@@ -1,9 +1,44 @@
-# Sector Intelligence in Shared Shell — four-round masterplan
+# Sector Intelligence in Shared Shell — masterplan v1.1
 
-**Revision:** 1.0 — final four-round masterplan, 9 November 2026 (America/Vancouver); finalized 10 November 2026 UTC.  
-**Status:** final planning handoff for Fable-led T3 implementation. All four requested planning rounds are complete; application, release and production acceptance remain to be proved.  
+**Revision:** 1.1 — Prophet v5.1 symbiosis amendment, 9 November 2026 (America/Vancouver; 10 November UTC).  
+**Status:** current implementation direction for the already-started Fable 5.2 team on T3. The original four-round v1.0 planning is retained; v1.1 adds the source-grounded Sector–Prophet contract and reviewed R6 Paper designs. Application, installed persistence, release, scientific and production acceptance remain separate.  
 **Parent:** Macro [#7646](https://github.com/mastermindx-market-intelligence/macro/issues/7646), operation sector-central-redesign-20260921-sol-001, WS:SECTOR-INTELLIGENCE-COMPLETION.  
-**Canonical plan family:** research/sector_completion_20261021/. This document amends the 21 October masterplan and its capability matrix; it does not create another program, lifecycle, task registry or analytical owner.
+**Canonical plan family:** research/sector_completion_20261021/. One programme, existing nine lanes and existing analytical/persistence/strategy owners.
+
+## Current-use v1.1 ruling — read before the retained v1.0 plan
+
+The Chairman's later instruction connects Sector Intelligence deeply to Prophet v5.1. The existing team has already started Sector v1.0 through Macro #10922; the initial-commission language in the retained four-round record is historical. Continue that team and its active carriers. Do not relaunch the compiled briefs or reset accepted work.
+
+The default experience is **market participation → sector/industry choice → full member population → independent company evidence in Prophet → qualified strategy action → honest evaluation**, with precise return and durable original context. Sector support is shared across discovery, explanation, comparison, saves, monitoring and evaluation. Original issuer observations feed back into sector economics; selected winners or Prophet confidence do not become upstream evidence. Direct company search, independent emergence and defensive/countertrend strategies remain reachable.
+
+The governing affected-seam contract is [PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md](https://github.com/mastermindx-market-intelligence/macro/blob/38bae28d191ae10b9bc438aa3df3ff196f08a98f/research/sector_completion_20261021/PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md). It reads Prophet §18 and §18.14 at exact source **1f645a751ea22d7ad5fe512165017873d8b65382**, mirrors its **SI01–SI20 and SP01–SP24**, and reconciles current Fable source. It takes precedence over an inconsistent affected seam in this retained v1.0 body; every unaffected original B01–B12, P01–P23, J01–J15, all 134 capabilities, 24 anchors and accepted evidence remains binding.
+
+### Decisions Fable must carry into the current build
+
+| Concern | Current v1.1 requirement |
+|---|---|
+| Captured context | Prophet consumes one compatible captured Sector context through its existing immutable read bundle. Preserve native identities, cutoff/basis/rights and full population; do not require unrelated generation IDs to be equal. |
+| Full membership | Keep membership, Prophet coverage, policy eligibility and access distinct. The current lane 1 five-member LEGACY example does not prove a general PIT constituent service. Search the full source population before preview/paging. |
+| Independent support | Show the raw group for description and all-alias issuer-excluded peers for confirmation. Freeze benchmark/membership/model/other inputs in invariance proof; dedupe roots without claiming statistical independence. |
+| Upstream company evidence | Aggregate original dated assertions over the declared eligible/reported/comparable cohort, with missing and contrary evidence visible. Never aggregate Prophet-selected winners as original fundamentals. |
+| Forecasts and history | Preserve Cycles and native depth; separate event/first-known time and independently qualify four forecast heads. Current lane 8 findings withhold hazard and its malformed prior. Historical 4/6 qualification is not current authority. |
+| Saved reasoning | Lane 6 composes its reserved source-only 0049 with compatible Prophet v3 through one owner/version sequence. Structural admission does not prove retained bytes, original reopen or current rights. No duplicate 0049 or independent v3 against old 0047. |
+| Product/evaluation | Raw return differences, relative wealth, estimated beta/residual and portfolio attribution/skill remain separate. Show participation, cash, allocation, costs and selection honestly; preserve existing Evaluation/Portfolio/Record ownership. |
+| Delivery | Existing lane 3 alone integrates shared Terminal files; lane 6 owns shared Investigation integration. Preserve holds/denials/unknown effects. Actual served/natural-update/correction/rollback evidence closes the programme. |
+
+### Design and implementation handoff
+
+[R6_PAPER_BUILD_SPEC_2026-11-09.md](https://github.com/mastermindx-market-intelligence/macro/blob/38bae28d191ae10b9bc438aa3df3ff196f08a98f/research/sector_completion_20261021/R6_PAPER_BUILD_SPEC_2026-11-09.md) defines eleven new editable roots on the existing Sector file, their owner/input/claim/interaction/state/proof/custody contracts, exact accessible disclosure destinations, illustrative arithmetic and remaining real-browser matrix.
+
+Editable pages: [Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-L-0), [States/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-M-0), [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-N-0). The original 47 R4 roots and Fable's 20 R5 roots remain. New R6-01–08 are product designs; R6-09 contains ten state/help specimens, R6-10/11 contain eight full build cards. RN3-0 is an additive README pointer. The manifest and actual JSX extraction accompany this plan in the same source family.
+
+Use **FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md** with the original final packet. The first integrated proof extends the real Sector read into full membership → covered Prophet Setup → exact evidence → restored Sector origin. Then prove retained original/current records, issuer economics and exclusion, qualified analytics/evaluation and ordinary update/correction/rollback. Do not block independent source/design work on another lane's held effect.
+
+Prophet's unresolved SX05 attribution and older mobile Plans operations remain at their original targets. R6 does not reproduce or finish them. Paper design completion is not production acceptance, and source publication/transport is not Fable adoption.
+
+## Retained v1.0 plan and acceptance history
+
+The following original four-round body is retained byte-for-byte from v1.0. Its original source pins, initial handoff/commission wording and dated candidate results are historical; the current-use ruling and exact v1.1 amendment govern the changes above. Do not downgrade or redo accepted work.
 
 ## 0. Commission, boundaries and completion
 
