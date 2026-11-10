@@ -830,3 +830,102 @@ class TestAtomicWrite:
         assert out.exists()
         assert not list(out.parent.glob("*.tmp"))  # tmp file cleaned up by os.replace
         assert json.loads(out.read_text())["schema"] == "track_ledger/v1"
+
+
+class TestUSAdmissionReceiptTruth:
+    """Synthetic episode metadata; no canonical data files are read or advanced."""
+
+    @staticmethod
+    def emit(monkeypatch, boards=None, closes=None):
+        from scripts import grade_us_board as gub
+        monkeypatch.setattr(gub, "LEDGER_HISTORY_FROM", "1900-01-01")
+        return gub.emit_ledger(_us_boards() if boards is None else boards,
+                               _us_closes() if closes is None else closes, None)
+
+    def test_admission_metadata_does_not_follow_later_appearances(self, monkeypatch):
+        boards = _us_boards()
+        boards[0]["rows"][0].update(position=38, align_tier="T2", sector="Original")
+        boards[2]["rows"][0].update(position=25, align_tier="T1", sector="Later")
+        doc = self.emit(monkeypatch, boards)
+        rows = sorted((r for r in doc["rows"] if r["t"] == "AAA"), key=lambda r: r["d"])
+        assert len(rows) == 2
+        assert (rows[0]["rk"], rows[0]["tr"], rows[0]["sec"]) == (39, "T2", "Original")
+        assert (rows[1]["rk"], rows[1]["tr"], rows[1]["sec"]) == (26, "T1", "Later")
+        assert rows[0]["rank_basis"] == "admission_one_based"
+        assert rows[0]["rank_as_of"] == rows[0]["d"]
+        assert rows[0]["rank_known_at"] is None, "a source date is not an original receipt time"
+
+    def test_first_position_is_one_and_continuous_run_keeps_first_position(self, monkeypatch):
+        doc = self.emit(monkeypatch)
+        bbb = next(r for r in doc["rows"] if r["t"] == "BBB")
+        assert bbb["rk"] == 2, "second day position zero must not rewrite the admission"
+        ddd = next(r for r in doc["rows"] if r["t"] == "DDD")
+        assert ddd["rk"] == 1
+        assert ddd["rank_basis"] == "admission_one_based"
+        assert ddd["ed"] is None
+        assert ddd["exit_date"] is None
+        assert ddd["return_end_date"] is None
+
+    @pytest.mark.parametrize("position", [None, True, -1, 1.5, float("nan"), float("inf"), "2"])
+    def test_invalid_positions_are_unavailable_not_guessed(self, monkeypatch, position):
+        boards = _us_boards()
+        boards[0]["rows"][1]["position"] = position
+        row = next(r for r in self.emit(monkeypatch, boards)["rows"] if r["t"] == "BBB")
+        assert row["rk"] is None
+        assert row["rank_basis"] == "unavailable"
+        assert row["rank_unavailable_reason"] == "invalid_admission_position"
+
+    def test_conflicting_same_admission_metadata_is_explicitly_unavailable(self, monkeypatch):
+        import copy
+        boards = _us_boards()
+        conflicting = copy.deepcopy(boards[0])
+        conflicting["rows"][1].update(position=91, align_tier="T4")
+        forward = self.emit(monkeypatch, [*boards, conflicting])
+        reverse = self.emit(monkeypatch, [conflicting, *reversed(boards)])
+        for doc in (forward, reverse):
+            row = next(r for r in doc["rows"] if r["t"] == "BBB")
+            assert row["rk"] is None and row["tr"] is None
+            assert row["rank_unavailable_reason"] == "conflicting_admission_metadata"
+        assert forward == reverse
+
+    def test_identical_duplicate_and_board_order_do_not_change_the_result(self, monkeypatch):
+        import copy
+        boards = _us_boards()
+        baseline = self.emit(monkeypatch, boards)
+        assert self.emit(monkeypatch, list(reversed(boards))) == baseline
+        duplicated = self.emit(monkeypatch, [copy.deepcopy(boards[0]), *reversed(boards)])
+        # Input-document counts may disclose an extra duplicate; outcomes and
+        # admission facts must not move with it.
+        assert duplicated["rows"] == baseline["rows"]
+        assert duplicated["summary"] == baseline["summary"]
+
+    def test_metadata_repair_changes_no_return_or_summary(self, monkeypatch):
+        boards = _us_boards()
+        baseline = self.emit(monkeypatch, boards)
+        boards[2]["rows"][0].update(position=91, align_tier="T4", sector="Changed")
+        changed = self.emit(monkeypatch, boards)
+        fields = ("t", "d", "ed", "e", "l", "p", "x", "dy", "st", "m", "xr", "bd")
+        assert [tuple(r[k] for k in fields) for r in baseline["rows"]] == [tuple(r[k] for k in fields) for r in changed["rows"]]
+        assert baseline["summary"] == changed["summary"]
+
+    def test_all_paths_name_the_model_and_only_real_evaluation_dates(self, monkeypatch):
+        doc = self.emit(monkeypatch)
+        for row in doc["rows"]:
+            assert row["evaluation_type"] == "model_episode"
+            assert row["evaluation_rule"] == "us_next_close_stochrsi80_trough97_h10_v1"
+            if row["m"]:
+                assert row["exit_date"] > row["ed"]
+                assert row["return_end_date"] == row["exit_date"]
+            else:
+                assert row["exit_date"] is None
+        unpriced = next(r for r in doc["rows"] if r["t"] == "CCC")
+        assert unpriced["rk"] == 3
+        assert unpriced["return_end_date"] is None
+
+    def test_inflight_model_mark_has_its_own_date(self, monkeypatch):
+        closes = _us_closes().iloc[:6]
+        doc = self.emit(monkeypatch, _us_boards()[:3], closes)
+        row = next(r for r in doc["rows"] if r["t"] == "BBB")
+        assert not row["m"]
+        assert row["exit_date"] is None
+        assert row["return_end_date"] == str(closes.index[-1].date())

@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-07T20:52:14.847916+00:00",
-  "posts_seen": 15,
-  "seen_total": 328,
-  "evaluated": 1,
+  "as_of": "2026-11-10T17:49:35.255764+00:00",
+  "posts_seen": 10,
+  "seen_total": 334,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-07-first-lady-melania-trump-and-lsu-establish-7-2-million-fostering-the-future-endo",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
