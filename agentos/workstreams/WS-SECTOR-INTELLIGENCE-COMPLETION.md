@@ -11,7 +11,7 @@ objective: >
   separately. Retire competing UX only after source, destination, access and saved-context parity.
 status: active
 program: sector-rotation-intelligence
-repos: [macro, mastermind, mastermind-terminal]
+repos: [macro, mastermind, terminal]
 owner: meta-ceo-fable
 class: build
 blast_radius: user_facing
