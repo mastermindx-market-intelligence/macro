@@ -199,3 +199,9 @@ Memory files (account-local, `~/.claude/projects/<project>/memory/`) are one fac
 `Macro Dashboard/ObsidianBrain/` is a live symlink view over memory + research (Dataview MOCs). It is a *view* — edit sources (memory files, research docs), never the vault copies.
 
 <!-- Reconstructed 2026-07-05: PR #1215 shipped this file as 0 bytes (commit message described vault pointer + memory contract; content was lost — the #1052 zero-byte failure mode). Rebuilt from the memory index + program docs, with the model-routing standing rule added. -->
+
+## Graph engineering for substantial missions
+
+Load [.agents/skills/mastermind-graph-engineering/SKILL.md](.agents/skills/mastermind-graph-engineering/SKILL.md) for multi-domain or long-horizon work. It resolves the shared Mastermind skill and its T3, Hermes and Paperclip guidance.
+
+Keep product direction, long-horizon planning and acceptance with the principal. Give admitted suborchestrators complete domain outcomes, let them coordinate admitted children and integrate evidence locally, and send compact decisions and proof upward. Preserve original root, actual parentage, scope, budget, writer custody and result return. Discover runtime depth limits before spawning; use the shallowest useful hierarchy and continue after accepted milestones.
