@@ -144,7 +144,7 @@
     if(d <= 0) return {ok:false, msg:"Enter a drawdown greater than 0%."};
     if(d >= 100) return {ok:false, msg:"A 100% drawdown means total loss — there's nothing left to recover."};
     var reqGain = 100 * d / (100 - d);
-    var out = {ok:true, d:d, reqGain:reqGain, dollarLoss:dollarLoss, fromPeakCurrent: (peak>0&&!isNaN(peak))};
+    var out = {ok:true, d:d, reqGain:reqGain, dollarLoss:dollarLoss, fromPeakCurrent: dollarLoss !== null, percentFallback: !!inp.balanceEntered && dollarLoss === null};
     if(!isNaN(g) && g > 0){
       out.years = Math.log(100 / (100 - d)) / Math.log(1 + g / 100);
       out.g = g;
@@ -179,16 +179,30 @@
     function money(n){ return "$" + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0}); }
     function dash(){ outMain.textContent="—"; [outDd,outYears,outLoss].forEach(function(e){e.textContent="—"; e.className="";}); }
 
+    function sourceLabel(res){
+      var zh = document.documentElement.getAttribute("data-lang") === "zh";
+      return res.fromPeakCurrent
+        ? (zh ? "（由峰值/当前值计算）" : " (from peak/current)")
+        : (zh ? "（使用输入的回撤百分比）" : " (from entered drawdown %)");
+    }
+    function fallbackNotice(res){
+      if(!res.percentFallback) return "";
+      var zh = document.documentElement.getAttribute("data-lang") === "zh";
+      return zh ? "峰值/当前值不完整或无效，已使用输入的回撤百分比。"
+                : "Peak/current values are incomplete or invalid; using the entered drawdown percentage.";
+    }
+
     var last=null;
     function render(){
       var inp = { ddPct:numFrom(els.ddPct), peak:numFrom(els.peak),
-                  current:numFrom(els.current), g:numFrom(els.retRate) };
+                  current:numFrom(els.current), g:numFrom(els.retRate),
+                  balanceEntered: !!((els.peak.value||"").trim() || (els.current.value||"").trim()) };
       var res=compute(inp); last=res;
       if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
 
       outMain.textContent = "+" + res.reqGain.toFixed(1) + "%";
       outMain.className   = "neg";  // recovery from a loss — sobering, not celebratory
-      outDd.textContent   = res.d.toFixed(1) + "%" + (res.fromPeakCurrent ? " (from peak/current)" : "");
+      outDd.textContent   = res.d.toFixed(1) + "%" + sourceLabel(res);
       if(res.dollarLoss !== null){
         outLoss.textContent = money(res.dollarLoss) + " from peak";
         outLoss.className   = "neg";
@@ -208,6 +222,7 @@
         plain += " At " + res.g.toFixed(1) + "% per year, that takes about " +
           res.years.toFixed(1) + " years.";
       }
+      if(res.percentFallback) plain += " " + fallbackNotice(res);
       outPlain.textContent = plain;
       outPlain.className   = "co-plain";
     }
@@ -215,6 +230,8 @@
     function copyLine(){
       if(!last || !last.ok) return "";
       var line = "Drawdown " + last.d.toFixed(1) + "% → needs +" + last.reqGain.toFixed(1) + "% to recover";
+      line += sourceLabel(last);
+      if(last.percentFallback) line += " · " + fallbackNotice(last);
       if(last.years != null) line += " · ~" + last.years.toFixed(1) + " yr at " + last.g.toFixed(1) + "% annual";
       line += " — mastermind-x.com";
       return line;
@@ -230,6 +247,7 @@
     ["dd-pct","peak","current","ret-rate"].forEach(function(id){
       var el=document.getElementById(id); if(el) el.addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();
