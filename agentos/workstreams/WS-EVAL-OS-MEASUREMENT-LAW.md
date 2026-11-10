@@ -13,13 +13,14 @@ status: active
 program: qualitative-intelligence
 repos:
   - macro
-owner: Eval-OS program (CEO Sol; bounded operator recovery lanes)
+owner: Intelligence Evaluation OS programme lead (current Chairman-assigned principal)
 class: build
 blast_radius: reversible
 ambiguity: scoped
 decisions:
   - "DEC:EVAL-OS-RECOVERY-ARCHITECTURE-FREEZE"
   - "DEC:EVAL-OS-DARK-WORKER-RECOVERY-2026-08-29"
+  - "DEC:EVAL-OS-WAVE-AUTHORITY-AND-LEADERSHIP-CONTINUITY-20261024"
 waves:
   - id: W1
     title: Architecture + metric validity
@@ -36,17 +37,15 @@ waves:
   - id: W4
     title: Append-only law + forward-only accrual
     status: in_progress
+    depends_on: [W2, W5]
     next_action: >
-      stock_desk general forward accrual is now PROVEN_LIVE from a real production registration:
-      data/qledger/evidence_clock_start/stock_desk.json starts at
-      2026-08-29T11:08:11.609328+00:00 for 20 trading days. stock_desk matched-control remains
-      truthfully NOT STARTED because the accepted stock receipts did not carry a valid governed
-      control. thematic_desk still has no durable general clock. The old E1 worker child was
-      terminally stopped for stale worker continuity after its effects were reconciled. A fresh
-      bounded E1 recovery child must classify why the already-wired real US thematic nightly path
-      yielded no registrable thesis/claim, produce the first lawful thematic prospective claim +
-      clock when the underlying desk actually makes one (or repair only a proven blocking defect),
-      and return explicit real grader/cohort proof that pre-clock rows are excluded.
+      The current programme lead inspects the existing producer/grader and runner-local
+      control/cohort receipts, preserving demand_chain 2026-08-19, stock_desk 2026-08-29
+      and thematic_desk 2026-08-31 general clocks. Identify the next genuine normal
+      publication and verify its selected-store consumption. Protect the QLedger integration
+      writer evidenced in the 2026-10-24T18:09Z recovery return and any unknown cutover
+      effect; an absent historical owner alone is not a wait condition. Do not force a run,
+      remint clocks or use the pre-release scheduled receipt as post-release proof.
   - id: W5
     title: Control-leg decision
     status: done
@@ -55,13 +54,42 @@ waves:
       is required only where governed policy names a defensible counterfactual. stock_desk and
       demand_chain are matched-control-required; thematic_desk is benchmark-only. #5665/#5672
       repaired demand-chain wiring/replay semantics.
-next_action: >
-  Place and execute fresh child eval-os-e1-thematic-cohort-recovery-20260829-sol-001 under the
-  current protected Skillpack. Do not redo the stock repair or stock general-clock start. Close the
-  remaining E1 truth gap: classify the real US thematic zero-output path, obtain the first lawful
-  thematic_desk prospective clock from real production without manufacturing a thesis, and prove
-  the real grader/cohort excludes pre-clock rows. Preserve demand_chain's runner-local control law
-  and stock matched-control NOT STARTED state until real governed evidence changes it.
+  - id: W6
+    title: Final composed promotion and clock-integrity acceptance
+    status: todo
+    depends_on: [W2, W3, W5]
+    next_action: >
+      Reuse the landed direction, ruler, correction and readiness tests, then bind their
+      adversarial conclusions to the actual released selected-store/consumer path.
+      Verify lawful horizon, market, direction, denominator, cohort and control basis;
+      missing or ineligible evidence must remain explicit and readiness must grant no
+      promotion or financial authority. Obtain fresh non-authoring acceptance for the
+      remaining exact-source scope. W3 remains done; this is its explicitly reserved
+      continuation, not a rebuild or a requirement for new market outcomes.
+  - id: W7
+    title: Staged invalid-emitter qualification and strict-hardening disposition
+    status: todo
+    depends_on: [W1, W6]
+    next_action: >
+      Qualify current affected emitters through the existing metric-validity CLI and
+      staged enforcement path, preserving accepted tests and WARN-tier behavior until
+      the actual rollout gates are satisfied. Record emitter coverage, exclusions,
+      observability and rollback evidence. Do not infer fleet-wide strict activation
+      from a merged substrate, a source-only change or this documentation PR.
+
+next_action: >-
+  Preserve all three accepted general clocks and their original receipts. Verify current original
+  scheduled producer/grader and cohort/control qualification through the existing owners; do not
+  restart the superseded thematic first-clock task. W4's read-only inspection proceeds under
+  current role-based programme leadership while actual live writers and unknown effects remain
+  protected. Reuse source accepted through merged #6651/#10130 and existing receipts to prepare W6
+  final composed adversarial acceptance, then W7 staged metric-validity qualification under its
+  declared prerequisites. Reconcile reusable receipts and live path/effect state before new work;
+  do not reopen #6651 or infer P1 START. Keep recorded failed-run/persisted-status qualifications
+  dated and require an actual current owner receipt for any new run.
+  The top product continuation is independently executable WS:EVAL-OS-EVIDENCE-VIEW A1;
+  W4 natural-time completion is not an A1 dependency. Wave records remain canonical planning/
+  execution state and the dated audit is evidence.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -74,7 +102,7 @@ landmines:
   - "engine/source_registry.py keeps its OWN _add_trading_days NYSE walker and grades narrative_source_call through its own exit. 'ONE resolver' is true only for claims that grade through qledger; do not overstate qledger scope."
   - "Current production track_record contains explicit and legacy bases and refuses pooling; future consumers must preserve this rather than reconstructing family statistics from raw mixed rows."
   - "data/qledger/control_evidence_clock_start/ is intentionally runner-local/untracked after #5970. A missing Git file is not proof a live clock is absent; production host/runtime truth must be read without inventing another canonical copy."
-  - "stock_desk now has a durable real general clock; thematic_desk is the only focal desk still missing a tracked general evidence_clock_start receipt."
+  - "All three focal general clocks exist. First-event annotations are immutable and distinct from current declared rulers or available grades."
   - "The canonical nightly thematic path is already wired daily engine -> cl_baskets -> build_baskets -> build_allocation -> _run_thematic_desk -> engine.thematic_desk.run. Do not invent a second producer or misclassify the remaining gap as a generic scheduler absence."
 do_not_redo:
   - "Do NOT re-propose 'the horizon fix is a one-line in_scope_horizons change'. The defect was missing unit declaration."
@@ -91,7 +119,53 @@ artifacts:
   - research/PREREG_P0C1_DIRECTION_CORRECT_CONTROL_HITS.md
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
+  - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - agentos/handoffs/EVAL-OS-P1-PROMOTION-INTEGRITY-ACCEPTANCE-2026-08-30.md
+  - research/EVAL_OS_WAVE_AUDIT_2026-10-24.md
+  - agentos/handoffs/EVAL-OS-MEASUREMENT-LAW-2026-10-24-PRO.md
+
 ---
+
+**2026-11-05 source-state reconciliation.** PR #6651 merged on October24 as
+`4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e`. Reuse accepted source and existing
+current-owner evidence; do not reopen its source release or infer a P1 START.
+The linked P1 handoff preserves the full ten-mutation matrix. W4 remains in
+progress, and all existing clock, cohort, control and natural-run qualifications
+are retained. Older run observations and proposed placements below retain their
+recorded epochs; this update does not assert new runtime state or new acceptance.
+
+
+## Wave audit and leadership continuity — 2026-10-24
+
+The existing objective and wave identities are the source of execution state. The Chairman's current instruction assigns the programme-lead role to the present principal. Historical roots, PR authors and absent sessions are provenance, not mandatory approval recipients. Actual active writes, pending effects, explicit denials and exact authentication consent remain protected. The original root's T03 advancement is retained; the reported active QLedger alias/entry-point integration is not taken over or duplicated.
+
+| Wave | Audited status | Evidence and acceptance boundary |
+|---|---|---|
+| W1 | done | #5471 accepted the architecture/validity substrate. WARN-tier defaults do not prove global strict enforcement; W7 carries that reserved residue. |
+| W2 | done | #5559 and corrective #5563 accepted the horizon/market substrate. Preserve 5/21/63 grade limits and explicit declared rulers. |
+| W3 | done | #5519, #5573, #5572 and later legality repairs are retained. W6 represents the final composed-path acceptance explicitly reserved by this wave. |
+| W4 | in_progress | All three general clocks exist. Current owner-local control/cohort qualification and genuine subsequent progression remain partial. Historical scheduled run 38406512307 is not a post-release pass. |
+| W5 | done | P0d/#5609, #5665 and #5672 establish benchmark/control policy and wiring; stock/demand require governed controls, thematic is benchmark-only. |
+| W6 | todo; added with rationale | Original P1/T17 composed acceptance was already reserved in W3 but absent from waves[]. It depends on accepted W2/W3/W5 and does not reopen them. Pass requires the released authority-consumer path, adversarial proof and independent acceptance. |
+| W7 | todo; added with rationale | Original T0/T3/G1 strict-hardening residue was already reserved in W1. It depends on W1/W6. Pass requires affected-emitter qualification and an explicit governed enforcement disposition, not an automatic strict flip. |
+
+W4 depends on W2/W5 because clock/cohort legality uses the accepted market and control contracts; both are already done. W6 and W7 expose previously declared obligations rather than enlarging the programme. No accepted wave is superseded or reopened. W6/W7 remain within this existing workstream; the separately registered R1 sibling below retains an already frozen programme obligation.
+
+### Programme boundaries retained
+
+The August recovery decision still owns the original T0–T12 obligations. T2 benchmark/MFE/MAE, outcome-dependent T5 taxonomy, original T6 historical PIT/adjudication, broader T9 adoption and T10–T12 consumer/adoption residue remain explicitly assessed in the dated audit. They are not silently counted complete by these bounded wave states. The programme-lead role owns their reconciliation through existing source owners; a later separately specified empirical build belongs in an explicit bounded canonical wave, not a second plan or automatic cross-project commission.
+
+A1 can complete its honest read-only product objective while W4 accrual remains incomplete. There is no A1 dependency on W4, QLedger #10079 activation, every empirical legacy objective, or the October commission's global T22–T24 closure chain. Programme completion remains false.
+
+### Separate existing R1 obligation
+
+[WS:EVAL-OS-RELIABILITY-EXTENSIONS](WS-EVAL-OS-RELIABILITY-EXTENSIONS.md) registers the recovery freeze's existing R1 wave with its original objective. Native Brain numeric/log acceptance belongs there, separately from this qledger measurement-law objective and A1's admin answer layer. This is a sibling programme obligation, not a W4/W6/W7 or A1 dependency.
+
+### Source-linked continuation
+
+Recipient: current Intelligence Evaluation OS programme lead. Action: execute the highest-value safe A1 acceptance slice while W4 and W6 retain their explicit independent work. Source: WS:EVAL-OS-EVIDENCE-VIEW.md, wave A1 and its acceptance table. Return: the A1 workstream evidence section and the dated handoff in this Draft PR. Any independent review binds an exact candidate revision; the author neither approves nor merges their own change.
+
+
 
 ## Reconciliation — 2026-08-27
 
@@ -128,3 +202,12 @@ The old E1 child received terminal `SOL CLOSED / STOP` on Slack thread
 `C0BSBM78V1N/1787896831.113919` at message `1788024583.456369`; its temporary watcher was ordered
 disarmed. The parent Eval OS program remains active. A fresh recovery child is required for the
 remaining thematic + cohort proof rather than silently moving the old worker/session.
+
+## Current clock reconciliation — 2026-10-12
+
+`git show a8e054ce5d7d44e48ff552841dc93d3c0ec87149:data/qledger/evidence_clock_start/thematic_desk.json` confirms the original thematic first registration at `2026-08-31T05:01:42.762963+00:00`,20 trading days, source09cc2e0f465c5a27f7382b3656694b5d068ef00d. The stock receipt remains2026-08-29T11:08:11.609328+00:00. Earlier absent-clock text describes its historical observation only. No new receipt or registration is authorized by this correction. Current acceptance still owes real cohort/control qualification and natural-run status.
+
+## Current consumer qualification — 2026-10-13
+
+The internal existing response-eval owner now has accepted finite synthetic seven-class/overlap/trial/look/contamination contracts and136 affected controls. This is deterministic internal QA, not empirical class qualification or protected study access. The evidence consumer preserves recorded cohorts, control and whole-family baseline populations, clock partitions and explicit zero/null; current/all-input qualification remains unavailable even when named local generations match. No registration event, control origin or grade horizon changed. Natural owner progression and original excluded study/producer obligations remain open.
+

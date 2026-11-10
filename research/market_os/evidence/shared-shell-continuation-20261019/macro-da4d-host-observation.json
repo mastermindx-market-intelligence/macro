@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-10-20T15:55:08.671779+00:00",
+  "observer": "/tmp/shared-shell-css-visual-20261019T1107/macro-b312-prearm-health-remote-v3.py",
+  "observer_bytes": 15894,
+  "observer_sha256": "ae53acf844cca7a86559643ba26d2b9a7db29d6d01f59093a6dc1fbd2acda21e",
+  "macro_local_head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "scope": "read-only sampled continuity and owner/hold evidence; not MOG arm or reservation",
+  "command": [
+    "ssh",
+    "-i",
+    "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "root@146.190.142.17",
+    "python3 -B -"
+  ],
+  "remote_exit": 0,
+  "finished_at": "2026-10-20T15:55:10.257844+00:00",
+  "stdout.json": {
+    "bytes": 23466,
+    "sha256": "bf9a09de5361692d9976e4271f95c5ec3f7cbd8898feba5b442d19407412abfa"
+  },
+  "stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

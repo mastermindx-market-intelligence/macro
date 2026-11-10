@@ -13,6 +13,8 @@ fixtures age is a scheduled red.
 from __future__ import annotations
 
 import json
+import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -283,14 +285,95 @@ def test_july_4_holiday_cannot_manufacture_a_breach():
 
 
 # ── wiring: the guard must actually be able to run ──────────────────────────
+def _assert_default_repository_identity(url, default_repo, env, root, revision):
+    expected = env.get("GITHUB_REPOSITORY") or "mastermindx-market-intelligence/macro"
+    assert default_repo == expected
+    github = re.fullmatch(r"(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)([^/]+/[^/]+)", url)
+    if github:
+        assert default_repo == github.group(1).removesuffix(".git")
+        return
+    # The exact-base runner deliberately substitutes a private pinned origin.
+    # Prove that fixture's identity instead of treating its path as a GitHub slug.
+    local = Path(url)
+    assert local.is_absolute()
+    assert root.parent.name.startswith("ci-base-replay-")
+    assert local.resolve() == (root.parent / "origin.git").resolve()
+    assert env.get("GITHUB_EVENT_NAME") == "base_replay"
+    assert env.get("CI_SEMANTIC_ROLE") == "main"
+    base = env.get("CI_BASE_SHA", "")
+    assert re.fullmatch(r"[0-9a-f]{40}", base)
+    assert env.get("CI_TESTED_TREE_SHA") == env.get("GITHUB_SHA") == base
+    assert revision("HEAD") == revision("origin/main") == base
+
+
 def test_default_repo_matches_the_git_remote():
-    """A wrong slug 404s into INDETERMINATE — permanently blind, and silent about
-    it. Pin the fallback to the real remote so a typo cannot ship."""
-    url = subprocess.run(["git", "remote", "get-url", "origin"],
-                         cwd=REPO_ROOT, capture_output=True, text=True,
-                         check=True).stdout.strip()
-    slug = url.removesuffix(".git").split("github.com", 1)[-1].lstrip(":/")
-    assert DEFAULT_REPO == slug
+    """A wrong repository slug must fail, including in an isolated base replay."""
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True,
+                              text=True, check=True).stdout.strip()
+    _assert_default_repository_identity(git("remote", "get-url", "origin"),
+        DEFAULT_REPO, os.environ, REPO_ROOT, lambda ref: git("rev-parse", ref))
+
+
+@pytest.mark.parametrize("url", [
+    "https://github.com/mastermindx-market-intelligence/macro.git",
+    "git@github.com:mastermindx-market-intelligence/macro.git",
+    "ssh://git@github.com/mastermindx-market-intelligence/macro.git",
+])
+def test_default_repo_identity_keeps_github_remote_verification(url, tmp_path):
+    _assert_default_repository_identity(url, "mastermindx-market-intelligence/macro",
+        {}, tmp_path, lambda ref: pytest.fail("GitHub identity must use its actual remote"))
+
+
+@pytest.mark.parametrize("url,default", [
+    ("https://github.com/other/repository.git", "mastermindx-market-intelligence/macro"),
+    ("https://github.com/mastermindx-market-intelligence/macro.git", "typo/repository"),
+    ("https://github.com.evil.invalid/mastermindx-market-intelligence/macro.git", "mastermindx-market-intelligence/macro"),
+])
+def test_default_repo_identity_refuses_wrong_repository_or_origin(url, default, tmp_path):
+    with pytest.raises(AssertionError):
+        _assert_default_repository_identity(url, default, {}, tmp_path, lambda ref: "0" * 40)
+
+
+@pytest.mark.parametrize("fault", [None, "missing_role", "wrong_role", "missing_base",
+    "wrong_tested_tree", "wrong_github_sha", "wrong_head", "wrong_origin_main", "foreign_origin", "wrong_default"])
+def test_default_repo_identity_qualifies_local_replay_instead_of_skipping_it(tmp_path, fault):
+    root = tmp_path / "ci-base-replay-fixture" / "worktree"
+    origin = root.parent / "origin.git"
+    base = "a" * 40
+    env = {"GITHUB_EVENT_NAME": "base_replay", "CI_SEMANTIC_ROLE": "main",
+           "CI_BASE_SHA": base, "CI_TESTED_TREE_SHA": base, "GITHUB_SHA": base}
+    refs = {"HEAD": base, "origin/main": base}
+    default = "mastermindx-market-intelligence/macro"
+    if fault == "missing_role": env.pop("GITHUB_EVENT_NAME")
+    if fault == "wrong_role": env["CI_SEMANTIC_ROLE"] = "pull_request"
+    if fault == "missing_base": env.pop("CI_BASE_SHA")
+    if fault == "wrong_tested_tree": env["CI_TESTED_TREE_SHA"] = "b" * 40
+    if fault == "wrong_github_sha": env["GITHUB_SHA"] = "b" * 40
+    if fault == "wrong_head": refs["HEAD"] = "b" * 40
+    if fault == "wrong_origin_main": refs["origin/main"] = "b" * 40
+    if fault == "foreign_origin": origin = tmp_path / "foreign.git"
+    if fault == "wrong_default": default = "typo/repository"
+    if fault is None:
+        _assert_default_repository_identity(str(origin), default, env, root, refs.__getitem__)
+    else:
+        with pytest.raises(AssertionError):
+            _assert_default_repository_identity(str(origin), default, env, root, refs.__getitem__)
+
+
+@pytest.mark.parametrize("repository,expected", [
+    (None, "mastermindx-market-intelligence/macro"),
+    ("", "mastermindx-market-intelligence/macro"),
+    ("qualified-owner/qualified-repository", "qualified-owner/qualified-repository"),
+])
+def test_default_repo_preserves_canonical_fallback_and_environment_selection(repository, expected):
+    env = dict(os.environ)
+    env.pop("GITHUB_REPOSITORY", None)
+    if repository is not None: env["GITHUB_REPOSITORY"] = repository
+    result = subprocess.run([sys.executable, "-B", "-c",
+        "from scripts.check_nightly_liveness import DEFAULT_REPO; print(DEFAULT_REPO)"],
+        cwd=REPO_ROOT, env=env, text=True, capture_output=True, check=True)
+    assert result.stdout.strip() == expected
 
 
 def test_workflow_is_off_the_self_hosted_pool():
@@ -1135,3 +1218,319 @@ def test_sector_intelligence_action_board_without_stamp_pages():
         "BOARD PUBLISHED WITHOUT A STAMP [Sector Intelligence action board]" in reason
         for reason in report["fail_reasons"]
     ), report
+
+
+# ── check E: the optional prophet_settlement block — typed reader evidence ──
+#
+# The V4-A2 availability-consumer seam: post-deploy, /live/staleness.json may
+# carry an optional ``prophet_settlement`` block written by the VPS sentinel.
+# These fixtures pin the READER contract only. The block is evidence about a
+# CLAIM — release, acceptance and source authority live with the sibling
+# WS:PROPHET-US-AVAILABILITY workstream, never with this guard — so a claimed
+# SETTLED can neither fail a check nor excuse one, and the heartbeat age alone
+# keeps grading pass/fail. A closed shape (schema id, status token, bundle
+# dates) is the only thing that crosses into facts; everything else a block
+# carries must stay invisible, because the file it rides is served to anyone.
+# Fixture dates are CONSTANTS, like every fixture above: the heartbeat reads
+# 30 min old at NOW (fresh against the 90 min budget) unless a test says
+# otherwise.
+
+SETTLEMENT_SCHEMA = "prophet.settlement_manifest/v1"
+FRESH_LAST_PASS = "2026-08-12T07:30:00+00:00"
+
+
+def _settlement_doc(block, *, last_pass_utc=FRESH_LAST_PASS):
+    """A staleness.json with a fresh heartbeat by default; block=None omits the
+    settlement key entirely (the pre-deploy document shape)."""
+    doc = {"heartbeat": {"last_pass_utc": last_pass_utc}}
+    if block is not None:
+        doc["prophet_settlement"] = block
+    return doc
+
+
+def _settlement(**overrides):
+    block = {"schema": SETTLEMENT_SCHEMA, "status": "SETTLED",
+             "owed_session": "2026-08-11", "source_asof": "2026-08-11",
+             "failures": []}
+    block.update(overrides)
+    return block
+
+
+_SETTLEMENT_FACT_KEYS = {
+    "prophet_settlement_schema",
+    "prophet_settlement_status",
+    "prophet_settlement_owed_session",
+    "prophet_settlement_source_asof",
+}
+
+
+def _settlement_fact_keys(report):
+    return {k for k in report["facts"] if k.startswith("prophet_settlement_")}
+
+
+def test_settlement_key_absent_contributes_nothing():
+    """Pre-deploy: the field does not exist yet. No evidence, no breach, no
+    false green, no noise — and an explicit null behaves identically, because
+    the producer may serialize the key before it ever fills it."""
+    bare = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=_settlement_doc(None))
+    assert bare["ok"] is True
+    assert not bare["fail_reasons"] and not bare["warnings"], bare
+    assert not _settlement_fact_keys(bare), bare
+    assert bare["facts"]["sentinel_heartbeat_age_minutes"] == 30.0
+
+    nulled = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat={
+        "heartbeat": {"last_pass_utc": FRESH_LAST_PASS},
+        "prophet_settlement": None,
+    })
+    assert nulled["ok"] is True
+    assert nulled["fail_reasons"] == bare["fail_reasons"]
+    assert nulled["warnings"] == bare["warnings"]
+    assert nulled["facts"] == bare["facts"]
+
+
+def test_settled_claim_on_a_fresh_heartbeat_is_typed_evidence_only():
+    """A QUALIFIED closed shape on a fresh heartbeat is recorded as the supplied
+    claim it is — and nothing more: no new warning, no fail_reason, and fact
+    keys stay inside the closed set. Recording a claim is not acceptance."""
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(_settlement()))
+    assert report["ok"] is True
+    assert not report["fail_reasons"] and not report["warnings"], report
+    assert _settlement_fact_keys(report) == _SETTLEMENT_FACT_KEYS, report["facts"]
+    assert report["facts"]["prophet_settlement_schema"] == SETTLEMENT_SCHEMA
+    assert report["facts"]["prophet_settlement_status"] == "SETTLED"
+    assert report["facts"]["prophet_settlement_owed_session"] == "2026-08-11"
+    assert report["facts"]["prophet_settlement_source_asof"] == "2026-08-11"
+
+
+def test_settlement_pending_is_advisory_and_never_a_breach():
+    """PENDING — with or without the full bundle — is an advisory non-settled
+    note. The issuer/GMI side can be unavailable for a long time; that must not
+    become a hard breach or a permanent page."""
+    for block in (_settlement(status="PENDING"),
+                  {"schema": SETTLEMENT_SCHEMA, "status": "PENDING"}):
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(block))
+        assert report["ok"] is True, report
+        assert not report["fail_reasons"], report
+        advisory = [w for w in report["warnings"] if "PENDING" in w]
+        assert len(advisory) == 1 and "ADVISORY" in advisory[0], report["warnings"]
+        assert _settlement_fact_keys(report) <= _SETTLEMENT_FACT_KEYS, report["facts"]
+        assert report["facts"]["prophet_settlement_status"] == "PENDING", report
+
+    # The full-bundle variant records the bundle dates it was given; the
+    # bundle-less variant records none and says the bundle is incomplete.
+    full = evaluate([_run()], ADVANCED, NOW,
+                    sentinel_heartbeat=_settlement_doc(_settlement(status="PENDING")))
+    assert full["facts"]["prophet_settlement_owed_session"] == "2026-08-11"
+    assert full["facts"]["prophet_settlement_source_asof"] == "2026-08-11"
+    bare = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=_settlement_doc(
+        {"schema": SETTLEMENT_SCHEMA, "status": "PENDING"}))
+    assert "prophet_settlement_owed_session" not in bare["facts"]
+    assert "prophet_settlement_source_asof" not in bare["facts"]
+    assert any("without a complete settlement bundle" in w for w in bare["warnings"])
+
+
+def test_settlement_unavailable_data_is_indeterminate_never_green_nor_outage():
+    """A typed UNAVAILABLE_DATA token is the issuer saying it has nothing to
+    grade: one INDETERMINATE warning, no fail, no synthetic recovery."""
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(
+                          _settlement(status="UNAVAILABLE_DATA")))
+    assert report["ok"] is True
+    assert not report["fail_reasons"], report
+    indet = [w for w in report["warnings"] if "UNAVAILABLE_DATA" in w]
+    assert len(indet) == 1 and "INDETERMINATE" in indet[0], report["warnings"]
+    assert _settlement_fact_keys(report) == {
+        "prophet_settlement_schema", "prophet_settlement_status"}, report["facts"]
+    assert report["facts"]["prophet_settlement_status"] == "UNAVAILABLE_DATA"
+
+
+def test_malformed_and_unknown_settlement_shapes_are_indeterminate():
+    """A block that is not a dict, an unknown status token, an unknown schema id
+    and a missing schema field are all unknown evidence: exactly one
+    INDETERMINATE warning, no fail, and no settlement facts at all."""
+    cases = [
+        "SETTLED",                                            # a bare string
+        ["SETTLED"],                                          # a list, not a block
+        _settlement(status="QUIET"),                          # unknown status token
+        _settlement(schema="sentinel.prophet_settlement/v2"),  # unknown schema id
+        {"status": "SETTLED", "owed_session": "2026-08-11",
+         "source_asof": "2026-08-11"},                        # no schema field
+        _settlement(owed_session="not-a-session-date"),       # bundle date unparseable
+    ]
+    for block in cases:
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(block))
+        assert report["ok"] is True, report
+        assert not report["fail_reasons"], report
+        settlement_warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+        assert len(settlement_warnings) == 1, report["warnings"]
+        assert "INDETERMINATE" in settlement_warnings[0], report["warnings"]
+        assert not _settlement_fact_keys(report), report["facts"]
+        # the unknown strings themselves must not be echoed back either
+        blob = json.dumps(report)
+        assert "QUIET" not in blob and "prophet_settlement/v2" not in blob
+        assert "not-a-session-date" not in blob
+
+
+@pytest.mark.parametrize("field", ["owed_session", "source_asof"])
+@pytest.mark.parametrize("value", [
+    "2026-08-11-GARBAGE",
+    "2026-08-11T00:00:00Z",
+    "2026-08-11Tmalformed",
+    "20260811",
+    "2026-W33-2",
+    "2026-08-11 ",
+])
+def test_settled_claim_requires_complete_canonical_session_dates(field, value):
+    """A parseable prefix, timestamp or alternate ISO form is not a session."""
+    report = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(_settlement(**{field: value})),
+    )
+    assert report["ok"] is True, report
+    assert not report["fail_reasons"], report
+    warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+    assert len(warnings) == 1 and "INDETERMINATE" in warnings[0], report
+    assert not _settlement_fact_keys(report), report["facts"]
+    assert value not in json.dumps(report)
+
+
+@pytest.mark.parametrize("status", ["PENDING", "UNAVAILABLE_DATA"])
+@pytest.mark.parametrize("last_pass_utc", [
+    "2026-08-12T02:00:00+00:00",
+    "not-a-timestamp",
+])
+def test_nonsettled_claim_requires_fresh_heartbeat_for_facts(status, last_pass_utc):
+    """Stale/unreadable observations retain warnings and the heartbeat verdict."""
+    baseline = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(None, last_pass_utc=last_pass_utc),
+    )
+    report = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(
+            _settlement(status=status), last_pass_utc=last_pass_utc,
+        ),
+    )
+    assert report["ok"] is baseline["ok"], report
+    assert report["fail_reasons"] == baseline["fail_reasons"], report
+    assert report["facts"] == baseline["facts"], report["facts"]
+    assert all(w in report["warnings"] for w in baseline["warnings"]), report
+    warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+    expected = "ADVISORY" if status == "PENDING" else "INDETERMINATE"
+    assert len(warnings) == 1 and expected in warnings[0], report
+    assert status in warnings[0], report
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_claimed_settled_cannot_rescue_a_stale_heartbeat():
+    """THE load-bearing one. The heartbeat age alone still grades pass/fail: a
+    document claiming SETTLED from a sentinel that has not passed in 6 hours is
+    a claim that is NOT honored — described in a warning, never recorded as
+    settlement facts, and the heartbeat fail stands untouched."""
+    stale_doc = _settlement_doc(_settlement(),
+                                last_pass_utc="2026-08-12T02:00:00+00:00")
+    report = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=stale_doc)
+    assert report["ok"] is False
+    assert report["facts"]["sentinel_heartbeat_age_minutes"] == 360.0, report["facts"]
+    stale = [f for f in report["fail_reasons"] if "SENTINEL HEARTBEAT STALE" in f]
+    assert len(stale) == 1, report["fail_reasons"]
+    honored = [w for w in report["warnings"] if "SETTLED" in w]
+    assert len(honored) == 1 and "NOT honored" in honored[0], report["warnings"]
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_claimed_settled_with_an_unreadable_heartbeat_is_not_honored():
+    """No usable heartbeat clock means freshness is UNKNOWN, so a SETTLED claim
+    has nothing fresh to stand on. The blindness warning still fires (an
+    unreadable clock is never a breach) and the claim stays undescribed in
+    facts — no synthetic green from a document that cannot even prove it is
+    recent."""
+    blind_doc = {"generated_at": "not-a-timestamp",
+                 "prophet_settlement": _settlement()}
+    report = evaluate([_run()], ADVANCED, NOW, sentinel_heartbeat=blind_doc)
+    assert report["ok"] is True
+    assert any("no usable" in w for w in report["warnings"]), report["warnings"]
+    honored = [w for w in report["warnings"] if "SETTLED" in w]
+    assert len(honored) == 1 and "NOT honored" in honored[0], report["warnings"]
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_settlement_reader_never_echoes_private_payload_fields():
+    """Only the closed field set may cross into facts or annotations. /live/
+    staleness.json is anonymous public — a paywall field riding the settlement
+    block must stay invisible in BOTH a qualified and an unrecognized shape, in
+    every one of warnings, fail_reasons and facts."""
+    hostile = _settlement(
+        paid_ticker_plan="TIER-99-PAID-TICKER-AAPL",
+        premium_note="entitled-only rows follow",
+    )
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(hostile))
+    blob = json.dumps(report)
+    assert "TIER-99-PAID-TICKER-AAPL" not in blob, blob
+    assert "entitled-only rows follow" not in blob, blob
+    assert _settlement_fact_keys(report) == _SETTLEMENT_FACT_KEYS
+
+    stranger = _settlement(schema="sentinel.prophet_settlement/v9-ENTITLED",
+                           status="SETTLED-ENTITLED")
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(stranger))
+    blob = json.dumps(report)
+    assert "v9-ENTITLED" not in blob and "SETTLED-ENTITLED" not in blob, blob
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
+def test_settlement_cannot_change_an_existing_a_to_d_failure():
+    """The optional block is strictly ADDITIVE evidence. Over a genuine checks
+    A/C failure backdrop, adding even a qualified fresh-heartbeat SETTLED claim
+    must leave ok, every fail_reason and every warning EXACTLY as they were —
+    it can neither add a page nor quiet one."""
+    baseline = evaluate([], FROZEN, NOW, sentinel_heartbeat=_settlement_doc(None))
+    with_claim = evaluate([], FROZEN, NOW,
+                          sentinel_heartbeat=_settlement_doc(_settlement()))
+    assert baseline["ok"] is False and with_claim["ok"] is False
+    assert any("NO RUN" in f for f in baseline["fail_reasons"])
+    assert with_claim["fail_reasons"] == baseline["fail_reasons"]
+    assert with_claim["warnings"] == baseline["warnings"]
+    common = {k: v for k, v in with_claim["facts"].items()
+              if not k.startswith("prophet_settlement_")}
+    assert common == baseline["facts"]
+    assert with_claim["facts"]["prophet_settlement_status"] == "SETTLED"
+
+
+def test_settlement_schema_matches_actual_v4_a2_public_report():
+    # Producer-side scripts/freshness_sentinel.py writes this literal.
+    # An earlier worker-only fixture invented sentinel.* and passed locally.
+    assert SETTLEMENT_SCHEMA == "prophet.settlement_manifest/v1"
+
+
+def test_settled_with_stale_source_does_not_become_liveness_green():
+    claim = _settlement(source_asof="2026-08-10")
+    report = evaluate([_run()], ADVANCED, NOW,
+                      sentinel_heartbeat=_settlement_doc(claim))
+    assert report["ok"] is True
+    assert not report["fail_reasons"]
+    assert any("INDETERMINATE" in w and "NOT honored" in w
+               for w in report["warnings"])
+    assert not _settlement_fact_keys(report)
+
+
+def test_settled_with_failures_or_no_failure_receipt_is_unverified():
+    cases = [_settlement(failures=["source_asof_stale"]),
+             _settlement(failures=None),
+             _settlement(failures="SECRET-TICKER")]
+    absent = _settlement()
+    absent.pop("failures")
+    cases.append(absent)
+    for claim in cases:
+        report = evaluate([_run()], ADVANCED, NOW,
+                          sentinel_heartbeat=_settlement_doc(claim))
+        assert report["ok"] is True
+        assert not report["fail_reasons"]
+        assert any("INDETERMINATE" in w and "NOT honored" in w
+                   for w in report["warnings"])
+        assert not _settlement_fact_keys(report)
+        assert "SECRET-TICKER" not in json.dumps(report)
