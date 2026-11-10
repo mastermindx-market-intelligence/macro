@@ -200,20 +200,39 @@ def test_missing_paths_do_not_crash_the_loader(tmp_path):
     assert bab._load_briefs_with_source(tmp_path / "nope", only_data)["btc_brief"][1] == "data_regime"
 
 
-def test_staleness_uses_refresh_days_with_one_day_grace_and_lens_fallback():
+def test_staleness_uses_refresh_days_with_grace_and_lens_fallback():
     def fr(lens, gen, **kw):
         return bab._lens_freshness(lens, _brief(gen, "x", **kw), "site", _NOW)["stale"]
 
-    # macro/china fall back to 1d cadence: stale only past 2 days
-    assert fr("macro", "2026-11-07T13:00:00+00:00") is False   # 1.96d
-    assert fr("macro", "2026-11-07T11:00:00+00:00") is True    # 2.04d
-    # btc falls back to 3d: stale only past 4 days
-    assert fr("btc", "2026-11-05T13:00:00+00:00") is False     # 3.96d
-    assert fr("btc", "2026-11-05T11:00:00+00:00") is True
+    # macro/china fall back to 1d cadence: stale only past 1d + 1d6h grace = 2.25d
+    assert fr("macro", "2026-11-07T07:00:00+00:00") is False   # 2.21d
+    assert fr("macro", "2026-11-07T05:00:00+00:00") is True    # 2.29d
+    # btc falls back to 3d: stale only past 3d + 1.25d = 4.25d (interval-gated lens
+    # regenerates at ~3d + nightly jitter; 6h slack beyond the 1d grace absorbs it)
+    assert fr("btc", "2026-11-05T07:00:00+00:00") is False     # 4.21d
+    assert fr("btc", "2026-11-05T05:00:00+00:00") is True
     # explicit refresh_days wins over the lens fallback
     assert fr("macro", "2026-11-05T13:00:00+00:00", refresh_days=3) is False
     # no usable timestamp -> unknown, never stale
     assert bab._lens_freshness("macro", None, None, _NOW)["stale"] is None
+
+
+def test_corrupt_refresh_days_falls_back_to_lens_default_without_crashing():
+    # json.loads accepts NaN/Infinity; timedelta(days=nan) raises — one bad lens
+    # value must degrade to the default cadence, never kill the page/receipt.
+    for bad in (float("nan"), float("inf"), 0, -2, 1e9, True):
+        info = bab._lens_freshness("btc", _brief("2026-11-08T00:00:00+00:00", "x",
+                                                 **{"refresh_days": bad}), "site", _NOW)
+        assert info["refresh_days"] == 3, bad
+        assert info["stale"] is False  # 1.5d old, 3d cadence -> fresh
+
+
+def test_stale_brief_without_refresh_days_still_gets_the_stale_chip():
+    # fallback cadence (macro -> 1d) applies; the chip must not depend on the
+    # brief carrying its own refresh_days
+    html = _stale_html("2026-10-18T22:00:00+00:00")
+    assert "Stale — last generated 2026-10-18" in html
+    assert "Updated daily" not in html
 
 
 def _stale_html(gen: str, **kw) -> str:
@@ -264,6 +283,8 @@ def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
     _w(root / "data" / "regime" / "master_brief.json",
        _brief("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1))
     _w(site / "btc_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16"))
+    # china present but with an UNPARSEABLE generated_at -> unknown age
+    _w(site / "china_brief.json", _brief("garbage", "2026-10-16", refresh_days=1))
     monkeypatch.setattr(bab, "config", SimpleNamespace(
         load=lambda: {"storage": {"site_dir": str(site)}}, ROOT=root))
     assert bab.main() == 0
@@ -274,12 +295,16 @@ def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
     assert macro["generated_at"] == "2026-11-09T01:00:00+00:00"
     assert macro["state_asof"] == "2026-11-06"
     assert macro["refresh_days"] == 1 and macro["source"] == "data_regime"
-    # btc (site copy, 2026-10-18) is long past 3d+1d grace; china absent -> unknown
+    # btc (site copy, 2026-10-18) is long past 3d+grace
     assert receipt["lenses"]["btc"]["source"] == "site" and receipt["lenses"]["btc"]["stale"] is True
-    assert receipt["lenses"]["china"] == {"generated_at": None, "state_asof": None,
-                                           "refresh_days": 1, "stale": None, "source": None}
+    # china PRESENT but unknown age -> receipt records None, and the page shows the
+    # china lens NO chip at all (no unverifiable "Updated daily"; exactly one such
+    # chip on the page, belonging to the fresh macro lens)
+    assert receipt["lenses"]["china"]["generated_at"] is None
+    assert receipt["lenses"]["china"]["stale"] is None
     html = (site / "aibrief.html").read_text()
     assert "Stale — last generated 2026-10-18" in html  # btc lens
+    assert html.count("Updated daily") == 1             # macro only — china suppressed
 
 
 def test_main_fail_open_still_writes_receipt_when_render_breaks(tmp_path, monkeypatch, capsys):
