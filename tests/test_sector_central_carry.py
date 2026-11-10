@@ -55,6 +55,15 @@ def test_real_artifacts_yield_every_producible_block():
     assert all(isinstance(u["as_of"], str) and u["as_of"] for u in built["confluence"].values())
 
 
+def test_etf_flow_windows_equal_the_producers_flow_periods():
+    """R3-N3: the carried window table restates the producer's constant - a producer
+    change of day count under the same labels must fail here, not mislabel silently.
+    The producer constant is imported in this test only (the carry module takes the
+    producer's output as data and must not import the producer)."""
+    from collectors.sponsors import FLOW_PERIODS
+    assert carry.ETF_FLOW_WINDOWS == FLOW_PERIODS  # labels AND day counts, order included
+
+
 def test_etf_flows_carries_the_lane7_windows_from_the_committed_producer():
     """Lane 7 needs 11 SPDRs x 1/3/5/10/21-day delta(shares) x NAV with as-of and depth."""
     flows = _flows()
