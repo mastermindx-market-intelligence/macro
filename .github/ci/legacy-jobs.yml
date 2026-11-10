@@ -21960,6 +21960,8 @@ jobs:
       # template-site-sync lane, which #3635 wired and which needs only pyyaml.
       # This job exists for the suite that lane CANNOT host: it RUNS each builder,
       # so it needs the data stack below.
+      - name: ownership forward ledger read-failure preservation
+        run: python -m pytest tests/test_ownership_ledger.py -q
       - name: every page builder emits the shim (runs each against a fixture root)
         run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
@@ -21969,9 +21971,14 @@ jobs:
       # Shared Shell keeps the existing document producer and finite route
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
-        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py -q
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py tests/test_beneficial_ownership.py -q
       - name: Shared Shell exact first-party parent handshake
         run: node --test tests/js/shared_shell_bridge.test.cjs
+      # Intraday Flow lifecycle P0 and history-preserving append: all inputs are
+      # synthetic or temporary. Keep the broad market-artifact owner DATA;
+      # select only the hermetic append class from that existing test module.
+      - name: Intraday Flow snapshot lifecycle and ledger preservation
+        run: python -m pytest tests/test_intraday_flow_lifecycle_js.py tests/test_intraday_flow_timing_lifecycle.py tests/test_intraday_flow_stance.py tests/test_intraday_flow.py::TestAppendLedger -q
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -39211,7 +39218,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright==1.64.1 rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
         run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_research_thesis_read.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
