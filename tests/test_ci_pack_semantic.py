@@ -1389,6 +1389,136 @@ def test_base_replay_checks_out_a_base_sha_inside_a_partial_clone(
     assert head != base
 
 
+@pytest.mark.parametrize(
+    "inventory, expected, failure",
+    [
+        ("", ["a" * 40, "b" * 40], None),
+        ("a" * 40 + "\n", ["b" * 40], None),
+        ("a" * 40 + "\n" + "b" * 40 + "\n", [], None),
+        ("not-an-object\n", None, RuntimeError),
+        ("a" * 40 + " blob 5\n", None, RuntimeError),
+        ("a" * 40 + "\n" + "a" * 40 + "\n", None, RuntimeError),
+        ("", None, subprocess.CalledProcessError),
+    ],
+)
+def test_base_replay_object_inventory_never_treats_a_failed_or_incomplete_probe_as_full(
+    monkeypatch: pytest.MonkeyPatch, inventory, expected, failure
+) -> None:
+    calls = []
+    deadline = PACK.time.monotonic() + 30
+
+    def run(args, **kwargs):
+        calls.append((list(args), kwargs))
+        if "ls-tree" in args:
+            return subprocess.CompletedProcess(
+                args, 0,
+                f"100644 blob {'a' * 40}\tfirst.txt\0"
+                f"100644 blob {'b' * 40}\tsecond.txt\0", "",
+            )
+        if failure is subprocess.CalledProcessError:
+            if kwargs.get("check", True):
+                raise subprocess.CalledProcessError(128, args, stderr="fixture inventory failed")
+            return subprocess.CompletedProcess(args, 128, "", "fixture inventory failed")
+        return subprocess.CompletedProcess(args, 0, inventory, "")
+
+    monkeypatch.setattr(PACK, "_git_run_bounded", run)
+    if failure is not None:
+        with pytest.raises(failure):
+            PACK._missing_tree_objects(Path("/fixture"), SHA_BASE, deadline=deadline)
+    else:
+        assert PACK._missing_tree_objects(Path("/fixture"), SHA_BASE, deadline=deadline) == expected
+    assert calls[-1][0] == [
+        "git", "cat-file", "--batch-all-objects", "--batch-check=%(objectname)"
+    ]
+    assert calls[-1][1]["deadline"] == deadline
+    assert calls[-1][1].get("check", True)
+    assert "stdin_text" not in calls[-1][1]
+
+
+@pytest.mark.parametrize(
+    "listing",
+    [
+        f"100644 blob {'a' * 40}\tfile.txt",
+        "malformed\0",
+        f"100644 unknown {'a' * 40}\tfile.txt\0",
+        "100644 blob not-an-object\tfile.txt\0",
+        f"100644 blob {'a' * 40}\tfile.txt\0\0",
+    ],
+)
+def test_base_replay_object_inventory_rejects_an_untrustworthy_tree_listing(
+    monkeypatch: pytest.MonkeyPatch, listing
+) -> None:
+    monkeypatch.setattr(
+        PACK, "_git_run_bounded",
+        lambda args, **_kwargs: subprocess.CompletedProcess(args, 0, listing, ""),
+    )
+    with pytest.raises(RuntimeError, match="exact-base tree object listing"):
+        PACK._missing_tree_objects(Path("/fixture"), SHA_BASE, deadline=123)
+
+
+def test_base_replay_object_inventory_is_local_and_includes_alternates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    work, base, head = _blobless_partial_clone(tmp_path)
+    missing = _locally_missing_blobs(work, base)
+    assert missing, "partial-clone negative control must retain a missing base blob"
+    real_run = PACK._git_run_bounded
+    calls = []
+
+    def observe(args, **kwargs):
+        calls.append(list(args))
+        assert "fetch" not in args, "an existence probe must not request transport"
+        return real_run(args, **kwargs)
+
+    monkeypatch.setattr(PACK, "_git_run_bounded", observe)
+    deadline = PACK.time.monotonic() + 30
+    assert PACK._missing_tree_objects(work, base, deadline=deadline) == missing
+    assert PACK._missing_tree_objects(work, head, deadline=deadline) == []
+    assert _locally_missing_blobs(work, base) == missing
+    borrowed = tmp_path / "borrowed.git"
+    _git(tmp_path, "init", "--bare", str(borrowed))
+    (borrowed / "objects/info/alternates").write_text(
+        str((work / ".git/objects").resolve()) + "\n", encoding="utf-8"
+    )
+    assert PACK._missing_tree_objects(borrowed, head, deadline=deadline) == []
+    assert PACK._missing_tree_objects(borrowed, base, deadline=deadline) == missing
+    assert _locally_missing_blobs(work, base) == missing
+    assert all("--batch-all-objects" in args for args in calls if "cat-file" in args)
+
+
+@pytest.mark.parametrize("stderr", [None, "x" * 5000 + "\nfixture checkout failure\n"])
+def test_base_replay_checkout_failure_exposes_bounded_stderr_and_stays_failed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, stderr
+) -> None:
+    source = tmp_path / "source"
+    base, head = _small_repository(source)
+    monkeypatch.setenv("RUNNER_TEMP", str(tmp_path))
+    real_run = PACK._git_run_bounded
+    deadline = PACK.time.monotonic() + 30
+    failures = []
+
+    def run(args, **kwargs):
+        if "checkout" in args:
+            assert kwargs["deadline"] == deadline
+            failure = subprocess.CalledProcessError(1, args, stderr=stderr)
+            failures.append(failure)
+            raise failure
+        return real_run(args, **kwargs)
+
+    monkeypatch.setattr(PACK, "_git_run_bounded", run)
+    with pytest.raises(RuntimeError, match=f"exact-base checkout of {base} failed ") as caught:
+        with PACK._exact_base_worktree(source, base, deadline=deadline):
+            pytest.fail("a failed checkout must never produce a replay")
+    assert len(failures) == 1
+    assert caught.value.__cause__ is failures[0]
+    message = str(caught.value)
+    assert "exit 1" in message
+    assert "\n" not in message
+    assert len(message) < 4200
+    assert ("fixture checkout failure" if stderr else "stderr unavailable") in message
+    assert _git(source, "rev-parse", "HEAD") == head
+
+
 def test_base_replay_hydration_is_a_noop_without_a_promisor_remote(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
