@@ -948,8 +948,8 @@ pages:
     archetype: "editorial"
     access_shell: "anonymous"
     payload_tier: "public"
-    evidence: [terminal/app/learn/page.tsx]
-    note: "static content page, no server-side data reads (revalidate 300)"
+    evidence: [terminal/app/(shell)/learn/page.tsx]
+    note: "public lesson content; existing shared chrome verifies identity and owns dynamic/private caching; no lesson entitlement"
 
   # ── monitor · alerts, news, holdings and service state ────────────────────────
   # Streams and watch-state: things you check, not things you rank.

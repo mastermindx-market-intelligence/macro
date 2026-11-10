@@ -189,7 +189,7 @@
       },
       {
         "component_id": "bond_desk_state",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"
@@ -197,7 +197,7 @@
         "null_reason": null,
         "required": false,
         "source_asof": "2026-11-06",
-        "status": "PRESENT"
+        "status": "PARTIAL"
       }
     ],
     "state": "STALE_SOURCE",
@@ -252,12 +252,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "bond_desk_health_score_level:bond_desk_health_score_level:03ff434fef20651a"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "national_debt_liabilities-US-fe37fa799ae96798"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "national_debt_liabilities-US-364f450d7bb228a3"
   },
   "drivers": {
     "balance_sheet": [
@@ -378,11 +376,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-08T06:28:26Z",
+    "built_at": "2026-11-10T08:33:34Z",
     "calculation_as_of": "2026-11-05",
-    "code_version": "9c377cfb6201005e195590887b292c737d18255c",
-    "content_sha256": "93e1abe4aa8b08de29ded9d4911cae9f7b0705253a49c47b46cbeed4018d2005",
-    "generation_id": "national_debt_liabilities-US-93e1abe4aa8b08de",
+    "code_version": "49216ab3a889fe1df56fa916df1fec2489662585",
+    "content_sha256": "b7b689943c9d3caaafc5058db1409da0131b3ead7f9eaa03e90c3a7ca454749d",
+    "generation_id": "national_debt_liabilities-US-b7b689943c9d3caa",
     "producer": "engine.market_os.macro_workspaces.national_debt",
     "rendered_at": null
   },
@@ -1481,7 +1479,7 @@
         "definition_id": "bonds_desk.health_score",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_healthy",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "bond_desk_health_score_level",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -1517,7 +1515,7 @@
         "definition_id": "bonds_desk.health_label",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "bond_desk_health_label",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -1553,7 +1551,7 @@
         "definition_id": "bonds_desk.cycle_phase",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "market_session": null,
         "metric_id": "bond_desk_cycle_phase",
         "model_version": "national_debt_liabilities.compose.v1",
@@ -3474,7 +3472,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "CURRENT",
+        "freshness": "LATE_WITHIN_TOLERANCE",
         "label": {
           "en": "Bond-desk health/cycle-phase state",
           "zh": "债券台面健康/周期阶段状态"

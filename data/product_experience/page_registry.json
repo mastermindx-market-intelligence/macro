@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-08T21:34:26Z",
+  "generated_at": "2026-11-08T23:52:41Z",
   "sources": {
     "macro": {
       "available": true,
@@ -51,11 +51,11 @@
     },
     "terminal": {
       "root": "/Volumes/Mastermind/agent-workspaces/claude/53c10d576ba9ec02/s17-unit-ci-wiring-00f73-20261107-709e38a9c6213f6f",
-      "ref": "018c14d57054bb4418eba4001f10db0010843059",
+      "ref": "a478bf64b5cf74dc7f977694ed418f550384f1cf",
       "available": true,
-      "sha": "018c14d57054bb4418eba4001f10db0010843059",
+      "sha": "a478bf64b5cf74dc7f977694ed418f550384f1cf",
       "page_modules": 35,
-      "registry_base_commit": "ac830737b94697bcc77672062aaf278a5ca6f45d",
+      "registry_base_commit": "37a21fefe2967209f82403fcc8cf5ca013a20c7f",
       "registry_base_sha256": "ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd"
     },
     "mastermind": {
@@ -14469,7 +14469,7 @@
       "repo": "terminal",
       "route": "/learn",
       "route_kind": "page",
-      "source_template": "terminal/app/learn/page.tsx",
+      "source_template": "terminal/app/(shell)/learn/page.tsx",
       "builder": [],
       "data_sources": [],
       "access_shell": "anonymous",
@@ -14495,13 +14495,13 @@
       "known_contracts": [],
       "open_prs": [],
       "source_evidence": [
+        "terminal/app/(shell)/learn/page.tsx",
         "terminal/app/layout.tsx",
-        "terminal/app/learn/page.tsx",
         "terminal/lib/i18n.tsx"
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
-        "static content page, no server-side data reads (revalidate 300)"
+        "public lesson content; existing shared chrome verifies identity and owns dynamic/private caching; no lesson entitlement"
       ]
     },
     {

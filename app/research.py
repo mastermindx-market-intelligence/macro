@@ -604,6 +604,32 @@ def research_search(
 # PAID routes (require_user + paid tier)
 # ---------------------------------------------------------------------------
 
+def _read_outline(segments: list[dict[str, Any]]) -> list[dict[str, int]] | None:
+    """Project a complete map from this revision's validated segment metadata.
+
+    Pages are never inferred from segment positions. Missing or malformed page
+    provenance withholds the whole optional map, retaining the text-window path.
+    The existing bounded derivative/segmenter bounds this metadata-only projection.
+    """
+    if not isinstance(segments, list) or not segments:
+        return None
+    outline: list[dict[str, int]] = []
+    previous_start, previous_end = 0, 0
+    for position, segment in enumerate(segments):
+        if not isinstance(segment, dict):
+            return None
+        values = tuple(segment.get(field) for field in ("segment_index", "page_start", "page_end"))
+        if any(type(value) is not int or not 0 <= value <= 2**53 - 1 for value in values):
+            return None
+        index, start, end = values
+        if (index != position or start < 1 or end < start
+                or start < previous_start or end < previous_end):
+            return None
+        outline.append({"segment_index": index, "page_start": start, "page_end": end})
+        previous_start, previous_end = start, end
+    return outline
+
+
 @router.get("/api/research/read/{doc_id}")
 def research_read(
     doc_id: str,
@@ -686,6 +712,7 @@ def research_read(
         # No raw store errors, internal keys or configuration escape the read boundary.
         return reply({"error": "research text unavailable"}, 503)
 
+    outline = _read_outline(segments)
     return reply({
         "schema": "research_vault.browser_read.v1",
         "report_id": doc_id,
@@ -703,6 +730,7 @@ def research_read(
         "text_layer_state": record["text_layer_state"],
         "segment_count_total": len(segments),
         "segments": segments[segment_start:segment_start + max_segments],
+        **({"outline": outline} if outline is not None else {}),
     })
 
 
