@@ -522,25 +522,19 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
     headline_mom = _change_after(
         text, r"Consumer Price Index for All Urban Consumers"
     )
+    # Anchored patterns first: BLS October 2026 phrasing moved the 12-month
+    # clause in front of the verb — "Over the last 12 months, the all items
+    # index increased 3.7 percent before seasonal adjustment." These cannot
+    # match the legacy clause order, and running them before the loose legacy
+    # window below keeps that window from binding a neighbouring index's
+    # yearly figure when paragraphs are short.
     headline_yoy_match = re.search(
-        rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
-        rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the last 12 months",
+        rf"over the last 12 months,?\s*the all items index\s+"
+        rf"(?P<verb>{_CHANGE_WORDS})\b"
+        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent",
         text,
         flags=re.IGNORECASE,
     )
-    if headline_yoy_match is None:
-        # BLS October 2026 phrasing moved the 12-month clause in front:
-        # "Over the last 12 months, the all items index increased 3.7 percent
-        # before seasonal adjustment."
-        headline_yoy_match = re.search(
-            rf"over the last 12 months,?\s*the all items index\s+"
-            rf"(?P<verb>{_CHANGE_WORDS})\b"
-            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent",
-            text,
-            flags=re.IGNORECASE,
-        )
     if headline_yoy_match is None:
         # Recap phrasing: "The all items index rose 3.7 percent for the 12
         # months ending September."
@@ -548,6 +542,15 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
             rf"the all items index\s+(?P<verb>{_CHANGE_WORDS})\b"
             r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
             r"\s+for the 12 months ending",
+            text,
+            flags=re.IGNORECASE,
+        )
+    if headline_yoy_match is None:
+        headline_yoy_match = re.search(
+            rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
+            rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+over the last 12 months",
             text,
             flags=re.IGNORECASE,
         )
@@ -580,22 +583,26 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         if core_match
         else None
     )
+    # Anchored pattern first (BLS October 2026 label order): "The all items
+    # less food and energy index rose 2.6 percent over the year." It cannot
+    # match the legacy label ("index for all items..."), and running it before
+    # the loose legacy window stops that window from crossing into a
+    # neighbouring sentence and binding the energy or shelter yearly figure.
     core_yoy_match = re.search(
-        r"(?:the )?index for all items less food and energy"
-        r".{0,180}?"
-        rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
+        r"(?:the )?all items less food and energy index\s+"
+        rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
         r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the year",
+        r"(?:\s+over the (?:last )?year"
+        r"|\s+over the last 12 months"
+        r"|\s+for the 12 months ending)",
         text,
         flags=re.IGNORECASE,
     )
     if core_yoy_match is None:
-        # BLS October 2026 phrasing moved "index" to the end of the label:
-        # "The all items less food and energy index rose 2.6 percent over the
-        # year, following a 2.4-percent increase ..."
         core_yoy_match = re.search(
-            r"(?:the )?all items less food and energy index\s+"
-            rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
+            r"(?:the )?index for all items less food and energy"
+            r".{0,180}?"
+            rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
             r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
             r"\s+over the year",
             text,

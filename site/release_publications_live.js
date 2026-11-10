@@ -966,7 +966,6 @@
   }
 
   function recentPublications(payload, now) {
-    var cutoff = now.getTime() - RESULT_WINDOW_MS;
     return (payload.publications || []).filter(function (row) {
       if (["published", "published_unparsed"].indexOf(row.status) < 0) return false;
       var detected = new Date(row.detected_at || row.date + "T23:59:59Z").getTime();

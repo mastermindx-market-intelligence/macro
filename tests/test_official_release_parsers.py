@@ -224,6 +224,41 @@ def test_cpi_parser_handles_october_2026_reordered_phrasing() -> None:
     assert "3.7% headline and 2.6% core" in actual["summary_en"]
 
 
+def test_cpi_parser_never_binds_neighbouring_yearly_figure_as_core() -> None:
+    # Short October-style paragraphs: the legacy 180-character window would
+    # cross from the core m/m sentence into the energy sentence and bind
+    # 20.4 as core YoY. The anchored October pattern must win first.
+    body = (
+        b"The Consumer Price Index for All Urban Consumers increased 0.6 percent on a "
+        b"seasonally adjusted basis in September. Over the last 12 months, the all items "
+        b"index increased 3.7 percent before seasonal adjustment. The index for all items "
+        b"less food and energy rose 0.3 percent in September. The energy index increased "
+        b"20.4 percent over the year. The all items less food and energy index rose 2.6 "
+        b"percent over the year."
+    )
+
+    actual = parse_cpi_actual(body)
+
+    assert actual is not None
+    assert actual["headline_yoy"] == 3.7
+    assert actual["core_yoy"] == 2.6
+
+
+def test_cpi_parser_accepts_sibling_core_yearly_phrasings() -> None:
+    body = (
+        b"The Consumer Price Index for All Urban Consumers increased 0.6 percent on a "
+        b"seasonally adjusted basis in September. Over the last 12 months, the all items "
+        b"index increased 3.7 percent before seasonal adjustment. The index for all items "
+        b"less food and energy rose 0.3 percent in September. The all items less food and "
+        b"energy index rose 2.6 percent over the last year."
+    )
+
+    actual = parse_cpi_actual(body)
+
+    assert actual is not None
+    assert actual["core_yoy"] == 2.6
+
+
 PPI_ENTRY = b"""
 PPI for final demand declines 0.3% in June; goods fall 1.4%, services increase 0.2%
 The Producer Price Index for final demand fell 0.3 percent in June. Prices for
