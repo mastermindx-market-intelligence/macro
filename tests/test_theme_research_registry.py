@@ -245,7 +245,8 @@ def test_dataclass_field_names_are_the_accepted_contract():
         "title_en", "title_zh", "note_en", "note_zh",
         "entry_kind", "profile_id", "subject_field", "subject_values",
         "time_modes", "single_document", "native_generation_prefix",
-        "native_generation_width", "evidence_refs_field",
+        "native_generation_width", "native_generation_field",
+        "evidence_refs_field",
     ]
 
 
@@ -598,8 +599,12 @@ def test_profile_entry_native_generation_grammar_is_the_verticals_own():
     tech = PROFILE_REGISTRY["technology_economic_change.v1"]
     assert tech.native_generation_prefix == "tecd_"
     assert tech.native_generation_width == 32
+    # the native payload FIELD is the sealed dossier's own name — the shell
+    # reads the native generation from payload["dossier_id"] for this entry
+    assert tech.native_generation_field == "dossier_id"
     finance = PROFILE_REGISTRY["finance_intelligence_research.v1"]
     assert finance.native_generation_prefix == "gen_"
+    assert finance.native_generation_field == "generation"
 
 
 @pytest.mark.parametrize("overrides", [
@@ -621,6 +626,7 @@ def test_profile_entry_native_generation_grammar_is_the_verticals_own():
     pytest.param({"native_generation_width": 4}, id="native-width-too-small"),
     pytest.param({"native_generation_width": 128}, id="native-width-too-large"),
     pytest.param({"native_generation_width": True}, id="native-width-bool"),
+    pytest.param({"native_generation_field": "dossier id"}, id="native-field-grammar"),
     pytest.param({"evidence_refs_field": "  "}, id="evidence-refs-field-blank"),
 ])
 def test_malformed_v2_columns_are_refused_with_value_error(overrides):

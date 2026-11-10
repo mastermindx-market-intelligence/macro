@@ -202,6 +202,13 @@ class VerticalRegistration:
     native_generation_prefix: str = "gen_"
     #: The hex width of the native generation after its prefix.
     native_generation_width: int = 32
+    #: The native payload field carrying this entry's native generation
+    #: (``generation`` for the theme and Finance composers; ``dossier_id`` for
+    #: Technology — the sealed dossier's own name). The shell reads the
+    #: NATIVE generation from this field to re-check the expected native
+    #: generation and to bind the context generation; the native value is
+    #: never renamed or re-prefixed.
+    native_generation_field: str = "generation"
     #: The native payload field carrying the owner-issued assertion
     #: references bound to rendered evidence (``evidence_refs`` for the
     #: theme composer, ``assertion_refs`` for Finance's dossier envelope).
@@ -336,6 +343,11 @@ class VerticalRegistration:
                 "VerticalRegistration.native_generation_prefix must match the "
                 "canonical id grammar so prefix+width composes into a closed "
                 "generation grammar without regex machinery"
+            )
+        if not _is_canonical_id(self.native_generation_field):
+            raise ValueError(
+                "VerticalRegistration.native_generation_field must match the "
+                "canonical id grammar (it names a native payload field)"
             )
         if self.evidence_refs_field is not None:
             _require_nonempty_text("evidence_refs_field", self.evidence_refs_field)
@@ -572,6 +584,7 @@ _TECHNOLOGY = VerticalRegistration(
     single_document=True,
     native_generation_prefix="tecd_",
     native_generation_width=32,
+    native_generation_field="dossier_id",
     evidence_refs_field=None,
 )
 

@@ -155,7 +155,7 @@ def test_facts_field_names_equal_the_frozen_field_set():
         "entry_kind", "profile_id", "sector_ref", "anchor_theme_id", "slice_keys",
         "views", "schema_id", "evidence_schema_id", "definition_version",
         "title_en", "title_zh", "note_en", "note_zh", "compose", "select_evidence",
-        "load_bundle",
+        "load_bundle", "build_query",
     )
     actual = dataclasses.fields(reg.FinanceRegistrationFacts)
     assert tuple(field.name for field in actual) == expected
@@ -175,10 +175,11 @@ def test_facts_equal_their_contract_consts():
     assert facts.sector_ref == expected_sector_ref == "sector:financials"
     assert tuple(facts.views) == reg.VIEWS == ("dossier",)
     assert tuple(reg.TIME_MODES) == ("latest",)
-    assert {facts.compose.__module__, facts.select_evidence.__module__, facts.load_bundle.__module__} == {REG}
+    assert {facts.compose.__module__, facts.select_evidence.__module__, facts.load_bundle.__module__, facts.build_query.__module__} == {REG}
     assert facts.compose is reg.compose
     assert facts.select_evidence is reg.select_evidence
     assert facts.load_bundle is reg.load_bundle
+    assert facts.build_query is reg.build_query
 
 
 def test_authority_keys_equal_projection_caps_and_contract_authority_all_false():
@@ -318,12 +319,17 @@ def test_hold_requires_both_anchor_and_slices(anchor_theme_id, slice_keys):
     assert constructed == []
 
 
-def test_real_shell_field_gap_is_exactly_view_keys_and_build_query():
-    """Pins the known share gap instead of hiding it. When the real shell
-    resolves, its record carries exactly two fields beyond the adapter's
-    quoted share — ``view_keys`` and ``build_query`` — and nothing in the
-    share is missing from the shell. When the shell is absent this asserts
-    that absence, so the test is informative on both states."""
+def test_real_shell_field_gap_is_exactly_view_keys_build_query_and_v2_columns():
+    """Pins the known share gap instead of hiding it. The share quotes the
+    12 fields of the shell's THEME-keyed construction path in the shell's
+    field order; Finance itself reaches the shell only through the v2
+    PROFILE_REGISTRY path (lane 5), which reads the adapter's own
+    ``view_keys``/``build_query`` plus the shell's ten defaulted v2 profile
+    columns. So when the real shell resolves, its record carries exactly
+    ``view_keys`` + ``build_query`` + the ten v2 columns beyond the quoted
+    share — and nothing in the share is missing from the shell. When the
+    shell is absent this asserts that absence, so the test is informative
+    on both states."""
     import dataclasses
     reg = _import_reg()
     cls = reg._resolve_vertical_registration_class()
@@ -332,7 +338,15 @@ def test_real_shell_field_gap_is_exactly_view_keys_and_build_query():
         return
     shell_fields = {f.name for f in dataclasses.fields(cls)}
     share = set(reg._VERTICAL_REGISTRATION_FIELDS)
-    assert shell_fields - share == {"view_keys", "build_query"}
+    assert shell_fields - share == {
+        # the two adapter-owned callables forwarded through PROFILE_REGISTRY
+        "view_keys", "build_query",
+        # the shell's ten defaulted v2 profile columns (lane 5)
+        "entry_kind", "profile_id", "subject_field", "subject_values",
+        "time_modes", "single_document", "native_generation_prefix",
+        "native_generation_width", "native_generation_field",
+        "evidence_refs_field",
+    }
     assert share - shell_fields == set()
 
 
@@ -1064,16 +1078,15 @@ def test_load_bundle_absent_binding_is_shared_shell_unavailable(shell_absent):
     assert " " not in excinfo.value.code
 
 
-def test_load_bundle_with_binding_double_raises_the_bindings_bundle_unavailable_directly():
-    """R5: when the binding module IS present and exposes a usable
-    :class:`BundleUnavailable` Exception subclass, ``load_bundle`` raises
-    that class DIRECTLY (no raise/catch/re-raise, no Finance refusal in
-    between). The message starts with the ``finance_owner_loader_pending``
-    prefix so the carrier classifies it, and the body names point (a) of
-    PR #7780 comment 5828668393 and R4. The shell maps
-    :class:`BundleUnavailable` to its fixed private 503 envelope — see
-    ``engine/market_ontology/theme_research_binding.py``.
-    """
+def test_load_bundle_with_binding_missing_owner_bundle_type_is_shared_shell_unavailable():
+    """Lane 5: the loader needs the binding's USABLE
+    ``OwnerBundle``/``BundleUnavailable`` PAIR. A binding double that
+    exposes only ``BundleUnavailable`` (no ``OwnerBundle``) cannot carry the
+    served bundle, so the loader raises the typed Finance refusal with the
+    bare ``shared_shell_unavailable`` code — the superseded
+    ``finance_owner_loader_pending`` stub raised the binding exception
+    instead of ever serving; the real loader's only direct
+    ``BundleUnavailable`` raise is the revision-less snapshot below."""
     reg = _import_reg()
 
     class _BundleUnavailable(Exception):
@@ -1083,14 +1096,13 @@ def test_load_bundle_with_binding_double_raises_the_bindings_bundle_unavailable_
     fake.BundleUnavailable = _BundleUnavailable
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(sys.modules, "engine.market_ontology.theme_research_binding", fake)
-        with pytest.raises(_BundleUnavailable) as excinfo:
-            reg.load_bundle(_Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF))
-    msg = str(excinfo.value)
-    assert msg.startswith("finance_owner_loader_pending")
-    assert "5828668393" in msg and "R4" in msg
-    # And it is NOT a FinanceRegistrationRefusal — the adapter did not
-    # wrap the binding exception.
-    assert not isinstance(excinfo.value, reg.FinanceRegistrationRefusal)
+        with pytest.raises(ValueError) as excinfo:
+            reg.load_bundle(
+                _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF),
+                rights_snapshot=("finance-rights-1", {}),
+            )
+    assert getattr(excinfo.value, "code", None) == "shared_shell_unavailable"
+    assert str(excinfo.value) == "shared_shell_unavailable"
 
 
 def test_load_bundle_with_binding_double_without_bundle_unavailable_type_is_shared_shell_unavailable():
@@ -1109,6 +1121,119 @@ def test_load_bundle_with_binding_double_without_bundle_unavailable_type_is_shar
             reg.load_bundle(_Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF))
     assert getattr(excinfo.value, "code", None) == "shared_shell_unavailable"
     assert str(excinfo.value) == "shared_shell_unavailable"
+
+
+def test_load_bundle_serves_the_honest_empty_bundle_with_typed_omissions():
+    """Lane 5: with a usable binding pair and an enforced rights snapshot,
+    ``load_bundle`` is a REAL loader in the Robotics honest-empty shape —
+    it reads the rights revision (the one real read), reads NOTHING off the
+    query, and returns the empty bundle whose omissions name WHICH owner
+    half is absent. Composing that bundle refuses
+    ``sealed_input_unavailable:run_context``: the profile is explicitly
+    UNAVAILABLE end-to-end through the vertical's own typed refusal, never
+    papered over with synthetic narrative."""
+    reg = _import_reg()
+
+    @dataclasses.dataclass(frozen=True)
+    class _OwnerBundle:
+        revision_tuple: tuple = ()
+        rights_revision: str = ""
+        assertions: tuple = ()
+        identity_results: tuple = ()
+        event_workspaces: tuple = ()
+        financial_packets: tuple = ()
+        interpretation_blocks: tuple = ()
+        native_refs: tuple = ()
+        omissions: tuple = ()
+
+    class _BundleUnavailable(Exception):
+        pass
+
+    fake = types.ModuleType("engine.market_ontology.theme_research_binding")
+    fake.OwnerBundle = _OwnerBundle
+    fake.BundleUnavailable = _BundleUnavailable
+    served: list = []
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(sys.modules, "engine.market_ontology.theme_research_binding", fake)
+        bundle = reg.load_bundle(
+            _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF),
+            rights_snapshot=("finance-rights-1", {}),
+        )
+        served.append(bundle)
+    assert isinstance(bundle, _OwnerBundle)
+    assert bundle.rights_revision == "finance-rights-1"
+    assert bundle.revision_tuple == ()
+    for half in ("assertions", "identity_results", "event_workspaces",
+                 "financial_packets", "interpretation_blocks", "native_refs"):
+        assert getattr(bundle, half) == ()
+    assert bundle.omissions == (reg.PRIVATE_ASSERTIONS_UNBOUND, reg.PUBLIC_COHORT_UNOWNED)
+
+    # The honest consequence through the REAL adapter: the profile is
+    # unavailable end-to-end — compose's own typed refusal, not a stub raise.
+    with pytest.raises(ValueError) as excinfo:
+        reg.compose(_Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF), bundle)
+    assert str(excinfo.value) == "sealed_input_unavailable:run_context"
+
+
+def test_load_bundle_snapshot_without_revision_raises_the_bindings_bundle_unavailable_directly():
+    """Lane 5: the one genuine "cannot serve" — a rights snapshot with NO
+    revision (``rights_revision`` feeds the generation fingerprint; serving
+    without it would fingerprint against nothing) raises the binding's
+    ``BundleUnavailable`` DIRECTLY, unwrapped by any Finance refusal, so
+    the shell maps it to its fixed private 503 envelope."""
+    reg = _import_reg()
+
+    @dataclasses.dataclass(frozen=True)
+    class _OwnerBundle:
+        pass
+
+    class _BundleUnavailable(Exception):
+        pass
+
+    fake = types.ModuleType("engine.market_ontology.theme_research_binding")
+    fake.OwnerBundle = _OwnerBundle
+    fake.BundleUnavailable = _BundleUnavailable
+    # The explicit revision-LESS snapshot tuple; a bare ``None`` would fall
+    # through to the carrier's real rights registry read, which is not this
+    # test's subject.
+    for snapshot in ((None, {}), ("", {})):
+        with pytest.MonkeyPatch.context() as mp:
+            mp.setitem(sys.modules, "engine.market_ontology.theme_research_binding", fake)
+            with pytest.raises(_BundleUnavailable) as excinfo:
+                reg.load_bundle(
+                    _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF),
+                    rights_snapshot=snapshot,
+                )
+        assert str(excinfo.value) == "rights snapshot carries no revision"
+        assert not isinstance(excinfo.value, reg.FinanceRegistrationRefusal)
+
+
+def test_build_query_constructs_the_frozen_carrier_and_refuses_foreign_fields():
+    """Lane 5: the registry-facing query constructor builds the frozen
+    :class:`FinanceResearchQuery` from EXACTLY its field set — the closed
+    contract between the v2 shell's parsed body and this vertical. A
+    foreign key (``anchor_theme_id``/``company_ref`` belong to the theme and
+    company_profile entry kinds) is a loud ``TypeError``, never a silently
+    dropped field. ``offset``/``limit`` exist with their §8 defaults — the
+    single-document SUPPLIED-limit refusal is the v2 shell's, upstream of
+    this constructor."""
+    reg = _import_reg()
+    query = reg.build_query(
+        profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF, view="dossier"
+    )
+    assert isinstance(query, reg.FinanceResearchQuery)
+    assert query.time_mode == "latest"
+    assert query.offset == 0 and query.limit == 50
+    assert query.expected_generation is None
+    for foreign in ({"anchor_theme_id": "ai_semiconductors"},
+                    {"company_ref": "co:us:synthetic-alpha"}):
+        with pytest.raises(TypeError) as excinfo:
+            reg.build_query(
+                profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                view="dossier", **foreign,
+            )
+        assert "finance build_query: unknown query fields" in str(excinfo.value)
+        assert next(iter(foreign)) in str(excinfo.value)
 
 
 def test_finance_registration_refusal_class_contract_holds_for_every_call_site():
