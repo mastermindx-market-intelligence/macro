@@ -706,17 +706,17 @@ def test_t9_no_clock_file_is_ever_committed(tmp_path):
 # T10 — THE REGISTRAR HOOK (C3.1)
 # =========================================================================== #
 def _forward_claim(family: str, *, control: str | None, subject: str = "AAPL",
-                   asof: str | None = None) -> dict:
-    """A claim registered TODAY for today's asof — prospective by construction
-    (its window fills on the next session, strictly after today)."""
+                   asof: str) -> dict:
+    """A claim prospective at the fixture's explicit registration date.
+    Its window fills on the next session, strictly after that UTC date."""
     return q.make_claim(
-        desk=family, asof=asof or date.today().isoformat(), scope_type="entity",
+        desk=family, asof=asof, scope_type="entity",
         scope_key=subject, direction=1, horizon_d=21,
         horizon_unit="trading_days", timestamp_quality="CRAWL_BOUNDED",
         claim_family=family, control=control)
 
 
-def test_t10_registrar_starts_the_clock_once_on_the_first_controlled_claim(tmp_path):
+def test_t10_registrar_starts_the_clock_once_on_the_first_controlled_claim(tmp_path, monotonic_now):
     """`register_batch` of a prospective, controlled, required-family claim
     writes the clock EXACTLY ONCE, stamped with that claim's own control and
     declared horizon. A later registration with a different control does not
@@ -727,7 +727,8 @@ def test_t10_registrar_starts_the_clock_once_on_the_first_controlled_claim(tmp_p
     A mutation that removes the hook call from `register_batch` fails THIS test
     on the clock's absence.
     """
-    q.register_batch([_forward_claim(REQ_A, control="XLK")], root=tmp_path)
+    today = monotonic_now.date()
+    q.register_batch([_forward_claim(REQ_A, asof=today.isoformat(), control="XLK")], root=tmp_path, today=today)
 
     rec = q.read_control_clock_start(REQ_A, tmp_path)
     assert rec is not None
@@ -738,12 +739,12 @@ def test_t10_registrar_starts_the_clock_once_on_the_first_controlled_claim(tmp_p
     assert rec["first_controlled_prospective_registration_utc"]
     assert len(list(_clock_dir(tmp_path).glob("*.json"))) == 1
 
-    q.register_batch([_forward_claim(REQ_A, control="XLV", subject="MSFT")],
-                     root=tmp_path)
+    q.register_batch([_forward_claim(REQ_A, asof=today.isoformat(), control="XLV", subject="MSFT")],
+                     root=tmp_path, today=today)
     assert q.read_control_clock_start(REQ_A, tmp_path) == rec
 
 
-def test_t10_registrar_starts_no_clock_for_benchmark_only_or_uncontrolled(tmp_path):
+def test_t10_registrar_starts_no_clock_for_benchmark_only_or_uncontrolled(tmp_path, monotonic_now):
     """A `benchmark_only` family's control-carrying registration starts NOTHING,
     and neither does an UNCONTROLLED required-family registration. Whether a
     family accrues matched-control evidence is policy, not data (C1.4).
@@ -752,11 +753,12 @@ def test_t10_registrar_starts_no_clock_for_benchmark_only_or_uncontrolled(tmp_pa
     `_start_control_clocks_for`. radar then acquires a clock on registration and
     this test fails on `read_control_clock_start(BENCH_FAM) is None`.
     """
+    today = monotonic_now.date()
     q.register_batch([
-        _forward_claim(BENCH_FAM, control="XLK"),      # benchmark_only + control
-        _forward_claim(REQ_A, control=None),           # required, no control
-        _forward_claim(REQ_B, control="AAPL"),         # required, control == subject
-    ], root=tmp_path)
+        _forward_claim(BENCH_FAM, asof=today.isoformat(), control="XLK"),      # benchmark_only + control
+        _forward_claim(REQ_A, asof=today.isoformat(), control=None),           # required, no control
+        _forward_claim(REQ_B, asof=today.isoformat(), control="AAPL"),         # required, control == subject
+    ], root=tmp_path, today=today)
 
     assert q.read_control_clock_start(BENCH_FAM, tmp_path) is None
     assert q.read_control_clock_start(REQ_A, tmp_path) is None
@@ -764,28 +766,30 @@ def test_t10_registrar_starts_no_clock_for_benchmark_only_or_uncontrolled(tmp_pa
     assert not _clock_dir(tmp_path).exists()
 
 
-def test_t10_registrar_hook_never_raises_into_registration(tmp_path, monkeypatch):
+def test_t10_registrar_hook_never_raises_into_registration(tmp_path, monkeypatch, monotonic_now):
     """A clock-write failure must never take a ledger write down with it."""
+    today = monotonic_now.date()
     def _boom(*_a, **_k):
         raise RuntimeError("clock store exploded")
     monkeypatch.setattr(q, "record_control_clock_start", _boom)
 
-    out = q.register_batch([_forward_claim(REQ_A, control="XLK")], root=tmp_path)
+    out = q.register_batch([_forward_claim(REQ_A, asof=today.isoformat(), control="XLK")], root=tmp_path, today=today)
 
     assert len(out) == 1 and out[0]["status"] == "open"
     assert len(q.load_claims(tmp_path)) == 1
 
 
-def test_t10_a_deduped_batch_starts_nothing(tmp_path):
+def test_t10_a_deduped_batch_starts_nothing(tmp_path, monotonic_now):
     """The hook runs over NEWLY APPENDED rows only. Re-running a producer cannot
     re-stamp, and a batch that dedupes entirely appends nothing to reason over."""
-    claim = _forward_claim(REQ_A, control="XLK")
-    q.register_batch([claim], root=tmp_path)
+    today = monotonic_now.date()
+    claim = _forward_claim(REQ_A, asof=today.isoformat(), control="XLK")
+    q.register_batch([claim], root=tmp_path, today=today)
     rec = q.read_control_clock_start(REQ_A, tmp_path)
     (tmp_path / "data" / "qledger" / "control_evidence_clock_start" /
      f"{REQ_A}.json").unlink()
 
-    q.register_batch([claim], root=tmp_path)          # pure dedupe, nothing new
+    q.register_batch([claim], root=tmp_path, today=today)          # pure dedupe, nothing new
 
     assert rec is not None
     assert q.read_control_clock_start(REQ_A, tmp_path) is None
@@ -1049,7 +1053,7 @@ def test_fix2_full_row_coverage_still_passes(tmp_path):
 
 @pytest.fixture
 def monotonic_now(monkeypatch):
-    """Strictly-increasing registration stamps on TODAY's UTC date.
+    """Strictly-increasing stamps from one explicit UTC fixture clock.
 
     A real batch produces increasing stamps, but two rows CAN collide on the
     same microsecond, which would make the instant-comparison mutation control
@@ -1057,8 +1061,10 @@ def monotonic_now(monkeypatch):
     the sequence removes that flake without weakening what is under test —
     registration still runs end to end through `_prepare_claim`, the append and
     the clock hook."""
-    base = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0,
-                                              microsecond=0)
+    # Claim asof, registration stamps and registrar/gate reference dates
+    # share this instant; host-local dates and midnight rollover cannot split
+    # an otherwise prospective fixture into two different calendar days.
+    base = datetime(2026, 11, 10, 12, 0, tzinfo=timezone.utc)
     counter = itertools.count()
     monkeypatch.setattr(
         q, "_now_iso",
@@ -1066,13 +1072,12 @@ def monotonic_now(monkeypatch):
     return base
 
 
-def _register_mixed_batch(root: Path, *, one_by_one: bool) -> list[dict]:
+def _register_mixed_batch(root: Path, *, one_by_one: bool, today: date) -> list[dict]:
     """A required family's real registration: 3 UNCONTROLLED claims first, then
-    2 controlled ones, all on today's asof (prospective — they fill next
+    2 controlled ones, all on the explicit UTC asof (they fill next
     session). Uncontrolled-first is the ordering that used to lose them."""
-    today = date.today().isoformat()
     batch = [
-        q.make_claim(desk=REQ_A, asof=today, scope_type="entity", scope_key=t,
+        q.make_claim(desk=REQ_A, asof=today.isoformat(), scope_type="entity", scope_key=t,
                      direction=1, horizon_d=21, horizon_unit="trading_days",
                      timestamp_quality="CRAWL_BOUNDED", claim_family=REQ_A,
                      control=ctrl)
@@ -1080,8 +1085,8 @@ def _register_mixed_batch(root: Path, *, one_by_one: bool) -> list[dict]:
                         ("AAPL", "XLK"), ("JNJ", "XLV"))
     ]
     if one_by_one:
-        return [q.register(c, root=root) for c in batch]
-    return q.register_batch(batch, root=root)
+        return [q.register(c, root=root, today=today) for c in batch]
+    return q.register_batch(batch, root=root, today=today)
 
 
 @pytest.mark.parametrize("one_by_one", [False, True], ids=["register_batch", "register_loop"])
@@ -1108,7 +1113,8 @@ def test_fix8_a_batch_is_never_excluded_from_the_cohort_it_started(
     `n_cohort_rows` falls to 2 and coverage jumps to 1.0 — this test fails on
     both.
     """
-    stored = _register_mixed_batch(tmp_path, one_by_one=one_by_one)
+    today = monotonic_now.date()
+    stored = _register_mixed_batch(tmp_path, one_by_one=one_by_one, today=today)
     grades = [_grade_row(s, 21, subject_ret=0.06,
                          control_ret=0.01 if s.get("control") else None,
                          bench_ret=0.0, hit=True) for s in stored]
@@ -1122,7 +1128,7 @@ def test_fix8_a_batch_is_never_excluded_from_the_cohort_it_started(
         "named after it")
     assert rec["control"] == "XLK"
 
-    r = q.matched_control_check(REQ_A, 21, root=tmp_path)
+    r = q.matched_control_check(REQ_A, 21, root=tmp_path, today=today)
 
     assert r.n_cohort_rows == 5, (
         f"every row of the triggering batch is a cohort member; got "
@@ -1136,10 +1142,10 @@ def test_fix8_a_batch_is_never_excluded_from_the_cohort_it_started(
 def test_fix8_registration_order_cannot_move_the_denominator(tmp_path, monotonic_now):
     """The same batch registered controlled-FIRST and uncontrolled-FIRST must
     produce the IDENTICAL coverage accounting. Order is not evidence."""
-    today = date.today().isoformat()
+    today = monotonic_now.date()
 
     def _mk(t, ctrl):
-        return q.make_claim(desk=REQ_A, asof=today, scope_type="entity",
+        return q.make_claim(desk=REQ_A, asof=today.isoformat(), scope_type="entity",
                             scope_key=t, direction=1, horizon_d=21,
                             horizon_unit="trading_days",
                             timestamp_quality="CRAWL_BOUNDED",
@@ -1150,14 +1156,14 @@ def test_fix8_registration_order_cannot_move_the_denominator(tmp_path, monotonic
     seen = []
     for label, seq in (("u_first", unc + con), ("c_first", con + unc)):
         root = tmp_path / label
-        stored = [q.register(_mk(t, c), root=root) for t, c in seq]
+        stored = [q.register(_mk(t, c), root=root, today=today) for t, c in seq]
         gp = root / "data" / "qledger" / "grades.jsonl"
         gp.write_text("".join(
             json.dumps(_grade_row(s, 21, subject_ret=0.06,
                                   control_ret=0.01 if s.get("control") else None,
                                   bench_ret=0.0, hit=True)) + "\n"
             for s in stored), encoding="utf-8")
-        r = q.matched_control_check(REQ_A, 21, root=root)
+        r = q.matched_control_check(REQ_A, 21, root=root, today=today)
         seen.append((r.n_cohort_rows, r.n_controlled_rows, r.control_coverage))
 
     assert seen[0] == seen[1] == (5, 2, pytest.approx(0.4)), seen

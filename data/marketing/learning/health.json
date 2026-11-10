@@ -62,9 +62,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 38,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=38 — need 5 of each",
+          "n_baseline": 34,
+          "n_recent": 2,
+          "reason": "recent n=2, baseline n=34 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -73,9 +73,9 @@
           "n": 9,
           "problems": [
             "only 2/9 of the visible grid carries a receipt (floor 3)",
-            "4 near-repeat(s) in the visible grid"
+            "3 near-repeat(s) in the visible grid"
           ],
-          "repeats": 4,
+          "repeats": 3,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
@@ -94,7 +94,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 175,
+      "n_rows": 177,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -117,9 +117,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 12,
+          "n_baseline": 11,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=12 — need 5 of each",
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -217,8 +217,8 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 65,
-          "n_recent": 7,
+          "n_baseline": 69,
+          "n_recent": 6,
           "reason": "baseline median is zero — a ratio against zero engagement is undefined, not infinite",
           "value": null,
           "verdict": "null"
@@ -228,9 +228,9 @@
           "n": 9,
           "problems": [
             "only 0/9 of the visible grid carries a receipt (floor 3)",
-            "6 near-repeat(s) in the visible grid"
+            "7 near-repeat(s) in the visible grid"
           ],
-          "repeats": 6,
+          "repeats": 7,
           "thresholds": {
             "receipt_floor": 3,
             "unmeasured_ceiling": 6
@@ -249,7 +249,7 @@
           "verdict": "null"
         }
       },
-      "n_rows": 187,
+      "n_rows": 193,
       "nulls": [
         "approval_rate",
         "rejection_reason_mix",
@@ -362,7 +362,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-11-09T11:00:22Z",
+  "as_of": "2026-11-10T16:16:47Z",
   "halted": [],
   "metrics": [
     "approval_rate",
