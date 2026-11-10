@@ -3007,6 +3007,22 @@ def _ms_canonical_view(snap: dict | None, latest: dict) -> dict | None:
     return snap
 
 
+def _ms_store_close_date() -> str | None:
+    """Read the SPY close without importing the self-heal worker into renders.
+
+    The self-heal script also reads ``store.read('yahoo', 'SPY')`` but imports
+    the full refresh/engine graph for its *writer* work. A site renderer must
+    not acquire that dependency closure merely to check its local store date.
+    """
+    df = store.read("yahoo", "SPY")
+    if df is None or "close" not in df.columns:
+        return None
+    closes = df["close"].dropna()
+    if closes.empty:
+        return None
+    return str(pd.to_datetime(closes.index).max().date())
+
+
 def market_state_view(latest: dict, f: pd.DataFrame) -> dict | None:
     """Render the canonical US Market State; only the nightly lane may calculate it.
 
@@ -3026,8 +3042,7 @@ def market_state_view(latest: dict, f: pd.DataFrame) -> dict | None:
             return canonical
 
         from lib.nyse_calendar import expected_last_session
-        from scripts.refresh_regime_if_stale import _store_close_date
-        store_asof = _store_close_date()
+        store_asof = _ms_store_close_date()
         expected_asof = str(expected_last_session())
         if not store_asof or store_asof < expected_asof:
             log.error("market_state: nightly SPY store %s behind expected NYSE %s; "

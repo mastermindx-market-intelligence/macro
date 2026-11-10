@@ -73,20 +73,17 @@ def test_express_render_withholds_missing_corrupt_or_wrong_session(monkeypatch):
 
 
 def test_nightly_stale_spy_preserves_41_and_never_appends_39(monkeypatch):
-    from scripts import refresh_regime_if_stale as refresh
-
     canonical = _snapshot()
     monkeypatch.setattr(audit, "ledger_lane_armed", lambda: True)
     monkeypatch.setattr(ms, "load_persisted", lambda: canonical)
     monkeypatch.setattr(ms, "market_state_snapshot", _refuse_recompute)
     monkeypatch.setattr(ms, "persist", _refuse_recompute)
-    monkeypatch.setattr(refresh, "_store_close_date", lambda: "2026-11-06")
+    monkeypatch.setattr(build_site, "_ms_store_close_date", lambda: "2026-11-06")
     monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: date(2026, 11, 9))
     assert build_site.market_state_view({"date": NOV9}, pd.DataFrame())["score"] == 41
 
 
 def test_nightly_fresh_spy_can_compute_and_persist(monkeypatch):
-    from scripts import refresh_regime_if_stale as refresh
     from engine import market_state_tune as tune
 
     published = []
@@ -96,7 +93,7 @@ def test_nightly_fresh_spy_can_compute_and_persist(monkeypatch):
     monkeypatch.setattr(ms, "persist", lambda snap: published.append(snap.copy()))
     monkeypatch.setattr(audit, "snapshot_and_grade", lambda snap: {"logged": True})
     monkeypatch.setattr(tune, "tune", lambda: {"updated": False})
-    monkeypatch.setattr(refresh, "_store_close_date", lambda: NOV9)
+    monkeypatch.setattr(build_site, "_ms_store_close_date", lambda: NOV9)
     monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: date(2026, 11, 9))
     got = build_site.market_state_view({"date": NOV9}, pd.DataFrame())
     assert got["score"] == published[0]["score"] == 41
@@ -104,17 +101,25 @@ def test_nightly_fresh_spy_can_compute_and_persist(monkeypatch):
 
 
 def test_nightly_does_not_publish_when_regime_and_spy_sessions_split(monkeypatch):
-    from scripts import refresh_regime_if_stale as refresh
-
     published = []
     monkeypatch.setattr(audit, "ledger_lane_armed", lambda: True)
     monkeypatch.setattr(ms, "load_persisted", lambda: _snapshot())
     monkeypatch.setattr(ms, "market_state_snapshot", lambda *_a: _snapshot())
     monkeypatch.setattr(ms, "persist", lambda snap: published.append(snap))
-    monkeypatch.setattr(refresh, "_store_close_date", lambda: NOV9)
+    monkeypatch.setattr(build_site, "_ms_store_close_date", lambda: NOV9)
     monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: date(2026, 11, 9))
     assert build_site.market_state_view({"date": "2026-11-06"}, pd.DataFrame()) is None
     assert published == []
+
+
+def test_nightly_store_date_reader_uses_existing_read_only_spy_store(monkeypatch):
+    seen = []
+    monkeypatch.setattr(build_site.store, "read", lambda source, ticker:
+                        seen.append((source, ticker)) or pd.DataFrame(
+                            {"close": [1.0, None, 2.0]},
+                            index=pd.to_datetime(["2026-11-05", "2026-11-09", "2026-11-06"])))
+    assert build_site._ms_store_close_date() == "2026-11-06"
+    assert seen == [("yahoo", "SPY")]
 
 
 def test_forward_log_is_required_before_claiming_nov9_settled(monkeypatch, tmp_path):
@@ -183,6 +188,10 @@ def test_nov9_canonical_data_matches_source_math():
 
 
 def test_both_express_publishers_gate_parity_and_pointer_races():
+    builder = (Path(__file__).parents[1] / "scripts/build_site.py").read_text()
+    # Importing the self-heal writer here widens the closure of every dashboard
+    # CI job to hundreds of engine files and breaks contract-delta publication.
+    assert "from scripts.refresh_regime_if_stale import" not in builder
     base = Path(__file__).parents[1] / ".github/workflows"
     for workflow in ("render.yml", "engine-render.yml"):
         src = (base / workflow).read_text()
