@@ -186,6 +186,44 @@ def test_cpi_parser_extracts_headline_and_core_changes() -> None:
     assert actual["headline_zh"]
 
 
+# Verbatim opening paragraphs of the real October 14, 2026 CPI news release
+# (September 2026 data). BLS moved the 12-month clause in front of the verb
+# ("Over the last 12 months, the all items index increased 3.7 percent ...")
+# and re-ordered the core label ("The all items less food and energy index
+# rose 2.6 percent over the year"), which parser v1 patterns missed — the
+# release sat in published_unparsed for weeks. This fixture pins the healed
+# behavior against the real phrasing.
+BLS_CPI_OCTOBER_ENTRY = b"""The Consumer Price Index for All Urban Consumers (CPI-U) increased 0.6 percent on a seasonally adjusted basis in
+September after rising 0.4 percent in August, the U.S. Bureau of Labor Statistics reported today. Over the last 12
+months, the all items index increased 3.7 percent before seasonal adjustment.
+
+The index for gasoline rose 9.1 percent in September, accounting for over half of the monthly all items increase. The
+energy index increased 5.2 percent over the month following a 2.1-percent increase in August. The shelter index rose 0.4
+percent in September after rising 0.3 percent in August. The index for food was unchanged in September, as the index for
+food away from home increased 0.2 percent and the index for food at home fell 0.1 percent.
+
+The index for all items less food and energy rose 0.3 percent in September, as it did in August. Indexes that increased
+over the month include recreation, used cars and trucks, education, airline fares, medical care, and apparel. Conversely,
+the index for communication was among the small number of major indexes that decreased in September.
+
+The all items index rose 3.7 percent for the 12 months ending September, a larger increase than the 3.4-percent increase
+reported for the 12 months ending in August. The all items less food and energy index rose 2.6 percent over the year,
+following a 2.4-percent increase over the 12 months ending August. The energy index increased 20.4 percent for the 12
+months ending September. The food index increased 2.5 percent over the last year."""
+
+
+def test_cpi_parser_handles_october_2026_reordered_phrasing() -> None:
+    actual = parse_cpi_actual(BLS_CPI_OCTOBER_ENTRY)
+
+    assert actual is not None
+    assert actual["headline_mom"] == 0.6
+    assert actual["headline_yoy"] == 3.7
+    assert actual["core_mom"] == 0.3
+    assert actual["core_yoy"] == 2.6
+    assert actual["headline_en"] == "CPI +0.6% m/m; core +0.3%"
+    assert "3.7% headline and 2.6% core" in actual["summary_en"]
+
+
 PPI_ENTRY = b"""
 PPI for final demand declines 0.3% in June; goods fall 1.4%, services increase 0.2%
 The Producer Price Index for final demand fell 0.3 percent in June. Prices for

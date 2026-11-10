@@ -530,6 +530,27 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         text,
         flags=re.IGNORECASE,
     )
+    if headline_yoy_match is None:
+        # BLS October 2026 phrasing moved the 12-month clause in front:
+        # "Over the last 12 months, the all items index increased 3.7 percent
+        # before seasonal adjustment."
+        headline_yoy_match = re.search(
+            rf"over the last 12 months,?\s*the all items index\s+"
+            rf"(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent",
+            text,
+            flags=re.IGNORECASE,
+        )
+    if headline_yoy_match is None:
+        # Recap phrasing: "The all items index rose 3.7 percent for the 12
+        # months ending September."
+        headline_yoy_match = re.search(
+            rf"the all items index\s+(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+for the 12 months ending",
+            text,
+            flags=re.IGNORECASE,
+        )
     headline_yoy = (
         _signed_change(
             headline_yoy_match.group("verb"), headline_yoy_match.group("value")
@@ -568,6 +589,18 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         text,
         flags=re.IGNORECASE,
     )
+    if core_yoy_match is None:
+        # BLS October 2026 phrasing moved "index" to the end of the label:
+        # "The all items less food and energy index rose 2.6 percent over the
+        # year, following a 2.4-percent increase ..."
+        core_yoy_match = re.search(
+            r"(?:the )?all items less food and energy index\s+"
+            rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+over the year",
+            text,
+            flags=re.IGNORECASE,
+        )
     core_yoy = (
         _signed_change(core_yoy_match.group("verb"), core_yoy_match.group("value"))
         if core_yoy_match

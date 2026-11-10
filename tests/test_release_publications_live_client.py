@@ -221,6 +221,66 @@ if (api.awaitingEvents(
   ).length !== 0) {{
   throw new Error("T+25h detected publication regressed to awaiting release");
 }}
+// A stuck unparsed row outlives the 24h result window only up to the
+// watcher-declared unresolved retention (default 7 days); a weeks-old row
+// must stop posing as a live detection.
+const staleUnparsedPayload = {{
+  publications: [{{
+    event_id: "cpi:2026-10-14",
+    type: "CPI",
+    date: "2026-10-14",
+    status: "published_unparsed",
+    data_ready: false,
+    detected_at: "2026-10-14T12:31:17Z"
+  }}],
+  poll_window: {{
+    unresolved_retention_min: {{ CPI: 10080 }}
+  }}
+}};
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-10-20T12:00:00Z")).length !== 1) {{
+  throw new Error("unparsed row inside declared retention was dropped");
+}}
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-11-09T22:00:00Z")).length !== 0) {{
+  throw new Error("26-day-old unparsed row still rendered as a live detection");
+}}
+const shortRetentionPayload = {{
+  publications: [{{
+    type: "CPI",
+    date: "2026-10-14",
+    status: "published_unparsed",
+    data_ready: false,
+    detected_at: "2026-10-14T12:31:17Z"
+  }}],
+  poll_window: {{
+    unresolved_retention_min: {{ CPI: 1440 }}
+  }}
+}};
+if (api.recentPublications(
+    shortRetentionPayload, new Date("2026-10-16T12:00:00Z")).length !== 0) {{
+  throw new Error("declared retention window was not honored");
+}}
+if (api.unresolvedRetentionMs({{}}, "CPI") !== 7 * 24 * 60 * 60 * 1000) {{
+  throw new Error("default unresolved retention is not 7 days");
+}}
+if (api.unresolvedRetentionMs(shortRetentionPayload, "CPI") !== 24 * 60 * 60 * 1000) {{
+  throw new Error("declared unresolved retention was not applied");
+}}
+// The "Detected" label must carry the ET date once the detection is not from
+// the current ET day, so an old extraction cannot read as a fresh detection.
+const sameDayStamp = api.easternStampPair(
+  "2026-11-06T13:31:17Z", new Date("2026-11-06T20:00:00Z"));
+if (!sameDayStamp || sameDayStamp.en !== "08:31 ET" ||
+    sameDayStamp.en !== sameDayStamp.zh) {{
+  throw new Error("same-ET-day detection stamp lost its clock-only form");
+}}
+const priorDayStamp = api.easternStampPair(
+  "2026-10-14T12:31:17Z", new Date("2026-11-09T22:00:00Z"));
+if (!priorDayStamp || priorDayStamp.en !== "Oct 14 · 08:31 ET" ||
+    priorDayStamp.zh !== "10月14日 · 08:31 ET") {{
+  throw new Error("prior-day detection stamp omitted its date");
+}}
 const expiringPayload = {{
   publications: [{{
     type: "FOMC",

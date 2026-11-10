@@ -13,6 +13,8 @@
   var ENDPOINT = "live/release_publications.json";
   var POLL_MS = 60000;
   var STALE_AFTER_MS = 3 * 60 * 1000;
+  var RESULT_WINDOW_MS = 24 * 60 * 60 * 1000;
+  var DEFAULT_UNRESOLVED_RETENTION_MIN = 7 * 24 * 60;
   var OFFICIAL_HOSTS = [
     "federalreserve.gov",
     "bls.gov",
@@ -59,6 +61,30 @@
     if (isNaN(parsed.getTime())) return "";
     var parts = easternParts(parsed);
     return parts.hour + ":" + parts.minute + " ET";
+  }
+
+  function easternStampPair(value, nowValue) {
+    var now = nowValue instanceof Date ? nowValue : new Date();
+    var parsed = new Date(value);
+    if (!value || isNaN(parsed.getTime())) return null;
+    var parts = easternParts(parsed);
+    var clock = parts.hour + ":" + parts.minute + " ET";
+    if (easternDateKey(parsed) === easternDateKey(now)) {
+      return { en: clock, zh: clock };
+    }
+    // A detection older than the current ET day must carry its date: without
+    // it a stuck "extracting" card reads as a live detection of the next
+    // release of the same type.
+    var enMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var zhMonths = ["1月", "2月", "3月", "4月", "5月", "6月",
+      "7月", "8月", "9月", "10月", "11月", "12月"];
+    var month = Number(parts.month) - 1;
+    var day = Number(parts.day);
+    return {
+      en: enMonths[month] + " " + day + " · " + clock,
+      zh: zhMonths[month] + day + "日 · " + clock
+    };
   }
 
   function officialReleaseTime(row) {
@@ -186,9 +212,13 @@
     card.appendChild(source);
   }
 
-  function renderPublicationCard(row) {
+  function renderPublicationCard(row, nowValue) {
+    var now = nowValue instanceof Date ? nowValue : new Date();
     var actual = row.actual || {};
     var verified = row.data_ready === true;
+    var detectedAt = new Date(row.detected_at || "");
+    var staleUnparsed = !verified && !isNaN(detectedAt.getTime()) &&
+      now.getTime() - detectedAt.getTime() > RESULT_WINDOW_MS;
     var card = document.createElement("section");
     card.className = "mx-live-event-card published " +
       (verified ? "verified" : "unparsed");
@@ -198,15 +228,20 @@
     top.className = "mx-live-event-top";
     top.appendChild(languagePair(
       "mx-live-event-pill",
-      verified ? "Official result · live" : "Official publication · extracting",
-      verified ? "官方结果 · 实时" : "官方发布 · 正在提取"
+      verified ? "Official result · live" :
+        staleUnparsed ? "Official publication · unresolved" :
+          "Official publication · extracting",
+      verified ? "官方结果 · 实时" :
+        staleUnparsed ? "官方发布 · 数据待解析" :
+          "官方发布 · 正在提取"
     ));
+    var stamp = easternStampPair(row.detected_at, now);
     var asof = document.createElement("span");
     asof.className = "mx-live-event-asof";
     setPair(
       asof,
-      "Detected " + (easternTime(row.detected_at) || "live"),
-      "检测于 " + (easternTime(row.detected_at) || "实时")
+      "Detected " + ((stamp && stamp.en) || "live"),
+      "检测于 " + ((stamp && stamp.zh) || "实时")
     );
     top.appendChild(asof);
     card.appendChild(top);
@@ -217,8 +252,14 @@
     ));
     card.appendChild(languagePair(
       "mx-live-event-summary",
-      actual.summary_en || "Official publication detected. Verified values are being extracted.",
-      actual.summary_zh || "已检测到官方发布，正在提取并核验数据。"
+      actual.summary_en ||
+        (staleUnparsed ?
+          "Official publication detected, but automated value extraction has not completed. Verified values will appear once parsing succeeds." :
+          "Official publication detected. Verified values are being extracted."),
+      actual.summary_zh ||
+        (staleUnparsed ?
+          "已检测到官方发布，但自动数值提取尚未完成，解析成功后将显示核验数值。" :
+          "已检测到官方发布，正在提取并核验数据。")
     ));
     appendSource(card, row);
     return card;
@@ -915,13 +956,28 @@
       (Number(clock[0]) * 60 + Number(clock[1] || 0));
   }
 
+  function unresolvedRetentionMs(payload, type) {
+    var minutes = DEFAULT_UNRESOLVED_RETENTION_MIN;
+    var declared = payload && payload.poll_window &&
+      payload.poll_window.unresolved_retention_min;
+    if (declared && declared[type] != null) minutes = Number(declared[type]);
+    if (!isFinite(minutes) || minutes < 24 * 60) minutes = 24 * 60;
+    return minutes * 60 * 1000;
+  }
+
   function recentPublications(payload, now) {
-    var cutoff = now.getTime() - (24 * 60 * 60 * 1000);
+    var cutoff = now.getTime() - RESULT_WINDOW_MS;
     return (payload.publications || []).filter(function (row) {
       if (["published", "published_unparsed"].indexOf(row.status) < 0) return false;
       var detected = new Date(row.detected_at || row.date + "T23:59:59Z").getTime();
-      return !isNaN(detected) &&
-        (row.status === "published_unparsed" || detected >= cutoff);
+      if (isNaN(detected)) return false;
+      // Verified results live for one day. An extraction that never completed
+      // stays visible only for the watcher's declared unresolved-retention
+      // window; past that a stuck row must stop posing as a live detection.
+      var horizon = row.status === "published_unparsed"
+        ? unresolvedRetentionMs(payload, row.type)
+        : RESULT_WINDOW_MS;
+      return detected >= now.getTime() - horizon;
     }).sort(function (left, right) {
       return new Date(left.detected_at || 0).getTime() -
         new Date(right.detected_at || 0).getTime();
@@ -1141,7 +1197,7 @@
     if (panel) {
       panel.textContent = "";
       publications.forEach(function (row) {
-        panel.appendChild(renderPublicationCard(row));
+        panel.appendChild(renderPublicationCard(row, now));
       });
       awaiting.forEach(function (row) {
         panel.appendChild(renderAwaitingCard(row, payload));
@@ -1205,6 +1261,8 @@
 
   window.__mmReleasePublicationTest = {
     easternDateKey: easternDateKey,
+    easternStampPair: easternStampPair,
+    unresolvedRetentionMs: unresolvedRetentionMs,
     officialReleaseTime: officialReleaseTime,
     eventHasPassed: eventHasPassed,
     safeOfficialUrl: safeOfficialUrl,
