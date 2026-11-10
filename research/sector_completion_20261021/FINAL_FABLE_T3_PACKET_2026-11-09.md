@@ -1,3 +1,19 @@
+# Current-use v1.1 amendment — active Fable team
+
+**This packet's original v1.0 body below is retained in full.** It is now consumed with **FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md**, [the Sector v1.1 integration amendment](https://github.com/mastermindx-market-intelligence/macro/blob/38bae28d191ae10b9bc438aa3df3ff196f08a98f/research/sector_completion_20261021/PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md), [the R6 Paper build specification](https://github.com/mastermindx-market-intelligence/macro/blob/38bae28d191ae10b9bc438aa3df3ff196f08a98f/research/sector_completion_20261021/R6_PAPER_BUILD_SPEC_2026-11-09.md) and the masterplan v1.1 in this same source family.
+
+Macro #10922 established the existing Fable 5.2 T3 execution charter/frontier and lane START records. The original packet's initial-commission/no-pickup wording is historical. Do not create a second team or dispatch the ten compiled authoring briefs again. The current amendment updates the existing nine delivery lanes, with actual heads and custody refreshed only when affected.
+
+The governing Prophet source is v5.1 at **1f645a751ea22d7ad5fe512165017873d8b65382**. Its twenty SI contracts and twenty-four SP falsifiers extend the original Sector B/P/J and 134-capability acceptance; they do not replace it. The default consumer now proves **Sector capture → full member population → Prophet Setup → original evidence → precise return**, then retained save/reopen, upstream original issuer economics and independently qualified evaluation/forecasts.
+
+Preserve lane 1's bounded authenticated generation reader and HOLD; extend its current five-member LEGACY example to a qualified complete population. Preserve Terminal lane 3's sole shared-file writer. **Lane 6 owns reserved 0049 and the coordinated compatible v2/v3 sequence**; structural SQL admission does not establish retained source/rights or original reopen. Keep current lane 8 hazard/prior withdrawals, all original release/denial/unknown-effect holds, and all 47 R4 plus 20 R5 Paper roots.
+
+The new editable [R6 product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-L-0), [states/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-M-0) and [build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-N-0) pages are source-linked additions. They are illustrative reviewed designs, not production or scientific acceptance. Prophet's SX05 and older mobile Plans unknown effects remain untouched.
+
+Full lane changes, dependency order, exact source/return request and remaining evidence obligations are in **FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md**. Delivery, ACK/adoption, team START, merged code, served release and accepted outcome remain separate.
+
+---
+
 # Sector Intelligence — final Fable-led T3 implementation packet
 
 **Version:** 1.0, 9 November 2026 (America/Vancouver).  
