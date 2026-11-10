@@ -810,3 +810,65 @@ The baseline run at `cbf9d99ac70d` (42822991031) finished green. A newer run at
 
 Unchanged. Five deltas are delivered to PRs and under or awaiting review (#1419, #1431,
 #1429, #10954, #10956). Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
+
+## 18. Status at 14:05Z — two review verdicts, both NOT READY, fixes ordered
+
+### 18.1 Verdicts
+
+| PR | Head reviewed | Verdict | Findings |
+|---|---|---|---|
+| Terminal #1419 (lane 7) | `6778c61594b9` | NOT READY | 0 blockers, 5 should-fix, 8 notes |
+| Terminal #1431 (lane 4) | `fb60cb3e0f82` | NOT READY | 2 blockers, 4 should-fix, 7 notes |
+
+Verdict files: `/tmp/si_plan/reviews/lane7_1419_review.md`,
+`/tmp/si_plan/reviews/lane4_1431_review.md`. Probe files sit beside them.
+
+No finding is reachable on a served product path today. #1419's components are mounted only
+on a dev page that returns 404 in production, and no producer emits forecast heads yet. Both
+sets sit in code that lane 3's #1429 mounts, so they are fixed before merge.
+
+The main defects, in plain terms:
+
+- **#1419 S1.** The Baskets tab reads the wrong array on the real owner file, so 49 scored
+  baskets would show as "no groups". The test fixture used an invented universe id.
+- **#1419 S2.** A malformed calls-board or Watch payload crashes the page, and an absent total
+  prints the word "undefined".
+- **#1419 S3, S4.** The flows reader accepts wrong-typed values as a partial read, and does
+  not check that a window label matches its trading-day count.
+- **#1419 S5.** A few raw English strings and internal field names reach Chinese readers.
+- **#1431 B1.** One odd reason-code string (`__proto__`) crashes the whole route.
+- **#1431 B2.** First-known turn dates are keyed by date across all sectors, so one sector's
+  date can appear on another sector's turn, including an unconfirmed one.
+- **#1431 S1, S2.** The reader accepted a `withdrawn` status, a `withdrawn_asof` date and a
+  `known_since` field. The producer emits none of the three.
+
+### 18.2 Decisions
+
+1. **Both lanes fix on their own branch and PR.** New commits only. Each reviewer probe that
+   exposed a defect becomes a permanent test. Orders sent at 14:02Z to the lane 4 and lane 7
+   threads.
+2. **The producer is the contract for #1431.** The reader accepts only the status the
+   producer emits at #10924's head (`withheld`). `withdrawn` and `qualified` read as an
+   invalid head. Withdrawal shows through the reason code that `withdraw()` writes, with no
+   date. A dated withdrawal waits for lane 8's `withdrawn_asof` increment. This also keeps a
+   head from showing an implied pass, which the amendment forbids.
+3. **First-known date field is `confirmed_at`.** That is the producer's name
+   (`engine/sector_heads.py:50`, `engine/cycle_ontology.py`). `known_since` is removed.
+4. **Emergence and row links accept only a same-site relative path.** Anything else renders
+   with no link.
+5. **Each fix gets a narrow second review at the new head.** Lane 3 then merges the new
+   heads into #1429. The #1429 review in progress is on `93a760a7d935`; its findings in lane 4
+   or lane 7 files route to those lanes, not to lane 3.
+
+### 18.3 Other state at 14:00Z
+
+- Macro #10924 at `f9cb2c6535ea`: armed, `merge-blocked` off, hosted contract-delta green at
+  13:53Z, six CI packs still running. Full local `tests/test_ci_pack.py` finished:
+  278 passed, 2 skipped.
+- Macro #10923 and #10945: still open and armed. #10929: draft, held, worker running.
+  #10954: review r4 running. #10956: lane 5 worker running.
+- Terminal #1410: clean and armed, not merged. #1425: behind master, no review recorded yet.
+
+### 18.4 Rung reached
+
+Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
