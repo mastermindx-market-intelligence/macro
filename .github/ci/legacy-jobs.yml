@@ -311,6 +311,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/sector_central_carry.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1391,6 +1395,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3561,6 +3582,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4654,6 +4692,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7963,6 +8018,12 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9287,6 +9348,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9979,6 +10057,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13578,6 +13664,23 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15231,6 +15334,11 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18356,6 +18464,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -20566,6 +20691,12 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22921,6 +23052,11 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
       - "tests/test_leadership_rotation_contract.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "site/riskdata/risk_envelope.json"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23156,6 +23292,10 @@ jobs:
       - "tests/conftest.py"
       - "tests/fixtures/leadership_rotation/measured_read_v1.json"
       - "tests/test_leadership_measured_read.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_research_handoff.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25591,6 +25731,12 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28785,6 +28931,16 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29424,6 +29580,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -29621,6 +29785,12 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     # The pack runner owns execution; keep both new source/API suites in CI.
     timeout-minutes: 12
     runs-on: ubuntu-latest
@@ -32358,6 +32528,23 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33618,6 +33805,12 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34523,6 +34716,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -34782,6 +34983,12 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -37001,6 +37208,23 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/deploy/update.sh"
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/numeric.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -38362,6 +38586,11 @@ jobs:
       - "engine/theme_graph/structural_navigation.py"
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "engine/theme_graph/curation_assertion.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "scripts/build_sector_action_board.py"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -41050,6 +41279,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -42407,6 +42644,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43039,6 +43293,19 @@ jobs:
       - "tests/test_leadership_rotation_countercases.py"
       - "tests/test_sector_central_measured_panel.py"
       - "scripts/calibrate_rate_inflation.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/sector_map.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_central_carry.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "templates/_sector_central_brief.js.j2"
+      - "tests/test_sector_native_view.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -45716,6 +45983,23 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -46916,6 +47200,23 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -47882,6 +48183,10 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -48172,6 +48477,10 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -50894,6 +51203,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/sector_central_carry.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52664,6 +52977,26 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/numeric.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "lib/yahoo_generation_contract.py"
+      - "lib/yahoo_runtime_profile.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52792,6 +53125,12 @@ jobs:
       - "tests/conftest.py"
       - "admin/press_audience.py"
       - "tests/test_press_account_claims.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
