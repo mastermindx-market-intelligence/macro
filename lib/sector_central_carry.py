@@ -15,10 +15,13 @@ then reads ``unavailable/not_produced``). Nothing is invented, repaired or defau
 from __future__ import annotations
 
 import json
+import logging
 import math
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+
+log = logging.getLogger(__name__)
 
 MAX_BLOCK_BYTES = 60 * 1024  # strictly under the reader's 64 KiB block cap
 CONFLUENCE_UNIVERSES = (
@@ -364,19 +367,21 @@ def _members_valid_at(intervals, basket_id: str, date: str) -> list[str]:
 def _pit_answers_at(pit, frame, date: str, ids) -> dict[str, tuple[Any, ...]] | None:
     """Per-group PIT answers at ``date`` from the ONE frame the builder already read.
 
-    Each answer is ``(pit, basis, members, snapshot_date)`` and equals the owner's
-    per-call ``members_asof`` answer for that pair - the dispatch mirrors the owner's
-    own: a covered frame with any versioned row takes the owner's interval
-    interpretation (its PUBLIC ``membership_intervals_from_history`` on the covered
-    frame, the same call the owner's versioned path makes); an all-legacy covered
-    frame resolves the newest stored snapshot, where a basket WITH rows keeps its
-    own members and a basket with NO row there is the owner's known-basket-absent
-    answer (``pit=True, members=[]`` - every id this builder queries comes from the
-    owner's own membership document, so it is known, never unknown). ``None`` when
-    ``date`` predates the store: the caller falls back to the owner's per-call
-    reader for its look-ahead branch. The interval CONSTRUCTION is never
-    re-implemented here; equality with the per-call reader is itself tested on the
-    real store (N4)."""
+    Each answer is ``(pit, basis, members, snapshot_date)`` and mirrors the owner's
+    own dispatch in ``members_asof``: a covered frame holding ANY versioned row is
+    answered - for every queried basket, exactly as the owner dispatches it - by the
+    owner's interval interpretation (its PUBLIC ``membership_intervals_from_history``
+    on the covered frame, the same call the owner's versioned path makes, so a MIXED
+    legacy-plus-versioned covered frame resolves here exactly as the owner resolves
+    it); an ALL-legacy covered frame is answered by the owner's PUBLIC per-call
+    ``members_asof`` itself, called as it is (SF1) - the newest-snapshot selection
+    and the active-at predicate stay the owner's, never re-implemented here, because
+    an interval reading of legacy history answered differently from the owner on
+    legacy-shaped stores (a revised ``added``, a future ``removed`` the query date
+    passed, a dropped removal). ``None`` when ``date`` predates the store: the
+    caller falls back to the owner's per-call reader for its look-ahead branch.
+    Equality with the per-call reader is pinned store-free on synthetic stores (SF2)
+    and against the real store (N4)."""
     if frame is None or frame.empty or "snapshot_date" not in frame.columns:
         return None
     covered = frame[frame["snapshot_date"].astype(str) <= date]
@@ -395,13 +400,12 @@ def _pit_answers_at(pit, frame, date: str, ids) -> dict[str, tuple[Any, ...]] | 
             answers[gid] = (True, "pit_snapshot", _members_valid_at(intervals, gid, date),
                             str(rows["snapshot_date"].astype(str).max()))
         return answers
-    snap = str(covered["snapshot_date"].astype(str).max())
-    snap_baskets = set(covered[covered["snapshot_date"].astype(str) == snap]
-                       ["basket_id"].astype(str))
-    intervals = pit.membership_intervals_from_history(covered, suite=pit.SUITE_US)
-    return {gid: ((True, "pit_snapshot", _members_valid_at(intervals, gid, date), snap)
-                  if gid in snap_baskets else (True, "pit_snapshot", [], snap))
-            for gid in queried}
+    owner_answers: dict[str, tuple[Any, ...]] = {}
+    for gid in queried:
+        owner = pit.members_asof(gid, date, suite=pit.SUITE_US)
+        owner_answers[gid] = (owner.get("pit"), owner.get("basis"),
+                              owner.get("members"), owner.get("snapshot_date"))
+    return owner_answers
 
 
 def membership_first_known(membership: Mapping[str, Any] | None, as_of: Any,
@@ -410,9 +414,11 @@ def membership_first_known(membership: Mapping[str, Any] | None, as_of: Any,
 
     For each (group, member) the OWNER's PIT store already holds, the date of the
     EARLIEST stored snapshot in which that member is in that basket, computed from
-    ONE store read plus the owner's public interval interpretation per stored
-    snapshot date (N4; each answer equals the owner's per-call ``members_asof``
-    answer, tested against the real store) - never the back-dated roster ``added``
+    ONE store read plus the owner's own interpretation per stored snapshot date -
+    its public interval construction for versioned history, its public per-call
+    ``members_asof`` for an all-legacy covered frame (N4/SF1; each answer equals the
+    owner's per-call answer, pinned store-free on synthetic stores and against the
+    real store) - never the back-dated roster ``added``
     date, which the owner's interval logic already refuses to open earlier than its
     first observation. The value is a LOWER BOUND from stored snapshots (the store
     begins 2026-08-13); a pair no stored snapshot contains is ``None`` with the
@@ -439,13 +445,15 @@ def membership_first_known(membership: Mapping[str, Any] | None, as_of: Any,
                   "no_stored_snapshots_at_or_before_as_of")
         return _bounded({"source": PIT_STORE_SOURCE, "as_of": as_of, "status": "unavailable",
                          "reason": reason, "basis": FIRST_KNOWN_BASIS})
-    # N4: ONE store read (above) and the owner's public interval interpretation per
-    # stored date, walking the dates in order and stopping per group once every
-    # roster symbol is placed. Each (group, date) answer equals the owner's per-call
-    # ``members_asof`` answer (tested against the real store), so the member set in
-    # force on that snapshot still comes from the owner's own interpretation - never a
-    # reimplementation, and never ~one store read per pair. A symbol not found by the
-    # LAST stored date has no stored snapshot and reads None (``absent_pair_reason``).
+    # N4/SF1: ONE store read (above) and the owner's own interpretation per stored
+    # date, walking the dates in order and stopping per group once every roster
+    # symbol is placed. Versioned dates take the owner's public interval construction
+    # over that one read; ALL-LEGACY dates are answered by the owner's per-call
+    # ``members_asof`` itself (SF1 - its legacy rule is never re-implemented here),
+    # at the cost of that reader's own store read per still-unplaced group. Each
+    # (group, date) answer equals the owner's per-call answer (pinned store-free on
+    # synthetic stores and against the real store). A symbol not found by the LAST
+    # stored date has no stored snapshot and reads None (``absent_pair_reason``).
     first_known: dict[str, dict[str, str | None]] = {gid: {} for gid in roster_cut}
     remaining = {gid: set(syms) for gid, syms in roster_cut.items()}
     for day in dates:
@@ -487,9 +495,12 @@ def membership_snapshots(membership: Mapping[str, Any] | None, as_of: Any,
                          roster_cut: Mapping[str, list[str]] | None) -> dict | None:
     """The stored PIT snapshot each group had at/before the effective session (item 2).
 
-    Per group, from ONE store read plus the owner's public interval interpretation
-    at the capture's effective session (N4; each answer equals the owner's per-call
-    ``members_asof`` answer, tested against the real store): the stored snapshot
+    Per group, from ONE store read plus the owner's own interpretation at the
+    capture's effective session - its public interval construction for a covered
+    frame with any versioned row, its public per-call ``members_asof`` for an
+    all-legacy covered frame (N4/SF1; each answer equals the owner's per-call
+    answer, pinned store-free on synthetic stores and against the real store): the
+    stored snapshot
     date, its ``members_sha`` (the owner's own content-dedup sha, read as stamped on
     the stored rows - never recomputed), the member count, and one boolean saying
     whether that stored member set equals the carried roster's current members for
@@ -524,8 +535,10 @@ def membership_snapshots(membership: Mapping[str, Any] | None, as_of: Any,
                 present_at.add(key)  # ANY row (member or collection marker) proves presence
     except pit.HistoryIntegrityError:
         frame = None  # members_asof answers per group with the unreadable basis itself
-    # N4: one read (above), the owner's public interval interpretation at the session
-    # (equality with the per-call reader is tested on the real store); None means the
+    # N4: one read (above), the owner's own interpretation at the session (its public
+    # interval construction for versioned coverage, its public per-call reader for an
+    # all-legacy covered frame - SF1; equality with the per-call reader is pinned
+    # store-free on synthetic stores and against the real store); None means the
     # session predates the store, where the owner's own per-call reader below serves
     # its look-ahead branch unchanged.
     try:
@@ -648,7 +661,12 @@ def build_carry(site: Path, central: Mapping[str, Any],
         snapshots_block = membership_snapshots(membership, effective, roster_pairs)
     except (KeyboardInterrupt, SystemExit):
         raise
-    except Exception:  # noqa: BLE001 — the PIT facts degrade; the carry does not
+    except Exception as e:  # noqa: BLE001 — the PIT facts degrade; the carry does not
+        # N2: the degradation is LOGGED with the exception type and message, so a
+        # programming error is never shipped silently under the same closed reason
+        # as store corruption.
+        log.warning("sector_central_carry: PIT facts degraded (%s: %s)",
+                    type(e).__name__, e)
         first_known_block = {"source": PIT_STORE_SOURCE, "as_of": effective,
                              "status": "unavailable", "reason": "membership_unreadable",
                              "basis": FIRST_KNOWN_BASIS}

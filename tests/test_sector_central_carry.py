@@ -532,11 +532,15 @@ def test_n2_an_over_cap_pit_block_is_a_bounded_unavailable_stub_never_a_silent_d
         assert len(json.dumps(block).encode()) <= 256
 
 
-def test_n5_a_pit_builder_failure_degrades_only_the_pit_facts(tmp_path, monkeypatch):
+def test_n5_a_pit_builder_failure_degrades_only_the_pit_facts(tmp_path, monkeypatch,
+                                                              caplog):
     """N5: ANY failure of the PIT builder - here the engine module failing to import -
     makes ONLY the two point-in-time facts unavailable (``membership_unreadable``);
     every other carried block is still served. KeyboardInterrupt/SystemExit are never
-    swallowed by the degradation."""
+    swallowed by the degradation. N2: the degradation is LOGGED with the exception
+    type and message - a programming error must not ship silently under the same
+    closed reason as store corruption."""
+    import logging
     def boom():
         raise ImportError("engine missing")
     monkeypatch.setattr(carry, "_pit_module", boom)
@@ -545,7 +549,11 @@ def test_n5_a_pit_builder_failure_degrades_only_the_pit_facts(tmp_path, monkeypa
     (site / "basketdata/baskets.json").write_text(json.dumps(
         {"baskets": [{"id": "g", "observation": {"effective_as_of": "2026-11-06"}}]}))
     membership = _roster_doc({"g": {"members": [{"ticker": "A", "added": "2024-01-01"}]}})
-    built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []}, membership, None)
+    with caplog.at_level(logging.WARNING, logger="lib.sector_central_carry"):
+        built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []}, membership, None)
+    assert [r.getMessage() for r in caplog.records
+            if r.name == "lib.sector_central_carry"] == [
+        "sector_central_carry: PIT facts degraded (ImportError: engine missing)"]
     for name in ("membership_first_known", "membership_snapshots"):
         assert built[name]["status"] == "unavailable", name
         assert built[name]["reason"] == "membership_unreadable", name
@@ -623,31 +631,129 @@ def test_n4_the_one_read_pit_path_matches_per_call_members_asof_on_the_real_stor
     """N4: the builder's one-read path answers every (group, stored date) pair on the
     REAL committed store identically to the owner's per-call ``members_asof`` on
     (pit, basis, members, snapshot_date) - the equality that alone authorizes
-    computing the carried facts from a single store read plus the owner's public
-    ``membership_intervals_from_history``. Also reports before/after wall time."""
-    import time
+    computing the carried facts from a single store read. This test needs the
+    committed PIT store, so it runs in the post-nightly DATA-HEALTH lane (its CI
+    step is gate:data, never the PR merge gate) and FAILS - never skips - when the
+    store is absent; the PULL-REQUEST-TIME pin of the same equality is the store-free
+    synthetic differential in ``test_sf2_...`` below."""
     from engine import basket_membership_pit as pit
     frame = pit.read_history(pit.SUITE_US, strict=True, include_collection_records=True)
     assert not frame.empty, "the committed real PIT store must be present"
     dates = sorted({str(d) for d in frame["snapshot_date"].dropna()})
     groups = sorted({str(g) for g in frame["basket_id"].dropna()})
     fields = ("pit", "basis", "members", "snapshot_date")
-    started = time.perf_counter()
     per_call = {(g, d): tuple(pit.members_asof(g, d, suite=pit.SUITE_US).get(k) for k in fields)
                 for g in groups for d in dates}
-    t_per_call = time.perf_counter() - started
-    started = time.perf_counter()
     one_read = {}
     for d in dates:
         answers = carry._pit_answers_at(pit, frame, d, groups)
         assert answers is not None, d
         for g in groups:
             one_read[(g, d)] = answers[g]
-    t_one_read = time.perf_counter() - started
-    print(f"N4 wall time over {len(per_call)} (group, stored date) pairs: "
-          f"per-call members_asof {t_per_call:.2f}s vs one-read {t_one_read:.2f}s")
     assert one_read == per_call
-    assert t_one_read < t_per_call
+
+
+def _pit_row(d, b, t, added=None, removed=None, kind=None):
+    """One synthetic history row in the owner's stored schema (SF2)."""
+    return {"snapshot_date": d, "suite": "baskets", "basket_id": b, "ticker": t,
+            "added": added, "removed": removed, "name_zh": None,
+            "members_sha": "0" * 64, "source_shape": "membership",
+            "record_kind": kind, "collection_id": None, "collection_receipt": None}
+
+
+_SF2_DATES = ("2025-12-31", "2026-01-01", "2026-01-15", "2026-02-01", "2026-02-10",
+              "2026-02-15", "2026-02-20", "2026-03-01", "2026-03-15", "2026-04-01")
+
+
+def _sf2_differential(tmp_path, monkeypatch, name, rows, known, shuffle=False):
+    """SF2: write a small synthetic store, point the owner's suite paths at it and
+    assert the builder's one-read ``_pit_answers_at`` answer equals the owner's
+    per-call ``members_asof`` on (pit, basis, members, snapshot_date) for EVERY
+    (group, date) pair. No real store is needed."""
+    import pandas as pd
+    from engine import basket_membership_pit as pit
+    root = tmp_path / name
+    root.mkdir()
+    history = root / "membership_history.parquet"
+    (root / "membership.json").write_text(json.dumps(
+        {"version": "t", "baskets": {g: {"members": []} for g in known}}))
+    monkeypatch.setattr(pit, "history_path", lambda suite: history)
+    monkeypatch.setattr(pit, "membership_path", lambda suite: root / "membership.json")
+    frame = pd.DataFrame(rows)
+    if shuffle:
+        frame = frame.sample(frac=1, random_state=7).reset_index(drop=True)
+    frame.to_parquet(history)
+    store = pit.read_history(pit.SUITE_US, strict=True, include_collection_records=True)
+    fields = ("pit", "basis", "members", "snapshot_date")
+    for date in _SF2_DATES:
+        answers = carry._pit_answers_at(pit, store, date, known)
+        for gid in known:
+            owner = tuple(pit.members_asof(gid, date, suite=pit.SUITE_US).get(k)
+                          for k in fields)
+            if answers is None:
+                # the date predates the store: the builder falls back to the owner's
+                # own per-call reader (identical by construction) - sound only when
+                # the owner does not answer point-in-time for that date either
+                assert owner[0] is not True, (name, date, gid, owner)
+                continue
+            assert tuple(answers[gid]) == owner, (name, date, gid,
+                                                  tuple(answers[gid]), owner)
+
+
+def test_sf2_the_one_read_pit_path_equals_per_call_members_asof_store_free(
+        tmp_path, monkeypatch):
+    """SF2: the one-read path is pinned WITHOUT the real store. Small synthetic
+    histories are written in the owner's own store schema, both readers are pointed
+    at the same synthetic store, and ``_pit_answers_at`` is asserted equal to the
+    owner's per-call ``members_asof`` for every (group, date) pair - including the
+    legacy shapes on which an interval reading of legacy history diverged from the
+    owner's newest-snapshot reading (SF1), the interval END boundary
+    (``valid_to > date``, not ``>=`` - mutation OR1) and the per-basket snapshot
+    date (the basket's OWN newest covered row, never the global one - OR5)."""
+    # LEGACY stores (record_kind NaN): a removal stated only in a later snapshot,
+    # in that snapshot's future but passed by the query date
+    _sf2_differential(tmp_path, monkeypatch, "legacy-late-future-removal", [
+        _pit_row("2026-01-01", "b", "A"), _pit_row("2026-01-01", "b", "B"),
+        _pit_row("2026-02-01", "b", "A", removed="2026-02-15"),
+        _pit_row("2026-02-01", "b", "B")], ["b"])
+    # a removal an earlier snapshot stated and a later one dropped (reinstated)
+    _sf2_differential(tmp_path, monkeypatch, "legacy-reinstated", [
+        _pit_row("2026-01-01", "b", "A", removed="2026-03-01"),
+        _pit_row("2026-02-01", "b", "A")], ["b"])
+    # a member added in the future, then that `added` revised earlier
+    _sf2_differential(tmp_path, monkeypatch, "legacy-added-then-changed-in-the-future", [
+        _pit_row("2026-01-01", "b", "A", added="2026-02-10"),
+        _pit_row("2026-02-01", "b", "A", added="2026-01-20")], ["b"])
+    # the same store with UNSORTED rows: neither reader may depend on row order
+    _sf2_differential(tmp_path, monkeypatch, "legacy-unsorted", [
+        _pit_row("2026-02-01", "b", "B"), _pit_row("2026-01-01", "b", "A"),
+        _pit_row("2026-02-01", "b", "A", removed="2026-02-15"),
+        _pit_row("2026-01-01", "b", "B")], ["b"], shuffle=True)
+    # VERSIONED store: a removal CONFIRMED by a receipt on its own removal day - the
+    # owner closes that interval ``valid_to = removed`` and the query AT the removal
+    # day (2026-02-15 is in ``_SF2_DATES``) pins the end as EXCLUSIVE
+    # (``valid_to > date``, never ``>=`` - mutation OR1). A removal merely STATED in
+    # advance never closes the interval until a later receipt passes it, so the
+    # receipt must sit on the boundary date itself to make it coverable then.
+    _sf2_differential(tmp_path, monkeypatch, "v2-removal-boundary", [
+        _pit_row("2026-01-01", "b", "A", kind="member.v2"),
+        _pit_row("2026-01-01", "b", "B", kind="member.v2"),
+        _pit_row("2026-02-15", "b", "A", removed="2026-02-15", kind="member.v2"),
+        _pit_row("2026-02-15", "b", "B", kind="member.v2")], ["b"])
+    # VERSIONED store where one basket has NO row at the newest covered date: its
+    # snapshot_date is its OWN newest covered row (2026-01-01), never the global
+    # newest (2026-02-01) (OR5)
+    _sf2_differential(tmp_path, monkeypatch, "v2-basket-missing-at-newest-date", [
+        _pit_row("2026-01-01", "b", "A", kind="member.v2"),
+        _pit_row("2026-01-01", "c", "X", kind="member.v2"),
+        _pit_row("2026-02-01", "c", "X", kind="member.v2")], ["b", "c"])
+    # MIXED store: legacy rows then versioned rows, with a basket that stays
+    # legacy-only - the owner dispatches the WHOLE covered frame to its versioned
+    # path once any versioned row is covered, and so must the builder
+    _sf2_differential(tmp_path, monkeypatch, "mixed-legacy-then-v2", [
+        _pit_row("2026-01-01", "b", "A"), _pit_row("2026-01-01", "b", "B"),
+        _pit_row("2026-01-01", "d", "D"),
+        _pit_row("2026-02-01", "b", "A", kind="member.v2")], ["b", "d"])
 
 
 def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):

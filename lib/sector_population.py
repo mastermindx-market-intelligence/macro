@@ -30,6 +30,7 @@ capture named inside a token is a server-issued fact, not a caller selector.
 from __future__ import annotations
 
 import base64
+import datetime
 import hashlib
 import hmac
 import json
@@ -185,7 +186,17 @@ _DAY = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 
 
 def _day_or_none(value: Any) -> str | None:
-    return value if isinstance(value, str) and _DAY.fullmatch(value) else None
+    """A day string that is also a REAL calendar date. ``2026-02-30`` matches the
+    ``_DAY`` pattern but is not a date: it reads exactly like a pattern mismatch at
+    every site that day-checks a carried fact (N6) - the same closed reason, never
+    a new one."""
+    if not (isinstance(value, str) and _DAY.fullmatch(value)):
+        return None
+    try:
+        datetime.date.fromisoformat(value)
+    except ValueError:
+        return None
+    return value
 
 
 def _carried_status_fact(doc: Any) -> dict[str, Any] | None:
@@ -515,12 +526,17 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     # roster must agree with it: a roster cut at a different session cannot vouch
     # for this capture's membership, so completeness reads null - never true - and
     # the disagreement is disclosed below with a closed status/reason.
-    # S2: an observation mapping PRESENT with an ``effective_as_of`` that is not a
-    # non-empty string (a list, a number, an empty string, null, a nested object)
-    # makes the clock INDETERMINATE even beside good stamps - it is malformed, never
-    # silently treated as unstated.
+    # S2/N1: an observation mapping PRESENT with an ``effective_as_of`` that is a
+    # value of the wrong type or shape (a list, a number, an empty string, a nested
+    # object) makes the clock INDETERMINATE even beside good stamps - it is
+    # malformed, never silently treated as unstated. A NULL or absent stamp is
+    # different: it is the producer's legitimate "no clock" value
+    # (``population_observation`` stamps ``_date_text(when)``, which is None when the
+    # producer has no clock) and reads the clock UNAVAILABLE - fail-closed alike,
+    # but labelled unavailable, never malformed (N1).
     stamps: set[str] = set()
     capture_malformed = False
+    capture_unstated = False
     for source in (groups_in, refusals):
         for entry in source:
             obs = entry.get("observation") if isinstance(entry, Mapping) else None
@@ -529,6 +545,8 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
             stamp = obs.get("effective_as_of")
             if isinstance(stamp, str) and stamp:
                 stamps.add(stamp)
+            elif stamp is None:
+                capture_unstated = True
             else:
                 capture_malformed = True
     capture_effective = next(iter(stamps)) if len(stamps) == 1 else None
@@ -541,14 +559,17 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
         roster_clock = {"status": "unavailable",
                         "reason": "capture_effective_as_of_malformed",
                         "roster_as_of": roster_as_of}
+    elif capture_unstated or not stamps:
+        roster_unknown = True  # no verifiable single stated session (N1: a null or
+        # absent stamp states no clock, even beside a stated one): cannot be verified
+        roster_clock = {"status": "unavailable",
+                        "reason": "capture_effective_as_of_unavailable",
+                        "roster_as_of": roster_as_of}
     elif capture_effective is None:
-        roster_unknown = True  # no single stated session: the clock cannot be verified
-        roster_clock = ({"status": "unavailable",
-                         "reason": "capture_effective_as_of_unavailable",
-                         "roster_as_of": roster_as_of} if not stamps else
-                        {"status": "mismatch", "reason": "capture_effective_as_of_not_single",
-                         "roster_as_of": roster_as_of,
-                         "capture_effective_as_of": sorted(stamps)})
+        roster_unknown = True  # more than one stated session: the clock cannot be verified
+        roster_clock = {"status": "mismatch", "reason": "capture_effective_as_of_not_single",
+                        "roster_as_of": roster_as_of,
+                        "capture_effective_as_of": sorted(stamps)}
     elif roster_as_of != capture_effective:
         # exact STRING equality: a form-only difference (the same session with an ISO
         # time suffix) is a mismatch, never a normalized agreement

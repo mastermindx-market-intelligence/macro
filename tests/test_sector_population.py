@@ -1006,17 +1006,16 @@ def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, 
                                       "roster_as_of": "2026-11-06T00:00:00",
                                       "capture_effective_as_of": "2026-11-06"}
     assert form_only.unaccounted is None and form_only.complete is None
-    # S2: an observation mapping whose effective_as_of is not a non-empty string makes
-    # the clock indeterminate even beside one good stamp (see the dedicated S2 test for
-    # the full shape list); null is one of those shapes
+    # N1: a null effective_as_of is the producer's legitimate "no clock" value
+    # (population_observation stamps _date_text(when), which is None when the
+    # producer has no clock) - unavailable, NOT malformed (see the dedicated N1 test)
     unstated = _synthetic(observation=_obs(["AAA", "BBB"], effective_as_of=None))
     unclocked = build(unstated, {"g1": ["AAA", "BBB"]})
     assert unclocked.roster_clock == {
-        "status": "unavailable", "reason": "capture_effective_as_of_malformed",
+        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
         "roster_as_of": "2026-11-06"}
     assert unclocked.complete is None and unclocked.configured_current is None
-    # no observation mapping AT ALL is the one remaining way the capture states no
-    # clock: unavailable, not malformed
+    # no observation mapping AT ALL states no clock the same way: unavailable
     no_observation = build(_synthetic(observation=None), {"g1": ["AAA", "BBB"]})
     assert no_observation.roster_clock == {
         "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
@@ -1034,15 +1033,17 @@ def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, 
 
 
 def test_s2_a_malformed_capture_effective_as_of_makes_the_clock_indeterminate():
-    """S2: an observation mapping present but whose ``effective_as_of`` is not a
-    non-empty string - a list, a number, an empty string, null, a nested object -
+    """S2: an observation mapping present but whose ``effective_as_of`` is a value of
+    the wrong type or shape - a list, a number, an empty string, a nested object -
     makes the capture clock INDETERMINATE even beside one good stamp: the roster
     cannot vouch, ``configured_current``/``complete`` read null (never true in any
     shape), the roster contributes nothing, and the disagreement is disclosed with
-    the closed ``capture_effective_as_of_malformed`` reason."""
+    the closed ``capture_effective_as_of_malformed`` reason. A null or absent stamp
+    is NOT one of these shapes (N1: it is the producer's "no clock" value and reads
+    ``capture_effective_as_of_unavailable`` instead)."""
     good_stamp = "2026-11-06"
     roster = {"g1": ["AAA"], "gone": ["XXX"]}
-    for bad in ([], 20261106, "", None, {"session": "2026-11-06"}):
+    for bad in ([], 20261106, "", {"session": "2026-11-06"}):
         doc = {"baskets": [
             {"id": "g1", "name": "G", "n_members": 1,
              "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
@@ -1060,6 +1061,97 @@ def test_s2_a_malformed_capture_effective_as_of_makes_the_clock_indeterminate():
         assert pop.unaccounted is None, bad
         assert not [u for u in pop.unserved
                     if u["reason"] == population.REASON_UNACCOUNTED], bad
+
+
+def test_n1_a_null_or_absent_effective_as_of_is_the_producers_no_clock_value():
+    """N1: an ``effective_as_of`` that is null - or whose key is absent - is the
+    producer's legitimate "no clock" value (``population_observation`` stamps
+    ``_date_text(when)``, which is None when the producer has no clock to state), so
+    the capture clock reads unavailable/``capture_effective_as_of_unavailable`` - the
+    reason it carried before S2 - never ``capture_effective_as_of_malformed``, which
+    stays for a PRESENT value of the wrong type or shape. Both outcomes are
+    fail-closed alike: the roster vouches for nothing, ``configured_current``/
+    ``complete``/``unaccounted`` read null, never true, never a guessed 0."""
+    roster = {"g1": ["AAA"], "gone": ["XXX"]}
+    for how in ("null", "absent key", "null beside a good stamp"):
+        obs = _obs(["AAA"])
+        doc = {"baskets": [
+            {"id": "g1", "name": "G", "n_members": 1,
+             "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+             "observation": obs}],
+            "observation_refusals": []}
+        if how == "null":
+            obs["effective_as_of"] = None
+        elif how == "absent key":
+            obs.pop("effective_as_of")
+        else:  # one group states a session; the other states no clock
+            doc["baskets"].append(
+                {"id": "g2", "name": "H", "n_members": 1,
+                 "members": [{"symbol": "BBB", "name": "B", "added": "2024-01-01"}],
+                 "observation": _obs(["BBB"], effective_as_of="2026-11-06")})
+            doc["baskets"][0]["observation"]["effective_as_of"] = None
+        pop = population.build_population(
+            baskets=doc, handoff={}, action_board={}, central=_roster_central(roster))
+        assert pop.roster_clock == {"status": "unavailable",
+                                    "reason": "capture_effective_as_of_unavailable",
+                                    "roster_as_of": "2026-11-06"}, how
+        assert pop.configured_current is None and pop.complete is None, how
+        assert pop.unaccounted is None, how
+        assert not [u for u in pop.unserved
+                    if u["reason"] == population.REASON_UNACCOUNTED], how
+    # control: a PRESENT wrong-typed value is still malformed (S2), fail-closed alike
+    malformed = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": {**_obs(["AAA"]), "effective_as_of": ["2026-11-06"]}}],
+        "observation_refusals": []}
+    pop = population.build_population(
+        baskets=malformed, handoff={}, action_board={}, central=_roster_central(roster))
+    assert pop.roster_clock["reason"] == "capture_effective_as_of_malformed"
+    assert pop.complete is None and pop.unaccounted is None
+
+
+def test_n6_a_pattern_matching_non_calendar_day_reads_like_a_pattern_mismatch():
+    """N6: a string that matches the day PATTERN but is not a real calendar date
+    (``2026-02-30``, ``2026-13-01``) is treated exactly as a pattern mismatch is
+    treated today at every site that day-checks a carried fact: the SAME closed
+    reason, no new reason code. A ``first_known`` pair value or a group's
+    ``snapshot_date`` in that shape degrades the WHOLE fact to
+    unavailable/``not_produced``; ``store_first``/``store_last`` read null."""
+    def first_known(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_first_known": doc}}).first_known
+
+    def snapshots(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_snapshots": doc}}).membership_snapshot
+
+    not_produced = {"status": "unavailable", "reason": "not_produced"}
+    good_fk = {"as_of": "2026-11-06", "basis": "lower_bound_from_stored_snapshots",
+               "first_known": {"g1": {"AAA": "2026-08-13", "BBB": None}}}
+    assert first_known(good_fk)["status"] == "available"  # control: real dates pass
+    for bogus in ("2026-02-30", "2026-13-01"):
+        value = {**good_fk, "first_known": {"g1": {"AAA": bogus, "BBB": None}}}
+        assert first_known(value) == dict(not_produced), bogus  # same as a mismatch
+    assert first_known({**good_fk, "first_known": {"g1": {"AAA": "not-a-date",
+                                                          "BBB": None}}}) == dict(not_produced)
+    span = first_known({**good_fk, "store_first": "2026-02-30",
+                        "store_last": "2026-13-01"})
+    assert span["store_first"] is None and span["store_last"] is None
+    good_snap = {"as_of": "2026-11-06", "suite": "baskets",
+                 "groups": {"g1": {"status": "available", "snapshot_date": "2026-10-14",
+                                   "members_sha": None, "member_count": 1,
+                                   "equals_current_roster": True}}}
+    assert snapshots(good_snap)["status"] == "available"  # control
+    for bogus in ("2026-02-30", "2026-13-01"):
+        bad = {**good_snap, "groups": {"g1": {**good_snap["groups"]["g1"],
+                                              "snapshot_date": bogus}}}
+        assert snapshots(bad) == dict(not_produced), bogus  # same as a mismatch
+    assert snapshots({**good_snap, "groups": {"g1": {**good_snap["groups"]["g1"],
+                                                     "snapshot_date": "not-a-date"}}}
+                     ) == dict(not_produced)
 
 
 def test_s3_the_carried_snapshot_fact_enforces_suite_and_members_sha():
