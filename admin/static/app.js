@@ -275,6 +275,7 @@ async function logout() {
 const NAV_ICO = (inner) => `<svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 const CONTROL_ROOM_URL = "https://control.mastermind-x.com";
 const ICONS = {
+  capacity_router: NAV_ICO('<path d="M4 6h6l4 12h6M4 18h6L14 6h6"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/>'),
   overview:    NAV_ICO('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
   neural_web:  NAV_ICO('<circle cx="12" cy="12" r="2.4"/><circle cx="5" cy="6" r="1.7"/><circle cx="19" cy="6" r="1.7"/><circle cx="5" cy="18" r="1.7"/><circle cx="19" cy="18" r="1.7"/><path d="M10 11 6.4 7.2M14 11l3.6-3.8M10 13l-3.6 3.8M14 13l3.6 3.8"/>'),
   alerts:      NAV_ICO('<path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-2 6.5h16c-.5-1-2-2.5-2-6.5a6 6 0 0 0-6-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>'),
@@ -346,7 +347,7 @@ const ICONS = {
 /* One inventory, organized by operator task. Specialist tools stay searchable
    and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["capacity_router", "Capacity Router"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
   { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
   { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
   { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
@@ -769,6 +770,7 @@ function runAdminRender(id, render) {
   });
 }
 function go(id) {
+  if (window.CapacityRouter) window.CapacityRouter.unmount();
   if (!Object.prototype.hasOwnProperty.call(RENDER, id) || typeof RENDER[id] !== "function") {
     ++ADMIN_RENDER_EPOCH;
     adminPageFailure("overview", new Error("This admin page does not exist."), () => go("overview"));
@@ -920,6 +922,10 @@ function meter(label, pct, valText, cls) {
 }
 
 const RENDER = {};
+RENDER.capacity_router = () => window.CapacityRouter.mount($("#view"), {
+  isCurrent: () => CURRENT === "capacity_router",
+  onAuthFailure: showLogin,
+});
 
 function renderControlRoom() {
   const view = $("#view");

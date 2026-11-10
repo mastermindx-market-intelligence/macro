@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SBAC-BULL-20260731",
-  "asof": "2026-11-08",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.219,
     "dist_to_t1_r": 1.281,
     "dist_to_t2_r": 2.781,
-    "horizon_pct_used": 206.7,
+    "horizon_pct_used": 208.9,
     "p1": 0.1459,
     "p2": 0.0729,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 93,
-  "tau": 2.0667,
+  "days_elapsed": 94,
+  "tau": 2.0889,
   "closed": true,
   "outcome": "EXPIRED"
 }
