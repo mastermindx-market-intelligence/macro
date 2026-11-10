@@ -1,4 +1,4 @@
-# Fable-led T3 commission — Prophet × Sector Intelligence, v5
+# Fable-led T3 commission — Prophet × Sector Intelligence, v5.1
 
 **Purpose:** implement the original full Prophet programme with the Chairman’s new mandatory beta-first, deeply connected Sector Intelligence scope. This is the current source commission plus the preserved original seven briefs. It is not delivery, pickup, admission, START, production acceptance or trading authority.
 
@@ -123,3 +123,11 @@ New Paper page: https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0 .
 Return exact source/base/head/diff; actual writer and candidate disposition; affected tests and required CI; installed/served generation and ordinary-refresh consumer proof; save and notification receipts; scientific protocol/result/claim scope; original and new acceptance status; held-effect custody; rollback evidence; remaining work and next safe action. Save/read back through existing GitHub and AgentOS owners. Transport, if later expressly authorized, carries recipient/action/exact source link/return only. Do not infer Fable START or create a watcher.
 
 The full programme is complete only when original advertised jobs and all preserved B/Q/D/R plus the new integration obligations have actual source, consumer, durable-state, scientific and operational proof or legitimate research disposition. A descriptive first release can be useful; an unavailable predictive feature remains an obligation. Stop only at that outcome or a proven active execution/control boundary. Web self-check and actual repository/security/release rules apply; no invented named-review ceremony.
+
+## Completion-pass precision — v5.1
+
+The accepted architecture is unchanged. P6/SI13/SP19–SP20 now require one common signed percentage-point scale; “Includes invested assets and cash”; starting invested/cash allocations 68.75%/31.25%; and no inference of ex-ante opportunity from a realized benchmark rise. SX11 card J and its source pointer were updated, read back and visually reviewed. The corrected source is [the exact build specification](https://github.com/mastermindx-market-intelligence/macro/blob/1e3ac76bdbd28852acb0b3796ac8e7e9279d459f/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md).
+
+The remaining SX05 controls are Evaluation details, How attribution works, Coverage and the existing authorized Portfolio destination. Preserve synthetic versus accepted status, exact evaluation/protocol, benchmark/period/currency/basis, actual or simulated weights, explicit method/cash/cost/FX and actual missingness. A scope label is not coverage proof; no invented counts or holdings. The original Record enum remains closed.
+
+These product-board corrections remain unapplied because the original SX05 effect is unresolved. A fresh read again found no attribution children; the current Paper tool surface has no old-operation status query. The pinned bridge source explicitly retains no persistent operation/retry ledger. Neither absence nor this diagnosis establishes terminal no-effect. Do not replay, replace or finish that root. No new admission, protected-outcome permission, dispatch or START is granted by this refinement.

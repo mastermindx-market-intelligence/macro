@@ -1,8 +1,8 @@
 # Prophet production masterplan
 
-## Version 5.0 — Sector-connected architecture and implementation commission
+## Version 5.1 — Sector-connected architecture and implementation commission
 
-**Version:** 5.0, 9 November 2026, America/Vancouver. **Package state:** SECTOR_CONNECTED_SOURCE_BASELINE_WITH_PRECISE_PAPER_EXCEPTION. The accepted four-turn architecture/design baseline is preserved and amended by the Chairman’s new beta-first Sector Intelligence mandate. This freezes twenty additional integration contracts, twenty-four additional proof cases and concrete changes to all seven implementation packets. Architecture/source completion is separate from the unresolved SX05 design effect, product implementation, accepted science and production release.
+**Version:** 5.1, 9 November 2026, America/Vancouver. **Package state:** SECTOR_CONNECTED_SOURCE_BASELINE_WITH_PRECISE_PAPER_EXCEPTION. The accepted four-turn architecture/design baseline is preserved and amended by the Chairman’s new beta-first Sector Intelligence mandate. This freezes twenty additional integration contracts, twenty-four additional proof cases and concrete changes to all seven implementation packets. Version 5.1 additionally hardens attribution presentation and the remaining qualification/coverage controls; section 18.14 records the actual completion-pass delta. Architecture/source completion is separate from the unresolved SX05 design effect, product implementation, accepted science and production release.
 
 **Preserved scope:** all original 38 design-to-owner contracts, 29 B build units, 24 Q research packets, 12 D decisions, 36 R requirements, PF01–PF20, activation branches, eight sleeves and market roadmap. Retained Turn 2 Paper: 23 canvases, 22 reviewed and one held mobile Plans fragment. New Sector page: 11 roots, 10 reviewed and one partial evaluation root; 2 additive guide pointers. New SI01–SI20 / SP01–SP24 supplement the original programme.
 
@@ -1921,7 +1921,24 @@ All visible market/name figures are illustrative. US fixture: market +3.2%, Heal
 
 The separately specified synthetic evaluation fixture reconciles benchmark8.0%, equity allocation+0.6pp, cash allocation−2.5pp, selection+0.5pp, interaction−0.1pp and costs−0.4pp to net6.1%, a−1.9pp benchmark gap. It uses a single-period Brinson–Fachler method with cash as an explicit allocation segment and **starting invested allocation68.75%**. It does not establish average invested exposure or a real strategy result. Full weights, returns and proof are in [SX6]. If the unknown original HTML later appears, correct its average-invested label after reconciliation.
 
-Next design action is narrowly bounded: obtain original terminal/cancellation or verified later-effect evidence; inspect the exact SX05 children; complete the unissued controls and correct the label only after custody is resolved; review the whole board and finish its exact root. This does not require repeating accepted architecture or rebuilding completed canvases. [SX8]
+Next design action is narrowly bounded: obtain original terminal/cancellation or verified later-effect evidence; inspect the exact SX05 children; complete the unissued controls and apply all four section 18.14 corrections only after custody is resolved; review the whole board and finish its exact root. This does not require repeating accepted architecture or rebuilding completed canvases. [SX8]
+
+### 18.14 Completion pass: attribution precision and remaining controls
+
+The v5.1 pass leaves the accepted architecture intact and corrects four concrete presentation requirements. The independent build card J in SX11 was updated and read back; both the card and complete build board were visually reviewed and that exact root was finished. Its source pointer names the saved build specification at commit `1e3ac76bdbd28852acb0b3796ac8e7e9279d459f`. No product node inside held SX05 was changed. [SX6], [SX8]
+
+| Element | Required correction | Acceptance meaning |
+|---|---|---|
+| Attribution bars | One signed percentage-point scale with visible zero/direction. At 120px/pp, +0.6 / −2.5 / +0.5 / −0.1 / −0.4 use absolute widths 72 / 300 / 60 / 12 / 48px. | The original intended bars compressed the cash loss. Do not normalize each row independently or hide clipping; retain signed values and an accessible equivalent. |
+| Benchmark answer | “Includes invested assets and cash.” | The fixture supplies one period and starting weights, not a sequence of invested/cash periods. |
+| Capital labels | “Starting invested allocation · 68.75%”; “Starting cash allocation · 31.25%”. | Starting weights do not establish average exposure. |
+| Cash explanation | Inspect original reasons for cash and opportunities available at those decision times. | A positive realized benchmark return does not establish an ex-ante opportunity forecast. |
+
+The unissued controls have four named destinations: **Evaluation details** for synthetic/accepted status, protocol/result, benchmark, period, currency, basis and actual/simulated capital; **How attribution works** for method, inputs, cash/cost/FX and reconciliation; **Coverage** for actual eligible/observed/missing/no-entry/no-fill information; and **Open Portfolio** for the existing authorized holdings view. Scope text such as “All eligible decisions” is not a completeness proof. Do not invent counts. Each disclosure preserves keyboard/touch access, focus and return context. Missing weights suppress reconciliation and zero/near-zero benchmarks suppress unsupported capture ratios. The original Record enum stays unchanged. [SX6]
+
+The synthetic arithmetic was independently rechecked as a single-period fixture: 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1%, with cash and costs counted once. No protected outcomes or strategy evaluation ran. These are acceptance refinements to SI13 and SP19/SP20, not new research permissions.
+
+The fresh exact-target read still showed the same five heading/answer children and no attribution children. Paper 0.5.18 exposes no operation-status query; the inspected pinned adapter source retains no persistent operation/retry ledger. These observations identify the reconciliation limitation but do not prove that the old write was cancelled. SX05 remains EFFECT_UNKNOWN and unreplayed. Three disjoint SX11 operations returned APPLIED_RESPONSE_OBSERVED, bringing this page's recorded operations to 82: 81 applied responses and one original unknown. Original mobile Plans remains a separate unchanged hold. [SX8]
 
 ## Appendix A. Native PR census
 
@@ -2388,7 +2405,7 @@ The table condenses the unchanged source docket [T325]; it does not register or 
 [SX3]: https://github.com/mastermindx-market-intelligence/macro/blob/638d5f40627f53d4479acb63a515207a95669398/research/design_candidates/prophet_production_20261109/SECTOR_QUANT_PROTOCOL.md
 [SX4]: https://github.com/mastermindx-market-intelligence/macro/blob/sol/prophet-production-design-20261109/research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json
 [SX5]: https://github.com/mastermindx-market-intelligence/macro/blob/sol/prophet-production-design-20261109/research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md
-[SX6]: https://github.com/mastermindx-market-intelligence/macro/blob/sol/prophet-production-design-20261109/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md
+[SX6]: https://github.com/mastermindx-market-intelligence/macro/blob/1e3ac76bdbd28852acb0b3796ac8e7e9279d459f/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md
 [SX7]: https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0
 [SX8]: https://github.com/mastermindx-market-intelligence/macro/blob/sol/prophet-production-design-20261109/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json
 [SX9]: https://github.com/mastermindx-market-intelligence/macro/blob/sol/prophet-production-design-20261109/research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json

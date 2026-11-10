@@ -2127,6 +2127,121 @@
       },
       "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
       "retry_allowed": false
+    },
+    {
+      "operation_id": "prophet-sector-20261109-sx11-eval-precision-v51",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "1GKA-0",
+            "html": "Qualified result/protocol; actual or simulated capital/weights; benchmark, period, currency and return basis; cash, costs/FX, method and actual coverage. This example supplies starting allocations, not average exposure or decision counts."
+          },
+          {
+            "nodeId": "1GKD-0",
+            "html": "Preserve MODEL_PLAN_RECORD | REGISTERED_OPPORTUNITY_COHORT; Strategy evaluation is separate. Use one signed pp scale. Starting invested/cash allocations are 68.75%/31.25%. Realized benchmark gains do not establish an earlier opportunity forecast."
+          },
+          {
+            "nodeId": "1GKG-0",
+            "html": "Evaluation details → How attribution works → Coverage → existing authorized Portfolio. Preserve keyboard/focus/return context. “All eligible decisions” is a scope label; show actual missingness and never invent counts."
+          },
+          {
+            "nodeId": "1GKM-0",
+            "html": "SP19 / SP20: cash counted once; 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1%. At 120px/pp, widths are 72/300/60/12/48px, with zero and direction. No unsupported capture ratio, average-exposure label or hindsight opportunity claim."
+          },
+          {
+            "nodeId": "1GKP-0",
+            "html": "SX05 root 1G21-0 / target 1G3F-0 remains EFFECT_UNKNOWN. Correct scale, cash wording and starting labels only after original reconciliation; then add unissued qualification/coverage/Portfolio controls. This build card is disjoint from the held product root."
+          }
+        ],
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.1",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1GKA-0\"\n    },\n    {\n      \"nodeId\": \"1GKD-0\"\n    },\n    {\n      \"nodeId\": \"1GKG-0\"\n    },\n    {\n      \"nodeId\": \"1GKM-0\"\n    },\n    {\n      \"nodeId\": \"1GKP-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-sx11-source-pointer-v51",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "1GHH-0",
+            "html": "Core amendment / quantitative protocol: 638d5f40627f53d4479acb63a515207a95669398. Completion/build corrections: 1e3ac76bdbd28852acb0b3796ac8e7e9279d459f · research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md."
+          }
+        ],
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.1",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1GHH-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-sx11-finish-v51",
+      "tool": "finish_working_on_nodes",
+      "arguments": {
+        "nodeIds": [
+          "1GHB-0"
+        ],
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.1",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
     }
   ],
   "roots": [
@@ -2279,5 +2394,81 @@
     "head_specific_forecast_withdrawal": true,
     "calibration_designated_past_windows": true,
     "source_pointer_verified": "Source amendment · exact saved revision 638d5f40627f53d4479acb63a515207a95669398"
+  },
+  "completion_pass_v51": {
+    "version": "5.1",
+    "scope": "Attribution presentation and remaining completion controls",
+    "design_source_refresh": {
+      "macro_main": "fc07cb58b17df11aa9cb83c782f8833d035482cb",
+      "compared_prior": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+      "doctrine_blob": "2ef014e6ccb23c23922e22291d2cfe0904c60345",
+      "design_system_blob": "f8a28702767b78b2e48299f55a85e21a5c2360cd",
+      "both_unchanged": true
+    },
+    "catalog": {
+      "server": "paper-desktop",
+      "version": "0.5.18",
+      "sha256": "f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb",
+      "operation_status_action_present": false
+    },
+    "original_target_read": {
+      "node": "1G3F-0",
+      "children": [
+        "1G3H-0",
+        "1G3L-0",
+        "1G3R-0",
+        "1G3Y-0",
+        "1G47-0"
+      ],
+      "attribution_children_observed": false,
+      "absence_is_terminal_evidence": false
+    },
+    "adapter_source_diagnosis": {
+      "ref": "3652d8907df1738de551dd3032b42aa2a2acb482",
+      "bridge_path": "integrations/paper_desktop/bridge.py",
+      "bridge_blob": "2b52aad47f57a796cccc7456eaf03380fa9e43cc",
+      "server_path": "integrations/paper_desktop/mcp_server.py",
+      "server_blob": "2aa9ce0b2b4ad5d6f7d0dc7b65285ead1811b667",
+      "finding": "Pinned source explicitly retains no persistent duplicate/retry ledger; status reports current connection/document, not an old operation result. Current exposed tools have no operation-status query. This is source/surface diagnosis, not a receipt for the unknown call or proof of installed source hash."
+    },
+    "original_effect_state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
+    "held_root_mutated": false,
+    "alternate_carrier_or_host_repair": false,
+    "corrections": [
+      "common signed percentage-point scale",
+      "invested assets and cash rather than invested/cash periods",
+      "starting invested/cash allocations rather than average exposure",
+      "realized gain does not establish ex-ante opportunity"
+    ],
+    "build_spec_commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f",
+    "paper_update": {
+      "root": "1GHB-0",
+      "card": "1GJY-0",
+      "text_nodes": [
+        "1GKA-0",
+        "1GKD-0",
+        "1GKG-0",
+        "1GKM-0",
+        "1GKP-0"
+      ],
+      "source_pointer_node": "1GHH-0",
+      "exact_text_readback": true,
+      "card_and_full_board_screenshot_reviewed": true,
+      "finished_exact_root": true,
+      "operations": [
+        "prophet-sector-20261109-sx11-eval-precision-v51",
+        "prophet-sector-20261109-sx11-source-pointer-v51",
+        "prophet-sector-20261109-sx11-finish-v51"
+      ]
+    },
+    "remaining_controls": [
+      "Evaluation details",
+      "How attribution works",
+      "Coverage",
+      "Open Portfolio"
+    ],
+    "remaining_controls_issued": false,
+    "numeric_fixture_check": "Exact rational reconciliation accepted from bounded reasoning review; single-period synthetic example only, no protected outcomes or strategy run.",
+    "prior_programme_and_architecture_preserved": true
   }
 }

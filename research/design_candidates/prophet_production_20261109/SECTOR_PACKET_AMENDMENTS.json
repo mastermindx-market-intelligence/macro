@@ -1,6 +1,6 @@
 {
   "schema": "prophet.packet_amendments.editorial.v1",
-  "version": "5.0",
+  "version": "5.1",
   "original_briefs_preserved": true,
   "admission": false,
   "protected_outcome_authority": false,
@@ -116,5 +116,19 @@
       ],
       "collision": "Sector lane 9 integrated proof; actual source/runtime/release holds bind. No fixture-only production or scientific claim."
     }
+  },
+  "completion_precision": {
+    "packet": "P6",
+    "contracts": [
+      "SI13",
+      "SI14"
+    ],
+    "cases": [
+      "SP19",
+      "SP20"
+    ],
+    "build_spec_commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f",
+    "requirement": "One common signed pp scale, truthful starting-allocation and asset/cash labels, no hindsight opportunity claim, and inspectable status/method/coverage/authorized Portfolio controls.",
+    "changes_original_record_enum": false
   }
 }
