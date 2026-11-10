@@ -24,12 +24,51 @@ from typing import Any
 log = logging.getLogger(__name__)
 
 MAX_BLOCK_BYTES = 60 * 1024  # strictly under the reader's 64 KiB block cap
+#: Row blocks (wire v1.1 §1) carry full group rows and members; measured on the real
+#: artifacts they are 1.7-5.1x the 60 KiB cap, so they get their own measured cap.
+#: The 4 MiB whole-document bound does not move.
+MAX_ROW_BLOCK_BYTES = 512 * 1024
 CONFLUENCE_UNIVERSES = (
     ("sp500", "marketdata/subsector_confluence.json"),
     ("nasdaq", "marketdata/subsector_confluence_nasdaq.json"),
     ("russell", "marketdata/subsector_confluence_russell.json"),
     ("china", "marketdata/subsector_confluence_china.board.json"),
 )
+#: The four confluence-universe row blocks (wire v1.1 §1): block name, source
+#: artifact, required owner word, group arrays carried in this order. The mainland
+#: China universe gets NO row block (no consumer tab mounts it; its rows carry no
+#: members) - it stays in the existing ``confluence`` id-list block only.
+CONFLUENCE_UNIVERSE_ROW_BLOCKS = (
+    ("confluence_universe_sp500", "marketdata/subsector_confluence.json",
+     "sp500_subsectors", ("subsectors", "sectors")),
+    ("confluence_universe_nasdaq", "marketdata/subsector_confluence_nasdaq.json",
+     "nasdaq_subsectors", ("subsectors", "sectors")),
+    ("confluence_universe_russell", "marketdata/subsector_confluence_russell.json",
+     "russell_subsectors", ("subsectors", "sectors")),
+    ("confluence_universe_baskets", "marketdata/basket_confluence.json",
+     "curated_baskets", ("baskets",)),
+)
+#: Closed allow-lists (wire v1.1 §2). A key present at the producer is copied
+#: verbatim; a key absent at the producer stays absent; a null stays null. Nothing
+#: is defaulted, renamed, recomputed or re-sorted.
+_UNIVERSE_DATA_KEYS = ("ok", "universe", "weighting", "benchmark", "region", "as_of",
+                      "generated_utc", "coverage", "entry_now", "forming", "headwind")
+_UNIVERSE_COVERAGE_KEYS = ("n_subsectors", "n_baskets", "n_listed", "n_gateable",
+                           "n_thin", "n_below_min_members", "n_unscored", "n_sectors",
+                           "n_high", "n_med", "n_low_conf", "thin_share")
+_UNIVERSE_ROW_KEYS = ("key", "kind", "label", "label_zh", "sector", "sector_zh",
+                      "n_members", "n_priced", "reliability", "coverage_pct", "n_live",
+                      "start", "as_of", "price_level", "class", "entry", "regime",
+                      "members", "basket_id", "chart_key", "has_signals")
+_UNIVERSE_ENTRY_KEYS = ("tier", "weight", "tier_sub", "ticks", "bars_to_cross",
+                        "fresh_bars", "eligible", "buyable", "above200", "reason")
+_UNIVERSE_REGIME_KEYS = ("state", "side", "label", "label_zh", "action", "action_zh",
+                         "rs_60d")
+_UNIVERSE_MEMBER_KEYS = ("ticker", "name_zh", "price", "ret_20d", "vs_basket",
+                         "stock_tier", "stock_weight", "stock_ticks",
+                         "stock_bars_to_cross", "stock_buyable", "stock_state")
+#: Window labels the theme-row ``perf`` object may carry (wire v1.1 §3).
+THEME_PERF_WINDOWS = ("1d", "5d", "10d", "20d", "60d", "mtd", "ytd", "full")
 INDUSTRY_SOURCE = "marketdata/subsector_confluence.json"
 INDUSTRY_BASIS = "current_sp500_membership_not_point_in_time"
 INDUSTRY_GICS_SOURCE = "stagedata/screener.json"
@@ -208,6 +247,177 @@ def theme_table(site: Path) -> dict | None:
         return None
     return _bounded({"source": "basketdata/si_handoff.json#theme_context.themes",
                      "as_of": context.get("as_of"), "themes": dict(themes)})
+
+
+def _allowlisted(source: Mapping[str, Any], keys) -> dict:
+    """The closed allow-list projection: present keys verbatim, absent keys absent."""
+    return {key: source[key] for key in keys if key in source}
+
+
+def _universe_row(row: Any) -> dict | None:
+    """One group row under its closed allow-list, or ``None`` when it is hostile.
+
+    ``members`` is carried only as produced: present means a list of mappings each
+    with a non-empty string ``ticker``; ``entry`` / ``regime`` present means a
+    mapping. There is no partial row set - the caller drops the whole block.
+    """
+    if not isinstance(row, Mapping):
+        return None
+    key = row.get("key")
+    if not isinstance(key, str) or not key:
+        return None
+    if "members" in row:
+        members = row["members"]
+        if not isinstance(members, list):
+            return None
+        for member in members:
+            if not isinstance(member, Mapping):
+                return None
+            ticker = member.get("ticker")
+            if not isinstance(ticker, str) or not ticker:
+                return None
+    for nested in ("entry", "regime"):
+        if nested in row and not isinstance(row[nested], Mapping):
+            return None
+    out = _allowlisted(row, _UNIVERSE_ROW_KEYS)
+    if "entry" in out:
+        out["entry"] = _allowlisted(out["entry"], _UNIVERSE_ENTRY_KEYS)
+    if "regime" in out:
+        out["regime"] = _allowlisted(out["regime"], _UNIVERSE_REGIME_KEYS)
+    if "members" in out:
+        out["members"] = [_allowlisted(m, _UNIVERSE_MEMBER_KEYS) for m in out["members"]]
+    return out
+
+
+def confluence_universe_rows(site: Path, relative: str, owner_word: str,
+                             group_arrays) -> dict | None:
+    """One confluence universe as a row block (wire v1.1 §2), or ``None``.
+
+    The shared builder behind the four closed entries of
+    ``CONFLUENCE_UNIVERSE_ROW_BLOCKS``. Each universe is independent: any failure
+    here removes ONLY this block - never another universe, never the existing
+    ``confluence`` id-list block. The envelope date is the existing ``confluence()``
+    dating rule (the file's ``as_of`` when a non-empty string, else its
+    ``generated_utc``, named in ``as_of_field``); ``data.as_of`` is the document's
+    own value, verbatim - null stays null, and the envelope date is never copied
+    into it. Over ``MAX_ROW_BLOCK_BYTES`` the small stub is carried, never a
+    shortened row set.
+    """
+    document = _read(site, relative)
+    if document is None or document.get("universe") != owner_word:
+        return None
+    if not isinstance(document.get("coverage"), Mapping):
+        return None
+    for name in ("entry_now", "forming", "headwind"):
+        value = document.get(name)
+        if not isinstance(value, list) or len(value) > _LIMIT_IDS \
+                or not all(isinstance(i, str) for i in value):
+            return None
+    dated = next(((f, document[f]) for f in ("as_of", "generated_utc")
+                  if isinstance(document.get(f), str) and document[f]), None)
+    if dated is None:
+        return None
+    data = _allowlisted(document, _UNIVERSE_DATA_KEYS)
+    data["coverage"] = _allowlisted(document["coverage"], _UNIVERSE_COVERAGE_KEYS)
+    for array in group_arrays:
+        rows = document.get(array)
+        if not isinstance(rows, list):
+            return None
+        carried = []
+        for row in rows:
+            projected = _universe_row(row)
+            if projected is None:
+                return None
+            carried.append(projected)
+        data[array] = carried
+    block = {"source": relative, "as_of": dated[1], "as_of_field": dated[0],
+             "group_arrays": list(group_arrays), "data": data}
+    raw = _encoded(block)
+    if raw is None:
+        return None  # not finite JSON: absent, exactly like every other carried block
+    if len(raw) <= MAX_ROW_BLOCK_BYTES:
+        return block
+    return _bounded({"source": relative, "as_of": dated[1], "as_of_field": dated[0],
+                     "status": "unavailable", "reason": "block_too_large"})
+
+
+def _or_null(value: Any) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def theme_rows(site: Path) -> dict | None:
+    """The theme row array (wire v1.1 §3), or ``None``.
+
+    One row per theme id of ``theme_context.themes`` in the mapping's own order as
+    read. ``state`` is the theme's mapping verbatim. ``name`` / ``name_zh`` come from
+    the ``baskets.json`` entry of that id (a string, else null; null also when
+    ``baskets.json`` is unreadable or has no such entry). ``perf`` is carried only
+    when ``baskets.json`` carries a non-empty string top-level ``as_of`` (that string
+    is ``perf_as_of``), within the closed window set, keys ``ret`` / ``rel`` when
+    present; a basket without ``perf`` has no ``perf`` key. ``chart_key`` comes from
+    the ``basket_confluence.json`` basket of that id (a string, else null). No
+    ``href`` is carried - the consumer composes its link from ``chart_key``.
+    """
+    handoff = _read(site, "basketdata/si_handoff.json")
+    context = handoff.get("theme_context") if handoff else None
+    themes = context.get("themes") if isinstance(context, Mapping) else None
+    if not isinstance(themes, Mapping) or not themes:
+        return None
+    if not all(isinstance(state, Mapping) for state in themes.values()):
+        return None
+    as_of = context.get("as_of")
+    if not isinstance(as_of, str) or not as_of:
+        return None
+    by_id: dict[str, Mapping[str, Any]] = {}
+    perf_as_of = None
+    baskets = _read(site, "basketdata/baskets.json")
+    entries = baskets.get("baskets") if baskets else None
+    if isinstance(entries, list):
+        for entry in entries:
+            if isinstance(entry, Mapping) and isinstance(entry.get("id"), str) \
+                    and entry["id"] not in by_id:
+                by_id[entry["id"]] = entry
+        top = baskets.get("as_of")
+        if isinstance(top, str) and top:
+            perf_as_of = top
+    chart_keys: dict[str, str | None] = {}
+    universes = _read(site, "marketdata/basket_confluence.json")
+    basket_rows = universes.get("baskets") if universes else None
+    if isinstance(basket_rows, list):
+        for row in basket_rows:
+            if isinstance(row, Mapping) and isinstance(row.get("basket_id"), str) \
+                    and row["basket_id"] not in chart_keys:
+                chart_keys[row["basket_id"]] = _or_null(row.get("chart_key"))
+    rows = []
+    for theme_id, state in themes.items():
+        entry = by_id.get(theme_id)
+        row = {"id": theme_id,
+               "name": _or_null(entry.get("name")) if entry is not None else None,
+               "name_zh": _or_null(entry.get("name_zh")) if entry is not None else None,
+               "chart_key": chart_keys.get(theme_id),
+               "state": dict(state)}
+        if perf_as_of is not None and entry is not None:
+            perf = entry.get("perf")
+            if isinstance(perf, Mapping):
+                row["perf"] = {window: {k: perf[window][k] for k in ("ret", "rel")
+                                        if k in perf[window]}
+                               for window in THEME_PERF_WINDOWS
+                               if window in perf and isinstance(perf[window], Mapping)}
+        rows.append(row)
+    block = {"source": "basketdata/si_handoff.json#theme_context.themes",
+             "as_of": as_of,
+             "name_source": "basketdata/baskets.json#baskets",
+             "perf_source": "basketdata/baskets.json#baskets[].perf",
+             "perf_as_of": perf_as_of,
+             "chart_key_source": "marketdata/basket_confluence.json#baskets[].chart_key",
+             "rows": rows}
+    raw = _encoded(block)
+    if raw is None:
+        return None  # not finite JSON: absent, exactly like every other carried block
+    if len(raw) <= MAX_ROW_BLOCK_BYTES:
+        return block
+    return _bounded({"source": "basketdata/si_handoff.json#theme_context.themes",
+                     "as_of": as_of, "status": "unavailable", "reason": "block_too_large"})
 
 
 def _basket_symbols(site: Path) -> set[str] | None:
@@ -637,7 +847,10 @@ def owner_effective_as_of(site: Path) -> str | None:
 #: never carried with ``as_of: null``.
 _DATED_BLOCKS = ("sector_central_r1", "display_order", "etf_flows", "bottoming_watch",
                  "theme_table", "removed_members", "roster_baskets", "member_industry",
-                 "member_sub_industry", "membership_first_known", "membership_snapshots")
+                 "member_sub_industry", "membership_first_known", "membership_snapshots",
+                 "confluence_universe_sp500", "confluence_universe_nasdaq",
+                 "confluence_universe_russell", "confluence_universe_baskets",
+                 "theme_rows")
 
 
 def build_carry(site: Path, central: Mapping[str, Any],
@@ -687,6 +900,11 @@ def build_carry(site: Path, central: Mapping[str, Any],
         "member_industry": member_industry(site),
         "member_sub_industry": member_sub_industry(site),
     }
+    # The five lane-1 row blocks (wire v1.1 §1-3): the four closed universe entries
+    # plus the theme row array, each independent of every other carried block.
+    for name, relative, owner_word, arrays in CONFLUENCE_UNIVERSE_ROW_BLOCKS:
+        produced[name] = confluence_universe_rows(site, relative, owner_word, arrays)
+    produced["theme_rows"] = theme_rows(site)
     for name in _DATED_BLOCKS:
         block = produced.get(name)
         if block is not None and not (isinstance(block.get("as_of"), str) and block["as_of"]):

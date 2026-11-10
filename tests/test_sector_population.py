@@ -629,6 +629,91 @@ def test_r3_n6_group_index_states_refused_by_owner(real_store, tmp_path):
     assert all(isinstance(g["refused_by_owner"], bool) for g in index)
 
 
+def test_v11_group_index_serves_name_zh_and_changes_nothing_else(real_store, tmp_path,
+                                                                 monkeypatch):
+    """V1.1 wire §5 (REAL): every group_index entry carries ``name_zh`` - tonight a
+    non-null string within 160 on all 49 real groups - and nothing else about the
+    capture moves: the cursor grammar, ``BASIS_VERSION`` and the consumer content
+    hash (equal to a fresh ``build_population`` over the same real docs) are exact."""
+    client = _client(real_store["reader"])
+    first = client.get(URL, params={"audience": "entitled", "limit": "10"},
+                       cookies=COOKIE).json()["page"]
+    index = first["group_index"]
+    assert len(index) == 49
+    assert all("name_zh" in g for g in index)  # the key is always present
+    assert all(isinstance(g["name_zh"], str) and 0 < len(g["name_zh"]) <= 160
+               for g in index)
+    memory = next(g for g in index if g["group_id"] == "memory_storage")
+    assert memory["name_zh"] == "内存、HBM 与存储"  # the real captured Chinese name
+    # the cursor grammar is unchanged: page 1's cursor still validates page 2
+    # (the index itself rides only the unfiltered first page - page 2 has no key)
+    second = client.get(URL, params={"audience": "entitled", "limit": "10",
+                                     "cursor": first["next_cursor"]},
+                        cookies=COOKIE).json()["page"]
+    assert "group_index" not in second and second["rows"]
+    # the capture itself is untouched by the serve-time projection
+    capture = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                         cookies=COOKIE).json()["page"]["capture"]
+    assert capture["owner_ref"]["basis_version"] == population.BASIS_VERSION \
+        == "sector_population.basis/v1:baskets.members"
+    central = json.loads(_real("sectordata/sector_central.json"))
+    central["carried"] = _real_carry_blocks()
+    rebuilt = population.build_population(
+        baskets=json.loads(_real("basketdata/baskets.json")),
+        handoff=json.loads(_real("basketdata/si_handoff.json")),
+        action_board=json.loads((real_store["tmp"] / "action_board.json").read_bytes()),
+        central=central)
+    assert capture["owner_ref"]["consumer_content_sha256"] == rebuilt.content_sha256
+
+
+def test_v11_group_index_name_zh_serves_null_for_hostile_shapes(tmp_path, monkeypatch):
+    """V1.1 wire §5 (FIXTURE over real bytes): a 161-char, empty, non-string or absent
+    ``name_zh`` serves null - the key stays present, the group still serves, and the
+    serve-side bound is exactly 1..160 characters (unit-pinned below)."""
+    from app.sector_generation import _group_index_name_zh
+    assert _group_index_name_zh("内存、HBM 与存储") == "内存、HBM 与存储"
+    assert _group_index_name_zh("x" * 160) == "x" * 160
+    for hostile in ("x" * 161, "", None, 17, ["x"]):
+        assert _group_index_name_zh(hostile) is None, hostile
+
+    original = _real
+
+    def patched(name):
+        raw = original(name)
+        if name != "basketdata/baskets.json":
+            return raw
+        document = json.loads(raw)
+        by_id = {b["id"]: b for b in document["baskets"]}
+        by_id["big_pharma"]["name_zh"] = "长" * 161   # over the bound
+        by_id["us_sector_health"]["name_zh"] = ""     # empty
+        by_id["defensives"]["name_zh"] = 17           # not a string
+        by_id["energy_complex"].pop("name_zh", None)  # absent
+        return json.dumps(document, separators=(",", ":"),
+                          ensure_ascii=False).encode()
+
+    monkeypatch.setattr(f"{__name__}._real", patched)
+    mutated_dir = tmp_path / "namezh"
+    mutated_dir.mkdir()
+    _, published, root = _publish(mutated_dir, _real_bundle(tmp=mutated_dir),
+                                  generation_id="namezh", now=PUBLISHED)
+    assert published.status == "published", published.detail
+    mutated = _client(SectorGenerationReader(generations_root=root,
+                                             clock=lambda: PUBLISHED))
+    index = mutated.get(URL, params={"audience": "entitled", "limit": "1"},
+                        cookies=COOKIE).json()["page"]["group_index"]
+    zh = {g["group_id"]: g["name_zh"] for g in index}
+    assert len(index) == 49 and all("name_zh" in g for g in index)
+    assert zh["big_pharma"] is None and zh["us_sector_health"] is None
+    assert zh["defensives"] is None and zh["energy_complex"] is None
+    assert zh["memory_storage"] == "内存、HBM 与存储"  # untouched groups keep theirs
+    # the group still serves rows: the null costs nothing but the name
+    # (the index itself rides only the unfiltered first page)
+    page = mutated.get(URL, params={"audience": "entitled", "limit": "5",
+                                    "group": "big_pharma"},
+                       cookies=COOKIE).json()["page"]
+    assert page["rows"] and "group_index" not in page
+
+
 def test_r3_s1_real_route_a_basket_absent_from_both_lists_is_not_complete(tmp_path):
     """R3-S1: a real basket (housing, 18 configured) removed from the live list with
     NO refusal entry - the producer's ``lvl.dropna().empty`` exit or any other
@@ -1261,8 +1346,9 @@ def test_part_b_pit_membership_facts_travel_in_the_capture_not_on_rows(real_stor
 
 
 def test_nothing_new_appears_in_the_legacy_projection_or_typed_blocks(tmp_path):
-    """Frozen constraint: the legacy projection and ``typed_blocks`` (closed at seven
-    sources) gain NOTHING from the Part B facts, even when the carry carries them."""
+    """Frozen constraint: the legacy projection and ``typed_blocks`` (closed at twelve
+    sources - the seven incumbent plus the five lane-1 v1.1 row blocks) gain NOTHING
+    from the Part B facts, even when the carry carries them."""
     from engine.sector_native_view import project_sector_view, typed_blocks_of
     raw, identity = _real_bundle(tmp=tmp_path)  # real bytes + NEW carry (PIT blocks in)
     assert set(_real_carry_blocks()) >= {"membership_first_known", "membership_snapshots"}
@@ -1273,7 +1359,9 @@ def test_nothing_new_appears_in_the_legacy_projection_or_typed_blocks(tmp_path):
         projection = project_sector_view(inputs, receipt, audience=audience)
         assert set(typed_blocks_of(projection["data"])) == {
             "r1_rising_priced_share", "r2_display_order", "r2_hazard_qualification",
-            "etf_flows", "confluence", "bottoming_watch", "theme_table"}
+            "etf_flows", "confluence", "bottoming_watch", "theme_table",
+            "confluence_universe_sp500", "confluence_universe_nasdaq",
+            "confluence_universe_russell", "confluence_universe_baskets", "theme_rows"}
         text = json.dumps(projection)
         for needle in ("roster_clock", "first_known", "membership_snapshot",
                        "taxonomy_revision", "equals_current_roster", "members_sha"):

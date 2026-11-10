@@ -7,6 +7,7 @@ FIXTURE only where stated (absent / malformed / non-finite source, oversize).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -43,7 +44,10 @@ def test_real_artifacts_yield_every_producible_block():
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
                           "bottoming_watch", "theme_table", "member_industry",
                           "member_sub_industry", "removed_members", "roster_baskets",
-                          "membership_first_known", "membership_snapshots"}
+                          "membership_first_known", "membership_snapshots",
+                          "confluence_universe_sp500", "confluence_universe_nasdaq",
+                          "confluence_universe_russell", "confluence_universe_baskets",
+                          "theme_rows"}
     # without the owner's roster / flow history those blocks are not carried (never guessed)
     bare = carry.build_carry(SITE, _central())
     assert "removed_members" not in bare and "etf_flows" not in bare
@@ -279,7 +283,10 @@ def test_r4_n1_a_non_mapping_list_form_roster_entry_is_skipped_never_raised():
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
                           "bottoming_watch", "theme_table", "member_industry",
                           "member_sub_industry", "removed_members", "roster_baskets",
-                          "membership_first_known", "membership_snapshots"}
+                          "membership_first_known", "membership_snapshots",
+                          "confluence_universe_sp500", "confluence_universe_nasdaq",
+                          "confluence_universe_russell", "confluence_universe_baskets",
+                          "theme_rows"}
     # dict-form rosters are unchanged, and a member (not group) non-mapping entry is skipped
     assert carry.removed_members({"baskets": {"g": {"members": ["x"]}}}, "2026-11-06")[
         "removed"] == []
@@ -776,14 +783,362 @@ def test_generation_projects_carried_blocks_available_and_hazard_unavailable(tmp
     assert {n: b["status"] for n, b in blocks.items()} == {
         "r1_rising_priced_share": "available", "r2_display_order": "available",
         "r2_hazard_qualification": "unavailable", "etf_flows": "available",
-        "confluence": "available", "bottoming_watch": "available", "theme_table": "available"}
+        "confluence": "available", "bottoming_watch": "available", "theme_table": "available",
+        "confluence_universe_sp500": "available", "confluence_universe_nasdaq": "available",
+        "confluence_universe_russell": "available", "confluence_universe_baskets": "available",
+        "theme_rows": "available"}
     assert blocks["r2_hazard_qualification"]["reason"] == "not_produced"
     preview = typed_blocks_of(project_sector_view(inputs, receipt, audience="preview")["data"])
     assert preview["r1_rising_priced_share"]["status"] == "available"
     assert preview["confluence"]["reason"] == "audience_not_entitled"
+    assert preview["theme_rows"]["reason"] == "audience_not_entitled"
 
 
 def test_builder_wires_the_carry_before_publication():
     source = (REPO / "scripts/build_sector_central.py").read_text()
     assert source.index("build_carry(site, data, _membership(), sector_flow_periods())") < source.index(
         'data["publication"] = {')
+
+
+# --- lane 1 v1.1 row blocks (wire /tmp/si_plan/v11/LANE1_WIRE_V11_ROWS.md) ------
+
+ROWS_FIVE = ("confluence_universe_sp500", "confluence_universe_nasdaq",
+             "confluence_universe_russell", "confluence_universe_baskets", "theme_rows")
+
+
+def _canonical(value) -> bytes:
+    return json.dumps(value, ensure_ascii=False, allow_nan=False,
+                      sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def test_v11_row_blocks_carry_full_group_rows_and_members():
+    """REAL: the five row blocks on the committed artifacts - full group rows and
+    members under their own measured cap, with the wire's counts and dating."""
+    built = _real_carry_blocks()
+    sp500 = built["confluence_universe_sp500"]["data"]
+    assert (len(sp500["subsectors"]), len(sp500["sectors"])) == (65, 11)
+    nasdaq = built["confluence_universe_nasdaq"]["data"]
+    assert (len(nasdaq["subsectors"]), len(nasdaq["sectors"])) == (0, 6)
+    russell = built["confluence_universe_russell"]["data"]
+    assert (len(russell["subsectors"]), len(russell["sectors"])) == (0, 0)
+    baskets = built["confluence_universe_baskets"]["data"]
+    assert len(baskets["baskets"]) == 49
+    assert sum(len(row["members"]) for row in baskets["baskets"]) == 1020
+    theme = built["theme_rows"]
+    assert len(theme["rows"]) == 49
+    assert all(isinstance(row["name"], str) and row["name"] for row in theme["rows"])
+    assert all(isinstance(row["name_zh"], str) and row["name_zh"] for row in theme["rows"])
+    # member name_zh is carried as produced - null on every member tonight (wire §6)
+    members = [m for row in baskets["baskets"] for m in row["members"]]
+    assert len(members) == 1020 and all(m["name_zh"] is None for m in members)
+    # each block is under its own cap; the measured sizes are pinned exactly
+    sizes = {name: len(_canonical(built[name])) for name in ROWS_FIVE}
+    assert sizes == {"confluence_universe_sp500": 151948,
+                     "confluence_universe_nasdaq": 16099,
+                     "confluence_universe_russell": 552,
+                     "confluence_universe_baskets": 252432,
+                     "theme_rows": 39662}
+    assert all(size <= carry.MAX_ROW_BLOCK_BYTES == 512 * 1024
+               for size in sizes.values())
+    # dating: the existing confluence() rule on the envelope; the document's own
+    # as_of verbatim in data (null stays null; the envelope date never enters data)
+    assert (built["confluence_universe_sp500"]["as_of_field"],
+            built["confluence_universe_sp500"]["as_of"]) == ("as_of", "2026-11-06")
+    assert (built["confluence_universe_nasdaq"]["as_of_field"],
+            built["confluence_universe_nasdaq"]["as_of"]) == (
+        "generated_utc", "2026-11-09 09:38 UTC")
+    assert built["confluence_universe_nasdaq"]["data"]["as_of"] is None
+    assert built["confluence_universe_russell"]["data"]["as_of"] is None
+    assert built["confluence_universe_baskets"]["data"]["as_of"] == "2026-11-06"
+
+
+def test_v11_row_blocks_are_the_allow_listed_projection_of_their_sources():
+    """REAL: projection exactness (wire §2) - every allow-listed key is present in
+    the carry exactly when it is present in the source, with an equal value; no key
+    outside the allow-lists appears; row and member order are the producer's."""
+    built = _real_carry_blocks()
+    for name, relative, _owner_word, arrays in carry.CONFLUENCE_UNIVERSE_ROW_BLOCKS:
+        block = built[name]
+        document = json.loads((SITE / relative).read_bytes())
+        assert block["group_arrays"] == list(arrays)
+        data = block["data"]
+        assert set(data) == (set(carry._UNIVERSE_DATA_KEYS) & set(document)) | set(arrays)
+        for key in carry._UNIVERSE_DATA_KEYS:
+            assert (key in data) == (key in document), (name, key)
+            if key in data and key != "coverage":
+                assert data[key] == document[key], (name, key)
+        assert set(data["coverage"]) == set(carry._UNIVERSE_COVERAGE_KEYS) \
+            & set(document["coverage"])
+        for key in data["coverage"]:
+            assert data["coverage"][key] == document["coverage"][key], (name, key)
+        for array in arrays:
+            source_rows = document[array]
+            assert len(data[array]) == len(source_rows), (name, array)
+            for carried_row, source_row in zip(data[array], source_rows):
+                assert set(carried_row) == set(carry._UNIVERSE_ROW_KEYS) & set(source_row)
+                for key in carried_row:
+                    if key not in ("entry", "regime", "members"):
+                        assert carried_row[key] == source_row[key], (name, key)
+                for nested, allow in (("entry", carry._UNIVERSE_ENTRY_KEYS),
+                                      ("regime", carry._UNIVERSE_REGIME_KEYS)):
+                    assert (nested in carried_row) == (nested in source_row), (name, nested)
+                    if nested in source_row:
+                        assert set(carried_row[nested]) == set(allow) & set(source_row[nested])
+                        for key in carried_row[nested]:
+                            assert carried_row[nested][key] == source_row[nested][key]
+                assert ("members" in carried_row) == ("members" in source_row)
+                if "members" in source_row:
+                    assert len(carried_row["members"]) == len(source_row["members"])
+                    for carried, source in zip(carried_row["members"], source_row["members"]):
+                        assert set(carried) == set(carry._UNIVERSE_MEMBER_KEYS) & set(source)
+                        for key in carried:
+                            assert carried[key] == source[key]
+    # theme rows (wire §3): state verbatim, names/chart_key/perf from their named
+    # sources, the mapping's own order, and no href anywhere
+    handoff = json.loads(_real("basketdata/si_handoff.json"))["theme_context"]
+    entries = {g["id"]: g for g in json.loads(_real("basketdata/baskets.json"))["baskets"]}
+    charts = {g["basket_id"]: g.get("chart_key") for g in
+              json.loads(_real("marketdata/basket_confluence.json"))["baskets"]}
+    block = built["theme_rows"]
+    assert block["as_of"] == handoff["as_of"] == "2026-11-06"
+    assert block["perf_as_of"] == json.loads(_real("basketdata/baskets.json"))["as_of"]
+    assert [row["id"] for row in block["rows"]] == list(handoff["themes"])
+    for row in block["rows"]:
+        theme_id = row["id"]
+        assert row["state"] == handoff["themes"][theme_id]  # verbatim
+        assert row["name"] == entries[theme_id]["name"]
+        assert row["name_zh"] == entries[theme_id]["name_zh"]
+        assert row["chart_key"] == charts[theme_id]
+        assert set(row["perf"]) <= set(carry.THEME_PERF_WINDOWS)
+        for window, measures in row["perf"].items():
+            assert set(measures) <= {"ret", "rel"}
+            for key, value in measures.items():
+                assert value == entries[theme_id]["perf"][window][key]
+    assert "href" not in json.dumps(block)
+
+
+_ROWS_SITE_FILES = (
+    "marketdata/subsector_confluence.json",
+    "marketdata/subsector_confluence_nasdaq.json",
+    "marketdata/subsector_confluence_russell.json",
+    "marketdata/subsector_confluence_china.board.json",
+    "marketdata/basket_confluence.json",
+    "basketdata/baskets.json",
+    "basketdata/si_handoff.json",
+)
+
+
+def _rows_site(tmp_path, mutate=None) -> Path:
+    """A tmp site holding the real row-block sources; ``mutate`` maps one relative
+    name to replacement bytes, or ``None`` to delete the file."""
+    for relative in _ROWS_SITE_FILES:
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((SITE / relative).read_bytes())
+    for relative, payload in (mutate or {}).items():
+        target = tmp_path / relative
+        if payload is None:
+            target.unlink()
+        else:
+            target.write_bytes(payload)
+    return tmp_path
+
+
+def _nasdaq_mutation(transform, *, non_finite=False):
+    """Rewrite the real Nasdaq document through ``transform`` and encode it.
+
+    ``non_finite`` keeps the encoder's NaN spelling so the file carries a bare
+    ``NaN`` literal - exactly the hostile on-disk shape the reader must refuse.
+    """
+    document = json.loads((SITE / "marketdata/subsector_confluence_nasdaq.json").read_bytes())
+    transform(document)
+    return json.dumps(document, ensure_ascii=False,
+                      allow_nan=non_finite).encode("utf-8")
+
+
+NASDAQ = "marketdata/subsector_confluence_nasdaq.json"
+
+
+def _nasdaq_hostile_cases():
+    deep = ('{"label":' * 3000) + "1" + ("}" * 3000)  # built as text: never recursed here
+    cases = [
+        ("absent", {NASDAQ: None}),
+        ("corrupt bytes", {NASDAQ: b"not json {"}),
+        ("wrong owner word", {NASDAQ: _nasdaq_mutation(
+            lambda d: d.update(universe="sp500_subsectors"))}),
+        ("undated", {NASDAQ: _nasdaq_mutation(
+            lambda d: (d.pop("as_of", None), d.pop("generated_utc", None)))}),
+        ("group array not a list", {NASDAQ: _nasdaq_mutation(
+            lambda d: d.update(subsectors={}))}),
+        ("row not a mapping", {NASDAQ: _nasdaq_mutation(
+            lambda d: d.update(sectors=["x"]))}),
+        ("row without key", {NASDAQ: _nasdaq_mutation(
+            lambda d: d.update(sectors=[{"kind": "sector", "label": "X"}]))}),
+        ("members not a list", {NASDAQ: _nasdaq_mutation(
+            lambda d: d["sectors"][0].update(members="nope"))}),
+        ("member without ticker", {NASDAQ: _nasdaq_mutation(
+            lambda d: d["sectors"][0].update(members=[{"price": 1.0}]))}),
+        ("entry as a string", {NASDAQ: _nasdaq_mutation(
+            lambda d: d["sectors"][0].update(entry="T3"))}),
+        ("nan literal in a value", {NASDAQ: _nasdaq_mutation(
+            lambda d: d["coverage"].update(n_gateable=float("nan")), non_finite=True)}),
+        ("deeply nested value", {NASDAQ: deep.encode("utf-8")}),
+    ]
+    return cases
+
+
+@pytest.mark.parametrize("label,mutate", _nasdaq_hostile_cases(),
+                         ids=[case[0] for case in _nasdaq_hostile_cases()])
+def test_v11_one_bad_universe_file_removes_only_that_universe_block(tmp_path, label, mutate):
+    """FIXTURE over real files: a corrupted/absent/wrong-owner/undated Nasdaq file
+    never raises and removes ONLY the Nasdaq row block. The other four row blocks
+    and ``theme_table``/``theme_rows`` are byte-equal to the unmutated build; the
+    incumbent ``confluence`` block is exactly the incumbent ``confluence()`` law's
+    own answer over the same mutated site (row-shape mutations leave it byte-equal
+    to the good build; an absent/unreadable/undated file is dropped by the
+    incumbent's own four-or-nothing rule - never by the new blocks)."""
+    good = carry.build_carry(SITE, {"as_of": "2026-11-06", "sectors": []})
+    site = _rows_site(tmp_path, mutate)
+    built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []})  # never raises
+    assert "confluence_universe_nasdaq" not in built, label
+    for name in ("confluence_universe_sp500", "confluence_universe_russell",
+                 "confluence_universe_baskets", "theme_rows", "theme_table"):
+        assert _canonical(built[name]) == _canonical(good[name]), (label, name)
+    # the incumbent confluence block answers exactly its own law over this site
+    assert built.get("confluence") == carry.confluence(site)
+    if label == "wrong owner word":
+        # the incumbent carries the universe field verbatim without gating on it:
+        # its nasdaq entry shows the injected word (its own law over this file)
+        assert built["confluence"]["nasdaq"]["universe"] == "sp500_subsectors", label
+    elif label in ("group array not a list", "row not a mapping",
+                   "row without key", "members not a list",
+                   "member without ticker", "entry as a string"):
+        # the incumbent never reads the group arrays: its value is untouched
+        assert _canonical(built["confluence"]) == _canonical(good["confluence"]), label
+    else:
+        # absent / unreadable / non-finite / undated: the incumbent's OWN refusal drops it
+        assert "confluence" not in built and carry.confluence(site) is None, label
+
+
+def test_v11_theme_rows_fail_closed_cases(tmp_path):
+    """FIXTURE: the theme-row anchor refuses a non-mapping theme value, an empty
+    anchor and an undated context - each dropping ONLY the row block, never a
+    universe block; the incumbent ``theme_table`` answers its own law (it carries
+    a non-mapping value verbatim and does not require a dated context)."""
+    good = carry.build_carry(SITE, {"as_of": "2026-11-06", "sectors": []})
+
+    def handoff_mutation(transform):
+        document = json.loads((SITE / "basketdata/si_handoff.json").read_bytes())
+        transform(document)
+        return json.dumps(document, ensure_ascii=False).encode("utf-8")
+
+    for label, transform, table in (
+            ("theme value not a mapping",
+             lambda d: d["theme_context"]["themes"].update(memory_storage="thin"), True),
+            ("empty anchor", lambda d: d["theme_context"].update(themes={}), False),
+            ("undated context", lambda d: d["theme_context"].pop("as_of"), False)):
+        site = _rows_site(tmp_path, {"basketdata/si_handoff.json": handoff_mutation(transform)})
+        built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []})  # never raises
+        assert "theme_rows" not in built, label
+        assert ("theme_table" in built) == table, label
+        if table:
+            # the incumbent carries the non-mapping theme value verbatim
+            assert built["theme_table"]["themes"]["memory_storage"] == "thin", label
+        elif label == "undated context":
+            # the raw function returns the undated table; the build's _DATED_BLOCKS
+            # rule drops it (an undated block is never carried with a null date)
+            assert carry.theme_table(site)["as_of"] is None, label
+        assert _canonical(built["confluence_universe_sp500"]) == _canonical(
+            good["confluence_universe_sp500"]), label
+        assert _canonical(built["confluence_universe_baskets"]) == _canonical(
+            good["confluence_universe_baskets"]), label
+    # no dated baskets.json: perf_as_of null and no row carries a perf key
+    site = _rows_site(tmp_path)
+    baskets = json.loads((site / "basketdata/baskets.json").read_bytes())
+    baskets.pop("as_of")
+    (site / "basketdata/baskets.json").write_text(json.dumps(baskets))
+    block = carry.theme_rows(site)
+    assert block["perf_as_of"] is None
+    assert all("perf" not in row for row in block["rows"])
+    # a theme basket without perf: no perf key on that row, every other row keeps its own
+    site = _rows_site(tmp_path)  # fresh copy: the dating pop above must not leak in
+    baskets = json.loads((site / "basketdata/baskets.json").read_bytes())
+    orphan = next(row["id"] for row in good["theme_rows"]["rows"])  # first theme id
+    next(b for b in baskets["baskets"] if b["id"] == orphan).pop("perf")
+    (site / "basketdata/baskets.json").write_text(json.dumps(baskets))
+    block = carry.theme_rows(site)
+    assert "perf" not in next(row for row in block["rows"] if row["id"] == orphan)
+    assert sum("perf" in row for row in block["rows"]) == len(block["rows"]) - 1
+
+
+def test_v11_over_cap_row_blocks_carry_the_stub_never_shortened_rows(monkeypatch):
+    """FIXTURE over real files: above MAX_ROW_BLOCK_BYTES the small stub is carried
+    (dated, under the ordinary block cap) - never a shortened row set."""
+    central = {"as_of": "2026-11-06", "sectors": []}
+    full = carry.build_carry(SITE, central)
+    stubs = {
+        "confluence_universe_sp500": (
+            "marketdata/subsector_confluence.json", "as_of", "2026-11-06"),
+        "confluence_universe_nasdaq": (
+            "marketdata/subsector_confluence_nasdaq.json", "generated_utc",
+            "2026-11-09 09:38 UTC"),
+        "confluence_universe_russell": (
+            "marketdata/subsector_confluence_russell.json", "generated_utc",
+            "2026-11-09 09:39 UTC"),
+        "confluence_universe_baskets": (
+            "marketdata/basket_confluence.json", "as_of", "2026-11-06"),
+    }
+    with monkeypatch.context() as m:
+        m.setattr(carry, "MAX_ROW_BLOCK_BYTES", 512)  # below even Russell's 552 bytes
+        built = carry.build_carry(SITE, central)
+    for name, (source, field, as_of) in stubs.items():
+        assert built[name] == {"source": source, "as_of": as_of, "as_of_field": field,
+                               "status": "unavailable", "reason": "block_too_large"}, name
+        assert "data" not in built[name] and "group_arrays" not in built[name]
+        assert carry._bounded(built[name]) == built[name]  # the stub passes the bound
+    assert built["theme_rows"] == {
+        "source": "basketdata/si_handoff.json#theme_context.themes", "as_of": "2026-11-06",
+        "status": "unavailable", "reason": "block_too_large"}
+    assert "rows" not in built["theme_rows"]
+    # no row is dropped to fit: the same inputs under the real cap carry every row
+    assert len(full["confluence_universe_sp500"]["data"]["subsectors"]) == 65
+    assert len(full["confluence_universe_baskets"]["data"]["baskets"]) == 49
+    assert len(full["theme_rows"]["rows"]) == 49
+    # the cap boundary itself: one byte under is the full block, one byte over the stub
+    size = len(_canonical(full["confluence_universe_baskets"]))
+    with monkeypatch.context() as m:
+        m.setattr(carry, "MAX_ROW_BLOCK_BYTES", size - 1)
+        over = carry.confluence_universe_rows(
+            SITE, "marketdata/basket_confluence.json", "curated_baskets", ("baskets",))
+        m.setattr(carry, "MAX_ROW_BLOCK_BYTES", size)
+        exact = carry.confluence_universe_rows(
+            SITE, "marketdata/basket_confluence.json", "curated_baskets", ("baskets",))
+    assert over["status"] == "unavailable" and over["reason"] == "block_too_large"
+    assert "status" not in exact and len(exact["data"]["baskets"]) == 49
+
+
+def test_v11_an_absent_allow_listed_row_key_stays_absent():
+    """FIXTURE (wire §2): an allow-listed key absent from the source row is absent
+    from the carried row - never defaulted to null. (On tonight's real artifacts
+    every row carries every key it ever carries, so only a removed key can prove
+    this.) Present keys stay verbatim on the same row."""
+    source_row = json.loads((SITE / NASDAQ).read_bytes())["sectors"][0]
+    assert "label_zh" in source_row  # precondition: a really-present key to remove
+    without = dict(source_row)
+    del without["label_zh"]
+    carried = carry._universe_row(without)
+    assert carried is not None and "label_zh" not in carried
+    full = carry._universe_row(source_row)
+    assert full["label_zh"] == source_row["label_zh"]
+
+
+def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
+    """REAL: wire §0 - the incumbent values are byte-identical before and after.
+    The literals are the sha256 of the canonical encoding, measured by running the
+    BASE module (commit a089d2f9b4d7) and the new module over the same site."""
+    built = _real_carry_blocks()
+    confluence = hashlib.sha256(_canonical(built["confluence"])).hexdigest()
+    theme_table = hashlib.sha256(_canonical(built["theme_table"])).hexdigest()
+    assert confluence == "6d2c77f6de4cf30c35d542a2a3a97fe3af2d3601f42b47089086e624d0150deb"
+    assert theme_table == "1f62db7c409f1f4410997a4f529e76fb07d3e644e721eecec63eb6e372302914"
+
