@@ -119,6 +119,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 import urllib.error
@@ -1349,15 +1350,22 @@ def evaluate_brief_freshness(
     if not isinstance(briefs, dict):
         briefs = {}
     graded = 0
+    ungraded: list[str] = []
     for spec in BRIEF_LENSES:
         lens = spec["lens"]
         brief = _freshest_brief(briefs.get(lens))
         gen = _parse_dt((brief or {}).get("generated_at"))
         if gen is None:
+            ungraded.append(lens)
             continue
         graded += 1
         rd = brief.get("refresh_days")
-        if isinstance(rd, bool) or not isinstance(rd, (int, float)) or rd <= 0:
+        try:
+            valid_cadence = (not isinstance(rd, bool) and isinstance(rd, (int, float))
+                             and math.isfinite(rd) and rd > 0)
+        except OverflowError:
+            valid_cadence = False
+        if not valid_cadence:
             rd = spec["refresh_days"]
         age_days = (now - gen).total_seconds() / 86400.0
         state_asof = _parse_date(brief.get("state_asof")) or gen.date()
@@ -1387,13 +1395,19 @@ def evaluate_brief_freshness(
                     f"(source_asof) is {source_asof.isoformat()}. The AI brief step did not "
                     "run or did not publish — 2026-10-19→11-09 freeze shape."
                 )
+    facts["briefs_ungraded"] = ungraded
     if graded == 0:
         warn.append(
             "CHECK F INDETERMINATE: no readable AI brief (site/ or data/regime/) — "
             "brief freshness is UNGRADED, not green. If the path is right, check the "
             "lane's sparse-checkout list."
         )
-    elif source_asof is None:
+    elif ungraded:
+        warn.append(
+            "CHECK F INDETERMINATE: no readable AI brief (site/ or data/regime/) for "
+            f"{', '.join(ungraded)} — these lenses are UNGRADED, not green"
+        )
+    if graded and source_asof is None:
         warn.append(
             "CHECK F INDETERMINATE: data clock (Prophet source_asof) unreadable — "
             "brief age cannot be compared against it"
@@ -2275,3 +2289,4 @@ def main(argv: "list[str] | None" = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

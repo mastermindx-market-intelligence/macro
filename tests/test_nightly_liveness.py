@@ -1688,7 +1688,8 @@ def test_check_f_deferral_ends_when_the_run_concludes_badly():
 
 def test_check_f_in_flight_deferral_at_the_pure_level():
     frozen = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=1)
-    briefs = _briefs(macro=[frozen, None])
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    briefs = _briefs(macro=[frozen, None], china=[fresh, None], btc=[fresh, None])
     fail, warn, facts = evaluate_brief_freshness(
         briefs, date(2026, 11, 6), _F_NOW, in_flight=True)
     assert not fail and any("DEFERRED" in w for w in warn)
@@ -1743,3 +1744,40 @@ def test_every_brief_copy_is_in_the_sparse_checkout():
             assert prefix + lens["file"] in listed, (
                 f"{prefix}{lens['file']} is read by check F but missing from the "
                 "liveness lane's sparse-checkout — that brief would be silently ungraded")
+
+
+def test_check_f_partial_blindness_names_every_ungraded_lens():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    fail, warn, facts = evaluate_brief_freshness(
+        _briefs(macro=[fresh, None]), date(2026, 11, 6), _F_NOW)
+    assert not fail
+    assert any("CHECK F INDETERMINATE" in message
+               and "china" in message and "btc" in message for message in warn)
+    assert facts["briefs_ungraded"] == ["china", "btc"]
+
+
+def test_check_f_complete_readable_lenses_stay_graded():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    briefs = _briefs(**{spec["lens"]: [fresh, None] for spec in BRIEF_LENSES})
+    fail, warn, facts = evaluate_brief_freshness(briefs, date(2026, 11, 6), _F_NOW)
+    assert not fail and not warn
+    assert facts["briefs_ungraded"] == []
+
+
+def test_check_f_partial_blindness_preserves_the_missing_data_clock_warning():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    fail, warn, _facts = evaluate_brief_freshness(_briefs(macro=[fresh, None]), None, _F_NOW)
+    assert not fail
+    assert any("china" in message and "btc" in message for message in warn)
+    assert any("data clock" in message for message in warn)
+
+
+@pytest.mark.parametrize("cadence", [float("nan"), float("inf"), float("-inf"),
+                                    True, 0, -1, "1", 10 ** 400])
+def test_check_f_invalid_cadence_cannot_hide_a_stale_brief(cadence):
+    frozen = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=cadence)
+    fail, _warn, facts = evaluate_brief_freshness(
+        _briefs(macro=[frozen, None]), date(2026, 11, 6), _F_NOW)
+    assert any("BRIEF STALE [Check F] [macro]" in message for message in fail)
+    assert facts["briefs"]["macro"]["refresh_days"] == 1
+
