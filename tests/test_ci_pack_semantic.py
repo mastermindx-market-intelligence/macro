@@ -2288,7 +2288,7 @@ def test_ontology720_manifest_keeps_native_dependencies_and_six_assertions():
         "bca1372cc63fbb96695565266cfcceae9b2c771adc9e0e96b73de94de290d361",
         "75d5f2b5ac5b03ca38c5774b25609325854d01493b4eb9d85e5ee74c0c154b67",
         "31e57516c291f23c6a6d7e6e8d23023b328baa678dc9ad610696759649afdb3b",
-        "dd629ae237930d7d9f366fdb9bd339a813ae441f54ac683ebd30cf146eb30bcf",
+        "a67947c7054410fe5bda96a0b9d9ee0be70b887795b32b72653c24887f03409f",
         "62be4da3641b8ca31e7e6e6ec9a32e4ec08e913a51dda045a73b1f80ed7ead2d",
         "364e79fc9c6b40ff89f6c39b7cbac3b6a3757cebfe0a0dcdc0f6d1e147ed10f9",
     ]
