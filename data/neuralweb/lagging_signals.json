@@ -1761,7 +1761,7 @@
       ]
     },
     "cn_importance_v0": {
-      "n_recent_fires": 602,
+      "n_recent_fires": 497,
       "n_hostile_regime": 239,
       "n_breadth_unconfirmed": 311,
       "n_repeat_fire": 0,
@@ -2170,7 +2170,7 @@
       ]
     },
     "cn_importance_v0_pit": {
-      "n_recent_fires": 602,
+      "n_recent_fires": 497,
       "n_hostile_regime": 239,
       "n_breadth_unconfirmed": 311,
       "n_repeat_fire": 0,
@@ -4765,10 +4765,10 @@
       ]
     },
     "intel_hub": {
-      "n_recent_fires": 2389,
+      "n_recent_fires": 2287,
       "n_hostile_regime": 694,
       "n_breadth_unconfirmed": 1556,
-      "n_repeat_fire": 1407,
+      "n_repeat_fire": 1341,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -5178,7 +5178,7 @@
       ]
     },
     "narrative": {
-      "n_recent_fires": 14,
+      "n_recent_fires": 12,
       "n_hostile_regime": 6,
       "n_breadth_unconfirmed": 12,
       "n_repeat_fire": 0,
@@ -5819,10 +5819,10 @@
       ]
     },
     "stock_desk": {
-      "n_recent_fires": 219,
+      "n_recent_fires": 213,
       "n_hostile_regime": 73,
       "n_breadth_unconfirmed": 137,
-      "n_repeat_fire": 53,
+      "n_repeat_fire": 47,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -6247,10 +6247,10 @@
       "flagged": []
     },
     "thematic_desk": {
-      "n_recent_fires": 80,
+      "n_recent_fires": 76,
       "n_hostile_regime": 38,
       "n_breadth_unconfirmed": 56,
-      "n_repeat_fire": 42,
+      "n_repeat_fire": 40,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -7600,10 +7600,10 @@
       ]
     },
     "us_importance_v0": {
-      "n_recent_fires": 14643,
+      "n_recent_fires": 14334,
       "n_hostile_regime": 11148,
       "n_breadth_unconfirmed": 12100,
-      "n_repeat_fire": 5388,
+      "n_repeat_fire": 5121,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -8059,10 +8059,10 @@
       ]
     },
     "us_importance_v0_pit": {
-      "n_recent_fires": 14643,
+      "n_recent_fires": 14334,
       "n_hostile_regime": 11148,
       "n_breadth_unconfirmed": 12100,
-      "n_repeat_fire": 5388,
+      "n_repeat_fire": 5121,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -8931,7 +8931,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-08T10:00:00Z",
-  "inputs_hash": "sha256:9723fbeed21780a37d2c8b4f5011f71745a43058fe550c0b199b641af6555f6a",
+  "produced_at": "2026-11-09T10:14:26Z",
+  "inputs_hash": "sha256:9f926a24d3daab58f1f01366e815ca6139d7eee381853324d1e0a92fec9b09cc",
   "tier": "infrastructure"
 }
