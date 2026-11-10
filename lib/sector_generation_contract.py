@@ -164,6 +164,33 @@ def project_sector_bundle(
     return project_sector_view(inputs, receipt, audience=audience, preview_rows=preview_rows)
 
 
+def population_from_bundle(
+    *, member_bytes: Mapping[str, bytes], input_identity: Mapping[str, Any],
+    generation_id: str, published_at: str, now: datetime,
+):
+    """Project the FULL group-membership population of one captured bundle.
+
+    Qualification is the incumbent one: the same ``_capture_view`` (calendar,
+    freshness floor, basket dependency, action-board binding) that gates the
+    native view also gates the population, so a bundle the view refuses is never
+    served as a population. Returns ``(receipt, population)``; no value is
+    invented and nothing is truncated.
+    """
+    from lib.sector_population import PopulationError, build_population
+
+    inputs, receipt = _capture_view(
+        member_bytes=member_bytes, input_identity=input_identity,
+        generation_id=generation_id, published_at=published_at, now=now,
+    )
+    try:
+        population = build_population(
+            baskets=inputs.baskets, handoff=inputs.handoff,
+            action_board=inputs.action_board, central=inputs.central)
+    except PopulationError as exc:
+        raise SectorGenerationContractError(str(exc)) from None
+    return receipt, population
+
+
 def preflight_sector_bundle(
     *, member_bytes: Mapping[str, bytes], input_identity: Mapping[str, Any],
     generation_id: str, published_at: str, now: datetime, preview_rows: int = 3,

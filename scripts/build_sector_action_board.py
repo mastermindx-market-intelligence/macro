@@ -24,7 +24,13 @@ log = logging.getLogger("build_sector_action_board")
 
 def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    raw = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
+    # Strict JSON at the producer: a non-finite upstream value is *missing*
+    # (null), never a bare NaN literal that a strict reader must reject, and
+    # allow_nan=False makes anything the normalization misses fail the write
+    # (leaving the previous artifact) instead of publishing it.
+    from lib.numeric import finite_json_value
+    raw = json.dumps(finite_json_value(payload), separators=(",", ":"),
+                     ensure_ascii=False, allow_nan=False).encode()
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as handle:

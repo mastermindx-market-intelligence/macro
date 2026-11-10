@@ -86,6 +86,7 @@ from app.paywall import paywall_check
 from app.regwall import regwall_check
 from lib.sector_generation_wire import (
     MAX_ENCODED_BYTES, SCHEMA, SectorGenerationTooLarge, encode_sector_generation,
+    encode_sector_population,
 )
 
 log = logging.getLogger("macro.sector_generation")
@@ -186,6 +187,39 @@ class SectorGeneration:
     source_session: str
     published_at: str
     qualification: str
+
+
+@dataclass(frozen=True)
+class SectorPopulationRequest:
+    """What the reader is asked for when serving the full population.
+
+    ``capture`` is ``None`` for a fresh read (the selected generation) or a
+    ``(generation_id, content_id)`` pair taken from a token this server signed
+    and the route verified against the caller, filter, audience and basis. It is
+    never caller-supplied text.
+    """
+
+    audience: str
+    capture: tuple[str, str] | None = None
+
+
+class PopulationCaptureUnavailable(Exception):
+    """A retained capture named by a verified token can no longer be verified."""
+
+
+@dataclass(frozen=True)
+class PopulationCapture:
+    """One captured generation's complete population plus its own facts."""
+
+    population: Any
+    generation_id: str
+    content_id: str
+    published_at: str
+    source_session: str
+    qualification: str
+    read_captured_at: str
+    member_sha256: Mapping[str, str]
+    currentness: str
 
 
 @runtime_checkable
@@ -390,6 +424,66 @@ def _coerce_generation(result: Any, *, audience: str) -> SectorGeneration | None
     )
 
 
+ERROR_CURSOR_RESET = "CURSOR_RESET"
+ERROR_ORIGINAL_UNAVAILABLE = "ORIGINAL_UNAVAILABLE"
+_POPULATION_PARAMS = frozenset(("audience", "group", "q", "limit", "cursor"))
+
+
+def _reset(reason: str) -> JSONResponse:
+    """The explicit refresh/reset answer: a changed binding never yields mixed pages."""
+    return JSONResponse(
+        {"schema": ERROR_SCHEMA, "code": ERROR_CURSOR_RESET, "reason": reason},
+        status_code=409, headers=_HEADERS,
+    )
+
+
+def _parse_population_query(request: Request) -> tuple[dict[str, Any] | None, JSONResponse | None]:
+    """Closed query grammar of the population route.
+
+    ``audience=entitled`` is REQUIRED (the full population is never a preview
+    representation). ``group``/``q``/``limit`` shape the page; ``cursor`` is an
+    opaque server-signed token (page cursor or captured-context/original ref).
+    There is no parameter that can name a generation, path, URL, root or domain.
+    """
+    from lib import sector_population as population
+
+    items = request.query_params.multi_items()
+    names = [key for key, _ in items]
+    if len(set(names)) != len(names) or any(n not in _POPULATION_PARAMS for n in names):
+        return None, _error(400, ERROR_REQUEST_INVALID)
+    values = dict(items)
+    if values.get("audience") != AUDIENCE_ENTITLED:
+        return None, _error(400, ERROR_REQUEST_INVALID)
+    try:
+        limit = values.get("limit")
+        if limit is not None and not re.fullmatch(r"[0-9]{1,4}", limit):
+            raise population.PopulationError("invalid_limit")
+        limit_value = int(limit) if limit is not None else population.DEFAULT_LIMIT
+        if not 1 <= limit_value <= population.MAX_LIMIT:
+            raise population.PopulationError("invalid_limit")
+        flt = population.normalize_filter(values.get("group"), values.get("q"))
+        token = values.get("cursor")
+        if token is not None and len(token) > population.MAX_TOKEN:
+            raise population.PopulationError("malformed_token")
+    except population.PopulationError:
+        return None, _error(400, ERROR_REQUEST_INVALID)
+    return {"filter": flt, "limit": limit_value, "cursor": values.get("cursor")}, None
+
+
+def _actor_digest(request: Request) -> str:
+    """Digest of the identity the incumbent regwall verified, or the anonymous marker.
+
+    Reuses the exact incumbent verification (``_mm_supabase_access_token`` +
+    ``_mm_verify_uid_cached``); it adds no identity cache and no parser.
+    """
+    from app.main import _mm_supabase_access_token, _mm_verify_uid_cached
+    from lib import sector_population as population
+
+    token = _mm_supabase_access_token(request)
+    uid = _mm_verify_uid_cached(token) if token else None
+    return population.actor_digest(str(uid) if uid else None)
+
+
 def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
     """Build the Sector generation read router around ONE trusted reader.
 
@@ -431,6 +525,89 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             return _error(503, ERROR_GENERATION_TOO_LARGE)
         except Exception as exc:  # noqa: BLE001 — every malformed reader fails closed
             log.warning("sector_generation: reader envelope failed (%s)", type(exc).__name__)
+            return _error(503, ERROR_GENERATION_UNAVAILABLE)
+        return Response(content=encoded, media_type="application/json", headers=_HEADERS)
+
+    @router.get("/api/sector-generation/population")
+    def sector_population(request: Request) -> Response:
+        from lib import sector_population as population
+
+        parsed, invalid = _parse_population_query(request)
+        if invalid is not None:
+            return invalid
+        # Denied-before-read: both incumbent gates for every entitled resource
+        # answer BEFORE a token is opened, an actor is derived or storage is read.
+        denial = _authorize(request, RESOURCES_BY_AUDIENCE[AUDIENCE_ENTITLED])
+        if denial is not None:
+            return denial
+        try:
+            resolved = _resolve_reader(request, reader)
+            if resolved is None or not callable(getattr(resolved, "read_population", None)):
+                return _error(503, ERROR_GENERATION_UNAVAILABLE)
+            actor = _actor_digest(request)
+            flt, limit = parsed["filter"], parsed["limit"]
+            claims = None
+            if parsed["cursor"] is not None:
+                try:
+                    claims = population.open_token(parsed["cursor"])
+                except population.PopulationError:
+                    claims = None
+                if claims is None:
+                    return _error(400, ERROR_REQUEST_INVALID)
+                # Every binding is checked BEFORE any storage read. A mismatch is the
+                # explicit reset answer, never a page assembled from mixed state.
+                if (claims["a"] != AUDIENCE_ENTITLED or claims["u"] != actor
+                        or claims["b"] != population.BASIS_VERSION):
+                    return _reset("binding_changed")
+                if claims["k"] == "c" and (claims["f"] != population.filter_digest(flt)
+                                           or claims["l"] != limit):
+                    return _reset("binding_changed")
+            capture_key = (claims["g"], claims["c"]) if claims else None
+            try:
+                result = resolved.read_population(
+                    SectorPopulationRequest(audience=AUDIENCE_ENTITLED, capture=capture_key))
+            except PopulationCaptureUnavailable:
+                if claims is not None and claims["k"] == "x":
+                    return _error(404, ERROR_ORIGINAL_UNAVAILABLE)
+                return _reset("capture_not_retained")
+            if capture_key is not None and (result.generation_id, result.content_id) != capture_key:
+                return _reset("capture_changed")
+            offset = claims["o"] if claims is not None and claims["k"] == "c" else 0
+            rows, groups, total, next_offset = population.select_page(
+                result.population, flt, offset=offset, limit=limit)
+            filter_sha = population.filter_digest(flt)
+            common = dict(generation_id=result.generation_id, content_id=result.content_id,
+                          audience=AUDIENCE_ENTITLED, actor_sha=actor)
+            context_ref = population.mint_token(
+                "x", offset=0, filter_sha="*", limit=0, **common)
+            body = {
+                "capture": population.compatibility_tuple(
+                    generation_id=result.generation_id, content_id=result.content_id,
+                    published_at=result.published_at, source_session=result.source_session,
+                    qualification=result.qualification,
+                    read_captured_at=result.read_captured_at,
+                    member_sha256=result.member_sha256, population=result.population,
+                    ref=context_ref, currentness=result.currentness),
+                "filter": flt, "limit": limit, "offset": offset, "total_matching": total,
+                "complete": next_offset is None,
+                "rows": list(rows), "groups": groups,
+                "next_cursor": None if next_offset is None else population.mint_token(
+                    "c", offset=next_offset, filter_sha=filter_sha, limit=limit, **common),
+                "context_ref": context_ref,
+            }
+            if offset == 0 and flt["group"] is None and not flt["q"]:
+                body["group_index"] = [
+                    {"group_id": g["group_id"], "name": g["name"],
+                     "n_members_listed": g["n_members_listed"]}
+                    for g in result.population.groups]
+            encoded = encode_sector_population(
+                audience=AUDIENCE_ENTITLED, source_session=result.source_session,
+                published_at=result.published_at, qualification=result.qualification,
+                page=body, max_encoded_bytes=MAX_ENCODED_BYTES)
+        except SectorGenerationTooLarge:
+            return _error(503, ERROR_GENERATION_TOO_LARGE)
+        except Exception as exc:  # noqa: BLE001 — every malformed reader fails closed
+            log.warning("sector_population: envelope failed (%s)", type(exc).__name__)
             return _error(503, ERROR_GENERATION_UNAVAILABLE)
         return Response(content=encoded, media_type="application/json", headers=_HEADERS)
 
