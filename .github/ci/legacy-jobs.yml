@@ -7230,6 +7230,14 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
         run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q -o faulthandler_timeout=480
+      # SI lane 8 (#10924, 2026-11-10): the two new sector-analytics suites join this
+      # battery — the B04/B12 boundary register and the v1.1 forecast-heads contract.
+      # This job is non-exclusive (no declared paths), so the wiring adds no closure
+      # obligations. The boundaries suite skips its data/hazard and data/baskets cases
+      # when those tracked artifacts are absent (sparse checkout); the hosted full
+      # checkout runs them.
+      - name: sector analytics boundaries and forecast heads (lane 8)
+        run: python -m pytest tests/test_sector_analytics_boundaries.py tests/test_sector_forecast_heads.py -q
 
   tier-gate:
     if: ${{ false }}
@@ -7552,8 +7560,6 @@ jobs:
       - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
       - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
       - "research/sector_completion_20261021/b12/v11_heads_result.json"
-      - "tests/test_sector_analytics_boundaries.py"
-      - "tests/test_sector_forecast_heads.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7564,12 +7570,6 @@ jobs:
         run: pip install pytest numpy pandas pyyaml jinja2
       - name: sector cycles page and RS arithmetic
         run: python -m pytest tests/test_sector_cycles.py -q
-      # SI lane 8 (#10924, 2026-11-10): the two new sector-analytics suites wired here
-      # with their path gate in this same commit (W1 lesson). The boundaries suite skips
-      # its data/hazard and data/baskets cases when those tracked artifacts are absent
-      # (sparse checkout); the hosted full checkout runs them.
-      - name: sector analytics boundaries and forecast heads (lane 8)
-        run: python -m pytest tests/test_sector_analytics_boundaries.py tests/test_sector_forecast_heads.py -q
 
   regwall-boundary:
     if: ${{ false }}
