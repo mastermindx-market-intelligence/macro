@@ -1,7 +1,7 @@
 # Sector Intelligence in Shared Shell — four-round masterplan
 
-**Revision:** 0.3 — Rounds 1–3: source census, reviewed Paper design and source-grounded architecture hardening, 9 November 2026 (America/Vancouver).  
-**Status:** proposed build contract under active development; not the final Fable/T3 execution packet.  
+**Revision:** 1.0 — final four-round masterplan, 9 November 2026 (America/Vancouver); finalized 10 November 2026 UTC.  
+**Status:** final planning handoff for Fable-led T3 implementation. All four requested planning rounds are complete; application, release and production acceptance remain to be proved.  
 **Parent:** Macro [#7646](https://github.com/mastermindx-market-intelligence/macro/issues/7646), operation sector-central-redesign-20260921-sol-001, WS:SECTOR-INTELLIGENCE-COMPLETION.  
 **Canonical plan family:** research/sector_completion_20261021/. This document amends the 21 October masterplan and its capability matrix; it does not create another program, lifecycle, task registry or analytical owner.
 
@@ -14,7 +14,11 @@ The current Chairman directive explicitly asks for four conversational rounds:
 3. Revisit and harden architecture against the designs and unresolved contracts.
 4. Freeze a final masterplan for a Fable-led team using T3 to implement end to end.
 
-This document is the persistent, progressively revised output of those rounds. Round 1 established the source census and architecture/design brief. Round 2 produced and visually reviewed 47 editable Paper Frames, their state contracts, source-to-field map and exact extraction manifest. Round 3 has now traced the affected source architecture, resolved the durable-save owner, specified typed research admission and analytical semantics, mapped all 134 capability IDs and 24 legacy anchors, and hardened the integration and acceptance sequence. The [Round 3 architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) is the detailed amendment; §11 records the decisions and remaining final-packet obligations. The next requested turn is Round 4 finalization. This planning amendment remains unmerged; source/design evidence does not establish application production acceptance.
+This is the final version of the progressively revised four-round plan. Round 1 established the source census and preservation decisions. Round 2 produced and visually reviewed 47 editable Paper Frames and the exact design/interaction/extraction record. Round 3 hardened the source architecture, navigation, research, persistence, analytical semantics, 134 stable capabilities and 24 legacy anchors. Round 4 reconciles the changed source frontier, fixes earlier ledger/design aliases, freezes exact owner contracts, supplies ten validated role briefs, allocates every capability/design gap and defines release, operational proof and retirement.
+
+**Implementation entrypoint:** [final Fable/T3 packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md) and [ten complete machine-readable briefs](https://github.com/mastermindx-market-intelligence/macro/blob/ba1d27baff363ea8830d46150c7f36f7805b5c1c/research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json). The packet is the detailed version 1.0 contract; the [Round 3 architecture appendix](ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) supplies retained architecture/anchor detail with its Round 4 correction notice. The [Paper guide](ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md) retains the 47-root manifest and adds exact current consumption decisions. Use these files together at the final handoff commit.
+
+No additional planning round is owed. The next work is actual assignment and implementation of the first real coherent-generation → landed /sectors → selected dossier → exact-return vertical. This session prepared the GitHub handoff; it did not dispatch Fable/T3 or claim worker pickup/START. Source/design/brief evidence does not establish application production acceptance.
 
 ### Amendment to the destination
 
@@ -26,7 +30,7 @@ Mastermind OS is the organizational/agent application. It is not the investor-fa
 
 ### Four-round DONE_WHEN
 
-The final packet must contain a current source census; explicit preservation and retirement decisions; exact editable Paper references and reviewed states; source-to-field contracts; ordered implementation scope; genuine unresolved gates; and an executable acceptance/release/rollback plan. It must reconcile every inherited capability without treating blank evidence fields as completion.
+The final packet must contain a current source census; explicit preservation and retirement decisions; exact editable Paper references and reviewed states; source-to-field contracts; ordered implementation scope; genuine unresolved gates; and an executable acceptance/release/rollback plan. It reconciles every inherited capability using the actual P19 disposition ledger and a final stable-ID planning join. Blank P23 final fields are neither completion evidence nor proof that no prior acceptance ledger exists.
 
 ### Subsequent implementation DONE_WHEN
 
@@ -38,16 +42,16 @@ The Chairman's current four-round boundary controls this planning session. No au
 
 | Source | Pin / observed state |
 |---|---|
-| Mastermind protected procedure | master 3652d8907df1738de551dd3032b42aa2a2acb482; skillpack schema mastermind.sol_skillpack.v1, version 1.0.1, bootstrap major 1 |
-| Round 1 Macro source/data baseline | main 36ff39c98dfee8190d0a3f7aaaef9df86921226e; retained historical census |
-| Round 3 affected Macro source/data refresh | main 9a13c64bf69f782332afa29efb09fe48ee30b857; candidate identities and contract evidence in §11 and the architecture contract |
-| Round 1 Terminal / Shared Shell baseline | protected master 1377853d02fdb0295c0848d7127fdee4ca36714b; retained historical census |
-| Round 3 affected Terminal / Shared Shell refresh | protected master 1c0bf028cf72539a4d3fcb17fa137ee474d764f9; actual gateway, catalog, navigation, Investigation and alert owners inspected |
-| Paper | Round 1: exact-file read-only census and three screenshots. Round 2: 47 new editable Frames across Product, States/help and Build in the existing R4 file; actual screenshot review and exact-root readback; §7.6 and the Round 2 guide contain the manifest. |
-| Live Beta | /sectors rendered the Shared Shell 404. Following visible Discover navigation reached /discover and a signup/sign-in gate in the unauthenticated inspection browser |
-| Verification not performed in Round 1 | No authenticated product journey, producer job, deployed source-identity proof, test rerun, release, destructive cleanup or Paper mutation |
+| Mastermind protected procedure | master 3652d8907df1738de551dd3032b42aa2a2acb482; compatible skillpack v1.0.1/bootstrap1; current user AGENTS controls conflicts |
+| Round 1 Macro / Terminal baselines | Macro 36ff39c98dfee8190d0a3f7aaaef9df86921226e; Terminal 1377853d02fdb0295c0848d7127fdee4ca36714b; dated census retained |
+| Round 3 source refresh | Macro 9a13c64bf69f782332afa29efb09fe48ee30b857; Terminal 1c0bf028cf72539a4d3fcb17fa137ee474d764f9; historical architecture checkpoint |
+| Final affected Macro source | main bf91cd8964c0fc3ea4ea2e987a21d7759b380032; generation/research/P19/sleeve source inspected |
+| Final affected Terminal source | protected master 57ab4281d87ccb9e01e3bafcd42350034de1b222; landed route/catalog, actual gateway, Investigation and chart owners inspected |
+| Paper | 47 exact reviewed Round 2 Frames in the existing R4 file; retained donor/state reconciliation in final packet §5; no Round 3/4 Paper mutation |
+| Historical live Beta check | /sectors rendered 404 in the Round 1 unauthenticated browser; Discover reached the account gate. This is a dated observation, not the post-#1244 deployment state. |
+| Final verification scope | Affected source/PR reads, brief compilation, exact 134-ID/P19 join, design-state reconciliation and documentation save/readback. No current authenticated browser, installed DB, runtime/CI/release or natural-update proof. |
 
-GitHub search indexes were older than the pinned repositories. Actual source reads and native PR metadata control the census. Sections 1–10 preserve their original evidence and design history. Where an affected contract/status is updated, §11 and the linked Round 3 contract take precedence; unrefreshed facts retain their original pin. This is not a fresh live-route, CI, scientific-run or deployed-binding audit. Refresh only affected heads, custody, holds and execution facts at the next modifying step.
+Version 1.0 and its final packet control current planning decisions. Earlier pinned artifacts and dated design specimens remain historical evidence. Exact current runtime/source custody, installed schema and release controls must be checked by their owners when execution reaches those effects. Unrelated repository movement is not a reason to repeat the census.
 
 ## 1. Product thesis and architecture decisions
 
@@ -72,7 +76,7 @@ The premium quality comes from clear comparisons, coherent data and deep investi
 
 The parent masterplan is approximately 160 KB and contains 12 backend packets, 23 delivery tasks and 15 end-to-end journeys. The capability CSV contains **92 inherited Central requirements, 28 Cycles requirements and 14 upgrades: 134 rows in total**.
 
-Producer and route fields are populated for all 134. Actual Paper node/state, assigned owner, accepted candidate SHA, evidence link and final disposition are blank in all 134 at the inspected pin. That proves an incomplete acceptance ledger; it does not prove that all 134 capabilities are unimplemented. Accepted source and prior evidence must be mapped back into those rows. [S01] [S02] [S03]
+Producer and route fields are populated for all 134. The original matrix's final *_to_record fields remain blank pending P23, while a separate P19 ledger already records all 134 candidate dispositions: 80 CONFIRMED, 24 PARTIAL, 15 UNSUPPORTED, 13 NOT_DELIVERED, one CONFIRMED (contract gap), and one BLOCK_CONFIRMED. All served-proof fields remain PENDING_P22. Version 1.0 corrects the earlier inference that the blank final fields proved an absent ledger. Preserve accepted source/candidate evidence at its actual layer; the [final packet §6](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md#6-evidence-reuse-and-the-final-134-capability-planning-join) joins every stable ID, original P/J assignment, verdict and final owner/proof. [S01] [S02] [S03]
 
 ### 2.2 Layer-by-layer disposition
 
@@ -85,22 +89,22 @@ Producer and route fields are populated for all 134. Actual Paper node/state, as
 | Cycles | Complete legacy family plus active in-shell implementation work; generic relative-strength rotation is not parity | Integrate existing candidates and close the full C01–C28 contract |
 | Native Sector UI | Terminal [#754](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/754) merged; subsequent discovery, matrices, companies, dossier, exact returns and refresh improvements exist | Donate to the canonical composition |
 | Shared Shell foundation | Macro [#7949](https://github.com/mastermindx-market-intelligence/macro/pull/7949) and Terminal [#1063](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1063) merged on 21 October | Reuse outer shell and versioned legacy-document adapter |
-| Dedicated /sectors entrance | Macro registry declaration merged; Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244) remains Draft and route absent from inspected master | Complete existing carrier, exporter adoption and route proof |
-| Generation-aware native reader | Terminal [#1339](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1339) open/ready; current master still reads static Central paths | Reconcile and integrate existing generation seam |
+| Dedicated /sectors entrance | Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244) is MERGED as 67e2d515e4e92d2d05ea399f5691b7860fa07bbf; page/catalog exist at final protected source | Reuse the entrance; prove the new data consumer and actual served route separately |
+| Generation-aware native reader | Terminal [#1339](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1339) open/non-Draft with explicit integration/release HOLD; current gateway still includes static families | Integrate the existing Macro #10780 + dated-context #10839 seam under their actual constraints |
 | GMI | Graph/state/identity/qualification machinery exists; active Explorer candidate and current Paper product system | Preserve; expose only admitted evidence through permitted consumers |
 | Industry sleeves | Multiple composers and evidence modules exist; only ai_semiconductors is registered/mounted in the shared registry | Finish entry-kind registration, real evidence and consumer journeys |
 | Durable investigation | Existing watch/research/navigation owners and partial integrations | Prove separate save, note, navigation and alert outcomes |
 | Production acceptance | Source and design progress outpace served/authenticated/natural-update proof | Keep P22/P23 open until actual evidence is attached |
 
-### 2.3 The live route gap is confirmed
+### 2.3 Source route gap resolved; served consumer proof remains open
 
-Current Macro overrides declare signed-in, Beta-only terminal:sectors. Terminal's generated route catalog still references an older Macro inventory and has 13,987 legacy paths and 17 native paths; /sectors, /intelligence and /prophet are absent. The /sectors page exists on Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244)'s candidate, where it uses readShellMember and IntelligenceToolMount kind=sectors, but not on the inspected master. [S04] [S05] [S06]
+Terminal #1244 merged on 9 November 2026 at 23:20:49 UTC as 67e2d515e4e92d2d05ea399f5691b7860fa07bbf. The final protected source has /sectors and the updated generated catalog. Reuse the entrance, member/auth gate, IntelligenceToolMount and landed reading-clock response wrapper. Rebuilding this completed route prerequisite would duplicate accepted work.
 
-A read-only live check on 9 November independently rendered **404 — Page not found** at https://beta.mastermind-x.com/sectors. Discover rendered an account gate in the current browser. This establishes the missing public entrance observation and the authentication limit of this census; it does not establish authenticated behavior or deployed commit identity.
+Round 1's 404 at https://beta.mastermind-x.com/sectors and the older catalog counts describe the earlier source/browser state. No post-merge authenticated browser or deployed-identity check was performed here. The merge closes the source-route gap only; the new coherent generation, native selected dossier and exact return still need actual consumer/release/served evidence.
 
-Macro [#10639](https://github.com/mastermindx-market-intelligence/macro/pull/10639), which supplies the native route registry declarations, already merged on 5 November as e39ec45902c1a2bb28507beb851593be6e422167. Old prose telling Terminal to wait for that merge is obsolete.
+Macro #10639's registry declarations were already merged as e39ec45902c1a2bb28507beb851593be6e422167. #1339 remains a separate unmerged generation-parser/gateway candidate, and current Macro main still lacks app/sector_generation.py. Preserve #10780's actual dependency on #10839's sector_dated_context owner. [Final source frontier](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md#2-current-source-frontier-and-precise-integration-rules).
 
-### 2.4 A concrete mixed-availability data example
+### 2.4 Dated Round 1 mixed-availability data specimen
 
 The committed Central artifact has:
 
@@ -117,9 +121,9 @@ Therefore, “all rotation is stale” would also be incorrect. The UI must pres
 
 The committed Pulse snapshot also has 49 themes at 6 November. A sampled leading row has null historical rank/score deltas. Those nulls cannot become no change, deterioration, zero strength or a fabricated trend. [S08]
 
-### 2.5 Changed blockers and current candidate frontiers
+### 2.5 Source carriers: retained census and final affected refresh
 
-| Repository / carrier | Census status | Required treatment |
+| Repository / carrier | Observed status at stated census/refreshed head | Required treatment |
 |---|---|---|
 | Macro [#9917](https://github.com/mastermindx-market-intelligence/macro/pull/9917) | Merged; 8e322ca3 | Preserve partial Central delivery |
 | Macro [#10777](https://github.com/mastermindx-market-intelligence/macro/pull/10777) | Open, ready; 99968fd0533b39410040b01caf51f3e5b050c5be | Existing in-shell Cycles, Dossier Cycle and China candidate; reconcile supersession of [#10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703)/[#10707](https://github.com/mastermindx-market-intelligence/macro/pull/10707) |
@@ -127,21 +131,21 @@ The committed Pulse snapshot also has 49 themes at 6 November. A sampled leading
 | Macro [#7384](https://github.com/mastermindx-market-intelligence/macro/pull/7384) | Open, ready; 9355e1dfaaf833cc3554ebefff1d5a36fb7e0aad | Existing Confluence-history work; retain PIT/reconstructed distinction |
 | Macro [#10212](https://github.com/mastermindx-market-intelligence/macro/pull/10212) | Open, ready; 4e072e56654bca4af9dc80af003a4a8578828cb5 | Existing breadth projection; complete actual source/member/consumer contracts |
 | Macro [#10604](https://github.com/mastermindx-market-intelligence/macro/pull/10604) | Open, ready; 4cd5c4d441103d0f5c508a16e305d23683eb3972 | Matched current-cohort reconstructed history; not historical membership or flow |
-| Macro [#10676](https://github.com/mastermindx-market-intelligence/macro/pull/10676) | Draft; 2b2ab6615039e2e4172a0d0a713eae50fc237c1e | Active GMI Explorer; preserve evidence, keyboard, disclosure and recovery work |
+| Macro [#10676](https://github.com/mastermindx-market-intelligence/macro/pull/10676) | Final refresh: Draft; b3cb43f384c94d401977839d00e54d2c0689caed | Preserve no-merge/no-Ready/no-enqueue/no-relabel and model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED; independent UI donor remains reusable |
 | Macro [#10638](https://github.com/mastermindx-market-intelligence/macro/pull/10638) | Merged; fda69f87052676d9d93d2bf34f4509a25f1ef950 | Activity-history repair already landed |
 | Macro [#7870](https://github.com/mastermindx-market-intelligence/macro/pull/7870) | Merged; fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9 | Shared research foundation landed; old foundation wait is obsolete |
 | Macro [#8245](https://github.com/mastermindx-market-intelligence/macro/pull/8245) | Merged; 4ab1e79ed4312279c580ee85336ad9990e7f607a | Private publication foundation landed; downstream proof remains separate |
 | Macro [#7891](https://github.com/mastermindx-market-intelligence/macro/pull/7891) | Merged; cdac8e121e52df09c600a412d23d03b1385898f0 | Technology source exists; registration remains held |
 | Macro [#9103](https://github.com/mastermindx-market-intelligence/macro/pull/9103) | Merged; 8996951acf5a45b01dadd4d7814982fec4b063fb | Robotics source re-landed; do not rebuild it |
-| Macro [#9124](https://github.com/mastermindx-market-intelligence/macro/pull/9124) | Draft; e6fc0959d15804be00ec7c6e54e732f83a13cc70 | Correct Nuclear successor; old [#8002](https://github.com/mastermindx-market-intelligence/macro/pull/8002) closed unmerged |
+| Macro [#9124](https://github.com/mastermindx-market-intelligence/macro/pull/9124) | Final refresh: Draft; 2b72dc1cd0e0d970434ce37b14aa9898614786f8 | HOLD-FOR-SUCCESSOR-PROOF; preserve current successor and do not revive #8002 |
 | Macro [#8039](https://github.com/mastermindx-market-intelligence/macro/pull/8039) | Draft; 165a6cb02e2b401291d37aecad0d66e8ecc31fc3 | Communications candidate; preserve enrollment/admission limits |
-| Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244) | Draft; 07f6c6aeca8b0c320fc414bc0533fff467cdf653 | Existing native intelligence entrances, including /sectors |
+| Terminal [#1244](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1244) | Final refresh: MERGED; 67e2d515e4e92d2d05ea399f5691b7860fa07bbf | Reuse native entrances/catalog/wrapper; deployed consumer proof remains separate |
 | Terminal [#1249](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1249) | Draft; abe704f1f1519cc904881fba401a720467049bde | Existing native Cycles/theme-comparison slice; not full legacy Cycles parity |
 | Terminal [#1339](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1339) | Open, ready; 7ded5375caf0aa595ca740bf0df36b175471192e | Existing native generation binding; integrate, do not replace |
 | Terminal [#1285](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1285) / [#1311](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1311) / [#1332](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1332) / [#1333](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333) | Merged | Preserve transport classification, visible refresh, strict dossiers and return continuity |
 | Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) | Closed unmerged | Do not revive the superseded carrier |
 
-“Ready” is the observed Draft flag, not a conclusion that release gates have passed. This plan changes no holds, approvals or merge state.
+Rows without “Final refresh” retain their Round 1 evidence date; they do not assert a new current CI/custody audit. “Ready” in that dated record means non-Draft, not release acceptance. The [final packet §2](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md#2-current-source-frontier-and-precise-integration-rules) provides the controlling ten-carrier integration frontier, #10839 dependency/denial, #10777 changed-check/content-conflict conditions, #1339 release hold and original uncertain effects. This plan changes no holds, approvals or merge state.
 
 ## 3. The domain and data architecture
 
@@ -179,7 +183,7 @@ Terminal [#1339](https://github.com/mastermindx-market-intelligence/mastermind-t
 
 ### 3.3 Consumer envelope: required semantics, adapted to existing schemas
 
-Reconcile these fields with existing contracts in Round 3; do not create a parallel generic schema service:
+These field classes are reconciled through the existing owner contracts in the Round 3 appendix and final packet §3; do not create a parallel generic schema service:
 
 - Canonical subject ID, kind, region and listing/issuer identity where applicable.
 - Universe, taxonomy and effective membership versions; selection/cohort identity.
@@ -248,24 +252,24 @@ The inspected current GMI design uses a dated Micron HBM product observation and
 
 Preserve taxonomy scope, company/listing separation, native receipts, source-key/hash identity, bilingual behavior and current recovery/focus improvements from [#10676](https://github.com/mastermindx-market-intelligence/macro/pull/10676). Do not promote internal-only graph structure into a public view by wrapping it in a new UI. /gmi.html is deliberately non-admitted in the current Shared Shell inventory; future exposure requires the existing route and access owners to admit the actual consumer.
 
-### 4.2 Source and consumer status by vertical
+### 4.2 Final source and consumer status by vertical
 
-The current shared registry and mounts contain only ai_semiconductors. Module existence, route registration, source qualification and actual use are separate readiness facts. [S15]
+The full exact source/hold/witness table is [final packet §7](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md#7-ten-industry-witnesses-and-current-preservation-decisions). All ten verticals remain scoped; existing source progress is preserved and actual consumer admission remains explicit.
 
-| Vertical | Preserved progress | Missing or unproven join | Required representative consumer proof |
-|---|---|---|---|
-| Semiconductors | Shared foundation [#7870](https://github.com/mastermindx-market-intelligence/macro/pull/7870) merged; existing registration/mount | Foundation is not completion of the intended real evidence cases | TSMC HBM/advanced packaging and onsemi SiC/GaN cases, using their exact admitted evidence and economic limits |
-| Finance | Extensive composer and 52 source-defined slices; existing public legacy surface | FI_READ_URL empty; fixture-only adapter held on sector_profile | One actual sector-profile → evidence → institution/company → exact-return journey |
-| Technology ex-Semis | [#7891](https://github.com/mastermindx-market-intelligence/macro/pull/7891) merged; composer/renderer exists | Fixture-only adapter held on company_profile; no shared registration | One admitted company-profile explanation with evidence, contradiction and exact source dates |
-| Robotics | [#9103](https://github.com/mastermindx-market-intelligence/macro/pull/9103) re-landed composer/owner-bundle modules | No shared registry entry and no demonstrated served journey | Real industrial/robotics case through current identity and evidence owners |
-| Nuclear / Energy | Existing [#9124](https://github.com/mastermindx-market-intelligence/macro/pull/9124) successor includes registration/mount work | Candidate unmerged; qualify data and consumer, retain original source ownership | One source-qualified nuclear chain; distinguish orders, capacity, realized output and economics |
-| Mining | Pure copper/rare-earth composer with return validation | No connected route | Freeport / MP Materials economic explanation with the specific definitions and counter-thesis preserved |
-| Consumer Defensive | P&G envelope and private publication foundation merged | Actual dossier/readers/producer rollout needs end-to-end qualification | P&G claim → source → economic interpretation → company return, including missing magnitude |
-| Consumer Cyclical | Deterministic PLNT composition exists | V1-CORE correctness is separate from entitled/browser delivery | Real admitted case with the actual access state and saved/reopened research |
-| Healthcare | FDA supply consumer [#7930](https://github.com/mastermindx-market-intelligence/macro/pull/7930) merged | Regulatory supply status is not the full GLP-1 economic thesis | Preserve five-part explanation and display authority; do not infer revenue from regulatory status alone |
-| Industrials | Exponent/Pentair program and 56 inherited obligations | Current carrier/served frontier needs reconciliation; historical [#8250](https://github.com/mastermindx-market-intelligence/macro/pull/8250) lookup unresolved | Named source-to-cash mechanism, evidence, counterexample and actual return journey |
+| Vertical | Preserved current source | Remaining real consumer witness |
+|---|---|---|
+| Semiconductors | Shared #7870 foundation and the current ai_semiconductors registry/mount exist. | Real TSMC HBM/advanced-packaging and onsemi SiC/GaN assertion, exact issuer/listing, economic limits and rights-qualified source → company → return. Public economics alone does not close product/platform evidence. |
+| Technology ex-Semis | #7891 source is merged; held company-profile adapter and native tecd contract exist. | Actual owner company bundle → typed profile → business/comparison/counter-observations → exact assertion → company/return. No synthetic theme; latest only initially. |
+| Finance | Composer/economic slices and legacy surface exist; sector-profile admission/real loader is incomplete. | sector:financials → native dossier/evidence → institution/company → exact return; use canonical curation IDs and preserve economic definitions. |
+| Robotics | #9103 source re-landed; source presence does not populate its empty current loader or registry. | Real admitted robotics cohort and owner inputs → economic mechanism/counterexample → source/company/return. |
+| Mining | Native copper/rare-earth composer and return validation exist. | Real Freeport/MP Materials owner bundle with compatible units, perimeter and period → evidence and counter-thesis → exact return. |
+| Nuclear/Energy | #9124 is the current held successor at 2b72dc1cd0e0d970434ce37b14aa9898614786f8; do not revive #8002. | Actual ordered/capacity/output/economic evidence, source rights and successor proof. Planned capacity cannot become realized production. |
+| Consumer Defensive — P&G | [#8245](https://github.com/mastermindx-market-intelligence/macro/pull/8245) merged 4ab1e79ed4312279c580ee85336ad9990e7f607a and [#9105](https://github.com/mastermindx-market-intelligence/macro/pull/9105) merged a5eec0c6f562c2caa8f3d3d8afa6ee236981c533. Private economic refresh stage exists; refresh stays off by default. | Real current/pinned economic reader and shared dossier: scoped PG facts, interpretation, source rights, save/reopen and company return; missing magnitude remains missing. Qualify actual readers before producer enable. |
+| Consumer Cyclical — PLNT | V1-CORE #7942 is merged. [#10237](https://github.com/mastermindx-market-intelligence/macro/pull/10237) and [#10268](https://github.com/mastermindx-market-intelligence/macro/pull/10268) are merged; synthetic public card and stale registry/SEO references are removed/held. [#7804](https://github.com/mastermindx-market-intelligence/macro/pull/7804) remains open/non-Draft at 55ca7e27100a7bc92ca17326e15997ca467b3e27 as a research-only source package. | Real admitted source and identity/evidence → entitled registered consumer → save/reopen → exact return. Do not republish a synthetic fixture as a real dossier. Preserve R8 native-staging denial: no retry, transformed payload, alternate carrier/account/device/model or delegated workaround. |
+| Healthcare — FDA/GLP-1 | #7930 is merged; [#9399](https://github.com/mastermindx-market-intelligence/macro/pull/9399) merged 7ec844f46c3fee3765aa56cb7a08c40709d426db and [#9418](https://github.com/mastermindx-market-intelligence/macro/pull/9418) merged f5de4f25a855bb8e3635ca72ae82dc64f9e74c18. | Consume qualified/complete FDA capture, producer order and at most three record lines. Keep regulator, manufacturer and capacity clauses separate; capacity remains not observed from this source. Add separately evidenced economics/counterexample/company return; FDA status cannot imply revenue/share. |
+| Industrials — EXPO/PNR | Historical #8250 still returns 404. Actual T02 identities exist on main; [#9109](https://github.com/mastermindx-market-intelligence/macro/pull/9109) merged 9bc94a2a493a6e169a7f7df4ab38f807ccd9c8c7 and [#9408](https://github.com/mastermindx-market-intelligence/macro/pull/9408) merged 19f1bbde354bdfcce61b8a4366633339d1c74672. Later source-fact/certified code requires synthetic cases; planned industrials_theme_research.py is absent. | Real signed-in EXPO and PNR source → result-to-cash explanation → exact evidence/falsifier → company return, including correction/publication/access/revocation. Retain all 56 recovered original obligations; do not revive the obsolete 41-requirement source-loss blocker. |
 
-The evidence for Finance and Technology holds is in their existing registration adapters. Do not manufacture a theme anchor to fit an unsupported entry kind. Extend the existing closed registry grammar for theme-, company- and sector-oriented entries through its current owner, with the exact composer, schema, source selector, owner bundle and permitted view. [S16] [S17]
+The closed shared registry still declares only _SEMICONDUCTOR at final Macro pin. New theme/company-profile/sector-profile entries require actual source loaders, economic composers, assertion selectors, rights and renderer witnesses. Finance and Technology use the exact proposed v2 profile contracts in the final packet; no synthetic anchor repairs an unsupported entry kind. Merged source foundation, synthetic correctness and real entitled/browser delivery remain different evidence layers.
 
 ### 4.3 A reusable industry research anatomy
 
@@ -294,7 +298,7 @@ This is the shared reading model, not a new universal economic scoring model. Sp
 
 Dossier is an entity drilldown, not a sixth competing top-level navigation job. Cycles retains its full controls and analytical depth inside Explore and entity workflows. Global shell navigation, account, language/theme, search and access remain owned by Shared Shell.
 
-The exact query serialization is to be reconciled with parseSectorState/writeSectorState and current Macro hashes in Round 3. Do not introduce a second state router from this conceptual table.
+Use the exact additive parseSectorState/writeSectorState contract and legacy/hash rules frozen in the architecture appendix and final packet §3.1. This conceptual table does not introduce a second state router.
 
 ### 5.2 Default screen composition
 
@@ -387,19 +391,11 @@ Loading, populated, dense, no matching result, genuine recorded zero, incomplete
 
 Do not require every state as a separate full-page duplicate. Use reusable components and a deliberate state atlas, with complete critical journeys.
 
-### Proposed performance targets to freeze in Round 3
+### Fixed performance and responsive acceptance targets
 
-These are candidate acceptance budgets, not measured claims:
+The final targets are p95 ≤100 ms local acknowledgement, ≤1.5 s first useful warm same-account view and ≤3 s first useful cold authenticated view. Measure at least 30 warm and 30 cold runs using the pinned browser/device/network profile in final packet §8.3. These are planned acceptance budgets, not production measurements.
 
-- Selection and local disclosure respond within 100 ms under the agreed reference device.
-- Local filtering/sorting remains responsive at the actual supported maximum population.
-- First useful cached content appears within 1.5 seconds; cold navigation budget and network profile must be measured and fixed in Round 3.
-- Data refresh does not jump scroll, remove the user's selection or rewrite a pinned historical view.
-- Narrow 320/390 layouts have no whole-page horizontal overflow; large analytical tables use intentional contained alternatives.
-- All visible updates retain current account, subject and source identity.
-
-Do not optimize an unmeasured synthetic scenario at the expense of real data correctness. Use the current chart/rendering primitives before introducing dependencies.
-
+Preserve source correctness, access rights, actual supported populations, bounded history/payload/transport and selection/draft/scroll during refresh. Prove 320/390/430/768/1440 widths plus the applicable 1024/1280/1600 structural cases, both locales/themes, keyboard/touch, 200% zoom, reduced motion and equivalent exact chart values. Reuse existing chart/rendering primitives and defer deep work; do not introduce dependencies to solve an unmeasured synthetic case.
 
 ## 7. Paper census, design brief and completed Round 2 baseline
 
@@ -429,7 +425,7 @@ The R4 native suite page has 35 artboards; D05 has 12; Explore/compare has 6, on
 - R4 current retained-state catalogue 8M0-0.
 - R4 Build GPI-0: models, timing, dossier opening, comparison disclosure and returns.
 - D05 BML-0: provisional route/build contract; ACW-0 US rotation, AMY-0 China, ATF-0 Company, B1V-0 failures/save, B4G-0 breadth/flow, BB2-0 retained Brief.
-- R3 Research 4ED-0 / 4K9-0; Watches 3DN-0 / 47R-0 / 56C-0; Cycles edge states 3ZG-0; state matrix 4OO-0.
+- R3 Research 4ED-0 / 4K9-0; Watches 3DN-0 / 47R-0 / 16X-0 (56C-0 is Authority/contents); Cycles edge states 3ZG-0; state matrix 4OO-0.
 - R2 contract 11-0; nonprice comparison 1Z9-0; source version conflict 26U-0; methods 2BK-0; mobile memory 2LI-0.
 - GMI current theme 61M-0, mobile 6DR-0, company 6VF-0 and Build 7M9-0.
 - Review-only R4 canary G4P-0 remains outside the planned editing target.
@@ -497,7 +493,7 @@ The new compositions are ordinary editable Frames, not artboards. Use the guide'
 
 The guide maps every introduced field class to an existing source or a visibly proposed contract. In particular, relative wealth uses the producer's multiplicative total-return definition; rising/priced uses advances divided by priced observations, whereas breadth percentage excludes unchanged observations. Financials has two missing one-month observations in the retained specimen. One incompatible rotation companion does not make all available rotation history stale.
 
-The measured leadership context carries display authority with may_rank=false, may_gate=false, may_size=false, may_trade=false and may_escalate=false. Paper reuses the existing descriptive source order; Round 3 must settle owner-approved display sorting versus these caps before an implementation treats the order as a ranking capability. No design label expands analytical or trading authority.
+The measured leadership context carries display authority with may_rank=false, may_gate=false, may_size=false, may_trade=false and may_escalate=false. Paper reuses the existing descriptive source order; the final contract requires the actual source ordinal for the named horizon and an owner-qualified display receipt while preserving those authority caps. No design label expands analytical or trading authority.
 
 The narrow cycle charts preserve the two original historical SVG series. Their re-layout is a visual transformation, not a generated time series. China/regional negative states and saved-account examples are design specimens, not observations of live service failure or real user data.
 
@@ -509,7 +505,7 @@ Rendered coverage includes 1440, 768, 390 and 320. The five 320px views are Brie
 
 Review corrected unsupported concentration wording, ambiguous Energy horizons, missing-data disclosure, mobile section menus, comparison legend/scale, capture versus observation date, save-recovery placement, chart-label collision and tablet active navigation. No interaction runtime, browser accessibility, authenticated route, CI, release or natural-time producer proof was claimed.
 
-**Acceptance conservation:** 47 frames is an inventory, not a completion percentage. The historical missing-state rows, 430px defects, SC-066/SC-092 source gaps, all B01–B12/P01–P23/J01–J15 obligations and all 134 capability rows still require exact evidence/disposition reconciliation. This round completes the expressly bounded design commission and creates a stronger implementation contract; it does not retire the incumbent acceptance matrix.
+**Acceptance conservation:** 47 frames is an inventory, not a completion percentage. The final packet reconciles 19 historically applicable missing states and 23 historical N/A rules; required context/width proof remains. SC-066 maps to R3A-66, whose count fields already exist; finish the copy and Beta proof. SC-092 maps to R3A-92, whose real correction witness remains owed. All B01–B12/P01–P23/J01–J15 and 134 stable rows are preserved. The reviewed core design does not close full native calls/Bottoming Watch, four-universe confluence, phone flows or full Cycles depth; final packet §5 assigns those bounded additions.
 
 ## 8. Shared Shell migration and retirement contract
 
@@ -517,7 +513,7 @@ Review corrected unsupported concentration wording, ambiguous Energy horizons, m
 
 | Existing surface | Target treatment |
 |---|---|
-| Beta /sectors | Complete the existing candidate as the canonical Sector Intelligence entrance |
+| Beta /sectors | Reuse the merged #1244 entrance; integrate the coherent generation and one native workspace, then prove actual served behavior |
 | /discover?tab=sectors | Initially mount the same accepted component; later a compatibility entrance preserving native parsed state |
 | /sector_central.html | Keep the versioned legacy host until each journey is replaced; then map supported states into /sectors |
 | Current six hashes: overview, map, moving, money, explore, confluence | Preserve each destination and its state; no blanket redirect to Brief |
@@ -554,34 +550,30 @@ Use one existing alert writer/evaluator during migration. Never run two writers 
 
 The previous Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) carrier remains closed. The newer native components are useful donors; closing that old carrier is not an instruction to erase later source.
 
-## 9. Ordered implementation plan for the eventual Fable/T3 team
+## 9. Ordered implementation plan for the Fable-led T3 team
 
-These are implementation slices inside the incumbent B/P/J contract, not new Executive waves or an independent task store. Round 4 will freeze exact packet inputs and current carrier ownership.
+These are slices inside the incumbent B/P/J contract, not new Executive waves or a second task store. The [final packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md) and [ten compiled authoring briefs](https://github.com/mastermindx-market-intelligence/macro/blob/ba1d27baff363ea8830d46150c7f36f7805b5c1c/research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json) now supply exact inputs, owned proposal paths, output contracts, retained donors, acceptance and continuation.
 
-| Order | Existing plan linkage | Concrete deliverable | Depends on / decisive proof |
-|---|---|---|---|
-| 1 | P01/P02 reconciliation only; B01 | Current source/PR/Paper/route/consumer inventory, accepted-work map and exact custody | Preserve accepted P01–P03; assign only unresolved work; no superseded branches |
-| 2 | B01/B02/B10; P04/P06/P17 | Registry export, existing /sectors carrier and generation-aware gateway integrated through current owners | Current Macro declaration → current Terminal catalog → authenticated admitted route; no duplicate registry |
-| 3 | B03/B04/B08/B11 | Coherent membership/metrics/coverage/corrections/history contract | Same-basis fixtures plus partial, mismatched, revised and historical cases |
-| 4 | P07–P10; J01/J02/J03/J13 | Accepted Paper Brief/Explore and one native canonical composition | First working sector → comparison → exact return journey, not placeholder panels |
-| 5 | B05–B07/B12; P08/P15/P18 | Full Cycles/dossier depth and scientific qualification/disposition | Retain [#10777](https://github.com/mastermindx-market-intelligence/macro/pull/10777)/[#1249](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1249) work; anchor/cohort, model-vs-prior, phase-age, grader and historical proof |
-| 6 | B09; P11/P12/P14 | Dossier/member/company/research join; GMI evidence and industry registry entry kinds | Exact selected listing/subject/evidence consumed by receiver; source-qualified cases |
-| 7 | P12/P16; J10/J11 | Durable research/watches and supported condition monitoring | Separate write acknowledgments, account isolation, uncertain-outcome recovery, actual event/delivery if promised |
-| 8 | P14/P17; J07/J08/J12/J13 | Remaining breadth/flow/confluence/regional/return/access variants and compatibility | Every relevant inherited row has a real control, data source and failure state |
-| 9 | P19/P20 | Integrated capability disposition and targeted repair | All 134 baseline rows plus admitted new scope mapped; original J01–J14 evidence |
-| 10 | P21–P23; J15 | Normal protected release, served acceptance, natural update and justified retirement | Source/build/deployed identity chain, real users' permitted journeys, rollback and explicit closeout |
+| Order | Existing linkage | Delivery and advancement proof |
+|---|---|---|
+| 1 | P01–P03 retained; current reconciliation only | Fable binds real existing source/custody/runtime assignments; preserve accepted partial landing and original denial/unknown effects |
+| 2 | P04/P06; B01–B04/B08–B11; P10/P11/P13 | Actual Macro generation → current Terminal gateway/parser → landed /sectors → selected sector dossier → exact return |
+| 3 | P07/P08/P09; P14/P15/P17 | Complete only missing editable depth/state groups; integrate calls, flows, four universes and all C01–C28 with real source and interaction proof |
+| 4 | P06/P11/P12/P14/P16 | Real typed industry evidence and company continuation; installed Investigation admission, independent save/watch/note and qualified alerts |
+| 5 | P04/P05/P06/P18; P17 | Exact metric/history/correction/turn definitions and finite scientific disposition; all legacy/dynamic context paths |
+| 6 | P19/P20 | Reuse the actual ledger; prove integrated candidate behavior and repair only discriminating residuals |
+| 7 | P21/P22/P23; J15 | Normal controlled release, real permitted served journeys, natural update/no-change, rollback compatibility and separate final acceptances |
+| 8 | P17/P23 retirement condition | Remove competing UX only after equivalent destinations, source meaning, access, saved context and every unique capability have passed |
 
-Slices 3, 5 and industry evidence work may proceed in disjoint lanes while the route integration proceeds. Shared registry, routing, generation contracts and generated assets need one integration writer per owned diff.
+Original ownership: P04=B01–B04; P05=B05–B07; P06=B08–B11; P18=B12. P07 core/depth design; P08 Cycles; P09 applicable reference admission; P10 first integrated path; P11 member/company/Prophet/Screener; P12 research; P13 first candidate vertical; P14 lenses/flows/themes/four universes; P15 Cycles/history/Time Machine/Record/Methods; P16 saves/watches/alerts; P17 compatibility/access/responsiveness/composition; P19 integrated evidence; P20 repairs; P21 release; P22 served/natural update; P23 separate final acceptance.
 
 ### Team responsibilities
 
-The user requested a **Fable-led team in T3**. Fable should own cross-system decisions, scope, integration and acceptance. T3 is the development interface; existing local fleet and Capacity/Fabric admission remain the execution owners.
+Fable owns program direction, dependency/contract adjudication, integration and final acceptance. T3 is the requested development interface; current Capacity/Fabric/runtime owners choose eligible execution resources and preserve admission/budgets/continuity. One writer serializes shared files per owned repository diff. Domain work is bounded and path-disjoint where feasible.
 
-Use bounded qualified workers for source implementation, test repair and individual vertical cases. Add a domain coordinator only when it resolves real cross-file ambiguity. The frontier justification for Fable is the unresolved cross-repository product/data/science integration and long-horizon acceptance, not the number of files.
+The ten authoring objects comprise one Fable orchestrator plus generation, editable design, native workspace, Cycles, research, persistence/actions, retained depth/compatibility, analytics/history and integrated proof/release functions. Their null assignment/workspace/host fields are deliberate; authoring is not admission or START.
 
-Each final worker packet needs: exact source/branch/head; owned paths; retained donors and DO_NOT_REDO; input/output schema; sample real and failure fixtures; requested behavior; affected tests; current review/release constraints; consumer proof; and return location. Do not dispatch workers from this draft.
-
-Native CRITICAL/security/access changes retain actual distinct technical review and repository controls. Current Web self-check policy does not waive native or GitHub-required approvals. Do not add a manual non-author release-operator ceremony or clear existing holds by inference.
+Current Web self-check/affected tests and actual required CI/proof govern ordinary delivery. Real native CRITICAL/GitHub/CODEOWNERS/security/release holds remain. No blanket independent-review gate or named reviewer seat is added. Full source brief remains in GitHub; any later authorized transport carries only recipient/action/source link/return.
 
 ## 10. Acceptance that can falsify completion
 
@@ -616,116 +608,60 @@ For each retained capability, record actual producer/contract revision, editable
 
 Do not report completion percentages from blank fields or artboard counts. The final plan must distinguish preserve/complete/replace/archive, source-built/candidate/served, and qualified/unqualified scientific claims.
 
-## 11. Round gates and exact continuation
+## 11. Final decisions and completed four-round plan
 
-| Round | Output | Gate into next round |
-|---|---|---|
-| 1 — census and architecture | Completed in revision 0.1; source frontier, route finding, Paper targets and preservation decisions retained | Exact source save/readback completed; census reused |
-| 2 — Paper design | Completed in revision 0.2: 47 editable Frames, reviewed screenshots, preservation ledger, source-to-field and interaction contract, exact extraction manifest | Actual visual review and source save/readback; design does not close implementation evidence |
-| 3 — architecture hardening | Completed in revision 0.3: affected source/candidate refresh, owner and contract rulings, 134 stable-ID mappings, 24 anchors, integration order and discriminating acceptance | [Architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) saved/read back; remaining implementation and final-packet obligations are explicit |
-| 4 — final masterplan | Next: version 1.0 of this same document, resolved matrix amendments, final Paper/delta references, exact T3 packets and acceptance/release/rollback plan | Concrete source-linked Fable/T3 handoff; delivery and actual pickup/START remain distinct |
-
-### 11.1 Round 3 architectural rulings
-
-The [full contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) contains the immutable source index, wire/return/persistence semantics, real industry admission requirements, candidate composition map and all capability/anchor mappings. It is an appendix to this plan, not a new lifecycle, service, capability owner or implementation registry.
-
-| Decision | Ruling and practical effect |
+| Round | Completed bounded output |
 |---|---|
-| One product and host | Retain one SectorIntelligenceWorkspace in Beta Shared Shell. Reuse native source and Macro producers. Brief, Explore, Research and Watches are jobs inside the same experience; selected dossier/Cycles depth preserves the investigation. |
-| One coherent data path | Integrate Macro #10780's existing generation publisher/reader/API with Terminal #1339's parser/gateway and #1244's entrance. Current protected Terminal source still consumes static families; these candidates are unmerged. Source-session, publication, received and older Brief baseline times remain distinct. |
-| Route and compatibility | Add sectorJob through the existing codec. A clean /sectors opens Brief; old URLs without that field keep their original Explore/detail meaning. Keep the bounded return envelope, all current aliases, 24 exact anchors and dynamic theme/read/narrative identities. |
-| Durable research owner | Extend Investigation v2 admission, immutable revisions, expected_revision CAS, operation receipts and recovery journal. No new Saved Research database. Sector/GMI references are not yet admitted by the existing Options sector_origin type. |
-| Actor and access lifetime | Add expected-actor equality checks to the relevant incumbent operations and original-status lookup; reuse the annotation route's existing pattern and Shell identity. Invalidate private state on actor or entitlement-generation changes. This is a proposed race-prevention requirement, not an observed production leak. |
-| Independent effects | Save, watch membership, note synchronization, alert activation, trigger and delivery retain separate outcomes. Preserve exact unknown operations. New rotation/exposure/event alerts require a real evaluator and activation idempotency in the existing alerts owner. |
-| Typed research | Extend the existing registry/binding with versioned theme, company_profile and sector_profile variants. Each available directory entry needs real loader, identity/rights, composer, evidence selector, renderer and return proof. A module or removed hold is insufficient. |
-| Correct leadership | Display existing producer ordinals for the named horizon. Central array order is conviction; momentum.lead is primarily 21-session. The 63-session view must use the actual 63-session source rank. Keep display-only authority caps. |
-| Honest math and history | Relative wealth, arithmetic excess, rising/priced and unchanged-excluding breadth remain distinct. Current-cohort reconstruction is labeled until effective/knowledge-time membership, availability and turn-confirmation contracts support as-known views. |
-| Full Cycles reuse | Retain anchored rhythm, observed phase age, original family/selection/timing/DNA/outcome controls and useful candidate components. Current source retains hazard parity failure; historical qualification cannot enable an unqualified current MODEL. |
-| Preserve unique candidates | #10777 does not contain #10707's source-bound dossier captureView/applyView component. Compare and integrate unique behavior from #10703/#10707; PR recency is not supersession evidence. |
-| Evidence-based completion | All 134 rows and 24 anchors are mapped, not accepted. Preserve their source/design/served evidence obligations and the historical narrow-width/missing-state defects. |
+| 1 | Source census, product thesis, consolidation and preservation decisions |
+| 2 | 47 actual editable/reviewed Paper Frames, exact manifest, source-to-field/action/recovery contracts |
+| 3 | Source-grounded architecture, Investigation and research ownership, analytical definitions, all 134 stable IDs and 24 legacy anchors |
+| 4 | Version 1.0, changed-source reconciliation, corrected P19/design aliases, exact v2 owner contracts, ten compiled authoring briefs, 134-row final join, 42 historical state dispositions, ten vertical witnesses and final delivery/release/rollback/retirement packet |
 
-The product improvements are practical: a measured opening that identifies leadership and participation; explicit disagreement between horizons; contribution and coverage that use the same cohort; source-grounded industry explanations and counterevidence; exact company/sector return; and a saved original that can be compared with a later observation without rewriting history. Existing native signal lanes remain separately qualified and reachable in depth.
+### 11.1 Frozen implementation decisions
 
-### 11.2 Affected candidate frontier
+| Decision | Final ruling |
+|---|---|
+| Destination | One SectorIntelligenceWorkspace in Beta Shared Shell; Brief/Explore/Research/Watches inside the same investigation; Macro keeps analytical ownership |
+| First delivery | Real coherent Macro generation through already-landed /sectors into one selected dossier and exact return; route source is reused, served proof remains |
+| Generation dependency | #10780 consumes #10839's real sector_dated_context owner; preserve its bounded configured-theme/global-risk scope and original CI denial fence |
+| Candidate composition | Preserve #10703 regional/return and #10707 source-bound capture/apply/disposal behavior, #1249 native Cycles/basket controls and current landed response/chart helpers |
+| Research | Existing /api/themes/v1/research/query and /evidence; explicit v2 union; byte-compatible v1; exact Technology/Finance profiles, real loaders and native payloads |
+| Research evidence | Native generation remains native; context_generation binds semantic query/rights/native revisions; paired expectations and assertion-level selection; no document-first guessing |
+| Saved research | Investigation v2; narrow macro.sector and theme_graph owner references; xlf and sector:financials remain distinct actual owner identities with an explicit bridge if needed |
+| Recovery | Expected-actor checks before I/O; original actor journal retained; owner_mismatch cannot adjudicate an earlier unknown save; Check save status remains the visible control |
+| Installed admission | Inspect actual validator preimage, reserve/compose one migration and prove TS/Python/service/SQL parity; never replay 0028 or the migration directory |
+| Independent actions | Save, watch, note, activation, trigger and delivery keep separate outcomes; new Sector alerts require their actual incumbent evaluator/activation/run/delivery proof |
+| Display authority | Source ordinal/metric/horizon/basis receipt; no new score/rank/gate/size/trade authority; meaningful zero, missing, correction and optional failure stay distinct |
+| Design | Preserve 47 reviewed roots and correct S08=Source reader, S10=Sector map, R3 Watches=3DN/47R/16X; bounded missing groups/42 state dispositions are explicit |
+| Evidence | Actual P19 ledger reused; all 134 stable IDs retain original P/J and verdict; R3A-66 fields already exist, R3A-92 correction witness still owed |
+| Industry scope | Ten real source-to-consumer witnesses; preserve newly confirmed P&G/PLNT/Healthcare/Industrials source, all actual holds and synthetic-versus-real distinctions |
+| Release/retirement | Actual source/build/deployed/data identity, permitted user journeys, next normal update/no-change and rollback compatibility; only then retire duplicate UX |
 
-Point-in-time source metadata from this round:
+The full normative details, exact source paths/heads, request templates, falsifiers, donor IDs, row owners and evidence requirements are in the [final Fable/T3 packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md). No application endpoint/schema behavior is claimed already deployed merely because it is specified there.
 
-| Carrier | Exact inspected head | Observed status / integration relevance |
-|---|---|---|
-| Terminal #1244 | 43fa33c7423daca90237e5b34f26b08fe0b5c24d | Open, non-Draft, unmerged; /sectors and generated catalog |
-| Terminal #1339 | 7ded5375caf0aa595ca740bf0df36b175471192e | Open, non-Draft, unmerged; gateway/parser; shared route path overlaps #1244 |
-| Macro #10780 | 91add9613ad29dcfb82ff75036dd6519cfc6c06f | Open, non-Draft, unmerged; generation reader/API/projection; also an active matrix writer |
-| Macro #10777 | 99968fd0533b39410040b01caf51f3e5b050c5be | Open, non-Draft, unmerged; Cycles/central/regional integration donor |
-| Macro #10703 | 9fc460ff36345387c3a2c5435b079852e8488da0 | Draft, unmerged; D05 composition, return and regional work; holds preserved |
-| Macro #10707 | 74930f6931773b23072f91590319dc39fe5a7d07 | Draft, unmerged; unique dossier component semantics; holds preserved |
-| GMI #10676 | b3cb43f384c94d401977839d00e54d2c0689caed | Draft, unmerged; native topic/return progress; no hold removed |
-| Nuclear #9124 | e6fc0959d15804be00ec7c6e54e732f83a13cc70 | Draft, unmerged; preserve existing successor |
+### 11.2 Concrete boundaries retained
 
-Native mergeability was false for #1244, #1339 and #10777 at inspection. Older PR prose may describe another head. This round did not audit every CI run or current runtime writer; refresh real custody, exact current head and binding release requirements before modifying those candidates. The source dependency map is complete enough for packet preparation, not an authorization to seize an active branch.
+#1339 has an explicit integration/release hold. #10839's CI-registration proposal is ACTION_BLOCKED_NO_REPLAY pending legitimate original-scope disposition. #10777 needs current conflict/check reconciliation under its existing controller; its old green is stale. #10703/#10707 have distinct published and unpublished work/custody. #10676 retains publication holds and model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED. #9124 remains HOLD-FOR-SUCCESSOR-PROOF. PLNT retains PublicCarrierHold and R8's native-staging denial. P&G refresh remains off by default pending actual reader/consumer proof. Original Paper uncertain targets remain untouched. Existing installed-root/SSH/admissible-cut/release limits bind.
 
-The protected route catalog omits /sectors; the #1244 catalog includes it and an updated inventory source. Use the existing exporter and accepted inventory, not manual generated-JSON edits. The generation candidate's app mount exists; deployed root binding and the actual authenticated source-to-screen journey still require proof.
+Each blocks its exact effect, not unrelated safe authorized preparation. An explicit denial cannot be bypassed by another carrier, account, payload or worker. An uncertain effect must be reconciled at the original target before retry. This planning packet clears none of those boundaries.
 
-### 11.3 Resolution of the ten Round 2 evidence questions
+### 11.3 First Fable action
 
-| Guide agenda | Architecture disposition | Remaining implementation proof |
-|---|---|---|
-| R3-01 route/generation | Actual source chain, route/export gap, bounded API and parser documented | Integrated exact head, deployed reader root and one authorized served generation |
-| R3-02 registry kinds | Versioned closed union and real loader/evidence/renderer chain specified | Every admitted vertical's real dated and negative witness |
-| R3-03 persistence | Investigation v2 plus existing annotations/watchlist/alerts owners selected | Sector admission, actor checks, CAS/recovery/partial outcome and actual readback |
-| R3-04 corrections | Preserve assertion predecessor revision and immutable saved reference; extend evidence-diff resolvers | Real correction/tombstone and comparable current/original display |
-| R3-05 history | Effective time, knowledge time and availability are separate; current basket history is reconstructed | Owner-backed historical witnesses; no manufactured replay |
-| R3-06 timing/model | Existing rhythm/phase-age retained; versioned turn knowledge and current parity gate required | Detector semantic comparison, exact input epoch and permitted scientific disposition |
-| R3-07 region/rights/account | Identity/taxonomy and rights remain owner-bound; actor/access generation retires private state | Real regional population and cross-market/account/access negative paths |
-| R3-08 ordering | Producer order by exact horizon/cohort/basis; authority flags unchanged | Tie/missing/conviction-versus-RS and source-ordinal consumer proof |
-| R3-09 deep capabilities | Every stable ID mapped; unique candidate behavior and retained depth identified | Full controls, all destinations, historical defects and row-level source/design/served evidence |
-| R3-10 return/quality | Existing public/full bounds retained; additive codec and logical-anchor restoration; concrete profile/budgets selected | Back/Forward/reload/changed-generation proof, actual measured latency and accessible responsive journeys |
-
-A01/A06/MS01 keep Check save status as the primary uncertain-save control. The existing Investigation owner also permits exact original-operation replay; any exposed replay control requires original-status reconciliation, the same actor/operation/fingerprint and proof of the installed owner contract. That is an explicit final-packet design delta, not an already implemented Paper action.
-
-The previous performance candidates in §6 are now refined by contract §9.1: local acknowledgement p95 ≤100 ms, first useful warm view ≤1.5 s and cold authenticated view ≤3 s on a pinned 390px/DPR2/4×CPU/10-down/2-up Mbps/80ms reference profile, with desktop comparison. Measure at least 30 warm and 30 cold navigations per principal profile. Keep the existing 4 MiB/6-second transport bounds. Exercise the 11-sector/49-basket baseline, declared parser/history bounds, and 320/390/430/768/1440 layouts. These are proposed implementation acceptance targets; no production benchmark was run.
-
-### 11.4 Capability coverage and implementation dependency order
-
-The [134-row planning join and 24-anchor map](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md) preserve every incumbent stable ID. At the refreshed main pin, all 134 accepted_candidate_sha_to_record, evidence_link_to_record and final_disposition_to_record cells remain blank. This does not imply no code exists. #10780 changes that CSV, so this round preserved the active writer's matrix and supplied a read-only join for the final reconciliation.
-
-A07 is a navigation/depth atlas, not complete design coverage. Native calls/Bottoming Watch, confluence/four universes, actual flows, full Cycles controls/DNA/narratives/timing/outcomes, real industry evidence, and old 430px/missing-state defects remain explicit retained obligations. Historical SC-066/SC-092 labels must be matched by original wording; they are not automatically R3A-66/R3A-92.
-
-Use the following order within the existing P01–P23/B01–B12/J01–J15 assignments:
-
-1. Reconcile exact source, custody and overlapping candidates; preserve unique donor behavior.
-2. Admit the route and coherent generation chain; prove one real authenticated read.
-3. Bind Brief/Explore/dossier/compare and exact navigation to current source semantics.
-4. Integrate full Cycles depth and finite scientific disposition.
-5. Bind each real research vertical through existing query/evidence owners.
-6. Admit Investigation references and complete independent save/watch/note/alert behavior.
-7. Close retained depth, regional/access/compatibility and every capability disposition.
-8. Use normal release, actual served journeys and next natural update/no-change; prove rollback and then retire duplicate UX.
-
-The detailed contract names paths, seams, existing B/P/J linkage and exit evidence for each dependency group. Compatible source research and path-disjoint UI work may overlap after contract freeze. Shared source has one integration writer. These are implementation dependencies, not newly admitted Executive waves.
-
-### 11.5 Exact Round 4 continuation
-
-The next turn finalizes this same plan at version 1.0. It must bind exact worker packets to current carriers/owned paths, retained donor behavior and real owner adapter grammar; reconcile the remaining design-detail and recovery-control deltas; join the 134 rows with the existing matrix writer and name their evidence owners; and finalize release, natural update, rollback and retirement proof.
-
-Each packet must include current exact base/head, allowed diff, B/P/J and row IDs, request/response examples, real and negative fixtures, rights/identity/recovery constraints, focused validation, user-path evidence, current holds/custody and a source-linked return. Fable leads direction, integration and acceptance; T3 execution uses the existing admission/capacity systems. This round does not dispatch that team.
-
-The permitted authenticated Beta account/access path and installed runtime admission are implementation prerequisites to verify, not invented credentials or a new request for human debugging. Preserve genuine holds and the original uncertain Paper effect. Deliver the full final brief through GitHub at the requested final boundary; transport and actual pickup remain separate events.
+After actual assignment, use this same program and the final source checkpoint. Reconcile the affected current heads/custody/effects, bind eligible bounded workers through the existing runtime owners, and start the real coherent-generation → /sectors → selected dossier → exact-return vertical. Advance missing design, retained depth and real research in independent admitted lanes. Preserve exact accepted work and continue through P23; another broad census or a competing Sector application is not the next step.
 
 ## 12. Continuity and evidence disposition
 
-Rounds 1–3 are complete for the Chairman's expressly separated conversational scope after exact source save/readback. The four-round planning mission and product implementation remain incomplete. The next intended turn is Round 4: final masterplan and Fable/T3 packet. Bounded Round 3 outcome: PROVEN_OUTCOME. Application production acceptance: not established.
+The Chairman's four-round planning mission is complete at version 1.0 after exact source save/readback. The final packet and machine-readable briefs are concrete and reviewable. Planning outcome: PROVEN_OUTCOME. Product implementation, normal release and authenticated operational acceptance are not established by this planning session.
 
-**DO_NOT_REDO:** accepted Central landing; merged Shared Shell foundation; merged research/private-publication foundation; Technology and Robotics source; accepted Leadership Rotation/replay repairs; existing native components/gateway/return owner; Investigation v2 and current alert/annotation owners; the exact 47 reviewed Paper Frames. Do not revive Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) or Nuclear [#8002](https://github.com/mastermindx-market-intelligence/macro/pull/8002). Do not recreate the old masterplan, matrix, graph, identity, save or routing registry.
+**DO_NOT_REDO:** accepted partial Central landing; merged Shared Shell and /sectors foundations; research/private-publication foundations; Technology/Robotics and later P&G/PLNT/Healthcare/Industrials source; accepted Leadership Rotation/replay repairs; actual native gateway/return/chart components; Investigation v2 and current alerts/annotations; R3A-66 count fields; all 47 reviewed Paper Frames. Do not revive Terminal #1055 or Nuclear #8002, overwrite the active capability-matrix writer, or recreate identity/graph/save/routing/publication/retry/monitoring owners.
 
-**Effects across Rounds 1–3:** source-document authoring on sol/sector-shared-shell-masterplan-20261109-c3, the existing research entrypoint amendment, and Round 2's disjoint Paper pages/frames in the existing R4 file. Round 1 included bounded read-only public Beta navigation. Round 3 read affected source/metadata and wrote documentation only. It changed no application code, Paper node, account, runtime configuration, release, deployment, route retirement, Fable/Slack dispatch or background runner. All new Round 2 Paper effects had observed receipts; the unrelated paper-v21-current-app-board-20261103-sector-001 operation remains fenced to its original carrier and target.
+**Effects:** Rounds 1–4 authored source documents on sol/sector-shared-shell-masterplan-20261109-c3. Round 2 authored the 47 disjoint Frames/pages in the existing R4 file with observed receipts. Round 1 included bounded read-only public Beta navigation. Rounds 3/4 changed no Paper node or application/runtime/schema/account/release state. Round 4 updates the existing workstream's destination/artifact/next-action projection while preserving owner, status and accepted wave history. No Fable/T3/Slack dispatch, production test, background runner, source retirement or hold clearing occurred.
 
-**Source custody:** the assigned principal owns this documentation amendment. Existing implementation PR writers, actual holds, required reviews and uncertain effects retain their original boundaries. The plan does not retarget a STARTED worker or clear a hold.
+**Reasoning returns:** Round-specific read-only design/architecture/contract/coverage/integration specialists, including the final four-vertical carrier check, received explicit ACCEPTED / STOP after principal checks. This accepts bounded reasoning returns, not formal GitHub approval or production. Ten actual brief-compiler results are UNBOUND_AUTHORING with no execution authority/admission.
 
-**Routing:** Round 1 used principal synthesis and three reasoning specialists. Round 2 used principal composition plus two bounded visual/interaction critics. Round 3 used three bounded research/persistence/quant architecture specialists, all read-only, with material findings source-checked by the principal. All round-specific critics received explicit ACCEPTED / STOP. This accepts their bounded reasoning return, not formal source approval or production. No implementation worker or Fable/T3 execution was launched.
+**Durable package:** final masterplan, final Fable/T3 packet, complete JSON briefs, corrected consumption notices in the Round 3 contract and Round 2 guide, current launch entrypoint, same workstream and same dated November 9 handoff. The final handoff records exact saves/readbacks and the next owner action. Unmerged documentation is durable planning evidence; source protection/runtime adoption remain separate.
 
-**Refresh policy:** retain the procedure pin, source semantics and exact reviewed designs. Refresh only materially affected current heads, custody, release controls and runtime facts before the next modifying step. Actual served/natural-update/scientific evidence is still owed by implementation. Unrelated repository movement is not a reason to repeat the complete census.
-
-**Durable continuity:** this branch carries revision 0.3, the Round 3 architecture contract, the Round 2 guide with a consumption amendment, the existing launch pointer and the same dated November 9 handoff updated for Round 3. No active workstream owner/status/wave or runtime admission changed. Unmerged source documentation is durable planning evidence, not protected-source or runtime adoption.
+**Refresh policy:** reuse the procedure pin, analytical semantics, exact design and accepted layer evidence. Refresh only materially affected source custody, current holds, installed schema and runtime/release facts at their actual modifying step. Never convert source/design/CI counts into application acceptance.
 
 ## Source index
 
