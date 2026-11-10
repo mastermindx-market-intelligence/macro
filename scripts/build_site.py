@@ -9,7 +9,9 @@ Usage: python -m scripts.build_site
 An explicit --no-refresh-stock-library render requires --frozen-us-board-sha256
 and --frozen-us-gate-sha256. It consumes the existing native pair through the
 normal public/protected split and refuses changed inputs; it does not originate
-Plans or advance their ledger. Normal builds retain their existing refresh.
+Plans or advance their ledger. Add --frozen-us-pair-only to publish the pair
+and its shared preparation without building unrelated pages. Normal builds
+retain their existing refresh.
 
 """
 from __future__ import annotations
@@ -6302,6 +6304,82 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
     return out
 
 
+def _write_us_dashboard_pair(
+    env: Environment, site: Path, vm: dict, generated: str,
+    us_prophet_book_error: bool, _us_gate_cfg: dict,
+) -> None:
+    # US Stock Dashboard — same VM, the "looking for stocks" half of the split.
+    # Tier gate (docs/TIER_PREVIEW_PATTERN.md): _split_us_board NEVER mutates
+    # vm["us_standouts"] (shared with the macro.html render above/below) — the
+    # sliced shell and the `gate` dict are passed only into THIS render call via
+    # an overridden copy of vm, and the withheld remainder is written to
+    # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
+    _us_today_featured = _us_today_featured_preview(
+        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
+    # The loader emits for a GENUINE bound nonempty ungated Today too (same
+    # trampoline, same protected payload URL, no extra auth path): three real
+    # owner pins plus at least one Featured row, else None.
+    _us_today_emit = _us_today_native_emit_for(
+        vm.get("us_today_source_binding"), bool(_us_today_featured))
+    _us_shell_su, _us_gate, _us_locked = _split_us_board(
+        vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
+    # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
+    # above, applied to the plan book the migrated Setups grid renders from.
+    # Ladder counts are NEVER affected by this split (life_gate carries no
+    # count fields — see _split_us_prophet_board docstring); only which CARD
+    # ROWS render past the preview slice moves.
+    # Repair round, finding S1: the plan book's OWN `gated` switch is a
+    # fail-CLOSED read (_us_life_gate_cfg), not the fail-open
+    # _us_board_gate_cfg()["gated"] the candidate split above still uses —
+    # `preview_rows` itself stays shared (§8b: identical to the candidate
+    # board's own gate config).
+    _us_life_shell, _us_life_gate, _us_life_locked = _split_us_prophet_board(
+        vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
+        withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
+    _us_life_episodes = _us_prophet_episode_map((vm.get("us_prophet_book") or {}).get("plans") or [])
+    # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
+    _us_life_repair = _us_life_repair_context(vm, _us_life_shell, _us_life_gate,
+                                               _us_gate_cfg["preview_rows"])
+    # The four panels ADJACENT to the board (fresh triggers, market leaders,
+    # recently fired, act-now, theme tape) are fed by different artifacts, so the
+    # board's split never reached them — they ride the same payload as extra
+    # *_html blocks. Same rule: NEVER mutate the shared vm.
+    _us_pov, _us_pgate, _us_plocked = _split_us_panels(
+        vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
+    _us_shell_su, _us_life_repair = _us_apply_panel_withholding(
+        vm, _us_shell_su, _us_life_repair, _us_pov, _us_gate_cfg["preview_rows"])
+    _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
+        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
+    vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
+        (_us_plan_state, _us_plan_by_ticker), _us_life_locked)
+    vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
+    _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
+                       us_standouts=vm.get("us_standouts"),
+                       top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
+                       today_source_binding=vm.get("us_today_source_binding"),
+                       pgate=_us_pgate,
+                       panel_blocks=_render_us_panel_payload(
+                                       env, _us_pgate, _us_plocked, vm,
+                                       (_us_plan_state, _us_plan_by_ticker)),
+                       life_gate=_us_life_gate, locked_plans=_us_life_locked,
+                       cand_map=_us_life_repair["us_candidate_map"],
+                       trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
+                                if r.get("ticker")},
+                       episode_map=_us_life_episodes,
+                       plan_relations=(_us_plan_state, _us_plan_by_ticker))
+    out_st = site / "us_stocks.html"
+    write_page(out_st, env.get_template("dashboard.html.j2").render(
+        **{**vm, **_us_pov, "us_standouts": _us_shell_su,
+           "gate": _us_gate, "pgate": _us_pgate,
+           "us_today_native_emit": _us_today_emit,
+           "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
+           "us_prophet_episodes": _us_life_episodes,
+           "us_prophet_book_error": us_prophet_book_error,
+           **_us_life_repair}, mode="stocks"))
+    _tmark("dashboard_vm+render")
+    log.info("wrote %s (%.0f KB)", out_st, out_st.stat().st_size / 1024)
+
 def _capture_frozen_us_render_source(
     site: Path, board_sha256: str | None, gate_sha256: str | None,
 ) -> dict[Path, bytes]:
@@ -6364,9 +6442,12 @@ def main(
     *, refresh_stock_library: bool = True,
     frozen_us_board_sha256: str | None = None,
     frozen_us_gate_sha256: str | None = None,
+    frozen_us_pair_only: bool = False,
 ) -> int:
     from lib import nyse_calendar as _us_nyse_calendar  # noqa: PLC0415
 
+    if frozen_us_pair_only and refresh_stock_library:
+        raise ValueError("REFUSED_FROZEN_US_SOURCE: pair-only mode requires --no-refresh-stock-library")
     site = config.ROOT / config.load()["storage"]["site_dir"]
     if refresh_stock_library and (frozen_us_board_sha256 is not None or frozen_us_gate_sha256 is not None):
         raise ValueError("REFUSED_FROZEN_US_SOURCE: pins require no-refresh mode")
@@ -6384,9 +6465,10 @@ def main(
         latest = json.load(fh)
     hist = pd.read_parquet(config.data_dir() / "regime" / "regime_history.parquet")
     hist.index = pd.to_datetime(hist.index)
-    # client-side "Time Machine": ship the classified regime history as compact JSON
-    (site / "regime_timeline.json").write_text(
-        json.dumps(regime_timeline(hist), separators=(",", ":")))
+    if not frozen_us_pair_only:
+        # client-side "Time Machine": ship the classified regime history as compact JSON
+        (site / "regime_timeline.json").write_text(
+            json.dumps(regime_timeline(hist), separators=(",", ":")))
     f = build_features()
     _tmark("features+imports")
     from engine.conditions import conditions_frame
@@ -6434,11 +6516,12 @@ def main(
         _tmark("attention_data")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("attention data failed: %s", e)
-    try:
-        build_smartmoney_data(site)               # 13F super-investor holdings (CONTEXT)
-        _tmark("smartmoney_data")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("smart-money data failed: %s", e)
+    if not frozen_us_pair_only:
+        try:
+            build_smartmoney_data(site)               # 13F super-investor holdings (CONTEXT)
+            _tmark("smartmoney_data")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("smart-money data failed: %s", e)
     try:
         _put_absent = (latest.get("dislocation") or {}).get("put_state") == "put-absent"
         # per-fund rate/inflation overlay, reused from the playbook stages already in
@@ -6451,61 +6534,66 @@ def main(
                                                     rate_infl=_ri_by_fund)
     except Exception as e:  # noqa: BLE001 — drill-downs are additive, never fatal
         log.error("sector pages failed: %s", e)
-    try:
-        build_etf_page(env, site, generated)
-        _tmark("etf_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("etf page failed: %s", e)
-    factor_leadership = None
-    try:
-        _fac = build_factors_page(env, site, generated)
-        _tmark("factors_page")
-        factor_leadership = (_fac or {}).get("leadership")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("factors page failed: %s", e)
-    try:
-        build_signal_lab_page(env, site, generated)
-        _tmark("signal_lab_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("signal lab page failed: %s", e)
-    try:
-        build_quant_lab_page(env, site, generated)
-        _tmark("quant_lab_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("quant lab page failed: %s", e)
-    try:
-        build_alerts_page(env, site, generated)
-        _tmark("alerts_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("alerts page failed: %s", e)
-    try:
-        build_plans_page(env, site, generated)
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("plans page failed: %s", e)
-    try:
-        build_support_page(env, site, generated)
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("support page failed: %s", e)
-    try:
-        build_help_page(env, site, generated)
-        _tmark("help_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("help page failed: %s", e)
-    try:
-        build_unsubscribe_page(env, site, generated)
-        _tmark("plans_support_unsub_pages")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("unsubscribe page failed: %s", e)
-    # Quant Lab (advanced analytics): cross-asset concentration + risk budgeting +
-    # factor scorecard + the raw internals moved off the main dashboard. Returns the
-    # cross-asset snapshot for the dashboard's compact one-bet card.
-    cross_asset_snap = None
-    try:
-        cross_asset_snap = build_advanced_page(env, site, generated, latest, f,
-                                               confirming, contradicting)
-        _tmark("advanced_page")
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("advanced page failed: %s", e)
+    if not frozen_us_pair_only:
+        # These publishers write sibling pages and their sidecars. The frozen
+        # stock view uses the shared inputs above and its existing board/book.
+        try:
+            build_etf_page(env, site, generated)
+            _tmark("etf_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("etf page failed: %s", e)
+        factor_leadership = None
+        try:
+            _fac = build_factors_page(env, site, generated)
+            _tmark("factors_page")
+            factor_leadership = (_fac or {}).get("leadership")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("factors page failed: %s", e)
+        try:
+            build_signal_lab_page(env, site, generated)
+            _tmark("signal_lab_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("signal lab page failed: %s", e)
+        try:
+            build_quant_lab_page(env, site, generated)
+            _tmark("quant_lab_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("quant lab page failed: %s", e)
+        try:
+            build_alerts_page(env, site, generated)
+            _tmark("alerts_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("alerts page failed: %s", e)
+        try:
+            build_plans_page(env, site, generated)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("plans page failed: %s", e)
+        try:
+            build_support_page(env, site, generated)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("support page failed: %s", e)
+        try:
+            build_help_page(env, site, generated)
+            _tmark("help_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("help page failed: %s", e)
+        try:
+            build_unsubscribe_page(env, site, generated)
+            _tmark("plans_support_unsub_pages")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("unsubscribe page failed: %s", e)
+        # Quant Lab (advanced analytics): cross-asset concentration + risk budgeting +
+        # factor scorecard + the raw internals moved off the main dashboard. Returns the
+        # cross-asset snapshot for the dashboard's compact one-bet card.
+        cross_asset_snap = None
+        try:
+            cross_asset_snap = build_advanced_page(env, site, generated, latest, f,
+                                                   confirming, contradicting)
+            _tmark("advanced_page")
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("advanced page failed: %s", e)
+    else:
+        factor_leadership = cross_asset_snap = None
     # Supabase account config (public URL + publishable anon key) is BAKED into
     # theme.js at copy time so the account system (sign-in modal + cookie session)
     # is live on EVERY page — see lib/site_assets.copy_asset(), used in the loop
@@ -6644,9 +6732,11 @@ def main(
     _us_today_binding = None
     _us_source_bytes = None
     _us = site / "factordata" / "us_standouts.json"
-    if _us.exists():
+    if frozen_us_pair_only or _us.exists():
         try:
-            _us_source_bytes = _us.read_bytes()
+            _us_source_bytes = (
+                frozen_us_source[_us] if frozen_us_pair_only else _us.read_bytes()
+            )
             us_standouts = json.loads(_us_source_bytes)
             # Freeze raw owner binding before display attachments and tier splitting.
             # An optional provenance import/read failure cannot hide the board.
@@ -7664,6 +7754,13 @@ def main(
         **_master_brief_vm(),
     )
 
+    if frozen_us_pair_only:
+        _verify_frozen_us_render_source(frozen_us_source)
+        _write_us_dashboard_pair(
+            env, site, vm, generated, us_prophet_book_error, _us_board_gate_cfg())
+        _verify_frozen_us_render_source(frozen_us_source)
+        return 0
+
     # DEV-ONLY fast-render cache: when MACRO_DUMP_VM is set, pickle the assembled
     # view-model so scripts/render_macro_fast.py can re-render macro.html /
     # us_stocks.html from the SAME data in <1s while iterating on the template/CSS
@@ -7895,78 +7992,9 @@ def main(
     write_page(out_news, _news_html)
     log.info("wrote %s (%.0f KB)", out_news, out_news.stat().st_size / 1024)
 
-    # US Stock Dashboard — same VM, the "looking for stocks" half of the split.
-    # Tier gate (docs/TIER_PREVIEW_PATTERN.md): _split_us_board NEVER mutates
-    # vm["us_standouts"] (shared with the macro.html render above/below) — the
-    # sliced shell and the `gate` dict are passed only into THIS render call via
-    # an overridden copy of vm, and the withheld remainder is written to
-    # site/premiumdata/us_stocks.json regardless of the switch (empty when off).
     _us_gate_cfg = _us_board_gate_cfg()
-    _us_today_featured = _us_today_featured_preview(
-        vm.get("us_standouts"), _us_gate_cfg["today_preview_rows"])
-    # The loader emits for a GENUINE bound nonempty ungated Today too (same
-    # trampoline, same protected payload URL, no extra auth path): three real
-    # owner pins plus at least one Featured row, else None.
-    _us_today_emit = _us_today_native_emit_for(
-        vm.get("us_today_source_binding"), bool(_us_today_featured))
-    _us_shell_su, _us_gate, _us_locked = _split_us_board(
-        vm.get("us_standouts"), _us_gate_cfg["preview_rows"], gated=_us_gate_cfg["gated"])
-    # P-MP1-SHELL central act, §8b: the SAME re-plumb as the candidate split
-    # above, applied to the plan book the migrated Setups grid renders from.
-    # Ladder counts are NEVER affected by this split (life_gate carries no
-    # count fields — see _split_us_prophet_board docstring); only which CARD
-    # ROWS render past the preview slice moves.
-    # Repair round, finding S1: the plan book's OWN `gated` switch is a
-    # fail-CLOSED read (_us_life_gate_cfg), not the fail-open
-    # _us_board_gate_cfg()["gated"] the candidate split above still uses —
-    # `preview_rows` itself stays shared (§8b: identical to the candidate
-    # board's own gate config).
-    _us_life_shell, _us_life_gate, _us_life_locked = _split_us_prophet_board(
-        vm.get("us_prophet_book"), _us_gate_cfg["preview_rows"], gated=_us_life_gate_cfg(),
-        withheld=_us_withheld_names(vm, _us_gate_cfg["panel_preview_rows"]))
-    _us_life_episodes = _us_prophet_episode_map((vm.get("us_prophet_book") or {}).get("plans") or [])
-    # Repair round, findings B4/S2/S8/R2/R4 — see _us_life_repair_context().
-    _us_life_repair = _us_life_repair_context(vm, _us_life_shell, _us_life_gate,
-                                               _us_gate_cfg["preview_rows"])
-    # The four panels ADJACENT to the board (fresh triggers, market leaders,
-    # recently fired, act-now, theme tape) are fed by different artifacts, so the
-    # board's split never reached them — they ride the same payload as extra
-    # *_html blocks. Same rule: NEVER mutate the shared vm.
-    _us_pov, _us_pgate, _us_plocked = _split_us_panels(
-        vm, _us_gate_cfg["panel_preview_rows"], gated=_us_gate_cfg["panels"])
-    _us_shell_su, _us_life_repair = _us_apply_panel_withholding(
-        vm, _us_shell_su, _us_life_repair, _us_pov, _us_gate_cfg["preview_rows"])
-    _us_plan_state, _us_plan_by_ticker = _plan_relations_for(
-        vm.get("us_prophet_book"), vm.get("us_prophet_book_error"))
-    vm["plan_rel_by_ticker"] = _plan_relations_for_shell(
-        (_us_plan_state, _us_plan_by_ticker), _us_life_locked)
-    vm["plan_rel"] = {"state": _us_plan_state, "plans": []}
-    _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
-                       us_standouts=vm.get("us_standouts"),
-                       top_setups=vm.get("top_setups"), built=generated,
-                       today_rows=_us_today_featured,
-                       today_source_binding=vm.get("us_today_source_binding"),
-                       pgate=_us_pgate,
-                       panel_blocks=_render_us_panel_payload(
-                                       env, _us_pgate, _us_plocked, vm,
-                                       (_us_plan_state, _us_plan_by_ticker)),
-                       life_gate=_us_life_gate, locked_plans=_us_life_locked,
-                       cand_map=_us_life_repair["us_candidate_map"],
-                       trg_map={r.get("ticker"): r for r in ((vm.get("top_setups") or {}).get("buy") or [])
-                                if r.get("ticker")},
-                       episode_map=_us_life_episodes,
-                       plan_relations=(_us_plan_state, _us_plan_by_ticker))
-    out_st = site / "us_stocks.html"
-    write_page(out_st, env.get_template("dashboard.html.j2").render(
-        **{**vm, **_us_pov, "us_standouts": _us_shell_su,
-           "gate": _us_gate, "pgate": _us_pgate,
-           "us_today_native_emit": _us_today_emit,
-           "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
-           "us_prophet_episodes": _us_life_episodes,
-           "us_prophet_book_error": us_prophet_book_error,
-           **_us_life_repair}, mode="stocks"))
-    _tmark("dashboard_vm+render")
-    log.info("wrote %s (%.0f KB)", out_st, out_st.stat().st_size / 1024)
+    _write_us_dashboard_pair(
+        env, site, vm, generated, us_prophet_book_error, _us_gate_cfg)
 
     # Macro Signals — the dense data page that holds every gauge OFFLOADED from
     # macro.html so the front page stays uncluttered: business cycle, real-time
@@ -8846,6 +8874,8 @@ def _cli(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-refresh-stock-library", action="store_true",
                         help="Render the existing pinned US board without republishing its library.")
+    parser.add_argument("--frozen-us-pair-only", action="store_true",
+                        help="Render the pinned US pair and shared inputs only. Requires no-refresh and both pins.")
     parser.add_argument("--frozen-us-board-sha256")
     parser.add_argument("--frozen-us-gate-sha256")
     args = parser.parse_args(argv)
@@ -8853,6 +8883,7 @@ def _cli(argv: list[str] | None = None) -> int:
         refresh_stock_library=not args.no_refresh_stock_library,
         frozen_us_board_sha256=args.frozen_us_board_sha256,
         frozen_us_gate_sha256=args.frozen_us_gate_sha256,
+        frozen_us_pair_only=args.frozen_us_pair_only,
     )
 
 

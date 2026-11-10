@@ -32,6 +32,11 @@ def _pins(paths):
     return [hashlib.sha256(path.read_bytes()).hexdigest() for path in paths]
 
 
+def _tree(root: Path):
+    return {str(path.relative_to(root)): path.read_bytes()
+            for path in sorted(root.rglob("*")) if path.is_file()}
+
+
 def test_exact_native_pair_is_read_only_and_postcheck_detects_drift(tmp_path):
     site, paths = _pair(tmp_path)
     before = {path: path.read_bytes() for path in paths}
@@ -122,14 +127,58 @@ def test_missing_pins_stop_main_before_any_site_write(monkeypatch, tmp_path):
     assert not (tmp_path / "site").exists()
 
 
+def test_pair_only_requires_no_refresh_even_without_pins(monkeypatch, tmp_path):
+    monkeypatch.setattr(build_site.config, "ROOT", tmp_path)
+    monkeypatch.setattr(build_site.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    with pytest.raises((ValueError, RuntimeError)) as excinfo:
+        build_site.main(refresh_stock_library=True, frozen_us_pair_only=True)
+    message = str(excinfo.value)
+    assert message.startswith("REFUSED_FROZEN_US_SOURCE")
+    assert "require" in message
+    assert "no-refresh" in message
+    assert not (tmp_path / "site").exists()
+
+
+def test_pair_only_without_pins_refuses_before_any_site_write(monkeypatch, tmp_path):
+    _pair(tmp_path)
+    monkeypatch.setattr(build_site.config, "ROOT", tmp_path)
+    monkeypatch.setattr(build_site.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    before = _tree(tmp_path)
+    with pytest.raises(ValueError, match="both exact SHA256 pins are required"):
+        build_site.main(refresh_stock_library=False, frozen_us_pair_only=True)
+    assert _tree(tmp_path) == before
+
+
+def test_pair_only_with_wrong_pin_refuses_before_any_site_write(monkeypatch, tmp_path):
+    _site, paths = _pair(tmp_path)
+    pins = _pins(paths)
+    pins[0] = "0" * 64
+    monkeypatch.setattr(build_site.config, "ROOT", tmp_path)
+    monkeypatch.setattr(build_site.config, "load", lambda: {"storage": {"site_dir": "site"}})
+    before = _tree(tmp_path)
+    with pytest.raises(ValueError, match="digest mismatch"):
+        build_site.main(refresh_stock_library=False, frozen_us_pair_only=True,
+                        frozen_us_board_sha256=pins[0], frozen_us_gate_sha256=pins[1])
+    assert _tree(tmp_path) == before
+
+
 def test_cli_keeps_normal_default_and_forwards_explicit_frozen_pins(monkeypatch):
     seen = []
     monkeypatch.setattr(build_site, "main", lambda **kwargs: seen.append(kwargs) or 0)
     assert build_site._cli([]) == 0
     assert seen[-1] == {"refresh_stock_library": True,
-                        "frozen_us_board_sha256": None, "frozen_us_gate_sha256": None}
+                        "frozen_us_board_sha256": None, "frozen_us_gate_sha256": None,
+                        "frozen_us_pair_only": False}
     assert build_site._cli(["--no-refresh-stock-library",
                             "--frozen-us-board-sha256", "a" * 64,
                             "--frozen-us-gate-sha256", "b" * 64]) == 0
     assert seen[-1] == {"refresh_stock_library": False,
-                        "frozen_us_board_sha256": "a" * 64, "frozen_us_gate_sha256": "b" * 64}
+                        "frozen_us_board_sha256": "a" * 64, "frozen_us_gate_sha256": "b" * 64,
+                        "frozen_us_pair_only": False}
+    assert build_site._cli(["--no-refresh-stock-library",
+                            "--frozen-us-pair-only",
+                            "--frozen-us-board-sha256", "a" * 64,
+                            "--frozen-us-gate-sha256", "b" * 64]) == 0
+    assert seen[-1] == {"refresh_stock_library": False,
+                        "frozen_us_board_sha256": "a" * 64, "frozen_us_gate_sha256": "b" * 64,
+                        "frozen_us_pair_only": True}
