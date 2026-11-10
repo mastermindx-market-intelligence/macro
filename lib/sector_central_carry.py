@@ -264,6 +264,47 @@ def removed_members(membership: Mapping[str, Any] | None, as_of: Any) -> dict | 
                      "as_of": as_of, "removed": removed})
 
 
+def roster_baskets(membership: Mapping[str, Any] | None, as_of: Any) -> dict | None:
+    """The owner's roster of basket ids with each basket's CURRENT members (R3-S1).
+
+    The completeness denominator must be checkable against the owner's own roster
+    (``data/baskets/membership.json``), so a basket that left the capture by ANY
+    producer exit - not only the coverage refusal - can never silently leave the
+    denominator. "Current" uses the owner's own rule, the same clock
+    ``configured_members`` uses: a member is current when ``added <= as_of`` and it
+    is not removed on/before ``as_of`` (the ``removed_members`` cut). No membership
+    rule is invented here; ``as_of`` is the owner's effective session, not the
+    central date.
+    """
+    groups = membership.get("baskets") if isinstance(membership, Mapping) else None
+    if not isinstance(groups, (dict, list)) or not isinstance(as_of, str):
+        return None
+    pairs = groups.items() if isinstance(groups, dict) else [(g.get("id"), g) for g in groups]
+    baskets: dict[str, list[str]] = {}
+    for gid, group in pairs:
+        if not isinstance(gid, str) or not isinstance(group, Mapping):
+            return None
+        current: list[str] = []
+        seen: set[str] = set()
+        for member in (group.get("members") or ()) if isinstance(group.get("members"), list) else ():
+            if not isinstance(member, Mapping):
+                continue
+            ticker = member.get("ticker")
+            if not isinstance(ticker, str) or not ticker or ticker in seen:
+                continue  # the owner's own de-duplication: first listing wins
+            added, removed = member.get("added"), member.get("removed")
+            if isinstance(added, str) and added > as_of:
+                continue  # not yet a member at the effective session
+            if isinstance(removed, str) and removed <= as_of:
+                continue  # removed on/before the session (the removed_members clock)
+            seen.add(ticker)
+            current.append(ticker)
+        baskets[gid] = current
+    return _bounded({"source": "data/baskets/membership.json",
+                     "version": membership.get("version"), "as_of": as_of,
+                     "baskets": baskets})
+
+
 def member_sub_industry(site: Path) -> dict | None:
     """Current-basis S&P 500 sub-industry per member symbol. EXPLICITLY not point-in-time."""
     document = _read(site, INDUSTRY_SOURCE)
@@ -307,7 +348,7 @@ def owner_effective_as_of(site: Path) -> str | None:
 #: Blocks that must carry their own string ``as_of`` (``confluence`` is dated per universe
 #: instead). A block whose source has no date is NOT carried.
 _DATED_BLOCKS = ("sector_central_r1", "display_order", "etf_flows", "bottoming_watch",
-                 "theme_table", "removed_members")
+                 "theme_table", "removed_members", "roster_baskets")
 
 
 def build_carry(site: Path, central: Mapping[str, Any],
@@ -319,8 +360,10 @@ def build_carry(site: Path, central: Mapping[str, Any],
     ``flows`` the output of ``collectors.sponsors.sector_flow_periods()``; both are
     supplied by the central builder. ``None`` carries no such block.
     """
+    effective = owner_effective_as_of(site)
     produced = {
-        "removed_members": removed_members(membership, owner_effective_as_of(site)),
+        "removed_members": removed_members(membership, effective),
+        "roster_baskets": roster_baskets(membership, effective),
         "sector_central_r1": rising_priced_share(central),
         "display_order": display_order(central),
         "etf_flows": etf_flows(flows),

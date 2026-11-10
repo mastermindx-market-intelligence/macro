@@ -89,7 +89,9 @@ class Population:
     content_sha256: str
     #: Owner's configured CURRENT roster (configured minus removed), summed over groups
     #: from each group's captured ``observation.configured_members``; ``None`` when any
-    #: group's roster is not in the capture (then completeness is unknown, not true).
+    #: group's roster is not in the capture OR the carried owner-roster block
+    #: (``roster_baskets``, R3-S1) is missing/malformed (then completeness is unknown,
+    #: never true).
     configured_current: int | None
     served: int
     #: Configured current members with no row, each identified with a closed reason.
@@ -329,6 +331,36 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
             "action": {"status": "unavailable", "reason": "no_action_row"},
             "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
         })
+    # R3-S1: the owner's ROSTER (carried by the central builder from
+    # data/baskets/membership.json, cut at the owner's effective session) names every
+    # basket that owes members to this capture. A roster basket in NEITHER the live
+    # ``baskets`` list NOR ``observation_refusals`` left by an unexplained producer
+    # exit; its configured members are UNACCOUNTED - never silently absent from the
+    # denominator - so ``complete`` cannot be true over the hole. A capture with no
+    # readable roster block cannot be verified complete at all (null, never true).
+    roster_doc = carried.get("roster_baskets")
+    roster: dict[str, list[str]] | None = None
+    entries = roster_doc.get("baskets") if isinstance(roster_doc, Mapping) else None
+    if (isinstance(entries, Mapping) and entries
+            and isinstance(roster_doc.get("as_of"), str) and roster_doc["as_of"]):
+        if all(isinstance(gid, str) and _GROUP_ID.fullmatch(gid)
+               and isinstance(syms, list)
+               and all(isinstance(s, str) and _SYMBOL.fullmatch(s) for s in syms)
+               and len(set(syms)) == len(syms)
+               for gid, syms in entries.items()):
+            roster = dict(entries)
+        else:
+            roster_unknown = True
+    else:
+        roster_unknown = True
+    if roster is not None:
+        for rid, syms in sorted(roster.items()):
+            if rid in seen_groups:  # live baskets and valid refusals are already accounted
+                continue
+            for symbol in syms:
+                unserved.append({"group_id": rid, "symbol": symbol, "reason": REASON_UNACCOUNTED})
+                unaccounted += 1
+            configured_total = (configured_total or 0) + len(syms)
     # A removed member must never also be configured, served or unserved: that is a
     # contradiction between the owner's roster and its captured observation.
     if removed_meta.get("status") == "available":

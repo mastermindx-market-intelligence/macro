@@ -42,10 +42,11 @@ def test_real_artifacts_yield_every_producible_block():
     built = carry.build_carry(SITE, _central(), _roster(), _flows())
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
                           "bottoming_watch", "theme_table", "member_industry",
-                          "member_sub_industry", "removed_members"}
+                          "member_sub_industry", "removed_members", "roster_baskets"}
     # without the owner's roster / flow history those blocks are not carried (never guessed)
     bare = carry.build_carry(SITE, _central())
     assert "removed_members" not in bare and "etf_flows" not in bare
+    assert "roster_baskets" not in bare
     assert "hazard_qualification" not in built  # owner not on this base; never copied
     # every non-confluence block carries a string as-of; confluence is dated per universe
     for name, block in built.items():
@@ -178,6 +179,40 @@ def test_removed_members_come_from_the_owner_roster_with_dates():
     pairs = {(r["group_id"], r["symbol"]): r["removed_on"] for r in removed["removed"]}
     assert pairs[("silver_miners", "GATO")] == "2025-01-16"
     assert pairs[("silver_miners", "MAG")] == "2025-09-04"
+
+
+def test_roster_baskets_names_every_basket_the_capture_must_account_for():
+    """R3-S1: the carried owner roster the completeness check runs against."""
+    roster = carry.build_carry(SITE, _central(), _roster())["roster_baskets"]
+    assert roster["source"] == "data/baskets/membership.json"
+    assert roster["as_of"] == carry.owner_effective_as_of(SITE) == "2026-11-06"
+    baskets = json.loads(_real("basketdata/baskets.json"))
+    live = {g["id"] for g in baskets["baskets"]}
+    refused = {r["basket_id"] for r in baskets["observation_refusals"]}
+    # on the real bytes every roster basket is live or refused (nothing vanishes), and
+    # each basket's current members equal the owner's own captured configured list
+    assert set(roster["baskets"]) == live | refused
+    assert sum(len(v) for v in roster["baskets"].values()) == 1020
+    for g in baskets["baskets"]:
+        assert sorted(roster["baskets"][g["id"]]) == sorted(
+            g["observation"]["configured_members"]), g["id"]
+    assert len(json.dumps(roster).encode()) <= carry.MAX_BLOCK_BYTES
+    # no roster document, or no owner session to cut it at: no block (null downstream)
+    assert carry.roster_baskets(None, "2026-11-06") is None
+    assert carry.roster_baskets(_roster(), None) is None
+
+
+def test_roster_baskets_uses_the_owner_current_rule_at_the_effective_session():
+    """FIXTURE: current = added <= session < removed - the configured_members clock."""
+    roster = {"version": "t", "baskets": {"g": {"members": [
+        {"ticker": "IN", "added": "2026-01-06"},
+        {"ticker": "FUT", "added": "2026-11-07"},
+        {"ticker": "OUT", "added": "2026-01-06", "removed": "2026-11-05"},
+        {"ticker": "ONDAY", "added": "2026-01-06", "removed": "2026-11-06"},
+        {"ticker": "LATER", "added": "2026-01-06", "removed": "2026-11-09"},
+        {"ticker": "DUP", "added": "2026-01-06"}, {"ticker": "DUP", "added": "2026-01-06"}]}}}
+    # a repeated listing collapses to one (the owner's own first-listing-wins rule)
+    assert carry.roster_baskets(roster, "2026-11-06")["baskets"] == {"g": ["IN", "LATER", "DUP"]}
 
 
 def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):

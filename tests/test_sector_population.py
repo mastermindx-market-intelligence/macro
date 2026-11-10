@@ -49,15 +49,19 @@ def _real(name: str) -> bytes:
 
 
 def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
-                 carried: bool = True, refuse_group: str | None = None):
+                 carried: bool = True, refuse_group: str | None = None,
+                 vanish_group: str | None = None):
     """Real bytes -> (member bytes, identity); optionally derive an advanced generation.
 
     ``refuse_group`` (FIXTURE derivation of real bytes) moves one real basket out of
     ``baskets[]`` into ``observation_refusals`` exactly as ``engine/baskets.py:217-228``
-    does when a basket falls below the owner's coverage floor.
+    does when a basket falls below the owner's coverage floor. ``vanish_group`` (R3-S1)
+    removes the basket from ``baskets[]`` with NO refusal entry - the producer's
+    ``lvl.dropna().empty`` exit or any other unexplained drop - while the carried
+    owner roster still names it, exactly as a nightly divergence would leave it.
     """
     baskets_raw = _real("basketdata/baskets.json")
-    if drop_member is not None or refuse_group is not None:
+    if drop_member is not None or refuse_group is not None or vanish_group is not None:
         baskets = json.loads(baskets_raw)
         if drop_member is not None:
             group = next(g for g in baskets["baskets"] if g["id"] == drop_member[0])
@@ -68,6 +72,8 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
             baskets["baskets"] = [g for g in baskets["baskets"] if g["id"] != refuse_group]
             baskets["observation_refusals"].append(
                 {"basket_id": refuse_group, "observation": group["observation"]})
+        if vanish_group is not None:
+            baskets["baskets"] = [g for g in baskets["baskets"] if g["id"] != vanish_group]
         baskets_raw = json.dumps(baskets, separators=(",", ":"), ensure_ascii=False).encode()
     committed = json.loads(_real("basketdata/action_board.json"), parse_constant=float)
     baskets_path = tmp / "baskets.json"
@@ -452,10 +458,25 @@ def _obs(configured, *, observed=None, panel_missing=(), asof_missing=()):
             "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing)}
 
 
+def _roster_central(baskets: dict[str, list[str]], **carried_extra) -> dict:
+    """FIXTURE central carrying the owner's roster block (R3-S1) - the document the
+    central builder carries from ``data/baskets/membership.json``."""
+    return {"carried": {"roster_baskets": {
+        "source": "data/baskets/membership.json", "version": "t",
+        "as_of": "2026-11-06", "baskets": baskets}, **carried_extra}}
+
+
 def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
     """FIXTURE: complete only when served + explicitly accounted == configured current."""
-    build = lambda baskets: population.build_population(
-        baskets=baskets, handoff={}, action_board={}, central={})
+    def build(baskets, roster=None, central=None):
+        if central is None:
+            roster = ({g["id"]: list(g["observation"]["configured_members"])
+                       for g in baskets["baskets"]
+                       if isinstance(g.get("observation"), dict)}
+                      if roster is None else roster)
+            central = _roster_central(roster)
+        return population.build_population(baskets=baskets, handoff={}, action_board={},
+                                           central=central)
     # served == configured: complete
     ok = build(_synthetic(observation=_obs(["AAA", "BBB"])))
     assert (ok.configured_current, ok.served, len(ok.unserved), ok.complete) == (2, 2, 0, True)
@@ -482,6 +503,26 @@ def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
     # no captured roster at all: completeness is UNKNOWN (None), never True
     unknown = build(_synthetic(observation=None))
     assert (unknown.configured_current, unknown.complete) == (None, None)
+    # R3-S1: a roster basket absent from BOTH the live list and the refusals - its
+    # members are unaccounted and complete is False, never silently out of the denominator
+    vanished = build(_synthetic(observation=_obs(["AAA", "BBB"])),
+                     roster={"g1": ["AAA", "BBB"], "gone": ["XXX", "YYY"]})
+    assert (vanished.configured_current, vanished.served, vanished.unaccounted,
+            vanished.complete) == (4, 2, 2, False)
+    assert {(u["group_id"], u["symbol"], u["reason"]) for u in vanished.unserved
+            if u["group_id"] == "gone"} == {("gone", s, "unaccounted_by_owner")
+                                            for s in ("XXX", "YYY")}
+    # R3-S1: a capture with NO roster block, or a malformed one, is UNKNOWN - the
+    # roster is what makes `complete` verifiable, so it can never verify a `true`
+    assert build(_synthetic(observation=_obs(["AAA", "BBB"])), central={}).complete is None
+    for bad in ("x", 5, {}, {"as_of": "2026-11-06"}, {"as_of": "2026-11-06", "baskets": {}},
+                {"as_of": "2026-11-06", "baskets": {"g1": ["AAA", "AAA"]}},
+                {"as_of": "2026-11-06", "baskets": {"G 1": ["AAA"]}},
+                {"as_of": "2026-11-06", "baskets": {"gone": [7]}},
+                {"as_of": None, "baskets": {"gone": ["AAA"]}}):
+        broken = build(_synthetic(observation=_obs(["AAA", "BBB"])),
+                       central={"carried": {"roster_baskets": bad}})
+        assert broken.complete is None and broken.configured_current is None, bad
 
 
 def _store_from(tmp_path, **bundle):
@@ -527,6 +568,21 @@ def test_r2_b2_real_route_a_refused_basket_stays_in_the_denominator(tmp_path):
     index = client.get(URL, params={"audience": "entitled", "limit": "1"},
                        cookies=COOKIE).json()["page"]["group_index"]
     assert next(g for g in index if g["group_id"] == "housing")["n_unserved"] == 18
+
+
+def test_r3_s1_real_route_a_basket_absent_from_both_lists_is_not_complete(tmp_path):
+    """R3-S1: a real basket (housing, 18 configured) removed from the live list with
+    NO refusal entry - the producer's ``lvl.dropna().empty`` exit or any other
+    unexplained drop. The owner's carried roster still names it, so its members stay
+    in the denominator as unaccounted and the route must NEVER answer complete."""
+    client = _store_from(tmp_path, vanish_group="housing")
+    pop = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                     cookies=COOKIE).json()["page"]["capture"]["population"]
+    assert (pop["configured_current"], pop["served"], pop["accounted_unserved"]) == (1020, 997, 5)
+    vanished = [u for u in pop["unserved_members"] if u["group_id"] == "housing"]
+    assert len(vanished) == 18
+    assert {u["reason"] for u in vanished} == {"unaccounted_by_owner"}
+    assert (pop["unaccounted"], pop["complete"]) == (18, False)
 
 
 def test_sp18_same_context_refresh_emits_no_duplicate_generation(real_store):
@@ -588,7 +644,9 @@ def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
         "min_coverage": 0.6, "effective_as_of": "2026-11-06", "aggregate_eligible": False}}
     baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
     baskets["observation_refusals"] = [refused]
-    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={})
+    pop = population.build_population(baskets=baskets, handoff={}, action_board={},
+                                      central=_roster_central(
+                                          {"g1": ["AAA", "BBB"], "g2": ["XXX", "YYY", "ZZZ"]}))
     assert (pop.configured_current, pop.served, pop.accounted_unserved, pop.unaccounted) == (5, 2, 3, 0)
     assert {(u["group_id"], u["symbol"], u["reason"]) for u in pop.unserved} == {
         ("g2", s, "group_refused_by_owner_observation") for s in ("XXX", "YYY", "ZZZ")}
@@ -616,9 +674,11 @@ def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
 def test_removed_member_that_is_also_configured_is_a_contradiction():
     """FIXTURE: owner roster says removed while the capture still configures it."""
     baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
-    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={
-        "carried": {"removed_members": {"source": "r", "removed": [
-            {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}}})
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"]}, removed_members={
+            "source": "r", "removed": [
+                {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}))
     assert pop.unaccounted == 1 and pop.complete is False
 
 
