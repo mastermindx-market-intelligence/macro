@@ -132,13 +132,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Bind the checked source to this workflow run's immutable head_sha.
-          # Main-only pushes and schedules supply main's event SHA; dispatches
-          # retain their selected event SHA. merge_on_green lists only main
-          # runs and checks run.head_sha ancestry, so following a newer mutable
-          # main tip here would misidentify the source that its verdict proves.
-          # The existing main-only push filter already excludes queue refs.
-          ref: ${{ github.sha }}
           filter: blob:none
           # fetch-depth 0 -> 1 (2026-08-13). NOTHING in this job reads repository
           # history: check_workflow_yaml parses .github/workflows off disk,
