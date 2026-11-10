@@ -22361,6 +22361,7 @@ jobs:
       - research/MASTERMIND_AGENT_HANDOFF_PROTOCOL.md
       - config/compiled_kill_registry.yml
       - config/context_index.yml
+      - config/linear_initiative_portfolio.v1.json
       - config/mastermind_programs.yml
       - config/pr_linkage_rules.v1.json
       - config/ruling_graph.yml
@@ -22394,6 +22395,8 @@ jobs:
       - scripts/agentos_records_draft.py
       - scripts/agentos_ship_capture.py
       - scripts/audit_stranded_work.py
+      - scripts/linear_initiative_plan.py
+      - scripts/linear_initiative_plan_legacy.py
       - scripts/linear_portfolio_plan.py
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
@@ -22401,6 +22404,7 @@ jobs:
       - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
+      - tests/linear_initiative_plan_current_epoch_cases.py
       - tests/linear_portfolio_plan_cases.py
       - tests/linear_portfolio_plan_live_cases.py
       - tests/test_linear_projector_p1_offline.py

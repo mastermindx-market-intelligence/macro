@@ -1,0 +1,91 @@
+{
+  "result": {
+    "elapsed_seconds": 104.002,
+    "git_status": " M .github/ci/legacy-jobs.yml\n M config/linear_initiative_portfolio.v1.json\n M scripts/agentos.py\n M scripts/linear_initiative_plan.py\n M tests/linear_portfolio_plan_live_cases.py\n M tests/test_agentos_compile.py\n?? scripts/linear_initiative_plan_legacy.py\n?? tests/linear_initiative_plan_current_epoch_cases.py\n",
+    "head": "0267bf8fffc083cd048504bdb5c8e775025d6396",
+    "source_bytes_unchanged": true,
+    "statuses": {
+      "current-universe": 0,
+      "owner-suite": 0
+    }
+  },
+  "owner_summary": [
+    "131 passed in 99.70s (0:01:39)"
+  ],
+  "current_universe": {
+    "active_or_candidate_workstreams": 97,
+    "complete_current_classification": false,
+    "initiative_refusal": "strategy_unmapped_active_workstream",
+    "linear_mutation": false,
+    "project_semantic_hash": "27fba2c0bf5bc2db879fd06323fd835d67ba7a048778d8439fb072286a5eb48e",
+    "record_counts": {
+      "decisions": 605,
+      "discoveries": 660,
+      "handoffs": 929,
+      "workstreams": 115
+    },
+    "source_revision": "0267bf8fffc083cd048504bdb5c8e775025d6396",
+    "unmapped_workstreams": [
+      "WS:BROWSER-FABRIC",
+      "WS:COMMERCIAL-ACTIVATION",
+      "WS:COMMISSION-19-DATA-INTELLIGENCE",
+      "WS:CONSUMER-CYCLICAL-V1",
+      "WS:CONSUMER-DEFENSIVE-CDV1",
+      "WS:DATA-OS-COMPLETION",
+      "WS:EVAL-OS-RELIABILITY-EXTENSIONS",
+      "WS:EXECUTIVE-AUTONOMY-V1-CLOSURE",
+      "WS:EXECUTIVE-ECOSYSTEM-COMPLETION",
+      "WS:FLEET-STORAGE-LIFECYCLE",
+      "WS:GLOBAL-LIQUIDITY-TRANSMISSION",
+      "WS:GMI-COMMUNICATIONS",
+      "WS:GMI-ENERGY-NUCLEAR",
+      "WS:GMI-FINANCE-INTELLIGENCE",
+      "WS:GMI-HEALTHCARE",
+      "WS:GMI-INDUSTRIALS-FIRST-VERTICAL",
+      "WS:GMI-MINING-M1-INTEGRATION",
+      "WS:GMI-ROBOTICS",
+      "WS:GMI-SEMICONDUCTORS",
+      "WS:GMI-TECHNOLOGY-EX-SEMIS",
+      "WS:INTL-GLOBAL-SURVEILLANCE",
+      "WS:LEADERSHIP-ROTATION-INTELLIGENCE",
+      "WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT",
+      "WS:MARKET-TIME-MACHINE",
+      "WS:MARKETING-X-CATALYST-LOOP",
+      "WS:MASTERMIND-AI-FLAGSHIP",
+      "WS:MASTERMIND-AI-ILLUSTRATIONS",
+      "WS:NATIVE-CHART-ENGINE",
+      "WS:NEWS-INTELLIGENCE-ESTATE-CONVERGENCE",
+      "WS:ORCHESTRATOR-PROJECT-CONTINUITY",
+      "WS:PAPER-INTERNATIONAL-WAVES",
+      "WS:PORTFOLIO-BOT-REBUILD",
+      "WS:PROPHET-END-TO-END-R7",
+      "WS:PROPHET-NEWS-IMPACT",
+      "WS:PUBLIC-INTELLIGENCE-NETWORK",
+      "WS:RESEARCH-FACTORY-CODEGEN",
+      "WS:RESEARCH-VAULT-AI-FABRIC",
+      "WS:SECTOR-INTELLIGENCE-COMPLETION",
+      "WS:SOL-CAPABILITY-FABRIC",
+      "WS:TERMINAL-FORMING-CANDLES",
+      "WS:TERMINAL-REPAIR-AUDIT20-2026-10",
+      "WS:TERMINAL-TACTICAL-INTELLIGENCE",
+      "WS:TIINGO-DATA-OS"
+    ]
+  },
+  "diff_check_exit": 0,
+  "diff_check_output": "",
+  "modes_match": true,
+  "logs": {
+    "owner-suite.log": {
+      "sha256": "9779e67b6d03deccb8f623515c2c3bc45137846f5ae132d21f7787ef0d9aed52",
+      "bytes": 8149
+    },
+    "current-universe.log": {
+      "sha256": "0abd7b638ffd48e13b7c86202096c5285faff68386d23f46da74aadbee37d988",
+      "bytes": 1784
+    },
+    "host_result.json": {
+      "sha256": "f009667c1ebc67e7ed2c4657d6366f2564cc12b37f998f07203074fcedc36e61",
+      "bytes": 530
+    }
+  }
+}

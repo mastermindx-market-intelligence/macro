@@ -765,6 +765,7 @@ def test_pointer_authority_comes_from_the_index_config(tmp_path: Path) -> None:
         "CLAUDE.md": "A0",
         "docs/ACTIVE_BUILD_MAP.md": "A4",
         "notes/nothing-indexes-this.txt": "A3",
+        INITIATIVE_SOURCE_PATH: "A3",  # same registered Mastermind docs pointer class
     }
 
 
@@ -776,7 +777,7 @@ def test_an_artifact_entry_that_is_not_a_path_is_named(tmp_path: Path) -> None:
     bundle = _bundle(_compile("--root", str(root), "--workstream", "TARGET"))
 
     paths = [item["path"] for item in _section(bundle, "artifacts")["items"]]
-    assert paths == ["research/REAL.md"]
+    assert paths == ["research/REAL.md", INITIATIVE_SOURCE_PATH]
     for entry in ("DEC:WANDERED-IN", "https://example.invalid/x"):
         assert [row for row in bundle["degraded"]
                 if row == f"artifact entry not a repo path — skipped: {entry}"], (
@@ -785,6 +786,102 @@ def test_an_artifact_entry_that_is_not_a_path_is_named(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------- I4, both ways
+
+
+INITIATIVE_SOURCE_PATH = (
+    "mastermind:docs/superpowers/specs/"
+    "2026-09-03-linear-initiative-portfolio-v1-temporal-grain-current-epoch-amendment.md"
+)
+INITIATIVE_SOURCE_REVISION = "6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988"
+INITIATIVE_SOURCE_LOCATOR = (
+    "https://github.com/mastermindx-market-intelligence/Mastermind/blob/"
+    + INITIATIVE_SOURCE_REVISION + "/" + INITIATIVE_SOURCE_PATH.split(":", 1)[1]
+)
+
+
+@pytest.mark.parametrize("key", [
+    "TEMPORAL-GRAIN-INTELLIGENCE",       # approved membership in the source epoch
+    "ORCHESTRATOR-PROJECT-CONTINUITY",  # active, absent from that approved mapping
+    "WATCHLIST-PORTFOLIO-CEO",          # explicit compatibility exception
+])
+def test_selected_workstream_reaches_strategic_source_without_claiming_classification(key):
+    """Real selected records reach the source; none is classified by this bundle."""
+    bundle = _bundle(_compile("--workstream", key, "--budget", "50000"))
+    assert bundle["target"]["workstream"] == "WS:" + key
+    pointers = [item for item in _section(bundle, "artifacts")["items"]
+                if item["path"] == INITIATIVE_SOURCE_PATH]
+    assert len(pointers) == 1
+    pointer = pointers[0]
+    assert pointer["kind"] == "artifact" and pointer["key"] is None
+    assert pointer["locator"] == INITIATIVE_SOURCE_LOCATOR
+    assert pointer["status"] == "source not read; classification not established"
+    assert pointer["updated"] is None
+    assert "WS:" + key in pointer["why_included"]
+    assert "scripts/linear_initiative_plan.py" in pointer["excerpt"]
+    assert "config/linear_initiative_portfolio.v1.json" in pointer["excerpt"]
+    assert "fails closed" in pointer["excerpt"]
+    assert "initiative_id" not in pointer and "initiative_key" not in pointer
+    rendered = _compile("--workstream", key, "--budget", "50000", "--text")
+    assert rendered.returncode == 0, rendered.stderr
+    assert "source not read; classification not established" in rendered.stdout
+    assert INITIATIVE_SOURCE_REVISION in rendered.stdout
+    _budget_is_honest(bundle, key)
+
+
+@pytest.mark.parametrize("stale_source_present", [False, True])
+def test_strategic_pointer_never_absorbs_stale_or_missing_source(
+    tmp_path, monkeypatch, stale_source_present,
+):
+    root = tmp_path / "agentos"
+    _workstream(root, "TARGET", title="Legendary Alpha Discovery & Timing",
+                program="prophet-us")
+    cli = _load_cli()
+    store = cli.load_store(root, cli._load_programs())
+    shadow = tmp_path / "shadow-macro"
+    companion = shadow / "config/linear_initiative_portfolio.v1.json"
+    sibling = tmp_path / "sibling-mastermind"
+    amendment = sibling / INITIATIVE_SOURCE_PATH.split(":", 1)[1]
+    if stale_source_present:
+        for path in (companion, amendment):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("STALE-CLAIM: TARGET belongs to a guessed initiative.\n")
+    monkeypatch.setattr(cli, "repo_roots", lambda: {
+        "macro": shadow, "mastermind": sibling, "terminal": None,
+    })
+    original_read = Path.read_text
+
+    def no_strategic_read(path, *args, **kwargs):
+        assert path not in {companion, amendment}, "a pointer became a source read"
+        return original_read(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", no_strategic_read)
+    bundle = cli.compile_bundle(store, workstream="TARGET", now=cli._parse_moment(FROZEN))
+    pointer = next(item for item in _section(bundle, "artifacts")["items"]
+                   if item["path"] == INITIATIVE_SOURCE_PATH)
+    assert pointer["locator"] == INITIATIVE_SOURCE_LOCATOR
+    assert pointer["status"] == "source not read; classification not established"
+    assert "STALE-CLAIM" not in json.dumps(bundle)
+    assert "present on disk" not in pointer["status"]
+    assert bundle["source_records_digest"] == cli._source_records_digest(
+        [root / "workstreams/WS-TARGET.md"], repository_root=root.parent,
+    )
+
+
+def test_strategic_pointer_has_no_unresolved_target_or_budget_exemption(constrained):
+    bundle = _bundle(_compile("--root", str(constrained), "--workstream", "TARGET",
+                              "--budget", "500"))
+    assert INITIATIVE_SOURCE_PATH not in [item["path"] for item in _items(bundle)]
+    omitted = [row for row in bundle["omitted_due_to_budget"]
+               if row["path"] == INITIATIVE_SOURCE_PATH]
+    assert len(omitted) == 1 and omitted[0]["kind"] == "artifact"
+    _budget_is_honest(bundle, "strategic pointer omission")
+    cli = _load_cli()
+    store = cli.load_store(constrained, cli._load_programs())
+    unresolved = cli.compile_bundle(store, workstream="MISSING",
+                                    now=cli._parse_moment(FROZEN))
+    assert unresolved["target"]["workstream"] is None
+    assert unresolved["sections"] == []
+    assert INITIATIVE_SOURCE_PATH not in json.dumps(unresolved)
 
 
 def test_missing_joins_degrade_and_still_compile(simple: Path, tmp_path: Path) -> None:

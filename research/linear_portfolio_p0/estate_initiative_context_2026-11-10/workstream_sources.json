@@ -1,0 +1,467 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "revision": "0267bf8fffc083cd048504bdb5c8e775025d6396",
+  "source_mode": "IMMUTABLE_GITHUB_READ_ONLY_CENSUS",
+  "entries": [
+    {
+      "path": "agentos/workstreams/WS-ACCOUNT-IDENTITY-HARDENING.md",
+      "git_blob": "e1ba722141dd95d5a3ac9fbee626703491aebc08"
+    },
+    {
+      "path": "agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md",
+      "git_blob": "977c0e992fb2aa254da80cf86ad7be6f3f516cd8"
+    },
+    {
+      "path": "agentos/workstreams/WS-AGENT-EVAL-FABRIC.md",
+      "git_blob": "444c0d7f4067e75366185fb53933429a556c0db9"
+    },
+    {
+      "path": "agentos/workstreams/WS-AGENT-OS.md",
+      "git_blob": "cf399c0d3c31188480ec65264a521670d5435e96"
+    },
+    {
+      "path": "agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md",
+      "git_blob": "9e0942822eace5d4ee65c54a2b9437cc917a0e77"
+    },
+    {
+      "path": "agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md",
+      "git_blob": "16e429fc41ddea48e2219e0132afe0284884dd4c"
+    },
+    {
+      "path": "agentos/workstreams/WS-BIOCATALYST-RECOVERY-V2.md",
+      "git_blob": "22c0237e87ca3bfa977c623aecc245c9909f34be"
+    },
+    {
+      "path": "agentos/workstreams/WS-BPC-JV-RECON.md",
+      "git_blob": "f625ce7fca1c7ab428c96e33f32fd3747775c63e"
+    },
+    {
+      "path": "agentos/workstreams/WS-BREATHING-PLATFORM.md",
+      "git_blob": "63dbae6731c84b65db667ee397bf5d810ab1d1c2"
+    },
+    {
+      "path": "agentos/workstreams/WS-BROWSER-FABRIC.md",
+      "git_blob": "92775ec12d4575ca2973807c9202be17f840b52c"
+    },
+    {
+      "path": "agentos/workstreams/WS-CALCBENCH-FILING-FORENSICS-PARITY.md",
+      "git_blob": "dbc65de447780b5150583266a517ac6f0abe02a8"
+    },
+    {
+      "path": "agentos/workstreams/WS-CAPITAL-STRUCTURE-INTELLIGENCE-V2.md",
+      "git_blob": "dfd733d190bb7cc056551269b40a958ae1f4e447"
+    },
+    {
+      "path": "agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md",
+      "git_blob": "4da471c9c6e7d8a63f92f2e5913f0bdc93aec0ee"
+    },
+    {
+      "path": "agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md",
+      "git_blob": "422c259636ff03791701410a0fb7928479dfb044"
+    },
+    {
+      "path": "agentos/workstreams/WS-CI-MERGE-CONTROL-PLANE.md",
+      "git_blob": "56ef78b60c9848a6bee67905928b1c18bae87d32"
+    },
+    {
+      "path": "agentos/workstreams/WS-CN-COMMERCIAL-SUPPLY-DILIGENCE.md",
+      "git_blob": "8015b7f49e1f4e176ca849f6fa0720c6ca28817b"
+    },
+    {
+      "path": "agentos/workstreams/WS-CN-LIMIT-ALPHA.md",
+      "git_blob": "8d83db44ce5dc2fe07ff6a7cff10dbd61320b85b"
+    },
+    {
+      "path": "agentos/workstreams/WS-CN-SOE-DEMAND.md",
+      "git_blob": "28cabebda579b4d7d6723a1e9d5e928f925790e0"
+    },
+    {
+      "path": "agentos/workstreams/WS-CODE-INTELLIGENCE-FABRIC.md",
+      "git_blob": "7e95d30899b3409e01a31e9d60bfe51f48358e1c"
+    },
+    {
+      "path": "agentos/workstreams/WS-COMMERCIAL-ACTIVATION.md",
+      "git_blob": "d438a0620c3b282ad32f8d75af539007ec820b9b"
+    },
+    {
+      "path": "agentos/workstreams/WS-COMMERCIAL-PATH-ALERTING.md",
+      "git_blob": "5dfe8e37030ceba61dafa1f0d6643e33a8f30114"
+    },
+    {
+      "path": "agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md",
+      "git_blob": "79e777cf901a9ce20ec90b055db31778c754a56e"
+    },
+    {
+      "path": "agentos/workstreams/WS-CONSUMER-CYCLICAL-V1.md",
+      "git_blob": "c46e8d7d762771931689cf06bb2765b42ac63451"
+    },
+    {
+      "path": "agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md",
+      "git_blob": "774140fb64c29dd010b542fe2281bf387c00d5be"
+    },
+    {
+      "path": "agentos/workstreams/WS-CROSS-REPO-CONTRACT-GOVERNANCE.md",
+      "git_blob": "6e8bd6f8f358da4fcdb96ba19fd26e599d61e82d"
+    },
+    {
+      "path": "agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md",
+      "git_blob": "17eccb97de996b69f4338ef3a6b77dea1dcc194a"
+    },
+    {
+      "path": "agentos/workstreams/WS-CUSTOMER-DATA-BACKUP.md",
+      "git_blob": "f95de5c12c3d98404c829385c01107573c893540"
+    },
+    {
+      "path": "agentos/workstreams/WS-CYCLE-PATTERN-ISSUER-MECHANISM.md",
+      "git_blob": "f06460ded95fb14e50e0d62fedfcbc9856c3b1cc"
+    },
+    {
+      "path": "agentos/workstreams/WS-DATA-OS-COMPLETION.md",
+      "git_blob": "a8e85dedceec23e4a91217cf70eabfbac8ce2b0e"
+    },
+    {
+      "path": "agentos/workstreams/WS-DEEPVUE-INTELLIGENCE-WORKSPACE.md",
+      "git_blob": "2440caed653ed7974b5e7c9bd11c3679990ce23b"
+    },
+    {
+      "path": "agentos/workstreams/WS-DEFENSE-PROCUREMENT-V3.md",
+      "git_blob": "4b5d7d3bf42dc2ae49be007c0f3f4ec075417d69"
+    },
+    {
+      "path": "agentos/workstreams/WS-EARNINGS-EVENT-INTELLIGENCE-COMPILER.md",
+      "git_blob": "7463800d46a3b4ef036f7e78101803605008ce20"
+    },
+    {
+      "path": "agentos/workstreams/WS-EARNINGS-INTELLIGENCE-OS.md",
+      "git_blob": "a72be770f98735dc83cb3dc3813f99dcfe8abcb0"
+    },
+    {
+      "path": "agentos/workstreams/WS-EVAL-OS-EVIDENCE-VIEW.md",
+      "git_blob": "bc34f0b7f17b8455c5828661a921fee73c54ef2a"
+    },
+    {
+      "path": "agentos/workstreams/WS-EVAL-OS-MEASUREMENT-LAW.md",
+      "git_blob": "b2294bfe0ed198df069060944e855284067d4e78"
+    },
+    {
+      "path": "agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md",
+      "git_blob": "b32b2c39468ea13da2ba07358bf5a49bc62696bb"
+    },
+    {
+      "path": "agentos/workstreams/WS-EVAL-OS-RELIABILITY-EXTENSIONS.md",
+      "git_blob": "ab6ae568e35e22f5d56ab18c63d2c7a097b26f24"
+    },
+    {
+      "path": "agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md",
+      "git_blob": "8b4a2f9c10feea1dad4ceaa5ec321bb8fd539520"
+    },
+    {
+      "path": "agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md",
+      "git_blob": "e6fa12bf5bd8a50c0328f4d94e02a9d4d3693ec9"
+    },
+    {
+      "path": "agentos/workstreams/WS-EXECUTIVE-AUTONOMY-V1-CLOSURE.md",
+      "git_blob": "0df28e6f8dcccc8401924b08c48c63de582a0f7f"
+    },
+    {
+      "path": "agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md",
+      "git_blob": "93dd42a6083b8b5264fc05015c22bd887d2724fd"
+    },
+    {
+      "path": "agentos/workstreams/WS-EXECUTIVE-ECOSYSTEM-COMPLETION.md",
+      "git_blob": "a0a821381a3963be382dcd349c68e6805ef1402a"
+    },
+    {
+      "path": "agentos/workstreams/WS-EXECUTIVE-OS-DISASTER-RECOVERY.md",
+      "git_blob": "8694f94bcd89f8f46200f37209e53cf1dc187a78"
+    },
+    {
+      "path": "agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md",
+      "git_blob": "127a9e5250baed3f72eb675c307b674c52949222"
+    },
+    {
+      "path": "agentos/workstreams/WS-FLEET-STORAGE-LIFECYCLE.md",
+      "git_blob": "5d92d60242a35852f8ea1707c881019bed394713"
+    },
+    {
+      "path": "agentos/workstreams/WS-FLOW-OBSERVATORY-V2.md",
+      "git_blob": "05562a59713919b62d8a710b0f6d0e110f7b9930"
+    },
+    {
+      "path": "agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md",
+      "git_blob": "39b64f98f49902ce74edbc6e0b1e26464e5cbc06"
+    },
+    {
+      "path": "agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md",
+      "git_blob": "1f33c15df80c491c8175d78d968e4836f6e9a657"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-COMMUNICATIONS.md",
+      "git_blob": "2a9d8ee3cd09907c099f3b052638fddc42c6c764"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-ENERGY-NUCLEAR.md",
+      "git_blob": "5cc7e1261d6ca0127d897f6bba96c0ad93b6d084"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md",
+      "git_blob": "e35f0babfaf3efd418b33106afd7da96e6333941"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-HEALTHCARE.md",
+      "git_blob": "04f17e91ee98254507d946a84e6f9246b52f4ecb"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md",
+      "git_blob": "1fbe6bca70f4431cd6163df1de402019ee5df572"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md",
+      "git_blob": "1ae8b74ebf71f54fbfb99598b0c5cdb4fd98e692"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-ROBOTICS.md",
+      "git_blob": "8ab0f31f996b5406e705a33ebd30ce4a263a4dea"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-SEMICONDUCTORS.md",
+      "git_blob": "c884e91e8318eff31126525524c0e8b4877f8070"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-TECHNOLOGY-EX-SEMIS.md",
+      "git_blob": "b0011b50dc24866bc3b2cf9d8806d66a49022c95"
+    },
+    {
+      "path": "agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "git_blob": "ff82346532e3c693ccd31ba4dd13729315d8ce5e"
+    },
+    {
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "git_blob": "67d333db7a4a43732b1169f078a81a7f28b17f80"
+    },
+    {
+      "path": "agentos/workstreams/WS-INSTITUTIONAL-PRODUCT-EXPERIENCE-V2.md",
+      "git_blob": "abc86fab14307fd77318e905cf08f8fe1ca66760"
+    },
+    {
+      "path": "agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md",
+      "git_blob": "ddf60e50fe2792ea40d5a59de75bd305b7b44f76"
+    },
+    {
+      "path": "agentos/workstreams/WS-INTRADAY-FLOW-P0-RECOVERY.md",
+      "git_blob": "59764b7dd35952700fd35d0b92840ea7ccf161d9"
+    },
+    {
+      "path": "agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md",
+      "git_blob": "5ab4b783b7a0cde0b78e263fe27504022e3ac185"
+    },
+    {
+      "path": "agentos/workstreams/WS-LIVE-ENTRY-RADAR.md",
+      "git_blob": "820edcd6dd72ee3cd3ef60745d2660d5fed21f77"
+    },
+    {
+      "path": "agentos/workstreams/WS-MACRO-CONTEXT-INDEX.md",
+      "git_blob": "3d8965c16bd87f9f832c24595d46de1531505b51"
+    },
+    {
+      "path": "agentos/workstreams/WS-MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT.md",
+      "git_blob": "bb1f1f30de650b5b5d2a225b6e0de9a4b4c2e093"
+    },
+    {
+      "path": "agentos/workstreams/WS-MARKET-MEMORY-W2C.md",
+      "git_blob": "cd512a007a29f5a17dfd146891d2c650ddcad82f"
+    },
+    {
+      "path": "agentos/workstreams/WS-MARKET-OS.md",
+      "git_blob": "65972deff1626032e57a4756b9b3046ccb6519e1"
+    },
+    {
+      "path": "agentos/workstreams/WS-MARKET-TIME-MACHINE.md",
+      "git_blob": "686f3e63d6c68d0e2fa60fcaa722833e5998453f"
+    },
+    {
+      "path": "agentos/workstreams/WS-MARKETING-X-CATALYST-LOOP.md",
+      "git_blob": "098c21a9e60ae50a16b30e85d18545bdde0acd87"
+    },
+    {
+      "path": "agentos/workstreams/WS-MASSIVE-STOCK-DAY-R2-COHERENCE.md",
+      "git_blob": "0ff65376a7c9e1312cc3baa3d3efe1fa0967903a"
+    },
+    {
+      "path": "agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md",
+      "git_blob": "def58e5640de1a97046d6e44d7c64940cf2655d5"
+    },
+    {
+      "path": "agentos/workstreams/WS-MASTERMIND-AI-ILLUSTRATIONS.md",
+      "git_blob": "301eccf69a6b8a29e14246aea124312c7cb16429"
+    },
+    {
+      "path": "agentos/workstreams/WS-NATIVE-CHART-ENGINE.md",
+      "git_blob": "d62824483a32ffec7dbb5bfb369f9871301eac15"
+    },
+    {
+      "path": "agentos/workstreams/WS-NEWS-INTELLIGENCE-ESTATE-CONVERGENCE.md",
+      "git_blob": "9581daae267503df29ceaa954c9f5a7a8acab1a2"
+    },
+    {
+      "path": "agentos/workstreams/WS-OPERATION-ASSURANCE.md",
+      "git_blob": "3efaf35efa2806d95dc2e81d7fd6908255375c5b"
+    },
+    {
+      "path": "agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md",
+      "git_blob": "681ec895ebc842cd633651732db0848a46872976"
+    },
+    {
+      "path": "agentos/workstreams/WS-OPTIONS-CONTEXT-AUDIT-PREREG-V2.md",
+      "git_blob": "8651971f8f553bcb50ac469145986fd6a40f636d"
+    },
+    {
+      "path": "agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md",
+      "git_blob": "00f75948fdcd8f77945a757c3e05b02a85d8e88a"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "git_blob": "7880120f486fbdcfd246832786aa145a56f2f670"
+    },
+    {
+      "path": "agentos/workstreams/WS-PORTFOLIO-BOT-REBUILD.md",
+      "git_blob": "4c1ad327cc9595f6d20ff05226c78251c2ec8fad"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-CANDIDATE-ADDED-DATE.md",
+      "git_blob": "3aec683ddb5a1d20c7d5853697053093c6a515da"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-CONDITIONAL-FUSION.md",
+      "git_blob": "33ccaa96b70edae1966a29b0187ac8b74ebdf52b"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-END-TO-END-R7.md",
+      "git_blob": "e21fb16f15607001e2be2bb5c7ca482aa52fbb0c"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-HK-CA-REVAMP.md",
+      "git_blob": "3a2e03c813e3c67ec10f5f294eb83a21ce38f3bb"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-NEWS-IMPACT.md",
+      "git_blob": "4c56c750cd5c7e9d52e1dfacbe28565b11cc6727"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH.md",
+      "git_blob": "3b4896abe326c2ac1c0362803943c6013853ee53"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-US-AVAILABILITY.md",
+      "git_blob": "1b3c757eca3fb68a3b3bf863617623b3a158c222"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-US-ENTRY-TIMING.md",
+      "git_blob": "229a366ed8cea27debff93ae71f65a55266fb7cd"
+    },
+    {
+      "path": "agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md",
+      "git_blob": "331a6d2a3d7f39e1937ec2abddb780df42e3898c"
+    },
+    {
+      "path": "agentos/workstreams/WS-PUBLIC-INTELLIGENCE-NETWORK.md",
+      "git_blob": "95a37de79520074a4a51e5d7cb5d65d3c5a02eab"
+    },
+    {
+      "path": "agentos/workstreams/WS-QUANT-ASSESSMENT-2026-10.md",
+      "git_blob": "1102d991075f725037095b42282b9aeeaa20f811"
+    },
+    {
+      "path": "agentos/workstreams/WS-RATES-INFLATION-COMMAND.md",
+      "git_blob": "3ea45d8d376796676459f2da54b29d10be05873d"
+    },
+    {
+      "path": "agentos/workstreams/WS-REACTIVE-PROJECTION.md",
+      "git_blob": "18ead029ee655c2c367766246b1def62ad90fc91"
+    },
+    {
+      "path": "agentos/workstreams/WS-REPRODUCIBLE-WORKER-ENVIRONMENTS.md",
+      "git_blob": "1d675d41d2e5d43f8bf6790e0a0d90ed4e4d3afb"
+    },
+    {
+      "path": "agentos/workstreams/WS-RESEARCH-FACTORY-CODEGEN.md",
+      "git_blob": "223665e210455d138bb47fbaab55adf1e7b6e0bc"
+    },
+    {
+      "path": "agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md",
+      "git_blob": "ae4abaa430c9f2c45134ef25a4299de7f180698e"
+    },
+    {
+      "path": "agentos/workstreams/WS-RUNNER-FLEET-RESILIENCE.md",
+      "git_blob": "bdfb0876b16c1e5a1add1d00d980ee6eb5c85c33"
+    },
+    {
+      "path": "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md",
+      "git_blob": "7ad449229678056a1adaf372865f1a9fc189c289"
+    },
+    {
+      "path": "agentos/workstreams/WS-SOL-CAPABILITY-FABRIC.md",
+      "git_blob": "ba594f9237b15d1d9b5b4b8258cc5f07f9c8484f"
+    },
+    {
+      "path": "agentos/workstreams/WS-STOCK-DOSSIER-LIVE-QUOTE.md",
+      "git_blob": "13b2a824dcc4d77137cfffe8578b3841e295c0a6"
+    },
+    {
+      "path": "agentos/workstreams/WS-STOCK-IDENTITY.md",
+      "git_blob": "c0f96800848dcf75c013356c9601d9ba87dfefa2"
+    },
+    {
+      "path": "agentos/workstreams/WS-TECHNICAL-OPPORTUNITY-INTELLIGENCE.md",
+      "git_blob": "90b14f7f575c3db2edbfb8bb037bbc99549a7079"
+    },
+    {
+      "path": "agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md",
+      "git_blob": "546052fd7dd709ae6fb4b6ca85698f1b28505340"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-ENHANCEMENTS20.md",
+      "git_blob": "41559f50651fc4ab4b7c9406996315f431b7061e"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-FORMING-CANDLES.md",
+      "git_blob": "b20ae7a477663d87d871ae875c5c74ec9a85f97d"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-GITHUB-CANONICAL-DEPLOYMENT.md",
+      "git_blob": "304ecfbde068dbb3d8bab42481c2cb12185ed036"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-GITHUB-CANONICALIZATION.md",
+      "git_blob": "a0a7a790f6ddaa66eccd01f8e13bc64ce8345afb"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-REPAIR-AUDIT20-2026-10.md",
+      "git_blob": "a3c2de526eacc482744108d3820e5cdac27c4d24"
+    },
+    {
+      "path": "agentos/workstreams/WS-TERMINAL-TACTICAL-INTELLIGENCE.md",
+      "git_blob": "eafc4f1a72dbbf685c64c1c35f9629f8d98fabd4"
+    },
+    {
+      "path": "agentos/workstreams/WS-TIINGO-DATA-OS.md",
+      "git_blob": "870da6b0c1b946cb7e89a14244cb889d6a24e7ec"
+    },
+    {
+      "path": "agentos/workstreams/WS-TOP-ANATOMY.md",
+      "git_blob": "e848ac63b7648e9168370fcfbdb5e0a022fa6e15"
+    },
+    {
+      "path": "agentos/workstreams/WS-TREND-PERSISTENCE.md",
+      "git_blob": "1fbe7f0f4034e7786c65f92d7fefbab7245b298b"
+    },
+    {
+      "path": "agentos/workstreams/WS-TUSHARE-ENTITLEMENT.md",
+      "git_blob": "961e561f502164044e4035bfdabad010bcecbe51"
+    },
+    {
+      "path": "agentos/workstreams/WS-WATCHLIST-PORTFOLIO-CEO.md",
+      "git_blob": "5d0413b483199711e204e6ec7df37d6ebc42981b"
+    }
+  ]
+}
