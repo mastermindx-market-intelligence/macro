@@ -421,12 +421,12 @@
         {
           "path": "templates/_aibrief_body.html.j2",
           "role": "jinja_template",
-          "sha256": "bde4c19d5f511f478bea3b725626d1fe6bc6e3054755504171fcd4fd3534eadd"
+          "sha256": "acd72e5299e73a45aae726927c2563e9877637a91246bb9090f55bf310202691"
         },
         {
           "path": "templates/_aibrief_css.j2",
           "role": "jinja_template",
-          "sha256": "1c341bc8204ba2203cd6f1953419a58ace9ccc8c3048767658d276072cde5d81"
+          "sha256": "b365da96e4b6c489aa23ebece04117a52cd4f81ca68beaccb4a3f20d27f4cc18"
         },
         {
           "path": "templates/_cmd_hero.css.j2",
@@ -500,7 +500,7 @@
         }
       ],
       "output": "hk_stocks.html",
-      "output_sha256": "5ef8af3c3f7d34013955e452a6d169091cc3a8cbc381c5207411fd0cad3ba3d0",
+      "output_sha256": "529b680bf03bc8ab819e84dcc6150dae6b440e243bc501d9a450f0772c621148",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -633,7 +633,7 @@
             "sha256": "bc7ae67276a8a7c677af1ab1f69a8c08e6304a3a9b904285abd2454f5356c0e7"
           },
           "output": "hk_stocks.html",
-          "output_sha256": "5ef8af3c3f7d34013955e452a6d169091cc3a8cbc381c5207411fd0cad3ba3d0",
+          "output_sha256": "529b680bf03bc8ab819e84dcc6150dae6b440e243bc501d9a450f0772c621148",
           "owner_population": {
             "board": 39,
             "intersection": [],
@@ -769,7 +769,7 @@
             "sha256": "7f3de426f8a9f756fa155df0fc0dfe5685ed3280579dbbd25817c22f5ed441b9"
           },
           "output": "hk_stocks.null-buy.html",
-          "output_sha256": "fd8bbc976f2892615ff3c3c63fb9dd337a6e919746dc822b12a51e27edccf792",
+          "output_sha256": "b9785da72fcd27b3e2e74e2b12e555ac9ab7964ae26d133b1ea6c8e61aea652c",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -905,7 +905,7 @@
             "sha256": "5229a4fca6654bf6be5c88f015225586f11104cd49c1ab1726c52a35c8dc1ecf"
           },
           "output": "hk_stocks.watch-only.html",
-          "output_sha256": "399ec47f29c3887fcf8eb180d166cf24174636130f52b819353c4e2e81de5f78",
+          "output_sha256": "5a8d1a7591979d8ffad22ecc4f228ddeb68451928e5035db71cf3d401bd91e49",
           "owner_population": {
             "board": 36,
             "intersection": [],
