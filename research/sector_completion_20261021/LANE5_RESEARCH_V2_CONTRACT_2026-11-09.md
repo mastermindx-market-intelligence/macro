@@ -138,8 +138,10 @@ substitute.
 
 Provenance: derived by the lane-5 suborchestrator from first-hand repo
 evidence (registry reads, module reads, the witness suites named per row) on
-2026-11-09; the parallel census delegates had not returned before delivery and
-nothing below waits on them. The closed transport registers exactly three
+2026-11-09, then reconciled on 2026-11-10 against BOTH census delegates'
+reports (each an independent read-only census at the pre-lane anchor
+`ba77e7d4ca45`); their per-vertical findings are folded into the rows below.
+The closed transport registers exactly three
 entries — `ai_semiconductors` (theme kind), `technology_economic_change.v1`
 (company_profile), `finance_intelligence_research.v1` (sector_profile); an
 unregistered vertical is unreachable through `/research` by registry law
@@ -147,7 +149,7 @@ unregistered vertical is unreachable through `/research` by registry law
 
 | vertical | transport state | availability | exact missing real input / producer |
 |---|---|---|---|
-| semiconductors | registered — `theme`, anchor `ai_semiconductors` | **AVAILABLE** | none missing: real Company Intelligence reader + witness corpus serve today (`tests/test_theme_research_api.py` §13 production-mount, `tests/semiconductor_research_helpers.py`); the private half stays unbound and is served as typed omissions, not synthesized |
+| semiconductors | registered — `theme`, anchor `ai_semiconductors` | **AVAILABLE** (public half) | none missing on the public half: real Company Intelligence reader + witness corpus serve today (`tests/test_theme_research_api.py` §13 production-mount, `tests/semiconductor_research_helpers.py`). Census-confirmed caveat: ZERO real `theme_graph.curation_assertion.v1` rows exist repo-wide outside `tests/fixtures/` — the private half is unbound (open R4; T11a private-publication adapter review-rejected with a fix packet queued) and is served as typed omissions, never synthesized |
 | technology | registered — `company_profile`, `technology_economic_change.v1` | **UNAVAILABLE** end-to-end | real loader serves the honest-empty bundle; compose refuses `company_ref_unresolved` → private 404. Missing: private technology curation assertions + identity receipts for the cohort (producer: Theme Graph curation lane + identity owner). The v2 assertion-grained evidence selector itself is implemented and falsifier-covered; it serves nothing real until those inputs land |
 | finance | registered — `sector_profile`, `finance_intelligence_research.v1` | **UNAVAILABLE** end-to-end | honest-empty bundle; compose refuses `sealed_input_unavailable:run_context` → private 404. Missing: an admitted `finance_run_context` native-ref producer + the private assertion half (producer: finance intelligence run-context writer + Theme Graph curation lane) |
 | robotics | not registered (any `/research` request is the private 404 by law) | **UNAVAILABLE** | module is real and implements the honest-empty doctrine (`engine/market_ontology/robotics_owner_bundle.py`, `tests/test_market_ontology_robotics_theme_research.py`). Missing: private curation assertions + owned cohort (producer: Theme Graph curation lane) and transport registration once they exist |
@@ -155,12 +157,22 @@ unregistered vertical is unreachable through `/research` by registry law
 | nuclear | no entry, deliberately | **UNAVAILABLE** | #9124 content is HOLD-FOR-SUCCESSOR-PROOF; the entry stays explicitly unavailable per charter (no synthetic substitute, no revival) |
 | P&G | not registered | **UNAVAILABLE** | real surface is the Company Intelligence P&G profile (`engine/company_intelligence/pg_profile.py`, `pg_envelope.py`). Missing for the transport: registration + binding that profile's real inputs to a research composer (producer: Company Intelligence lane) |
 | PLNT | not registered | **UNAVAILABLE** — public hold | the synthetic fixture card is held from the public carrier (`tests/test_consumer_cyclical_plnt_public_hold.py`); native staging is out of scope per charter and is not retried here (producer: the hold's owner) |
-| healthcare | not registered | **UNAVAILABLE** | real surface is W0b dispersion infrastructure — sector-holdings archiver + EW sector ETF tickers (`tests/test_healthcare_dispersion_w0b.py`) plus FDA-details/molecule-gap suites. Missing: a research composer binding those real inputs + registration (producer: W0b dispersion lane) |
+| healthcare | not registered | **UNAVAILABLE** on this transport (inputs PARTIAL: real + qualified) | census found the strongest real-input lane: live openFDA collector (`collectors/fda_shortages.py`) + committed qualified capture (`data/fda/shortages.parquet` with `qualified: true, complete: true` sidecar, refreshed 2026-11-09) + real render (`site/foresight.html` GLP-1 row, `engine/foresight_cascade.py`). Missing: the D2 private binding + Healthcare profile registration (HELD on the #7870 shell) and any producer-order input; capacity is a closed not-observed refusal by design (producer: WS-GMI-HEALTHCARE D2–D4 lanes) |
 | industrials | not registered | **UNAVAILABLE** | real surfaces: `engine/fundamental_forensics/industrials_result_cash.py` and the shared financial dossier (`tests/test_industrials_financial_dossier.py`). Missing: registration + a composer binding (producer: fundamental-forensics / Company Intelligence lanes) |
 
 No row above substitutes generic or synthetic narrative for a missing input;
 the three registered entries are the only ones addressable on this transport,
 and two of them honestly refuse rather than serve composed placeholders.
+
+Census reconciliation note: both delegates censused the PRE-lane anchor, where
+the technology/finance registrations they describe as absent or fixture-only
+were exactly that — this PR adds those registrations on the v2 transport with
+the honest-empty refusals preserved, so the census's UNAVAILABLE content
+verdicts still hold end-to-end. The census's single strongest cross-cutting
+finding stands: zero real curation assertions exist anywhere in the repo
+outside `tests/fixtures/`, which is why every private half stays unbound and
+every vertical except the semiconductor public half refuses rather than
+serves.
 
 ## 8. Where the law lives
 
