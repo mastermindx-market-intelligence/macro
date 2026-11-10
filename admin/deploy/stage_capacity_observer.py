@@ -50,7 +50,7 @@ def main():
         raise SystemExit("staged generation already exists; inspect its receipt")
     originals = {}
     for source in sorted((base / "ops").rglob("*")):
-        if "__pycache__" in source.parts or source.suffix == ".pyc":
+        if "__pycache__" in source.relative_to(base).parts or source.suffix == ".pyc":
             continue
         if source.is_symlink():
             raise SystemExit("source release contains a symlink; reconcile before copying")
