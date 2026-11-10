@@ -1,0 +1,27 @@
+{
+  "tasks": 104,
+  "features": 60,
+  "competitors": 11,
+  "sources": 92,
+  "dependency_graph_including_all_conditional_edges": "acyclic",
+  "final_closeout_dispositions": "all_102_prior_tasks_required",
+  "conditional_rules": 39,
+  "all_feature_and_competitor_task_links": "valid",
+  "detailed_parity_requirements": 130,
+  "accountable_parity_owners_and_all_reference_links": "valid",
+  "explicit_parity_child_contracts": 11,
+  "external_product_or_runtime_mutations": 0,
+  "csv_json_task_roundtrip": "identical",
+  "all_60_features_104_tasks_11_competitor_families_linked": "PASS",
+  "requirement_origins": {
+    "COMPETITOR_REFERENCED": 112,
+    "TERMINAL_PRODUCT_REQUIREMENT": 18
+  },
+  "first_release_save_monitor_review_usefulness_required": "PASS",
+  "first_release_unrelated_later_gates_absent": "PASS",
+  "non_OA_population_unrelated_OA_UI_dependencies_absent": "PASS",
+  "all_102_preclose_tasks_in_closeout_ancestry": "PASS",
+  "csv_formula_prefix_scan": "PASS",
+  "markdown_fences_and_placeholders": "PASS",
+  "product_runtime_or_empirical_validation_performed": false
+}
