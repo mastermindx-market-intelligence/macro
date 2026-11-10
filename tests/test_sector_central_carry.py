@@ -15,7 +15,7 @@ import pytest
 from engine.sector_native_view import project_sector_view, typed_blocks_of
 from lib import sector_central_carry as carry
 from lib import sector_generation_contract as contract
-from tests.test_sector_population import PUBLISHED, _real, _real_bundle
+from tests.test_sector_population import PUBLISHED, _real, _real_bundle, _real_carry_blocks
 
 REPO = Path(__file__).resolve().parents[1]
 SITE = REPO / "site"
@@ -39,14 +39,16 @@ def _flows():
 
 
 def test_real_artifacts_yield_every_producible_block():
-    built = carry.build_carry(SITE, _central(), _roster(), _flows())
+    built = _real_carry_blocks()
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
                           "bottoming_watch", "theme_table", "member_industry",
-                          "member_sub_industry", "removed_members", "roster_baskets"}
+                          "member_sub_industry", "removed_members", "roster_baskets",
+                          "membership_first_known", "membership_snapshots"}
     # without the owner's roster / flow history those blocks are not carried (never guessed)
     bare = carry.build_carry(SITE, _central())
     assert "removed_members" not in bare and "etf_flows" not in bare
     assert "roster_baskets" not in bare
+    assert "membership_first_known" not in bare and "membership_snapshots" not in bare
     assert "hazard_qualification" not in built  # owner not on this base; never copied
     # every non-confluence block carries a string as-of; confluence is dated per universe
     for name, block in built.items():
@@ -67,7 +69,7 @@ def test_etf_flow_windows_equal_the_producers_flow_periods():
 def test_etf_flows_carries_the_lane7_windows_from_the_committed_producer():
     """Lane 7 needs 11 SPDRs x 1/3/5/10/21-day delta(shares) x NAV with as-of and depth."""
     flows = _flows()
-    block = carry.build_carry(SITE, _central(), _roster(), flows)["etf_flows"]
+    block = _real_carry_blocks()["etf_flows"]  # same real inputs the cache built on
     assert block["source"] == "collectors.sponsors.sector_flow_periods"
     assert block["unit"] == "usd_mn" and block["as_of"] == flows["asof"]
     assert block["depth"] == flows["depth"]
@@ -110,7 +112,8 @@ def test_fixture_a_malformed_etf_flows_row_drops_only_that_block():
     assert "etf_flows" not in built
     for name in ("sector_central_r1", "display_order", "confluence", "bottoming_watch",
                  "theme_table", "member_industry", "member_sub_industry",
-                 "removed_members", "roster_baskets"):
+                 "removed_members", "roster_baskets", "membership_first_known",
+                 "membership_snapshots"):
         assert name in built, name
 
 
@@ -183,7 +186,7 @@ def test_display_order_is_the_producers_own_published_order():
 
 
 def test_lane7_blocks_carry_their_own_source_and_as_of():
-    built = carry.build_carry(SITE, _central(), _roster(), _flows())
+    built = _real_carry_blocks()
     assert set(built["confluence"]) == {"sp500", "nasdaq", "russell", "china"}
     for key, relative in carry.CONFLUENCE_UNIVERSES:
         block = built["confluence"][key]
@@ -203,7 +206,7 @@ def test_lane7_blocks_carry_their_own_source_and_as_of():
 
 
 def test_industry_and_sub_industry_are_separate_current_basis_taxonomies():
-    built = carry.build_carry(SITE, _central(), _roster())
+    built = _real_carry_blocks()
     gics, sub = built["member_industry"], built["member_sub_industry"]
     for block in (gics, sub):
         assert block["point_in_time"] is False
@@ -221,7 +224,7 @@ def test_industry_and_sub_industry_are_separate_current_basis_taxonomies():
 
 
 def test_removed_members_come_from_the_owner_roster_with_dates():
-    removed = carry.build_carry(SITE, _central(), _roster())["removed_members"]
+    removed = _real_carry_blocks()["removed_members"]
     assert removed["source"] == "data/baskets/membership.json" and len(removed["removed"]) == 26
     pairs = {(r["group_id"], r["symbol"]): r["removed_on"] for r in removed["removed"]}
     assert pairs[("silver_miners", "GATO")] == "2025-01-16"
@@ -230,7 +233,7 @@ def test_removed_members_come_from_the_owner_roster_with_dates():
 
 def test_roster_baskets_names_every_basket_the_capture_must_account_for():
     """R3-S1: the carried owner roster the completeness check runs against."""
-    roster = carry.build_carry(SITE, _central(), _roster())["roster_baskets"]
+    roster = _real_carry_blocks()["roster_baskets"]
     assert roster["source"] == "data/baskets/membership.json"
     assert roster["as_of"] == carry.owner_effective_as_of(SITE) == "2026-11-06"
     baskets = json.loads(_real("basketdata/baskets.json"))
@@ -260,6 +263,224 @@ def test_roster_baskets_uses_the_owner_current_rule_at_the_effective_session():
         {"ticker": "DUP", "added": "2026-01-06"}, {"ticker": "DUP", "added": "2026-01-06"}]}}}
     # a repeated listing collapses to one (the owner's own first-listing-wins rule)
     assert carry.roster_baskets(roster, "2026-11-06")["baskets"] == {"g": ["IN", "LATER", "DUP"]}
+
+
+def test_r4_n1_a_non_mapping_list_form_roster_entry_is_skipped_never_raised():
+    """FIXTURE: R4-N1 - a list-form roster with a non-mapping entry must SKIP that
+    entry in BOTH loops. Before the guard this raised AttributeError inside
+    build_carry, whose fail-soft handler stripped EVERY carried block; the test
+    fails on revert because the exception escapes (no block set at all)."""
+    roster = {"version": "t", "baskets": [
+        "garbage", {"id": "g", "members": [{"ticker": "A", "added": "2024-01-01"}]}]}
+    built = carry.build_carry(SITE, _central(), roster, _flows())
+    assert built["roster_baskets"]["baskets"] == {"g": ["A"]}  # entry skipped, not fatal
+    assert built["removed_members"]["removed"] == []
+    # the other nine carried blocks survive what used to strip all of them
+    assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
+                          "bottoming_watch", "theme_table", "member_industry",
+                          "member_sub_industry", "removed_members", "roster_baskets",
+                          "membership_first_known", "membership_snapshots"}
+    # dict-form rosters are unchanged, and a member (not group) non-mapping entry is skipped
+    assert carry.removed_members({"baskets": {"g": {"members": ["x"]}}}, "2026-11-06")[
+        "removed"] == []
+
+
+def test_r4_n2_the_roster_clock_is_the_owners_clock():
+    """FIXTURE: R4-N2 - the owner's own rule (lib.closes_panel.population_observation):
+    the member key is ticker OR symbol and dates compare as pd.Timestamp, so an ISO
+    stamp like 2026-11-06T00:00:00 is INCLUDED; an unparseable date means NO roster
+    block (completeness null), never a silently included member. Each case diverged
+    from the owner before the fix (string comparison / ticker-key-only)."""
+    as_of = "2026-11-06"
+    iso = carry.roster_baskets({"version": "t", "baskets": {"g": {"members": [
+        {"ticker": "A", "added": "2026-11-06T00:00:00"}]}}}, as_of)
+    assert iso["baskets"] == {"g": ["A"]}  # string compare said "not yet a member"
+    sym = carry.roster_baskets({"version": "t", "baskets": {"g": {"members": [
+        {"symbol": "A", "added": "2026-01-06"}]}}}, as_of)
+    assert sym["baskets"] == {"g": ["A"]}  # the owner accepts the symbol key too
+    # removed with a time component: 2026-11-05T23:59:59 is still before the session
+    out_by = carry.roster_baskets({"version": "t", "baskets": {"g": {"members": [
+        {"ticker": "A", "removed": "2026-11-05T23:59:59"},
+        {"ticker": "B", "removed": "2026-11-06T00:00:00"}]}}}, as_of)
+    assert out_by["baskets"] == {"g": []}  # both removed at/before the session
+    # an unparseable roster date: the WHOLE block is absent (never a guessed cut)
+    for bad in ({"added": "zzz"}, {"removed": "not-a-date"}, {"added": {"x": 1}}):
+        assert carry.roster_baskets({"version": "t", "baskets": {"g": {"members": [
+            {"ticker": "A", **bad}]}}}, as_of) is None, bad
+    # a non-string session or empty session: no block either
+    assert carry.roster_baskets(_roster(), None) is None
+    assert carry.roster_baskets(_roster(), "") is None
+
+
+def test_r4_n2_the_real_roster_cut_still_agrees_with_the_owner_on_real_bytes():
+    """REAL: the mirrored clock produces the SAME cut the owner captured - every
+    live/refused basket's configured_members equals the carried current list."""
+    roster = _real_carry_blocks()["roster_baskets"]
+    baskets = json.loads(_real("basketdata/baskets.json"))
+    live = {g["id"]: g["observation"]["configured_members"] for g in baskets["baskets"]}
+    refused = {r["basket_id"]: r["observation"]["configured_members"]
+               for r in baskets["observation_refusals"]}
+    assert set(roster["baskets"]) == set(live) | set(refused)
+    for gid, members in {**live, **refused}.items():
+        assert sorted(roster["baskets"][gid]) == sorted(members), gid
+
+
+def _pit_store(root, monkeypatch, snapshots):
+    """FIXTURE PIT store built through the OWNER's own writer: write each dated
+    membership document to a tmp ``membership.json``, point the owner's suite paths
+    at the tmp store, and stamp with ``append_snapshot(lane="nightly")`` - the one
+    lane allowed to advance the US suite. ``snapshots`` is {date: roster_doc}."""
+    from engine import basket_membership_pit as pit
+    root.mkdir(parents=True, exist_ok=True)
+    roster_path = root / "membership.json"
+    hist_path = root / "membership_history.parquet"
+    monkeypatch.setattr(pit, "membership_path", lambda suite: roster_path)
+    monkeypatch.setattr(pit, "history_path", lambda suite: hist_path)
+    for date, doc in sorted(snapshots.items()):
+        roster_path.write_text(json.dumps(doc))
+        result = pit.append_snapshot(pit.SUITE_US, asof=date, lane="nightly")
+        assert result["written"] or result["reason"] == "membership unchanged", result
+    return pit
+
+
+def _roster_doc(baskets):
+    return {"version": "t", "baskets": baskets}
+
+
+def test_pit_first_known_is_the_earliest_stored_snapshot_never_the_added_date(tmp_path, monkeypatch):
+    """FIXTURE: Part B 1 - first_known is the earliest stored snapshot CONTAINING the
+    pair (a lower bound; the store begins at its own first snapshot), never the
+    roster's back-dated ``added`` date; a pair no snapshot contains is None."""
+    early = {"g": {"members": [{"ticker": "OLD", "added": "2023-05-09"},
+                               {"ticker": "GONE", "added": "2023-05-09"}]}}
+    later = {"g": {"members": [{"ticker": "OLD", "added": "2023-05-09"},
+                               {"ticker": "NEW", "added": "2023-05-09"},
+                               {"ticker": "KEEP", "added": "2023-05-09"}]}}
+    _pit_store(tmp_path / "store", monkeypatch, {"2026-08-13": _roster_doc(early),
+                                                 "2026-08-18": _roster_doc(later)})
+    roster = _roster_doc(later)  # the current roster names OLD, NEW, KEEP (not GONE)
+    cut = carry.roster_baskets(roster, "2026-08-18")
+    block = carry.membership_first_known(roster, "2026-08-18", cut["baskets"])
+    assert block["status"] == "available"
+    assert block["basis"] == "lower_bound_from_stored_snapshots"
+    assert (block["store_first"], block["store_last"]) == ("2026-08-13", "2026-08-18")
+    assert block["first_known"] == {"g": {"OLD": "2026-08-13", "NEW": "2026-08-18",
+                                          "KEEP": "2026-08-18"}}
+    # NEW's roster `added` is 2023-05-09 - the store answer never equals the
+    # back-dated date, and no value predates the store's first snapshot
+    assert block["first_known"]["g"]["NEW"] != "2023-05-09"
+    assert all(day >= block["store_first"] for day in block["first_known"]["g"].values())
+    # a member of the roster cut that NO stored snapshot contains: null + the reason
+    roster2 = _roster_doc({"g": {"members": [{"ticker": "OLD", "added": "2023-05-09"},
+                                             {"ticker": "GHOST", "added": "2024-01-01"}]}})
+    cut2 = carry.roster_baskets(roster2, "2026-08-18")
+    ghost = carry.membership_first_known(roster2, "2026-08-18", cut2["baskets"])
+    assert ghost["first_known"]["g"]["GHOST"] is None
+    assert ghost["absent_pair_reason"] == "no_stored_snapshot"
+
+
+def test_pit_first_known_fail_closed_cases(tmp_path, monkeypatch):
+    """FIXTURE: Part B 1 fail-closed - unreadable history, empty store, unknown
+    basket, and a store whose snapshots are all LATER than the session."""
+    # corrupt bytes: the store exists but cannot be read - block-level unavailable
+    from engine import basket_membership_pit as pit
+    roster = _roster_doc({"g": {"members": [{"ticker": "A", "added": "2024-01-01"}]}})
+    corrupt = tmp_path / "corrupt"
+    corrupt.mkdir()
+    (corrupt / "membership.json").write_text(json.dumps(roster))
+    (corrupt / "membership_history.parquet").write_bytes(b"not parquet at all")
+    monkeypatch.setattr(pit, "membership_path", lambda suite: corrupt / "membership.json")
+    monkeypatch.setattr(pit, "history_path", lambda suite: corrupt / "membership_history.parquet")
+    cut = carry.roster_baskets(roster, "2026-11-06")
+    bad = carry.membership_first_known(roster, "2026-11-06", cut["baskets"])
+    assert bad["status"] == "unavailable" and bad["reason"] == "membership_unreadable"
+    snap = carry.membership_snapshots(roster, "2026-11-06", cut["baskets"])
+    assert snap["groups"]["g"] == {"status": "unavailable", "reason": "membership_unreadable"}
+    # an empty store (no snapshots ever): no pair can be proven
+    _pit_store(tmp_path / "empty", monkeypatch, {})
+    (tmp_path / "empty" / "membership.json").write_text(json.dumps(roster))
+    assert carry.membership_first_known(roster, "2026-11-06", cut["baskets"]) == {
+        "source": carry.PIT_STORE_SOURCE, "as_of": "2026-11-06",
+        "status": "unavailable", "reason": "no_stored_snapshots",
+        "basis": carry.FIRST_KNOWN_BASIS}
+    # a store whose only snapshot is AFTER the session: no basket-scoped observation
+    # at the session, carried as unavailable with the owner's basis string
+    _pit_store(tmp_path / "ahead", monkeypatch, {"2026-10-14": _roster_doc(
+        {"g": {"members": [{"ticker": "A", "added": "2024-01-01"}]}})})
+    ahead = carry.membership_first_known(roster, "2026-08-01", cut["baskets"])
+    assert ahead["status"] == "unavailable"
+    assert ahead["reason"] == "no_stored_snapshots_at_or_before_as_of"
+    snap_ahead = carry.membership_snapshots(roster, "2026-08-01", cut["baskets"])
+    assert snap_ahead["groups"]["g"]["status"] == "unavailable"
+    # a basket the store has never heard of (roster names it, store does not)
+    unknown = _roster_doc({"h": {"members": [{"ticker": "B", "added": "2024-01-01"}]}})
+    cut_h = carry.roster_baskets(unknown, "2026-10-14")
+    snap_h = carry.membership_snapshots(unknown, "2026-10-14", cut_h["baskets"])
+    assert snap_h["groups"]["h"] == {"status": "unavailable", "reason": "unknown_basket"}
+    fk_h = carry.membership_first_known(unknown, "2026-10-14", cut_h["baskets"])
+    assert fk_h["first_known"]["h"]["B"] is None
+    # no roster cut at all: no PIT blocks (the facts are scoped to roster pairs)
+    assert carry.membership_first_known(roster, "2026-11-06", None) is None
+    assert carry.membership_first_known(roster, None, cut["baskets"]) is None
+
+
+def test_pit_snapshots_carry_the_stored_snapshot_and_roster_equality(tmp_path, monkeypatch):
+    """FIXTURE: Part B 2 - per basket the stored snapshot at/before the session with
+    the owner's own sha (as stamped, never recomputed) and member count, plus ONE
+    boolean vs the carried roster's current members; no member list is carried."""
+    day1 = {"g": {"members": [{"ticker": "A", "added": "2024-01-01"},
+                              {"ticker": "B", "added": "2024-01-01"}]}}
+    # B left: the owner's roster keeps the member with its removal date, exactly as
+    # data/baskets/membership.json does - positive rows alone cannot prove a exit
+    day2 = {"g": {"members": [{"ticker": "A", "added": "2024-01-01"},
+                              {"ticker": "B", "added": "2024-01-01",
+                               "removed": "2026-08-20"}]}}
+    pit = _pit_store(tmp_path / "store", monkeypatch, {"2026-08-13": _roster_doc(day1),
+                                                       "2026-09-04": _roster_doc(day2)})
+    roster_same = _roster_doc(day2)  # current roster == stored 09-04 member set
+    cut = carry.roster_baskets(roster_same, "2026-11-06")
+    snap = carry.membership_snapshots(roster_same, "2026-11-06", cut["baskets"])
+    entry = snap["groups"]["g"]
+    assert entry["status"] == "available" and entry["snapshot_date"] == "2026-09-04"
+    assert entry["member_count"] == 1 and entry["equals_current_roster"] is True
+    stored = pit.read_history(pit.SUITE_US, strict=True)
+    stamped = {r["members_sha"] for _, r in stored.iterrows()
+               if str(r["snapshot_date"]) == "2026-09-04"}
+    assert stamped == {entry["members_sha"]}  # the owner's own stamped sha, as stored
+    assert "members" not in entry  # the member list is never carried twice
+    # a roster that differs from the stored snapshot: equals_current_roster false
+    roster_diff = _roster_doc({"g": {"members": [{"ticker": "A", "added": "2024-01-01"},
+                                                 {"ticker": "C", "added": "2024-01-01"}]}})
+    cut_diff = carry.roster_baskets(roster_diff, "2026-11-06")
+    diff = carry.membership_snapshots(roster_diff, "2026-11-06", cut_diff["baskets"])
+    assert diff["groups"]["g"]["equals_current_roster"] is False
+    # no roster cut: the equality boolean is null (either side may be unavailable)
+    no_cut = carry.membership_snapshots(roster_same, "2026-11-06", None)
+    assert no_cut["groups"]["g"]["equals_current_roster"] is None
+
+
+def test_pit_blocks_on_real_bytes_sizes_and_values():
+    """REAL: the two Part B blocks on the committed artifacts and the committed PIT
+    store (4 snapshots 2026-08-13/08-18/09-04/10-14) - sizes under the block cap."""
+    built = _real_carry_blocks()
+    fk, snap = built["membership_first_known"], built["membership_snapshots"]
+    assert (len(json.dumps(fk).encode()), len(json.dumps(snap).encode())) == (23090, 10265)
+    assert all(len(json.dumps(built[n]).encode()) <= carry.MAX_BLOCK_BYTES
+               for n in ("membership_first_known", "membership_snapshots"))
+    assert fk["store_first"] == "2026-08-13" and fk["store_last"] == "2026-10-14"
+    pairs = {(g, s): d for g, bucket in fk["first_known"].items() for s, d in bucket.items()}
+    assert len(pairs) == 1020 and set(pairs.values()) <= {
+        "2026-08-13", "2026-08-18", "2026-09-04", "2026-10-14"}
+    # every value is a stored snapshot date - never a back-dated roster `added`
+    roster = json.loads((REPO / "data/baskets/membership.json").read_text())["baskets"]
+    added = {(g, m["ticker"]): m.get("added") for g, b in roster.items()
+             for m in b["members"]}
+    backdated = {p for p, day in pairs.items() if added.get(p) and added[p] < "2026-08-13"}
+    assert backdated and all(pairs[p] != added[p] for p in backdated)
+    assert snap["suite"] == "baskets" and set(snap["groups"]) == set(roster)
+    assert all(e["status"] == "available" and e["snapshot_date"] == "2026-10-14"
+               and e["equals_current_roster"] is True
+               for e in snap["groups"].values())
 
 
 def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):

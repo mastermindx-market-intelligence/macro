@@ -21,6 +21,7 @@ FIXTURE (a) the two Supabase identity seams (``gates`` fixture - the same local
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import copy
 import json
 from pathlib import Path
 import re
@@ -48,9 +49,28 @@ def _real(name: str) -> bytes:
     return (REPO / "site" / name).read_bytes()
 
 
+from functools import lru_cache  # noqa: E402
+
+
+@lru_cache(maxsize=1)
+def _cached_real_carry() -> dict:
+    """The real-input `carried` dict, built ONCE per process (same real quadruple
+    every caller uses; the two PIT blocks cost ~100 owner `members_asof` reads)."""
+    from lib.sector_central_carry import build_carry
+    from collectors.sponsors import sector_flow_periods
+    central = json.loads(_real("sectordata/sector_central.json"))
+    roster = json.loads((REPO / "data/baskets/membership.json").read_text())
+    return build_carry(REPO / "site", central, roster, sector_flow_periods())
+
+
+def _real_carry_blocks() -> dict:
+    """A deep copy of the cached real carry, so no caller can poison another."""
+    return copy.deepcopy(_cached_real_carry())
+
+
 def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
                  carried: bool = True, refuse_group: str | None = None,
-                 vanish_group: str | None = None):
+                 vanish_group: str | None = None, effective_as_of: str | None = None):
     """Real bytes -> (member bytes, identity); optionally derive an advanced generation.
 
     ``refuse_group`` (FIXTURE derivation of real bytes) moves one real basket out of
@@ -59,10 +79,19 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
     removes the basket from ``baskets[]`` with NO refusal entry - the producer's
     ``lvl.dropna().empty`` exit or any other unexplained drop - while the carried
     owner roster still names it, exactly as a nightly divergence would leave it.
+    ``effective_as_of`` (R4-N4) rewrites every observation's effective session in the
+    derived capture while the carried roster block stays cut at the real 2026-11-06 -
+    a capture whose own clock disagrees with the roster that must vouch for it.
     """
     baskets_raw = _real("basketdata/baskets.json")
-    if drop_member is not None or refuse_group is not None or vanish_group is not None:
+    if (drop_member is not None or refuse_group is not None or vanish_group is not None
+            or effective_as_of is not None):
         baskets = json.loads(baskets_raw)
+        if effective_as_of is not None:
+            for group in baskets["baskets"]:
+                group["observation"]["effective_as_of"] = effective_as_of
+            for refusal in baskets["observation_refusals"]:
+                refusal["observation"]["effective_as_of"] = effective_as_of
         if drop_member is not None:
             group = next(g for g in baskets["baskets"] if g["id"] == drop_member[0])
             group["members"] = [m for m in group["members"] if m["symbol"] != drop_member[1]]
@@ -87,10 +116,7 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
         # The committed sector_central.json predates the carry step; produce the
         # `carried` key with the NEW builder function over the real committed
         # artifacts (REAL inputs, new code) exactly as build_sector_central does.
-        from lib.sector_central_carry import build_carry
-        from collectors.sponsors import sector_flow_periods
-        roster = json.loads((REPO / "data/baskets/membership.json").read_text())
-        central["carried"] = build_carry(REPO / "site", central, roster, sector_flow_periods())
+        central["carried"] = _real_carry_blocks()
     raw = {
         MEMBERS[0]: json.dumps(central, separators=(",", ":"), ensure_ascii=False).encode(),
         MEMBERS[1]: _real("sectordata/sector_cycles.json"),
@@ -232,8 +258,13 @@ def test_industry_is_current_basis_not_point_in_time_and_never_relabelled(real_s
     assert "key" not in app_row["industry"]  # never merged into the sub-industry shape
     assert all(r["industry"] == {"status": "unavailable", "reason": "not_in_current_classification"}
                for r in rows if r["symbol"] not in gics_symbols)
-    # Point-in-time identity is NOT satisfied and stays recorded as unavailable.
-    assert identity["membership_first_known"]["status"] == "unavailable"
+    # ONE taxonomy stamp (Part B 3): the labels are current-basis and the historical
+    # revision is unavailable because no point-in-time classification source exists.
+    assert identity["taxonomy_revision"] == {
+        "status": "unavailable", "reason": "no_point_in_time_classification_source",
+        "labels_basis": "current_not_point_in_time",
+        "labels": ["industry", "sub_industry"]}
+    # Original affiliation stays honestly unproduced (no source on this base).
     assert identity["original_affiliation_set"]["status"] == "unavailable"
 
 
@@ -452,10 +483,14 @@ def _synthetic(*, observation=None, members=("AAA", "BBB"), removed_roster=None)
     return {"baskets": [group], "observation_refusals": []}
 
 
-def _obs(configured, *, observed=None, panel_missing=(), asof_missing=()):
+def _obs(configured, *, observed=None, panel_missing=(), asof_missing=(),
+         effective_as_of=SESSION):
+    """A captured observation. The effective session is stated (R4-N4): the real
+    producer stamps it on every observation, live and refused alike."""
     return {"configured_members": list(configured),
             "observed_members": list(configured if observed is None else observed),
-            "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing)}
+            "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing),
+            "effective_as_of": effective_as_of}
 
 
 def _roster_central(baskets: dict[str, list[str]], **carried_extra) -> dict:
@@ -712,7 +747,7 @@ def test_removed_member_that_is_also_configured_is_a_contradiction():
     pop = population.build_population(
         baskets=baskets, handoff={}, action_board={},
         central=_roster_central({"g1": ["AAA", "BBB"]}, removed_members={
-            "source": "r", "removed": [
+            "source": "r", "as_of": "2026-11-06", "removed": [
                 {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}))
     assert pop.unaccounted == 1 and pop.complete is False
 
@@ -836,3 +871,194 @@ def test_producer_emits_finite_json_without_post_hoc_repair(tmp_path):
         elif path.split("/")[-1] != "generated_utc":
             assert a == b, path
     walk(original["action_board"], decoded["action_board"])
+
+
+def test_r4_n3_an_undated_carried_block_reads_unavailable_never_available():
+    """R4-N3 (read side): every carried DATED block that arrives without a string
+    ``as_of`` is served as unavailable/``carried_block_undated`` - never available
+    with an unstated or null clock, and never silently dropped either."""
+    carried = {
+        "member_industry": {"symbols": {"AAA": "Media"}, "point_in_time": False},
+        "member_sub_industry": {"symbols": {"AAA": "software-application"},
+                                "subsectors": {"software-application": "Software - Application"},
+                                "point_in_time": False},
+        "removed_members": {"source": "r", "removed": [
+            {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]},
+        "membership_first_known": {"basis": "lower_bound_from_stored_snapshots",
+                                   "first_known": {"g1": {"AAA": "2026-08-13"}}},
+        "membership_snapshots": {"groups": {"g1": {
+            "status": "available", "snapshot_date": "2026-10-14", "members_sha": None,
+            "member_count": 1, "equals_current_roster": True}}}}
+    pop = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": carried})
+    undated = {"status": "unavailable", "reason": "carried_block_undated"}
+    assert pop.industry_classification == dict(undated)
+    assert pop.sub_industry_classification == dict(undated)
+    assert pop.removed == dict(undated)
+    assert pop.first_known == dict(undated)
+    assert pop.membership_snapshot == dict(undated)
+    # rows degrade to the honest not_produced class, never to an unlabelled value
+    assert {r["industry"]["reason"] for r in pop.rows} == {"not_produced"}
+    assert {r["sub_industry"]["reason"] for r in pop.rows} == {"not_produced"}
+    assert pop.removed.get("members") is None  # an undated removal list is not served
+    # the same blocks WITH their as_of string stay available (dated is the rule, not ban)
+    for block in carried.values():
+        block["as_of"] = "2026-11-06"
+    dated = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": carried})
+    assert dated.industry_classification["status"] == "available"
+    assert dated.removed["status"] == "available" and dated.removed["n"] == 1
+    assert dated.first_known["status"] == "available"
+    assert dated.membership_snapshot["status"] == "available"
+
+
+def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, tmp_path):
+    """R4-N4: completeness is only verifiable when the carried roster's ``as_of``
+    equals the capture's single ``observation.effective_as_of``; any disagreement
+    nulls ``configured_current``/``complete`` and is disclosed with closed reasons."""
+    client = _client(real_store["reader"])
+    capture = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                         cookies=COOKIE).json()["page"]["capture"]
+    pop = capture["population"]
+    assert pop["roster_clock"] == {"status": "agree", "roster_as_of": "2026-11-06",
+                                   "capture_effective_as_of": "2026-11-06"}
+    assert (pop["configured_current"], pop["complete"]) == (1020, True)
+    # REAL bytes, derived capture: every observation restated one session earlier while
+    # the carried roster block stays cut at 2026-11-06 - the roster can no longer vouch.
+    # (its own isolated store: the fixture's store already owns tmp_path's selection)
+    skewed_dir = tmp_path / "skewed"
+    skewed_dir.mkdir()
+    skewed = _store_from(skewed_dir, effective_as_of="2026-11-05")
+    pop = skewed.get(URL, params={"audience": "entitled", "limit": "1"},
+                     cookies=COOKIE).json()["page"]["capture"]["population"]
+    assert pop["roster_clock"] == {"status": "mismatch", "reason": "roster_as_of_mismatch",
+                                   "roster_as_of": "2026-11-06",
+                                   "capture_effective_as_of": "2026-11-05"}
+    assert pop["configured_current"] is None and pop["complete"] is None
+    # FIXTURE: the closed reasons around the capture's own clock
+    def build(doc, roster):
+        return population.build_population(baskets=doc, handoff={}, action_board={},
+                                           central=_roster_central(roster))
+    two_sessions = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")},
+        {"id": "g2", "name": "H", "n_members": 1,
+         "members": [{"symbol": "XXX", "name": "X", "added": "2024-01-01"}],
+         "observation": _obs(["XXX"], effective_as_of="2026-11-05")}],
+        "observation_refusals": []}
+    not_single = build(two_sessions, {"g1": ["AAA"]})
+    assert not_single.roster_clock == {
+        "status": "mismatch", "reason": "capture_effective_as_of_not_single",
+        "roster_as_of": "2026-11-06", "capture_effective_as_of": ["2026-11-05", "2026-11-06"]}
+    assert not_single.complete is None and not_single.configured_current is None
+    unstated = _synthetic(observation=_obs(["AAA", "BBB"], effective_as_of=None))
+    unclocked = build(unstated, {"g1": ["AAA", "BBB"]})
+    assert unclocked.roster_clock == {
+        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
+        "roster_as_of": "2026-11-06"}
+    assert unclocked.complete is None and unclocked.configured_current is None
+    # no roster block at all / a malformed one: the clock is unavailable for that reason
+    absent = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={})
+    assert absent.roster_clock == {"status": "unavailable", "reason": "roster_block_absent"}
+    malformed = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": {"roster_baskets": {"as_of": "2026-11-06", "baskets": {"gone": [7]}}}})
+    assert malformed.roster_clock == {"status": "unavailable", "reason": "roster_block_malformed"}
+    assert absent.complete is None and malformed.complete is None
+
+
+def test_r4_n6_non_finite_refusal_fields_are_dropped_and_the_page_stays_finite():
+    """R4-N6: a NaN/inf in an owner refusal field is dropped by ``_refusal_field``;
+    the population still encodes to a strictly finite, normal response.
+
+    Seam note: this is the DECODED-document seam, not published bytes - the strict
+    member decoder (``parse_constant``) rejects any byte stream carrying NaN or
+    Infinity before the population builder runs, so a non-finite float can only
+    reach ``_refusal_field`` via a decoded mapping (the same route the committed
+    action_board's legacy NaN takes through ``parse_constant=float``). Injecting
+    them there proves the real guarantee: the field is dropped, never repaired,
+    and the response passes ``allow_nan=False`` end to end."""
+    refusal = {"basket_id": "g2", "observation": {
+        "configured_members": ["XXX"], "status": float("nan"), "coverage": float("inf"),
+        "configured_n": 1, "min_members": 3, "effective_as_of": "2026-11-06"}}
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    baskets["observation_refusals"] = [refusal]
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"], "g2": ["XXX"]}))
+    served = next(g for g in pop.groups if g["group_id"] == "g2")
+    assert served["owner_observation_refusal"] == {"configured_n": 1, "min_members": 3,
+                                                  "effective_as_of": "2026-11-06"}
+    assert pop.complete is True  # the refusal still accounts its member normally
+    capture = population.compatibility_tuple(
+        generation_id="g", content_id="c", published_at=PUBLISHED.isoformat(),
+        source_session=SESSION, qualification="accepted",
+        read_captured_at=PUBLISHED.isoformat(), member_sha256={}, population=pop,
+        ref="ref", currentness="current")
+    encoded = wire.encode_sector_population(
+        audience="entitled", source_session=SESSION, published_at=PUBLISHED.isoformat(),
+        qualification="accepted", page={"capture": capture, "rows": [dict(r) for r in pop.rows]})
+    assert b"NaN" not in encoded and b"Infinity" not in encoded  # finite, normal response
+
+
+def test_part_b_pit_membership_facts_travel_in_the_capture_not_on_rows(real_store):
+    """Part B, REAL route: the three carried point-in-time facts surface in the
+    entitled capture with the committed store's own values, and never on rows."""
+    client = _client(real_store["reader"])
+    pages = _all_pages(client)
+    identity, pop = pages[0][1]["capture"]["identity"], pages[0][1]["capture"]["population"]
+    fk = identity["membership_first_known"]
+    assert (fk["status"], fk["basis"], fk["as_of"]) == (
+        "available", "lower_bound_from_stored_snapshots", SESSION)
+    assert fk["source"] == "engine/basket_membership_pit.py:data/baskets/membership_history.parquet"
+    assert fk["basis_note"] and (fk["store_first"], fk["store_last"]) == ("2026-08-13", "2026-10-14")
+    assert fk["absent_pair_reason"] == "no_stored_snapshot"
+    pairs = {(g, s): d for g, bucket in fk["groups"].items() for s, d in bucket.items()}
+    assert len(pairs) == 1020 and all(d is not None for d in pairs.values())
+    assert set(pairs.values()) == {"2026-08-13", "2026-08-18", "2026-09-04", "2026-10-14"}
+    assert pairs[("silver_miners", "PAAS")] == "2026-08-13"  # a real early-store member
+    snap = identity["membership_snapshot"]
+    assert (snap["status"], snap["suite"], snap["as_of"]) == ("available", "baskets", SESSION)
+    assert len(snap["groups"]) == 49
+    assert all(e["status"] == "available" and e["snapshot_date"] == "2026-10-14"
+               and e["equals_current_roster"] is True
+               for e in snap["groups"].values())
+    silver = snap["groups"]["silver_miners"]
+    assert (silver["member_count"], silver["members_sha"]) == (
+        8, "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245aa")
+    assert pop["roster_clock"]["status"] == "agree"  # the third fact (R4-N4)
+    # the facts live ONLY in the capture: no row carries a PIT field
+    rows = [r for _, page in pages for r in page["rows"]]
+    rows_json = json.dumps(rows)
+    for needle in ("first_known", "membership_snapshot", "roster_clock",
+                   "equals_current_roster", "members_sha"):
+        assert needle not in rows_json
+    # every page still fits the unchanged 4 MiB encoded bound (largest page measured
+    # on the real capture with all three new facts: 97,237 bytes - 2.3% of the bound)
+    largest = max(len(response.content) for response, _ in pages)
+    assert largest <= wire.MAX_ENCODED_BYTES == 4 * 1024 * 1024
+
+
+def test_nothing_new_appears_in_the_legacy_projection_or_typed_blocks(tmp_path):
+    """Frozen constraint: the legacy projection and ``typed_blocks`` (closed at seven
+    sources) gain NOTHING from the Part B facts, even when the carry carries them."""
+    from engine.sector_native_view import project_sector_view, typed_blocks_of
+    raw, identity = _real_bundle(tmp=tmp_path)  # real bytes + NEW carry (PIT blocks in)
+    assert set(_real_carry_blocks()) >= {"membership_first_known", "membership_snapshots"}
+    inputs, receipt = contract._capture_view(
+        member_bytes=raw, input_identity=identity, generation_id="carry",
+        published_at=PUBLISHED.isoformat(), now=PUBLISHED)
+    for audience in ("entitled", "preview"):
+        projection = project_sector_view(inputs, receipt, audience=audience)
+        assert set(typed_blocks_of(projection["data"])) == {
+            "r1_rising_priced_share", "r2_display_order", "r2_hazard_qualification",
+            "etf_flows", "confluence", "bottoming_watch", "theme_table"}
+        text = json.dumps(projection)
+        for needle in ("roster_clock", "first_known", "membership_snapshot",
+                       "taxonomy_revision", "equals_current_roster", "members_sha"):
+            assert needle not in text, (audience, needle)
