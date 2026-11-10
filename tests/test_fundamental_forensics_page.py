@@ -196,7 +196,7 @@ def test_reported_holding_asset_urls_follow_bytes_for_returning_visitors(tmp_pat
     root = Path(__file__).resolve().parents[1]
     templates = tmp_path / "templates"
     templates.mkdir()
-    names = ("institutional_holding_research.js", "institutional_holding_research.css")
+    names = ("fundamental_forensics.js", "institutional_holding_research.js", "institutional_holding_research.css")
     for source in (root / "templates").iterdir():
         if source.name in names:
             shutil.copyfile(source, templates / source.name)
