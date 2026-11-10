@@ -24,8 +24,8 @@ NAMES = ("r1_rising_priced_share", "r2_display_order", "r2_hazard_qualification"
 CONFLUENCE = {"us": {"n": 1}, "hk": {"n": 2}, "cn": {"n": 3}, "ca": {"n": 4}}
 
 
-def _inputs(tmp_path):
-    raw, identity = _real_bundle(tmp=tmp_path)
+def _inputs(tmp_path, *, carried=False):
+    raw, identity = _real_bundle(tmp=tmp_path, carried=carried)
     return contract._capture_view(
         member_bytes=raw, input_identity=identity, generation_id="typed-blocks",
         published_at=PUBLISHED.isoformat(), now=PUBLISHED)
@@ -36,7 +36,7 @@ def _project(inputs, receipt, audience="entitled"):
 
 
 def test_real_bytes_carry_no_typed_block_so_all_read_not_produced(tmp_path):
-    """REAL."""
+    """REAL: the committed `sector_central.json` predates the carry step (no `carried`)."""
     inputs, receipt = _inputs(tmp_path)
     for audience in ("entitled", "preview"):
         data = _project(inputs, receipt, audience)["data"]
@@ -55,13 +55,12 @@ def test_real_bytes_carry_no_typed_block_so_all_read_not_produced(tmp_path):
 def test_fixture_produced_blocks_are_available_and_preserved(tmp_path):
     """FIXTURE: documents that carry each block under its closed key."""
     inputs, receipt = _inputs(tmp_path)
-    inputs.central["sector_central_r1"] = {"rising_share": 0.42, "priced_share": 0.9,
-                                           "missing_members": 2}
-    inputs.central["display_order"] = {"order": ["xlk", "xlf"]}
     inputs.central["hazard_qualification"] = {"status": "withheld"}
-    ctx = inputs.handoff["theme_context"]
-    ctx.update(etf_flows={"rows": [1]}, confluence=deepcopy(CONFLUENCE),
-               bottoming_watch={"rows": []}, theme_table={"rows": [2]})
+    inputs.central["carried"] = {
+        "sector_central_r1": {"rising_share": 0.42, "priced_share": 0.9, "missing_members": 2},
+        "display_order": {"order": ["xlk", "xlf"]},
+        "etf_flows": {"rows": [1]}, "confluence": deepcopy(CONFLUENCE),
+        "bottoming_watch": {"rows": []}, "theme_table": {"rows": [2]}}
     blocks = _project(inputs, receipt)["data"]["typed_blocks"]
     assert all(blocks[n]["status"] == "available" and blocks[n]["reason"] is None for n in NAMES)
     assert blocks["confluence"]["value"] == CONFLUENCE
@@ -73,18 +72,19 @@ def test_fixture_produced_blocks_are_available_and_preserved(tmp_path):
 
 
 @pytest.mark.parametrize("name,owner,key,bad", [
-    ("r1_rising_priced_share", "central", "sector_central_r1", [1, 2]),
-    ("r2_display_order", "central", "display_order", {"order": [float("nan")]}),
-    ("etf_flows", "theme_context", "etf_flows", "text"),
-    ("confluence", "theme_context", "confluence", {"us": {}}),
-    ("theme_table", "theme_context", "theme_table", {"blob": "x" * (64 * 1024 + 1)}),
+    ("r1_rising_priced_share", "carried", "sector_central_r1", [1, 2]),
+    ("r2_display_order", "carried", "display_order", {"order": [float("nan")]}),
+    ("r2_hazard_qualification", "central", "hazard_qualification", "text"),
+    ("etf_flows", "carried", "etf_flows", "text"),
+    ("confluence", "carried", "confluence", {"us": {}}),
+    ("theme_table", "carried", "theme_table", {"blob": "x" * (64 * 1024 + 1)}),
 ])
 def test_fixture_malformed_block_is_invalid_shape_and_changes_nothing_else(
         tmp_path, name, owner, key, bad):
     """FIXTURE."""
     inputs, receipt = _inputs(tmp_path)
     baseline = _project(inputs, receipt)["data"]
-    target = inputs.central if owner == "central" else inputs.handoff["theme_context"]
+    target = inputs.central if owner == "central" else inputs.central.setdefault("carried", {})
     target[key] = bad
     data = _project(inputs, receipt)["data"]
     assert data["typed_blocks"][name] == {"status": "unavailable", "reason": "invalid_shape",
@@ -99,7 +99,7 @@ def test_projection_hash_moves_only_when_a_block_moves_and_stays_under_4mib(tmp_
     first = _project(inputs, receipt)
     again = _project(inputs, receipt)
     assert first["receipt"]["content_sha256"] == again["receipt"]["content_sha256"]
-    inputs.central["display_order"] = {"order": ["xlk"]}
+    inputs.central["carried"] = {"display_order": {"order": ["xlk"]}}
     changed = _project(inputs, receipt)
     assert changed["receipt"]["content_sha256"] != first["receipt"]["content_sha256"]
     assert len(json.dumps(changed, allow_nan=False).encode()) < 4 * 1024 * 1024

@@ -48,7 +48,8 @@ def _real(name: str) -> bytes:
     return (REPO / "site" / name).read_bytes()
 
 
-def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path):
+def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
+                 carried: bool = True):
     """Real bytes -> (member bytes, identity); optionally derive an advanced generation."""
     baskets_raw = _real("basketdata/baskets.json")
     if drop_member is not None:
@@ -64,8 +65,15 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path):
     board_writer.write_action_board(
         out, baskets_path=baskets_path, action_board=committed["action_board"],
         generated_utc="2026-11-06T22:00:00Z")  # committed file is a bare legacy envelope
+    central = json.loads(_real("sectordata/sector_central.json"))
+    if carried:
+        # The committed sector_central.json predates the carry step; produce the
+        # `carried` key with the NEW builder function over the real committed
+        # artifacts (REAL inputs, new code) exactly as build_sector_central does.
+        from lib.sector_central_carry import build_carry
+        central["carried"] = build_carry(REPO / "site", central)
     raw = {
-        MEMBERS[0]: _real("sectordata/sector_central.json"),
+        MEMBERS[0]: json.dumps(central, separators=(",", ":"), ensure_ascii=False).encode(),
         MEMBERS[1]: _real("sectordata/sector_cycles.json"),
         MEMBERS[2]: baskets_raw,
         MEMBERS[3]: _real("basketdata/si_handoff.json"),
@@ -147,6 +155,31 @@ def test_real_population_is_full_ordered_joined_and_bounded(real_store):
     assert {json.dumps(r["prophet_eligibility"], sort_keys=True) for r in rows} == {
         '{"reason": "not_produced", "status": "unavailable"}'}
     assert not re.search(r"\bNaN\b|Infinity", "".join(r.text for r, _ in pages))
+
+
+def test_industry_is_current_basis_not_point_in_time_and_never_relabelled(real_store):
+    """REAL inputs, NEW carry code: every row carries a labelled industry state."""
+    client = _client(real_store["reader"])
+    pages = _all_pages(client)
+    classification = pages[0][1]["capture"]["identity"]["industry_classification"]
+    assert classification["status"] == "available"
+    assert classification["point_in_time"] is False
+    assert classification["basis"] == "current_sp500_membership_not_point_in_time"
+    assert classification["source"] == "marketdata/subsector_confluence.json"
+    rows = [r for _, p in pages for r in p["rows"]]
+    states = {r["industry"]["status"] for r in rows}
+    assert states == {"available", "unavailable"}  # real: 424 of 698 symbols classified
+    classified = {r["symbol"] for r in rows if r["industry"]["status"] == "available"}
+    assert len(classified) == 424
+    app_row = next(r for r in rows if r["symbol"] == "APP")
+    assert app_row["industry"]["key"] == "software-application"
+    assert app_row["industry"]["label"] == "Software - Application"
+    assert all(r["industry"] == {"status": "unavailable", "reason": "not_in_current_classification"}
+               for r in rows if r["symbol"] not in classified)
+    # Point-in-time identity is NOT satisfied and stays recorded as unavailable.
+    identity = pages[0][1]["capture"]["identity"]
+    assert identity["membership_first_known"]["status"] == "unavailable"
+    assert identity["original_affiliation_set"]["status"] == "unavailable"
 
 
 def test_sp02_member_beyond_page_one_is_reachable_and_correctly_joined(real_store):

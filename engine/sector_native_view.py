@@ -1880,14 +1880,17 @@ def _history(cycles: dict, source: str, core_ids: dict[str, str]) -> dict:
 _TYPED_BLOCK_MAX_BYTES = 64 * 1024
 _CONFLUENCE_UNIVERSES = 4
 #: name -> (owning document, closed key). Lane 7 blocks are entitled-only depth.
+#: ``carried`` is ``sector_central.json["carried"]``, written by the central builder
+#: (lib.sector_central_carry) from existing producer artifacts. ``hazard_qualification``
+#: has no producer on this base (``hazard_score.qualify_current_model`` is not here).
 _TYPED_BLOCK_SOURCES = (
-    ("r1_rising_priced_share", "central", "sector_central_r1", False),
-    ("r2_display_order", "central", "display_order", False),
+    ("r1_rising_priced_share", "carried", "sector_central_r1", False),
+    ("r2_display_order", "carried", "display_order", False),
     ("r2_hazard_qualification", "central", "hazard_qualification", False),
-    ("etf_flows", "theme_context", "etf_flows", True),
-    ("confluence", "theme_context", "confluence", True),
-    ("bottoming_watch", "theme_context", "bottoming_watch", True),
-    ("theme_table", "theme_context", "theme_table", True),
+    ("etf_flows", "carried", "etf_flows", True),
+    ("confluence", "carried", "confluence", True),
+    ("bottoming_watch", "carried", "bottoming_watch", True),
+    ("theme_table", "carried", "theme_table", True),
 )
 
 
@@ -1913,13 +1916,14 @@ def _typed_block(value: Any, *, name: str) -> dict:
 def _typed_blocks(inputs: SectorViewInputs, audience: str) -> dict:
     """Optional lane 7/8 blocks, carried so downstream lanes get a stable shape.
 
-    Closed source locations only; nothing is read from disk and no value is
+    Closed source locations only (``central.carried.*`` and
+    ``central.hazard_qualification``); nothing is read from disk and no value is
     derived. On producers that do not emit a block it reads
     ``unavailable/not_produced``.
     """
-    theme_context = inputs.handoff.get("theme_context")
+    carried = inputs.central.get("carried")
     documents = {"central": inputs.central,
-                 "theme_context": theme_context if isinstance(theme_context, dict) else {}}
+                 "carried": carried if isinstance(carried, dict) else {}}
     blocks = {}
     for name, owner, key, entitled_only in _TYPED_BLOCK_SOURCES:
         if entitled_only and audience != "entitled":

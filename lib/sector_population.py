@@ -74,6 +74,7 @@ class Population:
     expected_members: int
     admitted_members: int
     missing_members: int
+    industry_classification: Mapping[str, Any]
 
 
 def _text(value: Any, limit: int = 160) -> str | None:
@@ -123,6 +124,18 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                 "n_effective": cov.get("n_effective") if isinstance(cov.get("n_effective"), int) else None,
                 "source_version": _text(cov.get("source_version"), 40),
             }
+    industry_doc = (central.get("carried") or {}).get("member_industry") \
+        if isinstance(central, Mapping) and isinstance(central.get("carried"), Mapping) else None
+    industry_symbols = industry_labels = None
+    industry_meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
+    if isinstance(industry_doc, Mapping) and isinstance(industry_doc.get("symbols"), Mapping) \
+            and isinstance(industry_doc.get("subsectors"), Mapping) \
+            and industry_doc.get("point_in_time") is False:
+        industry_symbols, industry_labels = industry_doc["symbols"], industry_doc["subsectors"]
+        industry_meta = {"status": "available", "basis": _text(industry_doc.get("basis"), 80),
+                         "point_in_time": False, "source": _text(industry_doc.get("source"), 120),
+                         "as_of": _text(industry_doc.get("as_of"), 40),
+                         "universe": _text(industry_doc.get("universe"), 80)}
     symbol_groups: Counter[str] = Counter()
     for group in groups_in:
         for member in (group.get("members") if isinstance(group, Mapping) else None) or ():
@@ -149,6 +162,17 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                 raise PopulationError("invalid_population_member")
             seen_symbols.add(symbol)
             added = member.get("added")
+            if industry_symbols is None:
+                industry = dict(UNAVAILABLE_NOT_PRODUCED)
+            elif isinstance(industry_symbols.get(symbol), str) \
+                    and isinstance(industry_labels.get(industry_symbols[symbol]), Mapping):
+                label = industry_labels[industry_symbols[symbol]]
+                industry = {"status": "available", "key": industry_symbols[symbol],
+                            "label": _text(label.get("label")),
+                            "label_zh": _text(label.get("label_zh")),
+                            "sector": _text(label.get("sector"))}
+            else:
+                industry = {"status": "unavailable", "reason": "not_in_current_classification"}
             rows.append({
                 "ordinal": len(rows), "group_id": gid, "symbol": symbol,
                 "name": _text(member.get("name")),
@@ -156,6 +180,7 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                                "effective_on": added if isinstance(added, str) and len(added) <= 10 else None},
                 "also_in_groups": symbol_groups[symbol] - 1,
                 "in_handoff_member_set": None if handoff_set is None else symbol in handoff_set,
+                "industry": industry,
                 "prophet_eligibility": dict(UNAVAILABLE_NOT_PRODUCED),
                 "visibility": {"scope": "entitled_full"},
             })
@@ -181,7 +206,7 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     canonical = json.dumps({"groups": groups, "rows": rows}, allow_nan=False, sort_keys=True,
                            separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     return Population(tuple(groups), tuple(rows), hashlib.sha256(canonical).hexdigest(),
-                      expected_total, len(rows), missing_total)
+                      expected_total, len(rows), missing_total, industry_meta)
 
 
 def normalize_filter(group: str | None, query: str | None) -> dict[str, str | None]:
@@ -299,6 +324,9 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
         "identity": {
             "market_profile": "us", "group_kind": "basket",
             "taxonomy_revision": dict(UNAVAILABLE_NOT_PRODUCED),
+            # Current-basis only: a label from today's classification, NEVER the
+            # member's point-in-time or original classification.
+            "industry_classification": dict(population.industry_classification),
             "membership_effective_time": "per_row_effective_on",
             "membership_first_known": dict(UNAVAILABLE_NOT_PRODUCED),
             "original_affiliation_set": dict(UNAVAILABLE_NOT_PRODUCED),
