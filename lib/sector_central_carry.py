@@ -133,7 +133,11 @@ def etf_flows(flows: Mapping[str, Any] | None) -> dict | None:
         return None
     funds = []
     for row in rows:
-        vals = row.get("vals") if isinstance(row, Mapping) else None
+        # R3-N4: a non-mapping row must drop ONLY this block (return None), never raise
+        # past build_carry - an exception there would strip every carried block.
+        if not isinstance(row, Mapping):
+            return None
+        vals = row.get("vals")
         if not isinstance(row.get("ticker"), str) or not isinstance(vals, Mapping) \
                 or set(vals) != set(labels):
             return None

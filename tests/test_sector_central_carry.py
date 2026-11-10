@@ -90,6 +90,21 @@ def test_fixture_etf_flows_rejects_a_producer_output_of_the_wrong_shape():
         assert carry.etf_flows(bad) is None
 
 
+def test_fixture_a_malformed_etf_flows_row_drops_only_that_block():
+    """FIXTURE: R3-N4 - a non-mapping fund row drops ONLY etf_flows; an exception here
+    would strip every carried block in the builder's fail-soft handler."""
+    labels = [lbl for lbl, _ in carry.ETF_FLOW_WINDOWS]
+    bad = {"asof": "2026-11-05", "depth": 79, "labels": labels,
+           "rows": ["XLB"], "net": dict.fromkeys(labels, 1.0)}
+    assert carry.etf_flows(bad) is None  # refused, never an AttributeError
+    built = carry.build_carry(SITE, _central(), _roster(), bad)
+    assert "etf_flows" not in built
+    for name in ("sector_central_r1", "display_order", "confluence", "bottoming_watch",
+                 "theme_table", "member_industry", "member_sub_industry",
+                 "removed_members", "roster_baskets"):
+        assert name in built, name
+
+
 def test_undated_block_is_dropped_not_carried_with_a_null_date(tmp_path):
     """FIXTURE: R2-N4 - a source with no date is not carried as `as_of: null`."""
     central = {"as_of": None, "sectors": [{"id": "a", "ticker": "A", "heat": {
