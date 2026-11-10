@@ -31,13 +31,22 @@ Donor PRs are reused by SHA into new lane branches. No donor carrier is pushed t
 Terminal shared files (`SectorIntelligenceWorkspace.tsx`, `sectorIntelligenceLex.ts`, `sectorIntelligence.ts`,
 `app/api/sector-intelligence/route.ts`) have one writer: lane 3. Lanes 4 and 6 return mount hunks.
 
-## Wave 2 (not started — each waits on a named input)
+## Wave 2
+
+Lanes 7 and 8 were launched on 2026-11-09 without waiting for their upstream lanes, each fenced off the shared input:
+
+| Lane | Brief | Repo | Model | State | Fence |
+|---|---|---|---|---|---|
+| 7 Retained native depth and compatibility (calls, Bottoming Watch, flows, four universes, legacy map) | 7 | Terminal | GLM 5.3 | STARTED | New files only under `terminal/components/sector-intelligence/depth/`; provisional props until lane 3 writes its mount slots; Macro `templates/*` not touched |
+| 8 Analytics and history (definitions, turn knowledge, B12 scientific disposition) | 8 | Macro | Opus 5.5 | STARTED | Does not edit `engine/sector_central.py` or any lane 1 file; returns hunks for lane 1 |
+
+Terminal lanes (3, 4, 6, 7) write their return to `/tmp/si_plan/returns/lane<N>.md` and message the COO thread.
+
+Not started — each waits on a named input:
 
 | Lane | Brief | Waits on |
 |---|---|---|
-| 7 Retained native depth and compatibility (calls, Bottoming Watch, flows, four universes, legacy destinations) | 7 | Lane 3 workspace slots; lane 2 frames for groups 1–3 |
-| 8 Analytics and history (definitions, turn knowledge, B12 scientific disposition) | 8 | Lane 1 landing `engine/sector_central.py` (shared file) |
-| Terminal integration pass (mount lanes 4 and 6, lane 5 research consumer) | 3 | Lanes 3, 4, 5, 6 returns |
+| Terminal integration pass (mount lanes 4, 6 and 7, lane 5 research consumer) | 3 | Lanes 3, 4, 5, 6, 7 returns |
 | 9 Integrated candidate proof, release, served and natural-update evidence | 9 | An integrated candidate in both repos |
 
 ## Open decisions held by the COO
