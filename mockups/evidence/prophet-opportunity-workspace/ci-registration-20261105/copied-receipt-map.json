@@ -1,0 +1,74 @@
+[
+  {
+    "source": "/tmp/prophet-ci-registration-39f792.receipt.json",
+    "file": "validation/initial-receipt.json"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-39f792-hosted-step.log",
+    "file": "validation/initial-hosted-step.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-39f792-unrun-census.log",
+    "file": "validation/initial-unrun-census.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-39f792-trigger-closure.log",
+    "file": "validation/initial-trigger-closure.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-39f792-manifest.log",
+    "file": "validation/initial-manifest.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-39f792-routing.log",
+    "file": "validation/initial-routing.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final-39f792.receipt.json",
+    "file": "validation/scope-gap-receipt.json"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final-39f792-unrun-census.log",
+    "file": "validation/scope-gap-unrun-census.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final-39f792-manifest.log",
+    "file": "validation/scope-gap-manifest.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final-39f792-trigger-closure.log",
+    "file": "validation/scope-gap-trigger-closure.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final-39f792-routing-and-exclusive-closure.log",
+    "file": "validation/scope-gap-routing-and-exclusive-closure.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final2-39f792.receipt.json",
+    "file": "validation/final-receipt.json"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final2-39f792-unrun-census.log",
+    "file": "validation/final-unrun-census.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final2-39f792-manifest.log",
+    "file": "validation/final-manifest.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final2-39f792-trigger-closure.log",
+    "file": "validation/final-trigger-closure.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-final2-39f792-routing-and-exclusive-closure.log",
+    "file": "validation/final-routing-and-exclusive-closure.log.txt"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-additional-suites-39f792.json",
+    "file": "validation/additional-suites-receipt.json"
+  },
+  {
+    "source": "/tmp/prophet-ci-registration-additional-suites-39f792.log",
+    "file": "validation/additional-suites.log.txt"
+  }
+]

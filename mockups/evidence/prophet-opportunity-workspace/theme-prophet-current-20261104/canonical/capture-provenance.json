@@ -1,0 +1,17 @@
+{
+  "source_head": "50cf9d22425587c04ce85c4c2774443abc500a16",
+  "canonical_module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+  "wrapper_sha256": "cbd6df74e27e219f664d16c161b6ce2d8d6f1c7cfc9245ec58883024368877a3",
+  "page_sha256": "1114ee760bd96444f757c68fb7dc92f7173bbc213f26cd858df03f722ac29ea5",
+  "source_files": {
+    "site/theme.js": "a32f4446fc013608a3e793f78b1db2d750a2a0a913bff47da602d339281e2f37",
+    "templates/_prophet_opportunity.css.j2": "d70b508ed0dad758336073a9066431fcc0b7b5f52d2249b1ddaabb09abc42eff",
+    "templates/_prophet_opportunity_card.html.j2": "23622fe898846800c6437c926f088a1c2dac249c68f69bd08dff64a91243592b",
+    "templates/dashboard.html.j2": "39911c032aaf0ee5587b9191a5cccc89449ff2a01c1df69df26a2298e4b4031f",
+    "templates/theme.css": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+    "site/us_stocks.html": "1114ee760bd96444f757c68fb7dc92f7173bbc213f26cd858df03f722ac29ea5",
+    "site/assets/css/60dc406b.css": "60dc406b8009347e9cd4fdc6d62823b2ccdca0313583dc005f7eb22e28dc0237"
+  },
+  "scope": "Canonical v2 producer unchanged; real browser hover/focus on a.terminal-link, no navigation. Public staging bytes match committed HTML. Only loopback public assets allowed. Anonymous offline lab, not authenticated or production acceptance.",
+  "exit": 0
+}

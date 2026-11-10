@@ -1,0 +1,25 @@
+{
+  "source_head": "5370b9f51740fe87d25da33d46552cd33b628596",
+  "steps": [
+    {
+      "tool": "capture_native_prophet.py",
+      "exit": 0
+    },
+    {
+      "tool": "verify_native_pair.py",
+      "exit": 0
+    },
+    {
+      "tool": "check_native_navigation.py",
+      "exit": 0
+    },
+    {
+      "tool": "capture_canonical_offline.py",
+      "exit": 0
+    },
+    {
+      "tool": "measure_native_loading.py",
+      "exit": 0
+    }
+  ]
+}

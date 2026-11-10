@@ -22,6 +22,16 @@ const cohortRenderer = [
   "template = env.from_string(macro + '{% include \"_commodity_decision_workspace.html.j2\" %}')",
   "json.dump({name: template.render(commodity_workspace=payload) for name, payload in payloads.items()}, sys.stdout)"
 ].join("\n");
+function assertPublishedGoldLinks(source, document) {
+  // Match the canonical template's chain.id-to-asset mapping.
+  const expected = source.chains.filter(chain => chain.id.includes("gold")).flatMap(
+    chain => (chain.cohorts || []).flatMap(
+      cohort => (cohort.companies?.linked || []).slice(0,6).map(company => company.href)));
+  const actual = Array.from(document.querySelectorAll(
+    '[data-cw-chain-asset="gold"] a[data-cw-company-href]'), link => link.dataset.cwCompanyHref);
+  assert.deepEqual(actual.sort(), expected.sort(), "published Gold company links differ from source");
+}
+
 function renderCompanyCohortFixtures(publishedHTML) {
   const source = new JSDOM(publishedHTML,{includeNodeLocations:true});
   const mount = source.window.document.getElementById("commodity-workspace");
@@ -31,6 +41,13 @@ function renderCompanyCohortFixtures(publishedHTML) {
   const location = source.nodeLocation(mount);
   assert.ok(location && location.endOffset > location.startOffset,"bounded workspace source");
   const published = JSON.parse(mount.querySelector("#cw-data").textContent);
+  // Keep the actual publisher boundary independently of the controlled cohort.
+  const publishedOwnerLinked = published.chains.some(chain => (chain.cohorts || []).some(
+    cohort => (cohort.companies?.linked || []).length > 0));
+  const publishedCompanyLinks = mount.querySelectorAll('a[data-cw-company-href]').length;
+  if (publishedOwnerLinked) assert.ok(publishedCompanyLinks > 0, "owner-backed company links omitted");
+  else assert.equal(publishedCompanyLinks, 0, "unqualified company link was published");
+  assertPublishedGoldLinks(published, source.window.document);
   const payloads = {};
   for (const mode of ["linked","empty","unavailable"]) {
     const payload = JSON.parse(JSON.stringify(published));
@@ -70,7 +87,7 @@ function renderCompanyCohortFixtures(publishedHTML) {
     assert.equal(typeof components[mode],"string",mode+" render result");
     html[mode]=publishedHTML.slice(0,location.startOffset)+components[mode]+publishedHTML.slice(location.endOffset);
   }
-  return {html,publishedFingerprint:published.fingerprint};
+  return {html,publishedFingerprint:published.fingerprint,publishedCompanyLinks,publishedOwnerLinked};
 }
 const cohortFixtures=renderCompanyCohortFixtures(publishedHTML);
 const html=cohortFixtures.html.linked;
@@ -160,6 +177,17 @@ async function checkMissingCompanyCohort(mode) {
 }
 
 (async()=>{
+  check("another chain cannot conceal omitted authorized Gold links",()=>{
+    const mixed = d.createElement("div");
+    const other = d.createElement("section");other.dataset.cwChainAsset="oil";
+    const link = d.createElement("a");link.dataset.cwCompanyHref="https://app.mastermind-x.com/analysis?symbol=A";
+    other.appendChild(link);mixed.appendChild(other);
+    const source = {chains:[{id:"real_rate_peak_gold_rerate",cohorts:[{companies:{linked:[{href:link.dataset.cwCompanyHref}]}}]}]};
+    assert.throws(()=>assertPublishedGoldLinks(source,mixed),/published Gold company links differ from source/);
+  });
+  check("source-backed company links obey the publisher's honest absence",()=>{
+    assert.equal(cohortFixtures.publishedCompanyLinks > 0, cohortFixtures.publishedOwnerLinked);
+  });
   check("controlled company links come from the actual template",()=>{
     assert.equal(data.test_fixture,"company-return-cohort:linked");
     assert.equal(d.querySelectorAll("[data-cw-company-href]").length,1);
@@ -372,8 +400,7 @@ async function checkMissingCompanyCohort(mode) {
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
     assert.deepEqual(consoleErrors,[]);
   });
-  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,published_snapshot:cohortFixtures.publishedFingerprint,company_cohort_cases:["linked","empty","unavailable"],fixture_only:true,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
+  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,published_snapshot:cohortFixtures.publishedFingerprint,source_company_links:cohortFixtures.publishedCompanyLinks,company_cohort_cases:["linked","empty","unavailable"],fixture_only:true,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();
 })().catch(error=>{console.error(error);dom.window.close();process.exitCode=1;});
-

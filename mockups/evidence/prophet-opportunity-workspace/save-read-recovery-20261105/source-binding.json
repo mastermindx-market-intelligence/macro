@@ -1,0 +1,27 @@
+{
+  "schema": "prophet.save_read_recovery_source_binding.v1",
+  "parent_head": "ec24a85de3fc91988ca5a6fb25a97384b1cf2ab5",
+  "source_sha256": {
+    "templates/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "site/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "tests/test_prophet_save_composition.py": "20a03bb1339af2d06753beaa0f18d957f60f71bb027097e8c5e596e65ccf980d"
+  },
+  "unchanged_product_sha256": {
+    "site/us_stocks.html": "5f09f469275023fa6cbee3db2e161796ae6c6f4febc6f924eeffceba756a8646",
+    "site/premiumdata/us_stocks.json": "4931a5c91d9de49b6b3d109c4985310a0f43ebc2acaa5caf362bf442633699b3",
+    "site/factordata/us_standouts.json": "1e821810c93753f5bcce47c083cc515486aaf38c9bd9b28af1b5639270f67471",
+    "site/factordata/signal_gate.json": "288fe5457782f460c3e705c2643ccb1a6b444a450f5e337c2f48b19aba3129a5"
+  },
+  "ci_manifest_sha256": "852ae0e785f518614161a2a92d4b41803910f94fa6e97ab79c1ecca99c910429",
+  "calibrated_probe_test_sha256": "12613af7d6157ee61e2b8756332d419f80edf3342180bf5375c7ea38e24c6413",
+  "browser_source_sha256": {
+    "templates/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "site/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "templates/prophet_save.css": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+    "templates/theme.css": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+    "templates/watchstore.js": "31ed104376ccd90c02903214d59782a512bacbcfa4dcc59f852b1504d06e544d"
+  },
+  "real_account_calls": false,
+  "production_acceptance": false,
+  "recorded_at": "2026-11-05T05:21:32.946823+00:00"
+}

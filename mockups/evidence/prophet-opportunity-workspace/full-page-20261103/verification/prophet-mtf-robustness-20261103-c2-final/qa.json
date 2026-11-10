@@ -1,0 +1,61 @@
+{
+  "kind": "synthetic-component-interaction-proof",
+  "source_sha256": "b5bd736aaf477564fa453e97107837f4ee20341d86ef6281fa0fe6fb614d02ce",
+  "checks": [
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "en",
+      "requests": 2,
+      "state": "ready",
+      "partial_disclosure": true,
+      "focus": "dash-mtf-heading",
+      "overflow": false,
+      "errors": [],
+      "screenshot": "mtf-320-light-en.png"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh",
+      "requests": 2,
+      "state": "ready",
+      "partial_disclosure": true,
+      "focus": "dash-mtf-heading",
+      "overflow": false,
+      "errors": [],
+      "screenshot": "mtf-390-dark-zh.png"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "language": "zh",
+      "requests": 2,
+      "state": "ready",
+      "partial_disclosure": true,
+      "focus": "dash-mtf-heading",
+      "overflow": false,
+      "errors": [],
+      "screenshot": "mtf-768-light-zh.png"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en",
+      "requests": 2,
+      "state": "ready",
+      "partial_disclosure": true,
+      "focus": "dash-mtf-heading",
+      "overflow": false,
+      "errors": [],
+      "screenshot": "mtf-1440-dark-en.png"
+    },
+    {
+      "javascript": false,
+      "state": "idle",
+      "skeleton_hidden": true,
+      "fallback_visible": true
+    }
+  ],
+  "public_network": false
+}

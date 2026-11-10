@@ -1,0 +1,50 @@
+{
+  "schema": "prophet.ci_registration_map.v1",
+  "parent_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "manifest": ".github/ci/legacy-jobs.yml",
+  "manifest_sha256": "852ae0e785f518614161a2a92d4b41803910f94fa6e97ab79c1ecca99c910429",
+  "entries": [
+    {
+      "suite": "tests/test_build_site_frozen_us_source.py",
+      "owner": "unrun-grading-board",
+      "step": "Today source binding and private hydration (hermetic)",
+      "scope": "existing inference"
+    },
+    {
+      "suite": "tests/test_render_macro_fast_source_guard.py",
+      "owner": "unrun-grading-board",
+      "step": "Today source binding and private hydration (hermetic)",
+      "scope": "existing inference"
+    },
+    {
+      "suite": "tests/test_prophet_public_featured_access_card.py",
+      "owner": "prophet-lab",
+      "step": "Prophet observation discovery — full-population search, access failure and theme geometry",
+      "added_paths": [
+        "tests/test_prophet_public_featured_access_card.py"
+      ],
+      "inferred_inputs_verified": [
+        "templates/dashboard.html.j2",
+        "templates/theme.css"
+      ]
+    },
+    {
+      "suite": "tests/test_prophet_same_date_publication.py",
+      "owner": "washout-turn-organ",
+      "step": "Prophet source, lifecycle and presentation contracts (one native process)",
+      "scope": "exclusive",
+      "added_paths": [
+        "tests/test_prophet_same_date_publication.py",
+        "site/prophet/index.json"
+      ]
+    }
+  ],
+  "new_jobs": 0,
+  "workflow_changes": 0,
+  "dependency_changes": 0,
+  "timeout_changes": 0,
+  "waiver_changes": 0,
+  "baseline_changes": 0,
+  "product_source_changes": 0,
+  "screenshot_changes": 0
+}

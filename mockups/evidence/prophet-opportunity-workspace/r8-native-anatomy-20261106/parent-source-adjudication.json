@@ -1,0 +1,19 @@
+{
+  "state": "SOURCE_FIXTURE_ACCEPTED_FOR_LOCAL_INTEGRATION",
+  "candidate": "e85506e68d520b4989e20ad055453247e9a76702",
+  "base": "9dbffa55cb1dbae715be6524adf813e81908a558",
+  "scope": [
+    "templates/_prophet_opportunity.css.j2",
+    "templates/_prophet_opportunity_card.html.j2",
+    "templates/_prophet_workspace.css.j2",
+    "tests/test_prophet_opportunity_card.py",
+    "tests/test_prophet_opportunity_integration.py"
+  ],
+  "review": "Parent inspected full diff and six original fixture PNGs; information/hooks/clocks preserved; initial header defects repaired and long-clock discriminator handled. Not native-pair or production acceptance.",
+  "tests": "230initial/127directlyaffected/2finalclockvalue with unchanged evidence reused;8normal+8longclock matrix as returned",
+  "remote9495": "Frozen9db; no push/cancel/metadata/CI effect",
+  "decision": "Fast-forward ONLY existing local repair branch. Remote CI42302216370 tests immutable9db; observer explicitrepo/run does not depend on local checkout. Native publisher needs fresh source qualification after local integration.",
+  "local_integration": "Normal fast-forward on owned repair branch9db\u2192e855 succeeded; remote9495 remains9db",
+  "final_visual_review": "Parent additionally inspected revision3 after/long-token-390-dark-zh andlong-iso-1440-light-en originals; bounded text/clock values visible, no hidden/truncated facts",
+  "native_source_qualification": "Original exec22127 START/live, exact reviewed e605 recipe on e855/cff22f1c;1915frozeninputs sameNov5 generation/0new; no stock refresh/network acquisition"
+}

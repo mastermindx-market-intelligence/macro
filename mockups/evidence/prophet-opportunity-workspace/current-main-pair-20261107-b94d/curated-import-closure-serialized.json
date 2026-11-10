@@ -1,0 +1,13 @@
+{
+  "rc": 0,
+  "seconds": 177.937,
+  "head": "e73ed3b5c5c19205ee669bc64f7a4aab9f729e81",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+    "-q"
+  ],
+  "reason": "Original assertion passed but session guard saw concurrent renderer writes; this run is serialized after exact owned-output reconciliation, guard unchanged"
+}

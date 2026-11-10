@@ -1,0 +1,510 @@
+{
+  "source_html_sha256": "eced30ec40e65d132c40c05ad3da354d46e8a557c0b6047743f7eaa9ca0838a4",
+  "access": "anonymous, isolated public build",
+  "cases": [
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "en",
+      "grid_width": 1360,
+      "gap": 16,
+      "tracks": [
+        328,
+        328,
+        328,
+        328
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 328,
+          "left": 40,
+          "top": 689.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 328,
+          "left": 384,
+          "top": 689.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 4,
+      "expected_track_width": 328.0,
+      "file": "today-1440-light-en.png",
+      "sha256": "12cc128f4d12776ad8a65784e459738b62b4dcc499782fdb5c2b7c964ecf88c7",
+      "passed": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "grid_width": 1360,
+      "gap": 16,
+      "tracks": [
+        328,
+        328,
+        328,
+        328
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 328,
+          "left": 40,
+          "top": 688.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 328,
+          "left": 384,
+          "top": 688.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 4,
+      "expected_track_width": 328.0,
+      "file": "today-1440-light-zh.png",
+      "sha256": "6435f2ca754ccd149e83fb631691a3e55b5f41c9b70fc05e5188ba43b87c3990",
+      "passed": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "grid_width": 1360,
+      "gap": 16,
+      "tracks": [
+        328,
+        328,
+        328,
+        328
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 328,
+          "left": 40,
+          "top": 689.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 328,
+          "left": 384,
+          "top": 689.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 4,
+      "expected_track_width": 328.0,
+      "file": "today-1440-dark-en.png",
+      "sha256": "87d34d62c9eea7212487a348d77cafc64928f9811733734dd2adeb105c66b5ac",
+      "passed": true
+    },
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "grid_width": 1360,
+      "gap": 16,
+      "tracks": [
+        328,
+        328,
+        328,
+        328
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 328,
+          "left": 40,
+          "top": 688.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 328,
+          "left": 384,
+          "top": 688.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 4,
+      "expected_track_width": 328.0,
+      "file": "today-1440-dark-zh.png",
+      "sha256": "fdf208c91e6611888d94c52c5634e57bb78ef7c40c5848034eb69efc8750faf1",
+      "passed": true
+    },
+    {
+      "viewport": 1024,
+      "theme": "light",
+      "locale": "en",
+      "grid_width": 988,
+      "gap": 16,
+      "tracks": [
+        318.656,
+        318.672,
+        318.656
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 318.65625,
+          "left": 18,
+          "top": 729.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 318.671875,
+          "left": 352.65625,
+          "top": 729.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 3,
+      "expected_track_width": 318.6666666666667,
+      "file": "today-1024-light-en.png",
+      "sha256": "361b6042b723f62a565d0f923a914f0637bfbc4b5c727d2064a45b350f818b1d",
+      "passed": true
+    },
+    {
+      "viewport": 1024,
+      "theme": "light",
+      "locale": "zh",
+      "grid_width": 988,
+      "gap": 16,
+      "tracks": [
+        318.656,
+        318.672,
+        318.656
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 318.65625,
+          "left": 18,
+          "top": 680.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 318.671875,
+          "left": 352.65625,
+          "top": 680.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 3,
+      "expected_track_width": 318.6666666666667,
+      "file": "today-1024-light-zh.png",
+      "sha256": "cddff202eff144badaadcd98b6ff5efdca247a9ea676a0198038c3aa08574bc7",
+      "passed": true
+    },
+    {
+      "viewport": 1024,
+      "theme": "dark",
+      "locale": "en",
+      "grid_width": 988,
+      "gap": 16,
+      "tracks": [
+        318.656,
+        318.672,
+        318.656
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 318.65625,
+          "left": 18,
+          "top": 729.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 318.671875,
+          "left": 352.65625,
+          "top": 729.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 3,
+      "expected_track_width": 318.6666666666667,
+      "file": "today-1024-dark-en.png",
+      "sha256": "ea9a0158c907b7a673ad3b80b0522238b5ba8f629478304556e957ffb5559022",
+      "passed": true
+    },
+    {
+      "viewport": 1024,
+      "theme": "dark",
+      "locale": "zh",
+      "grid_width": 988,
+      "gap": 16,
+      "tracks": [
+        318.656,
+        318.672,
+        318.656
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 318.65625,
+          "left": 18,
+          "top": 680.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 318.671875,
+          "left": 352.65625,
+          "top": 680.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 3,
+      "expected_track_width": 318.6666666666667,
+      "file": "today-1024-dark-zh.png",
+      "sha256": "0c9f68d4473e5e63842f0d29727cc19a9f97d87572d7fcf83cab620d589ee360",
+      "passed": true
+    },
+    {
+      "viewport": 768,
+      "theme": "light",
+      "locale": "en",
+      "grid_width": 732,
+      "gap": 16,
+      "tracks": [
+        358,
+        358
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 358,
+          "left": 18,
+          "top": 770.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 358,
+          "left": 392,
+          "top": 770.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 2,
+      "expected_track_width": 358.0,
+      "file": "today-768-light-en.png",
+      "sha256": "91904d689d4064de55b232fc4e911794b3f42649ca60890c593635c95b18f8b9",
+      "passed": true
+    },
+    {
+      "viewport": 768,
+      "theme": "light",
+      "locale": "zh",
+      "grid_width": 732,
+      "gap": 16,
+      "tracks": [
+        358,
+        358
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 358,
+          "left": 18,
+          "top": 769.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 358,
+          "left": 392,
+          "top": 769.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 2,
+      "expected_track_width": 358.0,
+      "file": "today-768-light-zh.png",
+      "sha256": "2c7f1b836da03591eb22e5e80353ff75f08a8db9734c21b0cde9a3ccb19788a0",
+      "passed": true
+    },
+    {
+      "viewport": 768,
+      "theme": "dark",
+      "locale": "en",
+      "grid_width": 732,
+      "gap": 16,
+      "tracks": [
+        358,
+        358
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 358,
+          "left": 18,
+          "top": 770.015625
+        },
+        {
+          "ticker": "CVCO",
+          "width": 358,
+          "left": 392,
+          "top": 770.015625
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 2,
+      "expected_track_width": 358.0,
+      "file": "today-768-dark-en.png",
+      "sha256": "cbfecffae1aa17039e31c37e527f76b601b9e3a5194ea4bd84c03cb215412f4b",
+      "passed": true
+    },
+    {
+      "viewport": 768,
+      "theme": "dark",
+      "locale": "zh",
+      "grid_width": 732,
+      "gap": 16,
+      "tracks": [
+        358,
+        358
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 358,
+          "left": 18,
+          "top": 769.796875
+        },
+        {
+          "ticker": "CVCO",
+          "width": 358,
+          "left": 392,
+          "top": 769.796875
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 2,
+      "expected_track_width": 358.0,
+      "file": "today-768-dark-zh.png",
+      "sha256": "ffd8f94a5d5cd0a62b780c3ae5d69e0619ba82eb427f08e5a0ddcc59c7a0a138",
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "en",
+      "grid_width": 354,
+      "gap": 16,
+      "tracks": [
+        354
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 354,
+          "left": 18,
+          "top": 918.453125
+        },
+        {
+          "ticker": "CVCO",
+          "width": 354,
+          "left": 18,
+          "top": 1547.328125
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 1,
+      "expected_track_width": 354.0,
+      "file": "today-390-light-en.png",
+      "sha256": "e8aebd1a55a9ad7ca0ae1ec826409a595802e2fa5e21b3c35c7cd385e94c58e8",
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "theme": "light",
+      "locale": "zh",
+      "grid_width": 354,
+      "gap": 16,
+      "tracks": [
+        354
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 354,
+          "left": 18,
+          "top": 861.484375
+        },
+        {
+          "ticker": "CVCO",
+          "width": 354,
+          "left": 18,
+          "top": 1472.359375
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 1,
+      "expected_track_width": 354.0,
+      "file": "today-390-light-zh.png",
+      "sha256": "8fabe3d6045fef2bfe49d6c7098c18d6dbc15bcea2b1dab75b225886b2ac116e",
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "en",
+      "grid_width": 354,
+      "gap": 16,
+      "tracks": [
+        354
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 354,
+          "left": 18,
+          "top": 918.453125
+        },
+        {
+          "ticker": "CVCO",
+          "width": 354,
+          "left": 18,
+          "top": 1547.328125
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 1,
+      "expected_track_width": 354.0,
+      "file": "today-390-dark-en.png",
+      "sha256": "101c63dc274336eb08f9c0dc7199ef6504ec1ac099d4da62bd88d5baa9245272",
+      "passed": true
+    },
+    {
+      "viewport": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "grid_width": 354,
+      "gap": 16,
+      "tracks": [
+        354
+      ],
+      "cards": [
+        {
+          "ticker": "FLS",
+          "width": 354,
+          "left": 18,
+          "top": 861.484375
+        },
+        {
+          "ticker": "CVCO",
+          "width": 354,
+          "left": 18,
+          "top": 1472.359375
+        }
+      ],
+      "overflow": false,
+      "expected_columns": 1,
+      "expected_track_width": 354.0,
+      "file": "today-390-dark-zh.png",
+      "sha256": "c4d7587c1535ebec7083a4f6482d1ae90120f86a0821d2b18c299862a5245042",
+      "passed": true
+    }
+  ]
+}

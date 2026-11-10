@@ -1,0 +1,17 @@
+2026-11-05T04:31:54.6843209Z [36;1m  echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2[0m
+2026-11-05T04:31:54.6847616Z [36;1m  echo "::error title=contract-delta::PR checkout is not an exact two-parent tested merge" >&2[0m
+2026-11-05T04:31:54.6849923Z [36;1m  echo "::error title=contract-delta::tested merge second parent does not match the exact PR head" >&2[0m
+2026-11-05T04:31:54.6877213Z   EXPECTED_PR_HEAD: 39f792bb3d0902fe46127b455c35f8f98d307080
+2026-11-05T04:31:55.1693563Z ##[group]Run python scripts/check_contract_delta.py --base 2fbee06234fec4e792918c1cb0d9f8ea2ed833c4
+2026-11-05T04:44:43.8657753Z contract-delta: probe templates/index.html: head 137 jobs / 5,912 s / 10 packs; base 137 jobs / 5,912 s / 10 packs; ceilings 137 / 5,912 / 10
+2026-11-05T04:44:43.8659137Z contract-delta: probe scripts/build_free_content.py: head 137 jobs / 5,927 s / 10 packs; base 137 jobs / 5,927 s / 10 packs; ceilings 138 / 5,927 / 10
+2026-11-05T04:44:43.8660358Z contract-delta: probe engine/prophet/plan_book.py: head 131 jobs / 5,668 s / 10 packs; base 131 jobs / 5,668 s / 10 packs; ceilings 131 / 5,668 / 10
+2026-11-05T04:44:43.8661457Z contract-delta: head census seconds: closure_and_suites 478.6, probes 153.8, skip_only 39.3, trigger_gaps 70.1
+2026-11-05T04:44:43.8662410Z contract-delta: base census seconds: closure_and_suites 439.0, probes 133.8, skip_only 39.2, trigger_gaps 69.3
+2026-11-05T04:44:43.8687726Z ##[error]tests/test_build_site_frozen_us_source.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-11-05T04:44:43.8701374Z ##[error]tests/test_prophet_public_featured_access_card.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-11-05T04:44:43.8707314Z ##[error]tests/test_prophet_same_date_publication.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-11-05T04:44:43.8710765Z ##[error]tests/test_render_macro_fast_source_guard.py is a new pytest suite named by no run: step in any workflow — wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml
+2026-11-05T04:44:43.8712344Z contract-delta: 4 introduced, 0 inherited (base 2fbee06234fe)
+2026-11-05T04:44:43.8712717Z contract-delta: wall 768.5 s
+2026-11-05T04:44:43.9188701Z ##[error]Process completed with exit code 1.

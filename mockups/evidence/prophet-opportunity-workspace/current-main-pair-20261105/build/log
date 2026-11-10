@@ -1,0 +1,316 @@
+
+MODULE scripts.build_site
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:401: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f["curve_tp_adj"] = f["spread_2s10s"] + f["term_premium_10y"]
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:452: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f["net_liquidity_bn"] = canon.net_liquidity_bn(f["walcl_bn"], f["rrp_bn"], f["tga_bn"])
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/engine/inputs.py:214: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  f[name] = s.reindex(idx)
+::warning title=equity_factors observation calendar::raw source calendar reached 2026-11-04, but 2026-11-04 carried no prices; effective 2026-11-03
+::warning title=equity_factors stale-tier column overridden::10 ticker(s) carried a FROZEN column in an earlier tier and a live one in a later tier — index migrants whose old tier's column stopped on index exit; the live column now wins: BTSG(smallcap_breadth->midcap_breadth), CAG(breadth->smallcap_breadth), CPB(breadth->smallcap_breadth), CTVA(breadth->midcap_breadth), KRYS(smallcap_breadth->midcap_breadth), MOH(smallcap_breadth->midcap_breadth), POOL(breadth->smallcap_breadth), SANM(smallcap_breadth->midcap_breadth), SMTC(smallcap_breadth->midcap_breadth), VIAV(smallcap_breadth->midcap_breadth)
+INFO residual_alpha: admitted 148 curated extras (e.g. ACHR, AEM, AFRM, AG, AGI)
+INFO wrote alpha.json (1599 names, 11 sectors)
+INFO wrote insider_signals.json (3484 names with 6mo Form-4 activity)
+::warning title=manager_quality observation calendar::raw source calendar reached 2026-11-04, but 2026-11-04 carried no prices; effective 2026-11-03
+::warning title=manager_quality stale-tier column overridden::10 ticker(s) carried a FROZEN column in an earlier tier and a live one in a later tier — index migrants whose old tier's column stopped on index exit; the live column now wins: BTSG(smallcap_breadth->midcap_breadth), CAG(breadth->smallcap_breadth), CPB(breadth->smallcap_breadth), CTVA(breadth->midcap_breadth), KRYS(smallcap_breadth->midcap_breadth), MOH(smallcap_breadth->midcap_breadth), POOL(breadth->smallcap_breadth), SANM(smallcap_breadth->midcap_breadth), SMTC(smallcap_breadth->midcap_breadth), VIAV(smallcap_breadth->midcap_breadth)
+INFO manager_quality: 51 funds, 50 graded (>=8 events), horizon 63d
+::warning title=manager_trades observation calendar::raw source calendar reached 2026-11-04, but 2026-11-04 carried no prices; effective 2026-11-03
+::warning title=manager_trades stale-tier column overridden::10 ticker(s) carried a FROZEN column in an earlier tier and a live one in a later tier — index migrants whose old tier's column stopped on index exit; the live column now wins: BTSG(smallcap_breadth->midcap_breadth), CAG(breadth->smallcap_breadth), CPB(breadth->smallcap_breadth), CTVA(breadth->midcap_breadth), KRYS(smallcap_breadth->midcap_breadth), MOH(smallcap_breadth->midcap_breadth), POOL(breadth->smallcap_breadth), SANM(smallcap_breadth->midcap_breadth), SMTC(smallcap_breadth->midcap_breadth), VIAV(smallcap_breadth->midcap_breadth)
+INFO wrote smartmoney.json (49 funds, 1315 names)
+INFO cycles: loaded fitted bands from /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/data/regime/cycle_bands_fit.json
+INFO cycles: equity dc_band override (36, 42) → (23, 44) (fitted)
+INFO cycles: equity ic_band_w override (16, 26) → (13, 25) (fitted)
+INFO cycles: loaded ladder risk calibration from /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/data/regime/ladder_risk_calibration.json (validated=False, any_bound=False)
+INFO wrote 11 sector drill-down pages
+::warning title=etf-snapshot-quarantine::BETZ: 24 snapshot(s) rejected by the weight-sum sanity check (2026-09-21, 2026-09-22, 2026-09-23, 2026-09-24, 2026-09-25, 2026-09-28, 2026-10-01, 2026-10-02, 2026-10-05, 2026-10-06, 2026-10-07, 2026-10-08, 2026-10-09, 2026-10-15, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23, 2026-10-26, 2026-10-30, 2026-11-02, 2026-11-03, 2026-11-04, 2026-11-05) — excluded from the flow/selection read
+WARNING flow decomposition BETZ: quarantined ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-28', '2026-10-01', '2026-10-02', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-15', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-26', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'] (weight sum outside (80.0, 120.0); declared nav_equity_frac 1.00)
+INFO etfs: premium payload /premiumdata/etfs.json (40 board rows, 40 adds, 12 trims)
+INFO wrote etfs.html (40 accumulation, 12 trims) + fund_flows.json (1915 names)
+INFO edgar panel cache fresh (2.9d) — skip fetch
+INFO finra short-interest cache fresh (2.0d)
+INFO insider cache fresh (2.9d)
+INFO insider panel backfill: 84 quarters 2006q1..2026q4
+INFO insider panel: 2026q4 unavailable (skip)
+INFO insider panel: 2369013 transactions, 17264 tickers, 2006-01-03..2026-09-30
+INFO eps_quarterly cache fresh (2.9d) — skip fetch
+::warning title=equity_factors stale price feeds::37/1527 name(s) lag the panel tip 2026-11-03 by >7d and are dropped from price-derived factors (mktcap, value yields, leadership) — fundamentals-only legs still publish: BRBR(138d), MRSH(138d), CWEN-A(130d), ARI(124d), GDYN(124d), CLB(124d), VITL(118d), GOGO(118d), UHT(118d), OXM(118d), ETD(118d), CTKB(118d) (+25 more)
+/home/ubuntu0/lanes/venv/lib/python3.12/site-packages/pandas/core/nanops.py:1716: RuntimeWarning: Degrees of freedom <= 0 for slice
+  return np.cov(a, b, ddof=ddof)[0, 1]
+/home/ubuntu0/lanes/venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:2902: RuntimeWarning: divide by zero encountered in divide
+  c *= np.true_divide(1, fact)
+/home/ubuntu0/lanes/venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:2902: RuntimeWarning: invalid value encountered in multiply
+  c *= np.true_divide(1, fact)
+INFO equity_factors: 51 share count(s) from Polygon reference (11 stale vs filing, 40 missing in EDGAR); largest gaps: {'BKNG': 23.72, 'CRWD': 4.06, 'VMRK': 2.05, 'APH': 2.01, 'MNST': 2.0, 'DVN': 1.77, 'WAT': 1.65, 'SWKS': 1.57}
+INFO wrote factors.html (1514 names, FY2025, ic=yes, nw_state=yes, seas=yes, momo=yes)
+INFO wrote signal_lab.html (65 signals, 1/11 factors survive FDR)
+INFO wrote quant_lab.html (5 models, study=yes, live n=2875)
+INFO wrote alerts.html (60 alerts: 2 critical / 1 major / 2 actionable, 1 with measured edge)
+INFO wrote plans.html (essential $99/$75 save 24% · pro $149/$109 save 27%)
+INFO wrote support.html (public support desk)
+INFO wrote help.html (8 source-validated links)
+INFO wrote unsubscribe.html (public opt-out)
+::warning title=etf-snapshot-quarantine::BETZ: 24 snapshot(s) rejected by the weight-sum sanity check (2026-09-21, 2026-09-22, 2026-09-23, 2026-09-24, 2026-09-25, 2026-09-28, 2026-10-01, 2026-10-02, 2026-10-05, 2026-10-06, 2026-10-07, 2026-10-08, 2026-10-09, 2026-10-15, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23, 2026-10-26, 2026-10-30, 2026-11-02, 2026-11-03, 2026-11-04, 2026-11-05) — excluded from the flow/selection read
+WARNING flow decomposition BETZ: quarantined ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-28', '2026-10-01', '2026-10-02', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-15', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-26', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'] (weight sum outside (80.0, 120.0); declared nav_equity_frac 1.00)
+INFO wrote advanced.html (113 KB)
+INFO rr_banner.json written (alert=none)
+INFO wrote factor_betas.json (1538 names)
+INFO wrote transmission_chains.json (7 chains, asof=2026-11-03)
+INFO theme_graph.rights_use: capture refused (SOURCE_FAMILY_UNRESOLVED)
+INFO W3C capture refused: ['SOURCE_FAMILY_UNRESOLVED']
+WARNING W3C US qualified reads refused (['CAPTURE_RIGHTS_UNAVAILABLE']); receipt-only
+INFO theme_graph.rights_use: capture refused (SOURCE_FAMILY_UNRESOLVED)
+INFO W3C capture refused: ['SOURCE_FAMILY_UNRESOLVED']
+INFO OEU M-PRO options context: 10/51 buy cards flagged (665 wall rows, 12 IV histories)
+WARNING gdelt_client: network error on attempt 0: HTTPSConnectionPool(host='api.gdeltproject.org', port=443): Read timed out. (read timeout=15)
+WARNING gdelt_client: 429 rate-limited on attempt 0
+WARNING gdelt_client: network error on attempt 1: HTTPSConnectionPool(host='api.gdeltproject.org', port=443): Read timed out. (read timeout=15)
+WARNING macro_news: global wire (GDELT) is DARK (fetch_error) — the 25 displayed headline(s) are official+RSS only, NOT a complete news suite
+WARNING gdelt_client: 429 rate-limited on attempt 0
+WARNING gdelt_client: 429 rate-limited on attempt 1
+WARNING gdelt_client: 429 rate-limited on attempt 0
+WARNING gdelt_client: 429 rate-limited on attempt 1
+WARNING gdelt_client: 429 rate-limited on attempt 2
+INFO news_vector: dropped 1 low-value headlines (calendar_preview=1)
+INFO news_vector: 111 raw -> 2 gated -> 0 new events (1443 total)
+INFO cycles: crypto dc_band override (56, 70) → (22, 45) (fitted)
+INFO cycles: crypto ic_band_w override (24, 40) → (11, 22) (fitted)
+INFO leadership_crack: wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/data/leadership_crack/latest.json
+INFO deterioration_cascade: wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/data/deterioration_cascade/latest.json
+INFO risk_envelope: session=2026-11-03 measured=None hazard=FRAGILE coherence=MIXED data=DEGRADED bundle=d70ca10e8fa44b10
+::warning title=etf-snapshot-quarantine::BETZ: 24 snapshot(s) rejected by the weight-sum sanity check (2026-09-21, 2026-09-22, 2026-09-23, 2026-09-24, 2026-09-25, 2026-09-28, 2026-10-01, 2026-10-02, 2026-10-05, 2026-10-06, 2026-10-07, 2026-10-08, 2026-10-09, 2026-10-15, 2026-10-20, 2026-10-21, 2026-10-22, 2026-10-23, 2026-10-26, 2026-10-30, 2026-11-02, 2026-11-03, 2026-11-04, 2026-11-05) — excluded from the flow/selection read
+WARNING flow decomposition BETZ: quarantined ['2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-28', '2026-10-01', '2026-10-02', '2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-15', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-26', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'] (weight sum outside (80.0, 120.0); declared nav_equity_frac 1.00)
+INFO MACRO_DUMP_VM: cached view-model -> /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/data/_dev_macro_vm.pkl
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro.html (1129 KB)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/news.html (247 KB)
+INFO us_stocks: premium payload /premiumdata/us_stocks.json (48 locked board rows, 851 locked plans, 10 locked panels)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/us_stocks.html (1112 KB)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_signals.html (183 KB)
+INFO wrote macrodata/macro_signals.json
+INFO macrodata: copied release_forecast.json
+INFO no Polygon key — live splice skipped (close-cache 1D)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/marketdata/sp500_heatmap.json — 503 tiles, 8/16 timeframes live, size=marketcap, src=daily-close
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/marketdata/themes_heatmap.json — 40 themes, 268 subsector tiles, 924 members, asof 2026-11-04
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/sector_heatmap.html (59 KB)
+INFO china heatmap caps: filled 934 names from Tushare total_mv_yi (30.0亿 placeholders dropped)
+INFO wrote china_heatmap.json — 1740 tiles, 12 sectors, size=marketcap, asof=2026-11-04
+WARNING hk heatmap: breadth cache missing — deep panel only
+WARNING hk heatmap: no turnover for 3/160 names (sized at floor): 0011.HK, 3333.HK, 0489.HK
+INFO hk heatmap: 3/160 names have no zh label (English fallback): 0100.HK, 0011.HK, 0489.HK
+INFO wrote hk_heatmap.json — 158 tiles, 13 sectors, size=marketcap, asof=2026-11-04
+INFO canada cap-completion: estimated 1 caps from index weight
+INFO wrote canada_heatmap.json — 216 tiles, 11 sectors, size=marketcap, asof=2026-11-04
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/china_heatmap.html (73 KB, ssr=True, gated=True)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/hk_heatmap.html (71 KB, ssr=True, gated=False)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/canada_heatmap.html (71 KB, ssr=True, gated=False)
+INFO turn read: 39 sessions (warm=True) — up 12/25, down 22/28, 7 nominations
+INFO track record: +0 snapshots, 57 days logged, verdict=measuring
+INFO sector ETFs: 11 rows, quadrants={'improving', 'weakening', 'leading', 'lagging'}, turn={'trending_up': 2, 'range': 8, 'topping': 1}
+INFO turn ledgers: +6 turns, +7 nominations (append-only)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/marketdata/subsector_rotation.json — 269 subsectors, 41 themes (themes unit hidden; emerging: energycleansolar, commagrifertilizers, fintechinsurance, commagrilivestock)
+INFO rotation alerts: 20 fired (entertainmentbetting, transportationairtravel, consumerfarmdirect, realestatehousing, transportationtrucking)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/subsector_rotation.html (4 KB)
+INFO wrote 269 subsector detail pages -> /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/rotation
+INFO wrote 269 subsector detail pages
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/marketdata/subsector_rotation_china.json — 233 subsectors, 22 themes (emerging: ths_baijiu, thsc308428, thsc301104, thsc300973)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/subsector_rotation_china.html (5 KB)
+INFO wrote 233 China subsector detail pages -> /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/rotation_china
+INFO wrote 233 China subsector detail pages
+INFO subsector_confluence: rendered subsectors.html + 114 detail pages
+INFO wrote subsectors.html + 114 subsector confluence detail pages
+INFO subsector_confluence[CHINA]: rendered subsectors_china.html + 237 detail pages
+INFO wrote subsectors_china.html + 237 China THS confluence detail pages
+INFO subsector_confluence[NASDAQ]: rendered 6 detail pages
+INFO subsector_confluence[RUSSELL]: rendered 0 detail pages
+INFO wrote 6 Nasdaq-100 + 0 Russell-2000 subsector confluence detail pages
+::warning title=index_leadership::no readable inputs — subsector_confluence*/basket_confluence boards or site/subsectorohlc*/ sidecars absent (fresh checkout without the R2 restore?); kept last committed index_leadership.json; forward ledger not advanced
+WARNING index_leadership: no confluence boards found — skipped
+INFO experiments_registry: 297 experiments (146 ready)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/history.html (181 KB)
+INFO retained pinned US board/gate; stock-library refresh disabled
+INFO theme_graph.rights_use: capture refused (SOURCE_FAMILY_UNRESOLVED)
+INFO W3C capture refused: ['SOURCE_FAMILY_UNRESOLVED']
+WARNING W3C US qualified reads refused (['CAPTURE_RIGHTS_UNAVAILABLE']); receipt-only
+INFO theme_graph.rights_use: capture refused (SOURCE_FAMILY_UNRESOLVED)
+INFO W3C capture refused: ['SOURCE_FAMILY_UNRESOLVED']
+INFO OEU M-PRO options context: 10/51 buy cards flagged (665 wall rows, 12 IV histories)
+WARNING US stock index /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/stockdata/index.json missing — chart data skipped
+INFO chart data: 0 ohlc files (0 candle-capable)
+INFO chart data: 0 US intraday (4H) files
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/watchlist.html
+INFO wrote 61 AI stock-brief target(s) for the parallel stock_briefs job
+INFO neuralwebdata: copied confluence_graph.json
+INFO neuralwebdata: copied kernel_families.json
+INFO neuralwebdata: copied half_life.json
+INFO neuralwebdata: copied daily_brief.json
+INFO neuralwebdata: copied liquidity_plumbing.json
+INFO neuralwebdata: copied attention_deterministic.json
+INFO neuralwebdata: wrote health_history.json (14 rows)
+INFO neuralwebdata: wrote governance_recent.json (20 rows)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/committee.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/neural_web.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/fundamental_forensics.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/biocatalyst.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/capital_structure.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/finance_intelligence.html
+INFO built site/expectation_surface.html — state=LIVE securities=1508 sessions=67
+INFO wrote site/expectation_surface.html (LIVE)
+WARNING consumer_cyclical_plnt.html render failed (consumer_cyclical_plnt is a synthetic fixture card; public render held (Product Trust F-6)); page skipped
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_liquidity_regime.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_growth_real_economy.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_business_activity.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_labor_markets.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_inflation_system.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_monetary_policy.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_financial_conditions.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_liquidity_central_banks.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_capital_structure.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_housing_real_estate.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_consumer_payments.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_national_debt_liabilities.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_rates_curves.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_trade_flows.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/macro_monetary.html
+INFO research_priority: dropped 0 theme node(s) with no name in either language
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/state_of_themes.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/basketdata/theme_lanes.json (18 theme lanes, 13 basket lanes, 13/18 themes with a basket)
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/market_structure.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/theme_tree.html
+INFO wrote /home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/site/market_memory.html
+INFO regenerated sitemap.xml: 3041 core entries + stocks entries preserved
+INFO timing: action_board+sector_timing           372.1s
+INFO timing: etf_page                              80.1s
+INFO timing: subsector_rotation                    55.2s
+INFO timing: dashboard_vm+render                   47.9s
+INFO timing: advanced_page                         42.2s
+INFO timing: smartmoney_data                       27.7s
+INFO timing: state_of_themes                       11.5s
+INFO timing: factors_page                           9.5s
+INFO timing: theme_tape                             4.6s
+INFO timing: theme_tree                             4.4s
+INFO timing: features+imports                       2.8s
+INFO timing: intl_heatmaps                          2.7s
+INFO timing: alpha_data                             2.3s
+INFO timing: quant_lab_page                         1.8s
+INFO timing: alerts_page                            1.7s
+INFO timing: insider_data                           0.9s
+INFO timing: stock_page                             0.8s
+INFO timing: signal_lab_page                        0.7s
+INFO timing: committee+neuralwebdata                0.6s
+INFO timing: sp500_heatmap                          0.4s
+INFO timing: one_build_lag_rerender                 0.4s
+INFO timing: subsector_confluence_cn                0.3s
+INFO timing: rr_banner                              0.3s
+INFO timing: market_structure                       0.3s
+INFO timing: fundamental_forensics                  0.3s
+INFO timing: subsector_confluence_us                0.1s
+INFO timing: help_page                              0.1s
+INFO timing: nasdaq_russell                         0.0s
+INFO timing: biocatalyst                            0.0s
+INFO timing: market_memory                          0.0s
+INFO timing: index_leadership                       0.0s
+INFO timing: watchlist                              0.0s
+INFO timing: neural_web_page                        0.0s
+INFO timing: plans_support_unsub_pages              0.0s
+INFO timing: chart_data                             0.0s
+INFO timing: attention_data                         0.0s
+INFO timing: TOTAL                                671.8s
+
+MODULE scripts.inject_data_base
+INFO inject_data_base: data_base shim injected into 11 page(s)
+
+MODULE scripts.externalize_css
+INFO externalize_css: externalized CSS+JS on 920 page(s); skipped 7 source page(s) (plain-copy pairs + hand-authored); pruned 4 orphan css + 0 orphan js file(s)
+
+MODULE scripts.optimize_assets
+INFO optimize_assets: re-stamped templates/movers.html (plain-copy pair)
+INFO optimize_assets: asset-optimized 13996 file(s)

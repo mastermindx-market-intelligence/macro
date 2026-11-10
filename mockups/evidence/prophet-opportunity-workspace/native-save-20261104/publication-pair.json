@@ -1,0 +1,46 @@
+{
+  "source_head": "5e27058f43bb4dbdbc5e54ff4ecbbba70ef81930",
+  "public_html_sha256": "653326c306ecc1adc9687eb664765301e1ab94151ed6ed51d01a2d2b6e2f093b",
+  "essential_payload_sha256": "03cb5dee7aea9cd923f5861584277f100f522ce3e478bb1f763bc3c124e847ea",
+  "final_board_sha256": "dfb34687cdbf32ea6faff946d00a56fb997a89892d2a51a9d4e15f8882fd70c5",
+  "as_of": "2026-11-02",
+  "screener": {
+    "preview": 3,
+    "protected": 53,
+    "total": 56
+  },
+  "today": {
+    "public_articles": 1,
+    "entitled_preview": 6,
+    "featured_total": 12
+  },
+  "eligible_pool": {
+    "public": 3,
+    "protected": 209,
+    "total": 212,
+    "source_digest": "1621576d2d6989528e8bc8e54d097760fe571e96d60f2ec614f58e94a77a0990",
+    "public_source_positions_zero_based": [
+      0,
+      1,
+      10
+    ],
+    "ordering_note": "Native withholding selects a public subsequence. Each partition preserves source order; concatenation is not the original raw order."
+  },
+  "protected_plan_targets": 76,
+  "missing_plan_targets": [],
+  "checks": {
+    "pool_membership": true,
+    "pool_no_duplicates": true,
+    "pool_disjoint": true,
+    "pool_public_subsequence": true,
+    "pool_protected_subsequence": true,
+    "pool_source_identity": true,
+    "screener_preview_order": true,
+    "screener_protected_order": true,
+    "today_entitled_order": true,
+    "plan_targets_resolve": true,
+    "public_has_no_protected_plan_controls": true,
+    "today_raw_source_binding": true
+  },
+  "scope": "Native generated artifact and source proof; not authenticated browser, Paper or production acceptance."
+}

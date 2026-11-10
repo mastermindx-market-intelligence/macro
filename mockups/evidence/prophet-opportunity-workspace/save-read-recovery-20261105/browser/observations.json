@@ -1,0 +1,1010 @@
+{
+  "schema": "prophet.save_read_recovery_browser.v1",
+  "scope": "hermetic component fixture using actual controller/CSS/local fonts and synthetic account-service boundary",
+  "real_account_calls": false,
+  "production_acceptance": false,
+  "source_sha256": {
+    "templates/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "site/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "templates/prophet_save.css": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+    "templates/theme.css": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82",
+    "templates/watchstore.js": "31ed104376ccd90c02903214d59782a512bacbcfa4dcc59f852b1504d06e544d"
+  },
+  "cell_count": 16,
+  "all_passed": true,
+  "cells": [
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 273.875,
+          "width": 284,
+          "height": 352.25
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-320-light-en.png",
+        "sha256": "90729d35b2a3574f1f8ebd748a83d243d4117ae4fd2fa3938caf8e901f9a0e47",
+        "bytes": 18924,
+        "dimensions": [
+          284,
+          354
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 262.625,
+          "width": 284,
+          "height": 374.75
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-320-light-en.png",
+        "sha256": "b6e7ce6753fea90df80ee708e44c1fc3464ad08d881712332d63bcbf5f80e5fb",
+        "bytes": 18503,
+        "dimensions": [
+          284,
+          376
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "zh",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 284,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-320-light-zh.png",
+        "sha256": "691d63a3a6328948d8431aff7cdb4d41f58bf7289c590d584ce8ff9833ee344a",
+        "bytes": 23318,
+        "dimensions": [
+          284,
+          334
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "zh",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 284,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-320-light-zh.png",
+        "sha256": "125e3268e35c8038f7acd1195b9a0a25319a996ed414dcf4b5da0c155b411e07",
+        "bytes": 22884,
+        "dimensions": [
+          284,
+          334
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 273.875,
+          "width": 284,
+          "height": 352.25
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-320-dark-en.png",
+        "sha256": "32ff99cdfa10e1da53ab39c5af2a6cb6791022107c9496da51b7be3942e5edf4",
+        "bytes": 18686,
+        "dimensions": [
+          284,
+          354
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 262.625,
+          "width": 284,
+          "height": 374.75
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-320-dark-en.png",
+        "sha256": "79ab06076d8fc3ea26d18ce3b9a7bf0a205eacf5f44ca4d3866bdb02284def5c",
+        "bytes": 18523,
+        "dimensions": [
+          284,
+          376
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 284,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-320-dark-zh.png",
+        "sha256": "4401832ef57e4dcdab7954c07ae355d2ac5869089fba9098d19d9349bbeb51ba",
+        "bytes": 23361,
+        "dimensions": [
+          284,
+          334
+        ]
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 284,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 250,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-320-dark-zh.png",
+        "sha256": "c747c627f9c29cf1c83c8d5ec0ebbc206d1b1f2b76a2f15bcba31fe60f5c2b44",
+        "bytes": 22843,
+        "dimensions": [
+          284,
+          334
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 354,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-390-light-en.png",
+        "sha256": "d00491ecd8e46ba3cc03b22d4511aaf7ec58587f8224e02ef077ddc000fb0814",
+        "bytes": 18776,
+        "dimensions": [
+          354,
+          334
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 354,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-390-light-en.png",
+        "sha256": "78559caa89b1c14d4b5e2263b253229012e7ffe5cd45c48703036ee78196b649",
+        "bytes": 18227,
+        "dimensions": [
+          354,
+          334
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 294.5,
+          "width": 354,
+          "height": 311
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-390-light-zh.png",
+        "sha256": "cbb804a1452a092109d4475b12938a5ce2f4aee067006f359cc0f8052a7b50db",
+        "bytes": 23349,
+        "dimensions": [
+          354,
+          312
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 294.5,
+          "width": 354,
+          "height": 311
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(28, 36, 48)",
+        "bg": "rgb(255, 255, 255)",
+        "reducedMotion": true
+      },
+      "status_contrast": 15.62,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-390-light-zh.png",
+        "sha256": "2787a79c69be6369978fb2ea8f7cf6e78249fa4045816e01b5baadba56f4e443",
+        "bytes": 22877,
+        "dimensions": [
+          354,
+          312
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 354,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-390-dark-en.png",
+        "sha256": "96341d2f28773d7f3df0d26dff009d0843fa57c44de1bdcf3a756fe85b18020b",
+        "bytes": 18634,
+        "dimensions": [
+          354,
+          334
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 283.25,
+          "width": 354,
+          "height": 333.5
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 75.875,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-400.woff2",
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-390-dark-en.png",
+        "sha256": "0fd119f987e77fa5e64bd0218d82b10dd69a3366c545d0a5902388f58e0af008",
+        "bytes": 17936,
+        "dimensions": [
+          354,
+          334
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "mode": "recoverable",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 294.5,
+          "width": 354,
+          "height": 311
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 2,
+        "listReads": 1,
+        "mode": "recoverable"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "recoverable-390-dark-zh.png",
+        "sha256": "3b3f5761f4a749722fe912b329200b6029ce90409c7156df8c875899d094eb64",
+        "bytes": 23487,
+        "dimensions": [
+          354,
+          312
+        ]
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "mode": "unexpected",
+      "geometry": {
+        "rect": {
+          "x": 18,
+          "y": 294.5,
+          "width": 354,
+          "height": 311
+        },
+        "documentOverflow": false,
+        "buttons": [
+          {
+            "width": 66.515625,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 44,
+            "overflow": false
+          },
+          {
+            "width": 320,
+            "height": 60,
+            "overflow": false
+          }
+        ],
+        "fg": "rgb(215, 220, 227)",
+        "bg": "rgb(24, 27, 33)",
+        "reducedMotion": true
+      },
+      "status_contrast": 12.513,
+      "proof": {
+        "writes": 1,
+        "inspections": 1,
+        "listReads": 1,
+        "mode": "unexpected"
+      },
+      "page_errors": [],
+      "console_errors": [],
+      "blocked_requests": [],
+      "served_asset_paths": [
+        "/fonts/Inter-600.woff2",
+        "/product-nav-icons.css",
+        "/prophet_save.css",
+        "/prophet_save.js",
+        "/theme.css"
+      ],
+      "capture": {
+        "file": "unexpected-390-dark-zh.png",
+        "sha256": "18d1a0836676392d90fb7416c6d1ae0cdb817314f931a17fff9dc3d1fe0274d1",
+        "bytes": 22907,
+        "dimensions": [
+          354,
+          312
+        ]
+      }
+    }
+  ],
+  "completed_at": "2026-11-05T05:14:04.311267+00:00"
+}

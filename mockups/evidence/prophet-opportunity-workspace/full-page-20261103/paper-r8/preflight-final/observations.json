@@ -1,0 +1,57 @@
+{
+  "scope": "Illustrative design preflight; not production or browser account acceptance",
+  "variants": [
+    {
+      "variant": "1440-light-en",
+      "viewport": 1440,
+      "width": 1440,
+      "height": 2446,
+      "firstCard": {
+        "x": 40,
+        "y": 452,
+        "width": 328,
+        "height": 451
+      },
+      "overflowNodes": []
+    },
+    {
+      "variant": "1440-dark-en",
+      "viewport": 1440,
+      "width": 1440,
+      "height": 2446,
+      "firstCard": {
+        "x": 40,
+        "y": 452,
+        "width": 328,
+        "height": 451
+      },
+      "overflowNodes": []
+    },
+    {
+      "variant": "390-light-en",
+      "viewport": 390,
+      "width": 390,
+      "height": 5210,
+      "firstCard": {
+        "x": 20,
+        "y": 649,
+        "width": 350,
+        "height": 451
+      },
+      "overflowNodes": []
+    },
+    {
+      "variant": "390-dark-zh",
+      "viewport": 390,
+      "width": 390,
+      "height": 5068,
+      "firstCard": {
+        "x": 20,
+        "y": 620,
+        "width": 350,
+        "height": 451
+      },
+      "overflowNodes": []
+    }
+  ]
+}

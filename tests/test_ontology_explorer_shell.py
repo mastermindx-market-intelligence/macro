@@ -167,7 +167,9 @@ def test_the_committed_page_matches_the_current_template_render():
     templates/ontology.html.j2 changes without a matching
     `python -m scripts.build_ontology_explorer` re-run and commit."""
     import tempfile
+    import hashlib
     from jinja2 import Environment, FileSystemLoader
+    from lib.pages import externalize_css_text
     from scripts.build_ontology_explorer import build_shell
 
     env = Environment(
@@ -176,10 +178,28 @@ def test_the_committed_page_matches_the_current_template_render():
         site = Path(tmp)
         build_shell(env, site)
         rendered = (site / "ontology.html").read_bytes()
+    # The normal publication lane extracts large inline styles, including the
+    # shared navigation's noscript fallback. Apply that same transform, then
+    # verify every extracted byte; do not ignore styles in the drift check.
+    lifted = {}
+
+    def make_href(css, _index, _media):
+        data = css.encode("utf-8")
+        if len(data) < 1024:  # scripts/externalize_css.py MIN_BYTES
+            return None
+        digest = hashlib.sha256(data).hexdigest()[:8]
+        lifted[digest] = data
+        return f"assets/css/{digest}.css?v={digest}"
+
+    rendered = externalize_css_text(rendered.decode("utf-8"), make_href).encode("utf-8")
     assert _without_lane_owned_asset_markup(rendered) == \
         _without_lane_owned_asset_markup(PAGE.read_bytes()), (
         "site/ontology.html is stale -- re-run "
         "`python -m scripts.build_ontology_explorer` and commit the result")
+    for digest, data in lifted.items():
+        asset = ROOT / "site" / "assets" / "css" / f"{digest}.css"
+        assert asset.is_file(), f"missing extracted stylesheet: {asset}"
+        assert asset.read_bytes() == data, f"extracted stylesheet differs: {asset}"
 
 
 _STAMP = re.compile(rb"\?v=[0-9a-f]{6,16}")

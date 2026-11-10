@@ -14,6 +14,7 @@ owned or duplicated here.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import subprocess
 from pathlib import Path
@@ -156,6 +157,31 @@ _REVIEWED_DEFAULT_OFF_HOST: bytes = (
     b'{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\\n" }}{% endif %}\n'
 )
 
+# The Prophet no-JS navigation recovery is a SECOND bounded source delta, not
+# permission to change the G7 host. Pin its entire reviewed candidate byte span
+# so the strict shared-chrome comparison below still rejects every other edit.
+_PINNED_NOJS_NAV_START = b"{# No-JS restore: theme.css now ships"
+_PINNED_NOJS_NAV_END = b"  </noscript>\n"
+_PINNED_NOJS_NAV_SHA256 = "3bb87fa68f3226a262cdc03c1af87bcfbaceebbc65dca0901db12c42181cd68f"
+
+
+def _strip_exact_nojs_nav_recovery(raw: bytes, *, required: bool) -> bytes:
+    """Strip ONLY the byte-pinned no-JS addition immediately before </nav>."""
+    count = raw.count(_PINNED_NOJS_NAV_START)
+    if count == 0 and not required:
+        return raw  # the upstream revision may predate this bounded addition
+    assert count == 1, f"expected exactly one no-JS recovery; found {count}"
+    start = raw.index(_PINNED_NOJS_NAV_START)
+    end = raw.find(_PINNED_NOJS_NAV_END, start)
+    assert end != -1, "no-JS recovery closing tag missing"
+    end += len(_PINNED_NOJS_NAV_END)
+    assert raw[end:].startswith(b"</nav>\n"), "no-JS recovery moved outside nav"
+    block = raw[start:end]
+    assert hashlib.sha256(block).hexdigest() == _PINNED_NOJS_NAV_SHA256, (
+        "no-JS recovery diverges from its exact reviewed candidate bytes"
+    )
+    return raw[:start] + raw[end:]
+
 
 def _assert_reviewed_default_off_host_only(upstream: bytes, local: bytes) -> None:
     """Validate ``local`` differs from ``upstream`` only by appending the exact
@@ -201,12 +227,39 @@ def _assert_reviewed_default_off_host_only(upstream: bytes, local: bytes) -> Non
 
 
 @pytest.mark.parametrize("path", ["templates/_site_nav.html.j2"])
-def test_shared_chrome_files_only_add_the_reviewed_default_off_host(path: str) -> None:
+def test_shared_chrome_only_adds_the_g7_host_and_exact_nojs_recovery(path: str) -> None:
     upstream = _origin_main_bytes(path)
     if upstream is None:
         pytest.skip("git show origin/main could not be resolved in this environment")
     local = (ROOT / path).read_bytes()
-    _assert_reviewed_default_off_host_only(upstream, local)
+    # A no-JS restoration must not be deleted merely to make G7 pass. Check the
+    # exact original G7 invariant AFTER removing only the byte-pinned addition
+    # from each side. This also works once upstream itself carries the addition.
+    _assert_reviewed_default_off_host_only(
+        _strip_exact_nojs_nav_recovery(upstream, required=False),
+        _strip_exact_nojs_nav_recovery(local, required=True),
+    )
+
+
+def test_nojs_nav_recovery_pin_rejects_mutation_or_relocation() -> None:
+    candidate = (TEMPLATES / "_site_nav.html.j2").read_bytes()
+    assert _strip_exact_nojs_nav_recovery(candidate, required=True)
+
+    with pytest.raises(AssertionError, match="reviewed candidate bytes"):
+        _strip_exact_nojs_nav_recovery(
+            candidate.replace(b"max-width: 480px", b"max-width: 640px"),
+            required=True,
+        )
+    with pytest.raises(AssertionError, match="exactly one"):
+        _strip_exact_nojs_nav_recovery(
+            candidate.replace(_PINNED_NOJS_NAV_START, b"{# altered no-JS restore:"),
+            required=True,
+        )
+    with pytest.raises(AssertionError, match="moved outside nav"):
+        _strip_exact_nojs_nav_recovery(
+            candidate.replace(b"  </noscript>\n</nav>\n", b"  </noscript>\n<!-- moved -->\n</nav>\n"),
+            required=True,
+        )
 
 
 # --- Hermetic, in-memory regression cases for the G7 helper --------------

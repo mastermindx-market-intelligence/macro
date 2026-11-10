@@ -1,0 +1,336 @@
+{
+  "source_head": "128ab198769a5cc2bd180d7f8eeae07924238d32",
+  "source_css_sha256": "4b8283dc7f3fd830d7dcbcdd39f479521edd209dcdc4e1a8ba3394ecf01dbae6",
+  "baseline_html_sha256": "12da851f12dea2570ec24291cbc59a513bd1fcb32ee82c964875dfbd9c5447af",
+  "method": "Prebuilt offline HTML; newly edited page CSS appended to body as last style. Not a publication build.",
+  "cells": [
+    {
+      "cell": "390-light-en",
+      "before": {
+        "card": {
+          "y": 918.453125,
+          "height": 612.875,
+          "width": 354,
+          "x": 18
+        },
+        "header": {
+          "y": 202.25,
+          "height": 232.859375,
+          "width": 354,
+          "x": 18
+        },
+        "brief": {
+          "y": 453.109375,
+          "height": 103.125,
+          "width": 354,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 48,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "after": {
+        "card": {
+          "y": 826.453125,
+          "height": 612.875,
+          "width": 354,
+          "x": 18
+        },
+        "header": {
+          "y": 202.25,
+          "height": 201.859375,
+          "width": 354,
+          "x": 18
+        },
+        "brief": {
+          "y": 422.109375,
+          "height": 60.125,
+          "width": 354,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 44,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "page_errors": []
+    },
+    {
+      "cell": "320-light-en",
+      "before": {
+        "card": {
+          "y": 1019.453125,
+          "height": 651.46875,
+          "width": 284,
+          "x": 18
+        },
+        "header": {
+          "y": 233.75,
+          "height": 232.859375,
+          "width": 284,
+          "x": 18
+        },
+        "brief": {
+          "y": 484.609375,
+          "height": 103.125,
+          "width": 284,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 48,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "after": {
+        "card": {
+          "y": 944.328125,
+          "height": 651.46875,
+          "width": 284,
+          "x": 18
+        },
+        "header": {
+          "y": 233.75,
+          "height": 201.859375,
+          "width": 284,
+          "x": 18
+        },
+        "brief": {
+          "y": 453.609375,
+          "height": 77,
+          "width": 284,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 44,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "page_errors": []
+    },
+    {
+      "cell": "390-dark-zh",
+      "before": {
+        "card": {
+          "y": 861.484375,
+          "height": 594.875,
+          "width": 354,
+          "x": 18
+        },
+        "header": {
+          "y": 202.25,
+          "height": 194.859375,
+          "width": 354,
+          "x": 18
+        },
+        "brief": {
+          "y": 415.109375,
+          "height": 103.125,
+          "width": 354,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 48,
+        "horizontalOverflow": 0,
+        "riskRadarText": "\u98ce\u9669\u96f7\u8fbe \u2192",
+        "marketStateText": "\u5e02\u573a\u72b6\u6001\n\u6df7\u5408",
+        "asOfText": "\u6570\u636e\u622a\u81f3\n2026-10-30\n\u5468\u671f\n\u518d\u901a\u80c0\n\u59ff\u6001\n\u9632\u5fa1"
+      },
+      "after": {
+        "card": {
+          "y": 772.484375,
+          "height": 594.875,
+          "width": 354,
+          "x": 18
+        },
+        "header": {
+          "y": 202.25,
+          "height": 166.859375,
+          "width": 354,
+          "x": 18
+        },
+        "brief": {
+          "y": 387.109375,
+          "height": 60.125,
+          "width": 354,
+          "x": 18
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 44
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 44
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 44
+          }
+        ],
+        "navMinHeight": 44,
+        "horizontalOverflow": 0,
+        "riskRadarText": "\u98ce\u9669\u96f7\u8fbe \u2192",
+        "marketStateText": "\u5e02\u573a\u72b6\u6001\n\u6df7\u5408",
+        "asOfText": "\u6570\u636e\u622a\u81f3\n2026-10-30\n\u5468\u671f\n\u518d\u901a\u80c0\n\u59ff\u6001\n\u9632\u5fa1"
+      },
+      "page_errors": []
+    },
+    {
+      "cell": "1440-light-en",
+      "before": {
+        "card": {
+          "y": 689.015625,
+          "height": 604.875,
+          "width": 328,
+          "x": 40
+        },
+        "header": {
+          "y": 145.5,
+          "height": 170.046875,
+          "width": 1360,
+          "x": 40
+        },
+        "brief": {
+          "y": 333.546875,
+          "height": 58,
+          "width": 1360,
+          "x": 40
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 38
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 38
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 38
+          }
+        ],
+        "navMinHeight": 48,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "after": {
+        "card": {
+          "y": 689.015625,
+          "height": 604.875,
+          "width": 328,
+          "x": 40
+        },
+        "header": {
+          "y": 145.5,
+          "height": 170.046875,
+          "width": 1360,
+          "x": 40
+        },
+        "brief": {
+          "y": 333.546875,
+          "height": 58,
+          "width": 1360,
+          "x": 40
+        },
+        "sourceButtons": [
+          {
+            "text": "Today\u4eca\u65e5",
+            "h": 38
+          },
+          {
+            "text": "Screener\u7b5b\u9009\u5668",
+            "h": 38
+          },
+          {
+            "text": "Plans\u8ba1\u5212",
+            "h": 38
+          }
+        ],
+        "navMinHeight": 48,
+        "horizontalOverflow": 0,
+        "riskRadarText": "Risk radar \u2192",
+        "marketStateText": "MARKET STATE\nMixed",
+        "asOfText": "Data through\n2026-10-30\nRegime\nReflation\nPosture\nDEFENSIVE"
+      },
+      "page_errors": []
+    }
+  ]
+}\n

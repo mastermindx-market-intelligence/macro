@@ -1,0 +1,49 @@
+{
+  "schema": "prophet.current_pair_visual_review.v1",
+  "reviewer": "attended parent self-QA",
+  "source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "public_html_sha256": "b9fa30649d3eb9c9c5dada5f88964e257e7e0f2cfbc207467d0797f0b27fc3fa",
+  "reviewed": [
+    {
+      "file": "browser/normal-top-1440-light-en.png",
+      "sha256": "1dac9afaf72120cfb698193324d5c5ec9632030bd4608995fd81343810c5d78e",
+      "dimensions": [
+        1440,
+        1000
+      ],
+      "result": "accepted",
+      "observation": "Readable hierarchy, wrapping and access-empty/fallback state; no new overlap or document-wide overflow. Existing contained horizontal subnavigation retained on narrow screens."
+    },
+    {
+      "file": "browser/normal-top-1440-dark-en.png",
+      "sha256": "c8dcede5454b8ecac24dedd200171b26257df062329a3451e76e474d9306c717",
+      "dimensions": [
+        1440,
+        1000
+      ],
+      "result": "accepted",
+      "observation": "Readable hierarchy, wrapping and access-empty/fallback state; no new overlap or document-wide overflow. Existing contained horizontal subnavigation retained on narrow screens."
+    },
+    {
+      "file": "browser/normal-top-390-dark-zh.png",
+      "sha256": "515aa69416beb431df766cc624c4a69c4a64c8ecbd6f6453cec352bee8b95cc0",
+      "dimensions": [
+        390,
+        844
+      ],
+      "result": "accepted",
+      "observation": "Readable hierarchy, wrapping and access-empty/fallback state; no new overlap or document-wide overflow. Existing contained horizontal subnavigation retained on narrow screens."
+    },
+    {
+      "file": "browser/normal-top-320-light-en.png",
+      "sha256": "74aeaba61e0af84b9418e689ab6fc8091a45176d94b303f7c5026c3eab5a9164",
+      "dimensions": [
+        320,
+        844
+      ],
+      "result": "accepted",
+      "observation": "Readable hierarchy, wrapping and access-empty/fallback state; no new overlap or document-wide overflow. Existing contained horizontal subnavigation retained on narrow screens."
+    }
+  ],
+  "scope": "anonymous offline viewport captures; no authenticated acceptance"
+}

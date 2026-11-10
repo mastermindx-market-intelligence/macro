@@ -1,0 +1,110 @@
+{
+  "source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "public_html_sha256": "b9fa30649d3eb9c9c5dada5f88964e257e7e0f2cfbc207467d0797f0b27fc3fa",
+  "essential_payload_sha256": "9e1d4a342e680c0229376ad993102d7aad13cc02fb9d16a77dbd1b154c59e1ee",
+  "final_board_sha256": "1d334d38742541ed23fac6f45eefe9bd41523f19b0d3945a140d260ca3e5f4ce",
+  "as_of": "2026-11-03",
+  "screener": {
+    "preview": 3,
+    "protected": 48,
+    "total": 51
+  },
+  "today": {
+    "public_articles": 0,
+    "entitled_preview": 6,
+    "featured_total": 12
+  },
+  "eligible_pool": {
+    "public": 3,
+    "protected": 156,
+    "total": 159,
+    "source_digest": "9b098e05e24ed7a954aaa0510a7e4b397c9e2685620c597416c30040d403d8cc",
+    "public_source_positions_zero_based": [
+      0,
+      7,
+      10
+    ],
+    "ordering_note": "Native withholding selects a public subsequence. Each partition preserves source order; concatenation is not the original raw order."
+  },
+  "protected_plan_targets": 56,
+  "missing_plan_targets": [],
+  "checks": {
+    "pool_membership": true,
+    "pool_no_duplicates": true,
+    "pool_disjoint": true,
+    "pool_public_subsequence": true,
+    "pool_protected_subsequence": true,
+    "pool_source_identity": true,
+    "screener_preview_order": true,
+    "screener_protected_order": true,
+    "today_entitled_order": true,
+    "plan_targets_resolve": true,
+    "public_has_no_protected_plan_controls": true,
+    "today_raw_source_binding": true
+  },
+  "scope": "Native generated artifact and source proof; not authenticated browser, Paper or production acceptance."
+}
+PUBLICATION_PAIR_VERIFIED
+{
+  "checks": {
+    "public_today_source_sha256": true,
+    "public_today_pair_id": true,
+    "public_today_selection_receipt": true,
+    "protected_today_full_binding": true,
+    "public_roster_size": true,
+    "public_today_served_count": true,
+    "public_today_served_identity": true,
+    "public_today_served_unique": true,
+    "plan_membership_complete": true,
+    "plan_ids_unique": true,
+    "plan_partitions_disjoint": true,
+    "plan_public_order_preserved": true,
+    "plan_protected_order_preserved": true,
+    "main_published_air_plan_retained": true,
+    "lifecycle_watch_published_value": true,
+    "lifecycle_ready_published_value": true,
+    "lifecycle_entered_published_value": true,
+    "lifecycle_delivering_published_value": true,
+    "lifecycle_overtime_published_value": true,
+    "lifecycle_invalidated_published_value": true,
+    "lifecycle_resolved_published_value": true,
+    "lifecycle_headline_published_value": true
+  },
+  "plans": {
+    "book_rows": 854,
+    "public": 3,
+    "protected": 851,
+    "published_order_sha256": "49ed58f70dd0deff4f591aec6ac01bf3ddfb82c488b105fc53f3276ae794eb25",
+    "missing": [],
+    "extra": []
+  },
+  "lifecycle_counts": {
+    "watch": "0",
+    "ready": "70",
+    "entered": "281",
+    "delivering": "0",
+    "overtime": "0",
+    "invalidated": "12",
+    "resolved": "491"
+  },
+  "today_public": 0
+}
+INTEGRATION_PAIR_COMPLETE
+PAIR {"source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4", "base_build_source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4", "static_asset_followup": null, "public_html_sha256": "b9fa30649d3eb9c9c5dada5f88964e257e7e0f2cfbc207467d0797f0b27fc3fa", "essential_payload_sha256": "9e1d4a342e680c0229376ad993102d7aad13cc02fb9d16a77dbd1b154c59e1ee", "public_html_bytes": 795365, "essential_payload_bytes": 9735093, "public_today_articles": 0, "public_rich_cards": 0, "public_pool_rows": 3, "private_top_level": {"schema": "str", "page": "str", "gated": "bool", "required_tier": "str", "built": "str", "total": "int", "preview": "int", "locked": "int", "as_of": "str", "cards_html": "str", "preview_cards_html": "str", "rows": "list", "today_cards_html": "str", "today_preview": "int", "today_total": "int", "today_rows_meta": "list", "today_source_binding": "dict", "panels": "dict", "candidate_pool_html": "str", "candidate_pool_source": "dict", "leader_observations_html": "str", "setups_html": "str", "leaders_html": "str", "ran_html": "str", "actnow_html": "str", "tape_html": "str", "plv_names": "dict", "what_changed_html": "str", "passed_html": "str", "life_gate": "dict", "plan_cards_html": "str"}, "scope": "Normal producer HTML unchanged; anonymous offline browser; no premium payload served; no live/authenticated acceptance.", "build_modules": [{"module": "scripts.build_site", "exit": 0, "seconds": 672.6, "argv": ["scripts.build_site", "--no-refresh-stock-library", "--frozen-us-board-sha256", "1d334d38742541ed23fac6f45eefe9bd41523f19b0d3945a140d260ca3e5f4ce", "--frozen-us-gate-sha256", "3d42ed3d96403950278fb5ded48e052237ea8e0d48765a2da0e05282d9b2f8d7"]}, {"module": "scripts.inject_data_base", "exit": 0, "seconds": 5.95, "argv": ["scripts.inject_data_base"]}, {"module": "scripts.externalize_css", "exit": 0, "seconds": 7.5, "argv": ["scripts.externalize_css"]}, {"module": "scripts.optimize_assets", "exit": 0, "seconds": 26.3, "argv": ["scripts.optimize_assets"]}]}
+CAPTURE 1440-light-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 1440-light-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 1440-dark-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 1440-dark-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 768-light-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 768-light-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 768-dark-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 768-dark-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 390-light-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 390-light-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 390-dark-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 390-dark-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 320-light-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 320-light-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 320-dark-en access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE 320-dark-zh access_empty True first_card_y None overflow 0 page_errors 0
+CAPTURE_COMPLETE /tmp/prophet-latest-main-frozen-9a8a28.native-browser/observations.json

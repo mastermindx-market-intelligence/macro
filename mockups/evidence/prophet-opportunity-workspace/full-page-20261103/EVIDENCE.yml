@@ -1,0 +1,14 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_site_nav.html.j2
+  - templates/theme.css
+  - templates/chat.html
+  - site/theme.css
+  - site/chat.html
+  - site/us_stocks.html
+  - site/premiumdata/us_stocks.json
+  - site/factordata/us_standouts.json
+  - site/assets/css/54c94155.css
+  - site/assets/css/584cf1d5.css
+  - site/assets/css/6acf16d6.css
+manifest: mockups/evidence/prophet-opportunity-workspace/full-page-20261103/canonical-final/manifest.json

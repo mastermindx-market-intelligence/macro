@@ -1070,9 +1070,9 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         rendered_bindings.append({
             "ticker": str(body.get("data-native-id", "")),
             "entry_status": _entry_status(body),
-            "signal_asof": str((_body_clock_text(body, ".pvs-assessment-clock")
-                                or {"data-assessment-asof": ""})
-                               .get("data-assessment-asof", "")),
+            "signal_asof": str((_body_clock_text(body, ".pvs-signal-clock")
+                                or {"data-signal-asof": ""})
+                               .get("data-signal-asof", "")),
             "price_as_of": _displayed_date(_source_field_text(body, "price_as_of")),
             "plan_relation": str(body.get("data-plan-relation", "")),
             "plan_ids": [str(record.get("data-plan-id", ""))
@@ -1083,7 +1083,8 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         "ticker": str(row.get("ticker", "")),
         "entry_status": str((row.get("entry_signal") or {}).get("status", "")
                             if isinstance(row.get("entry_signal"), dict) else ""),
-        "signal_asof": str(row.get("signal_asof", "")),
+        "signal_asof": (row["signal_asof"] if isinstance(row.get("signal_asof"), str)
+                        and row["signal_asof"].strip() else ""),
         "price_as_of": _displayed_date(str(row.get("price_as_of", ""))),
         "plan_relation": str(plan_relation
                             if plan_relation is not None else "none"),
@@ -1263,14 +1264,65 @@ def _plv_day_text(stamp: datetime, locale: str) -> str:
     return stamp.strftime("%b %-d")
 
 
+def _native_entry_clock_failures(body: Tag, row: dict[str, Any]) -> list[str]:
+    """Bind the native board's independent clocks without minting an assessment.
+
+    Owner: _prophet_setup_detail.body, separate pvs-signal-clock and
+    pvs-assessment-clock (current source contract). The latter also contains
+    the separately labelled quote timestamp; no signal/build date renews it.
+    """
+    failures: list[str] = []
+    signal = body.select_one(".pvs-signal-clock")
+    raw_signal = row.get("signal_asof")
+    source_signal = raw_signal if isinstance(raw_signal, str) and raw_signal.strip() else ""
+    if source_signal:
+        if _iso_date(source_signal) is None:
+            failures.append("source signal clock is not a valid ISO day")
+        elif signal is None or signal.get("data-signal-asof") != source_signal:
+            failures.append("signal clock differs from signal_asof")
+        else:
+            for lang, label in (("en", "Signal session"), ("zh", "信号交易日")):
+                text = _visible_text(signal, lang)
+                if label not in text or re.findall(r"\d{4}-\d{2}-\d{2}", text) != [source_signal]:
+                    failures.append(f"{lang} signal visible date differs from signal_asof")
+    elif signal is not None:
+        failures.append("signal clock rendered without a supplied signal session")
+
+    assessment = body.select_one(".pvs-assessment-clock")
+    if assessment is None:
+        return failures + ["assessment clock missing"]
+    if assessment.get("data-assessment-asof") != "":
+        failures.append("assessment clock invented without a supplied assessment timestamp")
+    raw_quote = row.get("price_as_of")
+    source_quote = raw_quote if isinstance(raw_quote, str) and raw_quote.strip() else ""
+    if source_quote and _iso_date(source_quote) is None and _runtime_stamp(source_quote) is None:
+        failures.append("source quote clock is not a valid date or timestamp")
+    for lang, unavailable, quote_label, missing_quote in (
+        ("en", "Entry read date not supplied", "Quote time", "Not supplied"),
+        ("zh", "入场判读日期来源未提供", "报价时间", "来源未提供"),
+    ):
+        text = _visible_text(assessment, lang)
+        parts = text.split(quote_label)
+        if len(parts) != 2:
+            failures.append(f"{lang} separately labelled quote clock missing or duplicated")
+            continue
+        assessment_text, quote_text = parts
+        if (unavailable.replace(" ", "") not in assessment_text.replace(" ", "")
+                or re.search(r"\d{4}-\d{2}-\d{2}", assessment_text)):
+            failures.append(f"{lang} assessment unavailable disclosure mismatch")
+        expected_quote = " ".join(source_quote.split()) if source_quote else missing_quote
+        if quote_text.strip() != expected_quote:
+            failures.append(f"{lang} quoted timestamp differs from price_as_of")
+    return failures
+
+
 def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                standouts: dict[str, Any] | None = None,
                runtime: dict[str, Any] | None = None,
                locale: str = "en", ticker: str | None = None) -> dict[str, Any]:
-    """J9 — bind plan-book, assessment and quote clocks to their sources."""
-    where = ("#us-plan-book-asof, .pvs-assessment-clock and #plv-asof "
-             "against index.source_asof, index.asof, signal_asof and runtime "
-             "meta quote_asof")
+    """J9 — independently bind plan-book, signal, assessment and quote clocks."""
+    where = ("#us-plan-book-asof, .pvs-signal-clock, .pvs-assessment-clock and #plv-asof "
+             "against their separate index, signal_asof, price_as_of and runtime sources")
     fails: list[str] = []
     book = _select_first(soup, "#us-plan-book-asof")
     if book is None:
@@ -1353,28 +1405,11 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
     selected_row = _standouts_payload_row(standouts or {}, ticker or "")
     wrapper = soup.select_one(f'[data-setup-ticker="{ticker}"]') if ticker else None
     bodies = _select_all_with_templates(wrapper, ".pv-setup-body") if wrapper else []
-    body = bodies[0] if bodies else None
-    clock = body.select_one(".pvs-assessment-clock") if body else None
-    if clock is None or selected_row is None:
+    if not bodies or selected_row is None:
         fails.append("assessment clock missing")
     else:
-        rendered = str(clock.get("data-assessment-asof", ""))
-        source = str(selected_row.get("signal_asof", ""))
-        source_date = _iso_date(source)
-        clock_text = clock.get_text(" ", strip=True, types=_TEXT_TYPES)
-        visible_dates = set(re.findall(r"\d{4}-\d{2}-\d{2}", clock_text))
-        if rendered and _iso_date(rendered) is None:
-            fails.append("assessment clock differs from signal_asof")
-        elif source_date is not None:
-            if rendered != source:
-                fails.append("assessment clock differs from signal_asof")
-            elif visible_dates != {source}:
-                fails.append("assessment visible date differs from signal_asof")
-        elif source_date is None:
-            if rendered != "":
-                fails.append("assessment clock differs from signal_asof")
-            elif "not supplied" not in clock_text and "来源未提供" not in clock_text:
-                fails.append("assessment clock unavailable text mismatch")
+        for body in bodies:
+            fails.extend(_native_entry_clock_failures(body, selected_row))
     plv = _select_first(soup, "#plv-asof")
     if plv is None:
         fails.append("#plv-asof missing")

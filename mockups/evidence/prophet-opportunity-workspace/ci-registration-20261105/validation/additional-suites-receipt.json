@@ -1,0 +1,21 @@
+{
+  "parent_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_prophet_public_featured_access_card.py",
+    "tests/test_prophet_same_date_publication.py",
+    "tests/test_render_macro_fast_source_guard.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 10.583,
+  "log": "/tmp/prophet-ci-registration-additional-suites-39f792.log",
+  "source_sha256": {
+    "tests/test_prophet_public_featured_access_card.py": "b6c58e7f876a30dba336a679eaf1041fd89de1e5fd09c7888c0133803eb1357d",
+    "tests/test_prophet_same_date_publication.py": "2e2f0a3bdaac3560a2de46983e5511a61b02fbe16af680d2768dd39e6ecae993",
+    "tests/test_render_macro_fast_source_guard.py": "007163b4ff02d58c492a691f9ac86d154d2f5494b1416214e18b01a1a1e0f7e7"
+  },
+  "completed_at": "2026-11-05T04:43:42.495032+00:00"
+}

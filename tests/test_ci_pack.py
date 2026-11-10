@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_958),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,75 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-10 (PR #9495, accepted main f860c281 composition):
+    Preserve main's full lifecycle/ledger enrollment and both source histories.
+    Retained selected Prophet enrollments contribute eight units: Lab+2,
+    grading+4, Brain+2. Compose main5958/5979/5716 to5966/5987/5724;
+    preserve137/138/131 jobs, ten packs and every existing limit/selector.
+    Source accounting is not a new timing or hosted qualification.
+
+    2026-11-08 Prophet #9495 browser enrollment on main5eb1603e:
+    CI42523238458 tested a26774e0 (base5eb1603e + head18cab35d) reports
+    index137/5943->5951, free137/5964->5972 and Plan131/5701->5709,
+    ten packs each. Canonical paired manifests on the same 18cab source
+    universe reproduce those measurements with identical selected IDs:
+    no entrants or exits. Selected owner weights are prophet-lab67->69,
+    unrun-grading-board40->44 and unrun-brain-gateway110->112. The first
+    six units were funded already; the last two retain the new native
+    page-layout browser suite in the existing Brain browser command.
+    Fund only the measured two-unit excess per ceiling, with no padding.
+    Preserve every suite, path/command/selector, job-count and pack bound,
+    runtime/setup timeout and admission limit. These are deterministic
+    planning weights, not measured execution time. Same-universe proof
+    SHA256 a8be4386fb19c53bc328410bd3ba372cd9ab1c412b5fe6c964cd720cea554ee2;
+    exact-base measurements remain in the original CI contract-delta log.
+
+    2026-11-08 Prophet #9495 actual composition with mainba32f20b:
+    Native paired planning on the SAME composed source universe preserves
+    all395 owners and identical selected IDs on all three probes. Main to
+    candidate: index137/5923->5929, free137/5944->5950, Plan131/5681->5687;
+    ten packs each. Only six existing selected Prophet registration units
+    are added: prophet-lab67->69 and unrun-grading-board40->44. The other
+    changed owners are unselected on these probes. Preserve main B-17,
+    benchmark/Immune/QTUM coverage, both enrollment path lists and every
+    command, selector, job cap137/138/131, pack and runtime/admission bound.
+    This is actual planner evidence, not execution speed or hosted CI.
+    Paired proof SHA256 b529a60d345c7f0b0c1b9dc520f10bfecf5bb6091ef5cd6694821ecabf59ecf3.
+
+    Prophet #9495 release composition against fc3c7aee (2026-11-07):
+    canonical paired measurements on this same composed source retain all
+    main jobs, Press/Options coverage, and the existing Prophet registrations.
+    Main-manifest -> composed-manifest: index137/5914->5920,
+    free-content137/5933->5939, Plan131/5672->5678; identical selected IDs,
+    all ten packs. Fund only the six retained Prophet planning-weight units
+    over main's measured ceilings. Keep job-count/pack/time/admission bounds,
+    commands and selectors unchanged. These are estimates, not runtime.
+    Proof: ci-weight-calibration-20261107/paired-fc3c.json.
+
+    Prophet #9495 current-main composition (2026-11-07): paired canonical
+    measurements on identical c060 product/source graph retain main cfdad's
+    provenance enrollment and the six original Prophet registration units.
+    Index 137 jobs / 5912 -> 5918, free-content 137 / 5929 -> 5935, and
+    Plan 131 / 5670 -> 5676; all ten packs with identical selected job IDs.
+    Raise only the two stale weight ceilings by two. This is an estimator
+    composition, not measured runtime; preserve all job/pack/time bounds,
+    selectors and suites. Proof: ci-weight-calibration-20261107/paired.json.
+
+    Prophet #9495 CI registration (2026-11-05): canonical paired manifests
+    at f3c79cfed262 and parent39f792bb3d09 on their identical product/source
+    graph, using the unchanged run_ci_pack owner. Measurement SHA256
+    bafd5037a9560b933634237a10e6555abd2bcdecc9e7b1bb7c2582ba987d4266:
+    index137jobs/5912->5918, free137jobs/5927->5933, Prophet131jobs/5668->5674;
+    all ten packs, identical selected IDs, no entrants or exits. Registering
+    the required suites changes selected prophet-lab64->66 and
+    unrun-grading-board40->44; washout-turn-organ137->139 is unselected by
+    all three probes. Command counts and length buckets do not change.
+    Re-base only the three estimated-weight ceilings to these exact values.
+    These are planner estimates, not measured execution seconds. Existing
+    job-count, pack, timeout and admission bounds are unchanged. Raw paired
+    proof: mockups/evidence/prophet-opportunity-workspace/
+    ci-weight-calibration-20261105/paired-measurement.json.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,

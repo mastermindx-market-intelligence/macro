@@ -126,7 +126,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
                plan_relation: str = "none",
                plan_link_target: str | None = None,
                plan_book_asof: str = "2026-09-26",
-               assessment_asof: str = "2026-09-26",
+               assessment_asof: str = "",
                plv_state: str = "today",
                plv_text: str = "quotes as of 4:00 pm ET",
                plv_text_zh: str = "报价截至 美东 16:00") -> str:
@@ -246,9 +246,11 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
      data-native-id="{ticker}" data-plan-relation="{plan_relation}">
   {plan_section}
   <p class="pvs-assessment-clock" data-assessment-asof="{assessment_asof}">
-   <span class="l-en">Entry read date {assessment_asof}</span>
-   <span class="l-zh">入场判读日期 {assessment_asof}</span>
+   <span class="l-en">Entry read date not supplied</span>
+   <span class="l-zh">入场判读日期来源未提供</span> ·
+   <span class="l-en">Quote time</span><span class="l-zh">报价时间</span> {detail_price_as_of}
   </p>
+  {('<p class="pvs-signal-clock" data-signal-asof="' + detail_signal_asof + '"><span class="l-en">Signal session</span><span class="l-zh">信号交易日</span> ' + detail_signal_asof + '</p>') if detail_signal_asof else ''}
   <p class="pvs-read" data-entry-status="{detail_entry_status}">
     <span class="l-en">Wait for confirmation</span>
     <span class="l-zh">等待确认</span></p>
@@ -439,7 +441,7 @@ def _corrected_html(**overrides: object) -> str:
         "plan_relation": "related_security",
         "plan_link_target": "pv-PLAN1",
         "plan_book_asof": "2026-09-26",
-        "assessment_asof": "2026-09-26",
+        "assessment_asof": "",
         "plv_state": "prior_day",
         "plv_text": "last read Sep 26, 4:00 pm ET",
     }
@@ -1128,7 +1130,7 @@ def test_j9_fail_plan_book_non_iso_day():
     assert "plan book attribute is not YYYY-MM-DD" in chk["observed"], chk
 
 
-def test_j9_fail_assessment_clock_differs_from_signal_asof():
+def test_j9_fail_invented_assessment_clock_even_when_signal_is_valid():
     html = _corrected_html(assessment_asof="2026-09-25")
     chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
@@ -1296,15 +1298,10 @@ def test_j9_fail_absent_source_asof_with_dated_attribute():
     assert chk["status"] == "FAIL", chk
 
 
-def test_j9_pass_absent_signal_asof_renders_not_supplied():
+def test_j9_pass_absent_signal_asof_omits_the_signal_clock():
     standouts = _standouts_payload()
     standouts["buy"][0].pop("signal_asof")
-    soup = BeautifulSoup(_corrected_html(assessment_asof=""), _pjr.HTML_PARSER)
-    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
-    # document; selecting on the template element itself reaches them on 2.x and 4.x.
-    clock = soup.select_one("template.pvs-body-source").select_one(".pvs-assessment-clock")
-    clock.select_one(".l-en").string = "Entry read date not supplied"
-    clock.select_one(".l-zh").string = "入场判读日期 来源未提供"
+    soup = BeautifulSoup(_corrected_html(detail_signal_asof=""), _pjr.HTML_PARSER)
     chk = _pjr._check_j9(soup, _index_payload(), standouts,
                          _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "PASS", chk
@@ -2403,3 +2400,86 @@ def test_j6_fail_second_template_with_stale_source_field():
     original_template.insert_after(second)
     result = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert result["status"] == "FAIL", result
+
+
+# Real producer contract: clocks come from the production macro, not a second
+# hand-written assumption that a signal date is an entry-assessment timestamp.
+def _native_entry_clock_body(*, signal="2026-09-25", quote="2026-09-26T20:00:00Z"):
+    from jinja2 import Environment, FileSystemLoader
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
+    row = {"ticker": "TEST1", "signal_asof": signal, "price_as_of": quote,
+           "entry_signal": {"status": "buy_now", "headline": "Entry open now"},
+           "signal": {}, "hold": {}}
+    rendered = env.get_template("_prophet_setup_detail.html.j2").module.body(
+        row, "board", "2026-09-24")
+    body = BeautifulSoup(str(rendered), _pjr.HTML_PARSER).select_one(".pv-setup-body")
+    return body, row
+
+
+@pytest.mark.parametrize("signal", ["2026-09-25", None, "", 0])
+@pytest.mark.parametrize("quote", ["2026-09-26", "2026-09-26T20:00:00Z", None])
+def test_j9_real_native_clocks_remain_independent(signal, quote):
+    body, row = _native_entry_clock_body(signal=signal, quote=quote)
+    assert _pjr._native_entry_clock_failures(body, row) == []
+
+
+@pytest.mark.parametrize("mutation", [
+    "signal_attribute", "signal_en", "signal_zh", "assessment_attribute",
+    "assessment_en", "assessment_zh", "quote_en", "quote_zh", "missing_quote_label",
+])
+def test_j9_real_native_clock_tampering_is_rejected(mutation):
+    body, row = _native_entry_clock_body()
+    signal = body.select_one(".pvs-signal-clock")
+    assessment = body.select_one(".pvs-assessment-clock")
+    if mutation == "signal_attribute":
+        signal["data-signal-asof"] = row["price_as_of"][:10]
+    elif mutation in ("signal_en", "signal_zh"):
+        signal.select_one(".l-" + mutation[-2:]).string = "Signal session 2099-01-01"
+    elif mutation == "assessment_attribute":
+        assessment["data-assessment-asof"] = row["signal_asof"]
+    elif mutation in ("assessment_en", "assessment_zh"):
+        assessment.select_one(".l-" + mutation[-2:]).string = "Entry read 2026-09-25"
+    elif mutation in ("quote_en", "quote_zh"):
+        lang = mutation[-2:]
+        for label in assessment.select(".l-" + lang):
+            if label.get_text() in ("Quote time", "报价时间"):
+                label.string = label.get_text() + " 2099-01-01T20:00:00Z"
+    else:
+        for label in assessment.select(".l-en"):
+            if label.get_text() == "Quote time":
+                label.string = "Assessment time"
+    assert _pjr._native_entry_clock_failures(body, row)
+
+
+@pytest.mark.parametrize("signal,quote", [("2026-02-30", None), (None, "not-a-time"),
+                                          (None, "2026-02-30T20:00:00Z")])
+def test_j9_malformed_native_source_clock_never_becomes_verified(signal, quote):
+    body, row = _native_entry_clock_body(signal=signal, quote=quote)
+    assert _pjr._native_entry_clock_failures(body, row)
+
+
+def test_j9_checks_every_selected_rendered_body_not_only_the_template():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    displayed.select_one(".pvs-signal-clock")["data-signal-asof"] = "2099-01-01"
+    result = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
+                          _runtime_payload(), ticker="TEST1")
+    assert result["status"] == "FAIL", result
+
+
+def test_j9_accepts_actual_production_clock_anatomy_with_distinct_sources():
+    import copy
+    body, row = _native_entry_clock_body()
+    source = _standouts_payload()
+    source["buy"][0].update(signal_asof=row["signal_asof"], price_as_of=row["price_as_of"])
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
+    for target in _pjr._select_all_with_templates(wrapper, ".pv-setup-body"):
+        for old in target.select(".pvs-signal-clock,.pvs-assessment-clock"):
+            old.decompose()
+        for clock in body.select(".pvs-signal-clock,.pvs-assessment-clock"):
+            target.insert(0, copy.copy(clock))
+    result = _pjr._check_j9(soup, _index_payload(), source,
+                          _runtime_payload(), ticker="TEST1")
+    assert result["status"] == "PASS", result
