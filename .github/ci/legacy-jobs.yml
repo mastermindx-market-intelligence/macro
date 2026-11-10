@@ -7747,6 +7747,14 @@ jobs:
       - "engine/market_ontology/theme_research_registry.py"
       - "tests/test_theme_research_registry.py"
       - "tests/test_theme_sources_registry.py"
+      # Lane 5 v1.1 (2026-11-10): the issuer-economics block the registry
+      # binds onto the v2 query envelope, and its suites — the SP04/SP05/SP12
+      # falsifier rows (plus the presence-gated REAL alias-enumeration test
+      # over data/reference/security_master.parquet, which runs in this job's
+      # full checkout) and the wiring/byte-identity differential.
+      - "engine/market_ontology/issuer_economics.py"
+      - "tests/test_market_ontology_issuer_economics.py"
+      - "tests/test_theme_research_issuer_economics_wiring.py"
       # Shared hook 2 (same ruling): the leaf module that owns what a mount
       # renders — anchor, slices, schema ids, bilingual copy — read by BOTH
       # the registration and the page builders. It is a leaf on purpose: the
@@ -8006,6 +8014,8 @@ jobs:
           -q
       - name: paid theme research transport (auth gate, closed vertical registration, rights owner veto, private binding)
         run: python -m pytest tests/test_theme_research_registry.py tests/test_theme_research_api.py tests/test_theme_research_rights_refresh.py tests/test_theme_research_private_binding.py -q
+      - name: lane 5 v1.1 issuer economics (SP04/SP05/SP12 falsifiers, REAL-gated alias enumeration, v2 query envelope attach, v1/evidence byte identity)
+        run: python -m pytest tests/test_market_ontology_issuer_economics.py tests/test_theme_research_issuer_economics_wiring.py -q
       - name: issuer release grammars, guidance history, EDGAR intake (TSMC + onsemi witnesses)
         run: python -m pytest tests/test_semiconductor_guidance_history.py tests/test_semiconductor_earnings_witnesses.py tests/test_semiconductor_earnings_intake.py tests/test_semiconductor_earnings_intake_integration.py -q
       - name: semiconductor research composer (inputs, composition, temporal law)
