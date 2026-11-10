@@ -50111,13 +50111,17 @@ jobs:
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
-    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    # C19 WP11 (MAS-263) MRI reader pins plus the full release-market-context suite.
+    # Reader and reaction-evidence cases use tmp_path fixtures. The existing
+    # full-suite Cleveland integration case conditionally copies its committed
+    # fixture and keeps its explicit skip when absent; do not call it hermetic.
     timeout-minutes: 10
     paths:
       - "engine/event_window.py"
       - "engine/validation.py"
       - "engine/release_market_context.py"
       - "tests/test_c19_wp11_reader_pins.py"
+      - "tests/test_release_market_context.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50127,7 +50131,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
-        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py tests/test_release_market_context.py -q -p no:cacheprovider
 
   robotics-theme-research:
     # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
