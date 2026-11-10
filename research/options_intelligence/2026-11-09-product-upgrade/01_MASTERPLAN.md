@@ -1,7 +1,7 @@
 # Options Suite — Production Design and Implementation Masterplan
-## November 9, 2026 · Turn 1 of 4 · Census and architecture amendment
+## November 9–10, 2026 · Rounds 1–2 of 4 · Census, architecture and Paper candidate
 
-**Status: DRAFT — first-round architecture, not final design or implementation acceptance.**  
+**Status: DRAFT — rounds 1 and 2 complete; architecture hardening and the final implementation masterplan remain in rounds 3 and 4.**  
 **Commission:** Chairman’s four-turn Options upgrade: (1) census and architecture; (2) Paper design; (3) deeper architecture hardening; (4) final masterplan for a Fable-led T3 implementation team.  
 **Programme parent:** Terminal issue #599, with #603 for the narrower workbench.  
 **Primary workstream:** WS-ADVANCED-DATA-OPTIONS, alongside the existing Options Alpha, Intraday Flow, and context-audit workstreams. No new workstream or task hierarchy is created.  
@@ -9,6 +9,29 @@
 **Date convention:** November 9, 2026, America/Vancouver. Source timestamps retain their original time zones.
 
 This is an additive product and architecture amendment to the October 31 Fable plan. It preserves the existing G/D/F/M/V/N/Q/U/R task hierarchy, OPT obligations, AC01–AC60 acceptance matrix, R1 journeys, R2 P01–P76 requirements, the 130 OPR competitor requirements, the 123-claim supersession register, and the original research programme. The 11 competitor entries and their requirements are retained for lawful original implementation; this census does not certify full competitor parity. It does not declare older work complete merely because a new document exists. [S02][S04][S05][S18][S19]
+
+---
+
+## Current programme state — after round 2
+
+**Round 2's editable Paper candidate is complete:** 34 new boards in the original Terminal file, 44 named state components, one consistent synthetic SPY case, and a complete primary English/Chinese journey across desktop, tablet and phone representatives. The original 245-board inventory remains retained; this round made no edits to those original boards or to the held D08D target.
+
+Read [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md) for the full product/build contract, precise board inventory, synthetic fixture, state/action mapping, source findings and verification limits. [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json) records exact node identities and the closeout fixture/checks.
+
+| Paper page | New boards | Role |
+|---|---:|---|
+| [Build contract · p-1R-0](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1R-0) | 4 | Start here, source bindings, interaction contract and future exact Plan-save preview |
+| [Product · p-1O-0](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1O-0) | 10 | Overview, Flow, Exposure, Volatility, Research, Saved, Plan, Review and two comparisons |
+| [Responsive · p-1P-0](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1P-0) | 16 | Fourteen phone screens, two tablet screens and complete primary Chinese path |
+| [States & help · p-1Q-0](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1Q-0) | 4 | 44 evidence, save/revision, watch/delivery and accessibility components |
+
+The six-destination shell is now designed, with all fifteen existing view keys and deeper entry points preserved. Important architecture findings from the designs are: (1) detailed Flow timelines require typed child-print evidence; the current owner supplies aggregates; (2) exact Plan save needs the incumbent admission/capture/history integration and retains its hold; (3) original saved values require exact source resolution; (4) Review needs explicit selected-event stability while reusing its existing immutable revision pathway; and (5) source timestamps, firing, delivery and research assessment remain separate.
+
+Affected Terminal files were read at **`2fe2f02f07d1df8c855388bc556383cd74de44fd`**. This refresh is limited to the Flow, draft, Investigation and receipt boundaries identified in the round-2 report. The broader source cuts and historical carrier states in the census below remain dated round-1 evidence.
+
+**Next round:** architecture hardening from the actual Paper candidate, starting with the owner/schema/dependency/acceptance decisions in the round-2 report §10.1. The Fable-led T3 commission remains round 4. No implementation dispatch, application source change, deployment or model activation occurred in round 2.
+
+**Reading note:** §§1–14 and Appendices A–C preserve the November 9 census/first-round plan. Their references to “this round” are historical round-1 statements. This current-state block and Appendix D add the completed round-2 outcome without recasting old acceptance or hold decisions.
 
 ---
 
@@ -1313,7 +1336,7 @@ The following source changes were discovered in the recent title-search census a
 
 ---
 
-## Appendix C. Continuity and non-duplication record
+## Appendix C. Round-1 continuity and non-duplication record (historical)
 
 **Mission:** complete the Chairman’s four-turn Options census/design/architecture/final-plan programme, then prepare the final Fable-led T3 implementation handoff. Turn 1’s product and architecture brief is complete when this document and its exact inventories are durably published and read back. The overall four-turn programme remains incomplete.
 
@@ -1329,3 +1352,21 @@ The following source changes were discovered in the recent title-search census a
 
 
 
+
+## Appendix D. Round-2 Paper result and continuation
+
+**Deliverable:** [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md), with [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json).
+
+**Scope completed:** 34 fresh boards and 44 locally scoped state components in Terminal file `01M3NSZGE8JWN2EZCSF0DT05RM`; six primary destinations; one shared contextual pane; source-specific units/clocks; exact authored Plan and one-assumption comparison; saved Exposure case; watch/Review flow; full primary EN/ZH path; light/dark, 1440/820/390 and 320px component coverage; current-versus-target build bindings.
+
+**Preservation:** original 17 core pages / 203 boards and twelve related pages / 42 boards remain in Appendix A. New pages are grouped after `p-1J-0`; all other page/divider relative order is preserved. No old board was deleted, archived or renamed by this round. D08D `p-2-0 / 1N2L-0` and adjacent held targets remain untouched.
+
+**Verification:** exact page/root readback; JSX for all 34 boards; 1,604 examined text leaves with explicit font assignments; actual rendered-screen inspection; source-linked boundary checks; numerical fixture and focused payoff sample check; state/focus/locale corrections; successful finish of exact owned boards. This verifies the design artifact, not live application behavior.
+
+**Design-driven requirements:** typed Flow child evidence through existing owners; original-source resolver/retention behavior; exact Plan admission, field mapping, capture and reopen; explicit firing selection; save result reconciliation; source/account/epoch invalidation; supported route/subview bindings; real consumer, accessibility, performance and scientific proof. No new database, collector, cache plane, case store, watcher, retry queue or authority registry is introduced.
+
+**Do not redo:** the census, accepted work, original inventories, completed Paper candidate or numerical fixture absent relevant changes. Refresh affected source/custody/release facts before overlapping implementation. Preserve all original AC/OPR/OPT/R1/R2/task graph/science obligations and holds.
+
+**Next safe action:** round 3 hardens the existing architecture and implementation graph against this actual candidate. Round 4 produces the final Fable-led T3 commission. The draft PR remains the same documentation carrier; no early dispatch or release opt-in.
+
+**Finalization:** PROVEN_OUTCOME for the round-2 Paper/design-contract deliverable after canonical readback. The overall programme and production implementation remain incomplete under the Chairman's four-turn structure.

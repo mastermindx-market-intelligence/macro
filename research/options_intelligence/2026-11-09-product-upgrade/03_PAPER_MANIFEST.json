@@ -1,0 +1,1459 @@
+{
+  "documentKind": "options_paper_round_2_design_inventory_not_runtime_schema",
+  "sessionRound": 2,
+  "totalRequestedRounds": 4,
+  "date": "2026-11-10 UTC",
+  "status": "PAPER_CANDIDATE_COMPLETE_IMPLEMENTATION_AND_FINAL_PLAN_PENDING",
+  "canonicalRepo": "mastermindx-market-intelligence/macro",
+  "branch": "claude/options-suite-production-plan-20261109",
+  "pr": 10898,
+  "paper": {
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "fileName": "Terminal",
+    "pages": {
+      "product": {
+        "id": "p-1O-0",
+        "name": "Options · R3 candidate · Product",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1O-0",
+        "artboardCount": 10
+      },
+      "responsive": {
+        "id": "p-1P-0",
+        "name": "Options · R3 candidate · Responsive",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1P-0",
+        "artboardCount": 16
+      },
+      "states": {
+        "id": "p-1Q-0",
+        "name": "Options · R3 candidate · States & help",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1Q-0",
+        "artboardCount": 4
+      },
+      "build": {
+        "id": "p-1R-0",
+        "name": "Options · R3 candidate · Build contract",
+        "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1R-0",
+        "artboardCount": 4
+      }
+    },
+    "boards": {
+      "flow": {
+        "id": "28VF-0",
+        "page": "p-1O-0",
+        "content": "28VX-0",
+        "main": "28XT-0",
+        "pane": "28XU-0",
+        "theme": "dark",
+        "name": "O02 · Flow · Dark EN · 1440"
+      },
+      "exposure": {
+        "id": "2918-0",
+        "page": "p-1O-0",
+        "content": "2928-0",
+        "theme": "light",
+        "name": "O03 · Exposure · Light EN · 1440",
+        "main": "293E-0",
+        "pane": "293F-0"
+      },
+      "volatility": {
+        "id": "2973-0",
+        "page": "p-1O-0",
+        "content": "2983-0",
+        "theme": "dark",
+        "name": "O04 · Volatility · Dark EN · 1440",
+        "main": "2999-0",
+        "pane": "299A-0"
+      },
+      "plan": {
+        "id": "29BT-0",
+        "page": "p-1O-0",
+        "content": "29CT-0",
+        "theme": "light",
+        "name": "O07 · Plan · Light EN · 1440",
+        "main": "29DW-0",
+        "pane": "29DX-0"
+      },
+      "overview": {
+        "id": "29HR-0",
+        "page": "p-1O-0",
+        "content": "29IR-0",
+        "theme": "light",
+        "name": "O01 · Overview · Light EN · 1440",
+        "main": "29JJ-0",
+        "pane": "29JK-0"
+      },
+      "research": {
+        "id": "29LI-0",
+        "page": "p-1O-0",
+        "content": "29MI-0",
+        "theme": "dark",
+        "name": "O05 · Research · Dark EN · 1440",
+        "main": "29NM-0",
+        "pane": "29NN-0"
+      },
+      "saved": {
+        "id": "29PH-0",
+        "page": "p-1O-0",
+        "content": "29QH-0",
+        "theme": "light",
+        "name": "O06 · Saved research · Light EN · 1440",
+        "main": "29RK-0",
+        "pane": "29RL-0"
+      },
+      "review": {
+        "id": "29T4-0",
+        "page": "p-1O-0",
+        "content": "29U4-0",
+        "theme": "dark",
+        "name": "O08 · Case review · Dark EN · 1440",
+        "main": "29VC-0",
+        "pane": "29VD-0"
+      },
+      "m_flow": {
+        "id": "29XA-0",
+        "page": "p-1P-0",
+        "content": "29XY-0",
+        "theme": "dark",
+        "lang": "EN",
+        "name": "M01 · Flow · Dark EN · 390",
+        "width": 390
+      },
+      "m_inspect": {
+        "id": "29ZH-0",
+        "page": "p-1P-0",
+        "content": "2A05-0",
+        "theme": "dark",
+        "lang": "EN",
+        "name": "M02 · Flow inspector · Dark EN · 390",
+        "width": 390
+      },
+      "m_exposure": {
+        "id": "2A1T-0",
+        "page": "p-1P-0",
+        "content": "2A2H-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M03 · 敞口 · Light ZH · 390",
+        "width": 390
+      },
+      "m_exposure_inspect": {
+        "id": "2A48-0",
+        "page": "p-1P-0",
+        "content": "2A4W-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M04 · 合约详情 · Light ZH · 390",
+        "width": 390
+      },
+      "m_plan": {
+        "id": "2A5P-0",
+        "page": "p-1P-0",
+        "content": "2A6D-0",
+        "theme": "light",
+        "lang": "EN",
+        "name": "M05 · Plan · Light EN · 390",
+        "width": 390
+      },
+      "m_review": {
+        "id": "2A81-0",
+        "page": "p-1P-0",
+        "content": "2A8P-0",
+        "theme": "dark",
+        "lang": "ZH",
+        "name": "M06 · 复盘 · Dark ZH · 390",
+        "width": 390
+      },
+      "m_nav": {
+        "id": "2A9S-0",
+        "page": "p-1P-0",
+        "content": "2AAG-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M07 · 导航 · Light ZH · 390",
+        "width": 390
+      },
+      "m_watch": {
+        "id": "2ADC-0",
+        "page": "p-1P-0",
+        "content": "2AE0-0",
+        "theme": "dark",
+        "lang": "EN",
+        "name": "M08 · Watch preview · Dark EN · 390",
+        "width": 390
+      },
+      "compare": {
+        "id": "2AEX-0",
+        "page": "p-1O-0",
+        "content": "2AFX-0",
+        "theme": "light",
+        "name": "O09 · Compare assumptions · Light EN · 1440",
+        "main": "2AGX-0",
+        "pane": "2AGY-0"
+      },
+      "book_compare": {
+        "id": "2AIS-0",
+        "page": "p-1O-0",
+        "content": "2AJS-0",
+        "theme": "dark",
+        "name": "O10 · Matched book comparison · Dark EN · 1440",
+        "main": "2AKU-0",
+        "pane": "2AKV-0"
+      },
+      "t_volatility": {
+        "id": "2ANC-0",
+        "page": "p-1P-0",
+        "content": "2ANM-0",
+        "theme": "light",
+        "lang": "EN",
+        "name": "T01 · Volatility · Light EN · 820",
+        "width": 820
+      },
+      "t_lab": {
+        "id": "2AQC-0",
+        "page": "p-1P-0",
+        "content": "2AQM-0",
+        "theme": "dark",
+        "lang": "ZH",
+        "name": "T02 · 研究实验室 · Dark ZH · 820",
+        "width": 820
+      },
+      "s_evidence": {
+        "id": "2ATC-0",
+        "page": "p-1Q-0",
+        "theme": "light",
+        "name": "S01 · Evidence & selection states",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "s_persistence": {
+        "id": "2AWP-0",
+        "page": "p-1Q-0",
+        "theme": "dark",
+        "name": "S02 · Drafts, save & revision states",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "s_watch": {
+        "id": "2B0G-0",
+        "page": "p-1Q-0",
+        "theme": "light",
+        "name": "S03 · Watch, delivery & return states",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "s_access": {
+        "id": "2B49-0",
+        "page": "p-1Q-0",
+        "theme": "light",
+        "name": "S04 · Narrow, locale & accessibility",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "b_start": {
+        "id": "2B8P-0",
+        "page": "p-1R-0",
+        "theme": "light",
+        "name": "B01 · Start here & preservation map",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "b_bindings": {
+        "id": "2BAQ-0",
+        "page": "p-1R-0",
+        "theme": "dark",
+        "name": "B02 · Source, action & authority bindings",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "b_interactions": {
+        "id": "2BCJ-0",
+        "page": "p-1R-0",
+        "theme": "light",
+        "name": "B03 · Interaction & acceptance contract",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "b_plan_save": {
+        "id": "2BEJ-0",
+        "page": "p-1R-0",
+        "theme": "light",
+        "name": "B04 · Exact Plan save · target preview",
+        "width": 1440,
+        "kind": "atlas"
+      },
+      "m_zh_overview": {
+        "id": "2BGP-0",
+        "page": "p-1P-0",
+        "content": "2BHD-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M09 · 概览 · Light ZH · 390",
+        "width": 390
+      },
+      "m_zh_flow": {
+        "id": "2BII-0",
+        "page": "p-1P-0",
+        "content": "2BJ6-0",
+        "theme": "dark",
+        "lang": "ZH",
+        "name": "M10 · 成交检查 · Dark ZH · 390",
+        "width": 390
+      },
+      "m_zh_volatility": {
+        "id": "2BKM-0",
+        "page": "p-1P-0",
+        "content": "2BLA-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M11 · 波动率 · Light ZH · 390",
+        "width": 390
+      },
+      "m_zh_plan": {
+        "id": "2BMJ-0",
+        "page": "p-1P-0",
+        "content": "2BN7-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M12 · 计划 · Light ZH · 390",
+        "width": 390
+      },
+      "m_zh_saved": {
+        "id": "2BOO-0",
+        "page": "p-1P-0",
+        "content": "2BPC-0",
+        "theme": "light",
+        "lang": "ZH",
+        "name": "M13 · 已保存研究 · Light ZH · 390",
+        "width": 390
+      },
+      "m_zh_watch": {
+        "id": "2BQK-0",
+        "page": "p-1P-0",
+        "content": "2BR8-0",
+        "theme": "dark",
+        "lang": "ZH",
+        "name": "M14 · 观察条件预览 · Dark ZH · 390",
+        "width": 390
+      }
+    },
+    "stateComponents": [
+      {
+        "id": "E01",
+        "title": "Source prints unavailable",
+        "body": "The aggregate is available. Print-level times and quote detail were not supplied.",
+        "detail": "Keep the $224,000 group; omit the six-print plot and quote split.",
+        "action": "Open available aggregate",
+        "node": "2ATL-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E02",
+        "title": "Activity was corrected",
+        "body": "The selected group has a correction. Review it before replacing your selection.",
+        "detail": "Original identity and return context stay visible.",
+        "action": "Review correction",
+        "node": "2ATU-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E03",
+        "title": "Activity was withdrawn",
+        "body": "This group is no longer available from the source.",
+        "detail": "Keep its identity. Do not select a neighboring row automatically.",
+        "action": "Return to Tape",
+        "node": "2AU3-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E04",
+        "title": "No matching activity",
+        "body": "The source is available. No activity meets these filters.",
+        "detail": "Scope: SPY · 20 Nov · premium ≥ $15k.",
+        "action": "Edit filters",
+        "node": "2AUC-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E05",
+        "title": "Not published yet",
+        "body": "No book is available for the selected session.",
+        "detail": "A missing publication is not a zero-exposure book.",
+        "action": "Choose an available session",
+        "node": "2AUN-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E06",
+        "title": "Refresh failed",
+        "body": "The Nov 6 book remains visible. A newer read could not be completed.",
+        "detail": "Preserve the selected contract and visible source date.",
+        "action": "Retry source read",
+        "node": "2AUW-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E07",
+        "title": "Access unavailable",
+        "body": "This source is not available for the current account.",
+        "detail": "Do not replace denied data with a different source silently.",
+        "action": "View access details",
+        "node": "2AV5-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E08",
+        "title": "Independent SPY book",
+        "body": "Continue with root context in the Nov 6 Exposure book.",
+        "detail": "The selected Flow group remains the origin for Back.",
+        "action": "Continue with SPY context",
+        "primary": true,
+        "node": "2AVE-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E09",
+        "title": "Saved source unavailable",
+        "body": "The saved reference is intact, but its exact source cannot be loaded.",
+        "detail": "Keep the fingerprint and identity; do not show invented original values.",
+        "action": "View saved reference",
+        "node": "2AVP-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E10",
+        "title": "Wing data missing",
+        "body": "Available volatility observations remain visible. The missing wing has no curve.",
+        "detail": "No fit or interpolation is implied by the empty region.",
+        "action": "Open exact table",
+        "node": "2AVY-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E11",
+        "title": "Research only",
+        "body": "Evidence is still accruing for this claim.",
+        "detail": "Candidate formation does not establish calibration or live authority.",
+        "action": "Inspect evidence maturity",
+        "node": "2AW7-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "E12",
+        "title": "Terms unresolved",
+        "body": "The exact contract terms could not be qualified. Payoff is unavailable.",
+        "detail": "One refused leg blocks the complete expression.",
+        "action": "Check contract terms",
+        "node": "2AWG-0",
+        "board": "2ATC-0",
+        "theme": "light"
+      },
+      {
+        "id": "P01",
+        "title": "Complete both legs",
+        "body": "Choose side and whole quantity, then enter premium per unit for each exact contract.",
+        "detail": "No dated mark or net debit pre-fills authored inputs.",
+        "action": "Calculate payoff",
+        "disabled": true,
+        "node": "2AWY-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P02",
+        "title": "Inputs changed",
+        "body": "Recalculate before using the result for the new assumptions.",
+        "detail": "The prior curve is labeled as an older calculation.",
+        "action": "Recalculate",
+        "primary": true,
+        "node": "2AX8-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P03",
+        "title": "Saving revision",
+        "body": "Your save is being processed. Keep this window open.",
+        "detail": "One admitted command and operation identity; no second write.",
+        "action": "Saving…",
+        "disabled": true,
+        "node": "2AXI-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P04",
+        "title": "Saved, still loading",
+        "body": "Revision 2 was saved. Its exact contents are still loading.",
+        "detail": "Commit is known. Retry only the revision read.",
+        "action": "Load saved revision",
+        "node": "2AXS-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P05",
+        "title": "Save result unknown",
+        "body": "The save may have completed. Check its status before trying again.",
+        "detail": "Reconcile the original operation and target; no blind retry.",
+        "action": "Check save status",
+        "primary": true,
+        "node": "2AY4-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P06",
+        "title": "A newer revision exists",
+        "body": "Another change was saved while you were editing.",
+        "detail": "Compare revisions and rebase explicitly; no overwrite.",
+        "action": "Open latest revision",
+        "node": "2AYE-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P07",
+        "title": "Open the latest revision",
+        "body": "You are viewing revision 1. Add an assessment from revision 2.",
+        "detail": "A superseded revision cannot create an assessment.",
+        "action": "Open revision 2",
+        "node": "2AYO-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P08",
+        "title": "Plan saving unavailable",
+        "body": "This exact Plan is not included in the saved Exposure investigation.",
+        "detail": "Held exact-Plan capture remains a separate integration dependency.",
+        "action": "Keep editing Plan",
+        "primary": true,
+        "node": "2AYY-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P09",
+        "title": "Leave this draft?",
+        "body": "Leaving the editor may discard the unsaved exact Plan.",
+        "detail": "Use the existing draft owner. Never promise unproven reload recovery.",
+        "action": "Keep editing",
+        "primary": true,
+        "secondary": "Leave draft",
+        "node": "2AZA-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P10",
+        "title": "Assessment: inconclusive",
+        "body": "Save your assessment and notes as revision 2.",
+        "detail": "Latest revision only; note ≤2,000 characters; selected event bound explicitly.",
+        "action": "Save as revision 2",
+        "primary": true,
+        "node": "2AZM-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P11",
+        "title": "Assessment saved",
+        "body": "Revision 2 includes your assessment. The original evidence remains pinned.",
+        "detail": "Success requires exact-revision readback from the existing command owner.",
+        "action": "Open revision 2",
+        "primary": true,
+        "node": "2AZW-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "P12",
+        "title": "Revision unavailable",
+        "body": "The requested saved revision cannot be loaded.",
+        "detail": "Keep its identity. Never silently substitute the latest revision.",
+        "action": "Retry revision read",
+        "node": "2B06-0",
+        "board": "2AWP-0",
+        "theme": "dark"
+      },
+      {
+        "id": "W01",
+        "title": "Watch not armed",
+        "body": "Review the price condition and its expiry before arming.",
+        "detail": "Save and arm are separate existing commands.",
+        "action": "Review condition",
+        "node": "2B0P-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W02",
+        "title": "Arming watch",
+        "body": "The arm request is being processed.",
+        "detail": "Do not show Armed before the owner confirms it.",
+        "action": "Arming…",
+        "disabled": true,
+        "node": "2B0Z-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W03",
+        "title": "Watch armed",
+        "body": "SPY price touch · $605 · one shot. Checked every five minutes. Ends 13 Nov, 16:00 ET.",
+        "detail": "Existing five-minute evaluator; no new watcher service.",
+        "action": "Manage watch",
+        "node": "2B19-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W04",
+        "title": "Price condition met",
+        "body": "Firing value $605.10. The research assessment is still open.",
+        "detail": "Bind the exact selected firing when an event ID exists.",
+        "action": "Review case",
+        "primary": true,
+        "node": "2B1J-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W05",
+        "title": "Queued for delivery",
+        "body": "A firing is recorded. Notification delivery is pending.",
+        "detail": "Matching outbox row: pending; delivered_at is null.",
+        "action": "Delivery receipt history",
+        "node": "2B1V-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W06",
+        "title": "Firing history unavailable",
+        "body": "The trigger stamp is visible, but the firing receipt history cannot be read.",
+        "detail": "Fallback fire_event_id is null; do not claim exact-event binding.",
+        "action": "View available firing details",
+        "node": "2B25-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W07",
+        "title": "No firing recorded",
+        "body": "The readable history has no firing for this watch.",
+        "detail": "An empty result differs from an unreadable history.",
+        "action": "Open watch condition",
+        "node": "2B2F-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W08",
+        "title": "Watch expired",
+        "body": "The condition’s expiry passed. It is no longer armed.",
+        "detail": "A research horizon does not automatically extend a watch.",
+        "action": "Review a new watch",
+        "node": "2B2P-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W09",
+        "title": "A later firing exists",
+        "body": "You are reviewing an earlier firing. Keep it selected or switch explicitly.",
+        "detail": "Freeze selected event identity for the assessment revision.",
+        "action": "View later firing",
+        "secondary": "Keep this firing",
+        "node": "2B31-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W10",
+        "title": "Evaluation unavailable",
+        "body": "The saved condition is visible. Evaluation cannot currently be confirmed.",
+        "detail": "Never infer a working evaluator from a saved condition alone.",
+        "action": "View watch status",
+        "node": "2B3D-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W11",
+        "title": "No active saved case",
+        "body": "This Flow group is not part of a saved investigation.",
+        "detail": "Do not imply unsupported print or Volatility capture.",
+        "action": "Open Exposure investigation",
+        "node": "2B3N-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "W12",
+        "title": "Later observations available",
+        "body": "Keep the 10:20 snapshot, or explicitly open the latest activity.",
+        "detail": "Changing temporal mode preserves the original return context.",
+        "action": "View latest",
+        "secondary": "Keep snapshot",
+        "node": "2B3X-0",
+        "board": "2B0G-0",
+        "theme": "light"
+      },
+      {
+        "id": "A01",
+        "title": "发现更新的修订",
+        "node": "2B4K-0",
+        "board": "2B49-0",
+        "theme": "light",
+        "width": 320
+      },
+      {
+        "id": "A02",
+        "title": "来源数据不可用",
+        "node": "2B4U-0",
+        "board": "2B49-0",
+        "theme": "dark",
+        "width": 320
+      },
+      {
+        "id": "A03",
+        "title": "Keyboard return",
+        "node": "2B53-0",
+        "board": "2B49-0",
+        "theme": "light",
+        "width": 320,
+        "focusFallback": "Build note · Escape restores focus and scroll. If the row is unavailable, focus the Tape heading and announce its absence; retain the original identity."
+      },
+      {
+        "id": "A04",
+        "title": "方向与状态",
+        "node": "2B5C-0",
+        "board": "2B49-0",
+        "theme": "dark",
+        "width": 320
+      },
+      {
+        "id": "A05",
+        "title": "正在读取数据",
+        "node": "2B5L-0",
+        "board": "2B49-0",
+        "theme": "light",
+        "width": 320
+      },
+      {
+        "id": "A06",
+        "title": "三维视图不可用",
+        "node": "2B5U-0",
+        "board": "2B49-0",
+        "theme": "dark",
+        "width": 320
+      },
+      {
+        "id": "A07",
+        "title": "Whole contracts required",
+        "node": "2B62-0",
+        "board": "2B49-0",
+        "theme": "light",
+        "width": 320
+      },
+      {
+        "id": "A08",
+        "title": "复盘笔记过长",
+        "node": "2B6B-0",
+        "board": "2B49-0",
+        "theme": "light",
+        "width": 320
+      }
+    ],
+    "boardCount": 34,
+    "stateComponentCount": 44
+  },
+  "sourcePins": {
+    "governingMastermind": "9e6659c4a49ee6f11a6f6ee690d222ce81d67b09",
+    "round1Macro": "9a13c64bf69f782332afa29efb09fe48ee30b857",
+    "round1Terminal": "1c0bf028cf72539a4d3fcb17fa137ee474d764f9",
+    "round2AffectedTerminal": "2fe2f02f07d1df8c855388bc556383cd74de44fd",
+    "priorPlanningHead": "7b11d785f9a320c51eb013606a43c256e6418faf"
+  },
+  "preserved": {
+    "originalCensusedBoards": 245,
+    "modifiedByThisRound": false,
+    "heldTargets": [
+      {
+        "pageId": "p-2-0",
+        "nodeId": "1N2L-0",
+        "disposition": "READ_ONLY_UNCHANGED_ORIGINAL_HOLD"
+      },
+      {
+        "pageId": "p-Q-0",
+        "nodeId": "1B5H-0",
+        "disposition": "UNTOUCHED_ADJACENT_CUSTODY"
+      },
+      {
+        "pageId": "p-1-0",
+        "nodeId": "189S-0",
+        "disposition": "UNTOUCHED_ADJACENT_CUSTODY"
+      }
+    ],
+    "otherPageRelativeOrderPreserved": true,
+    "taskNamespaces": [
+      "G/D/F/M/V/N/Q/U/R",
+      "OPT",
+      "AC01-AC60",
+      "R1",
+      "R2 P01-P76",
+      "130 OPR",
+      "123-claim supersession register"
+    ]
+  },
+  "verification": {
+    "jsx": [
+      {
+        "key": "flow",
+        "id": "28VF-0",
+        "chars": 45524,
+        "rootFound": true,
+        "textLeaves": 92,
+        "fontMissing": []
+      },
+      {
+        "key": "exposure",
+        "id": "2918-0",
+        "chars": 35683,
+        "rootFound": true,
+        "textLeaves": 65,
+        "fontMissing": []
+      },
+      {
+        "key": "volatility",
+        "id": "2973-0",
+        "chars": 33513,
+        "rootFound": true,
+        "textLeaves": 64,
+        "fontMissing": []
+      },
+      {
+        "key": "plan",
+        "id": "29BT-0",
+        "chars": 42016,
+        "rootFound": true,
+        "textLeaves": 77,
+        "fontMissing": []
+      },
+      {
+        "key": "overview",
+        "id": "29HR-0",
+        "chars": 30113,
+        "rootFound": true,
+        "textLeaves": 61,
+        "fontMissing": []
+      },
+      {
+        "key": "research",
+        "id": "29LI-0",
+        "chars": 31442,
+        "rootFound": true,
+        "textLeaves": 64,
+        "fontMissing": []
+      },
+      {
+        "key": "saved",
+        "id": "29PH-0",
+        "chars": 28535,
+        "rootFound": true,
+        "textLeaves": 60,
+        "fontMissing": []
+      },
+      {
+        "key": "review",
+        "id": "29T4-0",
+        "chars": 31754,
+        "rootFound": true,
+        "textLeaves": 67,
+        "fontMissing": []
+      },
+      {
+        "key": "m_flow",
+        "id": "29XA-0",
+        "chars": 17019,
+        "rootFound": true,
+        "textLeaves": 32,
+        "fontMissing": []
+      },
+      {
+        "key": "m_inspect",
+        "id": "29ZH-0",
+        "chars": 17560,
+        "rootFound": true,
+        "textLeaves": 36,
+        "fontMissing": []
+      },
+      {
+        "key": "m_exposure",
+        "id": "2A1T-0",
+        "chars": 18921,
+        "rootFound": true,
+        "textLeaves": 38,
+        "fontMissing": []
+      },
+      {
+        "key": "m_exposure_inspect",
+        "id": "2A48-0",
+        "chars": 11728,
+        "rootFound": true,
+        "textLeaves": 18,
+        "fontMissing": []
+      },
+      {
+        "key": "m_plan",
+        "id": "2A5P-0",
+        "chars": 18094,
+        "rootFound": true,
+        "textLeaves": 33,
+        "fontMissing": []
+      },
+      {
+        "key": "m_review",
+        "id": "2A81-0",
+        "chars": 14308,
+        "rootFound": true,
+        "textLeaves": 25,
+        "fontMissing": []
+      },
+      {
+        "key": "m_nav",
+        "id": "2A9S-0",
+        "chars": 16061,
+        "rootFound": true,
+        "textLeaves": 29,
+        "fontMissing": []
+      },
+      {
+        "key": "m_watch",
+        "id": "2ADC-0",
+        "chars": 12769,
+        "rootFound": true,
+        "textLeaves": 22,
+        "fontMissing": []
+      },
+      {
+        "key": "compare",
+        "id": "2AEX-0",
+        "chars": 30865,
+        "rootFound": true,
+        "textLeaves": 67,
+        "fontMissing": []
+      },
+      {
+        "key": "book_compare",
+        "id": "2AIS-0",
+        "chars": 37304,
+        "rootFound": true,
+        "textLeaves": 82,
+        "fontMissing": []
+      },
+      {
+        "key": "t_volatility",
+        "id": "2ANC-0",
+        "chars": 22846,
+        "rootFound": true,
+        "textLeaves": 46,
+        "fontMissing": []
+      },
+      {
+        "key": "t_lab",
+        "id": "2AQC-0",
+        "chars": 23174,
+        "rootFound": true,
+        "textLeaves": 49,
+        "fontMissing": []
+      },
+      {
+        "key": "s_evidence",
+        "id": "2ATC-0",
+        "chars": 28107,
+        "rootFound": true,
+        "textLeaves": 63,
+        "fontMissing": []
+      },
+      {
+        "key": "s_persistence",
+        "id": "2AWP-0",
+        "chars": 30171,
+        "rootFound": true,
+        "textLeaves": 64,
+        "fontMissing": []
+      },
+      {
+        "key": "s_watch",
+        "id": "2B0G-0",
+        "chars": 30835,
+        "rootFound": true,
+        "textLeaves": 65,
+        "fontMissing": []
+      },
+      {
+        "key": "s_access",
+        "id": "2B49-0",
+        "chars": 18993,
+        "rootFound": true,
+        "textLeaves": 48,
+        "fontMissing": []
+      },
+      {
+        "key": "b_start",
+        "id": "2B8P-0",
+        "chars": 18596,
+        "rootFound": true,
+        "textLeaves": 51,
+        "fontMissing": []
+      },
+      {
+        "key": "b_bindings",
+        "id": "2BAQ-0",
+        "chars": 15792,
+        "rootFound": true,
+        "textLeaves": 36,
+        "fontMissing": []
+      },
+      {
+        "key": "b_interactions",
+        "id": "2BCJ-0",
+        "chars": 18409,
+        "rootFound": true,
+        "textLeaves": 37,
+        "fontMissing": []
+      },
+      {
+        "key": "b_plan_save",
+        "id": "2BEJ-0",
+        "chars": 14881,
+        "rootFound": true,
+        "textLeaves": 32,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_overview",
+        "id": "2BGP-0",
+        "chars": 14850,
+        "rootFound": true,
+        "textLeaves": 27,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_flow",
+        "id": "2BII-0",
+        "chars": 17670,
+        "rootFound": true,
+        "textLeaves": 38,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_volatility",
+        "id": "2BKM-0",
+        "chars": 16084,
+        "rootFound": true,
+        "textLeaves": 33,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_plan",
+        "id": "2BMJ-0",
+        "chars": 17196,
+        "rootFound": true,
+        "textLeaves": 32,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_saved",
+        "id": "2BOO-0",
+        "chars": 15588,
+        "rootFound": true,
+        "textLeaves": 29,
+        "fontMissing": []
+      },
+      {
+        "key": "m_zh_watch",
+        "id": "2BQK-0",
+        "chars": 12314,
+        "rootFound": true,
+        "textLeaves": 22,
+        "fontMissing": []
+      }
+    ],
+    "explicitTextLeaves": 1604,
+    "sourceAndFixture": {
+      "axisCount": 103,
+      "focusCount": 20,
+      "allVisibleSamplesFromSource": true,
+      "allVisiblePnlMatch": true,
+      "selected606": 280,
+      "comparison606": 230,
+      "noInserted605": true,
+      "noInsertedBreakeven": true,
+      "exposureCurrent": 200,
+      "exposureBaseline": 150,
+      "childContracts": 400,
+      "childPremium": 224000,
+      "reviewIdValidShape": true
+    },
+    "observedAppliedPaperOperations": 541,
+    "unresolvedPaperEffects": [],
+    "finishedOwnedBoardOperation": "options-r2-final-finish-complete-language-suite",
+    "paperScreenshotReview": true,
+    "authenticatedRuntimeBehaviorProven": false,
+    "productionDeploymentPerformed": false,
+    "localExecutorCloseoutAvailable": false
+  },
+  "fixture": {
+    "kind": "synthetic_design_fixture_not_market_data",
+    "timeZone": "America/New_York (ET labels)",
+    "researchSnapshot": "2026-11-09T10:20:00-05:00",
+    "originalSpot": {
+      "value": 598.4,
+      "observedAt": "2026-11-09T10:19:58-05:00"
+    },
+    "flow": {
+      "contract": "SPY261120C00600000",
+      "unitPremium": 5.6,
+      "multiplier": 100,
+      "children": [
+        {
+          "id": "synthetic-child-1",
+          "timeET": "10:17:50",
+          "contracts": 100,
+          "premium": 56000,
+          "quoteClassification": "at_ask"
+        },
+        {
+          "id": "synthetic-child-2",
+          "timeET": "10:18:03",
+          "contracts": 80,
+          "premium": 44800,
+          "quoteClassification": "at_ask"
+        },
+        {
+          "id": "synthetic-child-3",
+          "timeET": "10:18:11",
+          "contracts": 70,
+          "premium": 39200,
+          "quoteClassification": "at_ask"
+        },
+        {
+          "id": "synthetic-child-4",
+          "timeET": "10:18:20",
+          "contracts": 50,
+          "premium": 28000,
+          "quoteClassification": "at_ask"
+        },
+        {
+          "id": "synthetic-child-5",
+          "timeET": "10:18:31",
+          "contracts": 60,
+          "premium": 33600,
+          "quoteClassification": "unknown"
+        },
+        {
+          "id": "synthetic-child-6",
+          "timeET": "10:18:42",
+          "contracts": 40,
+          "premium": 22400,
+          "quoteClassification": "unknown"
+        }
+      ],
+      "selectedContracts": 400,
+      "selectedPremium": 224000,
+      "atAskContracts": 300,
+      "unknownContracts": 100,
+      "atAskPremium": 168000,
+      "unknownPremium": 56000,
+      "displayedGroups": 3,
+      "displayedSourcePrints": 8,
+      "displayedContracts": 520,
+      "displayedPremium": 255800,
+      "implementationStatus": "TARGET_CHILD_EVIDENCE_EXTENSION; CURRENT_AGGREGATE_FALLBACK_E01"
+    },
+    "exposure": {
+      "currency": "USD",
+      "unit": "million per +1% underlying move",
+      "signModel": "assumed call-positive / put-negative OI",
+      "expiry": "2026-11-20",
+      "baselineDate": "2026-11-05",
+      "currentDate": "2026-11-06",
+      "baselineSpot": 594.8,
+      "currentSpot": 596.2,
+      "currentAvailableAt": "2026-11-09T03:52:00-05:00",
+      "baselineAvailableAt": "2026-11-06T03:52:00-05:00",
+      "rows": [
+        {
+          "key": "590C",
+          "prior": 35,
+          "current": 40,
+          "delta": 5
+        },
+        {
+          "key": "590P",
+          "prior": -25,
+          "current": -30,
+          "delta": -5
+        },
+        {
+          "key": "600C",
+          "prior": 140,
+          "current": 180,
+          "delta": 40
+        },
+        {
+          "key": "600P",
+          "prior": -60,
+          "current": -70,
+          "delta": -10
+        },
+        {
+          "key": "610C",
+          "prior": 60,
+          "current": 80,
+          "delta": 20
+        },
+        {
+          "key": "610P",
+          "prior": null,
+          "current": null,
+          "delta": null
+        }
+      ],
+      "knownBaselineSubtotal": 150,
+      "knownCurrentSubtotal": 200,
+      "matchedChange": 50,
+      "knownMembers": 5,
+      "totalMembers": 6,
+      "fullTotal": null
+    },
+    "volatility": {
+      "sourceDate": "2026-11-06",
+      "firstAvailableAt": null,
+      "expiries": [
+        {
+          "expiry": "2026-11-13",
+          "dte": 7,
+          "atmIv": 23.5
+        },
+        {
+          "expiry": "2026-11-20",
+          "dte": 14,
+          "atmIv": 22
+        },
+        {
+          "expiry": "2026-12-18",
+          "dte": 42,
+          "atmIv": 21
+        }
+      ],
+      "selectedExpiry": "2026-11-20",
+      "call25DeltaIv": 20,
+      "put25DeltaIv": 23,
+      "callMinusPutRiskReversal": -3,
+      "rv20": 18,
+      "sourcePublishedVrp": 4,
+      "ivRank": null
+    },
+    "plan": {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "currency": "USD",
+      "multiplier": 100,
+      "legs": [
+        {
+          "strike": 600,
+          "right": "C",
+          "side": "buy",
+          "quantity": 1,
+          "authoredPremiumPerUnit": 5.6
+        },
+        {
+          "strike": 610,
+          "right": "C",
+          "side": "sell",
+          "quantity": 1,
+          "authoredPremiumPerUnit": 2.4
+        }
+      ],
+      "netDebit": 320,
+      "worstExpiryPnl": -320,
+      "bestExpiryPnl": 680,
+      "analyticBreakeven": 603.2,
+      "sampling": {
+        "range": [
+          480,
+          732
+        ],
+        "count": 103,
+        "focus": [
+          580,
+          625
+        ],
+        "visible": [
+          {
+            "spot": 580.8,
+            "pnl": -320
+          },
+          {
+            "spot": 583.32,
+            "pnl": -320
+          },
+          {
+            "spot": 585.84,
+            "pnl": -320
+          },
+          {
+            "spot": 588.36,
+            "pnl": -320
+          },
+          {
+            "spot": 590.88,
+            "pnl": -320
+          },
+          {
+            "spot": 593.4,
+            "pnl": -320
+          },
+          {
+            "spot": 595.92,
+            "pnl": -320
+          },
+          {
+            "spot": 598.44,
+            "pnl": -320
+          },
+          {
+            "spot": 600,
+            "pnl": -320
+          },
+          {
+            "spot": 600.96,
+            "pnl": -224
+          },
+          {
+            "spot": 603.48,
+            "pnl": 28
+          },
+          {
+            "spot": 606,
+            "pnl": 280
+          },
+          {
+            "spot": 608.52,
+            "pnl": 532
+          },
+          {
+            "spot": 610,
+            "pnl": 680
+          },
+          {
+            "spot": 611.04,
+            "pnl": 680
+          },
+          {
+            "spot": 613.56,
+            "pnl": 680
+          },
+          {
+            "spot": 616.08,
+            "pnl": 680
+          },
+          {
+            "spot": 618.6,
+            "pnl": 680
+          },
+          {
+            "spot": 621.12,
+            "pnl": 680
+          },
+          {
+            "spot": 623.64,
+            "pnl": 680
+          }
+        ]
+      },
+      "comparison": {
+        "onlyChange": "long-leg premium 5.60 to 6.10",
+        "netDebit": 370,
+        "worstExpiryPnl": -370,
+        "bestExpiryPnl": 630,
+        "analyticBreakeven": 603.7,
+        "pnlAt606": 230
+      },
+      "scope": "expiry intrinsic payoff; fees, slippage, exercise, assignment, current valuation, probability and realized returns excluded",
+      "saveState": "CURRENT_UNAVAILABLE; B04_TARGET_AFTER_EXISTING_ADMISSION_CAPTURE_HISTORY_DEPENDENCIES"
+    },
+    "investigation": {
+      "savedRevision": 1,
+      "savedAt": "2026-11-09T10:28:00-05:00",
+      "viewedAt": "2026-11-09T10:35:00-05:00",
+      "question": "What evidence would support or weaken a move through $605?",
+      "continuation": "Reassess below $595 or if later evidence contradicts the case.",
+      "horizon": "Review by 13 Nov 2026",
+      "included": [
+        "supported Exposure evidence refs",
+        "selected exact contract"
+      ],
+      "excluded": [
+        "Flow child-print capture",
+        "Volatility snapshot capture",
+        "exact Plan draft"
+      ],
+      "originalNumericValuesRequireExactResolver": true
+    },
+    "watch": {
+      "kind": "price_touch",
+      "threshold": 605,
+      "mode": "one_shot",
+      "evaluationCadenceMinutes": 5,
+      "previewAt": "2026-11-09T10:29:00-05:00",
+      "armedAt": "2026-11-09T10:30:00-05:00",
+      "expiresAt": "2026-11-13T16:00:00-05:00",
+      "firedAt": "2026-11-10T10:06:02-05:00",
+      "firingValue": 605.1,
+      "reviewedAt": "2026-11-10T10:15:00-05:00",
+      "receipt": {
+        "outbox": "READABLE",
+        "matchingEvent": true,
+        "event_id": "e4f7a0c923d681b59a50fe3d2c8b74a1f6985bd027ea0f31c46d9218a7b05e63",
+        "status": "pending",
+        "delivered_at": null,
+        "source_asof": null,
+        "assessment": null,
+        "fire_event_id": "e4f7a0c923d681b59a50fe3d2c8b74a1f6985bd027ea0f31c46d9218a7b05e63",
+        "note": "Synthetic 64-hex fixture identity; never a production receipt."
+      }
+    },
+    "alternativeBranches": {
+      "B04": "future exact Plan capture from revision 1 to revision 2",
+      "O08_P10_P11": "assessment of revision 1 saved as revision 2",
+      "rule": "Alternative fixtures, not two writes to the same revision; runtime expected/latest revision governs."
+    }
+  },
+  "nextRound": {
+    "number": 3,
+    "objective": "Harden incumbent architecture, schemas, dependencies and acceptance against actual Paper candidate.",
+    "firstActions": [
+      "Read 02_PAPER_DESIGN.md section 10.1 and exact board bindings.",
+      "Refresh only affected source/custody/hold facts.",
+      "Bind Flow child evidence, exact Plan capture/reopen, source resolver and explicit firing selection to existing owners.",
+      "Preserve all inherited acceptance/science obligations; no Fable dispatch until round 4."
+    ]
+  },
+  "children": "Bounded reasoning reviews complete; no implementation workers running."
+}
