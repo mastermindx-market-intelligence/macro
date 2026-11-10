@@ -498,7 +498,8 @@ def test_navigation_button_controls_share_focus_and_press_feedback() -> None:
     assert ".search-pagination button:active {" in interaction
     assert "transition-duration: .06s;" in interaction
     assert "min-height: 40px;" in interaction
-    assert "min-width: 40px;" in interaction
+    pager = re.search(r"\.search-pagination button \{\s*min-width: (\d+)px;", interaction)
+    assert pager and int(pager.group(1)) >= 40
     assert "@media (prefers-reduced-motion: reduce)" in interaction
     reduced = interaction.split("@media (prefers-reduced-motion: reduce)", 1)[1]
     for selector in (
@@ -535,7 +536,8 @@ def test_ticker_search_escape_restores_keyboard_focus() -> None:
         assert jsmin("if (restoreFocus)") in source
         assert jsmin("trigger.focus({ preventScroll: true })") in source
         assert jsmin("closeButton.addEventListener('click', function () { closeSearch(true); });") in source
-        escape = source.split(jsmin("} else if (e.key === 'Escape') {"), 1)[1].split("}", 1)[0]
+        escape = source.split(jsmin("box.addEventListener('keydown', function (e) {"), 1)[1].split("});", 1)[0]
+        assert jsmin("e.key !== 'Escape'") in escape
         assert "e.preventDefault();" in escape
         assert "closeSearch(true);" in escape
 

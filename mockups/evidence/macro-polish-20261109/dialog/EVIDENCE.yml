@@ -1,0 +1,7 @@
+{
+  "schema": "mastermind.page_evidence_receipt.v1",
+  "changed_paths": [
+    "templates/dashboard.html.j2"
+  ],
+  "manifest": "mockups/evidence/macro-polish-20261109/dialog/manifest.json"
+}

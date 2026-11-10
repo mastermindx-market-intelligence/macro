@@ -1,0 +1,14 @@
+{
+  "basis": "Current authored source in owned dirty worktree; fixture uses these files and synthetic offline data. The capture manifest HEAD is base ancestry, not a claim of a clean render.",
+  "base_sha": "73bbade8efdb464279a1693a6e2c72a39c1790c9",
+  "sha256": {
+    "templates/theme.js": "6b27720f9dff3cd23ee4734ad7d0259c6b32598cbdd5979b0047ede408bf5bb7",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/navigation-refresh.css": "8275c9a26b949f6d3da654ae349a3df8a08355655b8086932a0fa75285392f21",
+    "templates/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+    "templates/dashboard.html.j2": "da3428e66e10b7f192c02a2279aa16f009d71f4e0658dec21ae182e2cd24059a",
+    "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+    "templates/_navlinks.html.j2": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+    "tests/macro_polish_browser_support.py": "630e0fc244390d49b16c6d39eaf438e1440924a76b1f1dd9a26d8897314a2e8a"
+  }
+}

@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 16/16 captured
+manifest: mockups/evidence/macro-polish-20261109/retry/manifest.json
+smells: mockups/evidence/macro-polish-20261109/retry/observations.json

@@ -2486,10 +2486,10 @@ html[data-lang="zh"] .ticker-search .search-esc {
   will-change: opacity, transform;
 }
 
-.search-drop-head { padding: 16px 17px 12px; border-color: var(--mock-line); }
-.search-drop-title { color: var(--mock-ink); font-size: 12px; }
-.search-drop-sub { margin-top: 3px; color: #929dae; font-size: 9.5px; }
-.market-profile { padding: 5px 8px; border-color: var(--mock-line); color: #6d7890; background: var(--mock-surface-soft); font-size: 8.5px; }
+.search-drop-head { padding: var(--sp-4,16px) var(--sp-4,16px) var(--sp-3,12px); border-color: var(--mock-line); }
+.search-drop-title { color: var(--text); font-size: var(--fs-body); line-height: 1.4; }
+.search-drop-sub { margin-top: var(--sp-1,4px); color: var(--muted); font-size: var(--fs-sm); line-height: 1.4; }
+.market-profile { padding: var(--sp-1,4px) var(--sp-2,8px); border-color: var(--mock-line); color: var(--muted); background: var(--mock-surface-soft); font-size: var(--fs-micro); }
 .fan-grid { gap: 7px; padding: 13px 14px 15px; perspective: 800px; }
 
 .fan-card {
@@ -2498,20 +2498,22 @@ html[data-lang="zh"] .ticker-search .search-esc {
   gap: 9px;
   padding: 7px 8px;
   border-radius: 11px;
-  animation: mockupCardSettle .22s cubic-bezier(.2, .82, .2, 1) both;
-  animation-delay: calc(var(--i) * 14ms + 20ms);
+  /* The popup owns the entrance. Repainted rows stay visible while typing. */
+  animation: none;
+  opacity: 1;
 }
 
 .result-row {
   min-height: 58px;
-  grid-template-columns: 40px minmax(150px, 1fr) auto;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
   gap: 10px;
   padding: 9px 10px 9px 9px;
   border: 1px solid var(--mock-line);
   border-radius: 10px;
   background: #fafbfc;
-  animation: mockupResultSettle .2s cubic-bezier(.2, .82, .2, 1) both;
-  animation-delay: calc(var(--i) * 12ms);
+  animation: none;
+  opacity: 1;
+  transform: none;
 }
 
 html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft); }
@@ -2525,14 +2527,14 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.ticker-symbol { color: var(--mock-ink); font-size: 11px; font-weight: 780; }
-.ticker-name { margin-top: 2px; color: #929dae; font-size: 8.5px; }
-.market-code { padding: 3px 5px; border-radius: 5px; color: #8a95a7; background: #eef1f5; font-size: 7.5px; }
+.ticker-symbol { color: var(--text); font-size: var(--fs-body); font-weight: 700; }
+.ticker-name { margin-top: 2px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.4; }
+.market-code { padding: var(--sp-1,4px) var(--sp-2,8px); border-radius: var(--r-ctl,8px); color: var(--muted); background: var(--panel2); font-size: var(--fs-label); }
 .results-list { gap: 6px; padding: 11px 14px 8px; }
-.signal-status { min-height: 26px; padding: 5px 8px; border-radius: 7px; font-size: 8.5px; }
+.signal-status { min-height: 28px; padding: var(--sp-1,4px) var(--sp-2,8px); border-radius: var(--r-ctl,8px); font-size: var(--fs-label); }
 .search-pagination { gap: 7px; min-height: 39px; padding: 6px 12px 10px; }
-.search-pagination button { min-width: 26px; height: 26px; border-radius: 7px; font-size: 9px; }
-.empty-search { padding: 30px 20px 34px; font-size: 11px; }
+.search-pagination button { min-width: 44px; height: 44px; border-radius: var(--r-ctl,8px); font-size: var(--fs-sm); }
+.empty-search { padding: var(--sp-7,32px) var(--sp-5,20px); color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; }
 
 @keyframes mockupCardSettle {
   from {
@@ -2626,7 +2628,7 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
 }
 
 @media (max-width: 560px) {
-  .fan-grid { grid-template-columns: 1fr; max-height: 350px; overflow-y: auto; }
+  .fan-grid { grid-template-columns: 1fr; max-height: none; overflow: visible; }
   .ticker-dropdown { max-height: calc(100dvh - 150px); }
 }
 
@@ -3034,8 +3036,8 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
 }
 
 .search-pagination button {
-  min-width: 40px;
-  height: 40px;
+  min-width: 44px;
+  height: 44px;
 }
 
 .nav-mega.nav-mega .nm-feat:active,
@@ -3093,6 +3095,46 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
   .result-row:active {
     transform: none;
   }
+}
+
+/* Search keeps one scroll surface and a stable, readable selection. The shared
+   popup handles motion; results never replay an entrance after every keystroke. */
+.ticker-search .search-status {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.ticker-search .ticker-dropdown { overscroll-behavior: contain; }
+.ticker-search .search-drop-head {
+  position: sticky; top: 0; z-index: 3; background: var(--mock-surface);
+  align-items: flex-start; gap: var(--sp-3,12px);
+}
+.ticker-search .search-drop-head > div { min-width: 0; }
+.ticker-search .search-drop-title { overflow-wrap: anywhere; }
+.ticker-search .market-profile { flex-shrink: 0; max-width: 45%; white-space: normal; text-align: right; }
+.ticker-search .search-pagination {
+  position: sticky; bottom: 0; z-index: 3; background: var(--mock-surface);
+  padding: var(--sp-2,8px) var(--sp-3,12px); border-top: 1px solid var(--mock-line);
+}
+.ticker-search .fan-card.sel,
+.ticker-search .result-row.sel {
+  color: var(--text); background: var(--panel2); border-color: var(--muted);
+  box-shadow: none; transform: none;
+}
+.ticker-search .search-notice { font-size: var(--fs-sm); line-height: 1.5; }
+.ticker-search .search-notice button {
+  min-height: 44px; padding: var(--sp-2,8px) var(--sp-3,12px); border-radius: var(--r-ctl,8px);
+  font: inherit; touch-action: manipulation;
+}
+.ticker-search .search-notice button:focus-visible {
+  outline: 2px solid var(--link); outline-offset: 2px;
+}
+.ticker-search .search-notice button:disabled { cursor: progress; color: var(--muted); }
+@media (max-width: 560px) {
+  .ticker-search .search-drop-head { flex-direction: column; gap: var(--sp-2,8px); }
+  .ticker-search .market-profile { max-width: 100%; text-align: left; }
+  .ticker-search .result-row { grid-template-columns: 38px minmax(0, 1fr); }
+  .ticker-search .result-row .signal-status { grid-column: 2; justify-self: start; }
+  .ticker-search .ticker-name { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* ALL_TOOLS_MATERIAL_V1_START */

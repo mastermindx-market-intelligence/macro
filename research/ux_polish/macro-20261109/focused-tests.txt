@@ -1,0 +1,4 @@
+Historical diagnostic run summary; unrelated pytest temporary-directory cleanup warnings omitted.
+FAILED tests/test_navigation_refresh.py::test_navigation_button_controls_share_focus_and_press_feedback
+FAILED tests/test_navigation_refresh.py::test_ticker_search_escape_restores_keyboard_focus
+2 failed, 117 passed, 49 warnings in 111.81s (0:01:51)

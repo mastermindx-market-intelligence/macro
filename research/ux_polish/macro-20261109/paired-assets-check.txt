@@ -1,0 +1,2 @@
+PASS: site/theme.js equals lib.site_assets.emit_theme_js(templates/theme.js).
+PASS: site/navigation-refresh.css equals templates/navigation-refresh.css.
