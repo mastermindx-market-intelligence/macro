@@ -1930,6 +1930,7 @@ on:
       - "tests/test_subsector_rotation_alerts.py"
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_confluence.py"
+      - "tests/test_subsector_confluence_zh.py"
       - "tests/test_themes_heatmap.py"
       # Research Factory W1 (RF-11): authority guard, ledger schemas, state machine.
       - "scripts/research_factory*.py"

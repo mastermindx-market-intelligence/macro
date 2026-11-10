@@ -34,6 +34,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from engine import bar_derive          # the display-grid anchor era + b3 boundaries (DG-R3/R6)  # noqa: E402
+from engine import sp500_heatmap       # SECTOR_ZH — the heatmap's own sector table  # noqa: E402
 from engine import subsector_confluence as sc  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
@@ -45,6 +46,14 @@ SIG_DIR = "subsector_signals"
 DETAIL_DIR = "subsector"
 BOARD_JSON = "marketdata/subsector_confluence.json"
 BASKET_JSON = "marketdata/basket_confluence.json"
+
+# Chinese names for the S&P desk, carried ONLY from tables the repo already owns
+# (never an authored translation): the sub-industry table is a character-for-character
+# copy of templates/heatmap.js INDUSTRY_ZH, parity-pinned by
+# tests/test_subsector_confluence_zh.py so the two can never drift; the sector words are
+# engine.sp500_heatmap.SECTOR_ZH — the SAME table the S&P heatmap renders from, imported
+# directly so no second copy exists.
+_ZH_TABLE_PATH = config.ROOT / "config" / "sp500_subindustry_zh.json"
 
 # China 同花顺 (THS) concept desk — namespaced so it never clobbers the US outputs.
 CN_OHLC_DIR = "subsectorohlc_china"
@@ -88,6 +97,22 @@ def _bars_from_candle(cand) -> list[list]:
 def _write_json(path: Path, obj) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(_clean(obj), separators=(",", ":"), allow_nan=False))
+
+
+def _sp500_zh_names() -> dict[str, str] | None:
+    """The S&P desk's {English name: owned Chinese name} lookup: the sub-industry table
+    (config/sp500_subindustry_zh.json ← templates/heatmap.js INDUSTRY_ZH) merged with
+    engine.sp500_heatmap.SECTOR_ZH for the sector words. Additive-never-fatal: a
+    missing/unreadable table logs a warning and returns None — the rows stay null, the
+    nightly never dies. Matching downstream is exact string; unknown keys stay null."""
+    try:
+        table = json.loads(_ZH_TABLE_PATH.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001 — display-only bilingual labels
+        log.warning("subsector_confluence: zh table unreadable (%s) — S&P rows stay English", e)
+        return None
+    out = dict(table)
+    out.update(sp500_heatmap.SECTOR_ZH)
+    return out
 
 
 def _detail_key(g: dict) -> str:
@@ -153,7 +178,7 @@ def _emit_group_files(site: Path, g: dict, ohlc_dir: str = OHLC_DIR, sig_dir: st
 def _build_payloads(site: Path, generated_utc: str) -> tuple[dict, dict]:
     """Run both engines, emit the per-group chart/signal files, return the two board payloads
     (with the heavy series stripped, ready to serialise)."""
-    subs = sc.compute_subsector_confluence()
+    subs = sc.compute_subsector_confluence(zh_names=_sp500_zh_names())
     for g in subs.get("subsectors", []) + subs.get("sectors", []):
         _emit_group_files(site, g)
     subs["generated_utc"] = generated_utc
