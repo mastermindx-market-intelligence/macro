@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-08",
+  "operation": "paper-audit-clarity-20261108-c3",
+  "motion_reference": {
+    "command": "node research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+    "reference_sha256": "bc4d36201e11f742320a70560afaa442b4703f03c2cbd2e806654ce89ba6a37e",
+    "harness_sha256": "35b6c8b3beca617e7fa51494ecdc2535a6d3e14b335bba7854eef3fada58dbf5",
+    "result": "PASS",
+    "checks": 9,
+    "passed": [
+      "Open evidence preserves the query and pins the source snapshot",
+      "Back restores the original scroll position and triggering control",
+      "Forward puts the evidence heading in view",
+      "Current appearance/language/motion survive Back with a matching URL",
+      "History and reload cannot undo the simulated current access denial",
+      "Reload restores a qualified theme return position",
+      "A direct evidence link returns safely without assuming an origin history entry",
+      "Empty results retain the query and expose an explicit clear action",
+      "A failed read keeps the dated example without pretending it is current"
+    ],
+    "limitation": "Source DOM harness only; browser layout, motion rendering and installed integration remain unverified."
+  },
+  "artifact_checks": {
+    "result": "PASS",
+    "checks": [
+      "agentos/discoveries/DSC-GMI-RELATIONSHIP-LINK-DROPS-SELECTION-20261108.md: frontmatter checks PASS",
+      "agentos/handoffs/GMI-THEME-GRAPH-2026-11-08-paper-audit-c3.md: frontmatter checks PASS"
+    ],
+    "json_files": 4,
+    "screenshots": 10,
+    "gmi_targets": 12,
+    "observed_effects": 52,
+    "internal_audit_links": "PASS",
+    "artifacts": 23,
+    "total_bytes": 1517768,
+    "limitation": "Focused local record shape checks; full canonical Agent OS validation remains a repository CI check."
+  },
+  "paper": {
+    "capture_count": 10,
+    "capture_receipts": "SCREENSHOT_RECEIPTS.json",
+    "node_readback": "NODE_READBACK.json",
+    "effect_receipts": "EFFECTS.json"
+  },
+  "not_proven": [
+    "Real-browser rendering and accessibility tree of HTML reference",
+    "Installed product integration",
+    "Production capability, source admission or programme acceptance"
+  ],
+  "repository_ci": "Exact GitHub PR/check receipts own this status; not inferred from local checks."
+}
+
