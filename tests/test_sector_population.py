@@ -55,7 +55,13 @@ from functools import lru_cache  # noqa: E402
 @lru_cache(maxsize=1)
 def _cached_real_carry() -> dict:
     """The real-input `carried` dict, built ONCE per process (same real quadruple
-    every caller uses; the two PIT blocks cost ~100 owner `members_asof` reads)."""
+    every caller uses; the two PIT blocks each cost one owner store read).
+
+    MUST NOT be called under a point-in-time monkeypatch (a patched PIT store,
+    membership path or history path): the cache is process-wide and is never
+    invalidated, so one patched call would poison every later caller in the same
+    process with the patched store's answers. Under any such monkeypatch, build a
+    fresh carry directly instead of using this cache (N6)."""
     from lib.sector_central_carry import build_carry
     from collectors.sponsors import sector_flow_periods
     central = json.loads(_real("sectordata/sector_central.json"))
@@ -886,7 +892,7 @@ def test_r4_n3_an_undated_carried_block_reads_unavailable_never_available():
             {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]},
         "membership_first_known": {"basis": "lower_bound_from_stored_snapshots",
                                    "first_known": {"g1": {"AAA": "2026-08-13"}}},
-        "membership_snapshots": {"groups": {"g1": {
+        "membership_snapshots": {"suite": "baskets", "groups": {"g1": {
             "status": "available", "snapshot_date": "2026-10-14", "members_sha": None,
             "member_count": 1, "equals_current_roster": True}}}}
     pop = population.build_population(
@@ -937,6 +943,11 @@ def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, 
                                    "roster_as_of": "2026-11-06",
                                    "capture_effective_as_of": "2026-11-05"}
     assert pop["configured_current"] is None and pop["complete"] is None
+    # S1: a roster that cannot vouch for the capture contributes NOTHING - no
+    # ``unaccounted_by_owner`` entries from it, and ``unaccounted`` itself is served
+    # as null, never a guessed 0
+    assert pop["unaccounted"] is None
+    assert all(u["reason"] != "unaccounted_by_owner" for u in pop["unserved_members"])
     # FIXTURE: the closed reasons around the capture's own clock
     def build(doc, roster):
         return population.build_population(baskets=doc, handoff={}, action_board={},
@@ -954,12 +965,62 @@ def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, 
         "status": "mismatch", "reason": "capture_effective_as_of_not_single",
         "roster_as_of": "2026-11-06", "capture_effective_as_of": ["2026-11-05", "2026-11-06"]}
     assert not_single.complete is None and not_single.configured_current is None
+    # S1, the reviewer's realistic trigger: the owner's REFUSALS stamped at a different
+    # session than the live groups - two stamps, so the roster cannot vouch. The
+    # roster's own unexplained basket (gone) must contribute NOTHING and unaccounted
+    # reads null, while the refusal's owner-explained evidence is still served.
+    refused_skew = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")}],
+        "observation_refusals": [
+            {"basket_id": "g2", "observation": _obs(["YYY"], effective_as_of="2026-11-05")}]}
+    skewed = build(refused_skew, {"g1": ["AAA"], "g2": ["YYY"], "gone": ["XXX"]})
+    assert skewed.roster_clock["reason"] == "capture_effective_as_of_not_single"
+    assert skewed.unaccounted is None and skewed.complete is None
+    assert not [u for u in skewed.unserved
+                if u["reason"] == population.REASON_UNACCOUNTED]
+    assert [(u["group_id"], u["symbol"]) for u in skewed.unserved
+            if u["group_id"] == "g2"] == [("g2", "YYY")]
+    # control: the SAME capture with the refusal stamped at the SAME session - one
+    # agreeing clock - DOES account both the refusal and ``gone`` (the clock gate,
+    # not the fixture, is what suppresses it above)
+    agreeing_doc = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")}],
+        "observation_refusals": [
+            {"basket_id": "g2", "observation": _obs(["YYY"], effective_as_of="2026-11-06")}]}
+    agreeing = build(agreeing_doc, {"g1": ["AAA"], "g2": ["YYY"], "gone": ["XXX"]})
+    assert agreeing.roster_clock["status"] == "agree"
+    assert agreeing.unaccounted == 1 and agreeing.complete is False
+    assert [(u["group_id"], u["symbol"], u["reason"]) for u in agreeing.unserved
+            if u["group_id"] == "gone"] == [("gone", "XXX", population.REASON_UNACCOUNTED)]
+    # the clock comparison is EXACT STRING EQUALITY: a form-only difference (the same
+    # session with an ISO time suffix) still reads mismatch, never a normalized agree
+    form_only = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": {"roster_baskets": {
+            "as_of": "2026-11-06T00:00:00", "baskets": {"g1": ["AAA", "BBB"]}}}})
+    assert form_only.roster_clock == {"status": "mismatch", "reason": "roster_as_of_mismatch",
+                                      "roster_as_of": "2026-11-06T00:00:00",
+                                      "capture_effective_as_of": "2026-11-06"}
+    assert form_only.unaccounted is None and form_only.complete is None
+    # S2: an observation mapping whose effective_as_of is not a non-empty string makes
+    # the clock indeterminate even beside one good stamp (see the dedicated S2 test for
+    # the full shape list); null is one of those shapes
     unstated = _synthetic(observation=_obs(["AAA", "BBB"], effective_as_of=None))
     unclocked = build(unstated, {"g1": ["AAA", "BBB"]})
     assert unclocked.roster_clock == {
-        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
+        "status": "unavailable", "reason": "capture_effective_as_of_malformed",
         "roster_as_of": "2026-11-06"}
     assert unclocked.complete is None and unclocked.configured_current is None
+    # no observation mapping AT ALL is the one remaining way the capture states no
+    # clock: unavailable, not malformed
+    no_observation = build(_synthetic(observation=None), {"g1": ["AAA", "BBB"]})
+    assert no_observation.roster_clock == {
+        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
+        "roster_as_of": "2026-11-06"}
     # no roster block at all / a malformed one: the clock is unavailable for that reason
     absent = population.build_population(
         baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
@@ -970,6 +1031,69 @@ def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, 
         central={"carried": {"roster_baskets": {"as_of": "2026-11-06", "baskets": {"gone": [7]}}}})
     assert malformed.roster_clock == {"status": "unavailable", "reason": "roster_block_malformed"}
     assert absent.complete is None and malformed.complete is None
+
+
+def test_s2_a_malformed_capture_effective_as_of_makes_the_clock_indeterminate():
+    """S2: an observation mapping present but whose ``effective_as_of`` is not a
+    non-empty string - a list, a number, an empty string, null, a nested object -
+    makes the capture clock INDETERMINATE even beside one good stamp: the roster
+    cannot vouch, ``configured_current``/``complete`` read null (never true in any
+    shape), the roster contributes nothing, and the disagreement is disclosed with
+    the closed ``capture_effective_as_of_malformed`` reason."""
+    good_stamp = "2026-11-06"
+    roster = {"g1": ["AAA"], "gone": ["XXX"]}
+    for bad in ([], 20261106, "", None, {"session": "2026-11-06"}):
+        doc = {"baskets": [
+            {"id": "g1", "name": "G", "n_members": 1,
+             "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+             "observation": {**_obs(["AAA"]), "effective_as_of": good_stamp}},
+            {"id": "g2", "name": "H", "n_members": 1,
+             "members": [{"symbol": "BBB", "name": "B", "added": "2024-01-01"}],
+             "observation": {**_obs(["BBB"]), "effective_as_of": bad}}],
+            "observation_refusals": []}
+        pop = population.build_population(
+            baskets=doc, handoff={}, action_board={}, central=_roster_central(roster))
+        assert pop.roster_clock == {"status": "unavailable",
+                                    "reason": "capture_effective_as_of_malformed",
+                                    "roster_as_of": "2026-11-06"}, bad
+        assert pop.configured_current is None and pop.complete is None, bad
+        assert pop.unaccounted is None, bad
+        assert not [u for u in pop.unserved
+                    if u["reason"] == population.REASON_UNACCOUNTED], bad
+
+
+def test_s3_the_carried_snapshot_fact_enforces_suite_and_members_sha():
+    """S3: the carried ``membership_snapshots`` fact is only readable when it states
+    the owner's own suite (the literal ``baskets``) and every available group's
+    ``members_sha`` is null or a lowercase 64-hex digest; failing either degrades the
+    WHOLE fact with the closed ``carried_fact_malformed`` reason, never a partially
+    trusted group set. The owner's own per-group unavailable reasons - including
+    ``pit_answer_unreadable`` - pass through verbatim."""
+    dated = {"as_of": "2026-11-06", "suite": "baskets", "groups": {
+        "g1": {"status": "available", "snapshot_date": "2026-10-14",
+               "members_sha": "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245aa",
+               "member_count": 8, "equals_current_roster": True},
+        "g2": {"status": "unavailable", "reason": "pit_answer_unreadable"}}}
+
+    def fact(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_snapshots": doc}}).membership_snapshot
+
+    good = fact(dated)
+    assert good["status"] == "available" and good["suite"] == "baskets"
+    assert good["groups"]["g2"] == {"status": "unavailable", "reason": "pit_answer_unreadable"}
+    malformed = {"status": "unavailable", "reason": "carried_fact_malformed"}
+    for suite in ("sector", "BASKETS", None, ""):
+        assert fact({**dated, "suite": suite}) == dict(malformed), suite
+    for sha in ("not-a-sha", "E21BEE3F132251844940E3C114AACA993BCA628883B8877B1248A34C8E4245AA",
+                "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245", 123):
+        bad = {**dated, "groups": {**dated["groups"], "g1": {
+            **dated["groups"]["g1"], "members_sha": sha}}}
+        assert fact(bad) == dict(malformed), sha
+    null_sha = {**dated, "groups": {**dated["groups"], "g1": {
+        **dated["groups"]["g1"], "members_sha": None}}}
+    assert fact(null_sha)["status"] == "available"  # a null sha stays legal
 
 
 def test_r4_n6_non_finite_refusal_fields_are_dropped_and_the_page_stays_finite():

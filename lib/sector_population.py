@@ -57,6 +57,9 @@ MAX_TOKEN = 1024
 
 _GROUP_ID = re.compile(r"[a-z][a-z0-9_-]{0,79}\Z")
 _SYMBOL = re.compile(r"[A-Za-z0-9][A-Za-z0-9.\-]{0,15}\Z")
+#: The owner's own content-digest shape, as stamped on stored PIT rows (S3): a
+#: carried ``members_sha`` that is not null and not exactly this is malformed.
+_SNAPSHOT_SHA = re.compile(r"[0-9a-f]{64}\Z")
 _QUERY = re.compile(r"[\w .&'\-]{1,64}\Z")
 _TOKEN = re.compile(r"[A-Za-z0-9_\-]+\.[0-9a-f]{64}\Z")
 _ACTION_LANES = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
@@ -104,7 +107,9 @@ class Population:
     unserved: tuple[Mapping[str, str], ...]
     #: ``unaccounted_by_owner`` entries, served-but-unconfigured rows and removed members
     #: that also appear as configured or served. Any of these makes ``complete`` false.
-    unaccounted: int
+    #: ``None`` when the roster clock does not agree (S1): the roster then contributes
+    #: nothing, so no count is guessed - null, never a zero that would read as checked.
+    unaccounted: int | None
     removed: Mapping[str, Any]
     industry_classification: Mapping[str, Any]
     sub_industry_classification: Mapping[str, Any]
@@ -245,6 +250,10 @@ def _snapshot_fact(doc: Any) -> dict[str, Any]:
         return dict(UNAVAILABLE_NOT_PRODUCED)
     if not (isinstance(doc.get("as_of"), str) and doc["as_of"]):
         return {"status": "unavailable", "reason": REASON_UNDATED}
+    # S3: the fact is only readable when it states the owner's own suite (the literal
+    # ``baskets``) - anything else is malformed as a WHOLE, never partially trusted.
+    if doc.get("suite") != "baskets":
+        return {"status": "unavailable", "reason": "carried_fact_malformed"}
     groups_in = doc.get("groups")
     if not isinstance(groups_in, Mapping) or not groups_in:
         return dict(UNAVAILABLE_NOT_PRODUCED)
@@ -263,9 +272,12 @@ def _snapshot_fact(doc: Any) -> dict[str, Any]:
         day, count, equals = entry.get("snapshot_date"), entry.get("member_count"), \
             entry.get("equals_current_roster")
         sha = entry.get("members_sha")
+        # S3: a stamped sha that is not null and not the owner's own 64-hex lowercase
+        # digest shape degrades the WHOLE fact with the closed malformed reason.
+        if not (sha is None or (isinstance(sha, str) and _SNAPSHOT_SHA.fullmatch(sha))):
+            return {"status": "unavailable", "reason": "carried_fact_malformed"}
         if (_day_or_none(day) is None
                 or not isinstance(count, int) or isinstance(count, bool) or count < 0
-                or not (sha is None or isinstance(sha, str))
                 or not (equals is None or isinstance(equals, bool))):
             return dict(UNAVAILABLE_NOT_PRODUCED)
         groups[gid] = {"status": "available", "snapshot_date": day,
@@ -503,18 +515,32 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     # roster must agree with it: a roster cut at a different session cannot vouch
     # for this capture's membership, so completeness reads null - never true - and
     # the disagreement is disclosed below with a closed status/reason.
+    # S2: an observation mapping PRESENT with an ``effective_as_of`` that is not a
+    # non-empty string (a list, a number, an empty string, null, a nested object)
+    # makes the clock INDETERMINATE even beside good stamps - it is malformed, never
+    # silently treated as unstated.
     stamps: set[str] = set()
+    capture_malformed = False
     for source in (groups_in, refusals):
         for entry in source:
             obs = entry.get("observation") if isinstance(entry, Mapping) else None
-            stamp = obs.get("effective_as_of") if isinstance(obs, Mapping) else None
+            if not isinstance(obs, Mapping):
+                continue
+            stamp = obs.get("effective_as_of")
             if isinstance(stamp, str) and stamp:
                 stamps.add(stamp)
+            else:
+                capture_malformed = True
     capture_effective = next(iter(stamps)) if len(stamps) == 1 else None
     if roster is None:
         roster_clock = {"status": "unavailable",
                         "reason": "roster_block_malformed" if roster_malformed or entries
                         else "roster_block_absent"}
+    elif capture_malformed:
+        roster_unknown = True  # an unreadable stamp: the clock cannot be verified at all
+        roster_clock = {"status": "unavailable",
+                        "reason": "capture_effective_as_of_malformed",
+                        "roster_as_of": roster_as_of}
     elif capture_effective is None:
         roster_unknown = True  # no single stated session: the clock cannot be verified
         roster_clock = ({"status": "unavailable",
@@ -524,6 +550,8 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                          "roster_as_of": roster_as_of,
                          "capture_effective_as_of": sorted(stamps)})
     elif roster_as_of != capture_effective:
+        # exact STRING equality: a form-only difference (the same session with an ISO
+        # time suffix) is a mismatch, never a normalized agreement
         roster_unknown = True  # the roster was cut at a different session than the capture
         roster_clock = {"status": "mismatch", "reason": "roster_as_of_mismatch",
                         "roster_as_of": roster_as_of,
@@ -531,7 +559,12 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     else:
         roster_clock = {"status": "agree", "roster_as_of": roster_as_of,
                         "capture_effective_as_of": capture_effective}
-    if roster is not None:
+    # S1: a roster whose clock does not agree with the capture vouches for NOTHING -
+    # its unexplained baskets contribute no ``unaccounted_by_owner`` entries, and the
+    # served ``unaccounted`` is null (below), never a guessed 0. Owner-explained
+    # evidence from the capture itself (live-group and refusal observations) is
+    # unaffected: it never came from the roster.
+    if roster is not None and roster_clock.get("status") == "agree":
         for rid, syms in sorted(roster.items()):
             if rid in seen_groups:  # live baskets and valid refusals are already accounted
                 continue
@@ -556,7 +589,8 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     return Population(
         tuple(groups), tuple(rows), hashlib.sha256(canonical).hexdigest(),
         None if roster_unknown else configured_total, len(rows), tuple(unserved),
-        unaccounted, removed_meta, industry_meta, sub_meta, roster_clock, first_known,
+        unaccounted if roster_clock.get("status") == "agree" else None,
+        removed_meta, industry_meta, sub_meta, roster_clock, first_known,
         membership_snapshot)
 
 

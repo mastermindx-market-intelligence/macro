@@ -283,7 +283,10 @@ def roster_baskets(membership: Mapping[str, Any] | None, as_of: Any) -> dict | N
     comparison is ``pd.Timestamp`` against ``pd.Timestamp(as_of)``, so an ISO stamp
     like ``"2026-11-06T00:00:00"`` is included exactly as the owner includes it.
     That owner function needs a price panel, so its rule is MIRRORED here, not
-    called (R4-N2; stated per the brief). A roster date that cannot be parsed makes
+    called (R4-N2; stated per the brief) - and the mirror is differential-tested
+    against the owner over shared member fixtures (N1), which is what makes
+    "mirrored" a checked claim rather than a stated one. A roster date that cannot
+    be parsed makes
     the WHOLE roster block absent - completeness then reads null, never a roster
     that silently included a member on an unreadable date. ``as_of`` is the owner's
     effective session, not the central date.
@@ -310,7 +313,7 @@ def roster_baskets(membership: Mapping[str, Any] | None, as_of: Any) -> dict | N
             if not isinstance(member, Mapping):
                 continue
             ticker = member.get("ticker") or member.get("symbol")  # the owner's key rule
-            if not isinstance(ticker, str) or not ticker or ticker in seen:
+            if not ticker or ticker in seen:
                 continue  # the owner's own de-duplication: first listing wins
             added, removed = member.get("added"), member.get("removed")
             try:
@@ -320,8 +323,8 @@ def roster_baskets(membership: Mapping[str, Any] | None, as_of: Any) -> dict | N
                     continue  # removed on/before the session (the removed_members cut)
             except (ValueError, TypeError, OverflowError):
                 return None  # unparseable roster date: NO roster block, never a silent include
-            seen.add(ticker)
-            current.append(ticker)
+            seen.add(str(ticker))  # the owner str()s the key; so does the mirror (N1)
+            current.append(str(ticker))
         baskets[gid] = current
     return _bounded({"source": "data/baskets/membership.json",
                      "version": membership.get("version"), "as_of": as_of,
@@ -349,18 +352,72 @@ def _pit_snapshot_dates(pit, frame) -> list[str]:
     return sorted({str(d) for d in frame["snapshot_date"].dropna().tolist()})
 
 
+def _members_valid_at(intervals, basket_id: str, date: str) -> list[str]:
+    """Members the owner's OWN intervals hold in force on ``date``: the interval
+    consumer's contract (``valid_from <= date < valid_to``) over the owner's public
+    ``membership_intervals_from_history`` output - never a re-derived rule."""
+    return sorted({iv["ticker"] for iv in intervals
+                   if iv["basket_id"] == basket_id and iv["valid_from"] <= date
+                   and (iv["valid_to"] is None or iv["valid_to"] > date)})
+
+
+def _pit_answers_at(pit, frame, date: str, ids) -> dict[str, tuple[Any, ...]] | None:
+    """Per-group PIT answers at ``date`` from the ONE frame the builder already read.
+
+    Each answer is ``(pit, basis, members, snapshot_date)`` and equals the owner's
+    per-call ``members_asof`` answer for that pair - the dispatch mirrors the owner's
+    own: a covered frame with any versioned row takes the owner's interval
+    interpretation (its PUBLIC ``membership_intervals_from_history`` on the covered
+    frame, the same call the owner's versioned path makes); an all-legacy covered
+    frame resolves the newest stored snapshot, where a basket WITH rows keeps its
+    own members and a basket with NO row there is the owner's known-basket-absent
+    answer (``pit=True, members=[]`` - every id this builder queries comes from the
+    owner's own membership document, so it is known, never unknown). ``None`` when
+    ``date`` predates the store: the caller falls back to the owner's per-call
+    reader for its look-ahead branch. The interval CONSTRUCTION is never
+    re-implemented here; equality with the per-call reader is itself tested on the
+    real store (N4)."""
+    if frame is None or frame.empty or "snapshot_date" not in frame.columns:
+        return None
+    covered = frame[frame["snapshot_date"].astype(str) <= date]
+    if covered.empty:
+        return None
+    queried = list(ids)
+    basket = covered["basket_id"].astype(str)
+    if covered["record_kind"].notna().any():
+        intervals = pit.membership_intervals_from_history(covered, suite=pit.SUITE_US)
+        answers: dict[str, tuple[Any, ...]] = {}
+        for gid in queried:
+            rows = covered[basket == gid]
+            if rows.empty:
+                answers[gid] = (False, "unknown_basket", [], None)
+                continue
+            answers[gid] = (True, "pit_snapshot", _members_valid_at(intervals, gid, date),
+                            str(rows["snapshot_date"].astype(str).max()))
+        return answers
+    snap = str(covered["snapshot_date"].astype(str).max())
+    snap_baskets = set(covered[covered["snapshot_date"].astype(str) == snap]
+                       ["basket_id"].astype(str))
+    intervals = pit.membership_intervals_from_history(covered, suite=pit.SUITE_US)
+    return {gid: ((True, "pit_snapshot", _members_valid_at(intervals, gid, date), snap)
+                  if gid in snap_baskets else (True, "pit_snapshot", [], snap))
+            for gid in queried}
+
+
 def membership_first_known(membership: Mapping[str, Any] | None, as_of: Any,
                            roster_cut: Mapping[str, list[str]] | None) -> dict | None:
     """Point-in-time ``membership_first_known`` per roster pair (Part B item 1).
 
     For each (group, member) the OWNER's PIT store already holds, the date of the
-    EARLIEST stored snapshot in which that member is in that basket, read through
-    the owner's own ``members_asof`` at each stored snapshot date - never the
-    back-dated roster ``added`` date, which the owner's interval logic already
-    refuses to open earlier than its first observation. The value is a LOWER BOUND
-    from stored snapshots (the store begins 2026-08-13); a pair no stored snapshot
-    contains is ``None`` with the closed ``absent_pair_reason``. No roster cut, no
-    block: the fact is scoped to the roster's current pairs.
+    EARLIEST stored snapshot in which that member is in that basket, computed from
+    ONE store read plus the owner's public interval interpretation per stored
+    snapshot date (N4; each answer equals the owner's per-call ``members_asof``
+    answer, tested against the real store) - never the back-dated roster ``added``
+    date, which the owner's interval logic already refuses to open earlier than its
+    first observation. The value is a LOWER BOUND from stored snapshots (the store
+    begins 2026-08-13); a pair no stored snapshot contains is ``None`` with the
+    closed ``absent_pair_reason``. No roster cut, no block: the fact is scoped to
+    the roster's current pairs.
     """
     if not isinstance(as_of, str) or not as_of or not isinstance(roster_cut, Mapping) \
             or not roster_cut:
@@ -382,48 +439,66 @@ def membership_first_known(membership: Mapping[str, Any] | None, as_of: Any,
                   "no_stored_snapshots_at_or_before_as_of")
         return _bounded({"source": PIT_STORE_SOURCE, "as_of": as_of, "status": "unavailable",
                          "reason": reason, "basis": FIRST_KNOWN_BASIS})
-    # One owner read per (group, stored snapshot date), walking the dates in order
-    # and stopping per group once every roster symbol is placed: the member set in
-    # force on that snapshot comes from the owner's own function, never a
-    # reimplementation. A symbol not found by the LAST stored date has no stored
-    # snapshot and reads None (``absent_pair_reason`` names it).
+    # N4: ONE store read (above) and the owner's public interval interpretation per
+    # stored date, walking the dates in order and stopping per group once every
+    # roster symbol is placed. Each (group, date) answer equals the owner's per-call
+    # ``members_asof`` answer (tested against the real store), so the member set in
+    # force on that snapshot still comes from the owner's own interpretation - never a
+    # reimplementation, and never ~one store read per pair. A symbol not found by the
+    # LAST stored date has no stored snapshot and reads None (``absent_pair_reason``).
     first_known: dict[str, dict[str, str | None]] = {gid: {} for gid in roster_cut}
     remaining = {gid: set(syms) for gid, syms in roster_cut.items()}
     for day in dates:
         for gid in [g for g, syms in remaining.items() if not syms]:
             del remaining[gid]  # every roster symbol of this group is already placed
+        if not remaining:
+            break
+        answers = _pit_answers_at(pit, frame, day, remaining)
         for gid, syms in remaining.items():
-            answer = pit.members_asof(gid, day, suite=suite)
-            if answer.get("pit") is not True:
+            if answers is None or answers[gid][0] is not True:
                 continue  # no basket-scoped observation at this date: keep looking
-            present = syms & set(answer.get("members") or ())
+            present = syms & set(answers[gid][2] or ())
             for sym in present:
                 first_known[gid][sym] = day
             remaining[gid] = syms - present
     for gid, syms in remaining.items():
         for sym in syms:
             first_known[gid][sym] = None
-    return _bounded({"source": PIT_STORE_SOURCE, "as_of": as_of,
-                     "status": "available", "basis": FIRST_KNOWN_BASIS,
-                     "basis_note": ("date of the earliest stored snapshot containing the "
-                                    "pair; the store begins {first}, earlier knowledge is "
-                                    "not recorded").format(first=dates[0]),
-                     "store_first": dates[0], "store_last": dates[-1],
-                     "absent_pair_reason": ABSENT_PAIR_REASON,
-                     "first_known": first_known})
+    block = {"source": PIT_STORE_SOURCE, "as_of": as_of,
+             "status": "available", "basis": FIRST_KNOWN_BASIS,
+             "basis_note": ("date of the earliest stored snapshot containing the "
+                            "pair; the store begins {first}, earlier knowledge is "
+                            "not recorded").format(first=dates[0]),
+             "store_first": dates[0], "store_last": dates[-1],
+             "absent_pair_reason": ABSENT_PAIR_REASON,
+             "first_known": first_known}
+    bounded = _bounded(block)
+    if bounded is not None:
+        return bounded
+    if _encoded(block) is None:
+        return None  # not finite JSON: absent, exactly like every other carried block
+    # N2: over the cap the block is still not allowed to VANISH (the generation would
+    # read not_produced and lose the fact) - a small stub served as unavailable.
+    return _bounded({"source": PIT_STORE_SOURCE, "as_of": as_of, "status": "unavailable",
+                     "reason": "block_too_large", "basis": FIRST_KNOWN_BASIS})
 
 
 def membership_snapshots(membership: Mapping[str, Any] | None, as_of: Any,
                          roster_cut: Mapping[str, list[str]] | None) -> dict | None:
     """The stored PIT snapshot each group had at/before the effective session (item 2).
 
-    Per group, from the owner's own ``members_asof`` at the capture's effective
-    session: the stored snapshot date, its ``members_sha`` (the owner's own
-    content-dedup sha, read as stamped on the stored rows - never recomputed), the
-    member count, and one boolean saying whether that stored member set equals the
-    carried roster's current members for the basket (``None`` when either side is
-    unavailable). The member LIST is not carried a second time. ``pit=False``
-    answers carry as unavailable with the owner's own basis string, never guessed.
+    Per group, from ONE store read plus the owner's public interval interpretation
+    at the capture's effective session (N4; each answer equals the owner's per-call
+    ``members_asof`` answer, tested against the real store): the stored snapshot
+    date, its ``members_sha`` (the owner's own content-dedup sha, read as stamped on
+    the stored rows - never recomputed), the member count, and one boolean saying
+    whether that stored member set equals the carried roster's current members for
+    the basket (``None`` when either side is unavailable). The member LIST is not
+    carried a second time. ``pit=False`` answers carry as unavailable with the
+    owner's own basis string, never guessed. A KNOWN basket with no row in its
+    resolved stored snapshot (the owner's legacy path answers it pit=True with zero
+    members) reads unavailable with ``basket_absent_from_snapshot`` - never
+    ``available, member_count: 0`` (N8).
     """
     if not isinstance(as_of, str) or not as_of or membership is None:
         return None
@@ -437,35 +512,66 @@ def membership_snapshots(membership: Mapping[str, Any] | None, as_of: Any,
     if not ids or not all(isinstance(gid, str) and gid for gid in ids):
         return None
     sha_at: dict[tuple[str, str], str] = {}
+    present_at: set[tuple[str, str]] = set()
     try:
         frame = pit.read_history(suite, strict=True, include_collection_records=True)
         if not frame.empty and {"snapshot_date", "basket_id", "members_sha"} <= set(frame.columns):
             for row in frame.to_dict("records"):
                 sha = row.get("members_sha")
+                key = (str(row.get("snapshot_date")), str(row.get("basket_id")))
                 if isinstance(sha, str) and sha:
-                    sha_at[(str(row.get("snapshot_date")), str(row.get("basket_id")))] = sha
+                    sha_at[key] = sha
+                present_at.add(key)  # ANY row (member or collection marker) proves presence
     except pit.HistoryIntegrityError:
         frame = None  # members_asof answers per group with the unreadable basis itself
+    # N4: one read (above), the owner's public interval interpretation at the session
+    # (equality with the per-call reader is tested on the real store); None means the
+    # session predates the store, where the owner's own per-call reader below serves
+    # its look-ahead branch unchanged.
+    try:
+        answers = _pit_answers_at(pit, frame, as_of, ids) if frame is not None else None
+    except pit.HistoryIntegrityError:
+        answers = None  # the per-call reader below carries the unreadable basis itself
     out: dict[str, dict[str, Any]] = {}
     for gid in ids:
-        answer = pit.members_asof(gid, as_of, suite=suite)
-        if answer.get("pit") is not True:
+        if answers is not None:
+            pit_flag, basis, members, snapshot_date = answers[gid]
+        else:
+            answer = pit.members_asof(gid, as_of, suite=suite)
+            pit_flag = answer.get("pit")
+            basis = answer.get("basis")
+            members = answer.get("members")
+            snapshot_date = answer.get("snapshot_date")
+        if pit_flag is not True:
             # the owner's own basis string (look-ahead fallback, unknown basket,
             # unreadable history) - carried as unavailable, never substituted
-            out[gid] = {"status": "unavailable", "reason": _text_of(answer.get("basis"))}
+            out[gid] = {"status": "unavailable", "reason": _text_of(basis)}
             continue
-        snapshot_date = answer.get("snapshot_date")
-        members = answer.get("members")
         if not isinstance(snapshot_date, str) or not isinstance(members, list):
             out[gid] = {"status": "unavailable", "reason": "pit_answer_unreadable"}
+            continue
+        if (snapshot_date, gid) not in present_at:
+            # N8: a KNOWN basket with no row in the resolved stored snapshot - the
+            # owner answers it pit=True with zero members, which must never be served
+            # as an empty basket. Presence is decided from the snapshot's own basket
+            # set in the frame read above, never from the owner's free-text note.
+            out[gid] = {"status": "unavailable", "reason": "basket_absent_from_snapshot"}
             continue
         equals = (set(members) == set(roster_cut.get(gid) or ())
                   if isinstance(roster_cut, Mapping) and gid in roster_cut else None)
         out[gid] = {"status": "available", "snapshot_date": snapshot_date,
                     "members_sha": sha_at.get((snapshot_date, gid)),
                     "member_count": len(members), "equals_current_roster": equals}
+    block = {"source": PIT_READER_SOURCE, "as_of": as_of, "suite": suite,
+             "groups": out}
+    bounded = _bounded(block)
+    if bounded is not None:
+        return bounded
+    if _encoded(block) is None:
+        return None  # not finite JSON: absent, exactly like every other carried block
+    # N2: over the cap the block is still not allowed to VANISH - a small stub.
     return _bounded({"source": PIT_READER_SOURCE, "as_of": as_of, "suite": suite,
-                     "groups": out})
+                     "status": "unavailable", "reason": "block_too_large"})
 
 
 def _text_of(value: Any, limit: int = 80) -> str | None:
@@ -533,11 +639,27 @@ def build_carry(site: Path, central: Mapping[str, Any],
     effective = owner_effective_as_of(site)
     roster = roster_baskets(membership, effective)
     roster_pairs = roster.get("baskets") if isinstance(roster, Mapping) else None
+    # N5: ANY failure of the two PIT facts - including the engine module failing to
+    # import or a non-mapping answer - degrades ONLY them (unavailable with the
+    # closed ``membership_unreadable`` reason); every other carried block is still
+    # served. KeyboardInterrupt/SystemExit are never swallowed.
+    try:
+        first_known_block = membership_first_known(membership, effective, roster_pairs)
+        snapshots_block = membership_snapshots(membership, effective, roster_pairs)
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    except Exception:  # noqa: BLE001 — the PIT facts degrade; the carry does not
+        first_known_block = {"source": PIT_STORE_SOURCE, "as_of": effective,
+                             "status": "unavailable", "reason": "membership_unreadable",
+                             "basis": FIRST_KNOWN_BASIS}
+        snapshots_block = {"source": PIT_READER_SOURCE, "as_of": effective,
+                           "suite": "baskets", "status": "unavailable",
+                           "reason": "membership_unreadable"}
     produced = {
         "removed_members": removed_members(membership, effective),
         "roster_baskets": roster,
-        "membership_first_known": membership_first_known(membership, effective, roster_pairs),
-        "membership_snapshots": membership_snapshots(membership, effective, roster_pairs),
+        "membership_first_known": first_known_block,
+        "membership_snapshots": snapshots_block,
         "sector_central_r1": rising_priced_share(central),
         "display_order": display_order(central),
         "etf_flows": etf_flows(flows),

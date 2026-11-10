@@ -483,6 +483,173 @@ def test_pit_blocks_on_real_bytes_sizes_and_values():
                for e in snap["groups"].values())
 
 
+def test_n1_roster_baskets_mirrors_the_owners_population_observation():
+    """N1: the roster cut's mirrored rule is asserted EQUAL to the owner's own
+    ``population_observation`` configured list over the same member fixtures - the
+    differential that proves the mirror (R4-N2), rather than restating it. The owner
+    runs on an empty price panel: ``configured_members`` is panel-independent."""
+    import pandas as pd
+    from lib.closes_panel import population_observation
+    cases = [
+        [],
+        [{"ticker": "AAA", "added": "2024-01-01"}, {"symbol": "BBB", "added": "2024-02-01"}],
+        [{"ticker": "AAA"}, {"symbol": "AAA"}],          # first listing wins, across keys
+        [{"symbol": "BBB"}, {"ticker": "BBB", "added": "2020-01-01"}],
+        [{"ticker": "FUT", "added": "2026-12-01"}],       # not yet a member at the session
+        [{"ticker": "GONE", "removed": "2026-01-01"}],    # already removed
+        [{"ticker": "ONDAY", "added": "2026-11-06"}],     # added ON the session: in
+        [{"ticker": "OUTDAY", "removed": "2026-11-06"}],  # removed ON the session: out
+        [{"ticker": "ISO", "added": "2026-11-06T00:00:00"}],
+        [{"ticker": "BLANK", "added": "", "removed": ""}],
+        [{"ticker": 5}, {"symbol": 7}],                   # the owner str()s numeric keys
+        [{"ticker": ""}, {"symbol": None}, {"ticker": "OK"}],
+    ]
+    for members in cases:
+        owner = population_observation(
+            pd.DataFrame(index=pd.DatetimeIndex([])), members, "2026-11-06")["configured_members"]
+        mine = carry.roster_baskets({"version": "t", "baskets": {"g": {"members": members}}},
+                                    "2026-11-06")["baskets"]["g"]
+        assert mine == owner, members
+
+
+def test_n2_an_over_cap_pit_block_is_a_bounded_unavailable_stub_never_a_silent_drop(
+        tmp_path, monkeypatch):
+    """N2: an over-cap point-in-time block must NOT vanish from the carry - the
+    generation would then read ``not_produced`` and lose the fact entirely. It is
+    replaced by a small stub served as unavailable/``block_too_large``, and the stub
+    itself must pass the same bound."""
+    roster = _roster_doc({"g": {"members": [{"ticker": "A", "added": "2024-01-01"}]}})
+    _pit_store(tmp_path / "store", monkeypatch, {"2026-08-13": roster})
+    cut = carry.roster_baskets(roster, "2026-11-06")
+    monkeypatch.setattr(carry, "MAX_BLOCK_BYTES", 256)  # force the available blocks over
+    fk = carry.membership_first_known(roster, "2026-11-06", cut["baskets"])
+    snap = carry.membership_snapshots(roster, "2026-11-06", cut["baskets"])
+    for block, source in ((fk, carry.PIT_STORE_SOURCE), (snap, carry.PIT_READER_SOURCE)):
+        assert block is not None and block["status"] == "unavailable", source
+        assert block["reason"] == "block_too_large" and block["source"] == source
+        assert block["as_of"] == "2026-11-06"
+        assert carry._bounded(block) is block  # the stub passes the same bound
+        assert len(json.dumps(block).encode()) <= 256
+
+
+def test_n5_a_pit_builder_failure_degrades_only_the_pit_facts(tmp_path, monkeypatch):
+    """N5: ANY failure of the PIT builder - here the engine module failing to import -
+    makes ONLY the two point-in-time facts unavailable (``membership_unreadable``);
+    every other carried block is still served. KeyboardInterrupt/SystemExit are never
+    swallowed by the degradation."""
+    def boom():
+        raise ImportError("engine missing")
+    monkeypatch.setattr(carry, "_pit_module", boom)
+    site = tmp_path / "site"
+    (site / "basketdata").mkdir(parents=True)
+    (site / "basketdata/baskets.json").write_text(json.dumps(
+        {"baskets": [{"id": "g", "observation": {"effective_as_of": "2026-11-06"}}]}))
+    membership = _roster_doc({"g": {"members": [{"ticker": "A", "added": "2024-01-01"}]}})
+    built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []}, membership, None)
+    for name in ("membership_first_known", "membership_snapshots"):
+        assert built[name]["status"] == "unavailable", name
+        assert built[name]["reason"] == "membership_unreadable", name
+        assert isinstance(built[name]["as_of"], str)  # dated: carried, not dropped
+    assert built["roster_baskets"]["baskets"] == {"g": ["A"]}  # the other blocks survive
+    assert built["removed_members"]["removed"] == []
+    # KeyboardInterrupt is never swallowed
+    def interrupt():
+        raise KeyboardInterrupt
+    monkeypatch.setattr(carry, "_pit_module", interrupt)
+    try:
+        carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []}, membership, None)
+    except KeyboardInterrupt:
+        pass
+    else:
+        raise AssertionError("KeyboardInterrupt must propagate, never be degraded")
+
+
+def test_n8_a_known_basket_absent_from_the_snapshot_is_unavailable_not_zero(
+        tmp_path, monkeypatch):
+    """N8: on the owner's LEGACY store path a KNOWN basket with no row in the resolved
+    snapshot answers pit=True with zero members - which must NOT be served as
+    ``available, member_count: 0`` (indistinguishable from a genuinely empty basket).
+    It reads unavailable/``basket_absent_from_snapshot``, with presence decided from
+    the snapshot's own basket set in the frame the builder already read - never from
+    the owner's free-text note. A basket PRESENT with zero active members stays
+    available with member_count 0."""
+    from engine import basket_membership_pit as pit
+    root = tmp_path / "legacy"
+    root.mkdir()
+    snaps = root / "snapshots"
+    snaps.mkdir()
+    day1 = {"b1": {"members": [{"ticker": "AAA", "added": "2024-01-01"},
+                               {"ticker": "BBB", "added": "2024-01-01"}]},
+            "b2": {"members": [{"ticker": "CCC", "added": "2024-01-01"}]},
+            "b3": {"members": [{"ticker": "DDD", "added": "2024-01-01"}]}}
+    # b2 is entirely absent from the later snapshot; b1/b3 keep their rows, with
+    # removals that make b3's active set empty (present with zero members)
+    day2 = {"b1": {"members": [{"ticker": "AAA", "added": "2024-01-01"},
+                               {"ticker": "BBB", "added": "2024-01-01",
+                                "removed": "2026-09-01"}]},
+            "b3": {"members": [{"ticker": "DDD", "added": "2024-01-01",
+                                "removed": "2026-09-01"}]}}
+    (snaps / "2026-08-13.json").write_text(json.dumps({"version": "t", "baskets": day1}))
+    (snaps / "2026-09-04.json").write_text(json.dumps({"version": "t", "baskets": day2}))
+    membership = {"version": "t", "baskets": {
+        "b1": {"members": day2["b1"]["members"]},
+        "b2": {"members": day1["b2"]["members"]},  # still a KNOWN basket of the owner's
+        "b3": {"members": day2["b3"]["members"]}}}
+    monkeypatch.setattr(pit, "membership_path", lambda suite: root / "membership.json")
+    monkeypatch.setattr(pit, "history_path", lambda suite: root / "membership_history.parquet")
+    monkeypatch.setattr(pit, "snapshot_dir", lambda suite: snaps)
+    (root / "membership.json").write_text(json.dumps(membership))
+    # a LEGACY store (record_kind NaN rows) through the owner's own PUBLIC backfill
+    result = pit.backfill_from_json_snapshots(pit.SUITE_US, lane="nightly")
+    assert result["dates"] == ["2026-08-13", "2026-09-04"], result
+    # the owner's own answer for the absent known basket: pit=True, zero members - the
+    # exact answer the carry must NOT restate as "available with member_count 0"
+    owner = pit.members_asof("b2", "2026-09-10", suite=pit.SUITE_US)
+    assert (owner["pit"], owner["members"], owner["snapshot_date"]) == (True, [], "2026-09-04")
+    cut = carry.roster_baskets(membership, "2026-09-10")
+    snap = carry.membership_snapshots(membership, "2026-09-10", cut["baskets"])
+    groups = snap["groups"]
+    assert groups["b2"] == {"status": "unavailable", "reason": "basket_absent_from_snapshot"}
+    b1 = groups["b1"]
+    assert (b1["status"], b1["snapshot_date"], b1["member_count"]) == (
+        "available", "2026-09-04", 1)
+    assert b1["members_sha"] and len(b1["members_sha"]) == 64  # the owner's stamped sha
+    assert b1["equals_current_roster"] is True
+    b3 = groups["b3"]
+    assert (b3["status"], b3["member_count"]) == ("available", 0)  # present, zero active
+
+
+def test_n4_the_one_read_pit_path_matches_per_call_members_asof_on_the_real_store():
+    """N4: the builder's one-read path answers every (group, stored date) pair on the
+    REAL committed store identically to the owner's per-call ``members_asof`` on
+    (pit, basis, members, snapshot_date) - the equality that alone authorizes
+    computing the carried facts from a single store read plus the owner's public
+    ``membership_intervals_from_history``. Also reports before/after wall time."""
+    import time
+    from engine import basket_membership_pit as pit
+    frame = pit.read_history(pit.SUITE_US, strict=True, include_collection_records=True)
+    assert not frame.empty, "the committed real PIT store must be present"
+    dates = sorted({str(d) for d in frame["snapshot_date"].dropna()})
+    groups = sorted({str(g) for g in frame["basket_id"].dropna()})
+    fields = ("pit", "basis", "members", "snapshot_date")
+    started = time.perf_counter()
+    per_call = {(g, d): tuple(pit.members_asof(g, d, suite=pit.SUITE_US).get(k) for k in fields)
+                for g in groups for d in dates}
+    t_per_call = time.perf_counter() - started
+    started = time.perf_counter()
+    one_read = {}
+    for d in dates:
+        answers = carry._pit_answers_at(pit, frame, d, groups)
+        assert answers is not None, d
+        for g in groups:
+            one_read[(g, d)] = answers[g]
+    t_one_read = time.perf_counter() - started
+    print(f"N4 wall time over {len(per_call)} (group, stored date) pairs: "
+          f"per-call members_asof {t_per_call:.2f}s vs one-read {t_one_read:.2f}s")
+    assert one_read == per_call
+    assert t_one_read < t_per_call
+
+
 def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):
     """FIXTURE: the carry never repairs or invents."""
     (tmp_path / "marketdata").mkdir()
