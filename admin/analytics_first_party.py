@@ -281,11 +281,31 @@ def _excluded_cte(*, focus_visitors: bool = False) -> str:
         f"excl_geo_ips as ({geo_body}), "
         f"excl_ips as ({ips_body}), "
         f"excl_vids as ({vids_body}), "
-        "excl_seed as (select distinct e.visitor_id from public.analytics_events e "
-        "  where e.visitor_id is not null and (e.user_id in (select id from excl_users) "
-        "  or e.ip in (select ip from excl_geo_ips) or e.ip in (select ip from excl_ips) "
-        "  or e.visitor_id in (select visitor_id from excl_vids) "
-        f"  or e.ip in ({','.join(_LOOPBACK_IPS)}))), "
+        # The seed is the same shape as `excl_link` below, and had the same defect: an OR
+        # across FIVE different columns is not a join Postgres can hash or merge on, so it
+        # planned the only thing left — one seq scan of the entire store evaluating four
+        # hashed subplans per row. Measured on production 2026-11-09 (302,456 rows / 192 MB)
+        # this CTE alone was 7,056ms, the largest remaining term in the Visitors fold after
+        # `ident` got its index. `a or b` over a set we only read as DISTINCT visitor_id is
+        # `a` UNION `b`, and each arm on its own is a plain membership test that an index can
+        # drive (visitor_user / ip / visitor / ip respectively), so the same rows now come
+        # back from five short index probes. Same rows: both forms read the same predicate
+        # over the same table, and UNION de-duplicates exactly as `select distinct` did.
+        "excl_seed as ("
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.user_id in (select id from excl_users) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_geo_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.visitor_id in (select visitor_id from excl_vids) "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        f"    where e.ip in ({','.join(_LOOPBACK_IPS)}) and e.visitor_id is not null), "
         # An OR across two DIFFERENT join keys is not a join Postgres can hash or merge,
         # so it planned the only thing left: a nested loop evaluating the predicate for
         # every (event x anchor) pair. Measured on production 2026-08-26 — 58,702 rows
@@ -539,6 +559,19 @@ def status() -> dict:
 _QUERY_TIMEOUT_S = 9
 _OVERVIEW_ALLTIME_TIMEOUT_S = 0.75
 
+# Sort/hash memory for one analytics statement. This instance ships OLTP defaults —
+# work_mem is 2MB — while the visit fold sorts ~19k wide rows per statement, so every one
+# of those sorts spilled to disk. That cost was invisible to EXPLAIN: it is not a bad plan,
+# it is a sort that cannot fit, and no index reaches a window fold. Measured on production
+# 2026-11-09 through this endpoint (24h, median of 2, same statements):
+#     default 2MB   13,848ms      SET LOCAL 8MB   4,329ms      SET LOCAL 16MB   6,580ms
+# work_mem is an UPPER BOUND that a node only allocates when it actually sorts or hashes,
+# so the prelude is inert for the small panels. 16MB rather than 8MB because Sessions (the
+# wider fold) still measured 9.7s at 8MB against 6.1s at 16MB. The panel fans out at most
+# 6 statements at once, so the worst case is ~192MB of transient sort memory on a box with
+# 224MB of shared_buffers; it is set per statement, not per session, and does not leak.
+_QUERY_PRELUDE = "set local work_mem = '16MB'; "
+
 # Whole-surface budget. Every panel here is a chain of round trips to the Supabase
 # Management API, and admin.mastermind-x.com is served THROUGH a CDN edge (see the
 # admin block in app/deploy/Caddyfile) — so an endpoint that outruns the edge's
@@ -620,10 +653,22 @@ def _query(sql: str, timeout_cap_s: float | None = None):
         timeout = max(1.0, min(float(_QUERY_TIMEOUT_S), remaining))
     if timeout_cap_s is not None:
         timeout = min(timeout, max(0.5, float(timeout_cap_s)))
-    r = requests.post(
-        f"{_API}/projects/{ref}/database/query",
-        headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
-        json={"query": sql}, timeout=timeout)
+    try:
+        r = requests.post(
+            f"{_API}/projects/{ref}/database/query",
+            headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
+            json={"query": _QUERY_PRELUDE + sql}, timeout=timeout)
+    except requests.exceptions.Timeout:
+        # urllib3's own wording ("HTTPSConnectionPool(host='api.supabase.com', port=443):
+        # Read timed out. (read timeout=9.0)") was reaching the operator verbatim. It names
+        # the TRANSPORT, which is the wrong place to look: measured on production 2026-11-09,
+        # a bare `select 1` through this endpoint answers in 1.4s while one full-store scan
+        # takes 9-31s — so a read timeout here is the STATEMENT outrunning the budget, not the
+        # network. Say that, and say which budget.
+        raise TimeoutError(
+            f"analytics query did not finish within {timeout:.1f}s "
+            "(Supabase Management API) — a full-store scan outran the panel budget; "
+            "narrow the window and retry") from None
     if not (200 <= r.status_code < 300):   # the query endpoint answers 201 on success
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
     return r.json()
@@ -738,27 +783,31 @@ def overview(days=7, minutes=None, gap=None) -> dict:
               f"and {_not_excluded('e')} "
               "and e.visitor_id in (select visitor_id from bots)) as bots"
         )
-        r = _parallel(
-            core=lambda: (_query(core_sql) or [{}])[0],
-            # Exact all-time human count is context, not a render dependency. Keep it
-            # historically exact when it is cheap; otherwise omit only that secondary number.
-            alltime=lambda: (_optional_query(
-                _cte(include_ident=True)
-                + f"select count(*)::int as events, {_CANON_VISITORS} "
-                  "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                  f"where {_not_excluded('e')} and {_not_a_bot('e')}",
-                timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S,
-                default=[],
-            ) or [{}])[0],
-        )
-        core = r["core"] or {}
+        core = (_query(core_sql) or [{}])[0] or {}
+        # The all-time count runs AFTER the core fold, never beside it. It is a full-history
+        # scan of a 192MB table against a 224MB shared_buffers, capped at 0.75s — so it is
+        # cancelled part-way through after having pulled most of the store through the cache
+        # and evicted the pages the MANDATORY statement was about to read. Run concurrently it
+        # made the panel it decorates slower: measured on production 2026-11-09, overview
+        # returned in 3.55s on a warm pool and then failed its 9s budget on five consecutive
+        # calls once this probe had run, and the next Visitors/Sessions statements came back
+        # at 9.1s instead of 3.3s. It is explicitly "context, not a render dependency", so it
+        # may not cost the number the operator actually opens the panel for.
+        alltime = (_optional_query(
+            _cte(include_ident=True)
+            + f"select count(*)::int as events, {_CANON_VISITORS} "
+              "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
+              f"where {_not_excluded('e')} and {_not_a_bot('e')}",
+            timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S,
+            default=[],
+        ) or [{}])[0]
         win = core.get("win") or {}
         win["sessions"] = core.get("sessions")
         return {
             "days": round(m / 1440, 2),
             "minutes": m,
             "window": win,
-            "alltime": r["alltime"],
+            "alltime": alltime,
             "bots": core.get("bots") or {},
             "by_site": core.get("by_site") or [],
             "daily": core.get("daily") or [],
