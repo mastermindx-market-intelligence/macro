@@ -321,6 +321,52 @@ def test_stop_delegation_rejects_foreign_missing_and_second_hop(tmp_path, monkey
     assert json.loads(capsys.readouterr().out) == {}
 
 
+def _aliased_sibling(root, key='ALIASED'):
+    """A structurally valid record whose frontmatter shares one mapping object.
+
+    ``yaml.safe_dump`` anchors it — the WS-CHAIRMAN-CONTROL-ROOM defect (PR
+    #10593): plain YAML parsing succeeds and only the strict alias check (or
+    nothing at all, before that check existed) distinguishes it.
+    """
+    p = record(root, key, claim=False)
+    data = yaml.safe_load(p.read_text().split('---', 2)[1])
+    shared = {'repo': 'macro', 'path': 'docs/spec.md', 'commit': 'c' * 40}
+    data['commission_ref'] = shared
+    data['proof_contract_ref'] = shared
+    p.write_text('---\n' + yaml.safe_dump(data, sort_keys=False) + '---\n\nProse.\n')
+    return p
+
+
+def _oversized_sibling(root, key='OVERSIZE'):
+    """A structurally valid record over the 262144-byte cap (PR #8545 defect)."""
+    p = record(root, key, claim=False)
+    p.write_text(p.read_text() + '\n' + 'x' * 262145 + '\n')
+    return p
+
+
+def test_one_damaged_record_does_not_blind_the_store_reader(tmp_path):
+    from scripts import agentos_ship_capture as s
+    record(tmp_path)
+    _aliased_sibling(tmp_path)
+    _oversized_sibling(tmp_path)
+    assert set(s._records(tmp_path)) == {'ALPHA'}
+
+
+def test_damaged_sibling_records_do_not_break_the_stop_reminder(tmp_path):
+    from scripts import agentos_ship_capture as s
+    record(tmp_path)
+    _aliased_sibling(tmp_path)
+    _oversized_sibling(tmp_path)
+    result = s.handoff_reminder(tmp_path, branch=BRANCH, now=NOW)
+    assert result['code'] == 'HANDOFF_REMINDER'
+    assert result['workstream'] == 'ALPHA'
+
+
+def test_missing_store_still_reports_unavailable(tmp_path):
+    from scripts import agentos_ship_capture as s
+    assert s.handoff_reminder(tmp_path, branch=BRANCH, now=NOW)['code'] == 'HANDOFF_UNAVAILABLE'
+
+
 def test_wave_identity_uses_frozen_canonical_length_limit():
     from scripts import agentos_ship_capture as s
     with pytest.raises(ValueError, match='wave'):

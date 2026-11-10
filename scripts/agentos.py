@@ -2291,9 +2291,25 @@ def _read_label(row: dict[str, Any]) -> str:
     return str(label)
 
 
+class _NoAliasDumper(yaml.SafeDumper):
+    """Alias-free record rendering.
+
+    ``yaml.safe_dump`` emits ``&idNNN`` anchors and ``*idNNN`` aliases whenever
+    one shared dict object is serialized under two keys — a generator reusing a
+    single ``source_ref`` mapping does exactly that (WS-CHAIRMAN-CONTROL-ROOM,
+    PR #10593, 2026-11-02). Agent OS frontmatter readers reject aliased
+    frontmatter, so every record renderer must inline duplicate content
+    instead of anchoring it.
+    """
+
+    def ignore_aliases(self, data: Any) -> bool:
+        return True
+
+
 def _yaml_frontmatter(data: dict[str, Any]) -> str:
-    body = yaml.safe_dump(
+    body = yaml.dump(
         data,
+        Dumper=_NoAliasDumper,
         sort_keys=False,
         allow_unicode=True,
         default_flow_style=False,
