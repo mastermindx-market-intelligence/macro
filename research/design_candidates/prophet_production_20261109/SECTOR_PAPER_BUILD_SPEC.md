@@ -1,14 +1,14 @@
 # Prophet × Sector Intelligence — Paper review and build specification
 
-**Version 5.1.** Actual editable designs and embedded builder instructions, 9 November 2026 America/Vancouver. The completion pass corrects attribution presentation and specifies the remaining qualification/coverage controls. All figures are synthetic design fixtures, not current market data or a strategy result. SX05 remains held; source corrections do not assert an applied product-board change.
+**Version 5.2.** Completed SX05 evaluation and SX12 disclosure/compact designs, 9 November 2026 America/Vancouver. The recovered native content and final exports were verified before publication. All figures remain synthetic design fixtures, not current market data or an accepted strategy result. The historical insertion response, unreturned final editor-finish intent and separate original mobile Plans hold remain explicitly recorded.
 
 **Design:** https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0
 
-## Actual outcome and precise exception
+## Actual outcome and preserved receipt limits
 
-Eleven new native roots exist on p-H-0: ten visually reviewed product/state/build candidates and one partial Strategy evaluation root. Two additive pointers were written to the existing AGENT README and Start Here guide. Token hash 640746f9, existing Inter/PingFang SC and light/dark vocabulary were retained. The Sector R4 design territory and original held mobile Plans subtree were not modified.
+Twelve native roots exist on p-H-0. All twelve now have visual design review: ten retained candidates plus completed SX05 and new SX12. The latter contains four opened disclosure destinations and 320/390px component specimens. Two retained pointers connect the existing AGENT README and Start Here guide. Token hash 640746f9, existing Inter/PingFang SC and the accepted visual language were retained. The Sector R4 design territory and original held mobile Plans subtree were not modified.
 
-The manifest records 79 operations: 78 APPLIED_RESPONSE_OBSERVED and one UNKNOWN_RESPONSE, classified as EFFECT_UNKNOWN_TRANSPORT_TIMEOUT. Exact page readback observed 1467 nodes and 11 roots. This is design evidence, not browser implementation or economic qualification.
+The corrected v5.1 journal contains 82 entries: 81 applied responses and one historical unknown (the earlier 79-entry build-spec count was stale). Recovery found 153 entries through the interrupted v5.2 finish: 151 APPLIED_RESPONSE_OBSERVED, one historical UNKNOWN_RESPONSE and one final INTENT_RECORDED without a response. The 70 added v5.2 content edits all have applied responses. Subsequent builder-only recovery operations are individually recorded in the current manifest. Fresh readback observed 1,726 nodes and twelve roots. These are design receipts, not browser or economic qualification.
 
 | Board | Exact root | Reviewed result / state |
 | --- | --- | --- |
@@ -16,15 +16,18 @@ The manifest records 79 operations: 78 APPLIED_RESPONSE_OBSERVED and one UNKNOWN
 | SX02 · Sector focus · Healthcare · 1440 | `1FLQ-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX03 · Name setup · Shared context · 1440 | `1FRD-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX04 · Screener & compare · Sector population · 1440 | `1FWN-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
-| SX05 · Strategy evaluation · Benchmark first · 1440 | `1G21-0` | PARTIAL_HELD_EFFECT_UNKNOWN |
+| SX05 · Strategy evaluation · Benchmark first · 1440 | `1G21-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX06 · Mobile Today · 390 | `1G4T-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX07 · Mobile HK · ZH dark · 390 | `1G6T-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX08 · Small viewport · 320 | `1G8M-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX09 · State specimens · Sector connection | `1G9V-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX10 · Build contract · Shared owners | `1GC9-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 | SX11 · Build contract · Product & acceptance | `1GHB-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
+| SX12 · Evaluation disclosures · Opened states | `1GPK-0` | VISUALLY_REVIEWED_DESIGN_CANDIDATE |
 
-**New held effect:** operation `prophet-sector-20261109-sx05-attribution`, original Mastermind Paper `paper_edit / write_html insert-children`, target `1G3F-0`, root `1G21-0`. The call timed out without a terminal receipt. A later original-target read showed the existing heading/benchmark panel but no attribution children; absence is not proof of no effect. The catalog exposed no operation-status reconciliation action. No replay, recreation, re-home, carrier swap, finish or held-subtree mutation occurred. The unissued controls portion also remains unissued. Reconcile through the original operation/carrier before any continuation there.
+**Historical insertion response:** `prophet-sector-20261109-sx05-attribution`, original Mastermind Paper carrier, target `1G3F-0`, root `1G21-0`, timed out without a terminal receipt. The v5.2 Chairman-authorized repair was recorded at `891835cfb0e3728dcbed0312424873676e3e0d1d`; new inspected changes have their own applied responses. Preserve the original UNKNOWN_RESPONSE rather than inventing cancellation or a successful old receipt. Current SX05 content is verified; the v5.1 prospective hold is historical.
+
+**Interrupted finish intent:** `prophet-sector-20261109-v52-finish-evaluation-and-states` names only `finish_working_on_nodes` for roots `1G21-0` and `1GPK-0`. The recovered journal has INTENT_RECORDED and no response. Dispatch/completion are unproven. No replay occurred. Available current read schemas expose no historical-operation or working-indicator status. This editor-indicator uncertainty is separate from the 70 confirmed content edits and does not prevent disjoint source/PDF or SX11 guidance work.
 
 **Original hold:** `prophet-four-turn-t2-20261109-mplans-tabs`, target `1EF3-0`, root `1EEH-0`, remains unchanged. Existing ZE5/F01/#9495/#10579 effects and holds retain their original custody. These are separate effects, not a general ban on unrelated design/source work.
 
@@ -48,17 +51,17 @@ Names: HCA +12.2%, ISRG +9.0%, LLY +5.8%; differences versus Healthcare are +4.6
 
 HK/ZH state: local benchmark −4.0%, Healthcare −2.0%, relative advantage +2.0pp; 24/60 above trend (40%). Both absolute numbers remain negative. The benchmark is illustrative, not a claim about a live index. The later US close is unavailable to the earlier HK decision; no native-market or factor-model parity is inferred.
 
-### Strategy evaluation fixture — source contract; partial Paper target remains held
+### Strategy evaluation fixture — applied and visually reviewed
 
 Use a purely synthetic single-period Brinson–Fachler illustration with cash as an explicit allocation segment. Benchmark sector A/B weights 0.5/0.5 and returns 10%/6%; benchmark cash weight zero, cash return zero. Policy starting weights A 0.49375, B 0.19375, cash 0.3125; policy sector returns 10.6875%/6.3125%; costs 0.4 percentage points. Benchmark 8.0%; gross policy 6.5%; net 6.1%; net gap −1.9pp.
 
 Allocation uses (policy weight − benchmark weight) × (benchmark segment return − total benchmark return). Equity allocation +0.6pp; cash allocation −2.5pp. Selection +0.5pp; interaction −0.1pp. Identity: 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1. Cash is not counted again inside equity allocation; FX is zero only in this single-currency fixture. A production multiperiod view requires its explicit linking/cash/FX/cost convention.
 
-Label 68.75% **starting invested allocation**, not average invested capital: end-period drift and trades are not supplied by this one-period fixture. The unknown original HTML used an average-invested label; if that effect is later observed, correct it after reconciliation. Do not edit or reproduce that unknown subtree now. Positive selection in this example coexists with market underperformance. It is not an accepted strategy result or populated Model-plan Record.
+The applied design labels 68.75% **starting invested allocation** and 31.25% **starting cash allocation**, not average exposure: period drift and trades are not supplied. If materially conflicting late content is ever observed, reconcile its exact original operation before changing it. Positive selection coexists with market underperformance. This is not an accepted strategy result or populated Model-plan Record.
 
-### Completion-pass corrections — apply to SX05 only after reconciliation
+### Completion-pass corrections — verified in SX05 and SX12
 
-The next pass found three additional concrete presentation defects in the retained original HTML and already-applied answer copy. These are required corrections, not evidence that SX05 was edited:
+The v5.2 pass applied the four v5.1 presentation corrections below. Recovery verified the exact native exports and screenshots, including the shared signed scale and the compact equivalent:
 
 | Element | Required presentation | Why |
 |---|---|---|
@@ -67,7 +70,7 @@ The next pass found three additional concrete presentation defects in the retain
 | Invested and cash labels | “Starting invested allocation · 68.75%” and “Starting cash allocation · 31.25%”. | Starting allocations do not establish average exposure or period-by-period participation. |
 | Cash explanation | “Inspect the original reasons capital remained in cash and the opportunities available at those decision times.” | A positive realized benchmark return does not establish an ex-ante positive opportunity forecast. |
 
-The qualification/method/coverage/Portfolio controls were never issued. Their exact user-facing destinations are:
+The four controls and their opened destinations now exist in SX05/SX12. Their user-facing content is:
 
 1. **Evaluation details:** synthetic/accepted status; result and protocol identity; benchmark; period; currency and return basis; actual versus simulated capital/weights. The current specimen says “Illustrative example”; it cannot imply an accepted strategy run.
 2. **How attribution works:** the single-period Brinson–Fachler method; cash as one allocation segment; cost deduction once; single-currency FX assumption; full inputs and reconciliation. Production multiperiod linking must identify its own method and cannot silently inherit this fixture.
@@ -205,10 +208,10 @@ The following exact substance is embedded natively in SX10 and SX11. It is also 
 - **Owner/source:** Existing Evaluation result adapter; actual Portfolio/Risk and factor_exposure. Original Record contract remains closed.
 - **Inputs/identity:** Qualified result/protocol; actual or simulated capital/weights; benchmark, period, currency and return basis; cash, costs/FX, method and actual coverage. This example supplies starting allocations, not average exposure or decision counts.
 - **Calculation/claim:** Preserve MODEL_PLAN_RECORD | REGISTERED_OPPORTUNITY_COHORT; Strategy evaluation is separate. Use one signed pp scale. Starting invested/cash allocations are 68.75%/31.25%. Realized benchmark gains do not establish an earlier opportunity forecast.
-- **Interaction:** Evaluation details → How attribution works → Coverage → existing authorized Portfolio. Preserve keyboard/focus/return context. “All eligible decisions” is a scope label; show actual missingness and never invent counts.
+- **Interaction:** SX05 opens four independent destinations in SX12: Evaluation details, How attribution works, Coverage and existing Portfolio. Use the 320px signed list and 390px method sheet. Keyboard/touch opening, close, focus return and preserved context require browser proof.
 - **States:** Missing holdings/weights withholds reconciliation. HK/CN/CA native factor coverage cannot inherit the US-clock model.
 - **Proof:** SP19 / SP20: cash counted once; 8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1%. At 120px/pp, widths are 72/300/60/12/48px, with zero and direction. No unsupported capture ratio, average-exposure label or hindsight opportunity claim.
-- **Custody:** SX05 root 1G21-0 / target 1G3F-0 remains EFFECT_UNKNOWN. Correct scale, cash wording and starting labels only after original reconciliation; then add unissued qualification/coverage/Portfolio controls. This build card is disjoint from the held product root.
+- **Custody:** v5.2 SX05 (1G21-0) and SX12 (1GPK-0) are materially designed and visually reviewed; final JSX matched on recovery. The original insertion response and final finish receipt remain unproven. Do not recreate designs or replay those calls. Runtime interactions remain unproven.
 
 ### K — Follow meaningful sector changes
 
@@ -234,10 +237,29 @@ The following exact substance is embedded natively in SX10 and SX11. It is also 
 - **Interaction:** First real slice: native Sector context → complete Prophet population → company Setup → retained source → exact return.
 - **States:** Keep stale, denied, zero, unknown and unavailable distinct. Rollback retains original investigations and compatible readers.
 - **Proof:** All SP01–SP24 plus original PF/B/Q/D/R acceptance; affected tests, ordinary-refresh browser proof and actual receipts.
-- **Custody:** No competing Sector programme. Keep old mobile Plans 1EEH-0 / 1EF3-0 and new SX05 unknown effects fenced.
+- **Custody:** No competing Sector programme. Preserve original mobile Plans hold 1EEH-0 / 1EF3-0. SX05/SX12 content is verified; retain historical insertion and unreturned finish separately. Shared implementation custody and research gates remain unchanged.
 
-## Next lawful design action
+## Completed disclosure and compact-state contract
 
-The architecture/source package and ten reviewed new roots are usable now. The only uncompleted new board is SX05. Obtain terminal/cancellation evidence or a verified later effect for the exact original operation. If present, inspect its native children and apply all four completion-pass corrections; if terminal no-effect is established, the original owner may make one reconciled continuation. Then add the unissued qualification/method/coverage/Portfolio controls, review the full board and finish only its exact root. Mere absence or a new turn is not authorization to replay. No need to repeat the census, recreate the ten completed boards or reopen the entire architecture.
+SX12 is a state atlas, not one application screen. Each destination opens independently from SX05. Reuse the existing evaluation adapter, shared shell, investigation codec and authorized Portfolio route; do not create a second evaluation or navigation owner.
 
-The fresh continuation check found the same five original heading/answer children under target 1G3F-0 and no attribution children. Absence does not prove no effect. Paper 0.5.18 still exposes no operation-status lookup. The inspected pinned bridge explicitly retains no persistent operation/retry ledger; its status action reports current connection/document state, not the terminal state of an old edit. Source diagnostics therefore identify the missing reconciliation control and do not manufacture a terminal receipt. No host restart, alternate writer or replay is authorized by this finding.
+| Trigger | Designed destination | Exit and preserved context |
+|---|---|---|
+| Evaluation details | `1GPQ-0`, 640px sheet: illustrative qualification, unsupplied dates, explicit A/B benchmark, USD/basis, simulated starting weights, unregistered result/protocol | Close and Back to evaluation restore the originating control and exact selected evaluation. |
+| How attribution works | `1GPR-0`, 640px sheet: complete A/B/cash inputs, single-period method, costs once, explicit zero-FX assumption and full reconciliation | Same result, benchmark, period, currency, method and weights; no silent latest-result substitution. |
+| View coverage / Coverage | `1GPU-0`: eligible, observed, missing, no-entry and no-fill meanings; every unsupplied count remains Not supplied | Return to the same investigation; a scope label never turns absent population evidence into completeness. |
+| Open Portfolio | `1GPV-0`: no linked holdings, named existing Portfolio action and explicit return | Navigate only through the existing authorized destination. Preserve evaluation return context; do not create holdings or imply a linked account. |
+
+**Compact attribution:** `1GU0-0` is a 320px signed-value list. It retains all five effects, units, −1.9pp net gap and the named method action without compressed or rescaled bars.
+
+**Mobile method:** `1GU1-0` is a 390px sheet. Sector A is expanded; Sector B and Cash have distinct collapsed headers. Expansion must expose the same complete benchmark/strategy weights and returns as the desktop input table. The provided expanded A state is a visual specimen; actual accordion operation and B/Cash expansion are implementation acceptance, not behavior proven by the image.
+
+**Implementation interaction requirements:** named buttons work with keyboard and touch. Modal implementations use the shared dialog primitive with an accessible name, focus containment and an inert background; Escape and explicit close restore focus to the originating control. Portfolio navigation uses the existing route-return mechanism rather than a modal assumption. Closing, back navigation, responsive changes or failed loads must preserve exact source/result context. A loading or unavailable disclosure must not display invented inputs or replace the original result with an unrelated current one. This pass does not claim that these runtime behaviors were exercised.
+
+**Acceptance in existing SP19 / SP20 / SP23:** verify signed values and common scale; exact fixture reconciliation; absent weights suppress attribution; missing coverage remains missing; research/plan records cannot become holdings; all four controls open their named destinations; keyboard/touch close and focus return; 320/390px readable reflow; complete expanded input parity; stale/error recovery preserves context. Extend these incumbent cases rather than creating a parallel acceptance registry.
+
+## Recovery proof and remaining scope
+
+Fresh SX05/SX12 exports match the predecessor's saved final exports byte-for-byte: SX05 SHA256 `b65c4117bd7d6c298b667249501909ee95b341e3972cc4708b0c650a27167023`; SX12 SHA256 `2d6012ed68996b28284bb053eb3fad591c8b783a98044ca72b89c1917efdd258`. The canonical companion files `SX05_EVALUATION_V52.jsx` and `SX12_DISCLOSURES_V52.jsx` preserve those exact designs. Full-board screenshots were reviewed on recovery; the predecessor also recorded detailed row/component review. No clipping, overlap or unreadable specimen table was observed. This is expert static review, not a timed user study or browser test.
+
+The current v5.2 design pass proceeds to coordinated source/PDF publication and verified readback. It does not require recreating SX05/SX12 or repeating the accepted architecture/census. Keep the separate original mobile Plans hold and historical insertion/finish receipt limits explicit. Production implementation, scientific acceptance, release and a lawfully assigned implementation commission retain their original gates; this source-only pass neither dispatches Fable nor authorizes protected outcome access.
