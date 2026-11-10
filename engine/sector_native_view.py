@@ -1877,6 +1877,78 @@ def _history(cycles: dict, source: str, core_ids: dict[str, str]) -> dict:
     return {"meta": {"asOf": source, "rs_history": deepcopy(expected)}, "sectors": rows}
 
 
+_TYPED_BLOCK_MAX_BYTES = 64 * 1024
+_CONFLUENCE_UNIVERSES = 4
+#: name -> (owning document, closed key). Lane 7 blocks are entitled-only depth.
+_TYPED_BLOCK_SOURCES = (
+    ("r1_rising_priced_share", "central", "sector_central_r1", False),
+    ("r2_display_order", "central", "display_order", False),
+    ("r2_hazard_qualification", "central", "hazard_qualification", False),
+    ("etf_flows", "theme_context", "etf_flows", True),
+    ("confluence", "theme_context", "confluence", True),
+    ("bottoming_watch", "theme_context", "bottoming_watch", True),
+    ("theme_table", "theme_context", "theme_table", True),
+)
+
+
+def _typed_block(value: Any, *, name: str) -> dict:
+    """One optional typed block: ``available`` only if strictly well formed.
+
+    A malformed block reads ``invalid_shape`` - it is never repaired, never
+    raises and never changes any other part of the projection.
+    """
+    try:
+        encoded = json.dumps(value, ensure_ascii=False, allow_nan=False,
+                             sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ok = isinstance(value, dict) and len(encoded) <= _TYPED_BLOCK_MAX_BYTES
+        if ok and name == "confluence":
+            ok = len(value) == _CONFLUENCE_UNIVERSES
+    except (TypeError, ValueError, OverflowError, RecursionError):
+        ok = False
+    if not ok:
+        return {"status": "unavailable", "reason": "invalid_shape", "value": None}
+    return {"status": "available", "reason": None, "value": json.loads(encoded)}
+
+
+def _typed_blocks(inputs: SectorViewInputs, audience: str) -> dict:
+    """Optional lane 7/8 blocks, carried so downstream lanes get a stable shape.
+
+    Closed source locations only; nothing is read from disk and no value is
+    derived. On producers that do not emit a block it reads
+    ``unavailable/not_produced``.
+    """
+    theme_context = inputs.handoff.get("theme_context")
+    documents = {"central": inputs.central,
+                 "theme_context": theme_context if isinstance(theme_context, dict) else {}}
+    blocks = {}
+    for name, owner, key, entitled_only in _TYPED_BLOCK_SOURCES:
+        if entitled_only and audience != "entitled":
+            blocks[name] = {"status": "unavailable", "reason": "audience_not_entitled",
+                            "value": None}
+        elif key not in documents[owner]:
+            blocks[name] = {"status": "unavailable", "reason": "not_produced", "value": None}
+        else:
+            blocks[name] = _typed_block(documents[owner][key], name=name)
+    return blocks
+
+
+def typed_blocks_of(data: dict) -> dict:
+    """The seven blocks of a projected ``data`` object, absent key included.
+
+    An absent ``typed_blocks`` means no producer emitted any block: every block
+    reads ``unavailable/not_produced`` (the entitled-only four read
+    ``audience_not_entitled`` for a preview projection). Nothing is invented.
+    """
+    present = data.get("typed_blocks")
+    if isinstance(present, dict):
+        return present
+    preview = data.get("audience") == "preview"
+    return {name: {"status": "unavailable",
+                   "reason": "audience_not_entitled" if preview and entitled_only
+                   else "not_produced", "value": None}
+            for name, _owner, _key, entitled_only in _TYPED_BLOCK_SOURCES}
+
+
 def project_sector_view(
     inputs: SectorViewInputs,
     receipt: SectorViewReceipt,
@@ -1985,6 +2057,15 @@ def project_sector_view(
                      audience=audience, preview_rows=preview_rows),
         },
     }
+    # Incumbent byte parity (tests/test_sector_native_view.py golden hashes): an
+    # unproduced optional input leaves the hashed projection untouched, so the key
+    # is ABSENT while no block is produced or malformed. Consumers read an absent
+    # key through ``typed_blocks_of`` (every block unavailable/not_produced). Once
+    # any block is produced or malformed the full seven-block object is emitted.
+    typed = _typed_blocks(inputs, audience)
+    if any(b["reason"] not in ("not_produced", "audience_not_entitled")
+           for b in typed.values()):
+        data["typed_blocks"] = typed
     try:
         encoded_data = json.dumps(data, ensure_ascii=False, allow_nan=False,
                                   sort_keys=True, separators=(",", ":")).encode("utf-8")

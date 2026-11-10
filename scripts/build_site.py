@@ -2702,6 +2702,20 @@ def _load_nw_factor_state() -> dict | None:
         return None
 
 
+def write_factors_json(fac: dict, path: Path) -> None:
+    """Write factors.json as STRICT finite JSON from the ordinary producer.
+
+    Non-finite factor scores (pandas NaN for an unmeasurable leg) are *missing*,
+    so they are written as null - never 0, never a bare ``NaN`` literal that a
+    strict reader (the Sector generation member decoder) must refuse. Finite
+    values are unchanged; ``allow_nan=False`` makes anything this misses raise
+    before the file is touched.
+    """
+    from lib.numeric import finite_json_value
+    path.write_text(json.dumps(finite_json_value(fac), separators=(",", ":"),
+                               default=str, allow_nan=False))
+
+
 def build_factors_page(env: Environment, site: Path, generated: str) -> dict | None:
     """Render factors.html — the cross-sectional equity factor rankings (SEC
     EDGAR fundamentals x prices). Fundamentals fetch is cached weekly; ranks
@@ -2759,8 +2773,8 @@ def build_factors_page(env: Environment, site: Path, generated: str) -> dict | N
         return None
     fdir = site / "factordata"
     fdir.mkdir(parents=True, exist_ok=True)
-    (fdir / "factors.json").write_text(json.dumps(fac, separators=(",", ":"), default=str))
-    ic = _load_ic_scorecard()                  # leak-free point-in-time IC (degrade-never-raise)
+    write_factors_json(fac, fdir / "factors.json")
+    ic = _load_ic_scorecard()                 # leak-free point-in-time IC (degrade-never-raise)
     breadth = _load_breadth()                  # market-member breadth context (degrade-never-raise)
     series = _load_factor_series()             # factor portfolio return series (degrade-never-raise)
     nw_state = _load_nw_factor_state()         # NW factor intelligence state (RUL-NW7/NW8, fail-open)
