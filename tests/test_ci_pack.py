@@ -4018,7 +4018,8 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # more than it saved: `render-linux` is FOUR runners shared with render.yml,
     # engine-render.yml and merge-on-green.yml, so even four packs took the entire pool
     # and starved the sweeper that merges every armed pull request.
-    assert pack["runs-on"] == "ubuntu-latest"
+    # Use the literal GitHub-hosted Ubuntu label admitted by runner policy.
+    assert pack["runs-on"] == "ubuntu-24.04"
     # The self-hosted pools are the render/nightly lanes and must never absorb CI packs.
     runs_on = " ".join(str(pack["runs-on"]).split())
     assert "macstudio" not in runs_on

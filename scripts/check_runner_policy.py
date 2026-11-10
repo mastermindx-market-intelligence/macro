@@ -63,6 +63,13 @@ CUSTOM_LABELS = {
     "m1-light",
 }
 HOSTED = "ubuntu-latest"
+PACK_HOSTED = "ubuntu-24.04"
+HOSTED_PACK_CHECK = {
+    "name": "verify the hosted pack runner",
+    "id": "verify_hosted_runner",
+    "shell": "bash",
+    "run": 'test "${RUNNER_ENVIRONMENT:-}" = github-hosted',
+}
 TRUSTED_PULL_REQUEST_TARGET = ".github/workflows/ci-authority.yml"
 TRUSTED_AUTHORITY_CHECKOUT = (
     "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
@@ -1208,6 +1215,12 @@ def _pending_capacity_findings(registry: dict) -> list[Finding]:
     return findings
 
 
+def _expected_hosted_label(workflow: str, job: str) -> str:
+    if (workflow, job) == (".github/workflows/ci.yml", "ci-pack"):
+        return PACK_HOSTED
+    return HOSTED
+
+
 def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Finding]:
     registry = load_yaml(registry_path)
     findings: list[Finding] = []
@@ -1253,6 +1266,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             if not isinstance(job, dict):
                 continue
             if "pull_request" in workflow_triggers:
+                hosted_label = _expected_hosted_label(relative, str(job_id))
                 if "uses" in job:
                     if not (
                         relative == ".github/workflows/ci.yml"
@@ -1266,11 +1280,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                                 f"{relative}:{job_id} may not delegate on pull_request except through the exact governed protected-main trusted-CI call",
                             )
                         )
-                elif job.get("runs-on") != HOSTED:
+                elif job.get("runs-on") != hosted_label:
                     findings.append(
                         Finding(
                             "R3",
-                            f"{relative}:{job_id} must remain exactly {HOSTED} on pull_request during Wave B/C",
+                            f"{relative}:{job_id} must remain exactly {hosted_label} on pull_request during Wave B/C",
                         )
                     )
 
@@ -1292,9 +1306,10 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             continue
         for job_id in route.get("jobs") or []:
             job = (document.get("jobs") or {}).get(job_id)
-            if not isinstance(job, dict) or job.get("runs-on") != HOSTED:
+            hosted_label = _expected_hosted_label(workflow, job_id)
+            if not isinstance(job, dict) or job.get("runs-on") != hosted_label:
                 findings.append(
-                    Finding("R4", f"{workflow}:{job_id} must remain {HOSTED}")
+                    Finding("R4", f"{workflow}:{job_id} must remain {hosted_label}")
                 )
 
     allowed_custom: set[tuple[str, str]] = set()
@@ -1636,7 +1651,10 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             and "TRUSTED_PLAN_SHA" in parity_text
         )
         upload_is_exact = (
-            upload_step.get("if") == "always() && needs.ci-plan.outputs.plan_sha != ''"
+            upload_step.get("if") == (
+                "always() && steps.verify_hosted_runner.outcome == 'success' && "
+                "needs.ci-plan.outputs.plan_sha != ''"
+            )
             and upload_step.get("uses")
             == "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
             and (upload_step.get("with") or {}).get("name")
@@ -1645,7 +1663,8 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == "${{ runner.temp }}/ci-semantic-fragments/pack-${{ matrix.pack }}.json"
         )
         ci_pack_contract_is_exact = (
-            ci_pack.get("runs-on") == HOSTED
+            ci_pack.get("runs-on") == PACK_HOSTED
+            and pack_steps[:1] == [HOSTED_PACK_CHECK]
             and ci_pack.get("name") == "ci-pack-${{ matrix.pack }}"
             and ci_pack.get("needs") == ["ci-plan", "trusted-ci"]
             and ci_pack.get("if")

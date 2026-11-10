@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import subprocess
 import sys
 
 import pytest
@@ -44,11 +45,30 @@ def test_hosted_first_keeps_exact_main_owned_executor_as_pc_opt_in() -> None:
     assert (executor.get("on") or executor[True])["workflow_call"]["inputs"] == {}
 
 
+
+@pytest.mark.parametrize(
+    ("environment", "accepted"),
+    [({"RUNNER_ENVIRONMENT": "github-hosted"}, True),
+     ({"RUNNER_ENVIRONMENT": "self-hosted"}, False), ({}, False)],
+)
+def test_direct_pack_refuses_unqualified_runner_before_candidate_checkout(environment, accepted):
+    step = workflow("ci.yml")["jobs"]["ci-pack"]["steps"][0]
+    assert step["name"] == "verify the hosted pack runner"
+    result = subprocess.run(["/bin/bash", "-c", step["run"]], env=environment, check=False)
+    assert (result.returncode == 0) is accepted
+
+
 def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> None:
     job = workflow("ci.yml")["jobs"]["ci-pack"]
 
     assert job["name"] == "ci-pack-${{ matrix.pack }}"
-    assert job["runs-on"] == "ubuntu-latest"
+    assert job["runs-on"] == "ubuntu-24.04"
+    assert job["steps"][0] == {
+        "name": "verify the hosted pack runner",
+        "id": "verify_hosted_runner",
+        "shell": "bash",
+        "run": 'test "${RUNNER_ENVIRONMENT:-}" = github-hosted',
+    }
     assert job["needs"] == ["ci-plan", "trusted-ci"]
     assert job["strategy"] == {
         "fail-fast": False,
@@ -97,7 +117,10 @@ def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> Non
     assert "TRUSTED_PLAN_SHA" in parity["run"]
 
     upload = named_step(job, "publish this pack's raw semantic fragment")
-    assert upload["if"] == "always() && needs.ci-plan.outputs.plan_sha != ''"
+    assert upload["if"] == (
+        "always() && steps.verify_hosted_runner.outcome == 'success' && "
+        "needs.ci-plan.outputs.plan_sha != ''"
+    )
     assert upload["with"]["name"] == (
         "ci-semantic-pack-${{ github.run_id }}-${{ matrix.pack }}"
     )
@@ -212,7 +235,7 @@ def test_p3bb_route_contract_is_named_by_the_legacy_manifest() -> None:
 
 @pytest.mark.parametrize("regression", [
     "native_pc", "identity_input", "callee_input", "native_hosted",
-    "native_relay", "native_final",
+    "native_relay", "native_final", "unguarded_raw_upload",
 ])
 def test_native_route_contract_rejects_boundary_regressions(monkeypatch, regression):
     documents = {name: workflow(name) for name in ("ci.yml", "trusted-ci-executor.yml")}
@@ -231,6 +254,10 @@ def test_native_route_contract_rejects_boundary_regressions(monkeypatch, regress
     elif regression == "native_relay":
         step = named_step(jobs["ci-pack"], "relay the trusted pack fragment under the existing check contract")
         step["if"] = step["if"].replace("github.event_name != 'merge_group' && ", "")
+        check = test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback
+    elif regression == "unguarded_raw_upload":
+        upload = named_step(jobs["ci-pack"], "publish this pack's raw semantic fragment")
+        upload["if"] = "always() && needs.ci-plan.outputs.plan_sha != ''"
         check = test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback
     else:
         named_step(jobs["ci-gate"], "enforce current native group authority")["if"] = "false"

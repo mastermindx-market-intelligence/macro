@@ -159,7 +159,11 @@ label_registry:
   ubuntu-latest:
     status: github-hosted
     carried_by: []
-    note: GitHub-hosted; the Wave B/C default for every ordinary PR job.
+    note: GitHub-hosted; the Wave B/C default outside the pinned direct CI pack.
+  ubuntu-24.04:
+    status: github-hosted
+    carried_by: []
+    note: Pinned GitHub-hosted Noble image for the direct CI pack.
   self-hosted:
     status: live
     carried_by: [mac-builder-3, mac-builder-4, mac-builder-5, mac-builder-light,

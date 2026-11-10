@@ -5104,7 +5104,8 @@ jobs:
     #
     # NOT the macstudio pool, unchanged: that is the render/nightly lane and is
     # routinely saturated (CLAUDE.md — render budget is law).
-    runs-on: ubuntu-latest
+    # Keep the hosted image distinct from the fleet alias ubuntu-latest.
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     strategy:
       # Sibling packs must FINISH so their proofs survive a single red. A
@@ -5140,6 +5141,10 @@ jobs:
       CONTROL_ROOT: ${{ github.workspace }}
       MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
     steps:
+      - name: verify the hosted pack runner
+        id: verify_hosted_runner
+        shell: bash
+        run: test "${RUNNER_ENVIRONMENT:-}" = github-hosted
       # A self-hosted runner REUSES its workspace between jobs, and a sibling job that
       # checked out sparsely leaves `core.sparseCheckout=true` behind in the SAME
       # directory. `actions/checkout@v4` does not clear that when its own
@@ -5405,7 +5410,7 @@ jobs:
           shutil.copyfile(source, destination)
           PY
       - name: publish this pack's raw semantic fragment
-        if: always() && needs.ci-plan.outputs.plan_sha != ''
+        if: always() && steps.verify_hosted_runner.outcome == 'success' && needs.ci-plan.outputs.plan_sha != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ci-semantic-pack-${{ github.run_id }}-${{ matrix.pack }}

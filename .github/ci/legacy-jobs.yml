@@ -62429,6 +62429,8 @@ jobs:
       - "admin/auth.py"
       - "admin/brain_guest.py"
       - "admin/brief.py"
+      - "admin/capacity_fabric_schema.py"
+      - "admin/capacity_router.py"
       - "admin/causal_lab.py"
       - "admin/chronicle.py"
       - "admin/codex_panel.py"

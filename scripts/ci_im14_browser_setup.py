@@ -62,58 +62,76 @@ def _read_system_file(path: Path) -> bytes:
 
 
 def project_sources(original: bytes, mirror_list: bytes) -> bytes:
-    """Replace only the runner's known Ubuntu mirror, with unchanged signed suites."""
+    """Build the job's signed binary recipe from the admitted Noble pockets."""
     mirrors = [line.split() for line in mirror_list.decode("ascii").splitlines()
                if line.strip() and not line.lstrip().startswith("#")]
     if mirrors != [
         ["http://azure.archive.ubuntu.com/ubuntu/", "priority:1"],
         [HTTPS_ARCHIVE, "priority:2"],
-        ["https://security.ubuntu.com/ubuntu/", "priority:3"],
+        [HTTPS_SECURITY, "priority:3"],
     ]:
         raise ValueError("unqualified runner mirror inventory")
-    text = original.decode("ascii")
+
     suites = set()
-    stanzas = 0
-    for stanza in re.split(r"\n[ \t]*\n", text.strip()):
+    projected = []
+    for stanza in re.split(r"\n[ \t]*\n", original.decode("ascii").strip()):
         fields = {}
         for line in stanza.splitlines():
-            if line.startswith("#"):
+            if line.lstrip().startswith("#"):
                 continue
             match = re.fullmatch(r"([A-Za-z-]+):[ \t]+([^\r\n]+)", line)
-            if not match or match[1] in fields:
+            if not match or match[1].lower() in fields:
                 raise ValueError("unqualified Ubuntu source syntax")
-            fields[match[1]] = match[2].strip()
-        if (fields.keys() - {"Types", "URIs", "Suites", "Components", "Signed-By", "Architectures"}
-                or fields.get("Types") != "deb"
-                or fields.get("Signed-By") != UBUNTU_KEYRING
-                or set(fields.get("Components", "").split()) != {"main", "universe", "restricted", "multiverse"}):
+            fields[match[1].lower()] = match[2].strip()
+
+        # The provider file identifies the existing pockets, but is not the
+        # private APT recipe. Keep authority and transport options in this
+        # helper. Unused provider metadata and source-index requests cannot
+        # appear in the generated binary-only recipe.
+        unsupported = {
+            "trusted", "allow-insecure", "allow-weak", "allow-downgrade-to-insecure",
+            "check-valid-until", "valid-until-min", "valid-until-max", "check-date",
+            "date-max-future", "inrelease-path", "snapshot", "targets",
+            "by-hash", "pdiffs", "languages",
+        }
+        if (unsupported.intersection(fields)
+                or any(field.endswith(("-add", "-remove")) for field in fields)
+                or fields.get("enabled", "yes").lower() != "yes"
+                or fields.get("signed-by", UBUNTU_KEYRING) != UBUNTU_KEYRING):
+            raise ValueError("unqualified Ubuntu source policy")
+        types = sorted(fields.get("types", "").split())
+        components = fields.get("components", "").split()
+        if (types not in (["deb"], ["deb", "deb-src"])
+                or "main" not in components
+                or len(components) != len(set(components))
+                or set(components) - {"main", "multiverse", "restricted", "universe"}):
             raise ValueError("unqualified Ubuntu source fields")
-        # Retain the hosted x86 multiarch inventory verbatim. A lone
-        # foreign architecture, additional targets and duplicates all refuse.
-        architectures = sorted(fields.get("Architectures", "amd64").split())
-        if architectures not in (["amd64"], ["amd64", "i386"]):
+        architectures = fields.get("architectures", "amd64").split()
+        if sorted(architectures) not in (["amd64"], ["amd64", "i386"]):
             raise ValueError("unqualified Ubuntu source architectures")
-        current = fields.get("Suites", "").split()
+        current = fields.get("suites", "").split()
         if not current or suites.intersection(current) or len(current) != len(set(current)):
             raise ValueError("unqualified Ubuntu suites")
-        uri = fields.get("URIs")
-        if uri != MIRROR and not (uri in SECURITY_URIS and current == ["noble-security"]):
+        uri = fields.get("uris")
+        if uri == MIRROR:
+            destination = HTTPS_ARCHIVE
+        elif uri in SECURITY_URIS and current == ["noble-security"]:
+            destination = HTTPS_SECURITY
+        else:
             raise ValueError("unqualified Ubuntu source URI")
         suites.update(current)
-        stanzas += 1
+
+        recipe = [
+            "Types: deb", f"URIs: {destination}", f"Suites: {' '.join(current)}",
+            f"Components: {' '.join(components)}",
+        ]
+        if "architectures" in fields:
+            recipe.append(f"Architectures: {' '.join(architectures)}")
+        recipe.append(f"Signed-By: {UBUNTU_KEYRING}")
+        projected.append("\n".join(recipe))
     if suites != {"noble", "noble-updates", "noble-backports", "noble-security"}:
         raise ValueError("unqualified Ubuntu suite inventory")
-
-    uri_projection = {MIRROR.encode("ascii"): HTTPS_ARCHIVE.encode("ascii")}
-    uri_projection.update({uri.encode("ascii"): HTTPS_SECURITY.encode("ascii") for uri in SECURITY_URIS})
-    uri_pattern = rb"|".join(re.escape(uri) for uri in uri_projection)
-    projected, changed = re.subn(
-        rb"(?m)^(URIs:[ \t]+)(" + uri_pattern + rb")(?=[ \t]*$)",
-        lambda match: match[1] + uri_projection[match[2]], original,
-    )
-    if changed != stanzas:
-        raise ValueError("unqualified Ubuntu URI projection")
-    return projected
+    return ("\n\n".join(projected) + "\n").encode("ascii")
 
 
 def _source_profile() -> dict[str, bytes]:

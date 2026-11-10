@@ -26,10 +26,22 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 PRIVATE = "/var/tmp/mm-im14-apt.Abc123deFG"
 
 
-def test_projection_preserves_every_field_except_the_qualified_uri():
+def test_projection_preserves_the_qualified_binary_repository_inputs():
     assert im14.project_sources(SOURCES, MIRRORS) == SOURCES.replace(
         im14.MIRROR.encode(), im14.HTTPS_ARCHIVE.encode()
     )
+
+
+def test_projection_owns_private_binary_sources_independent_of_vendor_metadata():
+    vendor_sources = SOURCES.replace(b"Types: deb", b"types: deb deb-src")
+    vendor_sources = vendor_sources.replace(
+        b"Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg",
+        b"X-Vendor-Profile: Ubuntu hosted image",
+    )
+    vendor_sources = vendor_sources.replace(b" restricted universe multiverse", b" universe")
+    projected = im14.project_sources(vendor_sources, MIRRORS)
+    expected = SOURCES.replace(im14.MIRROR.encode(), im14.HTTPS_ARCHIVE.encode())
+    assert projected == expected.replace(b" restricted universe multiverse", b" universe")
 
 
 def test_projection_preserves_the_hosted_amd64_i386_inventory():
@@ -59,6 +71,13 @@ def test_projection_uses_tls_for_the_canonical_security_pocket(uri):
 @pytest.mark.parametrize("original,mirrors", [
     (SOURCES.replace(b"ubuntu-archive-keyring.gpg", b"foreign-keyring.gpg"), MIRRORS),
     (SOURCES.replace(b"Types: deb", b"Types: deb\nTrusted: yes"), MIRRORS),
+    (SOURCES.replace(b"restricted universe", b"restricted foreign"), MIRRORS),
+    (SOURCES.replace(b"main restricted", b"main main"), MIRRORS),
+    (SOURCES.replace(b"main restricted", b"restricted"), MIRRORS),
+    (SOURCES.replace(b"Types: deb", b"Types: deb\nCheck-Valid-Until: no"), MIRRORS),
+    (SOURCES.replace(b"Types: deb", b"Types: deb\nEnabled: no"), MIRRORS),
+    (SOURCES.replace(b"Types: deb", b"Types: deb\nArchitectures-Add: arm64"), MIRRORS),
+    (SOURCES.replace(b"Types: deb", b"Types: deb\ntypes: deb"), MIRRORS),
     (SOURCES.replace(b"Architectures: amd64", b"Architectures: arm64"), MIRRORS),
     (SOURCES.replace(b"Architectures: amd64", b"Architectures: i386"), MIRRORS),
     (SOURCES.replace(b"Architectures: amd64", b"Architectures: amd64 i386 i386"), MIRRORS),

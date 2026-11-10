@@ -208,7 +208,8 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
 
 def test_normal_ci_and_fences_remain_hosted() -> None:
     ci = workflow("ci.yml")
-    assert {ci["jobs"][name]["runs-on"] for name in ("ci-plan", "ci-pack", "ci-gate")} == {"ubuntu-latest"}
+    assert ci["jobs"]["ci-pack"]["runs-on"] == "ubuntu-24.04"
+    assert {ci["jobs"][name]["runs-on"] for name in ("ci-plan", "ci-gate")} == {"ubuntu-latest"}
     fences = workflow("fences.yml")
     for job in fences["jobs"].values():
         assert job["runs-on"] == "ubuntu-latest"
