@@ -77,6 +77,23 @@ def _caddy_public_exclusions() -> set[str]:
     return set(shlex.split(match.group(1)))
 
 
+def _caddy_site_block(host: str) -> str:
+    match = re.search(rf"^{re.escape(host)} \{{\n(.*?)^\}}", CADDY, flags=re.S | re.M)
+    assert match, f"Caddy site block missing for {host}"
+    return match.group(1)
+
+
+@pytest.mark.parametrize("host", ["www.mastermind-x.com", "mastermind-x.com"])
+def test_flagship_origin_tls_stays_browser_trusted(host):
+    """Public flagship origins must never expose Caddy's private local CA."""
+    body = _caddy_site_block(host)
+    assert "tls internal" not in body, (
+        f"{host} can be reached if the CDN is bypassed or DNS is stale; "
+        "tls internal exposes Caddy Local Authority and causes "
+        "NET::ERR_CERT_AUTHORITY_INVALID"
+    )
+
+
 def test_caddy_public_boundary_matches_policy_exactly():
     expected = set(NON_POLICY_ROUTES) | {"*.html"}
     expected.update(POLICY["public"]["exact"])
@@ -712,17 +729,18 @@ def _matches(path: str, patterns: list[str]) -> bool:
     )
 
 
-def _served_stamps() -> dict[str, str]:
-    """Root-relative asset path -> the ?v= stamp site/ actually serves for it."""
+def _served_stamps() -> dict[str, set[str]]:
+    """Collect every ?v= stamp referenced by site/ for each root-relative asset."""
     ref = re.compile(r'(?:src|href)="([^"]+\.(?:js|css))\?v=([0-9a-zA-Z]+)"')
-    out: dict[str, str] = {}
+    out: dict[str, set[str]] = {}
     for page in SITE.rglob("*.html"):
         parent = page.parent
         for url, stamp in ref.findall(page.read_text(encoding="utf-8", errors="replace")):
             if url.startswith(("http://", "https://", "//")):
                 continue
             try:
-                out["/" + str((parent / url).resolve().relative_to(SITE.resolve()))] = stamp
+                path = "/" + str((parent / url).resolve().relative_to(SITE.resolve()))
+                out.setdefault(path, set()).add(stamp)
             except ValueError:
                 continue
     return out
@@ -770,28 +788,59 @@ def test_every_stamped_public_asset_is_on_the_immutable_matcher():
 
 
 def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
-    """@watchlist_shell_versioned exists ONLY for hand-authored ?v=N integers,
-    which must not be cached for a year. A path whose served stamp equals its own
-    sha256[:8] is content-addressed and belongs on the immutable matcher instead
-    — that is exactly how mtf.js and mm_brain.js sat at 300s after they became
-    content-hashed, paying a revalidation on every navigation."""
+    """A path with any hand stamp still needs the short cache lifetime.
+
+    The matcher covers every version of a path. Only flag paths whose observed
+    stamps all match the asset body, as happened with mtf.js and mm_brain.js.
+    """
     if not SITE.is_dir():
         pytest.skip("site/ not checked out")
     stamps = _served_stamps()
     wrong = []
     for path in _caddy_path_list("watchlist_shell_versioned"):
-        served = stamps.get(path)
-        if served is None:
+        observed = stamps.get(path)
+        if observed is None:
             continue
         body = SITE / path.lstrip("/")
         if not body.is_file():
             continue
-        if served == hashlib.sha256(body.read_bytes()).hexdigest()[:8]:
-            wrong.append(f"{path}?v={served}")
+        current = hashlib.sha256(body.read_bytes()).hexdigest()[:8]
+        if observed == {current}:
+            wrong.append(f"{path}?v={current}")
     assert not wrong, (
         "these are content-hash stamped, so the 300s carve-out is wrong for them "
         f"— move them to @public_versioned: {wrong}"
     )
+
+
+@pytest.mark.parametrize("stamp_order", [
+    ("legacy", "hash"),
+    ("hash", "legacy"),
+    ("hash", "hash"),
+])
+def test_hand_stamp_carve_out_reads_all_references(tmp_path, monkeypatch, stamp_order):
+    body = b"// watchstore fixture\n"
+    current = hashlib.sha256(body).hexdigest()[:8]
+    (tmp_path / "watchstore.js").write_bytes(body)
+    pages = [tmp_path / "one.html", tmp_path / "two.html"]
+    for page, stamp in zip(pages, stamp_order):
+        version = current if stamp == "hash" else "12"
+        page.write_text(f'<script src="watchstore.js?v={version}"></script>', encoding="utf-8")
+
+    original_rglob = Path.rglob
+
+    def ordered_rglob(path, pattern, *args, **kwargs):
+        if path == tmp_path and pattern == "*.html":
+            return iter(pages)
+        return original_rglob(path, pattern, *args, **kwargs)
+
+    monkeypatch.setitem(globals(), "SITE", tmp_path)
+    monkeypatch.setattr(Path, "rglob", ordered_rglob)
+    if "legacy" in stamp_order:
+        test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+    else:
+        with pytest.raises(AssertionError, match=rf"/watchstore\.js\?v={current}"):
+            test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
 
 
 # ── R1A-M Intelligence Hub Market Pulse controller (freeze §10) ────────────
