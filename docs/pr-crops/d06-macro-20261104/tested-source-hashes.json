@@ -1,0 +1,156 @@
+{
+  "status": "passed",
+  "source_base": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "started_at": "2026-11-04T11:13:21.384531+00:00",
+  "files": {
+    "tests/test_d06_market_structure.py": {
+      "sha256": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+      "bytes": 7052
+    },
+    "tests/test_build_market_structure_page.py": {
+      "sha256": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+      "bytes": 42480
+    },
+    "tests/test_market_structure_glance_copy.py": {
+      "sha256": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+      "bytes": 4557
+    },
+    "tests/test_d06_stage_analysis.py": {
+      "sha256": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+      "bytes": 14640
+    },
+    "tests/test_stage_analysis_page.py": {
+      "sha256": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+      "bytes": 71951
+    },
+    "tests/test_d06_spvector.py": {
+      "sha256": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+      "bytes": 9388
+    },
+    "tests/test_spvector_page.py": {
+      "sha256": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+      "bytes": 10550
+    },
+    "tests/test_spvector_gate_chips.py": {
+      "sha256": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+      "bytes": 6389
+    },
+    "tests/test_spvector_scorecard_basis.py": {
+      "sha256": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+      "bytes": 9568
+    },
+    "templates/market_structure.html.j2": {
+      "sha256": "552efd0322c915dfbac7ddcecf00374c7aa1fb7ade1047b33cdd13c3ad0ae519",
+      "bytes": 91397
+    },
+    "templates/stage_analysis.html.j2": {
+      "sha256": "6de6ed8cf80d36eedf8d2a6ff022e4be49a82ec0af1466598aaac5ade2a448e8",
+      "bytes": 205552
+    },
+    "templates/spvector.html.j2": {
+      "sha256": "7e7d4a030283db232308f61b7450400986ce320d6a78d341ff6f2050dfb23640",
+      "bytes": 36322
+    },
+    "scripts/build_market_structure_page.py": {
+      "sha256": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+      "bytes": 6971
+    },
+    "scripts/build_stage_analysis_page.py": {
+      "sha256": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+      "bytes": 11604
+    },
+    "scripts/build_spvector.py": {
+      "sha256": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+      "bytes": 22738
+    },
+    "scripts/verify_d06_macro.py": {
+      "sha256": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+      "bytes": 37435
+    },
+    "scripts/d06_macro_fixtures.py": {
+      "sha256": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+      "bytes": 6080
+    },
+    "site/market_structure.html": {
+      "sha256": "04475f191f503e4d1db8b70b62c69cd39da990eae9572346d91d2b096b0ddc69",
+      "bytes": 221265
+    },
+    "site/stage_analysis.html": {
+      "sha256": "58fa361a27d669eb9cc3f857b4d1a0523737ee2b076c54426531866c0683d07e",
+      "bytes": 251113
+    },
+    "site/spvector.html": {
+      "sha256": "7c6ff37a22b14a4de1fd8da32cdc5d8509fbaa08b42c250cb78a6f9a37404ea7",
+      "bytes": 361761
+    },
+    "tests/fixtures/market_structure_latest.json": {
+      "sha256": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+      "bytes": 176048
+    },
+    "docs/pr-crops/d06-macro-20261104/stage-pinned-inputs.json": {
+      "sha256": "49c70e2746f2e550b162eeba62d2fd0520349f2d6e482760ea4c7bae43245221",
+      "bytes": 3702
+    },
+    "docs/pr-crops/d06-macro-20261104/spv-pinned-inputs.json": {
+      "sha256": "5756be3fc625b9514ea5bb5432297782316161648ecc75005d16123dbdb39d26",
+      "bytes": 83949
+    }
+  },
+  "render_inputs": {
+    "data/market_structure/latest.json": {
+      "sha256": "9c183217b6fada97db75b84700219f52e87292af3f03a755288fcb5e2b701272",
+      "bytes": 154442,
+      "git_blob": "d771f7138d5c5c709f3be27e0c5a927389d8a6a9"
+    },
+    "data/stage_analysis/context/latest.json": {
+      "sha256": "dd559f5ee91824e48d3d5641428108a6544f2ee7335ecb1b00a3dce14f1c31c7",
+      "bytes": 702850,
+      "git_blob": "1aa5a828b4c45d0707c304632dbdf7511820066e"
+    }
+  },
+  "generated_html_trailing_whitespace_normalized": true,
+  "runs": [
+    {
+      "surface": "actual",
+      "exit_code": 0,
+      "log": "docs/pr-crops/d06-macro-20261104/actual-final.log"
+    },
+    {
+      "surface": "market",
+      "exit_code": 0,
+      "log": "docs/pr-crops/d06-macro-20261104/market-final.log"
+    },
+    {
+      "surface": "spv",
+      "exit_code": 0,
+      "log": "docs/pr-crops/d06-macro-20261104/spv-final.log"
+    },
+    {
+      "surface": "stage",
+      "exit_code": 0,
+      "log": "docs/pr-crops/d06-macro-20261104/stage-final.log"
+    },
+    {
+      "surface": "unit",
+      "exit_code": 0,
+      "log": "docs/pr-crops/d06-macro-20261104/unit-final.log",
+      "preceding_failure_log": "docs/pr-crops/d06-macro-20261104/unit-fixture-shape-failure.log"
+    }
+  ],
+  "test_only_fixture_correction": {
+    "path": "tests/test_d06_stage_analysis.py",
+    "before": {
+      "sha256": "16a8bc42e5ec62071b1bc21e0f84a145b5ca8339a371f0a5eeaec2100a680139",
+      "bytes": 14623
+    },
+    "after": {
+      "sha256": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+      "bytes": 14640
+    },
+    "reason": "The new weather falsifier omitted the producer envelope's current field; add explicit null so it exercises unavailable population rather than Jinja Undefined formatting.",
+    "application_or_browser_change": false
+  },
+  "application_and_browser_sources_unchanged_through_run": true,
+  "source_unchanged_during_final_unit_run": true,
+  "finished_at": "2026-11-04T11:18:28.954966+00:00"
+}
