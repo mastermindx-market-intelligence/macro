@@ -290,3 +290,112 @@ console.log(JSON.stringify({
         '<span class="pill"><span class="l-en">a&lt;b</span>'
         '<span class="l-zh">\u7532&lt;\u4e59</span></span>'
     )
+
+
+# P12.T52: declared index benchmark must survive the native render-only handoff.
+def _p52_index_detail(tmp_path, monkeypatch, benchmark, label, ns="nasdaq"):
+    import json
+    from pathlib import Path
+    from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader
+    from scripts import build_subsector_confluence as build
+
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=ChoiceLoader([
+        DictLoader({"_site_nav.html.j2": ""}), FileSystemLoader(str(root / "templates")),
+    ]), autoescape=False)
+    group = {"key": "fixture-group", "label": "Synthetic complex", "kind": "sector",
+             "as_of": "2026-10-30", "n_members": 4, "n_priced": 4,
+             "reliability": "low", "chart_key": "fixture-group", "has_signals": True,
+             "regime": {"rs_60d": -17.5}, "members": []}
+    board = {"sectors": [group], "subsectors": [], "benchmark": benchmark,
+             "benchmark_label": label, "generated_utc": "BOARD_CLOCK"}
+    dirs = build._index_dirs(ns)
+    path = tmp_path / dirs["board"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(board))
+    pages = []
+    monkeypatch.setattr(build, "write_page", lambda p, html: pages.append(html))
+    def no_recompute(*args, **kwargs):
+        raise AssertionError("render-only benchmark disclosure must not recompute")
+    monkeypatch.setattr(build.sc, "compute_nasdaq_confluence", no_recompute)
+    monkeypatch.setattr(build, "_emit_group_files", no_recompute)
+    assert build.render_index_pages(ns, tmp_path, env, "RENDER_CLOCK") == 1
+    return pages[0], group, dirs, env
+
+
+def _p52_detail_client(html):
+    import json
+    import re
+    scripts = re.findall(r"<script(?:[^>]*)>(.*?)</script>", html, re.S)
+    script = next(s for s in scripts if "const DETAIL =" in s)
+    payload = json.loads(re.search(r"const DETAIL = (.*);", script).group(1))
+    out = _run_node("""
+const vm = require('vm');
+const app = {innerHTML:''}, mounts = [];
+const document = {getElementById:id=>id==='app'?app:{id},addEventListener:()=>{}};
+vm.runInNewContext(""" + json.dumps(script) + """, {
+  document, window:{StockChart:{mount:(...args)=>mounts.push(args.slice(1))}},
+  console:{error:e=>{throw Error(String(e));}}
+}, {timeout:1000});
+console.log(JSON.stringify({dom:app.innerHTML,mounts}));
+""")
+    return payload, out
+
+
+@pytest.mark.parametrize("ns,ticker,label", [
+    ("nasdaq", "QQQ", "Nasdaq-100 (QQQ)"), ("russell", "IWM", "Russell 2000 (IWM)"),
+])
+def test_p52_index_benchmark_actual_render_handoff(tmp_path, monkeypatch, ns, ticker, label):
+    html, group, dirs, _env = _p52_index_detail(tmp_path, monkeypatch, ticker, label, ns)
+    payload, out = _p52_detail_client(html)
+    assert payload["group"] == group
+    assert payload["benchmark"] == ticker and payload["benchmark_label"] == label
+    assert payload["as_of"] == "2026-10-30" and payload["generated_utc"] == "RENDER_CLOCK"
+    assert "RS benchmark: " + label in out["dom"]
+    assert "相对强弱基准：" + label in out["dom"]
+    assert "RENDER_CLOCK" not in out["dom"] and "BOARD_CLOCK" not in out["dom"]
+    assert "RS60" in out["dom"] and "-17.5" in out["dom"]
+    assert out["dom"].count('class="id-evidence-cell"') == 4
+    assert 'href="../subsectors.html"' in html and 'href="#evidence"' in out["dom"]
+    assert out["mounts"] == [["fixture-group", {"name": group["label"],
+        "ohlcDir": "../" + dirs["ohlc"], "signalsDir": "../" + dirs["sig"]}]]
+
+
+@pytest.mark.parametrize("ticker,label,expected", [
+    ("QQQ", None, "QQQ"), (None, "Declared label", "Declared label"),
+    (None, None, "Not published"), (" ", "\t", "Not published"),
+    (42, {"unexpected": "value"}, "Not published"),
+])
+def test_p52_benchmark_missingness_is_declared_only(tmp_path, monkeypatch, ticker, label, expected):
+    html, _g, _dirs, _env = _p52_index_detail(tmp_path, monkeypatch, ticker, label)
+    _payload, out = _p52_detail_client(html)
+    assert "RS benchmark: " + expected in out["dom"]
+    if expected == "Not published":
+        assert "相对强弱基准：未发布" in out["dom"]
+        assert "QQQ" not in out["dom"] and "[object Object]" not in out["dom"]
+
+
+def test_p52_benchmark_text_is_script_and_markup_safe(tmp_path, monkeypatch):
+    hostile = 'Declared & </script><b>"basis"</b>'
+    html, _g, _dirs, _env = _p52_index_detail(tmp_path, monkeypatch, None, hostile)
+    # The exact native string survives JSON decoding, without ending its script element.
+    payload, out = _p52_detail_client(html)
+    assert payload["benchmark_label"] == hostile
+    assert 'Declared & </script>' not in html
+    assert 'Declared &amp; &lt;/script&gt;&lt;b&gt;&quot;basis&quot;&lt;/b&gt;' in out["dom"]
+
+
+@pytest.mark.parametrize("kind", ["subsector", "concept", "basket"])
+def test_p52_nonindex_payload_has_no_benchmark_disclosure(tmp_path, monkeypatch, kind):
+    import json
+    html, group, _dirs, env = _p52_index_detail(tmp_path, monkeypatch, "QQQ", "QQQ")
+    payload, _out = _p52_detail_client(html)
+    for key in ["benchmark_meta", "benchmark", "benchmark_label"]:
+        payload.pop(key, None)
+    payload["kind"] = kind
+    legacy = env.get_template("subsector_detail.html.j2").render(
+        detail_json=json.dumps(payload), group_name=group["label"], chart_key=None,
+        has_signals=False, back_href="../subsectors.html")
+    _p, out = _p52_detail_client(legacy)
+    assert "RS benchmark:" not in out["dom"] and "相对强弱基准：" not in out["dom"]
+    assert '<span class="l-en">Equal-weight · current membership</span><span class="l-zh">等权 · 当前成分</span></div></div>' in out["dom"]

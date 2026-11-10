@@ -740,3 +740,134 @@ class TestLayerLabels:
         r = _get(env.client)
         assert r.status_code == 503
         assert r.json()["error"] == "research text unavailable"
+
+
+def _seed_outline_revision(store, *, page_chars=7000):
+    """A real canonical derivative with five explicit source-page boundaries."""
+    text = "\f".join(
+        f"Source page {page}: " + (f"page-{page} evidence " * page_chars)
+        for page in range(1, 6)
+    )
+    record = fulltext.build_extracted_text(
+        report_id=_DOC_ID,
+        source_pdf_sha256=_sha(_PDF_V1),
+        text=text,
+        extractor_name=fulltext_store.EXTRACTOR_NAME,
+        extractor_version=fulltext_store.EXTRACTOR_VERSION,
+        page_count=5,
+        text_layer_state="full",
+    )
+    store.seed(fulltext_store.receipt_key(_DOC_ID), _receipt_bytes(_DOC_ID, record["source_pdf_sha256"]))
+    store.seed(
+        fulltext_store.derivative_key(_DOC_ID, record["source_pdf_sha256"]),
+        fulltext_store.encode_record(record),
+    )
+    return record
+
+
+class TestSourceOutline:
+    def test_complete_source_outline_is_independent_of_visible_window(self, env):
+        record = _seed_outline_revision(env.store)
+        response = _get(env.client, max_segments=1)
+        assert response.status_code == 200
+        body = response.json()
+        expected = fulltext.build_segments(
+            record, segmenter_version=fulltext.SEGMENTER_VERSION,
+            max_bytes=_SEGMENT_MAX_BYTES,
+        )
+        assert body["segment_count_total"] == len(expected) > 4
+        assert len(body["segments"]) == 1
+        assert body["outline"] == [
+            {field: segment[field] for field in ("segment_index", "page_start", "page_end")}
+            for segment in expected
+        ]
+        assert body["outline"][0]["page_start"] == 1
+        assert body["outline"][-1]["page_end"] == 5
+        assert all(set(entry) == {"segment_index", "page_start", "page_end"}
+                   for entry in body["outline"])
+        assert "evidence" not in json.dumps(body["outline"])
+        assert len(response.content) < 4 * 1024 * 1024
+
+    def test_pinned_continuation_keeps_full_map_and_incumbent_read_footprint(self, env):
+        record = _seed_outline_revision(env.store)
+        original_objects = dict(env.store._objects)
+        first = _get(env.client, max_segments=1).json()
+        initial_reads = list(env.store.read_keys)
+        env.store.read_keys.clear()
+        response = _get(env.client, **_pinned_params(first["selection"]),
+                        segment_start=first["segment_count_total"] - 1, max_segments=1)
+        assert response.status_code == 200
+        continued = response.json()
+        assert continued["selection"] == first["selection"]
+        assert continued["source"] == first["source"]
+        assert continued["outline"] == first["outline"]
+        segment = continued["segments"][0]
+        assert continued["outline"][segment["segment_index"]] == {
+            field: segment[field] for field in ("segment_index", "page_start", "page_end")
+        }
+        receipt = fulltext_store.receipt_key(_DOC_ID)
+        derivative = fulltext_store.derivative_key(_DOC_ID, record["source_pdf_sha256"])
+        assert initial_reads == env.store.read_keys == [receipt, receipt, derivative, receipt]
+        assert env.store._objects == original_objects
+        assert len(env.allow_calls) == 2
+        assert _header_tokens(response, "Cache-Control") == {"private", "no-store"}
+
+    def test_none_layer_does_not_invent_an_available_page_map(self, env):
+        _seed_revision(env.store, _DOC_ID, text="", layer="none")
+        response = _get(env.client)
+        assert response.status_code == 200
+        assert response.json()["segment_count_total"] == 0
+        assert response.json()["segments"] == []
+        assert "outline" not in response.json()
+
+    @pytest.mark.parametrize("mutation", [
+        "missing_page", "unknown_page", "bool_start", "bool_end", "float_page",
+        "zero_page", "negative_page", "unsafe_page", "reversed_range",
+        "wrong_index", "bool_index", "float_index", "decreasing_start", "decreasing_end",
+    ])
+    def test_incomplete_or_malformed_hidden_metadata_omits_the_whole_map(self, env, monkeypatch, mutation):
+        record = _seed_outline_revision(env.store, page_chars=500)
+        original = fulltext.build_segments
+
+        def malformed(*args, **kwargs):
+            segments = [dict(segment) for segment in original(*args, **kwargs)]
+            target = segments[1]  # outside the selected segment-three window
+            if mutation == "missing_page":
+                target.pop("page_start")
+            elif mutation == "unknown_page":
+                target["page_start"] = None
+            elif mutation == "bool_start":
+                target["page_start"] = True
+            elif mutation == "bool_end":
+                target["page_end"] = True
+            elif mutation == "float_page":
+                target["page_start"] = 1.0
+            elif mutation == "zero_page":
+                segments[0]["page_start"] = 0
+            elif mutation == "negative_page":
+                segments[0]["page_start"] = -1
+            elif mutation == "unsafe_page":
+                segments[-1].update(page_start=2**53, page_end=2**53)
+            elif mutation == "reversed_range":
+                target["page_start"], target["page_end"] = 2, 1
+            elif mutation == "wrong_index":
+                target["segment_index"] = 0
+            elif mutation == "bool_index":
+                target["segment_index"] = True
+            elif mutation == "float_index":
+                target["segment_index"] = 1.0
+            elif mutation == "decreasing_start":
+                segments[1].update(page_start=2, page_end=2)
+                segments[2].update(page_start=1, page_end=2)
+            else:
+                segments[1].update(page_start=1, page_end=2)
+                segments[2].update(page_start=1, page_end=1)
+            return segments
+
+        canonical_visible = original(record, segmenter_version=fulltext.SEGMENTER_VERSION,
+                                     max_bytes=_SEGMENT_MAX_BYTES)[3]
+        monkeypatch.setattr(fulltext, "build_segments", malformed)
+        response = _get(env.client, **_pinned_params(record), segment_start=3, max_segments=1)
+        assert response.status_code == 200
+        assert "outline" not in response.json()
+        assert response.json()["segments"] == [canonical_visible]

@@ -370,6 +370,33 @@ def _assert_ruling_graph_exact_base_contract(definition: dict[str, object]) -> N
     assert command.index("git merge-base --is-ancestor") < command.index("python scripts/check_ruling_conflicts.py")
 
 
+
+def _assert_design_comparison_contract(definition: dict[str, object]) -> None:
+    """Only the two canonical plan-bound comparisons replace inline fetches.
+
+    The helper's real missing/mismatch/standalone cases are owned by the existing
+    semantic runner suite; this manifest seam pins callers, mode, path and
+    fail-closed sequencing without requiring a redundant moving-main fetch.
+    """
+    expected = (
+        ("forward-only design ratchet (new forbidden decisions on changed lines)",
+         "style", "/tmp/design.diff",
+         "python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+        ("visual evidence required for a material UI change", "visual", "/tmp/ui.diff",
+         "python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+    )
+    for name, kind, output, checker in expected:
+        matches = [step for step in definition["steps"] if step.get("name") == name]
+        assert len(matches) == 1, name
+        lines = [line.strip() for line in matches[0]["run"].splitlines() if line.strip()]
+        assert lines == [
+            "python3 scripts/design_semantic_comparison.py --prepare-source "
+            f"--write-design-diff {output} --design-diff-kind {kind} "
+            "--base-ref " + chr(34) + "${{ github.base_ref || 'main' }}" + chr(34) + " || exit 1",
+            checker,
+        ], (name, lines)
+
+
 def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
     payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
     consumers: dict[str, dict[str, object]] = {}
@@ -396,6 +423,8 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
                 definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
         elif job_id == "ruling-graph":
             _assert_ruling_graph_exact_base_contract(definition)
+        elif job_id == "design-governance":
+            _assert_design_comparison_contract(definition)
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs
@@ -552,3 +581,24 @@ def test_complete_history_survives_multiple_consumers_without_refetching(
     run_ci_pack._prepare_provided_actions(job, root=isolated, tested_tree_sha=tested)
     assert len(fetches) > len(first_fetches)
     assert run_ci_pack._tested_tree_ancestry_ready(isolated, env, tested)
+
+
+@pytest.mark.parametrize("damage", ["missing-call", "wrong-mode", "wrong-base", "ignored-refusal", "checker-first", "missing-visual"])
+def test_design_comparison_manifest_contract_rejects_drift(damage):
+    definition = copy.deepcopy(yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"])
+    style = next(s for s in definition["steps"] if s.get("name") == "forward-only design ratchet (new forbidden decisions on changed lines)")
+    visual = next(s for s in definition["steps"] if s.get("name") == "visual evidence required for a material UI change")
+    if damage == "missing-call":
+        style["run"] = style["run"].splitlines()[-1]
+    elif damage == "wrong-mode":
+        style["run"] = style["run"].replace("--design-diff-kind style", "--design-diff-kind visual")
+    elif damage == "wrong-base":
+        style["run"] = style["run"].replace("github.base_ref", "github.head_ref")
+    elif damage == "ignored-refusal":
+        style["run"] = style["run"].replace("|| exit 1", "|| true")
+    elif damage == "checker-first":
+        style["run"] = "\n".join(reversed(style["run"].splitlines()))
+    elif damage == "missing-visual":
+        definition["steps"].remove(visual)
+    with pytest.raises(AssertionError):
+        _assert_design_comparison_contract(definition)

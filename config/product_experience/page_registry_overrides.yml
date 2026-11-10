@@ -948,8 +948,8 @@ pages:
     archetype: "editorial"
     access_shell: "anonymous"
     payload_tier: "public"
-    evidence: [terminal/app/learn/page.tsx]
-    note: "static content page, no server-side data reads (revalidate 300)"
+    evidence: [terminal/app/(shell)/learn/page.tsx]
+    note: "public lesson content; existing shared chrome verifies identity and owns dynamic/private caching; no lesson entitlement"
 
   # ── monitor · alerts, news, holdings and service state ────────────────────────
   # Streams and watch-state: things you check, not things you rank.
@@ -1066,6 +1066,21 @@ pages:
     archetype: "chart_workspace"
     why: "Terminal app view — chart_workspace records the governing doctrine (adjudicated divergence, census §3.4), not the view's function; re-keying by function would subject Terminal views to Macro archetype law. Adjudicated 2026-08-12, DS-PR-1 review."
 
+  terminal:briefs_deliveryid_sharing:
+    archetype: "chart_workspace"
+    evidence: ["terminal/app/(shell)/briefs/[deliveryId]/sharing/page.tsx"]
+    why: "The signed-in sharing review is a Terminal app view governed by the existing Terminal chart_workspace doctrine; dynamic delivery access remains source-derived and this metadata grants no sharing authority."
+
+  terminal:briefs_shared_deliveryid:
+    archetype: "chart_workspace"
+    evidence: ["terminal/app/(shell)/briefs/shared/[deliveryId]/page.tsx"]
+    why: "The signed-in shared Brief reader is a Terminal app view under the existing Terminal doctrine; UUID/principal scope and source-derived unknown payload stay unchanged."
+
+  terminal:research_assistant:
+    archetype: "chart_workspace"
+    evidence: ["terminal/app/(shell)/research-assistant/page.tsx"]
+    why: "The signed-in EvidenceToThesisWorkspace follows the existing Terminal research doctrine; owner identity and unknown payload classification remain source-derived."
+
   terminal:analysis:
     archetype: "chart_workspace"
 
@@ -1112,7 +1127,12 @@ pages:
 
   terminal:options_futures:
     archetype: "chart_workspace"
-    evidence: [terminal/app/(shell)/options/futures/page.tsx]
+    access_shell: paid
+    payload_tier: premium
+    known_contracts:
+      - "entitlement feature terminal_live_options"
+    note: "Current getLiveOptionsAccessDetail page gate preserves verified denial and service-unavailable states before mounting; development fixture exemption is not production admission."
+    evidence: [terminal/app/(shell)/options/futures/page.tsx, terminal/lib/entitlement.ts]
     why: "The paid Terminal futures workspace, mounted through FuturesWorkspaceMount and governed like the existing options view."
 
   terminal:legacypath:
@@ -1400,6 +1420,12 @@ pages:
 
   terminal:options_equity_replay:
     archetype: chart_workspace
+    access_shell: paid
+    payload_tier: premium
+    known_contracts:
+      - "entitlement feature terminal_live_options"
+    note: "Current getLiveOptionsAccessDetail page gate preserves verified denial and service-unavailable states before mounting; development fixture exemption is not production admission."
     evidence:
+      - "terminal/lib/entitlement.ts"
       - "terminal/app/(shell)/options/equity-replay/page.tsx"
     why: "Existing paid equity-depth replay chart workspace using IexDepthReplayMount and the incumbent live-options gate. No navigation or access expansion."

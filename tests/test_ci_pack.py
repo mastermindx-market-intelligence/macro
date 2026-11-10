@@ -7832,7 +7832,15 @@ def test_evidence_corpus_edits_select_design_governance(real_manifest_scopes) ->
     job = jobs["design-governance"]
     assert not job.exclusive, "design-governance must stay non-exclusive (floor, not ceiling)"
     assert set(job.paths) >= {"mockups/evidence/**", "mockups/refs/**"}, job.paths
-    assert len(job.paths) == 9, job.paths  # 2 corpora globs + the 7 files the steps name (loader coverage audit)
+    # Exact existing evidence corpora plus all eight current entrypoint/test
+    # files, including the admitted immutable semantic comparison producer.
+    assert set(job.paths) == {
+        "mockups/evidence/**", "mockups/refs/**",
+        "scripts/check_design_system.py", "scripts/design_semantic_comparison.py",
+        "scripts/check_runtime_style_injection.py", "scripts/check_ui_visual_evidence.py",
+        "tests/test_check_design_system.py", "tests/test_check_runtime_style_injection.py",
+        "tests/test_check_ui_visual_evidence.py", "tests/test_freshness_chips_language_invariant.py",
+    }, job.paths
     scoped_jobs, _ = real_manifest_scopes
     for probe in ("mockups/evidence/sanctions-map-event-mark/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
                   "mockups/refs/onboarding/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
