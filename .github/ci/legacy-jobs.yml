@@ -1398,7 +1398,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -18364,7 +18364,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel
@@ -34786,6 +34786,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      - "tests/test_analytics_query_budget.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -34801,7 +34802,9 @@ jobs:
           export PATH="$pg_bin:$PATH"
           for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
           test "$(id -u)" -ne 0
-          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+          python -m pytest tests/test_analytics_exclusions.py \
+            tests/test_analytics_pages_postgres.py \
+            tests/test_analytics_query_budget.py -q
 
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
@@ -49216,6 +49219,10 @@ jobs:
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
       - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs tests/js/radar_panel_open_checks.test.mjs
+      - name: Calendar Clock latest-selected symbol identity
+        run: |
+          cmp templates/stock_seasonality.js site/stock_seasonality.js
+          node tests/js/test_stock_seasonality_selection.cjs templates/stock_seasonality.js
 
   sni-s2-event-response:
     if: ${{ false }}
@@ -51228,6 +51235,8 @@ jobs:
       - "admin/auth.py"
       - "admin/brain_guest.py"
       - "admin/brief.py"
+      - "admin/capacity_fabric_schema.py"
+      - "admin/capacity_router.py"
       - "admin/causal_lab.py"
       - "admin/chronicle.py"
       - "admin/codex_panel.py"
