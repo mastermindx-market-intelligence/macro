@@ -60,6 +60,13 @@
   background:color-mix(in srgb,var(--aib2-acc) 11%,transparent);
   border:1px solid color-mix(in srgb,var(--aib2-acc) 24%,transparent);
   color:color-mix(in srgb,var(--aib2-acc) 82%,var(--text));}
+/* 2026-10-19→11-09 freeze: stale variant drops the accent — a neutral, evenly
+   bordered pill whose LABEL (not color volume) carries the disclosure. Token-only
+   so both themes resolve it; no accent edge or stripe (chairman design rule). */
+.aib2-cadence--stale{
+  background:color-mix(in srgb,var(--aib2-hair) 42%,transparent);
+  border-color:var(--aib2-hair);
+  color:var(--aib2-mut);}
 .aib2-badge{margin-left:auto;align-self:center;font-size:10.5px;font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;color:var(--aib2-acc);opacity:.85;text-align:right;line-height:1.45;
   white-space:normal;max-width:210px;flex-shrink:0;}

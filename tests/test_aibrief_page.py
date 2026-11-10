@@ -151,3 +151,148 @@ def test_no_template_links_deleted_brief_pages():
             if needle in src:
                 offenders.append(f"{path.name}: {needle}")
     assert not offenders, "templates still link retired brief pages: " + "; ".join(offenders)
+
+
+# ── 2026-10-19→11-09 AI-brief freeze: freshest-copy pick, stale chip, receipt ──
+from datetime import datetime, timezone  # noqa: E402
+from types import SimpleNamespace  # noqa: E402
+
+from scripts import build_aibrief as bab  # noqa: E402
+
+_NOW = datetime(2026, 11, 9, 12, 0, tzinfo=timezone.utc)
+
+
+def _brief(gen: str, asof: str, **kw) -> dict:
+    return {"generated_at": gen, "state_asof": asof, "summary": "s", **kw}
+
+
+def _w(path, doc) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc))
+
+
+def test_fresher_data_regime_copy_wins_over_stale_site_copy(tmp_path):
+    site, data = tmp_path / "site", tmp_path / "data"
+    _w(site / "master_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16"))
+    _w(data / "regime" / "master_brief.json", _brief("2026-11-09T01:00:00+00:00", "2026-11-06"))
+    brief, src = bab._load_briefs_with_source(site, data)["master_brief"]
+    assert src == "data_regime" and brief["state_asof"] == "2026-11-06"
+    assert bab._load_briefs(site, data)["master_brief"]["state_asof"] == "2026-11-06"
+
+
+def test_tie_and_unparseable_prefer_site_or_the_other_copy(tmp_path):
+    site, data = tmp_path / "site", tmp_path / "data"
+    ts = "2026-11-09T01:00:00+00:00"
+    _w(site / "china_brief.json", _brief(ts, "a"))
+    _w(data / "regime" / "china_brief.json", _brief(ts, "b"))
+    assert bab._load_briefs_with_source(site, data)["china_brief"][1] == "site"
+    # unparseable site timestamp -> the parseable data/regime copy wins
+    _w(site / "btc_brief.json", _brief("garbage", "a"))
+    _w(data / "regime" / "btc_brief.json", _brief(ts, "b"))
+    assert bab._load_briefs_with_source(site, data)["btc_brief"][1] == "data_regime"
+
+
+def test_missing_paths_do_not_crash_the_loader(tmp_path):
+    loaded = bab._load_briefs_with_source(tmp_path / "nope", tmp_path / "nada")
+    assert all(v == (None, None) for v in loaded.values())
+    only_data = tmp_path / "d"
+    _w(only_data / "regime" / "btc_brief.json", _brief("2026-11-08T00:00:00+00:00", "x"))
+    assert bab._load_briefs_with_source(tmp_path / "nope", only_data)["btc_brief"][1] == "data_regime"
+
+
+def test_staleness_uses_refresh_days_with_one_day_grace_and_lens_fallback():
+    def fr(lens, gen, **kw):
+        return bab._lens_freshness(lens, _brief(gen, "x", **kw), "site", _NOW)["stale"]
+
+    # macro/china fall back to 1d cadence: stale only past 2 days
+    assert fr("macro", "2026-11-07T13:00:00+00:00") is False   # 1.96d
+    assert fr("macro", "2026-11-07T11:00:00+00:00") is True    # 2.04d
+    # btc falls back to 3d: stale only past 4 days
+    assert fr("btc", "2026-11-05T13:00:00+00:00") is False     # 3.96d
+    assert fr("btc", "2026-11-05T11:00:00+00:00") is True
+    # explicit refresh_days wins over the lens fallback
+    assert fr("macro", "2026-11-05T13:00:00+00:00", refresh_days=3) is False
+    # no usable timestamp -> unknown, never stale
+    assert bab._lens_freshness("macro", None, None, _NOW)["stale"] is None
+
+
+def _stale_html(gen: str, **kw) -> str:
+    loaded = {"master_brief": (_brief(gen, "2026-10-16", **kw), "site"),
+              "china_brief": (None, None), "btc_brief": (None, None)}
+    fresh = bab._build_freshness(loaded, _NOW)
+    return _render(**bab._annotate_freshness(loaded, fresh))
+
+
+def test_stale_chip_renders_with_last_generated_date_bilingual():
+    html = _stale_html("2026-10-18T22:00:00+00:00", refresh_days=1)
+    assert "Stale — last generated 2026-10-18" in html
+    assert "已过期 — 上次生成 2026-10-18" in html
+    assert "Updated daily" not in html  # the cadence claim is replaced, not appended
+
+
+def test_fresh_brief_keeps_cadence_chip_and_no_stale_chip():
+    html = _stale_html("2026-11-09T01:00:00+00:00", refresh_days=1)
+    assert "Updated daily" in html
+    assert "Stale — last generated" not in html
+
+
+def test_unknown_age_brief_shows_no_chip_at_all():
+    # unparseable generated_at → age unknown → the page must not claim "Updated daily"
+    html = _stale_html("garbage", refresh_days=1)
+    assert "Updated daily" not in html
+    assert "Updated every" not in html
+    assert "Stale — last generated" not in html
+
+
+def test_raw_brief_without_freshness_annotation_keeps_v1_cadence_chip():
+    # other pages pass briefs with no `_freshness` — v1 fail-open chip stands
+    html = _render(master_brief=_brief("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1))
+    assert "Updated daily" in html
+
+
+def _fake_root(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "templates").symlink_to(config.ROOT / "templates")
+    return root
+
+
+def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
+    root = _fake_root(tmp_path)
+    site = tmp_path / "out" / "site"
+    _w(site / "master_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16", refresh_days=1))
+    _w(root / "data" / "regime" / "master_brief.json",
+       _brief("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1))
+    _w(site / "btc_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16"))
+    monkeypatch.setattr(bab, "config", SimpleNamespace(
+        load=lambda: {"storage": {"site_dir": str(site)}}, ROOT=root))
+    assert bab.main() == 0
+    receipt = json.loads((site / "aibrief_freshness.json").read_text())
+    assert datetime.fromisoformat(receipt["built_at"]).tzinfo is not None
+    assert set(receipt["lenses"]) == {"macro", "china", "btc"}
+    macro = receipt["lenses"]["macro"]
+    assert macro["generated_at"] == "2026-11-09T01:00:00+00:00"
+    assert macro["state_asof"] == "2026-11-06"
+    assert macro["refresh_days"] == 1 and macro["source"] == "data_regime"
+    # btc (site copy, 2026-10-18) is long past 3d+1d grace; china absent -> unknown
+    assert receipt["lenses"]["btc"]["source"] == "site" and receipt["lenses"]["btc"]["stale"] is True
+    assert receipt["lenses"]["china"] == {"generated_at": None, "state_asof": None,
+                                           "refresh_days": 1, "stale": None, "source": None}
+    html = (site / "aibrief.html").read_text()
+    assert "Stale — last generated 2026-10-18" in html  # btc lens
+
+
+def test_main_fail_open_still_writes_receipt_when_render_breaks(tmp_path, monkeypatch, capsys):
+    root = _fake_root(tmp_path)
+    site = tmp_path / "out" / "site"
+    _w(site / "master_brief.json", _brief("2026-11-09T01:00:00+00:00", "2026-11-06"))
+    monkeypatch.setattr(bab, "config", SimpleNamespace(
+        load=lambda: {"storage": {"site_dir": str(site)}}, ROOT=root))
+
+    def _boom(*a, **k):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(bab, "write_page", _boom)
+    assert bab.main() == 0  # fail-open law: never breaks the site build
+    assert "::warning title=aibrief-build::" in capsys.readouterr().out
+    assert (site / "aibrief_freshness.json").exists()
