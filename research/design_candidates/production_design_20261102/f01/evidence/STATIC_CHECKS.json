@@ -1,0 +1,648 @@
+{
+  "schema": "F01_ARTIFACT_CHECK/1",
+  "observedAt": "2026-11-03T07:22:58.814Z",
+  "kind": "static source/artifact comparison; not product runtime tests",
+  "source": "mastermind-terminal@3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "directory": {
+    "sourceCount": 290,
+    "auditCount": 290,
+    "uniqueIds": 290,
+    "exactFields": [
+      "id",
+      "href",
+      "kind",
+      "title",
+      "group",
+      "question",
+      "payloadTier"
+    ],
+    "mismatches": [],
+    "pass": true
+  },
+  "geometryExamples": [
+    {
+      "viewport": 320,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 16,
+      "header": 56,
+      "useful": 288,
+      "primaryIfDocked": -56,
+      "dock": false
+    },
+    {
+      "viewport": 390,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 16,
+      "header": 56,
+      "useful": 358,
+      "primaryIfDocked": 14,
+      "dock": false
+    },
+    {
+      "viewport": 600,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 16,
+      "header": 56,
+      "useful": 568,
+      "primaryIfDocked": 224,
+      "dock": false
+    },
+    {
+      "viewport": 600.5,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 20,
+      "header": 56,
+      "useful": 560.5,
+      "primaryIfDocked": 216.5,
+      "dock": false
+    },
+    {
+      "viewport": 768,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 20,
+      "header": 56,
+      "useful": 728,
+      "primaryIfDocked": 384,
+      "dock": false
+    },
+    {
+      "viewport": 860,
+      "compact": false,
+      "nav": 0,
+      "gutterEach": 20,
+      "header": 56,
+      "useful": 820,
+      "primaryIfDocked": 476,
+      "dock": false
+    },
+    {
+      "viewport": 860.5,
+      "compact": false,
+      "nav": 196,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 624.5,
+      "primaryIfDocked": 280.5,
+      "dock": false
+    },
+    {
+      "viewport": 861,
+      "compact": false,
+      "nav": 196,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 625,
+      "primaryIfDocked": 281,
+      "dock": false
+    },
+    {
+      "viewport": 1024,
+      "compact": false,
+      "nav": 196,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 788,
+      "primaryIfDocked": 444,
+      "dock": false
+    },
+    {
+      "viewport": 1199,
+      "compact": false,
+      "nav": 196,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 963,
+      "primaryIfDocked": 619,
+      "dock": false
+    },
+    {
+      "viewport": 1199.5,
+      "compact": false,
+      "nav": 196,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 963.5,
+      "primaryIfDocked": 619.5,
+      "dock": false
+    },
+    {
+      "viewport": 1200,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 928,
+      "primaryIfDocked": 584,
+      "dock": false
+    },
+    {
+      "viewport": 1255,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 983,
+      "primaryIfDocked": 639,
+      "dock": false
+    },
+    {
+      "viewport": 1256,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 984,
+      "primaryIfDocked": 640,
+      "dock": true
+    },
+    {
+      "viewport": 1280,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 1008,
+      "primaryIfDocked": 664,
+      "dock": true
+    },
+    {
+      "viewport": 1440,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 1168,
+      "primaryIfDocked": 824,
+      "dock": true
+    },
+    {
+      "viewport": 1600,
+      "compact": false,
+      "nav": 224,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 1328,
+      "primaryIfDocked": 984,
+      "dock": true
+    },
+    {
+      "viewport": 1095,
+      "compact": true,
+      "nav": 72,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 983,
+      "primaryIfDocked": 639,
+      "dock": false
+    },
+    {
+      "viewport": 1096,
+      "compact": true,
+      "nav": 72,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 984,
+      "primaryIfDocked": 640,
+      "dock": true
+    },
+    {
+      "viewport": 1199.5,
+      "compact": true,
+      "nav": 72,
+      "gutterEach": 20,
+      "header": 64,
+      "useful": 1087.5,
+      "primaryIfDocked": 743.5,
+      "dock": true
+    },
+    {
+      "viewport": 1200,
+      "compact": true,
+      "nav": 72,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 1080,
+      "primaryIfDocked": 736,
+      "dock": true
+    },
+    {
+      "viewport": 1280,
+      "compact": true,
+      "nav": 72,
+      "gutterEach": 24,
+      "header": 64,
+      "useful": 1160,
+      "primaryIfDocked": 816,
+      "dock": true
+    }
+  ],
+  "geometryAssertions": {
+    "expanded1255No1256Yes": true,
+    "compact1095No1096Yes": true,
+    "independent600Gutter860Nav": true,
+    "domainReservedChrome": "Examples assume zero extra reservation; consumers must measure actual slot."
+  },
+  "semanticColorPairs": {
+    "checks": [
+      {
+        "theme": "dark",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "canvas",
+        "foreground": "#f3f3f3",
+        "background": "#080808",
+        "ratio": 18.049,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#f3f3f3",
+        "background": "#0c0c0c",
+        "ratio": 17.629,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "panel",
+        "foreground": "#f3f3f3",
+        "background": "#121212",
+        "ratio": 16.883,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "raised",
+        "foreground": "#f3f3f3",
+        "background": "#191919",
+        "ratio": 15.845,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "selected",
+        "foreground": "#f3f3f3",
+        "background": "#292929",
+        "ratio": 13.111,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "canvas",
+        "foreground": "#b8b8b8",
+        "background": "#080808",
+        "ratio": 10.096,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#b8b8b8",
+        "background": "#0c0c0c",
+        "ratio": 9.861,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "panel",
+        "foreground": "#b8b8b8",
+        "background": "#121212",
+        "ratio": 9.444,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "raised",
+        "foreground": "#b8b8b8",
+        "background": "#191919",
+        "ratio": 8.863,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "selected",
+        "foreground": "#b8b8b8",
+        "background": "#292929",
+        "ratio": 7.334,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "canvas",
+        "foreground": "#949494",
+        "background": "#080808",
+        "ratio": 6.602,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#949494",
+        "background": "#0c0c0c",
+        "ratio": 6.449,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "panel",
+        "foreground": "#949494",
+        "background": "#121212",
+        "ratio": 6.176,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "raised",
+        "foreground": "#949494",
+        "background": "#191919",
+        "ratio": 5.796,
+        "normalText4_5": true
+      },
+      {
+        "theme": "dark",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "selected",
+        "foreground": "#949494",
+        "background": "#292929",
+        "ratio": 4.796,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "canvas",
+        "foreground": "#1a1c20",
+        "background": "#f6f6f3",
+        "ratio": 15.757,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#1a1c20",
+        "background": "#efefec",
+        "ratio": 14.809,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "panel",
+        "foreground": "#1a1c20",
+        "background": "#ffffff",
+        "ratio": 17.061,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "raised",
+        "foreground": "#1a1c20",
+        "background": "#f0f0ed",
+        "ratio": 14.942,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-primary",
+        "backgroundRole": "selected",
+        "foreground": "#1a1c20",
+        "background": "#e2e2dc",
+        "ratio": 13.117,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "canvas",
+        "foreground": "#51555b",
+        "background": "#f6f6f3",
+        "ratio": 6.926,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#51555b",
+        "background": "#efefec",
+        "ratio": 6.509,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "panel",
+        "foreground": "#51555b",
+        "background": "#ffffff",
+        "ratio": 7.499,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "raised",
+        "foreground": "#51555b",
+        "background": "#f0f0ed",
+        "ratio": 6.568,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-secondary",
+        "backgroundRole": "selected",
+        "foreground": "#51555b",
+        "background": "#e2e2dc",
+        "ratio": 5.766,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "canvas",
+        "foreground": "#5f6368",
+        "background": "#f6f6f3",
+        "ratio": 5.587,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "navigation-surface",
+        "foreground": "#5f6368",
+        "background": "#efefec",
+        "ratio": 5.251,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "panel",
+        "foreground": "#5f6368",
+        "background": "#ffffff",
+        "ratio": 6.05,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "raised",
+        "foreground": "#5f6368",
+        "background": "#f0f0ed",
+        "ratio": 5.298,
+        "normalText4_5": true
+      },
+      {
+        "theme": "light",
+        "foregroundRole": "text-tertiary",
+        "backgroundRole": "selected",
+        "foreground": "#5f6368",
+        "background": "#e2e2dc",
+        "ratio": 4.651,
+        "normalText4_5": true
+      }
+    ],
+    "scope": "Calculated F02 specimen role pairs only, not a computed-style or whole-screen accessibility audit. Actual status colors, opacity and focus states still require verification."
+  },
+  "imageChecks": [
+    {
+      "path": "evidence/before/Search-6NVJ-0.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 124207,
+      "sha256": "f5a707c212d5ff0260bfd552718efdd10de2b2e0ad59b79c616a963eb031a461"
+    },
+    {
+      "path": "evidence/before/Terminal-6O5H-0.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 960,
+      "bytes": 179400,
+      "sha256": "8820421ccb8097fce372d167a9b70011869782561efb194150e64c5e8654acf2"
+    },
+    {
+      "path": "evidence/before/Today-6NMP-0.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 145848,
+      "sha256": "feebdb6c0da20b187e7605eb7dd457f8d42de4e6b954e215e8d89b6432dcc082"
+    },
+    {
+      "path": "evidence/live/Company-overview.png",
+      "format": "JPEG",
+      "width": 1853,
+      "height": 1204,
+      "bytes": 140375,
+      "sha256": "b7a5e6609002c78ae1de3b7e46341ade5040aa673aa8b28543b0a08ca14f9137"
+    },
+    {
+      "path": "evidence/live/US-route-failure.png",
+      "format": "JPEG",
+      "width": 1853,
+      "height": 1204,
+      "bytes": 46395,
+      "sha256": "a9e361957bacc95710dfbb312984a477541510095bbcd1bf391ea2aadfa43172"
+    },
+    {
+      "path": "evidence/paper/A.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 960,
+      "bytes": 121266,
+      "sha256": "61d6d71a2a833943122225c07afc6d2b0387d7b87379dceb63f880e11183807b"
+    },
+    {
+      "path": "evidence/paper/B.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 960,
+      "bytes": 104619,
+      "sha256": "71583e18e0d0472a568131411e07407fb253f3a5aa2ae8f9dfd9b7cd32a3e20b"
+    },
+    {
+      "path": "evidence/paper/C.jpg",
+      "format": "JPEG",
+      "width": 1280,
+      "height": 1012,
+      "bytes": 134558,
+      "sha256": "52c598c90e35addcb8df645c5be1fa0ab7ff48c998fa0e8215612c5ed4120562"
+    },
+    {
+      "path": "evidence/paper/D.jpg",
+      "format": "JPEG",
+      "width": 1024,
+      "height": 960,
+      "bytes": 103472,
+      "sha256": "f441ee3a93249fdc33b549e5d6f9f5a266ee4e351578b6682f7e1bead2b0229d"
+    },
+    {
+      "path": "evidence/paper/E.jpg",
+      "format": "JPEG",
+      "width": 390,
+      "height": 1000,
+      "bytes": 53422,
+      "sha256": "207a45020acdf288bc177ebbbb038746c52ef0d38c94a2ff15431f3b693adcd3"
+    },
+    {
+      "path": "evidence/paper/F.jpg",
+      "format": "JPEG",
+      "width": 320,
+      "height": 960,
+      "bytes": 39444,
+      "sha256": "257c3387ec3921f1c526faa43622433589172409dbb73663cbaac4ec35df9813"
+    },
+    {
+      "path": "evidence/paper/G.jpg",
+      "format": "JPEG",
+      "width": 768,
+      "height": 1024,
+      "bytes": 26413,
+      "sha256": "4c1e7d2cbd4477ca87f90eef09b6ac8bda638dc4c8dd18e32202f91a3d2c36b4"
+    },
+    {
+      "path": "evidence/paper/H.jpg",
+      "format": "JPEG",
+      "width": 1280,
+      "height": 960,
+      "bytes": 105769,
+      "sha256": "5982c148a2f100fb3834fbc5418087d213ec2deb8504125d9b59bcaf98599773"
+    },
+    {
+      "path": "evidence/paper/I.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 735,
+      "bytes": 128618,
+      "sha256": "7b1857d964d8d05b52a5e20dc891fddcc32efcf48945eec03d7c3275ac07b8d6"
+    },
+    {
+      "path": "evidence/paper/Readme.jpg",
+      "format": "JPEG",
+      "width": 1440,
+      "height": 900,
+      "bytes": 178484,
+      "sha256": "8a65ba8524d0ee9325a04937ca49052e2ed3040a3997cc039f6dea619bb6a9b9"
+    }
+  ],
+  "runtimeTests": "NOT_RUN: ACCEPTANCE_TESTS.md specifies future cases; artifact checks do not execute them."
+}

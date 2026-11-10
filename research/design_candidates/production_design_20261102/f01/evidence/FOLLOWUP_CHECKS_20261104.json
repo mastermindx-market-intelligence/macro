@@ -1,0 +1,175 @@
+{
+  "schema": "f01.followup-evidence-checks.v1",
+  "recorded_at_utc": "2026-11-04",
+  "scope": "Artifact/source integrity and static token arithmetic only. No candidate acceptance case was executed.",
+  "source_parent": "c1fc69b3452b92dff0f1863c1689e18b049cb56f",
+  "checks": [
+    {
+      "check": "Joint semantic contract unchanged",
+      "status": "PASS",
+      "detail": {
+        "git_blob": "1160f14b108bf0948384f59a249320385a1dfb6c",
+        "semantic_freeze": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff"
+      }
+    },
+    {
+      "check": "First reports preserved after repairs",
+      "status": "PASS",
+      "detail": {
+        "PRODUCT_FIRST_PASS.md": "4d895736e44edb2b436e2cf3b74c21d962283fd038ea0e1b7b33af5c1df5ae30",
+        "VISUAL_FIRST_PASS.md": "e7eba1ad36df5abe14422ce210482d18c96e651a87f89e975994f72e743d6062"
+      }
+    },
+    {
+      "check": "Capture members exact: evidence/native_directory_20261104",
+      "status": "PASS",
+      "detail": {
+        "aggregate": "03bb8f96801f452714c66da70ce6b6a8410492e8f5c4ee4548f97a98ae1c4692",
+        "member_count": 6
+      }
+    },
+    {
+      "check": "Capture members exact: evidence/native_directory_20261104/followup",
+      "status": "PASS",
+      "detail": {
+        "aggregate": "14a09641470f3bbad0cd6d4ed1d6a0335f4ce1299c03d97910ae97a18c5896d2",
+        "member_count": 6
+      }
+    },
+    {
+      "check": "Three new operation replies observed",
+      "status": "PASS",
+      "detail": [
+        {
+          "operation": "F01-20261104-F-directory-filter-count-v1",
+          "state": "APPLIED_RESPONSE_OBSERVED"
+        },
+        {
+          "operation": "F01-20261104-F-category-recovery-row-v1",
+          "state": "APPLIED_RESPONSE_OBSERVED"
+        },
+        {
+          "operation": "F01-20261104-F-scanner-task-copy-v1",
+          "state": "APPLIED_RESPONSE_OBSERVED"
+        }
+      ]
+    },
+    {
+      "check": "All twelve baseline query matches retained with four exact proposed-category entries",
+      "status": "PASS",
+      "detail": {
+        "all_match_count": 12,
+        "proposed_category_count": 4,
+        "other_matches": [
+          "/learn/options/charm-and-time-drift.html",
+          "/learn/options/dealer-hedging-mechanics.html",
+          "/learn/options/gamma-flip-levels.html",
+          "/learn/options/gamma-regimes.html",
+          "/learn/options/market-makers-middleman.html",
+          "/learn/options/open-interest-limits.html",
+          "/learn/options/zero-dte-regime.html",
+          "/tools/calculators/options-profit.html"
+        ]
+      }
+    },
+    {
+      "check": "Current counter/action/copy present",
+      "status": "PASS",
+      "detail": {
+        "scope": "Static text only; behavior not executed",
+        "nodes": [
+          "72CD-0",
+          "72CE-0",
+          "72CF-0",
+          "72CG-0",
+          "70Q2-0"
+        ]
+      }
+    },
+    {
+      "check": "Eighty-six distinct specifications retained, not converted to passes",
+      "status": "PASS",
+      "detail": {
+        "main": 80,
+        "consumer": 6,
+        "execution": "NOT_RUN"
+      }
+    },
+    {
+      "check": "Reviewed core source and directory/retention inputs unchanged",
+      "status": "PASS",
+      "detail": {
+        "paths": [
+          "DIRECTORY_PRESENTATION_PROPOSAL.json",
+          "directory-retention-audit.json",
+          "FEATURE_RETENTION_LEDGER.md",
+          "PRODUCT_UX_SPEC.md",
+          "SOURCE_AND_DATA_CONTRACT.md",
+          "ACCEPTANCE_TESTS.md",
+          "CONSUMER_INTEGRATION_NOTES.md",
+          "BUILDER_AND_MEASUREMENT_PLAN.md"
+        ],
+        "directory_baseline_count": 290,
+        "retention_groups": 36
+      }
+    },
+    {
+      "check": "Actual nonauthor source review identities retained",
+      "status": "PASS",
+      "detail": {
+        "review_ids": [
+          5760649569,
+          5760898375
+        ],
+        "authority": "Only each verbatim review scope; no native approval"
+      }
+    },
+    {
+      "check": "Browser presentation restored",
+      "status": "PASS",
+      "detail": {
+        "lang": "en",
+        "openDialogs": 0,
+        "theme": "light",
+        "url": "https://beta.mastermind-x.com/analysis?symbol=NVDA&page=statements",
+        "viewport": {
+          "height": 1204,
+          "width": 1853
+        },
+        "visibleLocalDialogs": 0
+      }
+    },
+    {
+      "check": "All package JSON parses",
+      "status": "PASS",
+      "detail": {
+        "note": "Integrity check, not application testing"
+      }
+    }
+  ],
+  "static_contrast": {
+    "basis": "Actual Paper token values observed with contentHash.tokens=cfd3d65c; foreground over canvas only. Not independent measured browser/AA qualification.",
+    "palette": {
+      "canvas": "#080808",
+      "panel": "#121212",
+      "primary": "#F3F3F3",
+      "secondary": "#B8B8B8",
+      "tertiary": "#949494",
+      "new_button_border": "#6F6F6F"
+    },
+    "ratios_over_canvas": {
+      "primary": 18.049,
+      "secondary": 10.096,
+      "tertiary": 6.602,
+      "new_button_border": 3.986
+    }
+  },
+  "unchanged_holds": [
+    "Original I/grid effect unknown",
+    "Original Readme DOCUMENT_CHANGED/no-retry",
+    "F02 candidate.4 author concurrence",
+    "F02 own footer/native findings",
+    "Complete native states and final independent RIG/QA01",
+    "Full behavior and accessibility execution"
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "schema": "F01.continuation_sources.v1",
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "protected_branch": "master",
+    "pin": "7a52808e5761739a08b279dddba0d0c88e13224d",
+    "bootstrap_major": 1,
+    "index_schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1",
+    "compatible": true,
+    "loaded_laws": [
+      "INDEX",
+      "COLD_START",
+      "ACTIVE_EXECUTION",
+      "SESSION_RELIABILITY",
+      "WEB_CEO_DELEGATION",
+      "EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM",
+      "CEO_PROJECT_PLAN_CONTINUITY",
+      "RECONCILE_STATE",
+      "CLOSEOUT"
+    ],
+    "paper_references": [
+      "skills/paper-design-workflow/SKILL.md",
+      "skills/paper-design-workflow/references/connection.md",
+      "docs/PAPER_DESIGN_INTEGRATION.md",
+      "docs/PAPER_DIRECT_CHATGPT.md"
+    ]
+  },
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "f01_parent": "ec99a1e6affe902efcdd79582ee72e15f90c87b9",
+  "operative_contract": "F01-F02-SHELL/1.0.0-candidate.4",
+  "candidate5": "PROPOSED_NOT_ADOPTED",
+  "F02_handshake": "6d1f6791408fbb317daf16b647c02465e8d81266",
+  "F02_resize_proposal_response": "013fdd72e6a387c6121df84082ce1e6c2201d336",
+  "F03_four_id_response": "e1ac30e1405d5fed4fa1a79d623a066505d47c52",
+  "focused": {
+    "file": "01M2WGNCX9475G79JRKJTCM08P",
+    "page": "p-23-0",
+    "board": "6O5H-0",
+    "new_clone": "73GF-0",
+    "source_screenshot_observed": true
+  },
+  "internal": {
+    "file": "01M3NRCX55B452A12819WNE1RH",
+    "page": "p-I-0",
+    "board": "OU0-0",
+    "source_regions": [
+      "OU2-0",
+      "OVD-0",
+      "VZC-0"
+    ],
+    "source_screenshot_observed": true,
+    "reuse": "Visible anatomy re-authored on F01; source file was read only. OS p-G-0 is archived market-shell reference; p-F-0 is a moved investor notice."
+  },
+  "public": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+    "route": "/blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
+    "cta": "/tools/calculators/drawdown-recovery.html",
+    "files": [
+      {
+        "key": "public-article-source",
+        "blob": "2b4c649a04d77135a2c56ab688ef66735eae72c3",
+        "sha256": "974a49fbf433c2232bf95fecd1d39ec6cf03841a21ceeb3703e4927de886101d",
+        "path": "content/seo/blog/why-a-50-percent-loss-needs-a-100-percent-gain.md",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/content/seo/blog/why-a-50-percent-loss-needs-a-100-percent-gain.md"
+      },
+      {
+        "key": "public-template-source",
+        "blob": "ff3dc93f9ae9f605da26cf2301df8462f5f75655",
+        "sha256": "37ca3418853c1541ac138872aee68f9a19fa22b05ca75c4cb68b87f8afd7d7fb",
+        "path": "templates/seo_article.html.j2",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/seo_article.html.j2"
+      },
+      {
+        "key": "public-navigation-source",
+        "blob": "8dae1801aecfdfecb5260e791ec3201a9b684999",
+        "sha256": "5d4f931c079b74da08f8c04a96a37faeed45d4c83e74c1d798807fbc5dad1031",
+        "path": "templates/_public_nav.html.j2",
+        "url": "https://github.com/mastermindx-market-intelligence/macro/blob/b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e/templates/_public_nav.html.j2"
+      }
+    ],
+    "published": "2026-07-20",
+    "updated": "2026-07-20",
+    "served_page_verified": false
+  },
+  "adjacent1244": "624dbc0ac22ecdaa6d1bd580d5221da939c5e5a9",
+  "children": {
+    "f01_contract_judgment": "READ_ONLY_MAPPING_OWNER_RESPONSE_AND_PARENT_INTEGRITY_COMPLETED",
+    "f01_ci_bound_failures": "READ_ONLY_DIAGNOSIS_AND_EXACT_HEAD_CI_OBSERVATION_COMPLETED",
+    "external_runtime_workers_started": false,
+    "external_messages_sent": false
+  },
+  "conversation_response_readback": {
+    "child": "/root/f01_contract_judgment",
+    "state": "READ_ONLY_COMPLETED",
+    "scope": "One bounded read per PR of conversation comment updates, including newly created or edited comments; no review mutation or external message.",
+    "f01": {
+      "pr": 10645,
+      "since": "2026-11-04T05:06:23Z",
+      "returned_comment": 6623077923,
+      "author": "mastermindxryan",
+      "body_and_timestamp_changed": false
+    },
+    "f02": {
+      "pr": 10630,
+      "since": "2026-11-04T05:00:23Z",
+      "returned_comment": 6622994822,
+      "author": "mastermidx4",
+      "body_and_timestamp_changed": false
+    },
+    "result": "No newly observed affected-owner concurrence extending candidate.5. Candidate.4 operative; candidate.5 proposed, not adopted."
+  },
+  "parent_package_integrity": {
+    "observer": "/root/f01_contract_judgment; bounded read-only integrity aid",
+    "commit": "ec99a1e6affe902efcdd79582ee72e15f90c87b9",
+    "subtree": "18c9776eb7f5ac944d842ffc8ce1c6ea7ffc30fa",
+    "tree_truncated": false,
+    "tree_entries": 196,
+    "directories": 16,
+    "blobs": 180,
+    "manifest_blob": "91c3a2f837ecefbf581975a4291073a37d935c74",
+    "members": 179,
+    "matched_path_git_sha_size": 179,
+    "total_member_bytes": 6448862,
+    "missing": 0,
+    "duplicates": 0,
+    "invalid_paths": 0,
+    "sha_mismatches": 0,
+    "byte_size_mismatches": 0,
+    "unexpected_unlisted": 0,
+    "excluded": "evidence/PACKAGE_MANIFEST.json",
+    "candidate4_blob": "7a987f6923e607d0ee49ef04eff7f1d20d728bc0",
+    "candidate5_blob": "7db3c0598bc22cfb47842406fdd6b28d587bc57f",
+    "scope": "Existing exact Git-object identities, inventory and sizes verified; old individual SHA256 values retained from canonical manifest, not freshly recomputed by downloading all old blobs."
+  }
+}

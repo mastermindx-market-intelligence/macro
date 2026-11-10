@@ -1,0 +1,204 @@
+{
+  "boards": [
+    {
+      "key": "Readme",
+      "nodeId": "6ZZX-0",
+      "screenshot": "evidence/paper/Readme.jpg",
+      "jsx": "evidence/paper/Readme.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "A",
+      "nodeId": "6ZY9-0",
+      "screenshot": "evidence/paper/A.jpg",
+      "jsx": "evidence/paper/A.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "B",
+      "nodeId": "6ZYA-0",
+      "screenshot": "evidence/paper/B.jpg",
+      "jsx": "evidence/paper/B.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "C",
+      "nodeId": "6ZYB-0",
+      "screenshot": "evidence/paper/C.jpg",
+      "jsx": "evidence/paper/C.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "D",
+      "nodeId": "6ZYC-0",
+      "screenshot": "evidence/paper/D.jpg",
+      "jsx": "evidence/paper/D.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "E",
+      "nodeId": "6ZYD-0",
+      "screenshot": "evidence/paper/E.jpg",
+      "jsx": "evidence/paper/E.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "F",
+      "nodeId": "6ZZV-0",
+      "screenshot": "evidence/paper/F.jpg",
+      "jsx": "evidence/paper/F.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "G",
+      "nodeId": "6ZZW-0",
+      "screenshot": "evidence/paper/G.jpg",
+      "jsx": "evidence/paper/G.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "H",
+      "nodeId": "70WJ-0",
+      "screenshot": "evidence/paper/H.jpg",
+      "jsx": "evidence/paper/H.jsx",
+      "mime": "image/jpeg"
+    },
+    {
+      "key": "I",
+      "nodeId": "710Z-0",
+      "screenshot": "evidence/paper/I.jpg",
+      "jsx": "evidence/paper/I.jsx",
+      "mime": "image/jpeg"
+    }
+  ],
+  "extras": [
+    {
+      "key": "paper_before_today",
+      "path": "evidence/before/Today-6NMP-0.jpg",
+      "nodeId": "6NMP-0",
+      "kind": "native predecessor"
+    },
+    {
+      "key": "paper_before_terminal",
+      "path": "evidence/before/Terminal-6O5H-0.jpg",
+      "nodeId": "6O5H-0",
+      "kind": "native predecessor"
+    },
+    {
+      "key": "freeze_prep_1",
+      "path": "evidence/before/Search-6NVJ-0.jpg",
+      "nodeId": "6NVJ-0",
+      "kind": "native predecessor"
+    },
+    {
+      "key": "beta_us_screen_final",
+      "path": "evidence/live/US-route-failure.png",
+      "route": "https://beta.mastermind-x.com/us_stocks.html",
+      "kind": "bounded live observation"
+    },
+    {
+      "key": "beta_company_financials",
+      "path": "evidence/live/Company-overview.png",
+      "route": "https://beta.mastermind-x.com/analysis?symbol=NVDA",
+      "kind": "bounded live observation"
+    }
+  ],
+  "captured": [
+    {
+      "key": "Readme",
+      "nodeId": "6ZZX-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:06.146Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "A",
+      "nodeId": "6ZY9-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:14.696Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "B",
+      "nodeId": "6ZYA-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:30.945Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "C",
+      "nodeId": "6ZYB-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:42.740Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "D",
+      "nodeId": "6ZYC-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:49.353Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "E",
+      "nodeId": "6ZYD-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:20:54.692Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "F",
+      "nodeId": "6ZZV-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:21:01.508Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "G",
+      "nodeId": "6ZZW-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:21:07.989Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "H",
+      "nodeId": "70WJ-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:21:13.174Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    },
+    {
+      "key": "I",
+      "nodeId": "710Z-0",
+      "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+      "pageId": "p-27-0",
+      "observedAt": "2026-11-03T07:21:17.705Z",
+      "screenshot": "observed",
+      "jsx": "observed"
+    }
+  ],
+  "sourcePins": {
+    "assignment": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "terminal": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "F02": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "F01Parent": "b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5"
+  }
+}

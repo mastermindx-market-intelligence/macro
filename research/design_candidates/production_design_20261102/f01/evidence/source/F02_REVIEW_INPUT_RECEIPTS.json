@@ -1,0 +1,23 @@
+{
+  "schema": "F01.F02_review_inputs.v1",
+  "commit": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+  "inputs": [
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/RETURN_F02.md",
+      "git_blob": "e754ed29943f1ef2e3e7d38db2f9774abcac7333"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/paper/reviews/NATIVE_REVIEW_REPORT.md",
+      "git_blob": "7358020fa671776b401f34b39c0d3de952e145a0"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/paper/CURRENT_DESIGN_AUTHORITY.md",
+      "git_blob": "54c5c0852cdb107411cdd60f4ddb9e08a4857974"
+    },
+    {
+      "path": "research/design_candidates/production_design_20261102/f02/reviews/REVIEW_REPORT.md",
+      "git_blob": "d2627ce2e707360778109e98fd0278ecb3c62676"
+    }
+  ],
+  "interpretation": "Historical source/static taste PASS_WITH_CONDITIONS is not native approval. First native Product BLOCK and Taste BLOCK remain; no repaired-native final freeze/review."
+}
