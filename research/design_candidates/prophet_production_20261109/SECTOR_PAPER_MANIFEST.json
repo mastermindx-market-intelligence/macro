@@ -2242,63 +2242,2462 @@
         "retry_allowed": false,
         "production_acceptance": false
       }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-copy",
+      "tool": "set_text_content",
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "1G4R-0",
+            "html": "Includes invested assets and cash."
+          },
+          {
+            "nodeId": "1G3Q-0",
+            "html": "Evaluation details"
+          },
+          {
+            "nodeId": "1G44-0",
+            "html": "Coverage not supplied"
+          },
+          {
+            "nodeId": "1G45-0",
+            "html": "View coverage"
+          },
+          {
+            "nodeId": "1G4H-0",
+            "html": "ILLUSTRATIVE BENCHMARK"
+          }
+        ],
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1G4R-0\"\n    },\n    {\n      \"nodeId\": \"1G3Q-0\"\n    },\n    {\n      \"nodeId\": \"1G44-0\"\n    },\n    {\n      \"nodeId\": \"1G45-0\"\n    },\n    {\n      \"nodeId\": \"1G4H-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-attribution-layout",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1G3F-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Attribution and cash context\" style=\"display:flex;gap:24px;align-items:flex-start;width:1168px\"><div layer-name=\"SX05 Attribution card\" style=\"display:flex;flex-direction:column;gap:16px;width:760px;padding:24px;border:1px solid var(--mx-light-line-quiet);border-radius:12px;background:var(--mx-light-panel)\"></div><div layer-name=\"SX05 Cash context column\" style=\"display:flex;flex-direction:column;gap:16px;width:384px\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GMY-0\",\n      \"name\": \"SX05 Attribution and cash context\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GMZ-0\",\n      \"name\": \"SX05 Attribution card\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN0-0\",\n      \"name\": \"SX05 Cash context column\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-attribution-heading",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Attribution heading\" style=\"display:flex;justify-content:space-between;align-items:flex-start;gap:12px\"><div style=\"display:flex;flex-direction:column;gap:6px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:700;color:var(--mx-light-text)\">Where the gap came from</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">Contribution to the gap · percentage points</div></div><div layer-name=\"SX05 Open method\" style=\"display:flex;align-items:center;justify-content:center;height:44px;padding:0 12px;border:1px solid var(--mx-light-line);border-radius:8px;flex-shrink:0\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:12px;line-height:17px;font-weight:600;color:var(--mx-light-ink-link)\">How attribution works</div></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GN2-0\",\n      \"name\": \"SX05 Attribution heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN4-0\",\n      \"name\": \"Where the gap came f…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN5-0\",\n      \"name\": \"Contribution to the …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN6-0\",\n      \"name\": \"SX05 Open method\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GN7-0\",\n      \"name\": \"How attribution work…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-attribution-axis",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Common axis minus3 plus1\" style=\"display:flex;gap:12px;align-items:center;width:712px\"><div style=\"width:136px\"></div><svg width=\"480\" height=\"26\" viewBox=\"0 0 480 26\"><text x=\"0\" y=\"18\" fill=\"#5D6B7E\" font-family=\"Inter\" font-size=\"12\">−3</text><text x=\"120\" y=\"18\" fill=\"#5D6B7E\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\">−2</text><text x=\"240\" y=\"18\" fill=\"#5D6B7E\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\">−1</text><text x=\"360\" y=\"18\" fill=\"#1C2430\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"middle\">0</text><text x=\"480\" y=\"18\" fill=\"#5D6B7E\" font-family=\"Inter\" font-size=\"12\" text-anchor=\"end\">+1 pp</text></svg><div style=\"width:72px\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GN9-0\",\n      \"name\": \"SX05 Common axis minus3 plus1\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNA-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNB-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNC-0\",\n      \"name\": \"−3\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GND-0\",\n      \"name\": \"−2\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNE-0\",\n      \"name\": \"−1\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNF-0\",\n      \"name\": \"0\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNG-0\",\n      \"name\": \"+1 pp\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNH-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-contribution-1",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Contribution Sector allocation\" style=\"display:flex;gap:12px;align-items:center;width:712px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;width:136px;font-size:13px;line-height:18px;font-weight:500;color:var(--mx-light-text)\">Sector allocation</div><svg width=\"480\" height=\"44\" viewBox=\"0 0 480 44\"><path d=\"M0 0V44 M120 0V44 M240 0V44 M480 0V44\" stroke=\"#E2E6EC\" stroke-width=\"1\" stroke-dasharray=\"2 4\"/><path d=\"M360 0V44\" stroke=\"#5D6B7E\" stroke-width=\"1\"/><rect x=\"360\" y=\"12\" width=\"72\" height=\"20\" rx=\"3\" fill=\"#1E6D47\"/></svg><div style=\"font-family:var(--font-ui),sans-serif;width:72px;text-align:right;font-size:14px;line-height:20px;font-weight:600;color:#1E6D47\">+0.6 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GNJ-0\",\n      \"name\": \"SX05 Contribution Sector allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNK-0\",\n      \"name\": \"Sector allocation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNL-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNM-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNN-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNO-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNP-0\",\n      \"name\": \"+0.6 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-contribution-2",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Contribution Cash allocation\" style=\"display:flex;gap:12px;align-items:center;width:712px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;width:136px;font-size:13px;line-height:18px;font-weight:500;color:var(--mx-light-text)\">Cash allocation</div><svg width=\"480\" height=\"44\" viewBox=\"0 0 480 44\"><path d=\"M0 0V44 M120 0V44 M240 0V44 M480 0V44\" stroke=\"#E2E6EC\" stroke-width=\"1\" stroke-dasharray=\"2 4\"/><path d=\"M360 0V44\" stroke=\"#5D6B7E\" stroke-width=\"1\"/><rect x=\"60\" y=\"12\" width=\"300\" height=\"20\" rx=\"3\" fill=\"#B23C3D\"/></svg><div style=\"font-family:var(--font-ui),sans-serif;width:72px;text-align:right;font-size:14px;line-height:20px;font-weight:600;color:#B23C3D\">−2.5 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GNR-0\",\n      \"name\": \"SX05 Contribution Cash allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNS-0\",\n      \"name\": \"Cash allocation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNT-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNU-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNV-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNW-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GNX-0\",\n      \"name\": \"−2.5 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-contribution-3",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Contribution Stock selection\" style=\"display:flex;gap:12px;align-items:center;width:712px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;width:136px;font-size:13px;line-height:18px;font-weight:500;color:var(--mx-light-text)\">Stock selection</div><svg width=\"480\" height=\"44\" viewBox=\"0 0 480 44\"><path d=\"M0 0V44 M120 0V44 M240 0V44 M480 0V44\" stroke=\"#E2E6EC\" stroke-width=\"1\" stroke-dasharray=\"2 4\"/><path d=\"M360 0V44\" stroke=\"#5D6B7E\" stroke-width=\"1\"/><rect x=\"360\" y=\"12\" width=\"60\" height=\"20\" rx=\"3\" fill=\"#1E6D47\"/></svg><div style=\"font-family:var(--font-ui),sans-serif;width:72px;text-align:right;font-size:14px;line-height:20px;font-weight:600;color:#1E6D47\">+0.5 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GNZ-0\",\n      \"name\": \"SX05 Contribution Stock selection\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO0-0\",\n      \"name\": \"Stock selection\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO1-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO2-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO3-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO4-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO5-0\",\n      \"name\": \"+0.5 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-contribution-4",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Contribution Interaction\" style=\"display:flex;gap:12px;align-items:center;width:712px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;width:136px;font-size:13px;line-height:18px;font-weight:500;color:var(--mx-light-text)\">Interaction</div><svg width=\"480\" height=\"44\" viewBox=\"0 0 480 44\"><path d=\"M0 0V44 M120 0V44 M240 0V44 M480 0V44\" stroke=\"#E2E6EC\" stroke-width=\"1\" stroke-dasharray=\"2 4\"/><path d=\"M360 0V44\" stroke=\"#5D6B7E\" stroke-width=\"1\"/><rect x=\"348\" y=\"12\" width=\"12\" height=\"20\" rx=\"3\" fill=\"#B23C3D\"/></svg><div style=\"font-family:var(--font-ui),sans-serif;width:72px;text-align:right;font-size:14px;line-height:20px;font-weight:600;color:#B23C3D\">−0.1 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GO7-0\",\n      \"name\": \"SX05 Contribution Interaction\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO8-0\",\n      \"name\": \"Interaction\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GO9-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOA-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOB-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOC-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOD-0\",\n      \"name\": \"−0.1 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-contribution-5",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Contribution Costs\" style=\"display:flex;gap:12px;align-items:center;width:712px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;width:136px;font-size:13px;line-height:18px;font-weight:500;color:var(--mx-light-text)\">Costs</div><svg width=\"480\" height=\"44\" viewBox=\"0 0 480 44\"><path d=\"M0 0V44 M120 0V44 M240 0V44 M480 0V44\" stroke=\"#E2E6EC\" stroke-width=\"1\" stroke-dasharray=\"2 4\"/><path d=\"M360 0V44\" stroke=\"#5D6B7E\" stroke-width=\"1\"/><rect x=\"312\" y=\"12\" width=\"48\" height=\"20\" rx=\"3\" fill=\"#B23C3D\"/></svg><div style=\"font-family:var(--font-ui),sans-serif;width:72px;text-align:right;font-size:14px;line-height:20px;font-weight:600;color:#B23C3D\">−0.4 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GOF-0\",\n      \"name\": \"SX05 Contribution Costs\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOG-0\",\n      \"name\": \"Costs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOH-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOI-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOJ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOK-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOL-0\",\n      \"name\": \"−0.4 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-attribution-total",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GMZ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Gap total\" style=\"display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--mx-light-line-quiet);padding-top:16px;gap:16px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Net gap after costs</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:700;color:var(--mx-light-ink-down)\">−1.9 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GON-0\",\n      \"name\": \"SX05 Gap total\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOO-0\",\n      \"name\": \"Net gap after costs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOP-0\",\n      \"name\": \"−1.9 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-capital-card",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GN0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Starting allocation\" style=\"display:flex;flex-direction:column;gap:16px;padding:20px;border:1px solid var(--mx-light-line-quiet);border-radius:12px;background:var(--mx-light-panel);width:384px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:17px;line-height:24px;font-weight:700;color:var(--mx-light-text)\">Starting allocation</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GOR-0\",\n      \"name\": \"SX05 Starting allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOS-0\",\n      \"name\": \"Starting allocation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-cash-card",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GN0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Cash investigation\" style=\"display:flex;flex-direction:column;gap:12px;padding:20px;border:1px solid var(--mx-light-line-quiet);border-radius:12px;background:var(--mx-light-panel);width:384px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:17px;line-height:24px;font-weight:700;color:var(--mx-light-text)\">Cash was the largest drag.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GOU-0\",\n      \"name\": \"SX05 Cash investigation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOV-0\",\n      \"name\": \"Cash was the largest…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-starting-invested",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GOR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Starting invested allocation\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">Starting invested allocation</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:700;color:var(--mx-light-text)\">68.75%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GOX-0\",\n      \"name\": \"SX05 Starting invested allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOY-0\",\n      \"name\": \"Starting invested al…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GOZ-0\",\n      \"name\": \"68.75%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-starting-cash",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GOR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Starting cash allocation\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">Starting cash allocation</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:700;color:var(--mx-light-text)\">31.25%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GP1-0\",\n      \"name\": \"SX05 Starting cash allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GP2-0\",\n      \"name\": \"Starting cash alloca…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GP3-0\",\n      \"name\": \"31.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-allocation-strip",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GOR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Starting allocation strip\" style=\"display:flex;width:342px;height:10px;border-radius:5px;overflow:hidden\"><div style=\"width:68.75%;height:10px;background:var(--mx-light-ser-1)\"></div><div style=\"width:31.25%;height:10px;background:var(--mx-light-line)\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GP5-0\",\n      \"name\": \"SX05 Starting allocation strip\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GP6-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GP7-0\",\n      \"name\": \"Rectangle\",\n      \"component\": \"Rectangle\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-cash-explanation",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GOU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Decision time explanation\" style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Review why capital remained in cash and the information available at those decision times.</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GP9-0\",\n      \"name\": \"SX05 Decision time explanation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-coverage-action",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GOU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Open coverage\" style=\"display:flex;align-items:center;justify-content:space-between;height:44px;border-top:1px solid var(--mx-light-line-quiet);padding-top:8px;gap:12px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">Decision history not supplied</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-ink-link)\">Coverage →</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPB-0\",\n      \"name\": \"SX05 Open coverage\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPC-0\",\n      \"name\": \"Decision history not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPD-0\",\n      \"name\": \"Coverage →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx05-portfolio-action",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GN0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX05 Portfolio handoff\" style=\"display:flex;flex-direction:column;gap:8px;padding:0 4px\"><div style=\"display:flex;align-items:center;justify-content:center;height:44px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-text)\">Open Portfolio →</div></div><div style=\"font-family:var(--font-ui),sans-serif;font-size:12px;line-height:17px;color:var(--mx-light-muted)\">This example contains no actual holdings.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPF-0\",\n      \"name\": \"SX05 Portfolio handoff\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPH-0\",\n      \"name\": \"Open Portfolio →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPI-0\",\n      \"name\": \"This example contain…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-atlas",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "root_node_p-H-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 · Evaluation disclosures · Opened states\" style=\"display:flex;position:absolute;left:4560px;top:3300px;width:1440px;height:fit-content;flex-direction:column;padding:32px;gap:24px;background:var(--mx-light-bg)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:12px;line-height:17px;font-weight:600;color:var(--mx-light-ink-link)\">SX05 · disclosure states · not one application screen</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:30px;line-height:42px;font-weight:700;color:var(--mx-light-text)\">Inspect the result. Keep its limits visible.</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:15px;line-height:22px;color:var(--mx-light-muted)\">Four destinations preserve the evaluation context. Each sheet has an explicit close or return path.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPK-0\",\n      \"name\": \"SX12 · Evaluation disclosures · Opened states\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPL-0\",\n      \"name\": \"SX05 · disclosure st…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPM-0\",\n      \"name\": \"Inspect the result. …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPN-0\",\n      \"name\": \"Four destinations pr…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-details-layout",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPK-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Detail and method row\" style=\"display:flex;justify-content:center;align-items:flex-start;gap:24px;width:1376px\"><div layer-name=\"SX12 Evaluation details sheet\" style=\"display:flex;flex-direction:column;gap:16px;width:640px;padding:24px;border:1px solid var(--mx-light-line);border-radius:14px;background:var(--mx-light-panel)\"></div><div layer-name=\"SX12 Attribution method sheet\" style=\"display:flex;flex-direction:column;gap:16px;width:640px;padding:24px;border:1px solid var(--mx-light-line);border-radius:14px;background:var(--mx-light-panel)\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPP-0\",\n      \"name\": \"SX12 Detail and method row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPQ-0\",\n      \"name\": \"SX12 Evaluation details sheet\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPR-0\",\n      \"name\": \"SX12 Attribution method sheet\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-layout",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPK-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage and Portfolio row\" style=\"display:flex;justify-content:center;align-items:flex-start;gap:24px;width:1376px\"><div layer-name=\"SX12 Coverage sheet\" style=\"display:flex;flex-direction:column;gap:16px;width:640px;padding:24px;border:1px solid var(--mx-light-line);border-radius:14px;background:var(--mx-light-panel)\"></div><div layer-name=\"SX12 Portfolio handoff state\" style=\"display:flex;flex-direction:column;gap:16px;width:640px;padding:24px;border:1px solid var(--mx-light-line);border-radius:14px;background:var(--mx-light-panel)\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPT-0\",\n      \"name\": \"SX12 Coverage and Portfolio row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPU-0\",\n      \"name\": \"SX12 Coverage sheet\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPV-0\",\n      \"name\": \"SX12 Portfolio handoff state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-details-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Evaluation details header\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:24px;line-height:34px;font-weight:700;color:var(--mx-light-text)\">Evaluation details</div><div layer-name=\"Close Evaluation details\" style=\"display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--mx-light-bg);flex-shrink:0\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"m5 5 10 10M15 5 5 15\" stroke=\"#1C2430\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GPX-0\",\n      \"name\": \"SX12 Evaluation details header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPY-0\",\n      \"name\": \"Evaluation details\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GPZ-0\",\n      \"name\": \"Close Evaluation details\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ0-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ1-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 How attribution works header\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:24px;line-height:34px;font-weight:700;color:var(--mx-light-text)\">How attribution works</div><div layer-name=\"Close How attribution works\" style=\"display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--mx-light-bg);flex-shrink:0\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"m5 5 10 10M15 5 5 15\" stroke=\"#1C2430\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQ3-0\",\n      \"name\": \"SX12 How attribution works header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ4-0\",\n      \"name\": \"How attribution work…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ5-0\",\n      \"name\": \"Close How attribution works\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ6-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQ7-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage header\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:24px;line-height:34px;font-weight:700;color:var(--mx-light-text)\">Coverage</div><div layer-name=\"Close Coverage\" style=\"display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--mx-light-bg);flex-shrink:0\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"m5 5 10 10M15 5 5 15\" stroke=\"#1C2430\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQ9-0\",\n      \"name\": \"SX12 Coverage header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQA-0\",\n      \"name\": \"Coverage\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQB-0\",\n      \"name\": \"Close Coverage\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQC-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQD-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-portfolio-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPV-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Portfolio header\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:24px;line-height:34px;font-weight:700;color:var(--mx-light-text)\">Portfolio</div><div layer-name=\"Close Portfolio\" style=\"display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--mx-light-bg);flex-shrink:0\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"m5 5 10 10M15 5 5 15\" stroke=\"#1C2430\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQF-0\",\n      \"name\": \"SX12 Portfolio header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQG-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQH-0\",\n      \"name\": \"Close Portfolio\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQI-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQJ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-details-status",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div style=\"display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--mx-light-panel2);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;font-weight:600;color:var(--mx-light-text)\">Illustrative example · no accepted strategy result</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQM-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-detail-row-1",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evaluation detail Period\" style=\"display:flex;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:150px;flex-shrink:0;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Period</div><div style=\"font-family:var(--font-ui),sans-serif;width:420px;font-size:14px;line-height:21px;font-weight:500;color:var(--mx-light-text)\">Illustrative single period · dates not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQO-0\",\n      \"name\": \"Evaluation detail Period\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQP-0\",\n      \"name\": \"Period\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQQ-0\",\n      \"name\": \"Illustrative single …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-detail-row-2",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evaluation detail Benchmark\" style=\"display:flex;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:150px;flex-shrink:0;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Benchmark</div><div style=\"font-family:var(--font-ui),sans-serif;width:420px;font-size:14px;line-height:21px;font-weight:500;color:var(--mx-light-text)\">50% Sector A + 50% Sector B</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQS-0\",\n      \"name\": \"Evaluation detail Benchmark\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQT-0\",\n      \"name\": \"Benchmark\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQU-0\",\n      \"name\": \"50% Sector A + 50% S…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-detail-row-3",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evaluation detail Currency / basis\" style=\"display:flex;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:150px;flex-shrink:0;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Currency / basis</div><div style=\"font-family:var(--font-ui),sans-serif;width:420px;font-size:14px;line-height:21px;font-weight:500;color:var(--mx-light-text)\">USD · supplied single-period returns</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GQW-0\",\n      \"name\": \"Evaluation detail Currency / basis\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQX-0\",\n      \"name\": \"Currency / basis\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GQY-0\",\n      \"name\": \"USD · supplied singl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-detail-row-4",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evaluation detail Capital\" style=\"display:flex;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:150px;flex-shrink:0;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Capital</div><div style=\"font-family:var(--font-ui),sans-serif;width:420px;font-size:14px;line-height:21px;font-weight:500;color:var(--mx-light-text)\">Simulated starting weights</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GR0-0\",\n      \"name\": \"Evaluation detail Capital\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR1-0\",\n      \"name\": \"Capital\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR2-0\",\n      \"name\": \"Simulated starting w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-detail-row-5",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evaluation detail Result / protocol\" style=\"display:flex;align-items:flex-start;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:150px;flex-shrink:0;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Result / protocol</div><div style=\"font-family:var(--font-ui),sans-serif;width:420px;font-size:14px;line-height:21px;font-weight:500;color:var(--mx-light-text)\">Not registered · design fixture</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GR4-0\",\n      \"name\": \"Evaluation detail Result / protocol\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR5-0\",\n      \"name\": \"Result / protocol\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR6-0\",\n      \"name\": \"Not registered · des…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-details-return",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPQ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Return from details\" style=\"display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Back to evaluation</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GR8-0\",\n      \"name\": \"SX12 Return from details\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GR9-0\",\n      \"name\": \"Back to evaluation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-explanation",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Method explanation\" style=\"display:flex;flex-direction:column;gap:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:17px;line-height:24px;font-weight:600;color:var(--mx-light-text)\">Single-period Brinson–Fachler</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Separates sector allocation, stock selection and their interaction. Cash is one allocation segment.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GRB-0\",\n      \"name\": \"SX12 Method explanation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRC-0\",\n      \"name\": \"Single-period Brinso…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRD-0\",\n      \"name\": \"Separates sector all…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-input-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Attribution inputs header\" style=\"display:flex;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--mx-light-line)\"><div style=\"font-family:var(--font-ui),sans-serif;width:94px;flex-shrink:0;font-size:11px;line-height:16px;font-weight:600;color:var(--mx-light-muted)\">Segment</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:11px;line-height:16px;font-weight:600;color:var(--mx-light-muted)\">Bmk weight</div><div style=\"font-family:var(--font-ui),sans-serif;width:100px;flex-shrink:0;font-size:11px;line-height:16px;font-weight:600;color:var(--mx-light-muted)\">Bmk return</div><div style=\"font-family:var(--font-ui),sans-serif;width:132px;flex-shrink:0;font-size:11px;line-height:16px;font-weight:600;color:var(--mx-light-muted)\">Strategy weight</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:11px;line-height:16px;font-weight:600;color:var(--mx-light-muted)\">Strategy return</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GRF-0\",\n      \"name\": \"SX12 Attribution inputs header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRG-0\",\n      \"name\": \"Segment\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRH-0\",\n      \"name\": \"Bmk weight\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRI-0\",\n      \"name\": \"Bmk return\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRJ-0\",\n      \"name\": \"Strategy weight\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRK-0\",\n      \"name\": \"Strategy return\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-input-1",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Input Sector A\" style=\"display:flex;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:94px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:600;color:var(--mx-light-text)\">Sector A</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">50%</div><div style=\"font-family:var(--font-ui),sans-serif;width:100px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">10%</div><div style=\"font-family:var(--font-ui),sans-serif;width:132px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">49.375%</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">10.6875%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GRM-0\",\n      \"name\": \"SX12 Input Sector A\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRN-0\",\n      \"name\": \"Sector A\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRO-0\",\n      \"name\": \"50%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRP-0\",\n      \"name\": \"10%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRQ-0\",\n      \"name\": \"49.375%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRR-0\",\n      \"name\": \"10.6875%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-input-2",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Input Sector B\" style=\"display:flex;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:94px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:600;color:var(--mx-light-text)\">Sector B</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">50%</div><div style=\"font-family:var(--font-ui),sans-serif;width:100px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">6%</div><div style=\"font-family:var(--font-ui),sans-serif;width:132px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">19.375%</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">6.3125%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GRT-0\",\n      \"name\": \"SX12 Input Sector B\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRU-0\",\n      \"name\": \"Sector B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRV-0\",\n      \"name\": \"50%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRW-0\",\n      \"name\": \"6%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRX-0\",\n      \"name\": \"19.375%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GRY-0\",\n      \"name\": \"6.3125%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-input-3",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Input Cash\" style=\"display:flex;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;width:94px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:600;color:var(--mx-light-text)\">Cash</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">0%</div><div style=\"font-family:var(--font-ui),sans-serif;width:100px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">0%</div><div style=\"font-family:var(--font-ui),sans-serif;width:132px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">31.25%</div><div style=\"font-family:var(--font-ui),sans-serif;width:108px;flex-shrink:0;font-size:13px;line-height:19px;font-weight:400;color:var(--mx-light-text)\">0%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GS0-0\",\n      \"name\": \"SX12 Input Cash\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS1-0\",\n      \"name\": \"Cash\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS2-0\",\n      \"name\": \"0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS3-0\",\n      \"name\": \"0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS4-0\",\n      \"name\": \"31.25%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GS5-0\",\n      \"name\": \"0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-conventions",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Method conventions\" style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Costs: 0.4 percentage points, deducted once. FX: zero in this single-currency example. Cash is not counted again within equity allocation.</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GS7-0\",\n      \"name\": \"SX12 Method conventions\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-reconciliation",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Method reconciliation\" style=\"display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:var(--mx-light-bg)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-text)\">Benchmark + contributions = net return</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:15px;line-height:22px;font-weight:600;color:var(--mx-light-text)\">8.0 + 0.6 − 2.5 + 0.5 − 0.1 − 0.4 = 6.1%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GS9-0\",\n      \"name\": \"SX12 Method reconciliation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSA-0\",\n      \"name\": \"Benchmark + contribu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSB-0\",\n      \"name\": \"8.0 + 0.6 − 2.5 + 0.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-limit",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">This example explains realized arithmetic. A multi-period evaluation must identify its own linking, cash, cost and FX conventions.</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSD-0\",\n      \"name\": \"This example explain…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-method-return",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPR-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Return from method\" style=\"display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Back to evaluation</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSF-0\",\n      \"name\": \"SX12 Return from method\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSG-0\",\n      \"name\": \"Back to evaluation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-state",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage missing state\" style=\"display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:8px;background:var(--mx-light-panel2)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:17px;line-height:24px;font-weight:600;color:var(--mx-light-text)\">Decision coverage is not supplied.</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">This example provides return inputs, not a decision population. Completeness cannot be assessed.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSI-0\",\n      \"name\": \"SX12 Coverage missing state\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSJ-0\",\n      \"name\": \"Decision coverage is…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSK-0\",\n      \"name\": \"This example provide…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-row-1",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage Eligible\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"display:flex;flex-direction:column;gap:4px;width:450px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Eligible</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Decisions included by the evaluation rules</div></div><div style=\"font-family:var(--font-ui),sans-serif;width:124px;text-align:right;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSM-0\",\n      \"name\": \"SX12 Coverage Eligible\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSO-0\",\n      \"name\": \"Eligible\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSP-0\",\n      \"name\": \"Decisions included b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSQ-0\",\n      \"name\": \"Not supplied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-row-2",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage Observed\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"display:flex;flex-direction:column;gap:4px;width:450px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Observed</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Eligible decisions with usable evidence</div></div><div style=\"font-family:var(--font-ui),sans-serif;width:124px;text-align:right;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSS-0\",\n      \"name\": \"SX12 Coverage Observed\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GST-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSU-0\",\n      \"name\": \"Observed\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSV-0\",\n      \"name\": \"Eligible decisions w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSW-0\",\n      \"name\": \"Not supplied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-row-3",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage Missing\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"display:flex;flex-direction:column;gap:4px;width:450px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Missing</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Required evidence that is absent</div></div><div style=\"font-family:var(--font-ui),sans-serif;width:124px;text-align:right;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GSY-0\",\n      \"name\": \"SX12 Coverage Missing\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GSZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT0-0\",\n      \"name\": \"Missing\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT1-0\",\n      \"name\": \"Required evidence th…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT2-0\",\n      \"name\": \"Not supplied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-row-4",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage No entry\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"display:flex;flex-direction:column;gap:4px;width:450px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">No entry</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Decisions without a qualified entry</div></div><div style=\"font-family:var(--font-ui),sans-serif;width:124px;text-align:right;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GT4-0\",\n      \"name\": \"SX12 Coverage No entry\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT6-0\",\n      \"name\": \"No entry\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT7-0\",\n      \"name\": \"Decisions without a …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GT8-0\",\n      \"name\": \"Not supplied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-row-5",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage No fill\" style=\"display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"display:flex;flex-direction:column;gap:4px;width:450px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">No fill</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Attempts without a usable fill under the stated assumptions</div></div><div style=\"font-family:var(--font-ui),sans-serif;width:124px;text-align:right;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Not supplied</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTA-0\",\n      \"name\": \"SX12 Coverage No fill\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTC-0\",\n      \"name\": \"No fill\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTD-0\",\n      \"name\": \"Attempts without a u…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTE-0\",\n      \"name\": \"Not supplied\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-coverage-return",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Coverage return\" style=\"display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Back to evaluation</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTG-0\",\n      \"name\": \"SX12 Coverage return\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTH-0\",\n      \"name\": \"Back to evaluation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-portfolio-state",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPV-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 No linked holdings\" style=\"display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--mx-light-bg);border-radius:10px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:600;color:var(--mx-light-text)\">This example has no linked holdings.</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Open your existing Portfolio to inspect actual positions and connected exposures. This illustration creates no positions.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTJ-0\",\n      \"name\": \"SX12 No linked holdings\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTK-0\",\n      \"name\": \"This example has no …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTL-0\",\n      \"name\": \"Open your existing P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-portfolio-truth",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPV-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Portfolio truth\" style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">Without actual positions and weights, portfolio attribution is unavailable. Saved research and model plans are not holdings.</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTN-0\",\n      \"name\": \"SX12 Portfolio truth\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-portfolio-actions",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPV-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Portfolio navigation\" style=\"display:flex;gap:12px\"><div style=\"display:flex;align-items:center;justify-content:center;flex:1;height:44px;border-radius:8px;background:var(--mx-light-text)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:white\">Open existing Portfolio</div></div><div style=\"display:flex;align-items:center;justify-content:center;flex:1;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Back to evaluation</div></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTP-0\",\n      \"name\": \"SX12 Portfolio navigation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTR-0\",\n      \"name\": \"Open existing Portfo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTT-0\",\n      \"name\": \"Back to evaluation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-responsive-heading",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPK-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Responsive component heading\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:22px;line-height:31px;font-weight:700;color:var(--mx-light-text)\">Depth survives a small screen.</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:21px;color:var(--mx-light-muted)\">320px contribution list and 390px method sheet. These are component states, not a second evaluation.</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTV-0\",\n      \"name\": \"SX12 Responsive component heading\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTW-0\",\n      \"name\": \"Depth survives a sma…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GTX-0\",\n      \"name\": \"320px contribution l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-responsive-layout",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GPK-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Responsive row\" style=\"display:flex;justify-content:center;align-items:flex-start;gap:32px;width:1376px\"><div layer-name=\"SX12 Compact attribution 320\" style=\"display:flex;flex-direction:column;gap:12px;width:320px;padding:16px;border:1px solid var(--mx-light-line);border-radius:12px;background:var(--mx-light-panel)\"></div><div layer-name=\"SX12 Mobile method 390\" style=\"display:flex;flex-direction:column;gap:16px;width:390px;padding:16px;border:1px solid var(--mx-light-line);border-radius:14px;background:var(--mx-light-panel)\"></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GTZ-0\",\n      \"name\": \"SX12 Responsive row\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU0-0\",\n      \"name\": \"SX12 Compact attribution 320\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU1-0\",\n      \"name\": \"SX12 Mobile method 390\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-heading",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div style=\"display:flex;flex-direction:column;gap:6px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:18px;line-height:25px;font-weight:700;color:var(--mx-light-text)\">Contribution to the gap</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:12px;line-height:17px;color:var(--mx-light-muted)\">Illustrative example · percentage points</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GU3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU4-0\",\n      \"name\": \"Contribution to the …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU5-0\",\n      \"name\": \"Illustrative example…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-row-1",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact Sector allocation\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;color:var(--mx-light-text)\">Sector allocation</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-ink-up)\">+0.6 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GU7-0\",\n      \"name\": \"SX12 Compact Sector allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU8-0\",\n      \"name\": \"Sector allocation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GU9-0\",\n      \"name\": \"+0.6 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-row-2",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact Cash allocation\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;color:var(--mx-light-text)\">Cash allocation</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-ink-down)\">−2.5 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUB-0\",\n      \"name\": \"SX12 Compact Cash allocation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUC-0\",\n      \"name\": \"Cash allocation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUD-0\",\n      \"name\": \"−2.5 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-row-3",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact Stock selection\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;color:var(--mx-light-text)\">Stock selection</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-ink-up)\">+0.5 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUF-0\",\n      \"name\": \"SX12 Compact Stock selection\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUG-0\",\n      \"name\": \"Stock selection\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUH-0\",\n      \"name\": \"+0.5 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-row-4",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact Interaction\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;color:var(--mx-light-text)\">Interaction</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-ink-down)\">−0.1 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUJ-0\",\n      \"name\": \"SX12 Compact Interaction\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUK-0\",\n      \"name\": \"Interaction\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUL-0\",\n      \"name\": \"−0.1 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-row-5",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact Costs\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;border-bottom:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;color:var(--mx-light-text)\">Costs</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-ink-down)\">−0.4 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUN-0\",\n      \"name\": \"SX12 Compact Costs\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUO-0\",\n      \"name\": \"Costs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUP-0\",\n      \"name\": \"−0.4 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-total",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Net gap</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:20px;line-height:28px;font-weight:700;color:var(--mx-light-ink-down)\">−1.9 pp</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUS-0\",\n      \"name\": \"Net gap\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUT-0\",\n      \"name\": \"−1.9 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-compact-method",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU0-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Compact open method\" style=\"display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-ink-link)\">How attribution works</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUV-0\",\n      \"name\": \"SX12 Compact open method\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUW-0\",\n      \"name\": \"How attribution work…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-method-header",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Mobile method header\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:22px;line-height:31px;font-weight:700;color:var(--mx-light-text)\">Attribution inputs</div><div style=\"display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:var(--mx-light-bg)\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"><path d=\"m5 5 10 10M15 5 5 15\" stroke=\"#1C2430\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GUY-0\",\n      \"name\": \"SX12 Mobile method header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GUZ-0\",\n      \"name\": \"Attribution inputs\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV1-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV2-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-method-status",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Illustrative single period · USD<br/>Single-period Brinson–Fachler</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GV4-0\",\n      \"name\": \"Illustrative single …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-sector-a",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Mobile Sector A expanded\" style=\"display:flex;flex-direction:column;gap:12px;padding:14px;border:1px solid var(--mx-light-line-quiet);border-radius:10px\"><div style=\"display:flex;justify-content:space-between;align-items:center;height:30px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:15px;line-height:22px;font-weight:600;color:var(--mx-light-text)\">Sector A</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">Expanded</div></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GV6-0\",\n      \"name\": \"SX12 Mobile Sector A expanded\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV8-0\",\n      \"name\": \"Sector A\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GV9-0\",\n      \"name\": \"Expanded\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-input-benchmark",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GV6-0",
+        "mode": "insert-children",
+        "html": "<div style=\"display:flex;flex-direction:column;gap:4px;padding-top:10px;border-top:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-text)\">Benchmark</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Weight 50% · return 10%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVC-0\",\n      \"name\": \"Benchmark\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVD-0\",\n      \"name\": \"Weight 50% · return …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-input-strategy",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GV6-0",
+        "mode": "insert-children",
+        "html": "<div style=\"display:flex;flex-direction:column;gap:4px;padding-top:10px;border-top:1px solid var(--mx-light-line-quiet)\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;font-weight:600;color:var(--mx-light-text)\">Strategy</div><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Weight 49.375% · return 10.6875%</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVG-0\",\n      \"name\": \"Strategy\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVH-0\",\n      \"name\": \"Weight 49.375% · ret…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-input-b",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Mobile Sector B collapsed\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:48px;padding:0 14px;border:1px solid var(--mx-light-line-quiet);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Sector B</div><div style=\"display:flex;gap:12px;align-items:center\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">19.375% weight</div><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path d=\"m4 2 4 4-4 4\" fill=\"none\" stroke=\"#5D6B7E\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVJ-0\",\n      \"name\": \"SX12 Mobile Sector B collapsed\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVK-0\",\n      \"name\": \"Sector B\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVM-0\",\n      \"name\": \"19.375% weight\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVN-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVO-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-input-cash",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Mobile Cash collapsed\" style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;height:48px;padding:0 14px;border:1px solid var(--mx-light-line-quiet);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Cash</div><div style=\"display:flex;gap:12px;align-items:center\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:18px;color:var(--mx-light-muted)\">31.25% weight</div><svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\"><path d=\"m4 2 4 4-4 4\" fill=\"none\" stroke=\"#5D6B7E\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVQ-0\",\n      \"name\": \"SX12 Mobile Cash collapsed\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVR-0\",\n      \"name\": \"Cash\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVT-0\",\n      \"name\": \"31.25% weight\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVU-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GVV-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-conventions",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:var(--font-ui),sans-serif;font-size:13px;line-height:19px;color:var(--mx-light-muted)\">Costs: 0.4 pp, deducted once.<br/>FX: zero in this single-currency example.</div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVX-0\",\n      \"name\": \"Costs: 0.4 pp, deduc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-sx12-mobile-return",
+      "tool": "write_html",
+      "arguments": {
+        "targetNodeId": "1GU1-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"SX12 Mobile return\" style=\"display:flex;align-items:center;justify-content:center;height:44px;border:1px solid var(--mx-light-line);border-radius:8px\"><div style=\"font-family:var(--font-ui),sans-serif;font-size:14px;line-height:20px;font-weight:600;color:var(--mx-light-text)\">Back to evaluation</div></div>",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"1GVZ-0\",\n      \"name\": \"SX12 Mobile return\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"1GW0-0\",\n      \"name\": \"Back to evaluation\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "reason": null,
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    },
+    {
+      "operation_id": "prophet-sector-20261109-v52-finish-evaluation-and-states",
+      "tool": "finish_working_on_nodes",
+      "arguments": {
+        "nodeIds": [
+          "1G21-0",
+          "1GPK-0"
+        ],
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM"
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "INTENT_RECORDED",
+      "pass": "5.2",
+      "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d"
+    },
+    {
+      "operation_id": "prophet-sector-v52-recovery-sx11-guidance-20261109",
+      "tool": "set_text_content",
+      "arguments": {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "updates": [
+          {
+            "nodeId": "1GKG-0",
+            "html": "SX05 opens four independent destinations in SX12: Evaluation details, How attribution works, Coverage and existing Portfolio. Use the 320px signed list and 390px method sheet. Keyboard/touch opening, close, focus return and preserved context require browser proof."
+          },
+          {
+            "nodeId": "1GKP-0",
+            "html": "v5.2 SX05 (1G21-0) and SX12 (1GPK-0) are materially designed and visually reviewed; final JSX matched on recovery. The original insertion response and final finish receipt remain unproven. Do not recreate designs or replay those calls. Product behavior remains unbuilt."
+          },
+          {
+            "nodeId": "1GMB-0",
+            "html": "No competing Sector programme. Preserve original mobile Plans hold 1EEH-0 / 1EF3-0. SX05/SX12 content is verified; retain historical insertion and unreturned finish separately. Shared implementation custody and research gates remain unchanged."
+          }
+        ]
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1GKG-0\"\n    },\n    {\n      \"nodeId\": \"1GKP-0\"\n    },\n    {\n      \"nodeId\": \"1GMB-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "pass": "5.2 recovery"
+    },
+    {
+      "operation_id": "prophet-sector-v52-recovery-sx11-source-pointer-20261109",
+      "tool": "set_text_content",
+      "arguments": {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "updates": [
+          {
+            "nodeId": "1GHH-0",
+            "html": "Core amendment / quantitative protocol: 638d5f40627f53d4479acb63a515207a95669398. v5.2 completed evaluation, disclosures and compact-state build specification: d6d7dbf43bddc53fb64572220125a2723a406af2 · research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md."
+          },
+          {
+            "nodeId": "1GKP-0",
+            "html": "v5.2 SX05 (1G21-0) and SX12 (1GPK-0) are materially designed and visually reviewed; final JSX matched on recovery. The original insertion response and final finish receipt remain unproven. Do not recreate designs or replay those calls. Runtime interactions remain unproven."
+          }
+        ]
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1GHH-0\"\n    },\n    {\n      \"nodeId\": \"1GKP-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "pass": "5.2 recovery"
+    },
+    {
+      "operation_id": "prophet-sector-v52-recovery-sx11-finish-20261109",
+      "tool": "finish_working_on_nodes",
+      "arguments": {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeIds": [
+          "1GHB-0"
+        ]
+      },
+      "expected_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M3NT5Y3G5HTJHVR0K5W2MDJM\",\n    \"name\": \"PROPHET\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"640746f9\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "after_snapshot": "b3197ff55d312ed55f6b8a73b5e2e7b080273990949f3f7cbf8dc8d654a6ce98",
+      "receipt_summary": {
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      "pass": "5.2 recovery"
     }
   ],
   "roots": [
     {
       "name": "SX01 · Today · Market to sector · 1440",
-      "id": "1FFU-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1FFU-0",
+      "id": "1FFU-0"
     },
     {
       "name": "SX02 · Sector focus · Healthcare · 1440",
-      "id": "1FLQ-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1FLQ-0",
+      "id": "1FLQ-0"
     },
     {
       "name": "SX03 · Name setup · Shared context · 1440",
-      "id": "1FRD-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1FRD-0",
+      "id": "1FRD-0"
     },
     {
       "name": "SX04 · Screener & compare · Sector population · 1440",
-      "id": "1FWN-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1FWN-0",
+      "id": "1FWN-0"
     },
     {
       "name": "SX05 · Strategy evaluation · Benchmark first · 1440",
-      "id": "1G21-0",
-      "state": "PARTIAL_HELD_EFFECT_UNKNOWN"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1G21-0",
+      "id": "1G21-0"
     },
     {
       "name": "SX06 · Mobile Today · 390",
-      "id": "1G4T-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1G4T-0",
+      "id": "1G4T-0"
     },
     {
       "name": "SX07 · Mobile HK · ZH dark · 390",
-      "id": "1G6T-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1G6T-0",
+      "id": "1G6T-0"
     },
     {
       "name": "SX08 · Small viewport · 320",
-      "id": "1G8M-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1G8M-0",
+      "id": "1G8M-0"
     },
     {
       "name": "SX09 · State specimens · Sector connection",
-      "id": "1G9V-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1G9V-0",
+      "id": "1G9V-0"
     },
     {
       "name": "SX10 · Build contract · Shared owners",
-      "id": "1GC9-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1GC9-0",
+      "id": "1GC9-0"
     },
     {
       "name": "SX11 · Build contract · Product & acceptance",
-      "id": "1GHB-0",
-      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "node_id": "1GHB-0",
+      "id": "1GHB-0"
+    },
+    {
+      "node_id": "1GPK-0",
+      "name": "SX12 · Evaluation disclosures · Opened states",
+      "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE",
+      "id": "1GPK-0"
     }
   ],
   "held_original": {
@@ -2326,8 +4725,8 @@
     "target": "1G3F-0",
     "root": "1G21-0",
     "state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
-    "readback": "Original target later observed without attribution children; absence is not terminal/no-effect evidence.",
-    "disposition": "No replay, recreation, re-home, carrier swap, finish or mutation of held subtree until original effect is reconciled. No operation-status action in observed Paper catalog.",
+    "readback": "Historical absence reads remain in reconciliation_attempts. Current SX05 attribution and all controls are present; exact final export matches recovered v5.2 bytes.",
+    "disposition": "Original response remains unknown; do not replay. The v5.1 prospective SX05 hold was superseded by the Chairman-authorized v5.2 current-state repair, saved at 891835cfb0e3728dcbed0312424873676e3e0d1d. Subsequent content edits have applied responses and fresh byte-identical readback. No old cancellation/terminal receipt is claimed.",
     "reconciliation_attempts": [
       {
         "action": "get_children original target",
@@ -2348,7 +4747,9 @@
           "1G47-0"
         ]
       }
-    ]
+    ],
+    "historical_prospective_disposition": "No replay, recreation, re-home, carrier swap, finish or mutation of held subtree until original effect is reconciled. No operation-status action in observed Paper catalog.",
+    "current_design_content_state": "VERIFIED_V52_CONTENT"
   },
   "verified_content_corrections": [
     "SX03 original/current labels and Context tab",
@@ -2358,20 +4759,22 @@
   "readback": {
     "state": "OBSERVED",
     "page_id": "p-H-0",
-    "node_count": 1467,
-    "root_count": 11,
+    "node_count": 1726,
+    "root_count": 12,
     "token_hash": "640746f9",
     "completed_roots": [
       "1FFU-0",
       "1FLQ-0",
       "1FRD-0",
       "1FWN-0",
+      "1G21-0",
       "1G4T-0",
       "1G6T-0",
       "1G8M-0",
       "1G9V-0",
       "1GC9-0",
-      "1GHB-0"
+      "1GHB-0",
+      "1GPK-0"
     ],
     "finished_exact_roots": [
       "1FFU-0",
@@ -2386,7 +4789,8 @@
       "1GHB-0",
       "1FD3-0",
       "1F71-0"
-    ]
+    ],
+    "finish_receipt_limit": "SX05/SX12 final finish intent has no response. Do not infer finished indicators from completed_roots; that field denotes reviewed content. SX11 recovery finish has an applied response."
   },
   "source_amendment_commit": "638d5f40627f53d4479acb63a515207a95669398",
   "quant_precision_readback": {
@@ -2470,5 +4874,139 @@
     "remaining_controls_issued": false,
     "numeric_fixture_check": "Exact rational reconciliation accepted from bounded reasoning review; single-period synthetic example only, no protected outcomes or strategy run.",
     "prior_programme_and_architecture_preserved": true
+  },
+  "completion_pass_v52": {
+    "version": "5.2",
+    "authority_commit": "891835cfb0e3728dcbed0312424873676e3e0d1d",
+    "recovery_checkpoint_commit": "3bd7e3fab1e03e86928a950fc389ea54e0cd2a23",
+    "build_spec_commit": "d6d7dbf43bddc53fb64572220125a2723a406af2",
+    "content_state": "DESIGNED_AND_VISUALLY_REVIEWED",
+    "root_ids": [
+      "1G21-0",
+      "1GPK-0"
+    ],
+    "all_four_disclosures_designed": true,
+    "compact_attribution": {
+      "node": "1GU0-0",
+      "width_px": 320
+    },
+    "mobile_method": {
+      "node": "1GU1-0",
+      "width_px": 390
+    },
+    "original_v52_applied_content_operations": 70,
+    "recovery_builder_operations": 3,
+    "original_uncertain_effect_not_replayed": true,
+    "unreturned_finish_not_replayed": true,
+    "original_mobile_plans_untouched": true,
+    "runtime_interactions_exercised": false,
+    "scientific_acceptance": false,
+    "design_source_refresh": {
+      "macro_main": "6cee674b5f8d39074c37540da6eedbced5a35708",
+      "doctrine_blob": "2ef014e6ccb23c23922e22291d2cfe0904c60345",
+      "design_system_blob": "f8a28702767b78b2e48299f55a85e21a5c2360cd",
+      "both_unchanged_from_v51": true,
+      "full_backend_recensus": false
+    },
+    "exports": {
+      "SX05_EVALUATION_V52.jsx": {
+        "sha256": "b65c4117bd7d6c298b667249501909ee95b341e3972cc4708b0c650a27167023",
+        "bytes": 37055,
+        "matches_predecessor_final": true,
+        "matches_fresh_native_read": true,
+        "source_commit": "d6d7dbf43bddc53fb64572220125a2723a406af2"
+      },
+      "SX12_DISCLOSURES_V52.jsx": {
+        "sha256": "2d6012ed68996b28284bb053eb3fad591c8b783a98044ca72b89c1917efdd258",
+        "bytes": 43987,
+        "matches_predecessor_final": true,
+        "matches_fresh_native_read": true,
+        "source_commit": "d6d7dbf43bddc53fb64572220125a2723a406af2"
+      }
+    },
+    "visual_review": {
+      "predecessor_detailed_review": {
+        "main": true,
+        "details_method_row": true,
+        "coverage_portfolio_row": true,
+        "responsive_row": true,
+        "complete_atlas": true,
+        "observation": "No clipping, overlap, crowding or illegible table observed at captured specimen sizes. Static design review only; runtime interaction not exercised."
+      },
+      "recovery_full_boards": [
+        "SX05",
+        "SX12",
+        "SX11"
+      ],
+      "verdict": "Spacing, hierarchy, neutral surfaces, contrast, wrapping and alignment passed at captured sizes. No clipping or overlap observed. Expert static review only."
+    },
+    "builder_guidance": {
+      "root": "1GHB-0",
+      "updated_text_nodes": [
+        "1GKG-0",
+        "1GKP-0",
+        "1GMB-0",
+        "1GHH-0"
+      ],
+      "exact_text_readback": true,
+      "finished_response_observed": true
+    }
+  },
+  "historical_v51_readback": {
+    "state": "OBSERVED",
+    "page_id": "p-H-0",
+    "node_count": 1467,
+    "root_count": 11,
+    "token_hash": "640746f9",
+    "completed_roots": [
+      "1FFU-0",
+      "1FLQ-0",
+      "1FRD-0",
+      "1FWN-0",
+      "1G4T-0",
+      "1G6T-0",
+      "1G8M-0",
+      "1G9V-0",
+      "1GC9-0",
+      "1GHB-0"
+    ],
+    "finished_exact_roots": [
+      "1FFU-0",
+      "1FLQ-0",
+      "1FRD-0",
+      "1FWN-0",
+      "1G4T-0",
+      "1G6T-0",
+      "1G8M-0",
+      "1G9V-0",
+      "1GC9-0",
+      "1GHB-0",
+      "1FD3-0",
+      "1F71-0"
+    ]
+  },
+  "unreturned_finish_intent": {
+    "operation_id": "prophet-sector-20261109-v52-finish-evaluation-and-states",
+    "tool": "finish_working_on_nodes",
+    "node_ids": [
+      "1G21-0",
+      "1GPK-0"
+    ],
+    "state": "DISPATCH_AND_COMPLETION_UNPROVEN",
+    "original_journal_state": "INTENT_RECORDED",
+    "response_present": false,
+    "replayed": false,
+    "scope": "Editor working indicators only; all prior v5.2 content writes have applied responses.",
+    "available_reconciliation": "Current catalog/node reads expose no operation status or working-indicator flag. Retain original intent without replay."
+  },
+  "version": "5.2",
+  "operation_summary": {
+    "entries": 156,
+    "states": {
+      "APPLIED_RESPONSE_OBSERVED": 154,
+      "UNKNOWN_RESPONSE": 1,
+      "INTENT_RECORDED": 1
+    },
+    "counts_are_tool_receipts_not_product_acceptance": true
   }
 }

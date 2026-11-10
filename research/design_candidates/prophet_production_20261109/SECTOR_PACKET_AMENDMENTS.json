@@ -1,6 +1,6 @@
 {
   "schema": "prophet.packet_amendments.editorial.v1",
-  "version": "5.1",
+  "version": "5.2",
   "original_briefs_preserved": true,
   "admission": false,
   "protected_outcome_authority": false,
@@ -82,7 +82,7 @@
         "SP19",
         "SP20"
       ],
-      "collision": "Lanes 6/7/8; one migration/outbox/ledger. SX05 attribution has an unresolved original Paper effect; use the source contract, do not duplicate that design mutation."
+      "collision": "Lanes 6/7/8; one migration/outbox/ledger. SX05/SX12 designs and compact states are reviewed. Preserve original insertion and unreturned finish receipts without replay; original mobile Plans hold is unchanged. Current shared-file custody must be refreshed at implementation pickup."
     },
     "P7": {
       "addition": "All SP01–SP24 and original PF01–PF20/B/Q/D/R acceptance, ordinary-refresh served proof, failure/correction and compatible rollback.",
@@ -130,5 +130,34 @@
     "build_spec_commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f",
     "requirement": "One common signed pp scale, truthful starting-allocation and asset/cash labels, no hindsight opportunity claim, and inspectable status/method/coverage/authorized Portfolio controls.",
     "changes_original_record_enum": false
+  },
+  "completion_pass_v52": {
+    "build_spec_commit": "d6d7dbf43bddc53fb64572220125a2723a406af2",
+    "paper_content_reviewed": true,
+    "destinations": [
+      "Evaluation details",
+      "How attribution works",
+      "Coverage",
+      "Open Portfolio"
+    ],
+    "compact_nodes": [
+      "1GU0-0",
+      "1GU1-0"
+    ],
+    "runtime_proof_owed": [
+      "independent destination open/close",
+      "keyboard/touch and focus return",
+      "exact evaluation context retained",
+      "complete mobile accordion inputs",
+      "missing/stale/error recovery",
+      "existing authorized Portfolio return"
+    ],
+    "existing_acceptance_cases": [
+      "SP19",
+      "SP20",
+      "SP23"
+    ],
+    "dispatch": false,
+    "research_permission_change": false
   }
 }

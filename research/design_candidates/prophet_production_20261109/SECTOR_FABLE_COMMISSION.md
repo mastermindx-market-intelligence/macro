@@ -1,4 +1,4 @@
-# Fable-led T3 commission — Prophet × Sector Intelligence, v5.1
+# Fable-led T3 commission — Prophet × Sector Intelligence, v5.2
 
 **Purpose:** implement the original full Prophet programme with the Chairman’s new mandatory beta-first, deeply connected Sector Intelligence scope. This is the current source commission plus the preserved original seven briefs. It is not delivery, pickup, admission, START, production acceptance or trading authority.
 
@@ -14,7 +14,7 @@ All original 38 T3C contracts, 29 B build units, 24 Q packets, 12 D decisions, 3
 
 ## Source and writer boundary
 
-Procedure pin 3652d8907df1738de551dd3032b42aa2a2acb482; Macro source pin f3a547cc09872d9aaa719759a6a2daa2832edad5; Terminal pin 2fe2f02f07d1df8c855388bc556383cd74de44fd. Refresh affected source and custody at pickup. Macro #10780/#10839 are unmerged candidates at the exact heads in the census; #10703 stays Draft/HOLD. The existing Sector frontier records Fable T3 COO thread 2f136a11-91f9-4bca-bf10-8a1d8b7f4e5d and lanes 1–8 STARTED. That source statement is not an independently checked runtime or completed implementation.
+The baseline retained procedure pin 3652d8907df1738de551dd3032b42aa2a2acb482, Macro source pin f3a547cc09872d9aaa719759a6a2daa2832edad5 and Terminal pin 2fe2f02f07d1df8c855388bc556383cd74de44fd. Recovery used protected procedure pin f357bd0b3c31ee40f028590909678f01a3a9d413 and refreshed the design sources at Macro 6cee674b5f8d39074c37540da6eedbced5a35708; their blobs were unchanged. The full backend/custody census remains dated. Refresh affected source and custody at pickup. Macro #10780/#10839 were unmerged candidates at the exact heads in that census; #10703 was Draft/HOLD. The retained Sector frontier records Fable T3 COO thread 2f136a11-91f9-4bca-bf10-8a1d8b7f4e5d and lanes 1–8 STARTED. That source statement is not an independently checked current runtime or completed implementation.
 
 Sector lane 3 is the sole shared-file writer for SectorIntelligenceWorkspace.tsx, sectorIntelligenceLex.ts, sectorIntelligence.ts and app/api/sector-intelligence/route.ts. Lane 1 owns generation integration; lane 4 Cycles; lane 5 research/industry evidence; lane 6 investigations; lane 7 depth; lane 8 analytics/history; lane 9 eventual integrated proof. Coordinate additive contracts through them. Do not create a competing Sector programme, overwrite donor branches or infer a new authority from a retrieved brief.
 
@@ -94,7 +94,7 @@ P1/P2: one authenticated native Sector capture → complete entitled dated Proph
 
 **Required proof:** SP14, SP17, SP18, SP19, SP20.
 
-**Custody:** Lanes 6/7/8; one migration/outbox/ledger. SX05 attribution has an unresolved original Paper effect; use the source contract, do not duplicate that design mutation.
+**Custody:** Lanes 6/7/8; one migration/outbox/ledger. SX05/SX12 designs and compact states are reviewed. Preserve original insertion and unreturned finish receipts without replay; original mobile Plans hold is unchanged. Current shared-file custody must be refreshed at implementation pickup.
 
 ### P7
 
@@ -116,7 +116,9 @@ Preserve the closed Model-plan Record population and legacy semantics. Implement
 
 ## Design custody and precise remaining work
 
-New Paper page: https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0 . Ten of eleven new roots are reviewed candidates; SX10/SX11 contain the native builder instructions and AGENT README/Start Here point to this scope. SX05 is partial because its attribution write has uncertain effect: operation prophet-sector-20261109-sx05-attribution, target 1G3F-0, root 1G21-0. Do not duplicate, re-home, swap carrier, mutate or finish that subtree before original reconciliation. Original mobile Plans 1EEH-0/1EF3-0 remains a separate hold. New source-contract completion does not claim all Paper mutations complete.
+Current Paper page: https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0 . Twelve roots are reviewed candidates. SX05 contains completed benchmark-first attribution; SX12 contains four opened disclosures, a 320px signed contribution list and a 390px method sheet. SX10/SX11 retain native builder instructions. The source build specification and exact native exports are pinned at `d6d7dbf43bddc53fb64572220125a2723a406af2`.
+
+Recovery verified the exact SX05/SX12 final exports and current screenshots; it did not reconstruct completed work. The old insertion response remains historical UNKNOWN_RESPONSE and the final `finish_working_on_nodes` intent for SX05/SX12 has no response. Do not replay either. The separate original mobile Plans target 1EEH-0/1EF3-0 remains held. These receipt limits do not erase the verified content, authorize production work or establish runtime interaction proof.
 
 ## Required return and full completion
 
@@ -124,10 +126,14 @@ Return exact source/base/head/diff; actual writer and candidate disposition; aff
 
 The full programme is complete only when original advertised jobs and all preserved B/Q/D/R plus the new integration obligations have actual source, consumer, durable-state, scientific and operational proof or legitimate research disposition. A descriptive first release can be useful; an unavailable predictive feature remains an obligation. Stop only at that outcome or a proven active execution/control boundary. Web self-check and actual repository/security/release rules apply; no invented named-review ceremony.
 
-## Completion-pass precision — v5.1
+## Completion-pass precision — retained v5.1 requirements, applied in v5.2
 
-The accepted architecture is unchanged. P6/SI13/SP19–SP20 now require one common signed percentage-point scale; “Includes invested assets and cash”; starting invested/cash allocations 68.75%/31.25%; and no inference of ex-ante opportunity from a realized benchmark rise. SX11 card J and its source pointer were updated, read back and visually reviewed. The corrected source is [the exact build specification](https://github.com/mastermindx-market-intelligence/macro/blob/1e3ac76bdbd28852acb0b3796ac8e7e9279d459f/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md).
+The accepted architecture is unchanged. P6/SI13/SP19–SP20 require one common signed percentage-point scale; “Includes invested assets and cash”; starting invested/cash allocations 68.75%/31.25%; and no inference of ex-ante opportunity from a realized benchmark rise. SX11 card J and its source pointer were updated, read back and visually reviewed. The original precision requirements are retained in the [historical v5.1 build specification](https://github.com/mastermindx-market-intelligence/macro/blob/1e3ac76bdbd28852acb0b3796ac8e7e9279d459f/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md); the current applied design contract is [the v5.2 build specification](https://github.com/mastermindx-market-intelligence/macro/blob/d6d7dbf43bddc53fb64572220125a2723a406af2/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md).
 
-The remaining SX05 controls are Evaluation details, How attribution works, Coverage and the existing authorized Portfolio destination. Preserve synthetic versus accepted status, exact evaluation/protocol, benchmark/period/currency/basis, actual or simulated weights, explicit method/cash/cost/FX and actual missingness. A scope label is not coverage proof; no invented counts or holdings. The original Record enum remains closed.
+The completed SX05/SX12 controls are Evaluation details, How attribution works, Coverage and the existing authorized Portfolio destination. Preserve synthetic versus accepted status, exact evaluation/protocol, benchmark/period/currency/basis, actual or simulated weights, explicit method/cash/cost/FX and actual missingness. A scope label is not coverage proof; no invented counts or holdings. The original Record enum remains closed.
 
-These product-board corrections remain unapplied because the original SX05 effect is unresolved. A fresh read again found no attribution children; the current Paper tool surface has no old-operation status query. The pinned bridge source explicitly retains no persistent operation/retry ledger. Neither absence nor this diagnosis establishes terminal no-effect. Do not replay, replace or finish that root. No new admission, protected-outcome permission, dispatch or START is granted by this refinement.
+The four presentation corrections and disclosure designs are now applied and visually reviewed under the v5.2 direction. The original v5.1 absence observation remains historical and is superseded for current content by exact live exports; it is not replaced with an invented old receipt. The 320px list preserves signed pp values; the 390px method sheet must retain complete inputs when its accordion is implemented. Preserve the current build specification at d6d7dbf43bddc53fb64572220125a2723a406af2 and extend the existing SP19/SP20/SP23 proof cases. No new admission, protected-outcome permission, dispatch or START is granted.
+
+## Design-pass recovery and implementation pickup
+
+This commission remains PREPARED_SOURCE_ONLY: it has not been sent, picked up or STARTED by Fable. Current v5.2 work completes design/source/PDF consistency; production implementation is outside that pass. On an actual authorized implementation pickup, refresh the existing shared-source writer/custody and evaluate the source programme against the live product. Reuse the same consumer journey and all original programme IDs. Prove each named disclosure, preserved investigation context, real retained Sector generation and qualified evaluation result in the browser; source and screenshots alone cannot accept the production programme.
