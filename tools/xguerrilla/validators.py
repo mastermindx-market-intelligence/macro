@@ -87,10 +87,17 @@ _BARE_LINK_HOSTS = {
 #: X autolinks a bare host too, so a URL is not only `scheme://`: the token
 #: matcher also names the hosts that matter. Order matters — the scheme and
 #: `www.` alternatives win at any position they can match.
+#: The last alternative is the general scheme-less host: any dotted host with
+#: an alphabetic TLD (two labels minimum), because a gate cannot maintain a
+#: list of everybody else's domains. Its shape refuses prose look-alikes:
+#: "e.g."/"i.e." end on a one-letter label, "v1.2"/"2.0.1" end on a number,
+#: and a sentence-final "done." carries no second label at all.
 _LINK_TOKEN = re.compile(
     r"(?i)(?:https?://[^\s<>\"'`]+"
     r"|www\.[^\s<>\"'`]+"
-    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-]))"
+    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-])"
+    r"|(?<![\w.@/-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}"
+    r"(?:/[^\s<>\"'`]*)?(?![\w-]))"
     % "|".join(re.escape(h) for h in sorted(_BARE_LINK_HOSTS))
 )
 #: Sentence punctuation is not part of a link.
