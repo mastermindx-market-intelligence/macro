@@ -2386,7 +2386,10 @@ class ProofFreshness:
         if not sha:
             return
         self.commits.insert(0, {"sha": sha, "message": message})
-        self._commit_files[sha] = (list(files or []), False)
+        # Unknown files (None) are recorded like a truncated list: `stale_for`
+        # then cannot show any later pull request's surface is untouched, so
+        # that pull request is re-proved instead of merged past this squash.
+        self._commit_files[sha] = (list(files or []), files is None)
         self._proof_bound_sha = None
 
     def sha_is_skip_ci_tick(self, sha: str) -> bool:
@@ -8322,9 +8325,12 @@ def sweep_pull(
         # a pull request that had just merged — the pass then kept judging on a
         # snapshot that did not contain the merge, and a second `main-red-repair`
         # could be evaluated behind it. Unreadable files are recorded as an
-        # empty file list, which is never skip-ci noise, so `proof_bound_sha`
-        # treats the squash as a PRODUCT commit: every later pull request in
-        # this pass is re-proved against it, never merged past it.
+        # UNKNOWN (truncated) file list. It is never skip-ci noise, so
+        # `proof_bound_sha` binds at the squash, and `stale_for` cannot show the
+        # squash is outside any later pull request's tested surface, so every
+        # later pull request in this pass is re-proved against it, never merged
+        # past it (R1, pinned by
+        # test_unreadable_merged_files_never_let_an_overlapping_green_pr_merge).
         try:
             merged_files = freshness.pull_files(number)
         except Exception as exc:

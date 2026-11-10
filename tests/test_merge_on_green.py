@@ -3776,6 +3776,99 @@ def test_repair_error_after_merge_still_spends_the_slot(monkeypatch, capsys):
     assert fresh.proof_bound_sha == "c" * 40
 
 
+@pytest.mark.parametrize("files_after_merge", ["readable", "raise", "none"])
+def test_unreadable_merged_files_never_let_an_overlapping_green_pr_merge(
+    monkeypatch, capsys, files_after_merge
+):
+    """R1 (re-review of the F7 repair, 2026-11-10). Green main; two armed clean
+    pull requests whose proofs are on the same main tip. The first squash is
+    accepted (HTTP 200) and touches a path inside the second one's tested
+    surface. If the merged pull request's file list cannot be re-read (transport
+    fault, or an HTTP error the request helper returns as ``None``), the squash
+    must still count as possibly inside that surface: the second pull request is
+    re-proved (update-branch), never merged on a proof that never saw the first
+    merge. The readable case is the control."""
+    import urllib.error
+
+    squash = "c" * 40
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}},
+    )
+    inner = MOG._request
+    state = {"merged": False}
+
+    def main_moves_after_the_merge(method, url, token, payload=None):
+        if state["merged"]:
+            if method == "GET" and "/git/ref/heads/main" in url:
+                calls.append((method, url, payload))
+                return 200, {"object": {"sha": squash}}
+            if "/compare/" in url and squash not in url and url.split(
+                "/compare/"
+            )[1].startswith("main..."):
+                status, answer = inner(method, url, token, payload)
+                answer = dict(answer)
+                answer["base_commit"] = {"sha": squash}
+                return status, answer
+            if method == "GET" and url.endswith("/commits/" + squash):
+                calls.append((method, url, payload))
+                return 200, {"files": [{"filename": "engine/signal_quality.py"}]}
+            if "/compare/" in url and squash in url:
+                calls.append((method, url, payload))
+                return 200, {
+                    "base_commit": {"sha": squash},
+                    "files": [{"filename": "engine/signal_quality.py"}],
+                    "commits": [
+                        {"sha": squash, "commit": {"message": "Change (#10759)"}}
+                    ],
+                }
+        status, answer = inner(method, url, token, payload)
+        if url.endswith("/merge") and status == 200:
+            state["merged"] = True
+        return status, answer
+
+    monkeypatch.setattr(MOG, "_request", main_moves_after_the_merge)
+    fresh = _freshness()
+    read_files = fresh.pull_files
+
+    def merged_files(number):
+        if number == 10759 and state["merged"]:
+            if files_after_merge == "raise":
+                raise urllib.error.URLError("timed out")
+            if files_after_merge == "none":
+                return None
+        return read_files(number)
+
+    fresh.pull_files = merged_files
+    monkeypatch.setenv("GH_REPO", "acme/widgets")
+    monkeypatch.setenv("READ_TOKEN", "read")
+    monkeypatch.setenv("MERGE_TOKEN", "write")
+    monkeypatch.delenv("TRIGGER_CONCLUSION", raising=False)
+    monkeypatch.delenv("TRIGGER_HEAD_SHA", raising=False)
+    monkeypatch.setattr(MOG, "labeled_pulls", lambda *_a: [_pull(10759), _pull(10760)])
+    monkeypatch.setattr(
+        MOG, "integration_baseline_state", lambda *_a: ("green", "fixture")
+    )
+    monkeypatch.setattr(
+        MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: fresh)
+    )
+    monkeypatch.setattr(MOG, "main_proof", lambda *_a: _proof())
+    monkeypatch.setattr(MOG, "ensure_main_baseline", lambda *_a: "stubbed")
+    monkeypatch.setattr(MOG, "core_rate_limit", lambda _t: (1000, 1000))
+    _pin_rotation(monkeypatch)  # #10759 is judged first
+
+    assert MOG.main() == 0
+    merges = [call[1] for call in calls if call[1].endswith("/merge")]
+    assert merges == [
+        "https://api.github.com/repos/acme/widgets/pulls/10759/merge"
+    ], f"{files_after_merge}: merge calls in one green pass: {merges}"
+    updates = [call[1] for call in calls if call[1].endswith("/update-branch")]
+    assert updates == [
+        "https://api.github.com/repos/acme/widgets/pulls/10760/update-branch"
+    ], f"{files_after_merge}: #10760 must be re-proved, got {updates}"
+    capsys.readouterr()
+
+
 def test_an_accepted_merge_settles_as_merged_when_every_later_step_fails(
     monkeypatch, capsys
 ):
