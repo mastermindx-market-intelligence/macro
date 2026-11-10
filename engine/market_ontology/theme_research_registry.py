@@ -446,6 +446,25 @@ def _issuer_economics_module() -> Any:
     return issuer_economics
 
 
+def _issuer_economics_unavailable(reason: str) -> Mapping[str, Any]:
+    """The typed unavailable block for a registration-seam fault (N1): the
+    issuer-economics module's own :func:`unavailable_block` when the module
+    imports, else the registry-local minimal literal (whose schema string is
+    pinned equal to the module's constant by test). The ``reason`` names the
+    exception CLASS only — never the message text, which can carry paths."""
+    try:
+        return _issuer_economics_module().unavailable_block(reason)
+    except Exception:  # noqa: BLE001 — the module itself is unreadable: minimal literal
+        return {
+            "schema": "sector_intelligence.issuer_economics.v1",
+            "state": "issuer_economics_unavailable",
+            "reason": reason,
+            "authority": {flag: False for flag in (
+                "rank", "gate", "size", "veto", "originate", "open_entry",
+            )},
+        }
+
+
 def _build_semiconductor_issuer_economics(
     query: Any, bundle: Any, *, dropped: bool = False,
 ) -> Mapping[str, Any]:
@@ -459,25 +478,31 @@ def _build_semiconductor_issuer_economics(
     scope module's own canonical master loader — the one immutable-byte-read
     reader contract; ``None`` when the master is unreadable, which the block
     carries as the typed alias unknown). Every import is lazy: importing the
-    registry loads no vertical and no data stack. The builder is pure over
-    mapping-shaped inputs and never raises, so a builder fault cannot take
-    the query route down."""
+    registry loads no vertical and no data stack. The FAULT LAW (N1): the
+    whole binding — owner reads and build — is wrapped, so any fault inside
+    it degrades to the typed unavailable block
+    (:func:`_issuer_economics_unavailable`, reason naming the exception
+    class only) and the query route still succeeds; the build function
+    itself is pure over plain mapping-shaped inputs and never raises."""
     from engine.market_ontology.semiconductor_witness_scope import (  # noqa: PLC0415 — lazy by design
         WITNESS_ROSTER,
         _load_issuer_master,
         resolve_witness_scope,
     )
 
-    slice_key = getattr(query, "slice_key", "")
-    scope = resolve_witness_scope(slice_key if isinstance(slice_key, str) else "")
-    master = _load_issuer_master()
-    return _issuer_economics_module().build_issuer_economics(
-        query, bundle,
-        scope=scope,
-        eligible_count=len(WITNESS_ROSTER.get(scope.slice_key, ())),
-        alias_resolver=(master.securities_of_issuer if master is not None else None),
-        dropped=dropped,
-    )
+    try:
+        slice_key = getattr(query, "slice_key", "")
+        scope = resolve_witness_scope(slice_key if isinstance(slice_key, str) else "")
+        master = _load_issuer_master()
+        return _issuer_economics_module().build_issuer_economics(
+            query, bundle,
+            scope=scope,
+            eligible_count=len(WITNESS_ROSTER.get(scope.slice_key, ())),
+            alias_resolver=(master.securities_of_issuer if master is not None else None),
+            dropped=dropped,
+        )
+    except Exception as exc:  # noqa: BLE001 — a seam fault is a typed unavailable block, never a failed query
+        return _issuer_economics_unavailable(f"builder_fault:{type(exc).__name__}")
 
 
 _build_semiconductor_issuer_economics.lazy_target = (

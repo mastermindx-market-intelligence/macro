@@ -276,3 +276,126 @@ def test_the_envelope_block_is_exactly_the_builders_output(
     ))
     assert evidence.status_code == 200, evidence.text
     assert len(recorded) == 1, "evidence path must not compose the block"
+
+
+# ---------------------------------------------------------------------------
+# Review follow-ups (2026-11-10, READY WITH FOLLOW-UP at 95aa439d0a8a):
+# the attach ORDER (N2/M3b — moving the single call before the expectation
+# gate previously passed every test) and the seam FAULT LAW (N1).
+# ---------------------------------------------------------------------------
+
+
+def test_the_builder_is_attached_only_after_the_expectation_gate(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """When the refresh gate refuses (409), the builder is not called at
+    all: the attach sits AFTER ``_v2_check_expectations``, so a refresh
+    conflict costs no block work. Review mutation M3b moved the single call
+    BEFORE the gate and every existing test stayed green — this one fails
+    on exactly that mutation."""
+    api_base._install_warm_owner_state(monkeypatch, tmp_path)
+    real = real_registration_for("ai_semiconductors")
+    calls: list = []
+
+    def recording(query, bundle, *, dropped=False):
+        calls.append({"dropped": dropped})
+        return real.issuer_economics(query, bundle, dropped=dropped)
+
+    monkeypatch.setattr(
+        theme_research, "registration_for",
+        lambda anchor: (
+            dataclasses.replace(real, issuer_economics=recording)
+            if anchor == "ai_semiconductors" else real_registration_for(anchor)
+        ),
+    )
+    # The refusal must fire AT the shell gate, not earlier: a wrong NATIVE
+    # expectation is already refused inside the vertical's compose, upstream
+    # of both the gate and the attach. So supply the REAL native generation
+    # and a wrong CONTEXT expectation — the one comparison the shell's gate
+    # alone performs — and the 409 is exactly the gate's.
+    ok = entitled_client.post(QUERY_ROUTE, json=api_base._v2_theme_query_body())
+    assert ok.status_code == 200, ok.text
+    native = ok.json()["generation"]
+    calls.clear()  # the warm-up call does not count
+
+    response = entitled_client.post(
+        QUERY_ROUTE,
+        json=api_base._v2_theme_query_body(
+            expected_generation=native,
+            expected_context_generation="gen_" + "e" * 32,
+        ),
+    )
+    assert response.status_code == 409, response.text  # the gate refused
+    assert response.json()["detail"]["error"]["code"] == "refresh_required"
+    assert calls == [], "a refused (409) query must not run the builder"
+
+    # Non-vacuity on the SAME state: the gate passing runs it exactly once.
+    ok = entitled_client.post(QUERY_ROUTE, json=api_base._v2_theme_query_body())
+    assert ok.status_code == 200, ok.text
+    assert len(calls) == 1
+
+
+def test_a_seam_fault_degrades_to_the_typed_unavailable_block(monkeypatch):
+    """N1: any fault inside the binding (here: the witness-scope owner read
+    raising) yields the block's typed unavailable form — reason naming the
+    exception CLASS only, never message text, which can carry paths — and
+    all-false authority."""
+    import engine.market_ontology.semiconductor_witness_scope as scope_mod
+
+    def raising(slice_key):
+        raise RuntimeError("owner down at /etc/secret")
+
+    monkeypatch.setattr(scope_mod, "resolve_witness_scope", raising)
+    registration = real_registration_for("ai_semiconductors")
+    block = dict(registration.issuer_economics(
+        SimpleNamespace(slice_key="hbm_packaging"),
+        SimpleNamespace(event_workspaces=()),
+    ))
+    assert block["schema"] == ISSUER_ECONOMICS_SCHEMA
+    assert block["state"] == "issuer_economics_unavailable"
+    assert block["reason"] == "builder_fault:RuntimeError"
+    assert "/" not in block["reason"]  # no path fragments
+    assert "owner down" not in str(block)  # no exception message text
+    assert block["authority"] == ALL_FALSE_AUTHORITY
+
+
+def test_a_seam_fault_does_not_fail_the_v2_query(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """N1, route level: the same fault inside the binding leaves the v2
+    QUERY route a 200 whose envelope carries the typed unavailable block —
+    the query still succeeds."""
+    import engine.market_ontology.semiconductor_witness_scope as scope_mod
+
+    api_base._install_warm_owner_state(monkeypatch, tmp_path)
+
+    def raising(slice_key):
+        raise RuntimeError("owner down")
+
+    monkeypatch.setattr(scope_mod, "resolve_witness_scope", raising)
+    response = entitled_client.post(
+        QUERY_ROUTE, json=api_base._v2_theme_query_body(),
+    )
+    assert response.status_code == 200, response.text
+    envelope = response.json()
+    assert envelope["issuer_economics"]["state"] == "issuer_economics_unavailable"
+    assert envelope["issuer_economics"]["reason"] == "builder_fault:RuntimeError"
+    # The payload itself is untouched by the block's degradation.
+    assert envelope["data"]["schema"] == "semiconductor_theme_research.v1"
+
+
+def test_registry_local_unavailable_literal_matches_the_module_form(monkeypatch):
+    """The registry's module-unreadable fallback literal agrees with the
+    issuer-economics module's own unavailable form on every key it carries."""
+    import engine.market_ontology.theme_research_registry as registry_mod
+    from engine.market_ontology import issuer_economics as econ_module
+
+    def unreadable():
+        raise ImportError("module unreadable")
+
+    monkeypatch.setattr(registry_mod, "_issuer_economics_module", unreadable)
+    fallback = dict(registry_mod._issuer_economics_unavailable("probe"))
+    reference = dict(econ_module.unavailable_block("probe"))
+    assert fallback == reference
+    assert fallback["schema"] == econ_module.ISSUER_ECONOMICS_SCHEMA
+    assert fallback["authority"] == ALL_FALSE_AUTHORITY

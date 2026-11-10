@@ -1322,8 +1322,9 @@ def _call_v2_query(
         # Lane 5 v1.1: the issuer-economics block rides the QUERY envelope
         # ONLY, as a sibling of ``data``. The v1 response and the v2 evidence
         # path never compose it — their byte-identity is pinned by test. The
-        # builder owns its owner reads and never raises; built AFTER the
-        # expectation gate so a refresh 409 costs no block work.
+        # binding owns its owner reads and its faults degrade to the typed
+        # unavailable block, so a builder fault never fails the query; built
+        # AFTER the expectation gate so a refresh 409 costs no block work.
         envelope["issuer_economics"] = registration.issuer_economics(
             query, bundle, dropped=dropped,
         )
