@@ -1003,3 +1003,5 @@ Sections 20.3 and 21.3 said #10959 stays stacked on #10945 and unarmed. That lef
 4. #10945's branch still receives no pushes.
 
 Pushes to the second branch cancel only the second branch's own run. To let it conclude, a new section is written only when something material has changed.
+
+Observed 14:33Z: no CI run had been scheduled for the second branch at `1340b43a51c2`. The earlier pushes happened while the pull request was based on the first branch, and changing a pull request's base does not start a run. The commit that adds this paragraph is the push that starts one.
