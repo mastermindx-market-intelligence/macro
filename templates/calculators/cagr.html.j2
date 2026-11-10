@@ -127,6 +127,29 @@
 
   var mode = "find";  // "find" | "project"
 
+  // A complete date range owns the horizon, even when it is invalid.
+  // With no complete pair, retain the existing numeric-years behavior.
+  function resolveHorizon(start, end, numericYears){
+    if(!start || !end) return {ok:true, n:numericYears, source:"years"};
+    function dateStamp(value){
+      var parts=/^(\d{4,})-(\d{2})-(\d{2})$/.exec(value);
+      if(!parts) return NaN;
+      var year=Number(parts[1]), month=Number(parts[2]), day=Number(parts[3]);
+      if(!(year>0 && year<=275760 && month>=1 && month<=12 && day>=1 && day<=31)) return NaN;
+      var date=new Date(0);
+      date.setUTCHours(0,0,0,0);
+      date.setUTCFullYear(year,month-1,day);
+      if(date.getUTCFullYear()!==year || date.getUTCMonth()!==month-1 || date.getUTCDate()!==day) return NaN;
+      return date.getTime();
+    }
+    var startTime=dateStamp(start), endTime=dateStamp(end);
+    if(!isFinite(startTime) || !isFinite(endTime)) return {ok:false,
+      msg:"Enter two valid dates.", msgZh:"请输入两个有效日期。"};
+    if(!(endTime>startTime)) return {ok:false,
+      msg:"The end date must be after the start date.", msgZh:"终止日期必须晚于起始日期。"};
+    return {ok:true, n:(endTime-startTime)/86400000/365.25, source:"dates"};
+  }
+
   // ── pure compute (CONTRACT §7) ──────────────────────────────────────────────
   function compute(inp){
     var m=inp.mode, V0=inp.V0, V1=inp.V1, n=inp.n, cagrRate=inp.cagrRate;
@@ -196,24 +219,20 @@
 
     function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:0}); }
-    function parseDays(){
-      var s=els.dateStart.value, e=els.dateEnd.value;
-      if(!s||!e) return null;
-      var d = (new Date(e) - new Date(s)) / 86400000;
-      return isFinite(d) && d >= 0 ? d : null;
-    }
     function dash(){ outMain.textContent="—"; outGain.textContent="—"; outYears.textContent="—"; }
 
-    var last=null;
+    var last=null, renderVersion=0;
     function render(){
-      var days = parseDays();
-      var n = days !== null ? days / 365.25 : numFrom(els.years);
+      renderVersion++;
+      resetCopyFeedback();
+      var horizon = resolveHorizon(els.dateStart.value, els.dateEnd.value, numFrom(els.years));
+      var n = horizon.n;
       var inp = { mode:mode, V0:numFrom(els.v0), V1:numFrom(els.v1),
                   n:n, cagrRate:numFrom(els.cagrRate) };
       if(mode==="find" && isNaN(inp.V1)) inp.V1 = NaN;
       if(mode==="project" && isNaN(inp.cagrRate)) inp.cagrRate = null;
-      var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      var res=horizon.ok ? compute(inp) : horizon; last=res;
+      if(!res.ok){ dash(); outPlain.textContent=(res.msgZh && document.documentElement.getAttribute("data-lang")==="zh") ? res.msgZh : res.msg; outPlain.className="co-plain"; return; }
 
       if(mode==="find"){
         outMain.textContent = (res.CAGR >= 0 ? "+" : "") + res.CAGR.toFixed(2) + "%";
@@ -288,12 +307,14 @@
     }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
+      var version=renderVersion;
       resetCopyFeedback();  // fresh state for this attempt
       if(navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
         var p;
         try{ p = navigator.clipboard.writeText(line); }
         catch(e){ showCopyFailure(line); return; } // sync throw: no success, no retry
-        p.then(showCopySuccess, function(){ showCopyFailure(line); });
+        p.then(function(){ if(version===renderVersion) showCopySuccess(); },
+          function(){ if(version===renderVersion) showCopyFailure(line); });
         // no hidden retry: a rejected promise never falls through to execCommand
       } else if(legacyCopy(line)){
         showCopySuccess();
@@ -309,6 +330,7 @@
     ["v0","v1","years","cagr-rate","date-start","date-end"].forEach(function(id){
       var el=document.getElementById(id); if(el) el.addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();
