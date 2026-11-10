@@ -583,6 +583,11 @@
         "repository": "mastermindx-market-intelligence/macro",
         "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
         "path": "engine/theme_graph/curation_assertion.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "scripts/build_consumer_cyclical_plnt_page.py"
       }
     ],
     "scope": {
@@ -603,7 +608,8 @@
         "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
         "No source/design/test/merge receipt presented as deployed or accepted production.",
         "No generic GMI snapshot store, fuzzy default vertical, fixture identity admission or invented company revenue/relationship magnitude.",
-        "No new model run or result consumption for GMI model01 while its original effect remains fenced."
+        "No new model run or result consumption for GMI model01 while its original effect remains fenced.",
+        "No PLNT synthetic-card republication or R8 native-staging retry through any alternate carrier. No P&G refresh enable before actual reader/consumer qualification. Synthetic Industrials cases do not admit real company dossiers."
       ]
     },
     "workspace": {
@@ -615,7 +621,8 @@
       "All app/engine paths belong Macro; terminal/ belongs Terminal. Exact new real-loader files must stay in their incumbent vertical owner directory and current source assignment.",
       "Use final §3.4–3.5: explicit request_schema=v2, closed entry_kind union, exact Tech/Finance profiles, unchanged v1 and single-document profile pagination.",
       "Technology native tecd ID stays native; context_generation uses the existing fingerprint. Continuation/evidence require both expected fields. Two same-document assertions require exact native selector identities.",
-      "Reuse GMI #10676 frontend/native-link donor without consuming held model output. Continue Nuclear #9124 on its actual successor with existing holds."
+      "Reuse GMI #10676 frontend/native-link donor without consuming held model output. Continue Nuclear #9124 on its actual successor with existing holds.",
+      "Remaining sleeves at the current Macro pin: P&G #8245/#9105 are merged; private refresh remains off by default until real readers/consumer qualification. PLNT #10237/#10268 remove the synthetic public card; PublicCarrierHold and #7804's R8 native-staging denial remain binding. Healthcare #9399/#9418 separate regulator/manufacturer/capacity and qualified FDA records. Industrials T02 identity and #9109/#9408 synthetic source/certified work exist; #8250 is unresolved, the planned shared research module is absent, and neither EXPO nor PNR has real Shared Shell evidence through that work."
     ],
     "data_contract": {
       "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
