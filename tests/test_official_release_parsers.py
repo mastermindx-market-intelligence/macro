@@ -259,6 +259,51 @@ def test_cpi_parser_accepts_sibling_core_yearly_phrasings() -> None:
     assert actual["core_yoy"] == 2.6
 
 
+@pytest.mark.parametrize("headline", [
+    b"Over the last 12 months, the all items index increased 3.7 percent before seasonal adjustment. ",
+    b"The index for all items rose 3.7 percent over the last 12 months. ",
+])
+@pytest.mark.parametrize("core_yearly", [
+    b"",
+    b"The all items less food and energy index rose N/A percent over the year.",
+    b"The index for all items less food and energy rose N/A percent over the year.",
+    b"The all items less food and energy index rose 2.6 over the year.",
+])
+def test_cpi_missing_core_yearly_never_uses_neighbouring_index(headline, core_yearly):
+    body = (
+        b"The Consumer Price Index for All Urban Consumers increased 0.6 percent on a "
+        b"seasonally adjusted basis in September. " + headline
+        + b"The index for all items less food and energy rose 0.3 percent in September. "
+        + b"The energy index increased 20.4 percent over the year. " + core_yearly
+    )
+    assert parse_cpi_actual(body) is None
+
+
+@pytest.mark.parametrize("label", [
+    b"The all items less food and energy index",
+    b"The index for all items less food and energy",
+])
+@pytest.mark.parametrize(("change", "expected"), [
+    (b"was unchanged", 0.0),
+    (b"fell 0.2 percent", -0.2),
+    (b"rose 2.6 percent", 2.6),
+])
+def test_cpi_core_yearly_clause_binds_zero_negative_and_positive(label, change, expected):
+    body = (
+        b"The Consumer Price Index for All Urban Consumers increased 0.6 percent on a "
+        b"seasonally adjusted basis in September. Over the last 12 months, the all items "
+        b"index increased 3.7 percent before seasonal adjustment. The index for all items "
+        b"less food and energy rose 0.3 percent in September. The energy index increased "
+        b"20.4 percent over the year. " + label + b" " + change + b" over the year."
+    )
+    actual = parse_cpi_actual(body)
+    assert actual is not None
+    assert actual["core_yoy"] == expected
+    assert next(row["value"] for row in actual["metrics"] if row["metric_id"] == "cpi_core_yoy") == expected
+    assert "20.4" not in actual["summary_en"]
+    assert "20.4" not in actual["summary_zh"]
+
+
 PPI_ENTRY = b"""
 PPI for final demand declines 0.3% in June; goods fall 1.4%, services increase 0.2%
 The Producer Price Index for final demand fell 0.3 percent in June. Prices for

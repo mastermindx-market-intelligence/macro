@@ -583,31 +583,42 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         if core_match
         else None
     )
-    # Anchored pattern first (BLS October 2026 label order): "The all items
-    # less food and energy index rose 2.6 percent over the year." It cannot
-    # match the legacy label ("index for all items..."), and running it before
-    # the loose legacy window stops that window from crossing into a
-    # neighbouring sentence and binding the energy or shelter yearly figure.
-    core_yoy_match = re.search(
-        r"(?:the )?all items less food and energy index\s+"
+    # Bind yearly changes to the core label itself, or its explicit monthly
+    # clause's semicolon continuation. A free character window can cross into
+    # an energy/shelter sentence when core YoY is missing or unreadable.
+    core_label = (
+        r"(?:the )?(?:all items less food and energy index"
+        r"|index for all items less food and energy)"
+    )
+    core_yearly_change = (
         rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?"
+        r"(?P<percent>\s*percent)?"
         r"(?:\s+over the (?:last )?year"
         r"|\s+over the last 12 months"
-        r"|\s+for the 12 months ending)",
+        r"|\s+for the 12 months ending)"
+    )
+    core_yoy_match = re.search(
+        core_label + r"\s+" + core_yearly_change,
         text,
         flags=re.IGNORECASE,
     )
     if core_yoy_match is None:
+        # Legacy BLS feed: "was unchanged in June (SA); up 2.6 percent
+        # over the year (NSA)". Match only this core-owned continuation.
         core_yoy_match = re.search(
-            r"(?:the )?index for all items less food and energy"
-            r".{0,180}?"
-            rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
-            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-            r"\s+over the year",
+            core_label
+            + rf"\s+(?:{_CHANGE_WORDS})\b"
+            + r"(?:\s+(?:by\s+)?\d+(?:\.\d+)?\s+percent)?"
+            + r"\s+in\s+[A-Z][a-z]+(?:\s+\(SA\))?;\s*"
+            + core_yearly_change,
             text,
             flags=re.IGNORECASE,
         )
+    # Only an explicit unchanged clause may omit its numerical percentage.
+    if core_yoy_match and "unchanged" not in core_yoy_match.group("verb").lower():
+        if core_yoy_match.group("value") is None or core_yoy_match.group("percent") is None:
+            core_yoy_match = None
     core_yoy = (
         _signed_change(core_yoy_match.group("verb"), core_yoy_match.group("value"))
         if core_yoy_match
