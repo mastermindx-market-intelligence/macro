@@ -1141,6 +1141,48 @@ def test_v11_an_absent_allow_listed_row_key_stays_absent():
     assert full["label_zh"] == source_row["label_zh"]
 
 
+def _baskets_mutation(transform):
+    """Rewrite the real baskets.json through ``transform`` and encode it."""
+    document = json.loads((SITE / "basketdata/baskets.json").read_bytes())
+    transform(document)
+    return json.dumps(document, ensure_ascii=False, allow_nan=False).encode("utf-8")
+
+
+def test_v11_extra_coverage_key_is_dropped(tmp_path):
+    """SF-3/M8 (review r1): a key outside the coverage allow-list is dropped -
+    the carried coverage is exactly the allow-listed keys the source has."""
+    def add_extra(document):
+        document["coverage"]["owner_note"] = "not in the allow-list"
+
+    site = _rows_site(tmp_path, {NASDAQ: _nasdaq_mutation(add_extra)})
+    block = carry.confluence_universe_rows(
+        site, "marketdata/subsector_confluence_nasdaq.json",
+        "nasdaq_subsectors", ("subsectors", "sectors"))
+    source_coverage = json.loads((site / NASDAQ).read_bytes())["coverage"]
+    assert block is not None and "owner_note" not in block["data"]["coverage"]
+    assert set(block["data"]["coverage"]) == set(carry._UNIVERSE_COVERAGE_KEYS) \
+        & set(source_coverage)
+
+
+def test_v11_non_string_theme_name_fields_read_null(tmp_path):
+    """SF-3/M11 (review r1): a non-string ``name`` / ``name_zh`` in baskets.json
+    reads null on the theme row; every untouched field stays the source's own
+    value (read from the mutated source, not a nightly constant)."""
+    def non_string(document):
+        by_id = {b["id"]: b for b in document["baskets"]}
+        by_id["memory_storage"]["name"] = 17
+        by_id["big_pharma"]["name_zh"] = ["x"]
+
+    site = _rows_site(tmp_path, {"basketdata/baskets.json": _baskets_mutation(non_string)})
+    rows = {row["id"]: row for row in carry.theme_rows(site)["rows"]}
+    source = {b["id"]: b for b in
+              json.loads((site / "basketdata/baskets.json").read_bytes())["baskets"]}
+    assert rows["memory_storage"]["name"] is None            # 17 -> null
+    assert rows["memory_storage"]["name_zh"] == source["memory_storage"]["name_zh"]
+    assert rows["big_pharma"]["name_zh"] is None             # ["x"] -> null
+    assert rows["big_pharma"]["name"] == source["big_pharma"]["name"]
+
+
 def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
     """REAL: wire §0 - the incumbent values are byte-identical before and after.
     The literals are the sha256 of the canonical encoding, measured by running the

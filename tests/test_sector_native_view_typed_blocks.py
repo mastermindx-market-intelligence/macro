@@ -129,6 +129,26 @@ def test_fixture_row_block_stub_reads_by_its_reason(tmp_path):
                                                     "reason": "invalid_shape", "value": None}
 
 
+def test_fixture_stub_to_preview_audience_still_reads_audience_not_entitled(tmp_path):
+    """SF-3/M5 (review r1): the audience gate comes FIRST - a carried
+    ``block_too_large`` stub served to the preview audience reads
+    ``audience_not_entitled``, never ``block_too_large``."""
+    inputs, receipt = _inputs(tmp_path)
+    inputs.central["carried"] = {
+        "confluence_universe_sp500": {"source": "x", "as_of": "2026-11-06",
+                                      "status": "unavailable", "reason": "block_too_large"},
+        "theme_rows": {"source": "x", "as_of": "2026-11-06",
+                       "status": "unavailable", "reason": "block_too_large"},
+    }
+    preview = typed_blocks_of(_project(inputs, receipt, "preview")["data"])
+    for name in ("confluence_universe_sp500", "theme_rows"):
+        assert preview[name] == {"status": "unavailable", "reason": "audience_not_entitled",
+                                 "value": None}, name
+    # and the projection emits no typed_blocks key of its own: every reason is
+    # audience_not_entitled or not_produced
+    assert "typed_blocks" not in _project(inputs, receipt, "preview")["data"]
+
+
 @pytest.mark.parametrize("name,owner,key,bad", [
     ("r1_rising_priced_share", "carried", "sector_central_r1", [1, 2]),
     ("r2_display_order", "carried", "display_order", {"order": [float("nan")]}),
