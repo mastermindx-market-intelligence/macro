@@ -817,3 +817,57 @@ def test_saved_clock_repaints_once_a_catalog_settles():
     assert "paintSavedClock();" in settle
     ingest = js[js.index("function ingest("):]
     assert ingest.index("ITEMS = items.map(normItem);") < ingest.index("finishCatalogPaint(")
+
+
+def test_selected_report_handoff_runtime_contract():
+    """Actual handoff+template nodes: truthful selection feedback, no access expansion."""
+    import os
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "Node is required for the Research Vault handoff contract"
+    result = subprocess.run(
+        [node, "-e", r"""// Parent acceptance controls: exercise actual production handoff, no copied state machine.
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),test=require('node:test');
+const root=process.env.RESEARCH_TEST_ROOT;
+assert(root,'RESEARCH_TEST_ROOT must name the actual source tree');
+const app=fs.readFileSync(root+'/site/research_vault_app.js','utf8');
+const template=fs.readFileSync(root+'/templates/research_vault.html.j2','utf8');
+const begin=app.indexOf('  /* deep link from a report landing page:'),end=app.indexOf('  /* ═══════════ boot',begin);
+assert(begin>=0&&end>begin);const actual=app.slice(begin,end);
+// Bind only IDs that actually exist in the template; unknown DOM cannot fabricate a pass.
+const ids=[...template.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
+const statusBlocks=[...template.matchAll(/<(p|div|span)\b([^>]*\brole="status"[^>]*)>([\s\S]*?)<\/\1>/g)];
+const block=statusBlocks.find(m=>/\bclass="[^"]*\brv-searching\b/.test(m[2])&&!/\bid="(?:si-research-status|rv-coverage-note)"/.test(m[2]));
+const statusId=block&&/\bid="([^"]+)"/.exec(block[2])?.[1];
+function setup({items=[{id:'current'}],preview=true,source='live',query='?doc=requested'}={}){
+ const nodes=new Map();for(const id of ids)nodes.set(id,{id,hidden:true,textContent:'',attrs:{},setAttribute(k,v){this.attrs[k]=String(v);},removeAttribute(k){delete this.attrs[k];}});
+ const status=statusId?nodes.get(statusId):null;
+ if(status){status.querySelector=s=>{const cl=s.replace(/^\./,'');const re=new RegExp('<span\\b(?=[^>]*\\bclass="[^"]*\\b'+cl+'\\b)([^>]*)>');const m=re.exec(block[3]);return m&&nodes.get(/\bid="([^"]+)"/.exec(m[1])?.[1])||null;};}
+ const calls=[],forbidden=[];const ctx=vm.createContext({ITEMS:structuredClone(items),CATALOG_PREVIEW:preview,CATALOG_SOURCE:source,USER_TIER:'anon',location:{search:query},decodeURIComponent,$:id=>nodes.get(id)||null,document:{getElementById:id=>nodes.get(id)||null},T:(en)=>en,openViewer:id=>calls.push(id),fetch:()=>{forbidden.push('fetch');throw Error('unexpected fetch');},withAuth:()=>{forbidden.push('auth');throw Error('unexpected auth');},history:{pushState(){forbidden.push('push');},replaceState(){forbidden.push('replace');}}});
+ ctx.window=ctx;ctx.XMLHttpRequest=function(){forbidden.push('xhr');throw Error('unexpected XHR');};
+ vm.runInContext(actual,ctx);const originalItems=JSON.stringify(ctx.ITEMS);
+ const run=()=>{assert.doesNotThrow(()=>vm.runInContext('openDeepLink()',ctx));assert.deepEqual(forbidden,[]);assert.equal(JSON.stringify(ctx.ITEMS),originalItems);};
+ return{ctx,calls,status,nodes,run,text:()=>[...nodes.values()].map(n=>n.textContent).join(' ')};
+}
+function visibleStatus(h){assert(h.status,'dedicated selected-report status markup missing');assert.equal(h.status.hidden,false);assert.match(block[2],/aria-live="polite"/);assert.match(block[3],/l-en/);assert.match(block[3],/l-zh/);}
+test('preview missing exact request gives bilingual neutral feedback, not viewer/data access',()=>{const h=setup();h.run();visibleStatus(h);assert.match(h.text(),/preview/i);assert.match(h.text(),/预览/);assert.doesNotMatch(h.text(),/deleted|删除|does not exist|不存在/);assert.deepEqual(h.calls,[]);});
+test('full catalog missing selection is not mislabeled a public preview',()=>{const h=setup({preview:false});h.run();visibleStatus(h);assert.match(h.text(),/catalog/i);assert.match(h.text(),/目录/);assert.doesNotMatch(h.text(),/public preview|公开预览/);assert.deepEqual(h.calls,[]);});
+test('catalog unavailable stays distinct from missing item',()=>{const h=setup({source:'unavailable',preview:false,items:[]});h.run();visibleStatus(h);assert.match(h.text(),/unavailable|could not|cannot/i);assert.match(h.text(),/无法|不可用/);assert.deepEqual(h.calls,[]);});
+for(const query of ['?doc=%ZZ','?doc='])test('malformed selection '+query+' never throws or opens',()=>{const h=setup({query});h.run();visibleStatus(h);assert.match(h.text(),/invalid/i);assert.match(h.text(),/无效/);assert.deepEqual(h.calls,[]);});
+test('later exact item clears old feedback and opens once without forced reopen',()=>{const h=setup({items:[]});h.run();visibleStatus(h);h.ctx.ITEMS=[{id:'requested'}];const before=JSON.stringify(h.ctx.ITEMS);assert.doesNotThrow(()=>vm.runInContext('openDeepLink()',h.ctx));assert.equal(JSON.stringify(h.ctx.ITEMS),before);assert.equal(h.status.hidden,true);assert.deepEqual(h.calls,['requested']);vm.runInContext('openDeepLink()',h.ctx);assert.deepEqual(h.calls,['requested']);});
+test('changed current URL selects its actual matching ID, repeated same ID remains closed/idempotent',()=>{const h=setup({items:[{id:'first'},{id:'second'}],query:'?doc=first'});h.run();assert.deepEqual(h.calls,['first']);h.ctx.location.search='?doc=second';h.run();h.run();assert.deepEqual(h.calls,['first','second']);});
+test('no doc query clears earlier error without selecting another report',()=>{const h=setup();h.run();visibleStatus(h);h.ctx.location.search='?theme=AI';h.run();assert.equal(h.status.hidden,true);assert.deepEqual(h.calls,[]);});
+test('existing matching exact request opens once',()=>{const h=setup({items:[{id:'requested'}]});h.run();h.run();assert.deepEqual(h.calls,['requested']);});
+test('existing malformed query never opens or mutates inventory',()=>{const h=setup({query:'?doc=%ZZ'});h.run();assert.deepEqual(h.calls,[]);});
+
+test('selection status is initially hidden in actual no-JS markup',()=>{assert(block,'dedicated selected-report status markup missing');assert.match(block[2],/\bhidden\b/);assert.match(block[2],/role="status"/);assert.match(block[2],/aria-live="polite"/);});
+test('returning to an earlier exact URL after a different missing selection is a new selection',()=>{const h=setup({items:[{id:'first'}],query:'?doc=first'});h.run();h.ctx.location.search='?doc=missing';h.run();visibleStatus(h);h.ctx.location.search='?doc=first';h.run();assert.deepEqual(h.calls,['first','first']);assert.equal(h.status.hidden,true);});
+
+for(const invalid of ['?doc=%ZZ','?doc='])test('invalid selection then return to prior exact ID '+invalid,()=>{const h=setup({items:[{id:'first'}],query:'?doc=first'});h.run();h.ctx.location.search=invalid;h.run();visibleStatus(h);assert.deepEqual(h.calls,['first']);h.ctx.location.search='?doc=first';h.run();assert.deepEqual(h.calls,['first','first']);assert.equal(h.status.hidden,true);h.run();assert.deepEqual(h.calls,['first','first']);});
+"""],
+        cwd=bld.ROOT, env={**os.environ, "RESEARCH_TEST_ROOT": str(bld.ROOT)},
+        capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
