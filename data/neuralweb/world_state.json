@@ -5279,7 +5279,7 @@
     ],
     "freshness": {
       "asof": "2026-11-09",
-      "built_at": "2026-11-10T08:20:35Z",
+      "built_at": "2026-11-10T11:14:41Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
@@ -5365,11 +5365,11 @@
           "dominant_chart_labels": [
             [
               "volatile_momentum_vehicle",
-              0.4247
+              0.4521
             ],
             [
               "mixed_chart",
-              0.3699
+              0.3425
             ],
             [
               "mean_reversion_rubber_band",
@@ -5415,15 +5415,15 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.4103
+              0.45
             ],
             [
               "volatile_momentum_vehicle",
-              0.3077
+              0.325
             ],
             [
               "stair_step_leader",
-              0.1795
+              0.15
             ]
           ],
           "tinderbox_share": 0.0263,
@@ -5465,15 +5465,15 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6761
+              0.6901
             ],
             [
               "volatile_momentum_vehicle",
               0.1408
             ],
             [
-              "basing_accumulator",
-              0.0563
+              "mean_reversion_rubber_band",
+              0.0423
             ]
           ],
           "tinderbox_share": 0.029,
@@ -5522,7 +5522,7 @@
               0.1429
             ],
             [
-              "stair_step_leader",
+              "failed_breakout_trap",
               0.0571
             ]
           ],
@@ -5601,32 +5601,32 @@
           "dominant_member_archetypes": [
             [
               "financial",
-              0.8295
+              0.8391
             ],
             [
               "distressed",
-              0.1477
+              0.1494
             ],
             [
-              "speculative_unprofitable",
-              0.0114
+              "secular_growth",
+              0.0115
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6224
+              0.6146
             ],
             [
               "volatile_momentum_vehicle",
-              0.1633
+              0.1667
             ],
             [
               "mean_reversion_rubber_band",
-              0.102
+              0.1042
             ]
           ],
-          "tinderbox_share": 0.0625,
+          "tinderbox_share": 0.0638,
           "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
@@ -5715,11 +5715,11 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.5577
+              0.5513
             ],
             [
               "volatile_momentum_vehicle",
-              0.2692
+              0.2756
             ],
             [
               "failed_breakout_trap",
@@ -5801,13 +5801,13 @@
   },
   "alerts": {
     "asof": "2026-11-09",
-    "generated_utc": "2026-11-10 08:33",
+    "generated_utc": "2026-11-10 11:36",
     "total": 60,
     "critical": 2,
     "major": 2,
     "minor": 56,
     "actionable": 2,
-    "backtested": 2
+    "backtested": 3
   },
   "factor_weather": {
     "style_regime": "mixed",
@@ -7311,10 +7311,10 @@
     "revision": "settled",
     "source_session": "2026-11-09",
     "as_of": "2026-11-09",
-    "observed_at": "2026-11-10T12:14:23Z",
-    "produced_at": "2026-11-10T12:14:23Z",
+    "observed_at": "2026-11-10T14:51:04Z",
+    "produced_at": "2026-11-10T14:51:04Z",
     "stale_after": null,
-    "bundle_id": "620ba42b1f5abf96",
+    "bundle_id": "c8d390d8b3feca5d",
     "measured_state": {
       "as_of": "2026-11-09",
       "role": "slow_confirmed_trend",
@@ -7860,7 +7860,7 @@
               "weight": 0.16
             }
           },
-          "logged_at": "2026-11-10T08:56:20+00:00",
+          "logged_at": "2026-11-10T12:07:19+00:00",
           "raw_score": 41,
           "score": 41,
           "score_caps": [],
@@ -7978,7 +7978,7 @@
             "weight": 0.16
           }
         },
-        "logged_at": "2026-11-10T08:56:20+00:00",
+        "logged_at": "2026-11-10T12:07:19+00:00",
         "raw_score": 41,
         "score": 41,
         "score_caps": [],
@@ -8186,44 +8186,44 @@
   "stock_personality_summary": {
     "available": true,
     "as_of": "2026-11-06",
-    "n_tickers": 2948,
+    "n_tickers": 1719,
     "coverage": {
-      "archetype": 0.73,
-      "dna_class": 0.383,
-      "ownership": 0.419,
-      "micro": 0.181,
-      "chart": 0.775
+      "archetype": 0.869,
+      "dna_class": 0.654,
+      "ownership": 0.583,
+      "micro": 0.229,
+      "chart": 0.762
     },
     "top_archetype_shares": [
       [
-        "speculative_unprofitable",
-        0.3783
+        "rate_sensitive",
+        0.1815
       ],
       [
-        "rate_sensitive",
-        0.1292
+        "speculative_unprofitable",
+        0.148
       ],
       [
         "financial",
-        0.1022
+        0.1474
       ]
     ],
     "top_chart_shares": [
       [
         "mixed_chart",
-        0.4676
+        0.5156
       ],
       [
         "volatile_momentum_vehicle",
-        0.1795
+        0.1921
       ],
       [
         "failed_breakout_trap",
-        0.158
+        0.1275
       ]
     ],
-    "n_tinderbox": 263,
-    "n_event_override": 84,
+    "n_tinderbox": 256,
+    "n_event_override": 44,
     "display_only": true
   },
   "context_risk": {
@@ -8355,7 +8355,7 @@
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -8393,7 +8393,7 @@
         "falsifier_id": "ag_f1"
       }
     ],
-    "n_stale_legs": 9,
+    "n_stale_legs": 10,
     "noteworthy": [
       {
         "theme_id": "nuclear_power",
@@ -8412,7 +8412,7 @@
       },
       {
         "theme_id": "glp1_obesity",
-        "reason": "stage=BROADENING",
+        "reason": "stage=BROADENING, tight_bottleneck+stale",
         "stage": "BROADENING"
       },
       {
@@ -8449,7 +8449,7 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-11-09",
-    "built_at": "2026-11-10T08:20:35Z",
+    "built_at": "2026-11-10T11:14:41Z",
     "age_days": 1,
     "stale": false
   },
@@ -8838,9 +8838,9 @@
     "asof": "2026-11-09",
     "gamma": {
       "regime": "short",
-      "net_gex_bn": -40.434219,
+      "net_gex_bn": -40.920721,
       "net_gex_pctile": 11.4,
-      "dist_to_flip_pct": -0.984088,
+      "dist_to_flip_pct": -1.04043,
       "days_in_regime": 3
     },
     "systematic": {
@@ -9463,8 +9463,8 @@
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-11-10T12:14:04.981869+00:00",
-      "built_at": "2026-11-10T12:14:04.985420+00:00",
+      "analysis_cutoff": "2026-11-10T14:50:05.619645+00:00",
+      "built_at": "2026-11-10T14:50:05.623964+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
@@ -9475,12 +9475,12 @@
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+          "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
           "read_status": "available"
         },
         "M": {
           "path": "data/market_state/latest.json",
-          "sha256": "9d5ee683dd0fefb287d8d5e9b6fa2f13fd93f8015d47428a90103aa3b26ffe7d",
+          "sha256": "7a44671cdbb4659e7b8eaab0b66a039a0d2d18496585a1e8b010a40fb5a8f02b",
           "read_status": "available"
         },
         "D": {
@@ -10118,7 +10118,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-09",
             "precision": "date",
@@ -10155,7 +10155,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10192,7 +10192,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-06",
             "precision": "date",
@@ -10229,7 +10229,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-09",
             "precision": "date",
@@ -10266,7 +10266,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-09",
             "precision": "date",
@@ -10303,7 +10303,7 @@
           "source": {
             "artifact": "M",
             "pointer": "/components/[key=breadth]/tone",
-            "sha256": "9d5ee683dd0fefb287d8d5e9b6fa2f13fd93f8015d47428a90103aa3b26ffe7d",
+            "sha256": "7a44671cdbb4659e7b8eaab0b66a039a0d2d18496585a1e8b010a40fb5a8f02b",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-06",
             "precision": "date",
@@ -10446,7 +10446,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-09",
             "precision": "date",
@@ -10668,7 +10668,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10705,7 +10705,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "0651f5e3e32f9f98fbddd09fdda84019515f8b3a8e6db17f2c489ddfbe3d0e15",
+            "sha256": "ee0c9101f96100fab9fcef7d10363ba3e0bc5febb153c117a8c09cd0d1c68965",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-09",
             "precision": "date",
@@ -11964,7 +11964,7 @@
     "data/neuralweb/liquidity_plumbing.json": "2026-10-14",
     "data/rebalance_pulse/latest.json": "2026-11-06",
     "site/chinastatedata/market_state.json": null,
-    "data/neuralweb/theme_state.json": "2026-11-09",
+    "data/neuralweb/theme_state.json": "2026-11-10",
     "data/transmission/latest.json": "2026-11-06",
     "data/rates_command/latest.json": "2026-11-06",
     "data/forex/latest.json": "2026-11-09",
@@ -11987,7 +11987,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-11-10T12:14:26Z",
-  "inputs_hash": "sha256:d8e4b7db16dd8c1267d0c7b980e283fd1576c45dad099121c67522bb6fa5dd34",
+  "produced_at": "2026-11-10T14:51:14Z",
+  "inputs_hash": "sha256:8581403c70c5f7d7a1d2ab6f8d78e00a4ba521c510cc3584385d883e28912cec",
   "tier": "infrastructure"
 }
