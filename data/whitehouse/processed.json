@@ -1979,6 +1979,30 @@
       "at": "2026-11-08T19:43:32.843875+00:00",
       "activated": false,
       "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54269": {
+      "id": "wh-2026-11-07-presidential-message-on-honoring-the-american-flag",
+      "at": "2026-11-08T23:42:07.804552+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54318": {
+      "id": "wh-2026-11-09-nominations-and-withdrawals-sent-to-the-senate-ba2b",
+      "at": "2026-11-10T01:30:41.633841+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54285": {
+      "id": "wh-2026-11-09-presidential-message-on-national-american-history-and-founders-month",
+      "at": "2026-11-10T01:30:43.007791+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54278": {
+      "id": "wh-2026-11-09-icymi-president-trump-on-60-minutes-we-have-historically-good-numbers",
+      "at": "2026-11-10T01:30:44.487933+00:00",
+      "activated": false,
+      "importance": 10
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
