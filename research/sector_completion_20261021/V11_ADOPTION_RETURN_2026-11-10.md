@@ -992,3 +992,14 @@ This record now lives on two branches. #10945 (first branch) is frozen at `3a5a6
 ### 21.4 Rung
 
 Unchanged. Nothing of v1.1 is merged or served. Integrated proof: 0 of 44.
+
+## 22. Status at 14:31Z — second status pull request pointed at main and armed (corrects 20.3 and 21.3)
+
+Sections 20.3 and 21.3 said #10959 stays stacked on #10945 and unarmed. That left it with no checks at all: CI does not run on a pull request whose base is not main, so in that arrangement it could never merge. Corrected arrangement:
+
+1. #10959 is pointed at main. It no longer merges into #10945's branch, so it cannot move #10945's head or cancel its run. The reason for the HOLD comment on #10959 is gone, and the hold is released by a `HOLD-RELEASED` comment from the thread that placed it.
+2. #10959 is armed with `merge-on-green`. Its content is a superset of #10945 (sections 1 to 22 against 1 to 19).
+3. Whichever lands first decides the follow-up. If #10945 lands first, the second branch merges main (keeping this fuller file) and continues. If #10959 lands first, #10945 holds nothing that main lacks and is closed with a comment saying so.
+4. #10945's branch still receives no pushes.
+
+Pushes to the second branch cancel only the second branch's own run. To let it conclude, a new section is written only when something material has changed.
