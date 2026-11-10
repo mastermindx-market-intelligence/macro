@@ -1339,3 +1339,527 @@ Until at least 16:12Z this session's `gh` acted as the shared account `mastermin
 ### 24.20 Rung
 
 Nothing of v1.1 is merged or served except documentation: #10959 is MERGED (16:24:25Z at `55a9978e21a7`); every code pull request stands at delivered or armed, none merged, nothing served. Armed and waiting on machinery: #1431, #1436 and #1419 on Terminal (all BEHIND, none in the queue at 16:46Z), #10924 on Macro (pack jobs not concluded) and #10923 on Macro (CI capacity, unchanged). #1431 and #1436 are review-complete and armed; #1419's third review is running on an armed pull request; #1429's fixes are running and it lands last in the Terminal order. Macro order after #10924 merges: #10929, then its release, then #10954, then #10965.
+
+## 25. Status at 19:22Z — three Terminal lanes merged; three follow-ups armed; lane 1 fix checked; lane 3 landing round ordered; Macro waiting on CI capacity
+
+Sub-sections 25.1 to 25.25 fold the notes written between 16:54Z and 19:22Z, grouped by subject
+rather than by clock time. Where a note corrects an earlier section or an earlier act of this
+thread, the correction is stated in 25.22. In this window the first v1.1 code reached a protected
+branch: #1431 (lane 4) and #1436 (lane 6) MERGED to Terminal master at 18:48:50Z and #1419
+(lane 7) at 18:57:21Z. On Macro, #10923 (design and documentation only) MERGED at 19:07:53Z and
+the third status pull request #10968 MERGED at 18:33:37Z, so sections 1 to 24 are on main. Not
+deployed, not production-proven: no v1.1 engine code is on Macro main, and nothing of v1.1 is
+served.
+
+### 25.1 #1419 third review READY WITH FOLLOW-UP (16:54Z)
+
+- **#1419 (lane 7), third review:** `VERDICT: READY WITH FOLLOW-UP at
+  92bc55aa9820de5a591756f60b8274e4906313d7`, 0 blockers, 0 should-fix, 6 notes. The verdict file
+  was written 16:48:52Z and found at 16:52Z by the directory listing; the reviewer thread had
+  already ended, so the "notify me" steer could not be delivered. S5 and R2-S1 are confirmed closed
+  (52 English and 13 Chinese tab-by-payload combinations). Review record posted shortly before a
+  16:54:06Z clock read: issuecomment-6773509168.
+  No hold; the duty arm (15:39:06Z) untouched. This supersedes the NOT READY line posted earlier in
+  issuecomment-6772903804.
+- Section 24's table still shows this review as running at 16:50Z, although the verdict file already
+  existed at 16:48:52Z. Stated as a known lag there and corrected here (25.22).
+
+### 25.2 Decisions on the #1419 notes; three follow-ups parked (16:54Z)
+
+- DECISION of the programme COO thread on notes R3-N2 and R3-N3 (calls-board navigation): the target
+  becomes `{ href: string | null, kind, id, ticker }`, emitted whenever a callback is supplied,
+  withheld (the row still renders) when `id` or `ticker` fails `/^[A-Za-z0-9_.\-]{1,64}$/`. Reason:
+  on real owner data every href is relative, so the 14:45Z shape never produced a target and the
+  workspace could not route from the board at all. Lane 3 must not mount the board before lane 7's
+  follow-up is in.
+- Follow-up orders, all on the rule "parked branch now, pull request only after the parent merges,
+  never push to the armed branch":
+  - Lane 4 (`si-v11-lane4-1431-r3-followup-1650z`): horizon cap plus two record corrections.
+    Returned between 16:50Z and 16:52Z: parked at `1cb8f36054d5781e19fb6da2d6acae4becb9fce9`,
+    branch `claude/si-lane4-horizon-cap`. Owed by this thread after #1431 merges: send "open it".
+  - Lane 6 (`si-v11-lane6-1436-followup-s1-n4-1650z`): S1, N4, N6. Returned: parked at
+    `249a66a221864e734bb46dff77788d4ae233ecb4`, branch `claude/si-lane6-followup-s1-n4`. Its return
+    section (the N6 answer about fixture field `u`) had not yet been read at 16:54Z; it is read in
+    25.5. Owed after #1436 merges: send "open it".
+  - Lane 7 (`si-v11-lane7-1419-r3-followup-1658z`, sent shortly before 16:54:06Z): R3-N1 to R3-N5 on
+    `claude/si-lane7-r3-followup`. Running at 16:54Z.
+
+### 25.3 Lane 3 r3 delivered; one review at the landing head (16:54Z)
+
+- Lane 3 r3 delivered: `36c2f865b64d1d0f4a6b3e359409a36bccd3cad8` on #1429; 12 files since
+  `100c63254c0f`; SF-1 to SF-4 and N-A to N-E fixed test-first; gates 429 + 80 tests passed, tsc 0;
+  two lane-7 mount mutants survive by design. Not armed, not labelled.
+- DECISION of the programme COO thread: no separate review of this head. #1429 cannot land before
+  #1431, #1436, #1419 and the lane 7 follow-up are on master, and it then needs one more commit
+  round (merge master; `delivery_problem` state; nullable-href navigation target; the four action
+  components only behind the gate — lane 3's own SF-3 gate at `af567e791` may already cover review
+  note N3, to be confirmed in that round; lane 1 point-in-time fields only after wire section 2b is
+  corrected). One independent review at that landing head instead of two.
+
+### 25.4 GitHub account, more exact; section 24 delegate started (16:54Z)
+
+- On #1419 this thread's comment at 16:27:46Z is `mastermindxryan` and lane 7's comment at 16:33:20Z
+  is `chriswong6031-creator`, so the machine's active login changed between those two times. The
+  #10924 comment and the `merge-blocked` removal at 16:36Z therefore also ran under
+  `chriswong6031-creator`. Not changed by this thread; not changed back.
+- Section 24: delegate `si-v11-status-section24-glm-1655z` (glm-5.3) started 16:52Z to write it on a
+  third status branch `claude/si-v11-adoption-status-c-20261110` and open a pull request. On return:
+  check one file, zero deletions, skim, then add `merge-on-green`. The return and the check are in
+  25.14.
+
+### 25.5 Stale 16:55Z wake; lane 6 and lane 4 follow-up returns read (16:58Z)
+
+- The wake that fired at 16:55Z carried the OLD prompt (written before 16:00Z). Every item in it was
+  already done or overtaken; the refreshed prompt is on the 17:25Z wake.
+- **Lane 6 follow-up return read** (parked `249a66a221864e734bb46dff77788d4ae233ecb4`, 3 files).
+  S1 allow-list: 13 out-of-union transport values tested; the old code fails
+  `expected 'following' not to be 'following'`; the new code: `20 passed (20)`. N4: lane 6 chose
+  FAIL on a duplicate owner instead of merging, because the route admits with `.some(...)` over all
+  adapters, so a duplicate would be live at runtime; accepted as the stricter contract. N6 closed:
+  fixture field `u` equals `sha256("sector-actor:11111111-1111-1111-1111-111111111111")` =
+  `4167eaad2de51b03cf330441bbe25d05f0fcb8d78c0b267984412855e632b2a2`, a placeholder identity from
+  Macro's tests, proven by computation; it is not derived from a real user. The two tokens are HMAC
+  signatures made with a throwaway per-process key; the fixture holds no key; fixture kept
+  unchanged. Gap stated by lane 6: the producer was not re-run and the exact signing key was not
+  identified, only the obvious test constants ruled out. Gates: `731 passed (731)`, tsc 0, eslint 0,
+  namespace guard `97 passed`.
+- **Lane 4 follow-up return read** (parked `1cb8f36054d5781e19fb6da2d6acae4becb9fce9`, 2 files,
+  +38 −2). The horizon cap is 2520 sessions, and it is NOT a producer cap: the producer states
+  none (`engine/sector_heads.py:32` emits the constant 20). The old code fails
+  `1e+308: expected 'live_state_not_protocol_epoch' to be 'payload_invalid'`; the new code: lane
+  vitest 120 tests passed, tsc 0, eslint 0. Lane 4 recorded both corrections and a sweep rule (a
+  sweep claim states how it was done and what it did not cover).
+
+### 25.6 Repository states at 16:58Z (16:58Z)
+
+- Macro at 16:58Z: #10924 `77061fee951e`: 10 checks passed, `ci-pack-2` to `ci-pack-5` still
+  running, the only failure `ci-authority/codex/merge-queue-pilot` (fails on every pull request).
+  #10931 (another session's) now carries `merge-on-green` at `3290bfe75f96`. #10923, #10929,
+  #10954, #10956 (`ffec9a8d6f64`), #10965 unchanged.
+- Terminal at 16:58Z: #1431, #1436, #1419 open, armed, BEHIND master, none merged. #1429
+  `36c2f865b64d` open, not armed. #1425 parked. Observation, not acted on: #1410 (parked,
+  migration-bearing) shows label `merge-on-green`, merge state CLEAN, native auto-merge NOT enabled.
+  A label alone does not enter the Terminal queue. Nothing was added or removed; the limit "no
+  re-enqueue of a migration-bearing Terminal PR" stands.
+
+### 25.7 Lane 5 repair returned at ffec9a8d6f64; narrow third review started (17:04Z)
+
+- Delegate `si-v11-lane5-glm-registration-inventory-1530z` finished. It declared
+  `SESSION END: EXACT_HUMAN_GATE` and wrote "owner thread 2f136a11 gone"; both are wrong (this
+  thread is live and no human gate exists). Recorded as the DELIVERED rung only.
+- Delivered: one commit `ffec9a8d6f642e66d0a3dcd50242698eb658aa54` on `57468d0406d4`,
+  fast-forward, six files (GitHub compare read at 17:03Z):
+  `engine/market_ontology/issuer_economics.py` +64 −19,
+  `engine/market_ontology/theme_research_registry.py` +9 −8,
+  `engine/sector_intelligence/finance_research_registration.py` +5 −3, and three test files
+  +220 −2.
+  `tests/test_theme_research_mount_context.py` is not in the change (merge check: passed). All six
+  are lane 5's owned files.
+- What it claims: the registration-inventory test repaired by adding `issuer_economics` to the
+  expected gap set (Finance does not implement the hook); the two mount-context failures were not
+  caused by this pull request (they pass once the sparse checkout has the `site/` file:
+  `66 passed`); SF1 and notes N-A to N-E of the second review fixed, each with a test and, except
+  N-E, a mutation that fails. Suites: `135 passed, 1 skipped`; `103 passed`; six-file command
+  `460 passed, 5 skipped`; wider census `627 passed, 5 skipped` (0 failed).
+- DECISION of the programme COO thread: this commit changes how issuer rows are attributed (N-D) and
+  when a bridge is produced (N-B, N-C), so it gets one narrow independent review before arming:
+  delegate `si-v11-lane5-opus-review-r3-1705z` (Opus, read-only), verdict to
+  `reviews/lane5_10956_review_r3.md`. It was asked to judge specifically whether the gap-set edit is
+  a truthful inventory or a loosened assertion.
+- #10956 stays unarmed until that verdict AND until #10931 (another session's, armed at
+  `3290bfe75f96`) has merged.
+- #10924 at 17:03Z: not re-read (pack jobs were still running at 16:58Z).
+
+### 25.8 Lane 5 third review READY; decisions on its nine notes (17:20Z)
+
+- **#10956 (lane 5), third review:** `VERDICT: READY at ffec9a8d6f642e66d0a3dcd50242698eb658aa54`,
+  0 blockers, 0 should-fix, 9 notes (file written 17:14:36Z; delegate
+  `si-v11-lane5-opus-review-r3-1705z`, Opus, read-only). The registration-inventory repair is a
+  classification and not a loosened check: the test is still an exact set equality and three
+  mutations each fail it. SF1 and N-A to N-E are each closed by a fix with a test that fails on
+  revert. All four suite counts reproduced exactly. Review record posted 17:19Z:
+  issuecomment-6774132787.
+- DECISION of the programme COO thread on the nine notes: the reviewed head is not moved. Notes 1
+  (quarter-0 test does not test the Q0 hazard), 2 (docstring over-claims that an overflowing pair is
+  reported), 4 (a CIK claimed by two issuer ids is attributed by identity order), 5 (empty and
+  all-zero CIKs match each other) and 9 (stale test docstring) go to one small glm-5.3 follow-up
+  AFTER #10956 merges. Notes 3, 6, 7, 8 recorded only (not reachable from the roster or the producer
+  today).
+- #10956 has no labels and is NOT armed. It waits for #10931 (another session's; `merge-on-green` at
+  `3290bfe75f96`, still open at 17:19Z).
+- The reviewer could not remove its scratch worktree
+  `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/review-10956-r3-cafa03919b2ae79e`
+  (registered, locked, branch `claude/ssd-review-10956-r3-cafa03919b2ae79e` at the PR head, no
+  commits of its own). DECISION: left for the host worktree sweeper (`scripts/worktree_gc.py`,
+  house law "Worktree GC"); a locked tree is not force-removed by hand. Nothing in it needs keeping.
+
+### 25.9 Lane 7 follow-up return read; states at 17:19Z (17:20Z)
+
+- **Lane 7 follow-up return read** (parked `62ca52b19fd4d4c6db1bc27a78653cde81cf3e61`, branch
+  `claude/si-lane7-r3-followup`; return section written 17:15:43Z; no one-line message reached this
+  thread, found by the directory listing). R3-N1 to R3-N5 done; R3-N6 untouched as ordered. Six new
+  tests fail on the old code (`6 failed | 10 passed (16)`), then eight lane suites
+  `266 passed (266)`, tsc and eslint clean. The window-label check is now pinned at an exported seam
+  (`carriedWindowOf`): reverting it fails 1 of 51 tests. Correction comment posted by lane 7 on
+  #1419 (issuecomment-6773880458). `CallsNavigateTarget.href` is `string | null`; real captured rows
+  (relative hrefs) now produce controls that route by kind + id. Owed by this thread after #1419
+  merges: send "open it".
+- Macro at 17:19Z: #10923 `8abe28febaf0`, #10924 `77061fee951e`, #10931 `3290bfe75f96` open with
+  `merge-on-green`; #10929 held draft `c5d8c31db57d`; #10954 `0d43d893cc70`, #10956
+  `ffec9a8d6f64`, #10965 `32d7ebcfd977` open without labels. Nothing merged.
+- Terminal at 17:19Z: #1431 `cd980225c7ed`, #1436 `df42f39e2381`, #1419 `92bc55aa9820` open,
+  armed, BEHIND master, none merged. #1429 `36c2f865b64d` not armed. #1410 and #1425 parked,
+  unchanged.
+- #10924 at 17:20Z: 14 checks passed (all pack jobs), 4 skipped, `ci-gate` queued, the only failure
+  `ci-authority/codex/merge-queue-pilot` (fails on every pull request). Not yet merged.
+- Terminal queue at 17:21Z: only #1435 in the queue (awaiting checks). #1419, #1436, #1431 armed,
+  not in the queue. On #1419 and #1431 both required checks have passed; the remaining running jobs
+  are the e2e shards, which are not a merge gate. Not re-armed, nothing changed. Wake moved to
+  17:50Z with a rewritten prompt.
+
+### 25.10 Lane 1 follow-up delivered at f0a5b605df5d; narrow second review started (17:40Z)
+
+- Delegate `si-v11-lane1-glm-pit-review-followup-1642z` returned (return section written 17:34:48Z).
+  Delivered: one commit `f0a5b605df5da7a1dc3da364a6c1ee56564c4026` on the reviewed `32d7ebcfd977`,
+  fast-forward, four files (GitHub compare read at 17:38Z): `lib/sector_central_carry.py`
+  +165 −43, `lib/sector_population.py` +39 −5, `tests/test_sector_central_carry.py` +167,
+  `tests/test_sector_population.py` +127 −3. Merge check on custody: passed (only lane 1's
+  own four files).
+- What it claims: S1 to S3 and N1, N2, N4, N5, N6, N8 done; N3 and N7 documented only. Four new
+  closed reason codes: `capture_effective_as_of_malformed`, `carried_fact_malformed`,
+  `block_too_large`, `basket_absent_from_snapshot`. Suites `68 passed` and `472 passed, 3 skipped`.
+  Seven mutations each fail a named test. Largest real page unchanged at 97,237 bytes (under the
+  4 MiB bound).
+- N4 was adopted: point-in-time answers now come from one frame read through the owner's
+  `membership_intervals_from_history`; 196 of 196 real-store pairs identical to the per-call path;
+  66.89 s against 0.68 s in the test run.
+- DECISION of the programme COO thread: the one-read path is a new algorithm on a served fact, and
+  the author's mutation table has no row for it (nor for N1), so it gets one narrow independent
+  review before any arming: delegate `si-v11-lane1-opus-review-r2-1740z` (Opus, read-only), verdict
+  to `reviews/lane1_10965_review_r2.md`. Questions put to it: is the one-read path pinned by any
+  test that runs when the real store is absent (the CI checkout is sparse); does a 60-second
+  comparison run inside CI; does the broad catch (N5) leave denied-before-read intact; is a null
+  stamp rightly "malformed" and does any consumer branch on the old code; where is "wire doc
+  section 2b", since the commit changes no document.
+- Open point noticed: the return says wire doc section 2b was updated, but the commit contains only
+  two source and two test files. The reviewer was asked to find where that text lives.
+- #10965 has no labels and is not armed. It is last in the Macro order (#10924, #10929, #10954,
+  then #10965), so the review costs no calendar time.
+- The section-24 delegate (`si-v11-status-section24-glm-1655z`) had not returned yet (started
+  16:52Z).
+
+### 25.11 Lane 1 author's four answers, passed to the reviewer as claims (17:45Z)
+
+- The lane 1 worker sent answers (all four are the AUTHOR's claims): (1) the one-read path is pinned
+  without the real store by the N2, N8 and N5 tests, and the real store
+  `data/baskets/membership_history.parquet` is committed so CI has it; (2) the equality test has no
+  skip marker and re-runs the old per-call sweep on every suite run (20.67 s to 66.89 s); (3) the
+  catch-all sits only in `build_carry` at nightly capture time, not on the serving route; (4) "wire
+  doc section 2b" is a host-local file, `/tmp/si_plan/v11/LANE1_WIRE_V11.md` (40,956 bytes; section
+  2b at line 72), never a repository file.
+- 17:44Z steered the running reviewer (`si-v11-lane1-opus-review-r2-1740z`, delivery "steered") with
+  those four claims, marked as claims to verify with its own evidence, plus the sharper tests: do
+  N2/N8/N5 fail when the path resolves the WRONG snapshot; which CI pack runs the file and its time
+  ceiling; every caller of `build_carry`; completeness of section 2b against the code.
+- DECISIONS of the programme COO thread. On (4): a consumer contract that lives only under `/tmp`
+  is not durable; after the verdict, section 2b (corrected if the review finds gaps) is posted as a
+  comment on #10965, which does not move the head. On (2): the sweep size is decided after the
+  reviewer reports the measured time and the pack ceiling.
+
+### 25.12 CI citation; worktree-unlock option declined (17:48Z)
+
+- The lane 1 worker cited where the carry test file runs in CI (`.github/ci/legacy-jobs.yml:7391`,
+  step "sector central carry — carried blocks over committed artifacts", reads `site/` and
+  `data/`). Author claim; steered to the running reviewer at 17:47Z to confirm and to report any
+  time ceiling on that step.
+- The worker offered an option: this thread unlocks and removes the FINISHED predecessor worker's
+  locked worktree
+  (`/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/t3-1ff3cb67-5510d78db93105cd`,
+  stale at `32d7ebcfd977`) so that the worker can rename its local branch and keep its seat alive
+  until #10965 merges. DECISION: declined. That tree is another session's git state and it is
+  locked; house law lets only the host sweeper reclaim it. Nothing is lost: the work is DELIVERED
+  and pushed, the worker seat ends, and the post-merge verification of #10965 is commissioned fresh
+  by this thread after the merge. The worker said no reply is needed unless the option is taken, so
+  none was sent.
+- State at 17:47Z: nothing merged on either repository; #10965 head is now `f0a5b605df5d`; all other
+  heads and labels as at 17:19Z.
+
+### 25.13 Lane 1 follow-up delegate ended; end state corrected (17:49Z)
+
+- Delegate `si-v11-lane1-glm-pit-review-followup-1642z` completed and declared
+  `SESSION END: EXACT_HUMAN_GATE`. That is wrong: no human action is needed; the next steps (review
+  verdict, arming, merge order) are this thread's. Recorded as the DELIVERED rung only, head
+  `f0a5b605df5d`.
+- Its stop-guard diagnosis (the guard looks up pull requests by the LOCAL branch name, and its
+  local branch was a collision-forced alias `claude/si-lane1-pit-followup-20261110`) is a real
+  tooling fact for future commissions: tell a follow-up worker to work on a local branch whose
+  name equals the pull request head branch, or expect it to exit through the guard ladder.
+- It says section 2b is now "in-band on the PR". At 17:49Z #10965 has zero comments, so if present
+  it is in the pull request body; to be confirmed when the review verdict arrives, before this
+  thread posts anything.
+
+### 25.14 Section 24 pull request #10968 opened, checked and armed (18:06Z)
+
+- Delegate `si-v11-status-section24-glm-1655z` returned (its end line is a hold note; rung
+  DELIVERED). **#10968** `docs(sector): v1.1 status at 16:50Z — section 24`, head
+  `00d1ca3a1571a34e73e17245ac7ada3e11aa0d30`, branch `claude/si-v11-adoption-status-c-20261110`,
+  base main. Check at 18:05Z: one file
+  (`research/sector_completion_20261021/V11_ADOPTION_RETURN_2026-11-10.md`), 199 additions, 0
+  deletions; sub-sections 24.1 to 24.20; the title, 24.9, the state table 24.17, 24.18, 24.19 and
+  24.20 were read against the notes and no invented fact was found. Linked to this thread;
+  `merge-on-green` added 18:06Z. Do NOT push to this branch again; section 25 goes on a fourth
+  branch after it merges.
+- Known lag in section 24, stated there and corrected here (25.22): its table shows the #1419 third
+  review as running at 16:50Z; the verdict file already existed at 16:48:52Z and was read at 16:52Z
+  (READY WITH FOLLOW-UP, 25.1).
+- Terminal at 18:06Z: #1436 (lane 6) is IN the merge queue, position 3, enqueued 17:56:02Z, merge
+  state CLEAN, checks SUCCESS; ahead of it #1232 and #1427. #1419 and #1431 armed, BEHIND, not in
+  the queue, check rollup PENDING (browser shards).
+- Macro at 18:06Z: #10924 `77061fee951e`: every check complete, 15 passed, 4 skipped, the single
+  failure `ci-authority/codex/merge-queue-pilot` (fails on every pull request); GitHub merge state
+  UNKNOWN (recomputing); still OPEN with `merge-on-green`, last comment this thread's of 16:35:54Z,
+  no new controller comment. The controller owns the next act.
+
+### 25.15 Lane 1 second review READY WITH FOLLOW-UP; one more fix commit ordered (18:13Z)
+
+- **#10965 (lane 1), second review:** `VERDICT: READY WITH FOLLOW-UP at
+  f0a5b605df5da7a1dc3da364a6c1ee56564c4026`, 0 blockers, 2 should-fix, 6 notes (file
+  `reviews/lane1_10965_review_r2.md` written 18:06:52Z; delegate
+  `si-v11-lane1-opus-review-r2-1740z`, Opus, read-only). Review record posted on the pull request at
+  18:11Z: issuecomment-6775291566.
+  - Should-fix 1: the one-read path's all-legacy branch (`lib/sector_central_carry.py:397-404`) does
+    not equal the owner's `members_asof`: 14 differing synthetic pairs, reaching served blocks (a
+    null `first_known`, a member count of 2 against the owner's 1). Not reachable from today's data
+    (legacy era frozen; 196 of 196 real pairs equal).
+  - Should-fix 2: no store-free test pins the one-read path. Mutation "interval end inclusive" is
+    caught only by the real-store test; mutation "global newest date instead of the basket's own"
+    passes all 68 tests. The author's claim that N2, N5 and N8 pin it is false.
+  - Notes: (1) null or missing `effective_as_of` mislabelled `malformed`; (2) the catch-all logs
+    nothing; (3) the real-store test takes about 66 s, fails when the store is absent, asserts wall
+    time; (4) both lane suites are `gate: data` steps (`.github/ci/legacy-jobs.yml:7283-7285`), so
+    they run only in the post-nightly data-health lane and never on the pull-request gate, a
+    registration that predates this pull request; (5) the consumer contract (wire section 2b) lives
+    only in `/tmp/si_plan/v11/LANE1_WIRE_V11.md`, accurate with four small gaps; (6) impossible
+    calendar dates pass the day pattern (`lib/sector_population.py:184`), predates this commit.
+  - Held as claimed: the four serving rules unchanged; the catch-all is on the nightly capture path
+    only (`build_carry` has one caller, `scripts/build_sector_central.py:669-670`; `app/` imports
+    neither module); only four files changed; `68 passed` and `472 passed, 3 skipped` reproduced.
+- DECISIONS of the programme COO thread:
+  - Should-fix 1: legacy-only dates take each answer from the owner's public `members_asof`, called
+    as it is. The one-read path stays for versioned history. No owner rule is copied; the cost is
+    bounded because the legacy era no longer grows. A 30-second ceiling on added real-store build
+    time is in the order; above it the worker stops and reports.
+  - Should-fix 2: a store-free synthetic differential against `members_asof` over legacy, versioned
+    and mixed stores; three mutations must each fail a store-free test.
+  - Note 1: null or missing returns to the "unavailable" code; `malformed` only for a wrong type.
+    Note 2: one warning log line. Note 3: the wall-time assertion is removed; the full 196-pair
+    comparison stays and still fails when the store is absent (a failure was not turned into a
+    skip). Note 6: impossible dates treated as a pattern mismatch, with no new code; if an existing
+    test would have to change, the worker drops the item and reports.
+  - Note 5: the corrected section 2b goes into the description of #10965 in full, so the contract
+    lane 3 consumes is durable in GitHub and not only in a host-local file.
+  - Note 4: recorded, not changed. It means nothing in #10965's own CI ran these tests; the evidence
+    is the reviewer's and the worker's local runs. A change to that registration is a CI-authority
+    edit and belongs to the CI owner, not to this pull request.
+- Ordered: delegate `si-v11-lane1-glm-pit-review-followup2-1815z` (glm-5.3, own worktree), one
+  commit on `claude/si-lane1-pit-fields-20261110` from `f0a5b605df5d`, four owned files only. The
+  order tells the worker that its Stop guard keys on the local branch name, that arming and merge
+  are this thread's, and to end with DURABLE_EXECUTION_RUNNING and no hold-note loop.
+- After it returns: this thread's merge check (four files only, the three mutation failures quoted,
+  the reviewer's differential re-run showing zero differing pairs, section 2b in the description).
+  Whether a third narrow review is owed is decided then; the default is that the reviewer's own
+  differential probe, re-run, is the independent evidence for should-fix 1.
+- #10965 stays unarmed and last in the Macro order.
+- The reviewer could not remove its scratch worktree
+  `/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/t3-48efd072-98d9eab469a76efb`
+  (branch `claude/ssd-t3-48efd072-98d9eab469a76efb`). Left for the host worktree sweeper, as with
+  the two earlier ones.
+
+### 25.16 States read; #1431 entered the queue; wake moved to 19:15Z (18:15Z)
+
+- Terminal at 18:14Z: queue is #1232, #1427, #1436 (position 3, enqueued 17:56:02Z), #1431
+  (position 4, enqueued 18:10:35Z), all awaiting checks. #1419 `92bc55aa9820` armed, BEHIND, rollup
+  pending, not yet queued. #1429 not armed. #1410 and #1425 parked, unchanged.
+- Macro at 18:14Z: nothing merged. #10924 `77061fee951e`: 15 checks success, 4 skipped, 1 failure
+  (the known pilot check), mergeable, merge state UNSTABLE, no new comment since this thread's of
+  16:35:54Z. Merge-controller runs are queued (workflow_dispatch 18:02:53Z, workflow_run 18:11:15Z
+  pending; three earlier runs cancelled by newer ones; last success 17:48:04Z). The controller owns
+  the next act; nothing was dispatched by this thread.
+- #10968 `00d1ca3a1571` open with `merge-on-green`. #10931 (another session) still open, so #10956
+  stays unarmed.
+- Wake task updated with the full current prompt; next run 19:15Z. The lane 1 fix delegate wakes
+  this thread on completion.
+
+### 25.17 Three Terminal lanes merged; three follow-ups opened and armed (19:22Z)
+
+All times in 25.17 to 25.20 were read from `date -u` or from GitHub timestamps.
+
+- Status record: the third status pull request #10968 (section 24) MERGED at 18:33:37Z.
+- Terminal merges, the first v1.1 code on a protected branch: #1431 (lane 4) and #1436 (lane 6)
+  MERGED at 18:48:50Z; #1419 (lane 7) MERGED at 18:57:21Z. Squash commits `f9eddc1c711e`,
+  `289e26df41c2`, `5cbd29d49f1f`. Rung reached for lanes 4, 6 and 7: MERGED to Terminal master. Not
+  deployed, not production-proven.
+- Three parked follow-ups opened from master, checked and armed by this thread. Each was rebuilt
+  from master because a squash merge breaks ancestry; each author was told to open it at about
+  19:00Z.
+  - #1443 (lane 4, review note 3): `horizon_sessions` must be a safe integer in 1..2520. Two files.
+    Head `363f881a8334`. Merge-check comment issuecomment-6776611509; armed (squash, pinned to
+    head).
+  - #1444 (lane 6, review items S1 and N4): follow state claims a notification only for `queued`
+    or `sent`; duplicate adapter owner throws in the contract helpers. Three files. Head
+    `b04bce65b8e5`. Comment issuecomment-6776636524; armed.
+  - #1445 (lane 7, third-review notes N1 to N5): generic fallback wording, navigation target with
+    nullable href and validated id and ticker, localized unknown class word, own-key window lookup.
+    Twelve files, all lane 7's. Head `7671ceeb7284`. Comment issuecomment-6776792374 (19:13Z);
+    armed. Two existing assertions changed, both required by the review items; named in the comment.
+  - Correction recorded (also in 25.22): this thread's #1443 comment repeated the author's statement
+    that two `tsc` errors exist on master. Lane 6 showed they come from a stale local install (`npm
+    ci`, then `tsc` exits 0). Corrected on #1443 (issuecomment-6776638312) and stated on #1445.
+- DECISION of the programme COO thread: #1410 and #1425 are not touched at all. The earlier plan was
+  for lane 6 to merge master into both parked pull requests. At 18:50:23Z the Terminal merge sweeper
+  set `merge-blocked` on #1410, which still carries `merge-on-green`. A conflict-free head on a pull
+  request with that label could be re-enqueued by the sweeper, and re-enqueueing a migration-bearing
+  pull request is forbidden. So the conflict is left in place as an additional barrier. Both stay
+  parked behind the one human item (App and environment-key enrollment).
+
+### 25.18 Macro: #10923 merged; merge controller waiting on CI capacity (19:22Z)
+
+- Macro #10923 (design round 5: five Paper design groups and the guide amendment) MERGED at
+  19:07:53Z by the merge controller at head `0bdd06afe124`. It is a design and documentation pull
+  request; no v1.1 Macro engine code is on main yet. Lane 8's code is #10924, still open.
+- Macro merge controller, measured: #10924 has clean checks but its proof is stale (main changed
+  check definitions). The controller's 18:49Z log: 8 indexed CI runs, global cap 8, 0 workload slots
+  this sweep, "a later sweep picks it up". So Macro merges are waiting on CI capacity; nothing is
+  failing. DECISION of the programme COO thread: this thread does not push a merge of main into an
+  armed Macro pull request itself. That would bypass the controller's slot accounting and restart CI
+  outside its ledger.
+- Macro stack confirmed: #10929 (held draft `c5d8c31db57d`) is the base of #10954 (`0d43d893cc70`),
+  which is the base of #10965. Order stays #10924, #10929, #10954, #10965.
+
+### 25.19 Lane 1 fix commit checked; third review not owed (19:22Z)
+
+- Lane 1 (#10965) fix commit checked. Delegate `si-v11-lane1-glm-pit-review-followup2-1815z`
+  returned at 18:53Z: one commit `a089d2f9b4d713cc11acd89063fae8cb4161096b`, fast-forward on
+  `f0a5b605df5d`, four owned files. This thread's checks, all read-only: the library diff was read
+  line by line; the second reviewer's own differential probe re-run against this head gives
+  `TOTAL DIFFS 0` (14 before); the two library files tested are byte-identical to the GitHub head
+  (sha256); both lane suites `71 passed` in 92 s at 19:08Z; the description names every reason code.
+  Quoted from the author and not re-run by this thread: three mutations each fail the new
+  store-free test; `472 passed, 3 skipped`; added build time 0.7 to 0.8 s.
+- Two existing assertions changed (null `effective_as_of` now reads "unavailable" and no longer
+  "malformed"). The capture is refused under both readings; only the label changed. Not a loosened
+  check.
+- DECISION of the programme COO thread: a third independent review is not owed. No new algorithm;
+  the independent reviewer's probe is clean. Stated on the pull request as what it is: a parent
+  check of the delta by a non-author session, not a second independent child review. Record:
+  issuecomment-6776794714 (19:14Z). #10965 stays unarmed and last in the order.
+- The worker ended after ten ship-loop cycles because its Stop guard resolves pull requests by local
+  branch name. Counted as DELIVERED only.
+
+### 25.20 Lane 3 landing round ordered; lane 1 next increment scoped (19:22Z)
+
+- Lane 3 landing round ordered at 19:15Z (thread run 12; item 6 added at 19:21Z): merge master;
+  follow-state `delivery_problem`; calls-board navigation by `kind` and `id` with nullable href
+  (final merge of master only after #1445 is MERGED; the board is not mounted from a base that lacks
+  it); confirm the admission gate covers all four action components; consume lane 1's
+  point-in-time facts from section 2b in #10965's description, every one optional and absent-safe;
+  admit optional `group_index[].name_zh`. Then ONE independent review at the landing head.
+- Lane 1 next increment, scope decided. The queue item "full confluence payloads and theme rows"
+  (section 15.2) is not buildable from a one-line order: the S&P universe's full rows are about
+  160 KB against a 60 KiB per-block cap, the consumer's fourth universe is curated Baskets while
+  the carry has `china`, and tests pin "exactly four universes" and "closed at seven". DECISION of
+  the programme COO thread: a read-only census first (consumer field list, producer keys, sizes, the
+  pinning tests), then this thread freezes the wire and orders the build as a pull request stacked
+  on `a089d2f9b4d7`, with its own independent review. `group_index[].name_zh` (string 1 to 160, or
+  null) goes in the same increment. The `hazard_qualification` carry still waits for #10924.
+- Known consequence: the Terminal product lands with the confluence universes board and the theme
+  table reading "unavailable". They light up only after the lane 1 rows increment is served and
+  lane 7 does one more consumer round.
+
+### 25.21 Review verdicts in this window
+
+| Pull request | Review | Head | Verdict | Blockers / should-fix / notes | What was done |
+|---|---|---|---|---|---|
+| #1419 (lane 7) | third | `92bc55aa9820de5a591756f60b8274e4906313d7` | READY WITH FOLLOW-UP (file written 16:48:52Z, found 16:52Z) | 0 / 0 / 6 | Review record posted issuecomment-6773509168; no hold; duty arm 15:39:06Z untouched; supersedes the NOT READY line in issuecomment-6772903804 (25.1). Follow-up parked, later opened as #1445 (25.17). |
+| #10956 (lane 5) | third | `ffec9a8d6f642e66d0a3dcd50242698eb658aa54` | READY (file written 17:14:36Z) | 0 / 0 / 9 | Review record posted 17:19Z, issuecomment-6774132787; head not moved; notes 1, 2, 4, 5, 9 to one small glm-5.3 follow-up after merge (25.8). Pull request still unarmed, waiting on #10931. |
+| #10965 (lane 1) | second | `f0a5b605df5da7a1dc3da364a6c1ee56564c4026` | READY WITH FOLLOW-UP (file written 18:06:52Z) | 0 / 2 / 6 | Review record posted 18:11Z, issuecomment-6775291566; one more fix commit ordered (25.15), delivered and checked at `a089d2f9b4d7`; third review ruled not owed (25.19). |
+
+### 25.22 Corrections to section 24, and to my own orders and comments
+
+1. **Section 24's state table shows the #1419 third review as running at 16:50Z.** The verdict file
+   already existed at 16:48:52Z and was read at 16:52Z: READY WITH FOLLOW-UP (25.1). The lag was
+   known when section 24 was checked and is corrected here.
+2. **My #1443 comment repeated a false statement about `tsc` on master.** It repeated the author's
+   statement that two `tsc` errors exist on master. Lane 6 showed they come from a stale local
+   install (`npm ci`, then `tsc` exits 0). Corrected on #1443 (issuecomment-6776638312) and stated
+   on #1445 (25.17).
+3. **The earlier plan to merge master into #1410 and #1425 was withdrawn.** The plan was for lane 6
+   to merge master into both parked pull requests. At 18:50:23Z the Terminal merge sweeper set
+   `merge-blocked` on #1410, which still carries `merge-on-green`. A conflict-free head on a pull
+   request with that label could be re-enqueued by the sweeper, and re-enqueueing a
+   migration-bearing pull request is forbidden. So the conflict is left in place as an additional
+   barrier, and both pull requests stay parked (25.17).
+4. **My NOT READY comment on #1419 (issuecomment-6772903804) was superseded** by the third review's
+   READY WITH FOLLOW-UP and its record, issuecomment-6773509168 (25.1).
+5. **Two worker end-state declarations were wrong and were not adopted.** The lane 5 repair
+   delegate declared `SESSION END: EXACT_HUMAN_GATE` and wrote "owner thread 2f136a11 gone"
+   (25.7); the lane 1 follow-up delegate declared `SESSION END: EXACT_HUMAN_GATE` (25.13). Both
+   wrong: no human action was needed; the next steps were this thread's. Both returns were
+   recorded as the DELIVERED rung only.
+6. **The 16:55Z wake carried the OLD prompt**, written before 16:00Z; every item in it was already
+   done or overtaken. The refreshed prompt went on the 17:25Z wake (25.5).
+
+### 25.23 State of every programme pull request at 19:22Z
+
+| Pull request | Head (12 characters) | State | Armed or not | What it waits on |
+|---|---|---|---|---|
+| #1410 | `dc02f1c28879` (24.17; not re-read) | Parked; `merge-blocked` set by the Terminal merge sweeper 18:50:23Z; still carries `merge-on-green`; conflict left in place as a barrier | Label present, native auto-merge not enabled (16:58Z read); not armed by this thread | The human item; no re-enqueue of a migration-bearing pull request |
+| #1425 | `02cb8b725e3c` (24.17; not re-read) | Parked; not touched at all (25.17) | Not armed | The human item |
+| #1429 | `36c2f865b64d` | Open; not armed; lane 3 landing round ordered 19:15Z | Not armed | The landing round; final master merge only after #1445 is MERGED; then one independent review |
+| #1431 | `f9eddc1c711e` (squash) | MERGED 18:48:50Z | — | Nothing |
+| #1436 | `289e26df41c2` (squash) | MERGED 18:48:50Z | — | Nothing |
+| #1419 | `5cbd29d49f1f` (squash) | MERGED 18:57:21Z | — | Nothing |
+| #1443 | `363f881a8334` | Open; two files; checked and armed by this thread | Armed (squash, pinned to head) | Auto-merge |
+| #1444 | `b04bce65b8e5` | Open; three files; checked and armed by this thread | Armed | Auto-merge |
+| #1445 | `7671ceeb7284` | Open; twelve files, all lane 7's; comment 19:13Z; checked and armed by this thread | Armed | Auto-merge; #1429's final master merge waits on it |
+| #10923 | `0bdd06afe124` | MERGED 19:07:53Z by the merge controller; design and documentation only | — | Nothing |
+| #10924 | `77061fee951e` | Open; clean checks, proof stale; merge state UNSTABLE at 18:14Z; controller's 18:49Z log: 8 indexed runs, cap 8, 0 slots this sweep | Armed (`merge-on-green`) | CI capacity; the controller's later sweep |
+| #10929 | `c5d8c31db57d` | Held draft; base of #10954 | Not armed | #10924 to merge, then its final pass |
+| #10945 | — | Not re-read in this window (closed as superseded, 24.17) | — | — |
+| #10954 | `0d43d893cc70` | Open without labels (17:19Z); base of #10965 | Not armed | Its base #10929 |
+| #10956 | `ffec9a8d6f64` | No labels, not armed (17:20Z); third review READY; last state read 18:15Z | Not armed | #10931 (another session's) to merge |
+| #10959 | — | Not re-read in this window (MERGED 16:24:25Z, 24.17) | — | — |
+| #10965 | `a089d2f9b4d7` | Open; fix commit checked; parent-check record 19:14Z; last in the Macro order | Not armed | #10954 and the Macro order |
+| #10968 | `00d1ca3a1571` | MERGED 18:33:37Z | — | Nothing |
+
+#10931 is another session's pull request, armed at `3290bfe75f96`; this programme does not act on
+it beyond waiting.
+
+### 25.24 Open items, and the one item that needs a person
+
+- Reads owed: the results of the armed follow-ups #1443, #1444 and #1445 once the machinery acts on
+  them; the Macro controller's later sweep for #10924; #10931's merge, which unblocks #10956's arm.
+- After #10956 merges: one small glm-5.3 follow-up for review notes 1, 2, 4, 5 and 9 (25.8).
+- After #10924 shows MERGED: the #10929 final pass, then its release, then #10954, then #10965 —
+  order confirmed at 19:22Z (25.18).
+- Running: the lane 3 landing round (ordered 19:15Z, item 6 added 19:21Z), then one independent
+  review at the landing head (25.20).
+- Lane 1 next increment: read-only census first (consumer field list, producer keys, sizes, the
+  pinning tests), then this thread freezes the wire and orders the build stacked on
+  `a089d2f9b4d7`, with its own independent review; `group_index[].name_zh` in the same increment;
+  the `hazard_qualification` carry still waits for #10924 (25.20).
+- Known consequence to carry: the Terminal product lands with the confluence universes board and
+  the theme table reading "unavailable" until the lane 1 rows increment is served and lane 7 does
+  one more consumer round (25.20).
+- Worktrees left for the host worktree sweeper (`scripts/worktree_gc.py`):
+  `review-10956-r3-cafa03919b2ae79e` and `t3-48efd072-98d9eab469a76efb`, as with the two earlier
+  ones (25.8, 25.15).
+- HUMAN ITEM (unchanged): the Terminal migration-ownership App and environment-key enrollment.
+  Until it is done, #1410 and #1425 stay parked and untouched. Everything else lands without it.
+
+### 25.25 Rung
+
+The 19:22Z note's rung sentence, exactly: "Rung reached at 19:22Z: lanes 4, 6 and 7 MERGED to
+Terminal master (not deployed); Macro #10923 (design guide) MERGED. Lanes 1, 3, 5, 8 and 9
+DELIVERED to pull requests (lane 8's #10924 armed, waiting on CI capacity). Nothing of v1.1 is
+served or production-proven. No APPLY, no migration action, no reservation-ledger edit."
