@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-10",
-  "generated_utc": "2026-11-10T00:53:58.125679+00:00",
+  "generated_utc": "2026-11-10T11:15:26.794483+00:00",
   "n_tickers": 2871,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -2524,8 +2524,8 @@
       ],
       "weighted_score": 0.2,
       "hf_downloads_30d": 152894592.0,
-      "days_to_earnings": 14,
-      "next_earnings": "2026-11-24",
+      "days_to_earnings": 9,
+      "next_earnings": "2026-11-19",
       "earnings_surprise_pct": -43.3,
       "congress_position_usd": 193148000.0,
       "convergence_score": 1,
@@ -3160,6 +3160,21 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "EZPW": {
+      "ticker": "EZPW",
+      "channels": [
+        "short_squeeze"
+      ],
+      "weighted_score": 0.3,
+      "days_to_earnings": 1,
+      "next_earnings": "2026-11-11",
+      "earnings_surprise_pct": 20.5,
+      "days_to_cover": 19.5,
+      "si_change_pct": 3.9,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "TR": {
       "ticker": "TR",
       "channels": [
@@ -3183,21 +3198,6 @@
       "days_to_earnings": 2,
       "next_earnings": "2026-11-12",
       "earnings_surprise_pct": 31.2,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "EZPW": {
-      "ticker": "EZPW",
-      "channels": [
-        "short_squeeze"
-      ],
-      "weighted_score": 0.3,
-      "days_to_earnings": 2,
-      "next_earnings": "2026-11-12",
-      "earnings_surprise_pct": 20.5,
-      "days_to_cover": 19.5,
-      "si_change_pct": 3.9,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
