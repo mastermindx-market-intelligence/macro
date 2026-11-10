@@ -532,3 +532,53 @@ run SP04, SP05 and SP12, and open one pull request stacked on #10931. It commits
 Registration carriers for #10929 and #10924; the lane 1 follow-up worker; the lane 5 worker; the
 point-in-time membership census; lanes 3, 4 and 7 on their own threads. Nothing of v1.1 is merged
 or served.
+
+## 13. Status at 12:30Z (point-in-time membership census; #10924 carrier resumed)
+
+### 13.1 Census result
+
+The read-only census is `PIT_MEMBERSHIP_CENSUS_2026-11-10.md` beside this file. It read
+`origin/main` at `7e115b6f1f10`.
+
+| Question | Answer |
+|---|---|
+| Basket and theme membership as known at a past date | Partly. `data/baskets/membership.json` holds effective dates only, and its `added` field is back-dated. First-known is recoverable from 2026-06-14 by commit, and from 2026-08-13 from the four stored snapshots in `membership_history.parquet`. |
+| Sector, industry and sub-industry labels at a past date | No. Every surface is current-basis. `sp1500_pit_sectors` receipts `era_correct_count: 0` by design. |
+| S&P index membership at a past date | Yes. `data/breadth/sp1500_pit_membership.parquet`: 500 from 1996, 400 from 2012, 600 from 2019. Floored starts are lower bounds. |
+| Existing owner | `engine/basket_membership_pit.py`: append-only, keep-first store with `members_sha` and the `members_asof` reader, whose `pit=False` flag already models "not known at that date". |
+| Not producible from this repository | Era-correct historical labels and taxonomy revision dates; historical add-announcement dates; mid- and small-cap membership before 2012 and 2019; basket first-known before 2026-06-14. |
+| Survivorship | Partly. The ledger keeps all 26 removed members with dates. GATO and MAG have no price tape anywhere in the repository. |
+
+Not verified by the census: 12 of the 26 removed members' tapes were not individually checked;
+`data/baskets/extras.parquet` was not opened.
+
+### 13.2 Decisions
+
+1. **Lane 8 comparators C4 and C5 stay `unavailable: no_pit_constituent_membership`.** Index
+   membership at a past date exists; the sector label at that date does not, and the comparators
+   need the join. A small producer change cannot supply it. Lane 8 changes nothing.
+2. **No outside data source is sought by this programme.** Era-correct labels need a licensed
+   point-in-time classification dataset. That is a purchase, which is the Chairman's decision, and
+   v1.1 does not need it: SP08 accepts "original or explicitly unretained", and the rows are
+   emitted as `unavailable`. It is put to the Chairman as an optional item.
+3. **What is producible gets carried, through the existing owner.** A lane 1 increment exposes,
+   from `engine/basket_membership_pit.py` and nothing new: `membership_first_known` per member
+   (earliest stored snapshot, labelled a lower bound, never the back-dated `added`); the stored
+   member set and `members_sha` of the newest snapshot at or before the capture date; and a
+   taxonomy stamp that states the current label basis with the historical revision `unavailable`.
+   It starts after the round 3 follow-up returns, because both edit `lib/sector_population.py`.
+4. **Survivorship is disclosed, not repaired.** Any analytics over baskets that had removals
+   states that removed members' price histories are incomplete (GATO and MAG absent).
+
+### 13.3 #10924 registration carrier
+
+Failed at 12:20Z on a provider error (502) before editing anything. #10924 was unchanged at
+`f1337bdd8738`. Its partial return had the diagnosis: 83 findings introduced, 0 inherited: 81
+closure rows across 21 jobs (four new files) and two unwired suites; no packing ceiling breached.
+Resumed on the same thread at 12:23Z. Second 502 from the local gateway in about an hour (lane 5
+at 11:18Z).
+
+### 13.4 Unchanged
+
+#10929 draft and held at `595fe6b75af2`, review ready, registration not yet returned. #10923 armed
+and open. Nothing of v1.1 is merged or served.
