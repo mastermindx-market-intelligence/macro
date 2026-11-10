@@ -1183,6 +1183,48 @@ def test_v11_non_string_theme_name_fields_read_null(tmp_path):
     assert rows["big_pharma"]["name"] == source["big_pharma"]["name"]
 
 
+def test_v11_theme_perf_needs_baskets_list_even_with_string_as_of(tmp_path):
+    """N-3 (review r1, COO ruling - null stays): a baskets.json whose top-level
+    ``as_of`` is a non-empty string but whose ``baskets`` is not a list reads
+    ``perf_as_of`` null and no row carries a ``perf`` key. The string ``as_of``
+    alone must not switch perf on."""
+    def not_a_list(document):
+        document["baskets"] = {"id": "memory_storage"}  # mapping, not a list
+
+    site = _rows_site(tmp_path, {"basketdata/baskets.json": _baskets_mutation(not_a_list)})
+    block = carry.theme_rows(site)
+    source = json.loads((site / "basketdata/baskets.json").read_bytes())
+    assert isinstance(source["as_of"], str) and source["as_of"]  # precondition
+    assert block is not None and block["perf_as_of"] is None
+    assert all("perf" not in row for row in block["rows"])
+
+
+def test_v11_theme_perf_with_no_allowed_windows_carries_empty_mapping(tmp_path):
+    """N-3 (review r1): a basket whose ``perf`` mapping has none of the closed
+    window keys still carries ``perf`` - as an empty mapping, not an absent key."""
+    def foreign_windows(document):
+        by_id = {b["id"]: b for b in document["baskets"]}
+        by_id["memory_storage"]["perf"] = {"q7": {"ret": 0.5}, "ytd2": {"ret": 0.1}}
+
+    site = _rows_site(tmp_path, {"basketdata/baskets.json": _baskets_mutation(foreign_windows)})
+    rows = {row["id"]: row for row in carry.theme_rows(site)["rows"]}
+    assert rows["memory_storage"]["perf"] == {}
+
+
+def test_v11_theme_producer_null_perf_leaves_the_key_absent(tmp_path):
+    """N-3 (review r1): a producer ``perf: null`` on the basket entry is not
+    carried as ``null`` - the row simply has no ``perf`` key."""
+    def null_perf(document):
+        by_id = {b["id"]: b for b in document["baskets"]}
+        by_id["memory_storage"]["perf"] = None
+
+    site = _rows_site(tmp_path, {"basketdata/baskets.json": _baskets_mutation(null_perf)})
+    rows = {row["id"]: row for row in carry.theme_rows(site)["rows"]}
+    assert "perf" not in rows["memory_storage"]
+    # an untouched basket on the same night still carries its perf
+    assert "perf" in rows["big_pharma"]
+
+
 def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
     """REAL: wire §0 - the incumbent values are byte-identical before and after.
     The literals are the sha256 of the canonical encoding, measured by running the
