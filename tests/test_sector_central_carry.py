@@ -1291,15 +1291,85 @@ def test_v11_source_file_at_the_ceiling_is_read_normally(tmp_path, monkeypatch):
     assert block == reference  # the same bytes: an unguarded read's equal
 
 
-def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
-    """REAL: wire §0 - the incumbent values are byte-identical before and after.
-    The literals are the sha256 of the canonical encoding, measured by running the
-    BASE module (commit a089d2f9b4d7) and the new module over the same site."""
+def _base_guard_site(tmp_path):
+    """A FIXED synthetic site for the base-vs-head byte guard (review r2 SF-A).
+
+    Literal inputs that cannot change with the night, exercising both incumbent
+    readers with real content: all four universes valid (two carrying id rows),
+    one ``as_of``-dated and one ``generated_utc``-dated, and a theme table with
+    three rows. Returns the site (== ``tmp_path``)."""
+    documents = {
+        # as_of-dated; rows in two of the three id lists
+        "marketdata/subsector_confluence.json": {
+            "as_of": "2099-01-02", "universe": "sp500_subsectors", "ok": True,
+            "benchmark": "SPY", "coverage": {"n_subsectors": 2, "n_sectors": 1},
+            "entry_now": ["memory_storage", "big_pharma"],
+            "forming": ["ai_semiconductors"], "headwind": []},
+        # generated_utc-dated (no as_of): the dating rule's other arm
+        "marketdata/subsector_confluence_nasdaq.json": {
+            "generated_utc": "2099-01-02 09:38 UTC", "universe": "nasdaq_subsectors",
+            "ok": True, "benchmark": "QQQ", "coverage": {"n_subsectors": 1},
+            "entry_now": ["memory_storage"], "forming": [],
+            "headwind": ["big_pharma"]},
+        "marketdata/subsector_confluence_russell.json": {
+            "as_of": "2099-01-02", "universe": "russell_subsectors", "ok": True,
+            "benchmark": "IWM", "coverage": {"n_subsectors": 0},
+            "entry_now": [], "forming": [], "headwind": []},
+        "marketdata/subsector_confluence_china.board.json": {
+            "as_of": "2099-01-02", "universe": "cn_subsectors", "ok": True,
+            "benchmark": "510300.SS", "coverage": {"n_subsectors": 1},
+            "entry_now": ["cn_memory_storage"], "forming": [], "headwind": []},
+        "basketdata/si_handoff.json": {
+            "theme_context": {"as_of": "2099-01-02",
+                              "themes": {"memory_storage": {"state": "entry_now"},
+                                         "big_pharma": {"state": "forming"},
+                                         "ai_semiconductors": {"state": "headwind"}}}},
+    }
+    for relative, document in documents.items():
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(json.dumps(document, ensure_ascii=False,
+                                      allow_nan=False).encode("utf-8"))
+    return tmp_path
+
+
+def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base(tmp_path):
+    """FIXTURE (review r2 SF-A): wire §0 - the incumbent ``confluence`` and
+    ``theme_table`` blocks are byte-identical before and after. The literals pin
+    the canonical hashes of the two blocks built from a FIXED synthetic site
+    (``_base_guard_site`` - literal inputs, so no nightly refresh can move
+    them). At authoring time the BASE module (commit a089d2f9b4d7), loaded
+    outside the repo tree, produced the same two hashes on the same fixture
+    (proof quoted in the r2 return; the committed test needs no git/history).
+
+    Dated record, real 2026-11-09 artifacts: the two blocks hashed
+    ``6d2c77f6de4cf30c35d542a2a3a97fe3af2d3601f42b47089086e624d0150deb`` and
+    ``1f62db7c409f1f4410997a4f529e76fb07d3e644e721eecec63eb6e372302914``;
+    base-versus-head byte equality on real artifacts was confirmed by the
+    independent reviews r1 and r2 (probe p4). On the real site this test now
+    asserts only what holds on any night: both blocks present, no ``status``,
+    and the same top-level key sets as the fixture blocks."""
+    site = _base_guard_site(tmp_path)
+    fixture_confluence = carry.confluence(site)
+    fixture_theme_table = carry.theme_table(site)
+    assert fixture_confluence is not None and fixture_theme_table is not None
+    assert hashlib.sha256(_canonical(fixture_confluence)).hexdigest() == \
+        "00949329d93bb8e2d3273230c937ce17ddf725c0455b8cc57d14374053729518"
+    assert hashlib.sha256(_canonical(fixture_theme_table)).hexdigest() == \
+        "a390afa123f158e77eef504bdfd807fefb01093eeac4820431b14c6a1e76648c"
+    # the fixture really exercises both readers: four universes, two with id
+    # rows; both dating arms; a three-row theme table
+    assert set(fixture_confluence) == {"sp500", "nasdaq", "russell", "china"}
+    assert [fixture_confluence[key]["as_of_field"] for key in fixture_confluence] == \
+        ["as_of", "generated_utc", "as_of", "as_of"]
+    assert len(fixture_theme_table["themes"]) == 3
+    # REAL, night-independent: the live site's two incumbent blocks keep the
+    # fixture's shapes - present, never a stub, same top-level key sets
     built = _real_carry_blocks()
-    confluence = hashlib.sha256(_canonical(built["confluence"])).hexdigest()
-    theme_table = hashlib.sha256(_canonical(built["theme_table"])).hexdigest()
-    assert confluence == "6d2c77f6de4cf30c35d542a2a3a97fe3af2d3601f42b47089086e624d0150deb"
-    assert theme_table == "1f62db7c409f1f4410997a4f529e76fb07d3e644e721eecec63eb6e372302914"
+    assert built["confluence"] is not None and "status" not in built["confluence"]
+    assert built["theme_table"] is not None and "status" not in built["theme_table"]
+    assert set(built["confluence"]) == set(fixture_confluence)
+    assert set(built["theme_table"]) == set(fixture_theme_table)
 
 
 def test_v11_free_js_twin_omits_the_five_row_blocks_and_nothing_else():
