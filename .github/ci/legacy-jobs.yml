@@ -1404,7 +1404,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -8192,6 +8192,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/options_r5_shock.py"
       - config/provider_production_modes.v1.json
       - engine/provider_production_modes.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
@@ -9328,6 +9329,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_r5_shock.py"
       - engine/provider_production_modes.py
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -18393,7 +18395,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel
@@ -34842,6 +34844,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      - "tests/test_analytics_query_budget.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -34857,7 +34860,9 @@ jobs:
           export PATH="$pg_bin:$PATH"
           for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
           test "$(id -u)" -ne 0
-          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+          python -m pytest tests/test_analytics_exclusions.py \
+            tests/test_analytics_pages_postgres.py \
+            tests/test_analytics_query_budget.py -q
 
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
@@ -49290,6 +49295,10 @@ jobs:
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
       - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs tests/js/radar_panel_open_checks.test.mjs
+      - name: Calendar Clock latest-selected symbol identity
+        run: |
+          cmp templates/stock_seasonality.js site/stock_seasonality.js
+          node tests/js/test_stock_seasonality_selection.cjs templates/stock_seasonality.js
 
   sni-s2-event-response:
     if: ${{ false }}
@@ -50194,13 +50203,17 @@ jobs:
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
-    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    # C19 WP11 (MAS-263) MRI reader pins plus the full release-market-context suite.
+    # Reader and reaction-evidence cases use tmp_path fixtures. The existing
+    # full-suite Cleveland integration case conditionally copies its committed
+    # fixture and keeps its explicit skip when absent; do not call it hermetic.
     timeout-minutes: 10
     paths:
       - "engine/event_window.py"
       - "engine/validation.py"
       - "engine/release_market_context.py"
       - "tests/test_c19_wp11_reader_pins.py"
+      - "tests/test_release_market_context.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50210,7 +50223,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
-        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py tests/test_release_market_context.py -q -p no:cacheprovider
 
   robotics-theme-research:
     # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
@@ -51312,6 +51325,8 @@ jobs:
       - "admin/auth.py"
       - "admin/brain_guest.py"
       - "admin/brief.py"
+      - "admin/capacity_fabric_schema.py"
+      - "admin/capacity_router.py"
       - "admin/causal_lab.py"
       - "admin/chronicle.py"
       - "admin/codex_panel.py"
