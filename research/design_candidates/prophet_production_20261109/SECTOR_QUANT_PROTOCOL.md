@@ -207,3 +207,7 @@ All references below are primary research authors/publishers, index methodology 
 **Architecture recommendation: adopt now.** Deep market/sector/security context, source coherence, navigation, preserved original context and explicit benchmark participation are justified product requirements.
 
 **Predictive/economic verdict: promising hypotheses requiring qualification.** The reviewed literature motivates sector-aware research and supplies important failure cases. It does not prove Prophet's beta capture, alpha, pivot forecasts, remaining upside, deliberate company-news timing or cross-market portability. The implementation package should preserve these as concrete, measurable obligations under the existing Q programme, not as claimed capabilities or indefinite optional research.
+
+## Accepted root precision amendment
+
+For issuer-exclusion invariance, freeze the captured benchmark, membership, model parameters and all nonissuer inputs before perturbing the candidate across aliases. Raw leave-issuer-out constituents, weights and measures must remain unchanged; a separately recomputed benchmark-mediated effect must be identified and cannot count as independent issuer confirmation. Forecast qualification and withdrawal operate per head; unrelated qualified heads remain available. Fit calibrators on protocol-designated past training/calibration windows, never on the untouched test set, and evaluate calibration on held-out observations. These refinements are accepted C3 quantitative reasoning, not new empirical results or outcome access.

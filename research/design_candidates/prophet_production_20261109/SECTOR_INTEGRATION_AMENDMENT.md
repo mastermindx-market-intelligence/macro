@@ -63,7 +63,7 @@ The #10780 candidate domain captures five existing members: Sector Central, Sect
 
 Prophet-selected winners, popularity, final ranks and confidence labels must not become upstream independent sector confirmation. A count of selected Prophet names is a selection/coverage statistic, not sector fundamentals or institutional flow. Learned feedback features require a frozen schedule, cross-fitting or equivalent leakage control where necessary, and ablation under the existing Evaluation owner.
 
-For candidate X, independent group confirmation excludes **all same-issuer listings and aliases** in the relevant population. Keep the raw sector object for market monitoring and the leave-issuer-out object for candidate support; show excluded weight, member count and concentration. A singleton or concentrated near-singleton group may be unable to confirm independently. Perturbing X's own price or news must not improve X's independent peer evidence.
+For candidate X, independent group confirmation excludes **all same-issuer listings and aliases** in the relevant population. Keep the raw sector object for market monitoring and the leave-issuer-out object for candidate support; show excluded weight, member count and concentration. A singleton or concentrated near-singleton group may be unable to confirm independently. For the issuer-exclusion test, hold the captured benchmark, membership, model parameters and all nonissuer inputs fixed. Perturbing X's prices/news across all relevant listings must not change the leave-issuer-out constituents, weights or raw peer measures. A separately recomputed benchmark can itself contain X; identify any benchmark-mediated effect and do not present it as independent issuer confirmation.
 
 Use the existing `dedupe_source_roots` semantics. Sector trend, overlapping theme trend, name-relative return and an explanation generated from those facts can share one price-source root; they are not four independent votes. Distinguish economic relations from taxonomy association. Post-decision outcomes return to the existing Evaluation/learning owner with original cohort/protocol identity, not to the pre-decision facts that justified those decisions.
 
@@ -108,7 +108,7 @@ Before outcomes, freeze objective, market/channel, universe, benchmark, currency
 
 Match capital and risk/exposure as well as raw P&L. Where market timing is also changed, preregister the relevant factorial ablations rather than post-hoc searching every toggle. Include invested time, beta uncertainty, tracking error, upside/downside capture, near-zero denominator handling, concentration, cash yield, turnover, costs and missed-participation attribution. Preserve full eligible opportunities, never-confirmers, no-entry/no-fill, halts, delistings, failures and unavailable cases. A selected winners-only record cannot pass.
 
-Use time-respecting rolling/expanding evaluation, PIT membership and revisions, train-only transforms/residualization/calibration, purging of overlapping labels and justified dependence handling. Dates, issuers and sectors create shared dependence; report effective sample sizes and uncertainty. Include rebound/crash, failed rotation, crowded leadership and concentration failures. Selected top-K, thin context cells and abstention coverage need separate examination.
+Use time-respecting rolling/expanding evaluation, PIT membership and revisions, transforms/residualization fitted only on permitted training history, purging of overlapping labels and justified dependence handling. Fit calibrators only on protocol-designated past training/calibration windows, never on the untouched test set. Evaluate calibration, selected-cohort performance and abstention on held-out observations. Dates, issuers and sectors create shared dependence; report effective sample sizes and uncertainty. Include rebound/crash, failed rotation, crowded leadership and concentration failures. Selected top-K, thin context cells and abstention coverage need separate examination.
 
 US, HK and mainland China have native benchmark, currency, taxonomy, calendar, availability and investor-channel rules. A/H securities share issuer evidence but retain distinct price, venue, access and execution. Later US information cannot feed an earlier Asia decision just because the calendar date matches. HK curated/equal-weight baskets are not automatically official or investable sector indices; China concept boards are not automatically official industries; top-eight previews cannot supply the full selection denominator. Current taxonomy cannot retrospectively prove PIT classification.
 
@@ -147,7 +147,7 @@ The structured registry is the exact cross-reference for SI01–SI20. These cont
 | SI02 | Full PIT market/group/member identity and population | A valid member beyond the preview is found; reclassification, aliases, unknown mapping and missing coverage remain truthful. |
 | SI03 | Shared market/sector/name journey and cross-product return | Sector → full names → Setup → evidence → return preserves selected context, filters, sort, focus and account. |
 | SI04 | Distinct absolute/relative/wealth/beta/residual meanings | Falling absolute leader stays falling; percentage-point and wealth arithmetic match their definitions. |
-| SI05 | Independent issuer-excluded confirmation | Changing one issuer and its aliases cannot improve that issuer's independent peer confirmation. |
+| SI05 | Independent issuer-excluded confirmation | With captured benchmark/membership/model/nonissuer inputs fixed, changing issuer/aliases cannot change raw leave-issuer-out peers; identify any separately recomputed benchmark-mediated effect. |
 | SI06 | Source-root dedupe and overlap/concentration | Repeated labels for the same price facts do not add independent evidence; overlapping themes remain visible. |
 | SI07 | Source-qualified constituent evidence returned upstream | Full reported/usable/unknown denominator and cutoff retained; selected winner counts cannot masquerade as economics or flows. |
 | SI08 | Native phase/turn/forecast semantics | Original event and first-known times remain separate; unavailable/parity-failed forecasts produce no forward numbers. |
@@ -185,13 +185,13 @@ The extended Fable commission is a ready source brief, not dispatch, pickup, adm
 1. SP01: a Sector publication changes during one Prophet read; list/detail/source retain one capture.
 2. SP02: a valid member outside the China top-eight or first page is searchable and comparable.
 3. SP03: a sector is −2% while its benchmark is −4%; relative resilience does not become bullish absolute strength.
-4. SP04: change the candidate and every alias listing; independent peer evidence remains unchanged.
+4. SP04: hold captured benchmark, membership, model parameters and nonissuer inputs fixed; perturb candidate prices/news across all relevant listings. Leave-issuer-out constituents, weights and raw measures remain unchanged. Identify any separately recomputed benchmark-mediated effect; it is not independent issuer confirmation.
 5. SP05: repeat one price root under sector/theme/residual/explanation; independent evidence count does not rise.
 6. SP06: narrow concentration rises while breadth falls; the challenge remains visible beside leadership.
 7. SP07: strong company evidence in a weak sector remains reachable in the appropriate research lane.
 8. SP08: membership changes after the decision; original context remains original or explicitly unretained.
 9. SP09: later US close arrives after an Asia decision; no future-data join occurs.
-10. SP10: remove forecast qualification/parity; all forward probabilities disappear while observed facts remain.
+10. SP10: remove qualification/parity for one forecast head; that head's forward outputs disappear while independently qualified heads and observed facts remain available under their own valid contracts.
 11. SP11: pivot was visible only after confirmation; history shows both dates and evaluation uses availability.
 12. SP12: group population contains unreported issuer results; denominator and unknown count remain truthful.
 13. SP13: return Sector → Prophet → evidence → Sector; identity, view, focus, selection and filter survive.

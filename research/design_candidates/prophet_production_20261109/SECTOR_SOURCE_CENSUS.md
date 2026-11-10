@@ -226,3 +226,7 @@ Paper: work only on Prophet's disjoint page/targets. Sector lane 2 owns its R4 d
 
 This adviser read current default source, the final Sector programme, fresh exact candidate PR metadata and relevant source modules. No installed application/runtime/DB state or live served correctness was verified. Source continuity says worker lanes started; that was not independently checked through runtime. Historical scientific statements in source comments are owner claims, not new validation by this report. No source dataset or forward-return experiment was opened or run. Current product correctness and qualified predictiveness remain distinct implementation and research obligations.
 
+
+## Accepted root precision amendment
+
+For issuer-exclusion invariance, freeze the captured benchmark, membership, model parameters and all nonissuer inputs before perturbing the candidate across aliases. Raw leave-issuer-out constituents, weights and measures must remain unchanged; a separately recomputed benchmark-mediated effect must be identified and cannot count as independent issuer confirmation. Forecast qualification and withdrawal operate per head; unrelated qualified heads remain available. Fit calibrators on protocol-designated past training/calibration windows, never on the untouched test set, and evaluate calibration on held-out observations. These refinements are accepted C3 quantitative reasoning, not new empirical results or outcome access.
