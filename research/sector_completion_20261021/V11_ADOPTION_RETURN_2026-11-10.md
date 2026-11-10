@@ -173,3 +173,76 @@ Lane 1 is fixing all of these on the same PR; a follow-up review of the new comm
 - **Point-in-time constituent membership** does not exist in any producer. It blocks SI02's
   identity requirement (lane 1) and comparators C4 / C5 (lane 8).
 - **Prophet eligibility** is not produced on any member row.
+
+## 8. Status at 10:30Z (second adjudication pass)
+
+Nothing in this section is merged, served or accepted unless it says so. No migration was applied.
+
+### 8.1 Lane 1 — review response delivered, second review running
+
+Macro #10929 is at `9c5db069856d` (draft, held). The range `5129620204c4..9c5db069856d` holds three
+commits: `8c3fed6ffa34` (typed blocks, first industry map), `cd5f7e1afb9e` (producer-side industry
+and removed-member carry) and `9c5db069856d` (the review fixes). The lane's own claims, not yet
+independently confirmed:
+
+- **Completeness.** The denominator is now the owner's configured current roster, read from the
+  captured generation. On real committed bytes: 1,020 configured current members (1,046 less 26
+  removed), 1,015 served, 5 accounted for without a row (`not_observed_at_effective_as_of`), 0
+  unaccounted. `complete: true` therefore means "all 1,020 accounted for", not "1,020 served".
+- **Stale or forged reference.** A well-formed token with an unrecognised signature now answers
+  `409 CURSOR_RESET` for a page cursor and `404 ORIGINAL_UNAVAILABLE` for a context reference. A
+  short or empty signing secret answers `503` on mint and on open.
+- **Durability is stated on the wire.** `retained_resolver_ref_durability` reads `durable` only
+  when the signing secret is configured, otherwise `process_lifetime_only`.
+- **Industry.** `industry` (617 of 698, current GICS) and `sub_industry` (424 of 698) are separate
+  fields. Neither is point-in-time.
+
+Still open by the lane's own account: no cursor expiry, qualification is re-read per page, a cursor
+chain crossing a qualification change is untested, and the committed `site/` files predate the new
+writers, so a nightly proof is owed. A second independent review of the range (Opus, read-only)
+started in this pass; its report will be `/tmp/si_plan/reviews/lane1_population_review_r2.md`.
+
+### 8.2 Lane 6 — complete for the adjudicated scope
+
+- Terminal #1410 is unchanged at `dc02f1c28879` (migration 0052, armed, clean).
+- New Terminal **#1425** at `57d63a5e6d8f`, stacked on #1410: v3 readers, the durable identity, and
+  a source-only migration **0053** taken from the allocator. Nothing applied; v3 writes stay closed.
+  It is expected red on one PR-state test until #1410 merges.
+- The durable reference is the generation id plus content id, plus the v3 member hash. Lane 1's
+  `context_ref` is stored as a hint only.
+- **Observation for the Chairman.** Production's `apply_investigation_revision_v2` body hashes to
+  `a14a4abf290ca9dc99f89b19617c7e9c`. That is the 0029 body from the still-open Terminal #804
+  (applied 2026-10-05), not master's 0028 body, and not either body that #1312's 0051 guard
+  accepts. Reported only; no lane acted on it.
+- Executed: SI10 on a real PostgreSQL 17 engine. SI09 is contract and fixture only. SI15, SP14 and
+  SP15 were not executed.
+
+### 8.3 Lane 3 — first live attempt
+
+A real member sign-in succeeded with no second factor. The deployed Terminal route answered
+`400 {"error":"invalid_source"}`: #1414 is not merged, so the deployed route table has no
+`generation` source. This is deployment lag, not a refusal. #1414 is clean and armed at
+`3004b74f48bc`; the v1.1 consumer work goes on a new stacked PR and the live attempt is repeated
+after the deploy. Lane 3's v1.1 return was not yet written at 10:30Z.
+
+### 8.4 Lane 8 — merge refused on a real regression
+
+The merge controller refused macro #10924 at `3e6b51ef09fc`:
+`tests/test_sector_metric_definitions.py::test_b04_doc_citations_resolve_to_lines_that_name_the_row`
+fails on the PR. The fix is with lane 8 on the same PR. Lane 1's one-line `hazard_qualification`
+carry waits on this merge.
+
+### 8.5 Carriers
+
+- Lane 5 failed at 09:37Z on a refused connection and lane 7 failed twice on a message-format
+  error after a model-family switch. Both were resumed on their own threads; lane 7 is back on
+  `glm-5.3`. No duplicate worker was started.
+- Lane 9 (integrated proof) started at 10:30Z as one read-only child under the existing programme:
+  phase A joins every SI and SP row to its evidence class and writes the live run-sheet. Phase B,
+  the served checks, cannot run until #1414 is deployed and #10929 is served.
+
+### 8.6 Open, with owners
+
+The four items in §7.5 stand. Added: the production apply-body mismatch in §8.2 (Chairman / the
+owner of Terminal #804 and #1312), and Terminal #1413 (lane 4), which the controller has marked
+`merge-blocked` at `a8cf1f5d7250` for a cause not yet read.
