@@ -485,12 +485,24 @@ def _enforce_hazard_cdf(hz: dict | None) -> dict | None:
 #
 # `score()` reports what the W4.2 artifact would say for a feature vector.  It
 # does NOT establish that the live vector, turn set, cohort and leg are the ones
-# the artifact was qualified on.  A *current* MODEL claim needs every qualifier
-# below; anything less is emitted as the PRIOR (family/direction KM baseline,
-# computed from the KM artifact — never derived from the withheld MODEL value,
-# which is dropped from the payload).
+# the artifact was qualified on.  A *current* MODEL curve needs every qualifier
+# below.  Anything less is not emitted in the P(turn <= h from now) slots: the
+# block is withheld whole, and the KM PRIOR is emitted beside it under its own
+# name and population (`leg_origin_prior`).  The PRIOR is computed from the KM
+# artifact only — never from the withheld MODEL value, which is dropped.
+#
+# Why the PRIOR does not go into the 1m/3m/6m slots (B12 Q9, measured on
+# data/hazard/panel_price_c4414dcb.parquet): `km_by_month` gives 1 - S(h), the
+# share of legs that ended within h months of the LEG ORIGIN.  It does not
+# condition on the open leg's age.  The fit's own comparator (`brier_km`) is the
+# age-bucket from-now rate.  For us_sector up legs the from-now 1/3/6-month rates
+# are 0.241/0.333/0.441 against a leg-origin 0.0125/0.0474/0.0894; for down legs
+# 0.708/0.881/0.959 against 0.0188/0.2146/0.485.  Placing the leg-origin value in
+# a from-now slot would mislabel it by up to ~37x, and mixing it with a from-now
+# MODEL cell is what produces the inverted curves `_enforce_hazard_cdf` withholds.
 
 CURRENT_MODEL_SCHEMA = "sector_cycles.current_model_qualification.v1"
+LEG_ORIGIN_PRIOR_SCHEMA = "sector_cycles.leg_origin_prior.v1"
 CURRENT_MODEL_QUALIFIERS: tuple[str, ...] = (
     "parity", "epoch", "cohort", "direction", "basis", "horizon", "whole_curve")
 # Families whose legs are in the training panel (panel `family` column).  A
@@ -505,13 +517,7 @@ _KM_FAMILY_KEY: dict[str, str] = {
 
 
 def prior_population(family: str, direction: str, km: dict | None = None) -> dict:
-    """What population the emitted PRIOR describes — disclosed with every PRIOR.
-
-    The KM `km_by_month` table is survival measured from the LEG ORIGIN and does
-    not condition on the open leg's current age, so `1 - S(h)` is the share of
-    legs that ended within h months of starting — not P(turn within h months
-    from today) for an aged leg.  That is stated here, never hidden.
-    """
+    """The population a KM `km_by_month` PRIOR describes — never hidden."""
     fam_key = _KM_FAMILY_KEY.get(family, "pooled")
     out = {
         "source": f"data/hazard/km_baseline_{_EPOCH}.json#km_by_month",
@@ -520,6 +526,7 @@ def prior_population(family: str, direction: str, km: dict | None = None) -> dic
         "population_matches_record": family in TRAINED_COHORTS,
         "horizon_origin": "leg_origin",
         "conditional_on_current_age": False,
+        "from_now_probability": False,
         "n_rows": None,
         "n_censored": None,
     }
@@ -534,6 +541,21 @@ def prior_population(family: str, direction: str, km: dict | None = None) -> dic
     return out
 
 
+def leg_origin_prior(family: str, direction: str, km: dict | None = None) -> dict:
+    """1 - S(h) from the KM artifact for h = 1/3/6 months, with its population.
+
+    Read: "of legs in this population, this share ended within h months of the
+    leg's start".  It is NOT P(turn within h months from today)."""
+    km = km if km is not None else _load_km()
+    out = {"schema": LEG_ORIGIN_PRIOR_SCHEMA, "source": "PRIOR",
+           "direction": direction,
+           "turn_kind": "peak" if direction == "up" else "trough"}
+    for h in _HORIZONS:
+        out[_H_LABELS[h]] = round(_km_prior(km, direction, family, int(h)), 4)
+    out["population"] = prior_population(family, direction, km)
+    return out
+
+
 def _ledger_verdict(model: dict, direction: str, h_label: str) -> str:
     cell = ((model.get("ledger") or {}).get(direction) or {}).get(h_label) or {}
     return str(cell.get("verdict") or "PRIOR")
@@ -545,27 +567,30 @@ def qualify_current_model(hz: dict | None, *, parity: dict | None,
                           turn_direction: str | None,
                           model: dict | None = None,
                           km: dict | None = None) -> dict | None:
-    """Gate a scored hazard block into what may be EMITTED as current.
+    """Gate a scored hazard block into what may be EMITTED as a current curve.
 
-    Block qualifiers (all must hold for any MODEL cell to stay MODEL):
-      parity     — `parity["verdict"] == "PARITY_HOLDS"` (the recorded live-
-                   feature parity verdict, engine/hazard_parity.py)
-      epoch      — the record's turn-set epoch identity equals the artifact's
-                   `turn_def_version` (`_EPOCH`); a turn set with no epoch fails
-      cohort     — the record's family is a trained cohort (TRAINED_COHORTS)
-      direction  — the scored direction equals the direction implied by the
-                   last CONFIRMED turn (trough → up, peak → down), the training
-                   definition
-      basis      — the record's structure basis is the training turn basis
-      whole_curve— 1m/3m/6m all present and the emitted curve is a monotone CDF
-    Cell qualifier:
-      horizon    — the artifact ledger qualified (PASS) that direction×horizon
+    Every qualifier must hold for the 1m/3m/6m cells to be emitted (as MODEL):
+      parity      — `parity["verdict"] == "PARITY_HOLDS"` (the recorded live-
+                    feature parity verdict, engine/hazard_parity.py)
+      epoch       — the record's turn-set epoch identity equals the artifact's
+                    `turn_def_version`; a turn set with no epoch fails
+      cohort      — the record's family is a trained cohort (TRAINED_COHORTS)
+      direction   — the scored direction equals the direction implied by the
+                    last CONFIRMED turn (trough -> up, peak -> down), the
+                    training definition
+      basis       — the record's structure basis is the training turn basis
+      horizon     — the artifact ledger qualified (PASS) EVERY horizon of the
+                    scored direction (a curve cannot mix a from-now MODEL cell
+                    with a leg-origin PRIOR cell)
+      whole_curve — 1m/3m/6m all present, none withheld, monotone CDF
 
-    Returns a NEW dict (the input is not mutated) or None when `hz` is None.
-    A failed block emits every horizon as PRIOR for the training-defined leg
-    direction, with `model_withheld` and the failing qualifier list; the
-    MODEL probability is dropped, not carried.  Never raises: on any internal
-    error the block becomes unavailable (reason `qualification_error`).
+    Failure of ANY qualifier: the block is `unavailable`
+    (`unavailable_reason: "current_model_unqualified"`), carries no 1m/3m/6m
+    cells and no MODEL value, and carries `leg_origin_prior` (the KM PRIOR for
+    the training-defined leg direction, with its population) plus the
+    `current_model` disclosure naming every failing qualifier and the horizons
+    whose MODEL value was withheld.  Returns a NEW dict; None when `hz` is None.
+    Never raises (internal error -> unavailable, reason `qualification_error`).
     """
     if hz is None:
         return None
@@ -577,7 +602,8 @@ def qualify_current_model(hz: dict | None, *, parity: dict | None,
         log.warning("hazard_score: qualification failed: %s", exc)
         out = _unavailable_hazard(hz, "qualification_error")
         out["current_model"] = {"schema": CURRENT_MODEL_SCHEMA, "qualified": False,
-                                "qualifiers": None, "failing": ["qualification_error"]}
+                                "qualifiers": None, "failing": ["qualification_error"],
+                                "withheld_horizons": []}
         return out
 
 
@@ -588,93 +614,47 @@ def _qualify_current_model(hz, *, parity, turn_epoch, family, structure_basis,
     scored_dir = hz.get("direction")
     cells_present = all(isinstance(hz.get(_H_LABELS[h]), dict)
                         and hz[_H_LABELS[h]].get("p") is not None for h in _HORIZONS)
-    block = {
+    qualifiers = {
         "parity": bool(isinstance(parity, dict)
                        and parity.get("verdict") == "PARITY_HOLDS"),
         "epoch": bool(turn_epoch) and turn_epoch == str(model.get("turn_def_version")),
         "cohort": family in TRAINED_COHORTS,
         "direction": turn_direction in ("up", "down") and turn_direction == scored_dir,
         "basis": structure_basis == MODEL_TURN_BASIS,
+        "horizon": scored_dir in ("up", "down") and all(
+            _ledger_verdict(model, scored_dir, _H_LABELS[h]) == "PASS" for h in _HORIZONS),
         "whole_curve": bool(cells_present and not hz.get("unavailable")
                             and _hazard_cdf_is_monotone(_hazard_cdf_cells(hz))),
     }
-    horizon = {_H_LABELS[h]: (scored_dir in ("up", "down")
-                              and _ledger_verdict(model, scored_dir, _H_LABELS[h]) == "PASS")
-               for h in _HORIZONS}
-    block_ok = all(block.values())
-    qualifiers = dict(block)
-    qualifiers["horizon"] = horizon
-    failing = [k for k in CURRENT_MODEL_QUALIFIERS if k != "horizon" and not block[k]]
-    if not all(horizon.values()):
-        failing.append("horizon")
-
+    failing = [k for k in CURRENT_MODEL_QUALIFIERS if not qualifiers[k]]
+    withheld = [_H_LABELS[h] for h in _HORIZONS
+                if isinstance(hz.get(_H_LABELS[h]), dict)
+                and hz[_H_LABELS[h]].get("source") == "MODEL"]
+    current = {"schema": CURRENT_MODEL_SCHEMA, "qualified": not failing,
+               "qualifiers": qualifiers, "failing": failing,
+               "withheld_horizons": [] if not failing else withheld}
     header = {k: hz.get(k) for k in ("epoch", "revision_optimistic") if k in hz}
-    if block_ok:
+
+    if not failing:
         out = dict(header)
         out.update({"direction": scored_dir, "turn_kind": hz.get("turn_kind")})
         for h in _HORIZONS:
-            lab = _H_LABELS[h]
-            cell = dict(hz[lab])
-            if cell.get("source") == "MODEL" and not horizon[lab]:
-                # never reached with an honest artifact (score() only emits MODEL
-                # for PASS cells) — refuse rather than relabel
-                cell = {"p": round(_km_prior(km, scored_dir, family, int(h)), 4),
-                        "source": "PRIOR", "cell_verdict": _ledger_verdict(model, scored_dir, lab),
-                        "model_withheld": True}
-            out[lab] = cell
-        out["current_model"] = {"schema": CURRENT_MODEL_SCHEMA,
-                                "qualified": any(out[_H_LABELS[h]].get("source") == "MODEL"
-                                                 for h in _HORIZONS),
-                                "qualifiers": qualifiers, "failing": failing}
-        if any(out[_H_LABELS[h]].get("source") == "PRIOR" for h in _HORIZONS):
-            out["prior_population"] = prior_population(family, scored_dir, km)
-        return _finalize_curve(out)
-
-    # Block failed: every horizon is the PRIOR for the training-defined leg.
-    prior_dir = turn_direction if turn_direction in ("up", "down") else scored_dir
-    if prior_dir not in ("up", "down"):
-        out = _unavailable_hazard(hz, "no_leg_direction")
-        out["current_model"] = {"schema": CURRENT_MODEL_SCHEMA, "qualified": False,
-                                "qualifiers": qualifiers, "failing": failing}
+            out[_H_LABELS[h]] = dict(hz[_H_LABELS[h]])
+        out["current_model"] = current
         return out
+
+    prior_dir = turn_direction if turn_direction in ("up", "down") else scored_dir
     out = dict(header)
-    out.update({"direction": prior_dir,
-                "turn_kind": "peak" if prior_dir == "up" else "trough"})
-    if prior_dir != scored_dir:
+    out.update({"direction": prior_dir if prior_dir in ("up", "down") else scored_dir,
+                "unavailable": True,
+                "unavailable_reason": "current_model_unqualified",
+                "current_model": current})
+    if prior_dir in ("up", "down"):
+        out["turn_kind"] = "peak" if prior_dir == "up" else "trough"
+        out["leg_origin_prior"] = leg_origin_prior(family, prior_dir, km)
+    if scored_dir != out.get("direction"):
         out["scored_direction"] = scored_dir
-    any_withheld = False
-    for h in _HORIZONS:
-        lab = _H_LABELS[h]
-        was_model = isinstance(hz.get(lab), dict) and hz[lab].get("source") == "MODEL"
-        any_withheld = any_withheld or was_model
-        cell = {"p": round(_km_prior(km, prior_dir, family, int(h)), 4),
-                "source": "PRIOR",
-                "cell_verdict": _ledger_verdict(model, prior_dir, lab)}
-        if was_model:
-            cell["model_withheld"] = True
-        out[lab] = cell
-    out["current_model"] = {"schema": CURRENT_MODEL_SCHEMA, "qualified": False,
-                            "qualifiers": qualifiers, "failing": failing,
-                            "model_withheld": any_withheld}
-    out["prior_population"] = prior_population(family, prior_dir, km)
-    return _finalize_curve(out)
-
-
-def _finalize_curve(out: dict) -> dict:
-    """Whole-curve rule on the EMITTED mix: an inverted curve is withheld whole.
-
-    The qualification disclosure survives the withholding (the unavailable
-    block names why), so a reader never sees a silent disappearance."""
-    final = _enforce_hazard_cdf(out)
-    if final is out or not final.get("unavailable"):
-        return final
-    cm = dict(out.get("current_model") or {"schema": CURRENT_MODEL_SCHEMA})
-    failing = list(cm.get("failing") or [])
-    if "whole_curve" not in failing:
-        failing.append("whole_curve")
-    cm.update({"qualified": False, "failing": failing})
-    final["current_model"] = cm
-    return final
+    return {k: v for k, v in out.items() if v is not None}
 
 
 def score_from_record(rec: dict) -> dict | None:

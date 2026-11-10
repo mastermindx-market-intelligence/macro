@@ -168,15 +168,19 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
                     continue
                 if cell.get("source") == "PRIOR":
                     hazard_kinds[h] = "baseline_prior"
-                    # Lane 8: a historically qualified cell whose current MODEL
-                    # claim was withheld by hazard_score.qualify_current_model
-                    # is EMITTED as the prior; the claim/parity pointer below
-                    # still says why, so the withholding is never silent.
-                    if cell.get("model_withheld") is True:
-                        withheld.append(h)
-                        any_qualified = True
                     continue
             hazard_kinds[h] = "missing_estimate"
+        # Lane 8: hazard_score.qualify_current_model withholds an unqualified
+        # curve whole (no 1m/3m/6m cells) and names the horizons whose
+        # historically qualified MODEL value it dropped.  The claim / parity
+        # pointer below still says why, so the withholding is never silent.
+        cm = hazard.get("current_model") if isinstance(hazard, dict) else None
+        if isinstance(cm, dict) and cm.get("qualified") is False:
+            withheld = [h for h in (cm.get("withheld_horizons") or []) if h in _HORIZONS]
+            if withheld:
+                any_qualified = True
+        leg_prior = bool(isinstance(hazard, dict)
+                         and isinstance(hazard.get("leg_origin_prior"), dict))
 
         # B12: the recorded live-feature parity verdict gates the current claim.
         # B12r2 (RB12 repair): a record carries only {verdict, failing,
@@ -202,6 +206,7 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "model_cell_current_claim": claim if any_qualified else None,
             "live_feature_parity": live_parity,
             "model_withheld_horizons": withheld,
+            "leg_origin_prior": leg_prior,
         }
     except Exception:  # noqa: BLE001 — pure module contract: never raises
         return {
@@ -211,4 +216,5 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "model_cell_current_claim": None,
             "live_feature_parity": None,
             "model_withheld_horizons": [],
+            "leg_origin_prior": False,
         }
