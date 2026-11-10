@@ -23,10 +23,17 @@ def _central():
     return json.loads(_real("sectordata/sector_central.json"))
 
 
+def _roster():
+    return json.loads((REPO / "data/baskets/membership.json").read_text())
+
+
 def test_real_artifacts_yield_every_producible_block():
-    built = carry.build_carry(SITE, _central())
+    built = carry.build_carry(SITE, _central(), _roster())
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
-                          "bottoming_watch", "theme_table", "member_industry"}
+                          "bottoming_watch", "theme_table", "member_industry",
+                          "member_sub_industry", "removed_members"}
+    # without the owner's roster no removal block is carried (never guessed)
+    assert "removed_members" not in carry.build_carry(SITE, _central())
     assert "hazard_qualification" not in built  # owner not on this base; never copied
 
 
@@ -74,13 +81,30 @@ def test_lane7_blocks_carry_their_own_source_and_as_of():
         assert len(json.dumps(built[name]).encode()) <= carry.MAX_BLOCK_BYTES
 
 
-def test_industry_is_current_basis_and_explicitly_not_point_in_time():
-    industry = carry.build_carry(SITE, _central())["member_industry"]
-    assert industry["point_in_time"] is False and industry["basis"] == carry.INDUSTRY_BASIS
-    assert industry["source"] == carry.INDUSTRY_SOURCE
-    assert len(industry["symbols"]) == 430  # real: today's S&P 500 sub-industry members
-    assert industry["symbols"]["APP"] == "software-application"
-    assert industry["subsectors"]["software-application"]["label"] == "Software - Application"
+def test_industry_and_sub_industry_are_separate_current_basis_taxonomies():
+    built = carry.build_carry(SITE, _central(), _roster())
+    gics, sub = built["member_industry"], built["member_sub_industry"]
+    for block in (gics, sub):
+        assert block["point_in_time"] is False
+    # GICS industry: stage screener, current, 617 of the 698 basket symbols.
+    assert (gics["source"], gics["basis"], gics["taxonomy"]) == (
+        "stagedata/screener.json", "current_gics_industry_not_point_in_time", "gics_industry")
+    assert gics["as_of"] == "2026-11-09" and len(gics["symbols"]) == 617
+    assert all(isinstance(v, str) for v in gics["symbols"].values())
+    # S&P 500 sub-industry: its own source/as-of; 430 symbols (424 are basket members).
+    assert (sub["source"], sub["basis"]) == (carry.INDUSTRY_SOURCE, carry.INDUSTRY_BASIS)
+    assert sub["as_of"] == "2026-11-06" and len(sub["symbols"]) == 430
+    assert sub["symbols"]["APP"] == "software-application"
+    assert sub["subsectors"]["software-application"]["label"] == "Software - Application"
+    assert gics["symbols"] != sub["symbols"]  # never merged
+
+
+def test_removed_members_come_from_the_owner_roster_with_dates():
+    removed = carry.build_carry(SITE, _central(), _roster())["removed_members"]
+    assert removed["source"] == "data/baskets/membership.json" and len(removed["removed"]) == 26
+    pairs = {(r["group_id"], r["symbol"]): r["removed_on"] for r in removed["removed"]}
+    assert pairs[("silver_miners", "GATO")] == "2025-01-16"
+    assert pairs[("silver_miners", "MAG")] == "2025-09-04"
 
 
 def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):
@@ -111,4 +135,5 @@ def test_generation_projects_carried_blocks_available_and_hazard_unavailable(tmp
 
 def test_builder_wires_the_carry_before_publication():
     source = (REPO / "scripts/build_sector_central.py").read_text()
-    assert source.index("build_carry(site, data)") < source.index('data["publication"] = {')
+    assert source.index("build_carry(site, data, _membership())") < source.index(
+        'data["publication"] = {')

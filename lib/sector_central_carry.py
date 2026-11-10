@@ -29,6 +29,8 @@ CONFLUENCE_UNIVERSES = (
 )
 INDUSTRY_SOURCE = "marketdata/subsector_confluence.json"
 INDUSTRY_BASIS = "current_sp500_membership_not_point_in_time"
+INDUSTRY_GICS_SOURCE = "stagedata/screener.json"
+INDUSTRY_GICS_BASIS = "current_gics_industry_not_point_in_time"
 _LIMIT_IDS = 200
 
 
@@ -164,8 +166,69 @@ def theme_table(site: Path) -> dict | None:
                      "as_of": context.get("as_of"), "themes": dict(themes)})
 
 
+def _basket_symbols(site: Path) -> set[str] | None:
+    baskets = _read(site, "basketdata/baskets.json")
+    groups = baskets.get("baskets") if baskets else None
+    if not isinstance(groups, list):
+        return None
+    return {m["symbol"] for g in groups if isinstance(g, Mapping)
+            for m in (g.get("members") or ()) if isinstance(m, Mapping)
+            and isinstance(m.get("symbol"), str)}
+
+
 def member_industry(site: Path) -> dict | None:
-    """Current-basis sub-industry per member symbol. EXPLICITLY not point-in-time."""
+    """Current GICS industry per basket member (stage screener). NOT point-in-time.
+
+    Source ``stagedata/screener.json`` ``rows[].industry`` (producer
+    ``engine/stage_analysis.py``). Only symbols that are basket members are carried.
+    """
+    document = _read(site, INDUSTRY_GICS_SOURCE)
+    rows = document.get("rows") if document else None
+    wanted = _basket_symbols(site)
+    if not isinstance(rows, list) or wanted is None:
+        return None
+    symbols: dict[str, str] = {}
+    for row in rows:
+        symbol = row.get("ticker") if isinstance(row, Mapping) else None
+        industry = row.get("industry") if isinstance(row, Mapping) else None
+        if symbol in wanted and isinstance(industry, str) and industry.strip():
+            if symbol in symbols and symbols[symbol] != industry:
+                return None  # contradictory duplicate: carried as nothing, not guessed
+            symbols[symbol] = industry
+    if not symbols:
+        return None
+    block = {"source": INDUSTRY_GICS_SOURCE, "as_of": document.get("asof"),
+             "basis": INDUSTRY_GICS_BASIS, "point_in_time": False, "taxonomy": "gics_industry",
+             "symbols": symbols}
+    raw = _encoded(block)
+    return block if raw is not None and len(raw) <= 256 * 1024 else None
+
+
+def removed_members(membership: Mapping[str, Any] | None, as_of: Any) -> dict | None:
+    """Members the owner's roster stamped ``removed`` on or before the session.
+
+    Reported SEPARATELY from the served/accounted population: a removed member is not
+    a current member, so it is neither listed nor "missing". ``membership`` is the
+    owner's own roster document (``engine.baskets._membership()``), read by the
+    builder - never at request time.
+    """
+    groups = membership.get("baskets") if isinstance(membership, Mapping) else None
+    if not isinstance(groups, (dict, list)) or not isinstance(as_of, str):
+        return None
+    pairs = groups.items() if isinstance(groups, dict) else [(g.get("id"), g) for g in groups]
+    removed = []
+    for gid, group in pairs:
+        for member in (group.get("members") if isinstance(group, Mapping) else None) or ():
+            when = member.get("removed") if isinstance(member, Mapping) else None
+            if isinstance(when, str) and when <= as_of and isinstance(member.get("ticker"), str):
+                removed.append({"group_id": gid, "symbol": member["ticker"], "removed_on": when})
+    removed.sort(key=lambda r: (r["group_id"], r["symbol"]))
+    return _bounded({"source": "data/baskets/membership.json", "version": membership.get("version"),
+                     "as_of": as_of, "removed": removed})
+
+
+def member_sub_industry(site: Path) -> dict | None:
+    """Current-basis S&P 500 sub-industry per member symbol. EXPLICITLY not point-in-time."""
     document = _read(site, INDUSTRY_SOURCE)
     subsectors = document.get("subsectors") if document else None
     if not isinstance(subsectors, list) or not subsectors:
@@ -189,9 +252,15 @@ def member_industry(site: Path) -> dict | None:
     return block if raw is not None and len(raw) <= 256 * 1024 else None
 
 
-def build_carry(site: Path, central: Mapping[str, Any]) -> dict[str, Any]:
-    """Every block its source provides; absent keys mean ``not_produced``."""
+def build_carry(site: Path, central: Mapping[str, Any],
+                membership: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Every block its source provides; absent keys mean ``not_produced``.
+
+    ``membership`` is the owner's roster document (``engine.baskets._membership()``),
+    supplied by the central builder; ``None`` carries no ``removed_members``.
+    """
     produced = {
+        "removed_members": removed_members(membership, central.get("as_of")),
         "sector_central_r1": rising_priced_share(central),
         "display_order": display_order(central),
         "etf_flows": etf_flows(site),
@@ -199,5 +268,6 @@ def build_carry(site: Path, central: Mapping[str, Any]) -> dict[str, Any]:
         "bottoming_watch": bottoming_watch(site),
         "theme_table": theme_table(site),
         "member_industry": member_industry(site),
+        "member_sub_industry": member_sub_industry(site),
     }
     return {name: block for name, block in produced.items() if block is not None}
