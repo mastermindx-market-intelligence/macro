@@ -1,6 +1,8 @@
 # Options Suite — Paper Design and Build Contract
 ## Round 2 of 4 · 2026-11-10 UTC
 
+**Current design entry:** [21_CONSOLIDATION_PAPER_MANIFEST.json](21_CONSOLIDATION_PAPER_MANIFEST.json) contains the recovered 49 Round 6 boards plus nine new C1 boards and a durable 58-board snapshot. B04's new-case/revision-1 correction is present in the recovered JSX. This file and 03 preserve the historical Round 2 artifact and dated adjudications below; they are not instructions to redo completed Paper work. Use [00](00_START_HERE_FABLE_HANDOFF.md), [18](18_CONSOLIDATION_SOURCE_AND_INTERACTION_CONTRACTS.md) and [22](22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md) for the current consolidation contract.
+
 **Round-5 reading note:** the exact original OPT/OPR packet is recovered. [10](10_ROUND5_SOURCE_READINESS.md) and [11](11_RELEASE_AND_DESIGN_CONTRACT.md) now govern source truth and the next Paper work. No Paper nodes or the historical manifest changed in Round 5. Besides B04, correct aggregate-versus-child Flow detail, Volatility tenor/percentile/history labels, strict sampled price-condition wording, unsupported watch expiry/consent copy, selected-firing stability and bounded history. Core Trade Lab pre-expiry comparison and the Opportunities/Monitor jobs remain required; 1280/1920 obligations also survive. The synthetic fixture remains design evidence only.
 
 **Historical round-2 status: Paper candidate complete for that round.** The current programme baseline is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md); later architecture decisions are in [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md).

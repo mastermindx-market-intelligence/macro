@@ -90,7 +90,7 @@
     "02_PAPER_DESIGN.md": "60839d4066893e5c10dc2905e7acf67b046a5b4baffb4557dbe832c35f1e2c57",
     "03_PAPER_MANIFEST.json": "e622912dd71ddd92ef7fc0b08521f84bf847c4dd7b9127682de4a95da6e314a5"
   },
-  "current_validation": "13_ROUND5_VALIDATION.json",
+  "current_validation": "24_PACKAGE_VALIDATION.json",
   "round5_open_obligations": [
     {
       "id": "source_consumer_proof",
@@ -172,5 +172,38 @@
     "paper_design_alone_proves_production": false,
     "next_round": 6,
     "implementation_dispatch_sent": false
+  },
+  "historical_round5_current_validation": "13_ROUND5_VALIDATION.json",
+  "current_entry": "00_START_HERE_FABLE_HANDOFF.md",
+  "consolidation_c1": {
+    "date": "2026-11-10",
+    "planning_design_status": "COMPLETE_SPECIFICATION_NOT_IMPLEMENTATION_ACCEPTANCE",
+    "original_task_count": 104,
+    "original_opr_count": 130,
+    "original_crosswalk_rows": 528,
+    "counts_overlap": true,
+    "feature_dispositions": 55,
+    "paper_recovered_round6_boards": 49,
+    "paper_new_consolidation_boards": 9,
+    "paper_total_snapshotted_boards": 58,
+    "source_contract": "18_CONSOLIDATION_SOURCE_AND_INTERACTION_CONTRACTS.md",
+    "execution_commission": "19_FABLE_T3_EXECUTION_COMMISSION.md",
+    "conditional_bindings": "20_COHORT_AND_CONDITIONAL_BINDINGS.json",
+    "paper_manifest": "21_CONSOLIDATION_PAPER_MANIFEST.json",
+    "migration_contract": "22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md",
+    "current_continuation": "23_CURRENT_CONTINUATION.md",
+    "terminal_source_pin": "abd68886b86713b2b0ac7f5a50fe7c0417a26662",
+    "macro_source_pin": "7e115b6f1f10832b4b123149215ea7a041279753",
+    "governing_pin": "76cca6bf0d4f54c1c4a732726a16c70dbe8ed679",
+    "history_note": "Other unprefixed Round 4/5 fields retain their dated historical meaning. No runtime, scientific or production acceptance is inferred from planning completion.",
+    "remaining_execution": [
+      "affected implementation and source/access admission",
+      "held Plan/F01/retained-selection gates",
+      "original full vertical and deeper mandatory scope",
+      "natural installed consumer proof",
+      "user usefulness and performance/accessibility/isolation",
+      "family-specific scientific and consumer qualification",
+      "per-donor cutover/retirement/rollback"
+    ]
   }
 }

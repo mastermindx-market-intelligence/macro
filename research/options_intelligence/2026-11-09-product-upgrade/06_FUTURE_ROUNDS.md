@@ -1,10 +1,10 @@
 # Options Suite — Additional Rounds and Convergence Plan
 
-## Round 5 complete · Rounds 6–12 next under the extended commission · 10 November 2026 UTC
+## Retained execution and qualification roadmap · Consolidation C1 · 10 November 2026 UTC
 
-**Authority:** the Chairman authorized additional rounds after round 4 to build a substantially more robust Options system. This document specifies the next planning, design and qualification work. It does not dispatch Fable/T3, start workers, authorize a held effect, change scientific admission or imply that a live product has been accepted.
+**Current status:** the architecture/design handoff is complete in [00](00_START_HERE_FABLE_HANDOFF.md) and [16–22](16_CONSOLIDATED_ARCHITECTURE.md). Round 6's 49 boards were recovered and frozen, and nine C1 boards cover the added Macro consolidation. The original packet is already recovered. This roadmap preserves deeper implementation, affected design hardening and qualification obligations; its historical round labels do not require another sequence of planning conversations.
 
-**Current baseline:** [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md), [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) and [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md), with the preserved [earlier architecture](04_ARCHITECTURE_HARDENING.md). The existing [Paper candidate](02_PAPER_DESIGN.md), original task hierarchy and acceptance sources remain inputs. All new findings amend this same programme and documentation carrier.
+**Authority:** the Chairman authorized extended planning and the eventual Fable-led T3 delivery model. No dispatch, installation, held effect or scientific promotion is implied. [19](19_FABLE_T3_EXECUTION_COMMISSION.md) is the current executable commission; [20](20_COHORT_AND_CONDITIONAL_BINDINGS.json) preserves actual conditional rules. [05](05_IMPLEMENTATION_MASTERPLAN.md), [10](10_ROUND5_SOURCE_READINESS.md), [11](11_RELEASE_AND_DESIGN_CONTRACT.md) and the original packet retain full-suite detail.
 
 The eight rounds below are a useful sequence, not a requirement to spend eight more conversations. Combine independently ready work when it improves the result; skip an already satisfied item after citing its accepted proof. Preserve real dependencies. No architecture round can substitute for elapsed market history, original source access, an installed consumer or a binding release decision.
 
@@ -59,7 +59,7 @@ The six destinations should feel like one product while retaining the depth of t
 
 ### Scope and method
 
-Use the current Terminal Paper file and its exact page/node identities. Preserve the 34 new boards, 44 state components and original 245-board inventory. Start by assigning each retained capability one explicit disposition:
+Use the current Terminal Paper file and exact page/node identities in 21. Preserve the 49 recovered Round 6 and nine new C1 boards, the historical Round 2 34-board/44-state record and original 245-board inventory. Reuse completed dispositions and qualify affected implementation changes using these categories:
 
 1. reuse the accepted board and behavior;
 2. adapt its composition to the shared shell;
@@ -78,7 +78,7 @@ The depth inventory includes Tide, 0DTE, Largest, Flow Surface, Screener, ticker
 - **Research Lab:** five connected, positively qualified Chain/Volatility/Replay/Packages/Scenarios jobs where their source domains permit them. Preserve the exact table and failure fallback. A disabled tab or a renderer fallback does not close the positive requirement.
 - **Session review:** retain R2 P59/P60's open-to-close and session-completeness questions. The new O08 saved-case assessment is a separate workflow.
 - **Plans and saved research:** explicit New/Add/Save, pending and uncertain result, exact revision reopen, dirty input, comparison, selected firing and review revision.
-- **B04 source correction:** revise `p-1R-0 / 2BEJ-0` and its fixture to New research → Add → Save → new case revision 1, matching the implemented #804 admission. Existing-Exposure-case revision-2 Plan attachment is a separately unimplemented extension through that owner. Keep O08's assessment revision distinct.
+- **B04 source correction completed in recovered Round 6:** `p-1R-0 / 2BEJ-0` now depicts New research → Add detached Plan → Save → new case revision 1. Preserve this exact #804 admission in implementation. Existing-case revision-2 Plan attachment remains a separate unimplemented extension; O08's assessment revision is distinct.
 - **Cross-product origins:** preserve the accepted Sector→Exposure/chart/Back journey as well as the new Flow origin. Futures and Equity replay keep their own native time/contract grammar.
 
 Bind each control to its actual handler, receiver, input, resulting state and return. Explicitly register new Research and Plans home routes; do not publish links that silently fall back to Tape. OI Changes and Prophet lane controls require typed preset/lane decoding.
@@ -99,7 +99,7 @@ The resulting design manifest connects each retained important job to exact boar
 
 Users should understand why an insight deserves attention, what evidence contradicts it, what question a study answered and whether an exact option expression has any qualified outcome evidence.
 
-### Architecture to finish
+### Architecture to implement and qualify
 
 Extend the existing candidate/campaign, evaluation and capability projections. Keep these identities distinct:
 
@@ -271,13 +271,14 @@ The team shape remains Fable-led T3, as requested. This document does not claim 
 
 A whole-suite completion claim requires the original accepted scope, useful intelligence, coherent real workflows, source and scientific qualification for the actual claims, durable saved/reviewed work and installed consumer evidence. Remaining held or time-dependent capabilities stay explicit. No new plan silently cancels them.
 
-## 11. Carry-forward record
+## 11. Current carry-forward record
 
-**Do not redo:** Round 5 exact archive recovery/checksums and original graph reconstruction; rounds 1–2 census/design, accepted R1 W1/W2 and other scoped receipts, exact Plan source already on #804, original Lab/Matrix wire work, existing numerical fixtures, accepted methods reviews and preserved scientific definitions unless affected evidence invalidates them.
+**Do not redo:** exact original archive recovery/checksums and graph reconstruction; 528-row crosswalk; completed census; accepted unchanged R1/numerical/Plan/Lab/Matrix/methods work; recovered Round 6 design; the nine C1 boards and frozen 58-board snapshot. Do not recover D86 again or recreate the design inventory.
 
-**Still open:** deep-view disposition and missing design; selection/routing/source contracts; held source integration; original-source retention; exact watch/firing semantics; actual implementation/installation/consumer proof; P74/P75/P76 and the remaining inherited rows; empirical stages and stronger claim admission.
+**Planning decisions now closed:** one Terminal Options suite and shared direct market/equity entry; six-group F01 consumer amendment with retained fifteen keys; donor feature dispositions; typed source families/clocks/rights; original conditional binding policy; source/view access composition; exact legacy semantics, cutover and rollback. Read 16–22 for these decisions rather than re-running the old round prompts.
 
-**Next concrete action:** use the known D86 provenance to recover and verify the original packet, then reconcile actual rows into the existing traceability projection. In parallel only where independent, bind the source readiness dossier and first useful release slice. If a lane is blocked, continue other authorized useful work and preserve the exact blocker.
+**Still to execute:** changed source/UI integration and held admission; complete original first vertical and specialist depth; exact retention/selected firing/outcomes; natural installed proof; original usefulness/performance/accessibility obligations; family-specific scientific stages and consumer verdicts. Later methods, lifecycle, portfolio and replay work above remains assigned under original contracts, including time-dependent data requirements.
 
-**Sources:** this roadmap is a proposed sequence derived from the source registers in [04](04_ARCHITECTURE_HARDENING.md), the [frontend](appendices/FRONTEND_REVIEW.md), [quantitative](appendices/QUANT_REVIEW.md) and [acceptance](appendices/ACCEPTANCE_REVIEW.md) reviews, and the original pinned references in [01](01_MASTERPLAN.md). It introduces no new empirical findings or runtime authority.
+**Next concrete action:** Fable adopts the exact completed package, reconciles current custody/source/rights/holds and starts the first ready bounded packet from 19. Bind every applicable field and receipt from 20 before dispatch. A blocked lane does not stop independent useful work. No restart of recovery and no automatic dispatch by this document.
 
+**Sources:** the current architecture and commission, inherited [04](04_ARCHITECTURE_HARDENING.md), [frontend](appendices/FRONTEND_REVIEW.md), [quantitative](appendices/QUANT_REVIEW.md), [acceptance](appendices/ACCEPTANCE_REVIEW.md), [05](05_IMPLEMENTATION_MASTERPLAN.md), and original pinned packet. This roadmap specifies work; it introduces no empirical finding or runtime grant.

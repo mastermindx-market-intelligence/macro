@@ -1,12 +1,12 @@
-# Options Suite — Implementation Masterplan Through Round 5
+# Options Suite — Integrated Implementation Masterplan · Consolidation C1
 
 ## Production design baseline and Fable/T3 build contract · 10 November 2026 UTC
 
-**Status: Round 5 recovery and source-readiness planning complete; the extended programme remains open.** This is the integrated implementation baseline, amended by [10](10_ROUND5_SOURCE_READINESS.md) and [11](11_RELEASE_AND_DESIGN_CONTRACT.md). Those files govern updated source semantics, exact original vertical scope and Round 6 work. Accepted source, release holds, original requirements, scientific contracts and runtime authority remain intact.
+**Status: planning/design specification complete through Consolidation C1; implementation and production acceptance remain open.** Start with [00_START_HERE_FABLE_HANDOFF.md](00_START_HERE_FABLE_HANDOFF.md). This inherited full-suite baseline is now amended by [16](16_CONSOLIDATED_ARCHITECTURE.md), [18](18_CONSOLIDATION_SOURCE_AND_INTERACTION_CONTRACTS.md), [19](19_FABLE_T3_EXECUTION_COMMISSION.md), [20](20_COHORT_AND_CONDITIONAL_BINDINGS.json) and [22](22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md). Original mandatory scope, accepted source, release holds and scientific contracts remain intact. Historical Round 5 source observations below retain their dates; 16 §8 supplies the refreshed C1 source cut.
 
 **Canonical carrier:** [Macro PR #10898](https://github.com/mastermindx-market-intelligence/macro/pull/10898), branch claude/options-suite-production-plan-20261109. **Programme parent:** [Terminal #599](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599); narrower workbench [#603](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/603). Fable-led T3 implementation is the intended later execution model. No Fable message, worker commission, activation, merge, deployment or trade was sent or performed in this planning round.
 
-The Chairman authorized further rounds. Round 5 recovered and verified the original packet, reconciled 528 references and completed the source-readiness/release dossier. Round 6 now uses those findings in Paper. [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) preserves later research, lifecycle, portfolio, monitoring and production-proof work. The same programme and Draft PR continue; this is not a final whole-suite implementation acceptance.
+The Chairman extended the commission to consolidate Macro Options, Dark Pool and Market Structure into Terminal/Shared Shell. Round 6's 49 boards were recovered and snapshotted; nine C1 boards complete the added consolidation design. The original packet and 528-reference reconstruction remain preserved. [06](06_FUTURE_ROUNDS.md) retains advanced execution and qualification work. The same programme and Draft PR continue; this is a completed planning handoff, not whole-suite implementation acceptance.
 
 ## 1. The product we are building
 
@@ -41,16 +41,19 @@ Production design requires:
 
 | File | Responsibility |
 |---|---|
-| [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md) | Current outcome, build slices, dependencies, owners and acceptance |
+| [00_START_HERE_FABLE_HANDOFF.md](00_START_HERE_FABLE_HANDOFF.md) | Current entry, decision summary, original-scope preservation and read order |
+| [16–22](16_CONSOLIDATED_ARCHITECTURE.md) | C1 architecture, 55 dispositions, source/access/action contracts, Fable commission, conditional bindings, Paper and migration |
+| [21](21_CONSOLIDATION_PAPER_MANIFEST.json) / [24](24_PACKAGE_VALIDATION.json) | 58-board design snapshot and current planning-package validation |
+| [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md) | Inherited full-suite implementation detail, amended by the current C1 contracts |
 | [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md) | Exact contracts and source adjudications behind the plan |
-| [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md) | 34 editable boards, 44 states, interaction contract and synthetic fixture |
+| [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md) | Historical Round 2: 34 boards/44 state components; current Round 6/C1 inventory is 21 |
 | [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json) | Exact page/node identities and design verification; documentation inventory only |
 | [07_REQUIREMENT_TRACEABILITY.csv](07_REQUIREMENT_TRACEABILITY.csv) | 528 reference rows; prior 294 fields preserved and actual 104 OPT/130 OPR appended with Round 5 adjudication |
 | [08_COVERAGE_GAPS.json](08_COVERAGE_GAPS.json) | Recovered packet disposition, actual remaining gaps and namespace boundaries |
 | [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) | Current source/owner contracts and production-proof limits |
 | [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md) | Exact original release scope, next Paper work and consumer proof |
 | [12_PACKET_RECOVERY.json](12_PACKET_RECOVERY.json) / [13_ROUND5_VALIDATION.json](13_ROUND5_VALIDATION.json) | Exact archive/graph and current documentation verification |
-| [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) | Further architecture/design/proof rounds and the final dispatch condition |
+| [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md) | Retained advanced execution/qualification roadmap; current commission is 19 |
 | [01_MASTERPLAN.md](01_MASTERPLAN.md) | Preserved census, progress history, original 245-board estate and earlier decisions |
 | [Frontend review](appendices/FRONTEND_REVIEW.md) | Full route/action/return mapping and source counterexamples |
 | [Quantitative review](appendices/QUANT_REVIEW.md) | Domain/maturity contracts, six-pilot details and advanced-capability falsifiers |
@@ -115,14 +118,15 @@ All primary actions must have a named handler, receiver, qualified input, result
 
 ### 4.3 Design assets to preserve
 
-The current Paper file is [Terminal](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1R-0).
+The editable [Terminal Paper file](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1S-0) now has a 58-board recovery/consolidation snapshot. [21](21_CONSOLIDATION_PAPER_MANIFEST.json) is the exact current manifest; [03](03_PAPER_MANIFEST.json) retains historical Round 2 evidence.
 
-- [Build contract](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1R-0): 4 boards.
-- [Product](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1O-0): 10 desktop boards.
-- [Responsive](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1P-0): 14 phone and 2 tablet boards.
-- [States & help](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1Q-0): 4 atlases containing 44 components.
+- Build contract p-1R-0: four recovered boards, including corrected B04.
+- Product p-1O-0: fifteen recovered boards.
+- Responsive p-1P-0: twenty-five recovered boards.
+- States/help p-1Q-0: five recovered atlases.
+- Consolidation p-1S-0 and p-1T-0: C01–C07, S06 and B05, nine new boards.
 
-The original 245-board census is retained. The new design does not erase older detailed capabilities or their holds. Text uses established Inter/PingFang SC and shared tokens. Light and dark are both deliberate compositions. No decorative colored edge stripes.
+The 49 recovered boards remain unchanged by C1. All 58 have fresh JSX exports; the nine C1 boards have inspected native JPEG captures. The original 245-board estate and deeper capabilities remain accounted for. Original Round 2's 34-board/44-state count is historical, not the current total. Text uses Inter/PingFang SC and established tokens; preserve deliberate light/dark and EN/ZH compositions without decorative edge stripes.
 
 ## 5. Implementation graph on existing tasks
 
@@ -189,7 +193,7 @@ This graph orders capability slices; its “Production acceptance” node is acc
 
 **Incumbents:** V03 and U02 explicitly, with U01/U04 integration, existing Plan/payoff/terms owners, original #804 and its accepted integration source. N01–N03 retain their distinct near-expiry latency, lifecycle and workflow requirements; ordinary Plan save does not discharge them.
 
-**Work:** compose the held detached Plan bridge with the new interface; preserve explicit New research/Add/Save and native operation journal; first save is revision 1 of a new case. Reconcile original uncertain operations; keep known-commit/read-failed distinct from not-applied. Compose 0047/0043 predicates and TypeScript/admission probe forward through their original owner based on actual installed identity. Retain canonical/embedded exact readers and native lifetime guards. B04's existing-case revision-2 attachment requires correction or a separately qualified extension; it is not implemented by this bridge.
+**Work:** compose the held detached Plan bridge with the new interface; preserve explicit New research/Add/Save and native operation journal; first save is revision 1 of a new case. Reconcile original uncertain operations; keep known-commit/read-failed distinct from not-applied. Compose 0047/0043 predicates and TypeScript/admission probe forward through their original owner based on actual installed identity. Retain canonical/embedded exact readers and native lifetime guards. Recovered Round 6 B04 now depicts new research and revision 1. Existing-case revision-2 Plan attachment remains a separately qualified extension; O08's assessment revision belongs to another case.
 
 **Exit proof:** qualified ordinary-domain Plan; unresolved/adjusted terms refusal; two-leg arithmetic and aligned sampled axis; dirty input; detached copy after Add; lost response/reload; exact operation lookup; no duplicate mutation; two-tab revision conflict; account revocation; exact revision missing; reader invalidation; correct canonical and embedded return.
 
@@ -280,7 +284,7 @@ Research can revisit expressly reopened hypotheses while retaining earlier negat
 | AC | 60 | Original acceptance assertions |
 | R2 | 76 | Original product requirements; production acceptance is not established by the design |
 | SUP | 123 | Dated claim dispositions, not 123 new implementation tasks |
-| Paper | 34 boards /44 state components | Design artifacts and specimens |
+| Paper | 49 recovered +9 C1 boards; historical R2 34/44 retained | Design artifacts and specimens, not runtime acceptance |
 | OPT | 104 recovered tasks | Exact source rows, dependencies, conditions and child contracts preserved |
 | OPR | 130 recovered requirements | Exact 112 competitor-referenced +18 product rows, owners and acceptance preserved |
 
@@ -327,6 +331,8 @@ The original requirements remain authoritative. At minimum the changed core loop
 - a capability shown as production accepted solely because a PR merged.
 
 ## 9. Rollout, migration and rollback
+
+[22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md](22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md) governs the added seven-entry Macro consolidation, source/view access composition, one-generation cutover, canary, active compatibility lifetime and semantic-safe rollback. The general rules below continue.
 
 Implement vertical capability slices so each has an observable user outcome. Freeze accepted schemas and changed-path acceptance before handing bounded work to builders. Existing in-flight source owners remain authoritative for their paths.
 
@@ -379,12 +385,20 @@ The full brief lives here and in its linked sources. It must bind:
 
 Do not dispatch a packet consisting only of “make it billion-dollar quality” or a link to a screenshot.
 
-## 11. Current disposition and next action — Round 5
+## 11. Current disposition and next action — Consolidation C1
 
-**Completed:** exact original packet recovery with CRC/checksums; 104-task CSV/JSON/graph and 130-OPR ownership validation; 528-row crosswalk preserving prior rows; source-readiness dossier; updated native Plan/Matrix/Save/watch contracts; exact first-vertical dependencies; and concrete Round 6 design inputs. Prior Round 4 architecture, accepted narrow source work and the 34-board/44-state Paper artifact remain preserved.
+**Completed planning:** original recovery and 528-row crosswalk; full-suite source/release baseline; 49-board Round 6 recovery with corrected B04 and deeper workflows; nine new consolidation boards; explicit Macro keep/merge/repair/retire decisions; direct Shell entry and six-group consumer amendment; source/access/action/route contracts; exact conditional graph; Fable packet ordering; migration, retirement and rollback acceptance. Current validation is [24](24_PACKAGE_VALIDATION.json).
 
-**Still owed:** remaining deep design and source contracts; semantic repairs identified in 10; held integration/admission; exact retained-source and firing-history behavior; real implementation/installation/consumer proof; P74/P75/P76; original scientific stages; usefulness and release acceptance. Recovery is not acceptance.
+**Execution still owed:** affected implementation/admission; installed source and entitlement composition; natural source-to-consumer proof; exact retained evidence and selected-node monitoring; original Trade Lab/full-vertical and deeper obligations; user usefulness, P74/P75/P76, applicable scientific stages and final operational acceptance. No source movement or design capture substitutes for these outcomes.
 
-**Next:** Round 6 Paper work in 11 §8, especially B04, Flow aggregate semantics, Volatility correctness, Opportunities, core Trade Lab and Monitor. Independently ready original correctness work retains its own prerequisites. No restart of the census, new task hierarchy or Fable/T3 dispatch is required by this document.
+**Next:** the intended Fable principal adopts [19](19_FABLE_T3_EXECUTION_COMMISSION.md) at this exact package commit, reconciles current custody/heads/holds and binds the first ready packet. Prioritize the off-exchange semantic repair and shared route/access contracts while independently preserving held lanes. Do not repeat archive recovery, the census or completed Paper work.
 
-The planning PR remains Draft. The eventual commission must cite the exact accepted package, real runtime grants, original effects/holds and bounded acceptance return. No application, Paper, production, SQL or activation effect occurred in Round 5.
+## 12. Consolidation amendment to the full suite
+
+The one Options suite retains all fifteen keys under six destinations. Off-Exchange and Market Structure also have neutral direct Shell entry using the same domain modules. Existing producers, registry, entitlement, source retention, chart, Plan/Investigation, alert/outcome and scientific owners remain canonical. C1 supersedes the old decision to keep Macro Options as a separate product destination; its useful depth and source qualifications survive.
+
+The full donor feature register is [17](17_MACRO_FEATURE_DISPOSITION.csv). Legacy mode/ticker semantics, inactive ticker context, rights and old-client registry behavior are specified in [18](18_CONSOLIDATION_SOURCE_AND_INTERACTION_CONTRACTS.md) and [22](22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md). Retire duplicate presentation only after replacement proof; keep supported compatibility links and shared producers.
+
+Original OPT-100 retains 15 direct/36 transitive unconditional predecessors. Export-bearing consolidation activates the original OPT-098→040 condition, expanding that minimum to 41 tasks before any other matching additions. [20](20_COHORT_AND_CONDITIONAL_BINDINGS.json) preserves every original rule and receipt. Two supported opportunity dossiers plus no-trade, core pre-expiry analysis, exact Save, selected-node monitoring and source-linked outcomes remain mandatory for the original full vertical.
+
+The planning PR remains Draft. The completed handoff does not dispatch workers, lift any hold or claim production/scientific acceptance.

@@ -1,7 +1,7 @@
 # Options Suite — Production Design and Implementation Masterplan
 ## November 9–10, 2026 · Rounds 1–5 · Extended programme authorized
 
-**Status: DRAFT — Round 5 scope recovery and source-readiness planning complete; Round 6 Paper work is next.** The current baseline is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md), amended by [10_ROUND5_SOURCE_READINESS.md](10_ROUND5_SOURCE_READINESS.md) and [11_RELEASE_AND_DESIGN_CONTRACT.md](11_RELEASE_AND_DESIGN_CONTRACT.md). Production implementation and whole-suite acceptance remain open.  
+**Current entry: [00_START_HERE_FABLE_HANDOFF.md](00_START_HERE_FABLE_HANDOFF.md). Consolidation C1 planning/design is complete; implementation remains open.** This document retains the historical Rounds 1–5 census and decisions. Their dated next-action statements are superseded by [16–22](16_CONSOLIDATED_ARCHITECTURE.md) and [23](23_CURRENT_CONTINUATION.md). Original scope and evidence remain preserved.  
 **Commission:** Chairman’s four-round Options upgrade, now extended with additional rounds: census, Paper design, architecture hardening and the current implementation baseline, followed by deeper scope/source/design/capability work and eventual Fable-led T3 implementation.  
 **Programme parent:** Terminal issue #599, with #603 for the narrower workbench.  
 **Primary workstream:** WS-ADVANCED-DATA-OPTIONS, alongside the existing Options Alpha, Intraday Flow, and context-audit workstreams. No new workstream or task hierarchy is created.  
