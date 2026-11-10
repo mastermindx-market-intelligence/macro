@@ -1,0 +1,120 @@
+{
+  "schema": "prophet.packet_amendments.editorial.v1",
+  "version": "5.0",
+  "original_briefs_preserved": true,
+  "admission": false,
+  "protected_outcome_authority": false,
+  "dispatch": false,
+  "packets": {
+    "P1": {
+      "addition": "One captured market/Sector context and complete dated member population in the existing Prophet read bundle.",
+      "input": "Sector lane 1 generation contract, closed owner schemas, existing B4 same-read owner and native population.",
+      "first_slice": "Capture one exact context once; serve one real eligible sector-to-name read with inspectable clocks and unavailable behavior.",
+      "proof": [
+        "SP01",
+        "SP02",
+        "SP03",
+        "SP09",
+        "SP16"
+      ],
+      "collision": "Sector lane 1 generation and lane 3 BFF/schema writer; no publisher or identity replacement."
+    },
+    "P2": {
+      "addition": "Continuous market → sector → names → Setup → Compare/Save → original return, using the native route and rich-card design.",
+      "input": "P1 versioned context/identity contract; SX01–SX04/SX06–SX09 and existing flagship geometry/actions.",
+      "first_slice": "Mount the shared context and full sector-originated filter; then prove save/reopen and exact cross-product return.",
+      "proof": [
+        "SP07",
+        "SP08",
+        "SP13",
+        "SP14",
+        "SP15",
+        "SP23"
+      ],
+      "collision": "Lane 3 sole shared Terminal writer; lane 6 single additive investigation migration. Do not edit lane 2 Sector R4 boards."
+    },
+    "P3": {
+      "addition": "Explicit strategy-specific use of qualified context; descriptive integration leaves current policy authority unchanged.",
+      "input": "Existing policy/source/entry contracts and original Plan terms; accepted new context use only when independently qualified.",
+      "first_slice": "Prove adding descriptive context does not alter B4 ranks/gates/size/entry/exit; separately specify any intended policy delta.",
+      "proof": [
+        "SP07",
+        "SP10"
+      ],
+      "collision": "Preserve incumbent B4 behavior and killed mechanisms; no blanket positive-sector gate across eight sleeves."
+    },
+    "P4": {
+      "addition": "Independent issuer-excluded peers, constituent economics returned upstream, and native cycle/remaining-opportunity capabilities.",
+      "input": "Early Leadership compiler, original group/member/earnings sources, phase/turn owners and qualified forecast references.",
+      "first_slice": "Prove real source-level issuer exclusion for one company; show economic company evidence beside sector support and challenge.",
+      "proof": [
+        "SP04",
+        "SP05",
+        "SP06",
+        "SP10",
+        "SP11",
+        "SP12"
+      ],
+      "collision": "Sector lanes 4/5/7; residual owner adaptation preserves original incumbent path. No circular selected-winner feedback."
+    },
+    "P5": {
+      "addition": "Frozen benchmark/participation/sector/member/joint/incumbent/emergence comparisons, market-native execution and separately calibrated future heads.",
+      "input": "Original Q01–Q24 owners and full quantitative protocol; actual later admission, rights and source availability.",
+      "first_slice": "Freeze intended use, population, baseline family, uncertainty, costs and meaningful effect/margin before any permitted outcomes.",
+      "proof": [
+        "SP09",
+        "SP10",
+        "SP11",
+        "SP19",
+        "SP21",
+        "SP22"
+      ],
+      "collision": "Sector lane 8; no new registry/evaluator and no protected-outcome permission from this brief."
+    },
+    "P6": {
+      "addition": "Material sector Follow, retained original/current context, a separate qualified Strategy evaluation adapter and actual Portfolio exposure.",
+      "input": "Existing event/preferences/outbox/delivery, investigation resolver, Evaluation results and Portfolio/Risk holdings.",
+      "first_slice": "Prove one supported retained transition through opt-in and actual delivery; keep Model-plan Record denominator unchanged.",
+      "proof": [
+        "SP14",
+        "SP17",
+        "SP18",
+        "SP19",
+        "SP20"
+      ],
+      "collision": "Lanes 6/7/8; one migration/outbox/ledger. SX05 attribution has an unresolved original Paper effect; use the source contract, do not duplicate that design mutation."
+    },
+    "P7": {
+      "addition": "All SP01–SP24 and original PF01–PF20/B/Q/D/R acceptance, ordinary-refresh served proof, failure/correction and compatible rollback.",
+      "input": "Exact integrated heads and real entitled consumer; measured operational baseline and source-qualified release claim bill.",
+      "first_slice": "Prove the real Sector → Prophet → company → original source/return path, then degraded/account/market-native branches.",
+      "proof": [
+        "SP01",
+        "SP02",
+        "SP03",
+        "SP04",
+        "SP05",
+        "SP06",
+        "SP07",
+        "SP08",
+        "SP09",
+        "SP10",
+        "SP11",
+        "SP12",
+        "SP13",
+        "SP14",
+        "SP15",
+        "SP16",
+        "SP17",
+        "SP18",
+        "SP19",
+        "SP20",
+        "SP21",
+        "SP22",
+        "SP23",
+        "SP24"
+      ],
+      "collision": "Sector lane 9 integrated proof; actual source/runtime/release holds bind. No fixture-only production or scientific claim."
+    }
+  }
+}
