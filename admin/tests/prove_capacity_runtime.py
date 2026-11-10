@@ -76,8 +76,8 @@ async def main(release):
     routes_module = importlib.import_module("ops.native_fabric.unified_router.routes")
     # Closed credential fixtures exist only in this proof process.
     gateway._route_authorization = lambda *args: "fixture-upstream-token"
-    account = SimpleNamespace(id="fixture-account")
-    gateway._oauth_accounts = lambda route: ([account], [account])
+    account = SimpleNamespace(id="fixture-account", exhausted=False, access_token="fixture-token", account_id="fixture-account")
+    gateway.codex_oauth.read_accounts = lambda *args: [account]
     gateway._oauth_headers = lambda selected: {"authorization": "Bearer fixture-upstream-token"}
     wires = {"anthropic": routes_module.WIRE_ANTHROPIC, "openai": routes_module.WIRE_OPENAI,
              "responses": routes_module.WIRE_RESPONSES}
@@ -95,6 +95,7 @@ async def main(release):
                     route = routes_module.Route(route_id="fixture-" + kind, kind="gateway", base_url="https://fixture.invalid",
                         wire=wire, models=("model-a",), priority=10, gateway_token_env="UNUSED_FIXTURE_TOKEN")
                     cfg = gateway.Settings(proxy_token=TOKEN, state_dir=Path(directory), routes=(route,),
+                        auth_store=Path(directory) / "NO_LIVE_AUTH_STORE",
                         aliases=(("fabric/fast", ("model-a",)),), capacity_wait_s=0)
                     request_body = {"model": "fabric/fast", "max_tokens": 24, "stream": streaming,
                                     "messages": [{"role": "user", "content": "fixture input"}]}
