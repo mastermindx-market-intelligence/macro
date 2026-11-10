@@ -1,7 +1,7 @@
 {
   "schema": "prophet.sector.verification.v1",
-  "recorded_at_utc": "2026-11-10T04:04:27.635332+00:00",
-  "mission": "Chairman extension: granular Prophet and Sector Intelligence symbiosis in source masterplan, actual Paper and embedded build contracts",
+  "recorded_at_utc": "2026-11-10T04:50:07.479967+00:00",
+  "mission": "Continue the Prophet and Sector Intelligence design/masterplan pass; harden attribution presentation, evaluation disclosures and original-effect recovery without reopening accepted architecture.",
   "finalization_classification": "EFFECT_UNKNOWN",
   "source_and_package_state": "AUTHORED_PUBLISHED_AND_FULL_CONTENT_READBACK_VERIFIED",
   "all_requested_design_coverage_complete": false,
@@ -12,37 +12,55 @@
     "terminal_master": "2fe2f02f07d1df8c855388bc556383cd74de44fd"
   },
   "authoring_checks": {
-    "state": "AUTHORING_CHECKS_PASSED",
-    "version": "5.0",
-    "masterplan_chars": 350287,
-    "masterplan_words": 42630,
-    "masterplan_sha256": "c96983fe8c5421c74a27b3aba5d05d397fe648a047389da0b5adbde8d4070f8e",
-    "active_edits": 46,
-    "original_program_equal": true,
+    "state": "V51_AUTHORING_CHECKS_PASSED",
+    "version": "5.1",
+    "masterplan_chars": 353561,
+    "masterplan_words": 43086,
+    "masterplan_sha256": "3233ad9a16ff60797213c6367796fdcb0741db1c6b41f474bf30ec26e8d36064",
     "original_38_contracts_equal": true,
-    "counts": {
+    "original_program_equal": true,
+    "new_contracts": 20,
+    "new_proof_cases": 24,
+    "build_cards": 12,
+    "paper_operations": 82,
+    "paper_states": {
+      "APPLIED_RESPONSE_OBSERVED": 81,
+      "UNKNOWN_RESPONSE": 1
+    },
+    "native_card_fields_match_spec": true,
+    "held_product_root_mutated": false,
+    "architecture_reopened": false,
+    "preserved_programme_counts": {
       "build_units": 29,
       "research_packets": 24,
       "decision_register": 12,
       "requirements": 36
     },
-    "new_contracts": 20,
-    "new_proof_cases": 24,
     "packet_amendments": 7,
-    "build_cards": 12,
-    "paper_roots": 11,
-    "paper_reviewed": 10,
-    "paper_partial_held": 1,
-    "numeric_fixture_identity": {
-      "benchmark": 8.0,
-      "gross": 6.5,
-      "net": 6.1,
-      "equity_allocation": 0.6000000000000001,
-      "cash_allocation": -2.5,
-      "selection": 0.5,
-      "interaction": -0.09999999999999998,
-      "cost": -0.4,
-      "starting_invested_allocation": 0.6875
+    "synthetic_fixture": {
+      "basis": "single-period synthetic Brinson-Fachler; no real strategy result",
+      "benchmark_percent": "8.0",
+      "gross_percent": "6.5",
+      "net_percent": "6.1",
+      "contributions_pp": {
+        "equity_allocation": "0.6",
+        "cash_allocation": "-2.5",
+        "selection": "0.5",
+        "interaction": "-0.1",
+        "costs": "-0.4"
+      },
+      "starting_invested_allocation_percent": "68.75",
+      "starting_cash_allocation_percent": "31.25",
+      "common_scale_px_per_pp": 120,
+      "absolute_bar_widths_px": [
+        72,
+        300,
+        60,
+        12,
+        48
+      ],
+      "cash_and_costs_counted_once": true,
+      "ex_ante_opportunity_inferred_from_realized_returns": false
     },
     "not_performed": [
       "application implementation",
@@ -178,15 +196,103 @@
           "blob_sha": "a11ad136e93c51494038b19a39f5daf7aa1b3425"
         }
       ]
+    },
+    {
+      "commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f",
+      "state": "VERIFIED",
+      "files": [
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PAPER_BUILD_SPEC.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md",
+          "chars": 26366,
+          "sha256": "f1de65e413b30fca276a5e73fc53983ff5fd900ca43cdc3ceade77a821232fee",
+          "blob_sha": "8cdf1d23d10622574c0e850ac8ae184e97155a40"
+        }
+      ],
+      "full_content_readbacks": [
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md",
+          "equal": true,
+          "blob_sha": "8cdf1d23d10622574c0e850ac8ae184e97155a40"
+        }
+      ]
+    },
+    {
+      "commit": "1f645a751ea22d7ad5fe512165017873d8b65382",
+      "state": "VERIFIED",
+      "files": [
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_INTEGRATION_REGISTRY.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json",
+          "chars": 292232,
+          "sha256": "7796e054beffeea3295dda2a13928d939112b0bd1966a7291e5598b418493a19",
+          "blob_sha": "45361f09a0ea240e0b583ab64f57f2f06c4d8cb7"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PACKET_AMENDMENTS.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json",
+          "chars": 5831,
+          "sha256": "72bf707e5567b8d3a511f5c0213041c0e94dad115df2ce891240688867b07a45",
+          "blob_sha": "540332686734d60516deb05ce08efeef1c318ed2"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PAPER_MANIFEST.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json",
+          "chars": 561330,
+          "sha256": "42d66cf5769f3259362ecd5d51a8ac4ad582f338665e21028301e6903bce67d2",
+          "blob_sha": "a08278c650045a0a3ae43845848db6175cd3f295"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_FABLE_COMMISSION.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md",
+          "chars": 13451,
+          "sha256": "993e1d7ad410865a814777406cc0f0b3ea197c3ed0e796d123cda0133ff328a4",
+          "blob_sha": "caace4738cf32d472bffcdb2990240711766898e"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "path": "research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "chars": 353561,
+          "sha256": "3233ad9a16ff60797213c6367796fdcb0741db1c6b41f474bf30ec26e8d36064",
+          "blob_sha": "f1aa214f4846ad430543137818d0c35394fbc6d2"
+        }
+      ],
+      "full_content_readbacks": [
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json",
+          "equal": true,
+          "blob_sha": "45361f09a0ea240e0b583ab64f57f2f06c4d8cb7"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json",
+          "equal": true,
+          "blob_sha": "540332686734d60516deb05ce08efeef1c318ed2"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json",
+          "equal": true,
+          "blob_sha": "a08278c650045a0a3ae43845848db6175cd3f295"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md",
+          "equal": true,
+          "blob_sha": "caace4738cf32d472bffcdb2990240711766898e"
+        },
+        {
+          "path": "research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "equal": true,
+          "blob_sha": "f1aa214f4846ad430543137818d0c35394fbc6d2"
+        }
+      ]
     }
   ],
   "paper": {
     "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
     "page_id": "p-H-0",
     "page_url": "https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0",
-    "operation_count": 79,
+    "operation_count": 82,
     "operation_states": {
-      "APPLIED_RESPONSE_OBSERVED": 78,
+      "APPLIED_RESPONSE_OBSERVED": 81,
       "UNKNOWN_RESPONSE": 1
     },
     "roots": [
@@ -311,7 +417,7 @@
       "root": "1G21-0",
       "state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
       "readback": "Original target later observed without attribution children; absence is not terminal/no-effect evidence.",
-      "disposition": "No replay, recreation, re-home, carrier swap, finish or mutation of held subtree until original effect is reconciled. No operation-status action in observed Paper catalog.",
+      "disposition": "Original effect remains unknown. No replay, recreation, re-home, carrier swap, finish or mutation of held SX05 root. No further unchanged absence polling is prescribed.",
       "reconciliation_attempts": [
         {
           "action": "get_children original target",
@@ -331,6 +437,18 @@
             "1G3Y-0",
             "1G47-0"
           ]
+        },
+        {
+          "action": "v5.1 original-carrier exact-target read and catalog/source diagnosis",
+          "result": "Same five heading/answer children observed; no terminal receipt or operation-status action. Pinned adapter source has no persistent operation/retry ledger. The source diagnosis does not prove installed source hash or cancellation.",
+          "child_ids": [
+            "1G3H-0",
+            "1G3L-0",
+            "1G3R-0",
+            "1G3Y-0",
+            "1G47-0"
+          ],
+          "held_root_mutated": false
         }
       ]
     },
@@ -347,70 +465,168 @@
       "real-user comprehension",
       "accepted financial outcomes",
       "complete SX05 attribution board"
-    ]
+    ],
+    "completion_pass_v51": {
+      "version": "5.1",
+      "scope": "Attribution presentation and remaining completion controls",
+      "design_source_refresh": {
+        "macro_main": "fc07cb58b17df11aa9cb83c782f8833d035482cb",
+        "compared_prior": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+        "doctrine_blob": "2ef014e6ccb23c23922e22291d2cfe0904c60345",
+        "design_system_blob": "f8a28702767b78b2e48299f55a85e21a5c2360cd",
+        "both_unchanged": true,
+        "scope_limit": "Only the two design-owner documents were compared at this newer main; the full backend census remains the earlier recorded frontier."
+      },
+      "catalog": {
+        "server": "paper-desktop",
+        "version": "0.5.18",
+        "sha256": "f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb",
+        "operation_status_action_present": false
+      },
+      "original_target_read": {
+        "node": "1G3F-0",
+        "children": [
+          "1G3H-0",
+          "1G3L-0",
+          "1G3R-0",
+          "1G3Y-0",
+          "1G47-0"
+        ],
+        "attribution_children_observed": false,
+        "absence_is_terminal_evidence": false
+      },
+      "adapter_source_diagnosis": {
+        "ref": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "bridge_path": "integrations/paper_desktop/bridge.py",
+        "bridge_blob": "2b52aad47f57a796cccc7456eaf03380fa9e43cc",
+        "server_path": "integrations/paper_desktop/mcp_server.py",
+        "server_blob": "2aa9ce0b2b4ad5d6f7d0dc7b65285ead1811b667",
+        "finding": "Pinned source explicitly retains no persistent duplicate/retry ledger; status reports current connection/document, not an old operation result. Current exposed tools have no operation-status query. This is source/surface diagnosis, not a receipt for the unknown call or proof of installed source hash."
+      },
+      "original_effect_state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
+      "held_root_mutated": false,
+      "alternate_carrier_or_host_repair": false,
+      "corrections": [
+        "common signed percentage-point scale",
+        "invested assets and cash rather than invested/cash periods",
+        "starting invested/cash allocations rather than average exposure",
+        "realized gain does not establish ex-ante opportunity"
+      ],
+      "build_spec_commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f",
+      "paper_update": {
+        "root": "1GHB-0",
+        "card": "1GJY-0",
+        "text_nodes": [
+          "1GKA-0",
+          "1GKD-0",
+          "1GKG-0",
+          "1GKM-0",
+          "1GKP-0"
+        ],
+        "source_pointer_node": "1GHH-0",
+        "exact_text_readback": true,
+        "card_and_full_board_screenshot_reviewed": true,
+        "finished_exact_root": true,
+        "operations": [
+          "prophet-sector-20261109-sx11-eval-precision-v51",
+          "prophet-sector-20261109-sx11-source-pointer-v51",
+          "prophet-sector-20261109-sx11-finish-v51"
+        ]
+      },
+      "remaining_controls": [
+        "Evaluation details",
+        "How attribution works",
+        "Coverage",
+        "Open Portfolio"
+      ],
+      "remaining_controls_issued": false,
+      "numeric_fixture_check": "Exact rational reconciliation accepted from bounded reasoning review; single-period synthetic example only, no protected outcomes or strategy run.",
+      "prior_programme_and_architecture_preserved": true
+    },
+    "build_spec_commit": "1e3ac76bdbd28852acb0b3796ac8e7e9279d459f"
   },
   "pdf": {
     "pdf": "/workspace/scratch/82fc6bad83b7/output/pdf/Prophet_Production_Masterplan.pdf",
-    "pages": 98,
-    "links": 353,
-    "bytes": 513304,
-    "sha256": "b3bc2bdb5675d622126c1889489d8e9ce3ee8be1d8017c8b7ce18ec63102913f",
+    "pages": 99,
+    "links": 357,
+    "bytes": 518252,
+    "sha256": "b728d7a6ac9d65432dd3ed4bb440185943604c86d14204f06089236b439cf11c",
     "text_bounds_violations": [],
     "all_38_contract_ids_present": true,
     "all_24_q_ids_present": true,
     "all_36_r_ids_present": true,
     "all_20_si_contracts_present": true,
     "all_24_sp_cases_present": true,
-    "source_commit": "1c24784e940b278738e5bc1aea27511ea9715711",
+    "source_commit": "1f645a751ea22d7ad5fe512165017873d8b65382",
     "visual_review": {
       "state": "REVIEWED",
-      "body_contact_sheets_reviewed": 9,
-      "all_body_pages_reviewed": true,
-      "contents_spill_repaired": true,
-      "post_repair_individual_pages": [
+      "individual_pages": [
         1,
         2,
-        77,
-        78,
-        80,
-        81
+        3,
+        81,
+        82
       ],
-      "method": "Every body page reviewed in contact sheets. After a TOC-only spacing change removed the orphan contents page, cover, repaired contents and dense integration/acceptance/actual-effect pages were reviewed individually. Body source and layout rules were unchanged.",
-      "layout_findings": "No observed clipping, overlapping text, missing glyph markers or out-of-page text. Source commit and current effect boundary are legible."
+      "contact_sheets_reviewed": [
+        1,
+        2,
+        7,
+        8,
+        9
+      ],
+      "contact_page_ranges": [
+        [
+          1,
+          24
+        ],
+        [
+          73,
+          99
+        ]
+      ],
+      "all_v51_changed_and_added_body_pages_in_reviewed_ranges": true,
+      "prior_v50_full_body_review_retained": true,
+      "method": "Rendered all 99 pages and checked text bounds and required IDs. Compared body text against the prior v5 PDF with footer/version/source and shifted page-number normalization; changed existing body pages were 3–13 and 81, with new page 82. Reviewed those ranges in contact sheets and the cover, contents, scope and completion section individually. Other body pages retain the earlier full visual review; this is not a claim of reviewing every unchanged page anew.",
+      "layout_findings": "No observed clipping, overlap or missing glyph markers. The repeated table header across pages 81–82, links, source revision and unresolved-effect boundary remain legible."
     }
   },
   "pdf_save": {
     "state": "REPLACED_AND_METADATA_APPLIED",
     "library_file_id": "libfile_6b8347e1870081919aede86a16f423d7",
-    "file_id": "file_00000000eb6c8212a8c68838a1dcbbb9",
-    "saved_version": 4,
+    "file_id": "file_000000006d148212a1df5e1f77d92931",
+    "saved_version": 5,
     "metadata_applied": true,
-    "saved_size_bytes": 538306,
+    "saved_size_bytes": 543254,
     "readback": {
       "state": "SAVED_PDF_READBACK_VERIFIED",
-      "document_version": "5.0",
+      "document_version": "5.1",
       "library_file_id": "libfile_6b8347e1870081919aede86a16f423d7",
-      "file_id": "file_00000000eb6c8212a8c68838a1dcbbb9",
-      "saved_version": 4,
-      "pages": 98,
+      "file_id": "file_000000006d148212a1df5e1f77d92931",
+      "saved_version": 5,
+      "pages": 99,
       "read_pages": [
         1,
-        71,
-        78,
-        81
+        81,
+        82,
+        99
       ],
       "checks": {
         "same_identity": true,
         "same_version": true,
+        "same_file": true,
         "page_count": true,
         "cover_has_version": true,
         "cover_has_source": true,
-        "integration_is_first_class": true,
-        "contract_registry": true,
+        "correction_section": true,
+        "common_attribution_scale": true,
+        "truthful_capital_label": true,
+        "truthful_asset_scope": true,
+        "four_destinations": true,
         "held_effect_disclosed": true,
-        "synthetic_starting_allocation": true
+        "retained_research_tail": true,
+        "source_build_pointer": true
       },
-      "remote_size_bytes": 538306,
+      "remote_size_bytes": 543254,
       "remote_byte_identity_asserted": false
     },
     "remote_byte_identity_asserted": false
@@ -427,7 +643,14 @@
     ],
     "state": "SOL_ACCEPTED_STOP",
     "external_mutations": false,
-    "production_outcome_execution": false
+    "production_outcome_execution": false,
+    "completion_pass": {
+      "task": "completion_contract_review",
+      "role": "bounded C3 reasoning and arithmetic review",
+      "state": "SOL_ACCEPTED_STOP",
+      "external_mutations": false,
+      "finding": "Four attribution-presentation corrections and the remaining evaluation/coverage destinations accepted by root; exact rational fixture checked. No protected research or production outcome execution."
+    }
   },
   "external_effects": {
     "owned_editorial_branch": "sol/prophet-production-design-20261109",
@@ -444,9 +667,24 @@
     "slack_email_linear_messages": false
   },
   "remaining_boundary": {
-    "new_design": "Reconcile original SX05 attribution effect before any held-root mutation; then correct starting-invested label if present, complete never-issued controls, review and finish only that root.",
+    "new_design": "Obtain original terminal/cancellation or verified later-effect evidence for SX05, inspect the exact subtree, then apply all four v5.1 corrections and the never-issued qualification/attribution/coverage/Portfolio controls; visually review and finish only that root.",
     "older_design": "Original mobile Plans operation remains untouched under its original hold.",
-    "reconciliation_requirement": "Original terminal/cancellation receipt or verified later-effect evidence. The observed Paper 0.5.18 catalog has no operation-status action. Absence reads do not prove no effect; no blind retry, duplicate, re-home, carrier swap or finish.",
+    "reconciliation_requirement": "Original terminal/cancellation receipt or verified later-effect evidence. Current Paper 0.5.18 catalog exposes no operation-status action; pinned adapter source has no persistent receipt ledger. Absence is not proof of no effect. Preserve original carrier and both separate holds.",
     "implementation": "Fable pickup must refresh live writer/candidate controls and prove real entitled consumer paths and scientific acceptance. Source continuity of Sector lanes is not a fresh runtime receipt."
+  },
+  "document_version": "5.1",
+  "prior_verification": {
+    "commit": "ecba8592a080f48e2113bc78c36b13e2b4b40c85",
+    "path": "research/design_candidates/prophet_production_20261109/SECTOR_VERIFICATION.json",
+    "document_version": "5.0",
+    "prior_full_review_and_publication_evidence_retained": true
+  },
+  "design_source_refresh": {
+    "macro_main": "fc07cb58b17df11aa9cb83c782f8833d035482cb",
+    "compared_prior": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+    "doctrine_blob": "2ef014e6ccb23c23922e22291d2cfe0904c60345",
+    "design_system_blob": "f8a28702767b78b2e48299f55a85e21a5c2360cd",
+    "both_unchanged": true,
+    "scope_limit": "Only the two design-owner documents were compared at this newer main; the full backend census remains the earlier recorded frontier."
   }
 }
