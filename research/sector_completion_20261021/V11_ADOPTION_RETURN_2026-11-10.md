@@ -692,3 +692,60 @@ Neither block is sourced client-side and the Terminal reads no Macro file direct
 ### 15.4 Rung reached
 
 Unchanged. Lane 7's delta is delivered to its PR. Nothing of v1.1 is merged or served.
+
+## 16. Status at 13:35Z — returns, the main-baseline circuit breaker, two reviews started
+
+### 16.1 What returned between 12:55Z and 13:35Z
+
+| Lane | PR and exact head | State reported | Still owed |
+|---|---|---|---|
+| 7 | Terminal #1419 `6778c61594b9736f73f132fa4a6f4bcb30c2a9d1` | Emergence rendering complete. Unit 191 passed; e2e desktop and mobile 30 passed, 6 skipped; tablet 15 passed, 3 skipped. | No owner emits `emerging` yet, so every visible instance is a labelled harness mount. The board's second action has no destination route and is not rendered. The native-identity audit waits on lane 3's population mount. |
+| 4 | Terminal #1431 `fb60cb3e0f8280875a7e38375b92f1fa7f4e12a3` | Master merged in (no rebase). Nine of its own files conflicted; none of lane 3's single-writer files. 14 files in the diff. 100 unit tests passed, `tsc` and `eslint` exit 0. #1413 is merged. | No live producer carries forecast heads; every state is a labelled fixture. |
+| 8 (CI registration) | Macro #10924 `d70025383c2d` | One file changed (`.github/ci/legacy-jobs.yml`). The curated-closure guard test passed alone at this head (1 passed, 639 s). | The full local `contract-delta` and the full `tests/test_ci_pack.py` run had not finished. The shared host was at load 107. |
+| 1 (CI registration) | Macro #10929 `07a9eafac6fb` | Pushed fast-forward from `595fe6b75af2`. Two files changed (`.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py`). | Final gates not finished. Two orders from 16.3 are outstanding. |
+| 1 (round 3 follow-up) | Macro #10954 `e809e7ae7071` | R3-S1 fixed: the owner's roster is carried, and a missing roster basket makes its members `unserved` and `complete` false. Probe before `1002/997/5/0/True`, after `1020/997/5/18/False`. | Notes N1, N3, N4, N5, N6, the wire document and the full ten-file test run. |
+| 5 (successor) | no PR yet | Implementation and tests green locally (10, 8 and 436 passed; 4 skipped). CI registration running. | Push and the stacked PR on `claude/si-research-v11-issuer-econ-20261110`. |
+
+### 16.2 Why the armed PRs had not merged
+
+The cause was outside this programme. The merge controller's log (run 42821456733) says
+"source main baseline is red; leaving it armed behind the circuit breaker". The
+`integration-baseline` workflow failed at main `e11afd6d8549`: one test,
+`test_curated_exclusive_scopes_cover_their_own_import_closure`, on job `eval-os-a1`
+(two `admin/capacity_*` files not in its path list). That sweep left 127 PRs
+baseline-blocked. Another party merged the repair as #10951 (main `cbf9d99ac70d`). The
+baseline run at that head (42822991031) was still in progress at 13:25Z. This programme
+took no action on it. #10923 and #10945 stay armed and should merge once the baseline is
+green.
+
+### 16.3 Decisions
+
+1. **Reviews of #1419 and #1431 started.** Each gets one independent Opus reviewer, read-only,
+   at the exact head in 16.1. They run as threads in the Terminal project, because a child
+   of this thread cannot be placed in another project (the orchestrator refused
+   `target.projectId`, twice) and a Macro-pinned session cannot run git in the Terminal
+   repo. Verdicts return as files: `/tmp/si_plan/reviews/lane7_1419_review.md` and
+   `/tmp/si_plan/reviews/lane4_1431_review.md`. Neither PR is armed before its verdict.
+2. **#10929 registration: path additions accepted, pack-limit change not accepted.** I read
+   the diff from `595fe6b75af2` to `07a9eafac6fb`. It adds path lines, eight run steps and
+   `openpyxl` to one install line. It removes nothing else. It also raises
+   `PACKING_PROBE_MAX_PACKS` from 10 to 11. That limit is a guard on how many CI packs a
+   common PR shape needs. The 11th pack comes only from 22 weight-seconds that six new steps
+   add to `tier-gate`, a job every index and free-content PR selects. The worker was ordered
+   to move those six steps into an existing job those probes do not select, and to restore
+   the limit to 10. One attempt. If no existing job fits without new closure findings, the
+   re-base stays and the return states the measured reason. No new job, no allowlist, no skip.
+3. **#10929 registration must merge main first.** #10951 edited the same job (`eval-os-a1`)
+   that this registration widens. `git merge-tree` shows both registration heads merge with
+   main `cbf9d99ac70d` without conflict. The worker merges (never rebases) and re-measures
+   on the merged tree.
+4. **#10924 keeps `merge-blocked`** until the local `contract-delta` reports no introduced
+   finding and `tests/test_ci_pack.py` passes at its head. The label then comes off with a
+   visible comment that names this session and the reason.
+5. **Release of #10929 is unchanged from 11.2**, and waits on decision 2 and 3 and the final
+   gates.
+
+### 16.4 Rung reached
+
+Unchanged. Three more deltas are delivered to their PRs (#1419, #1431, #10954). Nothing of
+v1.1 is merged or served. Integrated-proof count: 0 of 44 rows.
