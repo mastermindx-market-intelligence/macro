@@ -849,7 +849,7 @@ Additional decisive source reads:
 - entry_signal blob 42f2e8b0069cccb82282ac66fea8ba0c72e42d3c uses a close-to-close volatility proxy and a 2%-of-spot fallback; neither is silently admitted as measured true-range ATR.
 - Canonical indicator owners: entry_radar/indicator_core blob 0deb8a8623e095773607671948e112e0a18d4258; stock_technicals blob ca33b18252eb5f08feb5646e0fb904039d80629b.
 
-Correct two registry symbol names during integration: actual names are **read_native_b4_owner_inputs** and **compose_runtime_owner_facts**, not read_native_b4_owner_inputs or compose_runtime_owner_facts.
+Exact source symbols are **read_native_b4_owner_inputs** and **compose_runtime_owner_facts**. The final registry corrects the earlier name spellings; the versioned Turn 3 registry remains historical.
 
 ### 2. Freeze decisions
 
