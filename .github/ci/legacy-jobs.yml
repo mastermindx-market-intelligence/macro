@@ -34786,6 +34786,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      - "tests/test_analytics_query_budget.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -34801,7 +34802,9 @@ jobs:
           export PATH="$pg_bin:$PATH"
           for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
           test "$(id -u)" -ne 0
-          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+          python -m pytest tests/test_analytics_exclusions.py \
+            tests/test_analytics_pages_postgres.py \
+            tests/test_analytics_query_budget.py -q
 
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
