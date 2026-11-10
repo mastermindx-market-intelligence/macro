@@ -194,6 +194,38 @@ writer per overlapping file" this session does NOT dual-write its files.
   behind P2 custody. T3 capacity_fabric provider EXPOSES both deepseek-v4.1-flash and
   glm-5.3 (+glm-5.3-flash which Pro must NOT get) as child models.
 
+## Incident log + post-merge verification runbook (2026-11-10)
+
+- ~13:05Z armed merge-on-green → sweeper refused: stale-proof (main f3a8cf0450a1
+  changed check definitions) + refresh-lease starvation (#10615 held the one
+  durable lease 9+ h; full sweeps ~0.5/hr — mark-only wakes dominate). Remedy
+  applied per #5291: disarm-with-marker (comment 6754334735 + merge-blocked) →
+  merge main (22 commits, zero file overlap) → 146 tests green → push 35ff3f4c51ab
+  → re-arm LAST. Phase record + controller-stall diagnosis posted to parent #983
+  (comment 6755165019).
+- Fresh CI on 35ff3f4: two reds, both EXTERNAL browser-setup infra failures —
+  pack-9 `ontology-explorer`, pack-10 `bea-gvc-current-descriptive-consumer`,
+  both "browser setup failed (exit 1); original outcome retained" (the documented
+  #10740 Python-504 class). Rerun of failed jobs queued on run conclusion
+  (monitor b7ooauhd1); packs 0/5/7 still executing ~80 min in. The
+  `ci-authority/codex/merge-queue-pilot` red on both heads re-verified benign
+  (allowed=true, admin_verified=true, inactive_base_context — excluded by the
+  sweeper by design).
+- **Post-merge verification runbook (the live-verification the ship chain owes):**
+  1. `git fetch origin main`; confirm squash-merge commit on main containing the
+     check-F/check-B diff (`scripts/check_nightly_liveness.py` `evaluate_brief_freshness`
+     + `engine_job_verdict`), PR branch deleted, label state retired.
+  2. Next `nightly-liveness` run (cron 08:00/14:00/20:00Z): job log shows check B
+     verdicts from `engine_job_verdict` (no-op runs NOT counted) and check F facts
+     (`briefs.*.age_days/state_asof`). EXPECTED while #10725 is unmerged: check F
+     trips `BRIEF STALE` on macro/china (briefs 2026-10-18, source_asof newer) —
+     the truthful alert; if it does NOT trip, investigate blindness before celebrating.
+  3. After #10725 merges + first real engine slot completes: check F green again
+     (age within 2× refresh_days or in-flight deferral) — that is outcome-1's
+     monitoring proof.
+  4. Alert channels (Telegram/Discord) will receive the truthful stale alert in
+     the interim — pre-announced on #10725 and #983; not a regression.
+
 ## Open gates
 
 - Cancellers of engine jobs (chronic Oct 20–Nov 9): source unidentified (external cancel
