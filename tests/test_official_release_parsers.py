@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 
 import pytest
 
@@ -222,6 +223,251 @@ def test_cpi_parser_handles_october_2026_reordered_phrasing() -> None:
     assert actual["core_yoy"] == 2.6
     assert actual["headline_en"] == "CPI +0.6% m/m; core +0.3%"
     assert "3.7% headline and 2.6% core" in actual["summary_en"]
+
+
+def _november_cpi_document() -> bytes:
+    return (Path(__file__).parent / "fixtures" / "cpi_2026_11_10_reduced.html").read_bytes()
+
+
+def test_cpi_officially_unavailable_yearly_values_do_not_hide_monthly_result() -> None:
+    actual = parse_cpi_actual(_november_cpi_document())
+
+    assert actual is not None
+    assert actual["reference_period"] == "October 2026"
+    assert actual["headline_mom"] == 0.4
+    assert actual["core_mom"] == 0.3
+    assert actual["headline_yoy"] is None
+    assert actual["core_yoy"] is None
+    assert [(m["metric_id"], m["value"]) for m in actual["metrics"]] == [
+        ("cpi_headline_mom", 0.4), ("cpi_core_mom", 0.3)
+    ]
+    assert {m["metric_id"] for m in actual["unavailable_metrics"]} == {
+        "cpi_headline_yoy", "cpi_core_yoy"
+    }
+    assert all(m["reason"] == "official_prior_year_data_unavailable"
+               and m["comparison_period"] == "October 2025"
+               for m in actual["unavailable_metrics"])
+    assert actual["monthly_comparison"] == {
+        "reference_period": "September 2026", "headline_mom": 0.6, "core_mom": 0.3
+    }
+    assert "0.6% to 0.4%" in actual["summary_en"]
+    assert "held at 0.3%" in actual["summary_en"]
+    assert "not published" in actual["summary_en"]
+    assert "同比" in actual["summary_zh"] and "未发布" in actual["summary_zh"]
+
+
+@pytest.mark.parametrize("old,new", [
+    (b"BLS cannot publish 12-month percent changes for", b"Publication explanation omitted for"),
+    (b"October 2026 for indexes where", b"September 2026 for indexes where"),
+    (b"October 2025 data are unavailable", b"September 2025 data are unavailable"),
+    (b"12-mos.<br />ended<br />Oct. 2026", b"12-mos.<br />ended<br />Sep. 2026"),
+    (b'cpi_pressa.r.1 cpi_pressa.h.1.9"><span class="datavalue">-</span>',
+     b'cpi_pressa.r.1 cpi_pressa.h.1.9"><span class="datavalue">N/A</span>'),
+    (b'cpi_pressa.r.1.3 cpi_pressa.h.1.9"><span class="datavalue">-</span>',
+     b'cpi_pressa.r.1.3 cpi_pressa.h.1.9"><span class="datavalue">37.4</span>'),
+    (b'cpi_pressa.r.1 cpi_pressa.h.1.2 cpi_pressa.h.2.8"><span class="datavalue">0.4</span>',
+     b'cpi_pressa.r.1 cpi_pressa.h.1.2 cpi_pressa.h.2.8"><span class="datavalue">0.5</span>'),
+    (b"index for all items less food and energy rose 0.3 percent in October",
+     b"index for all items less food and energy rose N/A percent in October"),
+])
+def test_cpi_missingness_requires_current_series_and_monthly_evidence(old: bytes, new: bytes) -> None:
+    body = _november_cpi_document()
+    assert old in body
+    assert parse_cpi_actual(body.replace(old, new)) is None
+
+
+def test_cpi_absent_yearly_prose_is_not_official_unavailability() -> None:
+    body = _november_cpi_document().split(b"<table", 1)[0]
+    assert parse_cpi_actual(body) is None
+
+
+@pytest.mark.parametrize("annual_prose", [
+    b"The all items less food and energy index rose 2.6 percent over the year.",
+    b"Over the last 12 months, the all items index increased 3.7 percent. "
+    b"The all items less food and energy index rose 2.6 percent over the year.",
+])
+def test_cpi_conflicting_yearly_prose_and_missing_table_cell_is_rejected(annual_prose: bytes) -> None:
+    body = _november_cpi_document().replace(
+        b"</PRE>", annual_prose + b"</PRE>"
+    )
+    assert parse_cpi_actual(body) is None
+
+
+def test_cpi_official_missingness_preserves_zero_monthly_value() -> None:
+    body = _november_cpi_document().replace(
+        b"index for all items less food and energy rose 0.3 percent in October",
+        b"index for all items less food and energy was unchanged in October"
+    ).replace(
+        b'cpi_pressa.r.1.3 cpi_pressa.h.1.2 cpi_pressa.h.2.8"><span class="datavalue">0.3</span>',
+        b'cpi_pressa.r.1.3 cpi_pressa.h.1.2 cpi_pressa.h.2.8"><span class="datavalue">0.0</span>'
+    )
+    actual = parse_cpi_actual(body)
+    assert actual is not None and actual["core_mom"] == 0.0
+    assert actual["core_yoy"] is None
+
+
+def _november_cpi_feed() -> bytes:
+    # Exact observed entry content; XML envelope is reduced for replay.
+    return b'''<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>bls:feed:cpi</id><title>Consumer Price Index</title><entry>
+    <title>CPI for all items increases 0.4% in October; shelter rises</title>
+    <link href="https://www.bls.gov/news.release/archives/cpi_11102026.htm"/>
+    <id>cpi-2026_11_10__07_55_47</id>
+    <content>In October, the Consumer Price Index for All Urban Consumers rose 0.4 percent,
+    seasonally adjusted (SA). The index for all items less food and energy rose 0.3
+    percent in October (SA).</content><published>2026-11-10T07:55:47.272-05:00</published>
+    </entry></feed>'''
+
+
+def test_cpi_watcher_recovers_same_event_through_verified_detail(monkeypatch) -> None:
+    import hashlib
+    from datetime import datetime, timezone
+    from scripts import watch_release_publications as watcher
+    from engine.release_actuals import receipts_from_payload, receipt_integrity_errors
+
+    event = {"event_id": "cpi:2026-11-10", "type": "CPI", "date": "2026-11-10",
+             "time_et": "08:30", "label": "CPI", "label_zh": "消费者价格指数"}
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *a, **kw: [event])
+    calls = []
+    document = _november_cpi_document()
+    def fetch(spec, prior, timeout):
+        calls.append(spec.url)
+        body = _november_cpi_feed() if spec.feed_kind else document
+        return {"status": 200, "body": body, "fingerprint": hashlib.sha256(body).hexdigest()}
+    original_detected = "2026-11-10T13:30:39.365933+00:00"
+    state = {"publications": {event["event_id"]: {
+        **event, "status": "published_unparsed", "data_ready": False,
+        "detected_at": original_detected, "first_seen_at": original_detected,
+    }}}
+    updated, payload = watcher.detect(
+        now=datetime(2026, 11, 10, 13, 31, tzinfo=timezone.utc), state=state, fetcher=fetch
+    )
+    row = next(r for r in payload["publications"] if r["event_id"] == event["event_id"])
+    assert row["status"] == "published" and row["data_ready"] is True
+    assert row["detected_at"] == original_detected
+    assert row["source_sha256"] == hashlib.sha256(document).hexdigest()
+    assert row["source_url"].endswith("/cpi_11102026.htm")
+    assert row["actual"]["reference_period"] == "October 2026"
+    assert calls == ["https://www.bls.gov/feed/cpi.rss",
+                     "https://www.bls.gov/news.release/archives/cpi_11102026.htm"]
+    receipts = receipts_from_payload(payload)
+    assert sorted((r["release"], r["actual"]) for r in receipts) == [
+        ("cpi_core", 0.3), ("cpi_headline", 0.4)
+    ]
+    assert all(not receipt_integrity_errors(r) for r in receipts)
+    assert updated["publications"][event["event_id"]]["data_ready"] is True
+
+    # Retrying the same official document retains one event and its original
+    # detection/evidence tuple rather than manufacturing a second detection.
+    again, next_payload = watcher.detect(
+        now=datetime(2026, 11, 10, 13, 32, tzinfo=timezone.utc), state=updated, fetcher=fetch
+    )
+    assert len(next_payload["publications"]) == 1
+    assert next_payload["publications"][0]["detected_at"] == original_detected
+    assert next_payload["publications"][0]["source_sha256"] == row["source_sha256"]
+    assert receipts_from_payload(next_payload) == receipts
+
+
+@pytest.mark.parametrize("old,new", [
+    (b"Tuesday, November 10, 2026", b"Wednesday, October 14, 2026"),
+    (b"CONSUMER PRICE INDEX - OCTOBER 2026", b"CONSUMER PRICE INDEX - SEPTEMBER 2026"),
+    (b"Transmission of material in this release is embargoed until", b"Unverified header"),
+])
+def test_cpi_detail_header_mismatch_does_not_promote_feed(old: bytes, new: bytes) -> None:
+    import hashlib
+    from scripts import watch_release_publications as watcher
+    spec = next(s for s in watcher.SOURCES if s.source_id == "bls_cpi")
+    feed = _november_cpi_feed()
+    detail = _november_cpi_document().replace(old, new)
+    # A stale release may mention the next release date in its footer.
+    detail += b"Next CPI release: November 10, 2026. Reference period: October 2026."
+    def fetch(*args):
+        return {"status": 200, "body": detail, "fingerprint": hashlib.sha256(detail).hexdigest()}
+    doc, evidence, error = watcher._prepare_official_document(
+        spec=spec, event={"date": "2026-11-10"},
+        result={"status": 200, "body": feed}, source_state={}, state_key="test",
+        fetcher=fetch, timeout=1, checked_at="2026-11-10T13:31:00+00:00"
+    )
+    assert evidence is True and error == "CpiDetailIdentityMismatch"
+    assert doc["binding_kind"] == "feed_entry"
+    assert parse_cpi_actual(doc["body"]) is None
+
+
+def test_cpi_complete_feed_does_not_add_detail_dependency() -> None:
+    from scripts import watch_release_publications as watcher
+    spec = next(s for s in watcher.SOURCES if s.source_id == "bls_cpi")
+    def unexpected_fetch(*args):
+        pytest.fail("Complete CPI feed should not fetch a detail page")
+    doc, evidence, error = watcher._prepare_official_document(
+        spec=spec, event={"date": "2026-07-14"}, result={"status": 200, "body": BLS_CPI_ATOM},
+        source_state={}, state_key="test", fetcher=unexpected_fetch, timeout=1,
+        checked_at="2026-07-14T12:31:00+00:00"
+    )
+    assert evidence is True and error is None
+    assert parse_cpi_actual(doc["body"])["core_mom"] == 0.0
+
+
+@pytest.mark.parametrize("link", [
+    b"https://www.bls.gov/news.release/archives/cpi_10142026.htm",
+    b"https://www.bls.gov/news.release/cpi.nr0.htm",
+    b"https://www.bea.gov/news.release/archives/cpi_11102026.htm",
+])
+def test_cpi_detail_requires_exact_dated_bls_archive(link: bytes) -> None:
+    from scripts import watch_release_publications as watcher
+    spec = next(s for s in watcher.SOURCES if s.source_id == "bls_cpi")
+    feed = _november_cpi_feed().replace(
+        b"https://www.bls.gov/news.release/archives/cpi_11102026.htm", link
+    )
+    def unexpected_fetch(*args):
+        pytest.fail("Mismatched CPI archive must not be fetched")
+    doc, evidence, error = watcher._prepare_official_document(
+        spec=spec, event={"date": "2026-11-10"}, result={"status": 200, "body": feed},
+        source_state={}, state_key="test", fetcher=unexpected_fetch, timeout=1,
+        checked_at="2026-11-10T13:31:00+00:00"
+    )
+    assert evidence is True and error == "CpiDetailIdentityMismatch"
+    assert doc["binding_kind"] == "feed_entry" and parse_cpi_actual(doc["body"]) is None
+
+
+def test_cpi_detail_304_retries_original_reader_without_validators() -> None:
+    import hashlib
+    from scripts import watch_release_publications as watcher
+    spec = next(s for s in watcher.SOURCES if s.source_id == "bls_cpi")
+    document = _november_cpi_document()
+    calls = []
+    def fetch(spec, prior, timeout):
+        calls.append(prior)
+        return ({"status": 304} if len(calls) == 1 else
+                {"status": 200, "body": document, "fingerprint": hashlib.sha256(document).hexdigest()})
+    doc, evidence, error = watcher._prepare_official_document(
+        spec=spec, event={"date": "2026-11-10"},
+        result={"status": 200, "body": _november_cpi_feed()},
+        source_state={"test:document": {"etag": "old"}}, state_key="test",
+        fetcher=fetch, timeout=1, checked_at="2026-11-10T13:31:00+00:00"
+    )
+    assert calls == [{"etag": "old"}, {}]
+    assert evidence is True and error is None and doc["binding_kind"] == "detail_document"
+    assert parse_cpi_actual(doc["body"])["core_yoy"] is None
+
+
+def test_cpi_preembargo_feed_and_detail_do_not_publish_early(monkeypatch) -> None:
+    import hashlib
+    from datetime import datetime, timezone
+    from scripts import watch_release_publications as watcher
+    event = {"event_id": "cpi:2026-11-10", "type": "CPI", "date": "2026-11-10",
+             "time_et": "08:30", "label": "CPI"}
+    monkeypatch.setattr(watcher, "scheduled_releases", lambda *a, **kw: [event])
+    def fetch(spec, prior, timeout):
+        body = _november_cpi_feed() if spec.feed_kind else _november_cpi_document()
+        return {"status": 200, "body": body, "fingerprint": hashlib.sha256(body).hexdigest()}
+    state, payload = watcher.detect(
+        now=datetime(2026, 11, 10, 13, 29, 59, tzinfo=timezone.utc), state={}, fetcher=fetch
+    )
+    assert not payload["publications"] and not state["publications"]
+    state, payload = watcher.detect(
+        now=datetime(2026, 11, 10, 13, 30, tzinfo=timezone.utc), state=state, fetcher=fetch
+    )
+    assert len(payload["publications"]) == 1 and payload["publications"][0]["data_ready"] is True
 
 
 def test_cpi_parser_never_binds_neighbouring_yearly_figure_as_core() -> None:

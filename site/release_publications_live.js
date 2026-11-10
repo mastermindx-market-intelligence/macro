@@ -594,7 +594,41 @@
     setPair(card.querySelector(".wnx-go"), "Open all live details", "查看全部实时详情");
   }
 
+  function patchCpiSchedule(row, published) {
+    if (String(row.type || "").toUpperCase() !== "CPI" || !row.date) return;
+    var actual = row.actual || {};
+    var verified = published && row.data_ready === true;
+    var eventId = String(row.event_id || "CPI:" + row.date);
+    list(document.querySelectorAll("#dlg-fed .fbm-row")).forEach(function (schedule) {
+      var tip = schedule.querySelector(".fbm-tip");
+      var owned = schedule.getAttribute("data-live-event-id") === eventId;
+      var dated = tip && String(tip.getAttribute("data-tip-en") || "")
+        .indexOf("Release " + row.date + ".") === 0;
+      if (!owned && (!dated || !/Next CPI/i.test(schedule.textContent || ""))) return;
+      var summaryEn = actual.summary_en || (published ?
+        "CPI publication detected; verified facts are being extracted." :
+        "CPI scheduled time passed; verifying the official source.");
+      var summaryZh = actual.summary_zh || (published ?
+        "已检测到 CPI 官方发布；正在提取核验信息。" :
+        "CPI 预定时间已过；正在核验官方来源。");
+      setPair(schedule.querySelector(".fbm-row-state"),
+        verified ? "CPI released" : (published ? "CPI detected" : "CPI · verifying source"),
+        verified ? "CPI 已发布" : (published ? "已检测到 CPI" : "CPI · 核验来源中"));
+      setPair(schedule.querySelector(".fbm-row-line"), summaryEn, summaryZh);
+      if (tip) {
+        var source = safeOfficialUrl(row.source_url);
+        tip.setAttribute("data-tip-en", "Release " + row.date + ". " + summaryEn +
+          (source ? " Official source: " + source : ""));
+        tip.setAttribute("data-tip-zh", "发布日期 " + row.date + "。" + summaryZh +
+          (source ? " 官方来源：" + source : ""));
+      }
+      schedule.setAttribute("data-live-event-id", eventId);
+      schedule.classList.add("mx-live-resolved");
+    });
+  }
+
   function patchFedPath(row, published) {
+    patchCpiSchedule(row, published);
     if (String(row.type || "").toUpperCase() !== "FOMC") return;
     var actual = row.actual || {};
     var verified = published && row.data_ready === true;
@@ -1274,6 +1308,7 @@
     radarState: radarState,
     trackPrimaryState: trackPrimaryState,
     patchActionPlan: patchActionPlan,
+    patchCpiSchedule: patchCpiSchedule,
     patchProspectiveCopy: patchProspectiveCopy,
     notePollFailure: notePollFailure,
     freshness: function () { return feedFreshness; },

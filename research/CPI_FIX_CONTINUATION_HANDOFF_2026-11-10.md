@@ -1,54 +1,75 @@
-# CPI fix — continuation handoff (2026-11-10)
+# CPI release repair — active continuity (2026-11-10)
 
-Program: fix the "CPI detected before its release" defect on mastermind-x.com/macro.html.
-Authoring session: Claude (T3), branch `claude/ssd-t3-4a5c5a78-4511ebb22558e9b4`, commit `e3371a5ba69b`.
+## Mission and delivery carrier
 
-## Ship state at handoff
+Fix the user's CPI incident end to end: one correctly dated current release, immediate verified monthly figures and explanation, no indefinitely extracting historical card, and coherent event-related dashboard updates.
 
-- **PR #10930** (https://github.com/mastermindx-market-intelligence/macro/pull/10930) — OPEN, `merge-on-green` ARMED.
-  The merge-on-green controller owns the squash-merge; `ci-authority/codex/merge-queue-pilot` failing is a
-  universal non-blocking signature (see memory `macro-merge-queue-pilot-check-signature`); `ci-pack-*` were running.
-- Independent reviewer subagent (session-owned review law) was resumed to return its verdict; adjudicate any
-  BLOCKER/MAJOR before trusting the merge (CI green does not substitute for the review verdict).
+Carrier: [Macro PR #10930](https://github.com/mastermindx-market-intelligence/macro/pull/10930), branch `claude/ssd-t3-4a5c5a78-4511ebb22558e9b4`.
+Original accepted repair head: `0cdbec5f81eddf3274b6de5c55889f67526fe803`.
+Current session owns source repair and recovery under [incident takeover / HOLD](https://github.com/mastermindx-market-intelligence/macro/pull/10930#issuecomment-6769151750).
+The historical pre-release handoff and its proposed all-four-values acceptance are superseded by this actual-release diagnosis.
+Protected Mastermind procedure pin: `d8dc1873077867f8ddd281c9f98a63bb0b3258df` (bootstrap major 1).
 
-## Root cause (proven)
+At this source checkpoint the PR remains disarmed (`merge-blocked`, no `merge-on-green`).
+The successor is a substantive integration of original candidate and current main `0267bf8fffc083cd048504bdb5c8e775025d6396`.
+Its tree starts from current main. The six parser/watcher/client/test preimages are byte-identical between merge base `36cbcf322c91e664feb9b6c4756637bc0490ff3d` and current main; their owned changes compose without conflict.
+Current generated pages are preserved with only the live-client hash stamp changed.
+Current main already contains the prior two Playwright pins and corresponding tests; preserve them and the newer accepted CI ownership closure. Do not use the stale GitHub test-merge tree.
 
-The card was NOT a premature detection of the Nov 10 CPI. It was `cpi:2026-10-14` stuck in
-`published_unparsed` for 26 days: BLS's October 2026 release reordered two sentences
-("Over the last 12 months, the all items index increased 3.7 percent before seasonal adjustment" and
-"The all items less food and energy index rose 2.6 percent over the year"), both YoY regexes in
-`parse_cpi_actual` missed, the all-four-values contract failed closed, and the client rendered the
-stuck row indefinitely with a dateless "Detected 08:31 ET".
+## Proven incident causes
 
-## Fix shipped in the PR
+1. The apparent pre-release or double detection combines two event IDs. `cpi:2026-10-14` was detected at `2026-10-14T12:31:17.596439Z` (08:31 ET) and remained unparsed. The old client retained it indefinitely and showed only the time. It was not a premature detection of November CPI.
+2. The October parser failed after BLS changed the annual sentence order. Original PR fixes those phrases and prevents borrowing an energy/shelter annual number as core CPI.
+3. Today's distinct `cpi:2026-11-10` was detected at `2026-11-10T13:30:39.365933Z` (08:30 ET). BLS published monthly headline 0.4% and core 0.3% for October 2026 but explicitly did not publish these two annual comparisons because the corresponding October 2025 survey data are unavailable. The old parser required all four values and rejected this valid release.
+4. The CPI feed contains both monthly readings but omits the missingness notice and Table A. A parser-only change would still fail in production. Existing CPI configuration did not follow its selected entry to the full release.
+5. The Fed dialog's date-bound `Next CPI · 1d` schedule row was not a client update target and would retain its old prospective sentence and tooltip.
 
-1. `scripts/official_release_parsers.py` — fallback regexes for the new phrasings; parser stays `cpi` v1
-   (receipts stay valid); legacy phrasings pinned by tests.
-2. `templates/release_publications_live.js` (+ byte-identical site copy, `?v=3a0da984` stamped in
-   `macro.html`/`us_stocks.html`) — `published_unparsed` display bounded by
-   `poll_window.unresolved_retention_min` (live value 10080 min); dated detection stamps for non-same-day
-   rows; >24h unparsed cards relabel "unresolved".
+## Official-source evidence
 
-## Post-merge verification checklist (NOT yet done)
+- Archive: https://www.bls.gov/news.release/archives/cpi_11102026.htm
+- Feed: https://www.bls.gov/feed/cpi.rss
+- Selected entry: `cpi-2026_11_10__07_55_47`.
+- Observed feed SHA256: `d643c50862942c7de2997367c28d681cedad74f629ec67c9dd203d9b5e6ea43a`.
+- Selected entry-body SHA256: `db2a91273f0fd0692f407107a3b0102e7d26cd48fa31903846a626460f626293`; matches the live unparsed row.
+- Full archive: HTTP 200 through the existing production collector, 1,366,766 bytes, SHA256 `7041541ddfc6fc155e33eab0d191e6dff6ba44c1b847921f1926cf9425126c18`.
+- The committed reduced fixture preserves the opening PRE and Table A verbatim; navigation, later tables and notes are omitted.
+- Table A binds headline/core current monthly 0.4/0.3, previous monthly 0.6/0.3, and annual cells `-`. Other series have valid annual values; the general notice alone is not adequate series-specific evidence.
 
-Baseline banked pre-merge (2026-11-10 ~04:1xZ):
-`cpi:2026-10-14` = `published_unparsed`, `detected_at 2026-10-14T12:31:17Z`,
-`source_url https://www.bls.gov/news.release/archives/cpi_10142026.htm`, retention 10080 min declared for CPI.
+## Successor behavior
 
-1. After controller merge: VPS `macro-update` cron (`/usr/local/bin/n`) pulls within ~3 min →
-   `macro-live-fast.timer` (~60s cadence) re-runs `scripts/watch_release_publications.py`, whose
-   15-min unresolved retry re-fetches without validators.
-2. Verify https://www.mastermind-x.com/live/release_publications.json: `cpi:2026-10-14` flips to
-   `published` with actual headline 0.6 m/m / 3.7 y/y, core 0.3 m/m / 2.6 y/y (September 2026 data —
-   matches Table A of the real release). If the feed entry has rolled off the BLS feed, the row will
-   stay unparsed but the CLIENT fix already stops it rendering (26d > 7d retention); that is acceptable.
-3. Verify macro.html no longer renders the stale "extracting" card once either (a) the row heals, or
-   (b) the static site picks up the new client JS (next render).
-4. **Real test: 2026-11-10 08:30 ET (13:30Z) November CPI** — must parse on first detection
-   (watch the same JSON ~08:31–08:35 ET).
+- Complete CPI feeds retain their existing fast path with no extra request.
+- Incomplete CPI entries reuse the existing detail reader/cache/304 recovery. Exact BLS dated archive URL, embargo-header release date and title reference period must all match the selected event. A stale document's mention of the next release cannot satisfy identity.
+- Both monthly readings remain mandatory. Annual missingness is accepted only when the current-period official notice and the individual Table A cells prove it, with monthly table/prose agreement. Missing, malformed, contradictory or mismatched evidence remains unparsed.
+- Unavailable annual scalars remain null and are absent from numeric `metrics`; additive `unavailable_metrics` explains the official reason. No zero, annual estimate or borrowed series is invented.
+- The bilingual summary states the monthly readings and annual unavailability. Same-table monthly comparison states headline eased 0.6% to 0.4%, core held at 0.3%. This is a source-backed comparison, not a consensus-surprise or trading claim.
+- Parser contract remains `cpi` v1. The existing normalizer produces exactly the two valid monthly receipts; no canonical ledger is manually edited.
+- Original detection time and event identity are retained across recovery/replay.
+- The paired client retains the original seven-day unresolved display boundary and dated old stamps. The exact-date CPI schedule row now transitions through verifying/detected/released, replacing stale prose and tooltip without changing separate Fed model numbers. Other scheduled dates are untouched.
+- Existing collector and client clocks remain approximately 60 seconds each. The client updates an already-open event modal on its next poll. No new polling owner, publisher, queue, daemon or automation is introduced.
 
-## Known non-blockers
+## Verification completed before publication
 
-- 5 pre-existing test failures at pristine HEAD (2 × `test_release_actuals.py`, 3 ×
-  `test_vps_live_orchestration.py` — PCE binding-defect quarantine suites, untouched modules);
-  verified via tagged stash before authoring, noted in the PR body.
+`python -m pytest tests/test_official_release_parsers.py tests/test_release_publications_live_client.py tests/test_release_actuals.py -q`: **91 passed** with one unrelated installed-anyio/pytest deprecation warning.
+
+The focused checks cover the observed official November fixture, legacy and October phrasings, per-series missingness, wrong table/notice/date/archive evidence, neighboring-series contamination, genuine zero, unchanged complete-feed request count, detail 304 recovery, preembargo suppression, one-event replay, original detection time, exact document hash, both monthly receipt integrity, paired client/stamp consistency, and date-bound bilingual CPI schedule updates.
+
+The initial local extra-client-file staging newline and absent committed ledger fixtures were corrected by materializing exact source inputs; they were test-fixture setup issues, not product regressions. Prior handoff's unverified PCE-failure claims are not the current result: the complete 25-test receipt suite is green in this checkpoint.
+A standalone local headless-browser launch is unavailable in this container because the process singleton socket syscall is denied. No launch flags or alternate process carrier were used to evade it. Live browser UI acceptance remains outstanding; do not claim a browser pass from these unit tests.
+
+The candidate parser was also replayed in memory against the complete official archive using the existing production collector: HTTP 200, 1,366,766 bytes, expected SHA256 `7041541ddfc6fc155e33eab0d191e6dff6ba44c1b847921f1926cf9425126c18`, exact document identity true, correct monthly/annual-missing packet and bilingual summary. Diagnostic process 5641 exited 0. No production file or service was changed by this proof.
+
+## Remaining acceptance and next safe actions
+
+1. Read back the substantive successor commit, exact branch head/parents/diff, then consume its natural CI and fences. Do not reuse the old candidate's green checks.
+2. If the owned repair HOLD conditions are satisfied, record `HOLD-RELEASED` for that exact head and add `merge-on-green` once. The incumbent controller owns merge and its `merge-blocked` disposition; no self-merge, fabricated priority, noop push or CI bypass.
+3. Verify actual merge, VPS `/opt/macro` install via the existing pull cron, and the existing fast watcher. Read the public sidecar: today's CPI must be `published`/`data_ready=true`, with the correct monthly figures, explicit unavailable annual values, original detection time and full-document evidence.
+4. Verify the real dashboard: one current CPI card, explicit explanation, OUT calendar state, existing open-modal update, no historical October extracting card, and resolved matching CPI schedule row. Observe replay without duplicate insertion.
+5. Save final receipt/URLs and readback in the same PR. Do not end merely because a commit, PR or CI phase completed.
+
+## Boundaries and DO_NOT_REDO
+
+- The historical October row exceeds the watcher's seven-day retry horizon. The client hides it; this change does not manufacture its historical ledger repair. Status health may still mention that historical unresolved record.
+- No full AI Brief regeneration, forecast model rebake or canonical scoring advance is claimed by the publication sidecar. Those retain their existing owners. The verified event summary is available immediately through the existing live consumer.
+- Original October parser/client fixes and accepted CI pins are retained; do not redo independent review as ceremony.
+- Native children were bounded read-only contract/release reasoning, accepted and stopped. No paid-worker operation, background watcher, review approval or external notification was created by this recovery.
+- Root completion still requires production payload and UI evidence, or a precisely evidenced execution boundary.

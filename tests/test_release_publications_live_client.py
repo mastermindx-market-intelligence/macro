@@ -551,6 +551,55 @@ def test_action_plan_row_reads_as_a_sentence_not_a_styleless_chip():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_cpi_schedule_read_updates_only_the_matching_release():
+    driver = ACTION_PLAN_DRIVER.split("function freshActionRow()", 1)[0] + r'''
+function schedule(date, text) {
+  const row = new El("div"); row.className = "fbm-row";
+  const state = new El("span"); state.className = "fbm-row-state";
+  state.textContent = "Next CPI · 1d";
+  const line = new El("span"); line.className = "fbm-row-line";
+  line.textContent = text;
+  const tip = new El("span"); tip.className = "fbm-tip";
+  tip.setAttribute("data-tip-en", "Release " + date + ". 1 days out.");
+  row.appendChild(state); row.appendChild(line); row.appendChild(tip);
+  return row;
+}
+const current = schedule("2026-11-10", "A forthcoming print can reset the read.");
+const future = schedule("2026-12-10", "Future release remains scheduled.");
+document.querySelectorAll = function(selector) {
+  return selector === "#dlg-fed .fbm-row" ? [current, future] : [];
+};
+const row = { type: "CPI", event_id: "cpi:2026-11-10", date: "2026-11-10",
+  data_ready: false, source_url: "https://www.bls.gov/news.release/archives/cpi_11102026.htm" };
+api.patchCpiSchedule(row, true);
+if (!current.textContent.includes("CPI detected")) throw new Error("detection not shown");
+row.data_ready = true;
+row.actual = { summary_en: "CPI +0.4% m/m; core +0.3%. Annual comparisons not published.",
+  summary_zh: "CPI 环比 +0.4%；核心 +0.3%。同比未发布。" };
+api.patchCpiSchedule(row, true);
+api.patchCpiSchedule(row, true);
+if (!current.textContent.includes("CPI released") ||
+    !current.textContent.includes(row.actual.summary_en) ||
+    !current.textContent.includes(row.actual.summary_zh) ||
+    current.textContent.includes("Next CPI") || current.textContent.includes("forthcoming")) {
+  throw new Error("CPI schedule failed to transition to the bilingual result");
+}
+const tip = current.querySelector(".fbm-tip");
+if (!tip.getAttribute("data-tip-en").includes(row.source_url) ||
+    tip.getAttribute("data-tip-en").includes("1 days out")) {
+  throw new Error("obsolete pre-release tooltip survived");
+}
+if (!future.textContent.includes("Next CPI") || future.textContent.includes("not published")) {
+  throw new Error("a different scheduled release was overwritten");
+}
+'''
+    result = subprocess.run(
+        ["node", "-e", driver.replace("__TEMPLATE_PATH__", json.dumps(str(TEMPLATE)))],
+        cwd=ROOT, capture_output=True, text=True, timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_release_publication_client_patches_all_event_surfaces():
     source = TEMPLATE.read_text()
     for contract in (

@@ -970,7 +970,7 @@ def _prepare_official_document(
     checked_at: str,
     force_unconditional: bool = False,
 ) -> tuple[dict[str, Any], bool, str | None]:
-    """Resolve an exact dated feed entry and, for BEA, its permanent release page.
+    """Resolve an exact dated entry and, when needed, its permanent release page.
 
     Returns ``(document, publication_evidence, detail_error)``. Feed-wide changes
     never count as evidence for a particular event: the entry selector must match
@@ -1011,12 +1011,21 @@ def _prepare_official_document(
         "feed_entry_title": entry.get("title"),
         "binding_kind": "feed_entry",
     }
-    if not spec.follow_entry_link:
+    # Most CPI feeds contain the entire headline packet. If a field is absent,
+    # the full release may explain an officially unpublished comparison. Reuse
+    # the detail reader instead of leaving valid monthly data in extraction.
+    cpi_detail = spec.actual_parser == "cpi" and official_release_parsers.parse_actual("cpi", entry_body) is None
+    if not spec.follow_entry_link and not cpi_detail:
         return document, True, None
 
     detail_url = _safe_official_document_url(entry.get("source_url"))
     if not detail_url:
         return document, True, "UnsafeFeedLink"
+    if cpi_detail:
+        parsed_url = urlparse(detail_url)
+        archive_path = f"/news.release/archives/cpi_{date.fromisoformat(str(event['date'])).strftime('%m%d%Y')}.htm"
+        if parsed_url.hostname not in {"bls.gov", "www.bls.gov"} or parsed_url.path != archive_path or parsed_url.query:
+            return document, True, "CpiDetailIdentityMismatch"
     detail_key = f"{state_key}:document"
     detail_prior = (
         {} if force_unconditional else dict(source_state.get(detail_key) or {})
@@ -1034,6 +1043,10 @@ def _prepare_official_document(
         if detail.get("status") == 304:
             # An unresolved parser needs bytes, not only a validator.
             detail = fetcher(detail_spec, {}, timeout)
+        if cpi_detail and not official_release_parsers.cpi_document_matches_release(
+            detail.get("body") or b"", str(event["date"]), entry.get("reference_period"),
+        ):
+            return document, True, "CpiDetailIdentityMismatch"
         source_state[detail_key] = {
             "fingerprint": detail.get("fingerprint"),
             "etag": detail.get("etag"),
