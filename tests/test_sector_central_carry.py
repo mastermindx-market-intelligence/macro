@@ -974,36 +974,43 @@ NASDAQ = "marketdata/subsector_confluence_nasdaq.json"
 
 
 def _nasdaq_hostile_cases():
+    """(label, make_mutate) pairs - each ``make_mutate`` is a zero-arg callable.
+
+    The rewrite is evaluated at TEST time, never at import/parametrize time: a
+    replay that points ``SITE`` at another night's files must mutate THOSE
+    bytes, or the tmp site would carry this night's Nasdaq dates while the
+    good build carries the replay night's (review r2 acceptance replay)."""
     deep = ('{"label":' * 3000) + "1" + ("}" * 3000)  # built as text: never recursed here
     cases = [
-        ("absent", {NASDAQ: None}),
-        ("corrupt bytes", {NASDAQ: b"not json {"}),
-        ("wrong owner word", {NASDAQ: _nasdaq_mutation(
+        ("absent", lambda: {NASDAQ: None}),
+        ("corrupt bytes", lambda: {NASDAQ: b"not json {"}),
+        ("wrong owner word", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d.update(universe="sp500_subsectors"))}),
-        ("undated", {NASDAQ: _nasdaq_mutation(
+        ("undated", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: (d.pop("as_of", None), d.pop("generated_utc", None)))}),
-        ("group array not a list", {NASDAQ: _nasdaq_mutation(
+        ("group array not a list", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d.update(subsectors={}))}),
-        ("row not a mapping", {NASDAQ: _nasdaq_mutation(
+        ("row not a mapping", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d.update(sectors=["x"]))}),
-        ("row without key", {NASDAQ: _nasdaq_mutation(
+        ("row without key", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d.update(sectors=[{"kind": "sector", "label": "X"}]))}),
-        ("members not a list", {NASDAQ: _nasdaq_mutation(
+        ("members not a list", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d["sectors"][0].update(members="nope"))}),
-        ("member without ticker", {NASDAQ: _nasdaq_mutation(
+        ("member without ticker", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d["sectors"][0].update(members=[{"price": 1.0}]))}),
-        ("entry as a string", {NASDAQ: _nasdaq_mutation(
+        ("entry as a string", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d["sectors"][0].update(entry="T3"))}),
-        ("nan literal in a value", {NASDAQ: _nasdaq_mutation(
+        ("nan literal in a value", lambda: {NASDAQ: _nasdaq_mutation(
             lambda d: d["coverage"].update(n_gateable=float("nan")), non_finite=True)}),
-        ("deeply nested value", {NASDAQ: deep.encode("utf-8")}),
+        ("deeply nested value", lambda: {NASDAQ: deep.encode("utf-8")}),
     ]
     return cases
 
 
-@pytest.mark.parametrize("label,mutate", _nasdaq_hostile_cases(),
+@pytest.mark.parametrize("label,make_mutate", _nasdaq_hostile_cases(),
                          ids=[case[0] for case in _nasdaq_hostile_cases()])
-def test_v11_one_bad_universe_file_removes_only_that_universe_block(tmp_path, label, mutate):
+def test_v11_one_bad_universe_file_removes_only_that_universe_block(
+        tmp_path, label, make_mutate):
     """FIXTURE over real files: a corrupted/absent/wrong-owner/undated Nasdaq file
     never raises and removes ONLY the Nasdaq row block. The other four row blocks
     and ``theme_table``/``theme_rows`` are byte-equal to the unmutated build; the
@@ -1012,7 +1019,7 @@ def test_v11_one_bad_universe_file_removes_only_that_universe_block(tmp_path, la
     to the good build; an absent/unreadable/undated file is dropped by the
     incumbent's own four-or-nothing rule - never by the new blocks)."""
     good = carry.build_carry(SITE, {"as_of": "2026-11-06", "sectors": []})
-    site = _rows_site(tmp_path, mutate)
+    site = _rows_site(tmp_path, make_mutate())
     built = carry.build_carry(site, {"as_of": "2026-11-06", "sectors": []})  # never raises
     assert "confluence_universe_nasdaq" not in built, label
     for name in ("confluence_universe_sp500", "confluence_universe_russell",
@@ -1087,37 +1094,45 @@ def test_v11_theme_rows_fail_closed_cases(tmp_path):
 
 def test_v11_over_cap_row_blocks_carry_the_stub_never_shortened_rows(monkeypatch):
     """FIXTURE over real files: above MAX_ROW_BLOCK_BYTES the small stub is carried
-    (dated, under the ordinary block cap) - never a shortened row set."""
+    (dated, under the ordinary block cap) - never a shortened row set. Every stub
+    date and every count is an EQUALITY against the source file read in this same
+    test, so the next nightly's data cannot break it (review r2); tonight's exact
+    numbers live in the specimens and the return, not here."""
     central = {"as_of": "2026-11-06", "sectors": []}
     full = carry.build_carry(SITE, central)
-    stubs = {
-        "confluence_universe_sp500": (
-            "marketdata/subsector_confluence.json", "as_of", "2026-11-06"),
-        "confluence_universe_nasdaq": (
-            "marketdata/subsector_confluence_nasdaq.json", "generated_utc",
-            "2026-11-09 09:38 UTC"),
-        "confluence_universe_russell": (
-            "marketdata/subsector_confluence_russell.json", "generated_utc",
-            "2026-11-09 09:39 UTC"),
-        "confluence_universe_baskets": (
-            "marketdata/basket_confluence.json", "as_of", "2026-11-06"),
-    }
+
+    def dated_of(document):
+        # the envelope dating rule reads the source, not a constant: the file's
+        # as_of when a non-empty string, else its generated_utc
+        return next(((field, document[field]) for field in ("as_of", "generated_utc")
+                     if isinstance(document.get(field), str) and document[field]), None)
+
+    def source(relative):
+        return json.loads((SITE / relative).read_bytes())
+
+    stubs = {name: (relative, *dated_of(source(relative)))
+             for name, relative, _owner_word, _arrays
+             in carry.CONFLUENCE_UNIVERSE_ROW_BLOCKS}
     with monkeypatch.context() as m:
         m.setattr(carry, "MAX_ROW_BLOCK_BYTES", 512)  # below even Russell's 552 bytes
         built = carry.build_carry(SITE, central)
-    for name, (source, field, as_of) in stubs.items():
-        assert built[name] == {"source": source, "as_of": as_of, "as_of_field": field,
+    for name, (source_name, field, as_of) in stubs.items():
+        assert built[name] == {"source": source_name, "as_of": as_of, "as_of_field": field,
                                "status": "unavailable", "reason": "block_too_large"}, name
         assert "data" not in built[name] and "group_arrays" not in built[name]
         assert carry._bounded(built[name]) == built[name]  # the stub passes the bound
+    handoff = source("basketdata/si_handoff.json")
     assert built["theme_rows"] == {
-        "source": "basketdata/si_handoff.json#theme_context.themes", "as_of": "2026-11-06",
+        "source": "basketdata/si_handoff.json#theme_context.themes",
+        "as_of": handoff["theme_context"]["as_of"],
         "status": "unavailable", "reason": "block_too_large"}
     assert "rows" not in built["theme_rows"]
     # no row is dropped to fit: the same inputs under the real cap carry every row
-    assert len(full["confluence_universe_sp500"]["data"]["subsectors"]) == 65
-    assert len(full["confluence_universe_baskets"]["data"]["baskets"]) == 49
-    assert len(full["theme_rows"]["rows"]) == 49
+    assert len(full["confluence_universe_sp500"]["data"]["subsectors"]) == \
+        len(source("marketdata/subsector_confluence.json")["subsectors"])
+    assert len(full["confluence_universe_baskets"]["data"]["baskets"]) == \
+        len(source("marketdata/basket_confluence.json")["baskets"])
+    assert len(full["theme_rows"]["rows"]) == len(handoff["theme_context"]["themes"])
     # the cap boundary itself: one byte under is the full block, one byte over the stub
     size = len(_canonical(full["confluence_universe_baskets"]))
     with monkeypatch.context() as m:
@@ -1128,7 +1143,8 @@ def test_v11_over_cap_row_blocks_carry_the_stub_never_shortened_rows(monkeypatch
         exact = carry.confluence_universe_rows(
             SITE, "marketdata/basket_confluence.json", "curated_baskets", ("baskets",))
     assert over["status"] == "unavailable" and over["reason"] == "block_too_large"
-    assert "status" not in exact and len(exact["data"]["baskets"]) == 49
+    assert "status" not in exact and len(exact["data"]["baskets"]) == \
+        len(source("marketdata/basket_confluence.json")["baskets"])
 
 
 def test_v11_an_absent_allow_listed_row_key_stays_absent():
