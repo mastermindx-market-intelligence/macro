@@ -582,3 +582,65 @@ at 11:18Z).
 
 #10929 draft and held at `595fe6b75af2`, review ready, registration not yet returned. #10923 armed
 and open. Nothing of v1.1 is merged or served.
+
+## 14. Status at 12:50Z (provider errors on five workers; all resumed)
+
+### 14.1 What failed
+
+| Worker | Started | Failed | Pushed before failing | Resumed |
+|---|---|---|---|---|
+| Lane 5, original thread | 02:00Z | 11:18Z (second failed run) | nothing new | retired; successor started 11:46Z |
+| #10924 CI registration | 11:37Z | about 12:20Z | nothing | 12:23Z, same thread, by the COO |
+| Lane 1 round 3 follow-up | 12:04Z | about 12:30Z | nothing | 12:35Z, same thread, by the COO |
+| #10929 CI registration | 11:37Z | 12:34Z | nothing | 12:47Z, same thread, by the COO |
+| Lane 5 successor | 11:46Z | 12:36Z | nothing | 12:39Z, same thread, by the Chairman (typed `resume` in the thread) |
+
+Every failure carried the same text: `502 upstream transport failure; result may be ambiguous`,
+naming the local inference gateway at `127.0.0.1:8313`. All five workers ran on GLM 5.3. Opus and
+Sonnet runs in the same hours did not fail. The gateway's `/healthz` answered `{"ok":true}` when
+probed after the 12:30Z failure. Four of the five failures fell between 12:20Z and 12:37Z. Cause: not established. The
+timing fits one upstream interruption on the GLM route better than five separate faults.
+
+### 14.2 What was observed before each resume
+
+The error text says the result may be ambiguous, so each resume followed a read of the remote
+and of the worker's files, not an assumption.
+
+- Remote heads were unchanged: #10929 at `595fe6b75af2`, #10924 at `f1337bdd8738`. The branches
+  `claude/si-research-v11-issuer-econ-20261110` (lane 5) and the lane 1 follow-up branch were
+  not on the remote. No push, comment or label from a failed run was found.
+- #10929 registration: its partial return holds the diagnosis at head `595fe6b75af2` against
+  `origin/main` `e11afd6d8549`: 251 findings introduced, 0 inherited. 240 are closure rows
+  across 33 jobs. 8 are new suites named by no run step. One packing probe is over its ceilings
+  by one job (132 against 131) and by 8 weight-seconds (5,724 against 5,716). One suite skips
+  because `healthcare-fda-supply` does not install `openpyxl`. No CI file had been edited.
+- Lane 5: one local commit, `d0eb847ac359`, the 415-line draft module. Not pushed. No PR.
+
+### 14.3 Decisions
+
+1. A first failure is resumed on the same thread and the same model. The thread keeps what the
+   worker had already read. A thread is never moved to another model family.
+2. A worker that fails again after a resume is replaced by a fresh worker on another authorised
+   model (Sonnet 5.5 or DeepSeek Flash 4.1), started from a written handoff.
+3. No second lane 5 worker was started. The Chairman resumed the existing one at 12:39Z; a
+   second would duplicate a started run.
+4. Resumed workers were told to commit locally after each step and to update their return file
+   with the commit, so a further error costs minutes, not the run.
+5. `gemini-4-argon` remains unused.
+
+### 14.4 State at 12:50Z
+
+- #10923: open, armed, at `8abe28febaf0`. Hold released earlier by comment. Merge not observed.
+- #10924: open, armed, `merge-blocked`, at `f1337bdd8738`. Registration carrier running; a
+  path-addition script of its own appeared at 12:42Z.
+- #10929: draft, held, at `595fe6b75af2`. Third review ready (section 12). Registration carrier
+  running again. The hold stays until `contract-delta` passes (section 11.2, decision 2).
+- Lane 1 follow-up and lane 5: running. Neither has pushed.
+- Lane 3 (return of 12:11Z): the Terminal population fetch is in progress on its branch. It sets
+  `audience=entitled` on the server side and never takes it from the caller. The deploy of
+  #1414 is still not observed, so lane 9's phase B run-sheet has not been executed.
+- Lanes 4 and 7: running. Lane 6: idle after its last return.
+
+### 14.5 Rung reached
+
+Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44 rows.
