@@ -55,18 +55,25 @@ def _ret(s: pd.Series, is_yield: bool) -> pd.Series:
 
 
 def _beta_corr(da: pd.Series, du: pd.Series, w: int) -> tuple[float | None, float | None]:
-    """Last rolling beta (of asset return on USD return) and correlation over window w."""
-    j = pd.concat([da.rename("a"), du.rename("u")], axis=1).dropna()
-    if len(j) < max(20, w // 3):
+    """Beta and correlation for the terminal paired-observation window only.
+
+    An unavailable current estimate must not inherit a value from an older
+    window. A constant asset has zero beta when USD varies, but its correlation
+    is undefined; keep those two meanings distinct within the same window.
+    """
+    j = pd.concat([da.rename("a"), du.rename("u")], axis=1).dropna().tail(w)
+    if len(j) < max(20, w // 3) or not np.isfinite(j.to_numpy()).all():
         return None, None
-    cov = j["a"].rolling(w, min_periods=max(20, w // 3)).cov(j["u"])
-    var = j["u"].rolling(w, min_periods=max(20, w // 3)).var()
-    corr = j["a"].rolling(w, min_periods=max(20, w // 3)).corr(j["u"])
-    beta = cov / var.replace(0, np.nan)
-    b = beta.dropna()
-    c = corr.dropna()
-    return (float(b.iloc[-1]) if len(b) else None,
-            float(c.iloc[-1]) if len(c) else None)
+    # Exact constancy can still produce a tiny floating-point variance.
+    if j["u"].nunique() < 2:
+        return None, None
+    var = j["u"].var()
+    if not np.isfinite(var) or var <= 0:
+        return None, None
+    beta = j["a"].cov(j["u"]) / var
+    corr = j["a"].corr(j["u"]) if j["a"].nunique() > 1 else np.nan
+    return (float(beta) if np.isfinite(beta) else None,
+            float(corr) if np.isfinite(corr) else None)
 
 
 def _plain_read(usd_dir: str, headwind: list[str], tailwind: list[str],

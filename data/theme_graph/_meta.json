@@ -1,5 +1,5 @@
 {
-  "belief_time": "2026-11-08",
+  "belief_time": "2026-11-09",
   "capability_counts": {
     "measurement_candidate": 505,
     "semantic_only": 138
@@ -18,7 +18,7 @@
       "symbol": "VMRK"
     }
   ],
-  "computed_at": "2026-11-08T09:09:11Z",
+  "computed_at": "2026-11-09T09:34:38Z",
   "counts": {
     "capability": 645,
     "edges": 27438,
@@ -138,8 +138,8 @@
   },
   "rows_appended": {
     "capability": 643,
-    "edges": 394,
-    "evidence": 1,
+    "edges": 0,
+    "evidence": 0,
     "identity_resolution": 2806,
     "nodes": 0
   },

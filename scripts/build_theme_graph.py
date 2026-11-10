@@ -49,7 +49,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import basket_membership_pit  # noqa: E402
-from engine.theme_graph import materialize, probation, store  # noqa: E402
+from engine.theme_graph import activity_history_bridge, materialize, probation, store  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_theme_graph")
@@ -259,35 +259,41 @@ def _relation_event_sources() -> tuple[Path, Path]:
             Path(__file__).resolve().parent.parent / "config/theme_crosswalk.yml")
 
 
+# The repo root the activity-history binding reads its curation receipts, ruling
+# files and crosswalk from (tests point it at a hermetic root).
+_ACTIVITY_BINDING_ROOT = Path(__file__).resolve().parent.parent
+
+
 def _activity_history_events() -> list[dict] | None:
-    """The append-only activity-membership history ledger, or None when absent.
+    """The append-only activity-membership history ledger, or None when absent/refused.
 
     ``data/theme_graph/probation/activity_history_events.jsonl`` — one closed event
     per line (same folder pattern as relation_events.v2.jsonl), written by the
-    curation program, never by this script. Absent file -> None: today's production
-    state, and build() then takes its exact pre-fold path. ANY malformed line refuses
-    the WHOLE ledger (None) — a partially readable history must never look like a
-    shorter honest one — with a line-start ::warning (GitHub annotation law).
+    curation bridge (``scripts/bridge_activity_history.py``), never by this script.
+    Read ONLY through ``activity_history_bridge.load_bound_activity_events``, the
+    helper ``scripts/build_thematic_state.py`` shares: every event must be bound to
+    its bridge receipt row, the curation receipt bytes and a real ruling file, and
+    target a micro/sub theme. Absent file -> None: build() then takes its exact
+    pre-fold path. ANY refusal (a malformed line, an unbound or mis-tiered event)
+    refuses the WHOLE ledger (None) — a partially bound history must never look like
+    a shorter honest one — with one line-start ::warning naming the code.
     """
-    path = store.probation_path().parent / "activity_history_events.jsonl"
+    probation_dir = store.probation_path().parent
+    path = probation_dir / "activity_history_events.jsonl"
+    root = _ACTIVITY_BINDING_ROOT
     try:
-        text = path.read_text(encoding="utf-8")
-    except FileNotFoundError:
+        loaded = activity_history_bridge.load_bound_activity_events(
+            events_path=path,
+            bridge_receipts_path=probation_dir / "activity_history_bridge_receipts.jsonl",
+            receipts_dir=root / activity_history_bridge.DEFAULT_RECEIPTS_DIR,
+            ruling_root=root,
+            target_tiers=lambda: activity_history_bridge.activity_target_tiers_from_crosswalk_path(
+                root / activity_history_bridge.DEFAULT_CROSSWALK_PATH))
+    except activity_history_bridge.BridgeRefusal as exc:
+        print(f"::warning title=theme graph activity history refused::{path}: {exc}",
+              flush=True)
         return None
-    events: list[dict] = []
-    for lineno, line in enumerate(text.splitlines(), start=1):
-        if not line.strip():
-            continue
-        try:
-            event = json.loads(line)
-            if not isinstance(event, dict):
-                raise ValueError("line is not a JSON object")
-        except ValueError as exc:
-            print(f"::warning title=theme graph activity history refused::"
-                  f"{path}:{lineno} {exc}", flush=True)
-            return None
-        events.append(event)
-    return events
+    return None if loaded is None else loaded["events"]
 
 
 def _relation_action_owner_reader():
