@@ -9910,20 +9910,23 @@ def test_s8_foreign_owner_requires_current_generation_before_reserved_refresh(
 
 
 @pytest.mark.parametrize(
-    ("baseline", "census", "lease_readable", "expected"),
+    ("baseline", "census", "controller_census", "lease_readable", "expected"),
     [
-        ("red", 17, True, True),
-        ("green", 17, True, False),
-        ("pending", 17, True, False),
-        ("red", None, True, False),  # census unreadable: zero NEW workload, repair included
-        ("red", 17, False, False),  # lease unreadable: same
+        ("red", 17, 1, True, True),
+        ("green", 17, 1, True, False),
+        ("pending", 17, 1, True, False),
+        ("red", None, 1, True, False),  # repo-wide census unreadable
+        ("red", 17, None, True, False),  # controller census unreadable
+        ("red", 17, "raises", True, False),  # controller census read fails
+        ("red", 17, 1, False, False),  # lease unreadable: same
     ],
 )
 def test_the_sweep_authorizes_the_reserve_only_for_a_red_baseline_with_a_readable_census(
-    monkeypatch, baseline, census, lease_readable, expected
+    monkeypatch, baseline, census, controller_census, lease_readable, expected
 ):
     """The one line that wires the reserve to the baseline, exercised through
-    ``main()``: red + readable census -> authorized; anything else -> not."""
+    ``main()``: red + both readable censuses -> authorized and usable after the
+    ordinary slots are spent; any unreadable census denies reserved workload too."""
     monkeypatch.setenv("GH_REPO", "acme/widgets")
     monkeypatch.setenv("READ_TOKEN", "read")
     monkeypatch.setenv("MERGE_TOKEN", "write")
@@ -9946,15 +9949,28 @@ def test_the_sweep_authorizes_the_reserve_only_for_a_red_baseline_with_a_readabl
         return census
 
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", in_flight)
-    seen: list[bool] = []
+
+    def controller_in_flight(*_a, **_k):
+        if controller_census == "raises":
+            raise RuntimeError("controller census API down")
+        return controller_census
+
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", controller_in_flight)
+    seen: list[tuple[bool, bool, int]] = []
 
     def record(_repo, _pull, _read, _write, _freshness, _proof, budget, *_a, **_k):
-        seen.append(budget.repair_reserve_authorized)
+        # Spend any ordinary allowance, then exercise the actual reserve consumer.
+        # This catches a zero ordinary cap that still silently admits repair work.
+        budget.refreshes_used = budget.max_refreshes
+        admitted = budget.take_refresh(_pull, repair_candidate=True)
+        seen.append((budget.repair_reserve_authorized, admitted, budget.repair_reserve_used))
         return "refresh-deferred"
 
     monkeypatch.setattr(MOG, "sweep_pull", record)
     MOG.main()
-    assert seen == [expected], (baseline, census, lease_readable, seen)
+    assert seen == [(expected, expected, int(expected))], (
+        baseline, census, controller_census, lease_readable, seen
+    )
 
 
 def test_update_branch_is_fail_closed_when_no_serialized_budget_is_passed(

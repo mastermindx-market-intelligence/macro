@@ -8923,6 +8923,7 @@ def main() -> int:
     budget.repair_reserve_authorized = (
         baseline_state == "red"
         and active_pr_proofs is not None
+        and controller_proofs is not None
         and bool(refresh_lease.readable)
     )
 
