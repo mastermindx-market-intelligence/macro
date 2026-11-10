@@ -463,3 +463,72 @@ returned. No consumer relies on `complete` until it does.
 
 Nothing of v1.1 is merged or served. The integrated-proof count stays 0 of 44 rows. Terminal
 #1414's deploy is not observed.
+
+## 12. Status at 12:05Z (third review of lane 1: ready)
+
+### 12.1 Verdict
+
+The third independent review (Opus, separate context, read-only) returned `VERDICT: READY` for
+#10929 at `595fe6b75af2`, range `9c5db069856d..595fe6b75af2`. The report is
+`LANE1_POPULATION_REVIEW_R3_2026-11-10.md` beside this file.
+
+| Item | Result |
+|---|---|
+| R2-B1 (default label for a lost row) | Fixed |
+| R2-B2 (refused baskets left the denominator) | Fixed; every malformed refusals list tried gives null for the count and for `complete` |
+| Preserved limits | Hold: 0 reader calls on every denial, `private, no-store` on every answer, largest page 112 KB |
+| `etf_flows` carry | Acceptable: entitled-only, values as produced, local parquet only |
+| Round-2 notes | N1, N2, N5, N7, N8 fixed; N4 partly fixed |
+| Regressions | None found |
+| Mutation check | Putting either blocker back fails two of the new tests each time |
+| Suites (reviewer's run) | 602 passed, 3 skipped; central builder neighbours 279 passed |
+| Fenced files and new parameters | Range touches neither CI file and adds no parameter that names a generation, path or domain |
+
+Not verified by the review: the live host, the nightly build, CI, `build_sector_central.main()`
+end to end, and the author's exact test selections.
+
+### 12.2 Open findings and disposition
+
+- R3-S1, should-fix. A basket the producer drops at `engine/baskets.py:233` is in neither the
+  live list nor the refusals list, and the route answers `complete: true` with its members
+  missing. The reviewer's probe through the real route gave `configured_current 1002, complete
+  True` with all 18 housing members gone. Not reachable on current data: all 49 roster baskets
+  are present.
+- Eight notes: refusal text has no length limit (N1); `full_window` and `as_of` for ETF flows are
+  taken across all funds (N2); window lengths are restated, not imported (N3); one malformed
+  ETF-flow row drops every carried block (N4); the two industry blocks are outside the
+  undated-block rule (N5); `group_index` has no `refused_by_owner` (N6); two owner states the
+  producer cannot emit would read complete (N7); more than 500 unserved members answers 503 (N8).
+
+Disposition: #10929 is released at the reviewed head, so the merged bytes are the reviewed bytes
+plus registration-only commits. R3-S1 and notes N1, N3, N4, N5 and N6 go to a follow-up pull
+request stacked on #10929, carried by a fresh GLM 5.3 worker started at 12:03Z (branch
+`claude/si-lane1-r3-followup-20261110`; return `/tmp/si_plan/returns/lane1_r3_followup.md`). N2
+and N8 are stated as limits in the wire document. N7 needs no change. The follow-up gets its own
+review before it merges. Until it merges, no consumer renders `complete` as "all members"; lane 3
+has that instruction. The same worker reports, read-only, how the Macro server receives its
+production secrets.
+
+The verdict and this disposition are on #10929 (issuecomment-6766826217).
+
+### 12.3 Release state of #10929
+
+Unchanged: draft, labels `hold`, `do-not-merge`, `merge-blocked`. One condition of two is met
+(review ready). The other, `contract-delta` passing, waits on the registration carrier started
+at 11:40Z, which has not returned.
+
+### 12.4 Lane 5
+
+The lane 5 session failed at 11:18Z on a provider error (502), its second failed run in a row.
+Observed after the failure: the branch `claude/si-research-v11-issuer-econ-20261110` does not
+exist on the remote, #10931 is unchanged at `3290bfe75f96`, and the drafted
+`engine/market_ontology/issuer_economics.py` (17,621 bytes) is on disk, uncommitted, in that
+session's worktree. Nothing was pushed, so there is no unknown effect to reconcile. A fresh GLM
+5.3 worker started at 11:50Z with a written handoff: copy the draft, wire it into the query path,
+run SP04, SP05 and SP12, and open one pull request stacked on #10931. It commits and pushes early.
+
+### 12.5 Running at 12:05Z
+
+Registration carriers for #10929 and #10924; the lane 1 follow-up worker; the lane 5 worker; the
+point-in-time membership census; lanes 3, 4 and 7 on their own threads. Nothing of v1.1 is merged
+or served.
