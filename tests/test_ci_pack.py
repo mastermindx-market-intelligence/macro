@@ -1871,6 +1871,70 @@ def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen(real_mani
     assert {job.job_id for job in unscoped} <= {job.job_id for job in code}
 
 
+def test_sector_authoring_json_does_not_fan_out_unrelated_ci(real_manifest_scopes) -> None:
+    """Authored Fable briefs do not execute unrelated jobs via opaque fallbacks.
+
+    This is the eight-path docs-only diff from sector PR #10915: it previously
+    selected 77 of 327 legacy jobs, including collectors, billing and renderers.
+    Named/curated readers and both mandatory organizational fences must remain.
+    """
+    jobs, _ = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    packet = (
+        "research/sector_completion_20261021/"
+        "FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json"
+    )
+    real_data = "research/sector_completion_20261021/actual_measured_data.json"
+    real_source = "research/sector_completion_20261021/actual_processor.py"
+    assert PACK._matches_any(PACK.PASSIVE_UNOWNED_PATTERNS, packet)
+    assert not PACK._matches_any(PACK.PASSIVE_UNOWNED_PATTERNS, real_data)
+    assert not PACK._matches_any(PACK.PASSIVE_UNOWNED_PATTERNS, real_source)
+    assert PACK._job_diff_match(by_id["all-exports-resolve"], [packet]) is None
+    assert PACK._job_diff_match(
+        by_id["all-exports-resolve"], [real_source]
+    ) == (real_source, "fallback")
+    for direct_owner in ("integrated-answer-v0", "catalyst-opportunity"):
+        assert PACK._job_diff_match(
+            by_id[direct_owner], [packet]
+        ) == (packet, "declared")
+
+    paths = [
+        "agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-09.md",
+        "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md",
+        packet,
+        "research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md",
+        "research/sector_completion_20261021/LAUNCH_BRIEF_2026-10-21.md",
+        "research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md",
+        "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md",
+        "research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md",
+    ]
+    selected, reason = PACK.select_jobs(jobs, paths)
+    baseline, _ = PACK.select_jobs(jobs, [p for p in paths if p != packet])
+    selected_ids = {job.job_id for job in selected}
+    baseline_ids = {job.job_id for job in baseline}
+    assert {
+        "self-mod-fence",
+        "agentos-knowledge-contracts",
+        "integrated-answer-v0",
+        "catalyst-opportunity",
+    } <= selected_ids
+    for unrelated in (
+        "all-exports-resolve",
+        "collector-registry",
+        "china-native-collectors",
+        "billing-emails",
+        "chart-render",
+    ):
+        assert unrelated not in selected_ids, (unrelated, reason)
+    assert len(selected) <= 20, (reason, sorted(selected_ids))
+    for job in selected:
+        if job.job_id not in baseline_ids:
+            match = PACK._job_diff_match(job, [packet])
+            assert match is not None and match[1] in {"owned", "declared"}, (
+                job.job_id, match, reason
+            )
+
+
 def test_name_status_diff_preserves_both_sides_of_rename(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
