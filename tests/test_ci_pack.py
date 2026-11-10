@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_958),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_963),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_721),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-10 (PR #10924, SI lane 8 CI registration): wired the two new
+    sector-analytics suites (tests/test_sector_analytics_boundaries.py,
+    tests/test_sector_forecast_heads.py) into cycle-forward-log as a real
+    run step, and widened 21 legacy jobs' paths for engine/sector_heads.py
+    and the B12 v1.1 research artifacts. Measured at head d70025383c2d by
+    scripts/check_contract_delta.py against base e11afd6d8549: index
+    137 jobs / 5,963 s, free-content 138 jobs / 5,998 s (cycle-forward-log
+    newly selected — the boundaries suite's engine/sector_central.py
+    closure reaches scripts/build_free_content.py, so the wider selection
+    is the true cost of running it, not smear), plan_book 131 jobs /
+    5,721 s; ten packs on every probe. Fund only the measured excess:
+    5,958 -> 5,963, 5,979 -> 5,998, 5,716 -> 5,721. Job ceilings, the
+    pack ceiling, every selector and every assertion are unchanged.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
