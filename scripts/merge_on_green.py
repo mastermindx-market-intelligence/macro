@@ -261,7 +261,7 @@ import urllib.request
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -352,17 +352,15 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but retain a bounded evaluation ceiling: paginated discovery already spans the
-# full backlog independently of this cap. F7 (2026-11-10) raised the ceiling from
-# 128 to 256 because the measured backlog is 203-231 armed pull requests while the
-# live bucket held ~11-15k of 15,000 requests — every sampled sweep was evaluating
-# only 128 of 231 and deferring 75-103 of them behind a rotation, which is its own
-# green->merged latency term. `pull_cap_for_budget` still shrinks the window to
-# what the remaining requests can actually afford, so a thin bucket keeps the old
-# behaviour. If quota cannot be read, the known-safe 25 remains the fallback.
+# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
+# spans the full backlog independently of this cap. If quota cannot be read,
+# the known-safe 25 remains the fallback. (F7's first cut raised the ceiling to
+# 256; that was reverted: the 2026-11-09 latency was zero refresh slots, not the
+# evaluation window, a 231-pull backlog is still fully visited every two rotation
+# buckets, and nothing measured shows the wider window is needed.)
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 256
+MAX_PULL_CAP = 128
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
@@ -372,18 +370,16 @@ MAX_PULL_CAP = 256
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
 # mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
-# the sweeps that skip it so the shrink formula stays pessimistic. F7 adds the
-# five controller-owned census reads (one per active status) the same way.
-FULL_SWEEP_FIXED_REQUESTS = 97
+# the sweeps that skip it so the shrink formula stays pessimistic.
+FULL_SWEEP_FIXED_REQUESTS = 92
 AUTHORITY_RUN_LOOKUP_CAP = 8
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
-# A 25-pull reference pass now models 97 fixed + 25 x up-to-27 + 8 refresh
-# attempts = 780 calls. The floor retains the reference 90-percent bound (F7
-# raised it 700 -> 710 with the five controller-owned census reads) while leaving
-# room for other lanes in the ordinary cheaper shape. Larger buckets do
+# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 775 calls. The floor retains the reference 90-percent bound while
+# leaving room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
-RATE_LIMIT_FLOOR = 710
+RATE_LIMIT_FLOOR = 700
 # A mark-only failure wake-up costs ~4-8 calls and protects a correctness marker,
 # so it has a separate small floor instead of inheriting the full-sweep floor.
 MARK_ONLY_RATE_LIMIT_FLOOR = 20
@@ -409,9 +405,9 @@ MAX_REFRESHES_PER_SWEEP = 8
 # hosted jobs (plus fences), and on 2026-08-11 the shared pool was already pinned at
 # 180/180.  Count every active pull-request ci.yml run — ordinary session work and
 # controller re-proofs alike — and add no ordinary refreshes above this repo-wide
-# ceiling. The S9 saturation floor below admits one lease-serialized refresh
-# under its own hard ceiling, never a raised ordinary allowance. S8's separate
-# red-baseline repair reserve is described at REPAIR_REFRESH_RESERVE.
+# ceiling. The saturation floor below admits one lease-serialized refresh above
+# it, never a raised ordinary allowance. S8's separate red-baseline repair
+# reserve is described at REPAIR_REFRESH_RESERVE.
 # Eight proof runs are roughly half the hosted pool, leaving real capacity for the
 # sessions the controller exists to serve.  This is intentionally conservative:
 # an ordinary in-flight proof consumes the same runners as a controller-created one.
@@ -422,11 +418,12 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # advertised eight new refresh slots because the former "fair refresh" clamp raised
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
-# The F7 saturation floor below is NOT that clamp: it is two reserved refresh
-# slots, each serialized — the general slot through the one durable lease, the
-# repair slot through S8's reserve path — never a raised ordinary allowance (see
-# REFRESH_FLOOR_PER_SWEEP).
-HIGH_LOAD_LEASE_THRESHOLD = 2
+# The saturation floor below is NOT that clamp: it is ONE refresh, serialized by
+# the one durable lease, never a raised ordinary allowance (see
+# REFRESH_FLOOR_PER_SWEEP).  The threshold stays at 1: a threshold of 2 would
+# also serialize an ordinary allowance of exactly two behind the single lease,
+# turning two free slots into one write.
+HIGH_LOAD_LEASE_THRESHOLD = 1
 #: S8 (2026-11-06): one extra CI run per sweep reserved for the tier-0
 #: `main-red-repair` candidate while the integration baseline is red and the
 #: workload census was readable, admitted even when that census leaves zero
@@ -442,6 +439,73 @@ HIGH_LOAD_LEASE_THRESHOLD = 2
 #: the extra load at +1 run per sweep, only while main is red, for one labelled
 #: pull; `repair_slot_used` still admits a single repair candidate per pass.
 REPAIR_REFRESH_RESERVE = 1
+#: B3 (2026-11-10): the per-pass repair slot FAILS CLOSED.  Under a non-green
+#: baseline `main()` admits one `main-red-repair` candidate at a time and spends
+#: the slot on EVERY verdict that candidate returns except the ones named here.
+#: A name is listed only when every `sweep_pull` path returning it AFFIRMATIVELY
+#: observed that no merge happened: the head was judged before any merge call, a
+#: live read showed the pull request still open, or GitHub refused the merge
+#: (405/409) and the live read that follows showed it still open.  Everything
+#: else spends the slot:
+#:
+#:   * `merged`, `already-merged`, `merge-unknown` — a repair landed, or may have
+#:     (`already-closed` rides with them: it is also what an ambiguous merge
+#:     response settles to);
+#:   * `error` — an unclassified failure, which is also what an exception raised
+#:     AFTER an accepted merge becomes in `main()`;
+#:   * indeterminate reads (`authorization-unreadable`, `main-ref-unreadable`,
+#:     `freshness-deferred`, `recorded-hold-unverifiable`, `lease-release-retry`)
+#:     and `base-modified` (a merge call WAS sent; its settled re-read is allowed
+#:     to fail) — nothing merged on those paths today, but none of them is
+#:     evidence, and the cost of spending is one sweep's delay for the sibling;
+#:   * `main-moved`, which ends the pass anyway;
+#:   * any verdict a later change adds without listing it here.
+#:
+#: F7's first cut did the opposite — it spent the slot only on an allowlist of
+#: three merge verdicts — so a real merge that surfaced as `error` left the slot
+#: open and a second, jointly-unproven repair was evaluated in the same pass.
+REPAIR_SLOT_PRESERVING_VERDICTS = frozenset(
+    {
+        # judged before any merge call: not mergeable now
+        "blocked",
+        "conflict",
+        "empty-diff",
+        "excluded",
+        "incomplete",
+        "pending",
+        "recorded-hold",
+        "unproven",
+        # a live read showed it still open, with changed authority
+        "disarmed",
+        "draft",
+        "head-moved",
+        "lease-lost",
+        "wrong-base",
+        # handed back to CI, or waiting for CI / a refresh slot / the lease
+        "lease-generation-incomplete",
+        "lease-generation-pending",
+        "lease-generation-waiting",
+        "lease-rotation-deferred",
+        "re-proving",
+        "rebased",
+        "refresh-deferred",
+        "update-retry",
+        "updated",
+    }
+)
+
+
+def repair_verdict_spends_slot(verdict: str) -> bool:
+    """True when a repair candidate's verdict spends the per-pass repair slot.
+
+    Fail closed (B3): everything that is not a named affirmative no-merge
+    outcome spends it. Kept as a function so the decision can be observed
+    directly — for `merge-unknown` and `main-moved` the pass ends anyway, so
+    behaviour alone cannot show whether the slot was spent.
+    """
+    return verdict not in REPAIR_SLOT_PRESERVING_VERDICTS
+
+
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
 # Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
 # against a pool pinned at 180/180 on 2026-08-11; the repository now sits on the
@@ -494,49 +558,57 @@ ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
-# S9 (2026-11-07) saturation floor, superseded by the F7 floor (2026-11-10).  S9
-# admitted ONE refresh per sweep when the ordinary allowance was zero, but only
-# while the hosted-pool census (a) was read, (b) witnessed a pickup, and (c) showed
-# no refusal.  In production every sampled sweep withheld it (sweeps 42552348615,
-# 42563058041, 42590499019, 42599891207, 42744545240: 0/0 refresh slots in all
-# five, 11-23 in-flight pull-request ci.yml runs against the cap of 8, 13-66
-# refresh-deferred): with 15+ active runs SOME queued run or slow pickup is nearly
-# always visible, so condition (b)/(c) starved the very lane the floor existed to
-# protect and the queue drained 0-1 merges per sweep.
+# The saturation floor (S9, 2026-11-07; made unconditional by F7, 2026-11-10).
 #
-# F7 (2026-11-10) keeps the S9 insight — the floor lane must be serialized by the
-# durable lease so chained sweeps cannot stampede — and removes everything that
-# let ordinary AUTHORED activity hold it closed:
+# S9 admitted ONE refresh per sweep when the ordinary allowance was zero, but only
+# while the hosted-pool census (a) was read, (b) witnessed a pickup, (c) showed no
+# refusal and (d) fewer than twelve proofs were in flight.  In production every
+# sampled sweep withheld it (sweeps 42552348615, 42563058041, 42590499019,
+# 42599891207, 42744545240: 0/0 refresh slots in all five, 11-23 in-flight
+# pull-request ci.yml runs against the cap of 8, 13-66 refresh-deferred): with 15+
+# active runs SOME queued run or slow pickup is nearly always visible and the
+# count is over twelve, so the conditions starved the very lane the floor existed
+# to protect.  On 2026-11-09, ~23 author-pushed runs held the controller at zero
+# refresh slots with 231 pull requests armed (green->merged p90 10.6 h).
 #
-#   1. The in-flight proof CAP now counts CONTROLLER-OWNED workload only (runs on
-#      pull requests carrying `merge-refresh-in-flight`, plus the unindexed durable
-#      reservation).  Authored `synchronize` runs no longer consume the
-#      controller's eight slots: `ci.yml`'s per-PR concurrency already bounds an
-#      author to one active run per pull request, and the controller is not the
-#      admission authority for work it did not order.  A separate repo-wide brake
-#      (ADAPTIVE_PROOF_CAP_MAX minus ALL active runs) still bounds the TOTAL, so
-#      this changes WHAT is counted against the eight slots, never the ceiling the
-#      eight (or sixteen) run under.
-#   2. REFRESH_FLOOR_PER_SWEEP is TWO reserved slots, granted unconditionally when
-#      the ordinary allowance is zero: one GENERAL refresh (lease-serialized, so
-#      cross-sweep it drains at one controller proof per proof lifetime exactly as
-#      S9 designed) and, through S8's REPAIR_REFRESH_RESERVE, one MAIN-RED-REPAIR
-#      refresh (the tier-0 pull the whole repo is waiting on).  No hosted-pool
-#      census read, pickup witness, or refusal evidence can withhold the floor
-#      anymore; the census still governs only the ADAPTIVE headroom above the flat
-#      cap, which is a capacity question, not a starvation question.
-#   3. HIGH_LOAD_LEASE_THRESHOLD rises to 2 so BOTH floor slots are lease-required:
-#      the general slot must claim the one durable lease, and a second floor slot
-#      is reachable only through S8's reserve path (a labelled repair under a red
-#      baseline, authenticating a foreign lease owner), never as an unserialized
-#      second write.
-REFRESH_FLOOR_PER_SWEEP = 2
-# Controller-owned census pagination: one page per active status covers the
-# observed 11-23 active runs with room to grow; a status whose total exceeds
-# two pages makes the census unreadable (None) rather than silently undercounting
-# the controller's own workload.
-CONTROLLER_CENSUS_PAGE = 100
-CONTROLLER_CENSUS_PAGE_CAP = 2
+# What the floor IS, stated exactly:
+#
+#   * ONE general refresh per sweep (REFRESH_FLOOR_PER_SWEEP), granted whenever
+#     the workload census and the lease were readable and the ordinary allowance
+#     is zero.  No hosted-pool census read, pickup witness, refusal evidence or
+#     in-flight count can withhold it: author pushes can no longer starve the
+#     controller to zero.
+#   * It is serialized by the one durable lease (one slot is inside
+#     HIGH_LOAD_LEASE_THRESHOLD), and the lease is held until its owner's proof
+#     settles or the lease max age passes.  So across sweeps the floor drains at
+#     one controller proof per proof LIFETIME, not one per sweep, and it adds at
+#     most ONE controller proof above the workload cap at any time.
+#   * It is NOT two slots.  The second refresh a red-baseline sweep can issue is
+#     S8's separate REPAIR_REFRESH_RESERVE (one labelled `main-red-repair` pull,
+#     only while the baseline is red); a green-baseline sweep at saturation issues
+#     at most one update-branch write.
+#
+# What the floor is NOT: a change to what the cap counts.  The workload census
+# still counts EVERY active pull-request ci.yml run, authored or controller
+# refreshed, against the adaptive cap (8, or 12/16 on served hosted-pool
+# evidence), and a refused or slow hosted pool still collapses that cap to the
+# flat 8.  F7's first cut counted only "controller-owned" runs against the cap,
+# attributed through the single lease label; ordinary refreshes carry no label,
+# so the cap could never bind and the hosted-pool census was almost never read.
+# Durable attribution is not available without new state: the update-branch
+# actor is the shared merge-token login (also used by people and sessions), and
+# this controller keeps no per-refresh record between sweeps.  Total load is
+# therefore bounded as: ordinary controller refreshes only below the adaptive
+# cap on TOTAL load, plus at most one lease-serialized floor proof, plus S8's
+# one repair refresh per red-baseline sweep.
+REFRESH_FLOOR_PER_SWEEP = 1
+#: B2 (2026-11-10): age orders refresh SLOTS, never the evaluation window.  A
+#: refresh request the budget held for an older armed proof is asked again,
+#: oldest first, after the rotation-ordered pass; this bounds how many of those
+#: re-admissions one sweep runs.  Each costs what the held evaluation did not
+#: spend (one live authorization read plus the admission and write it skipped)
+#: and is preceded by a live rate-limit poll.
+REFRESH_READMISSION_CAP = MAX_REFRESHES_PER_SWEEP
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3162,87 +3234,6 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     return total
 
 
-def controller_in_flight_proofs(
-    repo: str, token: str, leased_numbers: Any
-) -> int | None:
-    """Active pull-request ``ci.yml`` runs the CONTROLLER ordered, or ``None``.
-
-    F7 (2026-11-10). The flat in-flight cap exists to bound the controller's own
-    contribution to hosted load, but :func:`in_flight_pr_proofs` counts every
-    active run — authored ``synchronize`` pushes included — so 11-23 ordinary
-    session runs starved all eight slots in every sampled sweep (sweeps
-    42552348615, 42563058041, 42590499019, 42599891207, 42744545240: 0/0 refresh
-    slots in all five) and the merge queue drained at 0-1 per sweep. This census
-    counts only runs on pull requests carrying the ``merge-refresh-in-flight``
-    label — the durable marker a controller refresh holds from ``update-branch``
-    until its proof settles — plus the caller's separate unindexed reservation.
-    Authored runs are excluded from the CAP's count on purpose (``ci.yml``'s
-    per-PR concurrency already bounds one active run per authored pull request);
-    they remain inside the repo-wide :func:`in_flight_pr_proofs` total, which the
-    admission formula keeps as the hard ceiling brake, so this narrows what the
-    eight slots are measured against without raising any ceiling.
-
-    Distinct pull requests are the unit, matching the cap's meaning (one lease
-    reserves one pull request's proof). Unreadable, malformed, or paginated-past-
-    the-cap answers are ``None`` — never an undercount of the controller's own
-    workload — and the caller pauses new refreshes exactly as it does for the
-    repo-wide census.
-    """
-    numbers = frozenset(
-        int(number) for number in leased_numbers if str(number).isdigit()
-    )
-    if not numbers:
-        # No leased pull request can be in flight: claim() is the only writer of
-        # the label and prepare_refresh_lease saw none. Zero without any read.
-        return 0
-    owned: set[int] = set()
-    for run_status in ACTIVE_PR_PROOF_STATUSES:
-        for page in range(1, CONTROLLER_CENSUS_PAGE_CAP + 1):
-            query = urllib.parse.urlencode(
-                {
-                    "event": "pull_request",
-                    "status": run_status,
-                    "per_page": str(CONTROLLER_CENSUS_PAGE),
-                    "page": str(page),
-                }
-            )
-            status, payload = _request(
-                "GET",
-                f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
-                token,
-            )
-            body = payload if isinstance(payload, dict) else {}
-            runs = body.get("workflow_runs")
-            count = body.get("total_count")
-            if (
-                status >= 400
-                or not isinstance(runs, list)
-                or not isinstance(count, int)
-                or isinstance(count, bool)
-                or count < 0
-                or count > CONTROLLER_CENSUS_PAGE_CAP * CONTROLLER_CENSUS_PAGE
-            ):
-                return None
-            for run in runs:
-                pull_requests = (
-                    run.get("pull_requests") if isinstance(run, dict) else None
-                )
-                if pull_requests is not None and not isinstance(pull_requests, list):
-                    return None
-                for pull_request in pull_requests or ():
-                    number = (
-                        pull_request.get("number")
-                        if isinstance(pull_request, dict)
-                        else None
-                    )
-                    if isinstance(number, int) and not isinstance(number, bool):
-                        if number in numbers:
-                            owned.add(number)
-            if len(runs) < CONTROLLER_CENSUS_PAGE:
-                break
-    return len(owned)
-
-
 @dataclass(frozen=True)
 class HostedPoolCensus:
     """Job-level evidence of hosted-pool service for this repository's ci.yml."""
@@ -3421,26 +3412,29 @@ def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
     return cap, f"+{headroom} adaptive: {why}"
 
 
-def refresh_floor_allowance(controller_proofs: int) -> tuple[int, str]:
+def refresh_floor_allowance(effective_proofs: int) -> tuple[int, str]:
     """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
 
-    F7 (2026-11-10): the floor is UNCONDITIONAL. S9 gated it on the hosted-pool
-    census witnessing a pickup and showing no refusal, and in production that
-    withheld the floor in every sampled sweep (11-23 active runs means some queued
-    run or slow pickup nearly always shows) — the lane built to prevent starvation
-    starved. The anti-stampede bound was never that census: it is the durable
-    lease. ``HIGH_LOAD_LEASE_THRESHOLD`` covers both floor slots, so the general
-    slot must claim the one lease (one controller proof in flight per proof
-    lifetime, cross-sweep) and the second slot is reachable only through S8's
-    ``REPAIR_REFRESH_RESERVE`` path for the labelled ``main-red-repair`` pull under
-    a red baseline. Authored ``synchronize`` runs cannot hold the floor closed any
-    more: ``controller_proofs`` counts only lease-marked controller workload.
+    The floor is UNCONDITIONAL (F7, 2026-11-10). S9 gated it on the hosted-pool
+    census witnessing a pickup and showing no refusal, and on fewer than twelve
+    proofs in flight; in production that withheld the floor in every sampled sweep
+    (11-23 active runs means some queued run or slow pickup nearly always shows)
+    — the lane built to prevent starvation starved. The anti-stampede bound was
+    never that census: it is the durable lease. One slot is inside
+    ``HIGH_LOAD_LEASE_THRESHOLD``, so the slot must claim the one lease, and the
+    lease is held until its owner's proof settles: one controller proof per proof
+    lifetime across sweeps, at most one controller proof above the workload cap.
+
+    It is ONE general slot, not two. S8's ``REPAIR_REFRESH_RESERVE`` is a separate
+    lane (one labelled ``main-red-repair`` pull, red baseline only) that this
+    function neither grants nor counts. ``effective_proofs`` is the TOTAL
+    in-flight workload the cap was measured against; it is reported, never used
+    to withhold the floor.
     """
     return REFRESH_FLOOR_PER_SWEEP, (
-        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} reserved refresh slot(s) "
-        "(1 general, lease-serialized + 1 main-red-repair reserve; "
-        f"{controller_proofs} controller-owned proof(s) in flight; authored "
-        "synchronize runs do not consume the floor)"
+        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} lease-serialized refresh "
+        f"slot above the cap ({effective_proofs} proof(s) in flight; not gated "
+        "on the hosted-pool census; the main-red-repair reserve is separate)"
     )
 
 
@@ -3737,7 +3731,6 @@ class RefreshLease:
         generation_head_sha: str = "",
         generation_id: str = "",
         readable: bool = True,
-        leased_numbers: Any = (),
     ) -> None:
         self.repo = repo
         self.read_token = read_token
@@ -3747,17 +3740,6 @@ class RefreshLease:
         self.generation_head_sha = str(generation_head_sha or "").lower()
         self.generation_id = str(generation_id or "").lower()
         self.readable = readable
-        # F7: every ARMED open pull request the lease census saw carrying the
-        # label, not just the register owner. This is the controller-owned
-        # workload census's attribution set: an active ci.yml run on one of these
-        # pull requests is a run the controller ordered, and `claim`/`release`
-        # keep the set exact (at most one association survives a clean
-        # `prepare_refresh_lease`; a quarantine fails the whole lease closed).
-        self.leased_numbers: frozenset[int] = frozenset(
-            int(number)
-            for number in leased_numbers
-            if str(number).isdigit()
-        )
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
         self.claim_attempted_number: int | None = None
@@ -4342,7 +4324,6 @@ def prepare_refresh_lease(
             owner_updated_at=acquired_at or str(issue.get("updated_at") or ""),
             generation_head_sha=generation_head_sha,
             generation_id=generation_id,
-            leased_numbers=[number],
         ),
         pulls,
     )
@@ -4381,7 +4362,8 @@ def pull_cap_for_limit(limit: Any) -> int:
     The 25-at-1,000 baseline is measured production behavior, not a guessed
     request cost. Scaling that ratio preserves the old budget share after an
     account-tier change; the 128 ceiling covers the measured 110-PR backlog
-    using existing paginated discovery while keeping one reconciliation bounded.
+    using existing paginated discovery while keeping one reconciliation bounded
+    (a larger backlog is visited by the rotation, 128 per bucket).
     An unreadable or malformed limit falls back to the known-safe baseline.
     """
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
@@ -4421,6 +4403,9 @@ class SweepBudget:
       `take_refresh()`— may it spend an `update-branch` (a write AND a CI run)?
       `refund_refresh()`— did an affirmative no-op return that CI capacity?
 
+    `take_refresh()` can also HOLD a request (`last_take_held`) so the pass's
+    scarce slots go to the oldest armed proofs first; see `take_refresh`.
+
     Every method fails OPEN on an unreadable budget, for the reason in
     `core_rate_limit`. None of them can ever authorise a merge that the check
     gates would refuse — they only ever make the sweep do LESS.
@@ -4454,6 +4439,16 @@ class SweepBudget:
         self.repair_reserve_used = 0
         self.repair_reserve_authorized = False
         self.last_take_used_reserve = False
+        # B2: age-ordered refresh admission. `main()` sets
+        # `older_refresh_candidates` before each ordinary (tier-3) evaluation of
+        # the rotation-ordered pass: how many OLDER ordinary pull requests in the
+        # evaluated window could still ask for a slot. None (the default, and the
+        # value for every priority tier and every direct caller) disables holding.
+        self.older_refresh_candidates: int | None = None
+        self.rotation_slot_taken = False
+        self.last_take_held = False
+        self.held_resume: Callable[[], str] | None = None
+        self._last_take_was_rotation_slot = False
         self.refresh_context = ""
         self.refresh_lease: RefreshLease | None = None
         self.requires_refresh_lease = False
@@ -4521,7 +4516,11 @@ class SweepBudget:
         return True, ""
 
     def take_refresh(
-        self, pull: dict[str, Any] | None = None, *, repair_candidate: bool = False
+        self,
+        pull: dict[str, Any] | None = None,
+        *,
+        repair_candidate: bool = False,
+        holdable: bool = False,
     ) -> bool:
         """Reserve one workload slot and one bounded `update-branch` attempt.
 
@@ -4547,12 +4546,58 @@ class SweepBudget:
         register still affirms on a fresh read. A free lease is claimed, never
         bypassed: a claim that declines or fails (possibly EFFECT_UNKNOWN) defers
         the pull for this sweep instead of falling through to the reserve.
+
+        B2 (2026-11-10): AGE orders the slots, never the evaluation window. The
+        pass still evaluates pull requests in rotation order, so the first one
+        to ask is whichever the rotation put first, not the stalest. When
+        ``older_refresh_candidates`` says older ordinary pull requests in this
+        window could still ask and there are not enough ordinary slots for all of
+        them plus this one, the request is HELD (``last_take_held``; nothing is
+        consumed, no lease write is sent) and ``main()`` asks the held requests
+        again, oldest-first, after the rotation-ordered pass. Only a caller that
+        can be re-run later asks for that (``holdable``); a repair candidate is
+        never held. Two deliberate limits keep age from becoming the
+        starvation it replaces:
+
+          * outside the single-slot lease band, the FIRST ordinary request of the
+            pass is never held: one slot per pass stays on the rotation, so heads
+            whose refresh keeps failing without restamping ``updated_at`` (an
+            unclassified 422, a 5xx) cannot take every slot of every pass;
+          * in the single-slot lease band the one slot is oldest-first, which is
+            safe there because a durable claim is a label write on that pull
+            request — it restamps ``updated_at`` and sends the owner to the back
+            of the age order — and a claim that declines before any write leaves
+            the latch clear for the next-oldest request.
+
+        A hold is only ever taken while an ordinary slot is actually grantable;
+        every other refusal (spent slots, foreign lease owner, the repair
+        reserve) runs exactly as before.
         """
         self.last_take_used_reserve = False
+        self.last_take_held = False
+        self._last_take_was_rotation_slot = False
         if (
             not self.refresh_authorized
             or self.refresh_attempts_used >= self.max_refresh_attempts
         ):
+            return False
+        age_governed = (
+            holdable
+            and not repair_candidate
+            and self.older_refresh_candidates is not None
+            and self.ordinary_refresh_available()
+        )
+        rotation_slot = (
+            age_governed
+            and not self.requires_refresh_lease
+            and not self.rotation_slot_taken
+        )
+        if (
+            age_governed
+            and not rotation_slot
+            and self.ordinary_slots_left() <= int(self.older_refresh_candidates or 0)
+        ):
+            self.last_take_held = True
             return False
         if self.refreshes_used >= self.max_refreshes:
             return self._take_repair_reserve(repair_candidate, pull)
@@ -4572,6 +4617,39 @@ class SweepBudget:
                 return False
         self.refreshes_used += 1
         self.refresh_attempts_used += 1
+        if rotation_slot:
+            self.rotation_slot_taken = True
+            self._last_take_was_rotation_slot = True
+        return True
+
+    def ordinary_slots_left(self) -> int:
+        """Ordinary workload slots this sweep could still spend (never the reserve)."""
+        return max(
+            0,
+            min(
+                self.max_refreshes - self.refreshes_used,
+                self.max_refresh_attempts - self.refresh_attempts_used,
+            ),
+        )
+
+    def ordinary_refresh_available(self) -> bool:
+        """True while an ORDINARY refresh could still be granted to a new pull.
+
+        Network-free. In the single-slot lease band that means the lease is
+        unowned and no claim has been attempted this sweep; a known owner or a
+        latched claim leaves nothing for another ordinary pull request.
+        """
+        if not self.refresh_authorized or self.ordinary_slots_left() <= 0:
+            return False
+        if self.requires_refresh_lease:
+            lease = self.refresh_lease
+            if (
+                lease is None
+                or not lease.readable
+                or lease.owner_number is not None
+                or lease.claim_attempted
+            ):
+                return False
         return True
 
     def _take_repair_reserve(
@@ -4629,6 +4707,53 @@ class SweepBudget:
             return
         if self.refreshes_used > 0:
             self.refreshes_used -= 1
+        if self._last_take_was_rotation_slot:
+            # The rotation's slot produced no workload (a real conflict, or the
+            # pull request had settled): hand it to the next request in rotation
+            # order instead of silently converting it into an age slot.
+            self.rotation_slot_taken = False
+            self._last_take_was_rotation_slot = False
+
+
+def sweep_tier(
+    pull: dict[str, Any],
+    *,
+    trigger_head_sha: str = "",
+    refresh_lease_number: Any = None,
+) -> int:
+    """Priority tier of one armed pull request (see ``sweep_order``)."""
+    if MAIN_RED_REPAIR_LABEL in label_names(pull):
+        return 0
+    lease_number = str(refresh_lease_number or "")
+    if lease_number and str(pull.get("number") or "") == lease_number:
+        return 1
+    wanted = str(trigger_head_sha or "").strip().lower()
+    if wanted and str((pull.get("head") or {}).get("sha") or "").lower() == wanted:
+        return 2
+    return 3
+
+
+def refresh_age_key(pull: dict[str, Any]) -> tuple[int, float]:
+    """Refresh-slot priority: oldest parseable ``updated_at`` first, unknown last.
+
+    Used ONLY to order refresh slots among the ordinary pull requests of the
+    window the rotation already chose (see ``SweepBudget.take_refresh``). It is
+    never a sort key for the evaluation window or the processing order: a pull
+    request nothing acts on never has its timestamp bumped, so as a window key it
+    would hold its place forever. Unknown age must never preempt measurable
+    staleness, so a missing or unparseable timestamp sorts last.
+    """
+    updated = str(pull.get("updated_at") or "").strip()
+    if updated:
+        try:
+            moment = dt.datetime.fromisoformat(updated.replace("Z", "+00:00"))
+        except ValueError:
+            moment = None
+        if moment is not None:
+            if moment.tzinfo is None:
+                moment = moment.replace(tzinfo=dt.timezone.utc)
+            return (0, moment.timestamp())
+    return (1, 0.0)
 
 
 def sweep_order(
@@ -4655,20 +4780,28 @@ def sweep_order(
          cap from adding latency to the case the trigger exists to serve.
       3. everything else, rotated.
 
-    Tier 3 is AGE-ordered, oldest `updated_at` first (F7, 2026-11-10): the
-    stalest green proofs are exactly the refresh candidates the scarce slot
-    exists for, and pure rotation let a fixed prefix monopolise them while
-    3-5-day-old proofs waited (2026-11-09 census: 0/8 refresh slots in every
-    sampled sweep). Age order is a FIFO queue, not starvation: acting on a pull
-    — update-branch, rebase, merge, any write — bumps `updated_at`, so being
-    served is what moves a pull to the back. The old rotation still governs
-    everything age cannot: it moves the evaluation window (`cap` per
-    `bucket_seconds`, phase advanced by a value coprime to gcd(cap, N) each
-    distinct-offset cycle) and breaks ties inside an age cohort. Pulls with a
-    missing or unparseable `updated_at` sort LAST — unknown age must never
-    preempt measurable staleness. Higher-priority tiers and actual admission
-    still decide whether a candidate receives its refresh. No state and no
-    extra requests are introduced.
+    The rotation is what makes the cap fair. This script keeps NO state between
+    runs — it is a level-triggered reconciler, and that property is load-bearing
+    for the overlapping-sweep safety argument — so it cannot remember where the
+    last sweep stopped. The wall clock is the cursor instead. Within a cycle,
+    the evaluation window advances by `cap` every `bucket_seconds`. That covers
+    evaluation, but can leave the smaller refresh-attempt prefix permanently
+    fixed: with 100 pulls and cap=100, only the same first eight get attempts.
+    After each distinct-offset cycle, advance its phase by a value coprime to
+    gcd(cap, N). The cycles then visit every residue class, so each ordinary pull
+    gets the first ordinary position within an aligned N-bucket epoch (assuming
+    a stable backlog and priority membership). Higher-priority tiers and actual
+    admission still decide whether it receives a refresh. No state or extra
+    requests are introduced. Sorting by `updated_at` was the obvious alternative and
+    it starves: a pull request nothing acts on never has its timestamp bumped, so
+    it would hold its place — or lose it — forever.
+
+    `updated_at` is therefore NOT part of this order (F7's first cut ranked tier
+    3 by it, ahead of the rotation, and froze the window on the oldest `cap`
+    pull requests: B2, 2026-11-10). Age is used one layer down, to decide which
+    of the refresh requests raised inside the window this function chose get
+    the pass's scarce slots — see `refresh_age_key` and
+    `SweepBudget.take_refresh`.
 
     The rotation applies WITHIN tier 0 as well, which is what keeps two armed
     repairs taking turns. Only the first repair in the order gets the single
@@ -4697,33 +4830,12 @@ def sweep_order(
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
 
-    def age_key(pull: dict[str, Any]) -> tuple[int, str]:
-        """Sort key: oldest parseable ``updated_at`` first, unknown age last."""
-        updated = str(pull.get("updated_at") or "").strip()
-        if updated:
-            try:
-                moment = dt.datetime.fromisoformat(updated.replace("Z", "+00:00"))
-            except ValueError:
-                moment = None
-            if moment is not None:
-                if moment.tzinfo is None:
-                    moment = moment.replace(tzinfo=dt.timezone.utc)
-                return (0, moment.astimezone(dt.timezone.utc).isoformat())
-        return (1, "")
-
-    def rank(
-        entry: tuple[int, dict[str, Any]],
-    ) -> tuple[int, tuple[int, str], int, int]:
+    def rank(entry: tuple[int, dict[str, Any]]) -> tuple[int, int, int]:
         index, pull = entry
-        if MAIN_RED_REPAIR_LABEL in label_names(pull):
-            tier = 0
-        elif lease_number and str(pull.get("number") or "") == lease_number:
-            tier = 1
-        elif wanted and str((pull.get("head") or {}).get("sha") or "").lower() == wanted:
-            tier = 2
-        else:
-            tier = 3
-        return (tier, age_key(pull), (index - offset) % span, int(pull.get("number") or 0))
+        tier = sweep_tier(
+            pull, trigger_head_sha=wanted, refresh_lease_number=lease_number
+        )
+        return (tier, (index - offset) % span, int(pull.get("number") or 0))
 
     return [pull for _index, pull in sorted(enumerate(stable), key=rank)]
 
@@ -7140,8 +7252,20 @@ def attempt_update_branch(
     token: str,
     budget: "SweepBudget | None",
     why: str,
+    *,
+    resume: Callable[[], str] | None = None,
 ) -> str:
-    """The sole gateway to ``update_branch`` and its workload/lease admission."""
+    """The sole gateway to ``update_branch`` and its workload/lease admission.
+
+    ``resume`` (B2) is the caller's own "ask again, then finish my verdict"
+    closure. Passing it lets the budget HOLD this request for an older armed
+    proof (``SweepBudget.take_refresh``); the closure is then parked on the
+    budget for ``main()`` to run oldest-first after the rotation-ordered pass,
+    and it must call back in here WITHOUT a ``resume`` so a request is held at
+    most once. Every re-admission therefore repeats the live authorization read,
+    the conflict check and the lease admission below; nothing about a held
+    request is trusted across the wait.
+    """
     live, disposition = live_authorized_pull(repo, pull, token)
     if live is None:
         _annotate(
@@ -7183,7 +7307,18 @@ def attempt_update_branch(
     # older listing but gone from the live pull was removed in between — the
     # reserve must not honor a label the pull no longer carries.
     repair_candidate = MAIN_RED_REPAIR_LABEL in label_names(live)
-    if not budget.take_refresh(live, repair_candidate=repair_candidate):
+    if not budget.take_refresh(
+        live, repair_candidate=repair_candidate, holdable=resume is not None
+    ):
+        if budget.last_take_held:
+            budget.held_resume = resume
+            print(
+                f"PR #{pull.get('number')}: {why}; queued for this pass's "
+                "age-ordered refresh admission (older armed proofs in this "
+                "window are asked first). No write attempted yet.",
+                flush=True,
+            )
+            return "refresh-deferred"
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.last_take_used_reserve:
         _annotate(
@@ -7293,12 +7428,44 @@ def reprove(
         f"PR #{number}: checks are clean but the proof is stale — {reason}. Merging "
         "main into the head; its fresh checks decide on a later sweep.",
     )
+    return _reprove_refresh(
+        repo, pull, reason, read_token, merge_token, budget, holdable=True
+    )
+
+
+def _reprove_refresh(
+    repo: str,
+    pull: dict[str, Any],
+    reason: str,
+    read_token: str,
+    merge_token: str,
+    budget: "SweepBudget | None",
+    *,
+    holdable: bool,
+) -> str:
+    """`reprove`'s refresh request and the verdict that follows from its answer.
+
+    Split out so a request the budget held for an older proof (B2) can be run
+    again later, in full — including the settled re-read and the one-shot
+    conflict marker — without repeating `reprove`'s opening annotation.
+    """
+    number = pull.get("number")
+    resume: Callable[[], str] | None = (
+        (
+            lambda: _reprove_refresh(
+                repo, pull, reason, read_token, merge_token, budget, holdable=False
+            )
+        )
+        if holdable
+        else None
+    )
     update_result = attempt_update_branch(
         repo,
         pull,
         merge_token,
         budget,
         f"its proof is stale ({reason})",
+        resume=resume,
     )
     if update_result == "refresh-deferred":
         return update_result
@@ -7627,6 +7794,31 @@ def sweep_pull(
         # the PR's checks newer than the proof, so it cannot be refreshed again until
         # main is genuinely re-proven — one refresh per PR per main proof.
         bad_names = failing_check_names(runs)
+
+        def block_for_red_checks() -> str:
+            """Label the head for its own red checks (one-shot comment)."""
+            if blocked_names is not None:
+                # What this sweep could not answer, for `ensure_main_baseline`.
+                blocked_names.update(bad_names)
+
+            live_pull, authorization = live_authorized_pull(repo, pull, read_token)
+            if live_pull is None:
+                return authorization
+            added = mark_blocked(
+                repo, live_pull, red_check_comment(names), merge_token
+            )
+            _annotate(
+                "warning",
+                "merge-on-green",
+                f"PR #{number}: red checks ({', '.join(names[:6])}); "
+                + (
+                    "marker written."
+                    if added
+                    else "no new marker (already labeled, or both writes failed above)."
+                ),
+            )
+            return verdict
+
         if bad_names and proof.clean_names and bad_names <= proof.clean_names:
             if not proof_postdates_failures(proof, runs):
                 # GREPPABLE ON PURPOSE. This line is how a future session tells "main's
@@ -7659,33 +7851,70 @@ def sweep_pull(
                 # and every refresh queues a fresh 36-91 minute `ci` run onto an
                 # 8-runner pool. Deferring is NOT `merge-blocked`: nothing is wrong with
                 # the pull request, so it stays armed and unlabeled for the next sweep.
-                update_result = attempt_update_branch(
-                    repo,
-                    pull,
-                    merge_token,
-                    budget,
-                    "its red checks are all green on main, so it needs a refresh",
-                )
-                if update_result == "refresh-deferred":
-                    return update_result
-                if update_result == "updated":
-                    clear_blocked(repo, pull, merge_token)
-                    print(
-                        f"PR #{number}: red checks ({', '.join(sorted(bad_names)[:6])}) "
-                        "are all green on a main proved since they ran — the base moved "
-                        "under it. Refreshed; its fresh checks decide on a later sweep.",
-                        flush=True,
+                def refresh_inherited_red(*, holdable: bool) -> str | None:
+                    """Ask for the refresh; None means GitHub declined it."""
+                    update_result = attempt_update_branch(
+                        repo,
+                        pull,
+                        merge_token,
+                        budget,
+                        "its red checks are all green on main, so it needs a refresh",
+                        resume=resume_inherited_red if holdable else None,
                     )
-                    return "rebased"
-                if update_result == "head-moved":
-                    clear_blocked(repo, pull, merge_token)
-                    return update_result
-                if update_result == "retry":
-                    return "update-retry"
-                if update_result.startswith("already-"):
-                    return update_result
-                if update_result != "declined":
-                    return update_result
+                    if update_result == "refresh-deferred":
+                        return update_result
+                    if update_result == "updated":
+                        clear_blocked(repo, pull, merge_token)
+                        print(
+                            f"PR #{number}: red checks "
+                            f"({', '.join(sorted(bad_names)[:6])}) "
+                            "are all green on a main proved since they ran — the "
+                            "base moved under it. Refreshed; its fresh checks "
+                            "decide on a later sweep.",
+                            flush=True,
+                        )
+                        return "rebased"
+                    if update_result == "head-moved":
+                        clear_blocked(repo, pull, merge_token)
+                        return update_result
+                    if update_result == "retry":
+                        return "update-retry"
+                    if update_result.startswith("already-"):
+                        return update_result
+                    if update_result != "declined":
+                        return update_result
+                    return None
+
+                def resume_inherited_red() -> str:
+                    """B2: the same request, re-run after the rotation-ordered pass.
+
+                    A decline cannot fall through to the rest of this function
+                    from here (that path can end in a merge, and a queued
+                    refresh never merges), so it reports the red checks the
+                    same way the in-pass path does unless main is still red on
+                    exactly these — in which case nothing is accused, the
+                    verdict is `update-declined` (which releases a lease this
+                    request claimed) and the next sweep's own evaluation takes
+                    the merge path.
+                    """
+                    outcome = refresh_inherited_red(holdable=False)
+                    if outcome is not None:
+                        return outcome
+                    if live_inherited_red(
+                        repo, pull, runs, bad_names, proof, freshness, read_token
+                    ):
+                        print(
+                            f"PR #{number}: GitHub declined the queued refresh and "
+                            "main is still red on the same checks; left armed and "
+                            "unlabeled for the next sweep's own evaluation.",
+                            flush=True,
+                        )
+                        return "update-declined"
+                    return block_for_red_checks()
+
+                outcome = refresh_inherited_red(holdable=True)
+                if outcome is not None:
+                    return outcome
 
         inherited_live = live_inherited_red(
             repo, pull, runs, bad_names, proof, freshness, read_token
@@ -7697,26 +7926,7 @@ def sweep_pull(
             # Fall through to the clean merge path (freshness, clobber, squash).
             print(f"PR #{number}: {inherited_live} — merging.", flush=True)
         else:
-            if blocked_names is not None:
-                # What this sweep could not answer, for `ensure_main_baseline`.
-                blocked_names |= bad_names
-
-            live_pull, authorization = live_authorized_pull(repo, pull, read_token)
-            if live_pull is None:
-                return authorization
-            pull = live_pull
-            added = mark_blocked(repo, pull, red_check_comment(names), merge_token)
-            _annotate(
-                "warning",
-                "merge-on-green",
-                f"PR #{number}: red checks ({', '.join(names[:6])}); "
-                + (
-                    "marker written."
-                    if added
-                    else "no new marker (already labeled, or both writes failed above)."
-                ),
-            )
-            return verdict
+            return block_for_red_checks()
 
     if semantic_mode and semantic_gate is not None and semantic_gate.inherited:
         inherited = "; ".join(_semantic_unit_lines(semantic_gate.inherited))
@@ -8105,9 +8315,32 @@ def sweep_pull(
             f"PR #{number}: every check concluded clean — squash-merged "
             f"({merged_sha[:12]}).",
         )
+        # B3 (2026-11-10): the 200 above IS the irreversible write, accepted. No
+        # read after it may turn that into any other verdict: this file re-read
+        # used to sit outside every `try`, so a transport fault or a rate limit
+        # here surfaced in `main()` as "error" (or ended the pass uncounted) for
+        # a pull request that had just merged — the pass then kept judging on a
+        # snapshot that did not contain the merge, and a second `main-red-repair`
+        # could be evaluated behind it. Unreadable files are recorded as an
+        # empty file list, which is never skip-ci noise, so `proof_bound_sha`
+        # treats the squash as a PRODUCT commit: every later pull request in
+        # this pass is re-proved against it, never merged past it.
+        try:
+            merged_files = freshness.pull_files(number)
+        except Exception as exc:
+            merged_files = None
+            _annotate(
+                "warning",
+                "merge-on-green cleanup",
+                f"PR #{number}: squash merge succeeded, but its changed files "
+                f"could not be re-read ({exc}). Recording the merged commit as an "
+                "unclassified product commit, so later pull requests in this pass "
+                "are re-proved instead of merged on the pre-merge snapshot. Merge "
+                "remains successful.",
+            )
         freshness.note_merged_commit(
             merged_sha or f"merged-{number}",
-            freshness.pull_files(number),
+            merged_files,
             message=f"squash merge of #{number}",
         )
         # Cleanup is genuinely best-effort. A label/ref read can fail after GitHub
@@ -8143,51 +8376,67 @@ def sweep_pull(
                 "a concurrent sweep won the race. Nothing to do, nothing labeled.",
             )
             return f"already-{how}"
-        update_result = attempt_update_branch(
-            repo,
-            pull,
-            merge_token,
-            budget,
-            f"GitHub refused the merge ({detail})",
-        )
-        if update_result == "refresh-deferred":
-            # No slots/lease left to fast-forward it, and the refusal may be
-            # nothing but a stale base — never fall through to `merge-blocked`.
-            return update_result
-        if update_result == "updated":
-            # The head now carries main. It is UNPROVEN until its fresh checks
-            # conclude, so nothing merges on this pass and the label stays armed
-            # for the sweep that judges those checks. Any stale `merge-blocked`
-            # from an earlier pass is cleared: the branch is moving again.
-            clear_blocked(repo, pull, merge_token)
-            return "updated"
-        if update_result == "head-moved":
-            clear_blocked(repo, pull, merge_token)
-            return update_result
-        if update_result == "retry":
-            return "update-retry"
-        if update_result.startswith("already-"):
-            return update_result
-        if update_result != "declined":
-            return update_result
-        live_pull, authorization = live_authorized_pull(repo, pull, read_token)
-        if live_pull is None:
-            return authorization
-        pull = live_pull
-        mark_blocked(
-            repo,
-            pull,
-            (
-                "`merge-on-green` sweeper: **not merging.** Every check was clean, but "
-                f"GitHub refused the squash merge: _{detail}_\n\n"
-                "GitHub also reports a REAL content conflict that prevents refreshing this "
-                "branch with `main`. Resolve the conflict and the next sweep will pick it "
-                "up (the label stays armed)."
-            ),
-            merge_token,
-        )
-        _annotate("warning", "merge-on-green", f"PR #{number}: merge refused — {detail}")
-        return "conflict"
+
+        def refresh_refused_merge(*, holdable: bool) -> str:
+            """Fast-forward a head GitHub refused to merge, or say why not.
+
+            Also the B2 resume: a request the budget held for an older proof
+            runs this again, in full, after the rotation-ordered pass. It
+            only ever refreshes or labels — the merge call is not repeated.
+            """
+            update_result = attempt_update_branch(
+                repo,
+                pull,
+                merge_token,
+                budget,
+                f"GitHub refused the merge ({detail})",
+                resume=(
+                    (lambda: refresh_refused_merge(holdable=False))
+                    if holdable
+                    else None
+                ),
+            )
+            if update_result == "refresh-deferred":
+                # No slots/lease left to fast-forward it, and the refusal may be
+                # nothing but a stale base — never fall through to `merge-blocked`.
+                return update_result
+            if update_result == "updated":
+                # The head now carries main. It is UNPROVEN until its fresh checks
+                # conclude, so nothing merges on this pass and the label stays armed
+                # for the sweep that judges those checks. Any stale `merge-blocked`
+                # from an earlier pass is cleared: the branch is moving again.
+                clear_blocked(repo, pull, merge_token)
+                return "updated"
+            if update_result == "head-moved":
+                clear_blocked(repo, pull, merge_token)
+                return update_result
+            if update_result == "retry":
+                return "update-retry"
+            if update_result.startswith("already-"):
+                return update_result
+            if update_result != "declined":
+                return update_result
+            live_pull, authorization = live_authorized_pull(repo, pull, read_token)
+            if live_pull is None:
+                return authorization
+            mark_blocked(
+                repo,
+                live_pull,
+                (
+                    "`merge-on-green` sweeper: **not merging.** Every check was "
+                    f"clean, but GitHub refused the squash merge: _{detail}_\n\n"
+                    "GitHub also reports a REAL content conflict that prevents "
+                    "refreshing this branch with `main`. Resolve the conflict and "
+                    "the next sweep will pick it up (the label stays armed)."
+                ),
+                merge_token,
+            )
+            _annotate(
+                "warning", "merge-on-green", f"PR #{number}: merge refused — {detail}"
+            )
+            return "conflict"
+
+        return refresh_refused_merge(holdable=True)
 
     _annotate(
         "warning",
@@ -8791,18 +9040,14 @@ def main() -> int:
     # shared by those sweeps. An unreadable census means zero NEW workload, not
     # zero merging: already-proven heads continue through every correctness gate.
     #
-    # F7 (2026-11-10) splits the one census into the two questions it was always
-    # conflating. The CAP is measured against CONTROLLER-OWNED workload — active
-    # ci.yml runs on pull requests carrying the refresh lease, plus the unindexed
-    # durable reservation — because authored `synchronize` runs are not this
-    # controller's admission decision (ci.yml's per-PR concurrency already bounds
-    # each author to one active run, and counting them starved all eight slots in
-    # every sampled sweep: 11-23 active vs cap 8, 0/0 refresh slots, 0-1 merges).
-    # The TOTAL brake is measured against the repo-wide count unchanged, so the
-    # ceiling the eight (adaptive sixteen) run under never rises: authored +
-    # controller proofs together still cannot exceed ADAPTIVE_PROOF_CAP_MAX in
-    # flight before ordinary refreshes stop. The floor lanes below are what keep
-    # draining when even that brake closes.
+    # The cap counts EVERY active pull-request ci.yml run, authored and controller
+    # refreshed alike: both consume the same hosted runners, and this stateless
+    # controller has no durable way to tell its own ordinary refreshes apart (the
+    # lease label marks only the single lease owner; the update-branch actor is
+    # the shared merge-token login). F7 (2026-11-10) does not change what the cap
+    # counts. It changes what happens when the cap is closed: the one
+    # lease-serialized floor slot below is no longer withheld by the hosted-pool
+    # census, so author pushes alone cannot hold the controller at zero.
     refresh_load_detail = ""
     try:
         active_pr_proofs = in_flight_pr_proofs(repo, read_token)
@@ -8816,35 +9061,31 @@ def main() -> int:
     reservation_count = refresh_lease_reservation_count(
         repo, read_token, refresh_lease, pulls
     )
-    try:
-        controller_proofs = controller_in_flight_proofs(
-            repo, read_token, refresh_lease.leased_numbers
-        )
-    except Exception as exc:
-        controller_proofs = None
-        refresh_load_detail = (
-            refresh_load_detail
-            or f"controller census failed ({exc}); new refreshes paused"
-        )
-    effective_controller_proofs = (
-        controller_proofs + reservation_count
-        if controller_proofs is not None
+    effective_active_proofs = (
+        active_pr_proofs + reservation_count
+        if active_pr_proofs is not None
         else None
     )
+    # ONE readability verdict for every new-workload lane. The pause below and the
+    # S8 repair reserve further down both read this single boolean, so a sweep that
+    # reports "new refreshes paused" can never still issue a reserve write: an
+    # unreadable census or lease means zero NEW workload for every pull, the
+    # labelled repair included.
+    workload_census_readable = active_pr_proofs is not None and bool(
+        refresh_lease.readable
+    )
     # The adaptive cap is read only where headroom could admit a refresh: a readable
-    # census and lease, refresh authority, fewer controller-owned proofs in flight
-    # than the widest cap, and a flat-cap allowance smaller than what this sweep
-    # could launch (with no proof in flight the flat cap already affords a full
+    # census and lease, refresh authority, fewer proofs in flight than the widest
+    # cap, and a flat-cap allowance smaller than what this sweep could launch (with
+    # no proof in flight the flat cap already affords a full
     # MAX_REFRESHES_PER_SWEEP). It degrades to the flat cap on ANY census problem,
     # including a RateLimited read: it must never route the sweep into the deferred
     # path.
     proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
     pool_census: HostedPoolCensus | None = None
-    effective_proofs = int(effective_controller_proofs or 0)
+    effective_proofs = int(effective_active_proofs or 0)
     if (
-        active_pr_proofs is not None
-        and controller_proofs is not None
-        and refresh_lease.readable
+        workload_census_readable
         and budget.refresh_authorized
         and effective_proofs < ADAPTIVE_PROOF_CAP_MAX
         and MAX_IN_FLIGHT_PR_PROOFS - effective_proofs < budget.max_refreshes
@@ -8855,29 +9096,16 @@ def main() -> int:
             adaptive_detail = f"census failed ({exc}): flat cap"
         else:
             proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
-    if (
-        active_pr_proofs is None
-        or controller_proofs is None
-        or not refresh_lease.readable
-    ):
+    if not workload_census_readable:
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
-        # Authored + controller proofs together may not pass the widest cap; the
-        # controller's own slots are measured against controller-owned workload.
-        total_brake = max(
-            0, ADAPTIVE_PROOF_CAP_MAX - active_pr_proofs - reservation_count
-        )
-        available_refreshes = min(
-            budget.max_refreshes,
-            max(0, proof_cap - int(effective_controller_proofs or 0)),
-            total_brake,
-        )
+        available_refreshes = max(0, proof_cap - effective_proofs)
         floor_detail = ""
         if available_refreshes == 0 and budget.max_refreshes > 0:
-            # F7: the ordinary allowance is closed, so the reserved floor takes
-            # over — unconditionally (see refresh_floor_allowance). Both floor
-            # slots are lease-serialized/threshold-bounded, never census-gated.
+            # The ordinary allowance is closed, so the one lease-serialized floor
+            # slot takes over — unconditionally (see refresh_floor_allowance):
+            # never census-gated, never more than one.
             available_refreshes, floor_detail = refresh_floor_allowance(
                 effective_proofs
             )
@@ -8886,12 +9114,10 @@ def main() -> int:
             0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
         )
         refresh_load_detail = (
-            f"{active_pr_proofs} indexed pull-request ci run(s) "
-            f"({controller_proofs} controller-owned) plus "
+            f"{active_pr_proofs} indexed pull-request ci run(s) plus "
             f"{reservation_count} unindexed durable "
-            f"reservation(s), controller cap "
-            f"{proof_cap} ({adaptive_detail}), repo-wide in-flight brake "
-            f"{total_brake} under {ADAPTIVE_PROOF_CAP_MAX}, "
+            f"reservation(s), global cap "
+            f"{proof_cap} ({adaptive_detail}), "
             f"{budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
             + (f" [{floor_detail}]" if floor_detail else "")
@@ -8920,11 +9146,12 @@ def main() -> int:
     # the repair label buys no extra workload, and an unreadable census or lease
     # still means zero NEW workload for every pull, repair included — the reserve
     # bounds a saturated census that was observed, never one that could not be.
+    # It reads the SAME boolean as the pause above on purpose (N1): any census
+    # that can pause ordinary refreshes must pause the reserve with them. (The
+    # interim `controller_proofs is not None` guard closed the same hole for the
+    # second census F7's first cut added; that census no longer exists.)
     budget.repair_reserve_authorized = (
-        baseline_state == "red"
-        and active_pr_proofs is not None
-        and controller_proofs is not None
-        and bool(refresh_lease.readable)
+        baseline_state == "red" and workload_census_readable
     )
 
     semantic_main = None
@@ -9055,9 +9282,112 @@ def main() -> int:
     repair_slot_used = False
     terminal_retry_reason = ""
     lease_watchdog_reason = ""
+    # B2: the rotation chose `considered` and its order; age only decides which
+    # of the refresh requests raised inside it get the scarce slots. Ordinary
+    # (tier-3) pull requests are ranked oldest `updated_at` first, rotation
+    # position breaking ties; `ordinary_pending` holds the ones that could still
+    # ask (not yet evaluated, or held), so a request is held only while an OLDER
+    # one could still need the slot it would take.
+    ordinary_rank: dict[int, tuple[tuple[int, float], int]] = {}
+    for position, candidate in enumerate(considered):
+        if (
+            sweep_tier(
+                candidate,
+                trigger_head_sha=trigger_head_sha,
+                refresh_lease_number=refresh_lease.owner_number,
+            )
+            == 3
+        ):
+            ordinary_rank[position] = (refresh_age_key(candidate), position)
+    ordinary_pending = set(ordinary_rank)
+    held_refreshes: list[tuple[int, dict[str, Any], Callable[[], str]]] = []
+    budget_stopped = False
+    def note_lease_verdict(pull: dict[str, Any], verdict: str) -> None:
+        """Lease bookkeeping owed after ANY verdict on a pull request.
+
+        Shared by the rotation-ordered pass and the age-ordered refresh
+        re-admission after it, so a refresh issued in either one releases or
+        watches the durable lease the same way.
+        """
+        nonlocal lease_watchdog_reason
+        if verdict in {
+            "authorization-unreadable",
+            "lease-lost",
+            "lease-rotation-deferred",
+            "lease-release-retry",
+        }:
+            lease_watchdog_reason = (
+                f"refresh generation on PR #{pull.get('number')} returned {verdict}"
+            )
+        elif verdict in {
+            "lease-generation-incomplete",
+            "lease-generation-pending",
+            "lease-generation-waiting",
+        }:
+            # Active ci/fences jobs generate their own completion wake. A minute-by-
+            # minute full-sweep chain during a normal 30-90 minute proof would burn
+            # the historical 1,000-request bucket. Missing/same-head states use the
+            # 10-minute level-triggered schedule as a bounded watchdog; it needs at
+            # most 12 passes over the two-hour hard TTL, not 120 self-dispatches.
+            print(
+                f"PR #{pull.get('number')}: refresh generation is {verdict}; "
+                "workflow completion or the bounded recovery schedule supplies "
+                "the next sweep without minute-by-minute self-dispatch.",
+                flush=True,
+            )
+        if refresh_lease.owns(pull):
+            release_reason = ""
+            if verdict in {
+                "blocked",
+                "conflict",
+                "empty-diff",
+                "update-declined",
+                "merged",
+                "already-merged",
+                "already-closed",
+                "draft",
+                "wrong-base",
+                "disarmed",
+            }:
+                release_reason = f"owner reached definitive verdict {verdict}"
+            elif verdict in {
+                "updated",
+                "re-proving",
+                "rebased",
+                "head-moved",
+                "update-retry",
+            }:
+                # Bridge update-branch -> Actions indexing. If no workflow appears,
+                # the chained sweep above eventually ages and releases the lease.
+                lease_watchdog_reason = (
+                    f"refresh write/retry on leased PR #{pull.get('number')}"
+                )
+            if release_reason:
+                release_target = pull
+                if verdict in {"blocked", "conflict", "empty-diff", "update-declined"}:
+                    live_release_pull, release_authorization = live_authorized_pull(
+                        repo, pull, read_token, require_refresh_lease=True
+                    )
+                    if live_release_pull is None:
+                        lease_watchdog_reason = (
+                            f"terminal lease release on PR #{pull.get('number')} "
+                            f"lost authorization ({release_authorization})"
+                        )
+                        return
+                    release_target = live_release_pull
+                if refresh_lease.release(release_target, release_reason):
+                    lease_watchdog_reason = (
+                        f"released refresh lease on PR #{pull.get('number')}"
+                    )
+                else:
+                    lease_watchdog_reason = (
+                        f"lease release retry on PR #{pull.get('number')}"
+                    )
+
     for index, pull in enumerate(considered):
         keep_going, why = budget.may_continue(index)
         if not keep_going:
+            budget_stopped = True
             left = len(considered) - index
             _annotate(
                 "warning",
@@ -9069,6 +9399,17 @@ def main() -> int:
             )
             tally["budget-deferred"] = tally.get("budget-deferred", 0) + left
             break
+        ordinary_pending.discard(index)
+        budget.held_resume = None
+        budget.older_refresh_candidates = (
+            sum(
+                1
+                for other in ordinary_pending
+                if ordinary_rank[other] < ordinary_rank[index]
+            )
+            if index in ordinary_rank
+            else None
+        )
         reconcile_only = False
         candidate_semantic = None
         candidate_runs = None
@@ -9151,12 +9492,12 @@ def main() -> int:
             elif is_repair:
                 # At most one repair MERGE per pass: even two individually green
                 # repairs have not been jointly proven against the broken baseline.
-                # F7: the slot is consumed only AFTER a verdict that actually spent
-                # it (see below), because sweep_pull has not yet judged eligibility
-                # here. Pre-consuming meant one DIRTY repair ("conflict") or one
-                # check-failing repair ("blocked") — both definitive no-ops —
-                # burned the only per-pass slot and deferred every other armed
-                # repair, and with it the whole repo, to later sweeps.
+                # The slot is settled AFTER the verdict (see below), because
+                # sweep_pull has not yet judged eligibility here. Pre-consuming
+                # meant one DIRTY repair ("conflict") or one check-failing repair
+                # ("blocked") — both definitive no-ops — burned the only per-pass
+                # slot and deferred every other armed repair, and with it the
+                # whole repo, to later sweeps.
                 pass
         try:
             sweep_options: dict[str, Any] = {}
@@ -9182,6 +9523,7 @@ def main() -> int:
                 f"done) — {exc}. The remaining {left} stay armed and unlabeled.",
             )
             tally["budget-deferred"] = tally.get("budget-deferred", 0) + left
+            budget_stopped = True
             break
         except Exception as exc:
             # One bad pull request must never fail a sweep that had clean work to
@@ -9193,89 +9535,26 @@ def main() -> int:
             )
             verdict = "error"
         tally[verdict] = tally.get(verdict, 0) + 1
+        held_resume, budget.held_resume = budget.held_resume, None
+        budget.older_refresh_candidates = None
+        if held_resume is not None and verdict == "refresh-deferred":
+            # Not refused: queued behind older armed proofs (B2). It still counts
+            # as a pending candidate for every younger request in this pass.
+            held_refreshes.append((index, pull, held_resume))
+            ordinary_pending.add(index)
         if (
             is_repair
             and baseline_state != "green"
-            and verdict in {"merged", "already-merged", "merge-unknown"}
+            and repair_verdict_spends_slot(verdict)
         ):
-            # The single per-pass repair merge is now spent — by this pass's own
-            # merge, an earlier pass's merge observed here, or an unknown-outcome
-            # merge attempt that must be treated as spent. Non-merge verdicts
-            # ("conflict", "blocked", "pending", "updated", ...) leave the slot
-            # open for the next armed repair in this same pass.
+            # B3: fail closed. The single per-pass repair merge is spent by every
+            # verdict that is not an affirmative no-merge outcome — this pass's
+            # own merge, an earlier pass's merge observed here, an unknown-outcome
+            # merge attempt, an unclassified "error", or a verdict nobody listed.
+            # Only the named no-ops ("conflict", "blocked", "pending", "updated",
+            # ...) leave the slot open for the next armed repair in this pass.
             repair_slot_used = True
-        if verdict in {
-            "authorization-unreadable",
-            "lease-lost",
-            "lease-rotation-deferred",
-            "lease-release-retry",
-        }:
-            lease_watchdog_reason = (
-                f"refresh generation on PR #{pull.get('number')} returned {verdict}"
-            )
-        elif verdict in {
-            "lease-generation-incomplete",
-            "lease-generation-pending",
-            "lease-generation-waiting",
-        }:
-            # Active ci/fences jobs generate their own completion wake. A minute-by-
-            # minute full-sweep chain during a normal 30-90 minute proof would burn
-            # the historical 1,000-request bucket. Missing/same-head states use the
-            # 10-minute level-triggered schedule as a bounded watchdog; it needs at
-            # most 12 passes over the two-hour hard TTL, not 120 self-dispatches.
-            print(
-                f"PR #{pull.get('number')}: refresh generation is {verdict}; "
-                "workflow completion or the bounded recovery schedule supplies "
-                "the next sweep without minute-by-minute self-dispatch.",
-                flush=True,
-            )
-        if refresh_lease.owns(pull):
-            release_reason = ""
-            if verdict in {
-                "blocked",
-                "conflict",
-                "empty-diff",
-                "merged",
-                "already-merged",
-                "already-closed",
-                "draft",
-                "wrong-base",
-                "disarmed",
-            }:
-                release_reason = f"owner reached definitive verdict {verdict}"
-            elif verdict in {
-                "updated",
-                "re-proving",
-                "rebased",
-                "head-moved",
-                "update-retry",
-            }:
-                # Bridge update-branch -> Actions indexing. If no workflow appears,
-                # the chained sweep above eventually ages and releases the lease.
-                lease_watchdog_reason = (
-                    f"refresh write/retry on leased PR #{pull.get('number')}"
-                )
-            if release_reason:
-                release_target = pull
-                if verdict in {"blocked", "conflict", "empty-diff"}:
-                    live_release_pull, release_authorization = live_authorized_pull(
-                        repo, pull, read_token, require_refresh_lease=True
-                    )
-                    if live_release_pull is None:
-                        lease_watchdog_reason = (
-                            f"terminal lease release on PR #{pull.get('number')} "
-                            f"lost authorization ({release_authorization})"
-                        )
-                        continue
-                    release_target = live_release_pull
-                if refresh_lease.release(release_target, release_reason):
-                    lease_watchdog_reason = (
-                        f"released refresh lease on PR #{pull.get('number')}"
-                    )
-                else:
-                    lease_watchdog_reason = (
-                        f"lease release retry on PR #{pull.get('number')}"
-                    )
+        note_lease_verdict(pull, verdict)
         if verdict in {"main-moved", "merge-unknown"}:
             # A product commit landed under this snapshot, or a merge outcome is
             # ambiguous. Remaining PRs need a rebuilt main timeline. Skip-ci ticks
@@ -9295,6 +9574,87 @@ def main() -> int:
             )
             terminal_retry_reason = f"PR #{pull.get('number')} verdict {verdict}"
             break
+
+    # B2: age-ordered refresh admission. Every request held above was judged to
+    # need a refresh under this pass's snapshot and was parked only so an older
+    # armed proof could be asked first. They are asked again here, oldest
+    # `updated_at` first (rotation position breaks ties, unknown age last), while
+    # an ordinary slot is still grantable. A re-admission can only refresh, label
+    # a real conflict or defer — it never merges — and it repeats the live
+    # authorization read and the lease admission, so it does not depend on the
+    # main snapshot and still runs after a `main-moved`/`merge-unknown` stop
+    # (otherwise a pass that ends early would issue fewer refreshes than plain
+    # rotation did). It does NOT run after a budget stop.
+    budget.older_refresh_candidates = None
+    budget.held_resume = None
+    if held_refreshes and not budget_stopped:
+        held_refreshes.sort(key=lambda entry: ordinary_rank[entry[0]])
+        readmitted = 0
+        for index, pull, resume in held_refreshes:
+            if (
+                readmitted >= REFRESH_READMISSION_CAP
+                or not budget.ordinary_refresh_available()
+            ):
+                break
+            keep_going, why = budget.may_continue(0)
+            if not keep_going:
+                _annotate(
+                    "warning",
+                    "merge-on-green",
+                    f"Stopping age-ordered refresh admission after {readmitted} of "
+                    f"{len(held_refreshes)} queued request(s) — {why}. The rest stay "
+                    "armed and unlabeled for a later sweep.",
+                )
+                break
+            readmitted += 1
+            try:
+                verdict = resume()
+            except RateLimited as exc:
+                readmitted -= 1
+                _annotate(
+                    "warning",
+                    "merge-on-green",
+                    f"Stopping age-ordered refresh admission at PR "
+                    f"#{pull.get('number')} — {exc}. Queued requests stay armed "
+                    "and unlabeled.",
+                )
+                break
+            except Exception as exc:
+                _annotate(
+                    "warning",
+                    "merge-on-green",
+                    f"PR #{pull.get('number')}: queued refresh failed ({exc}); "
+                    "retrying next run.",
+                )
+                verdict = "error"
+            if verdict != "refresh-deferred":
+                tally["refresh-deferred"] = tally.get("refresh-deferred", 1) - 1
+                if tally["refresh-deferred"] <= 0:
+                    del tally["refresh-deferred"]
+                tally[verdict] = tally.get(verdict, 0) + 1
+            note_lease_verdict(pull, verdict)
+        still_queued = held_refreshes[readmitted:]
+        if still_queued:
+            shown = ", ".join(f"#{pull.get('number')}" for _i, pull, _r in still_queued[:20])
+            more = f" (+{len(still_queued) - 20} more)" if len(still_queued) > 20 else ""
+            _annotate(
+                "notice",
+                "merge-on-green",
+                f"{len(still_queued)} queued refresh request(s) were not admitted "
+                f"this sweep: {budget.refreshes_used}/{budget.max_refreshes} "
+                f"effective CI workload slot(s) in use across "
+                f"{budget.refresh_attempts_used}/{budget.max_refresh_attempts} "
+                "bounded update attempt(s)"
+                + (f" ({budget.refresh_context})" if budget.refresh_context else "")
+                + ". Older armed proofs were asked first. Controller state is "
+                f"unchanged; a later sweep picks them up: {shown}{more}.",
+            )
+    elif held_refreshes:
+        print(
+            f"{len(held_refreshes)} queued refresh request(s) were not re-admitted: "
+            "this pass stopped on its API budget. They stay armed and unlabeled.",
+            flush=True,
+        )
 
     # AFTER the pull-request pass, deliberately: the dispatch decision needs to see
     # what this sweep was actually unable to answer, which only exists once the pass
