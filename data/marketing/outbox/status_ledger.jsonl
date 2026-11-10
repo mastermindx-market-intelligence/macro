@@ -13420,3 +13420,10 @@
 {"id":"ob-2026-11-10-b1a57b1627","from":"posting","to":"posted","at":"2026-11-10T18:35:04Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af363d8341cea4af629c8a6","external_url":null,"at":"2026-11-10T18:34:56Z","booked_at":"2026-11-10T18:51:56Z"}}
 {"id":"ob-2026-11-10-187df89ec5","from":"approved","to":"posting","at":"2026-11-10T18:35:04Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-10-187df89ec5","from":"posting","to":"posted","at":"2026-11-10T18:35:05Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af363d9eca53e2861fb7dd1","external_url":null,"at":"2026-11-10T18:34:56Z","booked_at":"2026-11-10T19:01:56Z"}}
+{"id":"ob-2026-11-10-71b90ef5b7","from":"queued","to":"approved","at":"2026-11-10T20:31:48Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-10-ef3c4b8756","from":"queued","to":"approved","at":"2026-11-10T20:31:48Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-10-f20d6bbda6","from":"queued","to":"approved","at":"2026-11-10T20:31:49Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-10-71b90ef5b7","from":"approved","to":"posting","at":"2026-11-10T20:31:51Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-11-10-71b90ef5b7","from":"posting","to":"posted","at":"2026-11-10T20:31:52Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af37f377c81278dfdb7e2de","external_url":null,"at":"2026-11-10T20:31:46Z","booked_at":"2026-11-10T20:31:46Z"}}
+{"id":"ob-2026-11-10-ef3c4b8756","from":"approved","to":"quarantined","at":"2026-11-10T20:31:52Z","actor":"publisher","note":"clock: stale_session_claim:2026-11-04!=2026-11-10 (copy claims today AND Wednesday's tape)","receipt":null}
+{"id":"ob-2026-11-10-f20d6bbda6","from":"approved","to":"quarantined","at":"2026-11-10T20:31:52Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
