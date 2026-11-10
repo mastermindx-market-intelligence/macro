@@ -1,21 +1,27 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-08T19:43:32.848033+00:00",
-  "posts_seen": 12,
-  "seen_total": 330,
-  "evaluated": 2,
+  "as_of": "2026-11-10T01:30:44.491896+00:00",
+  "posts_seen": 11,
+  "seen_total": 334,
+  "evaluated": 3,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-08-icymi-ag-todd-blanche-dismantles-democrats-oversight-charade-on-the-sunday-shows",
+      "id": "wh-2026-11-09-nominations-and-withdrawals-sent-to-the-senate-ba2b",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-09-presidential-message-on-national-american-history-and-founders-month",
       "importance": 5,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     },
     {
-      "id": "wh-2026-11-08-presidential-message-on-diwali-1f71",
-      "importance": 5,
+      "id": "wh-2026-11-09-icymi-president-trump-on-60-minutes-we-have-historically-good-numbers",
+      "importance": 10,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }

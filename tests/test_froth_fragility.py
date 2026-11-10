@@ -362,7 +362,8 @@ def test_render_smoke_bilingual():
     assert "Watch" in html and "关注" in html                         # headline band both langs
     assert "provisional" in html and "暂定" in html                   # accrual badge both langs
     assert "accruing" in html and "积累中" in html                    # forward-record line both langs
-    assert "sizing, not selection" in html and "而非选股" in html      # display-only doctrine both langs
+    assert "not validated trade signals" in html and "并非经验证的交易信号" in html
+    assert "the response is sizing" not in html and "应对是仓位控制" not in html
     assert 'class="pos"' not in html and 'class="neg"' not in html   # euphoria not "good"/"bad"
 
 
