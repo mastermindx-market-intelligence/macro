@@ -1215,7 +1215,8 @@ def _qualify_hazard(rec: dict, hz: dict, family: str) -> dict:
     `hazard_score.qualify_current_model` checks parity (the recorded
     LIVE_HAZARD_PARITY verdict), the record's turn epoch (turn_knowledge.epoch),
     cohort, direction, structure basis, horizon and the whole curve; a failed
-    block is emitted as the KM PRIOR with the MODEL value withheld.
+    block is emitted unavailable with no 1m/3m/6m number at all (the KM PRIOR is
+    withheld too: B12 Q9).
     """
     from engine import hazard_score as _hs
     try:

@@ -71,7 +71,9 @@
    "observed_rate": 0.0843,
    "mean_forecast": 0.0858,
    "mean_baseline": 0.084,
-   "reliability_slope": 0.731,
+   "reliability_slope_raw_windows": 0.731,
+   "n_reliability_bins": 10,
+   "reliability_slope": 0.621,
    "calibration_ok": true,
    "brier_model": 0.076758,
    "brier_baseline": 0.077547,
@@ -96,7 +98,9 @@
    "observed_rate": 0.233,
    "mean_forecast": 0.2288,
    "mean_baseline": 0.2254,
-   "reliability_slope": 0.992,
+   "reliability_slope_raw_windows": 0.992,
+   "n_reliability_bins": 10,
+   "reliability_slope": 1.0,
    "calibration_ok": true,
    "brier_model": 0.174457,
    "brier_baseline": 0.179234,
@@ -121,7 +125,9 @@
    "observed_rate": 0.1091,
    "mean_forecast": 0.1224,
    "mean_baseline": 0.1255,
-   "reliability_slope": 0.872,
+   "reliability_slope_raw_windows": 0.872,
+   "n_reliability_bins": 10,
+   "reliability_slope": 0.85,
    "calibration_ok": true,
    "brier_model": 0.088054,
    "brier_baseline": 0.09805,
@@ -138,6 +144,7 @@
   "test_to": "2026-09-16",
   "no_entry_periods_C3": 1,
   "no_fill_signals": 0,
+  "immature_signals_not_scored": 1,
   "exposure_match_w": 0.9958,
   "C1": {
    "ann_return": 0.115,
@@ -255,13 +262,13 @@
    "share_held_by_C3": 0.9356
   },
   "rebounds": {
-   "n_periods_after_10pct_drawdown": 67,
-   "n_with_usable_denominator": 61,
-   "C3_over_C1_median": 0.934,
-   "C2_over_C1_median": 0.037,
-   "C1_mean": 0.0122,
-   "C3_mean": 0.0108,
-   "C2_mean": 0.0075
+   "n_drawdown_episodes": 6,
+   "n_with_usable_denominator": 5,
+   "C3_over_C1_median": 0.72,
+   "C2_over_C1_median": 0.009,
+   "C1_mean": 0.0028,
+   "C3_mean": -0.0111,
+   "C2_mean": 0.001
   }
  },
  "tape_sha256": {
@@ -278,6 +285,30 @@
   "XLC": "527d47dca77e918e0f57d897d14f109231465b70f7913918de58420822fa0cf9",
   "SPY": "3a7a515be6be64af75d2aa3b29434db99271ea655cb013a1426e93ee7890ae94",
   "BIL": "600cb400a0256d29a4d12fba625e2562eff39d8104407bb3c1a076a86e41b1d6"
+ },
+ "sensitivity_not_verdict": {
+  "H2_adverse_tail": {
+   "direction_only_skill_vs_climatology": 0.0032,
+   "full_skill_vs_direction_only": 0.007,
+   "age_only_skill_vs_climatology": 0.00273,
+   "full_skill_vs_age_only": 0.00747
+  },
+  "H3_target_before_invalidation": {
+   "direction_only_skill_vs_climatology": 0.0152,
+   "full_skill_vs_direction_only": 0.01163,
+   "age_only_skill_vs_climatology": 0.00165,
+   "full_skill_vs_age_only": 0.02505
+  },
+  "H4_transition_time": {
+   "direction_only_skill_vs_climatology": 0.0928,
+   "full_skill_vs_direction_only": 0.01008,
+   "age_only_skill_vs_climatology": 0.03641,
+   "full_skill_vs_age_only": 0.06802
+  },
+  "H1_remaining_return_distribution": {
+   "full_skill_vs_direction_only": -0.00243,
+   "full_skill_vs_age_only": -0.00077
+  }
  },
  "authority": {
   "may_rank": false,

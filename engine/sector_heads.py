@@ -27,6 +27,7 @@ from typing import Literal, Optional, TypedDict
 FORECAST_HEADS_SCHEMA = "sector_cycles.forecast_heads.v1"
 PROTOCOL_REF = "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
 REPORT_REF = "research/sector_completion_20261021/b12/v11_heads_result.json"
+RESULTS_REF = "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
 PROTOCOL_EPOCH = "price_c4414dcb"        # ZigZag v2, close_price, pct 14 (onto.turn_epoch)
 HORIZON_SESSIONS = 20                    # completed sessions after a t+1 close entry
 AUTHORITY = {"may_rank": False, "may_gate": False, "may_size": False,
@@ -72,8 +73,10 @@ def _head(head: str, *, status: str, reason: str) -> dict:
         "reason_code": reason,
         "research_disposition": res["disposition"],
         "research_reasons": list(res.get("reasons") or []),
-        "evidence": {k: res[k] for k in ("skill", "ci90", "p_one_sided", "n_scored",
-                                         "coverage", "n_dates") if k in res},
+        # Pointer only: the protocol says "nothing numeric yet" on a record, so research
+        # statistics stay in the report, never on the live payload (independent review M2).
+        "evidence": {"protocol": PROTOCOL_REF, "report_ref": REPORT_REF,
+                     "results_doc": RESULTS_REF},
         "target": TARGETS[head],
         "horizon_sessions": HORIZON_SESSIONS,
         "market": "US",
@@ -86,6 +89,7 @@ def head_capabilities(*, record_kind: str, turn_epoch: Optional[str],
 
     Reason precedence per head (first that applies):
       membership_not_point_in_time  — basket / amalgam records (today's roster back-projected)
+      record_kind_not_evaluated     — any other non-sector record kind
       market_not_evaluated          — any non-US record
       research_withheld_failed / research_withheld_underpowered / research_not_evaluated
       live_state_not_protocol_epoch — the record's turn state is not the protocol's epoch
@@ -94,8 +98,10 @@ def head_capabilities(*, record_kind: str, turn_epoch: Optional[str],
     out = {}
     for head in HEADS:
         disp = (HEAD_RESEARCH.get(head) or {}).get("disposition", "NOT_EVALUATED")
-        if record_kind in _RECONSTRUCTED_KINDS or record_kind not in ("sector",):
+        if record_kind in _RECONSTRUCTED_KINDS:
             reason = "membership_not_point_in_time"
+        elif record_kind != "sector":
+            reason = "record_kind_not_evaluated"
         elif market != "US":
             reason = "market_not_evaluated"
         elif disp != "QUALIFIED_RESEARCH":

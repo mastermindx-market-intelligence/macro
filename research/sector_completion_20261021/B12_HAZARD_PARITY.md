@@ -283,3 +283,20 @@ and the gate before release.
   - direction comes only from the last confirmed turn
   - the qualified path requires MODEL/PASS cells
 - **Remaining reviewer gaps:** a proper leg-level KM was not computed; country, cn_sector and commodity were not recomputed.
+
+### v1.1 per-head qualification (2026-11-10)
+
+The four remaining-opportunity heads are now judged one at a time, each under its own
+predeclared protocol: `B12_V11_HEADS_PROTOCOL.md`, committed at `9a7fbf9e2563` before any
+result existed. Results and the review adjudication are in `B12_V11_HEADS_RESULTS.md`.
+
+| head | disposition |
+|---|---|
+| remaining-return distribution | WITHHELD_FAILED |
+| adverse tail | QUALIFIED_RESEARCH, fragile |
+| target before invalidation | QUALIFIED_RESEARCH, mostly leg direction |
+| transition time | QUALIFIED_RESEARCH, mostly leg direction |
+
+Every head is still emitted as `withheld` on every record, each with its own reason code
+(`engine/sector_heads.py`). Nothing above changes `LIVE_HAZARD_PARITY = PARITY_FAILS` or the
+Q1–Q15 register. The historical 4/6 verdict is still no input to the current runtime.

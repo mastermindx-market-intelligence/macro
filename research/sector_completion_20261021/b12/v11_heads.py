@@ -194,7 +194,15 @@ def judge(Fall: pd.DataFrame, rng) -> dict:
             f, y = F[f"f_{h}"].to_numpy(), F[h].to_numpy().astype(float)
             r["observed_rate"], r["mean_forecast"] = round(float(y.mean()), 4), round(float(f.mean()), 4)
             r["mean_baseline"] = round(float(F[f"b_{h}"].mean()), 4)
-            slope = float(np.polyfit(f, y, 1)[0]) if np.var(f) > 1e-12 else float("nan")
+            # Protocol §4 rule 6: forecast-DECILE reliability slope (OLS of decile mean outcome
+            # on decile mean forecast). The raw-window OLS slope is kept as a diagnostic only.
+            raw = float(np.polyfit(f, y, 1)[0]) if np.var(f) > 1e-12 else float("nan")
+            r["reliability_slope_raw_windows"] = None if not np.isfinite(raw) else round(raw, 3)
+            bins = pd.qcut(pd.Series(f).rank(method="first"), 10, labels=False)
+            bf = pd.Series(f).groupby(bins).mean().to_numpy()
+            by = pd.Series(y).groupby(bins).mean().to_numpy()
+            slope = float(np.polyfit(bf, by, 1)[0]) if np.var(bf) > 1e-12 else float("nan")
+            r["n_reliability_bins"] = int(len(bf))
             r["reliability_slope"] = None if not np.isfinite(slope) else round(slope, 3)
             r["calibration_ok"] = bool(abs(f.mean() - y.mean()) <= 0.03 and np.isfinite(slope)
                                        and 0.5 <= slope <= 1.5)
@@ -265,17 +273,19 @@ def comparators(data: dict, spy: pd.DataFrame, cash_tr: pd.Series, turns: dict, 
     sma200 = spy["close_price"].rolling(200, min_periods=200).mean()
     first_ok = {s: data[s].index[WARMUP] if len(data[s]) > WARMUP else None for s in SECTORS}
     rows, prev = [], {}
-    no_entry = no_fill = 0
+    no_entry = no_fill = immature = 0
     emerg = {"emergers": 0, "emergers_held": 0, "nontop": 0, "nontop_held": 0}
     failed = {"failed_leaders": 0, "failed_held": 0}
     rebounds = []
+    in_dd = False            # rebound episodes: first decision date per >=10% drawdown episode
     for i in range(WARMUP, len(idx), STEP):
         t = idx[i]
-        if i + 1 >= len(idx):
+        if i + 1 >= len(idx):          # signal on the last session: no t+1 close to fill at
             no_fill += 1
             continue
-        if i + 21 >= len(idx):
-            break
+        if i + 21 >= len(idx):         # filled but horizon not complete: immature, not scored
+            immature += 1
+            continue
         e, x = idx[i + 1], idx[i + 21]
         elig = [s for s in SECTORS if first_ok[s] is not None and first_ok[s] <= t
                 and e in data[s].index and x in data[s].index]
@@ -333,9 +343,14 @@ def comparators(data: dict, spy: pd.DataFrame, cash_tr: pd.Series, turns: dict, 
                     emerg["emergers_held"] += len(em & set(up_secs))
                     emerg["nontop"] += len(non)
                     emerg["nontop_held"] += len(non & set(up_secs))
-        # rebounds after a >= 10% C1 drawdown
+        # rebounds (protocol §5): the next 20 sessions after EACH >= 10% C1 drawdown — one
+        # period per episode (the first decision date at or past -10%); an episode ends when
+        # SPY makes a new total-return high above the episode's peak.
         peak = float(spy_tr.loc[:t].max())
-        if float(spy_tr.loc[t]) / peak - 1 <= -0.10:
+        if in_dd and peak > dd_peak:
+            in_dd = False
+        if not in_dd and float(spy_tr.loc[t]) / peak - 1 <= -0.10:
+            in_dd, dd_peak = True, peak
             rebounds.append(row)
     P = pd.DataFrame(rows).set_index("t")
     P = P[P.index >= TEST_FROM]
@@ -343,7 +358,8 @@ def comparators(data: dict, spy: pd.DataFrame, cash_tr: pd.Series, turns: dict, 
     P["C3_EXPO"] = w_match * P["C3_EW"] + (1 - w_match) * P["cash"]
     out = {"n_periods": int(len(P)), "test_from": str(TEST_FROM.date()),
            "test_to": str(P.index[-1].date()), "no_entry_periods_C3": no_entry,
-           "no_fill_signals": no_fill, "exposure_match_w": round(float(w_match), 4)}
+           "no_fill_signals": no_fill, "immature_signals_not_scored": immature,
+           "exposure_match_w": round(float(w_match), 4)}
     for k in ("C1", "C2", "C3", "C3_EW", "C3_EXPO"):
         s = stats(P[k], P["C1"], P["cash"])
         if f"{k}_inv" in P:
@@ -374,13 +390,38 @@ def comparators(data: dict, spy: pd.DataFrame, cash_tr: pd.Series, turns: dict, 
     RB = pd.DataFrame(rebounds)
     RB = RB[RB.t >= TEST_FROM] if len(RB) else RB
     ok = RB[RB.spy.abs() >= 0.005] if len(RB) else RB
-    out["rebounds"] = {"n_periods_after_10pct_drawdown": int(len(RB)),
+    out["rebounds"] = {"n_drawdown_episodes": int(len(RB)),
                        "n_with_usable_denominator": int(len(ok)),
                        "C3_over_C1_median": round(float((ok.C3 / ok.spy).median()), 3) if len(ok) else None,
                        "C2_over_C1_median": round(float((ok.C2 / ok.spy).median()), 3) if len(ok) else None,
                        "C1_mean": round(float(RB.spy.mean()), 4) if len(RB) else None,
                        "C3_mean": round(float(RB.C3.mean()), 4) if len(RB) else None,
                        "C2_mean": round(float(RB.C2.mean()), 4) if len(RB) else None}
+    return out
+
+
+def simpler_state_sensitivity(W: pd.DataFrame, F_full: pd.DataFrame) -> dict:
+    """Adjudication diagnostic added after the independent review (NOT a protocol rule and
+    never a verdict input): how much of each head's skill a direction-only or age-only state
+    already earns, on the full model's scored windows."""
+    full = F_full[~F_full.abstain].set_index(["sid", "t"])
+    out = {}
+    for name, fn in {"direction_only": lambda c: None if c is None else c.split(":")[0],
+                     "age_only": lambda c: None if c is None else c.split(":")[1]}.items():
+        W2 = W.copy()
+        W2["cell"] = W2.cell.map(fn)
+        A = forecasts(W2)
+        A = A[~A.abstain].set_index(["sid", "t"]).reindex(full.index)
+        for h, head in (("y2", HEADS[1]), ("y3", HEADS[2]), ("y4", HEADS[3])):
+            d = out.setdefault(head, {})
+            d[f"{name}_skill_vs_climatology"] = round(float(
+                1 - A[f"bs_m_{h}"].sum() / A[f"bs_b_{h}"].sum()), 5)
+            d[f"full_skill_vs_{name}"] = round(float(
+                1 - full[f"bs_m_{h}"].sum() / A[f"bs_m_{h}"].sum()), 5)
+        a1 = A.dropna(subset=["pl_m"])
+        f1 = full.loc[a1.index]
+        out.setdefault(HEADS[0], {})[f"full_skill_vs_{name}"] = round(float(
+            1 - f1.pl_m.sum() / a1.pl_m.sum()), 5)
     return out
 
 
@@ -404,6 +445,7 @@ def main() -> None:
     heads = judge(F, rng)
     cells = (F[~F.abstain].groupby("cell").size().to_dict())
     comp = comparators(data, spy, cash, turns, rng)
+    sens = simpler_state_sensitivity(W, F)
     tapes = {t: sha(a.tape_dir / "data" / "yahoo" / f"{t}.parquet") for t in SECTORS + ["SPY", "BIL"]}
     result = {"schema": "b12.v11_heads_result.v1",
               "protocol": "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md",
@@ -411,6 +453,7 @@ def main() -> None:
               "windows": {"total": int(len(W)), "mature": int(W.mature.sum()),
                           "test_cells_scored": {k: int(v) for k, v in cells.items()}},
               "heads": heads, "comparators": comp, "tape_sha256": tapes,
+              "sensitivity_not_verdict": sens,
               "authority": {k: False for k in ("may_rank", "may_gate", "may_size",
                                                "may_trade", "may_escalate")}}
     a.out.write_text(json.dumps(result, indent=1, default=str) + "\n")

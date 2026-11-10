@@ -46,8 +46,23 @@ def test_every_head_is_present_and_withheld_with_its_own_reason():
     for head, h in b["heads"].items():
         assert h["status"] == "withheld"
         assert h["reason_code"]
-        assert "value" not in h and "p" not in h          # no number leaks
         assert h["horizon_sessions"] == 20
+    _assert_no_number(b)
+
+
+def _assert_no_number(obj, path="forecast_heads"):
+    """No research statistic or forecast rides a record: the only number allowed in the
+    block is the horizon length (independent review M2)."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == "horizon_sessions":
+                continue
+            _assert_no_number(v, f"{path}.{k}")
+    elif isinstance(obj, (list, tuple)):
+        for i, v in enumerate(obj):
+            _assert_no_number(v, f"{path}[{i}]")
+    else:
+        assert isinstance(obj, (str, type(None))) or obj is False, f"number leaked at {path}: {obj!r}"
 
 
 def test_failed_head_carries_research_failure_not_the_epoch_reason():
@@ -68,10 +83,16 @@ def test_live_legacy_epoch_withholds_research_qualified_heads_individually():
             assert h["reason_code"] == "live_state_not_protocol_epoch"
 
 
-@pytest.mark.parametrize("kind", ["basket", "ndx", "rut"])
-def test_reconstructed_roster_records_withhold_every_head(kind):
-    b = _block(kind=kind, epoch=sh.PROTOCOL_EPOCH)
+def test_reconstructed_roster_records_withhold_every_head():
+    # amalgam records are stamped while still kind="basket" (build_basket), then renamed
+    b = _block(kind="basket", epoch=sh.PROTOCOL_EPOCH)
     assert {h["reason_code"] for h in b["heads"].values()} == {"membership_not_point_in_time"}
+
+
+@pytest.mark.parametrize("kind", ["country", "cn_sector", "ndx", ""])
+def test_other_record_kinds_are_not_evaluated_not_mislabelled(kind):
+    b = _block(kind=kind, epoch=sh.PROTOCOL_EPOCH)
+    assert {h["reason_code"] for h in b["heads"].values()} == {"record_kind_not_evaluated"}
 
 
 def test_non_us_market_is_not_evaluated():
@@ -104,6 +125,7 @@ def test_live_sector_build_emits_forecast_heads_all_withheld():
     fh = rec["forecast_heads"]
     assert fh["schema"] == sh.FORECAST_HEADS_SCHEMA
     assert all(h["status"] == "withheld" for h in fh["heads"].values())
+    _assert_no_number(fh)
     json.dumps(fh)
 
 
