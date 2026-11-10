@@ -1,3 +1,35 @@
+---
+key: MERGE-ARM-EXPIRY-14D-20261109
+question: "How should stale merge-on-green arms be retired without closing their pull requests?"
+answer: >-
+  Disarm open auto-merge requests that have had no PR update for more than
+  14 days and whose heads are behind or conflicting. Preserve the PR, add
+  one tracking comment linked to this decision, and require the author to
+  refresh the branch onto current main before explicitly re-arming.
+rationale: >-
+  The original Meta-CEO ruling reports about 200 armed PRs, a throughput
+  of about 2-4 merges per hour, and an oldest arm of 48 days. It identifies
+  stale arms holding queue position as an arm-hygiene problem. This
+  frontmatter repair records that published rationale without independently
+  re-verifying those measurements or changing the sweep procedure.
+alternatives:
+  - option: "(not recorded)"
+    why_not: >-
+      The original published ruling does not document an alternatives
+      comparison; this schema repair does not infer one.
+evidence:
+  - "https://github.com/mastermindx-market-intelligence/macro/commit/6e21083a349da8750ff738cb8d701c92743b5cd6"
+  - "Original ruling: Meta-CEO card t_b5022936"
+affects:
+  - "WS:CI-MERGE-CONTROL-PLANE"
+# These two metadata judgments are recorded by the H4 schema-repair owner.
+# They were not specified in the original published ruling.
+confidence: medium
+reversibility: easy
+decided_by: meta-ceo
+decided_at: 2026-11-09
+---
+
 # Merge-Arm Expiry Policy (14 Days)
 
 **Decision ID:** DEC-MERGE-ARM-EXPIRY-14D-20261109
