@@ -1225,6 +1225,72 @@ def test_v11_theme_producer_null_perf_leaves_the_key_absent(tmp_path):
     assert "perf" in rows["big_pharma"]
 
 
+def _over_ceiling(path):
+    """A sparse file whose on-disk size is one byte over the N-5 ceiling."""
+    with open(path, "wb") as handle:
+        handle.truncate(carry._ROW_SOURCE_MAX_BYTES + 1)
+    return path
+
+
+def test_v11_over_ceiling_source_file_is_not_parsed_and_carries_the_stub(
+        tmp_path, monkeypatch):
+    """N-5 (review r1): a row-block source file over ``_ROW_SOURCE_MAX_BYTES``
+    on disk is NEVER parsed - the reader carries the small ``block_too_large``
+    stub instead, undated (the date lives inside the file we refuse to open).
+    Proof of no parse: ``_read`` is patched to raise."""
+    def boom(_path):
+        raise AssertionError("an over-ceiling source file was parsed")
+    monkeypatch.setattr(carry, "_read", boom)
+    site = _rows_site(tmp_path)
+    _over_ceiling(site / NASDAQ)
+    block = carry.confluence_universe_rows(
+        site, "marketdata/subsector_confluence_nasdaq.json",
+        "nasdaq_subsectors", ("subsectors", "sectors"))
+    assert block == {"source": "marketdata/subsector_confluence_nasdaq.json",
+                     "status": "unavailable", "reason": "block_too_large"}
+
+
+def test_v11_over_ceiling_baskets_file_gives_theme_rows_the_stub(tmp_path):
+    """N-5 (review r1): the theme-row reader guards its own sources the same
+    way - an over-ceiling baskets.json carries the block_too_large stub, not a
+    degraded block with null names and no perf."""
+    site = _rows_site(tmp_path)
+    _over_ceiling(site / "basketdata/baskets.json")
+    block = carry.theme_rows(site)
+    assert block == {"source": "basketdata/si_handoff.json#theme_context.themes",
+                     "status": "unavailable", "reason": "block_too_large"}
+
+
+def test_v11_over_ceiling_stub_survives_build_carry_undated(tmp_path):
+    """N-5 (review r1): the undated stub survives ``build_carry``'s undated-drop
+    - the block is carried as ``block_too_large``, never silently degraded to
+    ``not_produced``."""
+    site = _rows_site(tmp_path)
+    _over_ceiling(site / NASDAQ)
+    produced = carry.build_carry(site, {})
+    assert produced["confluence_universe_nasdaq"] == {
+        "source": "marketdata/subsector_confluence_nasdaq.json",
+        "status": "unavailable", "reason": "block_too_large"}
+
+
+def test_v11_source_file_at_the_ceiling_is_read_normally(tmp_path, monkeypatch):
+    """N-5 (review r1): the guard is strictly greater-than - a file at exactly
+    the ceiling is parsed normally and carries the same block as the unguarded
+    read. The ceiling is pinned to the real file's own size for the boundary
+    case, so no 64 MiB fixture is written."""
+    site = _rows_site(tmp_path)
+    monkeypatch.setattr(carry, "_ROW_SOURCE_MAX_BYTES", (site / NASDAQ).stat().st_size)
+    assert (site / NASDAQ).stat().st_size == carry._ROW_SOURCE_MAX_BYTES
+    block = carry.confluence_universe_rows(
+        site, "marketdata/subsector_confluence_nasdaq.json",
+        "nasdaq_subsectors", ("subsectors", "sectors"))
+    reference = carry.confluence_universe_rows(
+        SITE, "marketdata/subsector_confluence_nasdaq.json",
+        "nasdaq_subsectors", ("subsectors", "sectors"))
+    assert block is not None and "status" not in block
+    assert block == reference  # the same bytes: an unguarded read's equal
+
+
 def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
     """REAL: wire §0 - the incumbent values are byte-identical before and after.
     The literals are the sha256 of the canonical encoding, measured by running the

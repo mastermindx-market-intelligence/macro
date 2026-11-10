@@ -102,6 +102,37 @@ def _read(site: Path, relative: str) -> Mapping[str, Any] | None:
     return document if isinstance(document, dict) else None
 
 
+#: N-5 (review r1): the on-disk size above which a v1.1 row-block source file is
+#: never parsed. The five row-block readers (the four confluence universes and
+#: ``theme_rows``) refuse the file at the door and carry the small
+#: ``block_too_large`` stub - undated, because the date lives inside the file we
+#: refuse to open. The seven incumbent readers are untouched.
+_ROW_SOURCE_MAX_BYTES = 64 * 1024 * 1024
+
+
+def _read_capped(site: Path, relative: str) -> tuple[Mapping[str, Any] | None, bool]:
+    """``_read`` behind the N-5 source-size guard: ``(document, over_ceiling)``.
+
+    ``over_ceiling`` is True only when the file exists on disk larger than
+    ``_ROW_SOURCE_MAX_BYTES`` - then it is not read at all and the caller
+    carries its block stub. Every other failure stays the caller's ordinary
+    fail-soft path (document None).
+    """
+    try:
+        size = (site / relative).stat().st_size
+    except OSError:
+        size = 0
+    if size > _ROW_SOURCE_MAX_BYTES:
+        return None, True
+    return _read(site, relative), False
+
+
+def _row_source_stub(source: str) -> dict:
+    """The N-5 stub: an over-ceiling source file is not parsed, so its block is
+    carried as ``unavailable / block_too_large`` with no date and no rows."""
+    return {"source": source, "status": "unavailable", "reason": "block_too_large"}
+
+
 def rising_priced_share(central: Mapping[str, Any]) -> dict | None:
     """R1 from the per-sector heat census the central builder already measured.
 
@@ -303,7 +334,9 @@ def confluence_universe_rows(site: Path, relative: str, owner_word: str,
     into it. Over ``MAX_ROW_BLOCK_BYTES`` the small stub is carried, never a
     shortened row set.
     """
-    document = _read(site, relative)
+    document, over_ceiling = _read_capped(site, relative)
+    if over_ceiling:  # N-5: never parse an over-ceiling source file
+        return _row_source_stub(relative)
     if document is None or document.get("universe") != owner_word:
         return None
     if not isinstance(document.get("coverage"), Mapping):
@@ -358,7 +391,9 @@ def theme_rows(site: Path) -> dict | None:
     the ``basket_confluence.json`` basket of that id (a string, else null). No
     ``href`` is carried - the consumer composes its link from ``chart_key``.
     """
-    handoff = _read(site, "basketdata/si_handoff.json")
+    handoff, over_ceiling = _read_capped(site, "basketdata/si_handoff.json")
+    if over_ceiling:  # N-5: never parse an over-ceiling source file
+        return _row_source_stub("basketdata/si_handoff.json#theme_context.themes")
     context = handoff.get("theme_context") if handoff else None
     themes = context.get("themes") if isinstance(context, Mapping) else None
     if not isinstance(themes, Mapping) or not themes:
@@ -370,7 +405,9 @@ def theme_rows(site: Path) -> dict | None:
         return None
     by_id: dict[str, Mapping[str, Any]] = {}
     perf_as_of = None
-    baskets = _read(site, "basketdata/baskets.json")
+    baskets, over_ceiling = _read_capped(site, "basketdata/baskets.json")
+    if over_ceiling:  # N-5: never parse an over-ceiling source file
+        return _row_source_stub("basketdata/si_handoff.json#theme_context.themes")
     entries = baskets.get("baskets") if baskets else None
     if isinstance(entries, list):
         for entry in entries:
@@ -381,7 +418,9 @@ def theme_rows(site: Path) -> dict | None:
         if isinstance(top, str) and top:
             perf_as_of = top
     chart_keys: dict[str, str | None] = {}
-    universes = _read(site, "marketdata/basket_confluence.json")
+    universes, over_ceiling = _read_capped(site, "marketdata/basket_confluence.json")
+    if over_ceiling:  # N-5: never parse an over-ceiling source file
+        return _row_source_stub("basketdata/si_handoff.json#theme_context.themes")
     basket_rows = universes.get("baskets") if universes else None
     if isinstance(basket_rows, list):
         for row in basket_rows:
@@ -907,6 +946,10 @@ def build_carry(site: Path, central: Mapping[str, Any],
     produced["theme_rows"] = theme_rows(site)
     for name in _DATED_BLOCKS:
         block = produced.get(name)
-        if block is not None and not (isinstance(block.get("as_of"), str) and block["as_of"]):
+        # N-5: a status stub (an over-ceiling source file) is exempt - its date
+        # lives inside the file that was never parsed. It is carried by its
+        # closed reason instead of being degraded to not_produced.
+        if block is not None and "status" not in block \
+                and not (isinstance(block.get("as_of"), str) and block["as_of"]):
             produced[name] = None  # undated: never carried with a null date
     return {name: block for name, block in produced.items() if block is not None}
