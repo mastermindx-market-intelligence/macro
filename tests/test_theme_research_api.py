@@ -2394,3 +2394,519 @@ def test_an_unreadable_owner_review_time_withholds_the_block_not_the_request(
     # is not, so the drop must be named with the same token the source_history
     # branch already uses for a row it could not date.
     assert "undatable_excluded" in payload["limitations"], payload["limitations"]
+
+
+# ---------------------------------------------------------------------------
+# 14. v2 UNION — the closed ``theme_research.request/v2`` dispatch (lane 5):
+#     discriminator law, per-kind bodies, per-entry generation grammars, the
+#     native/context expectation pair, and the profile registries' private
+#     404/400 boundaries. A body WITHOUT the discriminator keeps the v1
+#     contract byte-for-byte (proven by every section above still passing).
+# ---------------------------------------------------------------------------
+
+_V2_REQUEST_SCHEMA = "theme_research.request/v2"
+_V2_RESPONSE_SCHEMA = "theme_research.response/v2"
+_STALE_CONTEXT = "gen_" + "0" * 32
+_STALE_TECDA = "tecd_" + "0" * 32
+_EDGAR_SOURCE_URI = (
+    "https://www.sec.gov/Archives/edgar/data/320193/"
+    "000032019326000089/ex991.htm"
+)
+
+
+def _v2_theme_query_body(**overrides: Any) -> dict:
+    body = dict(_WITNESS_BODY)
+    body["request_schema"] = _V2_REQUEST_SCHEMA
+    body["entry_kind"] = "theme"
+    body.update(overrides)
+    return body
+
+
+def _v2_tech_query_body(**overrides: Any) -> dict:
+    import tests.test_market_ontology_technology_economic_change as tech_base
+
+    body = {
+        "request_schema": _V2_REQUEST_SCHEMA,
+        "entry_kind": "company_profile",
+        "profile_id": "technology_economic_change.v1",
+        "company_ref": tech_base.COMPANY,
+        "view": "business",
+        "time_mode": "latest",
+    }
+    body.update(overrides)
+    return body
+
+
+def _v2_tech_state(monkeypatch, *, rights_revision: str = "synthetic_rights"):
+    """Technology ``company_profile`` wiring through the REAL adapter: the
+    synthetic curation contract activated on the sealed composer's loader
+    seam (the same technique the adapter suite uses) and a bundle of themed
+    synthetic assertions installed through the route's own loader seam. Each
+    assertion's source carries a REAL EDGAR ``source_uri`` — ``sec_edgar``
+    is ``direct_display_ok`` in the carrier registry, so the transport's
+    rights filter SERVES them rather than withholding; the composer accepts
+    the extra key (its projection reads the closed six fields). The DECOY is
+    the duplicate-span sibling: same document, same selector, different
+    curation revision — the assertion whose ref must NOT serve.
+
+    Returns ``(role_ref, decoy_ref)``."""
+    import engine.market_ontology.technology_economic_change as tech_mod
+    import tests.test_market_ontology_technology_economic_change as tech_base
+    from engine.market_ontology.theme_research_binding import (
+        OwnerBundle,
+        curation_source_ref,
+    )
+
+    def themed(assertion: dict) -> dict:
+        source = dict(assertion["source"])
+        source["source_uri"] = _EDGAR_SOURCE_URI
+        return {
+            **assertion,
+            "source": source,
+            "scope": {
+                **assertion["scope"],
+                "theme_ref": tech_base.THEME,
+                "canonical_theme_id": tech_base.THEME,
+            },
+        }
+
+    role = themed(tech_base.ROLE)
+    decoy = themed(tech_base._assertion(
+        predicate="theme_membership",
+        seed="decoy-shared-1",
+        source=tech_base._src("synthetic-doc-role-1"),
+    ))
+    receipt = tech_base._receipt()
+    receipt.update({"node_id": None, "cik": None, "as_known": None})
+
+    def loader(query, *, principal, registration=None, rights_snapshot=None):
+        del query, principal, registration, rights_snapshot
+        return OwnerBundle(
+            revision_tuple=(),
+            rights_revision=rights_revision,
+            assertions=(role, themed(tech_base.BUYER_A), themed(tech_base.COUNTER), decoy),
+            identity_results=(receipt,),
+            event_workspaces=(),
+            financial_packets=(tech_base._comparison(),),
+            interpretation_blocks=(),
+            native_refs=(tech_base._native(),),
+            omissions=(),
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+    monkeypatch.setattr(
+        tech_mod, "_load_shared_curation_contract",
+        lambda: tech_base.SYNTHETIC_CURATION_CONTRACT,
+    )
+    return curation_source_ref(role), curation_source_ref(decoy)
+
+
+def test_v2_theme_query_wraps_the_native_payload(entitled_client, monkeypatch, tmp_path):
+    """The v2 theme entry kind serves the SAME composed payload the v1 route
+    serves (the real semiconductor registration, warm owner state), wrapped
+    in the v2 response envelope: schema/entry_kind/request echo, the NATIVE
+    generation, the shell's own context fingerprint, the exact registered
+    payload under ``data``, and the payload's evidence refs."""
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_theme_query_body(),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    envelope = response.json()
+    assert envelope["schema"] == _V2_RESPONSE_SCHEMA
+    assert envelope["entry_kind"] == "theme"
+    assert envelope["request"] == {
+        "entry_kind": "theme",
+        "anchor_theme_id": "ai_semiconductors",
+        "slice_key": "hbm_packaging",
+        "view": "composition",
+        "time_mode": "latest",
+        "source_cutoff": None,
+        "recorded_cutoff": None,
+        "offset": 0,
+        "limit": 50,
+    }
+    assert envelope["generation"].startswith("gen_") and len(envelope["generation"]) == 36
+    assert envelope["context_generation"].startswith("gen_") \
+        and len(envelope["context_generation"]) == 36
+    # The exact registered native payload, unmodified, under ``data``.
+    assert envelope["data"]["schema"] == "semiconductor_theme_research.v1"
+    assert envelope["data"]["authorized_coverage"]["selected"] == \
+        fixture["expected_first_selected"]
+    assert isinstance(envelope["evidence_refs"], list)
+
+
+def test_v1_body_with_v2_only_fields_is_refused(entitled_client):
+    """A body with NO discriminator keeps v1 parsing — and v1's closed model
+    refuses the v2-only vocabulary (``entry_kind``/``profile_id``/
+    ``company_ref``) as foreign fields. The union is opt-in by the
+    discriminator alone."""
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(entry_kind="company_profile",
+                         profile_id="technology_economic_change.v1",
+                         company_ref="co:us:synthetic-alpha"),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_unknown_request_schema_value_is_a_private_400(entitled_client):
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_theme_query_body(request_schema="theme_research.request/v3"),
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_foreign_entry_kind_is_a_private_400(entitled_client):
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_theme_query_body(entry_kind="universe_profile"),
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_mixed_entry_fields_are_refused(entitled_client):
+    """Fields of one entry kind on another (theme + profile fields; profile +
+    theme fields) are private 400s at parse — never silently ignored."""
+    for body in (
+        _v2_theme_query_body(profile_id="technology_economic_change.v1"),
+        _v2_tech_query_body(anchor_theme_id="ai_semiconductors", slice_key="core"),
+    ):
+        response = entitled_client.post("/api/themes/v1/research/query", json=body)
+        assert response.status_code == 400, response.text
+        assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_cursor_is_refused_on_the_single_document_kinds(entitled_client):
+    """A cursor on a single-document profile is refused rather than silently
+    ignored — the same law as a nonzero offset."""
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(cursor="opaque"),
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_unknown_profile_is_a_private_404(entitled_client, monkeypatch):
+    """Unknown profile id → the SAME private 404 envelope an unknown v1 anchor
+    gets: no echo of the requested id, no profile list, no distinction from
+    an unknown anchor."""
+    def untouchable(*_a, **_kw):
+        pytest.fail("reader touched for an unknown profile")
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", untouchable)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(profile_id="no_such_profile.v1"),
+    )
+    assert response.status_code == 404, response.text
+    _assert_private_headers(response)
+    assert response.json()["detail"] == {"error": {"code": "not_available", "action": "none"}}
+    assert "no_such_profile" not in response.text
+
+
+def test_v2_unknown_sector_subject_is_a_private_404(entitled_client, monkeypatch):
+    """The finance sector_profile carries a CLOSED subject set
+    (``sector:financials``); any other subject is the same private 404 an
+    unknown profile id gets."""
+    def untouchable(*_a, **_kw):
+        pytest.fail("reader touched for an unknown subject")
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", untouchable)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json={
+            "request_schema": _V2_REQUEST_SCHEMA,
+            "entry_kind": "sector_profile",
+            "profile_id": "finance_intelligence_research.v1",
+            "sector_ref": "sector:energy",
+            "view": "dossier",
+            "time_mode": "latest",
+        },
+    )
+    assert response.status_code == 404, response.text
+    assert response.json()["detail"] == {"error": {"code": "not_available", "action": "none"}}
+    assert "sector:energy" not in response.text
+
+
+def test_v2_profile_pagination_is_refused(entitled_client):
+    """Single-document kinds reject a nonzero offset (semantic 400 naming the
+    pagination law) and a supplied limit (no such field — parse 400)."""
+    nonzero = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(offset=1),
+    )
+    assert nonzero.status_code == 400, nonzero.text
+    assert nonzero.json()["detail"]["error"]["action"] == "fix_request"
+    assert "pagination" in nonzero.json()["detail"]["error"]["detail"]
+
+    supplied_limit = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(limit=10),
+    )
+    assert supplied_limit.status_code == 400, supplied_limit.text
+    assert supplied_limit.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_expectation_pair_must_arrive_together(entitled_client):
+    """Exactly-one-supplied is a private 400 on the query route; a theme
+    continuation (offset > 0) requires the full pair."""
+    for body in (
+        _v2_theme_query_body(expected_generation="gen_" + "a" * 32),
+        _v2_theme_query_body(expected_context_generation="gen_" + "a" * 32),
+        _v2_theme_query_body(offset=50),
+    ):
+        response = entitled_client.post("/api/themes/v1/research/query", json=body)
+        assert response.status_code == 400, response.text
+        assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_expected_generation_grammar_is_per_entry(entitled_client):
+    """The native expectation grammar is the ENTRY's own (registration
+    prefix/width), not the shell's: a tecd_ token on the theme entry and a
+    gen_ token on the Technology profile are both private 400s."""
+    wrong_for_theme = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_theme_query_body(
+            expected_generation=_STALE_TECDA,
+            expected_context_generation="gen_" + "a" * 32,
+        ),
+    )
+    assert wrong_for_theme.status_code == 400, wrong_for_theme.text
+    assert "grammar" in wrong_for_theme.json()["detail"]["error"]["detail"]
+
+    wrong_for_tech = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(
+            expected_generation="gen_" + "a" * 32,
+            expected_context_generation="gen_" + "a" * 32,
+        ),
+    )
+    assert wrong_for_tech.status_code == 400, wrong_for_tech.text
+
+
+def test_v2_technology_native_tecd_and_context_gen_generations(entitled_client, monkeypatch):
+    """Technology's native generation keeps its OWN ``tecd_`` grammar — never
+    renamed to the shell's ``gen_`` — while the context fingerprint is the
+    shell's ``gen_`` surface. Evidence with the exact pair serves the
+    vertical's OWN v2 evidence envelope."""
+    role_ref, _decoy_ref = _v2_tech_state(monkeypatch)
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    envelope = response.json()
+    assert envelope["schema"] == _V2_RESPONSE_SCHEMA
+    assert envelope["entry_kind"] == "company_profile"
+    native = envelope["generation"]
+    assert native.startswith("tecd_") and len(native) == 5 + 32
+    assert all(c in "0123456789abcdef" for c in native[5:])
+    context = envelope["context_generation"]
+    assert context.startswith("gen_") and len(context) == 4 + 32
+    assert envelope["data"]["schema"] == "technology_economic_change.v1"
+    assert envelope["data"]["dossier_id"] == native
+    assert envelope["evidence_refs"] == []
+
+    # Evidence with the EXACT pair: the vertical's own v2 evidence envelope,
+    # un-wrapped — generation is the same native dossier id.
+    evidence = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_v2_tech_query_body(
+            assertion_ref=role_ref,
+            expected_generation=native,
+            expected_context_generation=context,
+        ),
+    )
+    assert evidence.status_code == 200, evidence.text
+    served = evidence.json()
+    assert served["schema"] == "technology_economic_change.evidence.v2"
+    assert served["generation"] == native
+    assert served["assertion_ref"] == role_ref
+
+    # The same pinned pair re-queries identically (idempotent pinned read).
+    pinned = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(
+            expected_generation=native,
+            expected_context_generation=context,
+        ),
+    )
+    assert pinned.status_code == 200, pinned.text
+    assert pinned.json()["generation"] == native
+    assert pinned.json()["context_generation"] == context
+
+
+def test_v2_stale_native_or_context_is_the_same_409(entitled_client, monkeypatch):
+    """A stale NATIVE expectation and a stale CONTEXT expectation produce the
+    SAME 409 refresh envelope — the caller is told to reset, never WHICH
+    expectation failed or any source/rights detail."""
+    role_ref, _decoy_ref = _v2_tech_state(monkeypatch)
+    first = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(),
+    )
+    assert first.status_code == 200, first.text
+    native = first.json()["generation"]
+    context = first.json()["context_generation"]
+
+    stale_native = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(
+            expected_generation=_STALE_TECDA,
+            expected_context_generation=context,
+        ),
+    )
+    stale_context = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(
+            expected_generation=native,
+            expected_context_generation=_STALE_CONTEXT,
+        ),
+    )
+    for response in (stale_native, stale_context):
+        assert response.status_code == 409, response.text
+        _assert_private_headers(response)
+        assert response.json()["detail"] == {
+            "error": {"code": "refresh_required", "action": "reset_to_first_page"},
+        }
+    assert stale_native.json() == stale_context.json()
+
+
+def test_v2_rights_revision_change_at_fixed_native_generation_is_409(
+    entitled_client, monkeypatch,
+):
+    """The falsifier for the context fingerprint's job: the SAME owner inputs
+    under a DIFFERENT enforced rights revision leave the native dossier id
+    FIXED (Technology's digest does not bind rights_revision) while the
+    context generation MOVES — and the continuation carrying the old pair is
+    told to refresh."""
+    _v2_tech_state(monkeypatch, rights_revision="rights-a")
+    first = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(),
+    )
+    assert first.status_code == 200, first.text
+    native = first.json()["generation"]
+    context_a = first.json()["context_generation"]
+
+    # Same assertions, same sealed inputs — only the enforced rights revision
+    # moved. Reinstall the loader with the new revision.
+    _v2_tech_state(monkeypatch, rights_revision="rights-b")
+    control = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(),
+    )
+    assert control.status_code == 200, control.text
+    assert control.json()["generation"] == native  # native FIXED
+    assert control.json()["context_generation"] != context_a  # context MOVED
+
+    stale = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(
+            expected_generation=native,
+            expected_context_generation=context_a,
+        ),
+    )
+    assert stale.status_code == 409, stale.text
+    assert stale.json()["detail"] == {
+        "error": {"code": "refresh_required", "action": "reset_to_first_page"},
+    }
+
+
+def test_v2_evidence_requires_the_paired_expectations(entitled_client, monkeypatch):
+    """Every evidence request carries BOTH expectations; a missing one is a
+    private 400 at parse, never a silent unpinned serve."""
+    role_ref, _decoy_ref = _v2_tech_state(monkeypatch)
+    native = "tecd_" + "1" * 32
+    for body in (
+        _v2_tech_query_body(assertion_ref=role_ref,
+                            expected_context_generation=_STALE_CONTEXT),
+        _v2_tech_query_body(assertion_ref=role_ref,
+                            expected_generation=native),
+    ):
+        response = entitled_client.post("/api/themes/v1/research/evidence", json=body)
+        assert response.status_code == 400, response.text
+        assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_evidence_malformed_ref_is_a_private_400(entitled_client, monkeypatch):
+    _v2_tech_state(monkeypatch)
+    response = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_v2_tech_query_body(
+            assertion_ref="gmi-curation://theme:semiconductors/not-a-revision",
+            expected_generation="tecd_" + "1" * 32,
+            expected_context_generation=_STALE_CONTEXT,
+        ),
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["code"] == "invalid_request"
+
+
+def test_v2_evidence_duplicate_span_sibling_is_a_private_404(
+    entitled_client, monkeypatch,
+):
+    """Two assertions from ONE document: the rendered one serves; the
+    duplicate-span sibling (same document, same selector, different curation
+    revision — no rendered row carries ITS revision) gets the SAME private
+    404 an unknown ref gets. No existence disclosure, no document echo."""
+    role_ref, decoy_ref = _v2_tech_state(monkeypatch)
+    first = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(),
+    )
+    assert first.status_code == 200, first.text
+    native = first.json()["generation"]
+    context = first.json()["context_generation"]
+
+    served = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_v2_tech_query_body(
+            assertion_ref=role_ref,
+            expected_generation=native,
+            expected_context_generation=context,
+        ),
+    )
+    assert served.status_code == 200, served.text
+
+    sibling = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_v2_tech_query_body(
+            assertion_ref=decoy_ref,
+            expected_generation=native,
+            expected_context_generation=context,
+        ),
+    )
+    assert sibling.status_code == 404, sibling.text
+    _assert_private_headers(sibling)
+    assert sibling.json()["detail"] == {"error": {"code": "not_available", "action": "none"}}
+    # The refusal is byte-identical to an unknown-ref refusal: no way to
+    # tell "exists but not cited" from "does not exist".
+    unknown = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_v2_tech_query_body(
+            assertion_ref="gmi-curation://theme:technology-ex-semis/gmirca_" + "e" * 32,
+            expected_generation=native,
+            expected_context_generation=context,
+        ),
+    )
+    assert unknown.status_code == 404
+    assert unknown.json() == sibling.json()
+
+
+def test_v2_time_mode_outside_the_entrys_registered_set_is_a_private_400(
+    entitled_client,
+):
+    """The profiles are latest-only today; a mode outside the registration's
+    closed set is a 400 naming the rule, not a 404 and not a silent serve."""
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_v2_tech_query_body(time_mode="source_history"),
+    )
+    assert response.status_code == 400, response.text
+    assert response.json()["detail"]["error"]["detail"] == \
+        "time_mode is not registered for this entry kind"
