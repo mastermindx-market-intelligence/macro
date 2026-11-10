@@ -671,6 +671,23 @@ def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
                                            central={}).complete is None
 
 
+def test_r3_n1_owner_observation_refusal_strings_are_bounded():
+    """FIXTURE: R3-N1 - refusal strings take the same ``_text`` bound the live groups
+    use; a 200k-char status and a boolean coverage are dropped, numbers pass."""
+    refused = {"basket_id": "g2", "observation": {
+        "configured_members": ["XXX"], "status": "s" * 200_000, "coverage": True,
+        "observed_n": 1.0, "configured_n": 1, "min_members": 3, "min_coverage": 0.6,
+        "effective_as_of": "2026-11-06"}}
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    baskets["observation_refusals"] = [refused]
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"], "g2": ["XXX"]}))
+    refusal = next(g for g in pop.groups if g["group_id"] == "g2")["owner_observation_refusal"]
+    assert refusal == {"observed_n": 1.0, "configured_n": 1, "min_members": 3,
+                       "min_coverage": 0.6, "effective_as_of": "2026-11-06"}
+
+
 def test_removed_member_that_is_also_configured_is_a_contradiction():
     """FIXTURE: owner roster says removed while the capture still configures it."""
     baskets = _synthetic(observation=_obs(["AAA", "BBB"]))

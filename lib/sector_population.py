@@ -123,6 +123,17 @@ def _text(value: Any, limit: int = 160) -> str | None:
     return None
 
 
+def _refusal_field(value: Any) -> Any:
+    """One ``owner_observation_refusal`` field: numbers pass, strings take the same
+    ``_text`` bound the live groups use (R3-N1 - a 200,000-char ``status`` is not
+    carried verbatim), booleans and anything else are dropped."""
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, str):
+        return _text(value)
+    return value if isinstance(value, (int, float)) else None
+
+
 def _action_lookup(action_board: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     board = action_board.get("action_board") if isinstance(action_board, Mapping) else None
     found: dict[str, dict[str, Any]] = {}
@@ -324,9 +335,9 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
             "n_configured_current": len(configured), "n_members_listed": 0,
             "n_unserved": len(configured), "refused_by_owner": True,
             "owner_observation_refusal": {
-                k: obs.get(k) for k in ("status", "coverage", "observed_n", "configured_n",
-                                        "min_members", "min_coverage", "effective_as_of")
-                if isinstance(obs.get(k), (str, int, float)) and not isinstance(obs.get(k), bool)},
+                k: v for k, v in ((k, _refusal_field(obs.get(k))) for k in (
+                    "status", "coverage", "observed_n", "configured_n",
+                    "min_members", "min_coverage", "effective_as_of")) if v is not None},
             "membership_coverage": dict(UNAVAILABLE_NOT_PRODUCED),
             "action": {"status": "unavailable", "reason": "no_action_row"},
             "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
