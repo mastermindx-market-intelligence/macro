@@ -97,8 +97,9 @@ def build_signals(panel: pd.DataFrame, grid: list[pd.Timestamp], *,
                   mcap: pd.DataFrame | None = None, k_months: int = 6) -> dict:
     """Cross-sectional insider signals as (rebalance-date × ticker) matrices.
 
-    Each signal sums/counts open-market activity over a trailing `k_months` window
-    of FILINGS (causal), evaluated at each month-end rebalance in `grid`.
+    Each signal sums/counts open-market activity from the first calendar day of
+    the trailing `k_months` through the actual rebalance filing-date cutoff.
+    Buyer breadth counts distinct owners across that complete window.
 
     Variants (each also gets a sector-neutral pass in the harness):
       buy_usd        gross open-market purchase $              (size-confounded baseline)
@@ -112,27 +113,49 @@ def build_signals(panel: pd.DataFrame, grid: list[pd.Timestamp], *,
     p = panel.copy()
     p["m"] = p["filing_date"].dt.to_period("M")
     full = pd.period_range(p["m"].min(), p["m"].max(), freq="M")
+    if (isinstance(k_months, (bool, np.bool_))
+            or not isinstance(k_months, (int, np.integer)) or k_months < 1):
+        raise ValueError("k_months must be a positive integer")
     buys = p[p["code"] == "P"]
     sells = p[p["code"] == "S"]
     opp_buys = buys[~buys["is_routine"]] if "is_routine" in buys else buys
-    rw = role_weights(p)
+    p["_role_usd"] = role_weights(p) * p["usd"]
 
-    def roll(mat: pd.DataFrame) -> pd.DataFrame:
-        return mat.rolling(k_months, min_periods=1).sum()
-
-    buy_usd = roll(_monthly(buys["usd"], buys["m"], buys["ticker"], full))
-    sell_usd = roll(_monthly(sells["usd"], sells["m"], sells["ticker"], full))
-    net_usd = buy_usd.subtract(sell_usd, fill_value=0.0)
-    n_buyers = roll(_monthly_nunique(buys["rptownercik"], buys["m"], buys["ticker"], full))
-    opp_buy_usd = roll(_monthly(opp_buys["usd"], opp_buys["m"], opp_buys["ticker"], full))
-    opp_buyers = roll(_monthly_nunique(opp_buys["rptownercik"], opp_buys["m"], opp_buys["ticker"], full))
-    role_buy = roll(_monthly(rw.loc[buys.index] * buys["usd"], buys["m"], buys["ticker"], full))
-
-    mats = {
-        "buy_usd": buy_usd, "net_usd": net_usd, "n_buyers": n_buyers,
-        "opp_buy_usd": opp_buy_usd, "opp_buyers": opp_buyers, "role_buy_usd": role_buy,
+    # Preserve the panel-derived support of each original monthly matrix.
+    # No trade inside an observed month is zero; an unobserved month is absent.
+    buy_columns = buys.groupby("ticker")["usd"].sum().index
+    sell_columns = sells.groupby("ticker")["usd"].sum().index
+    opp_columns = opp_buys.groupby("ticker")["usd"].sum().index
+    columns = {
+        "buy_usd": buy_columns, "net_usd": buy_columns.union(sell_columns),
+        "n_buyers": buy_columns, "opp_buy_usd": opp_columns,
+        "opp_buyers": opp_columns, "role_buy_usd": buy_columns,
     }
-    sigs = {name: _to_grid(mat, grid) for name, mat in mats.items()}
+    rows = {name: {} for name in columns}
+    for d in grid:
+        cutoff = pd.Timestamp(d)
+        month = cutoff.to_period("M")
+        if month not in full:
+            continue
+        start = (month - (k_months - 1)).start_time
+        window = p[(p["filing_date"] >= start) & (p["filing_date"] <= cutoff)]
+        b = window[window["code"] == "P"]
+        s = window[window["code"] == "S"]
+        o = b[~b["is_routine"]] if "is_routine" in b else b
+        buy = b.groupby("ticker")["usd"].sum()
+        sell = s.groupby("ticker")["usd"].sum()
+        values = {
+            "buy_usd": buy,
+            "net_usd": buy.subtract(sell, fill_value=0.0),
+            "n_buyers": b.groupby("ticker")["rptownercik"].nunique(),
+            "opp_buy_usd": o.groupby("ticker")["usd"].sum(),
+            "opp_buyers": o.groupby("ticker")["rptownercik"].nunique(),
+            "role_buy_usd": b.groupby("ticker")["_role_usd"].sum(),
+        }
+        for name, value in values.items():
+            rows[name][d] = value.reindex(columns[name], fill_value=0.0).astype(float)
+    sigs = {name: pd.DataFrame(values).T if values else pd.DataFrame()
+            for name, values in rows.items()}
 
     if mcap is not None:
         mc = mcap.reindex(index=grid)
