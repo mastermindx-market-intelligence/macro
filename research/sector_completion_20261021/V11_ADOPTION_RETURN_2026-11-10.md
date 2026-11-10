@@ -749,3 +749,64 @@ green.
 
 Unchanged. Three more deltas are delivered to their PRs (#1419, #1431, #10954). Nothing of
 v1.1 is merged or served. Integrated-proof count: 0 of 44 rows.
+
+## 17. Status at 13:55Z — three more returns, `merge-blocked` removed from #10924, two more reviews
+
+### 17.1 What returned between 13:35Z and 13:55Z
+
+| Lane | PR and exact head | State reported | Still owed |
+|---|---|---|---|
+| 1 (round 3 follow-up) | Macro #10954 `0d43d893cc704fae94abbae9fe6dc319cf0f949f` | Complete. All six items closed (R3-S1, N1, N3, N4, N5, N6). Five owned files, +292/−19 against base `07a9eafac6fb`. Ten-file suite 610 passed, 3 skipped. Wire document updated. | Independent review (started, 17.3). It is stacked on #10929 and cannot merge before it. |
+| 8 (CI registration) | Macro #10924 `f9cb2c6535eaa6306defda22011a35ac50b53fd4` | Complete. Two files. Local `contract-delta`: 0 introduced, 0 inherited (868 s). Probe test and closure guard each passed alone. Three probe weight ceilings re-based to measured values: 5,958→5,963, 5,979→5,998, 5,716→5,721. Pack ceiling unchanged at 10. | GitHub CI at this head (six ci-pack jobs running at 13:55Z). The full local `tests/test_ci_pack.py` run had not finished. |
+| 3 | Terminal #1429 `93a760a7d935702d0b2d01e11c702b6577ab7fef` | Source-complete. Population reader and BFF `source=population` branch; lane 4, 6 and 7 heads merged in and mounted; master merged. `tsc` exit 0; 351 of 351 focused unit tests. | Independent review (started, 17.3). One lint error the author calls a false positive. The deployed site still runs the build before #1414, so the live step stays deferred. |
+| 5 (successor) | Macro #10956 `60e7a019651c` | PR open, not draft, not armed. Cut from #10931's head, so its range to main includes #10931's commits. Its own two suites: 10 and 8 passed. CI registration for its own file pushed. | Its worker is still running. Review follows its return. It cannot merge before #10931, which another session holds. |
+
+The lane 1 follow-up worker rebased its own unreviewed branch onto the moved base and pushed
+with `--force-with-lease`. It reported this as a deviation. Accepted: its own branch, no
+review had started, no other session's work was on it.
+
+The lane 1 follow-up also answered what the "cursor secret" needs, read-only: the API loads
+`/etc/macro-api.env` at service start (`app/deploy/macro-api.service:10`). One line,
+`SECTOR_GENERATION_CURSOR_SECRET=<value of at least 32 bytes>`, then a service restart.
+This programme does not create, print or set that value. It is one operator step, owed only
+when #10929 is about to be served.
+
+### 17.2 Main baseline
+
+The baseline run at `cbf9d99ac70d` (42822991031) finished green. A newer run at
+`0267bf8fffc0` was in progress at 13:55Z. #10923 and #10945 were still open and armed.
+
+### 17.3 Decisions
+
+1. **`merge-blocked` removed from #10924 at 13:56Z, with a visible comment**
+   (issuecomment-6769164978). This amends 16.3 decision 4. The one condition not yet met was
+   the full local `tests/test_ci_pack.py` run. GitHub CI runs the same suite at the same head,
+   and the controller requires it green before it merges. Waiting for a second local copy of
+   that result protected nothing and would have held the PR until the next wake. The label's
+   original cause was fixed at `f1337bdd8738`. `merge-on-green` was not touched. I read the
+   registration diff first: path additions, one run step, three measured ceiling re-bases, no
+   allowlist, skip, selector or assertion change.
+2. **#10924 merges before #10929, and that changes the #10929 suite move.** Both PRs edit the
+   same three probe lines. After #10924 the free-content probe sits 2 weight-seconds under the
+   11-pack line. #10924 also made `cycle-forward-log` selected by that probe, so it is not a
+   home for lane 1's six suites. The rule sent to the #10929 worker: a suite whose import
+   closure reaches the index or free-content files stays in `tier-gate`, because that weight is
+   its true cost; a suite whose closure does not reach them moves to a job those probes do not
+   select. If the total still crosses the line, 11 packs is the measured cost and is accepted
+   with the reason recorded. The worker finishes against current main now. One short final
+   pass follows after #10924 is in main.
+3. **Review of #10954 started** (Opus, child of this thread, read-only, narrow: the five-file
+   diff against R3-S1 and the five notes, plus exposure of the carried roster and the 4 MiB
+   bound). Verdict file: `/tmp/si_plan/reviews/lane1_population_review_r4.md`.
+4. **Review of #1429 started** (Opus, Terminal-project thread, read-only). Unit: lane 3's own
+   three commits and the mounts. The BFF `source=population` branch is the first item: denied
+   before read, forced audience, closed parameters, no caller-controlled upstream. Verdict
+   file: `/tmp/si_plan/reviews/lane3_1429_review.md`.
+5. **Terminal merge order.** #1429 contains the branches of #1419, #1425 and #1431. It is not
+   armed until each of those is reviewed and merged, or their reviews are ready and it is the
+   chosen carrier. That choice is made when the four verdicts are in.
+
+### 17.4 Rung reached
+
+Unchanged. Five deltas are delivered to PRs and under or awaiting review (#1419, #1431,
+#1429, #10954, #10956). Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
