@@ -200,3 +200,52 @@ def test_contract_examples_reproduce():
         quantity = {"form": "point", "value": example["value"], "currency": example["currency"]}
         assert format_amount(quantity, "en") == example["en"]
         assert format_amount(quantity, "zh") == example["zh"]
+
+
+@pytest.mark.parametrize(
+    ("value", "unit", "currency", "en", "zh"),
+    [
+        (2.18, "USD/share", "USD", "2.18 USD/share", "2.18 USD/share"),
+        (2.185, "USD/share", "USD", "2.185 USD/share", "2.185 USD/share"),
+        (-0.04, "USD/share", "USD", "-0.04 USD/share", "-0.04 USD/share"),
+        (-1e-7, "USD/share", "USD", "-0.0000001 USD/share", "-0.0000001 USD/share"),
+        (2.18, "USD", "USD", "$2.18", "2.18美元"),
+        (2.18, "", "USD", "$2.18", "2.18美元"),
+        (12.375, "JPY/share", "JPY", "12.375 JPY/share", "12.375 JPY/share"),
+        (2.18, "thousands", "USD", "2.18 thousands USD", "2.18 thousands USD"),
+        (0.0, "USD/share", "USD", "0 USD/share", "0 USD/share"),
+        (-0.0, "USD/share", "USD", "0 USD/share", "0 USD/share"),
+        (1000.0, "USD/share", "USD", "1000 USD/share", "1000 USD/share"),
+        (9007199254740993, "USD/share", "USD", "9007199254740993 USD/share", "9007199254740993 USD/share"),
+    ],
+)
+def test_unscaled_per_share_preserves_the_represented_value(value, unit, currency, en, zh):
+    # An observed per-share amount is neither a rounded total nor a new EPS estimate.
+    quantity = {**_q(value, unit=unit, currency=currency), "basis": "per_share"}
+    assert format_amount(quantity, "en") == en
+    assert format_amount(quantity, "zh") == zh
+
+
+@pytest.mark.parametrize(
+    ("bound", "en_prefix", "zh_prefix"),
+    [("exact", "", ""), ("approximately", "about ", "约"),
+     ("up_to", "up to ", "至多"), ("at_least", "at least ", "至少")],
+)
+def test_per_share_range_keeps_precision_sign_units_and_bounds(bound, en_prefix, zh_prefix):
+    quantity = {**_r(-0.125, 2.185, unit="USD/share", bound=bound), "basis": "per_share"}
+    assert format_amount(quantity, "en") == f"{en_prefix}-0.125 USD/share–{en_prefix}2.185 USD/share"
+    assert format_amount(quantity, "zh") == f"{zh_prefix}-0.125 USD/share–{zh_prefix}2.185 USD/share"
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+def test_nonfinite_per_share_is_refused(value):
+    quantity = {**_q(value, unit="USD/share"), "basis": "per_share"}
+    for locale in ("en", "zh"):
+        with pytest.raises((ValueError, OverflowError)):
+            format_amount(quantity, locale)
+
+
+def test_per_share_keeps_the_frozen_scaled_usd_rule():
+    quantity = {**_q(1_250_000), "basis": "per_share"}
+    assert format_amount(quantity, "en") == "$1.2 million"
+    assert format_amount(quantity, "zh") == "125万美元"
