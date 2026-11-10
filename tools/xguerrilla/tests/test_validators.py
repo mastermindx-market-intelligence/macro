@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 from tools.xguerrilla import config                       # noqa: E402
 from tools.xguerrilla.persona import Persona              # noqa: E402
 from tools.xguerrilla.validators import (                 # noqa: E402
+    BIO_PATH_RE,
     Draft,
     canonical_bio_link,
     enforce_voice,
@@ -23,6 +24,7 @@ from tools.xguerrilla.validators import (                 # noqa: E402
     validate,
     validate_bio,
 )
+import yaml                                               # noqa: E402
 
 MILA = "mila.lifts"
 WREN = "wren.mp4"
@@ -384,6 +386,54 @@ def test_a_registered_child_id_passes():
     assert validate_bio(_bio("deadbeef"), known_ids={CHILD, "deadbeef"}) == []
 
 
+def test_a_dotted_registry_id_passes_the_full_bio_contract():
+    # Real child ids are dotted: the settled shape must admit interior dots
+    # or it refuses the correct bio for 4 of the 5 registered children
+    # (desk.and.dusk, lowlit.austin, mila.lifts, wren.mp4).
+    assert validate_bio(
+        _bio("mila.lifts"),
+        child_id="mila.lifts",
+        known_ids={"mila.lifts", "wren.mp4", "desk.and.dusk"},
+    ) == []
+
+
+def test_every_registered_persona_handle_passes_the_bio_shape():
+    # The validator and the registry must not disagree: each persona file's
+    # handle IS a valid attribution key (BL-2), so the registry itself is the
+    # witness that the shape accepts the ids the network actually provisions.
+    handles = {
+        row["handle"]
+        for row in (
+            yaml.safe_load(p.read_text())
+            for p in Path(config.personas_dir()).glob("*.yml")
+        )
+        if isinstance(row, dict) and row.get("handle")
+    }
+    assert len(handles) >= 5, handles
+    for handle in handles:
+        assert BIO_PATH_RE.fullmatch(f"/x/{handle}"), handle
+        assert validate_bio(_bio(handle), known_ids=handles) == [], handle
+
+
+def test_the_dot_admitting_shape_still_refuses_degenerate_forms():
+    for bad in ("a..b", ".lead", "ab1", "a" * 33,
+                ".".join(["a"] * 17), ".".join(["a"] * 32)):
+        problems = validate_bio(_bio(bad))
+        assert any("destination shape" in p for p in problems), (bad, problems)
+
+
+@pytest.mark.parametrize("child", ["a.bc", "ab.c", "a." + "b" * 29, "a." + "b" * 30])
+def test_bio_id_length_counts_interior_dots(child):
+    assert BIO_PATH_RE.fullmatch(f"/x/{child}")
+    assert validate_bio(_bio(child), child_id=child, known_ids={child}) == []
+
+
+@pytest.mark.parametrize("child", ["a..b", "trail.", "a." + "b" * 31, ".".join(["a"] * 32)])
+def test_invalid_dotted_child_id_cannot_bind_even_to_a_valid_link(child):
+    problems = validate_bio(_bio(), child_id=child)
+    assert any("not a valid attribution key" in p for p in problems), problems
+
+
 def test_a_url_in_the_display_name_is_refused():
     problems = validate_bio(_bio(), display_name=f"mila {canonical_bio_link(CHILD)}")
     assert any("display name carries a URL" in p for p in problems), problems
@@ -398,4 +448,3 @@ def test_links_in_text_sees_every_spelling_that_resolves():
         "mastermind-x.com/x/ab12cd34"]
     # A number is not a host: version strings must survive the matcher.
     assert links_in_text("shipped 2.0.1 today") == []
-

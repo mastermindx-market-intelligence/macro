@@ -1,0 +1,22 @@
+{
+  "formula": "0.66 * beta + 0.34 * cross_section_mean(beta)",
+  "x_raw": [
+    -0.2,
+    0.3,
+    0.3,
+    1.4,
+    2.0
+  ],
+  "x_shrunk": [
+    0.12639999999999996,
+    0.4564,
+    0.4564,
+    1.1824,
+    1.5784
+  ],
+  "x_rank_unchanged": true,
+  "y_rank_unchanged": true,
+  "raw_spearman": 0.9746794344808963,
+  "shrunk_spearman": 0.9746794344808963,
+  "x_dispersion_reduced": true
+}

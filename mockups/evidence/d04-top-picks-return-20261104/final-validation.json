@@ -1,0 +1,101 @@
+{
+  "observed_at_utc": "2026-11-05T09:34:48.780501+00:00",
+  "disposition": "SELF_REVIEWED",
+  "source_operation": "d04-top-picks-return-20261104",
+  "branch": "sol/web-d04-top-picks-return-20261104",
+  "source_base": "d18d83019f3972c9bd915c736210176c7bd0b6b5",
+  "publication": "Pre-commit local evidence; exact published commit and PR are recorded in the D04 programme continuation.",
+  "source_sha256": {
+    "templates/discovery.html.j2": "12e724dcd755ed4ba5b2d61c1eee6495c151a0c73dc6f1ae006d77aa4db1a899",
+    "templates/discovery.js": "1db708426877a937a085bffedc78fca2f74f54fe2669a9cfc6fb1c5ac81941f7",
+    "templates/discovery-controls.css": "e549ec2d4acdfcaa020ee1fdb48764718257b2de56c4c54cd141b7a5b97be35a",
+    "site/discovery.html": "c01fc11dab353df25aaa824d38e11653a1c9fe8facc13d73fa04d6a5135c3f15",
+    "site/discovery.js": "1db708426877a937a085bffedc78fca2f74f54fe2669a9cfc6fb1c5ac81941f7",
+    "site/discovery-controls.css": "e549ec2d4acdfcaa020ee1fdb48764718257b2de56c4c54cd141b7a5b97be35a",
+    "scripts/build_discovery.py": "f8fa57ecbe20662114af7fd8c2cd8ef4477ff7b8dd1f9572a49abbfb6fbcbeee",
+    "scripts/verify_top_picks_return_browser.py": "aaba1efeed7dfb0e76b0f40d6166f18ee858dd72c2666f281f9e8ec008880c8a"
+  },
+  "browser": {
+    "report": "ux-evidence/d04-top-picks-return-20261104/final/browser-report.json",
+    "passed": 51,
+    "screenshots": 22,
+    "failures": 0,
+    "page_errors": 0,
+    "version": "151.0.7922.34",
+    "process_id": 11072,
+    "observed_exit_code": 0
+  },
+  "python_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_top_picks.py",
+      "tests/test_signal_gate.py",
+      "tests/test_signal_gate_coherence.py",
+      "tests/test_signal_gate_validity_contract.py"
+    ],
+    "passed": 92,
+    "warnings": 12,
+    "test_seconds": 16.42,
+    "process_id": 8091,
+    "observed_exit_code": 0,
+    "evidence_basis": "Final process output observed in this same resumed session; this receipt records that observation, not a new test run.",
+    "warning_note": "Pytest cleanup warnings for an unrelated older temporary directory; no test failures."
+  },
+  "canonical_capture": {
+    "manifest": "mockups/evidence/d04-top-picks-return-20261104/manifest.json",
+    "captured": 16,
+    "attempted": 16,
+    "process_id": 14471,
+    "observed_exit_code": 0,
+    "generated_at": "2026-11-05T09:23:28Z",
+    "console_errors": 0,
+    "failed_responses": 0
+  },
+  "source_gates": {
+    "receipt": "mockups/evidence/d04-top-picks-return-20261104/source-checks.json",
+    "all_exit_zero": true,
+    "count": 6
+  },
+  "snapshot_verification": {
+    "base": "d18d83019f3972c9bd915c736210176c7bd0b6b5",
+    "base_html_sha256": "2555f1bbccb192b90502a28381446a80ec0db89dafaebd8e2cf16122416263f6",
+    "output_sha256": "c01fc11dab353df25aaa824d38e11653a1c9fe8facc13d73fa04d6a5135c3f15",
+    "sectors": 11,
+    "tables": 25,
+    "rows_and_buy_zone_unchanged": true,
+    "written": false,
+    "command": [
+      "python3",
+      "mockups/evidence/d04-top-picks-return-20261104/render_committed_snapshot.py"
+    ]
+  },
+  "visually_inspected": [
+    "top-picks-1440-en-dark.png",
+    "top-picks-1440-zh-light.png",
+    "top-picks-390-zh-light.png",
+    "top-picks-390-zh-dark.png",
+    "global-table-return-390-en-light.png",
+    "missing-sector.png"
+  ],
+  "review_note": "Author screenshot/diff/focused-test self-QA; optional read-only child advice is not GitHub approval.",
+  "release_hold": [
+    "merge",
+    "ready_or_undraft",
+    "queue",
+    "auto_merge",
+    "held_relabel",
+    "deploy",
+    "purchase"
+  ],
+  "limitations": [
+    "Not D07 content/authentication, live data, account persistence, shared-shell full-state transport, production or whole-D04 acceptance.",
+    "Fresh-document traversal is forced by disabling Chromium BFCache. Retained-document proof covers the incumbent overlay only.",
+    "Native traversal explicitly opens the existing company URL after source focus; ordinary keyboard activation and phone taps are separately tested through the incumbent overlay at all matrix widths.",
+    "Canonical captures measure presentation, not full accessibility or performance acceptance.",
+    "Pinned committed ranking snapshot; complete-input production rebuild not established.",
+    "No Paper edit or whole-programme acceptance promotion."
+  ]
+}
