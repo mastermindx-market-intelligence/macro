@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-11-09T05:39:22.823077+00:00",
+  "generated_at": "2026-11-09T16:12:30.137021+00:00",
   "n_ledgers": 35,
   "n_closed": 28,
   "n_grader_starved": 7,
@@ -16,7 +16,7 @@
       ],
       "n_logged": 118459,
       "n_graded": 219939,
-      "last_graded_at": "2026-11-09T05:34:32.576221+00:00",
+      "last_graded_at": "2026-11-09T16:07:12.363607+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -30,7 +30,7 @@
       ],
       "n_logged": 219939,
       "n_graded": 219939,
-      "last_graded_at": "2026-11-09T05:34:32.576221+00:00",
+      "last_graded_at": "2026-11-09T16:07:12.363607+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -141,7 +141,7 @@
       "graders": [
         "scripts/grade_promises.py"
       ],
-      "n_logged": 2573,
+      "n_logged": 2604,
       "n_graded": 5769,
       "last_graded_at": "2026-07-02T18:59:31.570004+00:00",
       "tune_step": "N",
@@ -409,9 +409,9 @@
       "graders": [
         "engine/foresight_grader.py"
       ],
-      "n_logged": 356,
+      "n_logged": 370,
       "n_graded": 138,
-      "last_graded_at": "2026-11-08",
+      "last_graded_at": "2026-11-09",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -423,7 +423,7 @@
       "graders": [
         "scripts/grade_policy_calendar.py"
       ],
-      "n_logged": 1404,
+      "n_logged": 1421,
       "n_graded": 1266,
       "last_graded_at": "2026-11-07",
       "tune_step": "N",
