@@ -158,6 +158,7 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
         hazard = now.get("hazard") if isinstance(now, dict) else None
         hazard_kinds: dict[str, str] = {}
         any_qualified = False
+        withheld: list[str] = []
         for h in _HORIZONS:
             cell = hazard.get(h) if isinstance(hazard, dict) else None
             if isinstance(cell, dict):
@@ -167,6 +168,13 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
                     continue
                 if cell.get("source") == "PRIOR":
                     hazard_kinds[h] = "baseline_prior"
+                    # Lane 8: a historically qualified cell whose current MODEL
+                    # claim was withheld by hazard_score.qualify_current_model
+                    # is EMITTED as the prior; the claim/parity pointer below
+                    # still says why, so the withholding is never silent.
+                    if cell.get("model_withheld") is True:
+                        withheld.append(h)
+                        any_qualified = True
                     continue
             hazard_kinds[h] = "missing_estimate"
 
@@ -193,6 +201,7 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "hazard": hazard_kinds,
             "model_cell_current_claim": claim if any_qualified else None,
             "live_feature_parity": live_parity,
+            "model_withheld_horizons": withheld,
         }
     except Exception:  # noqa: BLE001 — pure module contract: never raises
         return {
@@ -201,4 +210,5 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "hazard": {h: "missing_estimate" for h in _HORIZONS},
             "model_cell_current_claim": None,
             "live_feature_parity": None,
+            "model_withheld_horizons": [],
         }
