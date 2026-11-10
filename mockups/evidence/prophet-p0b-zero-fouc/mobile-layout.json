@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "303e47ba129f1dcc8679389a40161306caf475d1afeccff36b4de1ea8b598134"
+    "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "hk",
@@ -524,7 +524,7 @@
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json": "b668fa56fbb03786562784e1e66a7cf058732dbe9ff9055294d7cf65fad462c9",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json": "f0df976899677d3ff14ac0874b5b82e96ba77d52b9f1c0b7638927329e94ee95",
     "scripts/render_stock_dashboard_fixture.py": "8f46fc24b9582ee85bc8e612b907f7cf23d02ed151cf3d15f0607a766fe10332",
-    "templates/_aibrief_body.html.j2": "acd72e5299e73a45aae726927c2563e9877637a91246bb9090f55bf310202691",
+    "templates/_aibrief_body.html.j2": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb",
     "templates/_aibrief_css.j2": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a",
     "templates/_cmd_hero.css.j2": "86d3c260212c477d990b82dd424078dcb2227e252dcc83a2ba92f3e629b5170e",
     "templates/_decision_card.html.j2": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76",

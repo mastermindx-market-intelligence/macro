@@ -227,6 +227,48 @@ def test_corrupt_refresh_days_falls_back_to_lens_default_without_crashing():
         assert info["stale"] is False  # 1.5d old, 3d cadence -> fresh
 
 
+def test_oversized_json_int_refresh_days_degrades_not_aborts():
+    # C2 2026-11-10: a legal JSON integer like 10**309 is a Python int too large
+    # for float conversion — math.isfinite(int) raises OverflowError. One bad
+    # lens value must degrade to the default, never abort the whole dict before
+    # the receipt exists (main's call order: freshness precedes every write).
+    for bad in (10**309, -(10**309)):
+        info = bab._lens_freshness(
+            "btc", _brief("2026-11-08T00:00:00+00:00", "x", **{"refresh_days": bad}),
+            "site", _NOW)
+        assert info["refresh_days"] == 3, bad
+        assert info["stale"] is False
+    # and through the dict builder: a bad BTC lens cannot abort Macro/China facts
+    loaded = {"master_brief": (_brief("2026-11-09T01:00:00+00:00", "x"), "site"),
+              "china_brief": (None, None),
+              "btc_brief": (_brief("2026-11-09T01:00:00+00:00", "x",
+                                   **{"refresh_days": 10**309}), "site")}
+    receipt = bab._build_freshness(loaded, _NOW)
+    assert receipt["lenses"]["btc"]["refresh_days"] == 3
+    assert receipt["lenses"]["macro"]["stale"] is False
+
+
+def test_visible_cadence_consumes_the_normalized_value():
+    # C2 2026-11-10: the receipt normalizes corrupt cadence, so the VISIBLE chip
+    # must consume the annotation's normalized value — NaN/inf/-2/1e9/True/
+    # "not-a-number" may never reach the caption ("Updated every nan days"),
+    # and a bool True must not read as "Updated daily" on a 3-day lens.
+    for bad in (float("nan"), float("inf"), -2, 1e9, True, "not-a-number"):
+        loaded = {"btc_brief": (_brief("2026-11-09T01:00:00+00:00", "2026-11-06",
+                                       **{"refresh_days": bad}), "site")}
+        receipt = bab._build_freshness(loaded, _NOW)
+        assert receipt["lenses"]["btc"]["refresh_days"] == 3, bad
+        html = _render(**bab._annotate_freshness(loaded, receipt))
+        assert "every nan" not in html and "every inf" not in html, bad
+        assert "not-a-number" not in html, bad
+        assert "Updated every 3 days" in html, bad  # normalized caption
+        assert "Updated daily" not in html, bad     # True must not read as 1
+    # a clean annotated 1-day cadence still says daily
+    loaded = {"btc_brief": (_brief("2026-11-09T01:00:00+00:00", "x", refresh_days=1), "site")}
+    html = _render(**bab._annotate_freshness(loaded, bab._build_freshness(loaded, _NOW)))
+    assert "Updated daily" in html
+
+
 def test_stale_brief_without_refresh_days_still_gets_the_stale_chip():
     # fallback cadence (macro -> 1d) applies; the chip must not depend on the
     # brief carrying its own refresh_days

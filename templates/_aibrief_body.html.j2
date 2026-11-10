@@ -86,8 +86,12 @@
       <div class="aib2-hdr-sub">
         {%- if _asof %}<span class="aib2-hdr-date num">{{ _asof }}</span>{%- endif -%}
         {#-- cadence micro-chip from refresh_days; absent → no chip (v1 fail-open) --#}
-        {%- set _rd = b.get('refresh_days') -%}
         {%- set _fr = b.get('_freshness') -%}
+        {#-- Annotated briefs consume the NORMALIZED cadence (C2 2026-11-10): a
+            corrupt raw value (NaN/inf/bool/oversized) must never reach the visible
+            caption when the receipt already normalized it to the lens default.
+            Raw consumers (no `_freshness`) keep reading the raw value (v1 scope). --#}
+        {%- set _rd = (_fr.get('refresh_days') if _fr is mapping and _fr.get('refresh_days') else b.get('refresh_days')) -%}
         {#-- `_freshness` (set by scripts/build_aibrief, 2026-10-19→11-09 freeze):
             stale → stale chip REPLACES the cadence claim; known-fresh (stale is false)
             → cadence chip stands; UNKNOWN age (stale is none) → NO chip — an

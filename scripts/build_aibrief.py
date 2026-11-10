@@ -151,6 +151,21 @@ def _load_briefs(site_dir: Path, data_dir: Path) -> dict:
     return {k: b for k, (b, _src) in _load_briefs_with_source(site_dir, data_dir).items()}
 
 
+def _bad_refresh_days(rd: object) -> bool:
+    """True when a raw `refresh_days` must fall back to the lens default. Overflow-safe
+    (C2 2026-11-10): a legal JSON integer like 10**309 is a Python int too large for
+    float conversion — `math.isfinite(int)` raises OverflowError, which must degrade
+    this one lens, never abort the whole freshness dict before the receipt exists."""
+    if isinstance(rd, bool) or not isinstance(rd, (int, float)):
+        return True
+    try:
+        if not math.isfinite(rd):
+            return True
+    except OverflowError:  # int too large to convert to float
+        return True
+    return not (0 < rd <= 7)
+
+
 def _lens_freshness(lens: str, brief, source: str | None, now: datetime) -> dict:
     """Freshness facts for one lens. `stale` is None when it cannot be judged (no brief
     or no parseable `generated_at`) — unknown is never rendered as stale or as fresh.
@@ -159,8 +174,7 @@ def _lens_freshness(lens: str, brief, source: str | None, now: datetime) -> dict
     `json.loads` accepts NaN/Infinity, and `timedelta(days=nan)` raises)."""
     b = brief if isinstance(brief, dict) else {}
     rd = b.get("refresh_days")
-    if (isinstance(rd, bool) or not isinstance(rd, (int, float))
-            or not math.isfinite(rd) or rd <= 0 or rd > 7):
+    if _bad_refresh_days(rd):
         rd = _DEFAULT_REFRESH_DAYS[lens]
     ts = _brief_ts(b)
     stale = None if ts is None else (now - ts) > timedelta(days=rd) + STALE_GRACE
@@ -188,13 +202,17 @@ def _annotate_freshness(loaded: dict, freshness: dict) -> dict:
     """ctx_key → brief; every loaded brief is shallow-copied with `_freshness` so the
     shared macro (templates/_aibrief_body.html.j2) can pick its chip truthfully:
     stale → stale chip; known-fresh → cadence chip; UNKNOWN age (no parseable
-    `generated_at`) → NO chip — "Updated daily" must not assert an unverifiable age."""
+    `generated_at`) → NO chip — "Updated daily" must not assert an unverifiable age.
+    The annotation carries the NORMALIZED cadence (C2 2026-11-10) so the visible
+    chip consumes the same value the receipt records — a corrupt raw refresh_days
+    must never reach the caption."""
     out: dict = {}
     for k, (b, _src) in loaded.items():
         info = freshness["lenses"][_LENS_OF[k]]
         if isinstance(b, dict):
             b = {**b, "_freshness": {"stale": info["stale"],
-                                     "generated_date": str(info["generated_at"])[:10] if info["generated_at"] else None}}
+                                     "generated_date": str(info["generated_at"])[:10] if info["generated_at"] else None,
+                                     "refresh_days": info["refresh_days"]}}
         out[k] = b
     return out
 
