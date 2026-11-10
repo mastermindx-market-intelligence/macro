@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
   "as_of": "2026-11-10",
-  "generated_at": "2026-11-10T12:24:31Z",
+  "generated_at": "2026-11-10T14:58:16Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -1765,7 +1765,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-10T12:24:32Z",
-  "inputs_hash": "sha256:1c586445365ac7c919d640a5d8c7ed9a784be7eb85ec636c75a59c01d0327e3c",
+  "produced_at": "2026-11-10T14:58:17Z",
+  "inputs_hash": "sha256:406ce2f6eb4055660831065f9b1978feeb63e87ebd922c5d348c763e5d598e4b",
   "tier": "display"
 }

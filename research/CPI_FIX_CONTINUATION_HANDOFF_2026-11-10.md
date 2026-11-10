@@ -11,10 +11,18 @@ The historical pre-release handoff and its proposed all-four-values acceptance a
 Protected Mastermind procedure pin: `d8dc1873077867f8ddd281c9f98a63bb0b3258df` (bootstrap major 1).
 
 At this source checkpoint the PR remains disarmed (`merge-blocked`, no `merge-on-green`).
-The successor is a substantive integration of original candidate and current main `0267bf8fffc083cd048504bdb5c8e775025d6396`.
-Its tree starts from current main. The six parser/watcher/client/test preimages are byte-identical between merge base `36cbcf322c91e664feb9b6c4756637bc0490ff3d` and current main; their owned changes compose without conflict.
-Current generated pages are preserved with only the live-client hash stamp changed.
-Current main already contains the prior two Playwright pins and corresponding tests; preserve them and the newer accepted CI ownership closure. Do not use the stale GitHub test-merge tree.
+The first incident successor was `aead22099dde9a88a6d08b82b19e2cd73da67779`, integrating original candidate and main `0267bf8fffc083cd048504bdb5c8e775025d6396`.
+This substantive successor integrates that exact candidate with actually healed main `ecd19ef130b4405df2e72c12787cb59382702c10`, including accepted admin PR #10897 at `165d4b20953a347dea439c4fb92bcb1d0c84794c`.
+Its tree starts from the new main. The six parser/watcher/client/test preimages remain byte-identical to the prior receiving main; all seven owned code/test/fixture postimages are unchanged. Current generated pages are preserved with only the live-client hash stamp changed.
+The accepted current CI definitions, navigation placement, receipt contracts and other main changes remain untouched. Do not use a stale GitHub test-merge tree.
+
+### Resolved CI dependency
+
+Natural run [42833316319](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42833316319) for `aead220` completed failure at 15:28:11 UTC: ten packs passed; pack 7 failed the inherited admin navigation inventory guard, and pack 2 failed absolute-parent path pruning. The semantic gate also refused self-excusal because the candidate changes the protected `scripts/` surface. That protection remains in force; an all-pass successor can qualify without an exemption.
+
+Both required repairs are now accepted on main through #10897, whose commit explicitly adopts the previously reviewed source correction. Exact main blobs: `tests/test_admin_navigation_ux.py=c658d3630135dcad868c3e2664be2ddd652c9e54`; `admin/deploy/stage_capacity_observer.py=7918254d593080a7f9a8ab0cc3bd03b96aaf4ae5`. These match the two-file repair also carried by #10958. Main additionally includes the analytics suite registration in `.github/ci/legacy-jobs.yml`; it is preserved unchanged.
+
+Controller run [42841815989](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42841815989) had deferred #10958's stale-proof refresh for capacity after #10897 merged. A fresh exact-file main read resolved the dependency: #10958 itself need not merge again. No competing heal, controller override, manual refresh, new priority or second carrier was created. The next valid action is qualification of this substantive integration on the original CPI PR.
 
 ## Proven incident causes
 
@@ -57,6 +65,10 @@ The initial local extra-client-file staging newline and absent committed ledger 
 A standalone local headless-browser launch is unavailable in this container because the process singleton socket syscall is denied. No launch flags or alternate process carrier were used to evade it. Live browser UI acceptance remains outstanding; do not claim a browser pass from these unit tests.
 
 The candidate parser was also replayed in memory against the complete official archive using the existing production collector: HTTP 200, 1,366,766 bytes, expected SHA256 `7041541ddfc6fc155e33eab0d191e6dff6ba44c1b847921f1926cf9425126c18`, exact document identity true, correct monthly/annual-missing packet and bilingual summary. Diagnostic process 5641 exited 0. No production file or service was changed by this proof.
+
+The unchanged candidate was also replayed read-only through the real production state and existing collector. Diagnostic process 28331 exited 0: the existing November event advanced in memory from unparsed to ready, preserved detection time `2026-11-10T13:30:39.365933+00:00`, recovered the full official archive through feed-304/detail handling, and produced exactly the two monthly receipts with no integrity errors. No state, ledger, service or deployed source was changed.
+
+Authenticated Chrome confirmed the production baseline: two extracting cards point to distinct October/November archives. Production preflight at 15:05 UTC confirmed the timer/service is healthy and normal main pickup works, but November remains unparsed and the deployed client is still the old `d9a19340` asset. Live acceptance is not yet proven.
 
 ## Remaining acceptance and next safe actions
 

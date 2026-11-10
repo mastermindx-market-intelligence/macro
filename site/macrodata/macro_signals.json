@@ -1,6 +1,6 @@
 {
   "date": "2026-11-09",
-  "generated_utc": "2026-11-10 09:36",
+  "generated_utc": "2026-11-10 11:36",
   "business_cycle": {
     "available": true,
     "asof": "2026-11-30",
@@ -6188,62 +6188,62 @@
     {
       "ticker": "GC=F",
       "name": "Gold",
-      "price": 4122.4,
+      "price": 4086.2,
       "above50": false,
       "above200": false,
-      "pct_vs_50dma": -1.6,
-      "pct_vs_200dma": -7.0,
-      "rsi14": 51.0,
+      "pct_vs_50dma": -2.4,
+      "pct_vs_200dma": -7.8,
+      "rsi14": 48.0,
       "macd_pos": true,
-      "off_52w_high_pct": -22.5,
+      "off_52w_high_pct": -23.2,
       "season_this": "Nov: +1.5% avg, up 59% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -9.0
+      "mom_60d_pct": -9.8
     },
     {
       "ticker": "CL=F",
       "name": "Crude Oil",
-      "price": 85.42,
+      "price": 85.22,
       "above50": false,
       "above200": false,
-      "pct_vs_50dma": -11.0,
-      "pct_vs_200dma": -4.4,
+      "pct_vs_50dma": -11.2,
+      "pct_vs_200dma": -4.6,
       "rsi14": 35.0,
       "macd_pos": false,
-      "off_52w_high_pct": -24.4,
+      "off_52w_high_pct": -24.6,
       "season_this": "Nov: -3.2% avg, up 41% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.2%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": 2.4
+      "mom_60d_pct": 2.2
     },
     {
       "ticker": "HG=F",
       "name": "Copper",
-      "price": 6.32,
+      "price": 6.31,
       "above50": false,
       "above200": true,
       "pct_vs_50dma": -3.3,
-      "pct_vs_200dma": 0.6,
+      "pct_vs_200dma": 0.5,
       "rsi14": 42.0,
       "macd_pos": false,
-      "off_52w_high_pct": -7.1,
+      "off_52w_high_pct": -7.2,
       "season_this": "Nov: +1.5% avg, up 52% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -3.7
+      "mom_60d_pct": -3.8
     },
     {
       "ticker": "DX-Y.NYB",
       "name": "US Dollar",
-      "price": 101.56,
+      "price": 101.7,
       "above50": true,
       "above200": true,
-      "pct_vs_50dma": 0.2,
-      "pct_vs_200dma": 1.6,
-      "rsi14": 47.0,
+      "pct_vs_50dma": 0.3,
+      "pct_vs_200dma": 1.7,
+      "rsi14": 49.0,
       "macd_pos": false,
       "off_52w_high_pct": -1.0,
       "season_this": "Nov: +0.2% avg, up 52% of years (n=56)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-      "mom_60d_pct": 2.4
+      "mom_60d_pct": 2.6
     }
   ],
   "vix": {
@@ -6318,11 +6318,11 @@
     {
       "name": "<span class=\"l-en\">Market-maker effect</span><span class=\"l-zh\">\u505a\u5e02\u5546\u6548\u5e94</span>",
       "pct": null,
-      "label": "<span class=\"l-en\">amplifying swings</span><span class=\"l-zh\">\u653e\u5927\u6ce2\u52a8</span>",
-      "verdict": "<span class=\"l-en\">market-makers&#39; hedging adds fuel to moves \u2014 expect bigger swings both ways (and we&#39;re near the tipping point \u2014 it can flip any day)</span><span class=\"l-zh\">\u505a\u5e02\u5546\u5bf9\u51b2\u4e3a\u6ce2\u52a8\u6dfb\u67f4 \u2014 \u9884\u671f\u53cc\u5411\u6ce2\u52a8\u66f4\u5927\uff08\u4e14\u6211\u4eec\u5df2\u63a5\u8fd1\u4e34\u754c\u70b9 \u2014 \u968f\u65f6\u53ef\u80fd\u53cd\u8f6c\uff09</span>",
+      "label": "<span class=\"l-en\">dampening swings</span><span class=\"l-zh\">\u6291\u5236\u6ce2\u52a8</span>",
+      "verdict": "<span class=\"l-en\">market-makers&#39; hedging absorbs moves \u2014 calmer tape likely (and we&#39;re near the tipping point \u2014 it can flip any day)</span><span class=\"l-zh\">\u505a\u5e02\u5546\u5bf9\u51b2\u5438\u6536\u6ce2\u52a8 \u2014 \u76d8\u9762\u53ef\u80fd\u66f4\u5e73\u9759\uff08\u4e14\u6211\u4eec\u5df2\u63a5\u8fd1\u4e34\u754c\u70b9 \u2014 \u968f\u65f6\u53ef\u80fd\u53cd\u8f6c\uff09</span>",
       "left": "",
       "right": "",
-      "tip": "<span class=\"l-en\">Estimated dealer gamma (GEX) from the S&amp;P options chain, standard assumption (dealers long calls/short puts). Positive = their hedging dampens market moves; negative = it amplifies them. Today: -10bn per 1% move (as of 2026-11-09). An estimate, not ground truth.</span><span class=\"l-zh\">\u7531\u6807\u666e\u671f\u6743\u94fe\u4f30\u7b97\u7684\u505a\u5e02\u5546 gamma\uff08GEX\uff09\uff0c\u91c7\u7528\u6807\u51c6\u5047\u8bbe\uff08\u505a\u5e02\u5546\u6301\u6709\u591a\u5934\u770b\u6da8/\u7a7a\u5934\u770b\u8dcc\uff09\u3002\u6b63\u503c = \u5176\u5bf9\u51b2\u6291\u5236\u5e02\u573a\u6ce2\u52a8\uff1b\u8d1f\u503c = \u653e\u5927\u6ce2\u52a8\u3002\u4eca\u65e5\uff1a\u6bcf1%\u6ce2\u52a8 -10\u5341\u4ebf \uff08\u622a\u81f3 2026-11-09\uff09\u3002\u8fd9\u662f\u4f30\u7b97\uff0c\u5e76\u975e\u771f\u5b9e\u503c\u3002</span>"
+      "tip": "<span class=\"l-en\">Estimated dealer gamma (GEX) from the S&amp;P options chain, standard assumption (dealers long calls/short puts). Positive = their hedging dampens market moves; negative = it amplifies them. Today: +11bn per 1% move (as of 2026-11-09). An estimate, not ground truth.</span><span class=\"l-zh\">\u7531\u6807\u666e\u671f\u6743\u94fe\u4f30\u7b97\u7684\u505a\u5e02\u5546 gamma\uff08GEX\uff09\uff0c\u91c7\u7528\u6807\u51c6\u5047\u8bbe\uff08\u505a\u5e02\u5546\u6301\u6709\u591a\u5934\u770b\u6da8/\u7a7a\u5934\u770b\u8dcc\uff09\u3002\u6b63\u503c = \u5176\u5bf9\u51b2\u6291\u5236\u5e02\u573a\u6ce2\u52a8\uff1b\u8d1f\u503c = \u653e\u5927\u6ce2\u52a8\u3002\u4eca\u65e5\uff1a\u6bcf1%\u6ce2\u52a8 +11\u5341\u4ebf \uff08\u622a\u81f3 2026-11-09\uff09\u3002\u8fd9\u662f\u4f30\u7b97\uff0c\u5e76\u975e\u771f\u5b9e\u503c\u3002</span>"
     },
     {
       "name": "<span class=\"l-en\">Fear gauge</span><span class=\"l-zh\">\u6050\u614c\u6307\u6807</span>",
