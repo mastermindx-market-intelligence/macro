@@ -570,6 +570,24 @@ def test_r2_b2_real_route_a_refused_basket_stays_in_the_denominator(tmp_path):
     assert next(g for g in index if g["group_id"] == "housing")["n_unserved"] == 18
 
 
+def test_r3_n6_group_index_states_refused_by_owner(real_store, tmp_path):
+    """R3-N6: every group_index entry carries refused_by_owner (true or false), so a
+    refusal is visible on the unfiltered first page, not only via a group filter."""
+    client = _client(real_store["reader"])
+    index = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                       cookies=COOKIE).json()["page"]["group_index"]
+    assert len(index) == 49  # real capture: every basket live, none refused
+    assert all(g["refused_by_owner"] is False for g in index)
+    refused_dir = tmp_path / "refused"  # a second publish needs its own isolated store
+    refused_dir.mkdir()
+    refused = _store_from(refused_dir, refuse_group="housing")
+    index = refused.get(URL, params={"audience": "entitled", "limit": "1"},
+                        cookies=COOKIE).json()["page"]["group_index"]
+    housing = next(g for g in index if g["group_id"] == "housing")
+    assert housing["refused_by_owner"] is True and housing["n_members_listed"] == 0
+    assert all(isinstance(g["refused_by_owner"], bool) for g in index)
+
+
 def test_r3_s1_real_route_a_basket_absent_from_both_lists_is_not_complete(tmp_path):
     """R3-S1: a real basket (housing, 18 configured) removed from the live list with
     NO refusal entry - the producer's ``lvl.dropna().empty`` exit or any other
