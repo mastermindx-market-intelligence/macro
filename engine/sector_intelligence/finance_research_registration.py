@@ -1149,9 +1149,11 @@ VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE: str = "vertical_registration_held:sec
 # field order — the THEME-keyed hold path's construction share. The shell
 # itself carries more fields: ``view_keys`` and ``build_query`` (both now
 # owned by this adapter and forwarded through the v2 PROFILE registry path —
-# theme_research_registry.PROFILE_REGISTRY keys this profile, lane 5) plus
-# the defaulted v2 profile columns. The exact theme-keyed gap is pinned by
-# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_and_build_query.
+# theme_research_registry.PROFILE_REGISTRY keys this profile, lane 5), the
+# defaulted v2 profile columns, and the defaulted ``issuer_economics`` hook
+# (lane-5 v1.1; Finance registers none — the field stays ``None`` on this
+# adapter's constructions). The exact theme-keyed gap is pinned by
+# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_build_query_and_v2_columns.
 # The facts table above carries additional §8 columns (entry_kind,
 # profile_id, sector_ref, views, build_query) that are not part of the share.
 _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (

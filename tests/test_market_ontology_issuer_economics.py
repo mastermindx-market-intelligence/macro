@@ -368,6 +368,11 @@ def test_signed_changes_read_the_nested_reported_facts():
     assert changes == [{
         "metric": "revenue_usd_bn",
         "unit": "USD_bn",
+        # SF1: the row carries every series field the series states
+        # (``_fact`` states basis/currency/perimeter; no definition).
+        "basis": "reported_gaap",
+        "currency": "USD",
+        "perimeter": "as_reported",
         "from_fiscal_period": {"year": 2026, "quarter": 1},
         "to_fiscal_period": {"year": 2026, "quarter": 2},
         "from_value": 10.0,
@@ -538,12 +543,13 @@ def test_the_bridge_never_crosses_basis_currency_perimeter_or_definition():
     ) == []
 
     # Positive control — the bridge is not dead: the SAME stated series
-    # across adjacent periods still differences...
+    # across adjacent periods still differences (and SF1: the stated basis
+    # rides the row; the unstated currency/perimeter/definition stay absent)...
     assert one_series(
         _raw_fact("eps", 1.0, unit="USD", basis="gaap"),
         _raw_fact("eps", 1.5, unit="USD", basis="gaap"),
     ) == [{
-        "metric": "eps", "unit": "USD",
+        "metric": "eps", "unit": "USD", "basis": "gaap",
         "from_fiscal_period": {"year": 2026, "quarter": 1},
         "to_fiscal_period": {"year": 2026, "quarter": 2},
         "from_value": 1.0, "to_value": 1.5, "signed_change": pytest.approx(0.5),
@@ -802,6 +808,186 @@ def test_concentration_states_its_weighting_and_degrades_typed():
     assert loo["remaining_count"] == 0
     assert loo["remaining_weight_each"] is None
     assert loo["independent_peer_support"] == "none_singleton_cohort"
+
+
+# ---------------------------------------------------------------------------
+# Second review follow-ups (2026-11-10, READY WITH FOLLOW-UP at 57468d0406d4):
+# SF1, N-A, N-B, N-C, N-D — each test pins the rule the r2 review found, and
+# SF1/N-B/N-C are mutation-checked in this tree (revert the fix, red, restore).
+# ---------------------------------------------------------------------------
+
+
+def test_change_rows_carry_their_stated_series_fields():
+    """SF1: a bridge says WHICH series it belongs to. Two same-metric,
+    same-unit bridges that differ by currency (or by basis) must be
+    distinguishable ON THE ROW — labels asserted, not just the count —
+    because the series fields are exactly what makes the two bridges
+    separate series (S1). A field the series does not state stays absent
+    from the row."""
+    twd_usd = _build([
+        _row("evt-q1", A.cik, 2026, 1, [
+            _raw_fact("rev", 10.0, unit="millions", currency="TWD"),
+            _raw_fact("rev", 300.0, unit="millions", currency="USD"),
+        ]),
+        _row("evt-q2", A.cik, 2026, 2, [
+            _raw_fact("rev", 12.0, unit="millions", currency="TWD"),
+            _raw_fact("rev", 280.0, unit="millions", currency="USD"),
+        ]),
+    ], (A,), eligible_count=1)
+    by_currency = {c.get("currency"): c for c in _changes(twd_usd)}
+    assert set(by_currency) == {"TWD", "USD"}  # the labels are on the rows
+    assert by_currency["TWD"]["signed_change"] == pytest.approx(2.0)
+    assert by_currency["USD"]["signed_change"] == pytest.approx(-20.0)
+    # The unstated series fields stay absent — stated-only, never invented.
+    for change in by_currency.values():
+        assert "basis" not in change and "perimeter" not in change
+        assert change["metric"] == "rev" and change["unit"] == "millions"
+
+    # The gaap / non_gaap EPS pair carries its basis the same way.
+    eps = _build([
+        _row("evt-e1", A.cik, 2026, 1, [
+            _raw_fact("eps", 1.0, unit="USD", basis="gaap"),
+            _raw_fact("eps", 1.2, unit="USD", basis="non_gaap"),
+        ]),
+        _row("evt-e2", A.cik, 2026, 2, [
+            _raw_fact("eps", 1.5, unit="USD", basis="gaap"),
+            _raw_fact("eps", 1.6, unit="USD", basis="non_gaap"),
+        ]),
+    ], (A,), eligible_count=1)
+    by_basis = {c["basis"]: c for c in _changes(eps)}
+    assert set(by_basis) == {"gaap", "non_gaap"}
+    assert by_basis["gaap"]["signed_change"] == pytest.approx(0.5)
+    assert by_basis["non_gaap"]["signed_change"] == pytest.approx(0.4)
+    assert "currency" not in by_basis["gaap"]  # unstated: absent
+
+
+def test_absent_and_stated_none_are_distinct_series_fields():
+    """N-A: ABSENT is not STATED — including a field a fact explicitly states
+    as ``None``. A stated-``None`` basis matches another stated-``None`` basis
+    and NEVER matches an absent basis (the review's ``fact.get(field)``
+    mutant collapses the two and must fail here); two facts that both omit
+    the field are one series."""
+    def one_series(first, second):
+        return _changes(_build([
+            _row("evt-na1", A.cik, 2026, 1, [first]),
+            _row("evt-na2", A.cik, 2026, 2, [second]),
+        ], (A,), eligible_count=1))
+
+    # Absent on one fact, stated None on the other: NOT one series, no bridge.
+    assert one_series(
+        _raw_fact("rev", 10.0, unit="USD"),
+        _raw_fact("rev", 12.0, unit="USD", basis=None),
+    ) == []
+    # (and the mirror order too)
+    assert one_series(
+        _raw_fact("rev", 10.0, unit="USD", basis=None),
+        _raw_fact("rev", 12.0, unit="USD"),
+    ) == []
+    # Both state None: one series — the bridge is real, and SF1 carries the
+    # stated None onto the row (stated, not absent).
+    stated_none = one_series(
+        _raw_fact("rev", 10.0, unit="USD", basis=None),
+        _raw_fact("rev", 12.0, unit="USD", basis=None),
+    )
+    assert [c["signed_change"] for c in stated_none] == [pytest.approx(2.0)]
+    assert stated_none[0]["basis"] is None
+    # Both absent: one series (the plain bridge, unchanged).
+    assert [c["signed_change"] for c in one_series(
+        _raw_fact("rev", 10.0, unit="USD"),
+        _raw_fact("rev", 12.0, unit="USD"),
+    )] == [pytest.approx(2.0)]
+
+
+def test_a_non_finite_difference_is_not_a_change():
+    """N-B: two FINITE reported numbers can difference to a non-finite
+    result (−1e308 → 1e308 overflows float subtraction to inf) or make the
+    subtraction raise (an int too large to convert to float). Neither is a
+    change: no bridge is emitted for the pair — non-comparable, exactly like
+    a currency mix — the originals stay served verbatim, and the block stays
+    finite JSON with no raise out of the module."""
+    overflow_to_inf = _build([
+        _row("evt-nb1", A.cik, 2026, 1, [_raw_fact("rev", -1e308, unit="USD")]),
+        _row("evt-nb2", A.cik, 2026, 2, [_raw_fact("rev", 1e308, unit="USD")]),
+    ], (A,), eligible_count=1)
+    assert _changes(overflow_to_inf) == []
+    issuer = overflow_to_inf["issuers"][0]
+    assert issuer["cohort_state"] == "reported_noncomparable"
+    assert sorted(f["value"] for f in issuer["reported"]) == [-1e308, 1e308]
+    json.dumps(overflow_to_inf, allow_nan=False)  # finite JSON: raises if not
+
+    # The subtraction RAISES instead of overflowing to inf: int too large.
+    for left, right in ((10**400, 1.0), (1.0, 10**400)):
+        raises_instead = _build([
+            _row("evt-nb3", A.cik, 2026, 1, [_raw_fact("rev", left, unit="USD")]),
+            _row("evt-nb4", A.cik, 2026, 2, [_raw_fact("rev", right, unit="USD")]),
+        ], (A,), eligible_count=1)
+        assert _changes(raises_instead) == []
+        assert raises_instead["issuers"][0]["cohort_state"] \
+            == "reported_noncomparable"
+        json.dumps(raises_instead, allow_nan=False)
+
+    # Positive control: the guard does not eat honest large bridges — a
+    # finite difference of the same magnitude still bridges.
+    finite = _build([
+        _row("evt-nb5", A.cik, 2026, 1, [_raw_fact("rev", -1e30, unit="USD")]),
+        _row("evt-nb6", A.cik, 2026, 2, [_raw_fact("rev", 1e30, unit="USD")]),
+    ], (A,), eligible_count=1)
+    assert [c["signed_change"] for c in _changes(finite)] \
+        == [pytest.approx(2e30)]
+    assert finite["issuers"][0]["cohort_state"] == "comparable"
+
+
+def test_a_quarter_outside_one_to_four_never_bridges():
+    """N-C: ``2025Q5`` has the same period index as ``2026Q1`` and would
+    bridge across a year boundary that never happened (+89-style phantom
+    changes); a quarter outside 1..4 is not a well-formed period, so its
+    facts never enter a bridge — served verbatim, issuer non-comparable."""
+    def block_for(left_quarter, right_quarter):
+        return _build([
+            _row("evt-nc1", A.cik, 2025, left_quarter,
+                 [_fact("revenue_usd_bn", 10.0, "USD_bn", "2025Q4")]),
+            _row("evt-nc2", A.cik, 2025, right_quarter,
+                 [_fact("revenue_usd_bn", 99.0, "USD_bn", "2025Q5")]),
+        ], (A,), eligible_count=1)
+
+    phantom = block_for(4, 5)  # the collision the review demonstrated
+    assert _changes(phantom) == []
+    assert phantom["issuers"][0]["cohort_state"] == "reported_noncomparable"
+    assert sorted(f["value"] for f in phantom["issuers"][0]["reported"]) \
+        == [10.0, 99.0]
+
+    zeroth = block_for(4, 0)
+    assert _changes(zeroth) == []
+
+    # Positive control: the real year rollover still bridges.
+    rollover = _build([
+        _row("evt-nc3", A.cik, 2025, 4, [_fact("revenue_usd_bn", 10.0, "USD_bn", "2025Q4")]),
+        _row("evt-nc4", A.cik, 2026, 1, [_fact("revenue_usd_bn", 12.0, "USD_bn", "2026Q1")]),
+    ], (A,), eligible_count=1)
+    assert [c["signed_change"] for c in _changes(rollover)] \
+        == [pytest.approx(2.0)]
+
+
+def test_one_issuer_id_under_two_ciks_keeps_every_row_attributed():
+    """N-D: one issuer_id listed under two CIKs is ONE issuer (N6) whose key
+    holds BOTH CIKs — neither identity's rows are called unattributed and
+    the issuer's evidence is not under-counted."""
+    a_second_cik = _identity("AAA2", "ISS:SYN-A", "0000000020")
+    block = _build([
+        _row("evt-a-cik1", A.cik, 2026, 1,
+             [_fact("revenue_usd_bn", 10.0, "USD_bn", "2026Q1")]),
+        _row("evt-a-cik2", a_second_cik.cik, 2026, 2,
+             [_fact("revenue_usd_bn", 11.0, "USD_bn", "2026Q2")]),
+    ], (A, a_second_cik), eligible_count=2, aliases=ALIASES)
+
+    assert len(block["issuers"]) == 1  # one issuer, counted once (N6)
+    issuer = block["issuers"][0]
+    assert issuer["row_count"] == 2  # BOTH CIKs' rows attributed — no loss
+    assert issuer["cohort_state"] == "comparable"  # its series still bridges
+    assert "unattributed_workspace_rows" not in " ".join(block["limitations"])
+    assert block["cohort"]["identified"] == 1
+    assert block["cohort"]["reported"] + block["cohort"]["unknown"] \
+        == block["cohort"]["eligible"]
 
 
 # ---------------------------------------------------------------------------

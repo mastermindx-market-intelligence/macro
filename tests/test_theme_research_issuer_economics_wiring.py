@@ -359,6 +359,35 @@ def test_a_seam_fault_degrades_to_the_typed_unavailable_block(monkeypatch):
     assert block["authority"] == ALL_FALSE_AUTHORITY
 
 
+def test_a_lazy_import_fault_degrades_to_the_typed_unavailable_block(monkeypatch):
+    """N-E: the binding's OWN lazy import sits inside the wrap, so an
+    ImportError while bringing in the witness-scope module is a typed
+    unavailable block too — not an exception escaping the seam. (Before the
+    r2 fix the import was above the ``try`` and this test would raise.)"""
+    import sys
+
+    # ``None`` in sys.modules halts the import with an ImportError whose
+    # ``.name`` is the module — the same absence mechanism the finance
+    # suite's shell_absent fixture uses.
+    monkeypatch.setitem(
+        sys.modules, "engine.market_ontology.semiconductor_witness_scope", None,
+    )
+    registration = real_registration_for("ai_semiconductors")
+    block = dict(registration.issuer_economics(
+        SimpleNamespace(slice_key="hbm_packaging"),
+        SimpleNamespace(event_workspaces=()),
+    ))
+    assert block["schema"] == ISSUER_ECONOMICS_SCHEMA
+    assert block["state"] == "issuer_economics_unavailable"
+    # The halted-import fault class: ModuleNotFoundError subclasses
+    # ImportError and either spelling names the same import fault — nothing
+    # else is accepted.
+    assert block["reason"] in (
+        "builder_fault:ImportError", "builder_fault:ModuleNotFoundError",
+    )
+    assert block["authority"] == ALL_FALSE_AUTHORITY
+
+
 def test_a_seam_fault_does_not_fail_the_v2_query(
     entitled_client, monkeypatch, tmp_path,
 ):

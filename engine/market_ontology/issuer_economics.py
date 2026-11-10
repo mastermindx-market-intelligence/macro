@@ -60,6 +60,12 @@ never raises over plain mapping-shaped inputs:
 * a non-finite fact value (NaN, infinity) is not a reported number and is
   refused BY THIS MODULE'S OWN CHECK, with a typed omission — the upstream
   projector's refusal is not relied on;
+* a non-finite DIFFERENCE (two finite reported numbers whose subtraction
+  overflows to infinity or raises ``OverflowError`` — N-B) is not a change:
+  no bridge is emitted for that pair — the pair is non-comparable, exactly
+  like a currency mix or a duplicate disagreement — so the block is finite
+  JSON by this module's own check and the subtraction never raises out of
+  this module;
 * denominator inputs that cannot satisfy ``reported + unknown = eligible``
   publish the typed inconsistent form with the raw inputs and NULL derived
   counts — never counts that fail the sum.
@@ -199,14 +205,20 @@ def _fact_rows(
 def _row_period_index(row: Mapping[str, Any]) -> int | None:
     """The row's structured fiscal period as a comparable index
     (``year * 4 + quarter``), or ``None`` when the row carries no well-formed
-    period. The fact's own ``fiscal_period`` is a LABEL (``"2026Q2"``); the
-    structured period is the row's, so adjacency is decided on the row."""
+    period — including a quarter outside 1..4 (N-C): ``2025Q5`` collides with
+    ``2026Q1`` under the index, so a row carrying one has no comparable
+    period and its facts never enter a bridge (they stay served verbatim;
+    the issuer is non-comparable, not wrong). The fact's own
+    ``fiscal_period`` is a LABEL (``"2026Q2"``); the structured period is the
+    row's, so adjacency is decided on the row."""
     period = row.get("fiscal_period")
     if not isinstance(period, Mapping):
         return None
     year, quarter = period.get("year"), period.get("quarter")
     if not (isinstance(year, int) and not isinstance(year, bool)
             and isinstance(quarter, int) and not isinstance(quarter, bool)):
+        return None
+    if not 1 <= quarter <= 4:
         return None
     return year * 4 + quarter
 
@@ -226,9 +238,13 @@ def _series_key(fact: Mapping[str, Any]) -> tuple[object, ...] | None:
     (metric, unit, basis, currency, perimeter, definition) — with ABSENT
     distinct from stated. GAAP is never subtracted from non-GAAP, a segment
     from the consolidated company, TWD from USD, and a fact that merely
-    omits a field never bridges against one that states it. ``None`` when a
-    stated field is unhashable (outside the projector's token contract):
-    such a fact never enters a bridge."""
+    omits a field never bridges against one that states it. A field
+    explicitly stated as ``None`` is STATED (N-A): it matches another fact
+    that states ``None`` and never matches one that omits the field — absent
+    and stated-None are two different series-field values, which is why the
+    key reads ``field not in fact`` and not ``fact.get(field)``. ``None``
+    when a stated field is unhashable (outside the projector's token
+    contract): such a fact never enters a bridge."""
     parts = tuple(
         _ABSENT if field not in fact else fact[field]
         for field in _SERIES_FIELDS
@@ -282,15 +298,23 @@ def _signed_changes(rows: list[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
     key — the projector's own field names (S1) — so the bridge never
     subtracts across accounting basis, currency, reporting perimeter or
     definition, and never across a field one fact states and the other
-    omits. Original observations stay in ``reported`` VERBATIM; this adds
-    the descriptive bridge only where two ADJACENT periods (index step
-    exactly 1 — a missing quarter is a gap, never a span) of one series
+    omits. Each emitted change row CARRIES every series field its series
+    STATES (SF1): two same-metric bridges that differ by currency or basis
+    are distinguishable on the row itself, not only by matching values back
+    into ``reported``. Original observations stay in ``reported`` VERBATIM;
+    this adds the descriptive bridge only where two ADJACENT periods (index
+    step exactly 1 — a missing quarter is a gap, never a span) of one series
     exist. A negative change is displayed, never dropped; incomparable
     units are not differenced (they are not folded into one denominator).
     Duplicate facts for one (period, series) — the same filing re-served
     under several alias listings — must AGREE before a difference is
     emitted: a disagreement is ambiguous, never averaged and never picked.
-    A non-finite value is not a reported number and never enters (N3)."""
+    A non-finite value is not a reported number and never enters (N3). A
+    difference that is not finite — or whose subtraction overflows (N-B) —
+    is not a change either: no bridge is emitted for that pair, exactly as
+    for any other non-comparable pair (the issuer's ``cohort_state`` says
+    non-comparable), so a non-finite number never enters the block and the
+    subtraction never raises out of this module."""
     facts: dict[tuple[object, ...], list[tuple[str, float]]] = {}
     period_of: dict[int, Mapping[str, Any] | None] = {}
     indexes_by_series: dict[tuple[object, ...], set[int]] = {}
@@ -330,15 +354,32 @@ def _signed_changes(rows: list[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
             rv = _agreed(facts[(right, *series)])
             if lv is None or rv is None:
                 continue
-            changes.append({
+            try:
+                delta = rv - lv
+            except OverflowError:
+                # N-B: an int too large for float conversion is not a
+                # difference — no change for this pair, never a raise.
+                continue
+            if not _reported_number(delta):
+                # N-B: finite inputs can difference to infinity (−1e308 →
+                # 1e308); a non-finite number is not a change and never
+                # enters the block.
+                continue
+            # SF1: the row says WHICH series it bridges — every series field
+            # the series STATES rides the row (absent fields stay absent).
+            row_out: dict[str, Any] = {
                 "metric": series[0],
                 "unit": series[1],
                 "from_fiscal_period": period_of.get(left),
                 "to_fiscal_period": period_of.get(right),
                 "from_value": lv,
                 "to_value": rv,
-                "signed_change": rv - lv,
-            })
+                "signed_change": delta,
+            }
+            for field_name, part in zip(_SERIES_FIELDS[2:], series[2:]):
+                if part is not _ABSENT:
+                    row_out[field_name] = part
+            changes.append(row_out)
     return changes
 
 
@@ -476,18 +517,21 @@ def build_issuer_economics(
     scope_omissions = tuple(getattr(scope, "omissions", ()) or ())
 
     # --- per-issuer attribution over the declared cohort ------------------
-    # The attribution value is the identity's RAW cik object: ``_same_issuer``
-    # requires a real str on the identity side, so a missing/non-string CIK
-    # is a typed unknown that matches no row (N1) — never str()-coerced into
-    # matching a row that literally carries "None".
+    # The attribution value is the identity's RAW cik object — every CIK the
+    # key's identities carry (N-D: one issuer_id listed under two CIKs keeps
+    # BOTH, so neither identity's rows are called unattributed; N6 still
+    # counts the key once). ``_same_issuer`` requires a real str on the
+    # identity side, so a missing/non-string CIK is a typed unknown that
+    # matches no row (N1) — never str()-coerced into matching a row that
+    # literally carries "None".
     by_issuer: dict[str, list[Mapping[str, Any]]] = {}
-    attribution: dict[str, object] = {}
+    attribution: dict[str, list[object]] = {}
     identity_cik_not_string = 0
     for identity in identities:
         issuer_id = getattr(identity, "issuer_id", None)
         cik = getattr(identity, "cik", None)
         key = str(issuer_id) if issuer_id else f"cik:{cik}"
-        attribution[key] = cik
+        attribution.setdefault(key, []).append(cik)
         if not isinstance(cik, str):
             identity_cik_not_string += 1
         by_issuer.setdefault(key, [])
@@ -496,7 +540,8 @@ def build_issuer_economics(
     for row in rows:
         row_cik = row.get("cik")
         owner = next(
-            (key for key, want in attribution.items() if _same_issuer(row_cik, want)),
+            (key for key, wants in attribution.items()
+             if any(_same_issuer(row_cik, want) for want in wants)),
             None,
         )
         owners.append(owner)

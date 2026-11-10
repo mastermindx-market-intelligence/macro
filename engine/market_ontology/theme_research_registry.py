@@ -479,18 +479,19 @@ def _build_semiconductor_issuer_economics(
     reader contract; ``None`` when the master is unreadable, which the block
     carries as the typed alias unknown). Every import is lazy: importing the
     registry loads no vertical and no data stack. The FAULT LAW (N1): the
-    whole binding — owner reads and build — is wrapped, so any fault inside
-    it degrades to the typed unavailable block
+    whole binding — its own lazy imports, the owner reads and the build — is
+    wrapped, so any fault inside it (an ``ImportError`` included, N-E)
+    degrades to the typed unavailable block
     (:func:`_issuer_economics_unavailable`, reason naming the exception
     class only) and the query route still succeeds; the build function
     itself is pure over plain mapping-shaped inputs and never raises."""
-    from engine.market_ontology.semiconductor_witness_scope import (  # noqa: PLC0415 — lazy by design
-        WITNESS_ROSTER,
-        _load_issuer_master,
-        resolve_witness_scope,
-    )
-
     try:
+        from engine.market_ontology.semiconductor_witness_scope import (  # noqa: PLC0415 — lazy by design, INSIDE the wrap (N-E)
+            WITNESS_ROSTER,
+            _load_issuer_master,
+            resolve_witness_scope,
+        )
+
         slice_key = getattr(query, "slice_key", "")
         scope = resolve_witness_scope(slice_key if isinstance(slice_key, str) else "")
         master = _load_issuer_master()

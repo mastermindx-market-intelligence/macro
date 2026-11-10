@@ -346,6 +346,9 @@ def test_real_shell_field_gap_is_exactly_view_keys_build_query_and_v2_columns():
         "time_modes", "single_document", "native_generation_prefix",
         "native_generation_width", "native_generation_field",
         "evidence_refs_field",
+        # the shell's defaulted lane-5 v1.1 issuer-economics hook; None for
+        # Finance
+        "issuer_economics",
     }
     assert share - shell_fields == set()
 
