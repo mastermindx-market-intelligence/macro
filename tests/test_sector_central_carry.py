@@ -845,7 +845,12 @@ def test_v11_row_blocks_carry_full_group_rows_and_members():
                     source_row.get("members", ())), (name, array)
                 for carried, member in zip(carried_row.get("members", ()),
                                            source_row.get("members", ())):
-                    assert carried["name_zh"] == member.get("name_zh")
+                    # N-D (review r2): key-presence + .get equality - a future
+                    # source member without a name_zh key is correctly carried
+                    # without the key (absent stays absent, wire §2); the test
+                    # must not KeyError where the producer is right.
+                    assert ("name_zh" in carried) == ("name_zh" in member), (name, array)
+                    assert carried.get("name_zh") == member.get("name_zh"), (name, array)
     theme, handoff = built["theme_rows"], source("basketdata/si_handoff.json")
     context = handoff["theme_context"]
     entries = {b["id"]: b for b in source("basketdata/baskets.json")["baskets"]}
@@ -1139,6 +1144,27 @@ def test_v11_an_absent_allow_listed_row_key_stays_absent():
     assert carried is not None and "label_zh" not in carried
     full = carry._universe_row(source_row)
     assert full["label_zh"] == source_row["label_zh"]
+
+
+def test_v11_an_absent_member_name_zh_key_is_carried_absent(tmp_path):
+    """N-D (review r2): a source member WITHOUT a ``name_zh`` key is carried
+    without the key - absent stays absent (wire §2), the producer is right, so
+    nothing may KeyError and no null may be defaulted in. Untouched members on
+    the same row keep their own values."""
+    relative = "marketdata/subsector_confluence.json"
+    document = json.loads((SITE / relative).read_bytes())
+    row = next(r for r in document["subsectors"] if r.get("members"))
+    assert "name_zh" in row["members"][0]  # precondition: a key to remove
+    del row["members"][0]["name_zh"]
+    site = _rows_site(tmp_path, {relative: json.dumps(
+        document, ensure_ascii=False, allow_nan=False).encode("utf-8")})
+    block = carry.confluence_universe_rows(
+        site, relative, "sp500_subsectors", ("subsectors", "sectors"))
+    assert block is not None
+    carried_row = next(r for r in block["data"]["subsectors"] if r.get("members"))
+    members = carried_row["members"]
+    assert "name_zh" not in members[0]  # absent at the source, absent in the carry
+    assert all("name_zh" in member for member in members[1:])  # untouched keep theirs
 
 
 def _baskets_mutation(transform):
