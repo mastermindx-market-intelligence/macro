@@ -37,4 +37,11 @@ The current assignment explicitly authorizes direct squash merge and VPS deploym
 Principal retains architecture, tightly coupled implementation and deployment under LOWER_TOTAL_OVERHEAD and UNIQUE_APPROVED_ACCESS while source/transport are resolved. A native reasoning child provided architecture synthesis only, with no writes or execution. WHY NOT FABLE: no additional strategic principal is needed. Reassess separable paid-Fabric labor once exact contracts are frozen; never duplicate a live worker.
 
 ## Evidence and frontier
-Initial discovery and source branch creation verified. Next: inspect incumbent gateway status fields and source provenance, then build the smallest complete producer-to-admin consumer path.
+Implementation milestone: native admin workspace, authenticated API, bounded observer, private SSH projection, retained-history/epoch fencing and exact-release staging helper are implemented. Focused 23-case Python suite passes; Python and JavaScript syntax checks pass.
+
+Runtime census: the incumbent router is a single M2 process at port 8313 with 20 configured routes and four aliases. Existing source is a locally retained Mastermind build with production wire patches; the recorded base commit is unavailable on remote GitHub. The deployment will preserve that exact immutable release and its gateway/routes/wire/auth hashes, then add the macro-owned observer and replace only the service factory reference. No primary host checkout or credential file will be edited.
+
+Key runtime correction: OpenAI and Responses translators synthesize missing usage as zero. Original parsed provider usage is captured through observational translation hooks; translated downstream zeros are never treated as provider reports. Unknown input/output remains unknown. Request identity is pseudonymous and only recorded parent IDs establish agent relations.
+
+Next: publish this implementation checkpoint; run the 12 closed-transport cases against the exact staged gateway and translators; complete browser layout/interaction review; inspect current actual GitHub controls; squash and deploy through incumbent owners; verify live consumer telemetry and save receipts. This milestone is not completion.
+
