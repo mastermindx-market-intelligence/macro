@@ -65,6 +65,9 @@ def render_fixture(output: Path, source_ref: str) -> dict:
             "shadow_escalated": shadow.get("escalated"),
         }
     vm["fear_greed"] = snapshot("site/basketdata/fear_greed.json")
+    # Keep the separately published appetite lens in the immutable fixture too.
+    # The render owner already synthesized it; this harness never recomputes it.
+    vm["fear_euphoria"] = snapshot("site/macrodata/macro_signals.json").get("fear_euphoria")
     vm["vol_weather"] = snapshot("site/basketdata/vol_weather.json")
     vm["leadership_crack"] = snapshot("data/leadership_crack/latest.json")
     pulse = snapshot("site/basketdata/sector_pulse.json")
@@ -177,6 +180,55 @@ def check_ui(output: Path) -> dict:
             record("known warning survives partial coverage",
                    "Caution" in page.locator(".rkw-state-slot").inner_text() and
                    page.locator("#risk-envelope-band .gde-context-line").is_visible())
+            # Paper parity: the native source panels belong to the first scan, and
+            # they are the same nodes the inspector later borrows.
+            record("driver ladder is visible in the overview",
+                   page.locator(".rkw-ladder-slot .riskdlg-ladder").is_visible())
+            record("sentiment panel is visible in the overview",
+                   page.locator(".rkw-sentiment-slot #sentiment-regime").is_visible())
+            record("each sentiment lens has its own source-labelled scale",
+                   page.locator(".rkc-mood-lens .rkc-mood-axis").count() == 2)
+            original_soup = BeautifulSoup(original_html, "html.parser")
+            original_axis = "".join(original_soup.select_one(".rkc-mood-axis").get_text().split())
+            record("both sentiment scales retain every source tick in both languages",
+                   all("".join(text.split()) == original_axis for text in
+                       page.locator(".rkc-mood-lens .rkc-mood-axis").all_text_contents()))
+            source_lenses = original_soup.select(".rkc-mood-lens")
+            for i, lens in enumerate(source_lenses):
+                score = "".join(lens.select_one(".rkc-mood-score").get_text().split())
+                pin = lens.select_one(".rkc-mood-pin").get("style")
+                record("sentiment lens keeps its own value and pin " + str(i),
+                       "".join(page.locator(".rkc-mood-score").nth(i).text_content().split()) == score and
+                       page.locator(".rkc-mood-pin").nth(i).get_attribute("style") == pin)
+            record("leadership panel is visible in the overview",
+                   page.locator(".rkw-leadership-slot .riskdlg-leadership").is_visible())
+            record("envelope band sits beside the ladder",
+                   page.locator(".rkw-band-slot #risk-envelope-band").is_visible())
+            record("settled internals context and source session stay visible at first scan",
+                   page.locator(".rkw-completeness").is_visible() and
+                   "2026-11-02" in page.locator(".rkw-completeness").inner_text())
+            record("the signal index keeps its own scale",
+                   page.locator("#dlg-risk .rkw-odds .rkw-score-slot .riskdlg-score").count() == 1)
+            record("the signal index is never presented as odds",
+                   "not odds" in page.locator(".rkw-index-label").inner_text().lower())
+            record("each horizon keeps its own value",
+                   page.locator(".rkw-horizon-value").count() == 3)
+            page.evaluate("""window.__rkwNodes={
+                ladder:document.querySelector('.rkw-ladder-slot .riskdlg-ladder'),
+                sentiment:document.querySelector('.rkw-sentiment-slot #sentiment-regime'),
+                leadership:document.querySelector('.rkw-leadership-slot .riskdlg-leadership'),
+                band:document.getElementById('risk-envelope-band')};""")
+            page.evaluate("""window.__rkwMeta={
+                help:document.querySelector('.rkw-sentiment-panel .rkw-panel-heading .help'),
+                date:document.querySelector('.rkw-leadership-panel .rkw-panel-heading small')};""")
+            record("overview retains native sentiment help and leadership date",
+                   page.evaluate("!!window.__rkwMeta.help && !!window.__rkwMeta.date"))
+            record("the overview panels are single live nodes",
+                   page.evaluate("""!!window.__rkwNodes.ladder && !!window.__rkwNodes.sentiment &&
+                       !!window.__rkwNodes.leadership && !!window.__rkwNodes.band &&
+                       document.querySelectorAll('.riskdlg-ladder').length===1 &&
+                       document.querySelectorAll('#sentiment-regime').length===1 &&
+                       document.querySelectorAll('.riskdlg-leadership').length===1"""))
             page.evaluate("""window.__rkwOriginalBand=document.getElementById('risk-envelope-band');
                 window.__rkwOriginalLive=document.getElementById('gde-live-stage');""")
             page.locator('button[data-rkw-horizon="5"]').click()
@@ -190,11 +242,22 @@ def check_ui(output: Path) -> dict:
             saved_scroll = page.locator("#dlg-risk .mx5-dlg-body").evaluate("(e)=>e.scrollTop")
             page.locator(".rkw-driver").nth(3).click()
             record("driver opens integrated inspector", page.locator("#rkw-inspector-title").inner_text() == "Correlation")
+            record("the inspector borrows the live envelope band",
+                   page.evaluate("""(function(){var b=window.__rkwNodes.band;
+                       return !!b && b===document.getElementById('risk-envelope-band') && !!b.closest('#rkw-inspector');})()"""))
+            record("the detail view uses the full panel width",
+                   page.evaluate("""(function(){var p=document.querySelector('#dlg-risk .mx5-dlg-panel');
+                       var i=document.querySelector('#dlg-risk .rkw-inspector');
+                       if(!p||!i) return false;
+                       return i.getBoundingClientRect().width >= p.getBoundingClientRect().width - 40;})()"""))
             page.keyboard.press("Escape")
             record("Escape returns without closing", page.locator("#dlg-risk").evaluate(
                 "(d)=>d.classList.contains('open')&&!d.classList.contains('rkw-detail-open')"))
             record("Back restores driver focus", page.locator(".rkw-driver").nth(3).evaluate("(e)=>document.activeElement===e"))
             record("Back restores overview scroll", abs(page.locator("#dlg-risk .mx5-dlg-body").evaluate("(e)=>e.scrollTop") - saved_scroll) <= 2)
+            record("the band returns to its exact overview slot",
+                   page.evaluate("""(function(){var b=window.__rkwNodes.band;
+                       return !!b && b===document.getElementById('risk-envelope-band') && !!b.closest('.rkw-band-slot');})()"""))
             page.keyboard.press("Escape")
             page.wait_for_selector("#dlg-risk.open", state="hidden")
             record("close restores dashboard trigger", trigger.evaluate("(e)=>document.activeElement===e"))
@@ -210,6 +273,16 @@ def check_ui(output: Path) -> dict:
                 if key != "sentiment":
                     page.locator(f'.rkw-context-nav [data-rkw-view="{key}"]').click()
                 record("reachable " + key, page.locator("#rkw-inspector-title").inner_text() == heading)
+                if key == "sentiment":
+                    record("sentiment detail keeps the original scale help",
+                           page.evaluate("""!!window.__rkwMeta.help &&
+                             !!window.__rkwMeta.help.closest('.rkw-inspector-content') &&
+                             window.__rkwMeta.help.getClientRects().length>0"""))
+                if key == "leadership":
+                    record("leadership detail keeps the original as-of date",
+                           page.evaluate("""!!window.__rkwMeta.date &&
+                             !!window.__rkwMeta.date.closest('.rkw-inspector-content') &&
+                             window.__rkwMeta.date.getClientRects().length>0"""))
             record("one live consumer, same nodes", page.evaluate("""
                 document.getElementById('risk-envelope-band')===window.__rkwOriginalBand &&
                 document.getElementById('gde-live-stage')===window.__rkwOriginalLive &&
@@ -217,24 +290,59 @@ def check_ui(output: Path) -> dict:
                 document.querySelectorAll('#risk-envelope-band').length===1
             """))
             page.keyboard.press("Escape")
+            # Move, never clone: the panel that leaves the overview for the
+            # inspector is the same node, and it returns to the same slot.
+            page.locator('.rkw-explore [data-rkw-view="sentiment"]').click()
+            record("the inspector borrows the overview sentiment panel",
+                   page.evaluate("""(function(){var n=window.__rkwNodes.sentiment;
+                       return !!n && !!n.closest('.rkw-inspector-content');})()"""))
+            record("the borrowed panel is not duplicated",
+                   page.evaluate("document.querySelectorAll('#sentiment-regime').length===1"))
+            page.keyboard.press("Escape")
+            record("source metadata returns to its overview headings",
+                   page.evaluate("""!!window.__rkwMeta.help.closest('.rkw-sentiment-panel .rkw-panel-heading') &&
+                     !!window.__rkwMeta.date.closest('.rkw-leadership-panel .rkw-panel-heading')"""))
+            record("the panel returns to its exact overview slot",
+                   page.evaluate("""(function(){var n=window.__rkwNodes.sentiment;
+                       return !!n && !!n.closest('.rkw-sentiment-slot');})()"""))
+            record("the ladder returns to its exact overview slot",
+                   page.evaluate("""(function(){var n=window.__rkwNodes.ladder;
+                       return !!n && !!n.closest('.rkw-ladder-slot');})()"""))
+            record("the leadership panel returns to its exact overview slot",
+                   page.evaluate("""(function(){var n=window.__rkwNodes.leadership;
+                       return !!n && !!n.closest('.rkw-leadership-slot');})()"""))
             page.locator(".rkw-driver").nth(1).click()
             record("calendar does not show invented quantitative bars",
                    page.locator('.rkw-inspector-content .rlx-bar-track').count() == 0)
             page.keyboard.press("Escape")
 
-            for width, theme, language in [(1440, "dark", "en"), (1440, "light", "en"),
-                                           (390, "dark", "en"), (390, "light", "zh"),
-                                           (320, "light", "en"), (768, "dark", "zh")]:
+            risk_band_colors = {}
+            for width, theme, language in [(w, t, l) for w in (1440, 768, 390, 320)
+                                           for t in ("dark", "light") for l in ("en", "zh")]:
                 page.set_viewport_size({"width": width, "height": 844 if width < 900 else 900})
                 page.evaluate("""(s)=>{document.documentElement.dataset.theme=s[0];
                     document.documentElement.dataset.lang=s[1];document.documentElement.lang=s[1];}""",
                               [theme, language])
                 page.wait_for_timeout(250)  # Let the native theme transitions settle before capture.
+                colors = [page.locator(".riskdlg-scare .sc-band-" + band).first.evaluate(
+                    "(e)=>getComputedStyle(e).color") for band in ("high", "calm")]
+                if language == "en":
+                    risk_band_colors[(width, theme)] = colors
+                else:
+                    record(f"risk severity ink stays consistent across languages {width}px/{theme}",
+                           colors == risk_band_colors[(width, theme)] and colors[0] != colors[1])
                 page.locator("#dlg-risk .mx5-dlg-body").evaluate("(e)=>e.scrollTop=0")
                 record(f"modal fits {width}px {theme}/{language}", page.locator("#dlg-risk .mx5-dlg-panel").evaluate(
                     "(e)=>{let r=e.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&e.scrollWidth<=e.clientWidth+1;}"))
-                record(f"content fits {width}px", page.locator(".rkw-layout").evaluate("(e)=>e.scrollWidth<=e.clientWidth+1"))
+                record(f"content fits {width}px {theme}/{language}", page.locator(".rkw-layout").evaluate("(e)=>e.scrollWidth<=e.clientWidth+1"))
+                record(f"page has no sideways overflow {width}px {theme}/{language}",
+                       page.evaluate("document.documentElement.scrollWidth<=window.innerWidth+1"))
                 page.screenshot(path=str(shots / f"overview-{width}-{theme}-{language}.png"))
+                if width in (1440, 390):
+                    for selector, section in [(".rkw-analytical", "analysis"), (".rkw-sentiment-panel", "context")]:
+                        page.locator(selector).scroll_into_view_if_needed()
+                        page.screenshot(path=str(shots / f"{section}-{width}-{theme}-{language}.png"))
+                    page.locator("#dlg-risk .mx5-dlg-body").evaluate("(e)=>e.scrollTop=0")
                 if width == 390:
                     page.locator(".rkw-driver").first.click()
                     record("live context stays visible on mobile detail " + language,
@@ -242,7 +350,55 @@ def check_ui(output: Path) -> dict:
                     page.wait_for_timeout(230)  # Capture the settled inspector, not an animation frame.
                     page.screenshot(path=str(shots / f"detail-{width}-{theme}-{language}.png"))
                     page.keyboard.press("Escape")
+                # Keyboard focus must reach the driver strip and keep a visible ring
+                # at every width, in both art directions and both languages.
+                reached = False
+                for _ in range(40):
+                    page.keyboard.press("Tab")
+                    if page.evaluate("!!(document.activeElement && document.activeElement.classList.contains('rkw-driver'))"):
+                        reached = True
+                        break
+                record(f"driver strip is keyboard reachable {width}px {theme}/{language}", reached)
+                if reached:
+                    record(f"focus ring stays visible {width}px {theme}/{language}",
+                           page.locator(".rkw-driver:focus").evaluate(
+                               "(e)=>{var s=getComputedStyle(e);return s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>=2;}")
+                           if page.locator(".rkw-driver:focus").count() else False)
+                # Tabbing can land on a native lens trigger, which opens the shared
+                # popover. Dismiss it without touching the shared modal's own Escape.
+                page.evaluate("if(document.activeElement) document.activeElement.blur()")
+                page.wait_for_timeout(60)
 
+            # Text-only resize exercises fixed-size labels and controls as well as
+            # rem text. It changes only this isolated anonymous test document.
+            for width, language in [(w, l) for w in (1440, 390) for l in ("en", "zh")]:
+                page.set_viewport_size({"width": width, "height": 900})
+                page.goto(origin + "/risk-radar-component.html", wait_until="domcontentloaded")
+                page.wait_for_selector("#dlg-risk.rkw-ready.open", state="attached")
+                page.evaluate("""(lang)=>{
+                    document.documentElement.dataset.lang=lang;
+                    document.documentElement.lang=lang;
+                    const sizes=Array.from(document.querySelectorAll('#dlg-risk, #dlg-risk *'))
+                      .map(e=>[e,parseFloat(getComputedStyle(e).fontSize)]);
+                    sizes.forEach(([e,size])=>{if(Number.isFinite(size))e.style.fontSize=(size*2)+'px';});
+                }""", language)
+                record(f"200% text fits the dialog {width}px/{language}",
+                       page.locator("#dlg-risk .mx5-dlg-panel").evaluate(
+                           "(e)=>e.scrollWidth<=e.clientWidth+1") and
+                       page.locator(".rkw-layout").evaluate("(e)=>e.scrollWidth<=e.clientWidth+1"))
+                record(f"200% text keeps horizon controls readable {width}px/{language}",
+                       page.locator(".rkw-horizon").evaluate_all(
+                           "(nodes)=>nodes.every(e=>e.scrollWidth<=e.clientWidth+1&&e.scrollHeight<=e.clientHeight+1)"))
+                record(f"200% text keeps stance text clear of its icon {width}px/{language}",
+                       page.locator(".rkw-stance").evaluate("""(e)=>{
+                           const icon=e.querySelector('.rkw-stance-icon');
+                           const text=e.querySelector(':scope > div');
+                           const range=document.createRange(); range.selectNodeContents(icon);
+                           return text.getBoundingClientRect().left>=range.getBoundingClientRect().right;
+                       }"""))
+                page.screenshot(path=str(shots / f"text-200-{width}-{language}.png"))
+            page.goto(origin + "/risk-radar-component.html", wait_until="domcontentloaded")
+            page.wait_for_selector("#dlg-risk.rkw-ready.open", state="attached")
             page.emulate_media(reduced_motion="reduce")
             page.locator(".rkw-driver").first.click()
             record("reduced motion removes inspector animation",
@@ -250,6 +406,62 @@ def check_ui(output: Path) -> dict:
             page.keyboard.press("Escape")
             page.keyboard.press("Tab")
             record("focus stays within the open dialog", page.evaluate("document.getElementById('dlg-risk').contains(document.activeElement)"))
+
+            # Settled coherence is source text, not an inferred global quality verdict.
+            for coherence, context, older in [
+                ("Signals diverge", "The trend is positive, but underlying stress remains.", False),
+                ("Signals align", "", True),
+                ("Incomplete picture", "Some inputs are unavailable; this is not an all-clear.", False),
+            ]:
+                coverage = BeautifulSoup(original_html, "html.parser")
+                band = coverage.select_one("#risk-envelope-band")
+                label = band.select_one(".gde-coherence")
+                label.clear()
+                en = coverage.new_tag("span", attrs={"class": "l-en"})
+                en.string = coherence
+                label.append(en)
+                for node in band.select(".gde-context-line, .gde-input-caveat:not(#gde-live-fallback)"):
+                    node.decompose()
+                if context:
+                    node = coverage.new_tag("p", attrs={"class": "gde-context-line"})
+                    node.string = context
+                    band.append(node)
+                if older:
+                    node = coverage.new_tag("p", attrs={"class": "gde-input-caveat"})
+                    node.string = "Trend includes older inputs."
+                    band.append(node)
+                (output / "coverage.html").write_text(str(coverage))
+                page.goto(origin + "/coverage.html", wait_until="domcontentloaded")
+                page.wait_for_selector("#dlg-risk.rkw-ready", state="attached")
+                copied = page.locator(".rkw-completeness").text_content()
+                record("source coherence remains literal: " + coherence,
+                       coherence in copied and "All inputs present" not in copied and
+                       "Partial data" not in copied and "Live update unavailable" not in copied and "Settled " in copied)
+                if context:
+                    record("context qualification survives: " + coherence, context in copied)
+                if older:
+                    record("older-input qualification stays beside the reading",
+                           "Trend includes older inputs." in copied)
+
+            single_lens = BeautifulSoup(original_html, "html.parser")
+            for lens in single_lens.select(".rkc-mood-lens")[1:]:
+                lens.decompose()
+            (output / "single-lens.html").write_text(str(single_lens))
+            page.goto(origin + "/single-lens.html", wait_until="domcontentloaded")
+            page.wait_for_selector("#dlg-risk.rkw-ready", state="attached")
+            record("one available sentiment lens stays one instrument",
+                   page.locator(".rkc-mood-lens").count() == 1 and
+                   page.locator(".rkc-mood-lens .rkc-mood-axis").count() == 1 and
+                   "".join(page.locator(".rkc-mood-lens .rkc-mood-axis").text_content().split()) == original_axis)
+
+            for raw, unavailable in [("", True), ("  ", True), ("—", True), ("0/100", False)]:
+                indexed = BeautifulSoup(original_html, "html.parser")
+                indexed.select_one("#dlg-risk .riskdlg-score").string = raw
+                (output / "index-boundary.html").write_text(str(indexed))
+                page.goto(origin + "/index-boundary.html", wait_until="domcontentloaded")
+                page.wait_for_selector("#dlg-risk.rkw-ready", state="attached")
+                record("index missingness boundary " + repr(raw),
+                       page.locator(".rkw-index-meter").evaluate("(e)=>e.hidden") == unavailable)
 
             # Boundary tests modify only the local JSON response, not production.
             soup = BeautifulSoup(original_html, "html.parser")

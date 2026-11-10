@@ -7429,6 +7429,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
+      - "tools/xguerrilla/validators.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21933,6 +21934,8 @@ jobs:
       # template-site-sync lane, which #3635 wired and which needs only pyyaml.
       # This job exists for the suite that lane CANNOT host: it RUNS each builder,
       # so it needs the data stack below.
+      - name: ownership forward ledger read-failure preservation
+        run: python -m pytest tests/test_ownership_ledger.py -q
       - name: every page builder emits the shim (runs each against a fixture root)
         run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
@@ -21942,9 +21945,14 @@ jobs:
       # Shared Shell keeps the existing document producer and finite route
       # admission contracts on the code gate alongside page-injection coverage.
       - name: Shared Shell finite routes and document compatibility
-        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py -q
+        run: python -m pytest tests/test_export_shared_shell_routes.py tests/test_shared_shell_injection.py tests/test_hk_lookup_template.py tests/test_redirect_stub_page_only.py tests/test_movers_stub_page_only.py tests/test_special_sits_intel.py tests/test_special_situations_premium.py tests/test_beneficial_ownership.py -q
       - name: Shared Shell exact first-party parent handshake
         run: node --test tests/js/shared_shell_bridge.test.cjs
+      # Intraday Flow lifecycle P0 and history-preserving append: all inputs are
+      # synthetic or temporary. Keep the broad market-artifact owner DATA;
+      # select only the hermetic append class from that existing test module.
+      - name: Intraday Flow snapshot lifecycle and ledger preservation
+        run: python -m pytest tests/test_intraday_flow_lifecycle_js.py tests/test_intraday_flow_timing_lifecycle.py tests/test_intraday_flow_stance.py tests/test_intraday_flow.py::TestAppendLedger -q
 
   forex-r26-consumer:
     if: ${{ false }}
@@ -29845,6 +29853,62 @@ jobs:
         # Public runtime operations refuse; no live pool/persona/profile is read.
         # Git policy checks inspect ignore/index metadata, not the private file.
         run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
+
+  xguerrilla-admission:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # PR #10870 admission chain: tools/xguerrilla/admission.py's regression
+    # suite first landed appended to marketing-social-publisher's run line,
+    # which re-selected that job for ordinary code PRs and pushed all three
+    # packing probes 2 weight-seconds over their composed ceilings
+    # (contract-delta: 3 introduced, 0 inherited). Curated here instead:
+    # scope: exclusive owns this package conservatively. Pytest's ancestor
+    # conftest imports profiles -> runtime_boundary and inserts tools/ into
+    # sys.path; the static resolver cannot infer that package alias. Keep
+    # existing and future package-local dependencies covered, including
+    # dependencies reached only through pytest collection.
+    # The three unrelated packing probes still do not select this job.
+    # No job-count, weight, pack, timeout, or concurrency ceiling changes.
+    scope: exclusive
+    paths:
+      - "tools/xguerrilla/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Minimal lane deps: pytest + pyyaml only. admission.py is stdlib
+        # (hashlib/json/math/time/dataclasses/datetime/typing); net.py and
+        # persona.py import yaml. No numpy/pandas/pyarrow, zero network.
+        run: pip install pytest pyyaml
+      - name: admission chain unit tests
+        run: python -m pytest tools/xguerrilla/tests/test_admission.py -q
+
+  xguerrilla-identity-registry:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      # Collection injects tools/ as an import root; own the whole package,
+      # including conftest, profiles/runtime helpers and future dependencies.
+      - tools/xguerrilla/**
+      - tools/__init__.py
+      - research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install registry contract dependencies
+        run: pip install pytest pyyaml
+      - name: Identity schema, exact lock and pre-overwrite transition contracts
+        # Synthetic dictionaries and tmp_path files only; no live registry,
+        # persona, credential, account, browser or runtime admission is read.
+        run: python -m pytest tools/xguerrilla/tests/test_registry.py -q
 
   marketing-media-pipeline:
     if: ${{ false }}
@@ -39125,7 +39189,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright==1.64.1 rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
         run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_research_thesis_read.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
@@ -53250,3 +53314,57 @@ jobs:
         run: pip install pandas numpy pyyaml jsonschema
       - name: fail-closed signal builder entrypoint and healthy controls
         run: python -m unittest tests/test_build_signal_quality_fail_closed.py -v
+  public-site-figma-baseline-contracts:
+    # PR #7220 (public-site Figma baseline) CI-ownership repair, 2026-11-06: the three
+    # suites the branch shipped had no CI run-step owner — contract-delta flagged
+    # exactly those three as introduced unwired suites, and this job is that one
+    # owner. scope: exclusive — paths: is the measured import/read closure. The
+    # suites exercise pure contracts (36 capture targets, matrix sealing, generated
+    # JS parsed by node) and never launch a browser, touch Figma or the network.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # paths: is the planner's measured closure for this job's own commands, not a
+    # guess: the three suites, their ancestor init, the four tools/figma modules,
+    # and the eleven frozen site/ source files capture_reference_matrix.py names
+    # when it verifies the source before capture (a change to any of them must
+    # re-run these contracts).
+    paths:
+      - tests/__init__.py
+      - tests/test_public_site_figma_capture_jobs.py
+      - tests/test_public_site_figma_import_plan.py
+      - tests/test_public_site_figma_reference_matrix.py
+      - tools/figma/__init__.py
+      - tools/figma/public_site_baseline/__init__.py
+      - tools/figma/public_site_baseline/build_import_plan.py
+      - tools/figma/public_site_baseline/capture_reference_matrix.py
+      - tools/figma/public_site_baseline/reference_matrix.py
+      - site/adtest.js
+      - site/index.html
+      - site/landing.css
+      - site/mm_brain.js
+      - site/onboard.css
+      - site/onboard.js
+      - site/products/market-dashboards.html
+      - site/products/market-terminal.html
+      - site/products/mastermind-ai.html
+      - site/scene-motion.css
+      - site/scene-motion.js
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install test deps
+        run: pip install pytest playwright
+      - name: capture job matrix contracts
+        run: python -m pytest tests/test_public_site_figma_capture_jobs.py -q
+      - name: import plan contracts (generated JS parsed by node)
+        run: python -m pytest tests/test_public_site_figma_import_plan.py -q
+      - name: reference matrix sealing contracts
+        run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
