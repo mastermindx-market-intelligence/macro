@@ -350,9 +350,12 @@ def owner_effective_as_of(site: Path) -> str | None:
 
 
 #: Blocks that must carry their own string ``as_of`` (``confluence`` is dated per universe
-#: instead). A block whose source has no date is NOT carried.
+#: instead). A block whose source has no date is NOT carried. R3-N5: the two
+#: current-basis taxonomy blocks are dated blocks too - an undated classification is
+#: never carried with ``as_of: null``.
 _DATED_BLOCKS = ("sector_central_r1", "display_order", "etf_flows", "bottoming_watch",
-                 "theme_table", "removed_members", "roster_baskets")
+                 "theme_table", "removed_members", "roster_baskets", "member_industry",
+                 "member_sub_industry")
 
 
 def build_carry(site: Path, central: Mapping[str, Any],

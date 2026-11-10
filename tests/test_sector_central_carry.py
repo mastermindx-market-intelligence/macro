@@ -122,6 +122,29 @@ def test_undated_block_is_dropped_not_carried_with_a_null_date(tmp_path):
     assert "sector_central_r1" not in built and "display_order" not in built
 
 
+def test_fixture_undated_industry_sources_are_dropped_not_carried_null(tmp_path):
+    """FIXTURE: R3-N5 - the two current-basis taxonomy blocks join the dated-block rule."""
+    (tmp_path / "stagedata").mkdir()
+    (tmp_path / "marketdata").mkdir()
+    (tmp_path / "basketdata").mkdir()
+    screener = {"rows": [{"ticker": "X", "industry": "Things"}]}
+    sub = {"subsectors": [{"key": "k", "label": "K", "members": [{"ticker": "X"}]}]}
+    baskets = {"baskets": [{"id": "b", "members": [{"symbol": "X", "added": "2024-01-01"}],
+                            "observation": {"effective_as_of": "2026-11-06"}}]}
+    (tmp_path / "stagedata/screener.json").write_text(json.dumps(screener))
+    (tmp_path / "marketdata/subsector_confluence.json").write_text(json.dumps(sub))
+    (tmp_path / "basketdata/baskets.json").write_text(json.dumps(baskets))
+    built = carry.build_carry(tmp_path, {"as_of": "2026-11-06", "sectors": []})
+    assert "member_industry" not in built and "member_sub_industry" not in built
+    # dated sources ARE carried: the same rule as every other dated block
+    (tmp_path / "stagedata/screener.json").write_text(json.dumps({**screener, "asof": "2026-11-09"}))
+    (tmp_path / "marketdata/subsector_confluence.json").write_text(
+        json.dumps({**sub, "as_of": "2026-11-06"}))
+    built = carry.build_carry(tmp_path, {"as_of": "2026-11-06", "sectors": []})
+    assert built["member_industry"]["as_of"] == "2026-11-09"
+    assert built["member_sub_industry"]["as_of"] == "2026-11-06"
+
+
 def test_removed_members_use_the_owner_effective_session_not_the_central_date():
     """FIXTURE over real roster: R2-N5 - same clock as `configured_members`."""
     assert carry.owner_effective_as_of(SITE) == "2026-11-06"
