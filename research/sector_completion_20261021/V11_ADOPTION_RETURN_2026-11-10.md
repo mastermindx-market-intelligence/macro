@@ -304,3 +304,72 @@ A signed-in member sees none of this programme's work today. The ordered live ch
 - Outside this programme: `prophet_eligibility` and the native-sector crosswalk (Prophet
   programme); the signing secret and any migration apply (Chairman); the ungated hazard callers in
   `scripts/build_cycle.py` and `engine/commodity_cycle_state.py` found by lane 8.
+
+## 10. Status at 10:56Z (second review of lane 1)
+
+### 10.1 Verdict: not ready
+
+An independent read-only reviewer (Claude Opus 5.5 child) attacked `5129620204c4..9c5db069856d`
+on Macro #10929. Both reports are committed beside this file:
+`LANE1_POPULATION_REVIEW_R1_2026-11-10.md` and `LANE1_POPULATION_REVIEW_R2_2026-11-10.md`.
+
+| Item | Round 2 verdict |
+|---|---|
+| F1 completeness | Partial. Two blockers remain |
+| S1 token answers | Fixed |
+| S2 durability on the wire | Fixed. "Durable" covers the signature only, not retention or a changed secret |
+| S3 tests | Fixed for items (a) to (e). No test covers the two blockers |
+| Carried blocks | Pass with notes. Size cap enforced; nothing readable anonymously |
+| Industry fields | Pass. 617 / 698 and 424 / 698 reproduced, kept separate, current basis |
+| Regressions | None. Every round 1 pass still passes |
+
+The real numbers were reproduced: 1,020 configured current members, 1,015 served, 5 unserved with
+a reason, 0 unaccounted, 26 removed. The reviewer ran the author's suites at the head (541 passed,
+3 skipped), the neighbouring suites (283 passed) and four probes of its own.
+
+In both blockers the real route answers `complete: true` while configured current members are
+missing:
+
+- **R2-B1** (`lib/sector_population.py:259-260`). A member the owner observed with a price at the
+  as-of date, but with no served row, is labelled `empty_price_tape` and counted as explained. The
+  producer cannot create that state (`engine/baskets.py:216,241-250`), so the label appears only
+  when a row was lost after the owner's observation. With one real member dropped from the suite's
+  own fixture the route answers served 1,014, unserved 6, unaccounted 0, complete true.
+- **R2-B2.** The route never reads `observation_refusals` in the captured `baskets.json`. When the
+  owner refuses a basket for low coverage (`engine/baskets.py:217-228`), that basket's whole
+  configured roster leaves the denominator. Moving one real basket there gives 1,002 configured,
+  complete true, with 18 members gone.
+
+Not verified by the reviewer: the live host, a nightly run, the real web-server configuration, a
+real central build with the carried blocks, and the nightly ordering of the screener and
+confluence producers against the central builder.
+
+### 10.2 Routing
+
+- Both blockers went to lane 1 on its own thread at 10:53Z, with the required behaviour and a test
+  for each: a lost row counts as `unaccounted_by_owner` and `complete` is false; a refused basket's
+  members stay in the denominator under a new closed reason, and `complete` is null when the
+  refusal list is missing or malformed. If lane 1 reads the producer differently it answers with
+  evidence instead of applying the change.
+- Sent with them: five notes (a temporary identity-lookup failure answers 401 and should answer
+  503; `q` does not find unserved members; a date mismatch in `removed_members`; blocks carried
+  with a null date; reads missing from `config/dag.yml`), the `etf_flows` windows question, and
+  correction lineage (SP18).
+- The author's return names commit `cd5f7e1afb9e`. The PR range holds `01c661b0e448` instead. The
+  reviewer reviewed what is on the PR. Lane 1 was told to correct its return.
+- A third review, limited to the two blockers and the notes, starts after lane 1 pushes. #10929
+  stays draft and held at `9c5db069856d`.
+- No consumer should rely on `complete` until that review passes. Lane 3 gets the new reason name
+  when lane 1 fixes it in the wire document.
+
+### 10.3 Corrections to this record
+
+- Section 9's heading reads 10:55Z. It was committed at 10:49Z.
+- The message to lane 1 is headed 11:05Z. It was sent at 10:53Z.
+
+### 10.4 Unchanged since section 9
+
+Macro #10923 is armed and open at `8abe28febaf0` with only the non-binding pilot check red; why it
+has not merged is not yet read. Macro #10924 is open at `f1337bdd8738` and still carries
+`merge-blocked`. The point-in-time membership census has not returned. Terminal #1414's deploy is
+not observed.
