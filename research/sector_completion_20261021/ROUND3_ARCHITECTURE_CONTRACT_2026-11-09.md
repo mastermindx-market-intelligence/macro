@@ -1,5 +1,29 @@
 # Sector Intelligence — Round 3 architecture contract
 
+## Round 4 current-use amendment — final version 1.0
+
+This appendix is the retained Round 3 architecture record with narrow factual corrections. The final [masterplan](SHARED_SHELL_MASTERPLAN_2026-11-09.md) and [Fable/T3 packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md) now govern implementation. All four planning rounds are complete. Current source/contract decisions in that packet supersede historical Round 3 assumptions only where specified; no current application or installed schema is claimed implemented.
+
+| Corrected or refined matter | Final controlling disposition |
+|---|---|
+| Source route | Terminal #1244 merged as 67e2d515e4e92d2d05ea399f5691b7860fa07bbf; /sectors/catalog exist at 57ab4281d87ccb9e01e3bafcd42350034de1b222. Reuse the route; old missing-route/unmerged statements below are historical. |
+| Native generation | #10780/#1339 remain separate unmerged source candidates. #10839's sector_dated_context owner is a real dependency; preserve its bounded scope and exact CI-registration ACTION_BLOCKED_NO_REPLAY. |
+| Current source / holds | Final Macro pin bf91cd8964c0fc3ea4ea2e987a21d7759b380032. #10777 needs current conflict/check reconciliation under its existing controller. #1339 retains integration/release HOLD. GMI/Nuclear, original unknown operations, PLNT R8 staging denial and PublicCarrierHold remain. |
+| Evidence ledger | Actual P19 ledger: 80 CONFIRMED, 24 PARTIAL, 15 UNSUPPORTED, 13 NOT_DELIVERED, one CONFIRMED (contract gap), one BLOCK_CONFIRMED. All served proof PENDING_P22; blank original final fields were intentional pending P23. |
+| Stable aliases | SC-066 = R3A-66, basket disclosure; SC-092 = R3A-92, correction/revision. Existing basket count fields and n_subsectors ?? n_listed repair are reused; truthful listed/scored copy and new consumer proof remain. |
+| Exact Paper names | S08 IQ2-0 is Source reader; S10 L8B-0 is Sector map. R3 Watches are 3DN-0/47R-0/16X-0; 56C-0 is Authority/contents. The anchor table below is corrected accordingly. |
+| State/design debt | 19 historically applicable missing states plus 23 historical N/A dispositions; 47 core Frames are preserved. Full calls/Bottoming Watch, four-universe confluence, phone flows, full Cycles depth and actual context states have bounded design assignments. |
+| Subject/evidence admission | Proposed narrow v2 macro.sector and theme_graph owner references. Native xlf and Finance sector:financials remain separate owner identities; an actual versioned bridge is required when crossing. Keep new evidence pinned and thesis_refs empty. |
+| Save/recovery | Proposed actor fence before I/O; owner_mismatch does not resolve an earlier uncertain save. Retain actor journal, Check save status, exact operation and rights retirement. No added Replay button. |
+| Installed SQL | Compose a newly reserved migration over the actual installed validator; preserve 0028/0039/0040/0042/0047 and any installed 0043 behavior. Source says 0047 unapplied; no installed DB read occurred here. |
+| Research v2 | Exact closed request union/profile grammar, native generation plus context_generation, paired expected fields and assertion-level evidence.v2. V1 remains unchanged; real owner inputs and current rights admit every available vertical. |
+| Original delivery mapping | P04=B01–B04, P05=B05–B07, P06=B08–B11, P18=B12; P14 depth/lenses/flows/themes/four universes, P15 Cycles/history/Record/Methods, P16 actions, P17 compatibility/access/responsiveness. |
+| Final handoff | Ten validated complete authoring briefs, all 134 IDs/old P/J/verdicts/final owners, ten industry witnesses, normal release/operational/rollback/retirement proof. No worker dispatch or START. |
+
+The historical source and candidate snapshots below remain evidence of what Round 3 inspected. Use final packet §2 for the changed ten-carrier frontier and §7 for the refreshed remaining industry foundations. The unchanged Appendix A is the exact 24-anchor contract. A final planning join is not a replacement acceptance database.
+
+## Original Round 3 architecture record
+
 **Revision:** 0.3 planning amendment, 9 November 2026 (America/Vancouver).  
 **Parent:** Macro #7646 / sector-central-redesign-20260921-sol-001 / WS:SECTOR-INTELLIGENCE-COMPLETION.  
 **Owning plan:** [SHARED_SHELL_MASTERPLAN_2026-11-09.md](SHARED_SHELL_MASTERPLAN_2026-11-09.md).  
@@ -446,7 +470,7 @@ Map these into existing suites including sectorOwnerGateway/sectorNativeGenerati
 
 ## 11. Capability reconciliation instructions
 
-Appendix B routes **all 134 incumbent stable IDs exactly once** into this contract and the new/retained design. It is a planning join, not a replacement acceptance matrix. The current CSV's 134 accepted-evidence fields are still blank at the inspected pin; that fact does not mean no code exists. #10780 has an active change to that same CSV, so Round 3 deliberately does not overwrite its custody.
+Appendix B routes **all 134 incumbent stable IDs exactly once** into this contract and the new/retained design. It is a planning join, not a replacement acceptance matrix. Round 4 recovered the actual P19 ledger; the original final *_to_record fields are intentionally pending P23 and do not imply absent earlier evidence. #10780 has an active change to that same CSV, so this appendix does not overwrite its custody. The final packet preserves exact original P/J assignments and P19 verdicts for all 134 IDs.
 
 At implementation, integrate these planning mappings into the existing row evidence: actual producer revision, editable node/state, implemented control, accepted candidate head, test/served proof and final disposition. Keep each inherited row's original wording and row-specific acceptance. Proposed design references do not assert full detail parity. A07 is a navigation/depth atlas, not proof that every destination has a complete new screen.
 
@@ -574,7 +598,7 @@ Frame names resolve through the exact 47-root manifest in the [Round 2 guide](RO
 | R3A-63 | Explore / entry evidence and members | A07; retained detail | Four independent universe artifacts, one engine; no client mixing |
 | R3A-64 | Explore / entry evidence and members | A07; retained detail | Preserve universe order and selection semantics |
 | R3A-65 | Explore / entry evidence and members | A07; retained detail | SP500 thin/gateable/expected counts stay explicit |
-| R3A-66 | Explore / entry evidence and members | A07; retained detail | Resolve basket thin/gateable producer disclosure; missing is not zero |
+| R3A-66 | Explore / entry evidence and members | A07; retained detail | Round 4 correction: native count fields and n_subsectors ?? n_listed already exist; repair counted/listed/scored wording and prove new consumer; missing is not zero |
 | R3A-67 | Explore / entry evidence and members | A07; retained detail | Nasdaq/Russell zero/thin wording retains population |
 | R3A-68 | Explore / entry evidence and members | A07; retained detail | Nine source states preserve bilingual meaning |
 | R3A-69 | Explore / entry evidence and members | A07; retained detail | Bucket/ribbon mapping remains source-defined; no invented Forming bucket |
@@ -650,8 +674,8 @@ Frame names resolve through the exact 47-root manifest in the [Round 2 guide](RO
 |---|---|---|
 | Brief / Explore / dossier | S01 HDT-0; S02 HLG-0; S03 HTT-0 | Measured opening, exploration and selected depth |
 | Research / Watches / Cycles | S04 HZR-0; S05 I5T-0; S06 IC8-0 | Research, separate saved/monitoring outcomes and cycle depth |
-| Compare / industry / revisit | S07 IK4-0; S08 IQ2-0; S09 JSF-0 | Basis-aware comparison, directory and immutable-original revisit |
-| Source / company continuation | S10 L8B-0; S11 LZM-0; M10 M54-0 | Source interpretation and identity-preserving company transition |
+| Compare / Source reader / revisit | S07 IK4-0; S08 IQ2-0; S09 JSF-0 | Basis-aware comparison, source interpretation and immutable-original revisit |
+| Sector map / company continuation | S10 L8B-0; S11 LZM-0; M10 M54-0 | Sector map and identity-preserving company transition |
 | Save and recovery | A01 K4E-0; A06 KFZ-0; MS01 LP1-0 | Pending, uncertain, version and partial outcomes |
 | Availability / account / methods | A02 K6Q-0; A03 K8V-0; A04 KAP-0 | Capability-local failures, privacy retirement and formulas |
 | Cycles qualification / deep navigation | A05 KDO-0; A07 KJE-0; A08 M9O-0 | Clock/model limits, retained destinations and local loading |
@@ -664,7 +688,7 @@ The rest of the mobile, 320px, bilingual, theme and regional specimens remain in
 
 The final packet must explicitly assign full native calls/Bottoming Watch; confluence and the four universes; source-qualified flows; full Cycles selection, scale, timeline, DNA, narrative, timing and outcome controls; all real industry witnesses; and the historical missing-state and 430px defect set. Existing detailed Paper/source is the donor. The new overview and state frames do not prove that this depth has been implemented.
 
-Historical QA identifiers SC-066 and SC-092 are aliases from another record. They must be resolved to their original wording/evidence before mapping; do not assume they equal R3A-66/R3A-92 because the numbers resemble one another. No old defect is closed by the 47-frame count.
+Round 4 resolved the aliases through the actual P19 CSV: SC-066 = R3A-66 (basket thin/gateable disclosure), SC-092 = R3A-92 (correction/revision). Reuse the already implemented R3A-66 count fields and finish accurate copy/new consumer proof; retain the actual correction witness for R3A-92. No defect is closed by the 47-frame count.
 
 ## Source index
 
