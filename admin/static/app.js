@@ -347,12 +347,12 @@ const ICONS = {
 /* One inventory, organized by operator task. Specialist tools stay searchable
    and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["capacity_router", "Capacity Router"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
   { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
   { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
   { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
   { label: "Publishing tools", items: [["marketing_sentinel", "Sentinel"], ["marketing_lanes", "X Lanes"], ["marketing_radar", "Radar"], ["marketing_reply_queue", "Reply Deck"], ["marketing_seo", "SEO"], ["marketing_models", "Model Desk"], ["marketing_health", "Desk Health"], ["marketing_learning", "Learning"], ["marketing_lab", "Lab"], ["marketing_lobes", "Engines"], ["marketing_overview", "CMO Office"], ["marketing_departments", "Departments"], ["marketing_campaigns", "Campaigns"], ["marketing_channels", "Channels & Desks"], ["personas", "Persona Roster"], ["marketing_allies", "Allies"], ["marketing_ads", "Ad Central"], ["marketing_experiments", "Marketing experiments"]] },
-  { label: "Platform & settings", items: [["control_room", "Control Room"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Site inventory"], ["site_gate", "Site Access"], ["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
+  { label: "Platform & settings", items: [["control_room", "Control Room"], ["capacity_router", "Capacity Router"], ["metabolism", "Metabolism"], ["codex", "Codex Research"], ["cost", "AI Cost"], ["content", "Site inventory"], ["site_gate", "Site Access"], ["features", "Features"], ["brief", "AI Brief"], ["vector", "BTC Override"]] },
 ];
 const TAB_LABELS = Object.fromEntries(NAV_GROUPS.flatMap(g => g.items));
 const TAB_PREFETCH_PATHS = {
