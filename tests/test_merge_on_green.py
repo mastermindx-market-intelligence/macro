@@ -3812,12 +3812,12 @@ def test_unreadable_merged_files_never_let_an_overlapping_green_pr_merge(
                 return status, answer
             if method == "GET" and url.endswith("/commits/" + squash):
                 calls.append((method, url, payload))
-                return 200, {"files": [{"filename": "engine/signal_quality.py"}]}
+                return 200, {"files": [{"filename": "engine/signal_quality.py"}]}  # ci-trigger-closure: data — fixture changed-file name, never opened
             if "/compare/" in url and squash in url:
                 calls.append((method, url, payload))
                 return 200, {
                     "base_commit": {"sha": squash},
-                    "files": [{"filename": "engine/signal_quality.py"}],
+                    "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
                     "commits": [
                         {"sha": squash, "commit": {"message": "Change (#10759)"}}
                     ],
