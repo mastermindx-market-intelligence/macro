@@ -249,7 +249,15 @@ GLOBAL_INVALIDATORS = (
 # reads them. Such a reader's derived scope owns the file and still runs; an
 # otherwise-unowned Markdown edit must not turn a narrow code PR back into all
 # 180 jobs merely because it carries its handoff/provenance note.
-PASSIVE_UNOWNED_PATTERNS = ("**/*.md",)
+# The Sector implementation-brief JSON is an authoring handoff, not a runtime
+# research feed. Avoid cascading opaque subprocess/read-tree fallbacks into
+# dozens of unrelated collector and renderer suites. This suppression applies
+# ONLY to fallback matches: a job with an explicit/derived owned dependency
+# still runs. Never exclude research JSON generally (model/data inputs matter).
+PASSIVE_UNOWNED_PATTERNS = (
+    "**/*.md",
+    "research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_*.json",
+)
 
 # Bounded `.md` mention in a job command. A substring test also fires on
 # `.mdx` / `.mdown` / `.mdc` and incidental `.md` inside a URL, which would
