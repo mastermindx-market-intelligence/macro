@@ -813,43 +813,52 @@ def _canonical(value) -> bytes:
 
 def test_v11_row_blocks_carry_full_group_rows_and_members():
     """REAL: the five row blocks on the committed artifacts - full group rows and
-    members under their own measured cap, with the wire's counts and dating."""
+    members under their own measured cap, the wire's dating rule and the
+    projection's counts. Every pin is an EQUALITY against the source file read
+    in this same test, so the next nightly's data cannot break it (review r1
+    SF-2); tonight's exact numbers live in the specimens and the return, not
+    here."""
     built = _real_carry_blocks()
-    sp500 = built["confluence_universe_sp500"]["data"]
-    assert (len(sp500["subsectors"]), len(sp500["sectors"])) == (65, 11)
-    nasdaq = built["confluence_universe_nasdaq"]["data"]
-    assert (len(nasdaq["subsectors"]), len(nasdaq["sectors"])) == (0, 6)
-    russell = built["confluence_universe_russell"]["data"]
-    assert (len(russell["subsectors"]), len(russell["sectors"])) == (0, 0)
-    baskets = built["confluence_universe_baskets"]["data"]
-    assert len(baskets["baskets"]) == 49
-    assert sum(len(row["members"]) for row in baskets["baskets"]) == 1020
-    theme = built["theme_rows"]
-    assert len(theme["rows"]) == 49
-    assert all(isinstance(row["name"], str) and row["name"] for row in theme["rows"])
-    assert all(isinstance(row["name_zh"], str) and row["name_zh"] for row in theme["rows"])
-    # member name_zh is carried as produced - null on every member tonight (wire §6)
-    members = [m for row in baskets["baskets"] for m in row["members"]]
-    assert len(members) == 1020 and all(m["name_zh"] is None for m in members)
-    # each block is under its own cap; the measured sizes are pinned exactly
-    sizes = {name: len(_canonical(built[name])) for name in ROWS_FIVE}
-    assert sizes == {"confluence_universe_sp500": 151948,
-                     "confluence_universe_nasdaq": 16099,
-                     "confluence_universe_russell": 552,
-                     "confluence_universe_baskets": 252432,
-                     "theme_rows": 39662}
-    assert all(size <= carry.MAX_ROW_BLOCK_BYTES == 512 * 1024
-               for size in sizes.values())
-    # dating: the existing confluence() rule on the envelope; the document's own
-    # as_of verbatim in data (null stays null; the envelope date never enters data)
-    assert (built["confluence_universe_sp500"]["as_of_field"],
-            built["confluence_universe_sp500"]["as_of"]) == ("as_of", "2026-11-06")
-    assert (built["confluence_universe_nasdaq"]["as_of_field"],
-            built["confluence_universe_nasdaq"]["as_of"]) == (
-        "generated_utc", "2026-11-09 09:38 UTC")
-    assert built["confluence_universe_nasdaq"]["data"]["as_of"] is None
-    assert built["confluence_universe_russell"]["data"]["as_of"] is None
-    assert built["confluence_universe_baskets"]["data"]["as_of"] == "2026-11-06"
+
+    def source(relative):
+        return json.loads((SITE / relative).read_bytes())
+
+    def dated_of(document):
+        # the envelope dating rule reads the source, not a constant: the file's
+        # as_of when a non-empty string, else its generated_utc
+        return next(((field, document[field]) for field in ("as_of", "generated_utc")
+                     if isinstance(document.get(field), str) and document[field]), None)
+
+    for name, relative, _owner_word, arrays in carry.CONFLUENCE_UNIVERSE_ROW_BLOCKS:
+        block, document = built[name], source(relative)
+        assert "status" not in block, name  # the full block, never a stub
+        assert len(_canonical(block)) <= carry.MAX_ROW_BLOCK_BYTES == 512 * 1024, name
+        # the envelope date is the dating rule's own answer for this source
+        assert (block["as_of_field"], block["as_of"]) == dated_of(document), name
+        # data.as_of is the document's own value, verbatim - null stays null
+        assert block["data"]["as_of"] == document.get("as_of"), name
+        for array in arrays:
+            # every source row is carried, per array, and so is every member
+            assert len(block["data"][array]) == len(document[array]), (name, array)
+            for carried_row, source_row in zip(block["data"][array], document[array]):
+                assert len(carried_row.get("members", ())) == len(
+                    source_row.get("members", ())), (name, array)
+                for carried, member in zip(carried_row.get("members", ()),
+                                           source_row.get("members", ())):
+                    assert carried["name_zh"] == member.get("name_zh")
+    theme, handoff = built["theme_rows"], source("basketdata/si_handoff.json")
+    context = handoff["theme_context"]
+    entries = {b["id"]: b for b in source("basketdata/baskets.json")["baskets"]}
+    assert "status" not in theme
+    assert len(_canonical(theme)) <= carry.MAX_ROW_BLOCK_BYTES
+    assert theme["as_of"] == context["as_of"]  # the anchor's own date
+    assert [row["id"] for row in theme["rows"]] == list(context["themes"])
+    for row in theme["rows"]:
+        entry = entries.get(row["id"])
+        for field in ("name", "name_zh"):
+            expected = (entry.get(field) if isinstance(entry, dict)
+                        and isinstance(entry.get(field), str) else None)
+            assert row[field] == expected, (row["id"], field)
 
 
 def test_v11_row_blocks_are_the_allow_listed_projection_of_their_sources():
