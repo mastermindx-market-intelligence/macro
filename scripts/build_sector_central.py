@@ -664,9 +664,10 @@ def main(*, strict: bool = False) -> int:
     # finite, each with its own source name and as-of; nothing recomputed. A source
     # that is absent simply yields no key (the generation reads not_produced).
     try:
+        from collectors.sponsors import sector_flow_periods
         from engine.baskets import _membership
         from lib.sector_central_carry import build_carry
-        data["carried"] = build_carry(site, data, _membership())
+        data["carried"] = build_carry(site, data, _membership(), sector_flow_periods())
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: carried blocks skipped (%s)", e)
         data["carried"] = {}

@@ -70,9 +70,15 @@ class CursorSecretInvalid(PopulationError):
     """``SECTOR_GENERATION_CURSOR_SECRET`` is set but unusable: the route fails closed."""
 
 
-#: Closed reasons a configured current member has no served row.
+#: Closed reasons a configured current member has no served row. Every reason except
+#: ``unaccounted_by_owner`` is OWNER evidence captured in the generation; the last one
+#: marks a member the owner observed (or never explained) that is nevertheless absent
+#: from the served list - a row lost after the owner's observation - and it is never
+#: counted as explained.
+REASON_UNACCOUNTED = "unaccounted_by_owner"
+REASON_GROUP_REFUSED = "group_refused_by_owner_observation"
 UNSERVED_REASONS = ("absent_from_price_panel", "not_observed_at_effective_as_of",
-                    "empty_price_tape", "unaccounted_by_owner")
+                    REASON_GROUP_REFUSED, REASON_UNACCOUNTED)
 MAX_UNSERVED = 500
 
 
@@ -88,19 +94,25 @@ class Population:
     served: int
     #: Configured current members with no row, each identified with a closed reason.
     unserved: tuple[Mapping[str, str], ...]
-    #: Subset of ``unserved`` the owner did not explain, plus served-but-unconfigured rows.
+    #: ``unaccounted_by_owner`` entries, served-but-unconfigured rows and removed members
+    #: that also appear as configured or served. Any of these makes ``complete`` false.
     unaccounted: int
     removed: Mapping[str, Any]
     industry_classification: Mapping[str, Any]
     sub_industry_classification: Mapping[str, Any]
 
     @property
+    def accounted_unserved(self) -> int:
+        """Unserved members the OWNER explained (everything but ``unaccounted_by_owner``)."""
+        return sum(1 for u in self.unserved if u["reason"] != REASON_UNACCOUNTED)
+
+    @property
     def complete(self) -> bool | None:
-        """served + explicitly accounted == configured current, computed - never asserted."""
+        """served + owner-explained == configured current, computed - never asserted."""
         if self.configured_current is None:
             return None
         return (self.unaccounted == 0
-                and self.served + len(self.unserved) == self.configured_current)
+                and self.served + self.accounted_unserved == self.configured_current)
 
 
 def _text(value: Any, limit: int = 160) -> str | None:
@@ -256,13 +268,14 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                     reason = "absent_from_price_panel"
                 elif symbol in asof_missing:
                     reason = "not_observed_at_effective_as_of"
-                elif symbol in observed:
-                    reason = "empty_price_tape"
                 else:
-                    reason = "unaccounted_by_owner"
+                    # Observed with a price at the as-of date (the producer keeps every
+                    # such member) yet not served, or never explained: the row was lost
+                    # after the owner's observation. NOT an explained state (R2-B1).
+                    reason = REASON_UNACCOUNTED
                 unserved.append({"group_id": gid, "symbol": symbol, "reason": reason})
                 unserved_here += 1
-                if reason == "unaccounted_by_owner":
+                if reason == REASON_UNACCOUNTED:
                     unaccounted += 1
             extra = seen_symbols - set(configured)
             unaccounted += len(extra)  # a served row the roster does not list is never "complete"
@@ -275,10 +288,54 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
             "weighting": _text(group.get("weighting"), 40),
             "n_configured_current": configured_n, "n_members_listed": len(seen_symbols),
             "n_unserved": unserved_here if configured_n is not None else None,
+            "refused_by_owner": False, "owner_observation_refusal": None,
             "membership_coverage": coverage.get("b-" + gid, dict(UNAVAILABLE_NOT_PRODUCED)),
             "action": actions.get(gid, {"status": "unavailable", "reason": "no_action_row"}),
             "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
         })
+    # R2-B2: baskets the OWNER refused (coverage floor) are absent from ``baskets`` but
+    # their configured roster is in the same capture (``observation_refusals``). Their
+    # members stay in the denominator, each listed unserved under a reason that names the
+    # owner's refusal, and the refusal is visible per group. A missing or malformed list
+    # makes completeness UNKNOWN (null), never true.
+    refusals = baskets.get("observation_refusals")
+    if not isinstance(refusals, list):
+        roster_unknown = True
+        refusals = []
+    for refusal in refusals:
+        rid = refusal.get("basket_id") if isinstance(refusal, Mapping) else None
+        obs = refusal.get("observation") if isinstance(refusal, Mapping) else None
+        configured = obs.get("configured_members") if isinstance(obs, Mapping) else None
+        if (not isinstance(rid, str) or not _GROUP_ID.fullmatch(rid) or rid in seen_groups
+                or not isinstance(configured, list)
+                or not all(isinstance(s, str) and _SYMBOL.fullmatch(s) for s in configured)
+                or len(set(configured)) != len(configured)):
+            roster_unknown = True
+            continue
+        seen_groups.add(rid)
+        for symbol in configured:
+            unserved.append({"group_id": rid, "symbol": symbol, "reason": REASON_GROUP_REFUSED})
+        configured_total = (configured_total or 0) + len(configured)
+        groups.append({
+            "group_id": rid, "kind": "basket", "name": None, "name_zh": None,
+            "category": None, "weighting": None,
+            "n_configured_current": len(configured), "n_members_listed": 0,
+            "n_unserved": len(configured), "refused_by_owner": True,
+            "owner_observation_refusal": {
+                k: obs.get(k) for k in ("status", "coverage", "observed_n", "configured_n",
+                                        "min_members", "min_coverage", "effective_as_of")
+                if isinstance(obs.get(k), (str, int, float)) and not isinstance(obs.get(k), bool)},
+            "membership_coverage": dict(UNAVAILABLE_NOT_PRODUCED),
+            "action": {"status": "unavailable", "reason": "no_action_row"},
+            "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
+        })
+    # A removed member must never also be configured, served or unserved: that is a
+    # contradiction between the owner's roster and its captured observation.
+    if removed_meta.get("status") == "available":
+        removed_pairs = {(r.get("group_id"), r.get("symbol")) for r in removed_meta["members"]}
+        present = {(r["group_id"], r["symbol"]) for r in rows} | {
+            (u["group_id"], u["symbol"]) for u in unserved}
+        unaccounted += len(removed_pairs & present)
     if len(unserved) > MAX_UNSERVED:
         raise PopulationError("population_unserved_too_large")  # refuse, never truncate
     canonical = json.dumps({"groups": groups, "rows": rows, "unserved": unserved,
@@ -336,7 +393,14 @@ def select_page(population: Population, flt: Mapping[str, Any], *, offset: int, 
                 {"symbol": u["symbol"], "reason": u["reason"]}
                 for u in population.unserved if u["group_id"] == g["group_id"]]})
     next_offset = offset + len(page) if offset + len(page) < total else None
-    return page, groups, total, next_offset
+    # ``q`` / ``group`` also search the UNSERVED members, so a search UI that finds no
+    # served row still sees an accounted member (e.g. q=KVUE). Not paged: bounded by
+    # MAX_UNSERVED and identical on every page of a filter.
+    unserved_matching = [
+        dict(u) for u in population.unserved
+        if (group is None or u["group_id"] == group)
+        and (needle is None or needle in u["symbol"].casefold())]
+    return page, groups, total, next_offset, unserved_matching
 
 
 # --- signed continuation tokens ------------------------------------------------
@@ -465,10 +529,13 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
             # ``unserved`` entry with a closed reason. All counts are computed.
             "configured_current": population.configured_current,
             "served": population.served,
-            "accounted_unserved": len(population.unserved),
+            "accounted_unserved": population.accounted_unserved,
             "unaccounted": population.unaccounted,
             "unserved_members": [dict(u) for u in population.unserved],
             "unserved_reasons": list(UNSERVED_REASONS),
+            "unserved_reason_note": ("every reason except unaccounted_by_owner is owner "
+                                     "evidence from the captured observation; "
+                                     "unaccounted_by_owner entries are NOT explained"),
             "removed_members": dict(population.removed),
             "complete": population.complete,
             "complete_rule": "served + accounted_unserved == configured_current and unaccounted == 0",

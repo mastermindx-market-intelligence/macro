@@ -49,14 +49,25 @@ def _real(name: str) -> bytes:
 
 
 def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
-                 carried: bool = True):
-    """Real bytes -> (member bytes, identity); optionally derive an advanced generation."""
+                 carried: bool = True, refuse_group: str | None = None):
+    """Real bytes -> (member bytes, identity); optionally derive an advanced generation.
+
+    ``refuse_group`` (FIXTURE derivation of real bytes) moves one real basket out of
+    ``baskets[]`` into ``observation_refusals`` exactly as ``engine/baskets.py:217-228``
+    does when a basket falls below the owner's coverage floor.
+    """
     baskets_raw = _real("basketdata/baskets.json")
-    if drop_member is not None:
+    if drop_member is not None or refuse_group is not None:
         baskets = json.loads(baskets_raw)
-        group = next(g for g in baskets["baskets"] if g["id"] == drop_member[0])
-        group["members"] = [m for m in group["members"] if m["symbol"] != drop_member[1]]
-        group["n_members"] = len(group["members"])
+        if drop_member is not None:
+            group = next(g for g in baskets["baskets"] if g["id"] == drop_member[0])
+            group["members"] = [m for m in group["members"] if m["symbol"] != drop_member[1]]
+            group["n_members"] = len(group["members"])
+        if refuse_group is not None:
+            group = next(g for g in baskets["baskets"] if g["id"] == refuse_group)
+            baskets["baskets"] = [g for g in baskets["baskets"] if g["id"] != refuse_group]
+            baskets["observation_refusals"].append(
+                {"basket_id": refuse_group, "observation": group["observation"]})
         baskets_raw = json.dumps(baskets, separators=(",", ":"), ensure_ascii=False).encode()
     committed = json.loads(_real("basketdata/action_board.json"), parse_constant=float)
     baskets_path = tmp / "baskets.json"
@@ -71,8 +82,9 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
         # `carried` key with the NEW builder function over the real committed
         # artifacts (REAL inputs, new code) exactly as build_sector_central does.
         from lib.sector_central_carry import build_carry
+        from collectors.sponsors import sector_flow_periods
         roster = json.loads((REPO / "data/baskets/membership.json").read_text())
-        central["carried"] = build_carry(REPO / "site", central, roster)
+        central["carried"] = build_carry(REPO / "site", central, roster, sector_flow_periods())
     raw = {
         MEMBERS[0]: json.dumps(central, separators=(",", ":"), ensure_ascii=False).encode(),
         MEMBERS[1]: _real("sectordata/sector_cycles.json"),
@@ -406,11 +418,23 @@ def test_unverified_actor_is_refused_not_bound_to_a_shared_anonymous(real_store,
         population.actor_digest("")
     with pytest.raises(population.PopulationError):
         population.actor_digest(None)
-    monkeypatch.setattr(api, "_actor_digest", lambda request: None)
     client = _client(real_store["reader"])
+
+    def unverified(transient):
+        def raiser(request):
+            raise api._ActorUnverified(transient)
+        return raiser
+
+    monkeypatch.setattr(api, "_actor_digest", unverified(False))  # no session token
     response = client.get(URL, params={"audience": "entitled"}, cookies=COOKIE)
     assert response.status_code == 401 and response.json()["code"] == "AUTHENTICATION_REQUIRED"
     assert response.headers["cache-control"] == "private, no-store"
+    # R2-N8: a token the gates accepted but that no longer verifies is a transient
+    # identity failure (503), not a login prompt.
+    monkeypatch.setattr(api, "_actor_digest", unverified(True))
+    transient = client.get(URL, params={"audience": "entitled"}, cookies=COOKIE)
+    assert transient.status_code == 503 and transient.json()["code"] == "SERVICE_UNAVAILABLE"
+    assert transient.headers["cache-control"] == "private, no-store"
 
 
 def _synthetic(*, observation=None, members=("AAA", "BBB"), removed_roster=None):
@@ -419,7 +443,7 @@ def _synthetic(*, observation=None, members=("AAA", "BBB"), removed_roster=None)
                                                   for s in members], "n_members": len(members)}
     if observation is not None:
         group["observation"] = observation
-    return {"baskets": [group]}
+    return {"baskets": [group], "observation_refusals": []}
 
 
 def _obs(configured, *, observed=None, panel_missing=(), asof_missing=()):
@@ -442,16 +466,152 @@ def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
     assert (accounted.configured_current, accounted.complete) == (3, True)
     panel = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"], panel_missing=["CCC"])))
     assert panel.unserved[0]["reason"] == "absent_from_price_panel"
-    # a configured member silently dropped with no owner explanation: NOT complete
+    # a configured member the owner never explained: NOT complete
     silent = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"], observed=["AAA", "BBB"])))
     assert silent.unserved[0]["reason"] == "unaccounted_by_owner"
-    assert (silent.unaccounted, silent.complete) == (1, False)
+    assert (silent.unaccounted, silent.accounted_unserved, silent.complete) == (1, 0, False)
+    # R2-B1: a member the owner OBSERVED with a price (observed_members keeps it) but that
+    # is not served is a row lost after the owner's observation - NOT explained, NOT complete.
+    lost = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"])))  # CCC observed, no row
+    assert [(u["symbol"], u["reason"]) for u in lost.unserved] == [("CCC", "unaccounted_by_owner")]
+    assert (lost.unaccounted, lost.accounted_unserved, lost.complete) == (1, 0, False)
+    assert "empty_price_tape" not in population.UNSERVED_REASONS
     # a served row the roster does not configure: NOT complete
     extra = build(_synthetic(observation=_obs(["AAA"])))
     assert (extra.unaccounted, extra.complete) == (1, False)
     # no captured roster at all: completeness is UNKNOWN (None), never True
     unknown = build(_synthetic(observation=None))
     assert (unknown.configured_current, unknown.complete) == (None, None)
+
+
+def _store_from(tmp_path, **bundle):
+    """Publish a (derived) real bundle into a fresh isolated store and return its client."""
+    _, published, root = _publish(tmp_path, _real_bundle(tmp=tmp_path, **bundle),
+                                  generation_id="derived", now=PUBLISHED)
+    assert published.status == "published", published.detail
+    return _client(SectorGenerationReader(generations_root=root, clock=lambda: PUBLISHED))
+
+
+def test_r2_b1_real_route_a_lost_served_row_is_not_complete(tmp_path):
+    """REAL bytes with ONE real served member (housing/CARR) dropped and the owner's
+    captured observation left intact: the member was observed with a price, so it is a
+    row lost after the owner's observation - the route must not call that complete."""
+    client = _store_from(tmp_path, drop_member=("housing", "CARR"))
+    pop = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                     cookies=COOKIE).json()["page"]["capture"]["population"]
+    assert (pop["configured_current"], pop["served"]) == (1020, 1014)
+    assert (pop["accounted_unserved"], pop["unaccounted"], pop["complete"]) == (5, 1, False)
+    lost = [u for u in pop["unserved_members"] if u["reason"] == "unaccounted_by_owner"]
+    assert lost == [{"group_id": "housing", "symbol": "CARR", "reason": "unaccounted_by_owner"}]
+    assert all(u["reason"] != "empty_price_tape" for u in pop["unserved_members"])
+
+
+def test_r2_b2_real_route_a_refused_basket_stays_in_the_denominator(tmp_path):
+    """REAL bytes with the real `housing` basket (18 configured) moved into the owner's
+    `observation_refusals` exactly as the producer does below its coverage floor."""
+    client = _store_from(tmp_path, refuse_group="housing")
+    page = client.get(URL, params={"audience": "entitled", "limit": "1", "group": "housing"},
+                      cookies=COOKIE).json()["page"]
+    pop = page["capture"]["population"]
+    assert (pop["configured_current"], pop["served"], pop["accounted_unserved"],
+            pop["unaccounted"]) == (1020, 997, 23, 0)  # 18 refused + the 5 unobserved
+    refused = [u for u in pop["unserved_members"] if u["reason"] == "group_refused_by_owner_observation"]
+    assert len(refused) == 18 and {u["group_id"] for u in refused} == {"housing"}
+    assert pop["complete"] is True and "group_refused_by_owner_observation" in pop["unserved_reasons"]
+    # the refusal is visible per group, even though the group has no served row
+    group = next(g for g in page["groups"] if g["group_id"] == "housing")
+    assert group["refused_by_owner"] is True and group["n_members_listed"] == 0
+    assert group["n_configured_current"] == 18 and group["n_unserved"] == 18
+    assert group["owner_observation_refusal"]["configured_n"] == 18
+    assert len(group["unserved"]) == 18 and page["rows"] == []
+    index = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                       cookies=COOKIE).json()["page"]["group_index"]
+    assert next(g for g in index if g["group_id"] == "housing")["n_unserved"] == 18
+
+
+def test_search_also_finds_accounted_unserved_members(real_store):
+    """R2-N2: `q` over the full population includes the accounted-but-unserved list."""
+    client = _client(real_store["reader"])
+    page = client.get(URL, params={"audience": "entitled", "q": "KVUE"},
+                      cookies=COOKIE).json()["page"]
+    assert page["total_matching"] == 0 and page["rows"] == []
+    assert sorted((u["group_id"], u["reason"]) for u in page["unserved_matching"]) == [
+        ("defensives", "not_observed_at_effective_as_of"),
+        ("us_sector_staples", "not_observed_at_effective_as_of")]
+
+
+def test_forged_context_reference_answers_the_original_unavailable_class(real_store):
+    """S3: a forged `x` token (not just a stale one) is the same 404 body."""
+    client = _client(real_store["reader"])
+    first = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                       cookies=COOKIE).json()["page"]
+    ref = first["context_ref"]
+    forged = ref[:-1] + ("0" if ref[-1] != "0" else "1")
+    response = client.get(URL, params={"audience": "entitled", "cursor": forged}, cookies=COOKIE)
+    assert response.status_code == 404 and response.json() == {
+        "schema": "sector_generation.error/v1", "code": "ORIGINAL_UNAVAILABLE"}
+    assert response.headers["cache-control"] == "private, no-store"
+
+
+def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
+    """FIXTURE: a basket the owner refused keeps its configured roster, visibly."""
+    refused = {"basket_id": "g2", "observation": {
+        "configured_members": ["XXX", "YYY", "ZZZ"], "status": "insufficient",
+        "coverage": 0.33, "observed_n": 1, "configured_n": 3, "min_members": 3,
+        "min_coverage": 0.6, "effective_as_of": "2026-11-06", "aggregate_eligible": False}}
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    baskets["observation_refusals"] = [refused]
+    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={})
+    assert (pop.configured_current, pop.served, pop.accounted_unserved, pop.unaccounted) == (5, 2, 3, 0)
+    assert {(u["group_id"], u["symbol"], u["reason"]) for u in pop.unserved} == {
+        ("g2", s, "group_refused_by_owner_observation") for s in ("XXX", "YYY", "ZZZ")}
+    group = next(g for g in pop.groups if g["group_id"] == "g2")
+    assert group["refused_by_owner"] is True and group["n_members_listed"] == 0
+    assert group["n_configured_current"] == 3 and group["n_unserved"] == 3
+    assert group["owner_observation_refusal"]["coverage"] == 0.33
+    assert pop.complete is True  # all 5 accounted: 2 served + 3 owner-refused
+    # the live groups report themselves as NOT refused
+    assert next(g for g in pop.groups if g["group_id"] == "g1")["refused_by_owner"] is False
+    # a missing or malformed refusal list makes completeness UNKNOWN, never true
+    missing_key = _synthetic(observation=_obs(["AAA", "BBB"]))
+    del missing_key["observation_refusals"]
+    assert population.build_population(baskets=missing_key, handoff={}, action_board={},
+                                       central={}).complete is None
+    for bad in ("nope", [{"basket_id": "g2"}], [{"basket_id": "g2", "observation": {
+            "configured_members": "XXX"}}], [{"basket_id": "g1", "observation": {
+            "configured_members": ["AAA"]}}]):  # last: duplicates a live group id
+        broken = _synthetic(observation=_obs(["AAA", "BBB"]))
+        broken["observation_refusals"] = bad
+        assert population.build_population(baskets=broken, handoff={}, action_board={},
+                                           central={}).complete is None
+
+
+def test_removed_member_that_is_also_configured_is_a_contradiction():
+    """FIXTURE: owner roster says removed while the capture still configures it."""
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={
+        "carried": {"removed_members": {"source": "r", "removed": [
+            {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}}})
+    assert pop.unaccounted == 1 and pop.complete is False
+
+
+def test_max_unserved_is_refused_not_truncated():
+    """FIXTURE: an unserved list over the bound fails the build instead of being cut."""
+    names = [f"S{i}" for i in range(population.MAX_UNSERVED + 1)]
+    baskets = _synthetic(observation=_obs(["AAA", "BBB", *names], asof_missing=names))
+    with pytest.raises(population.PopulationError):
+        population.build_population(baskets=baskets, handoff={}, action_board={}, central={})
+
+
+def test_malformed_or_missing_industry_blocks_degrade_to_unavailable_not_error():
+    """FIXTURE: population-level behaviour when the carried taxonomies are bad."""
+    for carried in ({}, {"member_industry": "x", "member_sub_industry": 3},
+                    {"member_industry": {"symbols": {"AAA": "Media"}, "point_in_time": True}}):
+        pop = population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": carried})
+        assert pop.industry_classification == {"status": "unavailable", "reason": "not_produced"}
+        assert {r["industry"]["reason"] for r in pop.rows} == {"not_produced"}
 
 
 def test_f1_removed_members_are_separate_from_listed_and_missing():

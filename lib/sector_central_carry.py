@@ -108,13 +108,43 @@ def display_order(central: Mapping[str, Any]) -> dict | None:
                      "basis": basis, "ordinal": "list_position_zero_based", **out})
 
 
-def etf_flows(site: Path) -> dict | None:
-    document = _read(site, "flow_desk.json")
-    tile = document.get("etf_tile") if document else None
-    if not isinstance(tile, Mapping):
+#: Trading-day length of each window label produced by ``collectors.sponsors``
+#: (``FLOW_PERIODS``): 1D=1, 3D=3, 1W=5, 2W=10, 1M=21.
+ETF_FLOW_WINDOWS = (("1D", 1), ("3D", 3), ("1W", 5), ("2W", 10), ("1M", 21))
+
+
+def etf_flows(flows: Mapping[str, Any] | None) -> dict | None:
+    """The sector-SPDR creation/redemption proxy over 1/3/5/10/21 trading days.
+
+    ``flows`` is the output of ``collectors.sponsors.sector_flow_periods()`` - the same
+    producer that renders the page's "Where sector-ETF money is flowing" board - passed
+    in by the builder. The proxy is delta(shares outstanding) x NAV in $mn per fund.
+    Each window sums the trailing N trading days that exist, so a window is only a
+    full window once ``depth >= trading_days`` (stated per window, never assumed).
+    """
+    if not isinstance(flows, Mapping):
         return None
-    return _bounded({"source": "flow_desk.json#etf_tile", "as_of": tile.get("asof"),
-                     "tile": dict(tile)})
+    rows, labels, depth = flows.get("rows"), flows.get("labels"), flows.get("depth")
+    asof, net = flows.get("asof"), flows.get("net")
+    if (not isinstance(rows, list) or not rows or not isinstance(asof, str)
+            or not isinstance(depth, int) or isinstance(depth, bool)
+            or labels != [label for label, _ in ETF_FLOW_WINDOWS]
+            or not isinstance(net, Mapping)):
+        return None
+    funds = []
+    for row in rows:
+        vals = row.get("vals") if isinstance(row, Mapping) else None
+        if not isinstance(row.get("ticker"), str) or not isinstance(vals, Mapping) \
+                or set(vals) != set(labels):
+            return None
+        funds.append({"ticker": row["ticker"], "flow_mn": {k: vals[k] for k in labels}})
+    return _bounded({
+        "source": "collectors.sponsors.sector_flow_periods", "as_of": asof, "depth": depth,
+        "unit": "usd_mn", "measure": "delta_shares_outstanding_x_nav_creation_redemption_proxy",
+        "windows": [{"label": label, "trading_days": days, "full_window": depth >= days}
+                    for label, days in ETF_FLOW_WINDOWS],
+        "funds": funds, "net_flow_mn": {k: net.get(k) for k in labels},
+    })
 
 
 def confluence(site: Path) -> dict | None:
@@ -131,8 +161,15 @@ def confluence(site: Path) -> dict | None:
                     or not all(isinstance(i, str) for i in value):
                 return None
             lists[name] = value
+        # Dated per universe: ``as_of`` when the file has one, else its ``generated_utc``
+        # (named in ``as_of_field``). An undated universe means no four-universe block.
+        dated = next(((f, document[f]) for f in ("as_of", "generated_utc")
+                      if isinstance(document.get(f), str) and document[f]), None)
+        if dated is None:
+            return None
         universes[key] = {
-            "source": relative, "as_of": document.get("as_of"), "ok": document.get("ok"),
+            "source": relative, "as_of": dated[1], "as_of_field": dated[0],
+            "ok": document.get("ok"),
             "universe": document.get("universe"), "benchmark": document.get("benchmark"),
             "coverage": dict(document["coverage"]), **lists,
         }
@@ -252,22 +289,49 @@ def member_sub_industry(site: Path) -> dict | None:
     return block if raw is not None and len(raw) <= 256 * 1024 else None
 
 
+def owner_effective_as_of(site: Path) -> str | None:
+    """The single session the owner's basket observations were taken at, else ``None``.
+
+    ``removed_members`` must use THIS date (the one ``configured_members`` uses), not the
+    central ``as_of``, so a removal can never straddle the two clocks.
+    """
+    baskets = _read(site, "basketdata/baskets.json")
+    groups = baskets.get("baskets") if baskets else None
+    if not isinstance(groups, list):
+        return None
+    dates = {g["observation"].get("effective_as_of") for g in groups
+             if isinstance(g, Mapping) and isinstance(g.get("observation"), Mapping)}
+    return next(iter(dates)) if len(dates) == 1 and isinstance(next(iter(dates)), str) else None
+
+
+#: Blocks that must carry their own string ``as_of`` (``confluence`` is dated per universe
+#: instead). A block whose source has no date is NOT carried.
+_DATED_BLOCKS = ("sector_central_r1", "display_order", "etf_flows", "bottoming_watch",
+                 "theme_table", "removed_members")
+
+
 def build_carry(site: Path, central: Mapping[str, Any],
-                membership: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                membership: Mapping[str, Any] | None = None,
+                flows: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Every block its source provides; absent keys mean ``not_produced``.
 
-    ``membership`` is the owner's roster document (``engine.baskets._membership()``),
-    supplied by the central builder; ``None`` carries no ``removed_members``.
+    ``membership`` is the owner's roster document (``engine.baskets._membership()``) and
+    ``flows`` the output of ``collectors.sponsors.sector_flow_periods()``; both are
+    supplied by the central builder. ``None`` carries no such block.
     """
     produced = {
-        "removed_members": removed_members(membership, central.get("as_of")),
+        "removed_members": removed_members(membership, owner_effective_as_of(site)),
         "sector_central_r1": rising_priced_share(central),
         "display_order": display_order(central),
-        "etf_flows": etf_flows(site),
+        "etf_flows": etf_flows(flows),
         "confluence": confluence(site),
         "bottoming_watch": bottoming_watch(site),
         "theme_table": theme_table(site),
         "member_industry": member_industry(site),
         "member_sub_industry": member_sub_industry(site),
     }
+    for name in _DATED_BLOCKS:
+        block = produced.get(name)
+        if block is not None and not (isinstance(block.get("as_of"), str) and block["as_of"]):
+            produced[name] = None  # undated: never carried with a null date
     return {name: block for name, block in produced.items() if block is not None}

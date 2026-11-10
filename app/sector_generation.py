@@ -470,19 +470,31 @@ def _parse_population_query(request: Request) -> tuple[dict[str, Any] | None, JS
     return {"filter": flt, "limit": limit_value, "cursor": values.get("cursor")}, None
 
 
-def _actor_digest(request: Request) -> str | None:
-    """Digest of the identity the incumbent regwall verified; ``None`` if unverified.
+class _ActorUnverified(Exception):
+    """No verified user id. ``transient`` when a session token was present."""
+
+    def __init__(self, transient: bool):
+        super().__init__("actor_unverified")
+        self.transient = transient
+
+
+def _actor_digest(request: Request) -> str:
+    """Digest of the identity the incumbent regwall verified.
 
     Reuses the exact incumbent verification (``_mm_supabase_access_token`` +
     ``_mm_verify_uid_cached``); it adds no identity cache and no parser. There is NO
-    shared anonymous actor: the caller refuses a request with no verified user id.
+    shared anonymous actor. No session token at all is an authentication failure; a
+    token that both gates accepted moments ago but no longer verifies is a transient
+    identity-lookup failure (the caller answers 503, not a login prompt).
     """
     from app.main import _mm_supabase_access_token, _mm_verify_uid_cached
     from lib import sector_population as population
 
     token = _mm_supabase_access_token(request)
     uid = _mm_verify_uid_cached(token) if token else None
-    return population.actor_digest(str(uid)) if uid else None
+    if not uid:
+        raise _ActorUnverified(transient=bool(token))
+    return population.actor_digest(str(uid))
 
 
 def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
@@ -545,10 +557,13 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             resolved = _resolve_reader(request, reader)
             if resolved is None or not callable(getattr(resolved, "read_population", None)):
                 return _error(503, ERROR_GENERATION_UNAVAILABLE)
-            actor = _actor_digest(request)
-            if actor is None:
-                # Gates passed but no verified user id (regwall off / identity lookup
-                # failed): refuse rather than bind a shared "anonymous" actor.
+            try:
+                actor = _actor_digest(request)
+            except _ActorUnverified as exc:
+                # Gates passed but no verified user id: refuse rather than bind a shared
+                # "anonymous" actor. A present-but-unverifiable token is transient (503).
+                if exc.transient:
+                    return _error(503, ERROR_SERVICE_UNAVAILABLE)
                 return _error(401, ERROR_AUTHENTICATION_REQUIRED)
             flt, limit = parsed["filter"], parsed["limit"]
             claims = None
@@ -584,7 +599,7 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             if capture_key is not None and (result.generation_id, result.content_id) != capture_key:
                 return _reset("capture_changed")
             offset = claims["o"] if claims is not None and claims["k"] == "c" else 0
-            rows, groups, total, next_offset = population.select_page(
+            rows, groups, total, next_offset, unserved_matching = population.select_page(
                 result.population, flt, offset=offset, limit=limit)
             filter_sha = population.filter_digest(flt)
             common = dict(generation_id=result.generation_id, content_id=result.content_id,
@@ -603,6 +618,7 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
                 "filter": flt, "limit": limit, "offset": offset, "total_matching": total,
                 "complete": next_offset is None,
                 "rows": list(rows), "groups": groups,
+                "unserved_matching": unserved_matching,
                 "next_cursor": None if next_offset is None else population.mint_token(
                     "c", offset=next_offset, filter_sha=filter_sha, limit=limit, **common),
                 "context_ref": context_ref,

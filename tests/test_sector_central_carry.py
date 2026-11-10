@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from engine.sector_native_view import project_sector_view, typed_blocks_of
 from lib import sector_central_carry as carry
 from lib import sector_generation_contract as contract
@@ -27,14 +29,86 @@ def _roster():
     return json.loads((REPO / "data/baskets/membership.json").read_text())
 
 
+def _flows():
+    """REAL: the committed ETF-flow producer, run over the committed data/flows parquet."""
+    from collectors.sponsors import sector_flow_periods
+    flows = sector_flow_periods()
+    if flows is None:
+        pytest.skip("no committed data/flows history in this checkout")
+    return flows
+
+
 def test_real_artifacts_yield_every_producible_block():
-    built = carry.build_carry(SITE, _central(), _roster())
+    built = carry.build_carry(SITE, _central(), _roster(), _flows())
     assert set(built) == {"sector_central_r1", "display_order", "etf_flows", "confluence",
                           "bottoming_watch", "theme_table", "member_industry",
                           "member_sub_industry", "removed_members"}
-    # without the owner's roster no removal block is carried (never guessed)
-    assert "removed_members" not in carry.build_carry(SITE, _central())
+    # without the owner's roster / flow history those blocks are not carried (never guessed)
+    bare = carry.build_carry(SITE, _central())
+    assert "removed_members" not in bare and "etf_flows" not in bare
     assert "hazard_qualification" not in built  # owner not on this base; never copied
+    # every non-confluence block carries a string as-of; confluence is dated per universe
+    for name, block in built.items():
+        if name not in ("confluence", "member_industry", "member_sub_industry"):
+            assert isinstance(block["as_of"], str) and block["as_of"], name
+    assert all(isinstance(u["as_of"], str) and u["as_of"] for u in built["confluence"].values())
+
+
+def test_etf_flows_carries_the_lane7_windows_from_the_committed_producer():
+    """Lane 7 needs 11 SPDRs x 1/3/5/10/21-day delta(shares) x NAV with as-of and depth."""
+    flows = _flows()
+    block = carry.build_carry(SITE, _central(), _roster(), flows)["etf_flows"]
+    assert block["source"] == "collectors.sponsors.sector_flow_periods"
+    assert block["unit"] == "usd_mn" and block["as_of"] == flows["asof"]
+    assert block["depth"] == flows["depth"]
+    assert [(w["label"], w["trading_days"]) for w in block["windows"]] == [
+        ("1D", 1), ("3D", 3), ("1W", 5), ("2W", 10), ("1M", 21)]
+    assert all(w["full_window"] == (block["depth"] >= w["trading_days"]) for w in block["windows"])
+    assert len(block["funds"]) == 11
+    assert {f["ticker"] for f in block["funds"]} == {
+        "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY"}
+    by_ticker = {r["ticker"]: r["vals"] for r in flows["rows"]}
+    for fund in block["funds"]:
+        assert fund["flow_mn"] == by_ticker[fund["ticker"]]  # copied, never recomputed
+    assert block["net_flow_mn"] == {k: flows["net"][k] for k in flows["labels"]}
+    # the old tile (1d/5d/21d only) is NOT what lane 7's window contract needs
+    tile = json.loads((SITE / "flow_desk.json").read_text())["etf_tile"]
+    assert set(tile["funds"][0]) == {"ticker", "flow_1d", "flow_5d", "flow_21d"}
+
+
+def test_fixture_etf_flows_rejects_a_producer_output_of_the_wrong_shape():
+    """FIXTURE: a partial window set or undated output is not carried."""
+    good = {"asof": "2026-11-05", "depth": 3, "labels": ["1D", "3D", "1W", "2W", "1M"],
+            "rows": [{"ticker": "XLB", "vals": dict.fromkeys(["1D", "3D", "1W", "2W", "1M"], 1.0)}],
+            "net": dict.fromkeys(["1D", "3D", "1W", "2W", "1M"], 1.0)}
+    assert carry.etf_flows(good)["windows"][3] == {
+        "label": "2W", "trading_days": 10, "full_window": False}  # depth 3 < 10
+    for bad in (None, {**good, "labels": ["1D", "5D"]}, {**good, "asof": None},
+                {**good, "rows": []}, {**good, "depth": True},
+                {**good, "rows": [{"ticker": "XLB", "vals": {"1D": 1.0}}]}):
+        assert carry.etf_flows(bad) is None
+
+
+def test_undated_block_is_dropped_not_carried_with_a_null_date(tmp_path):
+    """FIXTURE: R2-N4 - a source with no date is not carried as `as_of: null`."""
+    central = {"as_of": None, "sectors": [{"id": "a", "ticker": "A", "heat": {
+        "n_tiles": 2, "n_priced_1M": 2, "adv": 1}}], "meta": {"board_order": "conviction"}}
+    built = carry.build_carry(SITE, central)
+    assert "sector_central_r1" not in built and "display_order" not in built
+
+
+def test_removed_members_use_the_owner_effective_session_not_the_central_date():
+    """FIXTURE over real roster: R2-N5 - same clock as `configured_members`."""
+    assert carry.owner_effective_as_of(SITE) == "2026-11-06"
+    roster = {"version": "t", "baskets": {"g": {"members": [
+        {"ticker": "EARLY", "removed": "2026-11-05"}, {"ticker": "ONDAY", "removed": "2026-11-06"},
+        {"ticker": "LATER", "removed": "2026-11-09"}]}}}
+    # an owner session of 11-06 removes EARLY and ONDAY, not LATER - whatever central says
+    assert [r["symbol"] for r in carry.removed_members(roster, "2026-11-06")["removed"]] == [
+        "EARLY", "ONDAY"]
+    assert [r["symbol"] for r in carry.removed_members(roster, "2026-11-09")["removed"]] == [
+        "EARLY", "LATER", "ONDAY"]
+    assert carry.removed_members(roster, None) is None
 
 
 def test_r1_states_its_denominators_and_matches_the_measured_census():
@@ -61,16 +135,15 @@ def test_display_order_is_the_producers_own_published_order():
 
 
 def test_lane7_blocks_carry_their_own_source_and_as_of():
-    built = carry.build_carry(SITE, _central())
+    built = carry.build_carry(SITE, _central(), _roster(), _flows())
     assert set(built["confluence"]) == {"sp500", "nasdaq", "russell", "china"}
     for key, relative in carry.CONFLUENCE_UNIVERSES:
         block = built["confluence"][key]
         document = json.loads((SITE / relative).read_bytes())
-        assert block["source"] == relative and block["as_of"] == document.get("as_of")
-        assert block["entry_now"] == document["entry_now"]
-    flow = json.loads((SITE / "flow_desk.json").read_text())
-    assert built["etf_flows"]["source"] == "flow_desk.json#etf_tile"
-    assert built["etf_flows"]["as_of"] == flow["etf_tile"]["asof"]  # may be stale: disclosed
+        assert block["source"] == relative and block["entry_now"] == document["entry_now"]
+        # dated per universe: the file's own as_of, else its generated_utc (named)
+        assert block["as_of"] == document[block["as_of_field"]]
+        assert block["as_of_field"] in ("as_of", "generated_utc")
     baskets = json.loads(_real("basketdata/baskets.json"))["theme_intel"]
     assert built["bottoming_watch"]["bottoming_watch"] == baskets["act_now"]["bottoming_watch"]
     assert built["bottoming_watch"]["as_of"] == baskets["as_of"]
@@ -112,7 +185,8 @@ def test_fixture_absent_malformed_or_nonfinite_sources_yield_no_block(tmp_path):
     (tmp_path / "marketdata").mkdir()
     (tmp_path / "flow_desk.json").write_text('{"etf_tile":{"asof":NaN}}')
     (tmp_path / "marketdata/subsector_confluence.json").write_text("[]")
-    built = carry.build_carry(tmp_path, {"as_of": "2026-11-06", "sectors": []})
+    built = carry.build_carry(tmp_path, {"as_of": "2026-11-06", "sectors": []},
+                              flows={"asof": float("nan")})
     assert built == {}
 
 
@@ -135,5 +209,5 @@ def test_generation_projects_carried_blocks_available_and_hazard_unavailable(tmp
 
 def test_builder_wires_the_carry_before_publication():
     source = (REPO / "scripts/build_sector_central.py").read_text()
-    assert source.index("build_carry(site, data, _membership())") < source.index(
+    assert source.index("build_carry(site, data, _membership(), sector_flow_periods())") < source.index(
         'data["publication"] = {')
