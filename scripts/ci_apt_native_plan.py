@@ -33,10 +33,15 @@ INHERITED_INSTALL_FLAGS = ("install", "-y", "--no-install-recommends")
 def qualified_direct_packages(*, distribution_version: str, driver_version: str,
                               bundle_sha256: str, os_id: str, os_version: str,
                               machine: str) -> tuple[str, ...]:
-    if (distribution_version, driver_version, bundle_sha256, os_id, os_version, machine) != (
-        "1.64.1", "1.64.0-beta-1791568591000", QUALIFIED_DRIVER, "ubuntu", "24.04", "x86_64"
-    ):
-        raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED")
+    observed = (distribution_version, driver_version, bundle_sha256, os_id, os_version, machine)
+    expected = ("1.64.1", "1.64.0-beta-1791568591000", QUALIFIED_DRIVER, "ubuntu", "24.04", "x86_64")
+    if observed != expected:
+        fields = ("distribution_version", "driver_version", "bundle_sha256", "os_id", "os_version", "machine")
+        mismatches = [field for field, value, pin in zip(fields, observed, expected, strict=True) if value != pin]
+        # Only fixed field names enter the existing public refusal detail.
+        raise AcquisitionRefused(
+            "DEPENDENCY_SOURCE_UNQUALIFIED; source_stage=tuple_mismatch; tuple_fields=" + ",".join(mismatches)
+        )
     return DIRECT_PACKAGES
 
 
