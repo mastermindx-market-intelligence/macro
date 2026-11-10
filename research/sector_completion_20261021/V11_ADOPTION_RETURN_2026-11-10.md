@@ -1005,3 +1005,138 @@ Sections 20.3 and 21.3 said #10959 stays stacked on #10945 and unarmed. That lef
 Pushes to the second branch cancel only the second branch's own run. To let it conclude, a new section is written only when something material has changed.
 
 Observed 14:33Z: no CI run had been scheduled for the second branch at `1340b43a51c2`. The earlier pushes happened while the pull request was based on the first branch, and changing a pull request's base does not start a run. The commit that adds this paragraph is the push that starts one.
+
+## 23. Status at 15:50Z — Terminal migration block and code-only split; four review verdicts; what the Macro merge controller is actually doing
+
+Sub-sections 23.1 to 23.8 are the notes written between 14:36Z and 15:01Z while the second status branch's CI run was allowed to finish. They are in time order and unedited. Sub-sections 23.9 to 23.16 were written at the 15:30Z wake. Where they differ from an earlier note, the later one governs.
+
+### 23.1 14:36Z — #10929 registration worker finished its pass
+- Verified by COO: the five registration commits after 595fe6b75af2 (a69878abaa83, b5f9baa4b65f, 7fc4679d3d26 on .github/ci/legacy-jobs.yml; 07a9eafac6fb, c5d8c31db57d on tests/test_ci_pack.py) touch only those two files. No skip, allowlist or loosened assertion. Ceilings re-based to measured values (index 5,958->5,980; free 5,979->6,001; Prophet 131->132 jobs and 5,716->5,746; MAX_PACKS 10->11) with a dated history note. Merge commit 10aed20e2882 brings in origin/main 0267bf8fffc0.
+- Still owed: final pass after #10924 merges. #10929 stays a held draft.
+
+### 23.2 14:36Z — lane 8 registration worker finished; #10924 unchanged
+- #10924 armed at f9cb2c6535ea, hosted contract-delta green, ci-pack-4/5 still executing at that time.
+
+### 23.3 14:39Z — #10956 review returned: READY WITH FOLLOW-UP at 95aa439d0a8a (0 blockers, 2 should-fix, 10 notes)
+- Verdict: /tmp/si_plan/reviews/lane5_10956_review.md
+- S1: the change bridge pairs facts by metric and unit only, so it would subtract GAAP from non-GAAP, a segment from the consolidated company, or TWD from USD. Not reachable today (the one live producer emits one basis); becomes a wrong number once a second basis, currency or perimeter is served.
+- S2: an issuer can be counted "comparable" while its change list is empty.
+- Notes ruled as fixes: N1 never-raises made true, N3 refuse NaN/inf in-module, N4 lineage id whitespace + unrooted count, N5 peers = other cohort members only, N6 counts add up or publish a typed inconsistent state, N7 state the equal-weight basis of the concentration figure. N8 fix if possible inside owned files. N9, N10 recorded.
+- Two rules had no test that fails when broken (no bridge across a gap; attach only after the gate): tests ordered.
+- DECISION: fix before release. A fresh glm-5.3 fix worker STARTED 14:41Z on the same branch (claude/si-research-v11-issuer-econ-20261110); the previous lane 5 worker had finished. Thread: thread:delegated-task:command%3Amcp%3A91a15a8e-9ef1-4dab-b2a2-c00582f76f68%3Adelegate-task%3Asi-v11-lane5-glm-review-fixes-1441z. DO NOT start another. Its completion wakes the COO thread; return is a new dated section in /tmp/si_plan/returns/lane5.md.
+- NEXT on its return: verify `git diff --stat 95aa439d0a8a <new head>` is owned files only, then start a narrow Opus review delegate (isolation worktree) on 95aa439d0a8a -> new head against S1, S2, N1, N3-N7; verdict to /tmp/si_plan/reviews/lane5_10956_review_r2.md. #10956 is not armed before #10931 (another session's) has merged.
+
+### 23.4 14:44Z — lane 7 (#1419) repair returned; second review started 14:45Z
+- New head ceab6184a492911b1dd224430b1c6a0e66f9b0a2 (was 6778c61594b9): fix commit c33a3c944 plus a merge of origin/master (branch was 25 behind; merge, no rebase, no force push). Not armed.
+- Author's account (/tmp/si_plan/returns/lane7.md): S1 groups keyed off the tab's universe id, not the payload owner word; S2 exported closed-shape readers actionBoardFromCarried / bottomingWatchFromCarried (malformed -> null -> unavailable, no throw); S3 flows reader strict, FLOW_FUND_MAX=64, empty list nulls the block; S4 window label must equal 1/3/5/10/21 trading days exactly; S5 EN+ZH lex entries for owner name, field names, benchmark label, tab id; N1, N2, N4 (new lib/sectorDepthHref.ts), N5, N7 fixed; N3, N6, N8 one-line answers, no code change.
+- Author's gates: 279 vitest passed across seven lane files (after master merge); tsc clean; eslint clean; e2e 45 passed / 9 skipped.
+- Second review STARTED 14:45Z (Opus, Terminal project): thread mcp:launch:8ea99b3642c40b0a6b3bf0ea1de2bedfff1732ea92d6d5649548e754a29bac39; verdict to /tmp/si_plan/reviews/lane7_1419_review_r2.md. DO NOT start another.
+- Lane 3 told 14:45Z (steered, running): merge lane 7 head ceab6184a492 with lane 4 4449e5873e3f and lane 6 0fd16f5bc4e0; mount through lane 7's exported readers; drop its own structural admission; use lane 7's sameSiteHref / isSameSiteHref, write no second link check.
+- RULING on link targets (lane 7 raised it as a gap for lane 1): real owner link targets today are relative Macro static-site paths (sector/..., basket/...). They are not Terminal routes. Under lane 7's rule they render as text with no link; that is correct and stays. The owner's output is NOT changed (Macro's own site consumes it), so this is not a lane 1 work item. Lane 3 links by entity id through its own router where it has a destination; if it needs entity kind + id on a lane 7 row callback it says so and that is ordered from lane 7 after its second review.
+- Basis for the link-target ruling checked 14:50Z: Macro `engine/sector_research_handoff.py:133` emits `{"kind": "basket_page", "href": f"basket/{rid}.html"}` — a relative page path of Macro's own static site.
+
+### 23.5 14:47Z — lane 4 (#1431) second review: READY WITH FOLLOW-UP at 4449e5873e3f4c2d4e6863f7d1dc82a2460679bf
+- Verdict: /tmp/si_plan/reviews/lane4_1431_review_r2.md. B1, B2, S1-S4, N1-N7 all CLOSED; 14 mutations, every one fails a test; 112 tests / 11 files, tsc 0, eslint 0; merge commit brings in master only. Reviewer did not run e2e/responsive.
+- Three notes, none reachable from a real payload: NEW-1 block-level keys not allowlisted; NEW-2 cosmetic; NEW-3 turn-knowledge index hardening.
+- DECISION: #1431 is review-complete at that head. It carries no migration file and none of lane 3's four files (15 files). Review record posted (issuecomment-6770665482); native auto-merge ENABLED 14:58:09Z (Terminal master is merged by the merge queue). 8 checks green, 18 still pending at 14:53Z; branch BEHIND master, which the queue handles.
+- Lane 4 told 14:58Z: no push to #1431's branch; prepare NEW-1/NEW-2/NEW-3 on a new branch cut from the reviewed head, PR only after #1431 merges.
+- First v1.1 Terminal piece ARMED. Not merged.
+
+### 23.6 14:50Z — Terminal merge queue refuses migration-bearing PRs (new to the status record)
+- Observed on #1410: removed from the merge queue 10:38:07Z, reason failed_checks; merge-group run 42794698403 (event merge_group, candidate c869b4957fd9), failed job "Ingest + signal-layer tests", one failing test `test_pr_state_matches_file_presence_on_the_real_tree` (MERGE_GROUP_OWNERSHIP_UNQUALIFIED + OPEN_PR_STATE_WITH_FILE_PRESENT). The PR-duty session's comment (11:00:03Z, account mastermidx4) rules: no unchanged re-enqueue, ledger not to be changed to "merged", remedy is the trusted migration-ownership rollout, which needs an App/grant enrollment. #1410 shows 27 green PR checks, label merge-on-green, native auto-merge null — it is NOT queued and will not merge as it stands. Earlier sections called it "CLEAN and armed"; that was true of the PR checks and misleading about the queue.
+- Same position: #1425 (0052 + 0053, RESERVATIONS.json, README) and #1429 (carries both through the lane 6 merge). #1431 and #1419 carry no migration file.
+- DECISION (COO): code lands without the migration files. #1410 and #1425 stay open and parked on that control; not re-enqueued; nothing applied. Lane 6 ordered 14:55Z (thread mcp:launch:ff9d918a..., started): verify the reading first; else ONE new code-only PR from master, byte-identical to 0fd16f5bc4e0 minus supabase/migrations/** and the tests that read the SQL; state what each route does with migrations not installed and writes closed; return a dated section in returns/lane6.md. Lane 3 told 14:55Z: #1429 must carry no path under supabase/migrations/.
+- New landing order: lane 6 code-only PR, #1419, #1431 as each is ready; master into #1429; #1429. #1410 / #1425 wait for the ownership rollout (owner: the Terminal migration-ownership control mission, Mastermind #1607 thread; not this programme).
+- Consequence for review: the #1425 review running at 0fd16f5bc4e0 covers the code-only PR only for byte-identical files; the new PR needs a short review of "safe with the migrations absent" before arming.
+- HUMAN ITEM (not blocking code): the App/grant enrollment for migration ownership is a credential act for the Chairman or the control owner. Until it happens no Terminal migration source can merge, so save / follow / arm stay closed for users regardless of this programme.
+
+### 23.7 14:50Z — PR heads seen
+- Terminal: #1429 940bae95f21d (lane 3 pushed; was 42ee6278c8c0); #1419 ceab6184a492; #1425 0fd16f5bc4e0; #1431 4449e5873e3f; #1410 dc02f1c28879. All BEHIND master except #1410.
+- Macro: unchanged (10923 8abe28febaf0, 10924 f9cb2c6535ea, 10945 3a5a6b422d57, 10959 17e75acc36bb, all armed; 10929 held draft c5d8c31db57d; 10954 0d43d893cc70; 10956 95aa439d0a8a). #10931 (another session's) is armed at 3290bfe75f96.
+
+### 23.8 15:01Z — #1431: both required checks passed on 4449e5873e3f; not yet in the merge queue
+- Required checks on Terminal PRs are exactly two: "Quote Hub tests" and "Ingest + signal-layer tests". Both SUCCESS. Auto-merge on; isInMergeQueue false, mergeStateStatus BEHIND, at 15:01Z.
+- The e2e shards (14) and "Terminal unit + typecheck (shard)" run on the PR but are NOT required, and the merge-group run skips e2e (seen on run 42794698403: merge group runs Quote Hub, Ingest, Investigation PostgreSQL invariants, unit + typecheck, typecheck + tests). All 15 were IN_PROGRESS at 15:01Z. So a Terminal PR can merge before its e2e finishes.
+- My 14:57Z comment on #1431 wrongly said e2e was "left to this PR's required checks". Corrected on the PR at 15:02Z.
+- OWED at the next wake: (1) if #1431 is still not queued or merged with required checks green, the likely cause is BEHIND — order lane 4 to merge origin/master into the branch (merge only, no other change), verify `git diff 4449e5873e3f <new head> -- <15 lane files>` is empty, and re-enable auto-merge; (2) read the e2e shard results on 4449e5873e3f once; a failure caused by lane 4 files goes to lane 4 as a fix PR.
+- For every later Terminal arm (#1419, lane 6 code-only, #1429): the review-record comment must say plainly that e2e is not a merge gate, and the e2e result is read separately.
+
+### 23.9 Corrections to earlier sections
+
+1. **#1410 is not armed.** Sections 16 to 22 describe Terminal #1410 as "CLEAN and armed". It was removed from the Terminal merge queue at 10:38:07Z by merge-group run 42794698403 and has not been queued since. Auto-merge is off. It is parked for the reason in 23.6.
+2. **The #1425 review returned at 14:40Z, not later.** Its verdict file was written at 14:40Z. The 14:50Z and 15:00Z notes treated it as still running, and it was read at 15:40Z. Lane 6 therefore built the code-only pull request #1436 without its findings. Cause: a review launched as a sister thread in the Terminal project does not wake this thread, and the earlier wakes read the thread's status rather than the file's time. From this wake on, the first step is to list `reviews/` and `returns/` by modification time.
+3. **The owed step in 23.8 is withdrawn.** It said to order lane 4 to merge master into #1431 if the pull request was not queued. See 23.10.
+4. **The Macro status pull requests were green and did not merge.** The reason is in 23.12; it is not the `merge-queue-pilot` check.
+
+### 23.10 Terminal pull requests at 15:36Z
+
+| Pull request | Lane | Head | State |
+|---|---|---|---|
+| #1410 | 6, sector admission (0052) | `dc02f1c28879` | Parked. Not queued. No re-enqueue. |
+| #1425 | 6, version-3 record (0053) | `0fd16f5bc4e0` | Parked. Review: READY WITH FOLLOW-UP, 0 blockers, 4 should-fix, 7 notes. |
+| #1436 | 6, code only, no migration file | `e15a8c924caf` | Open, not armed. Four fixes ordered; one review follows at the fixed head. |
+| #1419 | 7, retained depth | `a883ed339db7` | Second review NOT READY at `ceab6184a492`. Fixes ordered. |
+| #1429 | 3, workspace | `100c63254c0f` | 110 files, none under `supabase/`. Second review running. |
+| #1431 | 4, cycles | `4449e5873e3f` | Review complete. Auto-merge on since 14:58:09Z. Not yet in the queue. |
+
+**#1431.** 26 checks passed; one job that is not required, "Terminal typecheck + tests", is still waiting for a runner. The queue holds #1432 and #1422. They entered it 70 and 67 minutes after their last commit, although auto-merge had been on from the start. Admission to the queue is slow for every pull request; this one is not being refused. Decision: the head is not moved. Merging master in would restart every check and cost another hour. Lane 4's follow-up for the three review notes is ready on `claude/si-lane4-followup` at `accff2dce2bf` and becomes a pull request after #1431 merges.
+
+**#1419 head moved, and not by lane 7.** The pull-request-duty session (account `mastermidx4`) pushed `a883ed339db7` at 15:07Z, single parent `ceab6184a492`: a 14-line change to `terminal/e2e/sector-retained-depth.spec.ts` for the phone accordions, plus 24 evidence files under `docs/verification/pr1419-mobile-readiness-20261110/`. It announced the push on the pull request. Lane 7 builds on top of it.
+
+### 23.11 Verdicts and the orders that followed (sent 15:47Z)
+
+1. **Lane 7, #1419: NOT READY** at `ceab6184a492` (`reviews/lane7_1419_review_r2.md`). Ten earlier findings are closed. Two are open. S5 is half done: `SectorThemeCompare.tsx:170,389` still pass a display string as the owner and a raw field id, so the Chinese page shows `Macro sector generation` in Latin letters, and the tests cover English only. R2-S1 is new: a payload whose `universe` word names a different universe is drawn under whichever tab mounts it. Lane 7 was ordered to fix both, close the test gaps the review lists, and add the entity `kind` and `id` to the calls-board row callback that lane 3 asked for. A third, narrow review follows.
+2. **Lane 6, #1425: READY WITH FOLLOW-UP** at `0fd16f5bc4e0` (`reviews/lane6_1425_review.md`). The prefix census, the production preimage check and the disposable-database chain all hold. Decisions:
+   - S1: once 0053 is applied, any signed-in caller of `apply_investigation_revision_v2` can write a version-3 record at the database, whatever the application flag says, and one such row makes the down block refuse. I chose to state this plainly in the migration header and the pull request body, not to add a database switch. APPLY is a separate, later, human-authorized act, and the header already ties it to lane 9 qualification. The reservation ledger is not edited; its note "v3 app writes stay closed" is owed a correction when the ownership rollout un-parks the pull request.
+   - S2, S3, S4 and N4 are defects in code that #1436 carries (reopen identity accepts a capture with a different member set; three identity claims have no test; Follow claims a notification when transport failed; a rejected transport is not caught). They are fixed on #1436's branch, because that lands first.
+   - N1 and N5 (SQL test vectors) go on #1425's own branch, after the #1436 fixes.
+3. **Lane 6, #1436.** One review, at the head that carries the four fixes, instead of one now and one after. Lane 6 also runs `plan-evidence-capture.cjs` once on bare master to show whether the "conflicting evidence source locks" line it disclosed exists without this pull request.
+4. **Lane 3, #1429.** Second review started 15:47Z at `100c63254c0f` against B1, B2, S1 to S3, N1, N2, N4 to N7 of the first review, the lane 7 reader mounts, the relay error shape, save, follow and arm with writes closed, and two items the #1425 review raised for lane 3 (account-switch safety on the client; a `res.json()` call without a catch). Verdict to `reviews/lane3_1429_review_r2.md`. Lane 3's head will move again when lane 7's fix and #1436 land; that later change gets a merge check, not a full review.
+5. **Lane 5, #10956** at `57468d0406d4`. The fix diff from `95aa439d0a8a` is the five owned files and nothing else (836 insertions, 143 deletions). Second review started 15:47Z; verdict to `reviews/lane5_10956_review_r2.md`. Separately, three existing tests fail at this head and at the reviewed head. They enumerate registration fields and reject the `issuer_economics` field this pull request added (commit `506302fbaf01`), so they are this pull request's own breakage. A worker was started to register the field where each test checks it, with no assertion removed or loosened. #10956 is not armed before #10931 merges.
+
+### 23.12 Macro merge controller, read from its own logs
+
+**#10924 (lane 8).** Refused again at 15:09:57Z: "semantic evidence records authority_changed=true; candidate-era proof may not excuse this authority-changing pull request". The controller set `merge-blocked` itself. In plain words: the pull request edits CI definition files (`.github/ci/legacy-jobs.yml`, `tests/test_ci_pack.py`), so the controller will not excuse any red check as inherited from main; it needs a fully green run. One job was red, `ci-pack-5` in run 42824677266, on one test: `tests/test_no_absolute_path_part_prunes.py`, naming `admin/deploy/stage_capacity_observer.py:53`. That line came from main (#10950), is not in this pull request, and is already fixed on current main. Remedy: an ordinary merge of main into the branch, then re-validation of the registration, because main has also changed the check definitions (`165d4b20953a`, #10897). A worker was started for exactly that, with the same limits as before: no allowlist, no skip, no loosened assertion, no edit to a file the pull request does not own. `merge-blocked` stays until its return is read.
+
+**#10923, #10931, #10945, #10959.** Sweep 42841815989 at 15:30Z says the same thing for each: "checks are clean but the proof is stale — main commit 165d4b20953a changed the check definitions themselves, so no existing green describes the checks that run now". The controller means to merge main into each head and wait for fresh checks, and it deferred all four because it had no CI capacity: "0/0 effective CI workload slot(s)". That sweep's tally was 50 blocked, 116 cap-deferred, 3 conflict, 1 merged, 3 pending, 71 refresh-deferred. So a green pull request on Macro is currently waiting on CI capacity across the whole repository, not on anything in this programme.
+
+What this programme did about it:
+- This branch: main (`ecd19ef130b4`) was merged in by the commit before this section, so the push that carries section 23 also makes the proof current.
+- #10945: closed as redundant at this wake. Its 19 sections are a subset of this branch, and an open duplicate holds a CI slot other sessions need.
+- #10923 and #10931: left to the controller. #10931 is another session's. Pushing refresh merges by hand would add runs to a pool the controller is deliberately rationing.
+
+### 23.13 The one item that needs a person (unchanged from 23.6)
+
+Terminal's merge queue refuses any tree that adds an open migration file, because the ownership check has no read-only GitHub token (`docs/TRUSTED_MIGRATION_OWNERSHIP_ROLLOUT.md`). Enrolling the App or environment key is a credential act. This programme does not perform it. Until it is done, #1410 and #1425 cannot merge, and Save, Follow and Arm stay closed for users. Everything else lands without it.
+
+### 23.14 Running at 15:50Z
+
+| Work | Where | Model |
+|---|---|---|
+| Lane 7 fixes on #1419 | lane 7 thread `3a355225…` | glm-5.3 |
+| Lane 6 fixes on #1436, then #1425 | lane 6 thread `ff9d918a…` | claude-sonnet-5-5 |
+| #1429 second review | Terminal thread `bac6f41c…` | claude-opus-5-5 |
+| #10956 second review | delegate `si-v11-lane5-opus-review-r2-1530z` | claude-opus-5-5 |
+| #10956 registration-inventory repair | delegate `si-v11-lane5-glm-registration-inventory-1530z` | glm-5.3 |
+| #10924 merge of main and re-validation | delegate `si-v11-lane8-glm-merge-main-10924-1530z` | glm-5.3 |
+| Lane 1 point-in-time fields review (see 23.15) | delegate `si-v11-lane1-opus-review-pit-1600z` | claude-opus-5-5 |
+
+`gemini-4-argon` is used for nothing.
+
+### 23.15 Lane 1 point-in-time fields increment returned (15:46Z)
+
+Pull request #10965, head `7c870058baab`, base `claude/si-lane1-r3-followup-20261110` (#10954's branch, itself stacked on #10929). Open, not draft, no labels, not armed. Four files, all lane 1's own: `lib/sector_central_carry.py`, `lib/sector_population.py` and their two test files (846 insertions, 47 deletions).
+
+What it adds, by the worker's own return (`returns/lane1_pit_fields.md`), not yet reviewed:
+- The six notes from the fourth review (R4-N1 to R4-N6) are closed, each with a named test.
+- Three point-in-time membership facts are carried when the capture is built and served in the entitled population response: `identity.membership_first_known`, `identity.membership_snapshot` and `population.roster_clock`. The serving route reads nothing new at request time. Rows, cursor grammar and `BASIS_VERSION` are unchanged.
+- `membership_first_known` is a lower bound. The stored snapshots begin 2026-08-13, so 1,010 of 1,020 pairs read that date. It is labelled as a lower bound in the response.
+- Largest real response page: 97,237 bytes, 2.3% of the unchanged 4 MiB bound.
+- Tests: 61 passed in the two owned suites; 472 passed, 3 skipped in the importer and route suites.
+- The committed `sector_central.json` predates the carry step, so the new facts serve only after an ordinary nightly runs the new builder.
+
+An independent review was started at 16:00Z; verdict to `reviews/lane1_10965_review.md`. Lane 3 receives the wire change ("Consumer delta for lane 3", section 2b of `LANE1_WIRE_V11.md`) in its next batched order. Next lane 1 increment: full confluence payloads and theme rows.
+
+### 23.16 Rung
+
+Nothing of v1.1 is merged or served. Integrated proof stands at 0 of 44. Review-complete and waiting on machinery: #1431 (Terminal queue admission), #10923 (Macro CI capacity). Next landings in order: #1431; #1436 and #1419 as each passes review; then master into #1429; then #1429.
