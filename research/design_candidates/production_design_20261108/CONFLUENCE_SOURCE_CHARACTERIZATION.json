@@ -1,0 +1,219 @@
+{
+  "status": "CURRENT_HYDRATOR_HAZARDS_REPRODUCED_NOT_FIX_ACCEPTANCE",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "path": "templates/confluence_screener.html.j2",
+    "sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b"
+  },
+  "extraction": {
+    "first_line": 482,
+    "end_exclusive_line": 586,
+    "helper_sha256": "9ec01d09d3a9850e275e964ea04033e1777f0aaeb2da16e79bb6ff0ae01fe17a"
+  },
+  "execution": {
+    "runtime": "v24.22.1",
+    "environment": "Node vm and minimal fake DOM",
+    "network_calls": 0,
+    "auth_calls": 0,
+    "browser_playback": false,
+    "installed_runtime_acceptance": false
+  },
+  "cases": [
+    {
+      "id": "matching_control",
+      "observed": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [
+        {
+          "combo_id": "L0002",
+          "ticker_links": [
+            {
+              "href": "stocks/AAA.html",
+              "text": "AAAFixture A"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →AAAFixture A"
+        },
+        {
+          "combo_id": "L0003",
+          "ticker_links": [
+            {
+              "href": "stocks/BBB.html",
+              "text": "BBBFixture B"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →BBBFixture B"
+        }
+      ],
+      "required_future": "Hydrate both only after shared artifact and recipe bindings, counts and identifiers pass."
+    },
+    {
+      "id": "different_generation_same_ordinal",
+      "observed": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [
+        {
+          "combo_id": "L0002",
+          "ticker_links": [
+            {
+              "href": "stocks/CCC.html",
+              "text": "CCCWrong-generation fixture"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →CCCWrong-generation fixture"
+        },
+        {
+          "combo_id": "L0003",
+          "ticker_links": [
+            {
+              "href": "stocks/DDD.html",
+              "text": "DDDWrong-generation fixture"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →DDDWrong-generation fixture"
+        }
+      ],
+      "required_future": "Reject the full response before replacement; preserve public evidence and existing protected recovery."
+    },
+    {
+      "id": "same_timestamp_changed_content",
+      "observed": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [
+        {
+          "combo_id": "L0002",
+          "ticker_links": [
+            {
+              "href": "stocks/EEE.html",
+              "text": "EEEDifferent-content fixture"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →EEEDifferent-content fixture"
+        },
+        {
+          "combo_id": "L0003",
+          "ticker_links": [
+            {
+              "href": "stocks/FFF.html",
+              "text": "FFFDifferent-content fixture"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →FFFDifferent-content fixture"
+        }
+      ],
+      "required_future": "Require matching artifact fingerprint, not timestamp equality alone."
+    },
+    {
+      "id": "empty_payload",
+      "observed": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [],
+      "required_future": "No success announcement; expected protected rows remain unreconciled."
+    },
+    {
+      "id": "unmatched_ids",
+      "observed": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [],
+      "required_future": "Reject unexpected and missing row IDs atomically."
+    },
+    {
+      "id": "partial_payload",
+      "observed": {
+        "replacements": 1,
+        "remaining": 1,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [
+        {
+          "combo_id": "L0002",
+          "ticker_links": [
+            {
+              "href": "stocks/AAA.html",
+              "text": "AAA"
+            }
+          ],
+          "text": "Matching now  →当前匹配  →AAA"
+        }
+      ],
+      "required_future": "Validate the complete expected set before replacing any card."
+    },
+    {
+      "id": "malformed_positive_count_ticker",
+      "observed": {
+        "replacements": 1,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": true
+      },
+      "rendered": [
+        {
+          "combo_id": "L0002",
+          "ticker_links": [],
+          "text": "Matching now  →当前匹配  →No stock matches this one today.今日无股票匹配此组合。"
+        }
+      ],
+      "required_future": "Reject the malformed list; never convert invalid data into zero matches."
+    },
+    {
+      "id": "no_expected_protected_rows",
+      "observed": {
+        "replacements": 0,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": false
+      },
+      "rendered": [],
+      "required_future": "Skip protected hydration and paid success UI."
+    },
+    {
+      "id": "schema_rejected_control",
+      "observed": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": false,
+        "all_visible": false,
+        "no_match_message": false,
+        "error": "invalid payload"
+      },
+      "rendered": [],
+      "required_future": "Use a scoped version transition to make cached legacy consumers reject unbound payloads."
+    }
+  ],
+  "limits": [
+    "No current production payload or account accessed.",
+    "Current source only, without modifying helpers.",
+    "Public generation and recipe context are controlled fixture declarations, not existing consumed DOM fields.",
+    "Future identity and atomic reconciliation requirements remain implementation work."
+  ]
+}
