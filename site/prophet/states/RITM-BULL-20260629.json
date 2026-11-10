@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "RITM-BULL-20260629",
-  "asof": "2026-11-08",
+  "asof": "2026-11-09",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 42.6,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.175,
     "dist_to_t1_r": 1.325,
     "dist_to_t2_r": 2.825,
-    "horizon_pct_used": 275.6,
+    "horizon_pct_used": 277.8,
     "p1": 0.1167,
     "p2": 0.0583,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": "2026-08-13",
   "_first_t2_ts": null,
-  "days_elapsed": 124,
-  "tau": 2.7556,
+  "days_elapsed": 125,
+  "tau": 2.7778,
   "closed": true,
   "outcome": "T1_HIT"
 }
