@@ -46,7 +46,7 @@
     "name": "AGI",
     "quadrant": "weakening",
     "theme": "Artificial Intelligence",
-    "turn_state": "range"
+    "turn_state": "trending_up"
   },
   "aiapplications": {
     "emerging": false,
@@ -235,7 +235,7 @@
     "name": "Infrastructure",
     "quadrant": "lagging",
     "theme": "Big Data",
-    "turn_state": "trending_up"
+    "turn_state": "range"
   },
   "bigdataproviders": {
     "emerging": false,
@@ -340,7 +340,7 @@
     "name": "Edge",
     "quadrant": "lagging",
     "theme": "Cloud Computing",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "cloudhardware": {
     "emerging": false,
@@ -375,14 +375,14 @@
     "name": "Multi Cloud",
     "quadrant": "lagging",
     "theme": "Cloud Computing",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "cloudpaas": {
     "emerging": false,
     "name": "PaaS",
     "quadrant": "lagging",
     "theme": "Cloud Computing",
-    "turn_state": "range"
+    "turn_state": "trending_up"
   },
   "cloudsecurity": {
     "emerging": false,
@@ -410,7 +410,7 @@
     "name": "Fertilizers",
     "quadrant": "leading",
     "theme": "Commodities Agriculture",
-    "turn_state": "bottoming"
+    "turn_state": "turn_up"
   },
   "commagrigrains": {
     "emerging": false,
@@ -438,7 +438,7 @@
     "name": "Biofuels",
     "quadrant": "leading",
     "theme": "Commodities Energy",
-    "turn_state": "bottoming"
+    "turn_state": "range"
   },
   "commenergygaslng": {
     "emerging": false,
@@ -487,7 +487,7 @@
     "name": "Precious",
     "quadrant": "leading",
     "theme": "Commodities Metals",
-    "turn_state": "turn_up"
+    "turn_state": "bottoming"
   },
   "commmetalsrareearth": {
     "emerging": false,
@@ -522,7 +522,7 @@
     "name": "Farm-Direct",
     "quadrant": "improving",
     "theme": "Consumer Goods",
-    "turn_state": "bottoming"
+    "turn_state": "turn_up"
   },
   "consumerfood": {
     "emerging": true,
@@ -837,7 +837,7 @@
     "name": "Smart Grid",
     "quadrant": "leading",
     "theme": "Energy Renewable",
-    "turn_state": "turn_up"
+    "turn_state": "range"
   },
   "energycleansolar": {
     "emerging": true,
@@ -942,7 +942,7 @@
     "name": "Batteries",
     "quadrant": "improving",
     "theme": "Electric Vehicles",
-    "turn_state": "turn_up"
+    "turn_state": "bottoming"
   },
   "evscharging": {
     "emerging": true,
@@ -1047,14 +1047,14 @@
     "name": "Electronics",
     "quadrant": "lagging",
     "theme": "Hardware",
-    "turn_state": "turn_down"
+    "turn_state": "trending_up"
   },
   "hardwaregaming": {
     "emerging": false,
     "name": "Gaming",
     "quadrant": "weakening",
     "theme": "Hardware",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "hardwareindustrialiot": {
     "emerging": false,
@@ -1089,7 +1089,7 @@
     "name": "Printing",
     "quadrant": "lagging",
     "theme": "Hardware",
-    "turn_state": "trending_up"
+    "turn_state": "range"
   },
   "hardwareservers": {
     "emerging": false,
@@ -1278,7 +1278,7 @@
     "name": "Medicine",
     "quadrant": "weakening",
     "theme": "Nanotechnology",
-    "turn_state": "trending_up"
+    "turn_state": "range"
   },
   "nanotechproducts": {
     "emerging": false,
@@ -1586,7 +1586,7 @@
     "name": "Niche",
     "quadrant": "weakening",
     "theme": "Social Media",
-    "turn_state": "turn_down"
+    "turn_state": "range"
   },
   "socialvisualcontent": {
     "emerging": false,
@@ -1754,7 +1754,7 @@
     "name": "Wireless",
     "quadrant": "leading",
     "theme": "Telecommunications",
-    "turn_state": "range"
+    "turn_state": "turn_up"
   },
   "transportationaircargo": {
     "emerging": false,
