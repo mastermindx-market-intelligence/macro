@@ -1,0 +1,82 @@
+{
+  "source_base": "d18d83019f3972c9bd915c736210176c7bd0b6b5",
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "templates/discovery.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.048,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 4.337,
+      "stdout": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25320 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25320)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.192,
+      "stdout": "runtime style injection guard OK (277 .js files scanned, 44 injecting, 88 total hits — all within frozen allowances)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.506,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "compare served discovery assets with templates"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 0.752,
+      "stdout": "",
+      "stderr": "",
+      "diff_includes_untracked_source_paths": [
+        "site/discovery-controls.css",
+        "site/discovery.js",
+        "templates/discovery-controls.css",
+        "templates/discovery.js"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "templates/discovery.js": "1db708426877a937a085bffedc78fca2f74f54fe2669a9cfc6fb1c5ac81941f7",
+    "templates/discovery.html.j2": "12e724dcd755ed4ba5b2d61c1eee6495c151a0c73dc6f1ae006d77aa4db1a899",
+    "templates/discovery-controls.css": "e549ec2d4acdfcaa020ee1fdb48764718257b2de56c4c54cd141b7a5b97be35a",
+    "scripts/build_discovery.py": "f8fa57ecbe20662114af7fd8c2cd8ef4477ff7b8dd1f9572a49abbfb6fbcbeee",
+    "site/discovery.html": "c01fc11dab353df25aaa824d38e11653a1c9fe8facc13d73fa04d6a5135c3f15"
+  }
+}

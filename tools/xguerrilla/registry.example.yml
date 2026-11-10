@@ -1,0 +1,33 @@
+# XG identity registry — SYNTHETIC example, never the live roster.
+# One fake entry so schema shape and validator behaviour are checkable in CI.
+# The sha256 here is a documentation placeholder for evidence that does not exist.
+schema_version: 1
+registry_revision: 1
+mail_domains:
+  - mail.mastermind-x.com
+domains:
+  - domain: www.mastermind-x.com
+    state: admitted
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    admission_receipt:
+      path: research/admissions/0000-00-00-domain-acquisition.example.md
+      sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+entries:
+  - handle: example.persona
+    child_id: xg0000
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null
