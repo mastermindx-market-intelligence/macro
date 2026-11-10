@@ -1745,9 +1745,19 @@ class _PrewarmBoundedPipe(io.BytesIO):
         return super().readline(size)
 
 
+class _PrewarmInput(io.BytesIO):
+    def __init__(self):
+        super().__init__()
+        self.requests = []
+
+    def write(self, value):
+        self.requests.append(value)
+        return super().write(value)
+
+
 class _PrewarmGitProcess:
     def __init__(self, wire, *, code=0, short_reads=False, ignore_terminate=False):
-        self.stdin = io.BytesIO()
+        self.stdin = _PrewarmInput()
         self.stdout = _PrewarmBoundedPipe(wire, short_reads=short_reads)
         self.code = code
         self.returncode = None
@@ -1775,13 +1785,19 @@ def _prewarm_blob_wire(body, kind=b"blob"):
     return b"a" * 40 + b" " + kind + b" " + str(len(body)).encode() + b"\n" + body + b"\n"
 
 
-def _install_prewarm_process(monkeypatch, process):
+def _install_prewarm_process(monkeypatch, process, *, metadata_wire=None, metadata_code=0):
+    # Most cases select one body; multi-path and malformed metadata cases provide
+    # their separate metadata transcript explicitly.
+    if metadata_wire is None:
+        metadata_wire = process.stdout.getvalue().split(b"\n", 1)[0] + b"\n"
+    metadata = _PrewarmGitProcess(metadata_wire, code=metadata_code)
+
     def popen(command, **kwargs):
-        assert command == ["git", "cat-file", "--batch"]
+        assert command in (["git", "cat-file", "--batch"], ["git", "cat-file", "--batch-check"])
         assert kwargs["stdin"] == subprocess.PIPE
         assert kwargs["stdout"] == subprocess.PIPE
         assert kwargs["stderr"] == subprocess.DEVNULL
-        return process
+        return metadata if command[-1] == "--batch-check" else process
 
     def whole_capture_forbidden(*args, **kwargs):
         raise AssertionError("whole batch capture is not a bounded prewarm")
@@ -1789,19 +1805,25 @@ def _install_prewarm_process(monkeypatch, process):
     monkeypatch.setattr(CLI.subprocess, "Popen", popen)
     monkeypatch.setattr(CLI.subprocess, "run", whole_capture_forbidden)
     CLI.reset_caches()
+    return metadata
 
 
-def test_prewarm_stream_drains_oversize_without_retaining_it_and_keeps_alignment(monkeypatch, tmp_path):
+def test_prewarm_stream_skips_oversize_without_transferring_it_and_keeps_alignment(monkeypatch, tmp_path):
     wire = (
-        _prewarm_blob_wire(b"L" * (2 * 64 * 1024 + 7))
-        + _prewarm_blob_wire(b"one\r\ntwo\rthree\n")
-        + b"HEAD:data/c-missing missing\n"
+        _prewarm_blob_wire(b"one\r\ntwo\rthree\n")
         + _prewarm_blob_wire(b"")
         + _prewarm_blob_wire(b"\xff")
-        + _prewarm_blob_wire(b"tree bytes", kind=b"tree")
+    )
+    metadata_wire = (
+        b"b" * 40 + b" blob 131079\n"
+        + b"a" * 40 + b" blob 15\n"
+        + b"HEAD:data/c-missing missing\n"
+        + b"a" * 40 + b" blob 0\n"
+        + b"a" * 40 + b" blob 1\n"
+        + b"c" * 40 + b" tree 10\n"
     )
     process = _PrewarmGitProcess(wire)
-    _install_prewarm_process(monkeypatch, process)
+    metadata = _install_prewarm_process(monkeypatch, process, metadata_wire=metadata_wire)
     monkeypatch.setattr(CLI, "PREWARM_SIZE_CAP", 32)
     rels = ["data/a-large", "data/b-small", "data/c-missing", "data/d-empty", "data/e-binary", "data/f-tree"]
     assert CLI._prewarm_head_contents(tmp_path, rels) == 3
@@ -1810,7 +1832,9 @@ def test_prewarm_stream_drains_oversize_without_retaining_it_and_keeps_alignment
         (str(tmp_path), "data/c-missing"): (None, "absent"),
         (str(tmp_path), "data/d-empty"): (None, "absent"),
     }
-    assert max(process.stdout.read_sizes) == 64 * 1024
+    assert max(process.stdout.read_sizes) <= 32
+    assert process.stdin.requests == [b"a" * 40 + b"\n"] * 3
+    assert metadata.returncode == 0
     assert process.stdin.closed and process.stdout.closed
     assert process.returncode == 0 and not process.terminated
 
@@ -1834,7 +1858,10 @@ def test_prewarm_stream_handles_short_reads(monkeypatch, tmp_path):
 ])
 def test_prewarm_stream_declines_bad_framing_without_partial_cache(monkeypatch, tmp_path, bad_wire):
     process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid") + bad_wire)
-    _install_prewarm_process(monkeypatch, process)
+    _install_prewarm_process(
+        monkeypatch, process,
+        metadata_wire=b"a" * 40 + b" blob 5\n" + b"a" * 40 + b" blob 3\n",
+    )
     sentinel = (str(tmp_path), "already-cached")
     CLI._READ_CACHE[sentinel] = ("keep", "worktree")
     assert CLI._prewarm_head_contents(tmp_path, ["data/a-valid", "data/b-bad"]) == 0
@@ -1843,18 +1870,19 @@ def test_prewarm_stream_declines_bad_framing_without_partial_cache(monkeypatch, 
     assert process.terminated and process.returncode is not None
 
 
-def test_prewarm_stream_nonzero_exit_publishes_nothing(monkeypatch, tmp_path):
-    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"), code=1)
-    _install_prewarm_process(monkeypatch, process)
+@pytest.mark.parametrize("failed_stream", ["metadata", "contents"])
+def test_prewarm_stream_nonzero_exit_publishes_nothing(monkeypatch, tmp_path, failed_stream):
+    process = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"), code=int(failed_stream == "contents"))
+    metadata = _install_prewarm_process(monkeypatch, process, metadata_code=int(failed_stream == "metadata"))
     assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
     assert not CLI._READ_CACHE
-    assert process.returncode == 1
+    assert (metadata if failed_stream == "metadata" else process).returncode == 1
     assert process.stdin.closed and process.stdout.closed
 
 
 def test_prewarm_stream_reaps_aborted_git_that_ignores_termination(monkeypatch, tmp_path):
     process = _PrewarmGitProcess(b"bad\n", ignore_terminate=True)
-    _install_prewarm_process(monkeypatch, process)
+    _install_prewarm_process(monkeypatch, process, metadata_wire=b"a" * 40 + b" blob 3\n")
     assert CLI._prewarm_head_contents(tmp_path, ["data/a"]) == 0
     assert process.terminated and process.killed and process.returncode is not None
     assert process.stdin.closed and process.stdout.closed
@@ -2057,4 +2085,96 @@ def test_content_fallback_bad_worktree_still_uses_complete_head(monkeypatch, tmp
     _install_content_process(monkeypatch, process)
     assert CLI._content_text(tmp_path, "data/target.json") == ("head\n", None)
     assert process.stdout.closed and process.returncode == 0
+    assert not CLI._READ_CACHE
+
+
+def test_prewarm_metadata_skips_all_ineligible_bodies(monkeypatch, tmp_path):
+    metadata = _PrewarmGitProcess(
+        b"a" * 40 + b" blob 1048577\n" + b"b" * 40 + b" tree 4096\n"
+    )
+    commands = []
+    def popen(command, **kwargs):
+        commands.append(command)
+        assert command == ["git", "cat-file", "--batch-check"], "ineligible bodies must not be requested"
+        return metadata
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    CLI.reset_caches()
+    assert CLI._prewarm_head_contents(tmp_path, ["data/large", "data/tree"]) == 0
+    assert commands == [["git", "cat-file", "--batch-check"]]
+    assert not CLI._READ_CACHE
+    assert metadata.returncode == 0
+
+
+@pytest.mark.parametrize("bad_metadata", [
+    b"unterminated", b"x" * 4097 + b"\n", b"invalid blob 3\n",
+    b"a" * 40 + b" blob -1\n", b"a" * 40 + b" blob nope\n",
+    b"HEAD:other missing\n",
+])
+def test_prewarm_metadata_failure_cannot_publish_prefix(monkeypatch, tmp_path, bad_metadata):
+    contents = _PrewarmGitProcess(_prewarm_blob_wire(b"valid"))
+    metadata = _install_prewarm_process(
+        monkeypatch, contents,
+        metadata_wire=b"a" * 40 + b" blob 5\n" + bad_metadata,
+    )
+    sentinel = (str(tmp_path), "untouched")
+    CLI._READ_CACHE[sentinel] = ("keep", "worktree")
+    assert CLI._prewarm_head_contents(tmp_path, ["a", "b"]) == 0
+    assert CLI._READ_CACHE == {sentinel: ("keep", "worktree")}
+    assert metadata.stdin.closed and contents.stdin.closed
+
+
+@pytest.mark.parametrize("content_header", [
+    b"b" * 40 + b" blob 3\n", b"a" * 40 + b" tree 3\n",
+    b"a" * 40 + b" blob 4\n", b"a" * 40 + b" missing\n",
+])
+def test_prewarm_contents_must_match_selected_identity_type_and_size(monkeypatch, tmp_path, content_header):
+    contents = _PrewarmGitProcess(content_header + b"abc\n")
+    _install_prewarm_process(monkeypatch, contents, metadata_wire=b"a" * 40 + b" blob 3\n")
+    assert CLI._prewarm_head_contents(tmp_path, ["a"]) == 0
+    assert not CLI._READ_CACHE
+    assert contents.stdin.requests == [b"a" * 40 + b"\n"]
+
+
+def test_prewarm_real_git_reads_selected_oid_when_head_moves(monkeypatch, tmp_path):
+    root = _git_fixture_root(tmp_path)
+    path = root / "data/a.json"
+    original = path.read_text()
+    path.unlink()
+    real_popen = subprocess.Popen
+    moved = False
+
+    def popen(command, **kwargs):
+        nonlocal moved
+        if command == ["git", "cat-file", "--batch"] and not moved:
+            moved = True
+            path.write_text('{"replacement": true}\n')
+            subprocess.run(["git", "add", "data/a.json"], cwd=root, check=True)
+            subprocess.run(["git", "-c", "user.name=t4", "-c", "user.email=t4@example.com",
+                            "commit", "-qm", "move HEAD after metadata"], cwd=root, check=True)
+            path.unlink()
+        return real_popen(command, **kwargs)
+
+    monkeypatch.setattr(CLI.subprocess, "Popen", popen)
+    CLI.reset_caches()
+    assert CLI._prewarm_head_contents(root, ["data/a.json"]) == 1
+    assert moved
+    assert CLI._READ_CACHE[(str(root), "data/a.json")] == (original, "git")
+
+
+def test_prewarm_failed_cleanup_still_reaps_other_child_without_retry(monkeypatch, tmp_path):
+    contents = _PrewarmGitProcess(b"bad\n")
+    metadata = _install_prewarm_process(
+        monkeypatch, contents, metadata_wire=b"a" * 40 + b" blob 3\n",
+    )
+    attempts = []
+    def refused():
+        attempts.append("terminate")
+        raise PermissionError("fixture cleanup refusal")
+    monkeypatch.setattr(metadata, "terminate", refused)
+    with pytest.raises(PermissionError, match="fixture cleanup refusal"):
+        CLI._prewarm_head_contents(tmp_path, ["data/a"])
+    assert attempts == ["terminate"]
+    assert not metadata.killed
+    assert contents.terminated and contents.returncode is not None
+    assert metadata.stdin.closed and contents.stdin.closed
     assert not CLI._READ_CACHE

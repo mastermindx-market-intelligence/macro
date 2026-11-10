@@ -1,0 +1,760 @@
+{
+  "schema": "d08b.design_evidence/v1",
+  "status": "reviewable_candidate_rig_draft",
+  "artifactDate": "2026-11-04",
+  "immutability": "This manifest and its files are frozen by the containing Git commit. Live Paper URLs and snapshot guards are mutable, not approval identities.",
+  "file": {
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "fileName": "Terminal",
+    "pages": {
+      "candidate": {
+        "id": "p-12-0",
+        "name": "D08B · Exposure & Volatility · Candidate R1"
+      },
+      "readme": {
+        "id": "p-14-0",
+        "name": "00 · Read me & Build contract · D08B"
+      }
+    }
+  },
+  "pins": {
+    "Mastermind": "910803421beca53ca25145392725ab2d84c7a8e9",
+    "assignment": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "D08": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+    "F01F02Candidate4": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "Terminal": "2ded360882b9c721e690907ff363b553781fb920",
+    "Macro": "df691495abb1c2ba8f61e5624126cb17ad14e056"
+  },
+  "catalog": {
+    "version": "0.5.18",
+    "sha256": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4"
+  },
+  "artboards": [
+    {
+      "key": "B00",
+      "nodeId": "1PVF-0",
+      "pageId": "p-14-0",
+      "name": "B00 · Read me and build contract · R1",
+      "width": 1440,
+      "height": 1060,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B00.jpg",
+      "screenshotDimensions": [
+        1440,
+        1060
+      ],
+      "bytes": 218071,
+      "sha256": "1f6fcb195f10ea4f6db38578d65cfad1c445f785d213e3ee1de8b7fd7ae2b1dd",
+      "gitBlobSha1": "5d19cd44fc02f6dbc73b3cc247bb8733ff1e2112",
+      "captureReceipt": {
+        "key": "B00",
+        "nodeId": "1PVF-0",
+        "started": "2026-11-04T01:28:54.805Z",
+        "finished": "2026-11-04T01:29:48.559Z",
+        "mimeType": "image/jpeg",
+        "bytesApprox": 218073
+      }
+    },
+    {
+      "key": "B01",
+      "nodeId": "1NZL-0",
+      "pageId": "p-12-0",
+      "name": "B01 · Exposure + node · 1440 · Dark EN · R1",
+      "width": 1440,
+      "height": 1050,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B01.jpg",
+      "screenshotDimensions": [
+        1440,
+        1050
+      ],
+      "bytes": 167098,
+      "sha256": "7beedaab37baf59eca08ffd8c400d253e61af45614f3fda74faeb2554f715859",
+      "gitBlobSha1": "77bd91fb358983035d11c536054e24237954e513",
+      "captureReceipt": {
+        "key": "B01",
+        "nodeId": "1NZL-0",
+        "finished": "2026-11-04T01:35:19.033Z",
+        "mimeType": "image/jpeg",
+        "capture": "sequential after contrast-only correction"
+      }
+    },
+    {
+      "key": "B02",
+      "nodeId": "1OD3-0",
+      "pageId": "p-12-0",
+      "name": "B02 · Exposure slice · 390 · Dark EN · R1",
+      "width": 390,
+      "height": 1284,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B02.jpg",
+      "screenshotDimensions": [
+        390,
+        1284
+      ],
+      "bytes": 73558,
+      "sha256": "cf5012dfb50ef6f3b77a52cdc5bc627cbfdba2b6e35b3fb6ed71e0f1a9aeab13",
+      "gitBlobSha1": "7ec69cfeac0892033375a9e7941968f822b73442",
+      "captureReceipt": {
+        "key": "B02",
+        "nodeId": "1OD3-0",
+        "finished": "2026-11-04T01:35:21.004Z",
+        "mimeType": "image/jpeg",
+        "capture": "sequential after contrast-only correction"
+      }
+    },
+    {
+      "key": "B03",
+      "nodeId": "1OD4-0",
+      "pageId": "p-12-0",
+      "name": "B03 · Exact node · 320 · Light ZH · R1",
+      "width": 320,
+      "height": 1310,
+      "theme": "light",
+      "locale": "ZH",
+      "evidence": "evidence/B03.jpg",
+      "screenshotDimensions": [
+        320,
+        1310
+      ],
+      "bytes": 64658,
+      "sha256": "41109105df7745a49c6b4222665e25eea26c7c8ae97489359027e4cea0c924fd",
+      "gitBlobSha1": "819a5d56e260d17bdb146fbdfcc05472f902c4cc",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B04",
+      "nodeId": "1OMF-0",
+      "pageId": "p-12-0",
+      "name": "B04 · Expiry-led volatility · 1440 · Light EN · R1",
+      "width": 1440,
+      "height": 1050,
+      "theme": "light",
+      "locale": "EN",
+      "evidence": "evidence/B04.jpg",
+      "screenshotDimensions": [
+        1440,
+        1050
+      ],
+      "bytes": 141898,
+      "sha256": "5dd994d0b4840bd462df2652d80b2677cbf46ed679c721e890e041aa93322adc",
+      "gitBlobSha1": "7b2aacdcc3201214fca387adffe8b9a344e6cbba",
+      "captureReceipt": {
+        "key": "B04",
+        "nodeId": "1OMF-0",
+        "finished": "2026-11-04T01:35:24.038Z",
+        "mimeType": "image/jpeg",
+        "capture": "sequential after contrast-only correction"
+      }
+    },
+    {
+      "key": "B05",
+      "nodeId": "1P0P-0",
+      "pageId": "p-12-0",
+      "name": "B05 · 3D + exact slice · 1024 · Dark EN · R1",
+      "width": 1024,
+      "height": 1060,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B05.jpg",
+      "screenshotDimensions": [
+        1024,
+        1060
+      ],
+      "bytes": 104207,
+      "sha256": "83aa9ca4fb40bd308bf19a2d5bf22df70488e07c2564d9fc24b7909fdd3c590b",
+      "gitBlobSha1": "ee0db2079c6228dd7def8f22709a27fa9d8fcc56",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B06",
+      "nodeId": "1P85-0",
+      "pageId": "p-12-0",
+      "name": "B06 · Exact 2D table · 768 · Light ZH · R1",
+      "width": 768,
+      "height": 1140,
+      "theme": "light",
+      "locale": "ZH",
+      "evidence": "evidence/B06.jpg",
+      "screenshotDimensions": [
+        768,
+        1140
+      ],
+      "bytes": 69323,
+      "sha256": "c54ce7f9af6f8a8ed5628abd99a3002730f0ede76810a991549b8c0e18ebc048",
+      "gitBlobSha1": "767dad6f0dbdbcdca7c21d16053a57db56769b11",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B07",
+      "nodeId": "1PBQ-0",
+      "pageId": "p-12-0",
+      "name": "B07 · Matched change · 1440 · Dark EN · R1",
+      "width": 1440,
+      "height": 1050,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B07.jpg",
+      "screenshotDimensions": [
+        1440,
+        1050
+      ],
+      "bytes": 136304,
+      "sha256": "50d025b00db5a393b3fc18712ebdd8964becd1e6fa13f60a2c1719c710346e08",
+      "gitBlobSha1": "e742baa2a6d8fc08871d7e5a3429a1d1d284a330",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B08",
+      "nodeId": "1PG1-0",
+      "pageId": "p-12-0",
+      "name": "B08 · Missing expiry · 390 · Light EN · R1",
+      "width": 390,
+      "height": 1120,
+      "theme": "light",
+      "locale": "EN",
+      "evidence": "evidence/B08.jpg",
+      "screenshotDimensions": [
+        390,
+        1120
+      ],
+      "bytes": 55167,
+      "sha256": "e7f57d0bcfd5e245b8c6673cb8186578f99e853f404039b6a76a8a6e9486e72e",
+      "gitBlobSha1": "07e1288e7bc9dcc1a21f7e818e3d704822054cd6",
+      "captureReceipt": {
+        "key": "B08",
+        "nodeId": "1PG1-0",
+        "finished": "2026-11-04T01:35:27.790Z",
+        "mimeType": "image/jpeg",
+        "capture": "sequential after contrast-only correction"
+      }
+    },
+    {
+      "key": "B09",
+      "nodeId": "1PI4-0",
+      "pageId": "p-12-0",
+      "name": "B09 · State and interaction atlas · Dark EN · R1",
+      "width": 1440,
+      "height": 1020,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B09.jpg",
+      "screenshotDimensions": [
+        1440,
+        1020
+      ],
+      "bytes": 154684,
+      "sha256": "33ab634e2bee83c789d5589643b6e8a8d63e13174eb824f4a7c6f128d5296c70",
+      "gitBlobSha1": "300aef9a5a8179c1330c078212b9531ba455b394",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B10",
+      "nodeId": "1Q0P-0",
+      "pageId": "p-12-0",
+      "name": "B10 · Phone open research controls · 390 · Dark EN · R1",
+      "width": 390,
+      "height": 1210,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B10.jpg",
+      "screenshotDimensions": [
+        390,
+        1210
+      ],
+      "bytes": 51848,
+      "sha256": "f2cef2a8c4aaf7ada0f4cef54b23e8dd1409eaaca6fa97e49bfc0b3e5caf99bb",
+      "gitBlobSha1": "50458682fc940b36c91558a1e85f693a4ef549c3",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B11",
+      "nodeId": "1Q35-0",
+      "pageId": "p-12-0",
+      "name": "B11 · Phone exact 2D and cell states · 390 · Dark EN · R1",
+      "width": 390,
+      "height": 1310,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B11.jpg",
+      "screenshotDimensions": [
+        390,
+        1310
+      ],
+      "bytes": 59969,
+      "sha256": "40c449e80362bffaa27b193760747a442ff083db7e906506b66744eb6eef57d5",
+      "gitBlobSha1": "4c2b558567a038d95b63d568cfddd9321322be59",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B12",
+      "nodeId": "1QA0-0",
+      "pageId": "p-12-0",
+      "name": "B12 · Interaction and state annotations · R1",
+      "width": 1440,
+      "height": 1170,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B12.jpg",
+      "screenshotDimensions": [
+        1440,
+        1170
+      ],
+      "bytes": 221249,
+      "sha256": "6da30a657bedab4ffa0c7a4d946847a77d9ed7139c0fc913586f411607833e6c",
+      "gitBlobSha1": "1c7ccb18dfe88035021cff4539fffce0634628dd",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B13",
+      "nodeId": "1QC6-0",
+      "pageId": "p-12-0",
+      "name": "B13 · Published chain 3D + table · 1440 · Dark EN · R1",
+      "width": 1440,
+      "height": 1220,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B13.jpg",
+      "screenshotDimensions": [
+        1440,
+        1220
+      ],
+      "bytes": 158064,
+      "sha256": "3e92f05dca182da5e2a017f995641998037f9b3ecfc3852d8862f3005cd61bc9",
+      "gitBlobSha1": "66deec68475313594ec8d91daa3204619c6d0594",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B14",
+      "nodeId": "1QGP-0",
+      "pageId": "p-12-0",
+      "name": "B14 · Levels and positioning context · 1440 · Light EN · R1",
+      "width": 1440,
+      "height": 1120,
+      "theme": "light",
+      "locale": "EN",
+      "evidence": "evidence/B14.jpg",
+      "screenshotDimensions": [
+        1440,
+        1120
+      ],
+      "bytes": 134128,
+      "sha256": "9d031b48c5388ee70a51c964de5042e529711b4c51651c1480577d058116224b",
+      "gitBlobSha1": "ee3393c8dd1d8a93ffe6581d35df446f92cf9da3",
+      "captureReceipt": {
+        "key": "B14",
+        "nodeId": "1QGP-0",
+        "finished": "2026-11-04T01:35:29.494Z",
+        "mimeType": "image/jpeg",
+        "capture": "sequential after contrast-only correction"
+      }
+    },
+    {
+      "key": "B15",
+      "nodeId": "1QXD-0",
+      "pageId": "p-12-0",
+      "name": "B15 · Rendered loading empty failure access · R1",
+      "width": 1440,
+      "height": 1834,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B15.jpg",
+      "screenshotDimensions": [
+        1440,
+        1834
+      ],
+      "bytes": 249742,
+      "sha256": "0a836072239ac33c8e7afdfbf4d0b697dee553ed7189038a6102228574dd41a9",
+      "gitBlobSha1": "337c1f77f61363074cb87cfc9675087178b55911",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B16",
+      "nodeId": "1REL-0",
+      "pageId": "p-12-0",
+      "name": "B16 · Nonzero cohort differences · 1440 · Dark EN · R1",
+      "width": 1440,
+      "height": 1120,
+      "theme": "dark",
+      "locale": "EN",
+      "evidence": "evidence/B16.jpg",
+      "screenshotDimensions": [
+        1440,
+        1120
+      ],
+      "bytes": 132579,
+      "sha256": "649c8566888fad21837e5ed7ca96588e90497366e19b7a4376cd06cc0a84b22e",
+      "gitBlobSha1": "76d60cda6700ba145d4e96f77277edb6b96bac94",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    },
+    {
+      "key": "B17",
+      "nodeId": "1RIU-0",
+      "pageId": "p-12-0",
+      "name": "B17 · Exact contract and ambiguous terms · 390 · Light EN · R1",
+      "width": 390,
+      "height": 1420,
+      "theme": "light",
+      "locale": "EN",
+      "evidence": "evidence/B17.jpg",
+      "screenshotDimensions": [
+        390,
+        1420
+      ],
+      "bytes": 88153,
+      "sha256": "34cec1026b00d8315c822e511143e7aeb781048da210ee5df931265ee8692c9c",
+      "gitBlobSha1": "217efb21e462cfda7123ded12ee031f2c02914db",
+      "captureReceipt": {
+        "sessionDate": "2026-11-04",
+        "exactTimestamp": null,
+        "note": "Final native screenshot after this board’s last content change, reviewed in this session. No exact timestamp retained in compact capture record."
+      }
+    }
+  ],
+  "evidenceClasses": {
+    "candidate": "evidence/B00.jpg through B17.jpg are actual native Paper screenshots of labeled illustrative fixtures.",
+    "incumbentPaper": [
+      "evidence/before_exposure.jpg",
+      "evidence/before_vol.jpg",
+      "evidence/before_3d.jpg",
+      "evidence/before-exposure-r2-phone.jpg"
+    ],
+    "servedBrowserBaseline": [
+      "evidence/production-matrix-settled.jpg",
+      "evidence/production-volatility-read-failure.jpg"
+    ]
+  },
+  "readLimit": "An optional concurrent recapture yielded an image only for B00; no-image responses are not evidence. Final affected captures were obtained sequentially; unchanged reviewed screenshots were retained.",
+  "inventory": [
+    {
+      "path": "CAPABILITY_LEDGER.json",
+      "bytes": 29164,
+      "sha256": "82cf3e0efa8b937740da103e01119e7d3157561654af4dc0d62783fd136b28ab",
+      "gitBlobSha1": "7a2d72ad9ce571966d202e0aa99371c7405936f0"
+    },
+    {
+      "path": "CAPABILITY_LEDGER.md",
+      "bytes": 15577,
+      "sha256": "e3d58f191238baaf02c14698b1188ad0a037aa69b6e2f90b9750dea7fe91ad84",
+      "gitBlobSha1": "890836adc27d70b1867955db6a27aa25e4d48e3e"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 7517,
+      "sha256": "09648d32d300528ed1c2b41c911794eb96638810b4535d8c2b5d7aab7bdc7d7d",
+      "gitBlobSha1": "0adc23f02aefe7423ab34cd2f2c0876164070ff0"
+    },
+    {
+      "path": "INTERACTIONS_ACCESSIBILITY.md",
+      "bytes": 16608,
+      "sha256": "a11708c0655886f4033b0570d0d32d00ce01954a22e62d414727d6cc219371d0",
+      "gitBlobSha1": "542b045c167815f28e3283904a01c5679593fd5c"
+    },
+    {
+      "path": "PAPER_EFFECTS.json",
+      "bytes": 66982,
+      "sha256": "588894c2e4708dfe484ac3571a2f6ee4e0ac437639e7b64984669c939f28fdaf",
+      "gitBlobSha1": "5de5a2ca60bb2c372b3173a860600b70ecc2fe48"
+    },
+    {
+      "path": "PRODUCT_SPEC.md",
+      "bytes": 14248,
+      "sha256": "bfa019588070fd836f6cc66384c7c11f9a17612a3dc2776ea723c4df8c8bfeb0",
+      "gitBlobSha1": "66f89b72102edf9d1a0df1b500097a66c8654e7d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7332,
+      "sha256": "a100544d126a8a2fd8b5e942cc8197fe52e83f60a435fcacd042b1af078d6a49",
+      "gitBlobSha1": "331813c804de48f9300e7161e9ec390f64795044"
+    },
+    {
+      "path": "REVIEW.md",
+      "bytes": 10909,
+      "sha256": "5f436287bf8d3f7d9ef361bca11a666bd47f3aaf29a9424383cc89f716c22195",
+      "gitBlobSha1": "6a981ee751dbd0c7616a4cd39e54140789c2f0be"
+    },
+    {
+      "path": "SOURCE_AUDIT.md",
+      "bytes": 28255,
+      "sha256": "2f31756ed654ea3d67a66e3e426aa129704eb2f77db9944272faad74814e8466",
+      "gitBlobSha1": "aee97b64ba74a62b3272ca84f6401a2effdd4aeb"
+    },
+    {
+      "path": "SOURCE_BUILD_CONTRACT.md",
+      "bytes": 25479,
+      "sha256": "77942768f9836449350f412e9a63565f13dd1e0ecb5e7e881f031865a6ade69e",
+      "gitBlobSha1": "abc4a489227b464b8772df65158c6cbabbc15716"
+    },
+    {
+      "path": "VERIFICATION.md",
+      "bytes": 11391,
+      "sha256": "db96ac37d3a56be399471a81096d50202739c3de39d66d15de827e2eeccdcf33",
+      "gitBlobSha1": "3bc497d9236e9a10d977bed3db19a7398213d4b8"
+    },
+    {
+      "path": "VERIFICATION_RESULTS.json",
+      "bytes": 10218,
+      "sha256": "64b14ed7a25170bd34da2b08c3243af85e8e047dde161080beaa3bb7a5b58ffc",
+      "gitBlobSha1": "e6e70697b9d4075d373c81f25f8f85ef279e127c"
+    },
+    {
+      "path": "evidence/B00.jpg",
+      "bytes": 218071,
+      "sha256": "1f6fcb195f10ea4f6db38578d65cfad1c445f785d213e3ee1de8b7fd7ae2b1dd",
+      "gitBlobSha1": "5d19cd44fc02f6dbc73b3cc247bb8733ff1e2112"
+    },
+    {
+      "path": "evidence/B01.jpg",
+      "bytes": 167098,
+      "sha256": "7beedaab37baf59eca08ffd8c400d253e61af45614f3fda74faeb2554f715859",
+      "gitBlobSha1": "77bd91fb358983035d11c536054e24237954e513"
+    },
+    {
+      "path": "evidence/B02.jpg",
+      "bytes": 73558,
+      "sha256": "cf5012dfb50ef6f3b77a52cdc5bc627cbfdba2b6e35b3fb6ed71e0f1a9aeab13",
+      "gitBlobSha1": "7ec69cfeac0892033375a9e7941968f822b73442"
+    },
+    {
+      "path": "evidence/B03.jpg",
+      "bytes": 64658,
+      "sha256": "41109105df7745a49c6b4222665e25eea26c7c8ae97489359027e4cea0c924fd",
+      "gitBlobSha1": "819a5d56e260d17bdb146fbdfcc05472f902c4cc"
+    },
+    {
+      "path": "evidence/B04.jpg",
+      "bytes": 141898,
+      "sha256": "5dd994d0b4840bd462df2652d80b2677cbf46ed679c721e890e041aa93322adc",
+      "gitBlobSha1": "7b2aacdcc3201214fca387adffe8b9a344e6cbba"
+    },
+    {
+      "path": "evidence/B05.jpg",
+      "bytes": 104207,
+      "sha256": "83aa9ca4fb40bd308bf19a2d5bf22df70488e07c2564d9fc24b7909fdd3c590b",
+      "gitBlobSha1": "ee0db2079c6228dd7def8f22709a27fa9d8fcc56"
+    },
+    {
+      "path": "evidence/B06.jpg",
+      "bytes": 69323,
+      "sha256": "c54ce7f9af6f8a8ed5628abd99a3002730f0ede76810a991549b8c0e18ebc048",
+      "gitBlobSha1": "767dad6f0dbdbcdca7c21d16053a57db56769b11"
+    },
+    {
+      "path": "evidence/B07.jpg",
+      "bytes": 136304,
+      "sha256": "50d025b00db5a393b3fc18712ebdd8964becd1e6fa13f60a2c1719c710346e08",
+      "gitBlobSha1": "e742baa2a6d8fc08871d7e5a3429a1d1d284a330"
+    },
+    {
+      "path": "evidence/B08.jpg",
+      "bytes": 55167,
+      "sha256": "e7f57d0bcfd5e245b8c6673cb8186578f99e853f404039b6a76a8a6e9486e72e",
+      "gitBlobSha1": "07e1288e7bc9dcc1a21f7e818e3d704822054cd6"
+    },
+    {
+      "path": "evidence/B09.jpg",
+      "bytes": 154684,
+      "sha256": "33ab634e2bee83c789d5589643b6e8a8d63e13174eb824f4a7c6f128d5296c70",
+      "gitBlobSha1": "300aef9a5a8179c1330c078212b9531ba455b394"
+    },
+    {
+      "path": "evidence/B10.jpg",
+      "bytes": 51848,
+      "sha256": "f2cef2a8c4aaf7ada0f4cef54b23e8dd1409eaaca6fa97e49bfc0b3e5caf99bb",
+      "gitBlobSha1": "50458682fc940b36c91558a1e85f693a4ef549c3"
+    },
+    {
+      "path": "evidence/B11.jpg",
+      "bytes": 59969,
+      "sha256": "40c449e80362bffaa27b193760747a442ff083db7e906506b66744eb6eef57d5",
+      "gitBlobSha1": "4c2b558567a038d95b63d568cfddd9321322be59"
+    },
+    {
+      "path": "evidence/B12.jpg",
+      "bytes": 221249,
+      "sha256": "6da30a657bedab4ffa0c7a4d946847a77d9ed7139c0fc913586f411607833e6c",
+      "gitBlobSha1": "1c7ccb18dfe88035021cff4539fffce0634628dd"
+    },
+    {
+      "path": "evidence/B13.jpg",
+      "bytes": 158064,
+      "sha256": "3e92f05dca182da5e2a017f995641998037f9b3ecfc3852d8862f3005cd61bc9",
+      "gitBlobSha1": "66deec68475313594ec8d91daa3204619c6d0594"
+    },
+    {
+      "path": "evidence/B14.jpg",
+      "bytes": 134128,
+      "sha256": "9d031b48c5388ee70a51c964de5042e529711b4c51651c1480577d058116224b",
+      "gitBlobSha1": "ee3393c8dd1d8a93ffe6581d35df446f92cf9da3"
+    },
+    {
+      "path": "evidence/B15.jpg",
+      "bytes": 249742,
+      "sha256": "0a836072239ac33c8e7afdfbf4d0b697dee553ed7189038a6102228574dd41a9",
+      "gitBlobSha1": "337c1f77f61363074cb87cfc9675087178b55911"
+    },
+    {
+      "path": "evidence/B16.jpg",
+      "bytes": 132579,
+      "sha256": "649c8566888fad21837e5ed7ca96588e90497366e19b7a4376cd06cc0a84b22e",
+      "gitBlobSha1": "76d60cda6700ba145d4e96f77277edb6b96bac94"
+    },
+    {
+      "path": "evidence/B17.jpg",
+      "bytes": 88153,
+      "sha256": "34cec1026b00d8315c822e511143e7aeb781048da210ee5df931265ee8692c9c",
+      "gitBlobSha1": "217efb21e462cfda7123ded12ee031f2c02914db"
+    },
+    {
+      "path": "evidence/before-exposure-r2-phone.jpg",
+      "bytes": 62688,
+      "sha256": "c638fd8ea5974df06058909b46c589f7e8a1b42550a15ebb63b9152777c608db",
+      "gitBlobSha1": "92936007aaee1e8a0be2af9a3487cf485eb45a11"
+    },
+    {
+      "path": "evidence/before_3d.jpg",
+      "bytes": 221185,
+      "sha256": "81ef952567e891dabde2134481238877231cbe9e887eb57d25435b84c4a64ffb",
+      "gitBlobSha1": "0276852c19c7a2bafd30aeb67be940d59769380f"
+    },
+    {
+      "path": "evidence/before_exposure.jpg",
+      "bytes": 211376,
+      "sha256": "46fbf488013deac45a68ff714c40d8c2361fee25be5ee3eb68f6e1fa94f2c561",
+      "gitBlobSha1": "b9b48d60649945fbb9d1c73a6f8aadf016721578"
+    },
+    {
+      "path": "evidence/before_vol.jpg",
+      "bytes": 187719,
+      "sha256": "794e9192a8f6b1270f791339a261668306b0866f7db68275e31ad1274d0ecca8",
+      "gitBlobSha1": "32a2427b549d018009253b9e5b4cf780c8b7d3dc"
+    },
+    {
+      "path": "evidence/production-matrix-settled.jpg",
+      "bytes": 130043,
+      "sha256": "758a78de8a5fdbaba45d1031eec3acb685e602ae8c9d46ac330cd8aee6367046",
+      "gitBlobSha1": "4168656da38c1cb6bd10b37e55ab5dbb345c9c48"
+    },
+    {
+      "path": "evidence/production-volatility-read-failure.jpg",
+      "bytes": 62431,
+      "sha256": "e55e8b3489f715e6ebde89287d6c297518c7c9904ce91bf2b4c5b3d0cdec73d0",
+      "gitBlobSha1": "5357423ea3d709a173b63acae2222c81395c52f6"
+    },
+    {
+      "path": "source/additional_boards.py",
+      "bytes": 13493,
+      "sha256": "8f83f4c047ff2e1e84d286cce3c7ae653bc0bafbb7c91a84b154da29ad9b027c",
+      "gitBlobSha1": "57138137b38351329b843d98a1a01cad5789b4ec"
+    },
+    {
+      "path": "source/build_design.py",
+      "bytes": 38427,
+      "sha256": "6a9517a901578b43dafd8b7437723b0c094d7bc3064c70e2d0e666ff5be71319",
+      "gitBlobSha1": "5f34b624ce65055146b76720e507a1cad73b324f"
+    },
+    {
+      "path": "source/build_evidence_manifest.py",
+      "bytes": 2871,
+      "sha256": "5821a1f85d5e5e3ddd7601a80145366c6dff33e980b1bd3f56cd0054a575255d",
+      "gitBlobSha1": "3592a5a37b06d84b8144e2b3fac8bc76bbbcf62b"
+    },
+    {
+      "path": "source/build_ledger.py",
+      "bytes": 15761,
+      "sha256": "e9c12e525eb18c3c1bc518e7a80f4c372783eac4a446e8f3296cdb37b916bef4",
+      "gitBlobSha1": "daf4985e048f533bebf9ff7bdccc29638df82c1e"
+    },
+    {
+      "path": "source/chain-illustrative-fixture.json",
+      "bytes": 5083,
+      "sha256": "abbe9a64e4e2a9dffd41ee5b55ba971e81085bebe996cf834c80653a7d822009",
+      "gitBlobSha1": "32a2a1bf1b5cddf6eaca23a38515848935cb3609"
+    },
+    {
+      "path": "source/comparison-illustrative-fixture.json",
+      "bytes": 1431,
+      "sha256": "da5cc21f29c927e6fc68dd1a1359614185ab373d0c35b5c974c10a60d3b8bd17",
+      "gitBlobSha1": "f58df7700a250c3e131a81afd06bdafb20061c34"
+    },
+    {
+      "path": "source/illustrative-fixture.json",
+      "bytes": 2301,
+      "sha256": "7252ec0968259d25422a7bbf68e9ad8f5fe942f53bdbd4b9cdc78db52bcabc6e",
+      "gitBlobSha1": "8baa70f64b68ca62b9e3c2769833de6340722a6a"
+    },
+    {
+      "path": "source/paper-compositions.json",
+      "bytes": 241293,
+      "sha256": "e779098df6a03d656b4a59cecd7b92cd072d22c41e2a4f45184e6c0342ee0568",
+      "gitBlobSha1": "589131b7e09ac6db8c77699e685820f563742bbc"
+    },
+    {
+      "path": "source/paper-targets.json",
+      "bytes": 2617,
+      "sha256": "48708ead8f661ef624906a0d71f00dc069ccc035ef0e5c253aa88d9fb25f32c6",
+      "gitBlobSha1": "d24565809ffc2950ea40521264efc4fe41c22b8a"
+    },
+    {
+      "path": "source/state_boards.py",
+      "bytes": 11606,
+      "sha256": "740d7b7248a66a6dc127333d5dd8ed4c046938add880277726032304f062f859",
+      "gitBlobSha1": "bdbc3bb70f12fc1daef3dc23260de72b1f030573"
+    },
+    {
+      "path": "source/verify_design_package.py",
+      "bytes": 10007,
+      "sha256": "ee7d0ed00a89b91cbe18a602c2b006a4bbfdf3723ebc939d2ceb0ff057f9d667",
+      "gitBlobSha1": "4ea14e42b0e9dacdeefd13d8e85b24bd72d87e0e"
+    }
+  ],
+  "selfHashExcluded": true
+}
