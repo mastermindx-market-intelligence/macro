@@ -1,0 +1,47 @@
+{
+  "census_source_pin": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+  "command": "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_dataos_temporal.py tests/test_dataos_read_contract.py -q -p no:cacheprovider",
+  "earlier_attempts": [
+    {
+      "reason": "pytest unavailable",
+      "result": "environment incomplete"
+    },
+    {
+      "reason": "selected snapshot omitted price_views.py and basket_read.py; exact pinned modules subsequently fetched",
+      "result": "172 passed, 3 import failures"
+    }
+  ],
+  "environment": {
+    "pytest": "9.2.0",
+    "python": "3.12.14",
+    "selected_source_snapshot": true,
+    "test_dependencies": "task-local scratch directory added to PYTHONPATH"
+  },
+  "full_repository_suite_run": false,
+  "production_capture_proven": false,
+  "result": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 175
+  },
+  "runtime_source_modified": false,
+  "scope": "EXISTING_DATAOS_TEMPORAL_AND_READ_CONTRACT_SUITES",
+  "source_sha256": {
+    "lib/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lib/dataos/__init__.py": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+    "lib/dataos/basket_read.py": "24837c2cce65ad1d27c552d2e525b114483043d4cee35be4bace737475c6c897",
+    "lib/dataos/identity.py": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+    "lib/dataos/nulls.py": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+    "lib/dataos/price.py": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+    "lib/dataos/price_views.py": "7c15a8cbf36a4249b10a9e296f51721bc298585d4eb9818a59abeb2e8ce146fb",
+    "lib/dataos/quality.py": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+    "lib/dataos/read_contract.py": "75bff1347ea8d630725a95a3a5994015974539eafd9c832c03943065ab336e78",
+    "lib/dataos/registry.py": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+    "lib/dataos/temporal.py": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+    "tests/test_dataos_read_contract.py": "f232d1bc2ece9f11042d55ea93119937c01003fcbd9ef4db10c43b30bd2cc380",
+    "tests/test_dataos_temporal.py": "2c5ab171bd6c0af4846ba9cd22b5b57d4f5d9ceca82ac19bf196709c96b686c6"
+  },
+  "training_or_promotion_authorized": false
+}
