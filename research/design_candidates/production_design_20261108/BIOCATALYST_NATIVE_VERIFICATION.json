@@ -1,0 +1,134 @@
+{
+  "file_id": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+  "page_id": "p-4-0",
+  "builder_root": "171-0",
+  "reads": [
+    {
+      "node": "3F-0",
+      "current_texts": 53,
+      "preserved": 46,
+      "changed": [
+        {
+          "id": "VR-0",
+          "before": "Above the example $41.20 reference at the last example close. Next trigger: a new close below $39.60.",
+          "after": "Above the example $41.20 reference at the last example close. Manual review condition: a daily close below $39.60."
+        },
+        {
+          "id": "VX-0",
+          "before": "Save a review level",
+          "after": "Save review condition"
+        }
+      ],
+      "missing": [
+        {
+          "id": "67-0",
+          "text": "Signals"
+        },
+        {
+          "id": "69-0",
+          "text": "Calendar"
+        },
+        {
+          "id": "6B-0",
+          "text": "Watches"
+        },
+        {
+          "id": "6D-0",
+          "text": "Research"
+        },
+        {
+          "id": "6E-0",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "node": "AP-0",
+      "current_texts": 17,
+      "preserved": 16,
+      "changed": [
+        {
+          "id": "BT-0",
+          "before": "Create a condition",
+          "after": "Save review condition"
+        }
+      ],
+      "missing": []
+    },
+    {
+      "node": "BU-0",
+      "current_texts": 11,
+      "preserved": 7,
+      "changed": [
+        {
+          "id": "BX-0",
+          "before": "Save a research condition",
+          "after": "Save a review condition"
+        },
+        {
+          "id": "C0-0",
+          "before": "Condition for manual review",
+          "after": "Review condition"
+        },
+        {
+          "id": "C6-0",
+          "before": "The condition is not met at the last example close. Review this case manually when new evidence is available. A saved level is not an execution order.",
+          "after": "Review this condition manually against a dated daily close. A saved level is not an execution order."
+        }
+      ],
+      "missing": []
+    },
+    {
+      "node": "CD-0",
+      "current_texts": 53,
+      "preserved": 51,
+      "changed": [
+        {
+          "id": "CR-0",
+          "before": "My watches",
+          "after": "Saved conditions"
+        },
+        {
+          "id": "DS-0",
+          "before": "Two material records disagree on the primary endpoint. The investment interpretation is withheld and dependent condition evaluations are paused. Sources and saved definitions are retained.",
+          "after": "Two material records disagree on the primary endpoint. The investment interpretation is withheld. Saved review conditions remain available; check the conflicting sources before reassessing."
+        }
+      ],
+      "missing": []
+    },
+    {
+      "node": "171-0",
+      "current_texts": 165
+    }
+  ],
+  "static_only": true,
+  "chart_W9_exact": true,
+  "preserved_research_ids": [
+    {
+      "id": "VF-0",
+      "present": true
+    },
+    {
+      "id": "VY-0",
+      "present": true
+    },
+    {
+      "id": "W5-0",
+      "present": true
+    },
+    {
+      "id": "W7-0",
+      "present": true
+    },
+    {
+      "id": "W8-0",
+      "present": true
+    },
+    {
+      "id": "W9-0",
+      "present": true
+    }
+  ],
+  "original_save_limits_unchanged": true,
+  "original_save_label_unchanged": true
+}

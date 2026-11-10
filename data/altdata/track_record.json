@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-11-08",
-  "scored_total": 532,
-  "open": 229,
+  "as_of": "2026-11-10",
+  "scored_total": 533,
+  "open": 232,
   "unscored_soft": 0,
   "expired": 18,
   "overall": {
-    "n": 532,
-    "hits": 288,
+    "n": 533,
+    "hits": 289,
     "misses": 244,
-    "hit_rate": 0.541,
-    "dir_accuracy": 0.408
+    "hit_rate": 0.542,
+    "dir_accuracy": 0.407
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 532,
-      "hits": 288,
+      "n": 533,
+      "hits": 289,
       "misses": 244,
-      "hit_rate": 0.541,
-      "dir_accuracy": 0.408
+      "hit_rate": 0.542,
+      "dir_accuracy": 0.407
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 532,
-      "hits": 288,
+      "n": 533,
+      "hits": 289,
       "misses": 244,
-      "hit_rate": 0.541,
-      "dir_accuracy": 0.408
+      "hit_rate": 0.542,
+      "dir_accuracy": 0.407
     },
     "level": {
       "n": 0,
@@ -52,8 +52,17 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "532 scored, hit-rate 0.541 (directional accuracy 0.408).",
+  "calibration_note": "533 scored, hit-rate 0.542 (directional accuracy 0.407).",
   "recent": [
+    {
+      "id": "2026-11-02-AMD-altconv",
+      "subject": "AMD alt-data convergence",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0115,
+      "check_by": "2026-11-09"
+    },
     {
       "id": "2026-08-07-WM-altconv",
       "subject": "WM alt-data convergence",
@@ -134,17 +143,8 @@
       "outcome": "hit",
       "realized": 0.1181,
       "check_by": "2026-11-04"
-    },
-    {
-      "id": "2026-08-08-MSI-altconv",
-      "subject": "MSI alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0713,
-      "check_by": "2026-11-04"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 532 \u6761\uff0c\u547d\u4e2d\u7387 0.541\uff08\u65b9\u5411\u51c6\u786e\u7387 0.408\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 533 \u6761\uff0c\u547d\u4e2d\u7387 0.542\uff08\u65b9\u5411\u51c6\u786e\u7387 0.407\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }

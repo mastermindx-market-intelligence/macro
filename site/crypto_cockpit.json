@@ -2,24 +2,24 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-11-09",
-  "generated_at": "2026-11-09T13:52:16+00:00",
+  "as_of": "2026-11-10",
+  "generated_at": "2026-11-10T22:11:56+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 74918.2,
-    "change_24h_pct": 0.22,
-    "stance_en": "RISK-OFF",
-    "stance_zh": "偏空",
-    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": -33,
+    "price": 74112.55,
+    "change_24h_pct": -1.08,
+    "stance_en": "STRONG RISK-OFF",
+    "stance_zh": "强烈偏空",
+    "summary_en": "The big picture reads strongly risk-off. Support comes from miners and fundamentals; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向明显偏空。支撑来自矿工与基本面；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -35,
     "exposure_pct": 1,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "integrity_ok": true,
     "final_exposure_pct": 1,
     "errors": [],
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-11-09"
+        "as_of": "2026-11-10"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -257,9 +257,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Limited downside",
-          "state_zh": "下行受限",
-          "tone": "bull",
+          "state_en": "Amplifies sell-offs",
+          "state_zh": "放大下跌",
+          "tone": "bear",
           "grade": "CONFIRMED"
         }
       ]
