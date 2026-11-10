@@ -4060,6 +4060,1073 @@
       "changedLayouts": 39,
       "removedChrome": "YW2-0",
       "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "TZJ-0",
+      "pageId": "p-C-0",
+      "name": "R7-05 Today · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q48-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "YMJ-0",
+      "pageId": "p-C-0",
+      "name": "R7-27 Today · 768 · Light · EN",
+      "kind": "replace",
+      "header": "1Q4O-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "V1X-0",
+      "pageId": "p-C-0",
+      "name": "R7-09 Today · 320 · Light · EN · stress reflow",
+      "kind": "replace",
+      "header": "1Q54-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "USF-0",
+      "pageId": "p-C-0",
+      "name": "R7-08 Today · 390 · Dark · ZH",
+      "kind": "replace",
+      "header": "1Q5K-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "UIX-0",
+      "pageId": "p-C-0",
+      "name": "R7-07 Today · 390 · Light · ZH",
+      "kind": "replace",
+      "header": "1Q60-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "U9F-0",
+      "pageId": "p-C-0",
+      "name": "R7-06 Today · 390 · Dark · EN",
+      "kind": "replace",
+      "header": "1Q6G-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "VO1-0",
+      "pageId": "p-C-0",
+      "name": "R7-12 Setup detail · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q6W-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "VU9-0",
+      "pageId": "p-C-0",
+      "name": "R7-13 Setup detail · 390 · Dark · EN",
+      "kind": "replace",
+      "header": "1Q7C-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "XHQ-0",
+      "pageId": "p-C-0",
+      "name": "R7-18 Compare · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q7S-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "XUP-0",
+      "pageId": "p-C-0",
+      "name": "R7-20 Save to list · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q88-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "Y39-0",
+      "pageId": "p-C-0",
+      "name": "R7-22 State · Decision unavailable · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q8O-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "Y6V-0",
+      "pageId": "p-C-0",
+      "name": "R7-23 State · Stale quote · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q94-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "YAG-0",
+      "pageId": "p-C-0",
+      "name": "R7-24 State · Refusal receipt · 390 · Light · EN",
+      "kind": "replace",
+      "header": "1Q9K-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "ZRL-0",
+      "pageId": "p-C-0",
+      "name": "R8 Full Prophet · 390 · Light · EN · design illustration",
+      "kind": "replace",
+      "header": "1QA0-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "1092-0",
+      "pageId": "p-C-0",
+      "name": "R8 Full Prophet · 390 · Dark · ZH · design illustration",
+      "kind": "replace",
+      "header": "1QAG-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "DPQ-0",
+      "pageId": "p-1-0",
+      "name": "104 · R4.5 · Prophet Daily Brief + Top Picks · Mobile · Light",
+      "kind": "replace",
+      "header": "1QAW-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "FL7-0",
+      "pageId": "p-1-0",
+      "name": "108 · R4.7 · Prophet Daily Brief · Data Health States · Mobile · Light",
+      "kind": "replace",
+      "header": "1QBC-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "EHM-0",
+      "pageId": "p-1-0",
+      "name": "106 · R4.6 · Prophet Daily Brief · Entry Cleared · Mobile · Light",
+      "kind": "replace",
+      "header": "1QBS-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "GDO-0",
+      "pageId": "p-1-0",
+      "name": "110 · R4.8 · Compare · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QC8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "GNQ-0",
+      "pageId": "p-1-0",
+      "name": "112 · R4.9 · Full change log · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QCZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "HY6-0",
+      "pageId": "p-1-0",
+      "name": "114 · R5.0 · Daily Brief · First Failure · No Prior Brief · Mobile",
+      "kind": "status-wrap",
+      "header": "1QDQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "I46-0",
+      "pageId": "p-1-0",
+      "name": "116 · R5.1 · Brief History Unknown · Mobile",
+      "kind": "status-wrap",
+      "header": "1QEH-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "IH8-0",
+      "pageId": "p-1-0",
+      "name": "117 · Compare · One selected · Static recovery",
+      "kind": "status-wrap",
+      "header": "1QF8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "IH9-0",
+      "pageId": "p-1-0",
+      "name": "118 · Compare · None selected · Static recovery",
+      "kind": "status-wrap",
+      "header": "1QFZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "AU9-1",
+      "pageId": "p-8-0",
+      "name": "94 · R4.0 · AEIS refreshed quote · Assessment unchanged · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QGQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "B5I-1",
+      "pageId": "p-8-0",
+      "name": "96 · R4.1 · AEIS quote refresh failed · No observation · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QHH-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "BMW-1",
+      "pageId": "p-8-0",
+      "name": "98 · R4.2 · AEIS assessment health states · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QI8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "C8Q-0",
+      "pageId": "p-8-0",
+      "name": "100 · R4.3 · AEIS assessment review · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QIZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "CY9-0",
+      "pageId": "p-8-0",
+      "name": "102 · R4.4 · AEIS assessment review outcomes · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QJQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "8HV-0",
+      "pageId": "p-7-0",
+      "name": "72 · R3.1 · Mobile · Full card · Light",
+      "kind": "status-wrap",
+      "header": "1QKH-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "8SL-0",
+      "pageId": "p-7-0",
+      "name": "75 · R3.2 · Setup + timing · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QL8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "8VD-0",
+      "pageId": "p-7-0",
+      "name": "76 · R3.2 · Evidence list · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QLZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "8XB-0",
+      "pageId": "p-7-0",
+      "name": "77 · R3.2 · Source detail + return · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QMQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "8YU-0",
+      "pageId": "p-7-0",
+      "name": "78 · R3.2 · Return to Today · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QNH-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "9CI-0",
+      "pageId": "p-7-0",
+      "name": "83 · R3.3 · Trade playbook · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QO8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "9EQ-1",
+      "pageId": "p-7-0",
+      "name": "84 · R3.4 · Mobile · Changed-price review",
+      "kind": "status-wrap",
+      "header": "1QOZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "9G7-1",
+      "pageId": "p-7-0",
+      "name": "85 · R3.4 · Mobile · Return with newer quote",
+      "kind": "status-wrap",
+      "header": "1QPQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "9PH-1",
+      "pageId": "p-7-0",
+      "name": "88 · R3.6 · AEIS evidence · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QQH-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "9XO-1",
+      "pageId": "p-7-0",
+      "name": "89 · R3.7 · AEIS trade playbook · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QR8-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "AIU-1",
+      "pageId": "p-7-0",
+      "name": "92 · R3.9 · AEIS quote health states · Mobile · Light",
+      "kind": "status-wrap",
+      "header": "1QRZ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "6RE-0",
+      "pageId": "p-4-0",
+      "name": "54 · R2 · SCREENER · Mobile · Dark · EN",
+      "kind": "replace",
+      "header": "1QSQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "6Y0-0",
+      "pageId": "p-4-0",
+      "name": "55 · SCREENER · Mobile · Light · EN",
+      "kind": "replace",
+      "header": "1QT6-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "79J-0",
+      "pageId": "p-4-0",
+      "name": "56 · R2 STATE · Mobile · Screener Compare · EN",
+      "kind": "replace",
+      "header": "1QTM-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "IDX-0",
+      "pageId": "p-4-0",
+      "name": "57 · Mobile Compare · Scenario payoff expanded",
+      "kind": "replace",
+      "header": "1QU2-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "64A-0",
+      "pageId": "p-3-0",
+      "name": "37 · R2 · Today · Tablet · Dark · EN",
+      "kind": "replace",
+      "header": "1QUI-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "6FU-0",
+      "pageId": "p-3-0",
+      "name": "38 · R2 · Today · Tablet · Light · EN",
+      "kind": "replace",
+      "header": "1QUY-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "6A2-0",
+      "pageId": "p-3-0",
+      "name": "39 · R2 · Today · Tablet · Dark · ZH",
+      "kind": "replace",
+      "header": "1QVE-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "6LM-0",
+      "pageId": "p-3-0",
+      "name": "40 · R2 · Today · Tablet · Light · ZH",
+      "kind": "replace",
+      "header": "1QVU-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "56C-0",
+      "pageId": "p-3-0",
+      "name": "33 · R2 · Today · Mobile · EN",
+      "kind": "replace",
+      "header": "1QWA-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "5HE-0",
+      "pageId": "p-3-0",
+      "name": "34 · R2 · Today · Mobile · Light · EN",
+      "kind": "replace",
+      "header": "1QWQ-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "5BV-0",
+      "pageId": "p-3-0",
+      "name": "35 · R2 · Today · Mobile · Dark · ZH",
+      "kind": "replace",
+      "header": "1QX6-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "5MX-0",
+      "pageId": "p-3-0",
+      "name": "36 · R2 · Today · Mobile · Light · ZH",
+      "kind": "replace",
+      "header": "1QXM-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "7BU-0",
+      "pageId": "p-3-0",
+      "name": "62 · R2 REF · MPWR Setup · Mobile · ZH",
+      "kind": "replace",
+      "header": "1QY2-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "7E4-0",
+      "pageId": "p-3-0",
+      "name": "65 · R2 · PLANS · Mobile · Dark · EN",
+      "kind": "replace",
+      "header": "1QYI-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "7J8-0",
+      "pageId": "p-3-0",
+      "name": "66 · R2 · PLANS · Mobile · Light · EN",
+      "kind": "replace",
+      "header": "1QYY-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "LCH-0",
+      "pageId": "p-A-0",
+      "name": "13 · Complete card · Long-price layout · Mobile EN",
+      "kind": "status-wrap",
+      "header": "1QZE-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "MHC-0",
+      "pageId": "p-A-0",
+      "name": "05 · Complete cards · Today · Mobile Light EN",
+      "kind": "status-wrap",
+      "header": "1R05-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "QYY-0",
+      "pageId": "p-A-0",
+      "name": "33 · All strategies · Mobile · Light EN",
+      "kind": "status-wrap",
+      "header": "1R0W-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "R6L-0",
+      "pageId": "p-A-0",
+      "name": "34 · All strategies · Mobile · Dark EN",
+      "kind": "status-wrap",
+      "header": "1R1N-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "RE8-0",
+      "pageId": "p-A-0",
+      "name": "35 · 全部策略 · 手机 · Light ZH",
+      "kind": "status-wrap",
+      "header": "1R2E-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "RLV-0",
+      "pageId": "p-A-0",
+      "name": "36 · 全部策略 · 手机 · Dark ZH",
+      "kind": "status-wrap",
+      "header": "1R35-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "MP1-0",
+      "pageId": "p-A-0",
+      "name": "06 · Complete cards · Today · Mobile Dark EN",
+      "kind": "status-wrap",
+      "header": "1R3W-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "MP2-0",
+      "pageId": "p-A-0",
+      "name": "07 · 完整卡片 · 今日 · Mobile Light ZH",
+      "kind": "status-wrap",
+      "header": "1R4O-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "MP3-0",
+      "pageId": "p-A-0",
+      "name": "08 · 完整卡片 · 今日 · Mobile Dark ZH",
+      "kind": "status-wrap",
+      "header": "1R5F-0",
+      "localNavigationPreserved": true
+    },
+    {
+      "id": "DAZ-0",
+      "newId": "1R67-0",
+      "pageId": "p-1-0",
+      "name": "103 · R4.5 · Prophet Daily Brief + Top Picks · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 33,
+      "removedChrome": "DB0-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "EUE-0",
+      "newId": "1RLM-0",
+      "pageId": "p-1-0",
+      "name": "107 · R4.7 · Prophet Daily Brief · Data Health States · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 6,
+      "removedChrome": "F8C-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "E36-0",
+      "newId": "1RYK-0",
+      "pageId": "p-1-0",
+      "name": "105 · R4.6 · Prophet Daily Brief · Entry Cleared · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 33,
+      "removedChrome": "EH4-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "G9H-0",
+      "newId": "1SDZ-0",
+      "pageId": "p-1-0",
+      "name": "109 · R4.8 · Compare · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 32,
+      "removedChrome": "G9I-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "GJP-0",
+      "newId": "1SLU-0",
+      "pageId": "p-1-0",
+      "name": "111 · R4.9 · Full change log · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 16,
+      "removedChrome": "GJQ-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "HY5-0",
+      "newId": "1SS2-0",
+      "pageId": "p-1-0",
+      "name": "113 · R5.0 · Daily Brief · First Failure · No Prior Brief · Desktop",
+      "kind": "responsive-desktop",
+      "changedLayouts": 8,
+      "removedChrome": "HY7-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "I2B-0",
+      "newId": "1SWI-0",
+      "pageId": "p-1-0",
+      "name": "115 · R5.1 · Brief History Unknown · Desktop",
+      "kind": "responsive-desktop",
+      "changedLayouts": 8,
+      "removedChrome": "I3O-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "PCL-0",
+      "newId": "1T0Y-0",
+      "pageId": "p-A-0",
+      "name": "25 · Full Prophet · All strategies · Complete R3 cards · Light EN · DRAFT",
+      "kind": "responsive-desktop",
+      "changedLayouts": 18,
+      "removedChrome": "PLE-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "LPF-0",
+      "newId": "1TG8-0",
+      "pageId": "p-A-0",
+      "name": "02 · Card-first · Today · Dark EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 14,
+      "removedChrome": "LY8-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "LYQ-0",
+      "newId": "1TS4-0",
+      "pageId": "p-A-0",
+      "name": "03 · 完整卡片 · 今日 · Light ZH",
+      "kind": "responsive-desktop",
+      "changedLayouts": 14,
+      "removedChrome": "M7J-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "PPA-0",
+      "newId": "1U40-0",
+      "pageId": "p-A-0",
+      "name": "26 · 完整卡片 · 全部策略 · Light ZH · R3.1 产品界面 · DRAFT",
+      "kind": "responsive-desktop",
+      "changedLayouts": 18,
+      "removedChrome": "PY3-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "Q9K-0",
+      "newId": "1UJA-0",
+      "pageId": "p-A-0",
+      "name": "31 · Full Prophet · All strategies · Dark EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 18,
+      "removedChrome": "QLR-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "QM9-0",
+      "newId": "1UYK-0",
+      "pageId": "p-A-0",
+      "name": "32 · 完整卡片 · 全部策略 · 深色中文",
+      "kind": "responsive-desktop",
+      "changedLayouts": 18,
+      "removedChrome": "QYG-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "M81-0",
+      "newId": "1VDU-0",
+      "pageId": "p-A-0",
+      "name": "04 · 完整卡片 · 今日 · Dark ZH",
+      "kind": "responsive-desktop",
+      "changedLayouts": 14,
+      "removedChrome": "MGU-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "LKU-0",
+      "newId": "1VPQ-0",
+      "pageId": "p-A-0",
+      "name": "09 · Setup + timing · NVDA · Light EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 16,
+      "removedChrome": "LOI-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "NFW-0",
+      "newId": "1VWH-0",
+      "pageId": "p-A-0",
+      "name": "11 · Compare selected cards · Timing and risk · Light EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 23,
+      "removedChrome": "NFX-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "AZL-1",
+      "newId": "1W9V-0",
+      "pageId": "p-8-0",
+      "name": "95 · R4.1 · AEIS quote refresh failed · No observation · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 66,
+      "removedChrome": "AZM-1",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "BAM-1",
+      "newId": "1WI7-0",
+      "pageId": "p-8-0",
+      "name": "97 · R4.2 · AEIS assessment health states · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 16,
+      "removedChrome": "BAN-1",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "BWF-1",
+      "newId": "1WWU-0",
+      "pageId": "p-8-0",
+      "name": "99 · R4.3 · AEIS assessment review · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 10,
+      "removedChrome": "BWG-1",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "CKY-0",
+      "newId": "1XBI-0",
+      "pageId": "p-8-0",
+      "name": "101 · R4.4 · AEIS assessment review outcomes · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 7,
+      "removedChrome": "CKZ-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "839-0",
+      "newId": "1XPM-0",
+      "pageId": "p-7-0",
+      "name": "70 · R3.1 · Today · Complete cards · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 14,
+      "removedChrome": "83A-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "8KA-0",
+      "newId": "1Y1A-0",
+      "pageId": "p-7-0",
+      "name": "73 · R3.2 · Setup + timing · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 16,
+      "removedChrome": "8KB-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "8OM-0",
+      "newId": "1Y81-0",
+      "pageId": "p-7-0",
+      "name": "74 · R3.2 · Evidence + source detail · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 7,
+      "removedChrome": "8OP-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "94Y-0",
+      "newId": "1YEL-0",
+      "pageId": "p-7-0",
+      "name": "81 · R3.3 · Trade playbook · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 17,
+      "removedChrome": "94Z-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "99O-0",
+      "newId": "1YLW-0",
+      "pageId": "p-7-0",
+      "name": "82 · R3.3 · Draft review · Price changed · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 16,
+      "removedChrome": "99P-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "9KC-1",
+      "newId": "1YRB-0",
+      "pageId": "p-7-0",
+      "name": "87 · R3.5 · Why selected / Why not now · Desktop",
+      "kind": "responsive-desktop",
+      "changedLayouts": 0,
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "A49-1",
+      "newId": "1YZ5-0",
+      "pageId": "p-7-0",
+      "name": "90 · R3.8 · AEIS trade playbook · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 69,
+      "removedChrome": "A4A-1",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "ABR-1",
+      "newId": "1Z8W-0",
+      "pageId": "p-7-0",
+      "name": "91 · R3.9 · AEIS quote health states · Desktop · Light",
+      "kind": "responsive-desktop",
+      "changedLayouts": 53,
+      "removedChrome": "ABS-1",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "5ZG-0",
+      "newId": "1ZI9-0",
+      "pageId": "p-5-0",
+      "name": "03 · R2 SPEC · Engineering + Interaction",
+      "kind": "responsive-desktop",
+      "changedLayouts": 3,
+      "removedChrome": "5ZH-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "7WZ-0",
+      "newId": "1ZPU-0",
+      "pageId": "p-5-0",
+      "name": "04 · R2 SPEC · Coverage + Release Matrix",
+      "kind": "responsive-desktop",
+      "changedLayouts": 2,
+      "removedChrome": "7X0-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "7OC-0",
+      "newId": "1ZYL-0",
+      "pageId": "p-5-0",
+      "name": "07 · R2 STATE · Desktop · Interaction Overlays",
+      "kind": "responsive-desktop",
+      "changedLayouts": 25,
+      "removedChrome": "7OD-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "5U5-0",
+      "newId": "209Z-0",
+      "pageId": "p-5-0",
+      "name": "05 · R2 STATE · Honesty + Degraded",
+      "kind": "responsive-desktop",
+      "changedLayouts": 10,
+      "removedChrome": "5U6-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "51Q-0",
+      "newId": "20IV-0",
+      "pageId": "p-5-0",
+      "name": "06 · R2 SPEC · Regional Variants",
+      "kind": "responsive-desktop",
+      "changedLayouts": 5,
+      "removedChrome": "51R-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "37W-0",
+      "newId": "20Q8-0",
+      "pageId": "p-4-0",
+      "name": "53 · R2 REF · MPWR Filtered Table · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 10,
+      "removedChrome": "37X-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "3AI-0",
+      "newId": "215G-0",
+      "pageId": "p-4-0",
+      "name": "51 · SCREENER · Desktop · Grid · Dark · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 5,
+      "removedChrome": "3AJ-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "3NO-0",
+      "newId": "21LD-0",
+      "pageId": "p-4-0",
+      "name": "52 · SCREENER · Desktop · Grid · Light · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 6,
+      "removedChrome": "3NP-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "2NW-0",
+      "newId": "22DR-0",
+      "pageId": "p-3-0",
+      "name": "30 · R2 REF · MPWR Today · Desktop · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 6,
+      "removedChrome": "2NX-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "2H8-0",
+      "newId": "22J9-0",
+      "pageId": "p-3-0",
+      "name": "31 · R2 · Today · Desktop · Dark · ZH",
+      "kind": "responsive-desktop",
+      "changedLayouts": 4,
+      "removedChrome": "2H9-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "2QN-0",
+      "newId": "22SO-0",
+      "pageId": "p-3-0",
+      "name": "32 · R2 · Today · Desktop · Light · ZH",
+      "kind": "responsive-desktop",
+      "changedLayouts": 7,
+      "removedChrome": "2QO-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "2E6-0",
+      "newId": "233S-0",
+      "pageId": "p-3-0",
+      "name": "41 · R2 STATE · Today · No Entries Cleared",
+      "kind": "responsive-desktop",
+      "changedLayouts": 17,
+      "removedChrome": "2E7-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "4DB-0",
+      "newId": "239L-0",
+      "pageId": "p-3-0",
+      "name": "60 · R2 · SETUP · Desktop · US Plan Study",
+      "kind": "responsive-desktop",
+      "changedLayouts": 4,
+      "removedChrome": "4DC-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "4IZ-0",
+      "newId": "23I1-0",
+      "pageId": "p-3-0",
+      "name": "61 · R2 REF · MPWR Setup · Desktop · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 4,
+      "removedChrome": "4J0-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "4MM-0",
+      "newId": "23OF-0",
+      "pageId": "p-3-0",
+      "name": "63 · R2 · PLANS · Desktop · US Model Plan",
+      "kind": "responsive-desktop",
+      "changedLayouts": 5,
+      "removedChrome": "4MN-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "4U6-0",
+      "newId": "23YS-0",
+      "pageId": "p-3-0",
+      "name": "64 · R2 · PLANS · Desktop · Light · EN",
+      "kind": "responsive-desktop",
+      "changedLayouts": 5,
+      "removedChrome": "4U7-0",
+      "contentMethod": "preserved original content clones; layout adapted"
+    },
+    {
+      "id": "1CC5-0",
+      "pageId": "p-F-0",
+      "name": "T2 01 Today",
+      "kind": "chrome-replacement",
+      "nav": "1GW2-0",
+      "topbar": "1GZ2-0",
+      "originalContentPreserved": true
+    },
+    {
+      "id": "1DY9-0",
+      "pageId": "p-F-0",
+      "name": "T2 10 Today mobile",
+      "kind": "mobile-header",
+      "header": "1GZN-0",
+      "originalContentPreserved": true
+    },
+    {
+      "id": "NCP-0",
+      "newId": "NCP-0",
+      "pageId": "p-A-0",
+      "name": "10 · Same card → Setup → Evidence · Mobile",
+      "kind": "embedded-mobile-examples",
+      "phones": 2,
+      "contentPreserved": true
+    },
+    {
+      "id": "NMN-0",
+      "newId": "NMN-0",
+      "pageId": "p-A-0",
+      "name": "14 · Save to list · Uncertain result · Revisit rich card",
+      "kind": "embedded-mobile-examples",
+      "phones": 3,
+      "contentPreserved": true
+    },
+    {
+      "id": "O3P-0",
+      "newId": "24P3-0",
+      "pageId": "p-A-0",
+      "name": "17 · Strategy-specific complete cards · Mobile EN · Earnings/Cycle",
+      "kind": "embedded-mobile-examples",
+      "phones": 2,
+      "contentPreserved": true
+    },
+    {
+      "id": "O8I-0",
+      "newId": "24UQ-0",
+      "pageId": "p-A-0",
+      "name": "18 · 策略专属完整卡片 · 手机中文 · 财报/周期",
+      "kind": "embedded-mobile-examples",
+      "phones": 2,
+      "contentPreserved": true
+    },
+    {
+      "id": "OKP-0",
+      "newId": "250D-0",
+      "pageId": "p-A-0",
+      "name": "20 · 策略专属完整卡片 · 手机深色中文 · 财报/周期",
+      "kind": "embedded-mobile-examples",
+      "phones": 2,
+      "contentPreserved": true
+    },
+    {
+      "id": "OTP-0",
+      "newId": "2562-0",
+      "pageId": "p-A-0",
+      "name": "21 · 保存到已有列表 → 原结果待核验 → 回看历史卡片 · 中文手机",
+      "kind": "embedded-mobile-examples",
+      "phones": 3,
+      "contentPreserved": true
+    },
+    {
+      "id": "P4D-0",
+      "newId": "25BH-0",
+      "pageId": "p-A-0",
+      "name": "23 · 中文手机 · 同策略逐题对比 → 返回原卡片 · 选择不足恢复",
+      "kind": "embedded-mobile-examples",
+      "phones": 3,
+      "contentPreserved": true
+    },
+    {
+      "id": "919-0",
+      "newId": "919-0",
+      "pageId": "p-7-0",
+      "name": "79 · R3.2 · Quote + assessment inputs · Detail states",
+      "kind": "embedded-mobile-examples",
+      "phones": 1,
+      "contentPreserved": true
+    },
+    {
+      "id": "P8J-0",
+      "newId": "25GZ-0",
+      "pageId": "p-A-0",
+      "name": "24 · 320px mobile reflow stress · Full rich cards · EN/ZH",
+      "kind": "embedded-mobile-examples",
+      "phones": 2,
+      "contentPreserved": true
+    },
+    {
+      "id": "I8J-0",
+      "newId": "I8J-0",
+      "pageId": "p-3-0",
+      "name": "67 · Plan definitions + History unavailable",
+      "kind": "embedded-mobile-examples",
+      "phones": 1,
+      "contentPreserved": true
+    },
+    {
+      "id": "IBC-0",
+      "newId": "IBC-0",
+      "pageId": "p-3-0",
+      "name": "68 · Plan guide · Dark / 中文",
+      "kind": "embedded-mobile-examples",
+      "phones": 1,
+      "contentPreserved": true
     }
   ],
   "journal": [
@@ -5756,6 +6823,2058 @@
           "name": "R8 Full Prophet · 1440 · Light · EN · design illustration"
         }
       ]
+    },
+    {
+      "op": "prophet-shell-20261110-TZJ-0-legacyheader",
+      "tool": "write_html",
+      "target": "TZK-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q48-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-YMJ-0-legacyheader",
+      "tool": "write_html",
+      "target": "YVQ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q4O-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-V1X-0-legacyheader",
+      "tool": "write_html",
+      "target": "VB4-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q54-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-USF-0-legacyheader",
+      "tool": "write_html",
+      "target": "V1M-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q5K-0",
+          "name": "Shared Shell / MobileHeader / Dark ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-UIX-0-legacyheader",
+      "tool": "write_html",
+      "target": "US4-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q60-0",
+          "name": "Shared Shell / MobileHeader / Light ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-U9F-0-legacyheader",
+      "tool": "write_html",
+      "target": "UIM-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q6G-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-VO1-0-legacyheader",
+      "tool": "write_html",
+      "target": "VO2-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q6W-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-VU9-0-legacyheader",
+      "tool": "write_html",
+      "target": "VZY-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q7C-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-XHQ-0-legacyheader",
+      "tool": "write_html",
+      "target": "XHR-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q7S-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-XUP-0-legacyheader",
+      "tool": "write_html",
+      "target": "XUQ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q88-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-Y39-0-legacyheader",
+      "tool": "write_html",
+      "target": "Y3A-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q8O-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-Y6V-0-legacyheader",
+      "tool": "write_html",
+      "target": "Y6W-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q94-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-YAG-0-legacyheader",
+      "tool": "write_html",
+      "target": "YAH-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Q9K-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-ZRL-0-legacyheader",
+      "tool": "write_html",
+      "target": "1051-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QA0-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-1092-0-legacyheader",
+      "tool": "write_html",
+      "target": "10L8-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QAG-0",
+          "name": "Shared Shell / MobileHeader / Dark ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-DPQ-0-legacyheader",
+      "tool": "write_html",
+      "target": "DQ4-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QAW-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-FL7-0-legacyheader",
+      "tool": "write_html",
+      "target": "FY2-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QBC-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-EHM-0-legacyheader",
+      "tool": "write_html",
+      "target": "ETW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QBS-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-GDO-0-legacyheader",
+      "tool": "write_html",
+      "target": "GEH-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QC8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-GNQ-0-legacyheader",
+      "tool": "write_html",
+      "target": "GNR-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QCZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-HY6-0-legacyheader",
+      "tool": "write_html",
+      "target": "HZ1-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QDQ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-I46-0-legacyheader",
+      "tool": "write_html",
+      "target": "I5I-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QEH-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-IH8-0-legacyheader",
+      "tool": "write_html",
+      "target": "IHA-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QF8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-IH9-0-legacyheader",
+      "tool": "write_html",
+      "target": "IHL-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QFZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-AU9-1-legacyheader",
+      "tool": "write_html",
+      "target": "AUA-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QGQ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-B5I-1-legacyheader",
+      "tool": "write_html",
+      "target": "B5J-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QHH-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-BMW-1-legacyheader",
+      "tool": "write_html",
+      "target": "BMX-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QI8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-C8Q-0-legacyheader",
+      "tool": "write_html",
+      "target": "C8R-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QIZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-CY9-0-legacyheader",
+      "tool": "write_html",
+      "target": "CYA-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QJQ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8HV-0-legacyheader",
+      "tool": "write_html",
+      "target": "8HW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QKH-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8SL-0-legacyheader",
+      "tool": "write_html",
+      "target": "8SN-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QL8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8VD-0-legacyheader",
+      "tool": "write_html",
+      "target": "8VG-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QLZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8XB-0-legacyheader",
+      "tool": "write_html",
+      "target": "8XD-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QMQ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8YU-0-legacyheader",
+      "tool": "write_html",
+      "target": "8YW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QNH-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9CI-0-legacyheader",
+      "tool": "write_html",
+      "target": "9CJ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QO8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9EQ-1-legacyheader",
+      "tool": "write_html",
+      "target": "9ER-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QOZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9G7-1-legacyheader",
+      "tool": "write_html",
+      "target": "9I5-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QPQ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9PH-1-legacyheader",
+      "tool": "write_html",
+      "target": "9RF-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QQH-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9XO-1-legacyheader",
+      "tool": "write_html",
+      "target": "9XP-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QR8-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-AIU-1-legacyheader",
+      "tool": "write_html",
+      "target": "AIV-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QRZ-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-6RE-0-legacyheader",
+      "tool": "write_html",
+      "target": "6RF-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QSQ-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-6Y0-0-legacyheader",
+      "tool": "write_html",
+      "target": "6Y1-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QT6-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-79J-0-legacyheader",
+      "tool": "write_html",
+      "target": "79K-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QTM-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-IDX-0-legacyheader",
+      "tool": "write_html",
+      "target": "IG3-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QU2-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-64A-0-legacyheader",
+      "tool": "write_html",
+      "target": "64B-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QUI-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-6FU-0-legacyheader",
+      "tool": "write_html",
+      "target": "6FV-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QUY-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-6A2-0-legacyheader",
+      "tool": "write_html",
+      "target": "6A3-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QVE-0",
+          "name": "Shared Shell / MobileHeader / Dark ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-6LM-0-legacyheader",
+      "tool": "write_html",
+      "target": "6LN-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QVU-0",
+          "name": "Shared Shell / MobileHeader / Light ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-56C-0-legacyheader",
+      "tool": "write_html",
+      "target": "56D-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QWA-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-5HE-0-legacyheader",
+      "tool": "write_html",
+      "target": "5HF-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QWQ-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-5BV-0-legacyheader",
+      "tool": "write_html",
+      "target": "5BW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QX6-0",
+          "name": "Shared Shell / MobileHeader / Dark ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-5MX-0-legacyheader",
+      "tool": "write_html",
+      "target": "5MY-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QXM-0",
+          "name": "Shared Shell / MobileHeader / Light ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-7BU-0-legacyheader",
+      "tool": "write_html",
+      "target": "7BV-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QY2-0",
+          "name": "Shared Shell / MobileHeader / Light ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-7E4-0-legacyheader",
+      "tool": "write_html",
+      "target": "7E5-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QYI-0",
+          "name": "Shared Shell / MobileHeader / Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-7J8-0-legacyheader",
+      "tool": "write_html",
+      "target": "7J9-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QYY-0",
+          "name": "Shared Shell / MobileHeader / Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-dark-account-contrast",
+      "tool": "set_text_content",
+      "target": null,
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f"
+    },
+    {
+      "op": "prophet-shell-20261110-LCH-0-legacyheader",
+      "tool": "write_html",
+      "target": "LEM-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1QZE-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-MHC-0-legacyheader",
+      "tool": "write_html",
+      "target": "MHD-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R05-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-QYY-0-legacyheader",
+      "tool": "write_html",
+      "target": "R6B-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R0W-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-R6L-0-legacyheader",
+      "tool": "write_html",
+      "target": "RDY-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R1N-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-RE8-0-legacyheader",
+      "tool": "write_html",
+      "target": "RLL-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R2E-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-RLV-0-legacyheader",
+      "tool": "write_html",
+      "target": "RT8-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R35-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-MP1-0-legacyheader",
+      "tool": "write_html",
+      "target": "MP4-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R3W-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-MP2-0-legacyheader",
+      "tool": "write_html",
+      "target": "MPV-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R4O-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-MP3-0-legacyheader",
+      "tool": "write_html",
+      "target": "MQM-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R5F-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-DAZ-0-layout",
+      "tool": "write_html",
+      "target": "DAZ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1R67-0",
+          "name": "103 · R4.5 · Prophet Daily Brief + Top Picks · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-EUE-0-layout",
+      "tool": "write_html",
+      "target": "EUE-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1RLM-0",
+          "name": "107 · R4.7 · Prophet Daily Brief · Data Health States · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-E36-0-layout",
+      "tool": "write_html",
+      "target": "E36-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1RYK-0",
+          "name": "105 · R4.6 · Prophet Daily Brief · Entry Cleared · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-G9H-0-layout",
+      "tool": "write_html",
+      "target": "G9H-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1SDZ-0",
+          "name": "109 · R4.8 · Compare · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-GJP-0-layout",
+      "tool": "write_html",
+      "target": "GJP-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1SLU-0",
+          "name": "111 · R4.9 · Full change log · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-HY5-0-layout",
+      "tool": "write_html",
+      "target": "HY5-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1SS2-0",
+          "name": "113 · R5.0 · Daily Brief · First Failure · No Prior Brief · Desktop"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-I2B-0-layout",
+      "tool": "write_html",
+      "target": "I2B-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1SWI-0",
+          "name": "115 · R5.1 · Brief History Unknown · Desktop"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-PCL-0-layout",
+      "tool": "write_html",
+      "target": "PCL-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1T0Y-0",
+          "name": "25 · Full Prophet · All strategies · Complete R3 cards · Light EN · Shared Shell"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-LPF-0-layout",
+      "tool": "write_html",
+      "target": "LPF-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1TG8-0",
+          "name": "02 · Card-first · Today · Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-LYQ-0-layout",
+      "tool": "write_html",
+      "target": "LYQ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1TS4-0",
+          "name": "03 · 完整卡片 · 今日 · Light ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-PPA-0-layout",
+      "tool": "write_html",
+      "target": "PPA-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1U40-0",
+          "name": "26 · 完整卡片 · 全部策略 · Light ZH · R3.1 产品界面 · Shared Shell"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-Q9K-0-layout",
+      "tool": "write_html",
+      "target": "Q9K-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1UJA-0",
+          "name": "31 · Full Prophet · All strategies · Dark EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-QM9-0-layout",
+      "tool": "write_html",
+      "target": "QM9-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1UYK-0",
+          "name": "32 · 完整卡片 · 全部策略 · 深色中文"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-M81-0-layout",
+      "tool": "write_html",
+      "target": "M81-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1VDU-0",
+          "name": "04 · 完整卡片 · 今日 · Dark ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-LKU-0-layout",
+      "tool": "write_html",
+      "target": "LKU-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1VPQ-0",
+          "name": "09 · Setup + timing · NVDA · Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NFW-0-layout",
+      "tool": "write_html",
+      "target": "NFW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1VWH-0",
+          "name": "11 · Compare selected cards · Timing and risk · Light EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-AZL-1-layout",
+      "tool": "write_html",
+      "target": "AZL-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1W9V-0",
+          "name": "95 · R4.1 · AEIS quote refresh failed · No observation · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-BAM-1-layout",
+      "tool": "write_html",
+      "target": "BAM-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1WI7-0",
+          "name": "97 · R4.2 · AEIS assessment health states · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-BWF-1-layout",
+      "tool": "write_html",
+      "target": "BWF-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1WWU-0",
+          "name": "99 · R4.3 · AEIS assessment review · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-CKY-0-layout",
+      "tool": "write_html",
+      "target": "CKY-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1XBI-0",
+          "name": "101 · R4.4 · AEIS assessment review outcomes · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-839-0-layout",
+      "tool": "write_html",
+      "target": "839-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1XPM-0",
+          "name": "70 · R3.1 · Today · Complete cards · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8KA-0-layout",
+      "tool": "write_html",
+      "target": "8KA-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Y1A-0",
+          "name": "73 · R3.2 · Setup + timing · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-8OM-0-layout",
+      "tool": "write_html",
+      "target": "8OM-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Y81-0",
+          "name": "74 · R3.2 · Evidence + source detail · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-94Y-0-layout",
+      "tool": "write_html",
+      "target": "94Y-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1YEL-0",
+          "name": "81 · R3.3 · Trade playbook · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-99O-0-layout",
+      "tool": "write_html",
+      "target": "99O-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1YLW-0",
+          "name": "82 · R3.3 · Draft review · Price changed · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-9KC-1-layout",
+      "tool": "write_html",
+      "target": "9KC-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1YRB-0",
+          "name": "87 · R3.5 · Why selected / Why not now · Desktop"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-A49-1-layout",
+      "tool": "write_html",
+      "target": "A49-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1YZ5-0",
+          "name": "90 · R3.8 · AEIS trade playbook · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-ABR-1-layout",
+      "tool": "write_html",
+      "target": "ABR-1",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1Z8W-0",
+          "name": "91 · R3.9 · AEIS quote health states · Desktop · Light"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-5ZG-0-layout",
+      "tool": "write_html",
+      "target": "5ZG-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1ZI9-0",
+          "name": "03 · R2 SPEC · Engineering + Interaction"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-7WZ-0-layout",
+      "tool": "write_html",
+      "target": "7WZ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1ZPU-0",
+          "name": "04 · R2 SPEC · Coverage + Release Matrix"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-7OC-0-layout",
+      "tool": "write_html",
+      "target": "7OC-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "1ZYL-0",
+          "name": "07 · R2 STATE · Desktop · Interaction Overlays"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-5U5-0-layout",
+      "tool": "write_html",
+      "target": "5U5-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "209Z-0",
+          "name": "05 · R2 STATE · Honesty + Degraded"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-51Q-0-layout",
+      "tool": "write_html",
+      "target": "51Q-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20IV-0",
+          "name": "06 · R2 SPEC · Regional Variants"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-37W-0-layout",
+      "tool": "write_html",
+      "target": "37W-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20Q8-0",
+          "name": "53 · R2 REF · MPWR Filtered Table · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-setup-summary-fit",
+      "tool": "write_html",
+      "target": "1P22-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20VL-0",
+          "name": "Setup / aligned decision summary"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-VBF-0-chart-position",
+      "tool": "write_html",
+      "target": "1P3G-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20WU-0",
+          "name": "Timing / preserved coordinate stage"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-VHM-0-chart-position",
+      "tool": "write_html",
+      "target": "1PBX-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20XG-0",
+          "name": "Timing / preserved coordinate stage"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-compare-aligned-columns",
+      "tool": "write_html",
+      "target": "1SHQ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "20Y2-0",
+          "name": "Compare / aligned candidate columns"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-chart-coordinate-containers",
+      "tool": "write_html",
+      "target": "20WU-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "2115-0",
+          "name": "Timing / coordinate stage"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-dark-summary-fit",
+      "tool": "write_html",
+      "target": "1PAJ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "211Z-0",
+          "name": "Setup / aligned decision summary"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-chart-svg-labels",
+      "tool": "write_html",
+      "target": "2115-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "2138-0",
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-chart-final",
+      "tool": "write_html",
+      "target": "2138-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "213P-0",
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-r7-dark-chart-final",
+      "tool": "write_html",
+      "target": "20XG-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "2146-0",
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-playbook-chart-labels",
+      "tool": "write_html",
+      "target": "1YJ3-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "214N-0",
+          "name": "SVG"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-3AI-0-layout",
+      "tool": "write_html",
+      "target": "3AI-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "215G-0",
+          "name": "51 · SCREENER · Desktop · Grid · Dark · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-3NO-0-layout",
+      "tool": "write_html",
+      "target": "3NO-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "21LD-0",
+          "name": "52 · SCREENER · Desktop · Grid · Light · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-2NW-0-layout",
+      "tool": "write_html",
+      "target": "2NW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "22DR-0",
+          "name": "30 · R2 REF · MPWR Today · Desktop · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-2H8-0-layout",
+      "tool": "write_html",
+      "target": "2H8-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "22J9-0",
+          "name": "31 · R2 · Today · Desktop · Dark · ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-2QN-0-layout",
+      "tool": "write_html",
+      "target": "2QN-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "22SO-0",
+          "name": "32 · R2 · Today · Desktop · Light · ZH"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-2E6-0-layout",
+      "tool": "write_html",
+      "target": "2E6-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "233S-0",
+          "name": "41 · R2 STATE · Today · No Entries Cleared"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-4DB-0-layout",
+      "tool": "write_html",
+      "target": "4DB-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "239L-0",
+          "name": "60 · R2 · SETUP · Desktop · US Plan Study"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-4IZ-0-layout",
+      "tool": "write_html",
+      "target": "4IZ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "23I1-0",
+          "name": "61 · R2 REF · MPWR Setup · Desktop · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-4MM-0-layout",
+      "tool": "write_html",
+      "target": "4MM-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "23OF-0",
+          "name": "63 · R2 · PLANS · Desktop · US Model Plan"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-4U6-0-layout",
+      "tool": "write_html",
+      "target": "4U6-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "23YS-0",
+          "name": "64 · R2 · PLANS · Desktop · Light · EN"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NCP-0-NCX-0-embedded",
+      "tool": "write_html",
+      "target": "NCX-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "2495-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NCP-0-NEQ-0-embedded",
+      "tool": "write_html",
+      "target": "NEQ-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "249W-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NMN-0-NMW-0-embedded",
+      "tool": "write_html",
+      "target": "NMW-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24AN-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NMN-0-NNT-0-embedded",
+      "tool": "write_html",
+      "target": "NNT-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24BE-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-NMN-0-NOL-0-embedded",
+      "tool": "write_html",
+      "target": "NOL-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24C5-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O3P-0-O3Y-0-embedded",
+      "tool": "write_html",
+      "target": "O3Y-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24CW-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O3P-0-O48-0-embedded",
+      "tool": "write_html",
+      "target": "O48-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24DN-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O8I-0-O8R-0-embedded",
+      "tool": "write_html",
+      "target": "O8R-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24EE-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O8I-0-O91-0-embedded",
+      "tool": "write_html",
+      "target": "O91-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24F5-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OKP-0-OKY-0-embedded",
+      "tool": "write_html",
+      "target": "OKY-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24FW-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OKP-0-OL9-0-embedded",
+      "tool": "write_html",
+      "target": "OL9-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24GO-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OTP-0-OXH-0-embedded",
+      "tool": "write_html",
+      "target": "OXH-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24HG-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OTP-0-OWK-0-embedded",
+      "tool": "write_html",
+      "target": "OWK-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24I7-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OTP-0-OVS-0-embedded",
+      "tool": "write_html",
+      "target": "OVS-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24IY-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P4D-0-P5Y-0-embedded",
+      "tool": "write_html",
+      "target": "P5Y-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24JP-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P4D-0-P68-0-embedded",
+      "tool": "write_html",
+      "target": "P68-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24KG-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P4D-0-P6I-0-embedded",
+      "tool": "write_html",
+      "target": "P6I-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24L7-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-919-0-92F-0-embedded",
+      "tool": "write_html",
+      "target": "92F-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24LY-0",
+          "name": "Shared Shell / Device frame + MobileHeader"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P8J-0-P8Q-0-embedded",
+      "tool": "write_html",
+      "target": "P8Q-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24MP-0",
+          "name": "Shared Shell / MobileHeader + local context"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P8J-0-P8X-0-embedded",
+      "tool": "write_html",
+      "target": "P8X-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24NB-0",
+          "name": "Shared Shell / MobileHeader + local context"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-I8J-0-IB2-0-embedded",
+      "tool": "write_html",
+      "target": "IB2-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24NX-0",
+          "name": "Shared Shell / MobileHeader + local context"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-IBC-0-ICH-0-embedded",
+      "tool": "write_html",
+      "target": "ICH-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24OI-0",
+          "name": "Shared Shell / MobileHeader + local context"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O3P-0-gallery-fit",
+      "tool": "write_html",
+      "target": "O3P-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24P3-0",
+          "name": "17 · Strategy-specific complete cards · Mobile EN · Earnings/Cycle"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-O8I-0-gallery-fit",
+      "tool": "write_html",
+      "target": "O8I-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "24UQ-0",
+          "name": "18 · 策略专属完整卡片 · 手机中文 · 财报/周期"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OKP-0-gallery-fit",
+      "tool": "write_html",
+      "target": "OKP-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "250D-0",
+          "name": "20 · 策略专属完整卡片 · 手机深色中文 · 财报/周期"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-OTP-0-gallery-fit",
+      "tool": "write_html",
+      "target": "OTP-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "2562-0",
+          "name": "21 · 保存到已有列表 → 原结果待核验 → 回看历史卡片 · 中文手机"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P4D-0-gallery-fit",
+      "tool": "write_html",
+      "target": "P4D-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "25BH-0",
+          "name": "23 · 中文手机 · 同策略逐题对比 → 返回原卡片 · 选择不足恢复"
+        }
+      ]
+    },
+    {
+      "op": "prophet-shell-20261110-P8J-0-gallery-fit",
+      "tool": "write_html",
+      "target": "P8J-0",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "after": "08eaff559d113df28342f5c8bee1371c5d5c20cb35896a95e77bb06b37af858f",
+      "createdRoots": [
+        {
+          "id": "25GZ-0",
+          "name": "24 · 320px mobile reflow stress · Full rich cards · EN/ZH"
+        }
+      ]
     }
   ],
   "visualReadbacks": [
@@ -5803,8 +8922,421 @@
     "ZE5-0 palette effect"
   ],
   "next": [
-    "Finish legacy mobile global header insertion while preserving local navigation",
-    "Migrate remaining desktop families with responsive containers",
-    "Update every page's implementation/disposition contract; finish visual audit and node lineage"
+    "Complete every-page current integration guides and page order",
+    "Finish canvas spacing and focused visual readbacks",
+    "Persist final coverage, exact limits and Beta implementation handoff"
+  ],
+  "embedded": [
+    {
+      "board": "NCP-0",
+      "page": "p-A-0",
+      "phone": "NCU-0",
+      "target": "NCX-0",
+      "newId": "2495-0"
+    },
+    {
+      "board": "NCP-0",
+      "page": "p-A-0",
+      "phone": "NCV-0",
+      "target": "NEQ-0",
+      "newId": "249W-0"
+    },
+    {
+      "board": "NMN-0",
+      "page": "p-A-0",
+      "phone": "NMS-0",
+      "target": "NMW-0",
+      "newId": "24AN-0"
+    },
+    {
+      "board": "NMN-0",
+      "page": "p-A-0",
+      "phone": "NMT-0",
+      "target": "NNT-0",
+      "newId": "24BE-0"
+    },
+    {
+      "board": "NMN-0",
+      "page": "p-A-0",
+      "phone": "NMU-0",
+      "target": "NOL-0",
+      "newId": "24C5-0"
+    },
+    {
+      "board": "O3P-0",
+      "page": "p-A-0",
+      "phone": "O3V-0",
+      "target": "O3Y-0",
+      "newId": "24CW-0"
+    },
+    {
+      "board": "O3P-0",
+      "page": "p-A-0",
+      "phone": "O3W-0",
+      "target": "O48-0",
+      "newId": "24DN-0"
+    },
+    {
+      "board": "O8I-0",
+      "page": "p-A-0",
+      "phone": "O8O-0",
+      "target": "O8R-0",
+      "newId": "24EE-0"
+    },
+    {
+      "board": "O8I-0",
+      "page": "p-A-0",
+      "phone": "O8P-0",
+      "target": "O91-0",
+      "newId": "24F5-0"
+    },
+    {
+      "board": "OKP-0",
+      "page": "p-A-0",
+      "phone": "OKV-0",
+      "target": "OKY-0",
+      "newId": "24FW-0"
+    },
+    {
+      "board": "OKP-0",
+      "page": "p-A-0",
+      "phone": "OKW-0",
+      "target": "OL9-0",
+      "newId": "24GO-0"
+    },
+    {
+      "board": "OTP-0",
+      "page": "p-A-0",
+      "phone": "OWU-0",
+      "target": "OXH-0",
+      "newId": "24HG-0"
+    },
+    {
+      "board": "OTP-0",
+      "page": "p-A-0",
+      "phone": "OW2-0",
+      "target": "OWK-0",
+      "newId": "24I7-0"
+    },
+    {
+      "board": "OTP-0",
+      "page": "p-A-0",
+      "phone": "OTU-0",
+      "target": "OVS-0",
+      "newId": "24IY-0"
+    },
+    {
+      "board": "P4D-0",
+      "page": "p-A-0",
+      "phone": "P4J-0",
+      "target": "P5Y-0",
+      "newId": "24JP-0"
+    },
+    {
+      "board": "P4D-0",
+      "page": "p-A-0",
+      "phone": "P4S-0",
+      "target": "P68-0",
+      "newId": "24KG-0"
+    },
+    {
+      "board": "P4D-0",
+      "page": "p-A-0",
+      "phone": "P5G-0",
+      "target": "P6I-0",
+      "newId": "24L7-0"
+    },
+    {
+      "board": "919-0",
+      "page": "p-7-0",
+      "phone": "92D-0",
+      "target": "92F-0",
+      "newId": "24LY-0"
+    },
+    {
+      "board": "P8J-0",
+      "page": "p-A-0",
+      "phone": "P8P-0",
+      "target": "P8Q-0",
+      "newId": "24MP-0"
+    },
+    {
+      "board": "P8J-0",
+      "page": "p-A-0",
+      "phone": "P8W-0",
+      "target": "P8X-0",
+      "newId": "24NB-0"
+    },
+    {
+      "board": "I8J-0",
+      "page": "p-3-0",
+      "phone": "IA4-0",
+      "target": "IB2-0",
+      "newId": "24NX-0"
+    },
+    {
+      "board": "IBC-0",
+      "page": "p-3-0",
+      "phone": "IBJ-0",
+      "target": "ICH-0",
+      "newId": "24OI-0"
+    }
+  ],
+  "layoutFixes": [
+    {
+      "target": "1P22-0",
+      "newId": "20VL-0",
+      "op": "prophet-shell-20261110-r7-setup-summary-fit",
+      "label": "Setup / aligned decision summary",
+      "overrides": {
+        "1P24-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P2A-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P25-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P2I-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P26-0": {
+          "width": "252px",
+          "minWidth": "0px"
+        },
+        "1P2P-0": {
+          "width": "252px",
+          "minWidth": "0px"
+        },
+        "1P27-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P2Z-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1P28-0": {
+          "width": "136px",
+          "minWidth": "0px"
+        },
+        "1P32-0": {
+          "width": "136px",
+          "minWidth": "0px"
+        },
+        "1P35-0": {
+          "width": "210px",
+          "flexShrink": "0",
+          "gap": "8px"
+        },
+        "1P29-0": {
+          "height": "fit-content"
+        }
+      }
+    },
+    {
+      "target": "1P3G-0",
+      "newId": "20WU-0",
+      "op": "prophet-shell-20261110-VBF-0-chart-position",
+      "label": "Chart coordinates preserved"
+    },
+    {
+      "target": "1PBX-0",
+      "newId": "20XG-0",
+      "op": "prophet-shell-20261110-VHM-0-chart-position",
+      "label": "Chart coordinates preserved"
+    },
+    {
+      "target": "1SHQ-0",
+      "newId": "20Y2-0",
+      "op": "prophet-shell-20261110-compare-aligned-columns",
+      "label": "Compare / aligned candidate columns",
+      "overrides": {
+        "1SHR-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SHU-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SI1-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SI8-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SIB-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SIH-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SIN-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SIQ-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SIV-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJ0-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SJ3-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJ7-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJB-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SJE-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJI-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJM-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SJP-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJT-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SJX-0": {
+          "flexWrap": "nowrap",
+          "height": "fit-content"
+        },
+        "1SK0-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        },
+        "1SKE-0": {
+          "width": "479px",
+          "minWidth": "0px",
+          "flex": "1 1 0%"
+        }
+      }
+    },
+    {
+      "target": "20WU-0",
+      "newId": "2115-0",
+      "label": "Explicit chart annotation containers"
+    },
+    {
+      "target": "1PAJ-0",
+      "newId": "211Z-0",
+      "op": "prophet-shell-20261110-r7-dark-summary-fit",
+      "label": "Setup / aligned decision summary",
+      "overrides": {
+        "1PAL-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PAR-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PAM-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PAZ-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PAN-0": {
+          "width": "252px",
+          "minWidth": "0px"
+        },
+        "1PB6-0": {
+          "width": "252px",
+          "minWidth": "0px"
+        },
+        "1PAO-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PBG-0": {
+          "width": "176px",
+          "minWidth": "0px"
+        },
+        "1PAP-0": {
+          "width": "136px",
+          "minWidth": "0px"
+        },
+        "1PBJ-0": {
+          "width": "136px",
+          "minWidth": "0px"
+        },
+        "1PBM-0": {
+          "width": "210px",
+          "flexShrink": "0",
+          "gap": "8px"
+        },
+        "1PAQ-0": {
+          "height": "fit-content"
+        }
+      }
+    },
+    {
+      "target": "2115-0",
+      "newId": "2138-0",
+      "label": "Preserved chart geometry and annotation coordinates in editable SVG"
+    },
+    {
+      "target": "2138-0",
+      "newId": "213P-0",
+      "label": "SVG chart with original line styles and coordinates"
+    },
+    {
+      "target": "20XG-0",
+      "newId": "2146-0",
+      "label": "SVG chart with original line styles and coordinates"
+    },
+    {
+      "target": "1YJ3-0",
+      "newId": "214N-0",
+      "label": "Playbook chart labels preserved in coordinate SVG"
+    }
   ]
 }
