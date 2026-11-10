@@ -921,3 +921,211 @@ def test_coverage_epoch_module_opens_no_transport_service_route_or_publication()
     ):
         assert not hasattr(coverage_module, forbidden_entrypoint)
     assert "def main" not in source
+
+
+# Coverage remains historical evidence after closure, not new admission authority.
+def _closed_admission_epoch(run: dict, closure: str) -> dict:
+    epoch = _epoch(runs=[run])
+    epoch["transaction_to"] = "2026-08-04T00:00:00Z"
+    if closure == "withdrawn":
+        epoch["lifecycle"]["withdrawn_at"] = epoch["transaction_to"]
+        epoch["lifecycle"]["withdrawal_reason_code"] = "source_correction"
+    else:
+        assert closure == "superseded"
+        epoch["lifecycle"]["superseded_by_coverage_epoch_id"] = (
+            "ctgov_discovery_coverage_b1s4_successor"
+        )
+    return validate_attested_coverage_epoch(_rehash_epoch(epoch), runs=[run])
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-04T00:00:00Z",
+    "2026-08-04T00:00:00.000001Z",
+    "2026-08-03T19:00:00-05:00",
+])
+def test_admission_builder_refuses_closed_epoch(closure: str, decided_at: str) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    with pytest.raises(ContractValidationError) as caught:
+        build_cohort_admission_decision(
+            epoch=epoch, runs=[run], cohort=cohort,
+            candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+        )
+    assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (epoch, run, cohort) == before
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-04T00:00:00Z",
+    "2026-08-04T00:00:00.000001Z",
+    "2026-08-03T19:00:00-05:00",
+])
+def test_bound_admission_validator_refuses_closed_epoch(
+    closure: str, decided_at: str,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"],
+        decided_at="2026-08-03T01:00:00Z", repo_root=ROOT,
+    )
+    decision["decided_at"] = decided_at
+    decision["transaction_from"] = decided_at
+    _rehash_decision(decision)
+    before = copy.deepcopy((decision, epoch, cohort))
+    # Without a supplied epoch the validator must not invent its closure time.
+    assert validate_cohort_admission_decision(decision, cohort=cohort, repo_root=ROOT) == decision
+    with pytest.raises(ContractValidationError) as caught:
+        validate_cohort_admission_decision(
+            decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+        )
+    assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (decision, epoch, cohort) == before
+
+
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("decided_at", [
+    "2026-08-03T23:59:59.999999Z",
+    "2026-08-04T01:59:59.999999+02:00",
+])
+def test_admission_preserves_history_before_epoch_closure(
+    closure: str, decided_at: str,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+    )
+    assert decision["admitted_nct_ids"] == ["NCT00000001"]
+    assert validate_cohort_admission_decision(
+        decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+    ) == decision
+    assert (epoch, run, cohort) == before
+
+
+def test_admission_open_epoch_has_no_invented_expiry() -> None:
+    run = _run()
+    epoch = _epoch(runs=[run])
+    cohort = _cohort()
+    before = copy.deepcopy((epoch, run, cohort))
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort,
+        candidates=["NCT00000001"],
+        decided_at="2026-08-05T01:00:00Z", repo_root=ROOT,
+    )
+    assert epoch["transaction_to"] is None
+    assert decision["admitted_nct_ids"] == ["NCT00000001"]
+    assert validate_cohort_admission_decision(
+        decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+    ) == decision
+    assert (epoch, run, cohort) == before
+
+
+# Review regression: accepted fractional precision must survive the new bound.
+@pytest.mark.parametrize("closure", ["withdrawn", "superseded"])
+@pytest.mark.parametrize("entrypoint", ["builder", "bound_validator"])
+@pytest.mark.parametrize("closed_at,decided_at,allowed", [
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789000Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789001Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T05:30:00.123456788+05:30", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-03T19:00:00.123456789-05:00", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-03T23:59:59.999999999999Z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:01.000000000001Z", False),
+    ("2026-08-04T00:00:00.120000000Z", "2026-08-04T00:00:00.12Z", False),
+    ("2026-08-04T05:30:00.123456789+05:30", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00Z", "2026-08-04T00:00:00.000000000000Z", False),
+    # Lowercase closure timestamps retain the half-open expiry boundary.
+    # Lowercase public decision times remain invalid under knowledge_time.
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456789000Z", False),
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456789001Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456788z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789000z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789001z", False),
+    ("2026-08-04t00:00:00.120000000z", "2026-08-04T00:00:00.12Z", False),
+    ("2026-08-04T05:30:00.123456789+05:30", "2026-08-04t00:00:00.123456789z", False),
+    ("2026-08-04t00:00:00.123456789z", "2026-08-03T19:00:00.123456789-05:00", False),
+    ("2026-08-04T00:00:00Z", "2026-08-04t00:00:00.000000000000z", False),
+])
+def test_admission_closure_preserves_declared_fraction(
+    closure: str, entrypoint: str, closed_at: str, decided_at: str, allowed: bool,
+) -> None:
+    run = _run()
+    epoch = _closed_admission_epoch(run, closure)
+    epoch["transaction_to"] = closed_at
+    if closure == "withdrawn":
+        epoch["lifecycle"]["withdrawn_at"] = closed_at
+    epoch = validate_attested_coverage_epoch(_rehash_epoch(epoch), runs=[run])
+    cohort = _cohort()
+    decision = build_cohort_admission_decision(
+        epoch=epoch, runs=[run], cohort=cohort, candidates=["NCT00000001"],
+        decided_at="2026-08-03T01:00:00Z", repo_root=ROOT,
+    )
+    decision["decided_at"] = decided_at
+    decision["transaction_from"] = decided_at
+    _rehash_decision(decision)
+    before = copy.deepcopy((epoch, run, cohort, decision))
+    def invoke() -> dict:
+        if entrypoint == "builder":
+            return build_cohort_admission_decision(
+                epoch=epoch, runs=[run], cohort=cohort,
+                candidates=["NCT00000001"], decided_at=decided_at, repo_root=ROOT,
+            )
+        return validate_cohort_admission_decision(
+            decision, cohort=cohort, epoch=epoch, repo_root=ROOT,
+        )
+
+    if decided_at.endswith("z"):
+        # The private closure comparator accepts schema-valid lowercase z, but
+        # public admission times still obey the existing knowledge_time rule.
+        with pytest.raises(ContractValidationError) as standalone:
+            validate_cohort_admission_decision(decision, repo_root=ROOT)
+        assert "cohort_admission.knowledge_time" in _codes(standalone)
+        with pytest.raises(ContractValidationError) as bound:
+            invoke()
+        assert "cohort_admission.knowledge_time" in _codes(bound)
+    else:
+        # An unbound check may not invent the epoch's closing boundary.
+        assert validate_cohort_admission_decision(decision, repo_root=ROOT) == decision
+        if allowed:
+            assert invoke()["admitted_nct_ids"] == ["NCT00000001"]
+        else:
+            with pytest.raises(ContractValidationError) as caught:
+                invoke()
+            assert "cohort_admission.coverage_inactive" in _codes(caught)
+    assert (epoch, run, cohort, decision) == before
+
+
+@pytest.mark.parametrize("closed_at,decided_at,before_closure", [
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456788Z", True),
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456789000Z", False),
+    ("2026-08-04T00:00:00.123456789z", "2026-08-04T00:00:00.123456789001Z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456788z", True),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789000z", False),
+    ("2026-08-04T00:00:00.123456789Z", "2026-08-04T00:00:00.123456789001z", False),
+    ("2026-08-04t00:00:00.120000000z", "2026-08-04T00:00:00.12Z", False),
+    ("2026-08-04T05:30:00.123456789+05:30", "2026-08-04t00:00:00.123456789z", False),
+    ("2026-08-04t00:00:00.123456789z", "2026-08-03T19:00:00.123456789-05:00", False),
+    ("2026-08-04T00:00:00Z", "2026-08-04t00:00:00.000000000000z", False),
+])
+def test_private_closure_key_preserves_lowercase_fraction_order(
+    closed_at: str, decided_at: str, before_closure: bool,
+) -> None:
+    closed_key = coverage_module._closure_time_key(closed_at)
+    decided_key = coverage_module._closure_time_key(decided_at)
+    assert closed_key is not None and decided_key is not None
+    assert (decided_key < closed_key) is before_closure
+    canonical_closed = closed_at[:-1] + "Z" if closed_at.endswith("z") else closed_at
+    canonical_decided = decided_at[:-1] + "Z" if decided_at.endswith("z") else decided_at
+    assert closed_key == coverage_module._closure_time_key(canonical_closed)
+    assert decided_key == coverage_module._closure_time_key(canonical_decided)
