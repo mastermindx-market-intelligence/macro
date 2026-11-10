@@ -373,3 +373,93 @@ Macro #10923 is armed and open at `8abe28febaf0` with only the non-binding pilot
 has not merged is not yet read. Macro #10924 is open at `f1337bdd8738` and still carries
 `merge-blocked`. The point-in-time membership census has not returned. Terminal #1414's deploy is
 not observed.
+
+## 11. Status at 11:45Z (Chairman's delegation, decisions, lane 1 fourth pass)
+
+### 11.1 The delegation
+
+Four open items went to the Chairman: what to do with #10929 and the CI registration fence, who
+provisions the cursor secret, the production saved-investigation function that matches no merged
+migration, and which model carries lane 1. He answered in this thread on 2026-11-10: "you decide,
+we may need to just override it?" on the first, that he did not know what the second and third
+were, "moves to GLM if GLM is able to do this task" on the fourth, and "Many decisions, u can make
+for me". He also said the "Implement CI Lightning" session had traced failing PR checks to stale
+checkouts and was fixing that.
+
+The decisions below are the COO's, taken under that delegation. They are scoped to this programme.
+
+### 11.2 Decisions
+
+| # | Item | Decision | Reason |
+|---|---|---|---|
+| 1 | CI registration fence | Each programme PR carries the registration of the files it adds, in `.github/ci/legacy-jobs.yml` and `tests/test_ci_pack.py`. This supersedes the 08:05Z "stay fenced" note. | The 227 `contract-delta` findings on #10929 are introduced by the PR ("227 introduced, 0 inherited"). They are real registration debt, not a stale-checkout effect. The CI Lightning lead declined to deliver them and stated that ceiling re-bases are carried by the breaching PR. |
+| 2 | #10929 release | The hold stays until the third review returns ready and `contract-delta` passes. The COO then releases it, as the hold's own release condition allows ("Sol (or the delegated COO)"), lifts the labels, marks it ready and arms `merge-on-green`. The controller merges. | Release on the merits only. No self-merge. |
+| 3 | Cursor secret (`SECTOR_GENERATION_CURSOR_SECRET`) | Not provisioned by this programme. Not needed to merge or serve: without it the route works and labels every reference `process_lifetime_only`. It is needed before a saved investigation can reopen its original after a server restart. | A production secret is a real boundary. A one-line request goes to the Chairman or ops when #10929 is about to be served. |
+| 4 | Production `apply_investigation_revision_v2` body | No action here. Any future apply re-reads the installed body first. | Lane 6's migration 0053 does not replace that function. The mismatch belongs to Terminal #804 and #1312, where lane 6 already reported it. No APPLY in this programme. |
+| 5 | Lane 1 model | The Sonnet thread is retired. New lane 1 work goes to fresh GLM 5.3 workers with a written handoff. | Chairman's instruction. A fresh worker avoids the cross-family history fault seen on lane 7. The Opus review is the test of whether GLM is good enough. |
+| 6 | Lane 6's request for an open-by-identity path | Denied. | The amendment says "add no arbitrary generation/path/domain reads". A stored signed `context_ref` is the only way to name a retained capture. |
+| 7 | Sector Follow producer (SI15) | A later wave in a Macro lane, extending the existing B21 producer. Not started. | No Sector material-change producer exists. The gate `INVESTIGATION_V3_WRITES_OPEN` is false, so a saved preference claims no notification (SP17 holds). |
+
+Limits on decision 1, as sent to the carriers: only findings the check lists as introduced by the
+PR; no allowlist, exemption or skip entry; no assertion removed or loosened; ceilings re-based to
+the measured value with the recorded comment; #10839 untouched and its refused command not
+replayed; a hook or tool refusal ends the step and is reported, with no retry by another route.
+
+The standing constraint "fenced CI-registration files untouched" is changed by decision 1 and by
+nothing else. No APPLY, no second 0049, the Prophet Paper holds and no self-merge stand unchanged.
+
+### 11.3 What was done
+
+- The ruling is on #10929 (issuecomment-6766308701).
+- Two GLM 5.3 carriers started at 11:40Z, one for #10929 at `595fe6b75af2` and one for #10924 at
+  `f1337bdd8738`. Each owns only the registration files. Returns go to
+  `/tmp/si_plan/returns/lane1_ci_registration.md` and `lane8_ci_registration.md`. Neither has
+  returned. START, not DELIVERED.
+- #10923: the merge had been stopped by lane 2's own comment "HOLD — merge custody: program COO",
+  which the controller reads as a hold. Released by the named custodian with a `HOLD-RELEASED`
+  comment (issuecomment-6765621595). Still armed at `8abe28febaf0`. Merge not yet observed.
+
+### 11.4 Lane 1, fourth pass
+
+Head `595fe6b75af2cd36ab447d4987e3c410abe4cca0`; review range `9c5db069856d..595fe6b75af2`.
+
+- R2-B1 fixed: the `empty_price_tape` reason is deleted. A row lost after the owner's observation
+  is `unaccounted_by_owner` and `complete` is false. Real-bytes test: 1,020 configured, 1,014
+  served, 5 accounted, 1 unaccounted.
+- R2-B2 fixed: refused baskets stay in the denominator under the new closed reason
+  `group_refused_by_owner_observation`. A missing or malformed refusal list makes
+  `configured_current` and `complete` null. Real-bytes test with housing refused: 1,020
+  configured, 997 served, 23 accounted, 0 unaccounted.
+- Notes N1, N2, N3, N4, N5, N7 and N8 fixed. N6 (the carried lane 7 blocks also sit in the static
+  estate) is unchanged and is a tier decision outside this lane.
+- `etf_flows` is now real: the committed producer `collectors.sponsors.sector_flow_periods()`
+  gives five windows (1, 3, 5, 10 and 21 trading days) for 11 sector funds in USD millions.
+- Correction lineage (SP18) stays `unavailable`. The publisher emits no duplicate on a
+  same-context refresh (tested) but records no predecessor.
+- Author's suites: 601 passed, 3 skipped. Sample sha256 `dbb09959…49d80`.
+- Not tested: a cursor chain across a qualification change; the real
+  `build_sector_central.main()` end to end.
+
+These are the author's claims. A third independent review (Opus, narrow) is running and has not
+returned. No consumer relies on `complete` until it does.
+
+### 11.5 Other lanes
+
+- Lane 6, second pass: Terminal #1425 at `fbc0925d98a9`. SP15 run on the PostgreSQL 17 harness
+  (real engine). The reopen seam `terminal/lib/sectorInvestigationReopen.ts` is built and tested
+  over captured bytes with a fixture transport. Follow census: production `alert_outbox` has 0
+  rows and no Sector producer exists.
+- Lane 5: partial. #10931 untouched at `3290bfe75f96`. The issuer-economics block is drafted,
+  uncommitted, on a new stacked branch. All evidence is fixture.
+- Lane 3: opened Terminal #1429 for the v1.1 consumer. Sent at 11:40Z: the wire changes above,
+  the `etf_flows` pass-through, the reopen mount with `openByIdentity` unset, and the Follow state.
+- Lane 7: told the real `etf_flows` shape and asked to overwrite its 9 November return.
+- Lane 4: return still dated 9 November. One steer sent at 11:42Z for lane 3's five reason-code
+  tuples and a current return.
+- Lane 8: idle. #10924's registration is with the GLM carrier.
+- Point-in-time membership census: not returned.
+
+### 11.6 Rung reached
+
+Nothing of v1.1 is merged or served. The integrated-proof count stays 0 of 44 rows. Terminal
+#1414's deploy is not observed.
