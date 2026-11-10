@@ -1,0 +1,493 @@
+{
+  "schema": "sector.integration_verification.v1",
+  "version": "1.1",
+  "scope": "Planning, editable design, source publication and prepared existing-team handoff; not implementation/scientific/production proof",
+  "source_pins": {
+    "mastermind": "fe42651763a8c71e71dece27a2d5b7dd02aa913d",
+    "macro_initial": "8d83001de127a635c1ae1d19da9796a9311741dd",
+    "terminal_initial": "3e2e9fa249d688d1c9d72a9f10bd21d8b0fdec97",
+    "documentation_branch_base": "7298eeff33715dd8c09b3aaf9f1cad16b4614aad",
+    "prophet_v51": "1f645a751ea22d7ad5fe512165017873d8b65382",
+    "consolidated_before_verification": "69589d554f2696b93e1635427f06efa4cfb4ce68"
+  },
+  "fixture_validation": {
+    "status": "PASS",
+    "check_count": 24,
+    "checks": [
+      {
+        "check": "v1.0 masterplan body preservation",
+        "status": "PASS",
+        "detail": {
+          "retained_chars": 88771,
+          "sha256": "4398b253773851485b184b9fe6aa446b46feb46efc80b9d6330dd80cb1d5589f"
+        }
+      },
+      {
+        "check": "v1.0 final packet preservation",
+        "status": "PASS",
+        "detail": {
+          "retained_chars": 114254,
+          "sha256": "e9f2a3a002ec12cb55b885e4782dca717ef83fe5444d3aeb33d9bb481e57af09"
+        }
+      },
+      {
+        "check": "SI identifiers",
+        "status": "PASS",
+        "detail": [
+          "SI01",
+          "SI02",
+          "SI03",
+          "SI04",
+          "SI05",
+          "SI06",
+          "SI07",
+          "SI08",
+          "SI09",
+          "SI10",
+          "SI11",
+          "SI12",
+          "SI13",
+          "SI14",
+          "SI15",
+          "SI16",
+          "SI17",
+          "SI18",
+          "SI19",
+          "SI20"
+        ]
+      },
+      {
+        "check": "SP identifiers",
+        "status": "PASS",
+        "detail": [
+          "SP01",
+          "SP02",
+          "SP03",
+          "SP04",
+          "SP05",
+          "SP06",
+          "SP07",
+          "SP08",
+          "SP09",
+          "SP10",
+          "SP11",
+          "SP12",
+          "SP13",
+          "SP14",
+          "SP15",
+          "SP16",
+          "SP17",
+          "SP18",
+          "SP19",
+          "SP20",
+          "SP21",
+          "SP22",
+          "SP23",
+          "SP24"
+        ]
+      },
+      {
+        "check": "observed return differences",
+        "status": "PASS",
+        "detail": [
+          4.4,
+          4.6,
+          9
+        ]
+      },
+      {
+        "check": "relative wealth separately calculated",
+        "status": "PASS",
+        "detail": [
+          4.263565891472868,
+          4.275092936802974,
+          8.720930232558139
+        ]
+      },
+      {
+        "check": "coverage partition",
+        "status": "PASS",
+        "detail": [
+          52,
+          5,
+          3,
+          60
+        ]
+      },
+      {
+        "check": "industry breadth partitions",
+        "status": "PASS",
+        "detail": {
+          "current": 70,
+          "prior": 46.666666666666664
+        }
+      },
+      {
+        "check": "industry weighted return",
+        "status": "PASS",
+        "detail": 7.6
+      },
+      {
+        "check": "all-issuer-excluded example",
+        "status": "PASS",
+        "detail": {
+          "peers": 7.3,
+          "excluded_weight_pct": 6.122448979591836,
+          "breadth_pct": 69.49152542372882
+        }
+      },
+      {
+        "check": "reporting partitions",
+        "status": "PASS",
+        "detail": {
+          "improved_pct": 59.375
+        }
+      },
+      {
+        "check": "excluded-reporting partitions",
+        "status": "PASS",
+        "detail": {
+          "improved_pct": 58.064516129032256
+        }
+      },
+      {
+        "check": "issuer alias concentration",
+        "status": "PASS",
+        "detail": {
+          "raw": 15,
+          "peer": -5,
+          "excluded_weight_pct": 80
+        }
+      },
+      {
+        "check": "independent emergence",
+        "status": "PASS",
+        "detail": -1.5263157894736843
+      },
+      {
+        "check": "falling relative leader",
+        "status": "PASS",
+        "detail": {
+          "gap_pp": 2,
+          "wealth_pct": 2.0833333333333335
+        }
+      },
+      {
+        "check": "regional information cutoff",
+        "status": "PASS",
+        "detail": "event time does not override first availability"
+      },
+      {
+        "check": "fixed historical anchors",
+        "status": "PASS",
+        "detail": [
+          118,
+          127,
+          136
+        ]
+      },
+      {
+        "check": "Brinson-Fachler cash and equity reconciliation",
+        "status": "PASS",
+        "detail": {
+          "benchmark": 8,
+          "gross": 6.5,
+          "net": 6.1,
+          "parts_pp": [
+            0.6,
+            -2.5,
+            0.5,
+            -0.1,
+            -0.4
+          ],
+          "gap_pp": -1.9
+        }
+      },
+      {
+        "check": "shared signed attribution scale",
+        "status": "PASS",
+        "detail": {
+          "px": [
+            72,
+            300,
+            60,
+            12,
+            48
+          ],
+          "cash_to_selection": 5
+        }
+      },
+      {
+        "check": "starting capital weights",
+        "status": "PASS",
+        "detail": {
+          "invested_pct": 68.75,
+          "cash_pct": 31.25
+        }
+      },
+      {
+        "check": "actual editable extraction",
+        "status": "PASS",
+        "detail": {
+          "boards": 11,
+          "code_range": "R6-01..R6-11"
+        }
+      },
+      {
+        "check": "Paper writes reconciled",
+        "status": "PASS",
+        "detail": {
+          "operations": 112,
+          "new_unknown_effects": 0
+        }
+      },
+      {
+        "check": "owned finish",
+        "status": "PASS",
+        "detail": [
+          "QNB-0",
+          "QRX-0",
+          "QWH-0",
+          "R0W-0",
+          "R5B-0",
+          "R8Z-0",
+          "RA8-0",
+          "RCM-0",
+          "RDH-0",
+          "RGP-0",
+          "RGW-0",
+          "RN3-0"
+        ]
+      },
+      {
+        "check": "Prophet held targets untouched",
+        "status": "PASS",
+        "detail": "No writes or finish on either original held target"
+      }
+    ],
+    "jsx": [
+      {
+        "code": "R6-01",
+        "root": "QNB-0",
+        "jsx_sha256": "b5ce41f58c7acd8f90e006ea84c9c212d473cf25096a15f7c7e5e6cfd8241a73",
+        "jsx_chars": 32717
+      },
+      {
+        "code": "R6-02",
+        "root": "QRX-0",
+        "jsx_sha256": "77cb97a57a794728b3cc286463d632e05b5485bb34e6caf0b38a38185cab7b1f",
+        "jsx_chars": 34678
+      },
+      {
+        "code": "R6-03",
+        "root": "QWH-0",
+        "jsx_sha256": "0b22739baa8be85144a99f5cb0d4b14b5c7dce3c59041b91a607e5c3acdb52e6",
+        "jsx_chars": 31152
+      },
+      {
+        "code": "R6-04",
+        "root": "R0W-0",
+        "jsx_sha256": "0bc00ea0a8f8d1ac2b85517c638a46d05285329829b30a3929b8082e064ea41a",
+        "jsx_chars": 28512
+      },
+      {
+        "code": "R6-05",
+        "root": "R5B-0",
+        "jsx_sha256": "82c060c4b5cd35b9e7df6713dab62eeb4d073918d3ff31f0a31fdaf301525dd4",
+        "jsx_chars": 26104
+      },
+      {
+        "code": "R6-06",
+        "root": "R8Z-0",
+        "jsx_sha256": "bfa52c40451032527475af5ab473464569e0ac454c1a0fd2506879ca151a16cb",
+        "jsx_chars": 10100
+      },
+      {
+        "code": "R6-07",
+        "root": "RA8-0",
+        "jsx_sha256": "fefabb12a4c058ec59fc6679b8a5b0aeefdd8b7405b0a7133dc3308e1c3f1420",
+        "jsx_chars": 9241
+      },
+      {
+        "code": "R6-08",
+        "root": "RCM-0",
+        "jsx_sha256": "a3975c8f76df7c5ef5850ee61e46fbd8206720682a921063de3701c39c2167b4",
+        "jsx_chars": 7239
+      },
+      {
+        "code": "R6-09",
+        "root": "RDH-0",
+        "jsx_sha256": "17595d72e9ef854378c07aa164a1889151ba98561b0c770e0fd324ba6974a016",
+        "jsx_chars": 22419
+      },
+      {
+        "code": "R6-10",
+        "root": "RGP-0",
+        "jsx_sha256": "d46e81e6ac8e68b992be5009a45d8fd35b5e485e16cfded8bc83b85dcac852c4",
+        "jsx_chars": 27083
+      },
+      {
+        "code": "R6-11",
+        "root": "RGW-0",
+        "jsx_sha256": "b7205e956f7eb676d80ffcf545c1de6c3adaa8bc0fdec206565ea6cd6375e18b",
+        "jsx_chars": 26984
+      }
+    ],
+    "local_artifact_sha256": {
+      "amendment.md": "352dd828031ab43b216d5402a8c33f0b38cacae8cbddbe59a9682256608ba948",
+      "new_plan.md": "29a797a23862c5e8988398e6aaf8a887685b8becce3dfb813e76531f3b2d82bf",
+      "new_packet.md": "d5a814037edd5bf3d73e32c45b5eea272dde7e2df84997291c037f8806e17ac0",
+      "paper_build_spec.md": "afbbaa2d765cf8a5faffc0529a34ec660e6f7f34f5f5f88390e57cc949fc7508",
+      "paper_jsx.json": "0c3f89ca85234db0a1ba1fce6deb2bad63d68e5c41ffa1eb0f912103d9ea9ccc"
+    },
+    "scientific_or_product_execution": false,
+    "source_copies_exact_length": true
+  },
+  "source_readbacks": [
+    {
+      "path": "research/sector_completion_20261021/PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md",
+      "commit": "0ccc0fbe31e9a08eab999ce514e9b9d8f8be9788",
+      "blob": "c6bceec00c0fa63352ca30e739858328a0af1f71",
+      "exact_equality": true
+    },
+    {
+      "path": "research/sector_completion_20261021/R6_PAPER_BUILD_SPEC_2026-11-09.md",
+      "commit": "38bae28d191ae10b9bc438aa3df3ff196f08a98f",
+      "blob": "d0203004a7959571cba332764857273a79f057bb",
+      "exact_equality": true
+    },
+    {
+      "path": "research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md",
+      "commit": "7181606ab1a957100303a45389e688f74cea33f5",
+      "blob": "c67e3f6103ea1ce0e5ba6aa80fd13423cf2f2133",
+      "exact_equality": true
+    },
+    {
+      "path": "research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md",
+      "commit": "7181606ab1a957100303a45389e688f74cea33f5",
+      "blob": "28d8d053369b859c9cdbaf43f6cafad81fc3f39b",
+      "exact_equality": true
+    },
+    {
+      "path": "research/sector_completion_20261021/R6_PAPER_JSX_2026-11-09.json",
+      "commit": "69589d554f2696b93e1635427f06efa4cfb4ce68",
+      "blob": "e62eb38f794d9c107a4a276b78bcaefa6d17392e",
+      "exact_equality": true,
+      "characters": 268755
+    },
+    {
+      "path": "research/sector_completion_20261021/R6_PAPER_MANIFEST_2026-11-09.json",
+      "commit": "69589d554f2696b93e1635427f06efa4cfb4ce68",
+      "blob": "c03808350437240ca6779a321695436787a5a305",
+      "exact_equality": true,
+      "characters": 140729
+    },
+    {
+      "path": "research/sector_completion_20261021/FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md",
+      "commit": "69589d554f2696b93e1635427f06efa4cfb4ce68",
+      "blob": "03f912a1d6656842f591077ef8fbe9643eb5a64c",
+      "exact_equality": true,
+      "characters": 17125
+    },
+    {
+      "path": "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md",
+      "commit": "69589d554f2696b93e1635427f06efa4cfb4ce68",
+      "blob": "7ad449229678056a1adaf372865f1a9fc189c289",
+      "exact_equality": true,
+      "characters": 13543
+    },
+    {
+      "path": "agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-10.md",
+      "commit": "69589d554f2696b93e1635427f06efa4cfb4ce68",
+      "blob": "1efb0b9d3f6d6f1c4fee844f62429dabfb594ca5",
+      "exact_equality": true,
+      "characters": 13525
+    }
+  ],
+  "continuity_validation": {
+    "command": "python3 scripts/agentos.py validate --paths agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-10.md agentos/decisions/DEC-SOL-HOLD-IS-A-MERGE-BARRIER.md",
+    "validator_source_commit": "7298eeff33715dd8c09b3aaf9f1cad16b4614aad",
+    "validator_blob": "94fe2e7290797119cbb7f9890580e950012616d7",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 18,
+    "warning_scope": "Isolated local validation snapshot omits repository artifact paths; phantom-artifact/phantom-owns-path warnings, not claims that those paths are missing from GitHub. Full repository hosted gate remains separate.",
+    "preserved": {
+      "workstream_owner": "meta-ceo-fable",
+      "workstream_status": "active",
+      "historical_wave_objects": 8,
+      "byte_identical_wave_block": true,
+      "previous_dated_handoff": "UNCHANGED"
+    }
+  },
+  "paper": {
+    "file": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "new_roots": 11,
+    "readme_child": "RN3-0",
+    "new_pages": 3,
+    "applied_operations": 112,
+    "new_unknown_effects": 0,
+    "principal_visual_review": "all eleven roots and README child",
+    "jsx_actual_exports": 11,
+    "finished_owned_nodes": 12,
+    "independent_visual_reasoning": "five initial product screenshots; selection/prior breadth/return label/threshold findings fixed and principal re-reviewed",
+    "responsive_design_coverage": "pairwise 1440 dark/light EN, 390 light EN/dark ZH, 320 dark EN; full matrix remains browser proof",
+    "held_prophet_effects": "SX05 attribution and older mobile Plans preserved; no write/replay/re-home/finish"
+  },
+  "architecture_review": {
+    "verdict": "ACCEPT",
+    "source_commit": "0ccc0fbe31e9a08eab999ce514e9b9d8f8be9788",
+    "scope": "0049/v3 composition, bounded generation context, SI/SP mapping, current forecast withdrawal and non-circular evidence sharing",
+    "limits": [
+      "not installed database proof",
+      "not runtime liveness",
+      "not production/scientific or SI/SP execution",
+      "not formal GitHub APPROVED"
+    ]
+  },
+  "carrier_refresh": [
+    {
+      "repo": "macro",
+      "pr": 10929,
+      "head": "64cba740029532ab9dea8f9d1017292dfd25605e",
+      "state": "open",
+      "draft": true
+    },
+    {
+      "repo": "mastermind-terminal",
+      "pr": 1410,
+      "head": "e3169b213d4f6554c25a88dcd11f649724eab107",
+      "state": "open"
+    },
+    {
+      "repo": "mastermind-terminal",
+      "pr": 1414,
+      "head": "df92e9a1712b5384087ac4c8ca3f6f9a79490a65",
+      "state": "open"
+    },
+    {
+      "repo": "macro",
+      "pr": 10924,
+      "head": "4cdebe92d9dde7f612609667c61b6a87d0271d1a",
+      "state": "open"
+    }
+  ],
+  "handoff": {
+    "existing_t3_thread": "2f136a11-91f9-4bca-bf10-8a1d8b7f4e5d",
+    "source_path": "research/sector_completion_20261021/FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md",
+    "direct_session_target_projection": "EMPTY; no send target invented",
+    "designated_transport": "existing public #dotsandgroksecretary C0CBC6AEAQZ; top-level mention U0BTCHX8HMF",
+    "transport_receipt": "To be recorded in containing PR conversation after actual send/readback",
+    "fable_adoption": "NOT_OBSERVED",
+    "new_team_dispatch": false
+  },
+  "unexecuted": [
+    "SI01-SI20 / SP01-SP24 consumer and scientific obligations",
+    "application integration tests/build",
+    "installed migration and retained source read",
+    "full browser/locale/theme/accessibility matrix",
+    "live Strategy Evaluation and economic validation",
+    "ordinary production update/correction/rollback",
+    "source merge/protected-source adoption"
+  ]
+}
