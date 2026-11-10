@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-10",
-  "generated_utc": "2026-11-10T11:15:26.794483+00:00",
-  "n_tickers": 2871,
+  "generated_utc": "2026-11-10T16:28:55.391649+00:00",
+  "n_tickers": 2873,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -698,19 +698,17 @@
       "ticker": "GOOGL",
       "channels": [
         "affiliation",
-        "analyst_upgrade_cluster",
         "app_demand",
         "lobbying"
       ],
-      "weighted_score": 1.55,
+      "weighted_score": 1.2,
       "lobbying_usd": 4420000.0,
       "app_rating": 4.7,
       "app_reviews": 27219410,
       "hf_downloads_30d": 126542629.0,
-      "analyst_bull_ratio": 0.8,
       "github_stars": 201401,
       "congress_position_usd": 576392000.0,
-      "convergence_score": 4,
+      "convergence_score": 3,
       "trump_linked": false,
       "affiliated": true
     },
@@ -2801,6 +2799,17 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "FTNT": {
+      "ticker": "FTNT",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.82,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "CDNS": {
       "ticker": "CDNS",
       "channels": [
@@ -2838,6 +2847,18 @@
       "trump_linked": false,
       "affiliated": false
     },
+    "ELV": {
+      "ticker": "ELV",
+      "channels": [
+        "analyst_upgrade_cluster",
+        "special_situation"
+      ],
+      "weighted_score": 0.55,
+      "analyst_bull_ratio": 0.95,
+      "convergence_score": 2,
+      "trump_linked": false,
+      "affiliated": false
+    },
     "CB": {
       "ticker": "CB",
       "channels": [
@@ -2847,6 +2868,30 @@
       "analyst_bull_ratio": 0.91,
       "congress_position_usd": 105294000.0,
       "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EBAY": {
+      "ticker": "EBAY",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.88,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "EOG": {
+      "ticker": "EOG",
+      "channels": [
+        "analyst_upgrade_cluster",
+        "news_sentiment"
+      ],
+      "weighted_score": 0.55,
+      "analyst_bull_ratio": 0.87,
+      "news_bull_ratio": 0.84,
+      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2875,19 +2920,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "EOG": {
-      "ticker": "EOG",
-      "channels": [
-        "analyst_upgrade_cluster",
-        "news_sentiment"
-      ],
-      "weighted_score": 0.55,
-      "analyst_bull_ratio": 0.86,
-      "news_bull_ratio": 0.84,
-      "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "FANG": {
       "ticker": "FANG",
       "channels": [
@@ -2912,37 +2944,13 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "ELV": {
-      "ticker": "ELV",
-      "channels": [
-        "analyst_upgrade_cluster",
-        "special_situation"
-      ],
-      "weighted_score": 0.55,
-      "analyst_bull_ratio": 0.94,
-      "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "DOCU": {
-      "ticker": "DOCU",
+    "GNRC": {
+      "ticker": "GNRC",
       "channels": [
         "analyst_upgrade_cluster"
       ],
       "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.89,
-      "congress_position_usd": 61639500.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "BE": {
-      "ticker": "BE",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 0.86,
+      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -4785,6 +4793,15 @@
       "weighted_score": 0.2,
       "congress_position_usd": 61694000.0,
       "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "DOCU": {
+      "ticker": "DOCU",
+      "channels": [],
+      "weighted_score": 0,
+      "congress_position_usd": 61639500.0,
+      "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
     },
