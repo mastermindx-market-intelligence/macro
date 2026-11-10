@@ -1221,7 +1221,11 @@
     {
       "check": "no_obsolete_recovery_frontier:06_FUTURE_ROUNDS.md",
       "result": "PASS",
-      "details": null
+      "details": {
+        "freshly_checked_in_resume": true,
+        "prior_result_at_7eb841ee": "FALSE_POSITIVE_FOR_ACTIVE_ROUND6_RECOMMENDATION",
+        "corrected": "Active continuation now targets 19 packet A; no repeat Round 6/Paper/census."
+      }
     },
     {
       "check": "no_obsolete_recovery_frontier:23_CURRENT_CONTINUATION.md",
@@ -1233,7 +1237,8 @@
     "Validates document graph, preservation, source identities and design capture integrity only.",
     "Nine new native screenshots were visually inspected in this planning session; 49 recovered JSX exports retain earlier design provenance.",
     "No application code, browser implementation, production migration, entitlement change, scientific result or user study was tested by this validation.",
-    "Actual runtime grants, current source/holds, installed consumers and all relevant original acceptance remain execution requirements."
+    "Actual runtime grants, current source/holds, installed consumers and all relevant original acceptance remain execution requirements.",
+    "Resume amendment rechecks only its changed documentation and metadata. Unchanged C1 graph/archive/design/scientific distinctions retain prior exact-commit evidence; no historical test or capture was represented as rerun."
   ],
   "file_inventory": [
     {
@@ -1274,9 +1279,9 @@
     },
     {
       "path": "06_FUTURE_ROUNDS.md",
-      "bytes": 28417,
-      "sha256": "d3ef83ca1ce8cc149265c490949e8307557598263834a83c5f95972a50d6a762",
-      "git_blob_sha": "3305ab71793337953683475019460f21898359fd"
+      "bytes": 28710,
+      "sha256": "e5709cf0a26a46a158cfc35e1a166e16c18996ba7c243b735f26860ea38ff201",
+      "git_blob_sha": "57d32f52cb7e46d86314e4f082e96f23c3b90692"
     },
     {
       "path": "07_REQUIREMENT_TRACEABILITY.csv",
@@ -1352,9 +1357,9 @@
     },
     {
       "path": "19_FABLE_T3_EXECUTION_COMMISSION.md",
-      "bytes": 27215,
-      "sha256": "dde11de3be8ae3a8df157f33c303278c85b8352f060606a0babbc2887c587693",
-      "git_blob_sha": "78b6418e381e3d99afa55beededc4cd3615f7d24"
+      "bytes": 28547,
+      "sha256": "6fbda7537d8c0cd65cf7b39ee15c97d4c2910b2fd160fb4d40515a084623c9f0",
+      "git_blob_sha": "c1149aceb3c887176338d82d6288a87a0dd91379"
     },
     {
       "path": "20_COHORT_AND_CONDITIONAL_BINDINGS.json",
@@ -1376,9 +1381,9 @@
     },
     {
       "path": "23_CURRENT_CONTINUATION.md",
-      "bytes": 6202,
-      "sha256": "1d00381ddaf4982643162bceb897ad2189e36b495848d34ad747b9816103a888",
-      "git_blob_sha": "d3895d076810b463f56b3f29dcd4ad589dc2858b"
+      "bytes": 9061,
+      "sha256": "16f6d4002535fa8546e061f59d202c731fb51ecf9c7e82596b4be33a5b712fdf",
+      "git_blob_sha": "14bdb19e82af1a0453966302f17a85ea763a8bbf"
     },
     {
       "path": "appendices/ACCEPTANCE_REVIEW.md",
@@ -1540,8 +1545,32 @@
       "Export condition retains original task chain, minimum closure 41.",
       "Cutover binds one pathname owner per registry generation.",
       "Candidate.4 header uses 56px at exactly 860px and below.",
-      "Inactive unqualified legacyTicker preserves market-wide view without a per-name request; qualify only on deliberate Ticker activation."
+      "Inactive unqualified legacyTicker preserves market-wide view without a per-name request; qualify only on deliberate Ticker activation.",
+      "Resume repair: 06's remaining active Round 6 recommendation now targets 19 packet A; prior no-obsolete-frontier check missed that sentence.",
+      "19 explicitly consumes standing named-provider commercial approval without reopening licensing; actual access/PIT/export/scientific/release requirements remain."
     ],
+    "remaining_material_planning_blockers": []
+  },
+  "resume_amendment": {
+    "date": "2026-11-10",
+    "baseline_package_commit": "7eb841eec503e5383bafd6b4b252da8133f46217",
+    "governing_pin": "b85f7273597c6d129a0073abac3b74efc8503f62",
+    "scope": "Resume-direction correction, explicit standing commercial-rights precedence, and cumulative continuation; documentation only.",
+    "publication_carrier": "macro PR10898 / claude/options-suite-production-plan-20261109",
+    "direct_work_reason": "PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD: bounded current-scope and source-law correction; no separate implementation worker needed.",
+    "reasoning_review": "Bounded native architecture-acceptance return consumed; child terminal; no formal GitHub approval.",
+    "fresh_checks": {
+      "stale_resume_instruction_absent": true,
+      "current_packet_A_instruction_present": true,
+      "standing_named_source_approval_present": true,
+      "technical_and_original_gates_preserved": true,
+      "changed_document_links_valid": true,
+      "planning_and_product_completion_separate": true,
+      "original_binding_and_design_files_not_modified": true,
+      "inherited_rule_task_board_counts_retained": true
+    },
+    "no_application_paper_or_dispatch_effects": true,
+    "original_archives_and_rules_unchanged": true,
     "remaining_material_planning_blockers": []
   }
 }

@@ -57,3 +57,19 @@ Actual required proof remains: source→publication→API→entitled consumer, c
 
 The two native reasoning assignments used in this planning session completed and their returns were integrated. They were not implementation labor or future runtime owners. No handback to the exhausted prior chat is necessary.
 
+## Resume verification and narrow amendment · 10 November 2026
+
+The Chairman resumed the timed-out masterplan section. Recovery confirmed that the completed planning package survived at `7eb841eec503e5383bafd6b4b252da8133f46217` on this same branch/PR; the branch had not advanced and its PR conversation contained no later takeover/effect record. The current assigned session owns this bounded documentation correction. GitHub-native authentication was `mastermidx4`, with observed write permission; publication uses the original branch and an exact expected-head lease. No prior planning mutation required replay.
+
+The current governing source pin for this resume is Mastermind `b85f7273597c6d129a0073abac3b74efc8503f62`, compatible skillpack 1.0.1/bootstrap 1. Earlier source cuts above remain historical inspected evidence, not refreshed runtime facts.
+
+Two handoff corrections are made in this commit:
+
+- 06's active recommendation still told a successor to start Round 6 despite the completed C1 header. It now directs the future admitted implementation principal to 19 packet A and expressly preserves all 58 boards. The earlier 24 check named `no_obsolete_recovery_frontier:06_FUTURE_ROUNDS.md` had missed this sentence; its prior PASS is not evidence that the stale instruction was absent.
+- 19 now consumes the standing named-provider commercial-rights attestation as existing approval. Technical access, source/history/PIT qualification, account/export isolation, original dependencies, scientific rules and actual holds remain separately binding. No new commercial approval is requested.
+
+A bounded reasoning review of 16/17/18/19/22 found the substantive architecture, capability dispositions, source/interaction contracts, execution order and migration/rollback plan sufficient for the assigned planning handoff. This was reasoning support, not formal GitHub approval. The review child returned and received explicit STOP; no background worker or watcher remains from this resume.
+
+The author self-check covers the exact changed text, valid package links and JSON, updated affected-file hashes, retained 39-rule/104-task structure and the unchanged design/archive paths. The current 24 record distinguishes those fresh amendment checks from inherited C1 proof. No new application, Paper, migration, worker-dispatch or release acceptance is claimed. No implementation was dispatched, no page was retired, and the original holds remain.
+
+**Bounded planning mission: complete. Full product programme: incomplete.** The completed plan and editable-design evidence are the deliverable of this session. The next execution action remains 19 packet A under the Chairman's actual implementation commission/admission, then the first ready semantic or route/access packet. No additional census or automatic sequence of planning conversations is required.
