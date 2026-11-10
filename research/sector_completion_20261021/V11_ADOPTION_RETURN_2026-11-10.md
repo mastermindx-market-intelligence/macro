@@ -872,3 +872,56 @@ The main defects, in plain terms:
 ### 18.4 Rung reached
 
 Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
+
+## 19. Status at 14:08Z — fourth review of lane 1 ready; next lane 1 increment started
+
+### 19.1 Verdict on Macro #10954
+
+READY WITH FOLLOW-UP at head `0d43d893cc70` (`/tmp/si_plan/reviews/lane1_population_review_r4.md`).
+The reviewer reproduced both of the author's numbers on real bytes: with one basket missing
+from both lists, the base answers `complete: true`; the head answers 18 unaccounted and
+`complete: false`. R3-S1 and notes N1, N3, N4, N5 and N6 are closed. The carried roster never
+appears in a response, is 7,405 bytes against a 60 KiB block cap, and adds no file read.
+Serving guards are unchanged.
+
+Six new notes, none a blocker or should-fix, none reachable on today's data:
+
+| Note | In plain terms |
+|---|---|
+| R4-N1 | One malformed roster entry could drop all ten carried blocks. It fails closed. |
+| R4-N2 | The roster date cut matches the owner's rule only for plain dates and the `ticker` key. |
+| R4-N3 | The read side would serve an undated industry block as available. |
+| R4-N4 | The roster's date is not compared with the capture's session date. |
+| R4-N5 | The wire document overstates what the committed file reads before a nightly run. |
+| R4-N6 | A NaN in a refusal raises the wrong error type. Route behaviour not probed. |
+
+Not checked by the reviewer: CI, the live host, a nightly builder run.
+
+### 19.2 Decisions
+
+1. **#10954 is review-complete and stays at its reviewed head.** It is armed after #10929
+   merges and #10954 retargets to main. The six notes do not go onto it; adding commits would
+   move a reviewed head.
+2. **The six notes go into the next lane 1 increment as its first part.** That increment
+   edits the same two files, and its own review covers them.
+3. **Next lane 1 increment started at 14:08Z** (glm-5.3, child of this thread, own worktree,
+   new PR stacked on #10954): the R4 notes, then the point-in-time facts ruled in 13.2
+   decision 3. Per member, a first-known date from the earliest stored snapshot, labelled a
+   lower bound. Per group, the stored snapshot stamp and `members_sha`. One taxonomy stamp
+   saying labels are current-basis and the historical revision is unavailable. Source is the
+   existing `engine/basket_membership_pit.py` only. Nothing is read at request time, the
+   block cap is not raised, and nothing new enters the legacy response or `typed_blocks`.
+   Return file: `/tmp/si_plan/returns/lane1_pit_fields.md`.
+4. **Lane 3 was sent the #10954 wire changes at 14:08Z**: `refused_by_owner` in
+   `group_index`, nullable `configured_current` and `complete`, the `unaccounted_by_owner`
+   reason, bounded refusal strings. Lane 3 had said its decoder refuses the new field until
+   told. It was also told lane 4 and lane 7 heads will move.
+
+### 19.3 Housekeeping
+
+The reviewer left one of its own setup worktrees detached at `0d43d893cc70` with no file
+changes. It is a finished child's worktree and is left to the storage helper's reclaim.
+
+### 19.4 Rung reached
+
+Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
