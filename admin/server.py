@@ -2051,6 +2051,11 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
             "directly. For remote access use admin.mastermind-x.com or an SSH tunnel.")
     settings.startup_check()
     httpd = ThreadingHTTPServer((host, port), Handler)
+    # Keep the two heaviest analytics panels' pages resident so a cold open cannot outrun
+    # the panel budget (see analytics_first_party.start_warmer). Deployed only: a local
+    # run should not add load to the shared store.
+    if settings.deployed():
+        analytics_first_party.start_warmer()
     mode = "DEPLOYED (auth required)" if settings.deployed() else (
         "local + auth" if settings.auth_enabled() else "local (open)")
     print(f"  Macro Admin → http://{host}:{port}   [{mode}]")
