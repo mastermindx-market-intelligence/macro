@@ -1,3 +1,13 @@
+# Active v5.2 direction — Chairman-authorized SX05 repair
+
+The current outer directive is: “Resume the next useful pass, and the SX05 thing is auhtorized to be changed as needed.”
+
+This explicitly authorizes the current session to change SX05 as needed. New repair will use freshly inspected current contents, the original Mastermind Paper carrier, bounded edits and exact readback. The prior timed-out call remains historical UNKNOWN_RESPONSE; no cancellation or terminal receipt is claimed. The prospective SX05 hold below is superseded by this current directive. The separate original mobile Plans hold is unchanged. Source head before this pass: `6507addea609152f5dfc68b92b1dfbb093204073`.
+
+DONE_WHEN for this pass: SX05 and the four disclosure destinations are materially designed and visually reviewed; Paper build guidance, source masterplan, commission and PDF reflect actual completion; evidence and original historical uncertainty are retained with canonical readback. Production implementation and Fable dispatch remain outside this pass.
+
+## Retained v5.1 receipt (historical)
+
 # Prophet production design — v5.1 completion pass
 
 FINALIZATION_CLASSIFICATION: EFFECT_UNKNOWN  
