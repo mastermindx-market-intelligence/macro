@@ -360,6 +360,22 @@ class SnapshotDelivery(unittest.TestCase):
         self.assertIsNone(d["summary"]["output_tokens"])
         self.assertEqual(panel(path=self.path,now=self.snapshot["generated_at"]+20)["state"],"stale")
 
+    def test_stale_snapshot_preserves_its_measured_window(self):
+        rid=self.store.begin({})
+        self.store.input(rid,{"model":"model-a"})
+        self.store.event(rid,{"content":[{"type":"text","text":"fixture"}],
+                              "usage":{"input_tokens":2,"output_tokens":7}})
+        self.store.finish(rid)
+        snapshot=self.store.snapshot(state_app())
+        self.send(snapshot)
+        fresh=panel(5,path=self.path,now=snapshot["generated_at"]+1)
+        stale=panel(5,path=self.path,now=snapshot["generated_at"]+1800)
+        self.assertEqual(stale["state"],"stale")
+        self.assertEqual(stale["recent"],fresh["recent"])
+        self.assertEqual(stale["series"],fresh["series"])
+        self.assertEqual(stale["summary"],fresh["summary"])
+        self.assertEqual(stale["summary"]["output_tokens"],7)
+
     def test_symlink_is_rejected(self):
         target=Path(self.temp.name)/"target";target.write_text("untouched")
         self.path.symlink_to(target)
@@ -369,3 +385,4 @@ class SnapshotDelivery(unittest.TestCase):
 
 
 if __name__=="__main__":unittest.main()
+

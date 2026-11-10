@@ -53,7 +53,8 @@ def panel(minutes=15, *, path=None, now=None):
     age = max(0, age)
     data.update(ok=True, state="live" if age <= 15 else "stale", age_s=round(age, 1),
                 window_minutes=minutes, received_at=decoded.get("received_at"))
-    start = now - minutes * 60
+    # A stale snapshot preserves its last measured window; freshness uses wall time.
+    start = data["generated_at"] - minutes * 60
     recent = [r for r in data["recent"] if (r["ended_at"] or 0) >= start]
     data["recent"] = recent
     data["series"] = [b for b in data["series"] if b["at"] + 60 > start]
@@ -87,3 +88,4 @@ def panel(minutes=15, *, path=None, now=None):
         "recent_count": len(recent),
     }
     return data
+

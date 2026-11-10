@@ -21,3 +21,6 @@
 html[data-theme=light] .cf-shell{--cf-bg:#f4f7fa;--cf-panel:#fff;--cf-panel-2:#f0f4f8;--cf-line:#dbe3eb;--cf-text:#172c40;--cf-muted:#667c91;--cf-teal:#138770;--cf-blue:#2868bb;--cf-violet:#7955c8;--cf-amber:#a16b18;--cf-red:#bb4a56;color-scheme:light}html[data-theme=light] .cf-node>rect{fill:#f7fafc;stroke:#c6d4e2}html[data-theme=light] .cf-node:hover>rect,html[data-theme=light] .cf-node.selected>rect{fill:#e6f5f0;stroke:#3e9d88}html[data-theme=light] .cf-map-panel{background:#fcfdff}html[data-theme=light] .cf-edge path{stroke:#c3d2e2}html[data-theme=light] .cf-edge.observed path{stroke:#37a28e}html[data-theme=light] .cf-node-title{fill:#20364b}html[data-theme=light] .cf-node-sub{fill:#6d8298}html[data-theme=light] .cf-inspector{background:#fbfdfff5;box-shadow:0 24px 80px #1234}html[data-theme=light] .cf-inspector-bar{background:#f7fafbee}html[data-theme=light] .cf-shell th{background:#f5f8fa}html[data-theme=light] .cf-shell tbody tr:hover{background:#f0f7f7}html[data-theme=light] .cf-ghost{fill:#f4f8fc;stroke:#bbcbdc}
 
 .cf-shell[data-hidden=true] .cf-edge circle{display:none}.cf-shell[data-hidden=true] .cf-node-pulse{animation:none}
+
+
+.cf-scope-note{font-size:10px;color:var(--cf-muted);margin:-15px 0 19px!important}.cf-trend-chart rect.cf-usage-unknown{fill:none;stroke:var(--cf-muted);stroke-width:1;stroke-dasharray:2 2;opacity:.8}
