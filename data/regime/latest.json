@@ -26,7 +26,7 @@
     "flag_ratio_inflection": false,
     "flag_inflation_basket": false,
     "flag_confidence_decay": true,
-    "flag_gex": true,
+    "flag_gex": false,
     "flag_rotation_persistence": true
   },
   "confirming": [
@@ -179,21 +179,21 @@
       "rank": 13
     },
     {
-      "ticker": "GC=F",
-      "rs": 5.51634814357651,
-      "mom_20d_pct": 2.43,
-      "mom_60d_pct": -3.73,
-      "above_200d_trend": false,
-      "pctile_252d": 18.7,
-      "rank": 14
-    },
-    {
       "ticker": "IWM",
       "rs": 0.3753338145176403,
       "mom_20d_pct": 5.09,
       "mom_60d_pct": -4.48,
       "above_200d_trend": false,
       "pctile_252d": 36.9,
+      "rank": 14
+    },
+    {
+      "ticker": "GC=F",
+      "rs": 5.466393849598522,
+      "mom_20d_pct": 1.5,
+      "mom_60d_pct": -4.6,
+      "above_200d_trend": false,
+      "pctile_252d": 15.1,
       "rank": 15
     },
     {
@@ -247,7 +247,7 @@
       "XLF": 7,
       "XLI": 16,
       "XLB": 5,
-      "IWM": 15
+      "IWM": 14
     },
     "agreement": 0.6,
     "disagreement_flag": false,
@@ -276,10 +276,16 @@
     },
     "copper_gold": {
       "level": 0.0015,
-      "chg_20d_pct": -3.73
+      "chg_20d_pct": -3.78
     }
   },
   "alerts": [
+    {
+      "rule": "gex_flip_cross",
+      "severity": "warn",
+      "message": "GEX: net GEX changed sign (net +11bn, spot vs flip -1.0%)",
+      "message_zh": "GEX\uff1a\u51c0 GEX \u8f6c\u53d8\u65b9\u5411\uff08\u51c0 +11bn\uff0c\u73b0\u4ef7\u76f8\u5bf9\u7ffb\u8f6c\u70b9 -1.0%\uff09"
+    },
     {
       "rule": "sector_holdings_accumulation",
       "severity": "warn",
@@ -552,7 +558,7 @@
       "skew_pctile": 0.7986111111111112,
       "stock_bond_corr": 0.0023836225855914327,
       "stock_bond_regime": "mixed",
-      "roro": -0.8465243873086872,
+      "roro": -0.844437733701377,
       "roro_state": "risk-off",
       "vol_target_scalar": 0.5584963341745455,
       "news_sentiment": 0.03577227517962456,
@@ -8875,8 +8881,8 @@
   "cross_asset": {
     "asof": "2026-11-09",
     "verdict": "diversified",
-    "summary": "DIVERSIFIED \u00b7 0.34 5y-pctile",
-    "headline": "DIVERSIFIED \u2014 the 6 markets are moving largely independently (correlation in the bottom 34% of its 5y range); separate views are genuinely separate bets.",
+    "summary": "DIVERSIFIED \u00b7 0.31 5y-pctile",
+    "headline": "DIVERSIFIED \u2014 the 6 markets are moving largely independently (correlation in the bottom 31% of its 5y range); separate views are genuinely separate bets.",
     "window_d": 63,
     "markets": [
       "US",
@@ -8886,16 +8892,16 @@
       "Commodities",
       "Dollar"
     ],
-    "absorption_ratio": 0.348,
-    "absorption_pctile_5y": 0.34,
+    "absorption_ratio": 0.345,
+    "absorption_pctile_5y": 0.31,
     "absorption_floor": 0.167,
-    "mean_abs_corr": 0.225,
+    "mean_abs_corr": 0.222,
     "pc1_loadings": {
       "US": 0.5,
-      "Crypto": 0.53,
-      "China": 0.34,
-      "HK": 0.18,
-      "Commodities": 0.46,
+      "Crypto": 0.54,
+      "China": 0.35,
+      "HK": 0.19,
+      "Commodities": 0.45,
       "Dollar": 0.31
     },
     "dominant_cluster": [
@@ -8910,8 +8916,8 @@
         "Crypto": 0.5,
         "China": 0.13,
         "HK": -0.19,
-        "Commodities": 0.45,
-        "Dollar": 0.19
+        "Commodities": 0.43,
+        "Dollar": 0.2
       },
       "Crypto": {
         "US": 0.5,
@@ -8938,19 +8944,19 @@
         "Dollar": 0.03
       },
       "Commodities": {
-        "US": 0.45,
+        "US": 0.43,
         "Crypto": 0.27,
         "China": 0.23,
         "HK": 0.1,
         "Commodities": 1.0,
-        "Dollar": 0.11
+        "Dollar": 0.09
       },
       "Dollar": {
-        "US": 0.19,
+        "US": 0.2,
         "Crypto": 0.34,
         "China": 0.03,
         "HK": 0.03,
-        "Commodities": 0.11,
+        "Commodities": 0.09,
         "Dollar": 1.0
       }
     },
@@ -9058,20 +9064,20 @@
       0.36,
       0.34,
       0.34,
-      0.348
+      0.345
     ],
     "absorption_spark_asof": "2026-11-13",
     "evidence": "Absorption ratio = PC1 variance share (Kritzman-Page 2010): high/rising absorption marks a fragile one-factor regime that has historically led drawdowns. Daily closes across US/Asia/24-7 crypto carry a timezone lead/lag \u2014 a coarse regime gauge, not a hedge ratio."
   },
   "market_gamma": {
     "regime": "short",
-    "spot_vs_flip_pct": -3.1,
-    "net_gex_bn": -95.0,
-    "flip": 7617,
-    "gamma_flip": 7617,
-    "flip_strike": 7617,
-    "spot": 7377,
-    "asof": "2026-11-06",
+    "spot_vs_flip_pct": -1.0,
+    "net_gex_bn": 11.0,
+    "flip": 7628,
+    "gamma_flip": 7628,
+    "flip_strike": 7628,
+    "spot": 7550,
+    "asof": "2026-11-09",
     "regime_basis": "engine_direct_sign",
     "context": {
       "source": "index_gex_history/SPY",
@@ -9103,15 +9109,15 @@
     "dir_sign": -1,
     "confidence": "high",
     "confidence_zh": "\u9ad8",
-    "strength": 1.53,
-    "dominance_ratio": 1.99,
+    "strength": 1.5,
+    "dominance_ratio": 1.82,
     "agreement": 1.0,
-    "runner_up": "ai_semis",
-    "runner_up_label": "AI / semis",
-    "runner_up_label_zh": "AI/\u534a\u5bfc\u4f53",
-    "headline": "Oil shock \u2014 oil collapsing \u2014 energy lags, breakevens down. oil (WTI) -1.5\u03c3, energy sector RS -2.1\u03c3, 10y breakeven -1.5\u03c3.",
+    "runner_up": "fed_repricing",
+    "runner_up_label": "Fed repricing",
+    "runner_up_label_zh": "\u7f8e\u8054\u50a8\u91cd\u5b9a\u4ef7",
+    "headline": "Oil shock \u2014 oil collapsing \u2014 energy lags, breakevens down. oil (WTI) -1.4\u03c3, energy sector RS -2.1\u03c3, 10y breakeven -1.5\u03c3.",
     "evidence": [
-      "oil (WTI) -1.5\u03c3",
+      "oil (WTI) -1.4\u03c3",
       "energy sector RS -2.1\u03c3",
       "10y breakeven -1.5\u03c3"
     ],
@@ -9119,7 +9125,7 @@
       {
         "en": "oil (WTI)",
         "zh": "\u539f\u6cb9(WTI)",
-        "z": -1.5
+        "z": -1.4
       },
       {
         "en": "energy sector RS",
@@ -9134,16 +9140,25 @@
     ],
     "invalidation": "Fades if oil (WTI) reverses and the rest of the inflation fingerprint stops confirming.",
     "invalidation_zh": "\u82e5\u539f\u6cb9(WTI)\u53cd\u8f6c\u3001\u4e14\u901a\u80c0\u6307\u7eb9\u5176\u4f59\u817f\u505c\u6b62\u786e\u8ba4\uff0c\u6b64\u5224\u8bfb\u5c06\u6d88\u9000\u3002",
-    "absorption_pctile": 0.4,
+    "absorption_pctile": 0.38,
     "scores": [
       {
         "driver": "oil_shock",
         "label": "Oil shock",
         "label_zh": "\u6cb9\u4ef7\u51b2\u51fb",
         "family": "inflation",
-        "projection": -1.53,
-        "strength": 1.53,
+        "projection": -1.5,
+        "strength": 1.5,
         "direction": "oil collapsing \u2014 energy lags, breakevens down"
+      },
+      {
+        "driver": "fed_repricing",
+        "label": "Fed repricing",
+        "label_zh": "\u7f8e\u8054\u50a8\u91cd\u5b9a\u4ef7",
+        "family": "rates",
+        "projection": -0.83,
+        "strength": 0.83,
+        "direction": "dovish repricing \u2014 cuts priced in, front-end down"
       },
       {
         "driver": "ai_semis",
@@ -9155,31 +9170,22 @@
         "direction": "AI/semis unwind \u2014 tech-led de-rating"
       },
       {
-        "driver": "china_stimulus",
-        "label": "China stimulus",
-        "label_zh": "\u4e2d\u56fd\u523a\u6fc0",
-        "family": "china",
-        "projection": 0.39,
-        "strength": 0.39,
-        "direction": "China risk-on \u2014 A-shares/HK & copper lead up"
-      },
-      {
         "driver": "crypto_liquidity",
         "label": "Crypto liquidity",
         "label_zh": "\u52a0\u5bc6\u6d41\u52a8\u6027",
         "family": "crypto",
-        "projection": -0.38,
-        "strength": 0.38,
+        "projection": -0.36,
+        "strength": 0.36,
         "direction": "crypto liquidity draining \u2014 BTC/ETH lead down"
       },
       {
-        "driver": "real_rate_shock",
-        "label": "Real-rate shock",
-        "label_zh": "\u5b9e\u9645\u5229\u7387\u51b2\u51fb",
-        "family": "rates",
-        "projection": -0.31,
-        "strength": 0.31,
-        "direction": "real yields falling \u2014 easing, gold & duration bid"
+        "driver": "china_stimulus",
+        "label": "China stimulus",
+        "label_zh": "\u4e2d\u56fd\u523a\u6fc0",
+        "family": "china",
+        "projection": 0.33,
+        "strength": 0.33,
+        "direction": "China risk-on \u2014 A-shares/HK & copper lead up"
       },
       {
         "driver": "liquidity_impulse",
@@ -9189,6 +9195,15 @@
         "projection": -0.3,
         "strength": 0.3,
         "direction": "net liquidity draining \u2014 risk headwind"
+      },
+      {
+        "driver": "real_rate_shock",
+        "label": "Real-rate shock",
+        "label_zh": "\u5b9e\u9645\u5229\u7387\u51b2\u51fb",
+        "family": "rates",
+        "projection": -0.25,
+        "strength": 0.25,
+        "direction": "real yields falling \u2014 easing, gold & duration bid"
       },
       {
         "driver": "credit_stress",
@@ -9204,18 +9219,9 @@
         "label": "USD shock",
         "label_zh": "\u7f8e\u5143\u51b2\u51fb",
         "family": "fx",
-        "projection": 0.05,
-        "strength": 0.05,
+        "projection": 0.11,
+        "strength": 0.11,
         "direction": "dollar surging \u2014 squeeze, commodities & EM pressured"
-      },
-      {
-        "driver": "fed_repricing",
-        "label": "Fed repricing",
-        "label_zh": "\u7f8e\u8054\u50a8\u91cd\u5b9a\u4ef7",
-        "family": "rates",
-        "projection": -0.01,
-        "strength": 0.01,
-        "direction": "dovish repricing \u2014 cuts priced in, front-end down"
       }
     ],
     "note": "Deterministic cross-asset attribution \u2014 a regime READ, not a signal; never gates a score.",
@@ -9235,7 +9241,7 @@
   },
   "portfolio": {
     "asof": "2026-11-09",
-    "headline": "Equal-weighting all 6 market views puts 36% of portfolio RISK in one market (vs 17% if truly balanced); ERC rebalances to ~equal risk (heaviest weight: Dollar 0.468). Diversification ratio 1.69.",
+    "headline": "Equal-weighting all 6 market views puts 36% of portfolio RISK in one market (vs 17% if truly balanced); ERC rebalances to ~equal risk (heaviest weight: Dollar 0.467). Diversification ratio 1.69.",
     "risk_budget": {
       "window_d": 126,
       "markets": [
@@ -9261,17 +9267,17 @@
           "Crypto": 0.362,
           "China": 0.143,
           "HK": 0.105,
-          "Commodities": 0.233,
+          "Commodities": 0.231,
           "Dollar": 0.028
         },
-        "port_vol_ann": 0.122,
+        "port_vol_ann": 0.121,
         "diversification_ratio": 1.61,
         "max_risk_contrib": 0.362
       },
       "inverse_vol": {
         "scheme": "inverse_vol",
         "weights": {
-          "US": 0.153,
+          "US": 0.154,
           "Crypto": 0.061,
           "China": 0.113,
           "HK": 0.124,
@@ -9279,16 +9285,16 @@
           "Dollar": 0.46
         },
         "risk_contrib": {
-          "US": 0.193,
+          "US": 0.192,
           "Crypto": 0.172,
           "China": 0.155,
           "HK": 0.128,
-          "Commodities": 0.192,
+          "Commodities": 0.191,
           "Dollar": 0.161
         },
         "port_vol_ann": 0.079,
-        "diversification_ratio": 1.67,
-        "max_risk_contrib": 0.193
+        "diversification_ratio": 1.68,
+        "max_risk_contrib": 0.192
       },
       "erc": {
         "scheme": "erc",
@@ -9298,7 +9304,7 @@
           "China": 0.116,
           "HK": 0.142,
           "Commodities": 0.079,
-          "Dollar": 0.468
+          "Dollar": 0.467
         },
         "risk_contrib": {
           "US": 0.167,
@@ -9455,7 +9461,7 @@
   },
   "fed_path": {
     "asof": "2026-11-09",
-    "built": "2026-11-09T23:23:13.492207+00:00",
+    "built": "2026-11-10T11:11:52.459464+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -12235,7 +12241,7 @@
         "zh": "\u6d41\u52a8\u6027/\u907f\u9669\u51b2\u51fb\u2014\u2014\u4fe1\u7528\u5229\u5dee\u8d70\u9614\uff0b\u6ce2\u52a8\u7387\u98d9\u5347\uff0b\u540d\u4e49\u503a\u5238\u83b7\u4e70\u76d8\u3002\u6b63\u5728\u53d1\u751f\u7684\u6e05\u7b97\uff0c\u540c\u6b65\u6307\u6807\uff0c\u5e76\u975e\u9886\u5148\u9884\u8b66\uff08VIX\u5df2\u53cd\u6620\uff09\u3002"
       },
       "costate": {
-        "oil_chg_20d_pct": -8.0,
+        "oil_chg_20d_pct": -7.4,
         "real10y_chg_20d_bp": -31.0,
         "nom10y_chg_20d_bp": -40.0,
         "hy_oas_z": 1.6,
@@ -14622,7 +14628,7 @@
     "defer_to": null,
     "drivers": {
       "one_factor": false,
-      "absorption_pctile": 0.34,
+      "absorption_pctile": 0.31,
       "macro_shock": false,
       "primary": "oil_shock",
       "primary_label": "Oil shock",
@@ -17972,7 +17978,7 @@
         "name": "Space & Satellites",
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 0d (2026-11-09); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 8d (2026-11-18); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -18041,13 +18047,13 @@
         "language_accel": 0.75,
         "policy_reg_chip": {
           "theme": "space_satellite",
-          "summary": "comment close in 0d (2026-11-09); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
-          "days_to_comment_close": 0,
+          "summary": "comment close in 8d (2026-11-18); 14 proposed rule(s) last 60d; 7 final rule(s) last 60d",
+          "days_to_comment_close": 8,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 14,
           "rule_finalization_60d": 7,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "Improving the Effectiveness of the Robocall Mitigation Database; Call Authentication Trust Anchor; Advanced Methods To T",
+          "next_comment_close_date": "2026-11-18",
+          "next_comment_close_title": "Information Collection Being Submitted for Review and Approval to Office of Management and Budget",
           "evidence_class": "dated-structured"
         },
         "score": 54.4,
@@ -18099,7 +18105,7 @@
         "name": "Nuclear & SMR Power",
         "stage": "PRECIPICE (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 4d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+        "rationale": "language signal TIGHT, revisions undetermined \u2014 text-only; awaiting numeric physical confirmation \u00b7 customer capex accelerating (+69% YoY) confirms demand \u00b7 policy pipeline: comment close in 0d (2026-11-10); rule effective in 3d; 5 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -18168,13 +18174,13 @@
         "language_accel": 2.0,
         "policy_reg_chip": {
           "theme": "nuclear_power",
-          "summary": "comment close in 0d (2026-11-09); rule effective in 4d; 6 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "summary": "comment close in 0d (2026-11-10); rule effective in 3d; 5 proposed rule(s) last 60d; 5 final rule(s) last 60d",
           "days_to_comment_close": 0,
-          "days_to_rule_effective": 4,
-          "prorule_inflow_60d": 6,
+          "days_to_rule_effective": 3,
+          "prorule_inflow_60d": 5,
           "rule_finalization_60d": 5,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "Regulatory Enhancements for Reactor Licensing, Decommissioning, and Operational Oversight",
+          "next_comment_close_date": "2026-11-10",
+          "next_comment_close_title": "Information Collection: IAEA Design Information Questionnaire Forms",
           "evidence_class": "dated-structured"
         },
         "score": 50.0,
@@ -18228,7 +18234,7 @@
         "name": "Medical Devices",
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT, revisions undetermined \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 28d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT, revisions undetermined \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 0d (2026-11-10); rule effective in 27d; 1 proposed rule(s) last 60d; 19 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -18297,13 +18303,13 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "medical_devices",
-          "summary": "comment close in 0d (2026-11-09); rule effective in 28d; 1 proposed rule(s) last 60d; 27 final rule(s) last 60d",
+          "summary": "comment close in 0d (2026-11-10); rule effective in 27d; 1 proposed rule(s) last 60d; 19 final rule(s) last 60d",
           "days_to_comment_close": 0,
-          "days_to_rule_effective": 28,
+          "days_to_rule_effective": 27,
           "prorule_inflow_60d": 1,
-          "rule_finalization_60d": 27,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Human Cells, Tissues, and Cellular and T",
+          "rule_finalization_60d": 19,
+          "next_comment_close_date": "2026-11-10",
+          "next_comment_close_title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Medical Device Tracking",
           "evidence_class": "dated-structured"
         },
         "score": 48.8,
@@ -18355,7 +18361,7 @@
         "name": "Defense & Aerospace",
         "stage": "BROADENING (text)",
         "tier": "P",
-        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 alt-data confirms (pre-revision): 2 gov-award accel \u00b7 1 patent cluster \u00b7 policy pipeline: comment close in 14d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+        "rationale": "language signal TIGHT and revisions rising \u2014 text-only; awaiting numeric physical confirmation \u00b7 alt-data confirms (pre-revision): 2 gov-award accel \u00b7 1 patent cluster \u00b7 policy pipeline: comment close in 13d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "text-only thesis \u2014 awaiting numeric physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHT (text)",
@@ -18427,8 +18433,8 @@
         "language_accel": 1.5,
         "policy_reg_chip": {
           "theme": "defense_aerospace",
-          "summary": "comment close in 14d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
-          "days_to_comment_close": 14,
+          "summary": "comment close in 13d (2026-11-23); 5 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+          "days_to_comment_close": 13,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 5,
           "rule_finalization_60d": 4,
@@ -18487,7 +18493,7 @@
         "name": "Data Center Power & Cooling",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 21d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 20d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "TIGHTENING",
@@ -18556,8 +18562,8 @@
         "language_accel": -0.5,
         "policy_reg_chip": {
           "theme": "data_center_power",
-          "summary": "comment close in 21d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
-          "days_to_comment_close": 21,
+          "summary": "comment close in 20d (2026-11-30); 6 proposed rule(s) last 60d; 4 final rule(s) last 60d",
+          "days_to_comment_close": 20,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 6,
           "rule_finalization_60d": 4,
@@ -18616,7 +18622,7 @@
         "name": "Grid & Electrification",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 6d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "TIGHTENING",
@@ -18685,8 +18691,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "grid_electrification",
-          "summary": "comment close in 7d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 7,
+          "summary": "comment close in 6d (2026-11-16); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 6,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 1,
@@ -18745,7 +18751,7 @@
         "name": "Memory, HBM & Storage",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16); 2 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 6d (2026-11-16); 2 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -18816,8 +18822,8 @@
         "language_accel": 0.5,
         "policy_reg_chip": {
           "theme": "memory_storage",
-          "summary": "comment close in 7d (2026-11-16); 2 final rule(s) last 60d",
-          "days_to_comment_close": 7,
+          "summary": "comment close in 6d (2026-11-16); 2 final rule(s) last 60d",
+          "days_to_comment_close": 6,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 2,
@@ -18876,7 +18882,7 @@
         "name": "AI Semiconductors",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 7d (2026-11-16)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 6d (2026-11-16)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -18945,8 +18951,8 @@
         "language_accel": 0.17,
         "policy_reg_chip": {
           "theme": "ai_semiconductors",
-          "summary": "comment close in 7d (2026-11-16)",
-          "days_to_comment_close": 7,
+          "summary": "comment close in 6d (2026-11-16)",
+          "days_to_comment_close": 6,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -19005,7 +19011,7 @@
         "name": "Semiconductor Equipment (WFE)",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 32d (2026-12-11)",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 31d (2026-12-11)",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19074,8 +19080,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "semicap_equipment",
-          "summary": "comment close in 32d (2026-12-11)",
-          "days_to_comment_close": 32,
+          "summary": "comment close in 31d (2026-12-11)",
+          "days_to_comment_close": 31,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 0,
@@ -19134,7 +19140,7 @@
         "name": "Rare Earth & Critical Minerals",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); 3 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 2d (2026-11-12); 3 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19203,13 +19209,13 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "rare_earth_critical_min",
-          "summary": "comment close in 0d (2026-11-09); 3 final rule(s) last 60d",
-          "days_to_comment_close": 0,
+          "summary": "comment close in 2d (2026-11-12); 3 final rule(s) last 60d",
+          "days_to_comment_close": 2,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 3,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "National Petroleum Reserve in Alaska Production Site Development",
+          "next_comment_close_date": "2026-11-12",
+          "next_comment_close_title": "Agency Information Collection Activities; Submission to the Office of Management and Budget (OMB) for Review and Approva",
           "evidence_class": "dated-structured"
         },
         "score": 45.0,
@@ -19263,7 +19269,7 @@
         "name": "Copper, Steel & Electrification",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 3d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 2d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19332,8 +19338,8 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "copper_steel_electrify",
-          "summary": "comment close in 3d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 3,
+          "summary": "comment close in 2d (2026-11-12); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 2,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 1,
@@ -19509,7 +19515,7 @@
         "name": "GLP-1 / Obesity",
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 11d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+        "rationale": "fingerprint-only (annual member filings) TIGHT and revisions rising \u2014 awaiting real-time physical confirmation \u00b7 policy pipeline: comment close in 10d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "fingerprint-only thesis \u2014 awaiting real-time physical confirmation; no entry until FRED bottleneck leg fires",
         "bottleneck_band": "TIGHTENING (fingerprint)",
@@ -19573,8 +19579,8 @@
           "source": "fda_shortages",
           "theme": "glp1_obesity",
           "band": "SHORTAGE_ACTIVE",
-          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 0 d ago \u00b7 source generation 2026-11-06",
-          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e0\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
+          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 1 d ago \u00b7 source generation 2026-11-06",
+          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e1\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
           "tone": "warn",
           "rationale": "The FDA reports current shortages and formulation discontinuations.",
           "n_active": 9,
@@ -19584,9 +19590,9 @@
           "freshness": {
             "capture_qualified": true,
             "capture_finished_at": "2026-11-09T08:55:47.793982+00:00",
-            "capture_age_s": 52048.258843,
+            "capture_age_s": 94568.294157,
             "source_generation": "2026-11-06",
-            "source_generation_age_days": 3,
+            "source_generation_age_days": 4,
             "stale": null,
             "failed_refresh": null,
             "capture_incomplete": false
@@ -19620,8 +19626,8 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "glp1_obesity",
-          "summary": "comment close in 11d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
-          "days_to_comment_close": 11,
+          "summary": "comment close in 10d (2026-11-20); 1 proposed rule(s) last 60d; 1 final rule(s) last 60d",
+          "days_to_comment_close": 10,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 1,
           "rule_finalization_60d": 1,
@@ -19678,7 +19684,7 @@
         "name": "Diagnostics & Life-Science Tools",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 28d; 3 proposed rule(s) last 60d; 12 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 8d (2026-11-18); rule effective in 27d; 3 proposed rule(s) last 60d; 11 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19749,13 +19755,13 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "diagnostics_lifesci",
-          "summary": "comment close in 0d (2026-11-09); rule effective in 28d; 3 proposed rule(s) last 60d; 12 final rule(s) last 60d",
-          "days_to_comment_close": 0,
-          "days_to_rule_effective": 28,
+          "summary": "comment close in 8d (2026-11-18); rule effective in 27d; 3 proposed rule(s) last 60d; 11 final rule(s) last 60d",
+          "days_to_comment_close": 8,
+          "days_to_rule_effective": 27,
           "prorule_inflow_60d": 3,
-          "rule_finalization_60d": 12,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "Improving Patient Access to Deceased Donor Islet Cells and Cell Products; Request for Information",
+          "rule_finalization_60d": 11,
+          "next_comment_close_date": "2026-11-18",
+          "next_comment_close_title": "Potency Assessment of Active Immunotherapy Products; Draft Guidance for Industry; Availability",
           "evidence_class": "dated-structured"
         },
         "score": 40.6,
@@ -19807,7 +19813,7 @@
         "name": "Cybersecurity",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-09); rule effective in 747d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 13d (2026-11-23); rule effective in 746d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -19876,13 +19882,13 @@
         "language_accel": 2.0,
         "policy_reg_chip": {
           "theme": "cybersecurity",
-          "summary": "comment close in 0d (2026-11-09); rule effective in 747d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
-          "days_to_comment_close": 0,
-          "days_to_rule_effective": 747,
+          "summary": "comment close in 13d (2026-11-23); rule effective in 746d; 4 proposed rule(s) last 60d; 5 final rule(s) last 60d",
+          "days_to_comment_close": 13,
+          "days_to_rule_effective": 746,
           "prorule_inflow_60d": 4,
           "rule_finalization_60d": 5,
-          "next_comment_close_date": "2026-11-09",
-          "next_comment_close_title": "Agency Information Collection Activities: State, Local, Tribal and Private Sector (SLTPS) Clearance Request Form (Form 9",
+          "next_comment_close_date": "2026-11-23",
+          "next_comment_close_title": "Drawbridge Operation Regulation; Manitowoc River, Manitowoc, WI",
           "evidence_class": "dated-structured"
         },
         "score": 36.7,
@@ -19933,7 +19939,7 @@
         "name": "Solar",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 56d (2027-01-04); 1 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 55d (2027-01-04); 1 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "LOOSE",
@@ -20002,8 +20008,8 @@
         "language_accel": 0.0,
         "policy_reg_chip": {
           "theme": "solar",
-          "summary": "comment close in 56d (2027-01-04); 1 final rule(s) last 60d",
-          "days_to_comment_close": 56,
+          "summary": "comment close in 55d (2027-01-04); 1 final rule(s) last 60d",
+          "days_to_comment_close": 55,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 0,
           "rule_finalization_60d": 1,
@@ -20059,7 +20065,7 @@
         "name": "Agriculture & Fertilizer",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 1d (2026-11-10); rule effective in 57d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 0d (2026-11-10); rule effective in 56d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "LOOSE",
@@ -20128,9 +20134,9 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "ag_fertilizer",
-          "summary": "comment close in 1d (2026-11-10); rule effective in 57d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
-          "days_to_comment_close": 1,
-          "days_to_rule_effective": 57,
+          "summary": "comment close in 0d (2026-11-10); rule effective in 56d; 9 proposed rule(s) last 60d; 10 final rule(s) last 60d",
+          "days_to_comment_close": 0,
+          "days_to_rule_effective": 56,
           "prorule_inflow_60d": 9,
           "rule_finalization_60d": 10,
           "next_comment_close_date": "2026-11-10",
@@ -20185,7 +20191,7 @@
         "name": "Fintech & Payments",
         "stage": "WATCH",
         "tier": "P",
-        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 14d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
+        "rationale": "supply not tight; nothing actionable yet \u00b7 policy pipeline: comment close in 13d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
         "entry_ready": false,
         "entry_note": "not a thesis stage \u2014 no entry",
         "bottleneck_band": "NEUTRAL",
@@ -20254,8 +20260,8 @@
         "language_accel": 1.0,
         "policy_reg_chip": {
           "theme": "fintech_payments",
-          "summary": "comment close in 14d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
-          "days_to_comment_close": 14,
+          "summary": "comment close in 13d (2026-11-23); 6 proposed rule(s) last 60d; 9 final rule(s) last 60d",
+          "days_to_comment_close": 13,
           "days_to_rule_effective": null,
           "prorule_inflow_60d": 6,
           "rule_finalization_60d": 9,
@@ -20309,9 +20315,9 @@
     ],
     "dislocation": {
       "active": false,
-      "headline": "Buyable-washout regime: a stress dislocation with the Fed put intact (no recession trigger, 10y breakeven 2.32% < 2.5%). Historically these mean-revert with shallower median drawdown \u2014 confirm into stabilization, don't anticipate. The gate has known misses: it printed buyable early in the 2000-02 bear and twice in 2022 within 0.02pp of this cutoff.",
-      "verdict": "buyable_washout",
-      "state": "buyable_washout"
+      "headline": "No acute dislocation \u2014 markets are not in a stress washout.",
+      "verdict": "calm",
+      "state": "calm"
     },
     "demand_pool": {
       "bn": 378.7,
@@ -21921,15 +21927,370 @@
     "heat_threshold_note": "PROVISIONAL \u2014 chosen to be REACHABLE under the new denominator semantics so the board is not\u6c38-empty \u2014 NOT evidence-based; shadow calibration pending. Candidates [0.30, 0.40, 0.50] are wired in foresight_shadow.SHADOW_GRID and accrue heat-verdict rows in shadow_log.jsonl (type='heat'); grading not yet wired \u2014 labeled 'accruing' in the promotion report.",
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
-  "foresight_analyst": null,
+  "foresight_analyst": {
+    "regime_read": "The board shows the clearest early alignment in power infrastructure, where tightening physical conditions coincide with accelerating customer demand and raising guidance. Defense also shows a pre-revision scarcity pattern, but its bottleneck evidence remains text-only and therefore less durable.",
+    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u5171\u632f\u96c6\u4e2d\u5728\u7535\u529b\u57fa\u7840\u8bbe\u65bd\uff1a\u5b9e\u4f53\u7ea6\u675f\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u540c\u65f6\u51fa\u73b0\u3002\u56fd\u9632\u9886\u57df\u4e5f\u5448\u73b0\u4fee\u6b63\u524d\u7684\u7a00\u7f3a\u6027\u4fe1\u53f7\uff0c\u4f46\u74f6\u9888\u8bc1\u636e\u4ecd\u4ec5\u6765\u81ea\u6587\u672c\uff0c\u56e0\u6b64\u8010\u4e45\u6027\u8f83\u5f31\u3002",
+    "theses": [
+      {
+        "theme": "data_center_power",
+        "mechanism": "Accelerating customer demand is pressing against a tightening physical bottleneck, while management guidance is being raised rather than merely acknowledging demand; this suggests the constraint is reaching suppliers' operating outlooks [demand] [physical] [guidance].",
+        "non_obvious": "The difficult-to-see pattern is that analyst revisions are not yet fully broad even though the physical, customer-capex, and guidance legs already align, indicating operating evidence is moving ahead of broad Street recognition [physical] [demand] [guidance].",
+        "kill_criteria": [
+          "The bottleneck band loosens to NEUTRAL while demand remains unchanged [physical].",
+          "The demand band stops ACCELERATING [demand].",
+          "The guidance band turns NEUTRAL or shifts to cuts [guidance].",
+          "Revision breadth rolls over before physical tightening progresses [physical] [guidance]."
+        ],
+        "evidence": [
+          {
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "ungrounded": true
+          },
+          {
+            "text": "demand: demand band is ACCELERATING",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance band is RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth remains incomplete relative to the operating-leg alignment",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The board's rationale still characterizes supply as not tight, so TIGHTENING may represent an emerging constraint rather than established scarcity [physical].",
+        "confidence": "medium",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      },
+      {
+        "theme": "grid_electrification",
+        "mechanism": "Accelerating customer demand is meeting a tightening physical bottleneck, and management guidance is rising in the same direction, consistent with grid spending beginning to strain delivery capacity [demand] [physical] [guidance].",
+        "non_obvious": "The cross-surface signal is stronger than the theme's heat alone suggests: physical tightening and raised guidance coexist with relatively narrow revision breadth, implying company-level operating signals have not yet become a broad analyst consensus [physical] [guidance].",
+        "kill_criteria": [
+          "The bottleneck band returns to NEUTRAL [physical].",
+          "The demand band ceases to be ACCELERATING [demand].",
+          "The guidance band falls to NEUTRAL or turns to cuts [guidance].",
+          "Revision breadth rolls over without further physical tightening [physical] [guidance]."
+        ],
+        "evidence": [
+          {
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "ungrounded": true
+          },
+          {
+            "text": "demand: demand band is ACCELERATING",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance band is RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth is still narrow relative to the aligned operating legs",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The board explicitly says supply is not yet tight, so the current alignment may be an early watch signal rather than durable scarcity [physical].",
+        "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      },
+      {
+        "theme": "defense_aerospace",
+        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-based subsector scarcity, while revision breadth remains limited; together they suggest procurement and capacity signals may be forming before broad analyst recognition [altdata] [edgar_scarcity].",
+        "non_obvious": "The hidden pattern is the pairing of award acceleration with scarcity language and still-narrow revisions: demand-adjacent evidence and constrained-supply language agree even though management guidance remains neutral [altdata] [edgar_scarcity] [guidance].",
+        "kill_criteria": [
+          "Government-award acceleration disappears or reverses [altdata].",
+          "The filing-based scarcity signal falls to NEUTRAL [edgar_scarcity].",
+          "Numeric physical evidence fails to confirm the text-based bottleneck when available [edgar_scarcity] [physical].",
+          "Revision breadth broadens and then rolls over while guidance remains NEUTRAL [guidance]."
+        ],
+        "evidence": [
+          {
+            "text": "altdata: government-award acceleration and a patent cluster",
+            "ungrounded": true
+          },
+          {
+            "text": "edgar_scarcity: filing language indicates a TIGHT bottleneck",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance remains NEUTRAL",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth remains limited",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "There is no numeric physical confirmation, and neutral guidance means the apparent scarcity has not yet translated into management outlooks [physical] [guidance].",
+        "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      }
+    ],
+    "confidence": "medium",
+    "asof": "2026-11-09",
+    "n_theses": 3,
+    "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
+  },
   "thesis_monitor": {
     "asof": "2026-11-09",
-    "n_open": 9,
-    "n_broken": 4,
+    "n_open": 12,
+    "n_broken": 9,
     "n_weakening": 0,
-    "n_deterministic": 2,
+    "n_deterministic": 10,
     "n_llm": 9,
     "monitored": [
+      {
+        "theme": "ag_fertilizer",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "PRECIPICE (text)",
+        "opened": "2026-08-08",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "WEAKENING",
+          "BROKEN"
+        ],
+        "n_criteria": 2
+      },
+      {
+        "theme": "data_center_power",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-08-02",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "WEAKENING",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "INTACT",
+        "llm_heat_at_open": 0.487,
+        "llm_heat_now": 0.487,
+        "llm_opened_asof": "2026-11-09",
+        "llm_kill_criteria": [
+          "The physical bottleneck loosens from TIGHTENING to NEUTRAL.",
+          "Demand falls from ACCELERATING to NEUTRAL or weaker.",
+          "Guidance moves from RAISING to NEUTRAL or turns to cuts.",
+          "Revision breadth rolls over while the other convergence legs fail to strengthen."
+        ],
+        "llm_broken_reasons": []
+      },
+      {
+        "theme": "grid_electrification",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-11-02",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "INTACT",
+        "llm_heat_at_open": 0.223,
+        "llm_heat_now": 0.223,
+        "llm_opened_asof": "2026-11-09",
+        "llm_kill_criteria": [
+          "The bottleneck band returns to NEUTRAL [physical].",
+          "The demand band ceases to be ACCELERATING [demand].",
+          "The guidance band falls to NEUTRAL or turns to cuts [guidance].",
+          "Revision breadth rolls over without further physical tightening [physical] [guidance]."
+        ],
+        "llm_broken_reasons": []
+      },
+      {
+        "theme": "space_satellite",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-11-02",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "BROKEN",
+        "llm_heat_at_open": 0.284,
+        "llm_heat_now": 0.284,
+        "llm_opened_asof": "2026-11-06",
+        "llm_kill_criteria": [
+          "physical_confirmed never flips to true",
+          "revision_breadth continues negative without inflection",
+          "EDGAR scarcity disappears",
+          "policy pipeline (13 proposed rules) fails to convert to final rules"
+        ],
+        "llm_broken_reasons": [
+          "below_quorum"
+        ]
+      },
+      {
+        "theme": "rare_earth_critical_min",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "PRECIPICE (text)",
+        "opened": "2026-08-08",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "BROKEN",
+        "llm_heat_at_open": 0.287,
+        "llm_heat_now": 0.383,
+        "llm_opened_asof": "2026-09-23",
+        "llm_kill_criteria": [
+          "guidance_raisers fails to accumulate (no additional raisings in the next two quarters)",
+          "bottleneck_band stays NEUTRAL while the policy pipeline closes comments without effect",
+          "revision_breadth remains below 0.3 while guidance raisers stay at one"
+        ],
+        "llm_broken_reasons": [
+          "below_quorum"
+        ]
+      },
+      {
+        "theme": "copper_steel_electrify",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-07-25",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2
+      },
+      {
+        "theme": "ai_semiconductors",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-07-06",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "WEAKENING",
+          "BROKEN"
+        ],
+        "n_criteria": 2
+      },
+      {
+        "theme": "memory_storage",
+        "source": "deterministic",
+        "status": "BROKEN",
+        "stage_at_open": "BROADENING (text)",
+        "opened": "2026-09-04",
+        "kill_criteria": [
+          {
+            "kind": "text_accel_negative",
+            "detail": "language accel < 0 for 2 consecutive builds"
+          },
+          {
+            "kind": "stage_regressed_to_watch",
+            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
+          }
+        ],
+        "criterion_statuses": [
+          "INTACT",
+          "BROKEN"
+        ],
+        "n_criteria": 2,
+        "llm_mechanism": null,
+        "llm_status": "BROKEN",
+        "llm_heat_at_open": 0.676,
+        "llm_heat_now": 0.372,
+        "llm_opened_asof": "2026-11-05",
+        "llm_kill_criteria": [
+          "Alt-data award/patent cluster in MU reverts to no unusual activity",
+          "EDGAR scarcity cross-surface disappears (filings broaden)",
+          "Demand band rolls over from ACCELERATING to NEUTRAL or lower",
+          "Revision breadth peaks and rolls over before physical tightens"
+        ],
+        "llm_broken_reasons": [
+          "heat_drop"
+        ]
+      },
       {
         "theme": "medical_devices",
         "source": "llm",
@@ -21947,62 +22308,6 @@
         ],
         "broken_reasons": [
           "below_quorum"
-        ]
-      },
-      {
-        "theme": "space_satellite",
-        "source": "llm",
-        "status": "BROKEN",
-        "heat_at_open": 0.284,
-        "heat_now": 0.284,
-        "n_surfaces_now": 1,
-        "physical_now": false,
-        "opened_asof": "2026-11-06",
-        "kill_criteria": [
-          "physical_confirmed never flips to true",
-          "revision_breadth continues negative without inflection",
-          "EDGAR scarcity disappears",
-          "policy pipeline (13 proposed rules) fails to convert to final rules"
-        ],
-        "broken_reasons": [
-          "below_quorum"
-        ]
-      },
-      {
-        "theme": "rare_earth_critical_min",
-        "source": "llm",
-        "status": "BROKEN",
-        "heat_at_open": 0.287,
-        "heat_now": 0.383,
-        "n_surfaces_now": 1,
-        "physical_now": true,
-        "opened_asof": "2026-09-23",
-        "kill_criteria": [
-          "guidance_raisers fails to accumulate (no additional raisings in the next two quarters)",
-          "bottleneck_band stays NEUTRAL while the policy pipeline closes comments without effect",
-          "revision_breadth remains below 0.3 while guidance raisers stay at one"
-        ],
-        "broken_reasons": [
-          "below_quorum"
-        ]
-      },
-      {
-        "theme": "memory_storage",
-        "source": "llm",
-        "status": "BROKEN",
-        "heat_at_open": 0.676,
-        "heat_now": 0.372,
-        "n_surfaces_now": 4,
-        "physical_now": true,
-        "opened_asof": "2026-11-05",
-        "kill_criteria": [
-          "Alt-data award/patent cluster in MU reverts to no unusual activity",
-          "EDGAR scarcity cross-surface disappears (filings broaden)",
-          "Demand band rolls over from ACCELERATING to NEUTRAL or lower",
-          "Revision breadth peaks and rolls over before physical tightens"
-        ],
-        "broken_reasons": [
-          "heat_drop"
         ]
       },
       {
@@ -22074,40 +22379,6 @@
           "Revision breadth rolls over without numeric physical confirmation emerging."
         ],
         "llm_broken_reasons": []
-      },
-      {
-        "theme": "data_center_power",
-        "source": "llm",
-        "status": "INTACT",
-        "heat_at_open": 0.487,
-        "heat_now": 0.487,
-        "n_surfaces_now": 3,
-        "physical_now": true,
-        "opened_asof": "2026-11-09",
-        "kill_criteria": [
-          "The physical bottleneck loosens from TIGHTENING to NEUTRAL.",
-          "Demand falls from ACCELERATING to NEUTRAL or weaker.",
-          "Guidance moves from RAISING to NEUTRAL or turns to cuts.",
-          "Revision breadth rolls over while the other convergence legs fail to strengthen."
-        ],
-        "broken_reasons": []
-      },
-      {
-        "theme": "grid_electrification",
-        "source": "llm",
-        "status": "INTACT",
-        "heat_at_open": 0.203,
-        "heat_now": 0.223,
-        "n_surfaces_now": 3,
-        "physical_now": true,
-        "opened_asof": "2026-11-06",
-        "kill_criteria": [
-          "bottleneck_band reverses to NEUTRAL",
-          "guidance_band stops RAISING",
-          "revision_breadth stays near zero for an extended period with no broadening",
-          "demand_band cools to NEUTRAL"
-        ],
-        "broken_reasons": []
       },
       {
         "theme": "semicap_equipment",
@@ -22349,7 +22620,7 @@
     "state": "caution",
     "label_en": "Caution",
     "label_zh": "\u7559\u610f",
-    "headline_en": "Caution: fragility building (49/100). Drivers: SPX: dealers short gamma; net GEX -86.7bn; spot below gamma flip, HY OAS +37bp/21d; HYG/TLT -4.5%/20d, indexes rolling over / breaking down (75%).",
+    "headline_en": "Caution: fragility building (49/100). Drivers: SPX: dealers short gamma; net GEX -40.9bn; spot below gamma flip, HY OAS +37bp/21d; HYG/TLT -4.5%/20d, indexes rolling over / breaking down (75%).",
     "headline_zh": "\u7559\u610f\uff1a\u8106\u5f31\u6027\u4e0a\u5347\uff0849/100\uff09\u3002",
     "drivers": [
       {
@@ -22357,7 +22628,7 @@
         "intensity": 1.0,
         "weight": 0.9,
         "contribution": 0.9,
-        "detail_en": "SPX: dealers short gamma; net GEX -86.7bn; spot below gamma flip",
+        "detail_en": "SPX: dealers short gamma; net GEX -40.9bn; spot below gamma flip",
         "detail_zh": "\u505a\u5e02\u5546Gamma"
       },
       {
@@ -22439,7 +22710,7 @@
         "intensity": 1.0,
         "weight": 0.9,
         "contribution": 0.9,
-        "detail_en": "SPX: dealers short gamma; net GEX -86.7bn; spot below gamma flip",
+        "detail_en": "SPX: dealers short gamma; net GEX -40.9bn; spot below gamma flip",
         "detail_zh": "\u505a\u5e02\u5546Gamma"
       },
       "technical": {
@@ -22819,8 +23090,8 @@
     "state_ungated": "risk-off",
     "flow_status": {
       "min_history": 252,
-      "putcall_rows": 93,
-      "gex_rows": 94,
+      "putcall_rows": 94,
+      "gex_rows": 95,
       "mature": false,
       "putcall_missing_sessions": [
         "2026-07-02",
@@ -23192,7 +23463,7 @@
     ],
     "gate_clamped": true,
     "forward_log": {
-      "n_graded": 63,
+      "n_graded": 64,
       "alert_precision": null,
       "n_alerts": 0,
       "n_true_pos": 0,
@@ -23200,8 +23471,8 @@
       "recall_dd5_h21": 0.0,
       "by_state": {
         "caution": {
-          "n": 38,
-          "hit_rate": 0.026
+          "n": 39,
+          "hit_rate": 0.051
         },
         "watch": {
           "n": 15,
@@ -23213,15 +23484,91 @@
         }
       },
       "context_gate_counterfactual": {
-        "n_rows_with_ungated": 40,
-        "n_clamped_by_gate": 10,
-        "n_alerts_ungated": 10,
-        "n_true_pos_ungated": 1,
+        "n_rows_with_ungated": 41,
+        "n_clamped_by_gate": 11,
+        "n_alerts_ungated": 11,
+        "n_true_pos_ungated": 2,
         "n_false_pos_ungated": 9,
-        "alert_precision_ungated": 0.1,
+        "alert_precision_ungated": 0.182,
         "note": "Counterfactual: the state BEFORE the context gate clamped it, graded on the same realized SPY paths. Rows logged before state_ungated was recorded are excluded, so an empty block means 'not yet measurable', not 'no false alarms'."
       },
       "recent_mistakes": [
+        {
+          "asof": "2026-10-09",
+          "state": "caution",
+          "dominant_scare": "rates",
+          "scares": {
+            "credit": {
+              "score": 83.7,
+              "band": "elevated",
+              "firing_legs": [
+                {
+                  "leg": "credit_oas_roc",
+                  "pctile": 0.924,
+                  "confirmed": true,
+                  "era_robust": true,
+                  "lift_2020": 1.23
+                }
+              ]
+            },
+            "global": {
+              "score": 78.7,
+              "band": "elevated",
+              "firing_legs": [
+                {
+                  "leg": "global_breadth",
+                  "pctile": 0.941,
+                  "confirmed": true,
+                  "era_robust": false,
+                  "lift_2020": null
+                }
+              ]
+            },
+            "rates": {
+              "score": 70.2,
+              "band": "caution",
+              "firing_legs": [
+                {
+                  "leg": "rates_move",
+                  "pctile": 0.784,
+                  "confirmed": false,
+                  "era_robust": false,
+                  "lift_2020": 1.52
+                }
+              ]
+            },
+            "bubble": {
+              "score": 47.8,
+              "band": "calm",
+              "firing_legs": []
+            },
+            "growth": {
+              "score": 44.9,
+              "band": "calm",
+              "firing_legs": [
+                {
+                  "leg": "growth_cyc_def",
+                  "pctile": 0.601,
+                  "confirmed": false,
+                  "era_robust": false,
+                  "lift_2020": 1.63
+                }
+              ]
+            },
+            "internals": {
+              "score": 26.6,
+              "band": "calm",
+              "firing_legs": []
+            },
+            "vol": {
+              "score": 0.8,
+              "band": "calm",
+              "firing_legs": []
+            }
+          },
+          "kind": "tp_watch",
+          "fwd_dd_h21": -0.0585
+        },
         {
           "asof": "2026-10-08",
           "state": "caution",
@@ -23309,7 +23656,7 @@
       ],
       "asof_range": [
         "2026-06-23",
-        "2026-10-08"
+        "2026-10-09"
       ]
     },
     "recovery_log": {
@@ -23321,7 +23668,7 @@
     }
   },
   "ignition_radar": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "data_session": "2026-11-09",
     "state": "off",
     "k_count": 1,
@@ -23639,7 +23986,7 @@
       "n_qualifying": 32,
       "null": false,
       "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-      "as_of": "2026-11-09"
+      "as_of": "2026-11-10"
     },
     "narrow_top": {
       "basket_id": "XLB",
@@ -23653,7 +24000,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 3.5,
+    "_timing_s": 5.58,
     "forward_log": {
       "market": "us",
       "n_graded": 36,
@@ -23810,7 +24157,11 @@
       "min": -0.190184,
       "range": 0.207205
     },
-    "mags": null,
+    "mags": {
+      "px": 69.09,
+      "asof": "2026-11-09",
+      "since_run": null
+    },
     "tech_legs": [
       {
         "id": "mag7",
@@ -23886,7 +24237,7 @@
         }
       }
     },
-    "_timing_s": 0.09
+    "_timing_s": 0.15
   },
   "mag7_washout": {
     "schema": "mag7_washout.v1",
@@ -23923,7 +24274,7 @@
   },
   "index_momentum": {
     "organ": "index_momentum.v1",
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "data_as_of": "2026-11-09",
     "authority": {
       "rank": false,
@@ -25410,11 +25761,11 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 2.06
+    "_timing_s": 4.49
   },
   "vol_shock": {
-    "score": 50.5,
-    "score_int": 50,
+    "score": 51.0,
+    "score_int": 51,
     "band": "elevated",
     "band_zh": "\u5347\u9ad8",
     "asof": "2026-11-09",
@@ -25424,31 +25775,31 @@
         "key": "concentration",
         "label": "Cross-asset concentration",
         "label_zh": "\u8de8\u8d44\u4ea7\u96c6\u4e2d\u5ea6",
-        "value": 0.34,
+        "value": 0.31,
         "weight": 1.0,
         "available": true,
-        "sub": 34.0,
+        "sub": 31.0,
         "note": "cross-asset correlation mid-range",
         "note_zh": "\u8de8\u8d44\u4ea7\u76f8\u5173\u6027\u5904\u4e8e\u4e2d\u4f4d",
         "color": "#5a9bd4",
-        "points": 6.9
+        "points": 6.3
       },
       {
         "key": "dealer_gamma",
         "label": "Dealer gamma (short-gamma fragility)",
         "label_zh": "\u505a\u5e02\u5546 Gamma\uff08\u7a7a\u5934\u8106\u5f31\uff09",
-        "value": "short \u00b7 -3.10% to flip",
+        "value": "short \u00b7 -1.00% to flip",
         "weight": 0.0,
         "available": false,
-        "sub": 75.0,
-        "note": "dealers short gamma \u2014 they amplify moves \u00b7 gamma read is from 2026-11-06, 3 days before this update",
-        "note_zh": "\u505a\u5e02\u5546\u6301\u7a7a\u5934 Gamma\u2014\u2014\u4f1a\u653e\u5927\u6ce2\u52a8 \u00b7 Gamma \u8bfb\u6570\u53d6\u81ea 2026-11-06\uff0c\u6bd4\u672c\u6b21\u66f4\u65b0\u65e9 3 \u5929",
+        "sub": 91.7,
+        "note": "dealers short gamma \u2014 they amplify moves",
+        "note_zh": "\u505a\u5e02\u5546\u6301\u7a7a\u5934 Gamma\u2014\u2014\u4f1a\u653e\u5927\u6ce2\u52a8",
         "color": "#d04545",
         "points": null,
         "gated_out": true,
         "source": "contract",
-        "source_asof": "2026-11-06",
-        "source_age_days": 3,
+        "source_asof": "2026-11-09",
+        "source_age_days": 0,
         "passport": {
           "basis": "assumption",
           "verdict": "display-only",
@@ -25459,8 +25810,8 @@
           },
           "read": {
             "source": "contract",
-            "asof": "2026-11-06",
-            "age_days": 3,
+            "asof": "2026-11-09",
+            "age_days": 0,
             "snapshot_asof": "2026-11-09"
           },
           "note": "dealer long-call/short-put SIGN is unobservable from OI alone; single-name regimes are near-constant product attributes and the validator's MIN_PER_BUCKET is structurally unreachable for them. Weighted 0 in the score until the gate opens."
@@ -25468,8 +25819,8 @@
         "products_disagree": {
           "spy_regime": "short",
           "spx_regime": "short",
-          "spy_asof": "2026-11-06",
-          "spx_asof": "2026-11-06",
+          "spy_asof": "2026-11-09",
+          "spx_asof": "2026-11-09",
           "disagree": false,
           "note": "SPY and SPX agree on the gamma-regime sign today."
         }
@@ -25504,14 +25855,14 @@
         "key": "put_call",
         "label": "Put/call positioning",
         "label_zh": "\u770b\u8dcc/\u770b\u6da8\u6301\u4ed3",
-        "value": 0.58,
+        "value": 0.47,
         "weight": 0.5,
         "available": true,
-        "sub": 41.9,
+        "sub": 53.2,
         "note": "balanced put/call",
         "note_zh": "balanced put/call",
-        "color": "#5a9bd4",
-        "points": 4.3
+        "color": "#e0a030",
+        "points": 5.4
       },
       {
         "key": "complacency",
@@ -25572,14 +25923,14 @@
     "gex_products_disagree": {
       "spy_regime": "short",
       "spx_regime": "short",
-      "spy_asof": "2026-11-06",
-      "spx_asof": "2026-11-06",
+      "spy_asof": "2026-11-09",
+      "spx_asof": "2026-11-09",
       "disagree": false,
       "note": "SPY and SPX agree on the gamma-regime sign today."
     },
     "gex_source": "contract",
-    "gex_asof": "2026-11-06",
-    "gex_age_days": 3,
+    "gex_asof": "2026-11-09",
+    "gex_age_days": 0,
     "horizon_d": 10,
     "outcome_label_en": "realized SPY drawdown \u2264 \u22125% OR VIX intraday-high \u2265 1.4\u00d7 within 10d",
     "outcome_label_zh": "10 \u65e5\u5185\u6807\u666e\u56de\u64a4 \u2264 \u22125% \u6216 VIX \u65e5\u5185\u9ad8\u70b9 \u2265 1.4 \u500d",
@@ -25770,14 +26121,14 @@
           "key": "B4_absorption",
           "label": "Cross-asset absorption",
           "label_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4",
-          "value": 0.34,
+          "value": 0.31,
           "sub": 0.0,
           "weight": 0.13,
           "available": true,
           "scored": true,
           "points": 0.0,
-          "note": "cross-asset absorption 34% of 5y \u2014 markets tightly coupled",
-          "note_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4\u5904\u4e8e 5 \u5e74 34% \u5206\u4f4d\u2014\u2014\u5e02\u573a\u9ad8\u5ea6\u8026\u5408",
+          "note": "cross-asset absorption 31% of 5y \u2014 markets tightly coupled",
+          "note_zh": "\u8de8\u8d44\u4ea7\u5438\u6536\u6bd4\u5904\u4e8e 5 \u5e74 31% \u5206\u4f4d\u2014\u2014\u5e02\u573a\u9ad8\u5ea6\u8026\u5408",
           "color": "#5a9bd4",
           "pill": null,
           "thin": false
@@ -26167,8 +26518,8 @@
         "\u9884\u8b66\u5df2\u6fc0\u6d3b\uff1a\u652f\u6491\u5f53\u524d\u5468\u671f\u7684\u4fe1\u53f7\u4e00\u81f4\u5ea6\u6b63\u5728\u4e0b\u964d\u3002"
       ],
       [
-        "Warning already active: options positioning suggests a fragile, swingy market.",
-        "\u9884\u8b66\u5df2\u6fc0\u6d3b\uff1a\u671f\u6743\u6301\u4ed3\u663e\u793a\u5e02\u573a\u8106\u5f31\u3001\u6ce2\u52a8\u52a0\u5267\u3002"
+        "For a shift to Goldilocks, watch for inflation expectations cooling while breadth holds up.",
+        "\u82e5\u8981\u8f6c\u5411 \u7406\u60f3\u589e\u957f\uff0c\u5173\u6ce8 \u901a\u80c0\u9884\u671f\u964d\u6e29\uff0c\u800c\u5e02\u573a\u5e7f\u5ea6\u4fdd\u6301\u575a\u633a\u3002"
       ]
     ],
     "stages": [
@@ -28136,62 +28487,62 @@
       {
         "ticker": "GC=F",
         "name": "Gold",
-        "price": 4152.1,
+        "price": 4086.2,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -1.0,
-        "pct_vs_200dma": -6.4,
-        "rsi14": 54.0,
+        "pct_vs_50dma": -2.4,
+        "pct_vs_200dma": -7.8,
+        "rsi14": 48.0,
         "macd_pos": true,
-        "off_52w_high_pct": -21.9,
+        "off_52w_high_pct": -23.2,
         "season_this": "Nov: +1.5% avg, up 59% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -11.0
+        "mom_60d_pct": -9.8
       },
       {
         "ticker": "CL=F",
         "name": "Crude Oil",
-        "price": 86.22,
+        "price": 85.22,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -10.3,
-        "pct_vs_200dma": -3.4,
-        "rsi14": 36.0,
+        "pct_vs_50dma": -11.2,
+        "pct_vs_200dma": -4.6,
+        "rsi14": 35.0,
         "macd_pos": false,
-        "off_52w_high_pct": -23.7,
+        "off_52w_high_pct": -24.6,
         "season_this": "Nov: -3.2% avg, up 41% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.2%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 3.2
+        "mom_60d_pct": 2.2
       },
       {
         "ticker": "HG=F",
         "name": "Copper",
-        "price": 6.39,
+        "price": 6.31,
         "above50": false,
         "above200": true,
-        "pct_vs_50dma": -2.3,
-        "pct_vs_200dma": 1.8,
-        "rsi14": 46.0,
+        "pct_vs_50dma": -3.3,
+        "pct_vs_200dma": 0.5,
+        "rsi14": 42.0,
         "macd_pos": false,
-        "off_52w_high_pct": -6.1,
+        "off_52w_high_pct": -7.2,
         "season_this": "Nov: +1.5% avg, up 52% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -3.0
+        "mom_60d_pct": -3.8
       },
       {
         "ticker": "DX-Y.NYB",
         "name": "US Dollar",
-        "price": 101.68,
+        "price": 101.7,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 0.4,
+        "pct_vs_50dma": 0.3,
         "pct_vs_200dma": 1.7,
         "rsi14": 49.0,
         "macd_pos": false,
-        "off_52w_high_pct": -0.9,
+        "off_52w_high_pct": -1.0,
         "season_this": "Nov: +0.2% avg, up 52% of years (n=56)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-        "mom_60d_pct": 2.5
+        "mom_60d_pct": 2.6
       }
     ],
     "evidence": {
@@ -28267,9 +28618,9 @@
   },
   "freshness": {
     "asof": "2026-11-09",
-    "built_at": "2026-11-09T23:23:48Z",
-    "age_days": 0,
-    "age_sessions": 0,
+    "built_at": "2026-11-10T11:14:41Z",
+    "age_days": 1,
+    "age_sessions": 1,
     "max_age_sessions": 1,
     "stale": false,
     "note": "contract asof vs build time; the daily build lands post-close (22:40 UTC) so a consumer reading intraday should expect asof = prior session \u2014 recompute age against built_at at read time."
