@@ -40,6 +40,7 @@ from engine import cycle_ontology as onto
 _DOCTRINE_KEYS = ("doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink")
 
 from engine import cycle_phase_age
+from engine import sector_heads
 from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
@@ -1263,6 +1264,14 @@ def _stamp_turn_knowledge(rec: dict, struct: pd.Series, pct: float,
         log.warning("sector_cycles: turn knowledge failed for %s: %s", rec.get("id"), e)
 
 
+def _stamp_forecast_heads(rec: dict) -> None:
+    """Lane 8 v1.1: the four remaining-opportunity heads, each withheld or qualified ALONE
+    (engine/sector_heads.py). Observed Cycles facts stay on the record either way."""
+    tk = rec.get("turn_knowledge") if isinstance(rec.get("turn_knowledge"), dict) else {}
+    rec["forecast_heads"] = sector_heads.head_capabilities(
+        record_kind=rec.get("kind") or "", turn_epoch=tk.get("epoch"))
+
+
 HISTORY_KNOWLEDGE_SCHEMA = "sector_cycles.history_knowledge.v1"
 _PRICE_VINTAGE_REASON = ("adjusted price vintages are not retained; history is "
                          "computed on today's restated tape")
@@ -1372,6 +1381,7 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
     _stamp_turn_knowledge(rec, _structure_series(full, price), _ZZ_PCT)
     rec["history_knowledge"] = _history_knowledge_sector()
     _stamp_hazard(rec, family="sector")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
+    _stamp_forecast_heads(rec)
     return rec
 
 
@@ -1435,6 +1445,7 @@ def build_basket(bid: str, bmeta: dict, win_start: pd.Timestamp, last_ts: pd.Tim
         members, created=bmeta.get("created"),
         series_start=full.index[0] if len(full) else None)
     _stamp_hazard(rec, family="basket")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
+    _stamp_forecast_heads(rec)
     return rec
 
 
@@ -1905,6 +1916,13 @@ def compute(asof: str | None = None) -> dict | None:
                     "schema": HISTORY_KNOWLEDGE_SCHEMA,
                     "as_known": "unavailable",
                     "reason": _PRICE_VINTAGE_REASON,
+                },
+                "forecast_heads": {
+                    "schema": sector_heads.FORECAST_HEADS_SCHEMA,
+                    "heads": list(sector_heads.HEADS),
+                    "protocol": sector_heads.PROTOCOL_REF,
+                    "rule": ("each head is qualified or withheld on its own; withdrawing "
+                             "one never removes a sibling or the observed Cycles facts"),
                 },
                 "hazard_current_model": {
                     "schema": "sector_cycles.current_model_qualification.v1",
