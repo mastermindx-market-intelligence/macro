@@ -320,6 +320,66 @@ def test_setup_overlay_closes_modal_then_reopens_same_body_section_and_reading_p
     """)
 
 
+_SETUP_SIGNIN_RETURN = r"""
+  sess={state:'signed_out',userId:null,generation:1};
+  const native=element('dialog','','pv-setup-dialog'),head=element('header','pvs-dialog-head'),target=element('div','pvs-dialog-content');
+  const closer=element('button','pvs-close');head.append(closer);native.append(head,target);body.append(native);
+  const section=element('section');section.setAttribute('data-pvs-section',SECTION);first.content.append(section);
+  const tab=element('button');head.append(tab);
+  let selected='structure';
+  tab.addEventListener('click',()=>{selected=SECTION;section.removeAttribute('hidden');});
+  first.summary.addEventListener('click',()=>{
+    target.append(first.content);native.showModal();selected='structure';
+    section.id='return-panel';section.setAttribute('role','tabpanel');section.setAttribute('hidden','');
+    tab.setAttribute('aria-controls','return-panel');
+  });
+  closer.addEventListener('click',()=>{
+    first.details.append(first.content);native.close();
+    // Actual setup release removes its generated metadata; no stale role survives auth.
+    section.removeAttribute('id');section.removeAttribute('role');section.removeAttribute('hidden');
+    tab.removeAttribute('aria-controls');native.scrollTop=0;
+  });
+  window.scrollX=11;window.scrollY=500;
+  first.summary.click();tab.click();await flush();native.scrollTop=177;
+  native.querySelector('.pvs-save-setup').click();await flush();
+  assert.equal(native.open,false);assert.equal(state(),'signed-out');
+  buttons().find(b=>b.textContent.includes('Sign in')).click();
+  assert.equal(signins,1);assert.equal(saveDialog().open,false);
+  window.scrollX=0;window.scrollY=900;
+"""
+
+
+@pytest.mark.parametrize('section', ['sources', 'evidence'])
+def test_setup_signin_restores_original_reading_position_without_saving(section):
+    run('const SECTION=' + json.dumps(section) + ';' + _SETUP_SIGNIN_RETURN + r"""
+      sess={state:'ready',userId:'u1',generation:2};ev('mdx-auth',{event:'SIGNED_IN'});await flush();
+      assert.equal(state(),'choose');assert.equal(writes,0);
+      buttons()[0].click();await flush();
+      assert.equal(native.open,true);assert.equal(native.contains(first.content),true);
+      assert.equal(selected,SECTION);assert.equal(native.scrollTop,177);
+      assert.equal(window.scrollX,11);assert.equal(window.scrollY,500);
+      assert.equal(document.activeElement,native.querySelector('.pvs-save-setup'));
+      assert.equal(writes,0,'auth resumption only opens the chooser');
+    """)
+
+
+@pytest.mark.parametrize('mutation', [
+    'first.row.remove();candidate("replacement");',
+    'first.link.setAttribute("href","stock.html#OTHER");',
+    'panel.setAttribute("data-board-asof","replacement-generation");',
+    'panel.setAttribute("data-prophet-src","plans");',
+    'window.WatchStore={...WatchStore};',
+    'ev("mdx-auth",{event:"SIGNED_OUT"});',
+])
+def test_setup_signin_does_not_restore_invalidated_origin(mutation):
+    run('const SECTION="sources";' + _SETUP_SIGNIN_RETURN + mutation + r"""
+      await flush();sess={state:'ready',userId:'u1',generation:2};
+      ev('mdx-auth',{event:'SIGNED_IN'});await flush();
+      assert.equal(saveDialog().open,false);assert.equal(native.open,false);
+      assert.equal(reads,0);assert.equal(writes,0);
+    """)
+
+
 def test_dense_table_uses_the_same_exact_inert_source_and_returns_its_own_control():
     run(r"""
       const wrap=element('div','','us-stocktable-wrap'),tbody=element('tbody'),row=element('tr'),cell=element('td');

@@ -141,14 +141,19 @@
       origin.button.focus({preventScroll: true});
     }
   }
-  function show(entry, trigger, fromSetup) {
-    if (!usable(entry, true)) return;
+  function show(entry, trigger, fromSetup, returnContext) {
+    if (!usable(entry, true) || (returnContext && (returnContext.entry !== entry ||
+        returnContext.store !== window.WatchStore || returnContext.pane !== pane(entry.row)))) return;
     close(false); build();
     var s = session(), nativeDialog = document.getElementById('pv-setup-dialog');
     var selected = fromSetup && entry.body.querySelector('[role="tabpanel"]:not([hidden])');
     var origin = {entry: entry, button: trigger, store: window.WatchStore, userId: s.userId,
-      generation: s.generation, pane: pane(entry.row), fromSetup: !!fromSetup, section: selected && selected.getAttribute('data-pvs-section') || 'structure',
-      dialogScroll: nativeDialog ? nativeDialog.scrollTop : 0, x: window.scrollX, y: window.scrollY};
+      generation: s.generation, pane: pane(entry.row), fromSetup: !!fromSetup,
+      // Sign-in releases the native setup body, removing its generated tab state.
+      // Carry only the reader's position; account identity comes from the NEW session.
+      section: returnContext ? returnContext.section : selected && selected.getAttribute('data-pvs-section') || 'structure',
+      dialogScroll: returnContext ? returnContext.dialogScroll : nativeDialog ? nativeDialog.scrollTop : 0,
+      x: returnContext ? returnContext.x : window.scrollX, y: returnContext ? returnContext.y : window.scrollY};
     if (fromSetup && nativeDialog && nativeDialog.open) {
       var closer = nativeDialog.querySelector('.pvs-close'); if (!closer) return; closer.click();
     }
@@ -266,7 +271,7 @@
     var s = session();
     if (pendingSignIn && s.state === 'ready') {
       var origin = pendingSignIn; pendingSignIn = null;
-      if (usable(origin.entry, true) && origin.pane === pane(origin.entry.row)) show(origin.entry, origin.button, origin.fromSetup);
+      if (usable(origin.entry, true) && origin.pane === pane(origin.entry.row)) show(origin.entry, origin.button, origin.fromSetup, origin);
     } else if (active && !active.attempted) {
       // Client readiness for the SAME account may advance loading, never a write.
       if (active.userId === s.userId && active.generation === s.generation) load(active);
