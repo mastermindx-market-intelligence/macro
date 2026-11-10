@@ -439,7 +439,7 @@ def _wrap_forwarder(original, name, reasons):
         except BaseException as exc:
             if attempt is not None:
                 reason = getattr(exc, "reason", "")
-                safe = reason if reason in reasons or (isinstance(reason, str) and re.fullmatch(r"FABRIC_ROUTE_HTTP_[1-5][0-9]{2}", reason)) else "provider_error"
+                safe = reason if isinstance(reason, str) and (reason in reasons or re.fullmatch(r"FABRIC_ROUTE_HTTP_[1-5][0-9]{2}", reason)) else "provider_error"
                 attempt.update(state="failed", ended_at=time.time(), reason=safe)
             raise
         if attempt is not None:

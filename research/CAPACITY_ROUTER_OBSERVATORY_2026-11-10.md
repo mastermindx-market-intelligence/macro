@@ -45,3 +45,11 @@ Key runtime correction: OpenAI and Responses translators synthesize missing usag
 
 Next: publish this implementation checkpoint; run the 12 closed-transport cases against the exact staged gateway and translators; complete browser layout/interaction review; inspect current actual GitHub controls; squash and deploy through incumbent owners; verify live consumer telemetry and save receipts. This milestone is not completion.
 
+
+## Qualification before release
+- 25 focused Python tests pass, including concurrency, cancellation, fallback identity, byte preservation, original-error preservation, fragmented SSE, usage replacement, privacy canaries, missing usage, bounded compaction, atomic ingestion and stale/epoch fencing.
+- All 12 cases against the exact incumbent gateway/translators pass: Anthropic, OpenAI and Responses; streaming and non-streaming; reported and absent usage. Status, headers and response bytes are identical with and without the adapter. Tests use only a closed in-memory HTTPX transport and isolated credential fixtures.
+- Existing gateway hash: d3d325a5e8342409ec1af74c696914757538d279ddb5e8441c6adce5f90deafc. Existing plist hash: 6af3e3ab18b393568ad0ae07a00c1e96cc88184e83b48e0cf70a2f37d33397b8. Staging preserved and verified 749 source files.
+- Current main advanced to 45aea60fa7254ce185752dbc25e749d0fa6b2d6f through unrelated data work; all three edited incumbent admin files are unchanged from the task base. Main is unprotected and its sole listed ruleset is evaluate-only. Recheck the actual candidate before the authorized direct squash.
+- The connected browser has an extension UI blocking control. The isolated browser reaches the real admin sign-in page but has no authenticated session. Local preview is not network-accessible from that browser. No browser authentication or security control has been bypassed. Authenticated CLI verification can reuse existing server credentials in memory; visual live verification requires an existing browser session or secure user sign-in.
+- NEXT: ready PR, permitted direct squash, existing VPS deployment, exact observer overlay activation, live projection and real request proof, then final evidence readback. No deployment or acceptance is claimed yet.

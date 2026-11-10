@@ -108,6 +108,15 @@ def fake_gateway():
 
 
 class ObserverSemantics(unittest.TestCase):
+    def test_retry_does_not_inherit_usage_and_failed_attempt_closes(self):
+        store=observer.ObservationStore();rid=store.begin({})
+        store.attempt(rid,route(),{"model":"model-a"});store.usage(rid,{"output_tokens":17})
+        second=store.attempt(rid,route("provider-b"),{"model":"model-a"})
+        self.assertIsNone(store.active[rid]["usage"]["output_tokens"])
+        second.update(state="failed",status_code=400)
+        store.active[rid]["status_code"]=400;store.finish(rid)
+        self.assertIsNotNone(second["ended_at"])
+
     def test_latest_usage_replaces_provisional_and_rejects_huge_integer(self):
         store=observer.ObservationStore();rid=store.begin({})
         store.usage(rid,{"output_tokens":10});store.usage(rid,{"output_tokens":8})
@@ -225,6 +234,21 @@ class ObserverSemantics(unittest.TestCase):
 
 
 class ASGITransparency(unittest.IsolatedAsyncioTestCase):
+    async def test_untrusted_exception_reason_does_not_change_or_leak_error(self):
+        for reason in ("VALID_LOOKING_PRIVATE_CONTENT", ["malformed"]):
+            store=observer.ObservationStore();rid=store.begin({})
+            error=RuntimeError("private message");error.reason=reason
+            async def original(app,route,payload):
+                raise error
+            context=observer._CONTEXT.set((store,rid))
+            try:
+                with self.assertRaises(RuntimeError) as caught:
+                    await observer._wrap_forwarder(original,"_forward_anthropic",frozenset())(None,route(),{"model":"model-a"})
+                self.assertIs(caught.exception,error)
+            finally:
+                observer._CONTEXT.reset(context)
+            self.assertNotIn("PRIVATE",json.dumps(store.snapshot(state_app())))
+
     async def test_non_ascii_bad_auth_remains_incumbent_rejection(self):
         app,gateway=fake_gateway();observer.instrument_app(app,gateway)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app,client=("127.0.0.1",42)),base_url="http://local") as client:
