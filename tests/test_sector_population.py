@@ -71,7 +71,8 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
         # `carried` key with the NEW builder function over the real committed
         # artifacts (REAL inputs, new code) exactly as build_sector_central does.
         from lib.sector_central_carry import build_carry
-        central["carried"] = build_carry(REPO / "site", central)
+        roster = json.loads((REPO / "data/baskets/membership.json").read_text())
+        central["carried"] = build_carry(REPO / "site", central, roster)
     raw = {
         MEMBERS[0]: json.dumps(central, separators=(",", ":"), ensure_ascii=False).encode(),
         MEMBERS[1]: _real("sectordata/sector_cycles.json"),
@@ -144,13 +145,42 @@ def test_real_population_is_full_ordered_joined_and_bounded(real_store):
     for response, page in pages:
         assert len(response.content) <= wire.MAX_ENCODED_BYTES
         assert response.headers["cache-control"] == "private, no-store"
-        assert page["capture"]["population"]["complete"] is True
-        assert page["capture"]["population"]["admitted"] == 1015
-        assert page["capture"]["population"]["expected"] == 1015
-        # REAL: the owner reports 2 listed members without a usable measurement;
-        # they stay listed and are counted, never silently dropped.
-        assert page["capture"]["population"]["missing"] == 2
         assert page["total_matching"] == 1015
+    # F1: the denominator is the owner's configured CURRENT roster (configured minus
+    # removed = 1046 - 26 = 1020). 1,015 are served; the 5 current members with no row
+    # are identified, each with a closed reason; nothing is unaccounted. Counts computed.
+    pop = pages[0][1]["capture"]["population"]
+    assert (pop["configured_current"], pop["served"], pop["accounted_unserved"],
+            pop["unaccounted"], pop["complete"]) == (1020, 1015, 5, 0, True)
+    # Independent check of the denominator straight from the owner's roster file:
+    # configured minus removed, per group, equals served + unserved exactly.
+    roster = json.loads((REPO / "data/baskets/membership.json").read_text())["baskets"]
+    by_group = {}
+    for row in rows:
+        by_group.setdefault(row["group_id"], set()).add(row["symbol"])
+    for u in pop["unserved_members"]:
+        by_group.setdefault(u["group_id"], set()).add(u["symbol"])
+    expected_roster = {gid: {m["ticker"] for m in g["members"] if not m.get("removed")}
+                       for gid, g in roster.items()}
+    assert by_group == expected_roster
+    assert sum(len(v) for v in expected_roster.values()) == pop["configured_current"]
+    assert sorted((u["group_id"], u["symbol"], u["reason"]) for u in pop["unserved_members"]) == [
+        ("defensives", "KVUE", "not_observed_at_effective_as_of"),
+        ("regional_banks", "WBS", "not_observed_at_effective_as_of"),
+        ("us_sector_comm", "PSKY", "not_observed_at_effective_as_of"),
+        ("us_sector_comm", "WBD", "not_observed_at_effective_as_of"),
+        ("us_sector_staples", "KVUE", "not_observed_at_effective_as_of")]
+    # Removed members are reported separately (with their removal date): never listed,
+    # never "missing". GATO/MAG are among the 26.
+    removed = pop["removed_members"]
+    assert removed["status"] == "available" and removed["n"] == 26
+    by_symbol = {(r["group_id"], r["symbol"]): r["removed_on"] for r in removed["members"]}
+    assert by_symbol[("silver_miners", "GATO")] == "2025-01-16"
+    assert by_symbol[("silver_miners", "MAG")] == "2025-09-04"
+    served = {(r["group_id"], r["symbol"]) for r in rows}
+    assert not (served & set(by_symbol))
+    assert not (served & {(u["group_id"], u["symbol"]) for u in pop["unserved_members"]})
+    assert "missing" not in pop and "expected" not in pop and "admitted" not in pop
     # Prophet eligibility is a separate, honestly unproduced concept.
     assert {json.dumps(r["prophet_eligibility"], sort_keys=True) for r in rows} == {
         '{"reason": "not_produced", "status": "unavailable"}'}
@@ -161,23 +191,30 @@ def test_industry_is_current_basis_not_point_in_time_and_never_relabelled(real_s
     """REAL inputs, NEW carry code: every row carries a labelled industry state."""
     client = _client(real_store["reader"])
     pages = _all_pages(client)
-    classification = pages[0][1]["capture"]["identity"]["industry_classification"]
-    assert classification["status"] == "available"
-    assert classification["point_in_time"] is False
-    assert classification["basis"] == "current_sp500_membership_not_point_in_time"
-    assert classification["source"] == "marketdata/subsector_confluence.json"
-    rows = [r for _, p in pages for r in p["rows"]]
-    states = {r["industry"]["status"] for r in rows}
-    assert states == {"available", "unavailable"}  # real: 424 of 698 symbols classified
-    classified = {r["symbol"] for r in rows if r["industry"]["status"] == "available"}
-    assert len(classified) == 424
-    app_row = next(r for r in rows if r["symbol"] == "APP")
-    assert app_row["industry"]["key"] == "software-application"
-    assert app_row["industry"]["label"] == "Software - Application"
-    assert all(r["industry"] == {"status": "unavailable", "reason": "not_in_current_classification"}
-               for r in rows if r["symbol"] not in classified)
-    # Point-in-time identity is NOT satisfied and stays recorded as unavailable.
     identity = pages[0][1]["capture"]["identity"]
+    gics, sub = identity["industry_classification"], identity["sub_industry_classification"]
+    # Two SEPARATE taxonomies, each with its own source, as-of and basis label.
+    assert (gics["status"], gics["point_in_time"], gics["taxonomy"]) == (
+        "available", False, "gics_industry")
+    assert gics["basis"] == "current_gics_industry_not_point_in_time"
+    assert gics["source"] == "stagedata/screener.json" and gics["as_of"] == "2026-11-09"
+    assert (sub["status"], sub["point_in_time"]) == ("available", False)
+    assert sub["basis"] == "current_sp500_membership_not_point_in_time"
+    assert sub["source"] == "marketdata/subsector_confluence.json" and sub["as_of"] == "2026-11-06"
+    rows = [r for _, p in pages for r in p["rows"]]
+    gics_symbols = {r["symbol"] for r in rows if r["industry"]["status"] == "available"}
+    sub_symbols = {r["symbol"] for r in rows if r["sub_industry"]["status"] == "available"}
+    assert (len(gics_symbols), len(sub_symbols)) == (617, 424)  # real coverage of 698 symbols
+    app_row = next(r for r in rows if r["symbol"] == "APP")
+    assert app_row["sub_industry"]["key"] == "software-application"
+    assert app_row["sub_industry"]["label"] == "Software - Application"
+    assert app_row["industry"]["label"] == next(
+        x["industry"] for x in json.loads(_real("stagedata/screener.json"))["rows"]
+        if x["ticker"] == "APP")
+    assert "key" not in app_row["industry"]  # never merged into the sub-industry shape
+    assert all(r["industry"] == {"status": "unavailable", "reason": "not_in_current_classification"}
+               for r in rows if r["symbol"] not in gics_symbols)
+    # Point-in-time identity is NOT satisfied and stays recorded as unavailable.
     assert identity["membership_first_known"]["status"] == "unavailable"
     assert identity["original_affiliation_set"]["status"] == "unavailable"
 
@@ -261,8 +298,13 @@ def test_cursor_binding_change_is_an_explicit_reset_not_a_mixed_page(real_store)
         assert response.status_code == 409
         assert response.json() == {"schema": "sector_generation.error/v1",
                                    "code": "CURSOR_RESET", "reason": "binding_changed"}
+    # S1: a well-formed token whose signature is not recognised (forged OR minted by an
+    # earlier key) is the explicit reset; only malformed grammar stays 400.
     tampered = cursor[:-1] + ("0" if cursor[-1] != "0" else "1")
-    assert client.get(URL, params={**base, "cursor": tampered}, cookies=COOKIE).status_code == 400
+    forged = client.get(URL, params={**base, "cursor": tampered}, cookies=COOKIE)
+    assert forged.status_code == 409 and forged.json() == {
+        "schema": "sector_generation.error/v1", "code": "CURSOR_RESET",
+        "reason": "signature_unrecognised"}
     assert client.get(URL, params={**base, "cursor": "not a token"}, cookies=COOKIE).status_code == 400
     # A different actor cannot continue (or open the reference of) another actor's capture.
     import app.main as macro_main
@@ -270,9 +312,157 @@ def test_cursor_binding_change_is_an_explicit_reset_not_a_mixed_page(real_store)
     macro_main._mm_verify_uid_cached = lambda token: "22222222-2222-2222-2222-222222222222"
     try:
         other = client.get(URL, params=base, cookies=COOKIE)
+        other_ref = client.get(URL, params={"audience": "entitled",
+                                            "cursor": first["context_ref"]}, cookies=COOKIE)
     finally:
         macro_main._mm_verify_uid_cached = original
     assert other.status_code == 409 and other.json()["reason"] == "binding_changed"
+    # S3(e): the context reference is actor-bound too.
+    assert other_ref.status_code == 409 and other_ref.json()["reason"] == "binding_changed"
+
+
+def test_restart_or_key_change_answers_reset_not_invalid_and_discloses_nothing(real_store):
+    """S1: the stale-key answer is the reset/unavailable class, byte-identical to forged."""
+    client = _client(real_store["reader"])
+    first = client.get(URL, params={"audience": "entitled", "limit": "100"},
+                       cookies=COOKIE).json()["page"]
+    old_key = population._PROCESS_KEY
+    population._PROCESS_KEY = b"\x07" * 32  # a restart / another worker's key
+    try:
+        stale = client.get(URL, params={"audience": "entitled", "limit": "100",
+                                        "cursor": first["next_cursor"]}, cookies=COOKIE)
+        stale_ref = client.get(URL, params={"audience": "entitled",
+                                            "cursor": first["context_ref"]}, cookies=COOKIE)
+    finally:
+        population._PROCESS_KEY = old_key
+    assert stale.status_code == 409 and stale.json() == {
+        "schema": "sector_generation.error/v1", "code": "CURSOR_RESET",
+        "reason": "signature_unrecognised"}
+    assert stale_ref.status_code == 404 and stale_ref.json() == {
+        "schema": "sector_generation.error/v1", "code": "ORIGINAL_UNAVAILABLE"}
+    for response in (stale, stale_ref):
+        assert response.headers["cache-control"] == "private, no-store"
+        assert "real-g1" not in response.text
+
+
+def test_resolver_ref_durability_is_stated_never_assumed(real_store, monkeypatch):
+    """S2: the reference says whether it survives a restart."""
+    client = _client(real_store["reader"])
+    monkeypatch.delenv("SECTOR_GENERATION_CURSOR_SECRET", raising=False)
+    page = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                      cookies=COOKIE).json()["page"]
+    assert page["capture"]["owner_ref"]["retained_resolver_ref_durability"] == "process_lifetime_only"
+    monkeypatch.setenv("SECTOR_GENERATION_CURSOR_SECRET", "s" * 40)
+    page = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                      cookies=COOKIE).json()["page"]
+    assert page["capture"]["owner_ref"]["retained_resolver_ref_durability"] == "durable"
+    # With a provisioned secret the tokens survive a process-key change.
+    old_key = population._PROCESS_KEY
+    population._PROCESS_KEY = b"\x09" * 32
+    try:
+        again = client.get(URL, params={"audience": "entitled", "limit": "1",
+                                        "cursor": page["context_ref"]}, cookies=COOKIE)
+    finally:
+        population._PROCESS_KEY = old_key
+    assert again.status_code == 200
+
+
+@pytest.mark.parametrize("secret", ["", "short", "x" * 31])
+def test_short_or_empty_secret_fails_closed_on_mint_and_open(real_store, monkeypatch, secret):
+    """S3(b): never a silent weak key."""
+    client = _client(real_store["reader"])
+    monkeypatch.setenv("SECTOR_GENERATION_CURSOR_SECRET", secret)
+    mint = client.get(URL, params={"audience": "entitled", "limit": "100"}, cookies=COOKIE)
+    assert mint.status_code == 503 and mint.json()["code"] == "SECTOR_GENERATION_UNAVAILABLE"
+    open_ = client.get(URL, params={"audience": "entitled", "cursor": "e30.%s" % ("0" * 64)},
+                       cookies=COOKIE)
+    assert open_.status_code == 503
+    for response in (mint, open_):
+        assert response.headers["cache-control"] == "private, no-store"
+
+
+def test_duplicate_parameters_and_refusal_headers(real_store):
+    """S3(c)(d): duplicates are refused and EVERY refusal is private/no-store."""
+    client = _client(real_store["reader"])
+    refusals = [
+        client.get(URL + "?audience=entitled&audience=entitled", cookies=COOKIE),
+        client.get(URL + "?audience=entitled&limit=1&limit=2", cookies=COOKIE),
+        client.get(URL + "?audience=entitled&q=a&q=b", cookies=COOKIE),
+        client.get(URL + "?audience=entitled&cursor=a.b&cursor=c.d", cookies=COOKIE),
+        client.get(URL, params={"audience": "preview"}, cookies=COOKIE),
+        client.get(URL, params={"audience": "entitled", "generation": "real-g1"}, cookies=COOKIE),
+        client.get(URL, params={"audience": "entitled"}),  # 401 from the incumbent gates
+    ]
+    assert [r.status_code for r in refusals] == [400, 400, 400, 400, 400, 400, 401]
+    for response in refusals:
+        assert response.headers["cache-control"] == "private, no-store"
+        assert response.headers["vary"] == "Cookie"
+        assert response.headers["x-content-type-options"] == "nosniff"
+
+
+def test_unverified_actor_is_refused_not_bound_to_a_shared_anonymous(real_store, monkeypatch):
+    """N2: a caller with no verified user id never shares an 'anonymous' actor."""
+    with pytest.raises(population.PopulationError):
+        population.actor_digest("")
+    with pytest.raises(population.PopulationError):
+        population.actor_digest(None)
+    monkeypatch.setattr(api, "_actor_digest", lambda request: None)
+    client = _client(real_store["reader"])
+    response = client.get(URL, params={"audience": "entitled"}, cookies=COOKIE)
+    assert response.status_code == 401 and response.json()["code"] == "AUTHENTICATION_REQUIRED"
+    assert response.headers["cache-control"] == "private, no-store"
+
+
+def _synthetic(*, observation=None, members=("AAA", "BBB"), removed_roster=None):
+    """FIXTURE: one tiny basket document for F1 accounting edge cases."""
+    group = {"id": "g1", "name": "G", "members": [{"symbol": s, "name": s, "added": "2024-01-01"}
+                                                  for s in members], "n_members": len(members)}
+    if observation is not None:
+        group["observation"] = observation
+    return {"baskets": [group]}
+
+
+def _obs(configured, *, observed=None, panel_missing=(), asof_missing=()):
+    return {"configured_members": list(configured),
+            "observed_members": list(configured if observed is None else observed),
+            "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing)}
+
+
+def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
+    """FIXTURE: complete only when served + explicitly accounted == configured current."""
+    build = lambda baskets: population.build_population(
+        baskets=baskets, handoff={}, action_board={}, central={})
+    # served == configured: complete
+    ok = build(_synthetic(observation=_obs(["AAA", "BBB"])))
+    assert (ok.configured_current, ok.served, len(ok.unserved), ok.complete) == (2, 2, 0, True)
+    # a configured member with no row, explained by the owner: accounted, still complete
+    accounted = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"], asof_missing=["CCC"])))
+    assert [(u["symbol"], u["reason"]) for u in accounted.unserved] == [
+        ("CCC", "not_observed_at_effective_as_of")]
+    assert (accounted.configured_current, accounted.complete) == (3, True)
+    panel = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"], panel_missing=["CCC"])))
+    assert panel.unserved[0]["reason"] == "absent_from_price_panel"
+    # a configured member silently dropped with no owner explanation: NOT complete
+    silent = build(_synthetic(observation=_obs(["AAA", "BBB", "CCC"], observed=["AAA", "BBB"])))
+    assert silent.unserved[0]["reason"] == "unaccounted_by_owner"
+    assert (silent.unaccounted, silent.complete) == (1, False)
+    # a served row the roster does not configure: NOT complete
+    extra = build(_synthetic(observation=_obs(["AAA"])))
+    assert (extra.unaccounted, extra.complete) == (1, False)
+    # no captured roster at all: completeness is UNKNOWN (None), never True
+    unknown = build(_synthetic(observation=None))
+    assert (unknown.configured_current, unknown.complete) == (None, None)
+
+
+def test_f1_removed_members_are_separate_from_listed_and_missing():
+    """FIXTURE: a removal is neither served, unserved nor missing; it carries its date."""
+    from lib.sector_central_carry import removed_members
+    roster = {"version": "t", "baskets": {"g1": {"members": [
+        {"ticker": "AAA", "removed": None}, {"ticker": "OLD", "removed": "2025-01-16"},
+        {"ticker": "FUTR", "removed": "2099-01-01"}]}}}
+    removed = removed_members(roster, "2026-11-06")
+    assert removed["removed"] == [{"group_id": "g1", "symbol": "OLD", "removed_on": "2025-01-16"}]
+    assert removed_members(None, "2026-11-06") is None  # no roster => not carried
 
 
 def test_retained_capture_loss_resets_and_never_substitutes_latest(real_store):
@@ -302,7 +492,7 @@ def test_original_ref_reopens_the_retained_capture_not_the_latest(real_store):
                                        "q": "A"}, cookies=COOKIE).json()["page"]
     assert original["capture"]["owner_ref"]["generation_id"] == "real-g1"
     assert original["capture"]["currentness"] == "retained_original"
-    assert original["capture"]["population"]["admitted"] == 1015
+    assert original["capture"]["population"]["served"] == 1015
 
 
 def test_denied_before_read_one_reader_and_closed_selectors(real_store):

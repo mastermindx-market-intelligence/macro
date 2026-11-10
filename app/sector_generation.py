@@ -470,18 +470,19 @@ def _parse_population_query(request: Request) -> tuple[dict[str, Any] | None, JS
     return {"filter": flt, "limit": limit_value, "cursor": values.get("cursor")}, None
 
 
-def _actor_digest(request: Request) -> str:
-    """Digest of the identity the incumbent regwall verified, or the anonymous marker.
+def _actor_digest(request: Request) -> str | None:
+    """Digest of the identity the incumbent regwall verified; ``None`` if unverified.
 
     Reuses the exact incumbent verification (``_mm_supabase_access_token`` +
-    ``_mm_verify_uid_cached``); it adds no identity cache and no parser.
+    ``_mm_verify_uid_cached``); it adds no identity cache and no parser. There is NO
+    shared anonymous actor: the caller refuses a request with no verified user id.
     """
     from app.main import _mm_supabase_access_token, _mm_verify_uid_cached
     from lib import sector_population as population
 
     token = _mm_supabase_access_token(request)
     uid = _mm_verify_uid_cached(token) if token else None
-    return population.actor_digest(str(uid) if uid else None)
+    return population.actor_digest(str(uid)) if uid else None
 
 
 def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
@@ -545,15 +546,25 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             if resolved is None or not callable(getattr(resolved, "read_population", None)):
                 return _error(503, ERROR_GENERATION_UNAVAILABLE)
             actor = _actor_digest(request)
+            if actor is None:
+                # Gates passed but no verified user id (regwall off / identity lookup
+                # failed): refuse rather than bind a shared "anonymous" actor.
+                return _error(401, ERROR_AUTHENTICATION_REQUIRED)
             flt, limit = parsed["filter"], parsed["limit"]
             claims = None
             if parsed["cursor"] is not None:
                 try:
                     claims = population.open_token(parsed["cursor"])
+                except population.CursorSecretInvalid:
+                    return _error(503, ERROR_GENERATION_UNAVAILABLE)  # fail closed
                 except population.PopulationError:
-                    claims = None
+                    return _error(400, ERROR_REQUEST_INVALID)  # malformed grammar only
                 if claims is None:
-                    return _error(400, ERROR_REQUEST_INVALID)
+                    # Well formed but the signature is not recognised: forged, or minted
+                    # by an earlier process/key. One body for both - nothing disclosed.
+                    if population.unverified_kind(parsed["cursor"]) == "x":
+                        return _error(404, ERROR_ORIGINAL_UNAVAILABLE)
+                    return _reset("signature_unrecognised")
                 # Every binding is checked BEFORE any storage read. A mismatch is the
                 # explicit reset answer, never a page assembled from mixed state.
                 if (claims["a"] != AUDIENCE_ENTITLED or claims["u"] != actor
@@ -587,7 +598,8 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
                     qualification=result.qualification,
                     read_captured_at=result.read_captured_at,
                     member_sha256=result.member_sha256, population=result.population,
-                    ref=context_ref, currentness=result.currentness),
+                    ref=context_ref, currentness=result.currentness,
+                    ref_durable=population.key_is_durable()),
                 "filter": flt, "limit": limit, "offset": offset, "total_matching": total,
                 "complete": next_offset is None,
                 "rows": list(rows), "groups": groups,
@@ -598,7 +610,9 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
             if offset == 0 and flt["group"] is None and not flt["q"]:
                 body["group_index"] = [
                     {"group_id": g["group_id"], "name": g["name"],
-                     "n_members_listed": g["n_members_listed"]}
+                     "n_members_listed": g["n_members_listed"],
+                     "n_configured_current": g["n_configured_current"],
+                     "n_unserved": g["n_unserved"]}
                     for g in result.population.groups]
             encoded = encode_sector_population(
                 audience=AUDIENCE_ENTITLED, source_session=result.source_session,

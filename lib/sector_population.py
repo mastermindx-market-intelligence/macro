@@ -66,15 +66,41 @@ class PopulationError(ValueError):
     """A closed population-contract failure; never embeds private data."""
 
 
+class CursorSecretInvalid(PopulationError):
+    """``SECTOR_GENERATION_CURSOR_SECRET`` is set but unusable: the route fails closed."""
+
+
+#: Closed reasons a configured current member has no served row.
+UNSERVED_REASONS = ("absent_from_price_panel", "not_observed_at_effective_as_of",
+                    "empty_price_tape", "unaccounted_by_owner")
+MAX_UNSERVED = 500
+
+
 @dataclass(frozen=True)
 class Population:
     groups: tuple[Mapping[str, Any], ...]
     rows: tuple[Mapping[str, Any], ...]
     content_sha256: str
-    expected_members: int
-    admitted_members: int
-    missing_members: int
+    #: Owner's configured CURRENT roster (configured minus removed), summed over groups
+    #: from each group's captured ``observation.configured_members``; ``None`` when any
+    #: group's roster is not in the capture (then completeness is unknown, not true).
+    configured_current: int | None
+    served: int
+    #: Configured current members with no row, each identified with a closed reason.
+    unserved: tuple[Mapping[str, str], ...]
+    #: Subset of ``unserved`` the owner did not explain, plus served-but-unconfigured rows.
+    unaccounted: int
+    removed: Mapping[str, Any]
     industry_classification: Mapping[str, Any]
+    sub_industry_classification: Mapping[str, Any]
+
+    @property
+    def complete(self) -> bool | None:
+        """served + explicitly accounted == configured current, computed - never asserted."""
+        if self.configured_current is None:
+            return None
+        return (self.unaccounted == 0
+                and self.served + len(self.unserved) == self.configured_current)
 
 
 def _text(value: Any, limit: int = 160) -> str | None:
@@ -124,18 +150,34 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                 "n_effective": cov.get("n_effective") if isinstance(cov.get("n_effective"), int) else None,
                 "source_version": _text(cov.get("source_version"), 40),
             }
-    industry_doc = (central.get("carried") or {}).get("member_industry") \
-        if isinstance(central, Mapping) and isinstance(central.get("carried"), Mapping) else None
-    industry_symbols = industry_labels = None
-    industry_meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
-    if isinstance(industry_doc, Mapping) and isinstance(industry_doc.get("symbols"), Mapping) \
-            and isinstance(industry_doc.get("subsectors"), Mapping) \
-            and industry_doc.get("point_in_time") is False:
-        industry_symbols, industry_labels = industry_doc["symbols"], industry_doc["subsectors"]
-        industry_meta = {"status": "available", "basis": _text(industry_doc.get("basis"), 80),
-                         "point_in_time": False, "source": _text(industry_doc.get("source"), 120),
-                         "as_of": _text(industry_doc.get("as_of"), 40),
-                         "universe": _text(industry_doc.get("universe"), 80)}
+    carried = central.get("carried") if isinstance(central, Mapping) else None
+    carried = carried if isinstance(carried, Mapping) else {}
+
+    def classification(name: str, *, labelled: bool):
+        """(symbols, labels, meta) for one CURRENT-basis taxonomy, never point-in-time."""
+        doc = carried.get(name)
+        meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
+        if not (isinstance(doc, Mapping) and isinstance(doc.get("symbols"), Mapping)
+                and doc.get("point_in_time") is False
+                and (not labelled or isinstance(doc.get("subsectors"), Mapping))):
+            return None, None, meta
+        meta = {"status": "available", "taxonomy": _text(doc.get("taxonomy"), 40),
+                "basis": _text(doc.get("basis"), 80), "point_in_time": False,
+                "source": _text(doc.get("source"), 120), "as_of": _text(doc.get("as_of"), 40),
+                "universe": _text(doc.get("universe"), 80)}
+        return doc["symbols"], (doc.get("subsectors") if labelled else None), meta
+
+    industry_symbols, _unused, industry_meta = classification("member_industry", labelled=False)
+    sub_symbols, sub_labels, sub_meta = classification("member_sub_industry", labelled=True)
+    removed_doc = carried.get("removed_members")
+    removed_meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
+    if isinstance(removed_doc, Mapping) and isinstance(removed_doc.get("removed"), list):
+        removed_meta = {"status": "available", "n": len(removed_doc["removed"]),
+                        "source": _text(removed_doc.get("source"), 120),
+                        "version": _text(removed_doc.get("version"), 40),
+                        "as_of": _text(removed_doc.get("as_of"), 40),
+                        "members": [dict(r) for r in removed_doc["removed"]
+                                    if isinstance(r, Mapping)]}
     symbol_groups: Counter[str] = Counter()
     for group in groups_in:
         for member in (group.get("members") if isinstance(group, Mapping) else None) or ():
@@ -144,8 +186,10 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     groups: list[dict[str, Any]] = []
     rows: list[dict[str, Any]] = []
     seen_groups: set[str] = set()
-    missing_total = 0
-    expected_total = 0
+    unserved: list[dict[str, str]] = []
+    unaccounted = 0
+    configured_total: int | None = None
+    roster_unknown = False
     for group in groups_in:
         gid = group.get("id") if isinstance(group, Mapping) else None
         if not isinstance(gid, str) or not _GROUP_ID.fullmatch(gid) or gid in seen_groups:
@@ -162,17 +206,24 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                 raise PopulationError("invalid_population_member")
             seen_symbols.add(symbol)
             added = member.get("added")
+            # Two SEPARATE current-basis taxonomies; never merged into one field.
             if industry_symbols is None:
                 industry = dict(UNAVAILABLE_NOT_PRODUCED)
-            elif isinstance(industry_symbols.get(symbol), str) \
-                    and isinstance(industry_labels.get(industry_symbols[symbol]), Mapping):
-                label = industry_labels[industry_symbols[symbol]]
-                industry = {"status": "available", "key": industry_symbols[symbol],
-                            "label": _text(label.get("label")),
-                            "label_zh": _text(label.get("label_zh")),
-                            "sector": _text(label.get("sector"))}
+            elif isinstance(industry_symbols.get(symbol), str):
+                industry = {"status": "available", "label": _text(industry_symbols[symbol])}
             else:
                 industry = {"status": "unavailable", "reason": "not_in_current_classification"}
+            if sub_symbols is None:
+                sub_industry = dict(UNAVAILABLE_NOT_PRODUCED)
+            elif isinstance(sub_symbols.get(symbol), str) \
+                    and isinstance(sub_labels.get(sub_symbols[symbol]), Mapping):
+                label = sub_labels[sub_symbols[symbol]]
+                sub_industry = {"status": "available", "key": sub_symbols[symbol],
+                                "label": _text(label.get("label")),
+                                "label_zh": _text(label.get("label_zh")),
+                                "sector": _text(label.get("sector"))}
+            else:
+                sub_industry = {"status": "unavailable", "reason": "not_in_current_classification"}
             rows.append({
                 "ordinal": len(rows), "group_id": gid, "symbol": symbol,
                 "name": _text(member.get("name")),
@@ -180,33 +231,63 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
                                "effective_on": added if isinstance(added, str) and len(added) <= 10 else None},
                 "also_in_groups": symbol_groups[symbol] - 1,
                 "in_handoff_member_set": None if handoff_set is None else symbol in handoff_set,
-                "industry": industry,
+                "industry": industry, "sub_industry": sub_industry,
                 "prophet_eligibility": dict(UNAVAILABLE_NOT_PRODUCED),
                 "visibility": {"scope": "entitled_full"},
             })
             if len(rows) > MAX_ROWS:
                 raise PopulationError("population_too_large")
-        declared = group.get("n_members")
-        missing = group.get("missing") if isinstance(group.get("missing"), list) else []
-        if isinstance(declared, int) and not isinstance(declared, bool):
-            expected_total += declared
+        # ACCOUNTING against the owner's configured CURRENT roster, captured in the
+        # group's own ``observation`` (configured minus removed). Counts are computed.
+        configured_n = None
+        unserved_here = 0
+        observation = group.get("observation")
+        configured = observation.get("configured_members") if isinstance(observation, Mapping) else None
+        if isinstance(configured, list) and all(isinstance(s, str) for s in configured) \
+                and len(set(configured)) == len(configured):
+            configured_n = len(configured)
+            panel_missing = set(observation.get("missing_columns") or ())
+            asof_missing = set(observation.get("missing_at_asof") or ())
+            observed = set(observation.get("observed_members") or ())
+            for symbol in configured:
+                if symbol in seen_symbols:
+                    continue
+                if symbol in panel_missing:
+                    reason = "absent_from_price_panel"
+                elif symbol in asof_missing:
+                    reason = "not_observed_at_effective_as_of"
+                elif symbol in observed:
+                    reason = "empty_price_tape"
+                else:
+                    reason = "unaccounted_by_owner"
+                unserved.append({"group_id": gid, "symbol": symbol, "reason": reason})
+                unserved_here += 1
+                if reason == "unaccounted_by_owner":
+                    unaccounted += 1
+            extra = seen_symbols - set(configured)
+            unaccounted += len(extra)  # a served row the roster does not list is never "complete"
+            configured_total = (configured_total or 0) + configured_n
         else:
-            declared = None
-        missing_total += len(missing)
+            roster_unknown = True
         groups.append({
             "group_id": gid, "kind": "basket", "name": _text(group.get("name")),
             "name_zh": _text(group.get("name_zh")), "category": _text(group.get("category")),
             "weighting": _text(group.get("weighting"), 40),
-            "n_members_declared": declared, "n_members_listed": len(seen_symbols),
-            "n_missing": len(missing),
+            "n_configured_current": configured_n, "n_members_listed": len(seen_symbols),
+            "n_unserved": unserved_here if configured_n is not None else None,
             "membership_coverage": coverage.get("b-" + gid, dict(UNAVAILABLE_NOT_PRODUCED)),
             "action": actions.get(gid, {"status": "unavailable", "reason": "no_action_row"}),
             "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
         })
-    canonical = json.dumps({"groups": groups, "rows": rows}, allow_nan=False, sort_keys=True,
+    if len(unserved) > MAX_UNSERVED:
+        raise PopulationError("population_unserved_too_large")  # refuse, never truncate
+    canonical = json.dumps({"groups": groups, "rows": rows, "unserved": unserved,
+                            "removed": removed_meta}, allow_nan=False, sort_keys=True,
                            separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    return Population(tuple(groups), tuple(rows), hashlib.sha256(canonical).hexdigest(),
-                      expected_total, len(rows), missing_total, industry_meta)
+    return Population(
+        tuple(groups), tuple(rows), hashlib.sha256(canonical).hexdigest(),
+        None if roster_unknown else configured_total, len(rows), tuple(unserved),
+        unaccounted, removed_meta, industry_meta, sub_meta)
 
 
 def normalize_filter(group: str | None, query: str | None) -> dict[str, str | None]:
@@ -223,8 +304,12 @@ def filter_digest(flt: Mapping[str, Any]) -> str:
     return hashlib.sha256(json.dumps(dict(flt), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def actor_digest(actor: str | None) -> str:
-    return hashlib.sha256(("sector-actor:" + (actor or "anonymous")).encode("utf-8")).hexdigest()
+def actor_digest(actor: str) -> str:
+    """Digest of a VERIFIED user id. There is no shared anonymous actor: an empty id is
+    refused so no two callers can hold mutually replayable tokens."""
+    if not isinstance(actor, str) or not actor.strip():
+        raise PopulationError("actor_unverified")
+    return hashlib.sha256(("sector-actor:" + actor).encode("utf-8")).hexdigest()
 
 
 def select_page(population: Population, flt: Mapping[str, Any], *, offset: int, limit: int):
@@ -242,7 +327,14 @@ def select_page(population: Population, flt: Mapping[str, Any], *, offset: int, 
     total = len(matched)
     page = matched[offset:offset + limit]
     wanted = {r["group_id"] for r in page}
-    groups = [g for g in population.groups if g["group_id"] in wanted]
+    if group is not None:
+        wanted.add(group)  # a filtered group keeps its descriptor even with no served row
+    groups = []
+    for g in population.groups:
+        if g["group_id"] in wanted:
+            groups.append({**g, "unserved": [
+                {"symbol": u["symbol"], "reason": u["reason"]}
+                for u in population.unserved if u["group_id"] == g["group_id"]]})
     next_offset = offset + len(page) if offset + len(page) < total else None
     return page, groups, total, next_offset
 
@@ -253,13 +345,19 @@ _PROCESS_KEY = os.urandom(32)
 _KEY_DOMAIN = b"macro.sector_population.cursor.v1"
 
 
+def key_is_durable() -> bool:
+    """True only when a deployment-provisioned secret (>=32 bytes) signs the tokens."""
+    configured = os.environ.get("SECTOR_GENERATION_CURSOR_SECRET")
+    return configured is not None and len(configured.encode("utf-8")) >= 32
+
+
 def _key() -> bytes:
     configured = os.environ.get("SECTOR_GENERATION_CURSOR_SECRET")
     if configured is None:
         return _PROCESS_KEY
     raw = configured.encode("utf-8")
     if len(raw) < 32:
-        raise PopulationError("cursor_secret_invalid")
+        raise CursorSecretInvalid("cursor_secret_invalid")
     return hmac.new(raw, _KEY_DOMAIN, hashlib.sha256).digest()
 
 
@@ -300,10 +398,27 @@ def open_token(token: str, *, key: bytes | None = None) -> dict[str, Any] | None
     return body
 
 
+def unverified_kind(token: str) -> str | None:
+    """The kind claimed by a well-formed token whose signature was NOT recognised.
+
+    Used ONLY to choose between the page-cursor and original-reference answers for a
+    stale/forged token; it grants nothing and discloses nothing (same body either way).
+    """
+    try:
+        encoded = token.split(".")[0]
+        body = json.loads(base64.urlsafe_b64decode(
+            (encoded + "=" * (-len(encoded) % 4)).encode("ascii")).decode("ascii"))
+    except (ValueError, UnicodeError, AttributeError):
+        return None
+    kind = body.get("k") if isinstance(body, dict) else None
+    return kind if kind in TOKEN_KINDS else None
+
+
 def compatibility_tuple(*, generation_id: str, content_id: str, published_at: str,
                         source_session: str, qualification: str, read_captured_at: str,
                         member_sha256: Mapping[str, str], population: Population,
-                        ref: str, currentness: str) -> dict[str, Any]:
+                        ref: str, currentness: str,
+                        ref_durable: bool = False) -> dict[str, Any]:
     """The captured Sector context a downstream engine binds as a TUPLE.
 
     Coherence is this tuple, not equal generation strings: the owner reference,
@@ -320,6 +435,11 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
             "member_sha256": dict(member_sha256),
             "consumer_content_sha256": population.content_sha256,
             "retained_resolver_ref": ref,
+            # ``durable`` only when SECTOR_GENERATION_CURSOR_SECRET is configured (the
+            # signing key survives a restart / other worker). Otherwise the reference
+            # is valid for THIS process only and must not be persisted as durable.
+            "retained_resolver_ref_durability": ("durable" if ref_durable
+                                                 else "process_lifetime_only"),
         },
         "identity": {
             "market_profile": "us", "group_kind": "basket",
@@ -327,6 +447,7 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
             # Current-basis only: a label from today's classification, NEVER the
             # member's point-in-time or original classification.
             "industry_classification": dict(population.industry_classification),
+            "sub_industry_classification": dict(population.sub_industry_classification),
             "membership_effective_time": "per_row_effective_on",
             "membership_first_known": dict(UNAVAILABLE_NOT_PRODUCED),
             "original_affiliation_set": dict(UNAVAILABLE_NOT_PRODUCED),
@@ -338,16 +459,22 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
                    "decision_cutoff": dict(UNAVAILABLE_NOT_PRODUCED),
                    "qualification": qualification},
         "population": {
-            "expected": population.expected_members, "admitted": population.admitted_members,
-            "missing": population.missing_members, "eligible": dict(UNAVAILABLE_NOT_PRODUCED),
+            # Denominator = the owner's configured CURRENT roster (configured minus
+            # removed), captured per group in baskets.json ``observation``. Every
+            # configured current member is either a served row or an identified
+            # ``unserved`` entry with a closed reason. All counts are computed.
+            "configured_current": population.configured_current,
+            "served": population.served,
+            "accounted_unserved": len(population.unserved),
+            "unaccounted": population.unaccounted,
+            "unserved_members": [dict(u) for u in population.unserved],
+            "unserved_reasons": list(UNSERVED_REASONS),
+            "removed_members": dict(population.removed),
+            "complete": population.complete,
+            "complete_rule": "served + accounted_unserved == configured_current and unaccounted == 0",
+            "eligible": dict(UNAVAILABLE_NOT_PRODUCED),
             "measured": dict(UNAVAILABLE_NOT_PRODUCED),
             "entitled_visibility_scope": "entitled_full", "groups": len(population.groups),
-            # The LISTING is complete when the owner's own declared member counts
-            # equal the listed rows. ``missing`` counts listed members the owner
-            # reports without a usable measurement; they stay listed, never dropped.
-            "complete": population.expected_members == population.admitted_members,
-            "missing_reason": ("owner_reported_missing_members"
-                               if population.missing_members else None),
         },
         "claims": {"class": "observed_membership_listing", "forecast": "none",
                    "authority": {"may_rank": False, "may_gate": False, "may_size": False,
