@@ -529,6 +529,33 @@ def test_r2_b2_real_route_a_refused_basket_stays_in_the_denominator(tmp_path):
     assert next(g for g in index if g["group_id"] == "housing")["n_unserved"] == 18
 
 
+def test_sp18_same_context_refresh_emits_no_duplicate_generation(real_store):
+    """REAL bytes through the real publisher: republishing identical content is `unchanged`.
+
+    This is the publisher's half of SP18 only ("a same-context refresh emits no
+    duplicate"). The other half - "a correction links to its original" - is NOT
+    produced: neither the manifest nor the selection records a predecessor (see the wire
+    doc), so `correction_lineage` stays unavailable/not_produced.
+    """
+    tmp, root, first = real_store["tmp"], real_store["root"], real_store["first"]
+    before = sorted(p.name for p in (root / "sector").iterdir() if p.is_dir())
+    again_dir = tmp / "again"
+    again_dir.mkdir()
+    _, second, _ = _publish(tmp, _real_bundle(tmp=again_dir), generation_id="real-g1",
+                            expected=first.content_id, now=PUBLISHED)
+    assert second.status == "unchanged" and second.content_id == first.content_id
+    assert sorted(p.name for p in (root / "sector").iterdir() if p.is_dir()) == before
+    manifest = json.loads((root / "sector" / "real-g1" / "manifest.json").read_text())
+    assert not {"predecessor", "supersedes", "previous_content_id", "corrects"} & set(manifest)
+    selection = json.loads((root / "sector" / "current.json").read_text())
+    assert not {"predecessor", "supersedes", "previous_content_id", "corrects"} & set(selection)
+    capture = _client(real_store["reader"]).get(
+        URL, params={"audience": "entitled", "limit": "1"}, cookies=COOKIE
+    ).json()["page"]["capture"]
+    assert capture["correction_rights"]["correction_lineage"] == {
+        "status": "unavailable", "reason": "not_produced"}
+
+
 def test_search_also_finds_accounted_unserved_members(real_store):
     """R2-N2: `q` over the full population includes the accounted-but-unserved list."""
     client = _client(real_store["reader"])
