@@ -31093,6 +31093,9 @@ jobs:
       - templates/calculators/risk_reward.html.j2
       - site/tools/calculators/risk-reward.html
       - tests/js/risk_reward_warning_copy.test.mjs
+      - templates/calculators/covered_call.html.j2
+      - site/tools/calculators/covered-call.html
+      - tests/js/covered_call_annualized_copy.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31110,6 +31113,8 @@ jobs:
         run: |
           node --test tests/js/calculator_input_integrity.test.mjs
           node --test tests/js/risk_reward_warning_copy.test.mjs
+      - name: covered call unavailable-annualized render and copy integrity
+        run: node --test tests/js/covered_call_annualized_copy.test.mjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
