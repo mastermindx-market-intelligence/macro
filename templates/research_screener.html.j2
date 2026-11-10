@@ -39,7 +39,7 @@
     <h1 class="rs-title">{{ t('Research list', '研究名单') }}</h1>
     <p class="rs-lead">{{ t("Which names deserve a look first, and why.", "哪些公司值得先看，以及原因。") }}</p>
     <p class="rs-note">{{ t('This is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in about 30 trading days. Every line names a checkable fact and the record that produced it.', '这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。') }}</p>
-    <p class="rs-count">{% if n_names == 1 %}{{ t('1 name in this list.', '本名单共 1 家公司。') }}{% else %}{{ t('%s names in this list.'|format(n_names), '本名单共 %s 家公司。'|format(n_names)) }}{% endif %}{% if as_of %} <span class="rs-asof">{{ t('Data as of %s.'|format(as_of), '数据截至 %s。'|format(as_of)) }}</span>{% endif %}</p>
+    <p class="rs-count">{% if n_names == 0 %}{{ t('Research list unavailable.', '研究名单暂不可用。') }}{% elif n_names == 1 %}{{ t('1 name in this list.', '本名单共 1 家公司。') }}{% else %}{{ t('%s names in this list.'|format(n_names), '本名单共 %s 家公司。'|format(n_names)) }}{% endif %}{% if as_of and n_names %} <span class="rs-asof">{{ t('Data as of %s.'|format(as_of), '数据截至 %s。'|format(as_of)) }}</span>{% endif %}</p>
   </header>
 
   <div class="rs-toolbar">
@@ -58,7 +58,7 @@
 
   <p class="rs-theme-null" id="rs-theme-hint" data-rs-theme-null>{{ t("Theme lens isn't available yet.", "主题视角尚未提供。") }}</p>
   <p class="rs-exposure-null" data-rs-exposure-null data-state="signedout" hidden><span class="l-en">Sign in to see which of these you hold.</span><span class="l-zh">登录后即可看到你持有其中哪些。</span> <a class="rs-portfolio-link" data-rs-portfolio-link href="watchlist.html" hidden><span class="l-en">Open Portfolio</span><span class="l-zh">打开投资组合</span></a></p>
-  <p class="rs-empty" data-rs-empty hidden>{{ t('No names match these lenses right now.', '目前没有公司符合这些视角。') }}</p>
+  <p class="rs-empty" data-rs-empty{% if n_names %} hidden{% endif %}>{% if n_names == 0 %}{{ t('Company data is not available right now.', '当前没有可用的公司数据。') }}{% else %}{{ t('No names match these lenses right now.', '目前没有公司符合这些视角。') }}{% endif %}</p>
 
   <ol class="rs-list" data-rs-list>
     {% for row in rows %}

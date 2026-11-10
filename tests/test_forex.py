@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -1139,6 +1140,116 @@ def test_latest_json_old_keys_unchanged():
         for k in ("word_en", "word_zh", "tone", "headline_en", "headline_zh",
                   "sentence_en", "sentence_zh"):
             assert k in s, f"_stance missing key '{k}'"
+
+
+
+# --------------------------------------------------------------------------- #
+# Current-window transmission evidence (issue #10961).
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("usd_constant", [0.0, 0.001, -0.001])
+def test_transmission_terminal_constant_usd_never_reuses_older_estimates(usd_constant):
+    idx = _idx(350)
+    rng = np.random.default_rng(10961)
+    usd = pd.Series(rng.normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd + pd.Series(rng.normal(0, 0.001, len(idx)), index=idx)
+    usd.iloc[-80:] = usd_constant
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+@pytest.mark.parametrize("asset_constant", [0.0, 0.002])
+def test_transmission_terminal_constant_asset_has_zero_beta_and_no_correlation(asset_constant):
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(12).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    asset.iloc[-80:] = asset_constant
+    beta, corr = FT._beta_corr(asset, usd, 63)
+    assert beta == pytest.approx(0.0, abs=1e-12)
+    assert corr is None
+
+
+def test_transmission_terminal_fast_refusal_preserves_a_valid_slow_window():
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(13).normal(0, 0.004, len(idx)), index=idx)
+    usd.iloc[-80:] = 0.0
+    asset = -2.0 * usd
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+    beta, corr = FT._beta_corr(asset, usd, 252)
+    assert beta == pytest.approx(-2.0)
+    assert corr == pytest.approx(-1.0)
+
+
+@pytest.mark.parametrize("window,n,available", [(63, 20, False), (63, 21, True),
+                                               (252, 83, False), (252, 84, True)])
+def test_transmission_terminal_keeps_minimum_paired_sample_policy(window, n, available):
+    idx = _idx(n)
+    usd = pd.Series(np.linspace(-0.01, 0.01, n), index=idx)
+    result = FT._beta_corr(3.0 * usd, usd, window)
+    if available:
+        assert result[0] == pytest.approx(3.0)
+        assert result[1] == pytest.approx(1.0)
+    else:
+        assert result == (None, None)
+
+
+@pytest.mark.parametrize("column,value", [("asset", np.inf), ("asset", -np.inf),
+                                           ("usd", np.inf), ("usd", -np.inf)])
+def test_transmission_terminal_nonfinite_observation_refuses_the_window(column, value):
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(14).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    (asset if column == "asset" else usd).iloc[-4] = value
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+def test_transmission_terminal_overflowed_variance_is_unavailable():
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(15).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    usd.iloc[-64:] = np.tile([-1e308, 1e308], 32)
+    with np.errstate(over="ignore", invalid="ignore"):
+        assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+@pytest.mark.parametrize("window", [63, 252])
+def test_transmission_terminal_preserves_alignment_and_ignores_older_nonfinite_values(window):
+    idx = _idx(400)
+    usd = pd.Series(np.random.default_rng(16).normal(0, 0.004, len(idx)), index=idx)
+    asset = -1.5 * usd
+    # Independent missing observations retain the existing paired-observation rule.
+    asset = asset.drop(idx[-5])
+    usd = usd.drop(idx[-9])
+    asset.iloc[0] = np.inf
+    beta, corr = FT._beta_corr(asset, usd, window)
+    assert beta == pytest.approx(-1.5)
+    assert corr == pytest.approx(-1.0)
+
+
+def test_transmission_terminal_both_flat_omits_stale_rows():
+    idx = _idx(600)
+    returns = pd.Series(np.random.default_rng(17).normal(0, 0.004, len(idx)), index=idx)
+    broad = np.exp(returns.cumsum()) * 100
+    asset = np.exp((-returns).cumsum()) * 100
+    broad.iloc[-301:] = broad.iloc[-301]
+    asset.iloc[-301:] = asset.iloc[-301]
+    assert FT.transmission(broad, {"SPY": asset}, None, None, CFG["transmission"]) == {}
+
+
+def test_transmission_terminal_fast_flat_keeps_slow_evidence_without_a_current_headwind():
+    import json
+
+    idx = _idx(600)
+    returns = pd.Series(np.random.default_rng(18).normal(0, 0.004, len(idx)), index=idx)
+    broad = np.exp(returns.cumsum()) * 100
+    asset = np.exp((-returns).cumsum()) * 100
+    broad.iloc[-81:] = broad.iloc[-81]
+    asset.iloc[-81:] = asset.iloc[-81]
+    out = FT.transmission(broad, {"SPY": asset}, None, None, CFG["transmission"])
+    row = out["rows"][0]
+    assert row["beta_fast"] is None and row["corr_fast"] is None
+    assert row["corr_slow"] == pytest.approx(-1.0)
+    assert row["effect"] == "neutral"
+    assert out["headwind_for"] == out["tailwind_for"] == []
+    json.dumps(out, allow_nan=False)
 
 
 if __name__ == "__main__":
