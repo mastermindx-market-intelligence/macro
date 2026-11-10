@@ -358,7 +358,7 @@ def test_membership_curation_evidence_is_complete_and_ordered():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 6. Current-MODEL qualification — each single failed qualifier → PRIOR
+# 6. Current-MODEL qualification — each single failed qualifier → no MODEL value
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _down_model_block(p=(0.11, 0.33, 0.55)):
@@ -375,19 +375,17 @@ _GOOD = dict(parity=_HOLDS, turn_epoch="price_c4414dcb", family="sector",
 _H = ("1m", "3m", "6m")
 
 
-def _assert_downgraded(out, qualifier, model_p=(0.11, 0.33, 0.55)):
+def _assert_withheld(out, qualifier):
     assert out["unavailable"] is True
     assert out["unavailable_reason"] == "current_model_unqualified"
     assert not any(h in out for h in _H)                  # no from-now cell at all
     assert out["current_model"]["qualified"] is False
     assert qualifier in out["current_model"]["failing"]
-    prior = out["leg_origin_prior"]                       # the PRIOR, under its own name
-    assert prior["source"] == "PRIOR"
-    assert prior["population"]["horizon_origin"] == "leg_origin"
-    assert prior["population"]["from_now_probability"] is False
-    assert not set(model_p) & {prior[h] for h in _H}      # never the MODEL value
+    # the KM PRIOR has no population reading (row-weighted at-risk) → withheld, no number
+    assert out["prior"]["status"] == "withheld"
+    assert out["prior"]["reason"] == "km_by_month_at_risk_counts_panel_rows_not_legs"
     blob = json.dumps(out)
-    assert '"MODEL"' not in blob
+    assert '"MODEL"' not in blob and '"p"' not in blob
 
 
 @needs_hazard
@@ -396,7 +394,8 @@ def test_all_qualifiers_hold_keeps_model():
     assert [out[h]["source"] for h in _H] == ["MODEL"] * 3
     assert out["current_model"]["qualified"] is True
     assert out["current_model"]["failing"] == []
-    assert "leg_origin_prior" not in out and not out.get("unavailable")
+    assert "closing extremum" in out["current_model"]["target"]
+    assert "prior" not in out and not out.get("unavailable")
 
 
 _SINGLE_FAILURES = {
@@ -416,7 +415,7 @@ def test_single_failed_block_qualifier_downgrades_model_to_prior(qualifier):
     out = hs.qualify_current_model(_down_model_block(), **kw)
     assert out["current_model"]["failing"] == [qualifier]
     assert out["current_model"]["withheld_horizons"] == list(_H)
-    _assert_downgraded(out, qualifier)
+    _assert_withheld(out, qualifier)
 
 
 @needs_hazard
@@ -425,7 +424,17 @@ def test_single_failed_horizon_downgrades_model_to_prior():
     model["ledger"]["down"]["6m"]["verdict"] = "PRIOR"
     out = hs.qualify_current_model(_down_model_block(), model=model, **_GOOD)
     assert out["current_model"]["failing"] == ["horizon"]
-    _assert_downgraded(out, "horizon")
+    _assert_withheld(out, "horizon")
+
+
+@needs_hazard
+def test_a_prior_cell_inside_a_passing_ledger_fails_the_horizon_qualifier():
+    hz = _down_model_block()
+    hz["6m"] = {"p": 0.9, "source": "PRIOR", "cell_verdict": "PRIOR"}
+    out = hs.qualify_current_model(hz, **_GOOD)
+    assert out["current_model"]["failing"] == ["horizon"]
+    assert out["current_model"]["withheld_horizons"] == ["1m", "3m"]
+    _assert_withheld(out, "horizon")
 
 
 @needs_hazard
@@ -433,7 +442,7 @@ def test_up_leg_never_qualifies_because_up_3m_6m_are_prior_cells():
     hz = dict(_down_model_block(), direction="up", turn_kind="peak")
     out = hs.qualify_current_model(hz, **dict(_GOOD, turn_direction="up"))
     assert out["current_model"]["failing"] == ["horizon"]
-    _assert_downgraded(out, "horizon")
+    _assert_withheld(out, "horizon")
 
 
 @needs_hazard
@@ -441,53 +450,60 @@ def test_partial_curve_downgrades_model_to_prior():
     hz = _down_model_block()
     del hz["6m"]
     out = hs.qualify_current_model(hz, **_GOOD)
-    assert out["current_model"]["failing"] == ["whole_curve"]
-    _assert_downgraded(out, "whole_curve")
+    assert out["current_model"]["failing"] == ["horizon", "whole_curve"]
+    _assert_withheld(out, "whole_curve")
 
 
 @needs_hazard
 def test_inverted_model_curve_is_withheld_whole_not_sorted():
     out = hs.qualify_current_model(_down_model_block((0.6, 0.3, 0.9)), **_GOOD)
     assert out["current_model"]["failing"] == ["whole_curve"]
-    _assert_downgraded(out, "whole_curve", model_p=(0.6, 0.3, 0.9))
-    # the scorer's own whole-curve refusal is honoured the same way
+    _assert_withheld(out, "whole_curve")
     pre = hs._enforce_hazard_cdf(_down_model_block((0.6, 0.3, 0.9)))
     out2 = hs.qualify_current_model(pre, **_GOOD)
     assert "whole_curve" in out2["current_model"]["failing"]
+    _assert_withheld(out2, "whole_curve")
 
 
 @needs_hazard
-def test_prior_is_never_derived_from_the_withheld_model_value():
+def test_withheld_block_is_independent_of_the_model_value():
     kw = dict(_GOOD, parity={"verdict": "PARITY_FAILS"})
     a = hs.qualify_current_model(_down_model_block((0.1, 0.2, 0.3)), **kw)
     b = hs.qualify_current_model(_down_model_block((0.4, 0.5, 0.6)), **kw)
-    assert a["leg_origin_prior"] == b["leg_origin_prior"]
+    assert a == b
 
 
 @needs_hazard
-def test_leg_origin_prior_matches_the_km_artifact():
+def test_km_prior_is_row_weighted_and_therefore_withheld():
+    # the KM at-risk at age 1 equals the number of panel ROWS (not legs) — the
+    # reason no PRIOR number is shown (B12 Q9)
     km = json.loads(KM_PATH.read_text())
-    rows = {r["age_m"]: r["survival"] for r in
-            km["families"]["us_sector"]["down"]["km_by_month"]}
-    pr = hs.leg_origin_prior("sector", "down")
-    assert pr["1m"] == round(1 - rows[1], 4) and pr["6m"] == round(1 - rows[6], 4)
+    up = km["families"]["us_sector"]["up"]
+    assert up["km_by_month"][0]["age_m"] == 1
+    assert up["km_by_month"][0]["at_risk"] == up["n_rows"]
 
 
 @needs_hazard
-def test_direction_mismatch_reports_the_prior_for_the_confirmed_leg():
+def test_direction_mismatch_reports_the_confirmed_leg_and_keeps_the_scored_one():
     out = hs.qualify_current_model(_down_model_block(),
                                    **dict(_GOOD, turn_direction="up"))
     assert out["direction"] == "up" and out["turn_kind"] == "peak"
     assert out["scored_direction"] == "down"
-    assert out["leg_origin_prior"]["direction"] == "up"
 
 
 @needs_hazard
-def test_basket_prior_population_does_not_match_the_record():
+def test_no_confirmed_turn_omits_direction_rather_than_using_the_phase():
+    out = hs.qualify_current_model(_down_model_block(),
+                                   **dict(_GOOD, turn_direction=None))
+    assert "direction" not in out and "turn_kind" not in out
+    assert out["scored_direction"] == "down"
+    assert out["prior"]["direction"] is None
+
+
+@needs_hazard
+def test_basket_prior_disclosure_does_not_match_the_record():
     out = hs.qualify_current_model(_down_model_block(), **dict(_GOOD, family="basket"))
-    pop = out["leg_origin_prior"]["population"]
-    assert pop["family_key"] == "us_sector" and pop["population_matches_record"] is False
-    assert pop["conditional_on_current_age"] is False
+    assert out["prior"]["population_matches_record"] is False
 
 
 @needs_hazard
@@ -498,8 +514,16 @@ def test_withheld_curve_keeps_the_parity_claim_in_estimate_kinds():
     assert set(ek["hazard"].values()) == {"missing_estimate"}
     assert ek["model_withheld_horizons"] == list(_H)
     assert ek["model_cell_current_claim"] == "parity_failed"
-    assert ek["leg_origin_prior"] is True
     assert ek["live_feature_parity"]["report_ref"] == "meta.live_hazard_parity"
+
+
+@needs_hazard
+def test_withheld_for_another_qualifier_never_claims_parity_holds(monkeypatch):
+    import engine.hazard_parity as hpar
+    monkeypatch.setattr(hpar, "LIVE_HAZARD_PARITY", {"verdict": "PARITY_HOLDS", "failing": []})
+    out = hs.qualify_current_model(_down_model_block(), **dict(_GOOD, turn_epoch=None))
+    ek = estimate_kinds({"hazard": out}, {"status": "unavailable"})
+    assert ek["model_cell_current_claim"] == "qualifier_failed"
 
 
 @needs_hazard
@@ -517,5 +541,4 @@ def test_live_sector_build_emits_no_current_model_cell():
     assert hz is not None and hz["unavailable"] is True
     assert not any(h in hz for h in _H)
     assert {"parity", "epoch"} <= set(hz["current_model"]["failing"])
-    assert rec["estimate_kinds"] if "estimate_kinds" in rec else True
     json.dumps(rec)                                       # payload stays JSON-clean

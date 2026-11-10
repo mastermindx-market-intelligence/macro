@@ -206,13 +206,14 @@ them, and none of the positive ones, authorize a trade, a size, a gate or a rank
 | Q5 | W4.2 cell down/1m | same | 3,744 / 197 months | 0.23082 vs 0.24494; +0.01413 | CI90 [+0.0034, +0.0247]; p = 0.018; 11/17 years | survives | **QUALIFIED (historical)** | same | same |
 | Q6 | W4.2 cell down/3m | same | 3,744 / 197 months | 0.17650 vs 0.18427; +0.00777 | CI90 [+0.0005, +0.0155]; p = 0.036; 13/17 years | survives | **QUALIFIED (historical)** | same | same |
 | Q7 | W4.2 cell down/6m | same | 3,744 / 197 months | 0.10466 vs 0.10885; +0.00419 | CI90 [+0.0005, +0.0079]; p = 0.024; 12/17 years | survives | **QUALIFIED (historical)** | same | same |
-| Q8 | May any Sector Cycles record show a **current** MODEL turn probability today? | Round 3 §6.4 + this lane's frozen gate `hazard_score.qualify_current_model`: parity, epoch, cohort, direction, basis, horizon (every horizon of the direction PASS) and whole-curve validity must all hold | every sector / basket / amalgam record of every build | parity fails (Q1, Q1r); the live turn set has no epoch identity (`turn_knowledge.epoch = null`, ZigZag v1); up legs can never pass the horizon qualifier (up/3m, up/6m are PRIOR cells, Q3–Q4). Real-tape smoke at the 2026-11-06 session: XLK and XLU are scored `up` while the last confirmed turn is a peak (direction fails); XLK, XLE and XLU scored curves were already inverted (`non_monotone_cdf`) | n/a | n/a | **NO-GO**. The payload now carries no 1m/3m/6m cell for an unqualified block: `unavailable_reason: "current_model_unqualified"`, `current_model.failing` and `withheld_horizons`, and the PRIOR under `leg_origin_prior` | every qualifier holding at once: a parity-passing live vector, an epoch-stamped turn set, a trained cohort, matching direction and basis, and a direction whose three cells are all qualified | `python3 -m pytest tests/test_sector_analytics_boundaries.py -k "qualifier or curve or live_sector"` |
-| Q9 | Is the shipped KM PRIOR (`km_by_month`, 1 − S(h)) a P(turn within h months from today)? | Compare it with the from-now event rate on the training panel (`y1/y3/y6` = event within 1/3/6 months of the as-of, `build_hazard_panel.py:447-449`); the fit's own comparator is the age-bucket from-now rate (`fit_cycle_hazard._km_horizon_table`) | us_sector panel: up 2,554 rows / 107 legs; down 531 rows / 145 legs; 11 ETFs; 323 month-ends 1999-08 → 2026-06 | up: from-now 0.241 / 0.333 / 0.441 vs leg-origin 0.0125 / 0.0474 / 0.0894 (19× / 7× / 5× lower). down: from-now 0.708 / 0.881 / 0.959 vs leg-origin 0.0188 / 0.2146 / 0.485 (38× / 4× / 2× lower). Age-bucket from-now rates stay 0.21–0.35 (up, 1m) and 0.67–0.76 (down, 1m) across b1–b5 | row means over overlapping monthly rows; no CI claimed (the gap is an order of magnitude) | n/a | **NO-GO** as a from-now probability. It is a valid description of its own population ("share of legs that ended within h months of starting"), so it is emitted only as `leg_origin_prior` with `horizon_origin: "leg_origin"`, `conditional_on_current_age: false`, `from_now_probability: false` | an age-conditional from-now baseline admitted by the science owner (an estimator change, outside this lane) | `python3 - <<'EOF'` with `pandas.read_parquet("data/hazard/panel_price_c4414dcb.parquet")`: filter `family == "us_sector"`, group by `direction`, take the means of `y1`, `y3`, `y6`; compare with `1 - survival` at `age_m` 1/3/6 in `km_baseline_price_c4414dcb.json` → `families.us_sector.<dir>.km_by_month` |
-| Q10 | May a thematic-basket or amalgam record use the W4.2 model or its PRIOR as its own? | cohort qualifier: the panel `family` column holds only `us_sector`, `country`, `cn_sector` | panel: 3,085 us_sector, 8,982 country, 6,552 cn_sector rows; 0 basket rows | baskets are scored with the us_sector dummy (`_FAM_DUMMIES`) and the us_sector KM | n/a | n/a | **NO-GO** for MODEL. The PRIOR is shown with `population_matches_record: false` | a basket-family panel and fit | `test_basket_prior_population_does_not_match_the_record` |
+| Q8 | May any Sector Cycles record show a **current** MODEL turn probability today? | Round 3 §6.4 + this lane's frozen gate `hazard_score.qualify_current_model`: parity, epoch, cohort, direction, basis, horizon (every horizon of the direction PASS) and whole-curve validity must all hold | every sector / basket / amalgam record of every build | parity fails (Q1, Q1r); the live turn set has no epoch identity (`turn_knowledge.epoch = null`, ZigZag v1); up legs can never pass the horizon qualifier (up/3m, up/6m are PRIOR cells, Q3–Q4). Real-tape smoke at the 2026-11-06 session: XLK and XLU are scored `up` while the last confirmed turn is a peak (direction fails); XLK, XLE and XLU scored curves were already inverted (`non_monotone_cdf`) | n/a | n/a | **NO-GO**. The payload now carries no 1m/3m/6m cell for an unqualified block: `unavailable_reason: "current_model_unqualified"`, `current_model.failing` and `withheld_horizons`; the PRIOR is disclosed as withheld (Q9) | every qualifier holding at once: a parity-passing live vector, an epoch-stamped turn set, a trained cohort, matching direction and basis, and a direction whose three cells are all qualified | `python3 -m pytest tests/test_sector_analytics_boundaries.py -k "qualifier or curve or live_sector"` |
+| Q9 | Does the shipped KM PRIOR (`km_by_month`, 1 − S(h), the value `_km_prior` returns for PRIOR cells) describe any population a reader could be told — legs from their start, or turns from today? | Recompute `km_by_month` from its builder (`scripts/build_hazard_panel.py`, the integer-month KM block: `at_risk_m = int((grp["age_m"] >= m - 1).sum())`) and compare with leg-level durations and the panel labels | us_sector panel: up 2,554 rows / **200 legs**; down 531 rows / **179 legs** (legs = distinct `(id, leg_open_date)`); 11 ETFs; 323 month-ends 1999-08 → 2026-06 | The at-risk set counts panel **rows** aged ≥ m − 1, not legs alive: at m = 1 the at-risk is 2,554 = every up row. So 1 − S(h) = 0.0125 / 0.0474 / 0.0894 (up) and 0.0188 / 0.2146 / 0.485 (down) is a row-weighted quantity. For comparison, rough leg-level shares ending within 1/3/6 months of leg start are about 0.13 / 0.38 / 0.49 (up) and 0.07 / 0.49 / 0.78 (down). These are reviewer recomputations, not left-truncation- or censoring-corrected. The panel from-now label means are 0.241 / 0.333 / 0.441 (up) and 0.708 / 0.881 / 0.959 (down), but see Q15 for what those labels count | the defect is definitional (estimator construction), not sampling noise; the leg-level figures are approximate | n/a | **NO-GO** as a displayed probability of any kind. The 1m/3m/6m PRIOR numbers are withheld from the payload (`prior.status: "withheld"`, `reason: "km_by_month_at_risk_counts_panel_rows_not_legs"`). The PRIOR cells the incumbent shipped for up/3m and up/6m carried this number too. *Correction:* an earlier draft of this row called it a valid leg-origin share and emitted it as `leg_origin_prior`. The independent review (below) refuted that, and the field is gone. | a leg-level KM with left truncation and censoring, admitted by the science owner as the baseline (an estimator change outside this lane) | `python3 - <<'EOF'` with pandas: load `data/hazard/km_baseline_price_c4414dcb.json`; assert `families.us_sector.up.km_by_month[0].at_risk == families.us_sector.up.n_rows`. Load `data/hazard/panel_price_c4414dcb.parquet`; for us_sector count legs with `groupby(["direction", "id", "leg_open_date"]).size()` |
+| Q10 | May a thematic-basket or amalgam record use the W4.2 model or its PRIOR as its own? | cohort qualifier: the panel `family` column holds only `us_sector`, `country`, `cn_sector` | panel: 3,085 us_sector, 8,982 country, 6,552 cn_sector rows; 0 basket rows | baskets are scored with the us_sector dummy (`_FAM_DUMMIES`) and the us_sector KM | n/a | n/a | **NO-GO** for MODEL. The PRIOR is shown with `population_matches_record: false` | a basket-family panel and fit | `test_basket_prior_disclosure_does_not_match_the_record` |
 | Q11 | Does the cycle-ladder state earn a risk size multiplier ≠ 1.0 (W4.6)? | W4.6: vol-residualized p10 drawdown gap vs family base, month-block bootstrap 95% CI, BH-FDR q 0.10, embargo from 2024-01-01 | 48 (state × family × horizon) cells over 8,344 PIT stamps, counted in months | 0 of 48 cells survive | per-cell CIs in the artifact | BH-FDR q 0.10 | **NO-GO** — every multiplier stays 1.0 (inert sizing) | a fresh preregistered risk-channel study | `python -m scripts.fit_ladder_risk_calibration --print`; artifact `data/regime/ladder_risk_calibration.json` `verdict` |
 | Q12 | Do cross-instrument cycle position changes lead each other usefully (W5.1)? | W5.1 two-stage protocol: in-sample screen ≤ 2017, out-of-sample Brier test | 136 in-sample FDR survivors; top 20 pairs tested OOS over 9 year-blocks | OOS relative Brier improvement 0.029% | CI90 spans 0; 3/9 blocks positive | BH-FDR q 0.10 in stage A | **NO-GO (STOP)** — the lead-lag scope stays stopped; not re-run | a new preregistration on untouched data | `research/cycle_masterplan/W51_LEADLAG_VERDICT.md` |
 | Q13 | Does cycle position (decile) carry a forward-return edge? | W0.4 keystone: within-family position deciles, gap-vs-base CIs at 21/63/126d | 128–220 months per cell | every decile's gap CI straddles 0 | see keystone table | keystone family | **NO-GO** | a new preregistered construction | `research/cycle_masterplan/W04_KEYSTONE_VERDICT.md` §2.1 |
 | Q14 | Do Sector Central conviction directions show directional skill (grader v2 conditional hit rate)? | B07 grader v2 definition: next-bar fill, H ∈ {21, 63, 126} sessions, conditional rate = correct up/down calls ÷ directional calls, date-clustered SE. Reproduced here for the **sector** subset only (basket levels not read) | call log 2026-06-28 → 2026-10-16. Sector subset: 21d — 429 directional calls on 69 call dates; 63d — 220 calls on 31 dates; 126d — 0 matured. The windows overlap heavily: about 4 non-overlapping 21-session windows and 1–2 non-overlapping 63-session windows span the matured calls | 21d 0.448; 63d 0.455 (mostly `down` calls: 360/429 and 157/220) | date-clustered SE 0.029 (21d) and 0.022 (63d). The SE ignores overlap across dates, so it is optimistic | none (descriptive) | **UNDERPOWERED** (21d, 63d) · **ACCRUING** (126d). No skill claim either way; the figure is not a win rate | ≥ 12 non-overlapping matured windows per horizon, read under the frozen definition by the nightly grader | `python3 research/sector_completion_20261021/b12/grader_sector_subset.py data/sector_central/calls.parquet data/yahoo` |
+| Q15 | What do the W4.2 targets `y1/y3/y6` (and so any qualified MODEL cell) actually measure? | Read the label code (`scripts/build_hazard_panel.py`: the event is the first closing extremum after `last_turn_date`; `y_h = event_date <= t_end + h months`; no requirement that `event_date > t_end`) and measure it on the panel | us_sector rows: up 2,554 (616 y1 events); down 531 (376 y1 events) | Up: 459 rows (74.5% of y1 events) have a closing extremum already dated on or before the as-of. Down: 261 rows (69.4%). Turns strictly after the as-of and within h: up 0.062 / 0.154 / 0.261, down 0.217 / 0.390 / 0.467 as shares of all rows (0.075 / 0.187 / 0.318 and 0.426 / 0.767 / 0.919 among rows whose extremum is not already past) | deterministic count | n/a | **Disposition on meaning, not on skill.** The historical QUALIFIED cells (Q2, Q5–Q7) are qualified for the target "the open leg's closing extremum is dated within h months of the as-of, including one already past but not yet confirmed". They do not qualify "a new turn within h months". The builder's comment that an extremum before `t_end` "is impossible" is wrong for confirmation-lagged turns. The gate now publishes the target with every block (`current_model.target`), and any future UI wording must use it | a relabelled panel (strictly forward events, or confirmation-dated events) and a re-fit: science owner | `python3 - <<'EOF'` with pandas: `p = pd.read_parquet("data/hazard/panel_price_c4414dcb.parquet")`; for `family == "us_sector"` and each `direction`, count `(p.event_date <= p.date)` and compare with `y1.sum()` |
 
 **Not admitted (no disposition claimed):** E2 — rebuilding the live features to the panel
 contract. It would change `now.hazard`, so it needs the science owner, an independent reviewer
@@ -228,39 +229,57 @@ below) and the grader's descriptive fields.
 ```
 now.hazard = {
   "epoch": "price_c4414dcb", "revision_optimistic": true,
-  "direction": <leg direction from the last CONFIRMED turn>, "turn_kind": "peak"|"trough",
   "unavailable": true, "unavailable_reason": "current_model_unqualified",
+  "direction": <from the last CONFIRMED turn; omitted when there is none>,
+  "turn_kind": "peak"|"trough",
   "current_model": {"schema": "sector_cycles.current_model_qualification.v1",
                     "qualified": false,
                     "qualifiers": {"parity": false, "epoch": false, "cohort": ..., "direction": ...,
                                    "basis": ..., "horizon": ..., "whole_curve": ...},
-                    "failing": [...], "withheld_horizons": [...]},
-  "leg_origin_prior": {"schema": "sector_cycles.leg_origin_prior.v1", "source": "PRIOR",
-                       "1m": ..., "3m": ..., "6m": ...,
-                       "population": {"horizon_origin": "leg_origin",
-                                      "conditional_on_current_age": false,
-                                      "from_now_probability": false, ...}},
-  "scored_direction": <present only when the scorer's phase-based direction differs>
+                    "failing": [...], "withheld_horizons": [...],
+                    "target": "closing extremum of the open leg dated within h months of the as-of, ..."},
+  "prior": {"status": "withheld", "reason": "km_by_month_at_risk_counts_panel_rows_not_legs",
+            "source": "data/hazard/km_baseline_price_c4414dcb.json#km_by_month",
+            "family": ..., "population_matches_record": ..., "direction": ...},
+  "scored_direction": <present when the scorer's phase-based direction differs or no turn is confirmed>
 }
 ```
 
 `estimate_kinds` labels every horizon `missing_estimate` and keeps
-`model_cell_current_claim: "parity_failed"`, `model_withheld_horizons` and the
-`live_feature_parity` pointer, so the withholding is never silent. Other engines that call
-`hazard_score.score` directly (country, China cycles) are **unchanged**. Their parity was never
-measured, so the same question is open for them (owner: those engines; not this lane).
+`model_cell_current_claim` (`"parity_failed"` when parity is among the failing qualifiers,
+otherwise `"qualifier_failed"` — never `"parity_holds"` next to a withheld curve),
+`model_withheld_horizons` and the `live_feature_parity` pointer, so the withholding is
+never silent. Other engines that call
+`hazard_score.score` directly — country and China cycles, and `engine/commodity_cycle_state.py`
+(family `flagship`) — are **unchanged**. Their parity was never measured and their PRIOR cells
+carry the same row-weighted KM value, so Q8/Q9 are open for them (owner: those engines; not
+this lane).
 
 **Single-qualifier falsifiers** (each passes on its own with every other qualifier held true):
 `test_single_failed_block_qualifier_downgrades_model_to_prior[parity|epoch|cohort|direction|basis]`,
 `test_single_failed_horizon_downgrades_model_to_prior`, `test_partial_curve_downgrades_model_to_prior`,
-`test_inverted_model_curve_is_withheld_whole_not_sorted`; positive control
-`test_all_qualifiers_hold_keeps_model`; `test_prior_is_never_derived_from_the_withheld_model_value`;
+`test_inverted_model_curve_is_withheld_whole_not_sorted`,
+`test_a_prior_cell_inside_a_passing_ledger_fails_the_horizon_qualifier`; positive control
+`test_all_qualifiers_hold_keeps_model`; `test_withheld_block_is_independent_of_the_model_value`,
+`test_km_prior_is_row_weighted_and_therefore_withheld`,
+`test_withheld_for_another_qualifier_never_claims_parity_holds`;
 `test_live_sector_build_emits_no_current_model_cell` (all in `tests/test_sector_analytics_boundaries.py`).
 
 ### Receiver follow-on (templates — not edited by this lane)
 
 `templates/sector_cycles.js` already renders `hz.unavailable` as "Unavailable today". Its generic
-reason text ("a required input didn't settle cleanly") does not fit `current_model_unqualified`.
-The Cycles UI lane should add a reason-specific EN/ZH line and may show `leg_origin_prior` only
-with its population wording ("of past legs, x% ended within 1 month of starting"), never as
-"P(turn ≤ 1m)".
+reason text ("a required input didn't settle cleanly") does not fit `current_model_unqualified`;
+the Cycles UI lane should add a reason-specific EN/ZH line. No PRIOR number is available to show.
+The "Turn hazard (calibrated)" label and its "P(next confirmed turn within horizon)" tooltip
+describe neither quantity correctly (Q9, Q15). They must not return for these blocks.
+
+### Independent review (2026-11-09)
+
+A read-only native reviewer (Opus, separate context, no write tools) attacked this register
+and the gate before release.
+- **Claim A (the original Q9):** REFUTED. The KM at-risk counts rows, and the panel labels include past extrema. Both were verified by the lane on the data: `build_hazard_panel.py` `at_risk_m`; 459/2,554 and 261/531 already-past rows; 200/179 legs. Q9 was corrected and Q15 added.
+- **Claim B (the gate):** UPHELD-WITH-NOTES. Its minor notes are fixed:
+  - the claim no longer reads `parity_holds` beside a curve withheld for another reason
+  - direction comes only from the last confirmed turn
+  - the qualified path requires MODEL/PASS cells
+- **Remaining reviewer gaps:** a proper leg-level KM was not computed; country, cn_sector and commodity were not recomputed.

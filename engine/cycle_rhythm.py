@@ -175,12 +175,12 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
         # historically qualified MODEL value it dropped.  The claim / parity
         # pointer below still says why, so the withholding is never silent.
         cm = hazard.get("current_model") if isinstance(hazard, dict) else None
+        gate_failing: list[str] | None = None
         if isinstance(cm, dict) and cm.get("qualified") is False:
             withheld = [h for h in (cm.get("withheld_horizons") or []) if h in _HORIZONS]
             if withheld:
                 any_qualified = True
-        leg_prior = bool(isinstance(hazard, dict)
-                         and isinstance(hazard.get("leg_origin_prior"), dict))
+                gate_failing = [str(f) for f in (cm.get("failing") or [])]
 
         # B12: the recorded live-feature parity verdict gates the current claim.
         # B12r2 (RB12 repair): a record carries only {verdict, failing,
@@ -190,6 +190,11 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             claim = ("parity_holds" if _parity.get("verdict") == "PARITY_HOLDS"
                      else "parity_failed" if _parity.get("verdict") == "PARITY_FAILS"
                      else "parity_not_established")
+            # A curve withheld by the gate never reads "parity_holds": the claim
+            # names the gate's own reason (parity first, else another qualifier).
+            if gate_failing is not None:
+                claim = ("parity_failed" if "parity" in gate_failing
+                         else "qualifier_failed")
             live_parity = ({"verdict": _parity.get("verdict"),
                             # RB12b: own list — never the constant's own object
                             "failing": list(_parity.get("failing") or ()),
@@ -206,7 +211,6 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "model_cell_current_claim": claim if any_qualified else None,
             "live_feature_parity": live_parity,
             "model_withheld_horizons": withheld,
-            "leg_origin_prior": leg_prior,
         }
     except Exception:  # noqa: BLE001 — pure module contract: never raises
         return {
@@ -216,5 +220,4 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
             "model_cell_current_claim": None,
             "live_feature_parity": None,
             "model_withheld_horizons": [],
-            "leg_origin_prior": False,
         }
