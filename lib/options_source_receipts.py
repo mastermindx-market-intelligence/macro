@@ -33,6 +33,21 @@ THETA_SNAPSHOT_PARAMETERS = frozenset({"symbol", "expiration", "strike", "right"
     "stock_price", "max_dte", "strike_range", "min_time", "use_market_value", "current_day_only"})
 
 
+def dated_greek_request_options(root: str) -> dict:
+    """Explicit shared writer opt-in; never upgrade existing rows or source rights.
+
+    Daily and backfill writers must use the same requested version: whichever
+    supplies a new day first can otherwise leave its requested version unknown.
+    Empty configuration preserves all incumbent acquisition defaults.
+    """
+    import os
+    selected = {r.strip().upper() for r in os.environ.get(
+        "THETADATA_DATED_GREEKS_V1_ROOTS", "").split(",") if r.strip()}
+    if selected - {"SPY", "QQQ"}:
+        raise ValueError("Dated Greek version opt-in supports only SPY/QQQ")
+    return {"version": "1"} if root.upper() in selected else {}
+
+
 def _snapshot_calculation_provenance(path, parameters):
     if path == THETA_SNAPSHOT_ENDPOINTS["oi"]:
         return None
@@ -413,7 +428,7 @@ class BoundedRequestBudget:
     Failure/uncertainty closes the budget; consumed attempts cannot be reset.
     """
     def __init__(self, max_gets=3, *, profile="selected_expiry"):
-        cap = {"selected_expiry": 3, "reference_population": 40}.get(profile)
+        cap = {"selected_expiry": 3, "reference_population": 40, "eod_catchup": 4}.get(profile)
         if cap is None or type(max_gets) is not int or not 1 <= max_gets <= cap:
             raise ValueError("Bounded acquisition permits1–3GETs")
         self.profile = profile

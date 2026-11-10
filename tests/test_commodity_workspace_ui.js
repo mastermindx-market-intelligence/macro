@@ -4,9 +4,77 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const {JSDOM,VirtualConsole} = require("jsdom");
+const {spawnSync} = require("node:child_process");
 const root = path.resolve(__dirname,"..");
 const api = require(path.join(root,"templates/commodity-workspace.js"));
-const html = fs.readFileSync(path.join(root,"site/commodities.html"),"utf8").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
+const publishedHTML = fs.readFileSync(path.join(root,"site/commodities.html"),"utf8").replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,"");
+// The live publisher may honestly have no identity-qualified companies. Keep
+// that data honest and test the link contract with explicitly synthetic cohorts.
+// Render the real component; hand-built anchors would miss a broken template.
+const cohortRenderer = [
+  "import json, sys",
+  "from pathlib import Path",
+  "from jinja2 import Environment, FileSystemLoader, StrictUndefined",
+  "root = Path(sys.argv[1])",
+  "payloads = json.load(sys.stdin)",
+  "env = Environment(loader=FileSystemLoader(root / 'templates'), autoescape=True, undefined=StrictUndefined)",
+  "macro = '{% macro t(en,zh) %}<span class=\"l-en\">{{ en }}</span><span class=\"l-zh\">{{ zh }}</span>{% endmacro %}'",
+  "template = env.from_string(macro + '{% include \"_commodity_decision_workspace.html.j2\" %}')",
+  "json.dump({name: template.render(commodity_workspace=payload) for name, payload in payloads.items()}, sys.stdout)"
+].join("\n");
+function renderCompanyCohortFixtures(publishedHTML) {
+  const source = new JSDOM(publishedHTML,{includeNodeLocations:true});
+  const mount = source.window.document.getElementById("commodity-workspace");
+  assert.ok(mount,"published workspace mount");
+  assert.equal(source.window.document.querySelectorAll("#commodity-workspace").length,1);
+  assert.equal(mount.querySelectorAll("#cw-data").length,1);
+  const location = source.nodeLocation(mount);
+  assert.ok(location && location.endOffset > location.startOffset,"bounded workspace source");
+  const published = JSON.parse(mount.querySelector("#cw-data").textContent);
+  const payloads = {};
+  for (const mode of ["linked","empty","unavailable"]) {
+    const payload = JSON.parse(JSON.stringify(published));
+    // Do not let whichever real cohorts happen to be published supply coverage.
+    payload.chains = payload.chains.map(chain => ({...chain,cohorts:[]}));
+    const cohort = {
+      label:{en:"SYNTHETIC TEST COHORT",zh:"合成测试群组"},
+      note:{en:"Fixture only; no publisher identity or investment claim.",zh:"仅用于测试，不构成发布方身份或投资结论。"},
+      count:mode === "linked" ? 1 : null,unevaluable:null,
+      companies:{
+        state:mode === "linked" ? "available" : "unavailable",
+        linked_count:mode === "linked" ? 1 : 0,
+        linked:mode === "linked" ? [{
+          symbol:"TEST",
+          href:"https://app.mastermind-x.com/analysis?page=intelligence&entity_id=SYNTHETIC-COMPANY&symbol=TEST&owner=fixture"
+        }] : []
+      }
+    };
+    payload.chains.push({
+      id:"gold_company_return_fixture",title:{en:"SYNTHETIC company-return fixture",zh:"合成企业返回测试"},
+      applicability:"unavailable",source_state:"unavailable",as_of:payload.as_of,
+      conflicts:[],nodes:[],hops:[],current_checks_met:0,current_checks_total:0,
+      episode_id:null,cohorts:mode === "empty" ? [] : [cohort]
+    });
+    payload.test_fixture="company-return-cohort:"+mode;
+    payload.fingerprint=require("node:crypto").createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+    payloads[mode]=payload;
+  }
+  source.window.close();
+  const rendered=spawnSync(process.env.PYTHON || "python3",["-c",cohortRenderer,root],{
+    input:JSON.stringify(payloads),encoding:"utf8",maxBuffer:8*1024*1024,timeout:15000
+  });
+  assert.ifError(rendered.error);
+  assert.equal(rendered.status,0,"actual Jinja component render: "+rendered.stderr);
+  const components=JSON.parse(rendered.stdout),html={};
+  for (const mode of Object.keys(payloads)) {
+    assert.equal(typeof components[mode],"string",mode+" render result");
+    html[mode]=publishedHTML.slice(0,location.startOffset)+components[mode]+publishedHTML.slice(location.endOffset);
+  }
+  return {html,publishedFingerprint:published.fingerprint};
+}
+const cohortFixtures=renderCompanyCohortFixtures(publishedHTML);
+const html=cohortFixtures.html.linked;
+
 const output = [];
 const consoleErrors = [];
 const virtual = new VirtualConsole();
@@ -33,7 +101,7 @@ const tab=name=>click('#cw-tab-'+name);
 const pause=()=>new Promise(resolve=>setTimeout(resolve,35));
 let passed=0;
 function check(name,fn){fn();passed++;console.log("PASS",name);}
-function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-company-href]') {
+function checkCompanyReturn(selector='[data-cw-company-href]') {
   const link=q(selector), original=new URL(link.dataset.cwCompanyHref), current=new URL(link.href);
   for (const [key,value] of original.searchParams) assert.equal(current.searchParams.get(key),value,key);
   assert.deepEqual(Array.from(current.searchParams.keys()).sort(),Array.from(original.searchParams.keys()).concat("from","ret").sort());
@@ -46,12 +114,65 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
   return current.href;
 }
 
+async function checkMissingCompanyCohort(mode) {
+  const errors=[],vc=new VirtualConsole();
+  vc.on("jsdomError",error=>errors.push(error.message));
+  const fixture=new JSDOM(cohortFixtures.html[mode],{
+    url:"https://www.mastermind-x.com/commodities.html",runScripts:"outside-only",
+    pretendToBeVisual:true,virtualConsole:vc
+  });
+  const fw=fixture.window,fd=fw.document;
+  fw.HTMLElement.prototype.scrollIntoView=function(){};
+  fw.scrollTo=function(){};
+  try {
+    fw.eval(fs.readFileSync(path.join(root,"templates/commodity-workspace.js"),"utf8"));
+    const payload=JSON.parse(fd.getElementById("cw-data").textContent);
+    assert.equal(payload.test_fixture,"company-return-cohort:"+mode);
+    const get=selector=>{const el=fd.querySelector(selector);assert.ok(el,selector);return el;};
+    const noCompanyLink=()=>{
+      assert.equal(fd.querySelectorAll("[data-cw-company-href]").length,0,mode);
+      assert.equal(fd.querySelectorAll(".cw-cohorts a").length,0,mode);
+    };
+    noCompanyLink();
+    assert.equal(fd.querySelectorAll(".cw-cohorts").length,mode === "empty" ? 0 : 1);
+    get("#cw-tab-relationships").click();
+    const select=get("[data-cw-relationship-asset]");
+    select.value="gold";select.dispatchEvent(new fw.Event("change",{bubbles:true}));
+    assert.equal(api.readState(fw.location.hash,payload).asset,"gold");
+    assert.equal(get("#cw-panel-relationships").hidden,false);
+    noCompanyLink();
+    get("#cw-tab-research").click();
+    assert.equal(get("#cw-panel-research").hidden,false);
+    assert.equal(get('#cw-research-form [name="asset"]').value,"gold");
+    get("#cw-tab-compare").click();
+    const windowSelect=get("[data-cw-window]");
+    windowSelect.value="60";windowSelect.dispatchEvent(new fw.Event("change",{bubbles:true}));
+    assert.equal(get("#cw-panel-compare").hidden,false);
+    assert.equal(api.readState(fw.location.hash,payload).window,"60");
+    fd.documentElement.dataset.lang="zh";
+    fd.dispatchEvent(new fw.Event("langchange"));
+    await new Promise(resolve=>setTimeout(resolve,35));
+    noCompanyLink();
+    assert.deepEqual(errors,[]);
+  } finally {
+    fixture.window.close();
+  }
+}
+
 (async()=>{
+  check("controlled company links come from the actual template",()=>{
+    assert.equal(data.test_fixture,"company-return-cohort:linked");
+    assert.equal(d.querySelectorAll("[data-cw-company-href]").length,1);
+    assert.equal(new URL(q("[data-cw-company-href]").dataset.cwCompanyHref).searchParams.get("owner"),"fixture");
+  });
   check("default overview and dated evidence",()=>{
     assert.equal(q('#cw-panel-overview').hidden,false);
     assert.equal(q('#cw-panel-explore').hidden,true);
     assert.ok(api.validDate(data.as_of));assert.equal(data.assets.length,17);
-    assert.ok(q('#cw-panel-overview').textContent.includes("Inflation link unconfirmed"));
+    for (const id of data.attention) {
+      const asset = data.assets.find(a => a.id === id);
+      assert.ok(q('#cw-panel-overview .cw-focus[data-cw-open="'+id+'"]').textContent.includes(asset.read.headline.en));
+    }
   });
   click('#cw-panel-overview [data-cw-open="oil"]');
   check("commodity selection hides overview hero and keeps URL context",()=>{
@@ -112,8 +233,7 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
   });
   check("Gold export retains its regional proxy and excludes petroleum context",()=>{
     const evidence=api.conditionSemantics(data,"gold",20,"rates").as_saved_evidence;
-    assert.equal(evidence.gold_physical.method,"close_proxy");
-    assert.equal(evidence.gold_physical.clock,"2026-10-14 07:30 UTC");
+    assert.deepEqual(evidence.gold_physical,data.gold_physical);
     assert.equal(evidence.gold_physical.hypothesis_confirmation_eligible,false);
     assert.equal(evidence.physical,null);
   });
@@ -244,11 +364,16 @@ function checkCompanyReturn(selector='[data-cw-chain-asset="oil"] [data-cw-compa
     assert.equal(checkCompanyReturn('[data-cw-chain-asset="gold"] [data-cw-company-href]'),before);
     assert.deepEqual(api.readState(new URL(new URL(before).searchParams.get("ret")).hash,data),directState);
   });
+  for (const mode of ["empty","unavailable"]) {
+    await checkMissingCompanyCohort(mode);
+    passed++;console.log("PASS",mode+" company cohort keeps navigation usable without fabricating links");
+  }
   check("rendered DOM has no duplicate IDs or event errors",()=>{
     const ids=Array.from(d.querySelectorAll('[id]'),el=>el.id);assert.equal(new Set(ids).size,ids.length);
     assert.deepEqual(consoleErrors,[]);
   });
-  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
+  fs.writeFileSync(process.env.CW_UI_RECEIPT || '/tmp/commodity-workspace-ui-receipt.json',JSON.stringify({passed,assets:data.assets.length,snapshot:data.fingerprint,published_snapshot:cohortFixtures.publishedFingerprint,company_cohort_cases:["linked","empty","unavailable"],fixture_only:true,export_bytes:output[0].size,visual_layout_verified:false},null,2)+'\n');
   console.log('RESULT',passed,'rendered-DOM journeys passed; this is not a visual-layout proof.');
   dom.window.close();
 })().catch(error=>{console.error(error);dom.window.close();process.exitCode=1;});
+

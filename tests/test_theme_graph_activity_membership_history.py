@@ -356,7 +356,7 @@ def test_unadmitted_species_and_missing_curation_or_observation_are_refused():
         assert caught.value.code == code, (event["action"], code, caught.value)
 
 
-def test_fold_is_deterministic_pure_and_not_wired_into_build():
+def test_fold_is_deterministic_pure_and_wired_only_into_build():
     other_scope_target = "theme:advanced_packaging"
     events = [
         _append(),
@@ -387,10 +387,12 @@ def test_fold_is_deterministic_pure_and_not_wired_into_build():
     assert {row["reason"] for row in state["refused"]} == {"GRAPH_MEMBERSHIP_USE_NOT_GRANTED"}
     assert len(state["history"]) == 2  # the corrected original and the removed sibling
 
-    for wired in (materialize.build, materialize.apply_relation_events,
-                  materialize.changed_edges):
-        assert "apply_activity_membership_events" not in inspect.getsource(wired)
-        assert "activity_history" not in inspect.getsource(wired)
+    # Wired (2026-10-21 fold-seam lane): build() is the fold's ONLY consumer — the
+    # relation-event applier and the diffing path stay fold-free.
+    assert "apply_activity_membership_events" in inspect.getsource(materialize.build)
+    for unwired in (materialize.apply_relation_events, materialize.changed_edges):
+        assert "apply_activity_membership_events" not in inspect.getsource(unwired)
+        assert "activity_history" not in inspect.getsource(unwired)
 
 
 def _object_nodes(node, path="#"):

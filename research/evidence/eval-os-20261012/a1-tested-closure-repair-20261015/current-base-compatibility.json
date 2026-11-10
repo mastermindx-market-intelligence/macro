@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-15T07:27:03.620587+00:00",
+  "tested_base": "3f62e87835b22a2239f031f4fd6253d9e3aff7fa",
+  "current_main": "aafbe3bc722319358b296aac78137f13a198df4f",
+  "changed_rows": [
+    {
+      "path": "data/research_vault/catalog.json",
+      "before": "100644 blob fe7f8fb9c4440d46ff28d68f18e324c2da2a4348\tdata/research_vault/catalog.json",
+      "after": "100644 blob 59cce484e762e0d6b7cb44a507d708d2d753f7c5\tdata/research_vault/catalog.json"
+    },
+    {
+      "path": "data/research_vault/excerpts.json",
+      "before": "100644 blob a3eec651601a258160915f527dc6ff3dc004e0e5\tdata/research_vault/excerpts.json",
+      "after": "100644 blob b39f4f57e2d4cd7c2f646ff076270863b3e8e2a0\tdata/research_vault/excerpts.json"
+    },
+    {
+      "path": "site/stocks/earnings/mck-2026q4-call-record.html",
+      "before": "100644 blob c7309ededacc6685dd08a431a12b007b883a8d07\tsite/stocks/earnings/mck-2026q4-call-record.html",
+      "after": "100644 blob 80d2360a8561d7aa47be4aab12d13fd74804473f\tsite/stocks/earnings/mck-2026q4-call-record.html"
+    },
+    {
+      "path": "site/stocks/earnings/mck-2027q1-call-record.html",
+      "before": "100644 blob 9c4b35044d1c85c5f168c62dabe7fb19f4f306cb\tsite/stocks/earnings/mck-2027q1-call-record.html",
+      "after": "100644 blob 3c8b9f516564688fa7baa219e06cc33cef19bc2c\tsite/stocks/earnings/mck-2027q1-call-record.html"
+    },
+    {
+      "path": "site/stocks/earnings/page-16.html",
+      "before": "100644 blob 3c1cbe54ce65c313a04f9e1d6ccd1518eab504ec\tsite/stocks/earnings/page-16.html",
+      "after": "100644 blob 390778ffdf5cf44559429357c88f1a92e12a8183\tsite/stocks/earnings/page-16.html"
+    },
+    {
+      "path": "site/stocks/earnings/page-40.html",
+      "before": "100644 blob ab84e00e1da0e77e92f64feac53e02eafbfa3eb3\tsite/stocks/earnings/page-40.html",
+      "after": "100644 blob 5ebebad32e4a2c42b7ab0a91f5127f129180de4d\tsite/stocks/earnings/page-40.html"
+    },
+    {
+      "path": "site/stocks/earnings/rl-2026q4-call-record.html",
+      "before": "100644 blob aa6bc24f361208eac726b4ab0af6b4c3a7055127\tsite/stocks/earnings/rl-2026q4-call-record.html",
+      "after": "100644 blob 604664ea4f7ef64d194c5a35421dc128ed694059\tsite/stocks/earnings/rl-2026q4-call-record.html"
+    },
+    {
+      "path": "site/stocks/earnings/route-catalog.json",
+      "before": "100644 blob 0bc2dbb0e453818ceb56fc634eb0280ac64b8443\tsite/stocks/earnings/route-catalog.json",
+      "after": "100644 blob cef18aa1e00c641cc7a1d1d89fe667584167d324\tsite/stocks/earnings/route-catalog.json"
+    }
+  ],
+  "inventory_unchanged": true,
+  "python_and_ci_sources_unchanged": true,
+  "all_17_production_paths_unchanged": true,
+  "scope": "Read-only source/metadata comparison; no generated file contents, sealed outcomes or base integration read/performed."
+}

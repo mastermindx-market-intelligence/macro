@@ -350,8 +350,10 @@ def test_method_and_scare_classes_are_exclusive():
     assert not re.search(r'class="[^"]*\briskdlg-scare\s', dlg)
     assert "Fear ↔ Euphoria: regime synthesis" in dlg
     assert "恐惧 ↔ 欣喜：周期综合" in dlg
-    assert "sizing, not selection" in dlg
-    assert "而非选股" in dlg
+    # Sentiment is contextual evidence, not authority to select or size trades.
+    assert "Read both lenses as context, not as trade signals." in dlg
+    assert "两把尺仅供背景参考，均非交易信号。" in dlg
+    assert "sizing, not selection" not in dlg
 
 
 def test_missing_horizon_omits_zero_coerce():
