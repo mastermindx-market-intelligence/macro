@@ -352,12 +352,17 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
-# spans the full backlog independently of this cap. If quota cannot be read,
-# the known-safe 25 remains the fallback.
+# but retain a bounded evaluation ceiling: paginated discovery already spans the
+# full backlog independently of this cap. F7 (2026-11-10) raised the ceiling from
+# 128 to 256 because the measured backlog is 203-231 armed pull requests while the
+# live bucket held ~11-15k of 15,000 requests — every sampled sweep was evaluating
+# only 128 of 231 and deferring 75-103 of them behind a rotation, which is its own
+# green->merged latency term. `pull_cap_for_budget` still shrinks the window to
+# what the remaining requests can actually afford, so a thin bucket keeps the old
+# behaviour. If quota cannot be read, the known-safe 25 remains the fallback.
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 128
+MAX_PULL_CAP = 256
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
@@ -367,16 +372,18 @@ MAX_PULL_CAP = 128
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
 # mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
-# the sweeps that skip it so the shrink formula stays pessimistic.
-FULL_SWEEP_FIXED_REQUESTS = 92
+# the sweeps that skip it so the shrink formula stays pessimistic. F7 adds the
+# five controller-owned census reads (one per active status) the same way.
+FULL_SWEEP_FIXED_REQUESTS = 97
 AUTHORITY_RUN_LOOKUP_CAP = 8
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
-# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
-# attempts = 775 calls. The floor retains the reference 90-percent bound while
+# A 25-pull reference pass now models 97 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 780 calls. The floor retains the reference 90-percent bound (F7
+# raised it 700 -> 710 with the five controller-owned census reads) while leaving
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
-RATE_LIMIT_FLOOR = 700
+RATE_LIMIT_FLOOR = 710
 # A mark-only failure wake-up costs ~4-8 calls and protects a correctness marker,
 # so it has a separate small floor instead of inheriting the full-sweep floor.
 MARK_ONLY_RATE_LIMIT_FLOOR = 20
@@ -415,10 +422,11 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # advertised eight new refresh slots because the former "fair refresh" clamp raised
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
-# The S9 saturation floor below is NOT that clamp: it is one lease-serialized
-# refresh, granted only under a hard in-flight ceiling and only while the job-level
-# census shows no refusal (see REFRESH_FLOOR_PER_SWEEP).
-HIGH_LOAD_LEASE_THRESHOLD = 1
+# The F7 saturation floor below is NOT that clamp: it is two reserved refresh
+# slots, each serialized — the general slot through the one durable lease, the
+# repair slot through S8's reserve path — never a raised ordinary allowance (see
+# REFRESH_FLOOR_PER_SWEEP).
+HIGH_LOAD_LEASE_THRESHOLD = 2
 #: S8 (2026-11-06): one extra CI run per sweep reserved for the tier-0
 #: `main-red-repair` candidate while the integration baseline is red and the
 #: workload census was readable, admitted even when that census leaves zero
@@ -486,30 +494,49 @@ ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
-# S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
-# indexed proofs against the flat cap of 8, the census reported slow pickups (no
-# queued run, no refused job), the adaptive headroom was therefore 0, and the
-# allowance was 0 -- while EVERY armed pull request was stale because main had
-# changed the check definitions (~70 refresh-deferred per sweep).  Ordinary session
-# pushes kept the in-flight count above the cap, so the controller never refreshed
-# anything and nothing merged overnight.  A pool that is merely slow is still
-# serving; a pool that REFUSES (queued run or waiting hosted job) is not.  When the
-# ordinary allowance is zero, admit ONE refresh per sweep, serialized by the durable
-# lease (one slot is inside HIGH_LOAD_LEASE_THRESHOLD, so racing sweep generations
-# cannot both spend it), only while (a) the census was actually read and witnessed
-# the hosted pool picking work up (a served later-wave job, or a slow pickup -- a
-# slow job HAS started; a mature run with neither is no evidence of capacity),
-# (b) it shows no refusal evidence, and (c) fewer than REFRESH_FLOOR_PROOF_CEILING
-# proofs are in flight -- the same half-headroom cap the adaptive policy grants on
-# a single served run.  Controller refreshes count toward that ceiling like any
-# other proof, so the floor can never push the pool past it.  Because the lease is
-# held until its owner's proof settles (or the lease max age), the floor drains at
-# one controller proof per proof LIFETIME, not one per sweep -- enough to keep the
-# queue moving when sessions' own pushes alone would hold the allowance at zero.
-REFRESH_FLOOR_PER_SWEEP = 1
-REFRESH_FLOOR_PROOF_CEILING = MAX_IN_FLIGHT_PR_PROOFS + (
-    ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
-) // 2
+# S9 (2026-11-07) saturation floor, superseded by the F7 floor (2026-11-10).  S9
+# admitted ONE refresh per sweep when the ordinary allowance was zero, but only
+# while the hosted-pool census (a) was read, (b) witnessed a pickup, and (c) showed
+# no refusal.  In production every sampled sweep withheld it (sweeps 42552348615,
+# 42563058041, 42590499019, 42599891207, 42744545240: 0/0 refresh slots in all
+# five, 11-23 in-flight pull-request ci.yml runs against the cap of 8, 13-66
+# refresh-deferred): with 15+ active runs SOME queued run or slow pickup is nearly
+# always visible, so condition (b)/(c) starved the very lane the floor existed to
+# protect and the queue drained 0-1 merges per sweep.
+#
+# F7 (2026-11-10) keeps the S9 insight — the floor lane must be serialized by the
+# durable lease so chained sweeps cannot stampede — and removes everything that
+# let ordinary AUTHORED activity hold it closed:
+#
+#   1. The in-flight proof CAP now counts CONTROLLER-OWNED workload only (runs on
+#      pull requests carrying `merge-refresh-in-flight`, plus the unindexed durable
+#      reservation).  Authored `synchronize` runs no longer consume the
+#      controller's eight slots: `ci.yml`'s per-PR concurrency already bounds an
+#      author to one active run per pull request, and the controller is not the
+#      admission authority for work it did not order.  A separate repo-wide brake
+#      (ADAPTIVE_PROOF_CAP_MAX minus ALL active runs) still bounds the TOTAL, so
+#      this changes WHAT is counted against the eight slots, never the ceiling the
+#      eight (or sixteen) run under.
+#   2. REFRESH_FLOOR_PER_SWEEP is TWO reserved slots, granted unconditionally when
+#      the ordinary allowance is zero: one GENERAL refresh (lease-serialized, so
+#      cross-sweep it drains at one controller proof per proof lifetime exactly as
+#      S9 designed) and, through S8's REPAIR_REFRESH_RESERVE, one MAIN-RED-REPAIR
+#      refresh (the tier-0 pull the whole repo is waiting on).  No hosted-pool
+#      census read, pickup witness, or refusal evidence can withhold the floor
+#      anymore; the census still governs only the ADAPTIVE headroom above the flat
+#      cap, which is a capacity question, not a starvation question.
+#   3. HIGH_LOAD_LEASE_THRESHOLD rises to 2 so BOTH floor slots are lease-required:
+#      the general slot must claim the one durable lease, and a second floor slot
+#      is reachable only through S8's reserve path (a labelled repair under a red
+#      baseline, authenticating a foreign lease owner), never as an unserialized
+#      second write.
+REFRESH_FLOOR_PER_SWEEP = 2
+# Controller-owned census pagination: one page per active status covers the
+# observed 11-23 active runs with room to grow; a status whose total exceeds
+# two pages makes the census unreadable (None) rather than silently undercounting
+# the controller's own workload.
+CONTROLLER_CENSUS_PAGE = 100
+CONTROLLER_CENSUS_PAGE_CAP = 2
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -3135,6 +3162,87 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     return total
 
 
+def controller_in_flight_proofs(
+    repo: str, token: str, leased_numbers: Any
+) -> int | None:
+    """Active pull-request ``ci.yml`` runs the CONTROLLER ordered, or ``None``.
+
+    F7 (2026-11-10). The flat in-flight cap exists to bound the controller's own
+    contribution to hosted load, but :func:`in_flight_pr_proofs` counts every
+    active run — authored ``synchronize`` pushes included — so 11-23 ordinary
+    session runs starved all eight slots in every sampled sweep (sweeps
+    42552348615, 42563058041, 42590499019, 42599891207, 42744545240: 0/0 refresh
+    slots in all five) and the merge queue drained at 0-1 per sweep. This census
+    counts only runs on pull requests carrying the ``merge-refresh-in-flight``
+    label — the durable marker a controller refresh holds from ``update-branch``
+    until its proof settles — plus the caller's separate unindexed reservation.
+    Authored runs are excluded from the CAP's count on purpose (``ci.yml``'s
+    per-PR concurrency already bounds one active run per authored pull request);
+    they remain inside the repo-wide :func:`in_flight_pr_proofs` total, which the
+    admission formula keeps as the hard ceiling brake, so this narrows what the
+    eight slots are measured against without raising any ceiling.
+
+    Distinct pull requests are the unit, matching the cap's meaning (one lease
+    reserves one pull request's proof). Unreadable, malformed, or paginated-past-
+    the-cap answers are ``None`` — never an undercount of the controller's own
+    workload — and the caller pauses new refreshes exactly as it does for the
+    repo-wide census.
+    """
+    numbers = frozenset(
+        int(number) for number in leased_numbers if str(number).isdigit()
+    )
+    if not numbers:
+        # No leased pull request can be in flight: claim() is the only writer of
+        # the label and prepare_refresh_lease saw none. Zero without any read.
+        return 0
+    owned: set[int] = set()
+    for run_status in ACTIVE_PR_PROOF_STATUSES:
+        for page in range(1, CONTROLLER_CENSUS_PAGE_CAP + 1):
+            query = urllib.parse.urlencode(
+                {
+                    "event": "pull_request",
+                    "status": run_status,
+                    "per_page": str(CONTROLLER_CENSUS_PAGE),
+                    "page": str(page),
+                }
+            )
+            status, payload = _request(
+                "GET",
+                f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
+                token,
+            )
+            body = payload if isinstance(payload, dict) else {}
+            runs = body.get("workflow_runs")
+            count = body.get("total_count")
+            if (
+                status >= 400
+                or not isinstance(runs, list)
+                or not isinstance(count, int)
+                or isinstance(count, bool)
+                or count < 0
+                or count > CONTROLLER_CENSUS_PAGE_CAP * CONTROLLER_CENSUS_PAGE
+            ):
+                return None
+            for run in runs:
+                pull_requests = (
+                    run.get("pull_requests") if isinstance(run, dict) else None
+                )
+                if pull_requests is not None and not isinstance(pull_requests, list):
+                    return None
+                for pull_request in pull_requests or ():
+                    number = (
+                        pull_request.get("number")
+                        if isinstance(pull_request, dict)
+                        else None
+                    )
+                    if isinstance(number, int) and not isinstance(number, bool):
+                        if number in numbers:
+                            owned.add(number)
+            if len(runs) < CONTROLLER_CENSUS_PAGE:
+                break
+    return len(owned)
+
+
 @dataclass(frozen=True)
 class HostedPoolCensus:
     """Job-level evidence of hosted-pool service for this repository's ci.yml."""
@@ -3313,37 +3421,26 @@ def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
     return cap, f"+{headroom} adaptive: {why}"
 
 
-def refresh_floor_allowance(
-    census: HostedPoolCensus | None, effective_proofs: int
-) -> tuple[int, str]:
+def refresh_floor_allowance(controller_proofs: int) -> tuple[int, str]:
     """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
 
-    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable census
-    that witnessed a pickup (served run or slow job), on any refusal evidence, or
-    at/above ``REFRESH_FLOOR_PROOF_CEILING``.
+    F7 (2026-11-10): the floor is UNCONDITIONAL. S9 gated it on the hosted-pool
+    census witnessing a pickup and showing no refusal, and in production that
+    withheld the floor in every sampled sweep (11-23 active runs means some queued
+    run or slow pickup nearly always shows) — the lane built to prevent starvation
+    starved. The anti-stampede bound was never that census: it is the durable
+    lease. ``HIGH_LOAD_LEASE_THRESHOLD`` covers both floor slots, so the general
+    slot must claim the one lease (one controller proof in flight per proof
+    lifetime, cross-sweep) and the second slot is reachable only through S8's
+    ``REPAIR_REFRESH_RESERVE`` path for the labelled ``main-red-repair`` pull under
+    a red baseline. Authored ``synchronize`` runs cannot hold the floor closed any
+    more: ``controller_proofs`` counts only lease-marked controller workload.
     """
-    if census is None:
-        return 0, "floor withheld: hosted pool census not read"
-    if census.queued_runs > 0 or census.refused_jobs > 0:
-        return 0, (
-            f"floor withheld: hosted pool refused {census.queued_runs} queued "
-            f"run(s), {census.refused_jobs} waiting hosted job(s)"
-        )
-    if census.sampled_runs <= 0 or (census.served_runs <= 0 and census.slow_jobs <= 0):
-        return 0, (
-            "floor withheld: no hosted pickup witnessed "
-            f"({census.sampled_runs} mature run(s) sampled, none served or slow)"
-        )
-    if effective_proofs >= REFRESH_FLOOR_PROOF_CEILING:
-        return 0, (
-            f"floor withheld: {effective_proofs} proof(s) in flight, at or above "
-            f"the floor ceiling {REFRESH_FLOOR_PROOF_CEILING}"
-        )
     return REFRESH_FLOOR_PER_SWEEP, (
-        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} lease-serialized refresh "
-        f"({effective_proofs} proof(s) in flight under ceiling "
-        f"{REFRESH_FLOOR_PROOF_CEILING}, {census.slow_jobs} slow pickup(s), "
-        f"no refusal in {census.sampled_runs} mature run(s))"
+        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} reserved refresh slot(s) "
+        "(1 general, lease-serialized + 1 main-red-repair reserve; "
+        f"{controller_proofs} controller-owned proof(s) in flight; authored "
+        "synchronize runs do not consume the floor)"
     )
 
 
@@ -3640,6 +3737,7 @@ class RefreshLease:
         generation_head_sha: str = "",
         generation_id: str = "",
         readable: bool = True,
+        leased_numbers: Any = (),
     ) -> None:
         self.repo = repo
         self.read_token = read_token
@@ -3649,6 +3747,17 @@ class RefreshLease:
         self.generation_head_sha = str(generation_head_sha or "").lower()
         self.generation_id = str(generation_id or "").lower()
         self.readable = readable
+        # F7: every ARMED open pull request the lease census saw carrying the
+        # label, not just the register owner. This is the controller-owned
+        # workload census's attribution set: an active ci.yml run on one of these
+        # pull requests is a run the controller ordered, and `claim`/`release`
+        # keep the set exact (at most one association survives a clean
+        # `prepare_refresh_lease`; a quarantine fails the whole lease closed).
+        self.leased_numbers: frozenset[int] = frozenset(
+            int(number)
+            for number in leased_numbers
+            if str(number).isdigit()
+        )
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
         self.claim_attempted_number: int | None = None
@@ -4233,6 +4342,7 @@ def prepare_refresh_lease(
             owner_updated_at=acquired_at or str(issue.get("updated_at") or ""),
             generation_head_sha=generation_head_sha,
             generation_id=generation_id,
+            leased_numbers=[number],
         ),
         pulls,
     )
@@ -4545,21 +4655,20 @@ def sweep_order(
          cap from adding latency to the case the trigger exists to serve.
       3. everything else, rotated.
 
-    The rotation is what makes the cap fair. This script keeps NO state between
-    runs — it is a level-triggered reconciler, and that property is load-bearing
-    for the overlapping-sweep safety argument — so it cannot remember where the
-    last sweep stopped. The wall clock is the cursor instead. Within a cycle,
-    the evaluation window advances by `cap` every `bucket_seconds`. That covers
-    evaluation, but can leave the smaller refresh-attempt prefix permanently
-    fixed: with 100 pulls and cap=100, only the same first eight get attempts.
-    After each distinct-offset cycle, advance its phase by a value coprime to
-    gcd(cap, N). The cycles then visit every residue class, so each ordinary pull
-    gets the first ordinary position within an aligned N-bucket epoch (assuming
-    a stable backlog and priority membership). Higher-priority tiers and actual
-    admission still decide whether it receives a refresh. No state or extra
-    requests are introduced. Sorting by `updated_at` was the obvious alternative and
-    it starves: a pull request nothing acts on never has its timestamp bumped, so
-    it would hold its place — or lose it — forever.
+    Tier 3 is AGE-ordered, oldest `updated_at` first (F7, 2026-11-10): the
+    stalest green proofs are exactly the refresh candidates the scarce slot
+    exists for, and pure rotation let a fixed prefix monopolise them while
+    3-5-day-old proofs waited (2026-11-09 census: 0/8 refresh slots in every
+    sampled sweep). Age order is a FIFO queue, not starvation: acting on a pull
+    — update-branch, rebase, merge, any write — bumps `updated_at`, so being
+    served is what moves a pull to the back. The old rotation still governs
+    everything age cannot: it moves the evaluation window (`cap` per
+    `bucket_seconds`, phase advanced by a value coprime to gcd(cap, N) each
+    distinct-offset cycle) and breaks ties inside an age cohort. Pulls with a
+    missing or unparseable `updated_at` sort LAST — unknown age must never
+    preempt measurable staleness. Higher-priority tiers and actual admission
+    still decide whether a candidate receives its refresh. No state and no
+    extra requests are introduced.
 
     The rotation applies WITHIN tier 0 as well, which is what keeps two armed
     repairs taking turns. Only the first repair in the order gets the single
@@ -4588,7 +4697,23 @@ def sweep_order(
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
 
-    def rank(entry: tuple[int, dict[str, Any]]) -> tuple[int, int, int]:
+    def age_key(pull: dict[str, Any]) -> tuple[int, str]:
+        """Sort key: oldest parseable ``updated_at`` first, unknown age last."""
+        updated = str(pull.get("updated_at") or "").strip()
+        if updated:
+            try:
+                moment = dt.datetime.fromisoformat(updated.replace("Z", "+00:00"))
+            except ValueError:
+                moment = None
+            if moment is not None:
+                if moment.tzinfo is None:
+                    moment = moment.replace(tzinfo=dt.timezone.utc)
+                return (0, moment.astimezone(dt.timezone.utc).isoformat())
+        return (1, "")
+
+    def rank(
+        entry: tuple[int, dict[str, Any]],
+    ) -> tuple[int, tuple[int, str], int, int]:
         index, pull = entry
         if MAIN_RED_REPAIR_LABEL in label_names(pull):
             tier = 0
@@ -4598,7 +4723,7 @@ def sweep_order(
             tier = 2
         else:
             tier = 3
-        return (tier, (index - offset) % span, int(pull.get("number") or 0))
+        return (tier, age_key(pull), (index - offset) % span, int(pull.get("number") or 0))
 
     return [pull for _index, pull in sorted(enumerate(stable), key=rank)]
 
@@ -8663,9 +8788,21 @@ def main() -> int:
     # GLOBAL workload backpressure, before any branch mutation. The old cap of eight
     # PER SWEEP still launched dozens of CI runs when completed workflows started a
     # new full sweep roughly every minute. Active ci.yml runs are the durable state
-    # shared by those sweeps, so only the genuinely free repo-wide slots remain
-    # available to `take_refresh`. An unreadable census means zero NEW workload, not
+    # shared by those sweeps. An unreadable census means zero NEW workload, not
     # zero merging: already-proven heads continue through every correctness gate.
+    #
+    # F7 (2026-11-10) splits the one census into the two questions it was always
+    # conflating. The CAP is measured against CONTROLLER-OWNED workload — active
+    # ci.yml runs on pull requests carrying the refresh lease, plus the unindexed
+    # durable reservation — because authored `synchronize` runs are not this
+    # controller's admission decision (ci.yml's per-PR concurrency already bounds
+    # each author to one active run, and counting them starved all eight slots in
+    # every sampled sweep: 11-23 active vs cap 8, 0/0 refresh slots, 0-1 merges).
+    # The TOTAL brake is measured against the repo-wide count unchanged, so the
+    # ceiling the eight (adaptive sixteen) run under never rises: authored +
+    # controller proofs together still cannot exceed ADAPTIVE_PROOF_CAP_MAX in
+    # flight before ordinary refreshes stop. The floor lanes below are what keep
+    # draining when even that brake closes.
     refresh_load_detail = ""
     try:
         active_pr_proofs = in_flight_pr_proofs(repo, read_token)
@@ -8679,23 +8816,34 @@ def main() -> int:
     reservation_count = refresh_lease_reservation_count(
         repo, read_token, refresh_lease, pulls
     )
-    effective_active_proofs = (
-        active_pr_proofs
-        + reservation_count
-        if active_pr_proofs is not None
+    try:
+        controller_proofs = controller_in_flight_proofs(
+            repo, read_token, refresh_lease.leased_numbers
+        )
+    except Exception as exc:
+        controller_proofs = None
+        refresh_load_detail = (
+            refresh_load_detail
+            or f"controller census failed ({exc}); new refreshes paused"
+        )
+    effective_controller_proofs = (
+        controller_proofs + reservation_count
+        if controller_proofs is not None
         else None
     )
     # The adaptive cap is read only where headroom could admit a refresh: a readable
-    # census and lease, refresh authority, fewer proofs in flight than the widest
-    # cap, and a flat-cap allowance smaller than what this sweep could launch (with
-    # no proof in flight the flat cap already affords a full MAX_REFRESHES_PER_SWEEP).
-    # It degrades to the flat cap on ANY census problem, including a RateLimited
-    # read: it must never route the sweep into the deferred path.
+    # census and lease, refresh authority, fewer controller-owned proofs in flight
+    # than the widest cap, and a flat-cap allowance smaller than what this sweep
+    # could launch (with no proof in flight the flat cap already affords a full
+    # MAX_REFRESHES_PER_SWEEP). It degrades to the flat cap on ANY census problem,
+    # including a RateLimited read: it must never route the sweep into the deferred
+    # path.
     proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
     pool_census: HostedPoolCensus | None = None
-    effective_proofs = int(effective_active_proofs or 0)
+    effective_proofs = int(effective_controller_proofs or 0)
     if (
         active_pr_proofs is not None
+        and controller_proofs is not None
         and refresh_lease.readable
         and budget.refresh_authorized
         and effective_proofs < ADAPTIVE_PROOF_CAP_MAX
@@ -8707,29 +8855,44 @@ def main() -> int:
             adaptive_detail = f"census failed ({exc}): flat cap"
         else:
             proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
-    if active_pr_proofs is None or not refresh_lease.readable:
+    if (
+        active_pr_proofs is None
+        or controller_proofs is None
+        or not refresh_lease.readable
+    ):
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
-        available_refreshes = max(
-            0, proof_cap - int(effective_active_proofs or 0)
+        # Authored + controller proofs together may not pass the widest cap; the
+        # controller's own slots are measured against controller-owned workload.
+        total_brake = max(
+            0, ADAPTIVE_PROOF_CAP_MAX - active_pr_proofs - reservation_count
+        )
+        available_refreshes = min(
+            budget.max_refreshes,
+            max(0, proof_cap - int(effective_controller_proofs or 0)),
+            total_brake,
         )
         floor_detail = ""
         if available_refreshes == 0 and budget.max_refreshes > 0:
-            # S9: a saturated-but-serving pool must not freeze every stale proof
-            # indefinitely. One lease-serialized refresh, under a hard ceiling.
+            # F7: the ordinary allowance is closed, so the reserved floor takes
+            # over — unconditionally (see refresh_floor_allowance). Both floor
+            # slots are lease-serialized/threshold-bounded, never census-gated.
             available_refreshes, floor_detail = refresh_floor_allowance(
-                pool_census, effective_proofs
+                effective_proofs
             )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
             0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
         )
         refresh_load_detail = (
-            f"{active_pr_proofs} indexed pull-request ci run(s) plus "
+            f"{active_pr_proofs} indexed pull-request ci run(s) "
+            f"({controller_proofs} controller-owned) plus "
             f"{reservation_count} unindexed durable "
-            f"reservation(s), global cap "
-            f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
+            f"reservation(s), controller cap "
+            f"{proof_cap} ({adaptive_detail}), repo-wide in-flight brake "
+            f"{total_brake} under {ADAPTIVE_PROOF_CAP_MAX}, "
+            f"{budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
             + (f" [{floor_detail}]" if floor_detail else "")
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
@@ -8909,6 +9072,7 @@ def main() -> int:
         candidate_semantic = None
         candidate_runs = None
         semantic_unrelated = False
+        is_repair = False
         if baseline_state != "green":
             if baseline_state == "red" and semantic_main is not None:
                 number = pull.get("number")
@@ -8984,9 +9148,15 @@ def main() -> int:
                     tally[verdict] = tally.get(verdict, 0) + 1
                     continue
             elif is_repair:
-                # At most one repair candidate per pass. Even two individually green
+                # At most one repair MERGE per pass: even two individually green
                 # repairs have not been jointly proven against the broken baseline.
-                repair_slot_used = True
+                # F7: the slot is consumed only AFTER a verdict that actually spent
+                # it (see below), because sweep_pull has not yet judged eligibility
+                # here. Pre-consuming meant one DIRTY repair ("conflict") or one
+                # check-failing repair ("blocked") — both definitive no-ops —
+                # burned the only per-pass slot and deferred every other armed
+                # repair, and with it the whole repo, to later sweeps.
+                pass
         try:
             sweep_options: dict[str, Any] = {}
             if reconcile_only:
@@ -9022,6 +9192,17 @@ def main() -> int:
             )
             verdict = "error"
         tally[verdict] = tally.get(verdict, 0) + 1
+        if (
+            is_repair
+            and baseline_state != "green"
+            and verdict in {"merged", "already-merged", "merge-unknown"}
+        ):
+            # The single per-pass repair merge is now spent — by this pass's own
+            # merge, an earlier pass's merge observed here, or an unknown-outcome
+            # merge attempt that must be treated as spent. Non-merge verdicts
+            # ("conflict", "blocked", "pending", "updated", ...) leave the slot
+            # open for the next armed repair in this same pass.
+            repair_slot_used = True
         if verdict in {
             "authorization-unreadable",
             "lease-lost",

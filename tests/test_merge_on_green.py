@@ -27,6 +27,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
+REAL_CONTROLLER_IN_FLIGHT_PROOFS = MOG.controller_in_flight_proofs
 REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
@@ -80,6 +81,10 @@ def _no_unstubbed_http(monkeypatch):
     # keeps its numbers; tests about the adaptive cap override it.
     monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
+    # F7 splits the proof census: this controller-owned count is what the refresh
+    # cap is measured against. Healthy/idle is the neutral default, mirroring the
+    # repo-wide census above; tests about controller-owned admission override it.
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
         MOG,
@@ -3507,6 +3512,114 @@ def test_a_red_main_blocks_ordinary_pulls_and_allows_one_explicit_repair(
     assert "circuit breaker" in out
 
 
+def _red_main_harness(monkeypatch, pulls):
+    """`main()` under a red baseline: the state in which the per-pass repair slot
+    exists at all."""
+    monkeypatch.setenv("GH_REPO", "acme/widgets")
+    monkeypatch.setenv("READ_TOKEN", "read")
+    monkeypatch.setenv("MERGE_TOKEN", "write")
+    monkeypatch.delenv("TRIGGER_CONCLUSION", raising=False)
+    monkeypatch.delenv("TRIGGER_HEAD_SHA", raising=False)
+    monkeypatch.setattr(MOG, "labeled_pulls", lambda *_a: list(pulls))
+    monkeypatch.setattr(
+        MOG, "integration_baseline_state", lambda *_a: ("red", "failure at run")
+    )
+    monkeypatch.setattr(
+        MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness())
+    )
+    monkeypatch.setattr(MOG, "core_rate_limit", lambda _token: (1000, 1000))
+
+
+def test_a_dirty_repair_does_not_burn_the_single_per_pass_repair_slot(
+    monkeypatch, capsys
+):
+    """F7: `repair_slot_used` used to be set BEFORE `sweep_pull` judged
+    eligibility, so one DIRTY armed repair ("conflict") — a definitive no-op —
+    consumed the only per-pass slot and deferred every other armed repair, and
+    with it the whole repo, to later sweeps. The slot is now consumed only by a
+    verdict that actually spent it: a merge or an unknown-outcome merge attempt."""
+    repair_dirty = _pull(2, labels=("merge-on-green", "main-red-repair"))
+    repair_dirty["updated_at"] = "2026-11-05T00:00:00Z"  # older: swept first, deterministically
+    repair_clean = _pull(3, labels=("merge-on-green", "main-red-repair"))
+    repair_clean["updated_at"] = "2026-11-09T00:00:00Z"
+    _red_main_harness(monkeypatch, [repair_dirty, repair_clean])
+    verdicts = {2: "conflict", 3: "merged"}
+    swept: list[int] = []
+
+    def record(_repo, pull, *_a):
+        swept.append(pull["number"])
+        return verdicts[pull["number"]]
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    assert sorted(swept) == [2, 3], (
+        "the dirty no-op must not starve its sibling of the slot it never used"
+    )
+    assert "1 merged" in out and "1 conflict" in out, out
+
+
+def test_a_check_failing_repair_does_not_burn_the_repair_slot(monkeypatch, capsys):
+    repair_red = _pull(2, labels=("merge-on-green", "main-red-repair"))
+    repair_red["updated_at"] = "2026-11-05T00:00:00Z"  # older: swept first
+    repair_green = _pull(3, labels=("merge-on-green", "main-red-repair"))
+    repair_green["updated_at"] = "2026-11-09T00:00:00Z"
+    _red_main_harness(monkeypatch, [repair_red, repair_green])
+    verdicts = {2: "blocked", 3: "merged"}
+    swept: list[int] = []
+
+    def record(_repo, pull, *_a):
+        swept.append(pull["number"])
+        return verdicts[pull["number"]]
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    assert sorted(swept) == [2, 3]
+    assert "1 merged" in out and "1 blocked" in out, out
+
+
+def test_the_repair_slot_is_still_consumed_by_the_first_actual_repair_merge(
+    monkeypatch, capsys
+):
+    """The invariant the slot exists for is unchanged: at most one repair MERGE
+    per pass, because even two individually green repairs have not been jointly
+    proven against the broken baseline."""
+    repair_one = _pull(2, labels=("merge-on-green", "main-red-repair"))
+    repair_two = _pull(3, labels=("merge-on-green", "main-red-repair"))
+    _red_main_harness(monkeypatch, [repair_one, repair_two])
+    swept: list[int] = []
+
+    def record(_repo, pull, *_a):
+        swept.append(pull["number"])
+        return "merged"
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    assert MOG.main() == 0
+    assert len(swept) == 1 and swept[0] in {2, 3}, (
+        "the second repair must stay behind the circuit breaker"
+    )
+    out = capsys.readouterr().out
+    assert "1 merged" in out and "1 baseline-blocked" in out, out
+
+
+def test_an_unknown_outcome_repair_merge_still_spends_the_slot(monkeypatch, capsys):
+    repair_one = _pull(2, labels=("merge-on-green", "main-red-repair"))
+    repair_two = _pull(3, labels=("merge-on-green", "main-red-repair"))
+    _red_main_harness(monkeypatch, [repair_one, repair_two])
+    swept: list[int] = []
+
+    def record(_repo, pull, *_a):
+        swept.append(pull["number"])
+        return "merge-unknown"
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    assert MOG.main() == 0
+    assert len(swept) == 1 and swept[0] in {2, 3}, (
+        "an unknown-outcome merge attempt is spent, not refundable"
+    )
+
+
 def test_two_armed_repairs_take_turns_instead_of_one_starving_the_other():
     """A repair that is permanently red must not hold the single repair slot forever.
 
@@ -3528,6 +3641,96 @@ def test_two_armed_repairs_take_turns_instead_of_one_starving_the_other():
     assert first_choice == {2, 3}, (
         f"only {first_choice} ever won the repair slot across 12 rotations"
     )
+
+
+# --- F7: tier 3 is age-ordered, oldest green proof first ─────────────────────
+
+
+def _aged_pull(number, updated_at):
+    pull = _pull(number)
+    if updated_at is not None:
+        pull["updated_at"] = updated_at
+    return pull
+
+
+def test_tier_three_is_age_ordered_oldest_updated_first():
+    """F7: pure rotation let a fixed prefix monopolise the scarce refresh slots
+    while 3-5-day-old proofs waited. Tier 3 now sorts oldest `updated_at` first,
+    whatever the wall-clock rotation happens to be."""
+    pulls = [
+        _aged_pull(11, "2026-11-09T08:00:00Z"),
+        _aged_pull(12, "2026-11-06T21:14:00Z"),  # three days stale: must be first
+        _aged_pull(13, "2026-11-08T02:00:00Z"),
+        _aged_pull(14, "2026-11-09T09:30:00Z"),
+    ]
+    for bucket in range(12):
+        order = [
+            pull["number"]
+            for pull in MOG.sweep_order(
+                pulls, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+            )
+        ]
+        assert order == [12, 13, 11, 14], (bucket, order)
+
+
+def test_pulls_with_unknown_age_sort_last_in_tier_three():
+    """`_pull` payloads missing `updated_at` (and malformed timestamps) must not
+    preempt measurable staleness — unknown age goes to the back, where the rotation
+    still gives the cohort its turn."""
+    pulls = [
+        _aged_pull(21, None),  # no timestamp at all
+        _aged_pull(22, "2026-11-09T10:00:00Z"),
+        _aged_pull(23, "not-a-timestamp"),
+        _aged_pull(24, "2026-11-07T00:00:00Z"),
+    ]
+    for bucket in range(12):
+        order = [
+            pull["number"]
+            for pull in MOG.sweep_order(
+                pulls, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+            )
+        ]
+        assert order[:2] == [24, 22], (bucket, order)
+        assert set(order[2:]) == {21, 23}, (bucket, order)
+
+
+def test_being_acted_on_moves_a_pull_to_the_back_of_the_age_order():
+    """Age order is a FIFO queue, not starvation: any controller action
+    (update-branch, merge, label write) bumps `updated_at`, and the served pull
+    then waits behind its siblings instead of holding the front position."""
+    pulls = [
+        _aged_pull(31, "2026-11-09T08:00:00Z"),
+        _aged_pull(32, "2026-11-05T00:00:00Z"),
+    ]
+    first = [p["number"] for p in MOG.sweep_order(pulls, now=0)]
+    assert first == [32, 31]
+    # PR #32 is served: its branch update stamps it NOW, so it queues behind #31.
+    served = pulls[1]
+    served["updated_at"] = "2026-11-09T12:00:00Z"
+    second = [p["number"] for p in MOG.sweep_order(pulls, now=MOG.ROTATION_BUCKET_SECONDS)]
+    assert second == [31, 32]
+
+
+def test_priority_tiers_still_trump_age_ordering():
+    """Repairs (tier 0), the lease owner (tier 1) and the triggering head (tier 2)
+    keep their absolute priority even against the stalest ordinary proof."""
+    repair = _aged_pull(41, "2026-11-09T23:00:00Z")  # newest of all
+    repair["labels"].append({"name": "main-red-repair"})
+    lease_owner = _aged_pull(42, "2026-11-09T22:00:00Z")
+    lease_owner["labels"].append({"name": MOG.REFRESH_LEASE_LABEL})
+    trigger = _aged_pull(43, "2026-11-09T21:00:00Z")
+    trigger["head"]["sha"] = "e" * 40
+    ordinary = _aged_pull(44, "2026-11-01T00:00:00Z")  # stalest by far
+    order = [
+        pull["number"]
+        for pull in MOG.sweep_order(
+            [ordinary, trigger, lease_owner, repair],
+            trigger_head_sha="e" * 40,
+            refresh_lease_number=42,
+            now=0,
+        )
+    ]
+    assert order == [41, 42, 43, 44]
 
 
 def test_an_unavailable_baseline_aborts_without_touching_pulls(monkeypatch, capsys):
@@ -4989,6 +5192,121 @@ def test_an_unreadable_proof_census_never_claims_zero_load(
     assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") is None
 
 
+# --- F7: the controller-owned proof census ────────────────────────────────────
+
+
+def _controller_run(head, number):
+    return {
+        "head_sha": head,
+        "status": "in_progress",
+        "event": "pull_request",
+        "pull_requests": [{"number": number}],
+    }
+
+
+def test_controller_census_attributes_runs_by_the_durable_lease_label(monkeypatch):
+    """Only active ci.yml runs on pull requests carrying the refresh lease count
+    against the controller cap: the lease is the one durable marker separating a
+    controller-ordered update-branch run from an authored synchronize run, which
+    this census must ignore (that separation is the whole F7 fix)."""
+    seen: list[str] = []
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        seen.append(url)
+        assert "actions/workflows/ci.yml/runs?" in url
+        if "status=in_progress" in url:
+            return 200, {
+                "total_count": 4,
+                "workflow_runs": [
+                    _controller_run("a" * 40, 4242),  # the lease owner: counts
+                    _controller_run("b" * 40, 4242),  # same PR, older run: same unit
+                    _controller_run("c" * 40, 77),    # authored run: ignored
+                    _controller_run("d" * 40, 88),    # authored run: ignored
+                ],
+            }
+        if "status=queued" in url:
+            return 200, {
+                "total_count": 1,
+                "workflow_runs": [_controller_run("e" * 40, 4242)],
+            }
+        return 200, {"total_count": 0, "workflow_runs": []}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    assert (
+        REAL_CONTROLLER_IN_FLIGHT_PROOFS("acme/widgets", "read", ["4242", "junk"])
+        == 1
+    )
+    # The census walks every active status the repo-wide census does.
+    assert all(
+        any(f"status={status}" in url for url in seen)
+        for status in MOG.ACTIVE_PR_PROOF_STATUSES
+    )
+
+
+def test_controller_census_reads_no_http_and_counts_zero_without_a_lease(monkeypatch):
+    """No lease owner means no controller-owned workload can exist: zero, with no
+    request spent (this is the common case, so it must be free)."""
+    def refuse(*_a, **_k):
+        raise AssertionError("census read although no lease owner exists")
+
+    monkeypatch.setattr(MOG, "_request", refuse)
+    assert REAL_CONTROLLER_IN_FLIGHT_PROOFS("acme/widgets", "read", ()) == 0
+    assert (
+        REAL_CONTROLLER_IN_FLIGHT_PROOFS("acme/widgets", "read", ["not-a-number"])
+        == 0
+    )
+
+
+@pytest.mark.parametrize(
+    "status,payload",
+    [
+        (502, None),
+        (200, {}),
+        (200, {"total_count": "7"}),
+        (200, {"total_count": -1}),
+        # Pagination overflow: more active runs than the census will ever page
+        # through must not silently undercount — it is unreadable, and unreadable
+        # means new refreshes pause (fail closed).
+        (
+            200,
+            {"total_count": MOG.CONTROLLER_CENSUS_PAGE_CAP * MOG.CONTROLLER_CENSUS_PAGE + 1},
+        ),
+        # A malformed pull_requests association cannot be attributed to anyone.
+        (200, {"total_count": 1, "workflow_runs": [{"pull_requests": "nope"}]}),
+    ],
+)
+def test_an_unreadable_controller_census_never_claims_zero_load(
+    monkeypatch, status, payload
+):
+    monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (status, payload))
+    assert REAL_CONTROLLER_IN_FLIGHT_PROOFS("acme/widgets", "read", ["4242"]) is None
+
+
+def test_a_failed_controller_census_pauses_new_refreshes_fail_closed(monkeypatch, capsys):
+    """The controller census is a distinct failure from the repo-wide census: an
+    unreadable answer must pause NEW refreshes without blocking merges of already
+    proven heads, exactly like the repo-wide census."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    monkeypatch.setattr(
+        MOG, "controller_in_flight_proofs", lambda *_a, **_k: None
+    )
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [0]
+    out = capsys.readouterr().out
+    assert "new refreshes paused" in out
+
+
 def _refresh_owner(*, current_head="b" * 40):
     pull = _pull(
         999,
@@ -5129,17 +5447,36 @@ def test_refresh_budget_refuses_branch_writes_without_serialized_authority(
 
 
 @pytest.mark.parametrize(
-    "active,expected_allowance",
+    "active,expected_allowance,floor",
     [
-        (0, MOG.MAX_IN_FLIGHT_PR_PROOFS),
-        (MOG.MAX_IN_FLIGHT_PR_PROOFS - 1, 1),
-        (MOG.MAX_IN_FLIGHT_PR_PROOFS, 0),
-        (34, 0),
-        (None, 0),
+        (0, MOG.MAX_IN_FLIGHT_PR_PROOFS, False),
+        # F7 (2026-11-10): authored synchronize runs no longer consume the
+        # controller-owned cap. Before F7 these two rows expected 1 and 0 — the
+        # exact starvation the 2026-11-09 census measured live (11-23 active
+        # authored runs vs cap 8, 0/8 refresh slots in every sampled sweep).
+        (MOG.MAX_IN_FLIGHT_PR_PROOFS - 1, MOG.MAX_IN_FLIGHT_PR_PROOFS, False),
+        (MOG.MAX_IN_FLIGHT_PR_PROOFS, MOG.MAX_IN_FLIGHT_PR_PROOFS, False),
+        # The repo-wide brake still binds: authored + controller proofs together
+        # may not pass the widest cap.
+        (MOG.ADAPTIVE_PROOF_CAP_MAX - 1, 1, False),
+        # Brake closed: the unconditional F7 floor keeps two lease-serialized
+        # slots draining instead of freezing every stale proof.
+        (MOG.ADAPTIVE_PROOF_CAP_MAX, MOG.REFRESH_FLOOR_PER_SWEEP, True),
+        (34, MOG.REFRESH_FLOOR_PER_SWEEP, True),
+        (None, 0, False),
     ],
+    ids=(
+        "idle-repo",
+        "authored-at-cap-no-longer-starves",
+        "authored-over-cap-no-longer-starves",
+        "repo-wide-brake-binds",
+        "brake-closed-floor-two",
+        "authored-flood-floor-two",
+        "census-unreadable-paused",
+    ),
 )
-def test_repo_wide_active_proofs_clamp_update_branch_capacity(
-    monkeypatch, capsys, active, expected_allowance
+def test_repo_wide_authored_proofs_do_not_consume_the_controller_cap(
+    monkeypatch, capsys, active, expected_allowance, floor
 ):
     _main_harness(monkeypatch, [_pull(1)])
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
@@ -5160,13 +5497,17 @@ def test_repo_wide_active_proofs_clamp_update_branch_capacity(
         assert "new refreshes paused" in out
     else:
         assert f"{active} indexed pull-request ci run(s)" in out
+        assert "controller-owned" in out
+    if floor:
+        assert f"saturation floor: {MOG.REFRESH_FLOOR_PER_SWEEP}" in out
+        assert "(durable lease required)" in out
 
 
 @pytest.mark.parametrize(
     "reservation_count,expected_allowance,requires_lease",
     [
-        (0, 1, True),
-        (1, 0, False),
+        (0, MOG.MAX_IN_FLIGHT_PR_PROOFS, False),
+        (1, MOG.MAX_IN_FLIGHT_PR_PROOFS - 1, False),
     ],
     ids=("owner-run-indexed", "owner-run-not-yet-indexed"),
 )
@@ -5459,38 +5800,42 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "census,active,expected_allowance",
+    "census,controller,active,expected_allowance",
     [
-        (_census(served_runs=3), 8, 8),
-        (_census(served_runs=3), 15, 1),
-        (_census(served_runs=3), 16, 0),
-        (_census(sampled_runs=1, served_runs=1), 10, 2),
-        (_census(refused_jobs=1, served_runs=2), 8, 0),
-        # S9: a slow pickup collapses the adaptive cap to the flat 8 (unchanged) but
-        # is not refusal, so the saturation floor still admits one lease-serialized
-        # refresh while fewer than REFRESH_FLOOR_PROOF_CEILING proofs are in flight.
-        (_census(slow_jobs=1, served_runs=3), 8, 1),
-        (_census(queued_runs=1), 8, 0),
-        (_census(sampled_runs=0, served_runs=0), 8, 0),
-        (None, 8, 0),
+        # F7: the adaptive cap is measured against CONTROLLER-owned proofs (the
+        # lease-carrying refresh runs), so each row keeps one controller proof in
+        # flight to open the census gate (flat 8 - 1 < 8); repo-wide `active`
+        # drives only the total brake under ADAPTIVE_PROOF_CAP_MAX.
+        (_census(served_runs=3), 1, 0, 8),
+        (_census(served_runs=3), 1, 14, 2),
+        (_census(served_runs=3), 1, 16, MOG.REFRESH_FLOOR_PER_SWEEP),
+        (_census(sampled_runs=1, served_runs=1), 1, 0, 8),
+        (_census(refused_jobs=1, served_runs=2), 2, 0, 6),
+        (_census(refused_jobs=1, served_runs=2), 7, 0, 1),
+        (_census(refused_jobs=1, served_runs=2), 8, 0, MOG.REFRESH_FLOOR_PER_SWEEP),
+        (_census(queued_runs=1), 2, 0, 6),
+        (_census(sampled_runs=0, served_runs=0), 2, 0, 6),
+        (None, 1, 0, 7),
     ],
     ids=(
         "served-pool-cap-16",
-        "served-pool-last-slot",
-        "served-pool-full",
+        "served-pool-brake-clamps",
+        "served-pool-brake-closed-floor",
         "one-served-run-cap-12",
         "refused-job-flat-cap",
-        "slow-pickup-flat-cap-floor-one",
+        "refused-job-last-slot",
+        "controller-cap-full-floor-two",
         "queued-run-flat-cap",
         "no-witness-flat-cap",
-        "census-unreadable-flat-cap",
+        "adaptive-census-unreadable-flat-cap",
     ),
 )
 def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
-    monkeypatch, capsys, census, active, expected_allowance
+    monkeypatch, capsys, census, controller, active, expected_allowance
 ):
     _main_harness(monkeypatch, [_pull(1)])
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: controller)
     monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
     allowances: list[int] = []
 
@@ -5504,19 +5849,25 @@ def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
     assert MOG.main() == 0
     assert allowances == [expected_allowance]
     out = capsys.readouterr().out
-    if active >= MOG.ADAPTIVE_PROOF_CAP_MAX:
-        # Nothing could widen past a full widest cap: the census is not even read.
-        assert "global cap 8 (census skipped: flat cap)" in out
+    if census is None:
+        # An UNREADABLE adaptive census degrades to the flat cap; only an
+        # unreadable repo-wide or controller-owned census pauses new refreshes.
+        assert "controller cap 8 (census unavailable: flat cap)" in out
+        return
+    if controller >= MOG.MAX_IN_FLIGHT_PR_PROOFS:
+        # The controller-owned cap is full: the census read cannot add room and
+        # the floor is what admitted the two lease-serialized slots.
+        assert "saturation floor: 2" in out
     else:
         expected_cap, _ = MOG.adaptive_proof_cap(census)
-        assert f"global cap {expected_cap} (" in out
+        assert f"controller cap {expected_cap} (" in out
 
 
 @pytest.mark.parametrize(
-    "active,authorized,lease_readable",
+    "controller,authorized,lease_readable",
     [(0, True, True), (16, True, True), (20, True, True), (3, False, True), (3, True, False)],
     ids=(
-        "idle-repo",
+        "no-controller-workload",
         "widest-cap-already-full",
         "beyond-widest-cap",
         "refresh-authority-refused",
@@ -5524,10 +5875,11 @@ def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
     ),
 )
 def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
-    monkeypatch, capsys, active, authorized, lease_readable
+    monkeypatch, capsys, controller, authorized, lease_readable
 ):
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: controller)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: authorized)
     if not lease_readable:
         monkeypatch.setattr(
@@ -5547,14 +5899,18 @@ def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
     assert MOG.main() == 0
     out = capsys.readouterr().out
     if authorized and lease_readable:
-        assert "global cap 8 (census skipped: flat cap)" in out
+        assert "controller cap 8 (census skipped: flat cap)" in out
 
 
 def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
     monkeypatch, capsys
 ):
     _main_harness(monkeypatch, [_pull(1)])
+    # One controller-owned proof in flight opens the census gate (flat 8 - 1 < 8)
+    # so the exception path below is actually exercised; repo-wide authored runs
+    # only feed the total brake (16 - 7 = 9, not binding).
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: 1)
 
     def rate_limited(*_a, **_k):
         raise MOG.RateLimited("core budget exhausted")
@@ -5570,60 +5926,61 @@ def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert allowances == [1]
+    assert allowances == [7]
     out = capsys.readouterr().out
-    assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "controller cap 8 (census failed (core budget exhausted): flat cap)" in out
     assert "Sweep deferred" not in out
 
 
 @pytest.mark.parametrize(
-    "census,active,expected,needle",
-    [
-        (None, 12, 0, "census not read"),
-        (_census(queued_runs=1, served_runs=0), 12, 0, "refused 1 queued run(s)"),
-        (_census(refused_jobs=2, served_runs=1), 12, 0, "2 waiting hosted job(s)"),
-        (_census(sampled_runs=0, served_runs=0), 12, 0, "no hosted pickup witnessed"),
-        # Sampled but neither served nor slow: no later-wave hosted job was seen
-        # starting, so there is no capacity witness either way -- floor closed.
-        (_census(sampled_runs=2, served_runs=0), 9, 0, "2 mature run(s) sampled, none served or slow"),
-        (_census(sampled_runs=1, served_runs=1), 9, 1, "saturation floor: 1 lease-serialized"),
-        (_census(slow_jobs=1, served_runs=2), 12, 0, "at or above the floor ceiling 12"),
-        (_census(slow_jobs=1, served_runs=2), 40, 0, "at or above the floor ceiling 12"),
-        (_census(slow_jobs=1, served_runs=2), 11, 1, "saturation floor: 1 lease-serialized"),
-        (_census(slow_jobs=3, served_runs=0), 9, 1, "3 slow pickup(s), no refusal in 3"),
-    ],
+    "controller_proofs",
+    [0, 1, 7, 8, 12, 16, 40],
+    ids=(
+        "nothing-controller-owned",
+        "one-lease-owner",
+        "seven",
+        "flat-cap-full",
+        "old-ceiling",
+        "widest-cap-full",
+        "far-past-the-cap",
+    ),
 )
-def test_s9_refresh_floor_is_one_slot_under_a_hard_ceiling_without_refusal(
-    census, active, expected, needle
-):
-    """The repealed 'fair refresh' clamp raised a negative allowance to eight at 49
-    proofs in flight. The floor is one, only below the half-headroom ceiling, and
-    never on refusal evidence (a queued run or a waiting hosted job)."""
-    slots, detail = MOG.refresh_floor_allowance(census, active)
-    assert (slots, needle in detail) == (expected, True), detail
-    assert MOG.REFRESH_FLOOR_PER_SWEEP == 1
-    assert MOG.REFRESH_FLOOR_PROOF_CEILING == 12
+def test_f7_floor_is_two_unconditional_lease_serialized_slots(controller_proofs):
+    """F7 (2026-11-10) replaces the S9 conditional floor. The 2026-11-09 census
+    showed the conditional floor never fired in production: authored synchronize
+    runs (not the controller's admission decision) filled the repo-wide count the
+    ceiling was measured against, so 0/8 refresh slots were granted in every
+    sampled sweep and green PRs waited 10.6h (p90) behind proofs that could never
+    be refreshed. The floor is therefore now UNCONDITIONAL: two reserved slots
+    (one general lease-serialized refresh + one main-red-repair reserve), bounded
+    not by any census but by the durable single-owner lease each slot must claim
+    before its CI-producing write, and by the repo-wide total brake that still
+    caps authored + controller proofs together at ADAPTIVE_PROOF_CAP_MAX for
+    ORDINARY (non-floor) admission."""
+    slots, detail = MOG.refresh_floor_allowance(controller_proofs)
+    assert slots == MOG.REFRESH_FLOOR_PER_SWEEP == 2
+    assert "saturation floor: 2 reserved refresh slot(s)" in detail
+    assert "1 general, lease-serialized + 1 main-red-repair reserve" in detail
+    assert f"{controller_proofs} controller-owned proof(s) in flight" in detail
+    assert "authored synchronize runs do not consume the floor" in detail
+    assert not hasattr(MOG, "REFRESH_FLOOR_PROOF_CEILING"), (
+        "the S9 proof ceiling is repealed; a ceiling measured against the "
+        "repo-wide count is what starved the queue"
+    )
 
 
-@pytest.mark.parametrize(
-    "census,active,expected_allowance,needle",
-    [
-        # The overnight deadlock shape: slow pickups only, 12 proofs, flat cap 8 -> 0.
-        # 12 is AT the ceiling, so the floor stays closed; one proof fewer opens it.
-        (_census(slow_jobs=1, served_runs=2), 12, 0, "floor withheld: 12 proof(s)"),
-        (_census(slow_jobs=1, served_runs=2), 11, 1, "[saturation floor: 1"),
-        (_census(queued_runs=1, served_runs=0), 9, 0, "floor withheld: hosted pool refused"),
-        # Ordinary headroom is untouched: the floor only acts on a zero allowance.
-        (_census(served_runs=3), 9, 7, "global cap 16"),
-    ],
-    ids=("deadlock-at-ceiling", "deadlock-under-ceiling", "refusal", "headroom-untouched"),
-)
-def test_s9_floor_grants_one_lease_serialized_slot_when_the_census_zeroes_the_sweep(
-    monkeypatch, capsys, census, active, expected_allowance, needle
+def test_f7_floor_grants_two_lease_serialized_slots_under_an_authored_flood(
+    monkeypatch, capsys
 ):
+    """The exact 2026-11-09 production starvation, reproduced: 23 authored
+    synchronize runs fill the repo-wide census (the count the old cap was measured
+    against), no controller-owned refresh is in flight, and the ordinary allowance
+    closes. Before F7 this sweep granted 0/8 refresh slots — the shape of every
+    sampled sweep that week. F7 grants the unconditional two-slot floor, both
+    lease-serialized, so the queue keeps draining."""
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
-    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 23)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: 0)
     seen: list[tuple[int, bool]] = []
 
     def inspect_budget(
@@ -5634,45 +5991,56 @@ def test_s9_floor_grants_one_lease_serialized_slot_when_the_census_zeroes_the_sw
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert seen == [(expected_allowance, expected_allowance == 1)]
+    assert seen == [(MOG.REFRESH_FLOOR_PER_SWEEP, True)]
     out = capsys.readouterr().out
-    assert needle in out, out
-    if expected_allowance == 1:
-        assert "(durable lease required)" in out
+    assert "saturation floor: 2 reserved refresh slot(s)" in out
+    assert "(durable lease required)" in out
+    assert "23 indexed pull-request ci run(s)" in out
+    assert "0 controller-owned" in out
 
 
-def test_s9_floor_never_reads_a_second_census_and_stays_closed_past_the_widest_cap(
+def test_f7_floor_never_reads_a_second_census_but_still_reserves_two(
     monkeypatch, capsys
 ):
-    """At 16+ proofs the adaptive census is skipped; the floor must not open a new
-    read of its own and must stay closed (the ceiling is 12)."""
+    """At 16+ repo-wide proofs the total brake closes and the adaptive census is
+    skipped (no controller-owned headroom could use it); the floor must not open a
+    new read of its own — and unlike S9 it no longer closes: two lease-serialized
+    slots are reserved unconditionally."""
     _main_harness(monkeypatch, [_pull(1)])
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: 0)
 
     def never(*_a, **_k):
         raise AssertionError("census read although no headroom could be used")
 
     monkeypatch.setattr(MOG, "hosted_pool_census", never)
-    seen: list[int] = []
+    seen: list[tuple[int, bool]] = []
 
     def inspect_budget(
         _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
     ):
-        seen.append(budget.max_refreshes)
+        seen.append((budget.max_refreshes, budget.requires_refresh_lease))
         return "pending"
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert seen == [0]
-    assert "[floor withheld: hosted pool census not read]" in capsys.readouterr().out
+    assert seen == [(MOG.REFRESH_FLOOR_PER_SWEEP, True)]
+    out = capsys.readouterr().out
+    assert "census skipped: flat cap" in out
+    assert "saturation floor: 2 reserved refresh slot(s)" in out
 
 
-def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
-    """A RateLimited census degrades to the flat cap (unchanged); at 9 proofs that
-    is zero, and a floor without job-level evidence would be the repealed clamp.
-    9 is UNDER the floor ceiling, so only the missing census keeps it closed."""
+def test_f7_flat_cap_degrades_on_a_failed_census_read_and_the_floor_still_reserves(
+    monkeypatch, capsys
+):
+    """A RateLimited adaptive census still degrades to the flat cap without
+    deferring the sweep (unchanged). One controller-owned proof opens the census
+    gate so the failing read is actually exercised, and the repo-wide brake is
+    closed so the floor — which no longer depends on any census — reserves its two
+    lease-serialized slots."""
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 9)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+    monkeypatch.setattr(MOG, "controller_in_flight_proofs", lambda *_a, **_k: 1)
 
     def rate_limited(*_a, **_k):
         raise MOG.RateLimited("core budget exhausted")
@@ -5688,10 +6056,10 @@ def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, c
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert seen == [0]
+    assert seen == [MOG.REFRESH_FLOOR_PER_SWEEP]
     out = capsys.readouterr().out
     assert "census failed (core budget exhausted): flat cap" in out
-    assert "[floor withheld: hosted pool census not read]" in out
+    assert "saturation floor: 2 reserved refresh slot(s)" in out
     assert "Sweep deferred" not in out
 
 
@@ -6943,7 +7311,7 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    funded_cap = 23  # (1000 - 92 fixed - 8 attempts - 260 reserve) // 27
+    funded_cap = 23  # (1000 - 97 fixed - 8 attempts - 260 reserve) // 27
     assert len(seen) == funded_cap, (
         f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
@@ -6964,26 +7332,30 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
 
 
-def test_the_live_enterprise_quota_covers_110_armed_pulls(monkeypatch, capsys):
-    armed = [_pull(number) for number in range(1, 111)]
+def test_the_live_enterprise_quota_covers_231_armed_pulls(monkeypatch, capsys):
+    """F7 (2026-11-10) raised the ceiling from 128 to 256: the 2026-11-09 census
+    counted 203-231 armed pull requests, so the 128 evaluation cap silently
+    deferred ~100 of them every sweep while ~11-15k of the 15,000 Enterprise
+    requests went unused."""
+    armed = [_pull(number) for number in range(1, 232)]
     seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
     assert MOG.main() == 0
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
-    assert len(seen) == len(armed), "the measured 110-PR backlog must not be cap-deferred"
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 256
+    assert len(seen) == len(armed), "the measured 231-PR backlog must not be cap-deferred"
     assert "Per-sweep cap" not in capsys.readouterr().out
 
 
-def test_enterprise_evaluation_still_defers_beyond_128_without_extra_ci_slots(monkeypatch, capsys):
-    armed = [_pull(number) for number in range(1, 130)]
+def test_enterprise_evaluation_still_defers_beyond_256_without_extra_ci_slots(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 258)]
     seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
     assert MOG.main() == 0
-    assert len(seen) == MOG.MAX_PULL_CAP == 128
+    assert len(seen) == MOG.MAX_PULL_CAP == 256
     assert MOG.MAX_REFRESHES_PER_SWEEP == MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
     notices = [line for line in capsys.readouterr().out.splitlines()
                if "Per-sweep cap" in line]
     assert len(notices) == 1
-    assert "128 of 129" in notices[0]
-    missing = set(range(1, 130)) - set(seen)
+    assert "256 of 257" in notices[0]
+    missing = set(range(1, 258)) - set(seen)
     assert len(missing) == 1
     assert f"#{missing.pop()}" in notices[0]
 
@@ -7243,7 +7615,8 @@ def test_the_workflow_hands_the_sweeper_the_triggering_CONCLUSION_too():
 
 
 def test_the_dynamic_cap_preserves_the_proven_budget_share():
-    """The old 25/1,000 policy scales with the quota and stays bounded at 128.
+    """The old 25/1,000 policy scales with the quota and stays bounded at 256
+    (F7, 2026-11-10: the measured armed backlog reached 231).
 
     The fixed ceiling includes paginated discovery, main proof/baseline reads, the
     repo-wide workflow census, durable lease state, and the maximum 50 main commits
@@ -7251,7 +7624,7 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     five check pages, five PR-file pages, live authorization, ancestry, and lease
     fences. These are pessimistic admission numbers, not typical measured spend.
     Enterprise gives this repository 15,000;
-    the 128 ceiling drains the measured 110-PR backlog, while a partly spent bucket
+    the 256 ceiling drains the measured 231-PR backlog, while a partly spent bucket
     shrinks the window to the work it can actually fund.
     """
     fixed = MOG.FULL_SWEEP_FIXED_REQUESTS
@@ -7266,7 +7639,7 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.pull_cap_for_limit(None) == MOG.FALLBACK_PULL_CAP == 25
     assert MOG.pull_cap_for_limit(1_000) == 25
     assert MOG.pull_cap_for_limit(5_000) == 125
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 256
 
     worst_case = (
         fixed
@@ -7280,8 +7653,9 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
-    # now carries the up-to-five adaptive hosted-pool census reads.
+    # (600 - 260 reserve - 97 fixed - 8 attempts) // 27 = 8; the fixed overhead
+    # now carries the adaptive hosted-pool census reads plus the F7
+    # controller-owned proof census.
     assert MOG.pull_cap_for_budget(600, 15_000) == 8
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
@@ -9116,7 +9490,10 @@ def test_the_DEFAULT_budget_caps_refreshes_at_the_constant(monkeypatch):
     them green while the shipped sweeper refreshed the whole backlog in one pass —
     which is the exact 84-CI-runs-from-one-sweep failure this cap exists to prevent.
     """
-    assert MOG.HIGH_LOAD_LEASE_THRESHOLD == 1
+    # F7: both reserved floor slots (general + main-red-repair) are small enough
+    # to require the durable single-owner lease, so a saturated sweep still
+    # serialises its refresh writes instead of stampeding.
+    assert MOG.HIGH_LOAD_LEASE_THRESHOLD == MOG.REFRESH_FLOOR_PER_SWEEP == 2
     assert MOG.SweepBudget("read").max_refreshes == MOG.MAX_REFRESHES_PER_SWEEP
     assert (
         MOG.SweepBudget("read").max_refresh_attempts
