@@ -5731,6 +5731,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     not a timing or whole-tree planner claim; the merged tree still requires
     its own natural CI qualification.
 
+    2026-11-10 (PR #10929, COO 13:55Z suite-move review, merged main
+    cbf9d99ac70d at 10aed20e): the six sector-generation suites STAY in
+    tier-gate. Measured per suite through the scope pipeline
+    (suite_dependency_closure + ambiguity fallbacks, confirmed end-to-end
+    by probe selection): api, reader, population, central-carry and
+    typed-blocks each carry opaque-traversal fallbacks spanning every root
+    domain, so their closures reach BOTH scripts/build_free_content.py and
+    templates/index.html; native-view reaches templates/index.html (not
+    build_free_content.py). A job hosts a suite honestly only when a change
+    inside that closure selects the job, so no receiver outside the index/
+    free packs can host them honestly: cycle-forward-log measures
+    index+Prophet-selected on this tree (and free-selected once #10924
+    lands), and moving all six into a probe-clean non-exclusive job
+    measured WORSE (index 5,983, free 6,004 / 11 packs, Prophet 5,749 /
+    133 jobs). Their 22 weight-seconds on the index and free probes is
+    their true cost; free 6,001 crosses the 600-second bucket, so the 11th
+    pack IS the measured cost and MAX_PACKS=11 stands. Re-measured at the
+    merged head: index 137 / 5,980, free 137 / 6,001, Prophet 132 / 5,746,
+    breaches none. No suite moved and no ceiling, selector or assertion
+    changed by this note.
+
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
     the landed F09 token and both complete histories. Canonical metadata loads
