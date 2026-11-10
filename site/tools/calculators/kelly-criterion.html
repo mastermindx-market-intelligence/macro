@@ -372,26 +372,51 @@
   // ── pure compute ───────────────────────────────────────────────────────────
   // inputs: {W winProbPct, R winLossRatio}. Returns an outputs object, or
   // {ok:false, msg} for invalid input. Never returns NaN/Infinity.
+  // Sign/zero use exact rational arithmetic on canonical parsed Numbers.
+  // This does not recover digits already discarded by numFrom/parseFloat.
   function compute(inp){
     var W=inp.W, R=inp.R;
-    if(!(W>0) || W>=100) return {ok:false, msg:"Enter a win probability between 0 and 100."};
-    if(!(R>0)) return {ok:false, msg:"Enter a win/loss ratio above zero (average win ÷ average loss)."};
-    var w = W/100;                       // win prob as decimal
-    var lossProb = 1 - w;                // loss prob as decimal
-    var f = w - lossProb / R;            // Kelly fraction
-    var kellyPct = 100 * f;
-    var halfKellyPct = kellyPct / 2;
-    var edgeR = w * R - lossProb;        // expected value per unit staked, in R
-    var noEdge = !(f > 0);
+    if(!(W>0) || W>=100 || !isFinite(W)) return {ok:false, msg:"Enter a win probability between 0 and 100."};
+    if(!(R>0) || !isFinite(R)) return {ok:false, msg:"Enter a win/loss ratio above zero (average win ÷ average loss)."};
+    if(typeof BigInt !== "function") return {ok:false, msg:"This calculator requires a browser with BigInt support."};
+    var B=BigInt, zero=B(0), ten=B(10), hundred=B(100);
+    function power(n){ var v=B(1); while(n-->0) v*=ten; return v; }
+    function decimal(v){
+      var parts=String(v).toLowerCase().split("e"), digits=parts[0].split("."),
+          exponent=Number(parts[1]||0)-(digits[1]||"").length,
+          numerator=B(digits.join(""));
+      return exponent>=0 ? [numerator*power(exponent),B(1)] : [numerator,power(-exponent)];
+    }
+    // Convert only after exact classification. Twenty significant decimal
+    // digits bound conversion error; this is not a correctly-rounded proof.
+    function ratio(n,d){
+      if(n===zero) return 0;
+      var negative=n<zero; if(negative) n=-n;
+      var shift=20+d.toString().length-n.toString().length;
+      var q=shift>=0 ? (n*power(shift))/d : n/(d*power(-shift));
+      return (negative?-1:1)*Number(q.toString()+"e"+(-shift));
+    }
+    var w=decimal(W), r=decimal(R),
+        numerator=w[0]*(r[0]+r[1])-hundred*w[1]*r[1],
+        denominator=hundred*w[1]*r[0],
+        f=ratio(numerator,denominator),
+        kellyPct=ratio(numerator*hundred,denominator),
+        halfKellyPct=ratio(numerator*B(50),denominator),
+        edgeR=ratio(numerator,hundred*w[1]*r[1]);
+    var outputs=[f,kellyPct,halfKellyPct,edgeR];
+    if(outputs.some(function(v){return !isFinite(v) || (numerator!==zero && v===0);})){
+      return {ok:false, msg:"These inputs exceed this calculator's numeric range. Use a less extreme ratio or win probability."};
+    }
     return {
       ok:true, f:f, kellyPct:kellyPct, halfKellyPct:halfKellyPct,
-      edgeR:edgeR, lossPct:100*lossProb, noEdge:noEdge
+      edgeR:edgeR, lossPct:ratio(hundred*w[1]-w[0],w[1]), noEdge:numerator<=zero
     };
   }
 
   // ── §6 self-check: run the canonical fixtures on load, console.error on drift ─
   var WORKED_EXAMPLES = [
     { in:{W:55, R:2}, want:{kellyPct:32.5, halfKellyPct:16.25, noEdge:false} },
+    { in:{W:40, R:1.5}, want:{kellyPct:0, halfKellyPct:0, noEdge:true} },
     { in:{W:50, R:1}, want:{kellyPct:0,    halfKellyPct:0,     noEdge:true } }
   ];
   (function selfCheck(){
