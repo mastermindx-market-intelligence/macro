@@ -234,11 +234,18 @@ def test_semiconductor_registration_carries_the_mount_copy_verbatim():
 
 
 def test_dataclass_field_names_are_the_accepted_contract():
+    # The fourteen v1 fields keep their ORDER; the v2 profile columns
+    # (packet §3.4, lane 5) are appended AFTER note_zh, all defaulted, so
+    # every existing positional/keyword construction still builds the same
+    # theme entry. A reorder or a removal here is a contract break.
     assert [f.name for f in dataclasses.fields(VerticalRegistration)] == [
         "anchor_theme_id", "slice_keys", "view_keys", "schema_id",
         "evidence_schema_id", "definition_version", "compose",
         "select_evidence", "load_bundle", "build_query",
         "title_en", "title_zh", "note_en", "note_zh",
+        "entry_kind", "profile_id", "subject_field", "subject_values",
+        "time_modes", "single_document", "native_generation_prefix",
+        "native_generation_width", "evidence_refs_field",
     ]
 
 
@@ -261,10 +268,15 @@ def test_semiconductor_entry_binds_the_public_half_loader(monkeypatch):
 #: three more from it directly, so importing either shared module executed one
 #: vertical's entire closure and no second vertical could be served without it.
 #: A vertical now loads only once a request has actually resolved its
-#: registration. Both shared entry points are measured against this set.
+#: registration. Both shared entry points are measured against this set. The
+#: two §8 profile adapters joined the set when the profile registry did: each
+#: imports its own composer eagerly on ITS import, so a profile entry that
+#: bound one eagerly would reintroduce exactly the removed edge.
 _VERTICALS_AT_IMPORT = (
     "engine.market_ontology.semiconductor_theme_research",
     "engine.market_ontology.semiconductor_owner_bundle",
+    "engine.market_ontology.technology_research_registration",
+    "engine.sector_intelligence.finance_research_registration",
 )
 
 #: Additionally forbidden for the REGISTRY alone: the reader's network / data
@@ -467,6 +479,179 @@ def test_module_opens_no_file_and_reads_no_environment():
 
 def test_module_public_surface_is_closed():
     assert set(registry.__all__) == {
-        "REGISTRY", "VerticalRegistration", "allowed_slices", "allowed_views",
+        "REGISTRY", "PROFILE_REGISTRY", "VerticalRegistration",
+        "allowed_slices", "allowed_views", "profile_registration_for",
         "registration_for",
     }
+
+
+# ---------------------------------------------------------------------------
+# 6. The closed PROFILE registry — the v2 company/sector profile kinds
+# (packet §3.4, lane 5). Same closure laws as the theme registry, keyed by
+# exact profile id instead of anchor.
+# ---------------------------------------------------------------------------
+
+from engine.market_ontology.theme_research_registry import (  # noqa: E402
+    PROFILE_REGISTRY,
+    profile_registration_for,
+)
+
+
+def test_profile_registry_is_a_read_only_mapping_with_two_entries():
+    assert isinstance(PROFILE_REGISTRY, MappingProxyType)
+    assert list(PROFILE_REGISTRY) == [
+        "technology_economic_change.v1", "finance_intelligence_research.v1",
+    ]
+    with pytest.raises(TypeError):
+        PROFILE_REGISTRY["robotics_automation"] = PROFILE_REGISTRY[
+            "technology_economic_change.v1"
+        ]  # type: ignore[index]
+    with pytest.raises(TypeError):
+        del PROFILE_REGISTRY["finance_intelligence_research.v1"]  # type: ignore[attr-defined]
+
+
+def test_profile_entries_are_keyed_by_their_own_profile_id_and_kind():
+    for profile_id, entry in PROFILE_REGISTRY.items():
+        assert isinstance(entry, VerticalRegistration)
+        assert entry.profile_id == profile_id
+        assert entry.anchor_theme_id == profile_id
+        assert entry.entry_kind != "theme"
+        assert entry.slice_keys == ()
+    assert PROFILE_REGISTRY["technology_economic_change.v1"].entry_kind == "company_profile"
+    assert PROFILE_REGISTRY["finance_intelligence_research.v1"].entry_kind == "sector_profile"
+
+
+@pytest.mark.parametrize("probe", [
+    pytest.param("Technology_Economic_Change.v1", id="upper-case"),
+    pytest.param("technology_economic_change", id="missing-version"),
+    pytest.param("technology_economic_change.v2", id="wrong-version"),
+    pytest.param(" technology_economic_change.v1", id="leading-space"),
+    pytest.param("", id="empty"),
+    pytest.param("ai_semiconductors", id="theme-anchor-as-profile"),
+    pytest.param(None, id="none"),
+    pytest.param(7, id="int"),
+    pytest.param(("technology_economic_change.v1",), id="tuple"),
+])
+def test_profile_registration_for_unknown_or_non_exact_probe_is_none(probe):
+    assert profile_registration_for(probe) is None
+
+
+def test_profile_registration_for_is_exact_and_returns_the_entry():
+    entry = profile_registration_for("technology_economic_change.v1")
+    assert entry is PROFILE_REGISTRY["technology_economic_change.v1"]
+
+
+def test_theme_and_profile_key_spaces_are_disjoint():
+    for profile_id in PROFILE_REGISTRY:
+        assert profile_id not in REGISTRY
+    for anchor in REGISTRY:
+        assert anchor not in PROFILE_REGISTRY
+
+
+def test_technology_registration_reconciles_with_its_adapter_module():
+    """The same reconciliation law as the theme entries, stated for the
+    company_profile adapter: the registration's literals must be the
+    adapter's own constants, or the profile registry serves a contract the
+    vertical never emitted."""
+    entry = PROFILE_REGISTRY["technology_economic_change.v1"]
+    import engine.market_ontology.technology_research_registration as adapter_module
+    assert entry.schema_id == adapter_module.PROFILE_ID
+    assert entry.evidence_schema_id == adapter_module.EVIDENCE_SCHEMA_ID
+    assert entry.definition_version == adapter_module.DEFINITION_VERSION
+    assert entry.view_keys == adapter_module.VIEWS
+    assert entry.profile_id == adapter_module.TECHNOLOGY_REGISTRATION_FACTS.profile_id
+    assert entry.title_en == adapter_module.TECHNOLOGY_REGISTRATION_FACTS.title_en
+    assert entry.title_zh == adapter_module.TECHNOLOGY_REGISTRATION_FACTS.title_zh
+    assert entry.note_en == adapter_module.TECHNOLOGY_REGISTRATION_FACTS.note_en
+    assert entry.note_zh == adapter_module.TECHNOLOGY_REGISTRATION_FACTS.note_zh
+    # The lazy bindings dispatch to the adapter's own callables.
+    assert entry.compose.lazy_target() is adapter_module.compose
+    assert entry.select_evidence.lazy_target() is adapter_module.select_evidence
+    assert entry.build_query.lazy_target() is adapter_module.build_query
+    assert entry.load_bundle.lazy_target() is adapter_module.load_bundle
+
+
+def test_finance_registration_reconciles_with_its_adapter_module():
+    entry = PROFILE_REGISTRY["finance_intelligence_research.v1"]
+    import engine.sector_intelligence.finance_research_registration as adapter_module
+    assert entry.schema_id == adapter_module.PROFILE_ID
+    assert entry.evidence_schema_id == adapter_module.EVIDENCE_SCHEMA_ID
+    assert entry.definition_version == adapter_module.DEFINITION_VERSION
+    assert entry.view_keys == adapter_module.VIEWS
+    assert entry.subject_values == (adapter_module.SECTOR_REF,)
+    assert entry.profile_id == adapter_module.FINANCE_REGISTRATION_FACTS.profile_id
+    assert entry.title_en == adapter_module.FINANCE_REGISTRATION_FACTS.title_en
+    assert entry.title_zh == adapter_module.FINANCE_REGISTRATION_FACTS.title_zh
+    assert entry.note_en == adapter_module.FINANCE_REGISTRATION_FACTS.note_en
+    assert entry.note_zh == adapter_module.FINANCE_REGISTRATION_FACTS.note_zh
+    assert entry.compose.lazy_target() is adapter_module.compose
+    assert entry.select_evidence.lazy_target() is adapter_module.select_evidence
+    assert entry.build_query.lazy_target() is adapter_module.build_query
+    assert entry.load_bundle.lazy_target() is adapter_module.load_bundle
+
+
+def test_profile_entry_native_generation_grammar_is_the_verticals_own():
+    """Technology's native dossier id keeps its tecd_ prefix and is never
+    renamed to gen_ (packet §3.5); Finance's native generation is the shared
+    gen_ fingerprint. The CONTEXT surface is always gen_ and lives in the
+    shell, never here."""
+    tech = PROFILE_REGISTRY["technology_economic_change.v1"]
+    assert tech.native_generation_prefix == "tecd_"
+    assert tech.native_generation_width == 32
+    finance = PROFILE_REGISTRY["finance_intelligence_research.v1"]
+    assert finance.native_generation_prefix == "gen_"
+
+
+@pytest.mark.parametrize("overrides", [
+    pytest.param({"entry_kind": "vertical"}, id="entry-kind-unknown"),
+    pytest.param({"entry_kind": "company_profile"}, id="profile-kind-without-profile-id"),
+    pytest.param({"profile_id": "technology_economic_change.v1"}, id="theme-with-profile-id"),
+    pytest.param({"entry_kind": "company_profile", "profile_id": "Technology.V1"},
+                 id="profile-grammar"),
+    pytest.param({"subject_field": "company ref"}, id="subject-field-grammar"),
+    pytest.param({"subject_values": ["sector:financials"]}, id="subject-values-list"),
+    pytest.param({"subject_values": ("sector:financials", "sector:financials")},
+                 id="subject-values-duplicate"),
+    pytest.param({"time_modes": ()}, id="time-modes-empty"),
+    pytest.param({"time_modes": ("latest", "latest")}, id="time-modes-duplicate"),
+    pytest.param({"time_modes": ("Latest",)}, id="time-mode-grammar"),
+    pytest.param({"single_document": "yes"}, id="single-document-not-bool"),
+    pytest.param({"native_generation_prefix": ""}, id="native-prefix-empty"),
+    pytest.param({"native_generation_prefix": "te cd"}, id="native-prefix-grammar"),
+    pytest.param({"native_generation_width": 4}, id="native-width-too-small"),
+    pytest.param({"native_generation_width": 128}, id="native-width-too-large"),
+    pytest.param({"native_generation_width": True}, id="native-width-bool"),
+    pytest.param({"evidence_refs_field": "  "}, id="evidence-refs-field-blank"),
+])
+def test_malformed_v2_columns_are_refused_with_value_error(overrides):
+    with pytest.raises(ValueError):
+        VerticalRegistration(**_valid_kwargs(**overrides))
+
+
+def test_profile_entry_construction_requires_empty_slices_and_matching_anchor():
+    """A profile entry's anchor column holds the profile id (one identity),
+    and its slice tuple stays empty: slices are theme vocabulary."""
+    entry = VerticalRegistration(
+        **_valid_kwargs(
+            entry_kind="company_profile",
+            anchor_theme_id="synthetic_profile.v1",
+            profile_id="synthetic_profile.v1",
+            slice_keys=(),
+            subject_field="company_ref",
+        )
+    )
+    assert entry.entry_kind == "company_profile"
+    assert entry.profile_id == "synthetic_profile.v1"
+    assert registration_for("synthetic_profile.v1") is None  # not theme-registered
+    with pytest.raises(ValueError):
+        VerticalRegistration(**_valid_kwargs(
+            entry_kind="company_profile",
+            anchor_theme_id="synthetic_profile.v1",
+            profile_id="different_profile.v1",
+            slice_keys=(),
+        ))
+    with pytest.raises(ValueError):
+        VerticalRegistration(**_valid_kwargs(
+            entry_kind="sector_profile",
+            profile_id="synthetic_profile.v1",
+        ))
