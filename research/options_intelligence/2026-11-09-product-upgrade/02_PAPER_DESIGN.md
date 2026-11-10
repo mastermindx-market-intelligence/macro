@@ -1,7 +1,9 @@
 # Options Suite — Paper Design and Build Contract
 ## Round 2 of 4 · 2026-11-10 UTC
 
-**Status: Paper candidate complete for this round; architecture hardening and final implementation commission remain in rounds 3 and 4.**
+**Historical round-2 status: Paper candidate complete for that round.** The current programme baseline is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md); later architecture decisions are in [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md).
+
+**Round-4 source adjudication — read before implementation:** protected master still has the preparation-only Plan host, while original held #804 at `27df56d997df0ae94a17b6b8e2d14867431bb394` already implements the native bridge. Its admission is **new research draft only**, and the first save is revision 1 of a new case. B04's depicted Plan attachment as revision 2 of an existing Exposure case is not supplied by that bridge. Preserve this document and the manifest as the historical Paper artifact; use 04 §7.2 for the current implementation contract, and revise B04/its fixture in the next Paper round unless the incumbent owner explicitly qualifies same-case attachment. No Paper nodes were changed in round 4. Also retain the corrected route distinction: `?tab=0dte` is current URL syntax; `zero_dte` is an internal key.
 
 **Canonical carrier:** [Macro draft PR #10898](https://github.com/mastermindx-market-intelligence/macro/pull/10898), branch `claude/options-suite-production-plan-20261109`. This is an additive companion to [01_MASTERPLAN.md](01_MASTERPLAN.md), within the existing Terminal #599 / #603 and WS-ADVANCED-DATA-OPTIONS programme. It creates no replacement task hierarchy, runtime owner, implementation dispatch or release permission.
 

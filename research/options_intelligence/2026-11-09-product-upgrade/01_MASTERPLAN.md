@@ -1,8 +1,8 @@
 # Options Suite — Production Design and Implementation Masterplan
-## November 9–10, 2026 · Rounds 1–2 of 4 · Census, architecture and Paper candidate
+## November 9–10, 2026 · Rounds 1–4 baseline · Extended programme authorized
 
-**Status: DRAFT — rounds 1 and 2 complete; architecture hardening and the final implementation masterplan remain in rounds 3 and 4.**  
-**Commission:** Chairman’s four-turn Options upgrade: (1) census and architecture; (2) Paper design; (3) deeper architecture hardening; (4) final masterplan for a Fable-led T3 implementation team.  
+**Status: DRAFT — rounds 1–4 planning baseline complete; additional design, architecture and qualification rounds are authorized.** The current implementation contract is [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md). Production implementation and whole-suite acceptance remain open.  
+**Commission:** Chairman’s four-round Options upgrade, now extended with additional rounds: census, Paper design, architecture hardening and the current implementation baseline, followed by deeper scope/source/design/capability work and eventual Fable-led T3 implementation.  
 **Programme parent:** Terminal issue #599, with #603 for the narrower workbench.  
 **Primary workstream:** WS-ADVANCED-DATA-OPTIONS, alongside the existing Options Alpha, Intraday Flow, and context-audit workstreams. No new workstream or task hierarchy is created.  
 **Intended repository location:** research/options_intelligence/2026-11-09-product-upgrade/01_MASTERPLAN.md.  
@@ -12,7 +12,36 @@ This is an additive product and architecture amendment to the October 31 Fable p
 
 ---
 
-## Current programme state — after round 2
+## Current programme state — after round 4
+
+**The current four-round planning baseline is complete and the extended programme remains open.** This round hardened the actual Paper/source integration, produced the implementation graph and release proof contract, recovered 294 requirement-reference rows, and defined the next rounds. No application source, Paper nodes, production runtime, scientific activation or Fable/T3 dispatch changed in this round.
+
+Read the current package in this order:
+
+1. [05_IMPLEMENTATION_MASTERPLAN.md](05_IMPLEMENTATION_MASTERPLAN.md): product outcome, current progress, existing owners, build slices, acceptance and eventual team contract.
+2. [04_ARCHITECTURE_HARDENING.md](04_ARCHITECTURE_HARDENING.md): exact selection/source/Plan/persistence/watch/review contracts and source adjudications.
+3. [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md) and [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json): the retained 34-board, 44-state candidate and exact artifact identities; read the prominent round-4 B04 correction before building.
+4. [07_REQUIREMENT_TRACEABILITY.csv](07_REQUIREMENT_TRACEABILITY.csv) and [08_COVERAGE_GAPS.json](08_COVERAGE_GAPS.json): 35 execution, 60 AC, 76 R2 and 123 supersession reference rows, with original statuses and next proof.
+5. [06_FUTURE_ROUNDS.md](06_FUTURE_ROUNDS.md): proposed rounds 5–12 and the conditions for full implementation convergence.
+
+### Decisions established by the source refresh
+
+- **Reuse the held Plan bridge.** Original #804 at `27df56d997df0ae94a17b6b8e2d14867431bb394` already implements native whole-Plan admission and exact reopen. Its first save is revision 1 of a **new research case**. B04's existing-case revision-2 attachment is a separate unimplemented extension; revise that specimen or qualify an extension through the incumbent owner. The existing hold remains.
+- **Protect selection before adding richer intelligence.** Bind late responses to root, owner and source generation; preserve a missing explicit expiry; use consistent cold/warm route decoding and genuine preset/lane receivers.
+- **Qualify Exposure by capability.** Retain legacy analytics and dated provider-Gamma observed-v2 progress. Those do not establish instantaneous, joint, repricing or historical point-in-time capabilities.
+- **Keep original and latest evidence distinct.** Exact saved values require an admitted original-source resolver. Watches need original-operation reconciliation and explicit selected firing; current capped history is not a complete historical lookup.
+- **Preserve domain-specific obligations.** Case assessment is not session review; ordinary expiry Plan is not near-expiry lifecycle or exposure repricing; quote-ruler outcomes are not actual fills. Six pilots, FS-5 and sleeve/candidate programmes keep their original rules.
+- **Do not overstate coverage.** The original October 21 packet attests to 104 OPT tasks and 130 OPR requirements, but its full row text remains unrecovered. Round 5 begins with recovery and reconciliation. Whole-packet dispatch/full-parity claims remain conditional; independently bounded recovered slices can advance through their existing owners.
+
+Affected source was refreshed at Terminal `26c800c265d2cc627098955d186ddc8ef2886960`, Macro `fc07cb58b17df11aa9cb83c782f8833d035482cb`, and the original held Plan/Matrix heads recorded in 04. This is a bounded affected-source review, not a recensus or a new production acceptance claim.
+
+**Next round:** follow 06 Round 5. Preserve the current baseline and accepted work, recover original scope, then close source readiness and choose the next useful release slice. The same documentation PR remains Draft. No implementation dispatch has been sent.
+
+**Reading note:** the following round-2 block, §§1–14 and Appendices A–D are dated historical results. Their “next round” wording is preserved as history. This current block, Appendix E and files 04–08 govern the present planning frontier; original source law, release holds and accepted requirement text remain authoritative.
+
+---
+
+## Historical programme state — after round 2
 
 **Round 2's editable Paper candidate is complete:** 34 new boards in the original Terminal file, 44 named state components, one consistent synthetic SPY case, and a complete primary English/Chinese journey across desktop, tablet and phone representatives. The original 245-board inventory remains retained; this round made no edits to those original boards or to the held D08D target.
 
@@ -1353,7 +1382,7 @@ The following source changes were discovered in the recent title-search census a
 
 
 
-## Appendix D. Round-2 Paper result and continuation
+## Appendix D. Round-2 Paper result and continuation (historical)
 
 **Deliverable:** [02_PAPER_DESIGN.md](02_PAPER_DESIGN.md), with [03_PAPER_MANIFEST.json](03_PAPER_MANIFEST.json).
 
@@ -1370,3 +1399,23 @@ The following source changes were discovered in the recent title-search census a
 **Next safe action:** round 3 hardens the existing architecture and implementation graph against this actual candidate. Round 4 produces the final Fable-led T3 commission. The draft PR remains the same documentation carrier; no early dispatch or release opt-in.
 
 **Finalization:** PROVEN_OUTCOME for the round-2 Paper/design-contract deliverable after canonical readback. The overall programme and production implementation remain incomplete under the Chairman's four-turn structure.
+
+
+
+---
+
+## Appendix E. Round-4 outcome and extended continuation
+
+**Outcome:** architecture hardening and the current implementation baseline are complete as planning artifacts. Files 04–08 and the three review appendices preserve the decisions, actual recovered requirement rows and future-round programme. This is not a claim that the whole inherited scope is implementation-ready, that a consumer has shipped, or that a predictive capability is qualified.
+
+**Material source adjudications:** reuse #804's new-case-only exact Plan admission and native reader; revise B04's conflicting revision fixture; preserve #10866's exact wire and pending supplier/consumer gates; distinguish dated Exposure progress from stronger unavailable capabilities; fix source-observed selection/history mismatches; extend existing retention, alert and review owners without new stores or control planes.
+
+**Coverage:** 294 recovered reference rows are 35 execution + 60 AC + 76 R2 + 123 supersession rows. They are overlapping requirement layers, not independent test counts or a completion percentage. The original 104 OPT/130 OPR packet is still an explicit source-recovery gap. All 15 held R2 rows, P74 performance, P75 science and P76 actual consumer proof remain distinct.
+
+**Authority and effects:** documentation-only update on the same branch/PR. No changes to application code, database, Paper nodes, sources, runtime, models, release holds or worker dispatch. The held B04 design discrepancy is recorded for the next actual Paper edit; no screenshot or artifact was silently recast as updated.
+
+**Do not redo:** accepted source/receipts, original census, existing Paper candidate, implemented held Plan bridge, original scientific definitions and unchanged accepted methods work. Refresh only facts relevant to a next effect and preserve original denied/uncertain carriers.
+
+**Next action:** Round 5 original packet recovery, row reconciliation and source readiness through the actual known provenance and incumbent owners. Continue independent authorized work if a lane is blocked. Additional rounds are outcome-defined in 06 and may be combined or skipped when their accepted proof already exists.
+
+**Finalization scope:** PROVEN_OUTCOME for the current round-4 planning deliverable after canonical save/readback. The extended Options programme, future Fable/T3 implementation commission and production/scientific acceptance remain open under their explicit requirements.

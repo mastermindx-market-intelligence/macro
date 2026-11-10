@@ -1,0 +1,137 @@
+{
+  "kind": "documentation_validation_receipt_not_runtime_acceptance",
+  "validated_at": "2026-11-10 05:06:42 UTC",
+  "parent_plan_head": "626715ab73e3a0f9413c69faabd8a2a5030227de",
+  "governance_pin": "9e6659c4a49ee6f11a6f6ee690d222ce81d67b09",
+  "source_refresh": {
+    "recorded_at": "2026-11-10T04:40:03Z",
+    "governance_pin": "9e6659c4a49ee6f11a6f6ee690d222ce81d67b09",
+    "plan_pr": 10898,
+    "plan_head_before": "626715ab73e3a0f9413c69faabd8a2a5030227de",
+    "terminal_pin": "26c800c265d2cc627098955d186ddc8ef2886960",
+    "macro_affected_pin": "fc07cb58b17df11aa9cb83c782f8833d035482cb",
+    "held_plan_branch": {
+      "head": "27df56d997df0ae94a17b6b8e2d14867431bb394",
+      "state": "open",
+      "draft": true,
+      "release_hold": "5989604142"
+    },
+    "matrix_wire_branch": {
+      "head": "f9d9c1883b9a25ea2bd5f6b5b21f922a01307434",
+      "state": "open",
+      "labels": [
+        "merge-on-green",
+        "merge-blocked"
+      ]
+    },
+    "source_only": true,
+    "production_mutations": false,
+    "paper_mutations": false,
+    "fable_dispatch": false
+  },
+  "checks": {
+    "document_manifest": [
+      {
+        "path": "01_MASTERPLAN.md",
+        "bytes": 131926,
+        "sha256": "f7f64242796855c57348ebfcffddc88b5d26b247855457611cdda04ad947e908"
+      },
+      {
+        "path": "02_PAPER_DESIGN.md",
+        "bytes": 71804,
+        "sha256": "3deabd0e5a60bca0bcd78c2f07fcbf31938378788c53a31f1cb599dd263a6b92"
+      },
+      {
+        "path": "03_PAPER_MANIFEST.json",
+        "bytes": 41023,
+        "sha256": "b1215d13967ed13639b3918e4fe7d5ac5cdecf2da2018e9b4498caa2859a59d7"
+      },
+      {
+        "path": "04_ARCHITECTURE_HARDENING.md",
+        "bytes": 40550,
+        "sha256": "5d6728ed2c7bff8ae9b0893b9ea78d2f4012b07f0e53afb5b9225e111627751c"
+      },
+      {
+        "path": "05_IMPLEMENTATION_MASTERPLAN.md",
+        "bytes": 34823,
+        "sha256": "76a8f33b72a4705a323bdaf80ef5679d39a8a2f08c95598bf988f09b2ef7116e"
+      },
+      {
+        "path": "06_FUTURE_ROUNDS.md",
+        "bytes": 29037,
+        "sha256": "24961bfaa22331e7fe1a800c50427e01abd0866ab60cb67c048324fddbe29f98"
+      },
+      {
+        "path": "07_REQUIREMENT_TRACEABILITY.csv",
+        "bytes": 287605,
+        "sha256": "4694c31f93d69b48bc5fca3bb9a345f85ec8238a66dd7b856190169baa1b1a6c"
+      },
+      {
+        "path": "08_COVERAGE_GAPS.json",
+        "bytes": 5311,
+        "sha256": "e119679b8ace2f166184354e9d2125843d56fb3934f1c008bfa570d8bbe636a9"
+      },
+      {
+        "path": "appendices/FRONTEND_REVIEW.md",
+        "bytes": 45893,
+        "sha256": "c1c499e946909c8babc87c98d69a4e9527fa1589e253ff54f728cf0023a3574d"
+      },
+      {
+        "path": "appendices/QUANT_REVIEW.md",
+        "bytes": 58504,
+        "sha256": "60a0e35b2463355f34e81d2468c4efbf8e096b2c25fbc486b26d347788407ede"
+      },
+      {
+        "path": "appendices/ACCEPTANCE_REVIEW.md",
+        "bytes": 37579,
+        "sha256": "b019398781ee24f7132dbe1f5b8f819c5f31f1bb52cb1cb9e7b44766aa34a2ad"
+      }
+    ],
+    "traceability_counts": {
+      "AC": 60,
+      "R2": 76,
+      "EXEC": 35,
+      "SUP": 123
+    },
+    "traceability_rows": 294,
+    "qualified_ids_unique": true,
+    "original_requirement_fields_preserved": true,
+    "r2_held_rows": 15,
+    "supersession_status_counts": {
+      "ACCEPTED_DO_NOT_REDO": 75,
+      "HELD": 17,
+      "RETAINED_OPEN": 13,
+      "SUPERSEDED_OBSOLETE": 17,
+      "UNKNOWN": 1
+    },
+    "relative_document_links_resolve": true,
+    "original_paper_manifest_unchanged": true,
+    "unchangedCensusAndAppendicesABC": true,
+    "unchangedPaperContractAfterHeader": true,
+    "historicalPaperManifestUnchanged": true,
+    "historical_manifest_blob": "bd878ca083e1ef2c2a8abdc4736ad97c15bc0d0c",
+    "byte_normalization": "Local deliverables use canonical UTF-8 LF bytes. The historical Paper manifest blob is identical in parent and candidate; no Paper artifact or canonical manifest change."
+  },
+  "source_adjudications": [
+    "Reuse original held #804; Plan admission is fresh-new-case only, first Save revision 1.",
+    "B04 existing-case revision-2 attachment remains a historical unimplemented design target; current implementation and next Paper correction explicitly bind the new-case path.",
+    "Original V03/U02 Plan, N01-N03 near-expiry and F03/F04/V04/OA-1C/OA-3 prospective lineage obligations remain distinct.",
+    "Plan-to-watch graph edge applies to Plan-bearing cases only; independent admitted Exposure cases remain usable.",
+    "Pilot.P4 preserves five-session market/sector residual log total return after the registered one-session skip."
+  ],
+  "limits": {
+    "application_tests_run": false,
+    "reason": "Documentation-only scope; no application source changes. Source inspection and documentation consistency/readback do not prove runtime behavior.",
+    "paper_mutations": false,
+    "production_or_database_effects": false,
+    "scientific_promotion": false,
+    "fable_t3_dispatch": false,
+    "formal_github_approval": false,
+    "full_original_opt_opr_rows_recovered": false
+  },
+  "canonical_persistence": {
+    "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10898",
+    "branch": "claude/options-suite-production-plan-20261109",
+    "procedure": "Create one documentation commit on the exact current parent; verify candidate bytes/path set; compare-and-swap original branch; read back resulting exact head. This pre-publish receipt does not itself claim that those later effects occurred."
+  }
+}
