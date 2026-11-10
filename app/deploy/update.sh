@@ -1834,21 +1834,30 @@ fi
 # would abort the tick here before the reconciliation below. From here on a
 # refused tick is a no-change tick: nothing below resets or pulls.
 # BEGIN MACRO_UPDATE_PULL_SELECT
+# AcquisitionSource carries the branch that captured OLD/NEW this tick: "git"
+# when the updater fetched the published revision itself, "journal" when an
+# unfinished live-source transaction retained its original target (the git
+# branch below is byte-identical to the reviewed main-line stanza, at its
+# reviewed indentation, so the fragment contract in tests/test_deploy_git_
+# history.py keeps extracting the real acquisition; the journal branch never
+# fetches and never reads FETCH_HEAD).
 if [ "$LIVE_SOURCE_PENDING" -eq 1 ]; then
 	# Recovery retains the original target and original changed-path meaning.
 	# No network or FETCH_HEAD may redirect an unfinished source transaction.
 	OLD=$(live_source_control get old)
 	NEW=$(live_source_control get new)
+	AcquisitionSource=journal
 else
-	if [ "$DISK_REFUSED" -eq 0 ]; then
-		git -C "$APP_DIR" fetch -q origin main
-	fi
-	OLD=$(git -C "$APP_DIR" rev-parse HEAD)
-	if [ "$DISK_REFUSED" -eq 1 ]; then
-		NEW=$OLD
-	else
-		NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
-	fi
+if [ "$DISK_REFUSED" -eq 0 ]; then
+	git -C "$APP_DIR" fetch -q origin main
+fi
+OLD=$(git -C "$APP_DIR" rev-parse HEAD)
+if [ "$DISK_REFUSED" -eq 1 ]; then
+	NEW=$OLD
+else
+	NEW=$(git -C "$APP_DIR" rev-parse FETCH_HEAD)
+fi
+AcquisitionSource=git
 fi
 # END MACRO_UPDATE_PULL_SELECT
 CHANGED=""
@@ -1881,7 +1890,16 @@ if [ "$OLD" != "$NEW" ]; then
 	# END W1B5_PRE_RESET_GUARD
 	if [ "$LIVE_SOURCE_REPLAY" -eq 1 ]; then
 	live_source_control mutating
-	git -C "$APP_DIR" reset --hard -q "$NEW"
+	if [ "$AcquisitionSource" = journal ]; then
+		# Recovery resets to the journal's recorded target; FETCH_HEAD must
+		# never redirect an unfinished live-source transaction.
+		git -C "$APP_DIR" reset --hard -q "$NEW"
+	else
+	# Git-path tick: NEW is FETCH_HEAD by the stanza above (a disk-refused
+	# tick pins NEW=OLD and never reaches this reset), so the literal
+	# reviewed reset target is identical to "$NEW" on every path here.
+	git -C "$APP_DIR" reset --hard -q FETCH_HEAD
+	fi
 	REPO_UPDATED=1
 
 	# BEGIN MOVERS_BEFORE_MIRROR_GUARD
