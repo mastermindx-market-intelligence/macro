@@ -1,0 +1,452 @@
+{
+  "schema": "prophet.sector.verification.v1",
+  "recorded_at_utc": "2026-11-10T04:04:27.635332+00:00",
+  "mission": "Chairman extension: granular Prophet and Sector Intelligence symbiosis in source masterplan, actual Paper and embedded build contracts",
+  "finalization_classification": "EFFECT_UNKNOWN",
+  "source_and_package_state": "AUTHORED_PUBLISHED_AND_FULL_CONTENT_READBACK_VERIFIED",
+  "all_requested_design_coverage_complete": false,
+  "product_implementation_complete": false,
+  "protected_procedure_pin": "3652d8907df1738de551dd3032b42aa2a2acb482",
+  "source_frontier": {
+    "macro_main": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+    "terminal_master": "2fe2f02f07d1df8c855388bc556383cd74de44fd"
+  },
+  "authoring_checks": {
+    "state": "AUTHORING_CHECKS_PASSED",
+    "version": "5.0",
+    "masterplan_chars": 350287,
+    "masterplan_words": 42630,
+    "masterplan_sha256": "c96983fe8c5421c74a27b3aba5d05d397fe648a047389da0b5adbde8d4070f8e",
+    "active_edits": 46,
+    "original_program_equal": true,
+    "original_38_contracts_equal": true,
+    "counts": {
+      "build_units": 29,
+      "research_packets": 24,
+      "decision_register": 12,
+      "requirements": 36
+    },
+    "new_contracts": 20,
+    "new_proof_cases": 24,
+    "packet_amendments": 7,
+    "build_cards": 12,
+    "paper_roots": 11,
+    "paper_reviewed": 10,
+    "paper_partial_held": 1,
+    "numeric_fixture_identity": {
+      "benchmark": 8.0,
+      "gross": 6.5,
+      "net": 6.1,
+      "equity_allocation": 0.6000000000000001,
+      "cash_allocation": -2.5,
+      "selection": 0.5,
+      "interaction": -0.09999999999999998,
+      "cost": -0.4,
+      "starting_invested_allocation": 0.6875
+    },
+    "not_performed": [
+      "application implementation",
+      "application tests",
+      "protected outcomes",
+      "live strategy evaluation",
+      "installed/browser proof",
+      "Fable dispatch",
+      "Paper SX05 effect reconciliation"
+    ]
+  },
+  "source_publications": [
+    {
+      "commit": "638d5f40627f53d4479acb63a515207a95669398",
+      "state": "VERIFIED",
+      "files": [
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_INTEGRATION_AMENDMENT.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_AMENDMENT.md",
+          "chars": 37105,
+          "sha256": "73f5d2b0a22ee12722119d1447f89fe3961b4748e5009c8af8d61a3a43fa307f",
+          "blob_sha": "8ebe74c18bc734f406f8421a980bb45db690cf8f"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/owner_architecture.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_SOURCE_CENSUS.md",
+          "chars": 32818,
+          "sha256": "0b3e897f857212c60e84ebfd32d0ebf01ec5ef6b403ad000a52c179960e36f69",
+          "blob_sha": "aac673753c0fb4e3df9dbeea2c692ea23d654da5"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/quant_research.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_QUANT_PROTOCOL.md",
+          "chars": 35625,
+          "sha256": "941a18813774af209efe75f06744b548a16d6dff21a1414e42255020c74772bb",
+          "blob_sha": "17e2e268ccd5ca519185892cb4a928b0a3b0618f"
+        }
+      ],
+      "full_content_readbacks": [
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_AMENDMENT.md",
+          "equal": true,
+          "blob_sha": "8ebe74c18bc734f406f8421a980bb45db690cf8f"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_SOURCE_CENSUS.md",
+          "equal": true,
+          "blob_sha": "aac673753c0fb4e3df9dbeea2c692ea23d654da5"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_QUANT_PROTOCOL.md",
+          "equal": true,
+          "blob_sha": "17e2e268ccd5ca519185892cb4a928b0a3b0618f"
+        }
+      ]
+    },
+    {
+      "commit": "1c24784e940b278738e5bc1aea27511ea9715711",
+      "state": "VERIFIED",
+      "files": [
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_INTEGRATION_REGISTRY.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json",
+          "chars": 284240,
+          "sha256": "8a6d341a596f6cbae0581770f5eeacf1b929bb203e5585cf1567c8559f9be90a",
+          "blob_sha": "28754705c53808c69c874717887dd7f1ea304d8d"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PACKET_AMENDMENTS.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json",
+          "chars": 5361,
+          "sha256": "2879a297fba238bf0c6a6fa74fdfdf39386a6c6f7c424956451851f035aef437",
+          "blob_sha": "5f08750426ece340620a7df8457796170e95350e"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PAPER_MANIFEST.json",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json",
+          "chars": 553083,
+          "sha256": "100304af25a25171e59edbf842d867000cb35f4fd3ce8341117a998d50c64f0a",
+          "blob_sha": "4e5436ec420b4e8d20ca8b8216bdb851f531a167"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_PAPER_BUILD_SPEC.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md",
+          "chars": 21911,
+          "sha256": "b1e29c07b008d6599be966bd2f272fef81d0640565284a7d0981b35f4065c242",
+          "blob_sha": "ecb8d7e506a6458b19932761791a71e18399264a"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/SECTOR_FABLE_COMMISSION.md",
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md",
+          "chars": 11880,
+          "sha256": "4d52d01fd0b4b4758f3b06c15844d32c428e74b9894d16ff20091cf2c387fc75",
+          "blob_sha": "3fbd79f3f113f79c4eb224d985db079a3820aca2"
+        },
+        {
+          "local": "/workspace/scratch/82fc6bad83b7/prophet_sector_extension/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "path": "research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "chars": 350287,
+          "sha256": "c96983fe8c5421c74a27b3aba5d05d397fe648a047389da0b5adbde8d4070f8e",
+          "blob_sha": "a11ad136e93c51494038b19a39f5daf7aa1b3425"
+        }
+      ],
+      "full_content_readbacks": [
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json",
+          "equal": true,
+          "blob_sha": "28754705c53808c69c874717887dd7f1ea304d8d"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json",
+          "equal": true,
+          "blob_sha": "5f08750426ece340620a7df8457796170e95350e"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json",
+          "equal": true,
+          "blob_sha": "4e5436ec420b4e8d20ca8b8216bdb851f531a167"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md",
+          "equal": true,
+          "blob_sha": "ecb8d7e506a6458b19932761791a71e18399264a"
+        },
+        {
+          "path": "research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md",
+          "equal": true,
+          "blob_sha": "3fbd79f3f113f79c4eb224d985db079a3820aca2"
+        },
+        {
+          "path": "research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+          "equal": true,
+          "blob_sha": "a11ad136e93c51494038b19a39f5daf7aa1b3425"
+        }
+      ]
+    }
+  ],
+  "paper": {
+    "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "page_id": "p-H-0",
+    "page_url": "https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0",
+    "operation_count": 79,
+    "operation_states": {
+      "APPLIED_RESPONSE_OBSERVED": 78,
+      "UNKNOWN_RESPONSE": 1
+    },
+    "roots": [
+      {
+        "name": "SX01 · Today · Market to sector · 1440",
+        "id": "1FFU-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX02 · Sector focus · Healthcare · 1440",
+        "id": "1FLQ-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX03 · Name setup · Shared context · 1440",
+        "id": "1FRD-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX04 · Screener & compare · Sector population · 1440",
+        "id": "1FWN-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX05 · Strategy evaluation · Benchmark first · 1440",
+        "id": "1G21-0",
+        "state": "PARTIAL_HELD_EFFECT_UNKNOWN"
+      },
+      {
+        "name": "SX06 · Mobile Today · 390",
+        "id": "1G4T-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX07 · Mobile HK · ZH dark · 390",
+        "id": "1G6T-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX08 · Small viewport · 320",
+        "id": "1G8M-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX09 · State specimens · Sector connection",
+        "id": "1G9V-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX10 · Build contract · Shared owners",
+        "id": "1GC9-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      },
+      {
+        "name": "SX11 · Build contract · Product & acceptance",
+        "id": "1GHB-0",
+        "state": "VISUALLY_REVIEWED_DESIGN_CANDIDATE"
+      }
+    ],
+    "readback": {
+      "state": "OBSERVED",
+      "page_id": "p-H-0",
+      "node_count": 1467,
+      "root_count": 11,
+      "token_hash": "640746f9",
+      "completed_roots": [
+        "1FFU-0",
+        "1FLQ-0",
+        "1FRD-0",
+        "1FWN-0",
+        "1G4T-0",
+        "1G6T-0",
+        "1G8M-0",
+        "1G9V-0",
+        "1GC9-0",
+        "1GHB-0"
+      ],
+      "finished_exact_roots": [
+        "1FFU-0",
+        "1FLQ-0",
+        "1FRD-0",
+        "1FWN-0",
+        "1G4T-0",
+        "1G6T-0",
+        "1G8M-0",
+        "1G9V-0",
+        "1GC9-0",
+        "1GHB-0",
+        "1FD3-0",
+        "1F71-0"
+      ]
+    },
+    "build_cards": 12,
+    "guide_annotations": [
+      {
+        "node": "1GMD-0",
+        "parent": "1FD3-0",
+        "page": "p-G-0"
+      },
+      {
+        "node": "1GMP-0",
+        "parent": "1F71-0",
+        "page": "p-F-0"
+      }
+    ],
+    "content_corrections": [
+      "SX03 original/current labels and Context tab",
+      "SX04 issuer-excluded breadth 41/59",
+      "SX06 first name action moved to header; visible at approximately 630 CSS pixels"
+    ],
+    "quant_precision_readback": {
+      "benchmark_fixed_exclusion": true,
+      "head_specific_forecast_withdrawal": true,
+      "calibration_designated_past_windows": true,
+      "source_pointer_verified": "Source amendment · exact saved revision 638d5f40627f53d4479acb63a515207a95669398"
+    },
+    "source_amendment_commit": "638d5f40627f53d4479acb63a515207a95669398",
+    "new_unknown_effect": {
+      "operation_id": "prophet-sector-20261109-sx05-attribution",
+      "carrier": "mastermind_paper.paper_edit",
+      "target": "1G3F-0",
+      "root": "1G21-0",
+      "state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
+      "readback": "Original target later observed without attribution children; absence is not terminal/no-effect evidence.",
+      "disposition": "No replay, recreation, re-home, carrier swap, finish or mutation of held subtree until original effect is reconciled. No operation-status action in observed Paper catalog.",
+      "reconciliation_attempts": [
+        {
+          "action": "get_children original target",
+          "result": "transport timeout"
+        },
+        {
+          "action": "paper_inspect original carrier",
+          "result": "transport timeout"
+        },
+        {
+          "action": "later get_children original target",
+          "result": "OBSERVED existing heading and benchmark answer only; absence does not prove no effect",
+          "child_ids": [
+            "1G3H-0",
+            "1G3L-0",
+            "1G3R-0",
+            "1G3Y-0",
+            "1G47-0"
+          ]
+        }
+      ]
+    },
+    "older_hold": {
+      "operation": "prophet-four-turn-t2-20261109-mplans-tabs",
+      "root": "1EEH-0",
+      "target": "1EF3-0",
+      "state": "EFFECT_UNKNOWN",
+      "untouched": true
+    },
+    "not_claimed": [
+      "installed application",
+      "runtime accessibility/keyboard proof",
+      "real-user comprehension",
+      "accepted financial outcomes",
+      "complete SX05 attribution board"
+    ]
+  },
+  "pdf": {
+    "pdf": "/workspace/scratch/82fc6bad83b7/output/pdf/Prophet_Production_Masterplan.pdf",
+    "pages": 98,
+    "links": 353,
+    "bytes": 513304,
+    "sha256": "b3bc2bdb5675d622126c1889489d8e9ce3ee8be1d8017c8b7ce18ec63102913f",
+    "text_bounds_violations": [],
+    "all_38_contract_ids_present": true,
+    "all_24_q_ids_present": true,
+    "all_36_r_ids_present": true,
+    "all_20_si_contracts_present": true,
+    "all_24_sp_cases_present": true,
+    "source_commit": "1c24784e940b278738e5bc1aea27511ea9715711",
+    "visual_review": {
+      "state": "REVIEWED",
+      "body_contact_sheets_reviewed": 9,
+      "all_body_pages_reviewed": true,
+      "contents_spill_repaired": true,
+      "post_repair_individual_pages": [
+        1,
+        2,
+        77,
+        78,
+        80,
+        81
+      ],
+      "method": "Every body page reviewed in contact sheets. After a TOC-only spacing change removed the orphan contents page, cover, repaired contents and dense integration/acceptance/actual-effect pages were reviewed individually. Body source and layout rules were unchanged.",
+      "layout_findings": "No observed clipping, overlapping text, missing glyph markers or out-of-page text. Source commit and current effect boundary are legible."
+    }
+  },
+  "pdf_save": {
+    "state": "REPLACED_AND_METADATA_APPLIED",
+    "library_file_id": "libfile_6b8347e1870081919aede86a16f423d7",
+    "file_id": "file_00000000eb6c8212a8c68838a1dcbbb9",
+    "saved_version": 4,
+    "metadata_applied": true,
+    "saved_size_bytes": 538306,
+    "readback": {
+      "state": "SAVED_PDF_READBACK_VERIFIED",
+      "document_version": "5.0",
+      "library_file_id": "libfile_6b8347e1870081919aede86a16f423d7",
+      "file_id": "file_00000000eb6c8212a8c68838a1dcbbb9",
+      "saved_version": 4,
+      "pages": 98,
+      "read_pages": [
+        1,
+        71,
+        78,
+        81
+      ],
+      "checks": {
+        "same_identity": true,
+        "same_version": true,
+        "page_count": true,
+        "cover_has_version": true,
+        "cover_has_source": true,
+        "integration_is_first_class": true,
+        "contract_registry": true,
+        "held_effect_disclosed": true,
+        "synthetic_starting_allocation": true
+      },
+      "remote_size_bytes": 538306,
+      "remote_byte_identity_asserted": false
+    },
+    "remote_byte_identity_asserted": false
+  },
+  "reasoning_children": {
+    "tasks": [
+      "sector_owner_architecture",
+      "sector_product_reasoning",
+      "sector_quant_research"
+    ],
+    "bounded_precision_followups": [
+      "product active-contract contradiction review",
+      "quant synthetic attribution and issuer-exclusion review"
+    ],
+    "state": "SOL_ACCEPTED_STOP",
+    "external_mutations": false,
+    "production_outcome_execution": false
+  },
+  "external_effects": {
+    "owned_editorial_branch": "sol/prophet-production-design-20261109",
+    "application_files_changed": false,
+    "pull_request_created": false,
+    "merge": false,
+    "deployment": false,
+    "fable_commission": "PREPARED_SOURCE_ONLY",
+    "fable_delivery": false,
+    "fable_ack_or_start": false,
+    "runtime_admission_or_worker_dispatch": false,
+    "protected_outcomes": false,
+    "capital_or_trading_action": false,
+    "slack_email_linear_messages": false
+  },
+  "remaining_boundary": {
+    "new_design": "Reconcile original SX05 attribution effect before any held-root mutation; then correct starting-invested label if present, complete never-issued controls, review and finish only that root.",
+    "older_design": "Original mobile Plans operation remains untouched under its original hold.",
+    "reconciliation_requirement": "Original terminal/cancellation receipt or verified later-effect evidence. The observed Paper 0.5.18 catalog has no operation-status action. Absence reads do not prove no effect; no blind retry, duplicate, re-home, carrier swap or finish.",
+    "implementation": "Fable pickup must refresh live writer/candidate controls and prove real entitled consumer paths and scientific acceptance. Source continuity of Sector lanes is not a fresh runtime receipt."
+  }
+}

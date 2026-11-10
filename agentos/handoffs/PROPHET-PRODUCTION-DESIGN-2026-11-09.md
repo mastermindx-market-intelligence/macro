@@ -1,119 +1,133 @@
-# Prophet production design — final four-turn baseline, 2026-11-09
+# Prophet production design — Sector-connected v5 continuation
 
-FINALIZATION_CLASSIFICATION: PROVEN_OUTCOME
-MISSION_SCOPE: FOUR_TURN_EDITORIAL_ARCHITECTURE_AND_DESIGN_COMMISSION
-MISSION_COMPLETE: true
+FINALIZATION_CLASSIFICATION: EFFECT_UNKNOWN
+MISSION_SCOPE: CHAIRMAN_SECTOR_INTELLIGENCE_DESIGN_AND_MASTERPLAN_EXTENSION
+MISSION_COMPLETE: false
+SOURCE_CONTRACTS_AND_MASTERPLAN_SAVED_AND_VERIFIED: true
+PAPER_NEW_REVIEWED_ROOTS: 10
+PAPER_NEW_PARTIAL_HELD_ROOTS: 1
+ORIGINAL_MOBILE_PLANS_HOLD_PRESERVED: true
 PRODUCT_IMPLEMENTATION_COMPLETE: false
-BOUNDED_TURN_1_COMPLETE: true
-TURN_2_CANDIDATE_REVIEW_COMPLETE_WITH_PARTIAL_EXCEPTION: true
-ALL_TURN_2_REQUESTED_DESIGN_COVERAGE_COMPLETE: false
-BOUNDED_TURN_3_ARCHITECTURE_COMPLETE: true
-BOUNDED_TURN_4_FINAL_BASELINE_COMPLETE: true
-CAPABILITY_STATE: FINAL_IMPLEMENTATION_BASELINE_AUTHORED_AND_VERIFIED
+FABLE_COMMISSION_PREPARED: true
+FABLE_DELIVERED_OR_STARTED: false
 Operation: prophet-production-design-four-turn-20261109-sol-001
 
-## Assignment and actual outcome
+## Current assignment and outcome
 
-The Chairman commissioned four turns: (1) Prophet backend/sleeves/source census and architecture; (2) actual editable Paper design; (3) deeper source-bound architecture hardening; (4) final masterplan for a Fable-led team on Chairman-designated T3. Latest outer instruction: “Good work, start turn 4. You are also authorized additional turns beyond 4 if needed, which you can assess later.”
+The Chairman extended the accepted four-turn baseline with a material requirement: Prophet and Sector Intelligence must share granular market, sector, industry and constituent intelligence; market participation and sector allocation must be measured before attributing value to stock selection. Update actual Paper, embedded build instructions, architecture and the final Fable/T3 commission. Additional turns are authorized. This is a continuation in the same source and operation homes, not a new runtime programme.
 
-Turn 4 completes the editorial commission. The final architecture choices, owner specifications, retained programme, bounded work briefs and production acceptance/release contract are durable and verified. No further editorial turn is needed for the resolved choices. A later turn is useful if actual new evidence changes a contract; ordinary implementation clarification and source drift belong to the assigned implementation principal.
+The v5 source package, masterplan, actual new Paper page, build cards and PDF are saved and read back. Ten new Paper roots are reviewed. One new attribution insertion has an unresolved original effect; its root is partial and fenced. The original mobile Plans hold remains separate. This record does not call the extended design commission complete, infer installed application behaviour, establish financial performance or assert Fable delivery/START.
 
-This completion does not assert that the application or science is production-ready. Full product acceptance still requires the three advertised US economic jobs, qualified evidence/forecast/entry/management capabilities, durable user/original history, coherent entitled source generation, ordinary refresh, degraded operation, telemetry, rollback, and all retained sleeve/instrument/market obligations. A staged research release closes its declared milestone; withholding hard capabilities does not close the full programme. Blocked and not-yet-evaluated research remains open.
-
-Existing homes: WS:PROPHET-US-V4-RECOVERY and WS:PROPHET-US-ENTRY-TIMING. Source carrier: macro branch sol/prophet-production-design-20261109. This is an unmerged editorial baseline. No new runtime/control-plane entity, Fable dispatch, ACK/START, admission, application merge, deployment, scientific promotion or capital/trading action occurred.
+All safe independent source, design, verification and durable handoff work in this extension is complete. The next design action depends on new reconciliation evidence for the original SX05 operation. Repeating unchanged absence reads or replaying the write cannot close it. Additional general brainstorming or a full census restart is not needed.
 
 ## Exact canonical package — full content readbacks verified
 
-- Final masterplan v4.0, 301,139 characters / 36,516 whitespace-delimited words:
-  https://github.com/mastermindx-market-intelligence/macro/blob/bb07a33c7a2fb843e9eac877af08a8c4d28d1130/research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md
-  Commit bb07a33c7a2fb843e9eac877af08a8c4d28d1130; blob da31d8c86b70f1823b2c58b34fe8e1586bbf7331.
-  Sections 14–16 freeze owner contracts; section 17 freezes claims, proof and delivery; appendices preserve the original programme.
-- Fable-led implementation commission and handoff landing page:
-  https://github.com/mastermindx-market-intelligence/macro/blob/33e5a648d5f6faff9d04c8f9355592b9bd8173d3/research/design_candidates/prophet_production_20261109/TURN4_FABLE_IMPLEMENTATION_COMMISSION.md
-- Exact backend, experience and intelligence owner specifications:
-  https://github.com/mastermindx-market-intelligence/macro/blob/b36e0a74cfdd02a1525cfe2b935666243fef483e/research/design_candidates/prophet_production_20261109/TURN4_OWNER_CONTRACTS.md
-- Complete final machine-readable registry:
-  https://github.com/mastermindx-market-intelligence/macro/blob/9e9d894b40fa823da3e7e939d588b96dcb4652e3/research/design_candidates/prophet_production_20261109/TURN4_FINAL_REGISTRY.json
-- Seven compiled work briefs:
-  https://github.com/mastermindx-market-intelligence/macro/blob/5ed585137ed70c743b359d8d5b7309b79140abe8/research/design_candidates/prophet_production_20261109/TURN4_WORK_BRIEFS.md
-- Seven structured brief inputs:
-  https://github.com/mastermindx-market-intelligence/macro/blob/89bdb93349d71a9bdb1e4c3ec8a1cedf6f0531c1/research/design_candidates/prophet_production_20261109/TURN4_WORK_BRIEFS.json
-- Exact authoring/source/PDF/save verification:
-  https://github.com/mastermindx-market-intelligence/macro/blob/ce8245af954fd0458cc76a545a5bd99cfe13fd50/research/design_candidates/prophet_production_20261109/TURN4_VERIFICATION.json
+Owned carrier: `mastermindx-market-intelligence/macro`, branch `sol/prophet-production-design-20261109`. Source publications used one GitHub carrier, expected-head comparison and non-forced ref updates. No PR, application merge or deployment was performed.
 
-The final registry preserves the original programme object exactly: 29 B build units, 24 Q work packets, 12 D decisions and 36 R requirements. It contains all 38 design-to-owner contracts, 23 canvas mappings, twelve final choices, twenty PF proof cases and seven delivery packets. A01–A05 remain independent activation branches. All Q protected-outcome permissions remain false. The Q packets are specified work, not already registered trials or runtime dispatch.
+Final source package commit: **1c24784e940b278738e5bc1aea27511ea9715711**.
 
-Brief compilation verifies authoring shape and source references only. Receiver, assignment, workspace and host bindings remain null. No admission, resource grant or delivery is inferred. The final source-name clarification changes only one masterplan sentence; its exact diff and full saved readback were verified.
+- [Masterplan v5](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md). Blob `a11ad136e93c51494038b19a39f5daf7aa1b3425`; 350,287 characters / 42,630 whitespace-delimited words; SHA256 `c96983fe8c5421c74a27b3aba5d05d397fe648a047389da0b5adbde8d4070f8e`.
+- [Sector integration registry](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_REGISTRY.json). Blob `28754705c53808c69c874717887dd7f1ea304d8d`.
+- [Seven delivery packet amendments](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/design_candidates/prophet_production_20261109/SECTOR_PACKET_AMENDMENTS.json). Blob `5f08750426ece340620a7df8457796170e95350e`.
+- [Paper build specification](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_BUILD_SPEC.md). Blob `ecb8d7e506a6458b19932761791a71e18399264a`.
+- [Exact Paper operation manifest](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/design_candidates/prophet_production_20261109/SECTOR_PAPER_MANIFEST.json). Blob `4e5436ec420b4e8d20ca8b8216bdb851f531a167`.
+- [Extended Fable commission](https://github.com/mastermindx-market-intelligence/macro/blob/1c24784e940b278738e5bc1aea27511ea9715711/research/design_candidates/prophet_production_20261109/SECTOR_FABLE_COMMISSION.md). Blob `3fbd79f3f113f79c4eb224d985db079a3820aca2`.
 
-## PDF, validation and actual limits
+Core amendment commit: **638d5f40627f53d4479acb63a515207a95669398**. These are the exact source pointers embedded and read back in Paper:
 
-Prophet_Production_Masterplan.pdf, document version 4.0, saved version 3 under the existing identity:
-https://chatgpt.com/library?file_id=libfile_6b8347e1870081919aede86a16f423d7&account_id=personal
+- [Governing integration amendment](https://github.com/mastermindx-market-intelligence/macro/blob/638d5f40627f53d4479acb63a515207a95669398/research/design_candidates/prophet_production_20261109/SECTOR_INTEGRATION_AMENDMENT.md), blob `8ebe74c18bc734f406f8421a980bb45db690cf8f`.
+- [Source-owner census](https://github.com/mastermindx-market-intelligence/macro/blob/638d5f40627f53d4479acb63a515207a95669398/research/design_candidates/prophet_production_20261109/SECTOR_SOURCE_CENSUS.md), blob `aac673753c0fb4e3df9dbeea2c692ea23d654da5`.
+- [Quantitative protocol](https://github.com/mastermindx-market-intelligence/macro/blob/638d5f40627f53d4479acb63a515207a95669398/research/design_candidates/prophet_production_20261109/SECTOR_QUANT_PROTOCOL.md), blob `17e2e268ccd5ca519185892cb4a928b0a3b0618f`.
 
-85 pages / 323 links. Every page rendered and visually reviewed through eight contact sheets; dense pages 60 and 65 additionally inspected individually. No out-of-page text blocks or missing glyph markers. Complete T3C/B/Q/D/R/PF identities confirmed in extracted text. Decision-table pagination was repaired; exact source names read_native_b4_owner_inputs and compose_runtime_owner_facts are now stated without a duplicated historical comparison.
+The masterplan applies 46 active-contract amendments and adds governing section 18. Its dated prior sections remain history where identified. The registry preserves the original 38 T3C contracts and complete original programme object exactly: 29 B units, 24 Q packets, 12 D decisions and 36 R requirements. Added obligations are SI01–SI20, SP01–SP24 and amendments to P1–P7. A01–A05 and all original financial/scientific permissions remain. The separate Strategy evaluation adapter does not add a value to the closed Record enum.
 
-Canonical saved readback confirmed pages 1, 57, 65 and 68: version 4.0 cover, exact masterplan commit bb07a33c7a2fb843e9eac877af08a8c4d28d1130, 85 pages, Model-plan Record versus registered cohort, PF acceptance cases, and editorial versus production completion/held effect.
-Library identity libfile_6b8347e1870081919aede86a16f423d7; current file_id file_0000000034fc821281c999f337ff2fcc; saved version 3. Local PDF SHA256 5d676de72e4ebfebee6cc2b2702095253f0382ba5a29654e5cfa460cf65937e8, 454,708 bytes. That hash is local; no remote byte-identity claim. Saved metadata reports 479,710 bytes. Version attributes applied successfully.
+`SECTOR_VERIFICATION.json` in the same canonical design directory accompanies this continuity publication and contains the full authoring, publication-readback, PDF and actual Paper-state evidence. Verification and this record describe the package commits above; they are not themselves product proof.
 
-Exact GitHub comparison from 1909335ccc5dee2edcd6bf3a00c842df824cd296 to bb07a33c7a2fb843e9eac877af08a8c4d28d1130 shows five added Turn 4 documents and the masterplan update, seven commits, no application changes. Verification and this continuity follow separately. Work this turn comprises read-only source review, reasoning, authored specifications, compiler/schema checks, exact source readbacks and PDF QA. Application tests, installed migration inspection, browser user-state tests, notification delivery tests, protected outcomes and production acceptance were not performed.
+## PDF save and readback
 
-## Reusable procedure and source frontier
+[Prophet_Production_Masterplan.pdf](https://chatgpt.com/library?file_id=libfile_6b8347e1870081919aede86a16f423d7&account_id=personal)
 
-Protected Mastermind pin: 3652d8907df1738de551dd3032b42aa2a2acb482. INDEX and applicable source/delivery/execution/continuity/Paper law were read at the same pin; commission/routing/dialogue laws were refreshed at that pin this turn. Reuse the pin for unaffected work. Current Chairman AGENTS/Web review waiver governs older broad reviewer boilerplate; actual GitHub/CODEOWNERS/security/release holds remain binding.
+Document version 5.0; saved version 4 under the existing identity `libfile_6b8347e1870081919aede86a16f423d7`; current file `file_00000000eb6c8212a8c68838a1dcbbb9`.
 
-Turn 4 Macro main: cae8e01be6ada447c11a6e77c4a46cab2abb69d2.
-Turn 4 Terminal master: 90ab4ef7a4c15e023be7d1188c2bd278a61ff266.
-Original R6/census: 36ff39c98dfee8190d0a3f7aaaef9df86921226e.
+98 pages / 353 links. All body pages were rendered and reviewed in nine contact sheets. A contents-only spacing repair removed an orphan contents page; final pages 1, 2, 77, 78, 80 and 81 were then individually reviewed. No observed clipping, overlap, missing glyph markers or out-of-page text blocks. Required retained and new contract/proof identities are present. Exact saved readback of pages 1, 71, 78 and 81 confirms v5, source commit, the governing integration, SI contracts, numerical fixture precision and both Paper boundaries.
 
-Relevant backend/intelligence owner blobs were compared individually with Turn 3 and remained unchanged. A capped broad comparison was not used to prove absence. Terminal gained the native /prophet route, merged #1244 at 67e2d515e4e92d2d05ea399f5691b7860fa07bbf: existing shared shell/access checks → IntelligenceToolMount → IntelligenceToolWorkspace → ProphetLanesView. That is model-plan/options-lane integration, not proof the new Today/Screener experience is implemented. Reuse the native route and shell.
+Local render: 513,304 bytes; SHA256 `b3bc2bdb5675d622126c1889489d8e9ce3ee8be1d8017c8b7ce18ec63102913f`. Saved metadata reports 538,306 bytes. This is a content/readback claim, not remote byte identity. Version metadata was applied successfully.
 
-Original incumbent candidates and release holds retain their owners. The final commission records dispositions for #9495, #9369, #10824, #10176, #10509, #10202, #7399, #8308 and shared-shell/F01 work. Candidate source or green CI is not installation, science, release permission or consumer acceptance. Refresh exact affected heads and collisions at pickup.
+## Procedure, source frontier and live-writer custody
 
-## Final implementation choices — do not reopen without evidence
+Protected Mastermind pin reused: `3652d8907df1738de551dd3032b42aa2a2acb482`. INDEX and applicable law were read at that same pin in the session; current Chairman AGENTS and Web review waiver govern. Actual repository, security, release, admission and effect-custody controls remain binding.
 
-1. Extend the existing B4 same-read owner with one immutable request-local native read bundle, one B3 composition per binding and shared evaluated/presented facts. Preserve source/pass/quote/assembly clocks and use genuine current UTC evaluation after capture. Re-age without rewriting the original D5 cut or historical episode membership.
-2. Keep qualified current-entry availability separate from research usefulness, rank and confidence. Retain owner lifecycle/retraction and qualified structural breach precedence. Optional structural UNKNOWN does not require every gate PASS. Policy-specific terms expose actual unavailable/not-provided distinctions. Use measured prior-confirmed same-basis Wilder ATR through the existing owner, with no proxy fallback or accidental double shift.
-3. Filter the full entitled native observation/episode/Today population before pagination. Keep UNKNOWN identity/filter cases explicit. Stable population snapshots exclude volatile read/generated timestamps; actual source or membership change conflicts. Original Plan relations use the existing resolver and retained owner source bytes, never same-ticker substitution or read-time archive creation.
-4. D05 is concrete: security Save is WatchStore membership; notes are annotations; dated thesis uses immutable F11 versions attached to existing investigation revisions and operation receipts. Proposed v3 disposition/reason/milestone fields are additive. Verify the actual migration predecessor/grants, deploy reader compatibility before new writes, enforce exact same-account version joins, retain system commitment time and truthful partial two-owner success.
-5. Checked Save uses a bounded, account-bound reload-safe recovery envelope beside the existing WatchStore cache. Unknown original effects survive refresh/signout; current membership does not prove original insert attribution or authorize replay. Compare preserves exact chosen refs/order; browser return state retains native identity without leaking private payloads or silently retargeting changed sources.
-6. Initial Follow completes the existing B21 five-event email owner, preference/category/list enrollment and actual delivery proof. Assessment/B4 transitions require retained semantic owner events. Any later in-app projection shares the existing outbox row with separate opt-in/ack; no new queue or notification truth store. SMTP acceptance is not inbox delivery or read.
-7. Launch Record is the complete retained MODEL_PLAN_RECORD, open and terminal, keyed by original plan ID, with explicit coverage and legacy unknown lineage. All-retained / plan-recorded date is the default; registered opportunity cohorts remain separate existing Evaluation protocol populations. Entry, outcome and integrity are independent axes. Preserve legacy return/no-entry/quarantine semantics, correction/reconstruction provenance and actual historical-as-of limits.
-8. Early Leadership, Earnings and Cycle have explicit useful source-backed research journeys and separate qualification gates. All five other sleeve families, all 24 Q packets and the CN/HK/CA roadmap remain. Supported, evaluated null, inconclusive, blocked, killed and not-yet-evaluated are distinct. A launch with only unavailable fixtures does not satisfy useful product acceptance.
-9. P1–P7 are bounded delivery groupings, not new runtime workstreams. Shared source files and additive migrations have serialized ownership. Fable owns cross-repository integration; each scientific slice is routed again for its actual complexity. PF01–PF20 prove identity, coherent reads, clocks, useful evidence, durable state, notifications, Record, access, operation, served generation and rollback.
+Fresh source census: Macro main `f3a547cc09872d9aaa719759a6a2daa2832edad5`; Terminal master `2fe2f02f07d1df8c855388bc556383cd74de44fd`.
 
-## Paper custody — unchanged precise exception
+Macro #10922 merged the Sector final plan/charter/frontier. Its source frontier records Fable T3 COO thread `2f136a11-91f9-4bca-bf10-8a1d8b7f4e5d` and lanes 1–8 STARTED. This is source continuity, not a fresh runtime receipt or permission to displace workers. Sector lane 3 is the sole writer for `SectorIntelligenceWorkspace.tsx`, `sectorIntelligenceLex.ts`, `sectorIntelligence.ts` and `app/api/sector-intelligence/route.ts`; lane 6 owns the Sector investigation integration. Prophet D05 must join one compatible migration, not create a competing schema. No shared application paths were edited here.
 
-File PROPHET 01M3NT5Y3G5HTJHVR0K5W2MDJM, page p-F-0:
-https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-F-0
+Candidate #10780 was observed OPEN/non-Draft/unmerged at `91add9613ad29dcfb82ff75036dd6519cfc6c06f`; its API has a closed audience and no arbitrary historical-generation selector. #10839 was OPEN/non-Draft/unmerged at `3894ea1befb9ffe7f45e3398a1334c6c14b13a51`; #10703 remained Draft/HOLD at `9fc460ff36345387c3a2c5435b079852e8488da0`. Refresh affected heads and writers at execution pickup. Proposed contracts do not establish deployed APIs or retained bytes.
 
-23 mapped canvases: 22 reviewed candidate/reference/specimen roots and one partial held mobile Plans root. The accepted desktop Plans/Record direction and other reviewed canvases remain usable as specifications; full production responsive proof remains owed.
+## Governing decisions — preserve without evidence-driven change
 
-Turn 2 design review:
-https://github.com/mastermindx-market-intelligence/macro/blob/ecad3aa89a9bd347fb9ca50ea975807ca7dec3fc/research/design_candidates/prophet_production_20261109/TURN2_DESIGN_REVIEW.md
-Exact operation manifest:
-https://github.com/mastermindx-market-intelligence/macro/blob/d1332f6e66f199d63f4c2f41fe8dc304da2c6e2c/research/design_candidates/prophet_production_20261109/TURN2_PAPER_MANIFEST.json
+1. Default journey: market participation → sector/industry choice → independent company evidence → qualified policy action → honest attribution. Direct search, All research, independent emergence and other sleeve strategies remain reachable. Positive sector leadership is not a universal admission rule. Preserve `KILL-ROTATION-CYCLE-CONFLUENCE` and all original killed-mechanism rulings.
+2. Reuse market-state and native regional profiles, Sector Central/Pulse, ThemeGraph/membership, Early Leadership, residual/factor owners, Cycles, the existing read bundle, Evaluation, investigations and alerts. The stateless leadership projection is not a new store, evaluator or authority plane. Current rank/gate/size/trade/escalate flags remain false.
+3. Capture one native Sector context at Prophet request start; preserve both native generation IDs and their compatibility tuple. Exact source generation, clocks, membership/taxonomy, benchmark/currency/return basis and full population travel through discovery, detail, evidence, comparison, saved history and return. Filter complete point-in-time membership before paging; top-eight China preview is not the population.
+4. Sector facts flow into Prophet. Original dated constituent facts flow upstream with complete reported/usable/unknown denominators. Selected Prophet winners, ranks and repeated price narratives do not become independent Sector confirmation. Exclude all same-issuer aliases for candidate confirmation and deduplicate common roots. Perturbation tests freeze captured benchmark, membership, model and nonissuer inputs; separately label any recomputed-benchmark-mediated effect.
+5. Distinguish absolute return, benchmark-relative percentage-point return, relative wealth, estimated beta/factor residual, strategy attribution and incremental selection value. Sector rotation is an active policy and can trail a passive benchmark through cash, late rotation, concentration or cost even when chosen names win.
+6. Evaluate passive market, simple participation, sector-only, member-only, joint, exact incumbent and independent-emergence comparators with point-in-time walk-forward data, past-only transforms/calibration, costs, exposure, cash and failure regimes. A calibrator can fit designated past training/calibration windows, never untouched test outcomes. No protected outcome execution occurred here.
+7. Qualify remaining-return, adverse-tail, target-before-invalidation and time-to-transition heads separately. Do not imply a universal percentage of cycle remaining. Original pivot time and first-knowable/confirmation time differ. Withdrawal of one head suppresses that head, not independently qualified siblings. Existing cycle hazard parity failure forbids an invented live forecast.
+8. US, Hong Kong and mainland China retain native sessions, as-known cutoffs, currencies, taxonomies, accessible vehicles and execution constraints. Lagged SPY overnight context is not local HK/CN beta. Later US data cannot enter an earlier Asia decision. Unsupported native factor coverage remains explicit.
+9. Preserve the original Model-plan Record and registered opportunity cohort enum. A separate Strategy evaluation adapter requires reconciled positions/weights, cash, costs, benchmark and denominator. Actual Portfolio exposure comes from authorized holdings, not a saved research list. The original entry, durable Save, original-history, Follow and production-proof obligations remain.
+10. User-facing content stays concise; detailed lineage, assumptions, contradictory evidence and calculations are progressively inspectable. Original context survives return and reopening or is explicitly unavailable. A digest without retained bytes is not an archive. Native quote freshness cannot refresh stale sector facts.
 
-Original manifest: 365 operations, 364 APPLIED_RESPONSE_OBSERVED and one EFFECT_UNKNOWN_TRANSPORT_TIMEOUT.
-Unknown operation: prophet-four-turn-t2-20261109-mplans-tabs.
-Original carrier: mastermind_paper paper_edit / write_html insert-children.
-Target 1EF3-0 within root 1EEH-0; intended Current/History/Record tabs.
-No terminal receipt. Earlier absence observations are not no-effect proof. Original request/HTML remains in the manifest.
+The Chairman's corporate-news-timing thesis is retained as a testable hypothesis. Price and volume are not proof of institutional flows; news timing is not proof of issuer intent. Historical industry-momentum evidence motivates research but does not establish this implementation's performance or that leadership investing is always safest.
 
-Fence 1EEH-0 / 1EF3-0 and descendants. No retry, recreation, re-home, substitute target, carrier swap or finish until original terminal/cancellation evidence or a verified later effect resolves custody. Turn 4 performed only a read-only catalogue check: Paper 0.5.18 still has no operation-status reconciliation action and the active document belongs to MastermindOS. No focus change, held-target read, mutation or replay occurred. Repeating unchanged negative reads is not useful.
+## Actual Paper state
 
-Other original holds/effects remain: #9495 security/release/ambiguous effects; Paper ZE5-0 palette; F01 atlas EFFECT_UNKNOWN and readme DOCUMENT_CHANGED. #10579 actual writer controls bind; “Fable” does not prove eligible GitHub identity.
+[Sector-connected Prophet page](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-H-0), file `01M3NT5Y3G5HTJHVR0K5W2MDJM`, page `p-H-0`.
 
-## Do not redo, children and next execution action
+Eleven roots, 1,467 observed nodes, 79 operations: 78 `APPLIED_RESPONSE_OBSERVED`, one `UNKNOWN_RESPONSE`. Completed roots were individually finished; no global finish was used. Existing token hash `640746f9`, Inter/PingFang SC and semantic light/dark design were preserved.
 
-Preserve original 29 B / 24 Q / 12 D / 36 R and A01–A05; original rights, killed-mechanism and scientific rulings; accepted bounded B1 history; unchanged valid proofs; D03 semantics; selected visual direction; and exact original effects. Do not create duplicate identity, lifecycle, WatchStore, auth, alerts/outbox, Evaluation, publication, runtime, retry or control planes. Do not regenerate equivalent Paper boards, repeat the whole census or rewrite incumbent candidate branches wholesale.
+| Root | Content | Verified state |
+|---|---|---|
+| 1FFU-0 | SX01 desktop Today | Reviewed |
+| 1FLQ-0 | SX02 Sector focus | Reviewed |
+| 1FRD-0 | SX03 Name Setup | Reviewed |
+| 1FWN-0 | SX04 Screener/Compare | Reviewed |
+| 1G21-0 | SX05 Strategy evaluation | Partial, original effect unknown |
+| 1G4T-0 | SX06 mobile English 390 | Reviewed |
+| 1G6T-0 | SX07 HK/ZH dark 390 | Reviewed |
+| 1G8M-0 | SX08 small viewport 320 | Reviewed |
+| 1G9V-0 | SX09 ten state specimens | Reviewed |
+| 1GC9-0 | SX10 owner build cards A–F | Reviewed |
+| 1GHB-0 | SX11 product/acceptance cards G–L | Reviewed |
 
-The three Turn 4 native C3 reasoning advisers (backend, experience, intelligence) completed bounded source/contract advice and received explicit SOL ACCEPTED / STOP, including cross-contract precision review. They did not modify external source or run implementation labor. No independent approval was invented. No paid worker/Fable runner, automation, watcher, Slack/email/Linear effect or background job was created.
+Two guide additions: `1GMD-0` under existing AGENT README `1FD3-0` on `p-G-0`, and `1GMP-0` under Start Here `1F71-0` on `p-F-0`. Twelve embedded cards state user job, owner/source, inputs/identity, calculation/claim, interaction, states, proof and packet/lane custody. Exact source pointers and quant precision corrections were read back. First mobile name action appears around 630 CSS pixels; original/current context and the Context tab are explicit. Runtime keyboard/semantic accessibility and real-user comprehension remain implementation proof.
 
-The concrete commission is ready for lawful delivery to a real eligible Fable-led receiver on Chairman-designated T3. T3 is a venue label, not an inferred account/host/session. The read-only target projection returned no addressable target; this does not prove T3 or every lane unavailable. This session has not delivered, ACKed, admitted or STARTed the work. No fake OPEN_PICKUP broadcast or routine Chairman allocation request substitutes for actual placement.
+All numbers are synthetic fixtures. Market 3.2%, Healthcare 7.6%, HCA 12.2% yield a descriptive 3.2 + 4.4 + 4.6 bridge, not a causal factor attribution or alpha. Full breadth is 42/60; candidate-excluded breadth 41/59. Industry membership/breadth and weighted returns reconcile. HK fixture market −4%, sector −2% shows relative strength with absolute loss.
 
-At execution pickup, the current outer assignment supplies receiver authority. Refresh affected source heads, live writers, original effect custody and actual lane/admission controls. The first executable slice is P1's coherent native read plus one entitled real consumer proof; P2's noncolliding native-route/layout composition can proceed on explicit fixture contracts without claiming unimplemented producer capabilities. Serialize shared paths; preserve original branch activation and candidate ownership. Return exact source/head/diff, affected checks, installed consumer evidence, operation receipts, remaining obligations and next action to the existing GitHub/AgentOS owners.
+The separate one-period Brinson–Fachler fixture reconciles benchmark 8.0%, equity allocation +0.6pp, cash allocation −2.5pp, selection +0.5pp, interaction −0.1pp and costs −0.4pp to net 6.1%, a −1.9pp gap. Starting invested allocation is 68.75%; it is not average exposure. These arithmetic checks are not a live or historical strategy result.
 
-Full brief lives in GitHub; any actually authorized transport carries recipient/action/source link/return. Delivery, ACK, admission, START, CI, merge, deployment and product acceptance remain separate evidence states. This record grants no future background execution.
+### New held effect — exact target, no replay
 
-Prior Turn 3 continuity, retained as history:
-https://github.com/mastermindx-market-intelligence/macro/blob/1909335ccc5dee2edcd6bf3a00c842df824cd296/agentos/handoffs/PROPHET-PRODUCTION-DESIGN-2026-11-09.md
+Operation: `prophet-sector-20261109-sx05-attribution`.
+Original carrier: Mastermind Paper `paper_edit`, `write_html`, `insert-children`.
+Target: `1G3F-0`, inside root `1G21-0`, page `p-H-0`.
+State: `EFFECT_UNKNOWN_TRANSPORT_TIMEOUT`; no terminal receipt.
+
+The later original-target read showed existing heading/benchmark-answer children only: `1G3H-0`, `1G3L-0`, `1G3R-0`, `1G3Y-0`, `1G47-0`. This absence is not no-effect proof. The original HTML and intent are retained in the manifest. Paper 0.5.18's observed catalog has no operation-status reconciliation action.
+
+Fence the whole root/subtree. No retry, recreation, re-home, substitute target, carrier swap, finishing or further mutation until original terminal/cancellation evidence or verified later effect resolves custody. Prepared qualification/Portfolio controls were never issued. If the original attribution HTML later appears, change its “Average invested” label to “Starting invested allocation” only after reconciliation. Then complete the unissued controls, review the exact whole board and finish only that root.
+
+### Older held effect — unchanged
+
+`prophet-four-turn-t2-20261109-mplans-tabs`, target `1EF3-0`, root `1EEH-0`, page `p-F-0`. Original carrier and no-replay rules remain. This extension did not read, alter, recreate or finish the held subtree. Older ZE5, F01, #9495 and #10579 holds retain their existing owners and controls.
+
+## Children, non-effects and next safe action
+
+Native reasoning advisers `sector_owner_architecture`, `sector_product_reasoning` and `sector_quant_research` completed bounded analysis and received explicit SOL ACCEPTED / STOP. Product-contract and quant-precision followups also completed and were accepted/stopped. No substitute implementation workers, paid worker dispatch, protected outcomes or external mutations were performed by the advisers.
+
+No Slack/email/Linear message, Fable dispatch, ACK, admission, START, background runner or automation was created. The full source commission is ready for a lawful receiver; T3 remains the Chairman-designated venue, not an inferred host/account. The existing Sector source frontier establishes a coordination obligation, not evidence that this new Prophet commission was delivered.
+
+Preserve accepted work and exact original effects. Do not redo the source census or regenerate equivalent Paper boards. The next design action is the bounded SX05 reconciliation above. It requires a new control/receipt or verified effect; an extra turn alone is not reconciliation. After custody resolves, complete and verify the remaining board, update the manifest/masterplan status and save/read back the affected package. The older mobile hold remains separately governed.
+
+At implementation pickup, refresh affected source heads, live writers, original effect custody and actual lane/admission controls. First useful vertical slice: one entitled native Sector context and full Prophet member population → one real company Setup → retained source/evidence → exact return, with coherent clocks and IDs. Follow with separate useful intelligence and scientific qualification work; descriptive integration does not silently change ranks or policy. Serialized shared paths, real consumer proof, original controls, ordinary refresh, correction, operation and rollback remain required. Source/Paper/PDF completion is not production or financial acceptance.
+
+Prior four-turn baseline and its complete retained choices remain available as history:
+https://github.com/mastermindx-market-intelligence/macro/blob/8c0ada77a66ac78150ee58cf6bd986280d2606e9/agentos/handoffs/PROPHET-PRODUCTION-DESIGN-2026-11-09.md
