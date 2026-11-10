@@ -139,19 +139,25 @@
   // Returns an outputs object, or {ok:false, msg}. Never returns NaN/Infinity.
   function compute(inp){
     var lots = inp.lots || [], totalShares = 0, totalCost = 0, counted = 0, i, s, p, sawPartial = false;
+    var rangeMsg = {en:"The entered lots exceed this calculator's numeric range.",
+      zh:"输入的买入数据超出了本计算器的数值范围。"};
     for(i=0; i<lots.length; i++){
       s = lots[i].s; p = lots[i].p;
       var haveS = isFinite(s) && s > 0, haveP = isFinite(p) && p > 0;
       if(!haveS && !haveP) continue;          // fully blank row — ignore
       if(!haveS || !haveP){ sawPartial = true; continue; } // half-filled — flag, ignore
+      var lotCost = s * p;
+      if(!isFinite(lotCost) || !(lotCost > 0)) return {ok:false, msg:rangeMsg};
       totalShares += s;
-      totalCost   += s * p;
+      totalCost   += lotCost;
       counted++;
     }
     if(counted === 0) return {ok:false, msg:"Fill in at least two lots to blend your average cost."};
     if(counted === 1) return {ok:false, msg:"Add a second lot — with one buy, the average is just that price.", partial:sawPartial};
     if(!(totalShares > 0)) return {ok:false, msg:"Total shares must be above zero."};
     var avgCost = totalCost / totalShares;
+    if(!isFinite(totalShares) || !isFinite(totalCost) || !isFinite(avgCost) || !(avgCost > 0))
+      return {ok:false, msg:rangeMsg};
     return {
       ok:true, avgCost:avgCost, totalShares:totalShares, totalCost:totalCost,
       breakEven:avgCost, counted:counted, partial:sawPartial
@@ -194,7 +200,15 @@
       var res=compute({lots:lots}); last=res;
       if(!res.ok){
         dash();
-        outPlain.textContent = res.msg;
+        if(typeof res.msg === "string") outPlain.textContent = res.msg;
+        else {
+          outPlain.textContent = "";
+          ["en", "zh"].forEach(function(lang){
+            var span = document.createElement("span");
+            span.className = "l-" + lang; span.textContent = res.msg[lang];
+            outPlain.appendChild(span);
+          });
+        }
         outPlain.className = res.partial ? "co-plain warn" : "co-plain";
         return;
       }

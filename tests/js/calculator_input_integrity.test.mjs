@@ -940,3 +940,170 @@ test('compounding latest rejected operation still performs successful legacy cop
   assert.equal(ui.showCopied(), true);
   assert.equal(ui.fallbackShown(), false);
 });
+
+// Stock Average: execute the actual complete inline controller, not a replica.
+const STOCK_TEMPLATE = readFileSync(join(TEMPLATE_DIR, 'stock_average.html.j2'), 'utf8');
+const STOCK_PAGE = readFileSync(process.env.STOCK_PAGE_PATH || join(ROOT, 'site/tools/calculators/stock-average.html'), 'utf8');
+function stockScript(source) {
+  const scripts = [...source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]).filter(s => s.includes('stock-average self-check'));
+  assert.equal(scripts.length, 1, 'one native Stock Average controller');
+  return scripts[0];
+}
+
+function stockHarness(source) {
+  const elements = new Map();
+  const callbacks = {};
+  const copied = [];
+  const errors = [];
+  function element() {
+    let text = '';
+    const listeners = {};
+    const classes = new Set();
+    const el = { value: '', className: '', children: [],
+      addEventListener: (name, fn) => { listeners[name] = fn; },
+      dispatch: name => listeners[name]?.(),
+      appendChild: child => { el.children.push(child); },
+      select() {},
+      classList: { add: c => classes.add(c), remove: c => classes.delete(c) }
+    };
+    Object.defineProperty(el, 'textContent', {
+      get: () => text + el.children.map(c => c.textContent).join(''),
+      set: value => { text = String(value); el.children = []; }
+    });
+    return el;
+  }
+  const get = id => {
+    if (!elements.has(id)) elements.set(id, element());
+    return elements.get(id);
+  };
+  const sandbox = vm.createContext({
+    document: { addEventListener: (name, fn) => { callbacks[name] = fn; },
+      getElementById: get, createElement: element },
+    navigator: { clipboard: { writeText: text => { copied.push(text); return Promise.resolve(); } } },
+    setTimeout() {},
+    console: { error: (...args) => errors.push(args) }
+  });
+  const js = stockScript(source);
+  // Export only the native function; keep its complete controller unchanged.
+  const marker = '  var WORKED_EXAMPLES = [';
+  assert.equal(js.split(marker).length, 2);
+  vm.runInContext(js.replace(marker, '  globalThis.stockCompute = compute;\n' + marker), sandbox);
+  callbacks.DOMContentLoaded();
+  assert.deepEqual(errors, [], 'both retained worked examples pass');
+  function enter(lots) {
+    for (let i = 1; i <= 5; i++) {
+      get('s' + i).value = lots[i - 1]?.s ?? '';
+      get('p' + i).value = lots[i - 1]?.p ?? '';
+    }
+    get('s1').dispatch('input');
+  }
+  return { compute: sandbox.stockCompute, get, enter, copied };
+}
+
+const STOCK_RANGE_CASES = [
+  ['one lot product overflow', [{s:1e308,p:2},{s:100,p:40}]],
+  ['sum of finite costs overflow', [{s:1e308,p:1},{s:1e308,p:1}]],
+  ['shares overflow with finite total cost', [{s:1e308,p:.01},{s:1e308,p:.01}]],
+  ['three finite costs overflow', [{s:6e307,p:1},{s:6e307,p:1},{s:6e307,p:1}]],
+  ['one lot cost underflows to zero', [{s:Number.MIN_VALUE,p:.5},{s:100,p:40}]],
+  ['all lot costs underflow to zero', [{s:1e-300,p:1e-300},{s:1e-300,p:1e-300}]]
+];
+
+test('stock average template and committed page controllers match', () => {
+  assert.equal(stockScript(STOCK_TEMPLATE), stockScript(STOCK_PAGE));
+});
+
+for (const [label, source] of [['template', STOCK_TEMPLATE], ['committed page', STOCK_PAGE]]) {
+  for (const [name, lots] of STOCK_RANGE_CASES) {
+    test(`stock average ${label}: ${name} is unavailable`, () => {
+      const {compute} = stockHarness(source);
+      for (const ordered of [lots, [...lots].reverse()]) {
+        const result = compute({lots:ordered});
+        assert.equal(result.ok, false);
+        assert.match(result.msg.en, /numeric range/);
+        assert.match(result.msg.zh, /数值范围/);
+        for (const key of ['avgCost','totalShares','totalCost','breakEven'])
+          assert.equal(Object.hasOwn(result, key), false, `no ${key} supplied`);
+      }
+    });
+  }
+
+  test(`stock average ${label}: valid values, partial-lot policy and numeric edges stay intact`, () => {
+    const {compute} = stockHarness(source);
+    const cases = [
+      [{s:100,p:50},{s:100,p:40}],
+      [{s:.25,p:10},{s:.75,p:20}],
+      [{s:1e150,p:1e150},{s:1e150,p:1e150}],
+      [{s:Number.MIN_VALUE,p:1},{s:Number.MIN_VALUE,p:1}],
+      [{s:1,p:Number.MIN_VALUE},{s:1,p:Number.MIN_VALUE}]
+    ];
+    for (const lots of cases) {
+      const result = compute({lots});
+      assert.equal(result.ok, true);
+      assert.equal(result.totalShares, lots.reduce((n,l) => n+l.s, 0));
+      assert.equal(result.totalCost, lots.reduce((n,l) => n+l.s*l.p, 0));
+      assert.equal(result.avgCost, result.totalCost / result.totalShares);
+      assert.equal(result.breakEven, result.avgCost);
+      assert.equal(result.counted, 2);
+    }
+    const partial = compute({lots:[...cases[0], {s:2,p:NaN}, {s:NaN,p:NaN}]});
+    assert.equal(partial.ok, true);
+    assert.equal(partial.partial, true);
+    assert.equal(partial.counted, 2);
+    assert.equal(partial.avgCost, 45);
+    assert.equal(compute({lots:[]}).ok, false);
+    assert.equal(compute({lots:[{s:100,p:50}]}).ok, false);
+  });
+
+  for (const [name, lots] of STOCK_RANGE_CASES) {
+    test(`stock average ${label}: ${name} clears outputs, withholds copy and recovers`, () => {
+      const {get, enter, copied} = stockHarness(source);
+      enter([{s:'100',p:'50'},{s:'100',p:'40'}]);
+      assert.equal(get('out-main').textContent, '$45.00');
+      get('copy-result').dispatch('click');
+      assert.equal(copied.length, 1);
+      enter(lots.map(l => ({s:String(l.s),p:String(l.p)})));
+      for (const id of ['out-main','out-shares','out-cost','out-be','out-lots'])
+        assert.equal(get(id).textContent, '—');
+      assert.deepEqual(get('out-plain').children.map(c => c.className), ['l-en','l-zh']);
+      assert.match(get('out-plain').children[0].textContent, /numeric range/);
+      assert.match(get('out-plain').children[1].textContent, /数值范围/);
+      get('copy-result').dispatch('click');
+      assert.equal(copied.length, 1, 'range refusal never exports numeric output');
+      enter([{s:'100',p:'50'},{s:'100',p:'40'}]);
+      assert.equal(get('out-main').textContent, '$45.00');
+      assert.equal(get('out-plain').children.length, 0, 'new valid text replaces warning');
+      get('copy-result').dispatch('click');
+      assert.equal(copied.length, 2);
+      assert.equal(copied[0], copied[1]);
+    });
+  }
+}
+
+for (const [label, source] of [['template', STOCK_TEMPLATE], ['committed page', STOCK_PAGE]]) {
+  test(`stock average ${label}: 1000 seeded valid portfolios match exact integer-cent totals`, () => {
+    const {compute} = stockHarness(source);
+    let seed = 2123;
+    const next = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed; };
+    for (let i = 0; i < 1000; i++) {
+      const n = 2 + next() % 4;
+      const lots = [];
+      let shares = 0n, cents = 0n;
+      for (let j = 0; j < n; j++) {
+        const s = 1 + next() % 10000, priceCents = 1 + next() % 100000;
+        lots.push({s, p:priceCents / 100});
+        shares += BigInt(s); cents += BigInt(s) * BigInt(priceCents);
+      }
+      const result = compute({lots});
+      const expected = Number(cents) / Number(shares) / 100;
+      assert.equal(result.ok, true);
+      assert.equal(result.counted, n);
+      assert.equal(result.totalShares, Number(shares));
+      assert.ok(Math.abs(result.totalCost - Number(cents)/100) <= Math.max(1, result.totalCost)*1e-12);
+      assert.ok(Math.abs(result.avgCost - expected) <= Math.max(1, expected)*1e-12);
+      assert.ok(result.avgCost >= Math.min(...lots.map(l => l.p)) - 1e-10);
+      assert.ok(result.avgCost <= Math.max(...lots.map(l => l.p)) + 1e-10);
+    }
+  });
+}
