@@ -1,0 +1,238 @@
+{
+  "schema": "prophet.turn4.editorial_verification.v1",
+  "operation": "prophet-production-design-four-turn-20261109-sol-001",
+  "recorded_at": "2026-11-10 02:20:01 UTC",
+  "scope": "Final four-turn architecture/design/implementation commission; no product implementation or runtime acceptance asserted",
+  "editorial_finalization": "PROVEN_OUTCOME",
+  "editorial_package_complete": true,
+  "product_implementation_complete": false,
+  "source_carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "branch": "sol/prophet-production-design-20261109",
+    "before_turn4": "1909335ccc5dee2edcd6bf3a00c842df824cd296",
+    "masterplan_final_commit": "bb07a33c7a2fb843e9eac877af08a8c4d28d1130",
+    "unmerged_editorial_baseline": true
+  },
+  "reusable_pins": {
+    "governing_procedure": "3652d8907df1738de551dd3032b42aa2a2acb482",
+    "macro_main": "cae8e01be6ada447c11a6e77c4a46cab2abb69d2",
+    "terminal_master": "90ab4ef7a4c15e023be7d1188c2bd278a61ff266"
+  },
+  "package_checks": {
+    "source_refs_pinned": true,
+    "original_programme_deep_equality": true,
+    "original_counts": {
+      "build_units": 29,
+      "research_packets": 24,
+      "decision_register": 12,
+      "requirements": 36
+    },
+    "contracts": 38,
+    "paper_canvases": 23,
+    "final_decisions": 12,
+    "proof_cases": 20,
+    "briefs_compiled": 7,
+    "actual_runtime_refs_invented": false,
+    "protected_outcome_permissions_unchanged_false": true,
+    "hashes": {
+      "TURN4_FABLE_IMPLEMENTATION_COMMISSION.md": "474b3c2dc6d3797d131f006f9ec7ce9a6d465a459bfa68ae6b9129b46d4a2384",
+      "TURN4_WORK_BRIEFS.json": "b1e1971c7d3b6b6ab24ff77108846bac32840eb56aa63e62c8b6fbef782c7fa1",
+      "TURN4_OWNER_CONTRACTS.md": "f9055eb076f5845f9499f4fa5760eff9270ef64fe02753e7a2381e05a81fa221",
+      "TURN4_FINAL_REGISTRY.json": "486da2de05761fbc9e2d63590bf9dd515b902bb60518fb48897c5825f2d320c1",
+      "TURN4_WORK_BRIEFS.md": "409eecf7533b6c88b77d44ac50a1aa21afd26bd4d00fa9acd756957b56de2e6c",
+      "PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md": "69e0f0d3c57ca44ef00017748464bff9e1f1f730986684ceee4cb600c2064eae"
+    }
+  },
+  "source_readbacks": {
+    "TURN4_OWNER_CONTRACTS.md": {
+      "commit_sha": "b36e0a74cfdd02a1525cfe2b935666243fef483e",
+      "blob_sha": "2e0fbb04f99377029ef6981f536b05b2297152b7",
+      "chars": 109999,
+      "readback_equal": true
+    },
+    "TURN4_FINAL_REGISTRY.json": {
+      "commit_sha": "9e9d894b40fa823da3e7e939d588b96dcb4652e3",
+      "blob_sha": "433ac888bea8a459294400295203e1c54c0b8f8f",
+      "chars": 233023,
+      "readback_equal": true
+    },
+    "TURN4_WORK_BRIEFS.json": {
+      "commit_sha": "89bdb93349d71a9bdb1e4c3ec8a1cedf6f0531c1",
+      "blob_sha": "73cf5da0fbda2552a812f897f0c83a8c1cb240dd",
+      "chars": 79828,
+      "readback_equal": true
+    },
+    "TURN4_WORK_BRIEFS.md": {
+      "commit_sha": "5ed585137ed70c743b359d8d5b7309b79140abe8",
+      "blob_sha": "c87d4e6d4b4426cb6852c23dd35577f1d44071ba",
+      "chars": 111942,
+      "readback_equal": true
+    },
+    "TURN4_FABLE_IMPLEMENTATION_COMMISSION.md": {
+      "commit_sha": "33e5a648d5f6faff9d04c8f9355592b9bd8173d3",
+      "blob_sha": "2d1267b1f87bf35cd75884018937dfebbe57a778",
+      "chars": 30443,
+      "readback_equal": true
+    },
+    "PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md": {
+      "commit_sha": "bb07a33c7a2fb843e9eac877af08a8c4d28d1130",
+      "blob_sha": "da31d8c86b70f1823b2c58b34fe8e1586bbf7331",
+      "chars": 301139,
+      "readback_equal": true
+    }
+  },
+  "owned_document_diff": {
+    "base": "1909335ccc5dee2edcd6bf3a00c842df824cd296",
+    "head": "bb07a33c7a2fb843e9eac877af08a8c4d28d1130",
+    "commits": 7,
+    "files": [
+      {
+        "path": "research/design_candidates/prophet_production_20261109/TURN4_FABLE_IMPLEMENTATION_COMMISSION.md",
+        "status": "added"
+      },
+      {
+        "path": "research/design_candidates/prophet_production_20261109/TURN4_FINAL_REGISTRY.json",
+        "status": "added"
+      },
+      {
+        "path": "research/design_candidates/prophet_production_20261109/TURN4_OWNER_CONTRACTS.md",
+        "status": "added"
+      },
+      {
+        "path": "research/design_candidates/prophet_production_20261109/TURN4_WORK_BRIEFS.json",
+        "status": "added"
+      },
+      {
+        "path": "research/design_candidates/prophet_production_20261109/TURN4_WORK_BRIEFS.md",
+        "status": "added"
+      },
+      {
+        "path": "research/prophet_v4/PROPHET_PRODUCTION_MASTERPLAN_2026-11-09.md",
+        "status": "modified"
+      }
+    ],
+    "application_source_changed": false
+  },
+  "final_precision_repair": {
+    "issue": "Masterplan global symbol correction made a historical comparison repeat the same symbols on both sides.",
+    "repair": "Single sentence now states exact current symbols and preserves the earlier registry as history.",
+    "exact_single_sentence_diff_verified": true,
+    "full_readback_verified": true,
+    "commit": "bb07a33c7a2fb843e9eac877af08a8c4d28d1130"
+  },
+  "brief_authoring": {
+    "schema": "mastermind.craft_brief.v1",
+    "count": 7,
+    "compiled": true,
+    "source_refs_pinned": true,
+    "actual_assignment_workspace_host_refs": null,
+    "compiler_is_runtime_admission": false,
+    "original_activation_branches_preserved": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05"
+    ],
+    "proof_case_namespace": "PF01-PF20"
+  },
+  "pdf": {
+    "filename": "Prophet_Production_Masterplan.pdf",
+    "document_version": "4.0",
+    "pages": 85,
+    "links": 323,
+    "local_bytes": 454708,
+    "local_sha256": "5d676de72e4ebfebee6cc2b2702095253f0382ba5a29654e5cfa460cf65937e8",
+    "source_commit": "bb07a33c7a2fb843e9eac877af08a8c4d28d1130",
+    "all_pages_rendered": true,
+    "all_pages_visually_reviewed": true,
+    "contact_sheets_reviewed": 8,
+    "individual_dense_pages_reviewed": [
+      60,
+      65
+    ],
+    "out_of_page_text_blocks": [],
+    "missing_glyph_markers": false,
+    "complete_ids_confirmed": {
+      "contracts": 38,
+      "build_units": 29,
+      "research_packets": 24,
+      "decisions": 12,
+      "requirements": 36,
+      "proof_cases": 20
+    },
+    "layout_repair": "Chapter heading before decision table now keeps its first rows together without forcing the whole table to a fresh page."
+  },
+  "saved_pdf": {
+    "library_file_id": "libfile_6b8347e1870081919aede86a16f423d7",
+    "version": 3,
+    "file_id": "file_0000000034fc821281c999f337ff2fcc",
+    "metadata_bytes": 479710,
+    "canonical_url": "https://chatgpt.com/library?file_id=libfile_6b8347e1870081919aede86a16f423d7&account_id=personal",
+    "replace_status": "succeeded",
+    "local_version_attributes_applied": true,
+    "readback_pages": [
+      1,
+      57,
+      65,
+      68
+    ],
+    "readback_assertions": [
+      "Version 4.0 / Turn 4 cover",
+      "Exact final masterplan source commit",
+      "85-page document",
+      "Model-plan Record and separate registered cohort",
+      "Discriminating PF acceptance matrix",
+      "Editorial versus production completion and original held effect"
+    ],
+    "remote_byte_hash_verified": false,
+    "note": "The SHA256 above describes the local generated PDF only. Canonical version/content readback is verified separately; metadata byte count is not asserted byte-identical."
+  },
+  "paper_custody": {
+    "file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "page_id": "p-F-0",
+    "mapped_canvases": 23,
+    "reviewed_roots": 22,
+    "partial_held_roots": 1,
+    "original_operation": "prophet-four-turn-t2-20261109-mplans-tabs",
+    "target": "1EF3-0",
+    "root": "1EEH-0",
+    "state": "EFFECT_UNKNOWN_TRANSPORT_TIMEOUT",
+    "manifest_commit": "d1332f6e66f199d63f4c2f41fe8dc304da2c6e2c",
+    "manifest_operations": 365,
+    "applied_response_observed": 364,
+    "unknown_effects": 1,
+    "turn4_mutation_or_replay": false,
+    "turn4_readonly_catalog_resolved_effect": false,
+    "active_document_changed_to_other_project": true
+  },
+  "execution_boundary": {
+    "preferred_principal": "Fable",
+    "designated_venue": "T3",
+    "actual_receiver_binding": null,
+    "session_targets_observed": [],
+    "target_unavailability_inferred": false,
+    "transport_sent": false,
+    "ack_observed": false,
+    "start_observed": false,
+    "admission_claimed": false,
+    "new_runtime_entity_created": false
+  },
+  "not_performed": [
+    "Application source implementation",
+    "Runtime/installed migration changes",
+    "Production or browser consumer tests",
+    "Scientific trial registration or protected outcome reads",
+    "Forecast/ranking/strategy promotion",
+    "Production release, deployment, capital or trading action",
+    "Fable dispatch or Slack/email/Linear mutation"
+  ],
+  "finalization_conditions": {
+    "owner_contracts_frozen": true,
+    "original_programme_preserved": true,
+    "exact_deliverables_read_back": true,
+    "pdf_render_and_canonical_readback_complete": true,
+    "additional_editorial_turn_needed_now": false,
+    "implementation_and_original_holds_remain_open": true
+  }
+}
