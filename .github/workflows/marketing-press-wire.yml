@@ -78,7 +78,7 @@ jobs:
     # is ~19 MB on its 6-hourly conditional GET), the LLM summarize call and the
     # push race, and small enough that a wedged run frees the concurrency group
     # before the next cron.
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - name: checkout (shallow + sparse + write token)
         # SHALLOW + SPARSE + BLOBLESS, same reasoning as marketing-hot-tape.yml:

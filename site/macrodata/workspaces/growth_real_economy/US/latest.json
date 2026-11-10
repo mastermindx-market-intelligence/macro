@@ -390,12 +390,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "growth_axis:growth_axis_score:04d28049d00fae02"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native source components changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "growth_real_economy-US-9c53bf71c6d7278b"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
+    "predecessor_generation_id": "growth_real_economy-US-4498e0b1f8464b97"
   },
   "drivers": {
     "balance_sheet": [
@@ -516,11 +514,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-08T06:28:26Z",
+    "built_at": "2026-11-09T06:41:31Z",
     "calculation_as_of": "2026-11-06",
-    "code_version": "9c377cfb6201005e195590887b292c737d18255c",
-    "content_sha256": "4498e0b1f8464b970dcfbfce0f15f6823373ccf07af7feb2ef2aab76fa7f8613",
-    "generation_id": "growth_real_economy-US-4498e0b1f8464b97",
+    "code_version": "df80d43dc64ec32b78dff8acbfac3f11a7ce71c0",
+    "content_sha256": "eb6302cb27cb8b32a2e1ce66c941e1da5ac0ef909cb05045178146a91bd3ee9c",
+    "generation_id": "growth_real_economy-US-eb6302cb27cb8b32",
     "producer": "engine.market_os.macro_workspaces.growth",
     "rendered_at": null
   },
