@@ -2,8 +2,8 @@
   "schema": "mastermind.options_catalyst_links/v1",
   "spec_version": "v1",
   "session_date": "2026-10-30",
-  "asof": "2026-11-07",
-  "generated_utc": "2026-11-07T13:44:40Z",
+  "asof": "2026-11-09",
+  "generated_utc": "2026-11-09T10:12:39Z",
   "horizon_days": 63,
   "source": {
     "events": "r2:live_flow/events/2026-10-30.jsonl",
@@ -41,8 +41,8 @@
   ],
   "links_path": "2026-10-30.jsonl",
   "macro_calendar": {
-    "asof": "2026-11-07",
-    "horizon_end": "2027-01-09",
+    "asof": "2026-11-09",
+    "horizon_end": "2027-01-11",
     "source": "engine.event_calendar",
     "fomc": [
       {
