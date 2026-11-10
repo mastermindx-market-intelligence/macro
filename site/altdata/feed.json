@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-10T05:00:27.134463+00:00",
+  "generated_utc": "2026-11-10T16:28:41.505435+00:00",
   "as_of": "2026-11-10",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27007,9 +27007,20 @@
         "ticker": "FIVE",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": -0.03,
+        "est_chg_30d": 0.03,
         "n_analysts": 24,
         "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 24,
+        "hot": true
+      },
+      {
+        "ticker": "FTNT",
+        "net_up_30d": 24,
+        "breadth": 0.63,
+        "est_chg_30d": 3.31,
+        "n_analysts": 38,
+        "bull_ratio": 0.82,
         "rising": true,
         "revision_delta": 24,
         "hot": true
@@ -27092,6 +27103,17 @@
         "hot": true
       },
       {
+        "ticker": "ELV",
+        "net_up_30d": 18,
+        "breadth": 0.9,
+        "est_chg_30d": 2.4,
+        "n_analysts": 20,
+        "bull_ratio": 0.95,
+        "rising": true,
+        "revision_delta": 18,
+        "hot": true
+      },
+      {
         "ticker": "CB",
         "net_up_30d": 18,
         "breadth": 0.82,
@@ -27103,12 +27125,34 @@
         "hot": true
       },
       {
+        "ticker": "EBAY",
+        "net_up_30d": 18,
+        "breadth": 0.75,
+        "est_chg_30d": 2.49,
+        "n_analysts": 24,
+        "bull_ratio": 0.88,
+        "rising": true,
+        "revision_delta": 18,
+        "hot": true
+      },
+      {
         "ticker": "COP",
         "net_up_30d": 17,
         "breadth": 0.81,
         "est_chg_30d": 11.57,
         "n_analysts": 21,
         "bull_ratio": 0.91,
+        "rising": true,
+        "revision_delta": 17,
+        "hot": true
+      },
+      {
+        "ticker": "EOG",
+        "net_up_30d": 17,
+        "breadth": 0.74,
+        "est_chg_30d": 7.7,
+        "n_analysts": 23,
+        "bull_ratio": 0.87,
         "rising": true,
         "revision_delta": 17,
         "hot": true
@@ -27158,21 +27202,10 @@
         "hot": true
       },
       {
-        "ticker": "EOG",
-        "net_up_30d": 16,
-        "breadth": 0.73,
-        "est_chg_30d": 8.71,
-        "n_analysts": 22,
-        "bull_ratio": 0.86,
-        "rising": true,
-        "revision_delta": 16,
-        "hot": true
-      },
-      {
         "ticker": "FANG",
         "net_up_30d": 16,
         "breadth": 0.67,
-        "est_chg_30d": 14.2,
+        "est_chg_30d": 14.89,
         "n_analysts": 24,
         "bull_ratio": 0.83,
         "rising": true,
@@ -27191,45 +27224,12 @@
         "hot": true
       },
       {
-        "ticker": "ELV",
+        "ticker": "GNRC",
         "net_up_30d": 15,
-        "breadth": 0.88,
-        "est_chg_30d": 2.53,
-        "n_analysts": 17,
-        "bull_ratio": 0.94,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "DOCU",
-        "net_up_30d": 15,
-        "breadth": 0.79,
-        "est_chg_30d": 0.0,
-        "n_analysts": 19,
-        "bull_ratio": 0.89,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "BE",
-        "net_up_30d": 15,
-        "breadth": 0.71,
-        "est_chg_30d": 8.63,
-        "n_analysts": 21,
-        "bull_ratio": 0.86,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "GOOGL",
-        "net_up_30d": 15,
-        "breadth": 0.6,
-        "est_chg_30d": 0.03,
-        "n_analysts": 25,
-        "bull_ratio": 0.8,
+        "breadth": 1.0,
+        "est_chg_30d": 10.91,
+        "n_analysts": 15,
+        "bull_ratio": 1.0,
         "rising": true,
         "revision_delta": 15,
         "hot": true
@@ -28412,10 +28412,10 @@
         {
           "ticker": "MDLN",
           "buy_usd": 0.0,
-          "sell_usd": 1074693625.0,
-          "net_usd": -1074693625.0,
+          "sell_usd": 1053691320.0,
+          "net_usd": -1053691320.0,
           "buyers": 0,
-          "sellers": 9
+          "sellers": 8
         },
         {
           "ticker": "NVDA",
@@ -31217,6 +31217,13 @@
         "last_surprise_pct": null
       },
       {
+        "ticker": "EZPW",
+        "next_date": "2026-11-11",
+        "days_to": 1,
+        "eps_forecast": 0.4,
+        "last_surprise_pct": 20.5
+      },
+      {
         "ticker": "SHFS",
         "next_date": "2026-11-11",
         "days_to": 1,
@@ -31250,13 +31257,6 @@
         "days_to": 2,
         "eps_forecast": 1.15,
         "last_surprise_pct": 9.1
-      },
-      {
-        "ticker": "EZPW",
-        "next_date": "2026-11-12",
-        "days_to": 2,
-        "eps_forecast": 0.4,
-        "last_surprise_pct": 20.5
       },
       {
         "ticker": "CBRS",
@@ -31343,6 +31343,13 @@
         "last_surprise_pct": 3.4
       },
       {
+        "ticker": "BABA",
+        "next_date": "2026-11-19",
+        "days_to": 9,
+        "eps_forecast": 1.31,
+        "last_surprise_pct": -43.3
+      },
+      {
         "ticker": "ESE",
         "next_date": "2026-11-19",
         "days_to": 9,
@@ -31390,13 +31397,6 @@
         "days_to": 13,
         "eps_forecast": 1.17,
         "last_surprise_pct": 24.4
-      },
-      {
-        "ticker": "BABA",
-        "next_date": "2026-11-24",
-        "days_to": 14,
-        "eps_forecast": 1.31,
-        "last_surprise_pct": -43.3
       },
       {
         "ticker": "DELL",
@@ -31812,17 +31812,6 @@
         "why": "gov_contract_accel: $16,901,075, 15.1x accel \u00b7 special_situation: Spin-Offs"
       },
       {
-        "ticker": "GOOGL",
-        "score": 3,
-        "weighted_score": 1.05,
-        "channel_list": [
-          "analyst_upgrade_cluster",
-          "app_demand",
-          "lobbying"
-        ],
-        "why": "analyst_upgrade_cluster: net upgrades +15 revision delta \u00b7 app_demand: 4.7\u2605 \u00d7 27,219,410 reviews \u00b7 lobbying: $4,420,000 lobbied"
-      },
-      {
         "ticker": "CVX",
         "score": 3,
         "weighted_score": 1.05,
@@ -31843,6 +31832,16 @@
           "trump"
         ],
         "why": "analyst_upgrade_cluster: net upgrades +17 revision delta \u00b7 news_sentiment: 0.84 bullish news (50 art) \u00b7 trump: CONOCOPHILLIPS"
+      },
+      {
+        "ticker": "CEG",
+        "score": 2,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "gov_grant",
+          "insider_mspr"
+        ],
+        "why": "gov_grant: $6,756,531 federal grant/loan \u00b7 insider_mspr: MSPR 100.0"
       }
     ]
   }
