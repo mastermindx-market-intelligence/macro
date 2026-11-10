@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-10",
   "authority": {
     "allowed_actions": [
       "display",
@@ -348,7 +348,7 @@
           "note": "#1180 discontinuity — asof_legacy = pre-#1180 grades (fill_convention field absent in grade); next_bar = post-#1180 (fill_convention='next_bar')"
         },
         "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
-        "hit_gradeable_share": 0.947985,
+        "hit_gradeable_share": 0.948557,
         "maturity_mix": {
           "graded_5d_count": 10510,
           "graded_5d_share": 1.501858,
@@ -357,7 +357,7 @@
           "note": "21d/63d matured counts are 0 today — calendar-gated, not build-gated; earliest useful read ~2026-10-01"
         },
         "n_claims": 6998,
-        "n_hit_gradeable": 6634,
+        "n_hit_gradeable": 6638,
         "n_with_falsifier": 284,
         "source_ontology_fill": {
           "channels_fill_rate": 0.0,
@@ -1108,7 +1108,7 @@
       "src": "species:T1-T4@1.0"
     }
   ],
-  "generated_utc": "2026-11-09T10:18:55.812662+00:00",
+  "generated_utc": "2026-11-10T12:23:52.126072+00:00",
   "is_context_only": true,
   "notes": "Crosswalk only; local systems remain authoritative. No invented links; unknowns stay null.",
   "possible_duplicates": [
@@ -1413,7 +1413,7 @@
   "rows": {
     "entity:US:AVGO": {
       "authority": "display_only",
-      "funnel_as_of": "2026-11-09",
+      "funnel_as_of": "2026-11-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:AVGO",
@@ -1426,7 +1426,7 @@
     },
     "entity:US:NVDA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-11-09",
+      "funnel_as_of": "2026-11-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:NVDA",
@@ -1439,7 +1439,7 @@
     },
     "entity:US:VRT": {
       "authority": "display_only",
-      "funnel_as_of": "2026-11-09",
+      "funnel_as_of": "2026-11-10",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:VRT",
@@ -3347,11 +3347,11 @@
       "present": true
     },
     "data/neuralweb/governance.jsonl": {
-      "n": 398,
+      "n": 402,
       "present": true
     },
     "data/research/thesis_funnel_states.parquet": {
-      "n": 2875,
+      "n": 2876,
       "present": true
     },
     "data/research_factory/candidates.jsonl": {

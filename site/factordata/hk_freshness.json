@@ -1,34 +1,34 @@
 {
-  "checked_at": "2026-11-09T09:33:53+00:00",
-  "expected_session": "2026-11-09",
+  "checked_at": "2026-11-10T10:18:38+00:00",
+  "expected_session": "2026-11-10",
   "stores": {
     "cache": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "asof": "2026-11-09",
+      "lag_days": 1,
       "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "asof": "2026-11-09",
+      "lag_days": 1,
       "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "standouts": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "asof": "2026-11-09",
+      "lag_days": 1,
       "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "asof": "2026-11-09",
+      "lag_days": 1,
       "lag_sessions": 1,
       "state": "slow",
       "data_state": "late",
@@ -36,18 +36,18 @@
     },
     "southbound": {
       "asof": "2026-11-06",
-      "lag_days": 3,
-      "lag_sessions": 1,
+      "lag_days": 4,
+      "lag_sessions": 2,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true,
-      "expected_session": "2026-11-09"
+      "expected_session": "2026-11-10"
     }
   },
   "coherence": {
     "ok": true,
-    "standouts_asof": "2026-11-06",
-    "regime_date": "2026-11-06",
+    "standouts_asof": "2026-11-09",
+    "regime_date": "2026-11-09",
     "gap_sessions": 0,
     "calendar_verified": true,
     "data_state": "current",
@@ -55,8 +55,8 @@
   },
   "regression": {
     "ok": true,
-    "prev_cache_max": "2026-11-06",
-    "curr_cache_max": "2026-11-06",
+    "prev_cache_max": "2026-11-09",
+    "curr_cache_max": "2026-11-09",
     "note": null
   },
   "verdict": "ok",

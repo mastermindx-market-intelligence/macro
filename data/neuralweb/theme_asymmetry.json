@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
-  "as_of": "2026-11-09",
-  "generated_at": "2026-11-09T10:18:58Z",
+  "as_of": "2026-11-10",
+  "generated_at": "2026-11-10T12:24:31Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -34,7 +34,7 @@
       ],
       "legs": {
         "bottleneck_tightness": {
-          "value": 0.49,
+          "value": 0.53,
           "band": "med",
           "inputs": [
             "foresight_cascade:bottleneck_band",
@@ -42,8 +42,8 @@
             "radar:flags.observable.accel"
           ],
           "stale": false,
-          "note_en": "bottleneck_band=band=NEUTRAL, accel=2.89 → tightness=0.49",
-          "note_zh": "瓶颈波段=band=NEUTRAL，活动加速=accel=2.89，综合紧张度=0.49"
+          "note_en": "bottleneck_band=band=NEUTRAL, accel=2.89 → tightness=0.53",
+          "note_zh": "瓶颈波段=band=NEUTRAL，活动加速=accel=2.89，综合紧张度=0.53"
         },
         "stale_consensus_gap": {
           "value": 0.35,
@@ -1754,6 +1754,7 @@
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
     "divergence_log[robotics_automation]: stale (as_of=2026-11-02)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-11-04)",
+    "divergence_log[glp1_obesity]: stale (as_of=2026-11-05)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
     "divergence_log[copper_steel_electrify]: stale (as_of=2026-11-03)",
@@ -1764,7 +1765,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-09T10:18:58Z",
-  "inputs_hash": "sha256:9aabc0db8c6a211f03399ac1178e10e650e35481525d142dbee63c033c5e6a71",
+  "produced_at": "2026-11-10T12:24:32Z",
+  "inputs_hash": "sha256:1c586445365ac7c919d640a5d8c7ed9a784be7eb85ec636c75a59c01d0327e3c",
   "tier": "display"
 }
