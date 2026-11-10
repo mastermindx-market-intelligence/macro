@@ -1,0 +1,6581 @@
+{
+  "schema": "sector.paper.design_manifest.v1",
+  "version": "1.1",
+  "file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+  "file_name": "Sector Intelligence · R4 · Working Design",
+  "date": "2026-11-09",
+  "date_basis": "America/Vancouver; session UTC 2026-11-10",
+  "carrier": "Mastermind Paper connected local adapter",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "amendment_commit": "0ccc0fbe31e9a08eab999ce514e9b9d8f8be9788",
+    "amendment_path": "research/sector_completion_20261021/PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md",
+    "prophet_commit": "1f645a751ea22d7ad5fe512165017873d8b65382",
+    "build_spec_commit": "38bae28d191ae10b9bc438aa3df3ff196f08a98f"
+  },
+  "state": "APPLIED_REVIEWED_EXTRACTED_FINISHED",
+  "evidence_scope": "Editable design candidates and arithmetic; not product or scientific acceptance",
+  "pages": [
+    {
+      "id": "p-L-0",
+      "name": "R6 · Sector × Prophet · Product"
+    },
+    {
+      "id": "p-M-0",
+      "name": "R6 · Sector × Prophet · States & help"
+    },
+    {
+      "id": "p-N-0",
+      "name": "R6 · Sector × Prophet · Build"
+    }
+  ],
+  "boards": [
+    {
+      "code": "R6-01",
+      "root": "QNB-0",
+      "content": "QPL-0",
+      "page": "p-L-0",
+      "name": "Market participation",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "b5ce41f58c7acd8f90e006ea84c9c212d473cf25096a15f7c7e5e6cfd8241a73",
+      "jsx_chars": 32717,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-02",
+      "root": "QRX-0",
+      "content": "QU7-0",
+      "page": "p-L-0",
+      "name": "Healthcare · Full population · Light EN",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "77cb97a57a794728b3cc286463d632e05b5485bb34e6caf0b38a38185cab7b1f",
+      "jsx_chars": 34678,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-03",
+      "root": "QWH-0",
+      "content": "QYR-0",
+      "page": "p-L-0",
+      "name": "Company economics · Sector evidence · Dark EN",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "0b22739baa8be85144a99f5cb0d4b14b5c7dce3c59041b91a607e5c3acdb52e6",
+      "jsx_chars": 31152,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-04",
+      "root": "R0W-0",
+      "content": "R36-0",
+      "page": "p-L-0",
+      "name": "HCA · Independent peer context · Light EN",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "0bc00ea0a8f8d1ac2b85517c638a46d05285329829b30a3929b8082e064ea41a",
+      "jsx_chars": 28512,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-05",
+      "root": "R5B-0",
+      "content": "R7L-0",
+      "page": "p-L-0",
+      "name": "Saved context · Original and current · Dark EN",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "82c060c4b5cd35b9e7df6713dab62eeb4d073918d3ff31f0a31fdaf301525dd4",
+      "jsx_chars": 26104,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-06",
+      "root": "R8Z-0",
+      "content": "R9A-0",
+      "page": "p-L-0",
+      "name": "Market to company · 390 · Light EN",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "jsx_sha256": "bfa52c40451032527475af5ab473464569e0ac454c1a0fd2506879ca151a16cb",
+      "jsx_chars": 10100,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-07",
+      "root": "RA8-0",
+      "content": "RAJ-0",
+      "page": "p-L-0",
+      "name": "HK relative leader · 390 · Dark ZH",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "jsx_sha256": "fefabb12a4c058ec59fc6679b8a5b0aeefdd8b7405b0a7133dc3308e1c3f1420",
+      "jsx_chars": 9241,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-08",
+      "root": "RCM-0",
+      "content": "RCX-0",
+      "page": "p-L-0",
+      "name": "Original unavailable · 320 · Dark EN",
+      "theme": "dark",
+      "language": "en",
+      "width": 320,
+      "jsx_sha256": "a3975c8f76df7c5ef5850ee61e46fbd8206720682a921063de3701c39c2167b4",
+      "jsx_chars": 7239,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-09",
+      "root": "RDH-0",
+      "content": "RDL-0",
+      "page": "p-M-0",
+      "name": "States and user explanations",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "17595d72e9ef854378c07aa164a1889151ba98561b0c770e0fd324ba6974a016",
+      "jsx_chars": 22419,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-10",
+      "root": "RGP-0",
+      "content": "RGU-0",
+      "page": "p-N-0",
+      "name": "Build · Data, science and persistence",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "d46e81e6ac8e68b992be5009a45d8fd35b5e485e16cfded8bc83b85dcac852c4",
+      "jsx_chars": 27083,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    },
+    {
+      "code": "R6-11",
+      "root": "RGW-0",
+      "content": "RH1-0",
+      "page": "p-N-0",
+      "name": "Build · Journey, markets and delivery",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "jsx_sha256": "b7205e956f7eb676d80ffcf545c1de6c3adaa8bc0fdec206565ea6cd6375e18b",
+      "jsx_chars": 26984,
+      "screenshot_review": "REVIEWED",
+      "reviewed_by": "principal; product reasoning critic on five initial screens, principal corrections and final readbacks",
+      "finish_operation": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "illustrative": true
+    }
+  ],
+  "readme": {
+    "parent": "HBU-0",
+    "page": "p-9-0",
+    "new_child": "RN3-0",
+    "index": 0,
+    "original_children_preserved": [
+      "HD9-0",
+      "HBV-0",
+      "HC0-0",
+      "HC7-0",
+      "HCC-0",
+      "HCI-0",
+      "HCN-0",
+      "HCS-0",
+      "HCX-0",
+      "HD3-0"
+    ],
+    "review": "REVIEWED"
+  },
+  "build_cards": [
+    {
+      "code": "A",
+      "root": "RH3-0",
+      "title": "Capture once. Keep the full population.",
+      "field_count": 8
+    },
+    {
+      "code": "B",
+      "root": "RHU-0",
+      "title": "Independent peers. Original company evidence.",
+      "field_count": 8
+    },
+    {
+      "code": "C",
+      "root": "RIL-0",
+      "title": "Separate history from qualified forecasts.",
+      "field_count": 8
+    },
+    {
+      "code": "D",
+      "root": "RJC-0",
+      "title": "Compose retained records through lane 6.",
+      "field_count": 8
+    },
+    {
+      "code": "E",
+      "root": "RK3-0",
+      "title": "One journey, with exact return.",
+      "field_count": 8
+    },
+    {
+      "code": "F",
+      "root": "RKU-0",
+      "title": "Native markets and information clocks.",
+      "field_count": 8
+    },
+    {
+      "code": "G",
+      "root": "RLL-0",
+      "title": "Evaluate participation and keep action owners.",
+      "field_count": 8
+    },
+    {
+      "code": "H",
+      "root": "RMC-0",
+      "title": "Amend the existing Fable build.",
+      "field_count": 8
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "si-prophet-v11-20261109-product-page",
+      "tool": "create_page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [],
+      "page": "p-L-0"
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QNB-0",
+          "name": "R6-01 · Market participation · 1440 · Dark EN"
+        },
+        {
+          "id": "QNC-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QND-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNE-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QNF-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QNG-0",
+          "name": "Path"
+        },
+        {
+          "id": "QNH-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "QNI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNJ-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QNK-0",
+          "name": "Path"
+        },
+        {
+          "id": "QNL-0",
+          "name": "Collapse navigation"
+        },
+        {
+          "id": "QNM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNO-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QNP-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QNQ-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QNR-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QNS-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QNT-0",
+          "name": "Today"
+        },
+        {
+          "id": "QNU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNV-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QNW-0",
+          "name": "Path"
+        },
+        {
+          "id": "QNX-0",
+          "name": "Discover"
+        },
+        {
+          "id": "QNY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QNZ-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QO0-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QO1-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QO2-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QO3-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QO4-0",
+          "name": "Analysis"
+        },
+        {
+          "id": "QO5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QO6-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QO7-0",
+          "name": "Path"
+        },
+        {
+          "id": "QO8-0",
+          "name": "Monitor"
+        },
+        {
+          "id": "QO9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOA-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QOB-0",
+          "name": "Path"
+        },
+        {
+          "id": "QOC-0",
+          "name": "Research"
+        },
+        {
+          "id": "QOD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOE-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QOF-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOG-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOH-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOI-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOJ-0",
+          "name": "Portfolio"
+        },
+        {
+          "id": "QOK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOL-0",
+          "name": "QUICK ACCESS"
+        },
+        {
+          "id": "QOM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QON-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOO-0",
+          "name": "Market overview"
+        },
+        {
+          "id": "QOP-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOQ-0",
+          "name": "Prophet"
+        },
+        {
+          "id": "QOR-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOS-0",
+          "name": "Sectors & themes"
+        },
+        {
+          "id": "QOT-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QOU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QOV-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QOW-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOX-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOY-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QOZ-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QP0-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QP1-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QP2-0",
+          "name": "RY"
+        },
+        {
+          "id": "QP3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QP4-0",
+          "name": "Your workspace"
+        },
+        {
+          "id": "QP5-0",
+          "name": "Account & settings"
+        },
+        {
+          "id": "QP6-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QP7-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QP8-0",
+          "name": "Path"
+        },
+        {
+          "id": "QP9-0",
+          "name": "R6-01 Workspace"
+        },
+        {
+          "id": "QPA-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPC-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QPD-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QPE-0",
+          "name": "Path"
+        },
+        {
+          "id": "QPF-0",
+          "name": "Search companies, se…"
+        },
+        {
+          "id": "QPG-0",
+          "name": "⌘ K"
+        },
+        {
+          "id": "QPH-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QPI-0",
+          "name": "EN"
+        },
+        {
+          "id": "QPJ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPK-0",
+          "name": "Open Terminal ↗"
+        },
+        {
+          "id": "QPL-0",
+          "name": "R6-01 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QPL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QPN-0",
+          "name": "R6-01 Heading"
+        },
+        {
+          "id": "QPO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPP-0",
+          "name": "Markets / United Sta…"
+        },
+        {
+          "id": "QPQ-0",
+          "name": "Illustrative · 20 co…"
+        },
+        {
+          "id": "QPR-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPS-0",
+          "name": "Sector Intelligence"
+        },
+        {
+          "id": "QPT-0",
+          "name": "Sources & comparison…"
+        },
+        {
+          "id": "QPU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QPW-0",
+          "name": "Brief"
+        },
+        {
+          "id": "QPX-0",
+          "name": "Explore"
+        },
+        {
+          "id": "QPY-0",
+          "name": "Research"
+        },
+        {
+          "id": "QPZ-0",
+          "name": "Watches"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-hero",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QPL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QQ1-0",
+          "name": "R6-01 Answer"
+        },
+        {
+          "id": "QQ2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQ3-0",
+          "name": "MARKET PARTICIPATION"
+        },
+        {
+          "id": "QQ4-0",
+          "name": "Strength is broadeni…"
+        },
+        {
+          "id": "QQ5-0",
+          "name": "Healthcare leads a r…"
+        },
+        {
+          "id": "QQ6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQ7-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQ8-0",
+          "name": "Research Healthcare …"
+        },
+        {
+          "id": "QQ9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQA-0",
+          "name": "Explore all sectors"
+        },
+        {
+          "id": "QQB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQC-0",
+          "name": "US market · total re…"
+        },
+        {
+          "id": "QQD-0",
+          "name": "+3.20%"
+        },
+        {
+          "id": "QQE-0",
+          "name": "Same window as secto…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-panels",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QPL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QQG-0",
+          "name": "R6-01 Supporting"
+        },
+        {
+          "id": "QQH-0",
+          "name": "R6-01 Leaders"
+        },
+        {
+          "id": "QQI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQJ-0",
+          "name": "Where participation …"
+        },
+        {
+          "id": "QQK-0",
+          "name": "Comparison details →"
+        },
+        {
+          "id": "QQL-0",
+          "name": "R6-01 Challenge"
+        },
+        {
+          "id": "QQM-0",
+          "name": "What could weaken?"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-columns",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QQH-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QQO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQP-0",
+          "name": "SECTOR"
+        },
+        {
+          "id": "QQQ-0",
+          "name": "TOTAL RETURN"
+        },
+        {
+          "id": "QQR-0",
+          "name": "VS US MARKET"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-row1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QQH-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QQT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQU-0",
+          "name": "Healthcare →"
+        },
+        {
+          "id": "QQV-0",
+          "name": "+7.60%"
+        },
+        {
+          "id": "QQW-0",
+          "name": "+4.40 pp"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-row2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QQH-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QQY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QQZ-0",
+          "name": "Industrials"
+        },
+        {
+          "id": "QR0-0",
+          "name": "+5.40%"
+        },
+        {
+          "id": "QR1-0",
+          "name": "+2.20 pp"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-row3",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QQH-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QR3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QR4-0",
+          "name": "Technology"
+        },
+        {
+          "id": "QR5-0",
+          "name": "+2.60%"
+        },
+        {
+          "id": "QR6-0",
+          "name": "−0.60 pp"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-challenge-content",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QQL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QR8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QR9-0",
+          "name": "42 of 60"
+        },
+        {
+          "id": "QRA-0",
+          "name": "Healthcare members a…"
+        },
+        {
+          "id": "QRB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRC-0",
+          "name": "Five issuers supply …"
+        },
+        {
+          "id": "QRD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRE-0",
+          "name": "Inspect participatio…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-text-contrast",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": [
+        "QPS-0",
+        "QPW-0",
+        "QPX-0",
+        "QPY-0",
+        "QPZ-0",
+        "QQ4-0",
+        "QQA-0",
+        "QQJ-0",
+        "QQU-0",
+        "QQZ-0",
+        "QR4-0",
+        "QQM-0",
+        "QR9-0"
+      ],
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-foot",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QPL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QRG-0",
+          "name": "R6-01 Continuation"
+        },
+        {
+          "id": "QRH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRI-0",
+          "name": "New leaders can emer…"
+        },
+        {
+          "id": "QRJ-0",
+          "name": "Strong company evide…"
+        },
+        {
+          "id": "QRK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRL-0",
+          "name": "Explore independent …"
+        },
+        {
+          "id": "QRM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRN-0",
+          "name": "What remains ahead?"
+        },
+        {
+          "id": "QRO-0",
+          "name": "Remaining-return est…"
+        },
+        {
+          "id": "QRP-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRQ-0",
+          "name": "Inspect observed cyc…"
+        },
+        {
+          "id": "QRR-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRS-0",
+          "name": "Did participation he…"
+        },
+        {
+          "id": "QRT-0",
+          "name": "Review benchmark par…"
+        },
+        {
+          "id": "QRU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRV-0",
+          "name": "Open strategy evalua…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QRX-0",
+          "name": "R6-02 · Healthcare · Full population · Light EN"
+        },
+        {
+          "id": "QRY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QRZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QS0-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QS1-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QS2-0",
+          "name": "Path"
+        },
+        {
+          "id": "QS3-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "QS4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QS5-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QS6-0",
+          "name": "Path"
+        },
+        {
+          "id": "QS7-0",
+          "name": "Collapse navigation"
+        },
+        {
+          "id": "QS8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QS9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QSA-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QSB-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSC-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSD-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSE-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSF-0",
+          "name": "Today"
+        },
+        {
+          "id": "QSG-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QSH-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QSI-0",
+          "name": "Path"
+        },
+        {
+          "id": "QSJ-0",
+          "name": "Discover"
+        },
+        {
+          "id": "QSK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QSL-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QSM-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSN-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSO-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSP-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QSQ-0",
+          "name": "Analysis"
+        },
+        {
+          "id": "QSR-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QSS-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QST-0",
+          "name": "Path"
+        },
+        {
+          "id": "QSU-0",
+          "name": "Monitor"
+        },
+        {
+          "id": "QSV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QSW-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QSX-0",
+          "name": "Path"
+        },
+        {
+          "id": "QSY-0",
+          "name": "Research"
+        },
+        {
+          "id": "QSZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QT0-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QT1-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QT2-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QT3-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QT4-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QT5-0",
+          "name": "Portfolio"
+        },
+        {
+          "id": "QT6-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QT7-0",
+          "name": "QUICK ACCESS"
+        },
+        {
+          "id": "QT8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QT9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTA-0",
+          "name": "Market overview"
+        },
+        {
+          "id": "QTB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTC-0",
+          "name": "Prophet"
+        },
+        {
+          "id": "QTD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTE-0",
+          "name": "Sectors & themes"
+        },
+        {
+          "id": "QTF-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QTG-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTH-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QTI-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QTJ-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QTK-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QTL-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QTM-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QTN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTO-0",
+          "name": "RY"
+        },
+        {
+          "id": "QTP-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTQ-0",
+          "name": "Your workspace"
+        },
+        {
+          "id": "QTR-0",
+          "name": "Account & settings"
+        },
+        {
+          "id": "QTS-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QTT-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QTU-0",
+          "name": "Path"
+        },
+        {
+          "id": "QTV-0",
+          "name": "R6-02 Workspace"
+        },
+        {
+          "id": "QTW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QTY-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QTZ-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QU0-0",
+          "name": "Path"
+        },
+        {
+          "id": "QU1-0",
+          "name": "Search companies, se…"
+        },
+        {
+          "id": "QU2-0",
+          "name": "⌘ K"
+        },
+        {
+          "id": "QU3-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QU4-0",
+          "name": "EN"
+        },
+        {
+          "id": "QU5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QU6-0",
+          "name": "Open Terminal ↗"
+        },
+        {
+          "id": "QU7-0",
+          "name": "R6-02 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QU7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QU9-0",
+          "name": "R6-02 Heading"
+        },
+        {
+          "id": "QUA-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUB-0",
+          "name": "← Sector Intelligenc…"
+        },
+        {
+          "id": "QUC-0",
+          "name": "Illustrative · 20 co…"
+        },
+        {
+          "id": "QUD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUE-0",
+          "name": "Healthcare"
+        },
+        {
+          "id": "QUF-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUG-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUH-0",
+          "name": "Save investigation"
+        },
+        {
+          "id": "QUI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUJ-0",
+          "name": "Research in Prophet …"
+        },
+        {
+          "id": "QUK-0",
+          "name": "Inspect the whole se…"
+        },
+        {
+          "id": "QUL-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUM-0",
+          "name": "Overview"
+        },
+        {
+          "id": "QUN-0",
+          "name": "Companies"
+        },
+        {
+          "id": "QUO-0",
+          "name": "Economic evidence"
+        },
+        {
+          "id": "QUP-0",
+          "name": "Cycles"
+        },
+        {
+          "id": "QUQ-0",
+          "name": "Sources"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-summary",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QU7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QUS-0",
+          "name": "R6-02 Population"
+        },
+        {
+          "id": "QUT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUU-0",
+          "name": "60 sector members"
+        },
+        {
+          "id": "QUV-0",
+          "name": "Full group membershi…"
+        },
+        {
+          "id": "QUW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QUY-0",
+          "name": "52"
+        },
+        {
+          "id": "QUZ-0",
+          "name": "Prophet coverage"
+        },
+        {
+          "id": "QV0-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QV1-0",
+          "name": "5"
+        },
+        {
+          "id": "QV2-0",
+          "name": "No Prophet coverage"
+        },
+        {
+          "id": "QV3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QV4-0",
+          "name": "3"
+        },
+        {
+          "id": "QV5-0",
+          "name": "Identity unresolved"
+        },
+        {
+          "id": "QV6-0",
+          "name": "How coverage works →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-table",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QU7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QV8-0",
+          "name": "R6-02 Members"
+        },
+        {
+          "id": "QV9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVA-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVB-0",
+          "name": "Search the full memb…"
+        },
+        {
+          "id": "QVC-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVD-0",
+          "name": "All industries⌄"
+        },
+        {
+          "id": "QVE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVF-0",
+          "name": "Source order⌄"
+        },
+        {
+          "id": "QVG-0",
+          "name": "Compare selected"
+        },
+        {
+          "id": "QVH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVI-0",
+          "name": "COMPANY"
+        },
+        {
+          "id": "QVJ-0",
+          "name": "TOTAL RETURN"
+        },
+        {
+          "id": "QVK-0",
+          "name": "VS HEALTHCARE"
+        },
+        {
+          "id": "QVL-0",
+          "name": "COMPANY QUESTION"
+        },
+        {
+          "id": "QVM-0",
+          "name": "INVESTIGATE"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-row1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QV8-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QVO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVP-0",
+          "name": "HCA Healthcare"
+        },
+        {
+          "id": "QVQ-0",
+          "name": "+12.20%"
+        },
+        {
+          "id": "QVR-0",
+          "name": "+4.60 pp"
+        },
+        {
+          "id": "QVS-0",
+          "name": "Do margins confirm?"
+        },
+        {
+          "id": "QVT-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-row2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QV8-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QVV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QVW-0",
+          "name": "Intuitive Surgical"
+        },
+        {
+          "id": "QVX-0",
+          "name": "+9.00%"
+        },
+        {
+          "id": "QVY-0",
+          "name": "+1.40 pp"
+        },
+        {
+          "id": "QVZ-0",
+          "name": "Is demand broadening…"
+        },
+        {
+          "id": "QW0-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-row3",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QV8-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QW2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QW3-0",
+          "name": "Eli Lilly"
+        },
+        {
+          "id": "QW4-0",
+          "name": "+5.80%"
+        },
+        {
+          "id": "QW5-0",
+          "name": "−1.80 pp"
+        },
+        {
+          "id": "QW6-0",
+          "name": "What could change?"
+        },
+        {
+          "id": "QW7-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-footer",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QU7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QW9-0",
+          "name": "R6-02 Return"
+        },
+        {
+          "id": "QWA-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWB-0",
+          "name": "The sector is a star…"
+        },
+        {
+          "id": "QWC-0",
+          "name": "Company evidence can…"
+        },
+        {
+          "id": "QWD-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWE-0",
+          "name": "Explore independent …"
+        },
+        {
+          "id": "QWF-0",
+          "name": "Next members →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QWH-0",
+          "name": "R6-03 · Company economics · Sector evidence · Dark EN"
+        },
+        {
+          "id": "QWI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWJ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWK-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QWL-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QWM-0",
+          "name": "Path"
+        },
+        {
+          "id": "QWN-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "QWO-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWP-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QWQ-0",
+          "name": "Path"
+        },
+        {
+          "id": "QWR-0",
+          "name": "Collapse navigation"
+        },
+        {
+          "id": "QWS-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QWU-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QWV-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QWW-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QWX-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QWY-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QWZ-0",
+          "name": "Today"
+        },
+        {
+          "id": "QX0-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QX1-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QX2-0",
+          "name": "Path"
+        },
+        {
+          "id": "QX3-0",
+          "name": "Discover"
+        },
+        {
+          "id": "QX4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QX5-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QX6-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QX7-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QX8-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QX9-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QXA-0",
+          "name": "Analysis"
+        },
+        {
+          "id": "QXB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXC-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QXD-0",
+          "name": "Path"
+        },
+        {
+          "id": "QXE-0",
+          "name": "Monitor"
+        },
+        {
+          "id": "QXF-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXG-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QXH-0",
+          "name": "Path"
+        },
+        {
+          "id": "QXI-0",
+          "name": "Research"
+        },
+        {
+          "id": "QXJ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXK-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QXL-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QXM-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QXN-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QXO-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QXP-0",
+          "name": "Portfolio"
+        },
+        {
+          "id": "QXQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXR-0",
+          "name": "QUICK ACCESS"
+        },
+        {
+          "id": "QXS-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXU-0",
+          "name": "Market overview"
+        },
+        {
+          "id": "QXV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXW-0",
+          "name": "Prophet"
+        },
+        {
+          "id": "QXX-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QXY-0",
+          "name": "Sectors & themes"
+        },
+        {
+          "id": "QXZ-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QY0-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QY1-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QY2-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QY3-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QY4-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QY5-0",
+          "name": "Rect"
+        },
+        {
+          "id": "QY6-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QY7-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QY8-0",
+          "name": "RY"
+        },
+        {
+          "id": "QY9-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYA-0",
+          "name": "Your workspace"
+        },
+        {
+          "id": "QYB-0",
+          "name": "Account & settings"
+        },
+        {
+          "id": "QYC-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QYD-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QYE-0",
+          "name": "Path"
+        },
+        {
+          "id": "QYF-0",
+          "name": "R6-03 Workspace"
+        },
+        {
+          "id": "QYG-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYI-0",
+          "name": "SVG"
+        },
+        {
+          "id": "QYJ-0",
+          "name": "Circle"
+        },
+        {
+          "id": "QYK-0",
+          "name": "Path"
+        },
+        {
+          "id": "QYL-0",
+          "name": "Search companies, se…"
+        },
+        {
+          "id": "QYM-0",
+          "name": "⌘ K"
+        },
+        {
+          "id": "QYN-0",
+          "name": "All tools"
+        },
+        {
+          "id": "QYO-0",
+          "name": "EN"
+        },
+        {
+          "id": "QYP-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYQ-0",
+          "name": "Open Terminal ↗"
+        },
+        {
+          "id": "QYR-0",
+          "name": "R6-03 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QYR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QYT-0",
+          "name": "R6-03 Heading"
+        },
+        {
+          "id": "QYU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYV-0",
+          "name": "← Healthcare / Econo…"
+        },
+        {
+          "id": "QYW-0",
+          "name": "Illustrative · repor…"
+        },
+        {
+          "id": "QYX-0",
+          "name": "Improvement is uneve…"
+        },
+        {
+          "id": "QYY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QYZ-0",
+          "name": "19 of 32 comparable …"
+        },
+        {
+          "id": "QZ0-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZ1-0",
+          "name": "How counts work →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-cohort",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QYR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QZ3-0",
+          "name": "R6-03 Coverage"
+        },
+        {
+          "id": "QZ4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZ5-0",
+          "name": "60 eligible"
+        },
+        {
+          "id": "QZ6-0",
+          "name": "Dated issuer populat…"
+        },
+        {
+          "id": "QZ7-0",
+          "name": "→"
+        },
+        {
+          "id": "QZ8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZ9-0",
+          "name": "40 reported"
+        },
+        {
+          "id": "QZA-0",
+          "name": "20 have not reported"
+        },
+        {
+          "id": "QZB-0",
+          "name": "→"
+        },
+        {
+          "id": "QZC-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZD-0",
+          "name": "32 comparable"
+        },
+        {
+          "id": "QZE-0",
+          "name": "8 reports are not co…"
+        },
+        {
+          "id": "QZF-0",
+          "name": "Inspect cohort →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-panels",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QYR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QZH-0",
+          "name": "R6-03 Evidence split"
+        },
+        {
+          "id": "QZI-0",
+          "name": "R6-03 Distribution"
+        },
+        {
+          "id": "QZJ-0",
+          "name": "What comparable repo…"
+        },
+        {
+          "id": "QZK-0",
+          "name": "R6-03 Independence"
+        },
+        {
+          "id": "QZL-0",
+          "name": "A different populati…"
+        },
+        {
+          "id": "QZM-0",
+          "name": "Prophet’s research c…"
+        },
+        {
+          "id": "QZN-0",
+          "name": "A selected company l…"
+        },
+        {
+          "id": "QZO-0",
+          "name": "View research covera…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-chart",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QZI-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "QZQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZR-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZS-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QZT-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QZU-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "QZV-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "QZX-0",
+          "name": "19 improved"
+        },
+        {
+          "id": "QZY-0",
+          "name": "Higher comparable ma…"
+        },
+        {
+          "id": "QZZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R00-0",
+          "name": "9 weakened"
+        },
+        {
+          "id": "R01-0",
+          "name": "Lower comparable mar…"
+        },
+        {
+          "id": "R02-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R03-0",
+          "name": "4 unchanged"
+        },
+        {
+          "id": "R04-0",
+          "name": "Same reported measur…"
+        },
+        {
+          "id": "R05-0",
+          "name": "This distribution co…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-observations",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QYR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R07-0",
+          "name": "R6-03 Original sources"
+        },
+        {
+          "id": "R08-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R09-0",
+          "name": "Follow the original …"
+        },
+        {
+          "id": "R0A-0",
+          "name": "Open reporting cohor…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-obs1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QZZ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R0C-0",
+          "name": "Rectangle"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-place-source-row",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": [
+        {
+          "nodeId": "R0C-0",
+          "parentId": "R07-0"
+        }
+      ],
+      "updates": null,
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-fill-source-row",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R0C-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R0E-0",
+          "name": "R6-03 Source A"
+        },
+        {
+          "id": "R0F-0",
+          "name": "Illustrative issuer …"
+        },
+        {
+          "id": "R0G-0",
+          "name": "Operating margin imp…"
+        },
+        {
+          "id": "R0H-0",
+          "name": "Three measures · one…"
+        },
+        {
+          "id": "R0I-0",
+          "name": "Read original statem…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-obs2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R07-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R0K-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R0L-0",
+          "name": "Illustrative issuer …"
+        },
+        {
+          "id": "R0M-0",
+          "name": "Operating margin wea…"
+        },
+        {
+          "id": "R0N-0",
+          "name": "Comparable reporting…"
+        },
+        {
+          "id": "R0O-0",
+          "name": "Read original statem…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r603-obs3",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R07-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R0Q-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R0R-0",
+          "name": "Illustrative issuer …"
+        },
+        {
+          "id": "R0S-0",
+          "name": "Report not yet avail…"
+        },
+        {
+          "id": "R0T-0",
+          "name": "Unknown · excluded f…"
+        },
+        {
+          "id": "R0U-0",
+          "name": "Inspect source statu…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R0W-0",
+          "name": "R6-04 · HCA · Independent peer context · Light EN"
+        },
+        {
+          "id": "R0X-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R0Y-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R0Z-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R10-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R11-0",
+          "name": "Path"
+        },
+        {
+          "id": "R12-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "R13-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R14-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R15-0",
+          "name": "Path"
+        },
+        {
+          "id": "R16-0",
+          "name": "Collapse navigation"
+        },
+        {
+          "id": "R17-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R18-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R19-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R1A-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1B-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1C-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1D-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1E-0",
+          "name": "Today"
+        },
+        {
+          "id": "R1F-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R1G-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R1H-0",
+          "name": "Path"
+        },
+        {
+          "id": "R1I-0",
+          "name": "Discover"
+        },
+        {
+          "id": "R1J-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R1K-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R1L-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1M-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1N-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1O-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R1P-0",
+          "name": "Analysis"
+        },
+        {
+          "id": "R1Q-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R1R-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R1S-0",
+          "name": "Path"
+        },
+        {
+          "id": "R1T-0",
+          "name": "Monitor"
+        },
+        {
+          "id": "R1U-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R1V-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R1W-0",
+          "name": "Path"
+        },
+        {
+          "id": "R1X-0",
+          "name": "Research"
+        },
+        {
+          "id": "R1Y-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R1Z-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R20-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R21-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R22-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R23-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R24-0",
+          "name": "Portfolio"
+        },
+        {
+          "id": "R25-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R26-0",
+          "name": "QUICK ACCESS"
+        },
+        {
+          "id": "R27-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R28-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R29-0",
+          "name": "Market overview"
+        },
+        {
+          "id": "R2A-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2B-0",
+          "name": "Prophet"
+        },
+        {
+          "id": "R2C-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2D-0",
+          "name": "Sectors & themes"
+        },
+        {
+          "id": "R2E-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "R2F-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2G-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R2H-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R2I-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R2J-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R2K-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R2L-0",
+          "name": "All tools"
+        },
+        {
+          "id": "R2M-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2N-0",
+          "name": "RY"
+        },
+        {
+          "id": "R2O-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2P-0",
+          "name": "Your workspace"
+        },
+        {
+          "id": "R2Q-0",
+          "name": "Account & settings"
+        },
+        {
+          "id": "R2R-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R2S-0",
+          "name": "Circle"
+        },
+        {
+          "id": "R2T-0",
+          "name": "Path"
+        },
+        {
+          "id": "R2U-0",
+          "name": "R6-04 Workspace"
+        },
+        {
+          "id": "R2V-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2W-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R2X-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R2Y-0",
+          "name": "Circle"
+        },
+        {
+          "id": "R2Z-0",
+          "name": "Path"
+        },
+        {
+          "id": "R30-0",
+          "name": "Search companies, se…"
+        },
+        {
+          "id": "R31-0",
+          "name": "⌘ K"
+        },
+        {
+          "id": "R32-0",
+          "name": "All tools"
+        },
+        {
+          "id": "R33-0",
+          "name": "EN"
+        },
+        {
+          "id": "R34-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R35-0",
+          "name": "Open Terminal ↗"
+        },
+        {
+          "id": "R36-0",
+          "name": "R6-04 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R36-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R38-0",
+          "name": "R6-04 Heading"
+        },
+        {
+          "id": "R39-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3A-0",
+          "name": "← Healthcare / Compa…"
+        },
+        {
+          "id": "R3B-0",
+          "name": "Illustrative · 20 co…"
+        },
+        {
+          "id": "R3C-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3E-0",
+          "name": "Peers also strengthe…"
+        },
+        {
+          "id": "R3F-0",
+          "name": "Test the company’s o…"
+        },
+        {
+          "id": "R3G-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3H-0",
+          "name": "Open Prophet setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-panels",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R36-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R3J-0",
+          "name": "R6-04 Comparison"
+        },
+        {
+          "id": "R3K-0",
+          "name": "R6-04 Returns"
+        },
+        {
+          "id": "R3L-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3M-0",
+          "name": "The observed move"
+        },
+        {
+          "id": "R3N-0",
+          "name": "Exact values →"
+        },
+        {
+          "id": "R3O-0",
+          "name": "R6-04 Peers"
+        },
+        {
+          "id": "R3P-0",
+          "name": "Without this issuer"
+        },
+        {
+          "id": "R3Q-0",
+          "name": "+7.30%"
+        },
+        {
+          "id": "R3R-0",
+          "name": "Healthcare return ex…"
+        },
+        {
+          "id": "R3S-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3T-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3U-0",
+          "name": "41 of 59"
+        },
+        {
+          "id": "R3V-0",
+          "name": "Peers above trend"
+        },
+        {
+          "id": "R3W-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R3X-0",
+          "name": "6.12%"
+        },
+        {
+          "id": "R3Y-0",
+          "name": "Start weight exclude…"
+        },
+        {
+          "id": "R3Z-0",
+          "name": "Inspect excluded mem…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-values",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R3K-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R41-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R42-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R43-0",
+          "name": "Group"
+        },
+        {
+          "id": "R44-0",
+          "name": "0%"
+        },
+        {
+          "id": "R45-0",
+          "name": "5%"
+        },
+        {
+          "id": "R46-0",
+          "name": "10%"
+        },
+        {
+          "id": "R47-0",
+          "name": "15%"
+        },
+        {
+          "id": "R48-0",
+          "name": "Group"
+        },
+        {
+          "id": "R49-0",
+          "name": "Path"
+        },
+        {
+          "id": "R4A-0",
+          "name": "Path"
+        },
+        {
+          "id": "R4B-0",
+          "name": "Path"
+        },
+        {
+          "id": "R4C-0",
+          "name": "Path"
+        },
+        {
+          "id": "R4D-0",
+          "name": "Group"
+        },
+        {
+          "id": "R4E-0",
+          "name": "US market"
+        },
+        {
+          "id": "R4F-0",
+          "name": "Healthcare"
+        },
+        {
+          "id": "R4G-0",
+          "name": "HCA Healthcare"
+        },
+        {
+          "id": "R4H-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R4I-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R4J-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R4K-0",
+          "name": "Group"
+        },
+        {
+          "id": "R4L-0",
+          "name": "+3.20%"
+        },
+        {
+          "id": "R4M-0",
+          "name": "+7.60%"
+        },
+        {
+          "id": "R4N-0",
+          "name": "+12.20%"
+        },
+        {
+          "id": "R4O-0",
+          "name": "HCA is 4.60 percenta…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-evidence",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R36-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R4Q-0",
+          "name": "R6-04 Evidence distinction"
+        },
+        {
+          "id": "R4R-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R4S-0",
+          "name": "What the company add…"
+        },
+        {
+          "id": "R4T-0",
+          "name": "Inspect results, rev…"
+        },
+        {
+          "id": "R4U-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R4V-0",
+          "name": "Open company evidenc…"
+        },
+        {
+          "id": "R4W-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R4X-0",
+          "name": "Shared price evidenc…"
+        },
+        {
+          "id": "R4Y-0",
+          "name": "Sector and relative-…"
+        },
+        {
+          "id": "R4Z-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R50-0",
+          "name": "Inspect shared sourc…"
+        },
+        {
+          "id": "R51-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R52-0",
+          "name": "What would challenge…"
+        },
+        {
+          "id": "R53-0",
+          "name": "Fewer peers particip…"
+        },
+        {
+          "id": "R54-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R55-0",
+          "name": "Review sector partic…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r604-return",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R36-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R57-0",
+          "name": "R6-04 Retained return"
+        },
+        {
+          "id": "R58-0",
+          "name": "Your sector filters …"
+        },
+        {
+          "id": "R59-0",
+          "name": "Return to Healthcare…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r605-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R5B-0",
+          "name": "R6-05 · Saved context · Original and current · Dark EN"
+        },
+        {
+          "id": "R5C-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5E-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R5F-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R5G-0",
+          "name": "Path"
+        },
+        {
+          "id": "R5H-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "R5I-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5J-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R5K-0",
+          "name": "Path"
+        },
+        {
+          "id": "R5L-0",
+          "name": "Collapse navigation"
+        },
+        {
+          "id": "R5M-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5N-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5O-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R5P-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R5Q-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R5R-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R5S-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R5T-0",
+          "name": "Today"
+        },
+        {
+          "id": "R5U-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5V-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R5W-0",
+          "name": "Path"
+        },
+        {
+          "id": "R5X-0",
+          "name": "Discover"
+        },
+        {
+          "id": "R5Y-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R5Z-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R60-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R61-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R62-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R63-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R64-0",
+          "name": "Analysis"
+        },
+        {
+          "id": "R65-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R66-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R67-0",
+          "name": "Path"
+        },
+        {
+          "id": "R68-0",
+          "name": "Monitor"
+        },
+        {
+          "id": "R69-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6A-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R6B-0",
+          "name": "Path"
+        },
+        {
+          "id": "R6C-0",
+          "name": "Research"
+        },
+        {
+          "id": "R6D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6E-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R6F-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6G-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6H-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6I-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6J-0",
+          "name": "Portfolio"
+        },
+        {
+          "id": "R6K-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6L-0",
+          "name": "QUICK ACCESS"
+        },
+        {
+          "id": "R6M-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6N-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6O-0",
+          "name": "Market overview"
+        },
+        {
+          "id": "R6P-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6Q-0",
+          "name": "Prophet"
+        },
+        {
+          "id": "R6R-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6S-0",
+          "name": "Sectors & themes"
+        },
+        {
+          "id": "R6T-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "R6U-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R6V-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R6W-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6X-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6Y-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R6Z-0",
+          "name": "Rect"
+        },
+        {
+          "id": "R70-0",
+          "name": "All tools"
+        },
+        {
+          "id": "R71-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R72-0",
+          "name": "RY"
+        },
+        {
+          "id": "R73-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R74-0",
+          "name": "Your workspace"
+        },
+        {
+          "id": "R75-0",
+          "name": "Account & settings"
+        },
+        {
+          "id": "R76-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R77-0",
+          "name": "Circle"
+        },
+        {
+          "id": "R78-0",
+          "name": "Path"
+        },
+        {
+          "id": "R79-0",
+          "name": "R6-05 Workspace"
+        },
+        {
+          "id": "R7A-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7B-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7C-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R7D-0",
+          "name": "Circle"
+        },
+        {
+          "id": "R7E-0",
+          "name": "Path"
+        },
+        {
+          "id": "R7F-0",
+          "name": "Search companies, se…"
+        },
+        {
+          "id": "R7G-0",
+          "name": "⌘ K"
+        },
+        {
+          "id": "R7H-0",
+          "name": "All tools"
+        },
+        {
+          "id": "R7I-0",
+          "name": "EN"
+        },
+        {
+          "id": "R7J-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7K-0",
+          "name": "Open Terminal ↗"
+        },
+        {
+          "id": "R7L-0",
+          "name": "R6-05 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r605-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R7L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R7N-0",
+          "name": "R6-05 Heading"
+        },
+        {
+          "id": "R7O-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7P-0",
+          "name": "← Watches / Saved in…"
+        },
+        {
+          "id": "R7Q-0",
+          "name": "Illustrative saved a…"
+        },
+        {
+          "id": "R7R-0",
+          "name": "Revisit Healthcare"
+        },
+        {
+          "id": "R7S-0",
+          "name": "Your original view s…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r605-contexts",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R7L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R7U-0",
+          "name": "R6-05 Context pair"
+        },
+        {
+          "id": "R7V-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7W-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R7X-0",
+          "name": "Original view"
+        },
+        {
+          "id": "R7Y-0",
+          "name": "6 Nov 2026 · Close"
+        },
+        {
+          "id": "R7Z-0",
+          "name": "38 of 60"
+        },
+        {
+          "id": "R80-0",
+          "name": "Members above their …"
+        },
+        {
+          "id": "R81-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R82-0",
+          "name": "Original membership,…"
+        },
+        {
+          "id": "R83-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R84-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R85-0",
+          "name": "Open original"
+        },
+        {
+          "id": "R86-0",
+          "name": "Original sources →"
+        },
+        {
+          "id": "R87-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R88-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R89-0",
+          "name": "Current view"
+        },
+        {
+          "id": "R8A-0",
+          "name": "9 Nov 2026 · Close"
+        },
+        {
+          "id": "R8B-0",
+          "name": "42 of 60"
+        },
+        {
+          "id": "R8C-0",
+          "name": "Members above their …"
+        },
+        {
+          "id": "R8D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8E-0",
+          "name": "Four more members pa…"
+        },
+        {
+          "id": "R8F-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8G-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8H-0",
+          "name": "Open current"
+        },
+        {
+          "id": "R8I-0",
+          "name": "Inspect what changed…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r605-note",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R7L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R8K-0",
+          "name": "R6-05 Note"
+        },
+        {
+          "id": "R8L-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8M-0",
+          "name": "Your research note"
+        },
+        {
+          "id": "R8N-0",
+          "name": "Edit note →"
+        },
+        {
+          "id": "R8O-0",
+          "name": "Check whether margin…"
+        },
+        {
+          "id": "R8P-0",
+          "name": "Saved with the origi…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r605-follow",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R7L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R8R-0",
+          "name": "R6-05 Follow capability"
+        },
+        {
+          "id": "R8S-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8T-0",
+          "name": "Follow meaningful ch…"
+        },
+        {
+          "id": "R8U-0",
+          "name": "Sector notifications…"
+        },
+        {
+          "id": "R8V-0",
+          "name": "Price alerts and not…"
+        },
+        {
+          "id": "R8W-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R8X-0",
+          "name": "Review watch options…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R8Z-0",
+          "name": "R6-06 · Market to company · 390 · Light EN"
+        },
+        {
+          "id": "R90-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "R91-0",
+          "name": "Time"
+        },
+        {
+          "id": "R92-0",
+          "name": "9:41"
+        },
+        {
+          "id": "R93-0",
+          "name": "Icons"
+        },
+        {
+          "id": "R94-0",
+          "name": "SVG"
+        },
+        {
+          "id": "R95-0",
+          "name": "Path"
+        },
+        {
+          "id": "R96-0",
+          "name": "Path"
+        },
+        {
+          "id": "R97-0",
+          "name": "Path"
+        },
+        {
+          "id": "R98-0",
+          "name": "Path"
+        },
+        {
+          "id": "R99-0",
+          "name": "Path"
+        },
+        {
+          "id": "R9A-0",
+          "name": "R6-06 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-head",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R9A-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R9C-0",
+          "name": "R6-06 Heading"
+        },
+        {
+          "id": "R9D-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R9E-0",
+          "name": "MASTERMINDX"
+        },
+        {
+          "id": "R9F-0",
+          "name": "Menu ☰"
+        },
+        {
+          "id": "R9G-0",
+          "name": "Illustrative · US · …"
+        },
+        {
+          "id": "R9H-0",
+          "name": "Strength is broadeni…"
+        },
+        {
+          "id": "R9I-0",
+          "name": "Healthcare leads a r…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-context",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R9A-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R9K-0",
+          "name": "R6-06 Context"
+        },
+        {
+          "id": "R9L-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R9M-0",
+          "name": "US market"
+        },
+        {
+          "id": "R9N-0",
+          "name": "+3.20%"
+        },
+        {
+          "id": "R9O-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R9P-0",
+          "name": "Healthcare"
+        },
+        {
+          "id": "R9Q-0",
+          "name": "+7.60%"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-participation",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R9A-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R9S-0",
+          "name": "R6-06 Participation"
+        },
+        {
+          "id": "R9T-0",
+          "name": "42 of 60 above trend"
+        },
+        {
+          "id": "R9U-0",
+          "name": "Five issuers supply …"
+        },
+        {
+          "id": "R9V-0",
+          "name": "Frame"
+        },
+        {
+          "id": "R9W-0",
+          "name": "Explore Healthcare m…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-company",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R9A-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "R9Y-0",
+          "name": "R6-06 First company"
+        },
+        {
+          "id": "R9Z-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RA0-0",
+          "name": "HCA Healthcare"
+        },
+        {
+          "id": "RA1-0",
+          "name": "Open setup →"
+        },
+        {
+          "id": "RA2-0",
+          "name": "Do margins confirm t…"
+        },
+        {
+          "id": "RA3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RA4-0",
+          "name": "+12.20%"
+        },
+        {
+          "id": "RA5-0",
+          "name": "+4.60 pp vs sector"
+        },
+        {
+          "id": "RA6-0",
+          "name": "Inspect issuer-exclu…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r607-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RA8-0",
+          "name": "R6-07 · HK relative leader · 390 · Dark ZH"
+        },
+        {
+          "id": "RA9-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "RAA-0",
+          "name": "Time"
+        },
+        {
+          "id": "RAB-0",
+          "name": "9:41"
+        },
+        {
+          "id": "RAC-0",
+          "name": "Icons"
+        },
+        {
+          "id": "RAD-0",
+          "name": "SVG"
+        },
+        {
+          "id": "RAE-0",
+          "name": "Path"
+        },
+        {
+          "id": "RAF-0",
+          "name": "Path"
+        },
+        {
+          "id": "RAG-0",
+          "name": "Path"
+        },
+        {
+          "id": "RAH-0",
+          "name": "Path"
+        },
+        {
+          "id": "RAI-0",
+          "name": "Path"
+        },
+        {
+          "id": "RAJ-0",
+          "name": "R6-07 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r607-heading",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RAJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RAL-0",
+          "name": "R6-07 Heading"
+        },
+        {
+          "id": "RAM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RAN-0",
+          "name": "← 板块情报"
+        },
+        {
+          "id": "RAO-0",
+          "name": "香港⌄"
+        },
+        {
+          "id": "RAP-0",
+          "name": "示例数据 · 20 个已完成交易日 · …"
+        },
+        {
+          "id": "RAQ-0",
+          "name": "跌幅小于大市。 绝对价格仍在下跌。"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r607-returns",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RAJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RAS-0",
+          "name": "R6-07 Local returns"
+        },
+        {
+          "id": "RAT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RAU-0",
+          "name": "本地市场基准"
+        },
+        {
+          "id": "RAV-0",
+          "name": "−4.00%"
+        },
+        {
+          "id": "RAW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RAX-0",
+          "name": "医疗保健"
+        },
+        {
+          "id": "RAY-0",
+          "name": "−2.00%"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r607-context",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RAJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RB0-0",
+          "name": "R6-07 Relative meaning"
+        },
+        {
+          "id": "RB1-0",
+          "name": "相对领先 2.00 个百分点"
+        },
+        {
+          "id": "RB2-0",
+          "name": "60 只成分股中，24 只高于 50 日…"
+        },
+        {
+          "id": "RB3-0",
+          "name": "相对抗跌不代表已经转强。"
+        },
+        {
+          "id": "RB4-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RB5-0",
+          "name": "查看全部成分股 →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r607-clock",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RAJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RB7-0",
+          "name": "R6-07 Information cutoff"
+        },
+        {
+          "id": "RB8-0",
+          "name": "当时能知道什么？"
+        },
+        {
+          "id": "RB9-0",
+          "name": "决策时点：11 月 9 日 10:30 …"
+        },
+        {
+          "id": "RBA-0",
+          "name": "仅纳入当时已经可用的资料。"
+        },
+        {
+          "id": "RBB-0",
+          "name": "稍后发布的公司报告和美国收盘数据未纳入。"
+        },
+        {
+          "id": "RBC-0",
+          "name": "查看来源时间 →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-return-label",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": [
+        "QQJ-0"
+      ],
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r601-prior",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QR8-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RBE-0",
+          "name": "R6-01 Prior breadth"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r606-prior",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "R9S-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RBG-0",
+          "name": "R6-06 Prior breadth"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-review-labels",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": [
+        "R3V-0",
+        "QVG-0",
+        "QVF-0"
+      ],
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-selection-1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QVO-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RBI-0",
+          "name": "R6-02 Selectable member 1"
+        },
+        {
+          "id": "RBJ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RBK-0",
+          "name": "SVG"
+        },
+        {
+          "id": "RBL-0",
+          "name": "Rect"
+        },
+        {
+          "id": "RBM-0",
+          "name": "Path"
+        },
+        {
+          "id": "RBN-0",
+          "name": "HCA Healthcare"
+        },
+        {
+          "id": "RBO-0",
+          "name": "+12.20%"
+        },
+        {
+          "id": "RBP-0",
+          "name": "+4.60 pp"
+        },
+        {
+          "id": "RBQ-0",
+          "name": "Do margins confirm?"
+        },
+        {
+          "id": "RBR-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-selection-2",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QVV-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RBT-0",
+          "name": "R6-02 Selectable member 2"
+        },
+        {
+          "id": "RBU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RBV-0",
+          "name": "SVG"
+        },
+        {
+          "id": "RBW-0",
+          "name": "Rect"
+        },
+        {
+          "id": "RBX-0",
+          "name": "Path"
+        },
+        {
+          "id": "RBY-0",
+          "name": "Intuitive Surgical"
+        },
+        {
+          "id": "RBZ-0",
+          "name": "+9.00%"
+        },
+        {
+          "id": "RC0-0",
+          "name": "+1.40 pp"
+        },
+        {
+          "id": "RC1-0",
+          "name": "Is demand broadening…"
+        },
+        {
+          "id": "RC2-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-selection-3",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QW2-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RC4-0",
+          "name": "R6-02 Selectable member 3"
+        },
+        {
+          "id": "RC5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RC6-0",
+          "name": "SVG"
+        },
+        {
+          "id": "RC7-0",
+          "name": "Rect"
+        },
+        {
+          "id": "RC8-0",
+          "name": "Eli Lilly"
+        },
+        {
+          "id": "RC9-0",
+          "name": "+5.80%"
+        },
+        {
+          "id": "RCA-0",
+          "name": "−1.80 pp"
+        },
+        {
+          "id": "RCB-0",
+          "name": "What could change?"
+        },
+        {
+          "id": "RCC-0",
+          "name": "Open setup →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r602-selection-heading",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "QVH-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RCE-0",
+          "name": "R6-02 Selectable headings"
+        },
+        {
+          "id": "RCF-0",
+          "name": "Rectangle"
+        },
+        {
+          "id": "RCG-0",
+          "name": "COMPANY"
+        },
+        {
+          "id": "RCH-0",
+          "name": "TOTAL RETURN"
+        },
+        {
+          "id": "RCI-0",
+          "name": "VS HEALTHCARE"
+        },
+        {
+          "id": "RCJ-0",
+          "name": "COMPANY QUESTION"
+        },
+        {
+          "id": "RCK-0",
+          "name": "INVESTIGATE"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r608-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-L-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RCM-0",
+          "name": "R6-08 · Original unavailable · 320 · Dark EN"
+        },
+        {
+          "id": "RCN-0",
+          "name": "Status bar"
+        },
+        {
+          "id": "RCO-0",
+          "name": "Time"
+        },
+        {
+          "id": "RCP-0",
+          "name": "9:41"
+        },
+        {
+          "id": "RCQ-0",
+          "name": "Icons"
+        },
+        {
+          "id": "RCR-0",
+          "name": "SVG"
+        },
+        {
+          "id": "RCS-0",
+          "name": "Path"
+        },
+        {
+          "id": "RCT-0",
+          "name": "Path"
+        },
+        {
+          "id": "RCU-0",
+          "name": "Path"
+        },
+        {
+          "id": "RCV-0",
+          "name": "Path"
+        },
+        {
+          "id": "RCW-0",
+          "name": "Path"
+        },
+        {
+          "id": "RCX-0",
+          "name": "R6-08 Content"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r608-title",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RCX-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RCZ-0",
+          "name": "R6-08 Heading"
+        },
+        {
+          "id": "RD0-0",
+          "name": "← Saved investigatio…"
+        },
+        {
+          "id": "RD1-0",
+          "name": "Illustrative unavail…"
+        },
+        {
+          "id": "RD2-0",
+          "name": "Healthcare"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r608-unavailable",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RCX-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RD4-0",
+          "name": "R6-08 Original missing"
+        },
+        {
+          "id": "RD5-0",
+          "name": "Original sector cont…"
+        },
+        {
+          "id": "RD6-0",
+          "name": "Your saved note is r…"
+        },
+        {
+          "id": "RD7-0",
+          "name": "Current data will op…"
+        },
+        {
+          "id": "RD8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RD9-0",
+          "name": "Open current context…"
+        },
+        {
+          "id": "RDA-0",
+          "name": "Why is it unavailabl…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r608-note",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RCX-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDC-0",
+          "name": "R6-08 Retained note"
+        },
+        {
+          "id": "RDD-0",
+          "name": "Your research note"
+        },
+        {
+          "id": "RDE-0",
+          "name": "Check whether margin…"
+        },
+        {
+          "id": "RDF-0",
+          "name": "Edit note →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-page-states",
+      "tool": "create_page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-page-build",
+      "tool": "create_page",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-M-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDH-0",
+          "name": "R6-09 · States and user explanations"
+        },
+        {
+          "id": "RDI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RDJ-0",
+          "name": "Connected investigat…"
+        },
+        {
+          "id": "RDK-0",
+          "name": "Illustrative state s…"
+        },
+        {
+          "id": "RDL-0",
+          "name": "R6-09 States"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-coverage-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDN-0",
+          "name": "R6-09 coverage"
+        },
+        {
+          "id": "RDO-0",
+          "name": "Member coverage"
+        },
+        {
+          "id": "RDP-0",
+          "name": "Why some members hav…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-concentration-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDR-0",
+          "name": "R6-09 concentration"
+        },
+        {
+          "id": "RDS-0",
+          "name": "Independent peers"
+        },
+        {
+          "id": "RDT-0",
+          "name": "The selected issuer …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-emergence-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDV-0",
+          "name": "R6-09 emergence"
+        },
+        {
+          "id": "RDW-0",
+          "name": "Independent emergenc…"
+        },
+        {
+          "id": "RDX-0",
+          "name": "Company strength is …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-outlook-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RDZ-0",
+          "name": "R6-09 outlook"
+        },
+        {
+          "id": "RE0-0",
+          "name": "Forecast availabilit…"
+        },
+        {
+          "id": "RE1-0",
+          "name": "Observed evidence st…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-freshness-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RE3-0",
+          "name": "R6-09 freshness"
+        },
+        {
+          "id": "RE4-0",
+          "name": "Source update"
+        },
+        {
+          "id": "RE5-0",
+          "name": "The quote is newer t…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-account-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RE7-0",
+          "name": "R6-09 account"
+        },
+        {
+          "id": "RE8-0",
+          "name": "Save status"
+        },
+        {
+          "id": "RE9-0",
+          "name": "The earlier save is …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-evaluation-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REB-0",
+          "name": "R6-09 evaluation"
+        },
+        {
+          "id": "REC-0",
+          "name": "Strategy evaluation"
+        },
+        {
+          "id": "RED-0",
+          "name": "Selection helped; th…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-counts-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REF-0",
+          "name": "R6-09 counts"
+        },
+        {
+          "id": "REG-0",
+          "name": "How counts work"
+        },
+        {
+          "id": "REH-0",
+          "name": "A comparable-report …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-rights-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REJ-0",
+          "name": "R6-09 rights"
+        },
+        {
+          "id": "REK-0",
+          "name": "Source access"
+        },
+        {
+          "id": "REL-0",
+          "name": "This source is no lo…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-selection-shell",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDL-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REN-0",
+          "name": "R6-09 selection"
+        },
+        {
+          "id": "REO-0",
+          "name": "Comparison selection"
+        },
+        {
+          "id": "REP-0",
+          "name": "Choose companies to …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-coverage-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDN-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RER-0",
+          "name": "60 sector members in…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-concentration-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RET-0",
+          "name": "In this example, two…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-emergence-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDV-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REV-0",
+          "name": "The example company …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-outlook-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDZ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REX-0",
+          "name": "Remaining returns: u…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-freshness-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RE3-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "REZ-0",
+          "name": "A fresh quote does n…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-account-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RE7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RF1-0",
+          "name": "You are viewing anot…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-evaluation-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REB-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RF3-0",
+          "name": "Illustrative result:…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-counts-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REF-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RF5-0",
+          "name": "The selected measure…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-rights-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RF7-0",
+          "name": "Your research note i…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-selection-body",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REN-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RF9-0",
+          "name": "With no selection, C…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-coverage-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDN-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFC-0",
+          "name": "View group source →"
+        },
+        {
+          "id": "RFD-0",
+          "name": "Open available compa…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-concentration-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDR-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFF-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFG-0",
+          "name": "Inspect excluded lis…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-emergence-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDV-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFI-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFJ-0",
+          "name": "Open company evidenc…"
+        },
+        {
+          "id": "RFK-0",
+          "name": "Compare emerging mem…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-outlook-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDZ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFM-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFN-0",
+          "name": "Open observed cycles…"
+        },
+        {
+          "id": "RFO-0",
+          "name": "Why estimates are un…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-freshness-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RE3-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFR-0",
+          "name": "Refresh sector conte…"
+        },
+        {
+          "id": "RFS-0",
+          "name": "Read company reports…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-account-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RE7-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFU-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFV-0",
+          "name": "Switch account →"
+        },
+        {
+          "id": "RFW-0",
+          "name": "Keep this view"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-evaluation-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REB-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RFY-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RFZ-0",
+          "name": "Evaluation details →"
+        },
+        {
+          "id": "RG0-0",
+          "name": "Coverage →"
+        },
+        {
+          "id": "RG1-0",
+          "name": "Open Portfolio →"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-counts-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REF-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RG3-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RG4-0",
+          "name": "Inspect periods and …"
+        },
+        {
+          "id": "RG5-0",
+          "name": "Close and return"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-rights-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REJ-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RG7-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RG8-0",
+          "name": "View source status →"
+        },
+        {
+          "id": "RG9-0",
+          "name": "Return to investigat…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-selection-actions",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "REN-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RGB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RGC-0",
+          "name": "Return to members →"
+        },
+        {
+          "id": "RGD-0",
+          "name": "Review selected comp…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-coverage-copy",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": null,
+      "updates": [
+        "RER-0"
+      ],
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r609-coverage-concrete-rows",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RDN-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RGF-0",
+          "name": "R6-09 Uncovered and unresolved members"
+        },
+        {
+          "id": "RGG-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RGH-0",
+          "name": "Member A · identity …"
+        },
+        {
+          "id": "RGI-0",
+          "name": "No Prophet Setup ava…"
+        },
+        {
+          "id": "RGJ-0",
+          "name": "Open available resea…"
+        },
+        {
+          "id": "RGK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RGL-0",
+          "name": "Member B · identity …"
+        },
+        {
+          "id": "RGM-0",
+          "name": "Company link unavail…"
+        },
+        {
+          "id": "RGN-0",
+          "name": "View original member…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r610-root",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-N-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RGP-0",
+          "name": "R6-10 · Build · Data, science and persistence"
+        },
+        {
+          "id": "RGQ-0",
+          "name": "INTERNAL BUILD CONTR…"
+        },
+        {
+          "id": "RGR-0",
+          "name": "Build · Data, scienc…"
+        },
+        {
+          "id": "RGS-0",
+          "name": "Extend the active v1…"
+        },
+        {
+          "id": "RGT-0",
+          "name": "R6-10 Source"
+        },
+        {
+          "id": "RGU-0",
+          "name": "R6-10 Cards"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r611-root",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "root_node_p-N-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RGW-0",
+          "name": "R6-11 · Build · Journey, markets and delivery"
+        },
+        {
+          "id": "RGX-0",
+          "name": "INTERNAL BUILD CONTR…"
+        },
+        {
+          "id": "RGY-0",
+          "name": "Build · Journey, mar…"
+        },
+        {
+          "id": "RGZ-0",
+          "name": "Extend the active v1…"
+        },
+        {
+          "id": "RH0-0",
+          "name": "R6-11 Source"
+        },
+        {
+          "id": "RH1-0",
+          "name": "R6-11 Cards"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r610-card-a",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RGU-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RH3-0",
+          "name": "R6-10 Contract A"
+        },
+        {
+          "id": "RH4-0",
+          "name": "A · Capture once. Ke…"
+        },
+        {
+          "id": "RH5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RH6-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RH7-0",
+          "name": "Move from a market o…"
+        },
+        {
+          "id": "RH8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RH9-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RHA-0",
+          "name": "Existing Macro gener…"
+        },
+        {
+          "id": "RHB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHC-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RHD-0",
+          "name": "Native group, issuer…"
+        },
+        {
+          "id": "RHE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHF-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RHG-0",
+          "name": "20 completed session…"
+        },
+        {
+          "id": "RHH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHI-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RHJ-0",
+          "name": "Search before paging…"
+        },
+        {
+          "id": "RHK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHL-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RHM-0",
+          "name": "52 covered + 5 uncov…"
+        },
+        {
+          "id": "RHN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHO-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RHP-0",
+          "name": "One captured context…"
+        },
+        {
+          "id": "RHQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHR-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RHS-0",
+          "name": "Extend lane 1's boun…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r610-card-b",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RGU-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RHU-0",
+          "name": "R6-10 Contract B"
+        },
+        {
+          "id": "RHV-0",
+          "name": "B · Independent peer…"
+        },
+        {
+          "id": "RHW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RHX-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RHY-0",
+          "name": "Find sector support,…"
+        },
+        {
+          "id": "RHZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RI0-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RI1-0",
+          "name": "Sector membership/ag…"
+        },
+        {
+          "id": "RI2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RI3-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RI4-0",
+          "name": "All listings/aliases…"
+        },
+        {
+          "id": "RI5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RI6-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RI7-0",
+          "name": "Show full group for …"
+        },
+        {
+          "id": "RI8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RI9-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RIA-0",
+          "name": "Inspect excluded lis…"
+        },
+        {
+          "id": "RIB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIC-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RID-0",
+          "name": "60 eligible = 40 rep…"
+        },
+        {
+          "id": "RIE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIF-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RIG-0",
+          "name": "Perturb excluded iss…"
+        },
+        {
+          "id": "RIH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RII-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RIJ-0",
+          "name": "No Prophet winners, …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r610-card-c",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RGU-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RIL-0",
+          "name": "R6-10 Contract C"
+        },
+        {
+          "id": "RIM-0",
+          "name": "C · Separate history…"
+        },
+        {
+          "id": "RIN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIO-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RIP-0",
+          "name": "Understand observed …"
+        },
+        {
+          "id": "RIQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIR-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RIS-0",
+          "name": "Existing Sector Cycl…"
+        },
+        {
+          "id": "RIT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIU-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RIV-0",
+          "name": "Event time, confirma…"
+        },
+        {
+          "id": "RIW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RIX-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RIY-0",
+          "name": "Four separate heads:…"
+        },
+        {
+          "id": "RIZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJ0-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RJ1-0",
+          "name": "Unavailable forecast…"
+        },
+        {
+          "id": "RJ2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJ3-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RJ4-0",
+          "name": "Current #10924 withh…"
+        },
+        {
+          "id": "RJ5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJ6-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RJ7-0",
+          "name": "No future disclosure…"
+        },
+        {
+          "id": "RJ8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJ9-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RJA-0",
+          "name": "Owner-only qualifica…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r610-card-d",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RGU-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RJC-0",
+          "name": "R6-10 Contract D"
+        },
+        {
+          "id": "RJD-0",
+          "name": "D · Compose retained…"
+        },
+        {
+          "id": "RJE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJF-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RJG-0",
+          "name": "Save the exact reaso…"
+        },
+        {
+          "id": "RJH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJI-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RJJ-0",
+          "name": "Existing Investigati…"
+        },
+        {
+          "id": "RJK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJL-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RJM-0",
+          "name": "Original source refs…"
+        },
+        {
+          "id": "RJN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJO-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RJP-0",
+          "name": "0049 is structural v…"
+        },
+        {
+          "id": "RJQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJR-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RJS-0",
+          "name": "Install readers befo…"
+        },
+        {
+          "id": "RJT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJU-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RJV-0",
+          "name": "Original unavailable…"
+        },
+        {
+          "id": "RJW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RJX-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RJY-0",
+          "name": "Read installed valid…"
+        },
+        {
+          "id": "RJZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RK0-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RK1-0",
+          "name": "Never create another…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r611-card-e",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RH1-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RK3-0",
+          "name": "R6-11 Contract E"
+        },
+        {
+          "id": "RK4-0",
+          "name": "E · One journey, wit…"
+        },
+        {
+          "id": "RK5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RK6-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RK7-0",
+          "name": "Brief → full members…"
+        },
+        {
+          "id": "RK8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RK9-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RKA-0",
+          "name": "Shared shell, existi…"
+        },
+        {
+          "id": "RKB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKC-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RKD-0",
+          "name": "Market, group/listin…"
+        },
+        {
+          "id": "RKE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKF-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RKG-0",
+          "name": "Raw return differenc…"
+        },
+        {
+          "id": "RKH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKI-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RKJ-0",
+          "name": "0/1/2 selection stat…"
+        },
+        {
+          "id": "RKK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKL-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RKM-0",
+          "name": "Source refusal, cove…"
+        },
+        {
+          "id": "RKN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKO-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RKP-0",
+          "name": "Actual browser journ…"
+        },
+        {
+          "id": "RKQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKR-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RKS-0",
+          "name": "Preserve all R4 and …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r611-card-f",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RH1-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RKU-0",
+          "name": "R6-11 Contract F"
+        },
+        {
+          "id": "RKV-0",
+          "name": "F · Native markets a…"
+        },
+        {
+          "id": "RKW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RKX-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RKY-0",
+          "name": "Read US, Hong Kong o…"
+        },
+        {
+          "id": "RKZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RL0-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RL1-0",
+          "name": "Existing native regi…"
+        },
+        {
+          "id": "RL2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RL3-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RL4-0",
+          "name": "Local currency, exch…"
+        },
+        {
+          "id": "RL5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RL6-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RL7-0",
+          "name": "HK fixture: market −…"
+        },
+        {
+          "id": "RL8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RL9-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RLA-0",
+          "name": "Sources & comparison…"
+        },
+        {
+          "id": "RLB-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLC-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RLD-0",
+          "name": "Local holiday, suspe…"
+        },
+        {
+          "id": "RLE-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLF-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RLG-0",
+          "name": "02:30Z cutoff includ…"
+        },
+        {
+          "id": "RLH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLI-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RLJ-0",
+          "name": "Chinese directional …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r611-card-g",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RH1-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RLL-0",
+          "name": "R6-11 Contract G"
+        },
+        {
+          "id": "RLM-0",
+          "name": "G · Evaluate partici…"
+        },
+        {
+          "id": "RLN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLO-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RLP-0",
+          "name": "See whether the stra…"
+        },
+        {
+          "id": "RLQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLR-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RLS-0",
+          "name": "Existing Prophet Str…"
+        },
+        {
+          "id": "RLT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLU-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RLV-0",
+          "name": "Protocol, period, be…"
+        },
+        {
+          "id": "RLW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RLX-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RLY-0",
+          "name": "Fixture: benchmark 8…"
+        },
+        {
+          "id": "RLZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RM0-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RM1-0",
+          "name": "Open Evaluation deta…"
+        },
+        {
+          "id": "RM2-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RM3-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RM4-0",
+          "name": "Missing weights prev…"
+        },
+        {
+          "id": "RM5-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RM6-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RM7-0",
+          "name": "Common signed attrib…"
+        },
+        {
+          "id": "RM8-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RM9-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RMA-0",
+          "name": "Do not touch Prophet…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r611-card-h",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "RH1-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RMC-0",
+          "name": "R6-11 Contract H"
+        },
+        {
+          "id": "RMD-0",
+          "name": "H · Amend the existi…"
+        },
+        {
+          "id": "RME-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMF-0",
+          "name": "USER JOB"
+        },
+        {
+          "id": "RMG-0",
+          "name": "Deliver a useful int…"
+        },
+        {
+          "id": "RMH-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMI-0",
+          "name": "OWNER / SOURCE"
+        },
+        {
+          "id": "RMJ-0",
+          "name": "Existing Fable 5.2 T…"
+        },
+        {
+          "id": "RMK-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RML-0",
+          "name": "INPUTS / IDENTITY"
+        },
+        {
+          "id": "RMM-0",
+          "name": "v1.0 B/P/J, 134 stab…"
+        },
+        {
+          "id": "RMN-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMO-0",
+          "name": "CALCULATION / CLAIM"
+        },
+        {
+          "id": "RMP-0",
+          "name": "Design/fixture/sourc…"
+        },
+        {
+          "id": "RMQ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMR-0",
+          "name": "INTERACTION"
+        },
+        {
+          "id": "RMS-0",
+          "name": "First real path: Sec…"
+        },
+        {
+          "id": "RMT-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMU-0",
+          "name": "STATES"
+        },
+        {
+          "id": "RMV-0",
+          "name": "Keep live writers, r…"
+        },
+        {
+          "id": "RMW-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RMX-0",
+          "name": "PROOF"
+        },
+        {
+          "id": "RMY-0",
+          "name": "Real authorized sour…"
+        },
+        {
+          "id": "RMZ-0",
+          "name": "Frame"
+        },
+        {
+          "id": "RN0-0",
+          "name": "CUSTODY"
+        },
+        {
+          "id": "RN1-0",
+          "name": "Full brief belongs i…"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r6-readme-pointer",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": "HBU-0",
+      "node_ids": null,
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [
+        {
+          "id": "RN3-0",
+          "name": "R6 · Current Sector × Prophet v1.1 amendment"
+        },
+        {
+          "id": "RN4-0",
+          "name": "READ FIRST FOR THE C…"
+        },
+        {
+          "id": "RN5-0",
+          "name": "Sector Intelligence …"
+        },
+        {
+          "id": "RN6-0",
+          "name": "Preserve all R4 and …"
+        },
+        {
+          "id": "RN7-0",
+          "name": "PRODUCT · p-L-0 · R6…"
+        },
+        {
+          "id": "RN8-0",
+          "name": "Source: https://gith…"
+        },
+        {
+          "id": "RN9-0",
+          "name": "Existing Fable team …"
+        }
+      ],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r6-readme-first",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": null,
+      "moves": [
+        {
+          "nodeId": "RN3-0",
+          "parentId": "HBU-0",
+          "index": 0
+        }
+      ],
+      "updates": null,
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    },
+    {
+      "operation_id": "si-prophet-v11-20261109-r6-finish-reviewed-owned-roots",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target": null,
+      "node_ids": [
+        "QNB-0",
+        "QRX-0",
+        "QWH-0",
+        "R0W-0",
+        "R5B-0",
+        "R8Z-0",
+        "RA8-0",
+        "RCM-0",
+        "RDH-0",
+        "RGP-0",
+        "RGW-0",
+        "RN3-0"
+      ],
+      "moves": null,
+      "updates": null,
+      "returned_nodes": [],
+      "page": null,
+      "observed_result": null
+    }
+  ],
+  "new_unknown_effects": 0,
+  "preserved": {
+    "r4_reviewed_roots": 47,
+    "r5_product_and_state_roots": 19,
+    "r5_build_roots": 1,
+    "other_writer_nodes_changed": [],
+    "active_page_before_and_after": "p-9-0"
+  },
+  "held_external_effects": [
+    {
+      "file": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "operation": "prophet-sector-20261109-sx05-attribution",
+      "target": "1G3F-0",
+      "root": "1G21-0",
+      "state": "PRIOR_EFFECT_UNKNOWN_PRESERVED",
+      "action": "NOT_TOUCHED"
+    },
+    {
+      "file": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "operation": "prophet-four-turn-t2-20261109-mplans-tabs",
+      "target": "1EF3-0",
+      "root": "1EEH-0",
+      "state": "PRIOR_EFFECT_UNKNOWN_PRESERVED",
+      "action": "NOT_TOUCHED"
+    }
+  ],
+  "remaining_real_proof": [
+    "actual linked browser interactions",
+    "full language/theme/viewport/accessibility matrix",
+    "source, rights, retention and original reopen",
+    "SI01-SI20 and SP01-SP24 implementation",
+    "normal release/natural update/correction/rollback"
+  ]
+}

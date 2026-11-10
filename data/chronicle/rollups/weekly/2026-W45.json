@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-08",
   "coverage": {
-    "end": "2026-11-07",
+    "end": "2026-11-08",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W45; 14 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-08"
+    "start": "2026-08-09"
   },
   "iso_week": "2026-W45",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,7 +11,7 @@
     {
       "clusters": [
         {
-          "n_events": 442,
+          "n_events": 609,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -575,7 +575,7 @@
     {
       "clusters": [
         {
-          "n_events": 519,
+          "n_events": 521,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
