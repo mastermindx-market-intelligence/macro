@@ -1,43 +1,38 @@
 {
   "display_only": true,
-  "hk_session_date": "2026-11-09",
+  "hk_session_date": "2026-11-10",
   "adr_date": "2026-11-06",
-  "expected_hk_session": "2026-11-09",
+  "expected_hk_session": "2026-11-10",
   "freshness_verdict": "degraded",
   "adr_freshness": {
+    "BIDU": {
+      "asof": "2026-11-06",
+      "lag_days": 4,
+      "state": "slow"
+    },
     "BABA": {
       "asof": "2026-11-06",
-      "lag_days": 3,
+      "lag_days": 4,
       "state": "slow"
     },
     "JD": {
       "asof": "2026-11-06",
-      "lag_days": 3,
-      "state": "slow"
-    },
-    "TCOM": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
-      "state": "slow"
-    },
-    "KWEB": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "lag_days": 4,
       "state": "slow"
     },
     "FXI": {
       "asof": "2026-11-06",
-      "lag_days": 3,
+      "lag_days": 4,
+      "state": "slow"
+    },
+    "TCOM": {
+      "asof": "2026-11-06",
+      "lag_days": 4,
       "state": "slow"
     },
     "KWEB": {
       "asof": "2026-11-06",
-      "lag_days": 3,
-      "state": "slow"
-    },
-    "BIDU": {
-      "asof": "2026-11-06",
-      "lag_days": 3,
+      "lag_days": 4,
       "state": "slow"
     }
   },
@@ -57,7 +52,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -76,7 +71,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -95,7 +90,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -114,7 +109,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -133,7 +128,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -152,7 +147,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -171,7 +166,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -190,7 +185,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     },
@@ -209,7 +204,7 @@
       "missing_reason": null,
       "freshness": {
         "asof": "2026-11-06",
-        "lag_days": 3,
+        "lag_days": 4,
         "state": "slow"
       }
     }
