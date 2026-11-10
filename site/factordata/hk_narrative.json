@@ -1,8 +1,8 @@
 {
   "display_only": true,
   "organ": "hk_narrative",
-  "as_of": "2026-11-09",
-  "generated_utc": "2026-11-09T13:27:44+00:00",
+  "as_of": "2026-11-10",
+  "generated_utc": "2026-11-10T20:04:37+00:00",
   "freshness": "stale",
   "entities": [
     {
@@ -25,15 +25,15 @@
       "ticker": "0700.HK",
       "name_en": "Tencent",
       "name_zh": "\u817e\u8baf",
-      "attention_shock_z": -0.854,
+      "attention_shock_z": null,
       "tone_pctile": null,
-      "narrative_state": "quiet",
-      "young": false,
-      "n_obs": 68,
-      "as_of_date": "2026-11-08",
-      "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "narrative_state": null,
+      "young": true,
+      "n_obs": 0,
+      "as_of_date": null,
+      "no_data_reason": "young series: 0 < 20 obs",
+      "state_en": null,
+      "state_zh": null
     },
     {
       "slug": "meituan",
@@ -100,15 +100,15 @@
       "ticker": "1024.HK",
       "name_en": "Kuaishou",
       "name_zh": "\u5feb\u624b",
-      "attention_shock_z": -0.274,
+      "attention_shock_z": null,
       "tone_pctile": null,
-      "narrative_state": "quiet",
-      "young": false,
-      "n_obs": 68,
-      "as_of_date": "2026-11-07",
-      "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
+      "narrative_state": null,
+      "young": true,
+      "n_obs": 0,
+      "as_of_date": null,
+      "no_data_reason": "young series: 0 < 20 obs",
+      "state_en": null,
+      "state_zh": null
     },
     {
       "slug": "smic",
@@ -146,21 +146,6 @@
       "state_zh": "\u5e73\u9759"
     },
     {
-      "slug": "tencent",
-      "ticker": "0700.HK",
-      "name_en": "Tencent",
-      "name_zh": "\u817e\u8baf",
-      "attention_shock_z": -0.854,
-      "tone_pctile": null,
-      "narrative_state": "quiet",
-      "young": false,
-      "n_obs": 68,
-      "as_of_date": "2026-11-08",
-      "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
-    },
-    {
       "slug": "meituan",
       "ticker": "3690.HK",
       "name_en": "Meituan",
@@ -191,21 +176,6 @@
       "state_zh": "\u65b0\u95fb\u70ed\u5ea6"
     },
     {
-      "slug": "kuaishou",
-      "ticker": "1024.HK",
-      "name_en": "Kuaishou",
-      "name_zh": "\u5feb\u624b",
-      "attention_shock_z": -0.274,
-      "tone_pctile": null,
-      "narrative_state": "quiet",
-      "young": false,
-      "n_obs": 68,
-      "as_of_date": "2026-11-07",
-      "no_data_reason": null,
-      "state_en": "quiet",
-      "state_zh": "\u5e73\u9759"
-    },
-    {
       "slug": "smic",
       "ticker": "0981.HK",
       "name_en": "SMIC",
@@ -222,7 +192,7 @@
     }
   ],
   "n_watched": 8,
-  "n_live": 6,
+  "n_live": 4,
   "warming_up": false,
   "is_stale": true
 }

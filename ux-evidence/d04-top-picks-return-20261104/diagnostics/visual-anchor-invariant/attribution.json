@@ -1,0 +1,24 @@
+{
+  "method": "Delay animation callbacks, focus/change filter, explicitly scroll to 123 then release; observe exact visual anchor and all scrollTo invocations.",
+  "before": {
+    "scroll_y": 123,
+    "first_panel_top": 28,
+    "h1_top": 45
+  },
+  "after": {
+    "scroll_y": 74,
+    "first_panel_top": 28,
+    "h1_top": 45,
+    "focus": "hideStretch"
+  },
+  "scrollTo_calls": [
+    {
+      "source": "test explicit scroll",
+      "arguments": [
+        0,
+        123
+      ]
+    }
+  ],
+  "finding": "No adapter restoration scroll occurred. Native layout/scroll anchoring changed raw coordinates while visible position and later focus remained unchanged. Test now asserts that actual user-visible invariant."
+}
