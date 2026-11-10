@@ -275,8 +275,17 @@
     if(n>50)    return {ok:false, field:"years", msg:{en:"The table is capped at 50 years.", zh:"表格最多显示 50 年。"}};
     var i = r / 100 / f;
     var m = Math.round(n * f);
-    var pow = Math.pow(1 + i, m);
-    var FV  = i === 0 ? (P + c * m) : (P * pow + c * (pow - 1) / i);
+    // Preserve small positive rates without cancellation in (pow - 1) / i.
+    // This changes arithmetic only; the existing rounded payment count remains.
+    function valueAt(periods){
+      if(i === 0) return P + c * periods;
+      var gain = Math.expm1(periods * Math.log1p(i));
+      // For i >= 0 the annuity factor is at least the payment count.
+      // A downward last-bit rounding error must not manufacture negative growth.
+      var annuity = Math.max(periods, gain / i);
+      return P * (1 + gain) + c * annuity;
+    }
+    var FV = valueAt(m);
     var contributed = P + c * m;
     var growth = FV - contributed;
     // per-year table (whole years, plus fractional final row if n is non-integer)
@@ -284,8 +293,7 @@
     var nFloor = Math.floor(n);
     for(var yr=1; yr<=nFloor; yr++){
       var mm = Math.round(yr * f);
-      var pw = Math.pow(1 + i, mm);
-      var fvYr = i === 0 ? (P + c * mm) : (P * pw + c * (pw - 1) / i);
+      var fvYr = valueAt(mm);
       var contYr = P + c * mm;
       rows.push({ year:yr, contributed:contYr, growth:fvYr-contYr, fv:fvYr });
     }
@@ -531,7 +539,7 @@
         principal: "$" + echoNum(lastInp.P),
         contrib: "$" + echoNum(lastInp.c),
         freq: lang === "zh" ? fl.zh : fl.en,
-        rate: echoNum(lastInp.r),
+        rate: lastInp.r.toLocaleString("en-US", {useGrouping:false, maximumSignificantDigits:17}), // Preserve tiny rates as parser-compatible decimals.
         years: echoNum(lastInp.n),
         fv: outMain.textContent,
         contributed: outContrib.textContent,
@@ -568,3 +576,4 @@
 })();
 </script>
 {% endblock %}
+
