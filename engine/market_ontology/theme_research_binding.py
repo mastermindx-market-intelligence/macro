@@ -84,6 +84,7 @@ __all__ = [
     "canonical_text",
     "collapse_syndicated",
     "context_generation",
+    "curation_source_ref",
     "correction_lineage",
     "filter_interpretation_blocks",
     "generation_fingerprint",
@@ -184,16 +185,23 @@ class OwnerBundle:
     omissions: tuple[str, ...]
 
 
-def _curation_source_ref(assertion: Mapping[str, Any]) -> str:
+def curation_source_ref(assertion: Mapping[str, Any]) -> str:
     """``gmi-curation://<theme>/<revision>`` from fields already on the row.
 
     Same text ``source_ref_for`` emits for a fixture assertion that already
     validates. This leaf does not import the assertion validator: importing
-    it would pull the schema stack into every mount producer.
+    it would pull the schema stack into every mount producer. PUBLIC since
+    lane 5: the v2 profile selectors match request refs by this mint, and a
+    vertical adapter must not fork the grammar to use it.
     """
     scope = assertion.get("scope") or {}
     theme = scope.get("canonical_theme_id") if isinstance(scope, Mapping) else None
     return f"gmi-curation://{theme}/{assertion.get('curation_revision')}"
+
+
+#: Historical private spelling kept for this module's own internal callers;
+#: the public name above is the one other modules import.
+_curation_source_ref = curation_source_ref
 
 
 # ---------------------------------------------------------------------------

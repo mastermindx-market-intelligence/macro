@@ -91,18 +91,32 @@ from engine.market_ontology.technology_economic_change import (
     compose_technology_economic_change,
     identity_receipts_digest,
 )
+# The composer's OWN closed six-field source projection, imported under alias
+# so the v2 evidence selector recomputes the native tuple through the ONE
+# grammar owner instead of forking it here. A private name by deliberate
+# choice: re-implementing the projection in this adapter would be a second
+# grammar that can drift from the rendered rows; the sealed composer module is
+# already a hard import of this adapter, so this adds no new coupling.
+from engine.market_ontology.technology_economic_change import (  # noqa: E501
+    _assertion_source_ref as _native_assertion_source_ref,
+)
 
 __all__ = [
     "PROFILE_ID",
     "EVIDENCE_SCHEMA_ID",
+    "EVIDENCE_SCHEMA_ID_V1",
     "DEFINITION_VERSION",
     "VIEWS",
+    "TIME_MODES",
     "TechnologyRegistrationRefusal",
+    "TechnologyResearchQuery",
     "TECHNOLOGY_REGISTRATION_FACTS",
     "VERTICAL_REGISTRATION_HELD_COMPANY_PROFILE",
+    "build_query",
     "compose",
     "select_evidence",
     "validate_evidence_envelope",
+    "load_bundle",
     "registration_entry_or_refusal",
 ]
 
@@ -110,15 +124,29 @@ __all__ = [
 #: so the shell's ``payload["schema"] == registration.schema_id`` check and the
 #: profile routing can never drift apart.
 PROFILE_ID = SCHEMA_ID
-EVIDENCE_SCHEMA_ID = "technology_economic_change.evidence.v1"
+
+#: The assertion-grained evidence contract (lane 5, packet §3.5): selection
+#: keys on the owner-minted ``gmi-curation://`` assertion ref AND the full
+#: native source tuple including the selector, so two rendered assertions
+#: from ONE document are independently selectable when their selectors or
+#: curation revisions differ. The superseded document-grained v1 contract
+#: stays on disk under its own name; nothing emits it anymore.
+EVIDENCE_SCHEMA_ID = "technology_economic_change.evidence.v2"
+EVIDENCE_SCHEMA_ID_V1 = "technology_economic_change.evidence.v1"
 
 #: The evidence envelope's own contract, the mirror of the composer's
 #: ``CONTRACT_PATH``: :func:`validate_evidence_envelope` reads this file so the
 #: runtime check and the shipped contract can never drift apart.
 EVIDENCE_CONTRACT_PATH = (
     Path(__file__).resolve().parents[2]
-    / "contracts/market_ontology/technology_economic_change.evidence.v1.schema.json"
+    / "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
 )
+
+#: The closed time-mode set this profile serves today. ``system_replay`` is
+#: handled by its own typed refusal (``replay_identity_unavailable``) after
+#: identity resolution; every other non-latest mode refuses ``not_available``.
+#: Never silently serve a foreign mode as latest.
+TIME_MODES: tuple[str, ...] = ("latest",)
 
 #: Closed view tuple, derived by construction from THIS vertical's frozen
 #: contract (contracts/market_ontology/technology_economic_change.v1.schema.json):
@@ -332,6 +360,11 @@ def _validate_query_and_resolve(query: Any, bundle: Any) -> str:
         as_known = matched.get("as_known")
         if not (isinstance(as_known, Mapping) and as_known):
             _refuse("replay_identity_unavailable")
+    elif getattr(query, "time_mode", "latest") != "latest":
+        # :data:`TIME_MODES` is closed: ``latest`` is the only mode this
+        # profile serves today. A foreign mode — ``source_history`` included —
+        # refuses ``not_available``; it is never silently served as latest.
+        _refuse("not_available")
     if _SEALED_COMPANY_REF_RE.match(company_ref):
         return company_ref
     # cik: / revision-pinned requests: the sealed scope carries the RESOLVED
@@ -499,7 +532,7 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
     coverage = _coverage_from_omissions(bundle)
     if coverage is None:
         _refuse("sealed_input_unavailable:coverage")
-    return compose_technology_economic_change(
+    payload = compose_technology_economic_change(
         scope={
             "scope_mode": "company_first",
             "theme_ref": theme_ref,
@@ -514,22 +547,44 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
         input_vector=_input_vector_bound_to(comparison, native_context, receipts),
         coverage=coverage,
     )
+    expected_generation = getattr(query, "expected_generation", None)
+    if expected_generation is not None and expected_generation != payload["dossier_id"]:
+        # Continuation contract (lane 5): the caller's NATIVE expectation is
+        # compared against the composed dossier's own generation — the shell
+        # re-checks after composition; this is the owner-side half, so a
+        # stale expectation refreshes (``generation_changed``) instead of
+        # being silently answered from a different dossier. The dossier id is
+        # NOT renamed to ``gen_``: the native generation keeps the sealed
+        # composer's own ``tecd_`` grammar.
+        _refuse("generation_changed")
+    return payload
 
 
-def _cited_source_object_ids(payload: Mapping[str, Any]) -> set[str]:
-    """object_ids cited by a rendered row/card/counter of THIS composed
-    dossier. A refused business section renders nothing, so it cites nothing."""
-    cited: set[str] = set()
+def _rendered_source_evidence(payload: Mapping[str, Any]) -> list[tuple[str | None, dict[str, Any]]]:
+    """``(curation_revision, source_ref)`` for every rendered row/card/counter
+    citation of THIS composed dossier. Rows carry their producing
+    assertion's own ``curation_revision`` — the dossier's exact attribution;
+    cards and counter observations publish the closed tuple only (their
+    producing rows' revisions are already carried by those rows). A refused
+    business section renders nothing, so it cites nothing. Ref-grained, not
+    document-grained: two rendered rows from ONE document appear as two
+    DISTINCT refs whenever their selectors differ, which is what makes an
+    assertion from a shared document independently selectable under
+    evidence.v2."""
+    rendered: list[tuple[str | None, dict[str, Any]]] = []
 
-    def _add(ref: Any) -> None:
-        if isinstance(ref, Mapping) and isinstance(ref.get("object_id"), str) and ref["object_id"]:
-            cited.add(ref["object_id"])
+    def _add(ref: Any, revision: Any = None) -> None:
+        if isinstance(ref, Mapping):
+            rendered.append((
+                revision if isinstance(revision, str) else None,
+                dict(ref),
+            ))
 
     business = payload.get("business")
     if isinstance(business, Mapping) and business.get("refused") is not True:
         for row in business.get("rows") or ():
             if isinstance(row, Mapping):
-                _add(row.get("source_ref"))
+                _add(row.get("source_ref"), row.get("curation_revision"))
         for card in business.get("cards") or ():
             if isinstance(card, Mapping):
                 for ref in card.get("source_refs") or ():
@@ -537,7 +592,29 @@ def _cited_source_object_ids(payload: Mapping[str, Any]) -> set[str]:
     for observation in payload.get("counter_observations") or ():
         if isinstance(observation, Mapping):
             _add(observation.get("source_ref"))
-    return cited
+    return rendered
+
+
+def _curation_ref_text(assertion: Mapping[str, Any]) -> str | None:
+    """The owner-minted ``gmi-curation://`` ref text for one bundle
+    assertion — the same text ``theme_graph.curation_assertion.source_ref_for``
+    emits for a payload that validates, read from the row's own
+    ``scope.canonical_theme_id`` and ``curation_revision``. The mint is the
+    shell binding's own text builder (ONE grammar owner, imported lazily so
+    this adapter keeps working when the shared shell is absent); by the time
+    selection consults it, :func:`compose` has already validated every
+    rendered assertion through the composer's installed contract, so the text
+    here IS the owner's ref, not a re-implementation. A payload whose fields
+    are absent mints no usable ref — a ``None``-scoped or revision-less text
+    never equals a shell-validated request ref, so it matches nothing."""
+    binding = _import_shell_module(_SHELL_BINDING_MODULE)
+    if binding is None:
+        return None
+    mint = getattr(binding, "curation_source_ref", None)
+    if mint is None:
+        return None
+    ref = mint(assertion)
+    return ref if isinstance(ref, str) and ref else None
 
 
 def _dossier_limitation_texts(payload: Mapping[str, Any]) -> set[str]:
@@ -582,7 +659,7 @@ def _evidence_validator() -> Any:
 
 def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
     """Validate an evidence envelope against
-    ``contracts/market_ontology/technology_economic_change.evidence.v1.schema.json``,
+    ``contracts/market_ontology/technology_economic_change.evidence.v2.schema.json``,
     the mirror of the composer's ``validate_dossier``.
 
     Raises :class:`TechnologyRegistrationRefusal` (code
@@ -612,43 +689,35 @@ def validate_evidence_envelope(payload: Mapping[str, Any]) -> None:
         _refuse(f"evidence_schema_violation: {path}")
 
 
-def _evidence_source_object_id(source: Mapping[str, Any]) -> Any:
-    """Match key for one assertion source.
-
-    ``object_id`` when that key is present and not null. ``retention_ref``
-    only when ``object_id`` is absent. Callers still require the string to be
-    cited by the composed dossier. ``selector`` is not read.
-    """
-    if "object_id" in source and source.get("object_id") is not None:
-        return source.get("object_id")
-    return source.get("retention_ref")
-
-
 def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, Any]:
-    """Return the closed evidence envelope for ONE authorized assertion.
+    """Return the closed v2 evidence envelope for ONE authorized assertion.
 
-    The ref is authorized iff it equals a source_ref object_id cited by a
-    rendered row/card/counter of THAT composed dossier AND EXACTLY ONE
-    assertion in the bundle carries that source object_id — two or more
-    carrying it share the same refusal as zero, so no pick by tuple order and
-    the envelope can never hand out an assertion the dossier never rendered.
-    When ``source.object_id`` is absent, ``source.retention_ref`` is that
-    object id, and only when the string is in the cited set. A source that
-    already carries ``object_id`` keeps that match. ``selector`` is not a key.
-    Unknown, not-selected and ambiguous refs share the ONE code
+    Selection is ASSERTION-grained (``technology_economic_change.evidence.v2``,
+    lane 5): the request ref must equal the owner-minted ``gmi-curation://``
+    curation ref (:func:`_curation_ref_text`) of EXACTLY ONE bundle assertion,
+    AND that assertion's own closed six-field native source tuple — owner,
+    object_id, schema, generation, sha256, selector, the SELECTOR included —
+    must be cited by a rendered row/card/counter of THAT composed dossier,
+    AND a rendered item citing that tuple must carry the assertion's own
+    ``curation_revision`` (rows do) — the dossier's exact attribution. The
+    tuple is recomputed through the composer's own projection
+    (``_assertion_source_ref``) and compared by exact equality against the
+    rendered refs, never guessed from a document id and never fallen back to
+    the first matching row. Two assertions from ONE document (same object_id,
+    different ``selector`` or curation revision) are therefore INDEPENDENTLY
+    selectable when each actually produced a rendered item; a duplicate-span
+    sibling (same document AND same selector) that did not render cannot
+    borrow the rendered row — exactly-one authorized assertion cannot be
+    established, so the private unavailable outcome stands. Unknown,
+    not-cited, unattributed and ambiguous refs share the ONE code
     ``not_available`` — no existence disclosure. Never fetches, never
     dereferences a locator, never widens beyond the bundle.
 
-    That exactly-one gate is fail-closed and deliberate, but the ambiguity it
-    guards against is NOT inherent to the evidence: ``source.object_id`` is
-    DOCUMENT-grained while the evidence unit is assertion-grained, so two
-    legitimately distinct, both-rendered assertions from ONE filing (same
-    object_id, different ``selector``) both refuse ``not_available`` today.
-    The durable fix — authorizing on the full source ref including the
-    ``selector``, or naming an assertion-level id — is owed to §8 and
-    deliberately NOT taken here; the behaviour is pinned by test so the day
-    §8 names the finer key, the pin fails loudly instead of silently
-    re-passing.
+    The envelope carries the assertion ref verbatim and the FULL native source
+    tuple under ``source``, so a consumer can re-derive exactly which sealed
+    row the assertion produced. The document-grained v1 selector (keyed on
+    ``source.object_id`` alone) is superseded by this grain; its contract
+    stays on disk under the v1 name and nothing emits it anymore.
 
     The assertion is deep-copied VERBATIM, its assertion-internal ``authority``
     block included, unchanged. Nothing here pops, filters or normalises any
@@ -671,22 +740,175 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: Any) -> dict[str, An
     matches = [
         assertion for assertion in getattr(bundle, "assertions", None) or ()
         if isinstance(assertion, Mapping)
-        and isinstance(assertion.get("source"), Mapping)
-        and _evidence_source_object_id(assertion["source"]) == assertion_ref
+        and _curation_ref_text(assertion) == assertion_ref
     ]
-    if len(matches) != 1 or assertion_ref not in _cited_source_object_ids(payload):
+    if len(matches) != 1:
         _refuse("not_available")
-    authorized = copy.deepcopy(dict(matches[0]))
+    chosen = matches[0]
+    schema_id = chosen.get("schema")
+    native = _native_assertion_source_ref(
+        chosen.get("source"),
+        schema_id=schema_id if isinstance(schema_id, str) else None,
+    )
+    rendered = _rendered_source_evidence(payload)
+    if native is None or not any(ref == native for _, ref in rendered):
+        _refuse("not_available")
+    chosen_revision = chosen.get("curation_revision")
+    if not any(
+        revision == chosen_revision and ref == native
+        for revision, ref in rendered
+    ):
+        # The span rendered, but NO rendered item carries THIS assertion's
+        # curation revision: a duplicate-span sibling (same document AND
+        # same selector) produced the row, so exactly-one authorized
+        # assertion cannot be established — the private unavailable
+        # outcome, never a pick between indistinguishable twins.
+        _refuse("not_available")
     envelope = {
         "schema": EVIDENCE_SCHEMA_ID,
         "definition_version": DEFINITION_VERSION,
         "generation": payload["dossier_id"],
-        "assertion": authorized,
+        "assertion_ref": assertion_ref,
+        "source": dict(native),
+        "assertion": copy.deepcopy(dict(chosen)),
         "limitations": sorted(_dossier_limitation_texts(payload)),
         "authority": dict(_FALSE_AUTHORITY),
     }
     validate_evidence_envelope(envelope)
     return envelope
+
+
+# --- the shell's query carrier and the registered loader (lane 5) -----------------
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class TechnologyResearchQuery:
+    """The frozen request carrier the shared shell builds for the
+    ``company_profile`` entry kind: the §8 company-first request body with
+    the cutoffs and the native continuation expectation.
+
+    ``profile_id`` + ``company_ref`` + ``view`` + ``time_mode``; no anchor, no
+    slice (``slice_key`` stays ``None``); single-document — ``offset``/``cursor``
+    exist so a paging attempt is a typed refusal, never a silent page 1.
+    ``expected_generation`` is the caller's NATIVE expectation (the sealed
+    dossier id, ``tecd_`` grammar); the SHELL-level context expectation never
+    reaches the vertical."""
+
+    profile_id: str
+    company_ref: str | None
+    view: str
+    time_mode: str = "latest"
+    slice_key: str | None = None
+    source_cutoff: str | None = None
+    recorded_cutoff: str | None = None
+    offset: int = 0
+    cursor: str | None = None
+    expected_generation: str | None = None
+
+
+#: Exactly the frozen carrier's field set — the closed contract between the
+#: shell's parsed body and this vertical's callables.
+_QUERY_FIELDS: frozenset[str] = frozenset({
+    "profile_id", "company_ref", "view", "time_mode", "slice_key",
+    "source_cutoff", "recorded_cutoff", "offset", "cursor",
+    "expected_generation",
+})
+
+
+def build_query(**fields: Any) -> TechnologyResearchQuery:
+    """Construct :class:`TechnologyResearchQuery` from EXACTLY its frozen
+    field set — the registry-facing query constructor the shared shell calls.
+    An unknown key raises ``TypeError`` (shell-contract drift must be loud,
+    never silently dropped), and a missing required key raises the
+    dataclass's own ``TypeError``."""
+    unknown = set(fields) - _QUERY_FIELDS
+    if unknown:
+        raise TypeError(
+            "technology build_query: unknown query fields: " + ", ".join(sorted(unknown))
+        )
+    return TechnologyResearchQuery(**fields)
+
+
+#: The §8 bundle's private half (assertions, identity results, native run
+#: context, comparison packets) is unbound — private binding is the open
+#: R4/R5 ruling, exactly as it is for the semiconductor and Robotics
+#: verticals.
+PRIVATE_ASSERTIONS_UNBOUND = "private_assertions_unbound"
+
+#: No declared owner surface produces the §8 company-first bundle today (no
+#: technology cohort owns ``event_workspaces`` either). Declaring one is a
+#: Theme Graph / Data OS owner's ruling, not this adapter's. Both tokens are
+#: bundle diagnostics for tests and operators — NOT a wire vocabulary; no
+#: consumer may branch on them.
+PUBLIC_COHORT_UNOWNED = "public_cohort_unowned"
+
+
+def _rights_revision(rights_snapshot: object, bundle_unavailable: Any) -> str:
+    """The enforced rights revision for this request — the ONE rights
+    registry read the shell performs per request and also enforces with, so
+    the fingerprinted revision equals the enforced one. A direct caller may
+    omit it and this reads the snapshot itself; a snapshot that carries no
+    revision is the one genuine "cannot serve" (``bundle_unavailable`` — the
+    shell's :class:`BundleUnavailable`, passed in by the already-resolved
+    caller), because ``rights_revision`` feeds the context generation and
+    serving without it would fingerprint a response against nothing."""
+    snapshot: object = rights_snapshot
+    if snapshot is None:
+        try:
+            from engine.theme_graph.rights import (  # noqa: PLC0415 — lazy by design
+                load_registry_snapshot,
+            )
+        except ImportError as exc:  # pragma: no cover - carrier base fallback
+            raise bundle_unavailable(
+                "rights registry snapshot reader unavailable on this base"
+            ) from exc
+    if not (isinstance(snapshot, tuple) and len(snapshot) == 2
+            and isinstance(snapshot[0], str) and snapshot[0]):
+        raise bundle_unavailable("rights snapshot carries no revision")
+    return snapshot[0]
+
+
+def load_bundle(query: Any, *, rights_snapshot: Any = None) -> Any:
+    """Technology's registered owner-bundle loader: the REAL shell callable,
+    serving exactly what exists and declaring what does not — on the bundle,
+    in the Robotics loader's own honest-empty shape (a registered loader that
+    reads the enforced rights revision, resolves no unowned cohort, invents
+    no store, and never raises for coverage absence).
+
+    What exists today: the rights snapshot (the one real read). What does
+    NOT: every §8 bundle half — no admitted owner surface binds curated
+    assertions to a company request, no declared technology cohort owns the
+    public workspaces, and ``identity_results``/``native_refs``/
+    ``financial_packets`` have no producer. The loader therefore reads
+    NOTHING from ``query`` (not a company ref, path, URL, locator, ticker or
+    CIK) and returns the honest empty bundle; the two omission tokens name
+    WHICH half is absent for the bundle's own readers.
+
+    The honest consequence through the REAL composer: a company request
+    resolves no identity row, so :func:`compose` refuses before any dossier
+    is minted — the profile is UNAVAILABLE end-to-end today, stated by the
+    vertical's own typed refusal, never papered over with a synthetic
+    narrative. Binding a real surface (the census' named producer, when one
+    is admitted) replaces the empty halves here and ONLY here."""
+    binding = _import_shell_module(_SHELL_BINDING_MODULE)
+    owner_bundle = getattr(binding, "OwnerBundle", None) if binding else None
+    bundle_unavailable = getattr(binding, "BundleUnavailable", None) if binding else None
+    if owner_bundle is None or bundle_unavailable is None:
+        # The registered loader is a SHELL callable: its carrier types are
+        # the shell binding's, resolved lazily with the adapter's usual
+        # absent-shell refusal — typed, not crashed.
+        _refuse("shared_shell_unavailable")
+    return owner_bundle(
+        revision_tuple=(),
+        rights_revision=_rights_revision(rights_snapshot, bundle_unavailable),
+        assertions=(),
+        identity_results=(),
+        event_workspaces=(),
+        financial_packets=(),
+        interpretation_blocks=(),
+        native_refs=(),
+        omissions=(PRIVATE_ASSERTIONS_UNBOUND, PUBLIC_COHORT_UNOWNED),
+    )
 
 
 # --- the §8 facts (what the foundation owner copies on adjudication) --------------

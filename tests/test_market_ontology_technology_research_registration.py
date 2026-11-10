@@ -36,6 +36,7 @@ import pytest
 import engine.market_ontology.technology_economic_change as tech
 import engine.market_ontology.technology_research_registration as reg
 from engine.market_ontology.technology_economic_change import EconomicChangeDossierError
+from engine.market_ontology.theme_research_binding import curation_source_ref
 from engine.market_ontology.technology_research_registration import (
     TechnologyRegistrationRefusal,
 )
@@ -47,7 +48,7 @@ REGISTRATION_MODULE_PATH = (
 )
 EVIDENCE_SCHEMA_PATH = (
     REPO_ROOT / "contracts" / "market_ontology"
-    / "technology_economic_change.evidence.v1.schema.json"
+    / "technology_economic_change.evidence.v2.schema.json"
 )
 DOSSIER_SCHEMA_PATH = (
     REPO_ROOT / "contracts" / "market_ontology"
@@ -74,6 +75,7 @@ class SyntheticQuery:
     slice_key: str | None = None
     offset: int = 0
     cursor: str | None = None
+    expected_generation: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -94,7 +96,13 @@ class SyntheticBundle:
 
 def _themed(assertion: dict, theme_ref: str = THEME) -> dict:
     themed = dict(assertion)
-    themed["scope"] = {**assertion["scope"], "theme_ref": theme_ref}
+    themed["scope"] = {
+        **assertion["scope"],
+        "theme_ref": theme_ref,
+        # the curation-ref mint reads canonical_theme_id; carrying both (equal)
+        # is the owner-valid form and keeps _theme_ref_from_assertions happy
+        "canonical_theme_id": theme_ref,
+    }
     return themed
 
 
@@ -111,6 +119,10 @@ ROLE_T = _themed(base.ROLE)
 BUYER_T = _themed(base.BUYER_A)
 COUNTER_T = _themed(base.COUNTER)
 RECEIPT_RESULT = _identity_result()
+
+#: The owner-minted curation ref of the ROLE fixture — the v2 evidence
+#: request key (assertion-grained, not document-grained).
+ROLE_REF = curation_source_ref(ROLE_T)
 
 QUERY = SyntheticQuery(
     profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="business"
@@ -175,7 +187,7 @@ def test_registration_facts_are_the_proposed_section_8_field_set():
         "views": ("business", "comparison", "counter_observations", "identity", "coverage"),
         "company_ref_grammar": ("theme_graph_node", "cik"),
         "schema_id": "technology_economic_change.v1",
-        "evidence_schema_id": "technology_economic_change.evidence.v1",
+        "evidence_schema_id": "technology_economic_change.evidence.v2",
         "definition_version": "2026-09-24.1",
         "title_en": "Technology economic-change research",
         "title_zh": "科技产业经济变化研究",
@@ -585,7 +597,7 @@ def _evidence_validator() -> jsonschema.protocols.Validator:
 
 def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert envelope["schema"] == reg.EVIDENCE_SCHEMA_ID
     assert envelope["definition_version"] == reg.DEFINITION_VERSION
     assert envelope["generation"].startswith("tecd_")
@@ -603,25 +615,54 @@ def test_select_evidence_returns_the_one_authorized_assertion(monkeypatch):
         "veto": False, "originate": False, "open_entry": False,
     }
     assert set(envelope) == {
-        "schema", "definition_version", "generation", "assertion", "limitations", "authority"
+        "schema", "definition_version", "generation", "assertion_ref", "source",
+        "assertion", "limitations", "authority",
+    }
+    # v2 (lane 5): the envelope carries the owner-minted ASSERTION ref verbatim
+    # and the full closed six-field native source tuple — the selector included
+    assert envelope["assertion_ref"] == ROLE_REF
+    assert envelope["assertion_ref"] == curation_source_ref(ROLE_T)
+    assert envelope["source"] == {
+        "owner": ROLE_T["source"]["owner"],
+        "object_id": "synthetic-doc-role-1",
+        "schema": ROLE_T["source"]["schema"],
+        "generation": ROLE_T["source"]["generation"],
+        "sha256": ROLE_T["source"]["sha256"],
+        "selector": ROLE_T["source"]["selector"],
     }
     _evidence_validator().validate(envelope)
 
 
 def test_select_evidence_returns_the_conformant_assertion() -> None:
-    """The fixture object, not the synthetic stand-in. No loader monkeypatch."""
+    """The fixture object, not the synthetic stand-in. No loader monkeypatch.
+    The conformant source carries the SHARED-contract form (retention_ref,
+    no object_id): its native tuple is the composer's shared projection, and
+    the envelope's ``source`` must be exactly that projection — proof the v2
+    selector recomputes the tuple through the composer's own grammar instead
+    of trusting document ids."""
     payload = json.loads(base.CONFORMANT_ASSERTION_PATH.read_text(encoding="utf-8"))
     assert "theme_ref" not in payload["scope"]
     assert payload["scope"]["canonical_theme_id"] == base.THEME
     assert payload["source"]["retention_ref"] == "synthetic-doc-role-conformant"
     assert "object_id" not in payload["source"]
     bundle = _bundle(assertions=(payload,))
-    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-conformant")
-    assert envelope["schema"] == "technology_economic_change.evidence.v1"
+    conformant_ref = curation_source_ref(payload)
+    envelope = reg.select_evidence(QUERY, bundle, conformant_ref)
+    assert envelope["schema"] == "technology_economic_change.evidence.v2"
+    assert envelope["assertion_ref"] == conformant_ref
     assert (
         envelope["assertion"]["curation_revision"]
         == "gmirca_36e46fc0522eddc0eb823a0f171cdd7e"
     )
+    # the shared-contract projection: publisher->owner, retention_ref->
+    # object_id, schema_id->schema, retained[:10]->generation, native_digest->
+    # sha256, locator->selector
+    assert envelope["source"]["object_id"] == "synthetic-doc-role-conformant"
+    assert envelope["source"]["owner"] == payload["source"]["publisher"]
+    assert envelope["source"]["schema"] == payload["schema"]
+    assert envelope["source"]["sha256"] == payload["source"]["native_digest"]
+    assert envelope["source"]["generation"] == payload["source"]["retained_at"][:10]
+    assert envelope["source"]["selector"] == payload["source"]["locator"]
     assert envelope["authority"] == {
         "rank": False,
         "gate": False,
@@ -647,13 +688,13 @@ def test_theme_ref_and_canonical_theme_id_conflict_refuses() -> None:
 def test_select_evidence_generation_is_the_composed_dossier_id(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
     bundle = _bundle()
-    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, bundle, ROLE_REF)
     assert envelope["generation"] == reg.compose(QUERY, bundle)["dossier_id"]
 
 
 def test_select_evidence_limitations_come_from_the_dossier(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     dossier = reg.compose(QUERY, _bundle())
     assert envelope["limitations"] == [
         dossier["comparison"]["primary_limitation"]["text"]
@@ -669,42 +710,49 @@ def test_select_evidence_unknown_and_unselected_share_one_code(monkeypatch):
     )
     bundle = _bundle(assertions=(ROLE_T, unselected))
     codes = []
-    for ref in ("no-such-doc-anywhere", "synthetic-doc-unselected-1"):
+    for ref in ("gmi-curation://theme:no-such-doc-anywhere/gmirca_" + "0" * 32,
+                curation_source_ref(unselected)):
         with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
             reg.select_evidence(QUERY, bundle, ref)
         codes.append(excinfo.value.code)
     assert codes == ["not_available", "not_available"]  # one code, no existence disclosure
 
 
-def test_select_evidence_substitution_by_shared_source_object_id_refuses(monkeypatch):
-    # B1: a rendered assertion and a never-rendered decoy sharing ONE
-    # source.object_id — the citation gate passes on the rendered row, but the
-    # bundle cannot say WHICH assertion the ref names, so the envelope must
-    # refuse rather than hand out one by tuple order.
+def test_select_evidence_decoy_sharing_the_document_neither_blocks_nor_leaks(monkeypatch):
+    # B1 under evidence.v2: a never-rendered decoy sharing the rendered
+    # assertion's source.object_id but NOT its curation revision has its OWN
+    # minted ref. Under the v1 document-grain this pair was unresolvable and
+    # refused; under the assertion grain each ref is evaluated on its own —
+    # the rendered assertion's ref still serves (the decoy no longer holds it
+    # hostage), and the decoy's own ref refuses ``not_available`` (never
+    # rendered) exactly like an unknown ref. Tuple order never decides.
     _activate_synthetic_contract(monkeypatch)
     decoy = _themed(
         base._assertion(predicate="theme_membership", seed="decoy-shared-1",
                         source=base._src("synthetic-doc-role-1"))
     )
+    assert curation_source_ref(decoy) != ROLE_REF  # same document, different assertion
     for assertions in ((decoy, ROLE_T), (ROLE_T, decoy)):
+        envelope = reg.select_evidence(QUERY, _bundle(assertions=assertions), ROLE_REF)
+        assert envelope["assertion"] == ROLE_T
         with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
-            reg.select_evidence(QUERY, _bundle(assertions=assertions), "synthetic-doc-role-1")
+            reg.select_evidence(QUERY, _bundle(assertions=assertions),
+                                curation_source_ref(decoy))
         assert excinfo.value.code == "not_available"
     # the single-match happy path still returns the rendered assertion
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert envelope["assertion"] == ROLE_T
 
 
-def test_two_rendered_assertions_from_one_document_both_refuse(monkeypatch):
-    # X5(b) pin: source.object_id is DOCUMENT-grained while the evidence unit
-    # is assertion-grained. Two legitimately distinct, BOTH-RENDERED
-    # assertions from ONE filing (same object_id, different selector) share a
-    # single document key, so the exactly-one gate refuses and the ref comes
-    # back not_available. Fail-closed and deliberate — the durable fix
-    # (authorize on the full source ref including the selector, or an
-    # assertion-level id) is owed to §8 and not taken here. The day §8 names
-    # the finer key, THIS pin fails loudly and must be re-examined, never
-    # silently re-passed.
+def test_two_rendered_assertions_from_one_document_are_independently_selectable(monkeypatch):
+    # X5(b) RESOLVED by evidence.v2 (lane 5): source.object_id is
+    # DOCUMENT-grained while the evidence unit is assertion-grained. Two
+    # legitimately distinct, BOTH-RENDERED assertions from ONE filing (same
+    # object_id, different selector) are now keyed by their own minted
+    # curation refs, and EACH one's native tuple — the selector included — is
+    # matched against the rendered refs exactly. The old v1 pin (both refuse
+    # not_available) was the fail-closed interim; this is the finer key it
+    # said §8 owed, delivered.
     _activate_synthetic_contract(monkeypatch)
     page_one = _themed(base.ROLE)
     page_seven = _themed(
@@ -721,22 +769,27 @@ def test_two_rendered_assertions_from_one_document_both_refuse(monkeypatch):
     # both are real, rendered evidence from that one document...
     assert dossier["business"].get("refused") is not True
     assert len(dossier["business"]["rows"]) == 2
-    assert "synthetic-doc-role-1" in reg._cited_source_object_ids(dossier)
-    # ...and yet the document-grained key cannot name EITHER one
+    rendered_selectors = sorted(
+        row["source_ref"]["selector"] for row in dossier["business"]["rows"]
+    )
+    assert rendered_selectors == [
+        "synthetic/synthetic-doc-role-1#p1", "synthetic/synthetic-doc-role-1#p7",
+    ]
+    # ...and the assertion-grained key names EACH one
+    one = reg.select_evidence(QUERY, bundle, curation_source_ref(page_one))
+    assert one["assertion"] == page_one
+    assert one["source"]["selector"] == "synthetic/synthetic-doc-role-1#p1"
+    seven = reg.select_evidence(QUERY, bundle, curation_source_ref(page_seven))
+    assert seven["assertion"] == page_seven
+    # WRONG-SELECTOR falsifier: a ref naming page_one must never hand out
+    # page_seven's row just because both render from one document — the
+    # envelope's source is the requested assertion's OWN tuple
+    assert one["source"]["object_id"] == seven["source"]["object_id"]
+    assert one["source"]["selector"] != seven["source"]["selector"]
+    # the bare document id names NEITHER (it is not any assertion's ref)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
         reg.select_evidence(QUERY, bundle, "synthetic-doc-role-1")
     assert excinfo.value.code == "not_available"
-    # control: the same second assertion on its OWN document is selectable,
-    # so the shared document key — not the assertion — is what refused above
-    own_doc = _themed(
-        base._assertion(
-            predicate="buyer_paid_unit",
-            seed="one-doc-two-assertions-buyer",
-            source=base._src("synthetic-doc-buyer-1"),
-        )
-    )
-    selected = reg.select_evidence(QUERY, _bundle(assertions=(page_one, own_doc)), "synthetic-doc-role-1")
-    assert selected["assertion"] == page_one
 
 
 def test_select_evidence_deep_copies_the_assertion(monkeypatch):
@@ -745,19 +798,99 @@ def test_select_evidence_deep_copies_the_assertion(monkeypatch):
     # and a post-mutation comparison would compare the mutated value against
     # itself. Against the snapshot, replacing copy.deepcopy with dict() FAILS.
     _activate_synthetic_contract(monkeypatch)
-    first = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    first = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     expected = ROLE_T["observation"]["text"]
     first["assertion"]["observation"]["text"] = "mutated"
-    second = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    second = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert second["assertion"]["observation"]["text"] == expected
     # and the mutation never leaked into the shared fixture either
     assert ROLE_T["observation"]["text"] == expected
 
 
+# --- v2 (lane 5): time modes, native continuation, query constructor, loader -------
+
+
+def test_foreign_time_modes_refuse_not_available(monkeypatch):
+    # TIME_MODES is closed: ``latest`` only. The replay family keeps its own
+    # typed code (replay_identity_unavailable, pinned elsewhere); every OTHER
+    # foreign mode — source_history included — refuses not_available and is
+    # never silently served as latest.
+    _activate_synthetic_contract(monkeypatch)
+    for mode in ("source_history", "as_known", "latest ", ""):
+        query = SyntheticQuery(
+            profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="business",
+            time_mode=mode,
+        )
+        _refusal(monkeypatch, query, _bundle(), "not_available")
+
+
+def test_stale_native_expected_generation_refuses_generation_changed(monkeypatch):
+    # The native continuation check: a query carrying an expected_generation
+    # that is not the composed dossier's own id refreshes, never silently
+    # serves. The dossier id keeps its tecd_ grammar (never renamed to gen_).
+    _activate_synthetic_contract(monkeypatch)
+    dossier = reg.compose(QUERY, _bundle())
+    matching = SyntheticQuery(
+        profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="business",
+        expected_generation=dossier["dossier_id"],
+    )
+    assert reg.compose(matching, _bundle())["dossier_id"] == dossier["dossier_id"]
+    stale = SyntheticQuery(
+        profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="business",
+        expected_generation="tecd_" + "0" * 32,
+    )
+    _refusal(monkeypatch, stale, _bundle(), "generation_changed")
+
+
+def test_build_query_constructs_the_frozen_carrier_and_refuses_unknown_fields():
+    query = reg.build_query(
+        profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="business",
+        time_mode="latest", source_cutoff=None, recorded_cutoff=None,
+        expected_generation=None,
+    )
+    assert isinstance(query, reg.TechnologyResearchQuery)
+    assert dataclasses.is_dataclass(query)
+    assert (query.profile_id, query.company_ref, query.view, query.time_mode) == (
+        reg.PROFILE_ID, COMPANY, "business", "latest",
+    )
+    assert query.slice_key is None and query.offset == 0 and query.cursor is None
+    with pytest.raises(TypeError, match="unknown query fields: anchor_theme_id"):
+        reg.build_query(profile_id=reg.PROFILE_ID, company_ref=COMPANY,
+                        view="business", anchor_theme_id="ai_semiconductors")
+    with pytest.raises(TypeError, match="unknown query fields: limit"):
+        reg.build_query(profile_id=reg.PROFILE_ID, company_ref=COMPANY,
+                        view="business", limit=1)
+
+
+def test_load_bundle_serves_the_honest_empty_bundle_with_typed_omissions():
+    # The REAL registered loader: it reads the enforced rights revision and
+    # declares both absent halves on the bundle (Robotics' honest-empty
+    # shape). It reads NOTHING off the query, raises nothing for coverage
+    # absence, and the empty bundle honestly refuses to compose a dossier
+    # (no identity row -> company_ref_unresolved), so the profile is
+    # explicitly unavailable end-to-end — never a synthetic narrative.
+    snapshot = ("rights-rev-1", {})
+    bundle = reg.load_bundle(QUERY, rights_snapshot=snapshot)
+    assert bundle.rights_revision == "rights-rev-1"
+    assert bundle.revision_tuple == ()
+    assert bundle.assertions == () and bundle.identity_results == ()
+    assert bundle.event_workspaces == () and bundle.financial_packets == ()
+    assert bundle.interpretation_blocks == () and bundle.native_refs == ()
+    assert bundle.omissions == (reg.PRIVATE_ASSERTIONS_UNBOUND,
+                                reg.PUBLIC_COHORT_UNOWNED)
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.compose(QUERY, bundle)
+    assert excinfo.value.code == "company_ref_unresolved"
+    # a snapshot that carries no revision is the one genuine cannot-serve
+    from engine.market_ontology.theme_research_binding import BundleUnavailable
+    with pytest.raises(BundleUnavailable):
+        reg.load_bundle(QUERY, rights_snapshot=(None, {}))
+
+
 def test_select_evidence_applies_the_same_query_refusals(monkeypatch):
     bad_view = SyntheticQuery(profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="nope")
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
-        reg.select_evidence(bad_view, _bundle(), "synthetic-doc-role-1")
+        reg.select_evidence(bad_view, _bundle(), ROLE_REF)
     assert excinfo.value.code == "view_not_registered"
 
 
@@ -765,7 +898,7 @@ def test_select_evidence_without_the_shared_contract_refuses_everything(monkeypa
     # Real seam: no shared contract -> no rendered rows -> nothing is cited ->
     # not_available even for a ref the bundle actually carries.
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
-        reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+        reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert excinfo.value.code == "not_available"
 
 
@@ -774,7 +907,7 @@ def test_select_evidence_without_the_shared_contract_refuses_everything(monkeypa
 
 def test_evidence_schema_rejects_mutations(monkeypatch):
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     validator = _evidence_validator()
 
     mutated = json.loads(json.dumps(envelope))
@@ -823,8 +956,13 @@ def test_evidence_contract_accepts_the_real_five_flag_can_star_authority(monkeyp
         base._assertion(predicate="product_workload_role", seed="can-star-1")
     )
     assert assertion["authority"] == base.ASSERTION_FALSE_AUTHORITY
+    # v2 (lane 5) selects by the assertion's OWN minted ref — the request key
+    # is assertion-grained, so a same-document other-revision ref (ROLE_REF)
+    # is now a private not_available rather than a document-grained serve.
+    star_ref = curation_source_ref(assertion)
+    assert star_ref != ROLE_REF  # different curation revision, same document
     bundle = _bundle(assertions=(assertion,))
-    envelope = reg.select_evidence(QUERY, bundle, "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, bundle, star_ref)
     assert envelope["assertion"]["authority"] == {
         "can_rank": False, "can_gate": False, "can_size": False,
         "can_originate": False, "can_open_entry": False,
@@ -840,7 +978,7 @@ def test_selected_assertion_passes_the_shared_curation_contract_verbatim(monkeyp
     # motivated the inversion: under the old pop-the-required-key-out rule the
     # same call failed with missing ['authority'].
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     validated = base.SYNTHETIC_CURATION_CONTRACT.validate_assertion(envelope["assertion"])
     assert validated == envelope["assertion"]
 
@@ -854,7 +992,7 @@ def test_validate_evidence_envelope_has_runtime_teeth(monkeypatch):
     # assertion sub-schema is fully open, so assertion-internal mutations are
     # the owner contract's business, not this envelope's.)
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
 
     reg.validate_evidence_envelope(envelope)  # the lawful envelope passes
 
@@ -877,7 +1015,7 @@ def test_evidence_schema_violation_code_leaks_no_payload(monkeypatch):
     # offending instance, so the validator's message must never enter the
     # code. Path only, canary absent, hard length bound.
     _activate_synthetic_contract(monkeypatch)
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     canary = "LEAK-CANARY-7c31ab9e-assertion-content"
     smuggled = json.loads(json.dumps(envelope))
     smuggled["authority"]["rank"] = canary  # const-false violation
@@ -922,7 +1060,7 @@ def test_select_evidence_runs_the_contract_check_before_returning(monkeypatch):
         reg, "validate_evidence_envelope",
         lambda envelope: recorded.append(envelope),
     )
-    envelope = reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+    envelope = reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert len(recorded) == 1
     assert recorded[0] is envelope  # checked before return, on the returned object
 
@@ -931,7 +1069,7 @@ def test_select_evidence_runs_the_contract_check_before_returning(monkeypatch):
 
     monkeypatch.setattr(reg, "validate_evidence_envelope", _refusing)
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
-        reg.select_evidence(QUERY, _bundle(), "synthetic-doc-role-1")
+        reg.select_evidence(QUERY, _bundle(), ROLE_REF)
     assert excinfo.value.code == "evidence_schema_violation: <root>"
 
 
