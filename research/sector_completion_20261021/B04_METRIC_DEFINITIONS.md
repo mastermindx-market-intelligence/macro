@@ -105,3 +105,95 @@ invented): `conviction.score_version`, `by_score_version`, and
 (`scripts/build_sector_central.py:662`) but carries no `crowding_input` key; the
 `crowding_input_members` / `crowding_input_status` keys live under
 `membership_coverage` (`engine/sector_central.py:954-955`), a different object.
+
+
+## Lane 8 boundary register (P04 / B04) — 2026-11-09
+
+The tables above stay the accepted base census (SIC-D-B04 r3). This section adds what the frozen
+lane 8 spec still required for every metric a user reads: numerator, denominator, weight basis,
+contribution, overlap handling, unit, window and null rule, plus the tests that pin each boundary
+case. Owners are named by file and function rather than `file:line`, so a later edit does not
+silently break the pins. The boundary tests live in `tests/test_sector_analytics_boundaries.py`
+(abbreviated `TB::` below). Tests named without a prefix are in the incumbent suite given in
+brackets.
+
+**Three windows that must never be merged.** (1) **Dossier 21/63/126-session RS** (Sector Cycles
+`now.rs_21d/rs_63d/rs_126d`). It counts back over the ticker's own non-null rows, with the
+benchmark reindexed onto them and forward-filled for at most 5 sessions (sectors) or without a
+limit (baskets). (2) **Native 5/20/63-session windows**
+(`leadership_rotation_context.sector_window_measurements/v1`, carried by donor #10780 and
+integrated by lane 1, not on `main` at this base). Each endpoint is the canonical US session
+exactly N positions before T; interior gaps never move an endpoint, and missing endpoints null the
+value with a reason. (3) **1M heat participation** (Sector Central `heat.*`). This is the
+heat-map feed's own 1M `perf` per tile, consumed as delivered. A 20-session native value is not a
+21-session dossier value, and 1M is not a fixed session window. Controls name and change only the
+applicable metric.
+
+**Two orders that must never be merged.** The **source ordinal** for the 21/63-session horizons is
+`now.rs_21d_rank` / `now.rs_rank`, published in full as `meta.display_order.<family>.horizons`
+(`sector_cycles.display_order`). Central `sectors[]` order is **conviction** order, and
+`momentum.lead` is a 21-session-preferring flag. Neither is a 63-session ranking. A consumer may
+sort a table locally under a labelled basis but must not overwrite or re-derive the source ordinal.
+Every display-order block carries `may_rank / may_gate / may_size / may_trade / may_escalate = false`.
+
+### Constituent participation (Sector Central `_aggregate_heat`; owner lane 1, read-only here)
+
+| metric | numerator | denominator | weight basis | contribution | overlap | unit | window | null rule | boundary tests |
+|---|---|---|---|---|---|---|---|---|---|
+| `heat_1D` / `heat_1M` / `heat_YTD` | Σ wᵢ·perfᵢ over tiles that report that timeframe | Σ wᵢ over the same tiles (unpriced tiles leave both) | cap (tile `size`), or equal when `size_basis == "weight_proxy"` | none emitted (a tile's return is not its contribution) | a ticker is one tile in one Finviz sector | percent (mean of percentage numbers) | the feed's own 1D / 1M / YTD | None when no tile reports that timeframe | `TB::test_heat_partial_weight_mean_is_over_the_priced_subset_only`, `TB::test_heat_weight_proxy_basis_is_equal_weight` |
+| `adv` / `dec` | tiles with 1M perf > 0 / < 0 | — (counts) | count | — | as above | count | 1M | never None; an unchanged (0.0) tile is neither | `TB::test_heat_unchanged_population_separates_the_two_denominators` |
+| `breadth_pct` (constituent breadth) | adv | adv + dec (unchanged and unpriced excluded) | count | — | — | percent, 0 dp | 1M | **None when adv + dec == 0 (all flat or nothing priced)**; all-declining is a measured 0 | `TB::test_heat_all_flat_breadth_is_null_and_rising_share_is_measured_zero`, `TB::test_heat_all_declining_breadth_is_measured_zero_not_null` |
+| rising / priced share | adv | `n_priced_1M` (priced **includes** unchanged) | count | — | — | share | 1M | None when nothing priced; all-flat is a measured **0** | `TB::test_heat_all_flat_breadth_is_null_and_rising_share_is_measured_zero`. **Not yet emitted by its owner**: SHARED-FILE REQUEST R1 to lane 1 |
+| missing constituents | `n_tiles − n_priced_1M` | — | count | — | — | count | 1M | never None; missing is neither declining nor zero | `TB::test_heat_unchanged_population_separates_the_two_denominators` (75 / 73 / 59 / 14 / 2 specimen). **Not yet emitted**: R1 |
+| `n_tiles` / `n_priced_1M` / `n_unchanged_1M` | delivered tiles / tiles with 1M perf / tiles with 1M perf == 0.0 | — | count | — | — | count | 1M | never None | `TB::test_heat_missing_member_does_not_shrink_into_a_full_coverage_claim` |
+| `weight_coverage_1M` | Σ w of tiles with 1M perf | Σ w of **all** sector tiles | cap or equal (same basis as heat) | — | — | share [0, 1], 4 dp | 1M | None when total weight is 0 | `TB::test_heat_missing_member_does_not_shrink_into_a_full_coverage_claim` (weight ≠ count coverage) |
+| `breadth_basis` | label `adv_over_adv_plus_dec_excl_unchanged` | — | — | — | — | label | — | never None | [test_sector_metric_definitions.py] |
+
+Partial weights: heat is the mean over the **priced** subset, never rescaled to a full-sector
+claim. The unpriced share is disclosed by `weight_coverage_1M` for 1M only. 1D and YTD have no
+coverage field (census finding, see R1).
+
+### Sector-level breadth, weights, overlap and roster change (`engine/leadership_rotation_context.py`)
+
+| metric | numerator | denominator | weight basis | contribution | overlap | unit | window | null rule | boundary tests |
+|---|---|---|---|---|---|---|---|---|---|
+| `positive_breadth.k_over_n` (`sector_cohort_snapshot`, `measured_group_read`) | measured sectors with value > 0 | measured sectors | equal | — | the 11 SPDRs are distinct | fraction | the selected RS horizon | `Unmeasured`: missing inputs, invalid counts, empty population, or **no measured member** (`no_measured_members`). All-flat with n > 0 is a **measured 0** | `TB::test_positive_sector_breadth_all_flat_is_measured_zero`, `TB::test_positive_sector_breadth_no_measured_members_is_unmeasured_not_zero`, `TB::test_snapshot_flat_sector_is_measured_and_not_positive` |
+| `coverage` / `bounds` | n / N; bounds [k/N, (k + N − n)/N] | expected population N | equal | — | — | fraction; bound pair | same | bounds are identification bounds, **not** a confidence interval | `TB::test_breadth_missing_members_give_identification_bounds` |
+| `ranking.ranked` / `unranked` (`rank_measured`) | — | — | — | — | — | ordered ids | same | non-finite, bool and missing values never rank. Ties order by **id**: a descriptive observation, distinct from the producer ordinal | `TB::test_rotation_context_rank_breaks_ties_by_id_not_registry_order` |
+| `normalize_weights` / `overlap` / `concentration` | Σ min(w_g, w_h) / 1/Σw² | complete weight map | as supplied | — | **issuer-weight overlap**, distinct from the listed shared members | fraction / effective N | — | an incomplete map (any missing, negative or non-finite weight) is **refused**, never renormalized | `TB::test_partial_weight_map_is_refused_not_renormalised`, `TB::test_overlap_is_issuer_weight_overlap_and_shared_members_are_listed` |
+| `weight_coverage` | measured ids' share of the normalized expected weight | expected weight map | as supplied | — | — | count coverage and weight share, separately | — | empty population → `Unmeasured` | `TB::test_weight_coverage_differs_from_count_coverage` |
+| `breadth_change` | common-known members only | common-known members | equal | — | entrants and exits listed separately | fraction | between two snapshots | `composition_only = true` when breadth rose only through entrants | `TB::test_changed_roster_breadth_rise_from_entrants_is_composition_only` |
+| `cohort_at(..., as_known=True)` | members effective **and** known by `as_of` | — | — | — | — | id lists | as-of | a member whose `known_at` is unknown or later is excluded and listed | `TB::test_as_known_cohort_excludes_a_back_projected_member_before_curation` |
+
+### Sector Cycles producer fields (`engine/sector_cycles.py`)
+
+| metric | numerator | denominator | weight basis | contribution | overlap | unit | window | null rule | boundary tests |
+|---|---|---|---|---|---|---|---|---|---|
+| `now.rs_21d/63d/126d` (sector) | (ticker / SPY)ₜ | (ticker / SPY)ₜ₋N, N of the ticker's own rows | single instrument | — | — | relative wealth, % (0.1 dp) | 21 / 63 / 126 rows | absent (None) under 210 RS rows (`thin_history: true`) | `test_rs_*` pins [test_sector_metric_definitions.py] |
+| `now.rs_*` (basket) | (EW member-TR index / SPY)ₜ | same, N index rows | **equal weight**, current roster (`pit=False`) | none emitted | a name in two baskets counts fully in each; reconciliation is `behaves_as`, not de-duplication | relative wealth, % | as above | None under 210 index rows | `TB::test_changed_roster_removed_member_leaves_the_reconstructed_index` |
+| `now.rs_rank` / `now.rs_21d_rank` | — | ranked = records with a **finite real** value | — | — | per family (sectors, baskets, each amalgam family) | ordinal, 1 = strongest | 63 / 21 | **None** for a null, NaN, ±inf or bool value (previously NaN could be ranked). Ties: equal published values keep producer-registry order | `TB::test_rank_never_assigns_an_ordinal_to_null_nan_or_bool`, `TB::test_rank_ties_keep_registry_order_and_are_disclosed` |
+| `meta.display_order` | `ordered_ids`, `tie_groups`, `unranked_ids` per horizon | — | — | — | per cohort | ordered id lists | 21 / 63 | an unranked id is listed, never placed | `TB::test_display_order_is_the_source_ordinal_not_array_order` |
+| `turns[].confirmed_at` / `confirmation_sessions` + record `turn_knowledge` | the bar whose close first reversed by ≥ threshold from the pivot | — | — | — | — | ISO date / sessions | detector threshold (14% sectors; `_zz_pct_for` baskets) | None on the provisional tail. A replay that disagrees with the published turns makes the whole block `unavailable` (`detector_replay_mismatch`). `as_known` stays `unavailable` (restated tape; back-projected roster) | `TB::test_legacy_replay_pivots_equal_detect_swings`, `TB::test_pivot_is_not_confirmation`, `TB::test_turn_knowledge_window_view_aligns_with_published_turns`, `TB::test_turn_knowledge_replay_mismatch_is_unavailable_not_guessed`, `TB::test_turn_knowledge_as_known_stays_unavailable_and_has_no_epoch` |
+| `rhythm.window` / `status` | P25 / median / P75 of confirmed half-cycles added to the **last confirmed** pivot | — | — | — | — | decimal years + YYYY-MM | anchored, never today-relative | `unavailable` under 3 confirmed turns | `TB::test_fixed_turns_keep_window_edges_and_anchor_as_today_advances`; `test_window_never_rolls_forward_when_today_advances`, `test_provisional_turns_are_excluded_from_the_window` [test_cycle_rhythm_disclosure.py] |
+| `now.phase_v2_age*` | contiguous real benchmark sessions in the current `phase_v2` run (forward-log replay) | — | — | — | — | sessions | since the run start | `lower_bound` = at least N (a log gap, history starting inside the run, or a basis change); `insufficient_history`, `source_unavailable`, `unknown_phase`, `not_logged` stay distinct; weekend restamps never add sessions | `test_history_starting_inside_run_is_lower_bound`, `test_six_busday_hole_inside_run_is_lower_bound_at_the_hole`, `test_weekend_restamps_count_fri_and_mon_once`, `test_basis_change_stops_walk_at_the_change`, `test_missed_run_then_flip_is_lower_bound_not_measured` [test_cycle_phase_age.py] |
+| `now.hazard` (current curve) | — | — | — | — | — | probability per horizon | 1 / 3 / 6 months from the as-of | the 1m/3m/6m cells exist **only** when every qualifier (parity, epoch, cohort, direction, basis, horizon, whole curve) holds. Otherwise `unavailable_reason: "current_model_unqualified"` with `current_model.failing` | `TB::test_single_failed_block_qualifier_downgrades_model_to_prior[*]`, `TB::test_single_failed_horizon_downgrades_model_to_prior`, `TB::test_partial_curve_downgrades_model_to_prior`, `TB::test_inverted_model_curve_is_withheld_whole_not_sorted`, `TB::test_all_qualifiers_hold_keeps_model`, `TB::test_live_sector_build_emits_no_current_model_cell` |
+| `now.hazard.leg_origin_prior` | legs of the KM population that ended within h months of **starting** | legs at risk (KM) | — | — | population = us_sector for sectors **and** baskets (`population_matches_record: false` for baskets) | share per horizon | 1 / 3 / 6 months from the **leg origin** | absent when no leg direction can be established | `TB::test_leg_origin_prior_matches_the_km_artifact`, `TB::test_prior_is_never_derived_from_the_withheld_model_value`, `TB::test_basket_prior_population_does_not_match_the_record`, `TB::test_direction_mismatch_reports_the_prior_for_the_confirmed_leg` |
+| `history_knowledge` (sector) | — | — | single instrument | — | — | contract | — | `as_known_history: unavailable` (price vintages not retained) | `TB::test_sector_history_is_reconstructed_even_for_a_single_instrument` |
+| `history_knowledge` (basket) | `n_members`, `n_current`, `n_removed`, `n_knowledge_dated`, `n_back_projected` (an upper bound), `current_roster_known_from` | — | equal-weight roster | — | — | counts + date | — | `current_roster_known_from` is None if any current member lacks `curated_added`; `as_known_history: unavailable` | `TB::test_basket_history_knowledge_counts_back_projection_and_removals`, `TB::test_basket_history_knowledge_missing_curation_is_disclosed`, `TB::test_membership_curation_evidence_is_complete_and_ordered` |
+
+### Confluence desks (`engine/subsector_confluence.py`)
+
+| metric | numerator | denominator | weight basis | contribution | overlap | unit | window | null rule | boundary tests |
+|---|---|---|---|---|---|---|---|---|---|
+| `coverage.n_subsectors` / `n_listed` / `n_gateable` / `n_thin` / `n_below_min_members` / `n_unscored` / `n_sectors` | input groups / roster rows / scored groups / dropped / below 3 distinct members / attempted but unscored / scored rollups | — | count | — | overlapping rosters are scored independently | counts | snapshot | never None. `n_thin = n_below_min_members + n_unscored` | [test_subsector_confluence.py] |
+| `coverage.thin_share` | scored groups with `reliability == "low"` | **scored** groups (not `n_total`) | equal | — | — | share | snapshot | None when nothing scored | census row (no change) |
+| group `coverage_pct` | members live with volume at the last bar | members live at the last bar (`n_live_now`) | equal | — | — | share | last bar | None when `n_live_now == 0`; stale names listed separately | census row (no change) |
+| board order (`_board_key`) | class order, then entry weight (desc), then `rs_60d` (desc) | — | — | — | — | order | snapshot | **a missing or NaN `rs_60d` sorts after every measured value** (it used to sort as exactly 0); remaining ties keep build/roster order | `TB::test_confluence_board_sorts_missing_rs_after_measured_not_as_zero` |
+
+### Accepted rows referenced, not reopened
+
+`ret_12m`, `pos_12m`, `above_200dma` / `trend_pass`, conviction `score`, `n_above_trend` and every
+grader field (`dir_hit_rate` and the v2 decomposition) keep their accepted rows above and their
+pins in `tests/test_sector_metric_definitions.py` and `tests/test_sector_central_grader_v2.py`.
+`pos`, heat windows and the 20-interval namesake keep the `unmeasured` status they were
+given. No new evidence makes their endpoints exact.
