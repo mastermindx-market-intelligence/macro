@@ -58,9 +58,9 @@ def _beta(asset_px: pd.Series | None, driver: pd.Series | None) -> dict | None:
         return None
     a = asset_px.resample("W-FRI").last()
     d = driver.resample("W-FRI").last()
-    r = a.pct_change()
+    r = a.pct_change(fill_method=None)
     dd = d.diff()
-    df = pd.concat([r, dd], axis=1, keys=["r", "d"]).dropna()
+    df = pd.concat([r, dd], axis=1, keys=["r", "d"]).replace([np.inf, -np.inf], np.nan).dropna()
     if len(df) < 104:   # need ~2y of weekly obs
         return None
     var = float(df["d"].var())
@@ -68,6 +68,8 @@ def _beta(asset_px: pd.Series | None, driver: pd.Series | None) -> dict | None:
         return None
     beta = float(df["r"].cov(df["d"]) / var)
     corr = float(df["r"].corr(df["d"]))
+    if not np.isfinite(beta) or not np.isfinite(corr):
+        return None
     return {"beta": beta, "corr": corr, "n": int(len(df))}
 
 
@@ -220,10 +222,21 @@ def _verdict(s: dict) -> tuple[str, str]:
     tail = [a for a in s["assets"] if a["verdict"] == "tailwind"]
     head = [a for a in s["assets"] if a["verdict"] == "headwind"]
     dn = s["drivers_now"]
-    en = (f"Real-10y {dn.get('real_10y')}% ({dn.get('real_chg_bp'):+.0f}bp/3m), curve {dn.get('slope')}pp, "
-          f"HY OAS {dn.get('hy_oas')}%. ") if dn.get('real_10y') is not None else ""
+    en = zh = ""
+    if dn.get("real_10y") is not None:
+        bp = dn.get("real_chg_bp")
+        change_en = f"{bp:+.0f}bp/3m" if bp is not None else "3m change unavailable"
+        change_zh = f"{bp:+.0f}基点/3月" if bp is not None else "3个月变化暂无数据"
+        en = f"Real-10y {dn['real_10y']}% ({change_en})"
+        zh = f"10年实际利率 {dn['real_10y']}%（{change_zh}）"
+        if dn.get("slope") is not None:
+            en += f", curve {dn['slope']}pp"
+            zh += f"，曲线 {dn['slope']}pp"
+        if dn.get("hy_oas") is not None:
+            en += f", HY OAS {dn['hy_oas']}%"
+            zh += f"，高收益利差 {dn['hy_oas']}%"
+        en += ". "
+        zh += "。"
     en += f"{len(tail)} markets with a bond-associated tailwind, {len(head)} with a bond-associated headwind right now."
-    zh = (f"10年实际利率 {dn.get('real_10y')}%（{dn.get('real_chg_bp'):+.0f}基点/3月），曲线 {dn.get('slope')}pp，"
-          f"高收益利差 {dn.get('hy_oas')}%。") if dn.get('real_10y') is not None else ""
     zh += f"当前 {len(tail)} 个市场呈与债券指标相关的顺风，{len(head)} 个呈相关逆风。"
     return en, zh
