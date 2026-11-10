@@ -8467,11 +8467,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
           <span class="l-zh">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}近 {{ _mx5_hist_n }} 交易日走势{% else %}60 交易日走势{% endif %}</span>
         </span>
-        {# The display path is ledger history plus the current settled measured endpoint
-           when the ledger has not accrued that session yet. "Settled through" names the stable close explicitly and remains truthful
-           if risk_state_live.js later appends a provisional intraday point beyond it. #}
+        {# A fast self-heal can add the current canonical endpoint before the nightly
+           forward ledger advances. Only claim "settled" when the ledger independently
+           matches both the session and score. The chart can show the newer measured
+           snapshot without promoting the provisional point to a nightly settlement. #}
         {% set _ph_last_d = _mx5_hist[-1].asof if (_mx5_hist and _mx5_hist[-1].asof is defined and _mx5_hist[-1].asof and _mx5_hist[-1].asof | length >= 10) else none %}
-        <span class="mx5-path-meta">{% if _ph_last_d %}<span class="l-en">Measured blend &middot; settled through {{ _mx5_mos_en[_ph_last_d[5:7]|int] }} {{ _ph_last_d[8:10]|int }}</span><span class="l-zh">实测合成分 · 已结算至 {{ _ph_last_d[5:7]|int }}月{{ _ph_last_d[8:10]|int }}日</span>{% else %}<span class="l-en">Measured blend</span><span class="l-zh">实测合成分</span>{% endif %}</span>
+        <span class="mx5-path-meta">{% if _ph_last_d %}{% if ms_settlement_verified %}<span class="l-en">Measured blend &middot; settled through {{ _mx5_mos_en[_ph_last_d[5:7]|int] }} {{ _ph_last_d[8:10]|int }}</span><span class="l-zh">实测合成分 · 已结算至 {{ _ph_last_d[5:7]|int }}月{{ _ph_last_d[8:10]|int }}日</span>{% else %}<span class="l-en">Measured blend &middot; {{ _mx5_mos_en[_ph_last_d[5:7]|int] }} {{ _ph_last_d[8:10]|int }} snapshot · nightly verification pending</span><span class="l-zh">实测合成分 · {{ _ph_last_d[5:7]|int }}月{{ _ph_last_d[8:10]|int }}日快照 · 夜间核验待完成</span>{% endif %}{% else %}<span class="l-en">Measured blend</span><span class="l-zh">实测合成分</span>{% endif %}</span>
       </div>
       {% if _mx5_hist %}
       {# ── Legit chart geometry (Order 1) ──────────────────────────────────

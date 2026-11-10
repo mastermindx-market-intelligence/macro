@@ -2972,15 +2972,77 @@ def regime_snap_view(cf: pd.DataFrame) -> dict | None:
         return None
 
 
+def _ms_canonical_view(snap: dict | None, latest: dict) -> dict | None:
+    """Validate the single persisted US Market State source before a site-only render.
+
+    The regime and Market State pointers must describe one session. In particular,
+    never repair a missing or conflicting pointer by recomputing a second score from
+    the renderer's (potentially older) SPY store.
+    """
+    if not isinstance(snap, dict) or snap.get("schema") != "market_state.v1":
+        return None
+    asof = snap.get("asof")
+    score = snap.get("score")
+    regime_asof = latest.get("date") or latest.get("asof")
+    stamp = snap.get("freshness")
+    components = snap.get("components")
+    band = ("RISK_OFF" if isinstance(score, int) and score <= 41 else
+            "MIXED" if isinstance(score, int) and score <= 59 else "RISK_ON")
+    if (not isinstance(asof, str) or len(asof) != 10 or
+            not isinstance(score, int) or isinstance(score, bool) or
+            not 0 <= score <= 100 or not regime_asof or asof != str(regime_asof) or
+            not isinstance(stamp, dict) or stamp.get("data_asof") != asof or
+            not isinstance(stamp.get("expected_asof"), str) or
+            stamp["expected_asof"] < asof or
+            not isinstance(components, list) or len(components) != 6 or
+            any(not isinstance(c, dict) or not isinstance(c.get("score"), int) or
+                isinstance(c.get("score"), bool) or not 0 <= c["score"] <= 100
+                for c in components) or snap.get("verdict") != band):
+        return None
+    try:
+        if datetime.strptime(asof, "%Y-%m-%d").date().isoformat() != asof:
+            return None
+    except ValueError:
+        return None
+    return snap
+
+
 def market_state_view(latest: dict, f: pd.DataFrame) -> dict | None:
-    """DISPLAY-ONLY 'what kind of market is this?' command-center payload: wraps
-    engine.market_state.market_state_snapshot, blending the index multi-timeframe
-    tape (read off the in-memory feature frame) with the live cross-asset / vol /
-    breadth / liquidity / downturn-risk legs into a 0-100 risk-on score and a
-    Green/Yellow/Red verdict. Zero new data, never scored. None on shortfall."""
+    """Render the canonical US Market State; only the nightly lane may calculate it.
+
+    Site-only render/engine-render/closing-bell lanes consume the committed pointer.
+    The nightly lane may create a new score only after the raw SPY price store has
+    reached the completed NYSE session. A stale renderer must never publish a
+    different same-session score or overwrite the canonical source.
+    """
     try:
         from engine import market_state as _ms
+        from engine.market_state_audit import ledger_lane_armed
+
+        canonical = _ms_canonical_view(_ms.load_persisted(), latest)
+        if not ledger_lane_armed():
+            if canonical is None:
+                log.error("market_state: withholding unverified canonical pointer on render lane")
+            return canonical
+
+        from lib.nyse_calendar import expected_last_session
+        from scripts.refresh_regime_if_stale import _store_close_date
+        store_asof = _store_close_date()
+        expected_asof = str(expected_last_session())
+        if not store_asof or store_asof < expected_asof:
+            log.error("market_state: nightly SPY store %s behind expected NYSE %s; "
+                      "keeping canonical pointer and withholding new settlement",
+                      store_asof, expected_asof)
+            return canonical
+
         snap = _ms.market_state_snapshot(latest, f, latest.get("alerts") or [])
+        regime_asof = str(latest.get("date") or latest.get("asof") or "")
+        if (not snap or str(snap.get("asof") or "") != str(store_asof) or
+                regime_asof != str(store_asof)):
+            log.error("market_state: computed/regime session %s/%s does not match "
+                      "SPY close %s; refusing publication",
+                      (snap or {}).get("asof"), regime_asof, store_asof)
+            return canonical
         if snap:
             # Self-auditing forward-outcome log (engine/market_state_audit.py): log today's
             # verdict, grade matured entries vs realized SPY, and attach the scorecard
@@ -4438,7 +4500,7 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     (de-duped by asof, keep last), or None
     when the file is absent/unreadable.  Graceful — never fatal.
 
-    `current` is THIS build's market_state snapshot, and it settles a conflict the
+    `current` is THIS build's canonical Market State snapshot, and it resolves a conflict the
     two artifacts cannot settle between themselves. The forward log is a PIT
     ledger: engine.market_state_audit.log_snapshot is first-write-wins per as-of
     on purpose, so a later build of the same session can never rewrite a row that
@@ -4448,7 +4510,7 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     gauge baked 69 / Risk-on while the chart's endpoint baked 66, and the header's
     "last graded <date>" stamp disclosed nothing, because the two dates matched.
     The DISPLAY endpoint therefore follows the measured blend on the board it sits next to.
-    If the settled board is newer than the ledger tail, it is appended to the display path so
+    If the canonical board is newer than the ledger tail, it is appended to the display path so
     the chart cannot stop on an older score. The logged rows on disk are left exactly as written.
     Legacy rows without raw_score fall back to score."""
     try:
@@ -4486,13 +4548,46 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
                          cur_asof, out[-1]["score"], cur_score)
                 out[-1] = {"asof": cur_asof, "score": cur_score}
             elif cur_asof > last_asof:
-                log.info("ms_history: appending settled display endpoint %s=%d after ledger %s "
+                log.info("ms_history: appending canonical display endpoint %s=%d after ledger %s "
                          "(forward_log untouched)", cur_asof, cur_score, last_asof)
                 out.append({"asof": cur_asof, "score": cur_score})
                 out = out[-60:]
         return out
     except Exception:  # noqa: BLE001 — additive, never fatal
         return None
+
+
+def _ms_settlement_verified(current: dict | None, root: Path | None = None) -> bool:
+    """A settled UI claim needs a matching *nightly* forward-ledger row.
+
+    The fast self-heal can correctly advance latest.json ahead of the nightly
+    ledger. That is a current canonical snapshot, not proof that the nightly
+    settlement/forward record has completed. The display path may still show the
+    current measured point, but must not describe it as settled until the ledger
+    agrees on session, measured blend AND displayed score.
+    """
+    if not current or not current.get("asof"):
+        return False
+    asof = str(current["asof"])
+    fresh = current.get("freshness") or {}
+    if fresh.get("stale") or fresh.get("data_asof") != asof:
+        return False
+    try:
+        from lib.nyse_calendar import expected_last_session
+        if asof < str(expected_last_session()):
+            return False
+        base = config.data_dir() if root is None else Path(root) / "data"
+        p = base / "market_state" / "forward_log.jsonl"
+        for line in p.read_text().splitlines():
+            row = json.loads(line)
+            if row.get("type") == "premise_repair" or str(row.get("asof")) != asof:
+                continue
+            raw = current.get("raw_score", current.get("score"))
+            logged_raw = row.get("raw_score", row.get("score"))
+            return (logged_raw == raw and row.get("score") == current.get("score"))
+    except (OSError, ValueError, TypeError) as e:
+        log.warning("market_state nightly settlement proof unavailable: %s", e)
+    return False
 
 
 def _idx_spark_view() -> dict | None:
@@ -7560,6 +7655,7 @@ def main() -> int:
         regime_snap=_rs_view,
         market_state=_us_ms_view,  # Green/Yellow/Red market-state command-center (display-only)
         ms_history=_ms_history_view(_us_ms_view),  # v5 scorecard: measured blend, last <=60 sessions
+        ms_settlement_verified=_ms_settlement_verified(_us_ms_view),  # nightly ledger, not pointer age
         # UD-B2-W2 (DEC-SPINE-SCALE-BINDINGS): HK + CN spine rows bind to the
         # HK_PROFILE / CN_PROFILE market_state snapshots persisted by build_hk /
         # build_china. Read-only on this lane; off the heavy render path.

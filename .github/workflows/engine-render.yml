@@ -813,6 +813,11 @@ jobs:
           python3 scripts/check_ms_board_coherence.py && exit 0
           python3 scripts/check_ms_board_coherence.py --heal-from HEAD || true
           exit 1
+      - name: guard — US Market State canonical parity
+        # Site-only commits must never publish a second same-session Market State
+        # score from their local SPY store (Nov 9: canonical 41, rendered 39).
+        if: ${{ !cancelled() && (github.event_name == 'push' || inputs.scope == 'all' || inputs.scope == 'macro' || inputs.scope == 'fast') }}
+        run: python3 scripts/check_ms_board_coherence.py --canonical-parity site/macro.html
       - name: publish rebuilt US stockdata to R2 (browser data plane)
         # engine.run can change per-name display payloads without changing a template.
         # spine rebuilds the complete US stockdata tree for all/macro/fast scopes, and
@@ -930,6 +935,11 @@ jobs:
           git add templates/ 2>/dev/null || true
           git add -f site/stockbrief 2>/dev/null || true
           if git diff --cached --quiet; then echo "no rendered-site changes to commit"; exit 0; fi
+          MS_SOURCE_BLOB=""
+          case "${{ github.event.inputs.scope || 'all' }}" in
+            all|macro|fast)
+              MS_SOURCE_BLOB=$(git rev-parse 'HEAD:data/market_state/latest.json') || exit 1 ;;
+          esac
           # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): refuse to
           # commit staged `Updated upstream / Stashed changes` blocks or unmerged
           # index entries — a conflicted autostash apply is the known source.
@@ -956,6 +966,11 @@ jobs:
               push_abort_rebase
               push_backoff
               continue
+            fi
+            if [ -n "$MS_SOURCE_BLOB" ] && \
+               [ "$(git rev-parse 'origin/main:data/market_state/latest.json')" != "$MS_SOURCE_BLOB" ]; then
+              echo "::error title=Market State publication race::canonical pointer advanced during engine-render; refusing stale site/macro.html push"
+              exit 1
             fi
             COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
             # rename/rename on content-hashed site/assets/css/* is deterministic across

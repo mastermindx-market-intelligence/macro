@@ -131,6 +131,8 @@ _PATH_PTS = re.compile(r"<svg class=\"mx5-path-svg\"[^>]*?data-points='(.*?)'", 
 _SCORE_ANY = re.compile(r'id="ms-score"[^>]*>(\d+)<')
 _MEASURED_ANY = re.compile(r'id="ms-score"[^>]*data-measured-score="([0-9.]+)"')
 _ASOF_ANY = re.compile(r'id="(?:regime-asof|ms-date)"[^>]*>(\d{4}-\d{2}-\d{2})<')
+_MS_DATE = re.compile(r'id="ms-date"[^>]*>(\d{4}-\d{2}-\d{2})<')
+_FACTOR_SCORES = re.compile(r'class="mx5-factor-score(?: weak)?"[^>]*>(\d+)<')
 
 
 def _band(score: float) -> str:
@@ -284,6 +286,53 @@ def check_page(path: Path) -> list[str]:
     return check_text(str(path), html)
 
 
+def check_canonical_parity(name: str, html: str, canonical: dict) -> list[str]:
+    """(i): no independent score may be served as the US canonical score.
+
+    Unlike the intra-page coherence test, this catches the 2026-11-09 split:
+    data/market_state/latest.json=41 vs a self-consistent macro.html=39. The
+    comparison covers the dial, its date, all six factor rows and the measured
+    score path. Missing canonical evidence fails closed when a board is present.
+    """
+    if Path(name).name != "macro.html":
+        return []
+    score_m, date_m = _SCORE_ANY.search(html), _MS_DATE.search(html)
+    if not isinstance(canonical, dict) or canonical.get("schema") != "market_state.v1":
+        return [f"(i) {name}: canonical Market State missing/invalid"]
+    asof, score = canonical.get("asof"), canonical.get("score")
+    if not asof or not isinstance(score, int) or isinstance(score, bool):
+        return [f"(i) {name}: canonical Market State lacks a typed asof/score"]
+    # A verified snapshot for the page's regime session must actually reach the
+    # public board; withholding is correct only for a conflicted/absent pointer.
+    regime_m = re.search(r'id="regime-asof"[^>]*>(\d{4}-\d{2}-\d{2})<', html)
+    if regime_m and regime_m.group(1) == asof and not score_m:
+        return [f"(i) {name}: matching canonical {asof}/{score} not published"]
+    if not score_m:
+        return []
+    v: list[str] = []
+    if not date_m or date_m.group(1) != asof:
+        v.append(f"(i) {name}: score date {date_m.group(1) if date_m else 'MISSING'} != canonical {asof}")
+    if int(score_m.group(1)) != score:
+        v.append(f"(i) {name}: score {score_m.group(1)} != canonical {score} on {asof}")
+    got_factors = [int(x) for x in _FACTOR_SCORES.findall(html)]
+    expected_factors = [c.get("score") for c in canonical.get("components") or []]
+    if got_factors != expected_factors:
+        v.append(f"(i) {name}: factor scores {got_factors} != canonical {expected_factors}")
+    path_m = _PATH_PTS.search(html)
+    try:
+        points = json.loads(unescape(path_m.group(1))) if path_m else []
+        tail = points[-1] if points else {}
+        measured = canonical.get("raw_score")
+        if measured is None:
+            measured = score
+        if tail.get("d") != asof or tail.get("s") != measured:
+            v.append(f"(i) {name}: path endpoint {tail.get('d')}/{tail.get('s')} "
+                     f"!= canonical {asof}/{measured}")
+    except (ValueError, IndexError, TypeError) as e:
+        v.append(f"(i) {name}: canonical path unparseable ({e})")
+    return v
+
+
 def heal_from(ref: str, path: Path) -> bool:
     """Restore `path` wholesale from `ref`; True if git succeeded."""
     res = subprocess.run(
@@ -399,6 +448,26 @@ def _selftest() -> int:
 def main(argv: list[str]) -> int:
     if "--selftest" in argv:
         return _selftest()
+    if "--canonical-parity" in argv:
+        pages = [ROOT / a for a in argv if a != "--canonical-parity"] or [SITE_DIR / "macro.html"]
+        try:
+            canonical = json.loads((ROOT / "data/market_state/latest.json").read_text())
+        except (OSError, ValueError) as e:
+            print(f"ms-board canonical parity: REFUSED — canonical read failed ({e})")
+            return 1
+        violations = []
+        for page in pages:
+            try:
+                html = page.read_text(encoding="utf-8")
+            except OSError as e:
+                violations.append(f"(i) {page}: page read failed ({e})")
+                continue
+            violations.extend(check_canonical_parity(str(page), html, canonical))
+        if violations:
+            print("ms-board canonical parity: FAILED\n" + "\n".join(violations))
+            return 1
+        print(f"ms-board canonical parity: OK ({len(pages)} page(s))")
+        return 0
     heal_ref = None
     if "--heal-from" in argv:
         i = argv.index("--heal-from")
