@@ -38930,7 +38930,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps for the FDA supply suites
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+        # openpyxl added 2026-11-10 (PR #10929): the dispersion archiver's Excel
+        # round-trip test and the new explicit-inputs workbook suite both need a
+        # real Excel engine — without it the merge gate only ever SKIPS them
+        # (contract-delta skip_only finding). Same ordering as the sibling
+        # supply-lane installs.
+        run: pip install pytest pandas numpy pyarrow pyyaml openpyxl jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: Foresight health, score and sizing suites
