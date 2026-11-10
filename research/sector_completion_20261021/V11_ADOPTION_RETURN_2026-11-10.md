@@ -246,3 +246,61 @@ carry waits on this merge.
 The four items in §7.5 stand. Added: the production apply-body mismatch in §8.2 (Chairman / the
 owner of Terminal #804 and #1312), and Terminal #1413 (lane 4), which the controller has marked
 `merge-blocked` at `a8cf1f5d7250` for a cause not yet read.
+
+## 9. Status at 10:55Z (integrated-proof census)
+
+### 9.1 Nothing is served
+
+Lane 9's phase A join is committed beside this file as `LANE9_EVIDENCE_JOIN_2026-11-10.md`. It is
+that lane's output, spot-checked by the lane and not independently reviewed. It classes the 44
+acceptance rows (SI01–SI20, SP01–SP24) by the best evidence that exists today:
+
+| Class | Rows |
+|---|---|
+| Served on a deployed host | 0 |
+| Real committed data through real code, not served | 7 |
+| Real engine, fixture inputs | 6 |
+| Fixture | 7 |
+| Contract only | 10 |
+| Not executed | 13 |
+| No producer emits it | 1 |
+
+A signed-in member sees none of this programme's work today. The ordered live checks for later
+(phase B) are written at `/tmp/si_plan/v11/LANE9_PHASE_B_RUNSHEET.md` and have not been run.
+
+### 9.2 Changes since section 8
+
+- **Terminal #1414 merged** at `3004b74f48bc`: the first programme PR on a default branch. Its
+  deploy is not observed. Lane 3 repeats the live attempt after the deploy; an upstream refusal is
+  expected while #10929 is unserved.
+- **Correction to §8.3.** Lane 3's partial v1.1 return was written at 10:26Z. Its v1.1 consumer is
+  on the local branch `claude/ssd-si-lane3-v11-consumer-20261110` with no PR; the lane was told to
+  publish it.
+- **Macro #10924.** Lane 8 pushed the regression fix at `f1337bdd8738`. Checks are running and the
+  controller has not yet cleared `merge-blocked`.
+- **Terminal #1413.** The sweeper paused it at 09:45Z on a red typecheck at `3445b49a3cd1`. The
+  PR-duty account then merged master into the branch (`a8cf1f5d7250`); those checks are running.
+- **Macro #10931.** Another Chairman-assigned session (Macro PR healing duty, issue #10912,
+  account `MastermindX1`) pushed `3290bfe75f96` at 08:27Z and recorded a HOLD. That commit edits
+  `.github/ci/legacy-jobs.yml`, a file this programme's lanes are barred from editing. It is not
+  this programme's act. Lane 5 was told to carry its v1.1 delta on a stacked branch. A routing note
+  is at Macro issue #10912, comment 6765368384.
+
+### 9.3 Ownership rulings
+
+- The five forecast-head reason lines (EN and ZH) are lane 4's, in `sectorCycleLex.ts`. Lane 3
+  mounts them.
+- Lane 1's wire is the single location of the carried blocks
+  (`projection.data.typed_blocks.<name>`). Lane 7 adapts its parser to it.
+- `etf_flows`: lane 7 lists the fields its matrix needs that the carried value lacks. Until a
+  producer emits them the component shows the unavailable state with the carried date.
+- A context reference is not stored as durable until the signing secret is provisioned.
+- Saved-investigation reopen, account switch during save, and a real Follow (SP14, SP15, SI15,
+  SP17) are lane 6's second pass, on #1425, without APPLY.
+- Correction lineage (SP18, part of SI18) is lane 1's, after the second review reports.
+- Point-in-time membership has no owner. One read-only census child was started to establish what
+  the repository's existing data can produce; it decides whether SI02's identity half, SP08 and
+  comparators C4 / C5 are a producer change or need an outside source.
+- Outside this programme: `prophet_eligibility` and the native-sector crosswalk (Prophet
+  programme); the signing secret and any migration apply (Chairman); the ungated hazard callers in
+  `scripts/build_cycle.py` and `engine/commodity_cycle_state.py` found by lane 8.
