@@ -59,10 +59,14 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from engine.market_ontology.theme_research_binding import (
     BundleUnavailable,
     ResearchRefusal,
+    V2_REQUEST_SCHEMA,
+    V2_RESPONSE_SCHEMA,
+    context_generation,
     validate_cutoff_format,
 )
 from engine.market_ontology.theme_research_registry import (
     VerticalRegistration,
+    profile_registration_for,
     registration_for,
 )
 
@@ -211,6 +215,58 @@ def _map_research_refusal(exc: ResearchRefusal) -> HTTPException:
     )
 
 
+#: v2 (lane 5): the profile adapters refuse through their OWN ValueError
+#: subclasses carrying a ``.code`` — duck-typed, never imported here (the
+#: shell names no vertical's refusal class). ``code`` bases only; an adapter
+#: code with a ``:suffix`` (``sealed_input_unavailable:run_context``) maps by
+#: its base. Unknown bases fall through to the fixed private 503 — the shell
+#: never guesses a severity for a code it was not told about.
+_PRIVATE_UNAVAILABLE = {"code": "not_available", "action": "none"}
+_V2_VERTICAL_REFUSAL_MAP: dict[str, tuple[int, dict[str, str]]] = {
+    # The profile's own private unavailable verdicts: an unresolvable subject
+    # or a sealed input half that no admitted producer supplies today. Same
+    # bytes as ``not_available`` — no existence disclosure, no source/rights
+    # detail, 404-class.
+    "company_ref_unresolved": (404, _PRIVATE_UNAVAILABLE),
+    "theme_ref_unavailable": (404, _PRIVATE_UNAVAILABLE),
+    "sealed_input_unavailable": (404, _PRIVATE_UNAVAILABLE),
+    "replay_identity_unavailable": (404, _PRIVATE_UNAVAILABLE),
+    # A registry-declared view the registration's own guard also refuses;
+    # the shell pre-checks ``view_keys`` so this is normally unreachable.
+    "view_not_registered": (
+        400, {"code": "invalid_request", "action": "fix_request"},
+    ),
+    # Contract/carrier drift on the vertical's side: fixed private 503s.
+    "shared_shell_unavailable": (
+        503, {"code": "service_unavailable", "action": "retry_later"},
+    ),
+    "evidence_schema_violation": (
+        503, {"code": "service_unavailable", "action": "retry_later"},
+    ),
+}
+
+
+def _map_typed_vertical_refusal(exc: ValueError) -> HTTPException | None:
+    """Map a duck-typed vertical refusal (``ValueError`` carrying ``.code``)
+    to its private envelope. ``None`` means "not a refusal this shell knows" —
+    the caller answers the fixed private 503, never a bare 500."""
+    code = getattr(exc, "code", None)
+    if not isinstance(code, str) or not code:
+        return None
+    base = code.split(":", 1)[0]
+    if base == "not_available":
+        return _private_error(404, {"error": dict(_PRIVATE_UNAVAILABLE)})
+    # A code the SHARED map already knows (``generation_changed`` → 409
+    # refresh, the pagination/cutoff 400s) gets the shared envelope whatever
+    # class carried it — the verticals refuse through their own ValueError
+    # subclasses with the same code vocabulary the foundation defines.
+    entry = _V2_VERTICAL_REFUSAL_MAP.get(base) or _RESEARCH_REFUSAL_MAP.get(base)
+    if entry is None:
+        return None
+    status, envelope = entry
+    return _private_error(status, {"error": dict(envelope)})
+
+
 # ---------------------------------------------------------------------------
 # Body models — closed; extra="forbid"
 # ---------------------------------------------------------------------------
@@ -283,6 +339,115 @@ def _body_to_query(
         limit=body.limit,
         expected_generation=body.expected_generation,
     )
+
+
+# ---------------------------------------------------------------------------
+# v2 body models — the closed ``theme_research.request/v2`` union (lane 5)
+# ---------------------------------------------------------------------------
+
+#: The context expectation is the SHELL's own surface: always ``gen_`` width
+#: 32 (:func:`engine.market_ontology.theme_research_binding.context_generation`).
+_V2_CONTEXT_PATTERN = r"^gen_[0-9a-f]{32}$"
+#: Parse-time grammar for the NATIVE expectation: a prefix hex-width token
+#: (``gen_…``/``tecd_…``). The per-entry EXACT grammar (registration
+#: ``native_generation_prefix``/``native_generation_width``) is enforced
+#: AFTER the registration resolves — the shell cannot know the entry's
+#: grammar before it knows the entry.
+_V2_NATIVE_PATTERN = r"^[a-z0-9_]{1,16}_[0-9a-f]{8,64}$"
+#: The v2 assertion-ref grammar: any owner-minted ``gmi-curation://`` ref,
+#: canonical ``theme:``-prefixed or slug theme segment, hyphen/dot included
+#: (canonical ids like ``theme:technology-ex-semis`` are legal).
+_V2_ASSERTION_REF_PATTERN = (
+    r"^gmi-curation://(?:theme:)?[a-z0-9_.\-]+/gmirca_[0-9a-f]{32}$"
+)
+
+
+class _V2Body(BaseModel):
+    """Fields every v2 entry kind shares. ``extra="forbid"``: a field from
+    another entry kind (``anchor_theme_id`` on a profile, ``company_ref`` on
+    the theme kind, a ``cursor`` on a single-document profile) is a private
+    400 at parse, never silently ignored."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    request_schema: Literal["theme_research.request/v2"]
+    view: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
+    time_mode: Literal["latest", "source_history", "system_replay"]
+    source_cutoff: str | None = Field(default=None, max_length=32)
+    recorded_cutoff: str | None = Field(default=None, max_length=32)
+    expected_generation: str | None = Field(
+        default=None, max_length=80, pattern=_V2_NATIVE_PATTERN,
+    )
+    expected_context_generation: str | None = Field(
+        default=None, pattern=_V2_CONTEXT_PATTERN,
+    )
+
+
+class _V2ThemeBody(_V2Body):
+    """``entry_kind="theme"`` — the anchored, paginated collection (the v1
+    shape plus the discriminator and the context expectation)."""
+
+    entry_kind: Literal["theme"]
+    anchor_theme_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
+    slice_key: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
+    offset: int = Field(default=0, ge=0, le=10000)
+    limit: int = Field(default=50, ge=1, le=100)
+
+
+class _V2CompanyProfileBody(_V2Body):
+    """``entry_kind="company_profile"`` — single-document: NO ``limit`` field
+    exists (supplying one is the private 400 ``extra="forbid"`` gives), and a
+    nonzero ``offset`` is refused after the profile resolves rather than
+    silently ignored."""
+
+    entry_kind: Literal["company_profile"]
+    profile_id: str = Field(min_length=1, max_length=128, pattern=r"^[a-z0-9_.\-]+$")
+    company_ref: str = Field(
+        min_length=1, max_length=128,
+        pattern=r"^(?:[A-Za-z0-9:._\-]+|co:(?:us|cn|hk|ca|intl):[A-Za-z0-9.\-]+#[0-9]+)$",
+    )
+    offset: int = Field(default=0, ge=0)
+
+
+class _V2SectorProfileBody(_V2Body):
+    """``entry_kind="sector_profile"`` — single-document, same pagination
+    law as the company profile."""
+
+    entry_kind: Literal["sector_profile"]
+    profile_id: str = Field(min_length=1, max_length=128, pattern=r"^[a-z0-9_.\-]+$")
+    sector_ref: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9:._\-]+$")
+    offset: int = Field(default=0, ge=0)
+
+
+_V2_QUERY_MODELS: Mapping[str, type[_V2Body]] = {
+    "theme": _V2ThemeBody,
+    "company_profile": _V2CompanyProfileBody,
+    "sector_profile": _V2SectorProfileBody,
+}
+
+
+def _evidence_body(query_model: type[_V2Body]) -> type[_V2Body]:
+    """The evidence twin of one query model: same entry kind and fields, plus
+    the assertion ref and BOTH expectations REQUIRED (packet §3.6: every
+    evidence request carries the paired ``expected_generation`` +
+    ``expected_context_generation`` — a missing one is a private 400 at
+    parse, not a silent first-page serve)."""
+
+    class _Body(query_model):
+        assertion_ref: str = Field(
+            min_length=1, max_length=256, pattern=_V2_ASSERTION_REF_PATTERN,
+        )
+        expected_generation: str = Field(
+            min_length=8, max_length=80, pattern=_V2_NATIVE_PATTERN,
+        )
+        expected_context_generation: str = Field(pattern=_V2_CONTEXT_PATTERN)
+
+    return _Body
+
+
+_V2_EVIDENCE_MODELS: Mapping[str, type[_V2Body]] = {
+    kind: _evidence_body(model) for kind, model in _V2_QUERY_MODELS.items()
+}
 
 
 # ---------------------------------------------------------------------------
@@ -571,12 +736,13 @@ def _reject_oversized(request: Request) -> None:
         raise _private_error(413, "request body too large") from None
 
 
-async def _parse_body(model: type[BaseModel], request: Request) -> BaseModel:
-    """Read the request body, parse JSON, validate against ``model``.
+async def _read_json_object(request: Request) -> dict[str, Any]:
+    """Read the request body and parse it as a JSON object (size-capped).
 
-    Validation failures map to 400 with the private headers (not the framework's
-    bare 422). The route's auth dependency has already resolved by the time we
-    get here — a 401/403 will have fired above us if the caller is anonymous.
+    Failures map to the same private 400/413 envelopes ``_parse_body`` always
+    gave. Split out of it (lane 5) so a route can read the body ONCE and
+    dispatch on the v2 ``request_schema`` discriminator before choosing the
+    validation model — v1 bodies are then validated bytewise as before.
     """
     _reject_oversized(request)
     raw = await request.body()
@@ -596,14 +762,35 @@ async def _parse_body(model: type[BaseModel], request: Request) -> BaseModel:
             {"error": {"code": "invalid_request", "action": "fix_request",
                         "detail": "body must be a JSON object"}},
         ) from None
+    return payload
+
+
+def _validate_body(model: type[BaseModel], payload: Mapping[str, Any]) -> BaseModel:
+    """Validate an already-parsed JSON object against ``model``.
+
+    Validation failures map to 400 with the private headers (not the
+    framework's bare 422). The route's auth dependency has already resolved
+    by the time we get here — a 401/403 will have fired above us if the
+    caller is anonymous.
+    """
     try:
-        return model.model_validate(payload)
+        return model.model_validate(dict(payload))
     except ValidationError as exc:
         raise _private_error(
             400,
             {"error": {"code": "invalid_request", "action": "fix_request",
                         "detail": exc.errors()}},
         ) from None
+
+
+async def _parse_body(model: type[BaseModel], request: Request) -> BaseModel:
+    """Read the request body, parse JSON, validate against ``model``.
+
+    Validation failures map to 400 with the private headers (not the framework's
+    bare 422). The route's auth dependency has already resolved by the time we
+    get here — a 401/403 will have fired above us if the caller is anonymous.
+    """
+    return _validate_body(model, await _read_json_object(request))
 
 
 # ---------------------------------------------------------------------------
@@ -670,7 +857,9 @@ def _require_registered_contract(
     return dict(payload)
 
 
-def _refuse_unreadable_cutoff(body: _QueryBody | _EvidenceBody) -> None:
+def _refuse_unreadable_cutoff(
+    body: _QueryBody | _EvidenceBody | _V2Body,
+) -> None:
     """Refuse a supplied cutoff the engine cannot read.
 
     Scope, stated exactly: this closes the silent-200 half for every vertical
@@ -759,6 +948,453 @@ def _call_evidence(
 
 
 # ---------------------------------------------------------------------------
+# v2 dispatch — the closed ``theme_research.request/v2`` union through the
+# SAME router, registries, seam and rights filter (lane 5)
+# ---------------------------------------------------------------------------
+
+def _parse_v2_body(
+    models: Mapping[str, type[_V2Body]], payload: Mapping[str, Any],
+) -> _V2Body:
+    """Validate one raw v2 payload against the closed per-kind model. An
+    ``entry_kind`` outside the three closed kinds (absent, foreign, non-string)
+    is the private 400 ``invalid_request`` — the union is closed at the door,
+    never normalised. A body carrying ``request_schema`` with any value other
+    than the v2 constant fails the model's ``Literal`` the same way."""
+    kind = payload.get("entry_kind")
+    model = models.get(kind) if isinstance(kind, str) else None
+    if model is None:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "entry_kind must be one of the closed v2 entry kinds"}},
+        )
+    validated = _validate_body(model, payload)
+    assert isinstance(validated, _V2Body)  # models map holds only _V2Body subclasses
+    return validated
+
+
+def _resolve_v2_registration(body: _V2Body) -> VerticalRegistration:
+    """Resolve the registration for one parsed v2 union member.
+
+    ``theme`` → the closed anchor REGISTRY, exactly as v1 (unknown anchor →
+    the same private 404 ``not_available``). ``company_profile`` /
+    ``sector_profile`` → the closed PROFILE_REGISTRY (unknown profile → the
+    same private 404 — never an echo, never a list). Then the registered-set
+    checks in the v1 order: the SUBJECT first (a subject the entry does not
+    carry is an existence question → 404), then view and time_mode (a field
+    value a registered entry refuses → 400 ``fix_request``). The subject is
+    read off the registration's OWN ``subject_field`` column — the shell
+    hardcodes no per-vertical field name."""
+    if isinstance(body, _V2ThemeBody):
+        try:
+            registration = registration_for(body.anchor_theme_id)
+        except Exception:  # noqa: BLE001 — registry fault is a private 503, never a bare 500
+            raise _private_error(
+                503,
+                {"error": {"code": "service_unavailable", "action": "retry_later"}},
+            ) from None
+        if registration is None:
+            raise _private_error(
+                404, {"error": {"code": "not_available", "action": "none"}},
+            )
+        if not isinstance(registration, VerticalRegistration):
+            raise _private_error(
+                503,
+                {"error": {"code": "service_unavailable", "action": "retry_later"}},
+            )
+        if body.slice_key not in registration.slice_keys:
+            raise _private_error(
+                400,
+                {"error": {"code": "invalid_request", "action": "fix_request",
+                            "detail": "slice_key is not registered for this anchor"}},
+            )
+    else:
+        try:
+            registration = profile_registration_for(body.profile_id)
+        except Exception:  # noqa: BLE001 — registry fault is a private 503, never a bare 500
+            raise _private_error(
+                503,
+                {"error": {"code": "service_unavailable", "action": "retry_later"}},
+            ) from None
+        if (registration is None or not isinstance(registration, VerticalRegistration)
+                or registration.entry_kind != body.entry_kind):
+            raise _private_error(
+                404, {"error": {"code": "not_available", "action": "none"}},
+            )
+        subject = getattr(body, registration.subject_field, None)
+        if registration.subject_values and subject not in registration.subject_values:
+            # A closed subject set that does not carry the request's subject:
+            # the entry does not exist FOR THAT SUBJECT — the same private
+            # 404 an unknown profile id gets, never a 400 naming the set.
+            raise _private_error(
+                404, {"error": {"code": "not_available", "action": "none"}},
+            )
+    if body.view not in registration.view_keys:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "view is not registered for this entry kind"}},
+        )
+    if body.time_mode not in registration.time_modes:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "time_mode is not registered for this entry kind"}},
+        )
+    return registration
+
+
+def _v2_native_generation_well_formed(
+    value: Any, registration: VerticalRegistration,
+) -> bool:
+    """Exact string test against the native-generation grammar the
+    registration declares: the entry's own ``native_generation_prefix``
+    followed by exactly ``native_generation_width`` lowercase hex chars.
+    Plain string arithmetic, no pattern engine — the transport's
+    no-regex law (pinned by the source-scan test) is older than v2 and
+    still holds."""
+    if not isinstance(value, str):
+        return False
+    prefix = registration.native_generation_prefix
+    width = registration.native_generation_width
+    return (
+        value.startswith(prefix)
+        and len(value) == len(prefix) + width
+        and all(char in "0123456789abcdef" for char in value[len(prefix):])
+    )
+
+
+def _check_v2_query_semantics(
+    body: _V2Body, registration: VerticalRegistration,
+) -> None:
+    """The shell-owned v2 request laws a body must satisfy AFTER the entry
+    resolves: single-document pagination, expectation pairing, and the
+    entry's exact native grammar. All private 400 ``fix_request`` — the
+    refusal names the rule broken, never any source or rights state."""
+    if registration.single_document and body.offset != 0:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "pagination is not supported for a "
+                                  "single-document entry kind"}},
+        )
+    supplied_native = body.expected_generation is not None
+    supplied_context = body.expected_context_generation is not None
+    if supplied_native != supplied_context:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "expected_generation and "
+                                  "expected_context_generation must be "
+                                  "supplied together"}},
+        )
+    is_continuation = (
+        not registration.single_document and body.offset > 0
+    )
+    if is_continuation and not supplied_native:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "a continuation request (offset > 0) "
+                                  "requires the paired expected_generation "
+                                  "and expected_context_generation"}},
+        )
+    if supplied_native and not _v2_native_generation_well_formed(
+            body.expected_generation, registration,
+    ):
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "expected_generation does not match this "
+                                  "entry's generation grammar"}},
+        )
+
+
+def _check_v2_evidence_semantics(
+    body: _V2Body, registration: VerticalRegistration,
+) -> None:
+    """The evidence twins of the query laws. The expectation PAIR is required
+    by the evidence body models themselves (a missing one is a parse-level
+    400); here the single-document offset law and the native grammar apply.
+    The context grammar is the shell's own and already strict at parse."""
+    if registration.single_document and body.offset != 0:
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "pagination is not supported for a "
+                                  "single-document entry kind"}},
+        )
+    if not _v2_native_generation_well_formed(
+            body.expected_generation, registration,
+    ):
+        raise _private_error(
+            400,
+            {"error": {"code": "invalid_request", "action": "fix_request",
+                        "detail": "expected_generation does not match this "
+                                  "entry's generation grammar"}},
+        )
+
+
+def _v2_query_kwargs(
+    body: _V2Body, registration: VerticalRegistration,
+) -> dict[str, Any]:
+    """The semantic fields the registration's own ``build_query`` accepts,
+    per entry kind — the NATIVE expectation forwarded, the SHELL-level
+    context expectation NEVER (it is compared here and dropped)."""
+    del registration  # the closed union, not a per-registration column
+    common = {
+        "view": body.view,
+        "time_mode": body.time_mode,
+        "source_cutoff": body.source_cutoff,
+        "recorded_cutoff": body.recorded_cutoff,
+        "expected_generation": body.expected_generation,
+    }
+    if isinstance(body, _V2ThemeBody):
+        return {
+            "anchor_theme_id": body.anchor_theme_id,
+            "slice_key": body.slice_key,
+            "offset": body.offset,
+            "limit": body.limit,
+            **common,
+        }
+    if isinstance(body, _V2CompanyProfileBody):
+        return {
+            "profile_id": body.profile_id,
+            "company_ref": body.company_ref,
+            "offset": body.offset,
+            **common,
+        }
+    return {
+        "profile_id": body.profile_id,
+        "sector_ref": body.sector_ref,
+        "offset": body.offset,
+        **common,
+    }
+
+
+def _v2_semantic_request(body: _V2Body) -> dict[str, Any]:
+    """The validated semantic query echoed in the v2 response envelope —
+    exactly the fields the entry resolved on, in a deterministic order."""
+    if isinstance(body, _V2ThemeBody):
+        return {
+            "entry_kind": "theme",
+            "anchor_theme_id": body.anchor_theme_id,
+            "slice_key": body.slice_key,
+            "view": body.view,
+            "time_mode": body.time_mode,
+            "source_cutoff": body.source_cutoff,
+            "recorded_cutoff": body.recorded_cutoff,
+            "offset": body.offset,
+            "limit": body.limit,
+        }
+    if isinstance(body, _V2CompanyProfileBody):
+        return {
+            "entry_kind": "company_profile",
+            "profile_id": body.profile_id,
+            "company_ref": body.company_ref,
+            "view": body.view,
+            "time_mode": body.time_mode,
+            "source_cutoff": body.source_cutoff,
+            "recorded_cutoff": body.recorded_cutoff,
+        }
+    return {
+        "entry_kind": "sector_profile",
+        "profile_id": body.profile_id,
+        "sector_ref": body.sector_ref,
+        "view": body.view,
+        "time_mode": body.time_mode,
+        "source_cutoff": body.source_cutoff,
+        "recorded_cutoff": body.recorded_cutoff,
+    }
+
+
+def _v2_entry_key(body: _V2Body) -> str:
+    """anchor for ``theme``, profile id for the profile kinds (packet §3.5)."""
+    return body.anchor_theme_id if isinstance(body, _V2ThemeBody) else body.profile_id
+
+
+def _v2_native_generation(
+    payload: Any, registration: VerticalRegistration, *, evidence: bool,
+) -> str:
+    """The composed payload's OWN native generation, read from the field the
+    registration declares (``dossier_id`` for Technology, ``generation`` for
+    the gen_-fingerprinted verticals; the evidence envelopes carry it under
+    their contract's own ``generation`` key). A payload whose native
+    generation is absent or off-grammar is a composer/registration mismatch —
+    the fixed private 503, never a serve."""
+    field = "generation" if evidence else registration.native_generation_field
+    native = payload.get(field) if isinstance(payload, Mapping) else None
+    if not _v2_native_generation_well_formed(native, registration):
+        raise RegisteredContractMismatch(
+            "composed payload does not carry the registered native generation",
+        )
+    return native
+
+
+def _v2_context_generation(
+    body: _V2Body,
+    registration: VerticalRegistration,
+    bundle: Any,
+    snapshot: tuple[str, dict],
+    *,
+    native_generation: str,
+) -> str:
+    """The shell's own ``gen_`` continuation fingerprint over packet §3.5's
+    field set. ``rights_revision`` is the revision the bundle was SERVED
+    under — the loader stamps the enforced snapshot revision, and an injected
+    bundle keeps its own — so the fingerprint binds what the owner actually
+    served, not a second read."""
+    rights_revision = getattr(bundle, "rights_revision", None)
+    if not isinstance(rights_revision, str) or not rights_revision:
+        rights_revision = snapshot[0]
+    return context_generation(
+        entry_kind=body.entry_kind,
+        entry_key=_v2_entry_key(body),
+        subject=str(getattr(body, registration.subject_field)),
+        view=body.view,
+        time_mode=body.time_mode,
+        source_cutoff=body.source_cutoff,
+        recorded_cutoff=body.recorded_cutoff,
+        native_generation=native_generation,
+        definition_version=registration.definition_version,
+        rights_revision=rights_revision,
+        revision_tuple=getattr(bundle, "revision_tuple", ()),
+    )
+
+
+def _v2_check_expectations(
+    body: _V2Body, native_generation: str, context_gen: str,
+) -> None:
+    """The shell-level refresh gate. A mismatch on EITHER the native
+    generation or the context fingerprint is the SAME 409
+    ``refresh_required``/``reset_to_first_page`` envelope — without leaking
+    WHICH expectation failed, let alone any source/rights detail. The
+    vertical's own compose re-checks the native expectation through the
+    query it was handed; this is the shell's backstop after composition."""
+    if body.expected_generation is not None and body.expected_generation != native_generation:
+        raise _private_error(
+            409, {"error": {"code": "refresh_required", "action": "reset_to_first_page"}},
+        )
+    if body.expected_context_generation is not None \
+            and body.expected_context_generation != context_gen:
+        raise _private_error(
+            409, {"error": {"code": "refresh_required", "action": "reset_to_first_page"}},
+        )
+
+
+def _call_v2_query(
+    body: _V2Body, principal: Mapping[str, Any], registration: VerticalRegistration,
+) -> JSONResponse:
+    _check_v2_query_semantics(body, registration)
+    query = registration.build_query(**_v2_query_kwargs(body, registration))
+    snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
+    bundle = load_authorized_owner_bundle(
+        query, principal=principal, registration=registration, rights_snapshot=snapshot,
+    )
+    _refuse_unreadable_cutoff(body)  # AFTER the loader: the ORDER LAW above
+    bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
+    payload = _require_registered_contract(
+        registration.compose(query, bundle),
+        registration.schema_id,
+        registration.definition_version,
+    )
+    native = _v2_native_generation(payload, registration, evidence=False)
+    context_gen = _v2_context_generation(
+        body, registration, bundle, snapshot, native_generation=native,
+    )
+    _v2_check_expectations(body, native, context_gen)
+    payload = _post_process_rights_limitation(payload, dropped)
+    evidence_refs: Any = None
+    if registration.evidence_refs_field is not None:
+        evidence_refs = payload.get(registration.evidence_refs_field)
+    envelope = {
+        "schema": V2_RESPONSE_SCHEMA,
+        "entry_kind": body.entry_kind,
+        "request": _v2_semantic_request(body),
+        "generation": native,
+        "context_generation": context_gen,
+        "data": payload,
+        "evidence_refs": (
+            list(evidence_refs) if isinstance(evidence_refs, (list, tuple)) else []
+        ),
+    }
+    if registration.issuer_economics is not None:
+        # Lane 5 v1.1: the issuer-economics block rides the QUERY envelope
+        # ONLY, as a sibling of ``data``. The v1 response and the v2 evidence
+        # path never compose it — their byte-identity is pinned by test. The
+        # binding owns its owner reads and its faults degrade to the typed
+        # unavailable block, so a builder fault never fails the query; built
+        # AFTER the expectation gate so a refresh 409 costs no block work.
+        envelope["issuer_economics"] = registration.issuer_economics(
+            query, bundle, dropped=dropped,
+        )
+    return _private_json(200, envelope)
+
+
+def _call_v2_evidence(
+    body: _V2Body, principal: Mapping[str, Any], registration: VerticalRegistration,
+) -> JSONResponse:
+    _check_v2_evidence_semantics(body, registration)
+    query = registration.build_query(**_v2_query_kwargs(body, registration))
+    snapshot = load_registry_snapshot()  # ONE rights read per request (T03 owner)
+    bundle = load_authorized_owner_bundle(
+        query, principal=principal, registration=registration, rights_snapshot=snapshot,
+    )
+    _refuse_unreadable_cutoff(body)  # AFTER the loader: the ORDER LAW above
+    bundle, dropped = _filter_bundle_for_rights(bundle, snapshot=snapshot)
+    payload = _require_registered_contract(
+        registration.select_evidence(query, bundle, body.assertion_ref),
+        registration.evidence_schema_id,
+    )
+    native = _v2_native_generation(payload, registration, evidence=True)
+    context_gen = _v2_context_generation(
+        body, registration, bundle, snapshot, native_generation=native,
+    )
+    _v2_check_expectations(body, native, context_gen)
+    payload = _post_process_rights_limitation(payload, dropped)
+    # The v2 evidence response is the vertical's OWN evidence envelope — the
+    # shell wraps the QUERY response, never the evidence one (packet §3.5).
+    return _private_json(200, payload)
+
+
+def _invoke_v2(call, *args: Any) -> JSONResponse:
+    """Run one v2 pipeline with the v1 error discipline plus the duck-typed
+    vertical-refusal catch: the profile adapters refuse through their OWN
+    ``ValueError`` subclasses carrying ``.code`` — the shell imports none of
+    them and maps by the code's base token. An unrecognised ``ValueError``,
+    a bundle that cannot serve, a contract mismatch, a rights-registry fault
+    and any internal fault all land in the same fixed private 503; nothing
+    internal ever crosses the wire."""
+    try:
+        return call(*args)
+    except HTTPException:
+        raise
+    except ResearchRefusal as exc:
+        raise _map_research_refusal(exc) from None
+    except ValueError as exc:  # duck-typed vertical refusal (.code)
+        mapped = _map_typed_vertical_refusal(exc)
+        if mapped is not None:
+            raise mapped from None
+        raise _private_error(
+            503, {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
+    except (BundleUnavailable, RegisteredContractMismatch):
+        raise _private_error(
+            503, {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
+    except RightsRefusal:
+        # The rights registry itself is missing or corrupt: no verdict can be
+        # asked, so nothing is emitted. Fail closed behind the same headers.
+        raise _private_error(
+            503, {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
+    except Exception:  # noqa: BLE001 — internal detail must never cross the wire
+        raise _private_error(
+            503, {"error": {"code": "service_unavailable", "action": "retry_later"}},
+        ) from None
+
+
+# ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
 
@@ -776,9 +1412,22 @@ async def research_query(
     resolves the vertical (private 404 on an unregistered anchor, private 400
     on a foreign slice) before any reader is touched. Auth precedence is
     proven by ``test_unauthorized_request_never_constructs_private_reader``.
+
+    v2 (lane 5): a body carrying ``request_schema`` selects the closed
+    ``theme_research.request/v2`` union; a body WITHOUT the key keeps
+    byte-compatible v1 parsing and the v1 response envelope. No other value
+    of the discriminator is admitted (private 400 at parse).
     """
     _private(response)
-    body = await _parse_body(_QueryBody, request)
+    payload = await _read_json_object(request)
+    if "request_schema" in payload:
+        body = _parse_v2_body(_V2_QUERY_MODELS, payload)
+        # Registration AFTER auth + parse, BEFORE any reader; its private
+        # 404/400 must reach the wire as-is, so it resolves outside the
+        # catch-all.
+        registration = _resolve_v2_registration(body)
+        return _invoke_v2(_call_v2_query, body, user, registration)
+    body = _validate_body(_QueryBody, payload)
     # Closed registration AFTER auth + parse, BEFORE any reader: its private
     # 404/400 must reach the wire as-is, so it is resolved outside the
     # catch-all below.
@@ -812,9 +1461,18 @@ async def research_evidence(
     response: Response,
     user: Mapping[str, Any] = Depends(require_site_full_user),
 ) -> JSONResponse:
-    """Paid read-only projection of ONE authorized assertion's evidence."""
+    """Paid read-only projection of ONE authorized assertion's evidence.
+
+    v2 (lane 5): same discriminator law as the query route — a
+    ``request_schema``-carrying body selects the v2 evidence union (the
+    paired expectations REQUIRED), anything without the key keeps v1."""
     _private(response)
-    body = await _parse_body(_EvidenceBody, request)
+    payload = await _read_json_object(request)
+    if "request_schema" in payload:
+        body = _parse_v2_body(_V2_EVIDENCE_MODELS, payload)
+        registration = _resolve_v2_registration(body)
+        return _invoke_v2(_call_v2_evidence, body, user, registration)
+    body = _validate_body(_EvidenceBody, payload)
     registration = _resolve_registration(body)
     try:
         return _call_evidence(body, user, registration)

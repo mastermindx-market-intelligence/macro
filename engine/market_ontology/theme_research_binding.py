@@ -74,12 +74,17 @@ from typing import Any
 __all__ = [
     "SHARED_CONTRACT_MODULE",
     "SHARED_SHELL_MODULE",
+    "ENTRY_KINDS",
+    "V2_REQUEST_SCHEMA",
+    "V2_RESPONSE_SCHEMA",
     "BundleUnavailable",
     "OwnerBundle",
     "ResearchQuery",
     "ResearchRefusal",
     "canonical_text",
     "collapse_syndicated",
+    "context_generation",
+    "curation_source_ref",
     "correction_lineage",
     "filter_interpretation_blocks",
     "generation_fingerprint",
@@ -102,6 +107,20 @@ __all__ = [
 #: can load both owners without naming a sibling vertical.
 SHARED_CONTRACT_MODULE = "engine.theme_graph.curation_assertion"
 SHARED_SHELL_MODULE = "engine.market_ontology.theme_research_binding"
+
+#: The closed entry-kind union of ``theme_research.request/v2`` (packet
+#: §3.4, lane 5). Exact tokens, no wildcard, no default kind: an unlisted
+#: kind is refused by the transport, never normalised here. The registry
+#: imports this tuple so the two owners cannot drift apart.
+ENTRY_KINDS: tuple[str, ...] = ("theme", "company_profile", "sector_profile")
+
+#: The explicit v2 request/response discriminators. A request carrying
+#: ``request_schema == V2_REQUEST_SCHEMA`` selects the v2 union; a request
+#: WITHOUT the field keeps byte-compatible v1 parsing. No other value is
+#: admitted (the v1 model's ``extra="forbid"`` refuses a foreign
+#: ``request_schema`` with the existing private 400).
+V2_REQUEST_SCHEMA = "theme_research.request/v2"
+V2_RESPONSE_SCHEMA = "theme_research.response/v2"
 
 
 # ---------------------------------------------------------------------------
@@ -166,16 +185,23 @@ class OwnerBundle:
     omissions: tuple[str, ...]
 
 
-def _curation_source_ref(assertion: Mapping[str, Any]) -> str:
+def curation_source_ref(assertion: Mapping[str, Any]) -> str:
     """``gmi-curation://<theme>/<revision>`` from fields already on the row.
 
     Same text ``source_ref_for`` emits for a fixture assertion that already
     validates. This leaf does not import the assertion validator: importing
-    it would pull the schema stack into every mount producer.
+    it would pull the schema stack into every mount producer. PUBLIC since
+    lane 5: the v2 profile selectors match request refs by this mint, and a
+    vertical adapter must not fork the grammar to use it.
     """
     scope = assertion.get("scope") or {}
     theme = scope.get("canonical_theme_id") if isinstance(scope, Mapping) else None
     return f"gmi-curation://{theme}/{assertion.get('curation_revision')}"
+
+
+#: Historical private spelling kept for this module's own internal callers;
+#: the public name above is the one other modules import.
+_curation_source_ref = curation_source_ref
 
 
 # ---------------------------------------------------------------------------
@@ -625,3 +651,52 @@ def generation_fingerprint(*, definition_version: str, rights_revision: str,
     }
     digest = hashlib.sha256(canonical_text(payload).encode("utf-8")).hexdigest()[:width]
     return prefix + digest
+
+
+def context_generation(
+    *,
+    entry_kind: str,
+    entry_key: str,
+    subject: str,
+    view: str,
+    time_mode: str,
+    source_cutoff: str | None,
+    recorded_cutoff: str | None,
+    native_generation: str,
+    definition_version: str,
+    rights_revision: str,
+    revision_tuple: Any,
+) -> str:
+    """The v2 continuation fingerprint: :func:`generation_fingerprint` over
+    the ONE field set packet §3.5 names.
+
+    Binds the registration's definition version, the request's FRESH rights
+    revision, the bundle's native revision tuple, the entry kind and key
+    (anchor for ``theme``, profile id for the profile kinds), the exact
+    subject/view/time_mode/cutoffs, and the NATIVE owner generation the
+    vertical emitted. Deliberately EXCLUDES ``offset``/``limit`` and the
+    ``expected_*`` transport fields, so one collection context survives
+    pagination and a continuation pins the same value page after page.
+
+    Always ``gen_``-prefixed at width 32 — the CONTEXT surface is the shared
+    shell's own, distinct by construction from a vertical's native
+    generation (Technology's ``tecd_`` dossier id keeps its own grammar and
+    is never renamed). This adds a read fingerprint only: no store, no
+    allocator, no service, and no persistent lookup key — saved GMI evidence
+    keeps using the K1 assertion identity and digest.
+    """
+    return generation_fingerprint(
+        definition_version=definition_version,
+        rights_revision=rights_revision,
+        revision_tuple=revision_tuple,
+        fields={
+            "entry_kind": entry_kind,
+            "entry_key": entry_key,
+            "subject": subject,
+            "view": view,
+            "time_mode": time_mode,
+            "source_cutoff": source_cutoff,
+            "recorded_cutoff": recorded_cutoff,
+            "native_generation": native_generation,
+        },
+    )

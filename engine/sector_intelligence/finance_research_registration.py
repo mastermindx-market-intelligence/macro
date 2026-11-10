@@ -7,9 +7,13 @@ research shell (PR #7870; the shell's record is
 ``engine.market_ontology.theme_research_registry.VerticalRegistration``).
 
 This module is the Finance side of that contract: every name here is frozen
-to the §8 dispatch values, and every callable is a placeholder. The shell
-keys every registration on a canonical ``anchor_theme_id`` plus non-empty
-``slice_keys``; Finance's §8 facts are a ``sector_profile`` with neither, so
+to the §8 dispatch values, and the callables are the projection-coupled real
+ones — ``load_bundle`` is the REAL registered loader since lane 5 (the
+honest-empty bundle that reads the enforced rights revision and declares the
+unbound halves), no longer the ``finance_owner_loader_pending`` stub. The
+shell keys every registration on a canonical ``anchor_theme_id`` plus
+non-empty ``slice_keys``; Finance's §8 facts are a ``sector_profile`` with
+neither, so
 :func:`registration_entry_or_refusal` raises the typed hold
 ``vertical_registration_held:sector_profile`` before construction (H1 ruling,
 option B, #7870 2026-10-11). Retiring that hold is NOT a one-constant edit:
@@ -96,8 +100,13 @@ SECTOR_REF: str = json.loads(_T1_SCHEMA_PATH.read_text(encoding="utf-8"))[
 _REQUEST_FIELDS: tuple[str, ...] = ("profile_id", "sector_ref", "view", "time_mode")
 
 # Evidence ``assertion_ref`` shell pattern (see contracts AND app/theme_research._EvidenceBody).
+# Lane 5: Finance's canonical refs carry the owner's ``theme:`` scope prefix
+# (``gmi-curation://theme:.../gmirca_...`` — the mint of a finance assertion
+# whose ``scope.canonical_theme_id`` is a ``theme:`` id), and canonical theme
+# ids may legally carry hyphens/dots; the grammar now mirrors the shell's
+# request surface exactly.
 _ASSERTION_REF_PATTERN = re.compile(
-    r"^gmi-curation://[a-z0-9_]+/gmirca_[0-9a-f]{32}$"
+    r"^gmi-curation://(?:theme:)?[a-z0-9_.\-]+/gmirca_[0-9a-f]{32}$"
 )
 
 # Strict ISO-8601 (with time part) matching either ``Z`` or a numeric offset.
@@ -386,6 +395,54 @@ def _validate_query(query: Any) -> dict[str, Any]:
         "limit": limit,
         "expected_generation": expected_generation,
     }
+
+
+# ---------------------------------------------------------------------------
+# The shell's query carrier (lane 5)
+# ---------------------------------------------------------------------------
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class FinanceResearchQuery:
+    """The frozen request carrier the shared shell builds for the
+    ``sector_profile`` entry kind: the §8 sector request body with the
+    cutoffs and the native continuation expectation. Pagination fields
+    exist with their §8 defaults; the v2 shell refuses a SUPPLIED ``limit``
+    and a nonzero ``offset`` for a single-document entry before the
+    vertical sees them, and ``_validate_query`` re-checks both bounds."""
+
+    profile_id: str
+    sector_ref: str
+    view: str
+    time_mode: str = "latest"
+    source_cutoff: str | None = None
+    recorded_cutoff: str | None = None
+    offset: int = 0
+    limit: int = 50
+    expected_generation: str | None = None
+
+
+#: Exactly the frozen carrier's field set — the closed contract between the
+#: shell's parsed body and this vertical's callables.
+_QUERY_FIELDS: frozenset[str] = frozenset({
+    "profile_id", "sector_ref", "view", "time_mode",
+    "source_cutoff", "recorded_cutoff", "offset", "limit",
+    "expected_generation",
+})
+
+
+def build_query(**fields: Any) -> FinanceResearchQuery:
+    """Construct :class:`FinanceResearchQuery` from EXACTLY its frozen field
+    set — the registry-facing query constructor the shared shell calls. An
+    unknown key raises ``TypeError`` (shell-contract drift must be loud,
+    never silently dropped), and a missing required key raises the
+    dataclass's own ``TypeError``."""
+    unknown = set(fields) - _QUERY_FIELDS
+    if unknown:
+        raise TypeError(
+            "finance build_query: unknown query fields: " + ", ".join(sorted(unknown))
+        )
+    return FinanceResearchQuery(**fields)
 
 
 # ---------------------------------------------------------------------------
@@ -936,44 +993,91 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
     )
 
 
-def load_bundle(query: Any, *, rights_snapshot: Mapping[str, str] | None = None) -> Any:
-    """Load the owner inputs bundle for a request.
+#: The §8 bundle's private half (assertions, identity results, native
+#: run-context refs, financial packets) is unbound — private binding is the
+#: open R4 ruling, exactly as it is for the semiconductor and Robotics
+#: verticals. Bundle diagnostics for tests and operators; NOT a wire
+#: vocabulary, and no consumer may branch on them.
+PRIVATE_ASSERTIONS_UNBOUND: str = "private_assertions_unbound"
 
-    Behaviour (R5, the round-1 M3 instruction is SUPERSEDED — the packet and
-    the shell's own contract govern):
+#: No declared owner surface produces the Finance run-context native ref or
+#: owns a Finance public cohort today. Declaring one is a Theme Graph /
+#: Data OS owner's ruling, not this adapter's.
+PUBLIC_COHORT_UNOWNED: str = "public_cohort_unowned"
 
-    * If the binding module ``engine.market_ontology.theme_research_binding``
-      resolves AND it exposes a usable ``BundleUnavailable`` Exception
-      subclass, raise that class DIRECTLY with a message that starts
-      ``finance_owner_loader_pending`` and names point (a) of PR #7780
-      comment 5828668393 and R4. The shell maps ``BundleUnavailable`` to
-      its fixed private 503; the carrier classifies the hold by the prefix
-      and the comment/ruling ids inside the message.
-    * Otherwise (the binding is absent, OR the module is present but
-      exposes no usable ``BundleUnavailable`` type) raise
-      :class:`FinanceRegistrationRefusal` with the bare code
-      ``shared_shell_unavailable``. The class contract requires
-      ``str(exc) == exc.code`` and no whitespace in ``.code`` (mirrors
-      :class:`ResearchRefusal`); no call site passes a sentence as the
-      code.
-    """
+
+def _rights_revision(
+    rights_snapshot: Any, bundle_unavailable: type[Exception]
+) -> str:
+    """The enforced rights revision for this request — the ONE rights
+    registry read the shell performs per request and also enforces with, so
+    the fingerprinted revision equals the enforced one. A direct caller may
+    omit it and this reads the snapshot itself; a snapshot that carries no
+    revision is the one genuine "cannot serve" (``bundle_unavailable``),
+    because ``rights_revision`` feeds the generation fingerprint and serving
+    without it would fingerprint a response against nothing."""
+    snapshot: Any = rights_snapshot
+    if snapshot is None:
+        try:
+            from engine.theme_graph.rights import (  # noqa: PLC0415 — lazy by design
+                load_registry_snapshot,
+            )
+        except ImportError as exc:  # pragma: no cover - carrier base fallback
+            raise bundle_unavailable(
+                "rights registry snapshot reader unavailable on this base"
+            ) from exc
+        snapshot = load_registry_snapshot()
+    if not (isinstance(snapshot, tuple) and len(snapshot) == 2
+            and isinstance(snapshot[0], str) and snapshot[0]):
+        raise bundle_unavailable("rights snapshot carries no revision")
+    return snapshot[0]
+
+
+def load_bundle(query: Any, *, rights_snapshot: Any = None) -> Any:
+    """Load the owner inputs bundle for a request — the REAL registered
+    loader (lane 5), serving exactly what exists and declaring what does
+    not, in the Robotics loader's honest-empty shape. The superseded
+    ``finance_owner_loader_pending`` stub raised instead of serving; this
+    loader reads the enforced rights revision (the one real read), reads
+    NOTHING off ``query``, and returns the honest empty bundle whose
+    omissions name WHICH half is absent.
+
+    What does NOT exist today: every Finance owner input half — no producer
+    mints the ``finance_run_context`` native ref, the private assertion
+    half is unbound (R4), and no declared cohort owns the public
+    workspaces. The honest consequence through the REAL adapter:
+    :func:`compose` refuses ``sealed_input_unavailable:run_context`` (no
+    run-context ref) — the profile is UNAVAILABLE end-to-end today, stated
+    by the vertical's own typed refusal, never papered over. Binding a real
+    surface replaces the empty halves here and ONLY here.
+
+    The binding module supplies the carrier types: absent binding, or a
+    binding without a usable ``OwnerBundle``/``BundleUnavailable`` pair,
+    raises the typed ``shared_shell_unavailable`` (the fixture-only
+    contract)."""
     binding_module = _import_shell_module(_SHELL_BINDING_MODULE)
     if binding_module is None:
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
+    owner_bundle_type = getattr(binding_module, "OwnerBundle", None)
     unavailable_type = getattr(binding_module, "BundleUnavailable", None)
-    if not (isinstance(unavailable_type, type) and issubclass(unavailable_type, Exception)):
+    if not (
+        isinstance(owner_bundle_type, type)
+        and isinstance(unavailable_type, type)
+        and issubclass(unavailable_type, Exception)
+    ):
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
-    # Direct raise — the shell maps BundleUnavailable to its fixed private
-    # 503 envelope. The message prefix classifies the hold; the body names
-    # the source comment + R4 so the carrier can route the hold without
-    # needing repo state.
-    raise unavailable_type(
-        "finance_owner_loader_pending: Finance owner loader not wired into "
-        "the shared shell yet (T10 fixture-only contract, PR #7780 "
-        "comment 5828668393 point (a), R4). The §8 sector_profile "
-        "dispatcher must land before this returns a bundle."
+    return owner_bundle_type(
+        revision_tuple=(),
+        rights_revision=_rights_revision(rights_snapshot, unavailable_type),
+        assertions=(),
+        identity_results=(),
+        event_workspaces=(),
+        financial_packets=(),
+        interpretation_blocks=(),
+        native_refs=(),
+        omissions=(PRIVATE_ASSERTIONS_UNBOUND, PUBLIC_COHORT_UNOWNED),
     )
 
 
@@ -1002,6 +1106,7 @@ class FinanceRegistrationFacts:
     compose: Any
     select_evidence: Any
     load_bundle: Any
+    build_query: Any
 
 
 FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
@@ -1026,6 +1131,7 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
     compose=compose,
     select_evidence=select_evidence,
     load_bundle=load_bundle,
+    build_query=build_query,
 )
 
 
@@ -1040,12 +1146,16 @@ FINANCE_REGISTRATION_FACTS = FinanceRegistrationFacts(
 VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE: str = "vertical_registration_held:sector_profile"
 
 # The 12-field share with the shell's VerticalRegistration, in the shell's
-# field order. The shell itself carries 14 fields: the two it adds
-# (``view_keys``, ``build_query``) are NOT forwarded by this adapter, and the
-# exact gap is pinned by
-# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_and_build_query.
+# field order — the THEME-keyed hold path's construction share. The shell
+# itself carries more fields: ``view_keys`` and ``build_query`` (both now
+# owned by this adapter and forwarded through the v2 PROFILE registry path —
+# theme_research_registry.PROFILE_REGISTRY keys this profile, lane 5), the
+# defaulted v2 profile columns, and the defaulted ``issuer_economics`` hook
+# (lane-5 v1.1; Finance registers none — the field stays ``None`` on this
+# adapter's constructions). The exact theme-keyed gap is pinned by
+# tests/test_finance_research_registration.py::test_real_shell_field_gap_is_exactly_view_keys_build_query_and_v2_columns.
 # The facts table above carries additional §8 columns (entry_kind,
-# profile_id, sector_ref, views) that are not part of the share.
+# profile_id, sector_ref, views, build_query) that are not part of the share.
 _VERTICAL_REGISTRATION_FIELDS: tuple[str, ...] = (
     "anchor_theme_id",
     "slice_keys",
@@ -1154,11 +1264,15 @@ __all__ = (
     "AUTHORITY",
     "RESEARCH_SCHEMA_PATH",
     "EVIDENCE_SCHEMA_PATH",
+    "PRIVATE_ASSERTIONS_UNBOUND",
+    "PUBLIC_COHORT_UNOWNED",
     "FinanceRegistrationRefusal",
+    "FinanceResearchQuery",
     "FinanceRegistrationFacts",
     "FINANCE_REGISTRATION_FACTS",
     "_VERTICAL_REGISTRATION_FIELDS",
     "VERTICAL_REGISTRATION_HELD_SECTOR_PROFILE",
+    "build_query",
     "compose",
     "select_evidence",
     "load_bundle",
