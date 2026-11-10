@@ -34114,6 +34114,9 @@ jobs:
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
+      # Lane 5 v1.1 (2026-11-10): the registry's lazy issuer-economics edge
+      # widened in per contract-delta (closure now reaches it).
+      - "engine/market_ontology/issuer_economics.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40646,6 +40649,9 @@ jobs:
       # Shared profile registry: exact static import/read closure (lane 5 v2).
       - "engine/market_ontology/technology_economic_change.py"
       - "engine/market_ontology/technology_research_registration.py"
+      # Lane 5 v1.1 (2026-11-10): the registry's lazy issuer-economics edge
+      # widened in per contract-delta (closure now reaches it).
+      - "engine/market_ontology/issuer_economics.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
