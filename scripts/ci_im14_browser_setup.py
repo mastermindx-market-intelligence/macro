@@ -17,6 +17,11 @@ import time
 APT = Path("/etc/apt")
 MIRROR = "mirror+file:/etc/apt/apt-mirrors.txt"
 HTTPS_ARCHIVE = "https://archive.ubuntu.com/ubuntu/"
+HTTPS_SECURITY = "https://security.ubuntu.com/ubuntu/"
+SECURITY_URIS = (
+    "http://security.ubuntu.com/ubuntu", "http://security.ubuntu.com/ubuntu/",
+    "https://security.ubuntu.com/ubuntu", HTTPS_SECURITY,
+)
 UBUNTU_KEYRING = "/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 PLAYWRIGHT_VERSION = "1.63.0"
 # Exact Playwright 1.63.0 coreBundle Linux x64 dependency inventory. The
@@ -79,21 +84,32 @@ def project_sources(original: bytes, mirror_list: bytes) -> bytes:
                 raise ValueError("unqualified Ubuntu source syntax")
             fields[match[1]] = match[2].strip()
         if (fields.keys() - {"Types", "URIs", "Suites", "Components", "Signed-By", "Architectures"}
-                or fields.get("Types") != "deb" or fields.get("URIs") != MIRROR
+                or fields.get("Types") != "deb"
                 or fields.get("Signed-By") != UBUNTU_KEYRING
-                or fields.get("Architectures", "amd64") != "amd64"
                 or set(fields.get("Components", "").split()) != {"main", "universe", "restricted", "multiverse"}):
             raise ValueError("unqualified Ubuntu source fields")
+        # Retain the hosted x86 multiarch inventory verbatim. A lone
+        # foreign architecture, additional targets and duplicates all refuse.
+        architectures = sorted(fields.get("Architectures", "amd64").split())
+        if architectures not in (["amd64"], ["amd64", "i386"]):
+            raise ValueError("unqualified Ubuntu source architectures")
         current = fields.get("Suites", "").split()
         if not current or suites.intersection(current) or len(current) != len(set(current)):
             raise ValueError("unqualified Ubuntu suites")
+        uri = fields.get("URIs")
+        if uri != MIRROR and not (uri in SECURITY_URIS and current == ["noble-security"]):
+            raise ValueError("unqualified Ubuntu source URI")
         suites.update(current)
         stanzas += 1
     if suites != {"noble", "noble-updates", "noble-backports", "noble-security"}:
         raise ValueError("unqualified Ubuntu suite inventory")
+
+    uri_projection = {MIRROR.encode("ascii"): HTTPS_ARCHIVE.encode("ascii")}
+    uri_projection.update({uri.encode("ascii"): HTTPS_SECURITY.encode("ascii") for uri in SECURITY_URIS})
+    uri_pattern = rb"|".join(re.escape(uri) for uri in uri_projection)
     projected, changed = re.subn(
-        rb"(?m)^(URIs:[ \t]+)mirror\+file:/etc/apt/apt-mirrors\.txt(?=[ \t]*$)",
-        rb"\g<1>" + HTTPS_ARCHIVE.encode("ascii"), original
+        rb"(?m)^(URIs:[ \t]+)(" + uri_pattern + rb")(?=[ \t]*$)",
+        lambda match: match[1] + uri_projection[match[2]], original,
     )
     if changed != stanzas:
         raise ValueError("unqualified Ubuntu URI projection")

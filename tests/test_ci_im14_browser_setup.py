@@ -32,10 +32,41 @@ def test_projection_preserves_every_field_except_the_qualified_uri():
     )
 
 
+def test_projection_preserves_the_hosted_amd64_i386_inventory():
+    sources = SOURCES.replace(
+        b"Signed-By:", b"Architectures: amd64 i386\nSigned-By:", 1
+    ).replace(b"Architectures: amd64\n", b"Architectures: amd64 i386\n")
+    assert im14.project_sources(sources, MIRRORS) == sources.replace(
+        im14.MIRROR.encode(), im14.HTTPS_ARCHIVE.encode()
+    )
+
+
+@pytest.mark.parametrize("uri", [
+    b"http://security.ubuntu.com/ubuntu/",
+    b"https://security.ubuntu.com/ubuntu/",
+    b"http://security.ubuntu.com/ubuntu",
+])
+def test_projection_uses_tls_for_the_canonical_security_pocket(uri):
+    primary, security = SOURCES.split(b"\n\n")
+    security = security.replace(im14.MIRROR.encode(), uri)
+    assert im14.project_sources(primary + b"\n\n" + security, MIRRORS) == (
+        primary.replace(im14.MIRROR.encode(), im14.HTTPS_ARCHIVE.encode())
+        + b"\n\n"
+        + security.replace(uri, b"https://security.ubuntu.com/ubuntu/")
+    )
+
+
 @pytest.mark.parametrize("original,mirrors", [
     (SOURCES.replace(b"ubuntu-archive-keyring.gpg", b"foreign-keyring.gpg"), MIRRORS),
     (SOURCES.replace(b"Types: deb", b"Types: deb\nTrusted: yes"), MIRRORS),
     (SOURCES.replace(b"Architectures: amd64", b"Architectures: arm64"), MIRRORS),
+    (SOURCES.replace(b"Architectures: amd64", b"Architectures: i386"), MIRRORS),
+    (SOURCES.replace(b"Architectures: amd64", b"Architectures: amd64 i386 i386"), MIRRORS),
+    (SOURCES.replace(b"Architectures: amd64", b"Architectures: amd64 i386 arm64"), MIRRORS),
+    (SOURCES.replace(b"URIs: " + im14.MIRROR.encode(),
+                     b"URIs: http://security.ubuntu.com/ubuntu/", 1), MIRRORS),
+    (SOURCES.replace(b"URIs: " + im14.MIRROR.encode(),
+                     b"URIs: http://security.ubuntu.com.example/ubuntu/"), MIRRORS),
     (SOURCES.replace(b"noble-security", b"noble-updates"), MIRRORS),
     (SOURCES.replace(b"URIs: mirror", b"URIs: mirror+file:/extra mirror"), MIRRORS),
     (SOURCES, MIRRORS.replace(b"https://archive.ubuntu.com", b"https://example.invalid")),

@@ -9714,7 +9714,7 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
 
 
 def test_international_browser_partition_preserves_commands_guards_and_budget() -> None:
-    """Keep original proofs once and per-job setup/guard/budget unchanged."""
+    """Pin the original proofs, shared guards and IM14-specific setup."""
     import hashlib
     ids = ('international-workspace-browser', 'international-workspace-browser-im13', 'international-workspace-browser-im14')
     jobs = _yaml(MANIFEST)["jobs"]
@@ -9727,11 +9727,33 @@ def test_international_browser_partition_preserves_commands_guards_and_budget() 
         assert job["if"] == "${{ false }}"
         assert job["gate"] == "code" and job["scope"] == "exclusive"
         assert job["runs-on"] == "ubuntu-latest"
-        assert digest(job["paths"]) == 'e3d0818aa0ca9c9256117db3f3b83263428d7804fe60df48aec306b36752583f'
-        assert digest(job["steps"][:6]) == '837f572c82597fce7f0caab46c9f99aaed2caf2f00a0a7247aad93bad285ea2b'
-        for step in job["steps"][6:]:
+        paths = job["paths"]
+        shared_setup = job["steps"][:6]
+        proofs = job["steps"][6:]
+        if job_id == ids[2]:
+            assert paths[:2] == [
+                "scripts/ci_im14_browser_setup.py",
+                "tests/test_ci_im14_browser_setup.py",
+            ]
+            paths = paths[2:]
+            assert job["steps"][4:6] == [
+                {
+                    "name": "IM14 browser setup contract",
+                    "run": "python -m pytest tests/test_ci_im14_browser_setup.py -q",
+                },
+                {
+                    "name": "install browser test dependencies",
+                    "phase": "browser_setup",
+                    "timeout-minutes": 20,
+                    "run": "python -I scripts/ci_im14_browser_setup.py",
+                },
+            ]
+            shared_setup = [*job["steps"][:4], jobs[ids[0]]["steps"][4], job["steps"][6]]
+            proofs = job["steps"][7:]
+        assert digest(paths) == 'e3d0818aa0ca9c9256117db3f3b83263428d7804fe60df48aec306b36752583f'
+        assert digest(shared_setup) == '837f572c82597fce7f0caab46c9f99aaed2caf2f00a0a7247aad93bad285ea2b'
+        assert len(proofs) == (3 if job_id == ids[0] else 2)
+        for step in proofs:
             assert step["name"] not in actual, step["name"]
             actual[step["name"]] = hashlib.sha256(step["run"].encode()).hexdigest()
     assert actual == expected
-    assert len(jobs[ids[0]]["steps"][6:]) == 3
-    assert all(len(jobs[job_id]["steps"][6:]) == 2 for job_id in ids[1:])

@@ -22,6 +22,7 @@ MAIN_CONTROL_FILES = {
     "ci_apt_native_stage.py",
     "ci_apt_transaction_contract.py",
     "ci_browser_native_setup.py",
+    "ci_im14_browser_setup.py",
     "ci_authority_paths.py",
     "ci_scope_dependencies.py",
     "audit_unrun_tests.py",
