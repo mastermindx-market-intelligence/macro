@@ -14,6 +14,21 @@ from urllib.parse import unquote
 from scripts.ci_apt_cold_acquisition import AcquisitionRefused, Archive, make_download_plan
 
 
+# THE ONE PLAYWRIGHT PIN (F3, CI Lightning). The version below is the single
+# constant every surface must agree on:
+#   * this module's qualified-source tuple,
+#   * the three `acquisition: native_parallel` browser jobs in
+#     .github/ci/legacy-jobs.yml (their `pip install ... playwright==<V>`),
+#   * the `playwright==<V>` line in ci/constraints.txt (which constrains every
+#     other job that installs playwright unpinned via PIP_CONSTRAINT).
+# tests/test_ci_browser_native_setup.py enforces the manifest agreement;
+# tests/test_ci_dependency_constraints.py enforces the constraints-file
+# agreement. Moving this pin is a deliberate multi-file edit plus a fresh
+# nativeDeps bundle hash (QUALIFIED_DRIVER), never a bare bump: 1.65.0
+# (2026-11-09) failed 44 runs / 229 job-hours in 48 h because the tuple
+# accepted exactly one version while jobs installed whatever PyPI served.
+QUALIFIED_PLAYWRIGHT_VERSION = "1.64.1"
+
 # Official Playwright1.64.1 nativeDeps.ts ubuntu24.04-x64; registry adds
 # chromium then tools, preserving the original33 direct requested packages.
 # Source nativeDeps SHA256:1c4244d21f785e11e08b94ede8797bc15941f24b0bdfa677b13fc246f4ace35f.
@@ -34,7 +49,7 @@ def qualified_direct_packages(*, distribution_version: str, driver_version: str,
                               bundle_sha256: str, os_id: str, os_version: str,
                               machine: str) -> tuple[str, ...]:
     observed = (distribution_version, driver_version, bundle_sha256, os_id, os_version, machine)
-    expected = ("1.64.1", "1.64.0-beta-1791568591000", QUALIFIED_DRIVER, "ubuntu", "24.04", "x86_64")
+    expected = (QUALIFIED_PLAYWRIGHT_VERSION, "1.64.0-beta-1791568591000", QUALIFIED_DRIVER, "ubuntu", "24.04", "x86_64")
     if observed != expected:
         fields = ("distribution_version", "driver_version", "bundle_sha256", "os_id", "os_version", "machine")
         mismatches = [field for field, value, pin in zip(fields, observed, expected, strict=True) if value != pin]

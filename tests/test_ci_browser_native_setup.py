@@ -69,21 +69,53 @@ def test_invalid_or_elapsed_original_deadline_never_launches_even_bootstrap(monk
     assert result['outcome']=='failed' and result['timeout_settlement'] is None
 
 
-def test_brain_browser_dependency_enrollment_matches_the_native_distribution_pin():
+def _native_parallel_browser_jobs():
+    """Every manifest job whose browser step acquires Chromium natively.
+
+    These jobs install a pip `playwright` whose distribution version the
+    native plan's qualified-source tuple accepts EXACTLY one value for
+    (scripts/ci_apt_native_plan.py). Each must pin that one value; an
+    unpinned install floats with PyPI and the acquisition refuses with
+    DEPENDENCY_SOURCE_UNQUALIFIED (the 2026-11-09 Playwright 1.65.0 class:
+    44 failed runs / 229 job-hours in 48 h).
+    """
+    from scripts.ci_apt_native_plan import QUALIFIED_PLAYWRIGHT_VERSION
     manifest_path = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
-    job = yaml.safe_load(manifest_path.read_bytes())["jobs"]["unrun-brain-gateway"]
-    install = next(step["run"] for step in job["steps"] if step.get("name") == "install minimal deps")
-    requirements = shlex.split(install)
-    pins = [spec for spec in requirements if spec.startswith("playwright==")]
-    assert "playwright" not in requirements and len(pins) == 1
-    assert SETUP.qualified_direct_packages(
-        distribution_version=pins[0].split("==", 1)[1],
-        driver_version="1.64.0-beta-1791568591000",
-        bundle_sha256=QUALIFIED_DRIVER,
-        os_id="ubuntu",
-        os_version="24.04",
-        machine="x86_64",
-    ) == DIRECT_PACKAGES
+    jobs = yaml.safe_load(manifest_path.read_bytes())["jobs"]
+    found = [
+        (job_id, job)
+        for job_id, job in jobs.items()
+        if any(step.get("acquisition") == "native_parallel" for step in job.get("steps", []))
+    ]
+    assert found, "no native_parallel browser jobs found — manifest shape changed"
+    return QUALIFIED_PLAYWRIGHT_VERSION, found
+
+
+def test_every_native_parallel_browser_job_pins_the_single_playwright_constant():
+    version, found = _native_parallel_browser_jobs()
+    for job_id, job in found:
+        install = next(
+            step["run"] for step in job["steps"]
+            if "pip install" in str(step.get("run", ""))
+        )
+        requirements = shlex.split(install)
+        pins = [spec for spec in requirements if spec.startswith("playwright==")]
+        assert "playwright" not in requirements and len(pins) == 1, (
+            f"{job_id}: exactly one explicit playwright== pin required, got {requirements}"
+        )
+        assert pins[0] == f"playwright=={version}", (
+            f"{job_id}: playwright pin {pins[0]} does not equal the single "
+            f"constant QUALIFIED_PLAYWRIGHT_VERSION={version} "
+            "(scripts/ci_apt_native_plan.py)"
+        )
+        assert SETUP.qualified_direct_packages(
+            distribution_version=pins[0].split("==", 1)[1],
+            driver_version="1.64.0-beta-1791568591000",
+            bundle_sha256=QUALIFIED_DRIVER,
+            os_id="ubuntu",
+            os_version="24.04",
+            machine="x86_64",
+        ) == DIRECT_PACKAGES
 
 
 def test_native_apply_then_exact_vendor_browser_uses_same_env_and_remaining_original_total(monkeypatch):
