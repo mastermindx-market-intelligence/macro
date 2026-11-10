@@ -62,8 +62,19 @@ GLM_NATIVE_PINS = {
 }
 
 
+# Mastermind #2387 / protected ebc48690f20bb5c0554f91ec7cf2b4533f641f5a
+# changes only these two fixture members of the 19-file GLMv4 cohort. The
+# production transport/guard members are unchanged; no per-file mixing is allowed.
+GLM_FIXTURE_NATIVE_PINS = {
+    **GLM_NATIVE_PINS,
+    "tests/test_application_registered_pool_selection.py": "b0c1991f33bff830284225687700ee8d6b32e735",
+    "tests/test_application_registered_pool_composition.py": "59685ae3086241fec086c1e5eda4a37632ada044",
+}
+NATIVE_SOURCE_COHORTS = (NATIVE_PINS, GLM_NATIVE_PINS, GLM_FIXTURE_NATIVE_PINS)
+
+
 def _require_native_source_cohort(observed):
-    assert observed == NATIVE_PINS or observed == GLM_NATIVE_PINS, (
+    assert any(observed == expected for expected in NATIVE_SOURCE_COHORTS), (
         "complete paired native source cohort required"
     )
 
@@ -91,6 +102,52 @@ def test_native_source_cohort_rejects_all_mixed_combinations():
     drifted[changed[0]] = "0" * 40
     with pytest.raises(AssertionError, match="complete paired native source cohort"):
         _require_native_source_cohort(drifted)
+
+
+def test_native_source_cohort_keeps_fixture_repair_atomic_with_runtime_version():
+    """Only the three complete known versions pass all 128 seven-field mixes."""
+    changed = sorted(
+        key for key in NATIVE_PINS
+        if NATIVE_PINS[key] != GLM_FIXTURE_NATIVE_PINS[key]
+    )
+    assert len(changed) == 7
+    assert len(GLM_FIXTURE_NATIVE_PINS) == 19
+    fixture_changes = {
+        key for key in GLM_NATIVE_PINS
+        if GLM_NATIVE_PINS[key] != GLM_FIXTURE_NATIVE_PINS[key]
+    }
+    assert fixture_changes == {
+        "tests/test_application_registered_pool_selection.py",
+        "tests/test_application_registered_pool_composition.py",
+    }
+    accepted = 0
+    for mask in range(1 << len(changed)):
+        mixed = dict(NATIVE_PINS)
+        for index, key in enumerate(changed):
+            if mask & (1 << index):
+                mixed[key] = GLM_FIXTURE_NATIVE_PINS[key]
+        if mixed in NATIVE_SOURCE_COHORTS:
+            _require_native_source_cohort(mixed)
+            accepted += 1
+        else:
+            with pytest.raises(AssertionError, match="complete paired native source cohort"):
+                _require_native_source_cohort(mixed)
+    assert accepted == 3
+
+
+def test_fixture_repaired_cohort_rejects_missing_extra_and_drifted_members():
+    for key in GLM_FIXTURE_NATIVE_PINS:
+        for missing in (False, True):
+            malformed = dict(GLM_FIXTURE_NATIVE_PINS)
+            if missing:
+                del malformed[key]
+            else:
+                malformed[key] = "0" * 40
+            with pytest.raises(AssertionError, match="complete paired native source cohort"):
+                _require_native_source_cohort(malformed)
+    extended = {**GLM_FIXTURE_NATIVE_PINS, "candidate/unqualified.py": "0" * 40}
+    with pytest.raises(AssertionError, match="complete paired native source cohort"):
+        _require_native_source_cohort(extended)
 
 
 def native_source_pins(source_root):
