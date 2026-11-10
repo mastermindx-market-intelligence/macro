@@ -315,6 +315,8 @@ jobs:
       # paths named by scripts/check_contract_delta.py at head
       # 595fe6b7 — widening is the safe direction.
       - "lib/sector_central_carry.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43358,6 +43360,8 @@ jobs:
       - "lib/sector_history_contract.py"
       - "templates/_sector_central_brief.js.j2"
       - "tests/test_sector_native_view.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -51259,6 +51263,8 @@ jobs:
       # paths named by scripts/check_contract_delta.py at head
       # 595fe6b7 — widening is the safe direction.
       - "lib/sector_central_carry.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
