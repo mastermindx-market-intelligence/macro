@@ -41,6 +41,7 @@ import re
 import shlex
 import signal
 import shutil
+import stat
 import subprocess
 import sys
 import sysconfig
@@ -614,6 +615,10 @@ NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
 NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
 NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 
+IM14_BROWSER_JOB_ID = "international-workspace-browser-im14"
+IM14_BROWSER_SETUP_COMMAND = "python -I scripts/ci_im14_browser_setup.py"
+IM14_BROWSER_JOB_TIMEOUT_MINUTES = 20
+
 
 def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
     """Opt-in attribution only; setup consumes the original logical deadline."""
@@ -637,6 +642,19 @@ def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | N
     }
 
 def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
+    if step.get("run") == IM14_BROWSER_SETUP_COMMAND:
+        if (set(step) != {"name", "phase", "timeout-minutes", "run"}
+                or step["phase"] != "browser_setup"
+                or type(step["timeout-minutes"]) is not int
+                or step["timeout-minutes"] != IM14_BROWSER_JOB_TIMEOUT_MINUTES):
+            raise ManifestError("IM14 browser setup requires its exact non-native phase and original deadline")
+        helper = Path(__file__).with_name("ci_im14_browser_setup.py")
+        return {
+            "phase": "browser_setup", "command": step["run"],
+            "timeout_minutes": step["timeout-minutes"],
+            "budget": "within_original_logical_job_deadline",
+            "setup_source_sha256": hashlib.sha256(helper.read_bytes()).hexdigest(),
+        }
     # Unmarked jobs retain the protected projection, validation and digest.
     if "acquisition" not in step:
         return _incumbent_browser_setup_spec(step)
@@ -658,6 +676,49 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
             for name in ("ci_browser_dependency_inputs.py", "ci_browser_dependency_capture.py")
         },
     }
+
+
+def _run_im14_browser_setup(
+    setup: Mapping[str, Any], *, job_deadline: float, command_env: Mapping[str, str],
+) -> CommandObservation:
+    """Launch the exact helper bytes bound by the authoritative control."""
+    try:
+        scripts_fd = os.open("scripts", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            fd = os.open("ci_im14_browser_setup.py", os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                         dir_fd=scripts_fd)
+            with os.fdopen(fd, "rb") as source:
+                if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                    raise ValueError("not a regular source file")
+                helper = source.read(64 * 1024 + 1)
+        finally:
+            os.close(scripts_fd)
+        if not helper or len(helper) > 64 * 1024 or (
+            hashlib.sha256(helper).hexdigest() != setup["setup_source_sha256"]
+        ):
+            raise ValueError("source does not match control")
+    except (OSError, ValueError):
+        return CommandObservation(outcome="failed", returncode=1,
+                                  detail="IM14 candidate helper differs from authorized control; no launch")
+    # The file is private and unlinked. Python reads the verified snapshot from
+    # stdin, so it never reopens the candidate path after verification.
+    with tempfile.TemporaryFile() as snapshot:
+        snapshot.write(helper)
+        snapshot.seek(0)
+        remaining = job_deadline - time.monotonic()
+        if remaining <= 0:
+            return CommandObservation(outcome="timed_out", returncode=None,
+                                      detail="IM14 deadline exhausted before helper launch",
+                                      timeout_settlement="not_started")
+        result = _stream_command(
+            f"python -I - {job_deadline!r}", env=command_env, timeout_seconds=remaining,
+            stdin=snapshot.fileno(),
+        )
+        if result.returncode == 124:
+            return replace(result, outcome="timed_out", returncode=None, failure_signature=None,
+                           detail="IM14 setup deadline or privileged settlement is uncertain",
+                           timeout_settlement="unknown")
+        return result
 
 
 def _run_native_browser_setup(
@@ -703,6 +764,11 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
+    if any(spec["command"] == IM14_BROWSER_SETUP_COMMAND for spec in contract) and (
+        job.job_id != IM14_BROWSER_JOB_ID
+        or job.definition["timeout-minutes"] != IM14_BROWSER_JOB_TIMEOUT_MINUTES
+    ):
+        raise ManifestError("IM14 browser setup requires its original owner and job deadline")
     if any(spec.get("acquisition") == "native_parallel" for spec in contract):
         admitted_totals = {
             NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
@@ -4130,6 +4196,10 @@ def _run_job(
                     result = _run_native_browser_setup(
                         setup, job_deadline=job_deadline, setup_started_at=command_started_at, command_env=semantic_env,
                     )
+                elif setup is not None and setup["command"] == IM14_BROWSER_SETUP_COMMAND:
+                    result = _run_im14_browser_setup(
+                        setup, job_deadline=job_deadline, command_env=semantic_env,
+                    )
                 else:
                     result = _stream_command(
                         command,
@@ -4265,6 +4335,7 @@ def _stream_command(
     env: Mapping[str, str],
     timeout_seconds: int | float | None,
     detect_retryable_dependency_transport: bool = False,
+    stdin: int | None = None,
 ) -> CommandObservation:
     """Stream a child live while retaining only bounded structured atoms."""
     deadline = (
@@ -4289,6 +4360,7 @@ def _stream_command(
         stderr=subprocess.STDOUT,
         bufsize=0,
         start_new_session=True,
+        **({"stdin": stdin} if stdin is not None else {}),
     )
     assert process.stdout is not None
     pump_error: list[str] = []
@@ -5231,14 +5303,28 @@ def _run_exact_base_replays(
     ]
     if not failed_records or plan.role != "pr_head":
         return
-    deadline = time.monotonic() + max(1, budget_seconds)
     base_sha = plan.base_sha
+    # The IM14 setup performs a privileged package installation. An assertion
+    # failure must not launch the older base's unqualified setup to compare it.
+    replayable = []
+    for record in failed_records:
+        if record["logical_job_id"] != IM14_BROWSER_JOB_ID:
+            replayable.append(record)
+            continue
+        for step in record["steps"]:
+            if step.get("outcome") in {"failed", "timed_out"}:
+                step["base_replay"] = _base_replay_unavailable(
+                    base_sha, "IM14 privileged browser setup is outside exact-base replay"
+                )
+    if not replayable:
+        return
+    deadline = time.monotonic() + max(1, budget_seconds)
     current_steps: list[dict[str, Any]] = []
     try:
         with _exact_base_worktree(root, base_sha, deadline=deadline) as base_root:
             base_runner = base_root / "scripts" / "run_ci_pack.py"
             base_manifest = base_root / ".github" / "ci" / "legacy-jobs.yml"
-            for record in failed_records:
+            for record in replayable:
                 target_steps = [
                     step
                     for step in record["steps"]

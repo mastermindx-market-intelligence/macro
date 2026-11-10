@@ -4897,3 +4897,121 @@ def test_canonical_frozen_blob_from_packed_smart_http(tmp_path):
         server.server_close()
         thread.join(5)
         assert not thread.is_alive()
+
+
+def im14_job():
+    return next(job for job in PACK.load_legacy_jobs(MANIFEST) if job.job_id == PACK.IM14_BROWSER_JOB_ID)
+
+
+def test_setup_contract_keeps_budget_owner_and_assertions():
+    job = im14_job()
+    spec, = PACK._browser_setup_contract(job)
+    assert spec["timeout_minutes"] == job.definition["timeout-minutes"] == 20
+    assert "acquisition" not in spec
+    assert PACK.IM14_BROWSER_SETUP_COMMAND == spec["command"]
+    ids = [step.proof_id for step in PACK.semantic_step_specs(job)]
+    assert "install browser test dependencies" not in ids
+    assert ids == ["IM14 browser setup contract",
+                   "canonical base for the frozen-file guard (fail closed)",
+                   "IM14 market dossier tests (W2B)", "IM14 market dossier browser proof (W2B)"]
+    with pytest.raises(PACK.ManifestError, match="original owner and job deadline"):
+        PACK._browser_setup_contract(PACK.replace(job, job_id="other"))
+    with pytest.raises(PACK.ManifestError, match="original owner and job deadline"):
+        PACK._browser_setup_contract(PACK.replace(job, definition={**job.definition, "timeout-minutes": 21}))
+
+
+@pytest.mark.parametrize("outcome,settlement,infrastructure", [
+    ("failed", None, "dependency_failed"),
+    ("timed_out", "unknown", "unknown"),
+])
+def test_failed_setup_cannot_run_browser_or_create_semantic_replay_target(
+    monkeypatch, outcome, settlement, infrastructure
+):
+    job = im14_job()
+    calls = []
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_, **__: None)
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        if command.startswith("python -I - "):
+            with os.fdopen(os.dup(kwargs["stdin"]), "rb") as verified:
+                assert verified.read() == (ROOT / "scripts/ci_im14_browser_setup.py").read_bytes()
+            return PACK.CommandObservation(outcome=outcome, returncode=100 if outcome == "failed" else None,
+                                           detail="original APT result", timeout_settlement=settlement)
+        assert command.startswith("python -m pytest tests/test_ci_im14_browser_setup.py")
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="test", command_env={})
+    assert len(calls) == 2
+    assert result.infrastructure["outcome"] == infrastructure
+    assert result.timeout_settlement == settlement
+    assert [step["outcome"] for step in result.steps] == ["passed"] + ["infrastructure_blocked"] * 3
+
+
+def test_later_browser_assertion_failure_cannot_launch_old_privileged_base(monkeypatch):
+    monkeypatch.setattr(PACK, "_exact_base_worktree",
+                        lambda *_, **__: pytest.fail("IM14 base setup is not replayable"))
+    step = {"outcome": "failed", "proof_id": "IM14 market dossier browser proof (W2B)"}
+    plan = SimpleNamespace(role="pr_head", base_sha="a" * 40)
+    PACK._run_exact_base_replays(root=Path("."), plan=plan, records=[
+        {"logical_job_id": PACK.IM14_BROWSER_JOB_ID, "steps": [step]},
+    ], budget_seconds=120)
+    assert step["base_replay"]["outcome"] == "unavailable"
+
+@pytest.mark.parametrize("shape", ["different-bytes", "symlink", "directory-symlink"])
+def test_im14_refuses_candidate_helper_mismatch_before_process_start(tmp_path, monkeypatch, shape):
+    setup, = PACK._browser_setup_contract(im14_job())
+    control = ROOT / "scripts/ci_im14_browser_setup.py"
+    scripts = tmp_path / "scripts"
+    if shape == "directory-symlink":
+        scripts.symlink_to(control.parent, target_is_directory=True)
+    else:
+        scripts.mkdir()
+        candidate = scripts / control.name
+        if shape == "symlink":
+            candidate.symlink_to(control)
+        else:
+            candidate.write_text("raise SystemExit('different candidate')\n")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(PACK, "_stream_command", lambda *a, **kw: pytest.fail("process started"))
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "failed" and result.timeout_settlement is None
+    assert "no launch" in result.detail
+
+
+def test_im14_launches_a_verified_snapshot_even_if_candidate_changes(tmp_path, monkeypatch):
+    setup, = PACK._browser_setup_contract(im14_job())
+    control = ROOT / "scripts/ci_im14_browser_setup.py"
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    original = control.read_bytes()
+    candidate = scripts / control.name
+    candidate.write_bytes(original)
+    monkeypatch.chdir(tmp_path)
+
+    def stream(command, **kwargs):
+        candidate.write_bytes(b"changed after verification")
+        assert command.startswith("python -I - ")
+        with os.fdopen(os.dup(kwargs["stdin"]), "rb") as snapshot:
+            assert snapshot.read() == original
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "passed"
+
+def test_im14_nested_root_timeout_stays_unknown(monkeypatch):
+    setup, = PACK._browser_setup_contract(im14_job())
+    monkeypatch.setattr(PACK, "_stream_command",
+                        lambda *a, **kw: PACK.CommandObservation(outcome="failed", returncode=124))
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "timed_out"
+    assert result.timeout_settlement == "unknown"
