@@ -4053,7 +4053,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -10841,6 +10841,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
@@ -11975,6 +11976,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -28180,7 +28182,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel

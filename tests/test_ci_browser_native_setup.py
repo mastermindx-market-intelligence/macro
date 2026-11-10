@@ -86,6 +86,30 @@ def test_brain_browser_dependency_enrollment_matches_the_native_distribution_pin
     ) == DIRECT_PACKAGES
 
 
+@pytest.mark.parametrize(
+    ("job_id", "step_name"),
+    [
+        ("ontology-explorer", "install deps"),
+        ("bea-gvc-current-descriptive-consumer", "Install hermetic GMI source/read-gate tests"),
+    ],
+)
+def test_browser_producer_enrollment_matches_the_native_distribution_pin(job_id, step_name):
+    manifest = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
+    job = yaml.safe_load(manifest.read_bytes())["jobs"][job_id]
+    install = next(step["run"] for step in job["steps"] if step.get("name") == step_name)
+    requirements = shlex.split(install)
+    pins = [spec for spec in requirements if spec.startswith("playwright==")]
+    assert "playwright" not in requirements and len(pins) == 1
+    assert SETUP.qualified_direct_packages(
+        distribution_version=pins[0].split("==", 1)[1],
+        driver_version="1.64.0-beta-1791568591000",
+        bundle_sha256=QUALIFIED_DRIVER,
+        os_id="ubuntu",
+        os_version="24.04",
+        machine="x86_64",
+    ) == DIRECT_PACKAGES
+
+
 def test_native_apply_then_exact_vendor_browser_uses_same_env_and_remaining_original_total(monkeypatch):
     events=runtime(monkeypatch);env={'PATH':'/isolated/bin','ORIGINAL':'same'};calls=[]
     def browser(command,**kwargs):calls.append((command,kwargs));return observed()
