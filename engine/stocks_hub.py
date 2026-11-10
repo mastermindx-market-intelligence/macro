@@ -1228,9 +1228,16 @@ def normalize_us_sector_payload(payload: Mapping | None) -> dict | None:
 
     labels = {}
     for row in payload.get("sectors") or []:
-        k = key(row["key"])
-        if k not in labels or row["key"] == k:
-            labels[k] = {**row, "key": k, "en": k}
+        original = row["key"]
+        k = key(original)
+        if original not in GICS_TO_ETF:
+            labels[k] = dict(row)
+            continue
+        merged = dict(labels.get(k, {}))
+        for field, value in row.items():
+            if value not in (None, "") and (original == k or not merged.get(field)):
+                merged[field] = value
+        labels[k] = {**merged, "key": k, "en": k}
     return {**payload,
             "sectors": list(labels.values()),
             "tiles": [{**row, "sector": key(row.get("sector"))}
