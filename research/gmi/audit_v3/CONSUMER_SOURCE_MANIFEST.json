@@ -1,0 +1,343 @@
+{
+  "audit": "gmi-audit-masterplan-v3-20261003 consumer census",
+  "method": "GitHub connector exact-ref fetch_file; independent source branches kept separate",
+  "files": [
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": ".github/workflows/company-intelligence.yml",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/.github/workflows/company-intelligence.yml",
+      "local_sha256": "ffdcfb9c2df7178025ae19301a47c7e10ad55844fe7bf661e1b31127b2e5f2d0",
+      "local_lines": 178
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": ".github/workflows/sector-intelligence.yml",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/.github/workflows/sector-intelligence.yml",
+      "local_sha256": "a9b271db22fa1451e675cc3f62ec7627fadd284307514453be9c6845d9469c6d",
+      "local_lines": 192
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/contracts/sector_intelligence/sector_dossier_read_model.v1.schema.json",
+      "local_sha256": "63610b8963a07c599a3c13c49e24f8c66501b717b0919cf2746a97407c3f2ef6",
+      "local_lines": 1064
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "docs/superpowers/plans/2026-09-21-stsi1-sector-federation-technology-dossier.md",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/docs/superpowers/plans/2026-09-21-stsi1-sector-federation-technology-dossier.md",
+      "local_sha256": "b8195df9a650f857ddeeb4a23f91c4f1f616e448e738b57948f5f3ef0e703db5",
+      "local_lines": 2742
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/company_theme_exposure/contracts.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/company_theme_exposure/contracts.py",
+      "local_sha256": "5fece33d77418a99719b0b0ad706c0c4a9b3bab44e0b54a5f21fac98c2e4d269",
+      "local_lines": 306
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/company_theme_exposure/views.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/company_theme_exposure/views.py",
+      "local_sha256": "6d7c9e20abb8daa91c3287c0ad5863be9f3769a52fdd47b250cc59c39ac541d2",
+      "local_lines": 444
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/neuralweb/thematic_state.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/neuralweb/thematic_state.py",
+      "local_sha256": "241d65bebe0c8c84d61bf433050b150121c0a8ecd653452d5207f2d7894565a7",
+      "local_lines": 706
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/sector_intelligence/contracts.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/sector_intelligence/contracts.py",
+      "local_sha256": "5c95961254380a731a45e2c3b63a2fd4f446e9cd631390bbacdfa8d8f48ec87b",
+      "local_lines": 9304
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/sector_intelligence/finance_projection.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/sector_intelligence/finance_projection.py",
+      "local_sha256": "88dd872689be757ce8ee3be0db67ceebb1091431304d8cae2d1890f6e0b63354",
+      "local_lines": 3052
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/subsector_rotation.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/subsector_rotation.py",
+      "local_sha256": "a7ba875cc42ab2a305b28ea0205537f4635739f4b173e6fac3ea872d549fdf3b",
+      "local_lines": 547
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "engine/theme_graph/local_sources.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/engine/theme_graph/local_sources.py",
+      "local_sha256": "c5569a4874aef7219e0d75b2e57b27c4bb2495463c28c2cf8a7c03208b355c27",
+      "local_lines": 434
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "scripts/build_company_theme_exposure.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/scripts/build_company_theme_exposure.py",
+      "local_sha256": "9fff2765a603bc40d459544da422c55a28bbddac9bbf2d4e641696d4b9d38c79",
+      "local_lines": 70
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "scripts/build_sector_intelligence.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/scripts/build_sector_intelligence.py",
+      "local_sha256": "f0052bf47774c1da389f924e83372a6d28247551d43f68e4329d0dff50898d6e",
+      "local_lines": 61
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "scripts/check_sector_intelligence_freshness.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/scripts/check_sector_intelligence_freshness.py",
+      "local_sha256": "f8175c7498ff809ecad26039572bd7139cd165aa7405468b93ceb844ce2aaceb",
+      "local_lines": 267
+    },
+    {
+      "scope": "main",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "bebcb24db8707f93c3acca470590fead13e78dbd",
+      "path": "scripts/publish_company_theme_exposure_r2.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/bebcb24db8707f93c3acca470590fead13e78dbd/scripts/publish_company_theme_exposure_r2.py",
+      "local_sha256": "357d3696f85f171549df1e2bc762631b165f34684085ad2628a110d394599493",
+      "local_lines": 214
+    },
+    {
+      "scope": "terminal",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "41b8af2da46614cedd2a485214e53003d4f030fc",
+      "path": "terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "github_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/app/api/company-theme-context/[symbol]/route.ts",
+      "local_sha256": "579666006e762441bea9ec99ac0a9c307f8d8fdd9fddcfd56d860be6328a679a",
+      "local_lines": 98
+    },
+    {
+      "scope": "terminal",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "41b8af2da46614cedd2a485214e53003d4f030fc",
+      "path": "terminal/components/fin/CompanyIntelligencePage.tsx",
+      "github_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/components/fin/CompanyIntelligencePage.tsx",
+      "local_sha256": "4b4bc8704fb096bb09342d30a3a3f40f01e835d1ef27ab994dbb6dbfd20924de",
+      "local_lines": 915
+    },
+    {
+      "scope": "terminal",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "41b8af2da46614cedd2a485214e53003d4f030fc",
+      "path": "terminal/components/fin/CompanyThemeContextCard.tsx",
+      "github_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/components/fin/CompanyThemeContextCard.tsx",
+      "local_sha256": "f7d623baa762655596363db645f4008eb2b1a9a157e99d660dd075a22cb9cb8d",
+      "local_lines": 213
+    },
+    {
+      "scope": "terminal",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "commit": "41b8af2da46614cedd2a485214e53003d4f030fc",
+      "path": "terminal/lib/companyThemeExposure.ts",
+      "github_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/41b8af2da46614cedd2a485214e53003d4f030fc/terminal/lib/companyThemeExposure.ts",
+      "local_sha256": "ad1e023099cc60aad394f8030620bacea60dcd2bce42d8d533d65d4151e14644",
+      "local_lines": 594
+    },
+    {
+      "scope": "pr7455",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "ebc7604b624adb8452041d8240f7cda41733f167",
+      "path": "engine/neuralweb/thematic_state.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/ebc7604b624adb8452041d8240f7cda41733f167/engine/neuralweb/thematic_state.py",
+      "local_sha256": "cee458c8bac802aa62eb5ece6edaf34caf97e0f18509d6d28859ecaa51c7fa75",
+      "local_lines": 811
+    },
+    {
+      "scope": "pr7455",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "ebc7604b624adb8452041d8240f7cda41733f167",
+      "path": "engine/subsector_rotation.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/ebc7604b624adb8452041d8240f7cda41733f167/engine/subsector_rotation.py",
+      "local_sha256": "c93005eba9a2a4e159b48ec4544146e76a215d4fb2f49e46d83da4c378b95d52",
+      "local_lines": 1154
+    },
+    {
+      "scope": "pr7455",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "ebc7604b624adb8452041d8240f7cda41733f167",
+      "path": "scripts/build_subsector_rotation.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/ebc7604b624adb8452041d8240f7cda41733f167/scripts/build_subsector_rotation.py",
+      "local_sha256": "e7547357497362d3d578f2db536fdca7b0f350c01e22fca9c9033ec7fdba06d2",
+      "local_lines": 541
+    },
+    {
+      "scope": "pr8299",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "39ba5f7b8e88821c341b1de99344d262afcb8837",
+      "path": "engine/subsector_rotation.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ba5f7b8e88821c341b1de99344d262afcb8837/engine/subsector_rotation.py",
+      "local_sha256": "9801438201926775924dd345aed40dee6dbc59c3526bba6c360cd846b74eac8a",
+      "local_lines": 592
+    },
+    {
+      "scope": "pr8299",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "39ba5f7b8e88821c341b1de99344d262afcb8837",
+      "path": "engine/subsector_track_record.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ba5f7b8e88821c341b1de99344d262afcb8837/engine/subsector_track_record.py",
+      "local_sha256": "7b6905f5db6fc3543a800651de282d6d920e4183d4438aa56fbc1fbe52211cb8",
+      "local_lines": 853
+    },
+    {
+      "scope": "pr7976",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff",
+      "path": "engine/theme_repricing_context.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff/engine/theme_repricing_context.py",
+      "local_sha256": "dd2bbb5ee0f83fe64545d0ee7ac3f4930d426967ceefb60abd349b7c9a322db0",
+      "local_lines": 578
+    },
+    {
+      "scope": "pr7976",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff",
+      "path": "engine/theme_repricing_pit.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff/engine/theme_repricing_pit.py",
+      "local_sha256": "77c8eb3341bbe0c9c106daad064593b00d5fa280c209340883464313ccad7be1",
+      "local_lines": 257
+    },
+    {
+      "scope": "pr7976",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff",
+      "path": "engine/theme_rerating_durability.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/0a6e4d7f518d3ab086da2b1aecfe0d5fa6dac6ff/engine/theme_rerating_durability.py",
+      "local_sha256": "d9194fd00c9a473314d1e5e6b27aa3831ca59cd41189cbf0a412813b105d1273",
+      "local_lines": 313
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "app/theme_research.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/app/theme_research.py",
+      "local_sha256": "c3edacae992590307f7a03e6eef4980aac66f49633559f07f97d3e20bdb1aa68",
+      "local_lines": 783
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "engine/market_ontology/semiconductor_owner_bundle.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/engine/market_ontology/semiconductor_owner_bundle.py",
+      "local_sha256": "6f71d71d301981238f6865710ad57635260be9d3ebdac7c312f04ee99bfad115",
+      "local_lines": 448
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "engine/market_ontology/semiconductor_theme_research.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/engine/market_ontology/semiconductor_theme_research.py",
+      "local_sha256": "8abe5edec87fd1e36f7e1e8df525bf0b51e51c783ff1e6062282ac34c20079ac",
+      "local_lines": 1224
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "engine/market_ontology/theme_research_binding.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/engine/market_ontology/theme_research_binding.py",
+      "local_sha256": "420a917f402792c515ed9d3880d35a14a02b2b6a7b3f2688933c74d29e20c262",
+      "local_lines": 29
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "engine/market_ontology/theme_research_mounts.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/engine/market_ontology/theme_research_mounts.py",
+      "local_sha256": "7ee6f51451c1547dd46e977d83cf9f47b2db94f6330b14b0c41d47e215ee130c",
+      "local_lines": 303
+    },
+    {
+      "scope": "pr7870",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9",
+      "path": "engine/market_ontology/theme_research_registry.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/f12db8bff1d1a46a2c9fbf100bed8f6f3abc9ec9/engine/market_ontology/theme_research_registry.py",
+      "local_sha256": "5fd41ee5d17c40300225b96012d5713f5d2d6c9c493fee45a914d8720eb6b365",
+      "local_lines": 224
+    },
+    {
+      "scope": "pr8240",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "6d920952dc07731139cefc8a41cbd9bf92be5acf",
+      "path": "engine/prophet_early_leadership_evidence.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6d920952dc07731139cefc8a41cbd9bf92be5acf/engine/prophet_early_leadership_evidence.py",
+      "local_sha256": "55430eaebaaddbe5b12140ddf85cf033e927460e4f323cd4c284e3166730b61c",
+      "local_lines": 570
+    },
+    {
+      "scope": "pr8240",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "6d920952dc07731139cefc8a41cbd9bf92be5acf",
+      "path": "research/prophet_v4/PROPHET_EARLY_LEADERSHIP_EVIDENCE_V1_2026-09-30.md",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6d920952dc07731139cefc8a41cbd9bf92be5acf/research/prophet_v4/PROPHET_EARLY_LEADERSHIP_EVIDENCE_V1_2026-09-30.md",
+      "local_sha256": "8c456aa522074f5e59e205c82d16de5cdc00a8238e5a2f59c073246e763fbdac",
+      "local_lines": 172
+    },
+    {
+      "scope": "pr8240",
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "6d920952dc07731139cefc8a41cbd9bf92be5acf",
+      "path": "tests/test_prophet_fusion_w3_structural.py",
+      "github_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6d920952dc07731139cefc8a41cbd9bf92be5acf/tests/test_prophet_fusion_w3_structural.py",
+      "local_sha256": "fed36d7744d7007b1b3fa0a898feb45789f8cc0d7232fe3dd4fb2aea0078e598",
+      "local_lines": 1024
+    }
+  ],
+  "not_found_at_macro_pin": [
+    "engine/neuralweb/sector_federation.py",
+    "scripts/build_sector_dossiers.py",
+    "templates/sector_dossier.js",
+    "site/sectordata/sector_dossiers/xlk.json"
+  ],
+  "reproduction": {
+    "script": "prophet_boundary_probe.py",
+    "result": "PROPHET_BOUNDARY_REPRODUCTION.json",
+    "basis": "existing #8240 synthetic fixture only"
+  },
+  "production_effects": "none",
+  "live_deployment_claims": "none"
+}
