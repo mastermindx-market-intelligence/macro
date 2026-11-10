@@ -81,7 +81,7 @@ danger_areas:
   - "Measured display order/conviction/rank/gating/scientific and trading authority differ. Historical reconstruction, fixed timing windows, phase knowledge and whole-curve MODEL/PRIOR qualification remain explicit."
   - "Source fixtures and illustrative Paper specimens cannot become real input/rights/production proof. Existing Industrials certified source paths require synthetic cases; PLNT public fixture is held."
   - "Workstream owner/status/waves remain unchanged; this planning source does not assert new runtime admission, team START, source approval, merge or production acceptance."
-prs: []
+prs: [10915]
 ---
 
 # Sector Intelligence — final four-round handoff
@@ -89,6 +89,10 @@ prs: []
 **ROUND_4_COMPLETE: true. FOUR_ROUND_MISSION_COMPLETE: true. APPLICATION_PRODUCTION_ACCEPTED: false. TEAM_DISPATCHED: false.**
 
 This updates the same November9 source-owned planning handoff on the existing branch. The model field retains the Sol principal-author schema slot; actual authoring is ChatGPT Web GPT-6 Astra Pro. ended_because=complete describes the requested four-round planning mission, not the product program.
+
+## Reviewable source carrier
+
+[Macro PR #10915](https://github.com/mastermindx-market-intelligence/macro/pull/10915) is open and non-Draft against main on this same documentation branch. Native readback at the initial published head f9e44d5fd5b22faa371a3235b9b4d6924c0a6bc6 showed mergeable=true and exactly eight documentation/continuity files. Available patches, the exact path set and complete file postimages were inspected. GitHub omitted the long added packet patch; its complete immutable source was read back exactly. Hosted ci and fences were queued at that initial head; no hosted pass, merge-on-green request, merge, deployment or team dispatch is claimed. The PR contains this later source-linked carrier receipt as well.
 
 ## Final concrete sources
 
