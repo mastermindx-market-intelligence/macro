@@ -925,3 +925,43 @@ changes. It is a finished child's worktree and is left to the storage helper's r
 ### 19.4 Rung reached
 
 Unchanged. Nothing of v1.1 is merged or served. Integrated-proof count: 0 of 44.
+
+## 20. Status at 14:23Z — lane 5 delivered, #1429 review NOT READY, two reviews started, push rule for this record
+
+### 20.1 What returned
+
+| Item | Result | Head |
+|---|---|---|
+| Lane 5, issuer-economics delta (Macro #10956) | Delivered. Stacked on #10931, which another session holds and which is unmerged, so #10956 cannot merge yet. Own diff after `3290bfe75f96`: 7 files, +1446/-1 (verified with `git diff --stat`). Author's tests: 10 passed, 8 passed, 436 passed / 4 skipped. | `95aa439d0a8a` |
+| Lane 3, mounted surface (Terminal #1429), independent review | **NOT READY**: 2 blockers, 3 should-fix, 8 notes, reviewed at `93a760a7d935`. | lane 3 has since moved to `42ee6278c8c0` |
+| Lane 1 CI registration pass (Macro #10929) | Pass complete; contract-delta "0 introduced, 0 inherited" at `c5d8c31db57d`. All six sector-generation suites stay in their current job (moving them measured worse). The full packing test result is still being written into the return. Final pass waits for #10924 to merge. | `c5d8c31db57d` (draft, held) |
+
+The #1429 defects in plain terms:
+
+- B1: after the user applies one filter, the group picker goes dead and cannot be changed or cleared.
+- B2: pressing search again with the same text leaves the table on "Loading…" for good. This arrived in a commit the lane had described as type-only; that description was wrong.
+- S2: the reader checks each field's type but not whether a page agrees with itself (for example "complete" together with a next-page cursor).
+- S3: the server route passes the upstream refusal body to the browser as received.
+- N7: a test fixture holds real signed cursor tokens and an actor digest.
+- No route tests and no component tests exist for this surface.
+- #1429 carries lane 6's branch at an older head (`fbc0925d98a9`) than lane 6's current head (`0fd16f5bc4e0`).
+
+### 20.2 Decisions
+
+1. Lane 3 fixes B1, B2, S2, S3 and notes N2, N4, N5, N6, N7 as new commits; N1 is accepted as designed but pinned by route tests; N3 and N8 are recorded as known limits. The reviewer's probe tests become permanent tests. Lane 3 merges lane 6's current head now. A narrow second review of `93a760a7d935` → new head follows. Order sent 14:21Z.
+2. Lane 5 gets an independent review limited to its own four commits (started 14:21Z, verdict to `/tmp/si_plan/reviews/lane5_10956_review.md`). #10931 is not reviewed, not pushed to and not armed by this programme. #10956 is not armed until #10931 has merged and the review is READY.
+3. Lane 6 (#1425) had no independent review on record. One started 14:21Z (verdict to `/tmp/si_plan/reviews/lane6_1425_review.md`). It re-runs the migration-prefix census, checks the migration against the installed production state recorded by lane 6, and may write only to a disposable local database. No APPLY.
+4. Terminal landing order is unchanged: #1425, #1419, #1431, then master merged into #1429, then #1429. None is armed before its review reads READY.
+
+### 20.3 Push rule for this status record
+
+Every push to this branch cancels the CI run in progress for the previous head (runs 42829286555 and 42830350986 were cancelled this way), which is why #10945 has not merged. From 14:12Z new sections are committed locally and pushed only when #10945 has merged, in which case later sections go on a fresh branch from main with a new armed pull request, or when the CI run for the pushed head has concluded. At 14:23Z run 42831237204 is in progress on `3a5a6b422d57`.
+
+### 20.4 Observed pull request state, 14:22Z
+
+Macro: #10923 open, armed; #10924 open, armed, `f9cb2c6535ea`; #10945 open, armed, `3a5a6b422d57`; #10929 draft, held, `c5d8c31db57d`; #10954 open, reviewed, not armed, `0d43d893cc70`; #10956 open, not armed, `95aa439d0a8a`.
+Terminal: #1410 open, armed, clean, `dc02f1c28879`; #1419 `6778c61594b9`; #1425 `0fd16f5bc4e0`; #1429 `42ee6278c8c0`; #1431 `fb60cb3e0f82`. None merged.
+
+### 20.5 Rung
+
+Unchanged. Nothing of v1.1 is merged or served. Integrated proof: 0 of 44.
