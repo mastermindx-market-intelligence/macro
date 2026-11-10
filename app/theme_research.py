@@ -1318,6 +1318,15 @@ def _call_v2_query(
             list(evidence_refs) if isinstance(evidence_refs, (list, tuple)) else []
         ),
     }
+    if registration.issuer_economics is not None:
+        # Lane 5 v1.1: the issuer-economics block rides the QUERY envelope
+        # ONLY, as a sibling of ``data``. The v1 response and the v2 evidence
+        # path never compose it — their byte-identity is pinned by test. The
+        # builder owns its owner reads and never raises; built AFTER the
+        # expectation gate so a refresh 409 costs no block work.
+        envelope["issuer_economics"] = registration.issuer_economics(
+            query, bundle, dropped=dropped,
+        )
     return _private_json(200, envelope)
 
 

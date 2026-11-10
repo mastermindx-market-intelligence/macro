@@ -41,7 +41,8 @@ proof cohort carrying ``slice_scope_unowned`` upstream already). No ranking,
 gating, sizing, entry or origination flag is read or written; the only
 arithmetic is equal-weight renormalization over the DECLARED cohort, an HHI
 over those weights, and signed differences of same-metric adjacent-period
-rows. The fixed wording law is carried in the response: raw relative
+reported facts (the NESTED ``row["reported"]`` entries; the fiscal period is
+the owning row's). The fixed wording law is carried in the response: raw relative
 strength is not estimated alpha; positive selection contribution is not
 evidence of portfolio skill.
 
@@ -52,7 +53,7 @@ degrades to typed unknowns.
 """
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import Any
 
 __all__ = [
@@ -112,62 +113,121 @@ def _same_issuer(row_cik: object, identity_cik: object) -> bool:
     return isinstance(row_cik, str) and str.__eq__(identity_cik, row_cik) is True
 
 
+def _fact_rows(
+    rows: list[Mapping[str, Any]],
+) -> Iterator[tuple[Mapping[str, Any], Mapping[str, Any]]]:
+    """Yield ``(row, fact)`` over the rows' NESTED ``reported`` facts — the
+    one place facts are read. A row that served no fact yields nothing, so
+    "the issuer has rows" and "the issuer reported" can never be conflated
+    (SP12: a row with an empty ``reported`` list is an unreported issuer)."""
+    for row in rows:
+        for fact in row.get("reported") or ():
+            if isinstance(fact, Mapping):
+                yield row, fact
+
+
+def _row_period_index(row: Mapping[str, Any]) -> int | None:
+    """The row's structured fiscal period as a comparable index
+    (``year * 4 + quarter``), or ``None`` when the row carries no well-formed
+    period. The fact's own ``fiscal_period`` is a LABEL (``"2026Q2"``); the
+    structured period is the row's, so adjacency is decided on the row."""
+    period = row.get("fiscal_period")
+    if not isinstance(period, Mapping):
+        return None
+    year, quarter = period.get("year"), period.get("quarter")
+    if not (isinstance(year, int) and not isinstance(year, bool)
+            and isinstance(quarter, int) and not isinstance(quarter, bool)):
+        return None
+    return year * 4 + quarter
+
+
 def _cohort_state(rows: list[Mapping[str, Any]]) -> str:
     """eligible_unreported | reported_noncomparable | comparable.
 
-    ``comparable`` means the issuer carries BOTH a current and a preceding
-    fiscal-period row (the economics-grade pair); a single-period issuer is
-    REPORTED (an honest state, not a failure) but not comparable.
+    ``comparable`` means the issuer REPORTED at least one metric in two
+    adjacent fiscal periods (an economics-grade pair exists for that metric);
+    ``reported_noncomparable`` means reported facts exist but no metric spans
+    adjacent periods — REPORTED, an honest state, never a negative one. An
+    issuer whose rows carry no nested ``reported`` facts is UNREPORTED
+    (SP12: unreported is unknown, never "reported but degraded"), exactly as
+    an identified issuer with no rows at all is.
     """
-    if not rows:
+    reported_any = False
+    periods_by_metric: dict[tuple[object, object], set[int]] = {}
+    for _row, fact in _fact_rows(rows):
+        reported_any = True
+        index = _row_period_index(_row)
+        if index is None:
+            continue
+        periods_by_metric.setdefault(
+            (fact.get("metric"), fact.get("unit")), set(),
+        ).add(index)
+    if not reported_any:
         return "eligible_unreported"
-    periods = sorted(
-        {
-            (p.get("year"), p.get("quarter"))
-            for row in rows
-            if isinstance((p := row.get("fiscal_period")), Mapping)
-            and isinstance(p.get("year"), int) and isinstance(p.get("quarter"), int)
-        }
-    )
     adjacent = any(
-        periods[i + 1][0] * 4 + periods[i + 1][1]
-        - (periods[i][0] * 4 + periods[i][1]) == 1
-        for i in range(len(periods) - 1)
+        right - left == 1
+        for indexes in periods_by_metric.values()
+        for left, right in zip(sorted(indexes), sorted(indexes)[1:])
     )
     return "comparable" if adjacent else "reported_noncomparable"
 
 
 def _signed_changes(rows: list[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
-    """Same-metric signed differences over adjacent labelled periods.
+    """Same-metric signed differences over adjacent labelled periods, read
+    from the NESTED ``row["reported"]`` facts (metric/unit/value are the
+    fact's own; the period is the owning ROW's structured fiscal period).
 
     Original observations stay in ``reported`` VERBATIM; this adds the
     descriptive bridge only where two adjacent periods of one metric exist.
     A negative change is displayed, never dropped; incomparable units are
-    not differenced (they are not folded into one denominator)."""
-    facts: dict[tuple[int, int, str], Mapping[str, Any]] = {}
-    for row in rows:
-        period = row.get("fiscal_period")
-        metric = row.get("metric")
-        if not isinstance(period, Mapping) or not isinstance(metric, str):
+    not differenced (they are not folded into one denominator). Duplicate
+    facts for one (period, metric, unit) — the same filing re-served under
+    several alias listings — must AGREE before a difference is emitted: a
+    disagreement is ambiguous, never averaged and never picked."""
+    facts: dict[tuple[int, str, object], list[tuple[str, float]]] = {}
+    period_of: dict[int, Mapping[str, Any] | None] = {}
+    for row, fact in _fact_rows(rows):
+        index = _row_period_index(row)
+        metric = fact.get("metric")
+        if index is None or not isinstance(metric, str) or not metric:
             continue
-        year, quarter = period.get("year"), period.get("quarter")
-        if not (isinstance(year, int) and isinstance(quarter, int)):
+        value = fact.get("value")
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
             continue
-        facts[(year * 4 + quarter, metric, row.get("unit"))] = row
-    keys = sorted(facts)
+        event_id = row.get("event_id")
+        facts.setdefault((index, metric, fact.get("unit")), []).append(
+            (str(event_id) if event_id is not None else "", value),
+        )
+        period_of.setdefault(index, row.get("fiscal_period"))
+
+    def _agreed(entries: list[tuple[str, float]]) -> float | None:
+        ordered = sorted(entries)
+        return ordered[0][1] if all(v == ordered[0][1] for _, v in ordered) else None
+
+    # Compare WITHIN one (metric, unit) series. A global key sort would
+    # interleave same-period/different-metric keys and never place two
+    # adjacent-period/same-metric entries next to each other whenever a row
+    # serves more than one metric — the change bridge would silently vanish.
+    by_metric: dict[tuple[str, object], list[int]] = {}
+    for index, metric, unit in facts:
+        by_metric.setdefault((metric, unit), []).append(index)
     changes: list[Mapping[str, Any]] = []
-    for i in range(len(keys) - 1):
-        left, right = facts[keys[i]], facts[keys[i + 1]]
-        if (keys[i][0] + 1 != keys[i + 1][0]) or keys[i][1] != keys[i + 1][1]:
-            continue
-        lv, rv = left.get("value"), right.get("value")
-        if isinstance(lv, (int, float)) and not isinstance(lv, bool) \
-                and isinstance(rv, (int, float)) and not isinstance(rv, bool):
+    for (metric, unit), indexes in sorted(
+        by_metric.items(), key=lambda kv: (kv[0][0], str(kv[0][1])),
+    ):
+        ordered = sorted(indexes)
+        for left, right in zip(ordered, ordered[1:]):
+            if right - left != 1:
+                continue
+            lv = _agreed(facts[(left, metric, unit)])
+            rv = _agreed(facts[(right, metric, unit)])
+            if lv is None or rv is None:
+                continue
             changes.append({
-                "metric": keys[i][1],
-                "unit": keys[i][2],
-                "from_fiscal_period": left.get("fiscal_period"),
-                "to_fiscal_period": right.get("fiscal_period"),
+                "metric": metric,
+                "unit": unit,
+                "from_fiscal_period": period_of.get(left),
+                "to_fiscal_period": period_of.get(right),
                 "from_value": lv,
                 "to_value": rv,
                 "signed_change": rv - lv,

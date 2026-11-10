@@ -216,6 +216,15 @@ class VerticalRegistration:
     #: reports an EMPTY one — is the honest state for a vertical whose
     #: native payload does not yet carry one.
     evidence_refs_field: str | None = "evidence_refs"
+    #: Optional issuer-economics builder (lane 5 v1.1 amendment,
+    #: ``sector_intelligence.issuer_economics.v1``): when callable, the v2
+    #: QUERY envelope carries its block as a SIBLING of ``data`` under
+    #: ``issuer_economics``. The v1 response and the v2 evidence path never
+    #: call it (byte-identity pinned by test). The callable owns its own
+    #: owner reads — declared cohort, witness scope, Data OS alias
+    #: enumeration — and must never raise. ``None`` (the default) means the
+    #: entry serves no such block and its envelopes are unchanged.
+    issuer_economics: Callable[..., Mapping[str, Any]] | None = None
 
     def __post_init__(self) -> None:
         # --- entry-kind branch: the two kinds carry different identity laws ---
@@ -351,6 +360,10 @@ class VerticalRegistration:
             )
         if self.evidence_refs_field is not None:
             _require_nonempty_text("evidence_refs_field", self.evidence_refs_field)
+        if self.issuer_economics is not None and not callable(self.issuer_economics):
+            raise TypeError(
+                "VerticalRegistration.issuer_economics must be callable or None"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -422,6 +435,56 @@ def _load_semiconductor_owner_bundle(query: Any, *, rights_snapshot: Any = None)
     return load_semiconductor_owner_bundle(query, rights_snapshot=rights_snapshot)
 
 
+def _issuer_economics_module() -> Any:
+    """The lane-5 v1.1 issuer-economics module, imported on FIRST USE only —
+    stdlib-only at import, but the registry's import-closure laws are asserted
+    by naming verticals, and a new eager edge is exactly what those tests
+    exist to prevent."""
+    from engine.market_ontology import (  # noqa: PLC0415 — lazy by design
+        issuer_economics,
+    )
+    return issuer_economics
+
+
+def _build_semiconductor_issuer_economics(
+    query: Any, bundle: Any, *, dropped: bool = False,
+) -> Mapping[str, Any]:
+    """The semiconductor theme entry's issuer-economics builder (lane 5 v1.1).
+
+    The REGISTRATION SEAM performs the owner reads the block itself never
+    does: the declared witness scope
+    (:func:`semiconductor_witness_scope.resolve_witness_scope`), the DECLARED
+    cohort size (the roster, independent of identity resolution), and the
+    Data OS alias enumeration (``IssuerMaster.securities_of_issuer`` via the
+    scope module's own canonical master loader — the one immutable-byte-read
+    reader contract; ``None`` when the master is unreadable, which the block
+    carries as the typed alias unknown). Every import is lazy: importing the
+    registry loads no vertical and no data stack. The builder is pure over
+    mapping-shaped inputs and never raises, so a builder fault cannot take
+    the query route down."""
+    from engine.market_ontology.semiconductor_witness_scope import (  # noqa: PLC0415 — lazy by design
+        WITNESS_ROSTER,
+        _load_issuer_master,
+        resolve_witness_scope,
+    )
+
+    slice_key = getattr(query, "slice_key", "")
+    scope = resolve_witness_scope(slice_key if isinstance(slice_key, str) else "")
+    master = _load_issuer_master()
+    return _issuer_economics_module().build_issuer_economics(
+        query, bundle,
+        scope=scope,
+        eligible_count=len(WITNESS_ROSTER.get(scope.slice_key, ())),
+        alias_resolver=(master.securities_of_issuer if master is not None else None),
+        dropped=dropped,
+    )
+
+
+_build_semiconductor_issuer_economics.lazy_target = (
+    lambda: _issuer_economics_module().build_issuer_economics
+)
+
+
 # Shared hook 2: every DECLARATIVE fact — the anchor, the slice set, the view
 # set, the schema ids, the definition version and the bilingual copy — is the
 # mount's own definition, read from the leaf ``theme_research_mounts`` module
@@ -453,6 +516,9 @@ _SEMICONDUCTOR = VerticalRegistration(
     title_zh=_SEMICONDUCTOR_MOUNT.title_zh,
     note_en=_SEMICONDUCTOR_MOUNT.note_en,
     note_zh=_SEMICONDUCTOR_MOUNT.note_zh,
+    # Lane 5 v1.1 (amendment §6.2/§6.3): the issuer-economics block rides the
+    # v2 QUERY envelope only, as a sibling of ``data``.
+    issuer_economics=_build_semiconductor_issuer_economics,
 )
 
 _ENTRIES: tuple[VerticalRegistration, ...] = (_SEMICONDUCTOR,)

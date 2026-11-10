@@ -238,6 +238,10 @@ def test_dataclass_field_names_are_the_accepted_contract():
     # (packet §3.4, lane 5) are appended AFTER note_zh, all defaulted, so
     # every existing positional/keyword construction still builds the same
     # theme entry. A reorder or a removal here is a contract break.
+    # (v1.1, lane 5: ``issuer_economics`` appended after the frozen envelope
+    # contract's last field — defaulted None, so no existing construction
+    # changes meaning. The attach law itself is pinned in
+    # tests/test_theme_research_issuer_economics_wiring.py.)
     assert [f.name for f in dataclasses.fields(VerticalRegistration)] == [
         "anchor_theme_id", "slice_keys", "view_keys", "schema_id",
         "evidence_schema_id", "definition_version", "compose",
@@ -246,7 +250,7 @@ def test_dataclass_field_names_are_the_accepted_contract():
         "entry_kind", "profile_id", "subject_field", "subject_values",
         "time_modes", "single_document", "native_generation_prefix",
         "native_generation_width", "native_generation_field",
-        "evidence_refs_field",
+        "evidence_refs_field", "issuer_economics",
     ]
 
 
