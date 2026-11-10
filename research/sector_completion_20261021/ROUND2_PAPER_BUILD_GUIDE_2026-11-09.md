@@ -1,25 +1,37 @@
 # Sector Intelligence — Round 2 Paper build guide
 
-## Round 3 consumption amendment — 9 November 2026
+## Final consumption amendment — version 1.0, 9 November 2026
 
-The original Round 2 design record below is preserved. Its 47 editable roots, screenshots, fixture dates and extraction manifest remain unchanged. Current implementation planning is [masterplan revision 0.3](https://github.com/mastermindx-market-intelligence/macro/blob/469ca65e127baae8eb2dfd3552c4c0a2aceaedcb/research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md) and the [Round 3 architecture contract](https://github.com/mastermindx-market-intelligence/macro/blob/851331e6aa2cfc9a60fd8de536059c35a08ac94f/research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md). Round 3 did not edit Paper or implement these actions.
+The original Round 2 record below, including all 47 exact editable roots and its source specimens/review receipts, is preserved byte-for-byte. All four requested planning rounds are now complete. Read the final [masterplan](SHARED_SHELL_MASTERPLAN_2026-11-09.md), [Fable/T3 packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md) and [complete role briefs](https://github.com/mastermindx-market-intelligence/macro/blob/ba1d27baff363ea8830d46150c7f36f7805b5c1c/research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json) for current implementation decisions. Rounds 3 and 4 made no Paper mutations.
 
-The source inspection resolves the ten R3-01 through R3-10 agenda items at the architecture level:
+**Current frame roles:** S08 IQ2-0 is Source reader; S10 L8B-0 is Sector map. R3 Watches donors are 3DN-0/47R-0/16X-0; 56C-0 is Authority/contents. Where an earlier prose label disagrees, these observed node roles control; node identities and historical design receipts remain unchanged.
 
-- Route/data: compose the existing Macro generation API/reader, Terminal gateway/parser and Shared Shell entrance. Current candidates are unmerged; source mounting does not prove deployed binding.
-- Navigation: add the four jobs to the current codec, preserve old aliases and the 1024/8192-character public/full return bounds, and extend logical-anchor restoration without another state store.
-- Research: extend the existing registry with explicit versioned theme/company_profile/sector_profile contracts. Real input, identity/rights, evidence and renderer witnesses must admit each available vertical.
-- Saves: reuse Investigation v2, immutable revisions, CAS, exact operation receipts and its actor-scoped journal. Admit narrow Sector/GMI reference types; do not build a separate Saved Research service.
-- Recovery: A01/A06/MS01 retain Check save status as the primary uncertain-save action. The existing owner also supports exact same-operation replay; exposing it requires original-status reconciliation and proof of the installed same-actor/fingerprint contract. Any added control is a Round 4 design delta, not an existing Paper behavior or a new operation.
-- Account/effects: expected-actor checks and access-generation retirement belong in incumbent owners. Watch membership, note sync, saved investigation, alert activation and delivery remain separate outcomes.
-- Analytical truth: use the actual producer ordinal for the named horizon; distinguish relative wealth, rising/priced and breadth. Keep reconstruction explicit, evolve turn knowledge, and preserve current hazard parity refusal.
-- Revisit: original saved references remain fixed; source corrections, newer observations, membership and unavailable history are distinct. Add Sector/GMI resolvers to the existing evidence-diff owner.
-- Retained depth: #10777 does not contain #10707's captureView/applyView dossier component. Preserve its unique behavior and the deeper native calls, confluence, flow and Cycles controls.
-- Coverage/quality: the contract maps all 134 stable IDs and 24 anchors, freezes proposed implementation latency profiles, and specifies responsive/accessibility/source/rights/recovery falsifiers. Mapping and targets are not accepted implementation evidence.
+### Preserve the reviewed core and finish bounded missing depth
 
-The historical 430px/missing-state defects and every inherited row remain open until their own evidence is reconciled. A07 is a depth atlas, not complete design coverage for every linked destination. The original CSV is also being changed by #10780, so the architecture appendix supplies a stable-ID planning join without overwriting that writer.
+The 47 Frames comprise 31 Product, 13 States/help and three Build compositions on the existing R4 p-B-0/p-C-0/p-D-0 pages. Keep the same file, semantic tokens and visual hierarchy. A07 is a depth atlas; it does not claim full design coverage for every destination.
 
-**Next intended round:** Round 4 final masterplan, exact packets, remaining design deltas and final source-linked Fable/T3 handoff. The “next Round 3” language below records the original design-round checkpoint and is superseded by this amendment. No implementation dispatch, release hold change or runtime admission occurred.
+Final packet §5 names exact retained R4/R3/R2 donors and five missing design groups: complete native calls plus a separate Bottoming Watch; full four-universe Entry evidence; deliberate phone flow values; full Cycles narrative/DNA/timing/record/control depth; and the actual consumer contexts for access/recovery/correction. The final brief returns real new root IDs after authorized authoring. Never invent future IDs or mutate the G4P-0 canary/another uncertain target.
+
+The old state matrix has 19 applicable missing states and 23 historical N/A rules. Final packet §5.2 assigns all 42 current dispositions without commissioning 42 duplicate boards. Reuse shared state components where behavior is identical, then prove them in context. Retain the historical 320/430 overflow cases and applicable 768/1024/1280/1440/1600 structural obligations.
+
+### Frozen interaction and owner decisions
+
+- Reuse merged /sectors and the existing native workspace/codec. Add the four jobs and exact compatible return state; preserve old URL meaning.
+- Bind asynchronous results and restoration to actor/access, source generation, subject, region/universe and metric/window/basis. Typed optional failure stays local.
+- Use the actual source ordinal for the named horizon; no Paper display introduces rank/gate/size/trade authority.
+- Research uses the exact proposed v2 theme/company-profile/sector-profile contract through the existing router, real owner loaders and assertion-grained current-rights source reading. Native and context generations differ.
+- Save uses Investigation v2, narrow admitted owner references, immutable revisions, atomic layout capture, actor equality and original operation receipts. Native xlf and Finance sector:financials are distinct identities.
+- **Keep Check save status; add no Replay button.** A status not_found after a lost response remains uncertain. owner_mismatch retires the visible actor scope but cannot adjudicate an earlier unknown save; retain that actor's journal for exact recovery.
+- Watch membership, note synchronization, Investigation save, alert activation, trigger and delivery keep separate outcomes. Unsupported new Sector alert evaluators remain unavailable until their actual owner proof.
+- Preserve exact source dates, original saved references, actual correction lineage, measured/unknown/lower-bound age, fixed timing windows and MODEL/PRIOR qualification.
+
+### Acceptance and next implementation step
+
+The actual P19 ledger is reused. SC-066=R3A-66 has existing count fields; finish truthful counted/listed/scored copy and new Beta proof. SC-092=R3A-92 needs an actual correction witness. Blank final matrix fields are reserved for P23, not evidence that no candidate ledger exists.
+
+The next work is implementation under Fable's actual assignment, beginning with a real coherent generation → /sectors → selected dossier → exact return. Complete missing design and retained depth in eligible bounded lanes. Actual rendered/browser/accessibility, installed save admission, permitted served journeys and next natural update remain separate proof; the frame count cannot substitute for them. No team was dispatched by this guide.
+
+The “next Round 3”/unresolved-agenda language in the original record below is the historical design-round checkpoint and is superseded by this final consumption amendment.
 
 ## Original Round 2 design record
 
