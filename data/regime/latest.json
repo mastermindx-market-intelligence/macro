@@ -26,7 +26,7 @@
     "flag_ratio_inflection": false,
     "flag_inflation_basket": false,
     "flag_confidence_decay": true,
-    "flag_gex": true,
+    "flag_gex": false,
     "flag_rotation_persistence": true
   },
   "confirming": [
@@ -280,6 +280,12 @@
     }
   },
   "alerts": [
+    {
+      "rule": "gex_flip_cross",
+      "severity": "warn",
+      "message": "GEX: net GEX changed sign (net +11bn, spot vs flip -1.0%)",
+      "message_zh": "GEX\uff1a\u51c0 GEX \u8f6c\u53d8\u65b9\u5411\uff08\u51c0 +11bn\uff0c\u73b0\u4ef7\u76f8\u5bf9\u7ffb\u8f6c\u70b9 -1.0%\uff09"
+    },
     {
       "rule": "sector_holdings_accumulation",
       "severity": "warn",
@@ -9066,10 +9072,10 @@
   "market_gamma": {
     "regime": "short",
     "spot_vs_flip_pct": -1.0,
-    "net_gex_bn": -10.0,
-    "flip": 7624,
-    "gamma_flip": 7624,
-    "flip_strike": 7624,
+    "net_gex_bn": 11.0,
+    "flip": 7628,
+    "gamma_flip": 7628,
+    "flip_strike": 7628,
     "spot": 7550,
     "asof": "2026-11-09",
     "regime_basis": "engine_direct_sign",
@@ -9455,7 +9461,7 @@
   },
   "fed_path": {
     "asof": "2026-11-09",
-    "built": "2026-11-10T08:17:44.324888+00:00",
+    "built": "2026-11-10T11:11:52.459464+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -19573,8 +19579,8 @@
           "source": "fda_shortages",
           "theme": "glp1_obesity",
           "band": "SHORTAGE_ACTIVE",
-          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 0 d ago \u00b7 source generation 2026-11-06",
-          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e0\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
+          "label": "FDA: mixed \u2014 current 9 / discontinued 5 \u00b7 captured 1 d ago \u00b7 source generation 2026-11-06",
+          "label_zh": "FDA\uff1a\u6df7\u5408\u2014\u2014\u5f53\u524d9\uff0f\u505c\u4ea75 \u00b7 \u91c7\u96c6\u4e8e1\u5929\u524d \u00b7 \u6765\u6e90\u751f\u6210\u65e5\u671f2026-11-06",
           "tone": "warn",
           "rationale": "The FDA reports current shortages and formulation discontinuations.",
           "n_active": 9,
@@ -19584,7 +19590,7 @@
           "freshness": {
             "capture_qualified": true,
             "capture_finished_at": "2026-11-09T08:55:47.793982+00:00",
-            "capture_age_s": 84121.533204,
+            "capture_age_s": 94568.294157,
             "source_generation": "2026-11-06",
             "source_generation_age_days": 4,
             "stale": null,
@@ -21922,74 +21928,118 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "The clearest early alignment is in data-center power, where tightening physical conditions, accelerating customer demand, and raising guidance reinforce one another while revisions remain incomplete. Defense also shows a weaker pre-revision pattern, but it lacks numeric physical confirmation; other themes are either insufficiently aligned or no longer early.",
-    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u5171\u632f\u51fa\u73b0\u5728\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u4e0e\u51b7\u5374\uff1a\u5b9e\u4f53\u7ea6\u675f\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u76f8\u4e92\u5370\u8bc1\uff0c\u800c\u5206\u6790\u5e08\u4fee\u6b63\u5c1a\u672a\u5145\u5206\u5c55\u5f00\u3002\u56fd\u9632\u822a\u7a7a\u4e5f\u5448\u73b0\u8f83\u5f31\u7684\u4fee\u6b63\u524d\u4fe1\u53f7\uff0c\u4f46\u4ecd\u7f3a\u5c11\u91cf\u5316\u5b9e\u4f53\u786e\u8ba4\uff1b\u5176\u4ed6\u4e3b\u9898\u8981\u4e48\u72ec\u7acb\u4fe1\u53f7\u4e0d\u8db3\uff0c\u8981\u4e48\u5df2\u4e0d\u591f\u65e9\u671f\u3002",
+    "regime_read": "The board shows the clearest early alignment in power infrastructure, where tightening physical conditions coincide with accelerating customer demand and raising guidance. Defense also shows a pre-revision scarcity pattern, but its bottleneck evidence remains text-only and therefore less durable.",
+    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u5171\u632f\u96c6\u4e2d\u5728\u7535\u529b\u57fa\u7840\u8bbe\u65bd\uff1a\u5b9e\u4f53\u7ea6\u675f\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u540c\u65f6\u51fa\u73b0\u3002\u56fd\u9632\u9886\u57df\u4e5f\u5448\u73b0\u4fee\u6b63\u524d\u7684\u7a00\u7f3a\u6027\u4fe1\u53f7\uff0c\u4f46\u74f6\u9888\u8bc1\u636e\u4ecd\u4ec5\u6765\u81ea\u6587\u672c\uff0c\u56e0\u6b64\u8010\u4e45\u6027\u8f83\u5f31\u3002",
     "theses": [
       {
         "theme": "data_center_power",
-        "mechanism": "Accelerating customer spending is meeting tightening power-and-cooling capacity, giving suppliers enough visibility to raise guidance before analyst revisions have fully propagated [demand] [physical] [guidance].",
-        "non_obvious": "The important pattern is not demand acceleration alone, but its simultaneous appearance with a tightening physical leg and multiple guidance raisers while revision breadth remains incomplete; this is consistent with operating constraints reaching management outlooks before broad Street recognition [physical] [demand] [guidance].",
+        "mechanism": "Accelerating customer demand is pressing against a tightening physical bottleneck, while management guidance is being raised rather than merely acknowledging demand; this suggests the constraint is reaching suppliers' operating outlooks [demand] [physical] [guidance].",
+        "non_obvious": "The difficult-to-see pattern is that analyst revisions are not yet fully broad even though the physical, customer-capex, and guidance legs already align, indicating operating evidence is moving ahead of broad Street recognition [physical] [demand] [guidance].",
         "kill_criteria": [
-          "The bottleneck band loosens from TIGHTENING to NEUTRAL [physical].",
-          "The demand band falls from ACCELERATING to NEUTRAL or weaker [demand].",
-          "The guidance band ceases to be RAISING or guidance raisers disappear [guidance]."
+          "The bottleneck band loosens to NEUTRAL while demand remains unchanged [physical].",
+          "The demand band stops ACCELERATING [demand].",
+          "The guidance band turns NEUTRAL or shifts to cuts [guidance].",
+          "Revision breadth rolls over before physical tightening progresses [physical] [guidance]."
         ],
         "evidence": [
           {
-            "text": "Physical bottleneck band is TIGHTENING [physical].",
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
             "ungrounded": true
           },
           {
-            "text": "Customer demand band is ACCELERATING [demand].",
+            "text": "demand: demand band is ACCELERATING",
             "ungrounded": true
           },
           {
-            "text": "Management guidance band is RAISING, with more than one raiser [guidance].",
+            "text": "guidance: guidance band is RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth remains incomplete relative to the operating-leg alignment",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The board's own rationale says supply is not yet tight and nothing is actionable, so the physical signal may represent emerging friction rather than genuine scarcity [physical].",
+        "dissent": "The board's rationale still characterizes supply as not tight, so TIGHTENING may represent an emerging constraint rather than established scarcity [physical].",
         "confidence": "medium",
         "n_grounded": 0,
-        "n_total_evidence": 3,
+        "n_total_evidence": 4,
+        "_forecast_clamped": null
+      },
+      {
+        "theme": "grid_electrification",
+        "mechanism": "Accelerating customer demand is meeting a tightening physical bottleneck, and management guidance is rising in the same direction, consistent with grid spending beginning to strain delivery capacity [demand] [physical] [guidance].",
+        "non_obvious": "The cross-surface signal is stronger than the theme's heat alone suggests: physical tightening and raised guidance coexist with relatively narrow revision breadth, implying company-level operating signals have not yet become a broad analyst consensus [physical] [guidance].",
+        "kill_criteria": [
+          "The bottleneck band returns to NEUTRAL [physical].",
+          "The demand band ceases to be ACCELERATING [demand].",
+          "The guidance band falls to NEUTRAL or turns to cuts [guidance].",
+          "Revision breadth rolls over without further physical tightening [physical] [guidance]."
+        ],
+        "evidence": [
+          {
+            "text": "physical: bottleneck band is TIGHTENING and physically confirmed",
+            "ungrounded": true
+          },
+          {
+            "text": "demand: demand band is ACCELERATING",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance band is RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth is still narrow relative to the aligned operating legs",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The board explicitly says supply is not yet tight, so the current alignment may be an early watch signal rather than durable scarcity [physical].",
+        "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 4,
         "_forecast_clamped": null
       },
       {
         "theme": "defense_aerospace",
-        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-based scarcity language, suggesting program activity may be pressing against specialized capacity before management guidance or analyst revisions confirm it [altdata] [subsector_scarcity].",
-        "non_obvious": "The hard-to-see pattern is award acceleration plus subsector-scarcity language while guidance remains neutral and revisions are still narrow; that combination can mark a pre-revision capacity signal rather than a consensus earnings narrative [altdata] [subsector_scarcity] [guidance].",
+        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-based subsector scarcity, while revision breadth remains limited; together they suggest procurement and capacity signals may be forming before broad analyst recognition [altdata] [edgar_scarcity].",
+        "non_obvious": "The hidden pattern is the pairing of award acceleration with scarcity language and still-narrow revisions: demand-adjacent evidence and constrained-supply language agree even though management guidance remains neutral [altdata] [edgar_scarcity] [guidance].",
         "kill_criteria": [
-          "Government-award acceleration and patent-cluster confirmation disappear from the alt-data leg [altdata].",
-          "The filing-based scarcity signal falls from TIGHT to NEUTRAL [subsector_scarcity].",
-          "Numeric physical evidence, when available, fails to confirm tightening [physical].",
-          "Guidance turns toward cuts rather than progressing from NEUTRAL [guidance]."
+          "Government-award acceleration disappears or reverses [altdata].",
+          "The filing-based scarcity signal falls to NEUTRAL [edgar_scarcity].",
+          "Numeric physical evidence fails to confirm the text-based bottleneck when available [edgar_scarcity] [physical].",
+          "Revision breadth broadens and then rolls over while guidance remains NEUTRAL [guidance]."
         ],
         "evidence": [
           {
-            "text": "Alt-data shows government-award acceleration and a patent cluster [altdata].",
+            "text": "altdata: government-award acceleration and a patent cluster",
             "ungrounded": true
           },
           {
-            "text": "Annual filing language indicates subsector scarcity [subsector_scarcity].",
+            "text": "edgar_scarcity: filing language indicates a TIGHT bottleneck",
             "ungrounded": true
           },
           {
-            "text": "Guidance remains NEUTRAL and revisions remain narrow, preserving earliness but not confirming the thesis [guidance].",
+            "text": "guidance: guidance remains NEUTRAL",
+            "ungrounded": true
+          },
+          {
+            "text": "revision breadth remains limited",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "Both confirming legs are indirect: scarcity is text-only and the award and patent signals may reflect program timing rather than a durable physical bottleneck [subsector_scarcity] [altdata].",
+        "dissent": "There is no numeric physical confirmation, and neutral guidance means the apparent scarcity has not yet translated into management outlooks [physical] [guidance].",
         "confidence": "low",
         "n_grounded": 0,
-        "n_total_evidence": 3,
+        "n_total_evidence": 4,
         "_forecast_clamped": null
       }
     ],
     "confidence": "medium",
     "asof": "2026-11-09",
-    "n_theses": 2,
+    "n_theses": 3,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
@@ -22079,14 +22129,14 @@
         "n_criteria": 2,
         "llm_mechanism": null,
         "llm_status": "INTACT",
-        "llm_heat_at_open": 0.203,
+        "llm_heat_at_open": 0.223,
         "llm_heat_now": 0.223,
-        "llm_opened_asof": "2026-11-06",
+        "llm_opened_asof": "2026-11-09",
         "llm_kill_criteria": [
-          "bottleneck_band reverses to NEUTRAL",
-          "guidance_band stops RAISING",
-          "revision_breadth stays near zero for an extended period with no broadening",
-          "demand_band cools to NEUTRAL"
+          "The bottleneck band returns to NEUTRAL [physical].",
+          "The demand band ceases to be ACCELERATING [demand].",
+          "The guidance band falls to NEUTRAL or turns to cuts [guidance].",
+          "Revision breadth rolls over without further physical tightening [physical] [guidance]."
         ],
         "llm_broken_reasons": []
       },
@@ -23950,7 +24000,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 4.81,
+    "_timing_s": 5.58,
     "forward_log": {
       "market": "us",
       "n_graded": 36,
@@ -24108,8 +24158,8 @@
       "range": 0.207205
     },
     "mags": {
-      "px": 67.53,
-      "asof": "2026-11-06",
+      "px": 69.09,
+      "asof": "2026-11-09",
       "since_run": null
     },
     "tech_legs": [
@@ -25711,11 +25761,11 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 3.09
+    "_timing_s": 4.49
   },
   "vol_shock": {
-    "score": 49.9,
-    "score_int": 50,
+    "score": 51.0,
+    "score_int": 51,
     "band": "elevated",
     "band_zh": "\u5347\u9ad8",
     "asof": "2026-11-09",
@@ -25805,14 +25855,14 @@
         "key": "put_call",
         "label": "Put/call positioning",
         "label_zh": "\u770b\u8dcc/\u770b\u6da8\u6301\u4ed3",
-        "value": 0.58,
+        "value": 0.47,
         "weight": 0.5,
         "available": true,
-        "sub": 41.9,
+        "sub": 53.2,
         "note": "balanced put/call",
         "note_zh": "balanced put/call",
-        "color": "#5a9bd4",
-        "points": 4.3
+        "color": "#e0a030",
+        "points": 5.4
       },
       {
         "key": "complacency",
@@ -26468,8 +26518,8 @@
         "\u9884\u8b66\u5df2\u6fc0\u6d3b\uff1a\u652f\u6491\u5f53\u524d\u5468\u671f\u7684\u4fe1\u53f7\u4e00\u81f4\u5ea6\u6b63\u5728\u4e0b\u964d\u3002"
       ],
       [
-        "Warning already active: options positioning suggests a fragile, swingy market.",
-        "\u9884\u8b66\u5df2\u6fc0\u6d3b\uff1a\u671f\u6743\u6301\u4ed3\u663e\u793a\u5e02\u573a\u8106\u5f31\u3001\u6ce2\u52a8\u52a0\u5267\u3002"
+        "For a shift to Goldilocks, watch for inflation expectations cooling while breadth holds up.",
+        "\u82e5\u8981\u8f6c\u5411 \u7406\u60f3\u589e\u957f\uff0c\u5173\u6ce8 \u901a\u80c0\u9884\u671f\u964d\u6e29\uff0c\u800c\u5e02\u573a\u5e7f\u5ea6\u4fdd\u6301\u575a\u633a\u3002"
       ]
     ],
     "stages": [
@@ -28437,62 +28487,62 @@
       {
         "ticker": "GC=F",
         "name": "Gold",
-        "price": 4122.4,
+        "price": 4086.2,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -1.6,
-        "pct_vs_200dma": -7.0,
-        "rsi14": 51.0,
+        "pct_vs_50dma": -2.4,
+        "pct_vs_200dma": -7.8,
+        "rsi14": 48.0,
         "macd_pos": true,
-        "off_52w_high_pct": -22.5,
+        "off_52w_high_pct": -23.2,
         "season_this": "Nov: +1.5% avg, up 59% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -9.0
+        "mom_60d_pct": -9.8
       },
       {
         "ticker": "CL=F",
         "name": "Crude Oil",
-        "price": 85.42,
+        "price": 85.22,
         "above50": false,
         "above200": false,
-        "pct_vs_50dma": -11.0,
-        "pct_vs_200dma": -4.4,
+        "pct_vs_50dma": -11.2,
+        "pct_vs_200dma": -4.6,
         "rsi14": 35.0,
         "macd_pos": false,
-        "off_52w_high_pct": -24.4,
+        "off_52w_high_pct": -24.6,
         "season_this": "Nov: -3.2% avg, up 41% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.2%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": 2.4
+        "mom_60d_pct": 2.2
       },
       {
         "ticker": "HG=F",
         "name": "Copper",
-        "price": 6.32,
+        "price": 6.31,
         "above50": false,
         "above200": true,
         "pct_vs_50dma": -3.3,
-        "pct_vs_200dma": 0.6,
+        "pct_vs_200dma": 0.5,
         "rsi14": 42.0,
         "macd_pos": false,
-        "off_52w_high_pct": -7.1,
+        "off_52w_high_pct": -7.2,
         "season_this": "Nov: +1.5% avg, up 52% of years (n=27)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.5%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-        "mom_60d_pct": -3.7
+        "mom_60d_pct": -3.8
       },
       {
         "ticker": "DX-Y.NYB",
         "name": "US Dollar",
-        "price": 101.56,
+        "price": 101.7,
         "above50": true,
         "above200": true,
-        "pct_vs_50dma": 0.2,
-        "pct_vs_200dma": 1.6,
-        "rsi14": 47.0,
+        "pct_vs_50dma": 0.3,
+        "pct_vs_200dma": 1.7,
+        "rsi14": 49.0,
         "macd_pos": false,
         "off_52w_high_pct": -1.0,
         "season_this": "Nov: +0.2% avg, up 52% of years (n=56)",
         "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-        "mom_60d_pct": 2.4
+        "mom_60d_pct": 2.6
       }
     ],
     "evidence": {
@@ -28568,7 +28618,7 @@
   },
   "freshness": {
     "asof": "2026-11-09",
-    "built_at": "2026-11-10T08:20:35Z",
+    "built_at": "2026-11-10T11:14:41Z",
     "age_days": 1,
     "age_sessions": 1,
     "max_age_sessions": 1,
