@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-08",
+  "as_of": "2026-11-10",
   "data_session": "2026-11-05",
   "authority": {
     "rank": false,
@@ -2025,6 +2025,6 @@
       "note": null
     }
   ],
-  "_timing_s": 19.3,
+  "_timing_s": 56.27,
   "_n_ledger_new": 0
 }
