@@ -967,3 +967,28 @@ Terminal: #1410 open, armed, clean, `dc02f1c28879`; #1419 `6778c61594b9`; #1425 
 ### 20.5 Rung
 
 Unchanged. Nothing of v1.1 is merged or served. Integrated proof: 0 of 44.
+
+## 21. Status at 14:30Z — lane 4 repair returned, second review started; #10929 registration pass fully measured
+
+### 21.1 What returned
+
+| Item | Result | Head |
+|---|---|---|
+| Lane 4, cycle forecast heads (Terminal #1431), repair of the NOT READY verdict | Author reports all 2 blockers, 4 should-fix and 7 notes repaired on the same branch: one fix commit `cbe8175e7` plus a merge of master. Author's gates: 112 tests passed in 11 files; type check clean; lint clean on the 14 changed files; browser test 14 passed, 6 skipped by design. | `4449e5873e3f` (was `fb60cb3e0f82`) |
+| Lane 1 CI registration pass (Macro #10929) | The one open gate from section 20 is now filled: full packing test "278 passed, 2 skipped in 1151.20s", exit 0. With the contract check at "0 introduced, 0 inherited" and the nine wired suites green, this pass is complete. | `c5d8c31db57d` (draft, held) |
+
+What lane 4 changed, in plain terms: an unknown or hostile reason code now shows the generic line instead of crashing the panel; first-known dates are tied to the sector, the date and the kind of turn, so one sector's date can no longer appear on another; a forecast head is only ever "withheld", and a head claiming "withdrawn" or "qualified" reads as invalid; the first-known field is `confirmed_at`; one bad head no longer hides the other three.
+
+### 21.2 Decisions
+
+1. A narrow second review of #1431 (`fb60cb3e0f82` → `4449e5873e3f`) started 14:28Z. It re-runs every probe of the first review and tries to break each repair. Verdict to `/tmp/si_plan/reviews/lane4_1431_review_r2.md`.
+2. Lane 3 was told at 14:28Z to merge lane 4's new head together with lane 6's current head, and what changed for it as the consumer.
+3. #10929 stays a held draft. Its final pass (merge main after #10924 lands, keep main's three probe values, add only the measured excess) is still owed before release.
+
+### 21.3 Status record branches
+
+This record now lives on two branches. #10945 (first branch) is frozen at `3a5a6b422d57` and waits on its CI run. #10959 (second branch, stacked on the first) carries sections 20 onward, is not armed, and carries a HOLD comment with its release condition (#10945 merged).
+
+### 21.4 Rung
+
+Unchanged. Nothing of v1.1 is merged or served. Integrated proof: 0 of 44.
