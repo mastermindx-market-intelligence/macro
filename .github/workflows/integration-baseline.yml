@@ -132,6 +132,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # QUEUE-SHADOW PIN (2026-11-09). This lane's truth is main: it is
+          # push-to-main (+ schedule/dispatch) only, and its verdict is the
+          # freshness proof merge_on_green consumes. Without an explicit ref,
+          # checkout@v4 resolves whatever ref the event carried — including a
+          # refs/heads/gh-readonly-queue/... push, which would make this gate go
+          # green for a speculative tree main never had. The `paths:` filter
+          # above still decides WHEN the lane fires; this pin only decides WHICH
+          # tree it reads. A slightly newer main tip than the pushed SHA is
+          # harmless here: the sweeper's ancestry check accepts an older
+          # concluded proof, and reading main is the contract this gate asserts.
+          ref: refs/heads/main
           filter: blob:none
           # fetch-depth 0 -> 1 (2026-08-13). NOTHING in this job reads repository
           # history: check_workflow_yaml parses .github/workflows off disk,
