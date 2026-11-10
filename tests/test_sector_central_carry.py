@@ -1142,3 +1142,21 @@ def test_v11_confluence_and_theme_table_are_byte_identical_to_the_base():
     assert confluence == "6d2c77f6de4cf30c35d542a2a3a97fe3af2d3601f42b47089086e624d0150deb"
     assert theme_table == "1f62db7c409f1f4410997a4f529e76fb07d3e644e721eecec63eb6e372302914"
 
+
+def test_v11_free_js_twin_omits_the_five_row_blocks_and_nothing_else():
+    """SF-1 (review r1): the render-blocking JS twin drops exactly the five row
+    blocks from ``carried``; the JSON member data keeps all twelve and is not
+    mutated; every other key of the twin equals the member's."""
+    from scripts.build_sector_central import _js_twin_data
+    central = _central()
+    central["carried"] = _real_carry_blocks()
+    twin = _js_twin_data(central)
+    assert set(ROWS_FIVE) <= set(central["carried"])  # the JSON member keeps all twelve
+    assert set(twin["carried"]) & set(ROWS_FIVE) == set()
+    assert twin["carried"] == {name: block for name, block in central["carried"].items()
+                               if name not in ROWS_FIVE}
+    assert set(twin) == set(central)
+    for key in central:
+        if key != "carried":
+            assert twin[key] == central[key], key
+
