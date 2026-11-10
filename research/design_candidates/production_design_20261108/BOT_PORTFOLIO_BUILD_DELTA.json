@@ -1,0 +1,330 @@
+{
+  "schema": "bot_portfolio_build_delta.v1",
+  "status": "NATIVE_UI_IMPROVED_SOURCE_BEHAVIOR_CHARACTERIZED_INTEGRATION_PENDING",
+  "paper": {
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "product_page": "p-1-0",
+    "build_page": "p-2-0",
+    "build_root": "2EV-0",
+    "contract_body": "25P-0",
+    "today_320": "25X-0",
+    "holdings_320": "28Q-0",
+    "affected_product_boards": [
+      "1-0",
+      "2C-0",
+      "77-0",
+      "11E-0",
+      "14D-0"
+    ],
+    "protected_recent_boards": [
+      "1KJ-0",
+      "1QU-0",
+      "1V6-0",
+      "1XM-0"
+    ],
+    "verification": {
+      "unmodifiedOriginalLeafCount": 55,
+      "allOriginalExceptPointerPreserved": true,
+      "newPointer": {
+        "id": "8-0",
+        "text": "Editable V3 design reference · 9 October 2026. Read this map, product screens and state atlas, then implement against the source-backed manual brief. R4 Today → Holdings build contract and 320px proofs: p-2-0 · 2EV-0."
+      },
+      "newContractOnSeparatePage": true,
+      "selectedNavigation": [
+        {
+          "id": "1JT-0",
+          "exactSubtreePreserved": true
+        },
+        {
+          "id": "1JY-0",
+          "exactSubtreePreserved": true
+        },
+        {
+          "id": "1K3-0",
+          "exactSubtreePreserved": true
+        }
+      ]
+    }
+  },
+  "source": {
+    "Mastermind": {
+      "pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+      "account_path": "portfolio/paper_account.py",
+      "account_sha256": "cb87e10ce5817afd91bb4e84059fa740e045f33ad340e5c98ac77a698726cd9e",
+      "account_blob": "73b18d9c5ecaaeee30492d02af2312db4c57efd0",
+      "account_blob_matches_ref_master_on_readback": true,
+      "projection_path": "app/web.py",
+      "projection_blob": "339bd4483abeb884d09d93e9800c8638c245689b",
+      "projection_ranges": [
+        [
+          1224,
+          1291
+        ],
+        [
+          1422,
+          1519
+        ]
+      ],
+      "other_owners": [
+        "portfolio/marks.py",
+        "portfolio/fx.py",
+        "portfolio/fx_evidence.py"
+      ]
+    },
+    "S0_candidate": {
+      "pr": 673,
+      "head": "67aa483a3a5ac445b01a3dc2849889afa19ce057",
+      "observed_state": "open",
+      "observed_draft": true,
+      "scope": "US S0 snapshot inspector only; Draft/HOLD remains",
+      "path": "portfolio/decision_snapshot_sources.py"
+    },
+    "Terminal_reference": {
+      "pin": "5107f4d84e26aefc540c8c99e0ea3803770f1bb3",
+      "relationship": "Personal portfolio is a distinct owner; do not substitute its bookKey for bot S0 identity"
+    },
+    "Macro_reference": {
+      "pin": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+      "relationship": "engine/portfolio.py risk-budget reference is not bot held-account ledger"
+    }
+  },
+  "native_controls": {
+    "mobile": [
+      {
+        "root": "11E-0",
+        "id": "22O-0",
+        "parent": "22N-0",
+        "text": "Review target &amp; evidence →"
+      },
+      {
+        "root": "11E-0",
+        "id": "23Q-0",
+        "parent": "23P-0",
+        "text": "Open holdings →"
+      },
+      {
+        "root": "14D-0",
+        "id": "247-0",
+        "parent": "246-0",
+        "text": "Open research →"
+      },
+      {
+        "root": "14D-0",
+        "id": "249-0",
+        "parent": "248-0",
+        "text": "Decision history →"
+      },
+      {
+        "root": "14D-0",
+        "id": "24D-0",
+        "parent": "24C-0",
+        "text": "Value / unrealized P&amp;L"
+      },
+      {
+        "root": "14D-0",
+        "id": "25L-0",
+        "parent": "25K-0",
+        "text": "View accepted target risk →"
+      },
+      {
+        "root": "14D-0",
+        "id": "25N-0",
+        "parent": "25M-0",
+        "text": "Method &amp; sources →"
+      }
+    ],
+    "desktop_links": [
+      {
+        "old": "BF-0",
+        "nodes": [
+          {
+            "id": "2EY-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "2EZ-0",
+            "name": "Decision history →",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      },
+      {
+        "old": "BN-0",
+        "nodes": [
+          {
+            "id": "2F1-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "2F2-0",
+            "name": "Accepted target",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      },
+      {
+        "old": "BO-0",
+        "nodes": [
+          {
+            "id": "2F4-0",
+            "name": "Frame",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "2F5-0",
+            "name": "Method & sources →",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ]
+      }
+    ],
+    "close_control": "22C-0",
+    "minimum_action_height_px": 44,
+    "close_size_px": [
+      44,
+      44
+    ],
+    "copy": "Research and decision history are distinct; compact amounts are value/unrealized P&L; target-risk action identifies its basis"
+  },
+  "existing_state_bindings": {
+    "unpriced": "Atlas1EI-0 S03",
+    "stale_held_risk": "Atlas1EI-0 S04",
+    "target_report_unavailable": "Atlas1EI-0 S05 component1G9-0",
+    "account_switch": "AtlasS01/S02",
+    "selected_history": "Existing1KJ/1QU/1V6/1XM and21G–21J preserved"
+  },
+  "valuation_consumption": {
+    "owner": "paper_account.valuation",
+    "keep": [
+      "nav_status",
+      "nav",
+      "nav_qualified",
+      "cash",
+      "invested",
+      "per-line class and source/nulls"
+    ],
+    "withheld": "Keep every holding and known cash; total and full-account weights unavailable. Do not value at cost or zero.",
+    "provisional": "Display available source-computed value with its provisional qualification and affected rows.",
+    "qualified": "Preserve source status but do not equate it with explicit close, currency or FX attestation.",
+    "strict_nav_limitation": "strict=True rejects WITHHELD but still returns numeric PROVISIONAL; current empty dictionaries can also yield QUALIFIED.",
+    "evidence_projection": "Add evidence availability beside the incumbent result; no parallel valuation enum, amount calculation, service or store."
+  },
+  "evidence_requirements": [
+    "Account and mark references bound to one selected valuation",
+    "Canonical held population shared by totals and coverage denominator",
+    "Explicit source, observed session/date, adjustment basis and close eligibility when claimed",
+    "close_qualified === true where eligible-close assertion applies",
+    "Known input/output currency and consumed rate/operation evidence where conversion applies",
+    "FX receipt alone does not establish source convention or execution qualification"
+  ],
+  "S0_integration_gap": {
+    "existing_project_account": [
+      "cash",
+      "starting_nav",
+      "shares",
+      "avg_cost",
+      "identity_status",
+      "holding_mark_source",
+      "weight"
+    ],
+    "existing_project_latest": [
+      "as_of",
+      "ticker",
+      "weight",
+      "identity_status",
+      "holding_mark_source"
+    ],
+    "missing_from_these_projections": [
+      "current_price",
+      "market_value",
+      "unrealized_PnL",
+      "sealed FX valuation bundle"
+    ],
+    "required": "Extend the incumbent bound projection; do not add a new account or valuation engine; preserve Draft/HOLD and US scope."
+  },
+  "navigation_context": [
+    "book",
+    "reporting currency",
+    "selected valuation reference",
+    "instrument/position identity",
+    "held versus accepted-target risk basis",
+    "selected accepted decision identity",
+    "originating row",
+    "scroll",
+    "focus"
+  ],
+  "navigation_rules": [
+    "Today Open holdings opens existing77-0/14D-0 in held mode",
+    "Opening details changes presentation of the same selection, not silently to latest",
+    "Later generation is explicit choice; suppress stale late response overwrite",
+    "Unavailable selected snapshot remains unavailable; no default book or latest fallback",
+    "Book switch cannot carry US S0 reference into another book",
+    "Filters change visible subset, not account total",
+    "Close/Back restores original row, scroll and focus",
+    "Research/history remain bound to selected instrument; target review remains bound to accepted decision",
+    "Target risk needs matching target report; never scale/copy held beta",
+    "Method & sources uses selected report provenance",
+    "Any selected-view export must preserve the chosen reference and declared basis; current export integration is not proved here"
+  ],
+  "responsive_rules": {
+    "product_390": "Fluid card wrappers, existing selected-navigation subtrees retained verbatim",
+    "proof_320": "Separate native width320 content specimens in existing build page; summary stacks, body fits, nav allows at least76px for Opportunities and flexible44px-min other destinations",
+    "global_destinations": 5,
+    "original_selected_node_ids_preserved": [
+      "1JT-0",
+      "1JY-0",
+      "1K3-0"
+    ],
+    "browser_keyboard_zoom_proof": false
+  },
+  "acceptance": [
+    "Missing mark preserves row/cash, withholds NAV and full weights",
+    "Complete numeric prices with unattested evidence remains provisional or preview, not fully attested",
+    "Empty evidence entry cannot acquire a stronger UI claim from QUALIFIED alone",
+    "Carry and future mark boundaries retain observed dates and source behavior",
+    "Missing/incompatible FX evidence prevents verified converted-total claim",
+    "A→B concurrent generation and late-response suppression",
+    "Missing selected snapshot and cross-book changes",
+    "Held/target report separation and correct S05 fallback",
+    "Keyboard row selection,44px actions,close focus restoration,Back continuity",
+    "Real consumer integration proof at selected snapshot, not just fixture tests"
+  ],
+  "verification": {
+    "source_cases": 8,
+    "real_account_reads": 0,
+    "quote_calls": 0,
+    "fx_calls": 0,
+    "doctrine_reads": 0,
+    "endpoint_calls": 0,
+    "source_module_initialized": false,
+    "production_source_changed": false,
+    "production_deployment": false,
+    "browser_playback": false
+  }
+}
