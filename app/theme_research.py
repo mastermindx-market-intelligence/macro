@@ -402,7 +402,10 @@ class _V2CompanyProfileBody(_V2Body):
 
     entry_kind: Literal["company_profile"]
     profile_id: str = Field(min_length=1, max_length=128, pattern=r"^[a-z0-9_.\-]+$")
-    company_ref: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9:._\-]+$")
+    company_ref: str = Field(
+        min_length=1, max_length=128,
+        pattern=r"^(?:[A-Za-z0-9:._\-]+|co:(?:us|cn|hk|ca|intl):[A-Za-z0-9.\-]+#[0-9]+)$",
+    )
     offset: int = Field(default=0, ge=0)
 
 
@@ -1013,7 +1016,8 @@ def _resolve_v2_registration(body: _V2Body) -> VerticalRegistration:
                 503,
                 {"error": {"code": "service_unavailable", "action": "retry_later"}},
             ) from None
-        if registration is None or not isinstance(registration, VerticalRegistration):
+        if (registration is None or not isinstance(registration, VerticalRegistration)
+                or registration.entry_kind != body.entry_kind):
             raise _private_error(
                 404, {"error": {"code": "not_available", "action": "none"}},
             )

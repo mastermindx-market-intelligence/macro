@@ -564,8 +564,9 @@ def _rendered_source_evidence(payload: Mapping[str, Any]) -> list[tuple[str | No
     """``(curation_revision, source_ref)`` for every rendered row/card/counter
     citation of THIS composed dossier. Rows carry their producing
     assertion's own ``curation_revision`` — the dossier's exact attribution;
-    cards and counter observations publish the closed tuple only (their
-    producing rows' revisions are already carried by those rows). A refused
+    cards publish the closed tuple only. Counter observations bind their
+    revision through their own native ``row_backed_by_source`` relationship,
+    whose source and observation identity must match exactly. A refused
     business section renders nothing, so it cites nothing. Ref-grained, not
     document-grained: two rendered rows from ONE document appear as two
     DISTINCT refs whenever their selectors differ, which is what makes an
@@ -589,9 +590,28 @@ def _rendered_source_evidence(payload: Mapping[str, Any]) -> list[tuple[str | No
             if isinstance(card, Mapping):
                 for ref in card.get("source_refs") or ():
                     _add(ref)
+    relationships = (
+        business.get("relationships") or () if isinstance(business, Mapping) else ()
+    )
     for observation in payload.get("counter_observations") or ():
-        if isinstance(observation, Mapping):
-            _add(observation.get("source_ref"))
+        if not isinstance(observation, Mapping):
+            continue
+        ref = observation.get("source_ref")
+        observation_id = observation.get("observation_id")
+        revisions = {
+            edge["via_curation_revision"]
+            for edge in relationships
+            if isinstance(edge, Mapping)
+            and edge.get("rel_type") == "row_backed_by_source"
+            and isinstance(observation_id, str) and observation_id
+            and edge.get("from_id") == observation_id
+            and isinstance(ref, Mapping)
+            and edge.get("to_id") == ref.get("object_id")
+            and isinstance(edge.get("via_curation_revision"), str)
+            and edge["via_curation_revision"]
+        }
+        # A missing or ambiguous native attribution cannot authorize evidence.
+        _add(ref, next(iter(revisions)) if len(revisions) == 1 else None)
     return rendered
 
 
@@ -858,6 +878,7 @@ def _rights_revision(rights_snapshot: object, bundle_unavailable: Any) -> str:
             from engine.theme_graph.rights import (  # noqa: PLC0415 — lazy by design
                 load_registry_snapshot,
             )
+            snapshot = load_registry_snapshot()
         except ImportError as exc:  # pragma: no cover - carrier base fallback
             raise bundle_unavailable(
                 "rights registry snapshot reader unavailable on this base"

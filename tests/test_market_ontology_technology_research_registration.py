@@ -887,6 +887,84 @@ def test_load_bundle_serves_the_honest_empty_bundle_with_typed_omissions():
         reg.load_bundle(QUERY, rights_snapshot=(None, {}))
 
 
+def test_default_rights_revision_reads_once_and_explicit_snapshot_never_rereads(monkeypatch):
+    from engine.market_ontology.theme_research_binding import BundleUnavailable
+
+    reads = []
+    rights = types.ModuleType("engine.theme_graph.rights")
+    rights.load_registry_snapshot = lambda: (reads.append("read") or ("fresh-revision", {}))
+    monkeypatch.setitem(sys.modules, rights.__name__, rights)
+    assert reg._rights_revision(None, BundleUnavailable) == "fresh-revision"
+    assert reads == ["read"]
+    assert reg._rights_revision(("explicit-revision", {}), BundleUnavailable) == "explicit-revision"
+    assert reads == ["read"]
+    with pytest.raises(BundleUnavailable, match="no revision"):
+        reg._rights_revision((None, {}), BundleUnavailable)
+    assert reads == ["read"]
+
+
+@pytest.mark.parametrize("counter_only", [False, True])
+def test_counter_evidence_binds_its_native_observation_provenance(monkeypatch, counter_only):
+    _activate_synthetic_contract(monkeypatch)
+    bundle = _bundle(assertions=(COUNTER_T,)) if counter_only else _bundle()
+    dossier = reg.compose(QUERY, bundle)
+    assert dossier["counter_observations"]
+    if counter_only:
+        assert dossier["business"]["rows"] == []
+    envelope = reg.select_evidence(QUERY, bundle, curation_source_ref(COUNTER_T))
+    assert envelope["assertion"] == COUNTER_T
+    assert envelope["source"] == reg._native_assertion_source_ref(
+        COUNTER_T["source"], schema_id=COUNTER_T["schema"],
+    )
+
+
+@pytest.mark.parametrize("fault", [
+    "missing_edge", "foreign_row", "foreign_source", "stale_revision",
+    "ambiguous_revision", "stale_generation", "foreign_selector",
+])
+def test_counter_evidence_cannot_borrow_foreign_or_stale_provenance(monkeypatch, fault):
+    _activate_synthetic_contract(monkeypatch)
+    bundle = _bundle(assertions=(COUNTER_T,))
+    dossier = json.loads(json.dumps(reg.compose(QUERY, bundle)))
+    observation = dossier["counter_observations"][0]
+    relationships = dossier["business"]["relationships"]
+    edge = next(edge for edge in relationships
+                if edge["rel_type"] == "row_backed_by_source"
+                and edge["from_id"] == observation["observation_id"])
+    if fault == "missing_edge":
+        relationships.remove(edge)
+    elif fault == "foreign_row":
+        edge["from_id"] += "-foreign"
+    elif fault == "foreign_source":
+        edge["to_id"] += "-foreign"
+    elif fault == "stale_revision":
+        edge["via_curation_revision"] = ROLE_T["curation_revision"]
+    elif fault == "ambiguous_revision":
+        relationships.append({**edge, "via_curation_revision": ROLE_T["curation_revision"]})
+    elif fault == "stale_generation":
+        observation["source_ref"]["generation"] += "-stale"
+    else:
+        observation["source_ref"]["selector"] += "-foreign"
+    monkeypatch.setattr(reg, "compose", lambda *_a, **_kw: dossier)
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.select_evidence(QUERY, bundle, curation_source_ref(COUNTER_T))
+    assert excinfo.value.code == "not_available"
+
+
+def test_counter_evidence_rejects_an_unrendered_same_span_sibling(monkeypatch):
+    _activate_synthetic_contract(monkeypatch)
+    sibling = _themed(base._assertion(
+        predicate="theme_membership", seed="counter-span-unrendered-sibling",
+        source=COUNTER_T["source"],
+    ))
+    assert sibling["curation_revision"] != COUNTER_T["curation_revision"]
+    bundle = _bundle(assertions=(COUNTER_T, sibling))
+    assert reg.select_evidence(QUERY, bundle, curation_source_ref(COUNTER_T))["assertion"] == COUNTER_T
+    with pytest.raises(TechnologyRegistrationRefusal) as excinfo:
+        reg.select_evidence(QUERY, bundle, curation_source_ref(sibling))
+    assert excinfo.value.code == "not_available"
+
+
 def test_select_evidence_applies_the_same_query_refusals(monkeypatch):
     bad_view = SyntheticQuery(profile_id=reg.PROFILE_ID, company_ref=COMPANY, view="nope")
     with pytest.raises(TechnologyRegistrationRefusal) as excinfo:

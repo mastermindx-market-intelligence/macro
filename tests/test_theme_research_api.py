@@ -2613,6 +2613,72 @@ def test_v2_unknown_profile_is_a_private_404(entitled_client, monkeypatch):
     assert "no_such_profile" not in response.text
 
 
+def test_v2_revision_pinned_company_reaches_its_native_identity_receipt(entitled_client, monkeypatch):
+    _v2_tech_state(monkeypatch)
+    body = _v2_tech_query_body()
+    pinned = body["company_ref"] + "#3"
+    original_loader = theme_research.load_authorized_owner_bundle
+
+    def loader(query, **kwargs):
+        assert query.company_ref == pinned
+        bundle = original_loader(query, **kwargs)
+        receipt = {**bundle.identity_results[0], "node_id": pinned}
+        return dataclasses.replace(bundle, identity_results=(receipt,))
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+    response = entitled_client.post("/api/themes/v1/research/query", json={**body, "company_ref": pinned})
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    assert response.json()["data"]["scope"]["company_ref"] == body["company_ref"]
+
+
+@pytest.mark.parametrize("company_ref", [
+    "co:us:synth-alpha#", "co:us:synth-alpha#x", "co:us:synth-alpha##3",
+    "co:us:synth-alpha#3#4", "co:xx:synth-alpha#3", "co:us:synth_alpha#3",
+    "cik:0000320193#3", "foreign#3",
+])
+def test_v2_malformed_company_revision_is_400_before_readers(entitled_client, monkeypatch, company_ref):
+    def untouchable(*_a, **_kw):
+        pytest.fail("reader reached for malformed revision syntax")
+
+    monkeypatch.setattr(theme_research, "load_registry_snapshot", untouchable)
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", untouchable)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query", json=_v2_tech_query_body(company_ref=company_ref),
+    )
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("endpoint", ["query", "evidence"])
+def test_v2_profile_kind_mismatch_is_unknown_profile_before_dispatch(
+    entitled_client, monkeypatch, reverse, endpoint,
+):
+    def untouchable(*_a, **_kw):
+        pytest.fail("profile mismatch reached dispatch or a reader")
+
+    monkeypatch.setattr(theme_research, "load_registry_snapshot", untouchable)
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", untouchable)
+    monkeypatch.setattr(theme_research, "_call_v2_" + endpoint, untouchable)
+    body = (_v2_tech_query_body(profile_id="finance_intelligence_research.v1", view="dossier")
+            if reverse else {
+                "request_schema": _V2_REQUEST_SCHEMA, "entry_kind": "sector_profile",
+                "profile_id": "technology_economic_change.v1", "sector_ref": "sector:financials",
+                "view": "business", "time_mode": "latest",
+            })
+    if endpoint == "evidence":
+        body.update(expected_generation=_STALE_TECDA, expected_context_generation=_STALE_CONTEXT,
+                    assertion_ref="gmi-curation://theme:technology-ex-semis/gmirca_" + "0" * 32)
+    response = entitled_client.post("/api/themes/v1/research/" + endpoint, json=body)
+    unknown = entitled_client.post(
+        "/api/themes/v1/research/" + endpoint, json={**body, "profile_id": "no_such_profile.v1"},
+    )
+    assert response.status_code == unknown.status_code == 404, response.text
+    assert response.content == unknown.content
+    _assert_private_headers(response)
+
+
 def test_v2_unknown_sector_subject_is_a_private_404(entitled_client, monkeypatch):
     """The finance sector_profile carries a CLOSED subject set
     (``sector:financials``); any other subject is the same private 404 an

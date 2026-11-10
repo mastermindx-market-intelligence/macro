@@ -331,6 +331,13 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -1398,7 +1405,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -2502,6 +2509,13 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3593,13 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -7661,6 +7682,10 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "tests/test_market_ontology_technology_economic_change.py"
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8180,6 +8205,13 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -9315,6 +9347,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -12435,6 +12470,13 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -15329,6 +15371,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
       # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
@@ -17025,6 +17069,13 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -18364,7 +18415,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel
@@ -28084,6 +28135,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28937,6 +28991,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31313,6 +31370,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -33191,6 +33255,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -34034,6 +34101,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40563,6 +40633,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41114,6 +41187,13 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -44508,6 +44588,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45784,6 +45871,13 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51109,6 +51203,12 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Shared profile registry: exact static import/read closure (lane 5 v2).
+      - "contracts/market_ontology/technology_economic_change.evidence.v2.schema.json"
+      - "contracts/market_ontology/technology_economic_change.v1.schema.json"
+      - "engine/market_ontology/technology_economic_change.py"
+      - "engine/market_ontology/technology_research_registration.py"
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
