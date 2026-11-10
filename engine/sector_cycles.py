@@ -1244,10 +1244,21 @@ def _stamp_turn_knowledge(rec: dict, struct: pd.Series, pct: float,
                           as_known_blockers: list[str] | None = None) -> None:
     """Lane 8 / B05+B11 — versioned pivot + confirmation knowledge per record."""
     try:
-        rec["turn_knowledge"] = onto.legacy_turn_knowledge(
+        tk = onto.legacy_turn_knowledge(
             struct, rec.get("turns") or [], pct=pct,
             structure_basis=rec.get("basis") or "unknown",
             as_known_blockers=as_known_blockers)
+        # The per-turn arrays ride ON the turns (so they travel with `turns` into
+        # whichever payload chunk carries them); the record keeps the contract
+        # header + anchor.  A turn without the keys was never stamped.
+        conf, lag = tk.pop("confirmed_at", None), tk.pop("confirmation_sessions", None)
+        if tk.get("status") == "measured" and conf is not None:
+            for t, c, n in zip(rec.get("turns") or [], conf, lag):
+                t["confirmed_at"] = c
+                t["confirmation_sessions"] = n
+        tk["per_turn_fields"] = ["confirmed_at", "confirmation_sessions"]
+        tk.pop("confirmation_rule", None)        # published once in meta.knowledge_contracts
+        rec["turn_knowledge"] = tk
     except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
         log.warning("sector_cycles: turn knowledge failed for %s: %s", rec.get("id"), e)
 
@@ -1885,6 +1896,9 @@ def compute(asof: str | None = None) -> dict | None:
                     "detector": onto.LEGACY_DETECTOR_ID,
                     "detector_version": onto.LEGACY_DETECTOR_VERSION,
                     "confirmation_clock": onto.TURN_CONFIRMATION_CLOCK,
+                    "confirmation_rule": ("first bar whose close reverses by >= "
+                                          "threshold from the pivot extreme"),
+                    "per_turn_fields": ["confirmed_at", "confirmation_sessions"],
                     "as_known": "unavailable",
                 },
                 "history_knowledge": {

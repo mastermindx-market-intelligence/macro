@@ -217,6 +217,16 @@ def test_rotation_context_rank_breaks_ties_by_id_not_registry_order():
     assert lrc.rank_measured({"z": 1.0, "a": 1.0})["ranked"] == ["a", "z"]
 
 
+def test_confluence_board_sorts_missing_rs_after_measured_not_as_zero():
+    from engine.subsector_confluence import _board_key
+    g = lambda k, rs: {"key": k, "class": "neutral", "entry": {"weight": 0.0},
+                       "regime": {"rs_60d": rs}}
+    rows = [g("none", None), g("neg", -2.0), g("nan", float("nan")), g("pos", 3.0),
+            g("zero", 0.0)]
+    rows.sort(key=_board_key)
+    assert [r["key"] for r in rows] == ["pos", "zero", "neg", "none", "nan"]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 4. Turn knowledge — pivot is not confirmation
 # ─────────────────────────────────────────────────────────────────────────────
@@ -465,6 +475,10 @@ def test_live_sector_build_emits_no_current_model_cell():
     tape = hp.synthetic_tape()
     rec = hp.live_record(tape, tape["index"][-1])
     assert rec["turn_knowledge"]["status"] == "measured"
+    for t in rec["turns"]:                                # per-turn knowledge rides the turn
+        assert ("confirmed_at" in t) and (t["confirmed_at"] is None) == bool(t["provisional"])
+        assert t["confirmed_at"] is None or t["confirmed_at"] > t["date"]
+    assert rec["turn_knowledge"]["anchor"]["confirmed_at"] is not None
     assert rec["history_knowledge"]["as_known_history"]["status"] == "unavailable"
     hz = rec["now"].get("hazard")
     assert hz is not None
