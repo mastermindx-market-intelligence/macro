@@ -405,6 +405,8 @@ const briefText = (s,max=260) => {
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const fmtPct = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const fmtPP = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'pp';
+const fmtCount = x => Number.isFinite(x) ? x : '—';
+const countInk = (x, ink) => Number.isFinite(x) ? ink : 'muted';
 const cls = x => x==null?'muted':(x>=0?'pos':'neg');
 const TIER_LABELS={
   T1:['confirmed setup','已确认机会'],
@@ -459,9 +461,23 @@ function sparkN(arr,color='',{w=110,h=26}={}){
 // ---- equal-weight sector/theme cycle mini-chart. Self-contained inline SVG — no extra deps. ----
 const CYC_PHASE_ZH={Peak:'见顶',Expansion:'上行',Downturn:'回落',Recovery:'入场良机',Trough:'筑底'};
 function fmtYM(t){if(!t)return'—';const p=String(t).split('-');const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (M[(+p[1]||1)-1]||'')+" "+p[0];}
+// A cycle projection is past, in progress or genuinely forward on the
+// viewer's UTC calendar. Missing/malformed window dates fail closed.
+// Presentation only; model source, trading gates and evidence are unchanged.
+function projectionWindowState(pr, asofYM){
+  const month=v=>{
+    if(typeof v!=='string'||!/^[0-9]{4}-(0[1-9]|1[0-2])$/.test(v))return null;
+    return (+v.slice(0,4))*12+(+v.slice(5,7));
+  };
+  if(!pr||(pr.nextTurn!=='peak'&&pr.nextTurn!=='trough'))return 'unavailable';
+  const lo=month(pr.low),med=month(pr.central),hi=month(pr.high),now=month(asofYM);
+  if([lo,med,hi,now].some(v=>v===null)||lo>med||med>hi)return 'unavailable';
+  return hi<now?'expired':lo<=now?'in_progress':'future';
+}
 function cycleSectionHtml(cyc,bid){
   if(!cyc||!cyc.price||cyc.price.length<8) return '';
-  const W=760,H=168,PL=10,PR=12,PT=16,PB=14;
+  // Preserve original PR chart aspect and marker geometry.
+  const W=1080,H=240,PL=14,PR=16,PT=20,PB=18;
   const pts=cyc.price, xs=pts.map(p=>p.x), vs=pts.map(p=>p.v);
   const x0=(cyc.xDomain&&cyc.xDomain[0])||Math.min.apply(null,xs), x1=(cyc.xDomain&&cyc.xDomain[1])||Math.max.apply(null,xs);
   let lo=Math.min.apply(null,vs), hi=Math.max.apply(null,vs); const pad=((hi-lo)||1)*0.08; lo-=pad; hi+=pad;
@@ -475,16 +491,26 @@ function cycleSectionHtml(cyc,bid){
   const tdx=cyc.today!=null?SX(cyc.today):null;
   const todayLine=tdx!=null?`<line x1="${tdx.toFixed(1)}" y1="${PT}" x2="${tdx.toFixed(1)}" y2="${H-PB}" stroke="${cssv('--muted')}" stroke-width="1" stroke-dasharray="2 3" opacity=".5"/>`:'';
   let proj='';const pr=cyc.proj;
-  if(pr&&pr.central_x!=null&&pr.central_x<=x1+0.02){
+  const projectionState=projectionWindowState(pr,new Date().toISOString().slice(0,7));
+  // Past or in-progress forecast windows cannot create forward arrows.
+  if(projectionState==='future'&&pr.central_x!=null&&pr.central_x<=x1+0.02){
     const ymd=t=>{if(!t)return null;const q=String(t).split('-');return (+q[0])+(((+q[1]||1)-1)/12);};
     const clo=ymd(pr.low),chi=ymd(pr.high),cxp=SX(pr.central_x),up=pr.nextTurn==='peak';
     if(clo!=null&&chi!=null){const a=SX(Math.max(clo,cyc.today||x0)),b2=SX(Math.min(chi,x1));if(b2>a)proj+=`<rect x="${a.toFixed(1)}" y="${PT}" width="${(b2-a).toFixed(1)}" height="${H-PT-PB}" fill="${acc}" opacity=".10"/>`;}
     proj+=`<line x1="${cxp.toFixed(1)}" y1="${PT}" x2="${cxp.toFixed(1)}" y2="${H-PB}" stroke="${acc}" stroke-width="1.3" stroke-dasharray="3 3" opacity=".85"/><text x="${cxp.toFixed(1)}" y="${(PT-4).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="800" fill="${acc}">${up?'▲':'▼'}</text>`;
   }
-  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="none" style="display:block;height:168px"><path d="${d}" fill="none" stroke="${acc}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${todayLine}${proj}${marks}${nowDot}</svg>`;
+  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto;aspect-ratio:${W}/${H}"><path d="${d}" fill="none" stroke="${acc}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${todayLine}${proj}${marks}${nowDot}</svg>`;
   const nw=cyc.now||{}, ph=(cyc.phases||{})[nw.phase]||{}, hue=ph.hue||cssv('--muted');
   const sig=nw.signature||{};
-  const projTxt=(pr&&pr.central)?(L('next ','下一')+(pr.nextTurn==='peak'?L('peak','顶部'):L('trough','底部'))+' '+fmtYM(pr.central)+((pr.low&&pr.high)?(' ('+fmtYM(pr.low)+' – '+fmtYM(pr.high)+')'):'')):'—';
+  const projectedWindow=(pr&&pr.low&&pr.high)?(' ('+fmtYM(pr.low)+' – '+fmtYM(pr.high)+')'):'';
+  const projTxt=projectionState==='future'
+    ?L('next ','下一')+(pr.nextTurn==='peak'?L('peak','顶部'):L('trough','底部'))+' '+fmtYM(pr.central)+projectedWindow
+    :projectionState==='in_progress'
+      ?L('Projection window in progress','预测窗口进行中')+projectedWindow
+      :projectionState==='expired'
+        ?L('Historical projection window elapsed','历史预测窗口已结束')+projectedWindow
+        :L('No valid current projection','暂无有效当前预测');
+  const projHeading=projectionState==='future'?L('Projected next turn','推演下一拐点'):L('Projection status','投影状态');
   const chips=`<div class="cyc-readrow">
       <span class="cyc-pchip" style="background:${hue}22;border:1px solid ${hue};color:${hue}">${L(nw.phaseLabel||nw.phase||'—', CYC_PHASE_ZH[nw.phase]||nw.phaseLabel||'—')}</span>
       ${nw.pos!=null?`<span class="cyc-rk">${L('cycle pos','周期位置')} <b>${Math.round(nw.pos)}/100</b></span>`:''}
@@ -495,10 +521,10 @@ function cycleSectionHtml(cyc,bid){
   const fullLink=cyc.full_href?` <a href="${esc(cyc.full_href)}" style="color:var(--ink-link, var(--link))">${L('Open the full cycle dashboard →','打开完整周期看板 →')}</a>`:'';
   return `<h2><span class="idx">◷</span>${L('Theme cycle','主题周期')} <span class="chip">${L('rebased price · auto-detected turns','再基准化价格 · 自动识别拐点')}</span></h2>
     <div class="panel">
-      <div class="muted sm" style="margin-bottom:8px">${L("Equal-weight price on the cycle clock: past turns, current position, and projected next turn. Rhythm only.","等权价格的周期时钟：历史拐点、当前位置与下一拐点投影。仅看节奏。")}</div>
+      <div class="muted sm" style="margin-bottom:8px">${L("Equal-weight price on the cycle clock: observed turns, current position, and projection status. Rhythm only.","等权价格的周期时钟：历史拐点、当前位置与预测状态。仅看节奏。")}</div>
       ${svg}
       ${chips}
-      <div class="muted sm" style="margin-top:9px">${L('Projected next turn','推演下一拐点')}: ${projTxt}.${fullLink}</div>
+      <div class="muted sm" style="margin-top:9px">${projHeading}: ${projTxt}.${fullLink}</div>
     </div>`;
 }
 const VH_COLOR={EXPANSION_UP:'--up',COILED_UP:'--up',IN_HOLE:'--warn',EXPANDED:'--muted',COILED_DOWN:'--down',EXPANSION_DOWN:'--down'};
@@ -574,8 +600,15 @@ function convCell(c){
 function contestedList(th,b){
   const tx=th.textures||{}, rr=tx.rollover_risk||{}, cyc=(b||{}).cycle||null;
   const list=[];
-  if(cyc && (((cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak')) || ((cyc.proj||{}).nextTurn==='trough')))
-    list.push(['cycle clock at a provisional peak / projecting a trough next','周期时钟处于临时顶部 / 推演下一拐点为底部']);
+  const provisionalPeak=cyc && (cyc.turns||[]).some(x=>x&&x.provisional&&x.k==='peak');
+  const futureTrough=cyc && (cyc.proj||{}).nextTurn==='trough' &&
+    projectionWindowState(cyc.proj,new Date().toISOString().slice(0,7))==='future';
+  const cycleReasons=[];
+  if(provisionalPeak) cycleReasons.push(['at a provisional peak','处于临时顶部']);
+  if(futureTrough) cycleReasons.push(['projecting a trough next','推演下一拐点为底部']);
+  // These are two descriptions of one cycle texture, not two independent votes.
+  if(cycleReasons.length)
+    list.push(['cycle clock '+cycleReasons.map(x=>x[0]).join(' / '),'周期时钟'+cycleReasons.map(x=>x[1]).join(' / ')]);
   if(th.rs_pctile!=null && th.rs_pctile>=0.95)
     list.push(['very extended (RS ≥95%ile)','相对强度极端延展（≥95分位）']);
   const early = rr.band==='low' && (rr.reasons||[]).length>0 && th.rs_pctile!=null && th.rs_pctile>=0.9;
@@ -1368,8 +1401,8 @@ function render(){
     <div class="kpis" style="margin-top:12px">
       ${['1d','5d','10d','20d','60d','ytd'].map(hz=>{const p=(th.perf||{})[hz]||{};return `<div><div class="k">${L(hz.toUpperCase()+' vs '+BENCH, hz.toUpperCase()+' vs '+BENCHZ)}</div><div class="v ${cls(p.rel)}">${fmtPct(p.rel)}</div></div>`;}).join('')}
       <div><div class="k">${L('above 50d','站上50日')}</div><div class="v">${bd.pct50==null?'—':Math.round(bd.pct50*100)+'%'}</div></div>
-      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="pos">${bd.nh||0}</span>/<span class="neg">${bd.nl||0}</span></div></div>
-      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="pos">${th.adv||0}</span>/<span class="neg">${th.dec||0}</span></div></div>
+      <div><div class="k">${L('new hi / lo','新高/低')}</div><div class="v"><span class="${countInk(bd.nh, 'pos')}">${fmtCount(bd.nh)}</span>/<span class="${countInk(bd.nl, 'neg')}">${fmtCount(bd.nl)}</span></div></div>
+      <div><div class="k">${L('adv / dec today','今日涨/跌')}</div><div class="v"><span class="${countInk(th.adv, 'pos')}">${fmtCount(th.adv)}</span>/<span class="${countInk(th.dec, 'neg')}">${fmtCount(th.dec)}</span></div></div>
     </div>
     ${ref?`<div class="muted sm" style="margin-top:10px">${L('Cross-checked vs','交叉验证')} <b>${refLabelHtml(ref.label)}</b>: ${L('daily corr','日相关')} <b>${ref.corr}</b>, ${L('market-adjusted','剔除市场')} <b>${ref.rel_corr}</b> (${ref.n} ${L('sessions','日')})</div>`:''}
   </div>`;
@@ -1640,7 +1673,15 @@ function anatomyPanelHtml(th){
   return html;
 }
 
-// ── staleness banner (TS-R6): shown when basket detail as_of predates today's session
+// Intl spans exchange calendars. Report the supplied price date without inferring a due session.
+function pricePanelDateHtml(panelAsOf){
+  var date=typeof panelAsOf==='string'?panelAsOf.slice(0,10):'';
+  return '<div class="disc" data-price-panel-date>'
+    +(date?L('Price panel dated '+esc(date),'价格面板日期：'+esc(date))
+           :L('Price panel date unavailable','价格面板日期不可用'))+'</div>';
+}
+
+// ── staleness banner (TS-R6): existing non-Intl session disclosure
 function stalenessBannerHtml(detailAsOf){
   if(!detailAsOf) return '';
   // Compare detail as_of date to today in ET so 19:00–24:00 UTC (next UTC day) does
@@ -1775,8 +1816,8 @@ function injectFtrWidgets(pulse, turnWatch){
 
   var detailAsOf=(DETAIL.as_of||'').slice(0,10);
 
-  // Staleness banner: shown when basket data predates today's session (TS-R6)
-  var bannerHtml=stalenessBannerHtml(detailAsOf);
+  // Keep the mixed-market panel clock separate from the optional theme clock.
+  var bannerHtml=DETAIL.region==='intl'?pricePanelDateHtml(DETAIL.price_panel_as_of):stalenessBannerHtml(detailAsOf);
   if(bannerHtml){
     var bannerEl=document.createElement('div');
     bannerEl.className='ftr-stale-banner';
