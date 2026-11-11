@@ -333,7 +333,7 @@ The reviewer found three blockers in the enforcement of R17 (X1 an unpushed clos
 4. **(Y1)** The fixture dry run takes no path: `--dry-run-stage1-fixture` builds its inputs in memory from the committed seeded generator (`tests/rotation_core_v2_fixture.fixture_texts`, seed 7); the loaders accept in-memory text; it writes to an in-memory ledger only; every line is stamped FIXTURE. O7's manifest guard is removed. What remains procedural is stated under Limits.
 5. **(Y2)** The remote fetch fails closed and returns the sha it fetched; every remote check takes that sha, never a stale ref.
 6. **(Y3)** The reproduction hash and the recorded gate signs are required arguments of `final_evaluation`: no default, no None.
-7. **(Y4)** Stage 2 verifies, in order: the ledger, the release, the engine commit. Then `stage2_opened` unseals the sealed files (mode 0400) inside the runner, checks them against the recorded sealed hashes (`v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt`) and the release manifest, opens the loaders, and re-seals (mode 000) and closes on exit, whatever happens. The loader guard no longer reads a release itself; it is open only inside that verified context. Code and fixture-tested only; no sealed file was touched.
+7. **(Y4)** Stage 2 verifies, in order: the ledger, the release, the engine commit. Then `stage2_opened` unseals the sealed files (mode 0400) inside the runner, checks them against the recorded sealed hashes (`v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt`) and the release manifest, opens the loaders, and re-seals (mode 000) and closes on a normal return and on an exception that propagates out of the `with` block. *Corrected by R35.1:* on a hard exit (`_hard_exit` → `os._exit`) it does not re-seal, and the unsealed file is left at mode 0400; see R35. The loader guard no longer reads a release itself; it is open only inside that verified context. Code and fixture-tested only; no sealed file was touched.
 8. **(Y5)** The engine-commit check refuses:
    - modified or untracked files under the pinned paths;
    - `PYTHONPATH` being set;
@@ -942,4 +942,35 @@ Source: the CEO's reader, `FINDINGS_START_THEN_REFUSE.md` (no blocker).
    - A commit that changes its setting fails the stage-1 reproduction check (Phase A2) and aborts before any 2020–2025 number.
    - Neither spends the stage. It is not fixed in code because the engine is frozen.
    - **Covered by procedure:** between the GATE record and the stage-2 release, the only commit made on the branch is the stage-2 release file, made by the CEO. Before writing it the CEO confirms that `git diff <stage-1 release commit> HEAD -- research/rotation_core/results_v2_selection_rerun.json` is empty and runs `--preflight`.
+   - *R35.4:* the stage-2 selection-file case ends in the same hard exit (runner :1116), so the operator re-seal of R35.2 applies to it.
 4. **R21.6 wording** corrected (see there): the rehearsal matches stage 1 only from START onward. No code change.
+
+## R35 — the unsealed file after a hard exit (CEO; declared, no code change; the engine stays `b3f7ce4548`)
+
+Source: the outside reader, 22:40Z (runner :744–753, :1085–1124, :1660–1668; engine :1277–1308), confirmed by the CEO.
+
+**Finding.** `confirm_command` runs inside `with v2.stage2_opened(...)` (runner :1662). Every failure in it other than `IntegrityAbort` and `Stage1NotReproduced` ends in `_hard_exit`, which calls `os._exit` (:753). `os._exit` skips the `with` block's `__exit__`, so the `chmod 000` at engine :1303–1307 does not run, and the one unsealed file (`sealed_post2019/49_Industry_Portfolios_Daily.csv`) stays at mode 0400. Nothing in `--preflight` or `start_checks` tests the mode. No number leaks and no stage is spent.
+
+**Why declared, not fixed.** The single selection rerun (committed 22:39Z) pins engine commit `b3f7ce4548`. A code fix means a new engine commit and a second rerun, which R15 forbids.
+
+1. **Ruling line 336 corrected** (R20.7 / Y4 above). `stage2_opened` re-seals on a normal return and on an exception that propagates out of the `with` block. On a hard exit it does not, and the file is left at mode 0400.
+   - **Hard-exit sites inside the stage-2 `with` block** (all in `confirm_command`):
+     - runner :1111, the FINAL push for a Phase-B failure did not complete;
+     - :1114, Phase B raised, and the all-FAIL FINAL is recorded;
+     - :1116, any other exception;
+     - :1124, the FINAL push did not complete.
+   - The stage-1 hard-exit sites (:800, :808, :812, :824) do not matter here, because stage 1 never unseals.
+2. **The operator re-seals, on every exit.** The CEO runs stage 2 as one shell command: the `--stage confirm` invocation; then, unconditionally, `chmod 000` on every file under `sealed_post2019/` except `SHA256_FULL_FILES.txt`; then `stat -c '%a %n'` on that directory's files; then the exit code. For example:
+
+   ```
+   cd /home/ubuntu2/.t3/worktrees/Macro/rotation-core
+   env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm; rc=$?; \
+   S=/home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019; \
+   find "$S" -maxdepth 1 -type f ! -name SHA256_FULL_FILES.txt -exec chmod 000 {} +; \
+   stat -c '%a %n' "$S"/*; date -u +%FT%TZ; echo "exit $rc"
+   ```
+
+   The CEO sends the witness the `stat` output and the clock time before anything else runs.
+3. **Mode check before every invocation.** Before `--stage pre1998`, before the stage-2 release is written, and before `--stage confirm`, the CEO runs the same `stat` and requires mode 0 on all six data files (the 12, 17 and 49 industry `.csv` files and their `.zip` files). If any is not 0: set it to 000, tell the witness the file and the time, and only then continue. If the shell itself dies during stage 2, this check is what catches it.
+   - At the time of writing, all six are mode 0.
+4. **R34.3 gains one sentence** (see there): the stage-2 selection-file case ends in this same hard exit, so R35.2 applies to it.
