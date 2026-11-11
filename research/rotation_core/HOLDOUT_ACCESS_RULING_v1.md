@@ -23,3 +23,7 @@ H opens only for candidates that clear G1, G2, G3 and G5 on D. It also opens for
 ## Consequence for the header
 
 The header's two-stage design (Stage H runs right after Stage D is committed) is narrowed by this ruling. It is recorded in `results_stage_D.json` `deviations[]` as a pre-outcome access restriction.
+
+## Parent ruling on Stage D (2026-11-11 09:50Z): v1 closed at L0, Stage H never run
+
+The Prophet programme CEO read `RESULTS_STAGE_D.md` at commit `9aec219537` and accepted it. No v1 candidate cleared G1, G2, G3 and G5 on D. Under the default stated above before any outcome, the parent will not write `HOLDOUT_RELEASE_v1.json`. Stage H of protocol v1 is therefore never run, and v1 closes at L0 descriptive. The 2020-01-02 onward window stays unseen for this question and is reserved as a confirmation sample for protocol v2. Recorded by the Rotation Core lead at the commit that adds this paragraph.
