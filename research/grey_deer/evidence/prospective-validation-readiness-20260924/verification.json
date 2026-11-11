@@ -1,0 +1,31 @@
+{
+  "schema": "risk_radar_prospective_validation_readiness_verification.v1",
+  "protocol_commit": "7bc85b604a130e01b57b45db1e6430c292874a41",
+  "method_commit": "75d21ff6b478687971126a8790cda825bdd683f7",
+  "protocol_sha256": "94dde0082762a62e5212f4826f376583bc082fb34babd46172a310bccdf38840",
+  "scorecard_sha256": "122025b98da098d1da8dc7f9a980fa2d31d5e4e29b128c1481725b9e73583634",
+  "test_sha256": "0386f84b5235017e1a9cdbad50221993806fdb45961ba86472204ba7c7da5c1b",
+  "historical_forward_log": {
+    "sha256": "f42c11c0962d4a1e7f673d6510ec0c071b7e3a34077a03964c444a8d81282e14",
+    "rows": 52,
+    "prospective_status": "not_started",
+    "same_model_issued_n": 0,
+    "missing_issue_receipt": 52,
+    "readiness_status": "not_started",
+    "promotion_review_eligible": false,
+    "current_model_validated": false,
+    "public_validation_ready": false
+  },
+  "tests": {
+    "focused_readiness": 5,
+    "scorecard_full": 80,
+    "scorecard_card_reader": 20
+  },
+  "authority": {
+    "model_changed": false,
+    "probability_changed": false,
+    "gate_changed": false,
+    "policy_changed": false,
+    "capital_authority_changed": false
+  }
+}

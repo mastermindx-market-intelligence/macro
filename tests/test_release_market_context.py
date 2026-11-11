@@ -437,36 +437,62 @@ class TestReactionSensitivity:
         assert result["spy_h1_hot_pct"] == pytest.approx(-0.40, abs=1e-4)
         assert result["spy_h1_cold_pct"] == pytest.approx(0.55, abs=1e-4)
 
-    def test_prefers_regime_cell_when_n_ge_threshold(self, tmp_path: Path):
-        """Regime-conditioned cell with n>=8 is preferred over era-level cell."""
+    def test_prefers_pooled_regime_cell_when_n_ge_threshold(self, tmp_path: Path):
+        """Preregistered regime cells are era=all and beat the era-level fallback."""
         cells = _base_cells() + [
-            # Regime-conditioned Q1 cell with n=10 (>= _REGIME_MIN_N)
+            # Regime-conditioned Q1 table is pooled across eras by the frozen playbook.
             {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
-             "era": _ERA_LABEL, "regime": "Q1", "n": 10, "mean": 7.77, "median": 6.0,
+             "era": "all", "regime": "Q1", "n": 10, "mean": 7.77, "median": 6.0,
              "ci_lo": 2.0, "ci_hi": 12.0},
         ]
         p = _make_playbook(tmp_path, cells)
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is True
-        # The Q1-conditioned cell should be used for hot dgs10
+        assert result["regime_requested"] == "Q1"
+        assert result["regime_basis"] == "all"
+        assert result["regime_labels_revision_optimistic"] is True
+        # The pooled Q1-conditioned cell should be used for hot dgs10.
         assert result["dgs10_h1_hot_bp"] == pytest.approx(7.77, abs=1e-4)
-        # Cold dgs10 falls back to era-level (no Q1 cold cell)
+        hot_evidence = result["evidence"]["dgs10_h1_hot"]
+        assert hot_evidence == {
+            "n": 10,
+            "mean": 7.77,
+            "median": 6.0,
+            "ci_lo": 2.0,
+            "ci_hi": 12.0,
+            "era": "all",
+            "regime": "Q1",
+            "revision_optimistic": True,
+        }
+        # Cold dgs10 falls back to 2021plus era-level (no qualified Q1 cold cell).
         assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1, abs=1e-4)
+        cold_evidence = result["evidence"]["dgs10_h1_cold"]
+        assert cold_evidence["n"] == 20
+        assert cold_evidence["era"] == _ERA_LABEL
+        assert cold_evidence["regime"] is None
+        assert cold_evidence["revision_optimistic"] is False
+        assert "revision_optimistic" in result["note"]
 
     def test_falls_back_when_regime_n_below_threshold(self, tmp_path: Path):
         """Regime-conditioned cell with n<8 is NOT used; falls back to era-level."""
         cells = _base_cells() + [
             # n=5 < _REGIME_MIN_N — should be ignored
             {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
-             "era": _ERA_LABEL, "regime": "Q1", "n": 5, "mean": 99.0, "median": 99.0,
+             "era": "all", "regime": "Q1", "n": 5, "mean": 99.0, "median": 99.0,
              "ci_lo": 0.0, "ci_hi": 99.0},
         ]
         p = _make_playbook(tmp_path, cells)
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q1"
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
         assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2, abs=1e-4)  # era-level
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
+        assert result["evidence"]["dgs10_h1_hot"]["revision_optimistic"] is False
 
     def test_nfp_family_mapped_correctly(self, tmp_path: Path):
         """nfp release type maps to 'nfp' playbook family."""
@@ -494,7 +520,8 @@ class TestReactionSensitivity:
         required = {
             "dgs10_h1_hot_bp", "dgs10_h1_cold_bp",
             "spy_h1_hot_pct", "spy_h1_cold_pct",
-            "era_basis", "regime_cells_used", "note",
+            "era_basis", "regime_requested", "regime_basis", "regime_cells_used",
+            "regime_labels_revision_optimistic", "evidence", "note",
         }
         assert required.issubset(result.keys())
 
@@ -505,6 +532,12 @@ class TestReactionSensitivity:
         result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q2")
         assert result is not None
         assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q2"
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
+        assert result["evidence"]["dgs10_h1_hot"]["n"] == 20
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
 
     def test_fail_open_on_bad_json(self, tmp_path: Path):
         """Corrupt JSON → returns None without raising."""
@@ -905,3 +938,301 @@ def test_expectation_read_live_path_end_to_end(tmp_path, monkeypatch):
         f"Expected above_expectations for CPI point=0.42 vs Cleveland≈-0.061 "
         f"(delta≈0.48pp, std≈1.56); got tag={er['tag']!r}, er={er}"
     )
+
+
+# ===========================================================================
+# PACKET D — honest historical-reaction evidence
+# ===========================================================================
+
+def _packet_d_detail(result: dict, legacy_field: str) -> dict:
+    return result["evidence"]["cells"][legacy_field]
+
+
+def test_reaction_evidence_same_mean_different_n_and_interval(tmp_path: Path):
+    small = _base_cells()
+    small[0].update(n=8, mean=3.2, ci_lo=-12.0, ci_hi=18.0)
+    large = _base_cells()
+    large[0].update(n=900, mean=3.2, ci_lo=3.0, ci_hi=3.4)
+
+    small_result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path / "small", small)
+    )
+    large_result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path / "large", large)
+    )
+
+    assert small_result["dgs10_h1_hot_bp"] == large_result["dgs10_h1_hot_bp"] == 3.2
+    small_detail = _packet_d_detail(small_result, "dgs10_h1_hot_bp")
+    large_detail = _packet_d_detail(large_result, "dgs10_h1_hot_bp")
+    assert small_detail["n"] == 8
+    assert large_detail["n"] == 900
+    assert small_detail["interval"] != large_detail["interval"]
+
+
+def test_reaction_evidence_mixed_regime_never_borrows_base_metadata(tmp_path: Path):
+    cells = _base_cells() + [{
+        "release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+        "era": "all", "regime": "Q1", "n": 11, "mean": 7.77, "median": 6.0,
+        "ci_lo": 2.0, "ci_hi": 12.0,
+    }]
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, cells), current_regime="Q1"
+    )
+
+    conditioned = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    fallback = _packet_d_detail(result, "dgs10_h1_cold_bp")
+    assert result["dgs10_h1_hot_bp"] == pytest.approx(7.77)
+    assert conditioned["regime"] == "Q1"
+    assert conditioned["n"] == 11
+    assert conditioned["interval"]["lo"] == pytest.approx(2.0)
+    assert fallback["regime"] is None
+    assert fallback["n"] == 20
+    assert fallback["interval"]["lo"] == pytest.approx(-9.0)
+
+
+def test_reaction_evidence_missing_interval_stays_absent(tmp_path: Path):
+    cells = _base_cells()
+    cells[0].pop("ci_lo")
+    cells[0].pop("ci_hi")
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, cells)
+    )
+    detail = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert detail["n"] == 20
+    assert "interval" not in detail
+
+
+def test_reaction_evidence_h1_is_next_session_not_one_hour(tmp_path: Path):
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, _base_cells())
+    )
+    detail = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert detail["horizon"] == "h1"
+    assert detail["reference_basis"] == "next_trading_session_close_vs_pre_event_prior_close"
+    assert "hour" not in detail["reference_basis"]
+    assert "descriptive_historical_context_only_no_forecast_or_trade_authority" in detail["limitations"]
+    assert "effective_n" in detail["unknowns"]
+    assert "sample_span" in detail["unknowns"]
+    assert "cell_specific_exclusions" in detail["unknowns"]
+
+
+def test_reaction_evidence_cpi_target_keeps_legacy_index_point_basis(tmp_path: Path):
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, _base_cells())
+    )
+    target = result["evidence"]["target"]
+    assert target["observed_value"] == "cpi_initial_print_index_point_mom_change"
+    assert target["reference_benchmark"] == "prior_period_initial_print_index_point_mom_change"
+
+
+def test_reaction_evidence_source_digest_binds_exact_playbook(tmp_path: Path):
+    import hashlib
+
+    path = _make_playbook(tmp_path, _base_cells())
+    expected = hashlib.sha256(path.read_bytes()).hexdigest()
+    result = get_reaction_sensitivity("cpi_headline", path)
+    for detail in result["evidence"]["cells"].values():
+        assert detail["source"]["version"] == "playbook_v1"
+        assert detail["source"]["sha256"] == expected
+
+
+def test_reaction_evidence_duplicate_regime_candidates_fall_back(tmp_path: Path):
+    duplicate_a = {
+        "release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+        "era": "all", "regime": "Q1", "n": 10, "mean": 7.0, "median": 7.0,
+        "ci_lo": 1.0, "ci_hi": 10.0,
+    }
+    duplicate_b = dict(duplicate_a, n=12, mean=9.0)
+    cells = _base_cells() + [duplicate_a, duplicate_b]
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, cells), current_regime="Q1"
+    )
+    detail = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2)
+    assert detail["regime"] is None
+    assert detail["n"] == 20
+
+
+def test_reaction_evidence_malformed_metadata_omitted_neighbor_survives(tmp_path: Path):
+    cells = _base_cells()
+    cells[0]["n"] = "20"
+    cells[0]["ci_lo"] = 9.0
+    cells[0]["ci_hi"] = -9.0
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, cells)
+    )
+
+    malformed = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    neighbor = _packet_d_detail(result, "dgs10_h1_cold_bp")
+    assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2)
+    assert "n" not in malformed
+    assert "interval" not in malformed
+    assert neighbor["n"] == 20
+    assert neighbor["interval"]["lo"] == pytest.approx(-9.0)
+
+
+def test_reaction_evidence_nonfinite_conditioned_mean_falls_back(tmp_path: Path):
+    cells = _base_cells() + [{
+        "release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+        "era": "all", "regime": "Q1", "n": 10, "mean": float("nan"),
+        "median": 1.0, "ci_lo": -1.0, "ci_hi": 1.0,
+    }]
+    cells[2]["ci_hi"] = float("inf")
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, cells), current_regime="Q1"
+    )
+    assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2)
+    assert _packet_d_detail(result, "dgs10_h1_hot_bp")["regime"] is None
+    assert "interval" not in _packet_d_detail(result, "spy_h1_hot_pct")
+
+
+def test_reaction_evidence_ignores_untrusted_relabel_claims(tmp_path: Path):
+    conditioned = {
+        "release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+        "era": "all", "regime": "Q1", "n": 10, "mean": 7.0, "median": 7.0,
+        "ci_lo": 1.0, "ci_hi": 10.0,
+        "knowledge_status": "as_observed",
+        "horizon_label": "1h",
+        "target_unit": "official_mom_pct",
+    }
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, _base_cells() + [conditioned]),
+        current_regime="Q1",
+    )
+    detail = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert detail["reference_basis"] == "next_trading_session_close_vs_pre_event_prior_close"
+    assert detail["knowledge_status"]["regime_labels"] == "latest_revised_not_as_observed"
+    assert result["evidence"]["target"]["observed_value"] == "cpi_initial_print_index_point_mom_change"
+
+
+def test_reaction_evidence_legacy_fields_and_missing_family_preserved(tmp_path: Path):
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, _base_cells())
+    )
+    assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2)
+    assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1)
+    assert result["spy_h1_hot_pct"] == pytest.approx(-0.40)
+    assert result["spy_h1_cold_pct"] == pytest.approx(0.55)
+    assert get_reaction_sensitivity(
+        "claims", _make_playbook(tmp_path / "claims", _base_cells())
+    ) is None
+
+
+def test_reaction_evidence_real_builder_enrichment_carries_detail(tmp_path: Path):
+    from scripts import build_release_forecast as producer
+
+    _make_playbook(tmp_path, _base_cells())
+    regime_path = tmp_path / "data" / "regime" / "latest.json"
+    regime_path.parent.mkdir(parents=True, exist_ok=True)
+    regime_path.write_text(json.dumps({"quad": "Q1"}), encoding="utf-8")
+
+    item = {
+        "release_type": "cpi_headline",
+        "release": "cpi",
+        "period": "2026-08",
+        "release_date": "2026-09-15",
+        "projection": {},
+        "benchmark_set": {},
+        "surprise_skew": {},
+    }
+    producer._enrich_upcoming_block([item], tmp_path)
+
+    reaction = item["reaction_sensitivity"]
+    assert reaction["dgs10_h1_hot_bp"] == pytest.approx(3.2)
+    assert reaction["evidence"]["schema"] == "reaction_evidence.v1"
+    assert reaction["evidence"]["cells"]["dgs10_h1_hot_bp"]["n"] == 20
+
+
+# Current-main composition: preserve direct readers and additive detail together.
+@pytest.mark.parametrize("pooled_first", [False, True])
+def test_reaction_evidence_direct_and_detail_maps_share_pooled_cell(tmp_path: Path, pooled_first):
+    pooled = {
+        "release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+        "era": "all", "regime": "Q1", "n": 9, "mean": 7.777777, "median": 6.666666,
+        "ci_lo": 1.234567, "ci_hi": 9.876543,
+    }
+    wrong_era = dict(pooled, era=_ERA_LABEL, n=90, mean=90.0)
+    extras = [pooled, wrong_era] if pooled_first else [wrong_era, pooled]
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, _base_cells() + extras), current_regime="Q1"
+    )
+    direct = result["evidence"]["dgs10_h1_hot"]
+    detail = _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert result["regime_requested"] == "Q1"
+    assert result["regime_basis"] == "all"
+    assert result["regime_labels_revision_optimistic"] is True
+    assert direct == {
+        "n": 9, "mean": 7.7778, "median": 6.6667, "ci_lo": 1.2346,
+        "ci_hi": 9.8765, "era": "all", "regime": "Q1", "revision_optimistic": True,
+    }
+    assert result["dgs10_h1_hot_bp"] == direct["mean"] == detail["mean"]
+    assert detail["era"] == "all"
+    assert detail["n"] == direct["n"]
+    assert detail["interval"]["lo"] == 1.234567
+    assert detail["interval"]["hi"] == 9.876543
+    fallback = result["evidence"]["dgs10_h1_cold"]
+    assert fallback["mean"] == _packet_d_detail(result, "dgs10_h1_cold_bp")["mean"]
+    assert fallback["era"] == _ERA_LABEL
+    assert fallback["revision_optimistic"] is False
+
+
+@pytest.mark.parametrize(
+    "count,legacy_count",
+    [(None, 0), (True, None), ("20", None), (-1, None), (3.5, None)],
+)
+def test_reaction_evidence_missing_and_invalid_counts_keep_legacy_sentinel(
+    tmp_path: Path, count, legacy_count
+):
+    cells = _base_cells()
+    cells[0]["n"] = count
+    result = get_reaction_sensitivity("cpi_headline", _make_playbook(tmp_path, cells))
+    assert result["dgs10_h1_hot_bp"] == 3.2
+    assert result["evidence"]["dgs10_h1_hot"]["n"] == legacy_count
+    assert "n" not in _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert result["evidence"]["dgs10_h1_cold"]["n"] == 20
+    assert _packet_d_detail(result, "dgs10_h1_cold_bp")["n"] == 20
+
+
+def test_reaction_evidence_missing_and_ambiguous_cells_keep_direct_slots(tmp_path: Path):
+    cells = _base_cells()
+    cells.append(dict(cells[0]))
+    cells = [
+        cell for cell in cells
+        if not (cell["outcome"] == "spy_pct" and cell["bucket"] == "hot")
+    ]
+    result = get_reaction_sensitivity(
+        "cpi_headline", _make_playbook(tmp_path, [None, "untrusted row", *cells])
+    )
+    for prefix, compact in [
+        ("dgs10_h1_hot", "dgs10_h1_hot_bp"),
+        ("spy_h1_hot", "spy_h1_hot_pct"),
+    ]:
+        assert result[compact] is None
+        assert result["evidence"][prefix] is None
+        assert compact not in result["evidence"]["cells"]
+    assert result["dgs10_h1_cold_bp"] == -4.1
+    assert result["evidence"]["dgs10_h1_cold"]["mean"] == -4.1
+    assert _packet_d_detail(result, "dgs10_h1_cold_bp")["mean"] == -4.1
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [("median", 10 ** 400), ("ci_lo", 10 ** 400),
+     ("ci_hi", float("inf")), ("ci_hi", True)],
+)
+def test_reaction_evidence_invalid_optional_numbers_preserve_valid_neighbors(
+    tmp_path: Path, field, value
+):
+    cells = _base_cells()
+    cells[0][field] = value
+    result = get_reaction_sensitivity("cpi_headline", _make_playbook(tmp_path, cells))
+    assert result["dgs10_h1_hot_bp"] == 3.2
+    assert result["dgs10_h1_cold_bp"] == -4.1
+    direct = result["evidence"]["dgs10_h1_hot"]
+    if field == "median":
+        assert direct["median"] is None
+        assert "interval" in _packet_d_detail(result, "dgs10_h1_hot_bp")
+    else:
+        assert direct["ci_lo"] is None and direct["ci_hi"] is None
+        assert "interval" not in _packet_d_detail(result, "dgs10_h1_hot_bp")
+    assert _packet_d_detail(result, "dgs10_h1_cold_bp")["interval"]["lo"] == -9.0

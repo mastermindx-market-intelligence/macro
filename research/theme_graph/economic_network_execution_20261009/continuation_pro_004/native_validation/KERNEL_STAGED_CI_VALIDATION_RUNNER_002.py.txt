@@ -1,0 +1,59 @@
+import pathlib,subprocess,json,hashlib,datetime,os,sys
+ROOT=pathlib.Path('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004')
+CACHE=pathlib.Path('/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009')
+PREFIX='research/theme_graph/economic_network_execution_20261009/continuation_pro_004/'
+WORK=CACHE/'pro004-kernel-ci-staged-validation-002'
+HEAD='07e663731b7ad7f1854b181180fee5855746d237'
+PROBE="\"\"\"Root-run read-only native API probe; requires the canonical suite in git ls-files.\n\nStream through `python3 -B -` from the canonical repository root. This does not execute pytest or the kernel,\nreplace the selector, create a baseline, or run a CI pack. Packing measurements are\ncovered by the existing test_exclusive_curation_narrows_ordinary_code_prs test.\n\"\"\"\nimport json\nfrom pathlib import Path\n\nfrom scripts import audit_unrun_tests as AUDIT\nfrom scripts import run_ci_pack as PACK\n\nJOB = \"gmi-source-diagnostic-kernel\"\nSUITE = \"tests/test_gmi_source_diagnostic_kernel.py\"\nREVIEW = Path(\"research/theme_graph/economic_network_execution_20261009/continuation_pro_004/ci_enrollment_review_v1\")\nexpected_paths = json.loads((REVIEW / \"RUNTIME_PATHS.json\").read_text())[\"paths\"]\n\nsuites = AUDIT.discover_suites()\nsame_name = sorted(s for s in suites if s.rsplit(\"/\", 1)[-1] == SUITE.rsplit(\"/\", 1)[-1])\nassert same_name == [SUITE], (\"native suite discovery mismatch; check git index\", same_name)\n\njobs = PACK.load_legacy_jobs(Path(\".github/ci/legacy-jobs.yml\"))\nowners = [j for j in jobs if j.job_id == JOB]\nassert len(owners) == 1\nowner = owners[0]\nassert owner.gate == \"code\" and owner.exclusive\nassert list(owner.paths) == expected_paths and len(expected_paths) == 32\ncommands = [s[\"run\"] for s in owner.definition[\"steps\"] if \"run\" in s]\nassert sum(command.count(SUITE) for command in commands) == 1\nscoped, note = PACK.infer_job_scopes(owners)\nassert len(scoped) == 1 and not scoped[0].fallback_paths\n\ndef selected(path, **kwargs):\n    hit, reason = PACK.select_jobs(scoped, [path], **kwargs)\n    return JOB in {j.job_id for j in hit}, reason\n\npositive = {path: selected(path) for path in expected_paths}\nassert all(hit for hit, _ in positive.values()), positive\nnegative_paths = [\n    \"templates/index.html\",\n    \"scripts/build_free_content.py\",\n    \"engine/prophet/plan_book.py\",\n    \"research/theme_graph/economic_network_execution_20261009/continuation_pro_004/source_diagnostic_kernel_v1/README.md\",\n]\nnegative = {path: selected(path) for path in negative_paths}\nassert not any(hit for hit, _ in negative.values()), negative\nmanifest_default = selected(\".github/ci/legacy-jobs.yml\")\nmanifest_named = selected(\".github/ci/legacy-jobs.yml\", manifest_changed_job_ids=(JOB,))\nassert manifest_default[0] and manifest_named[0]\n\nprint(json.dumps({\n    \"schema\": \"research.gmi.wp02.native_selector_probe/v1\",\n    \"status\": \"PASS_NATIVE_API_PROBE\",\n    \"sole_native_discovered_suite\": same_name,\n    \"job_count\": len(jobs), \"job_id\": JOB, \"weight\": owner.weight,\n    \"path_count\": len(expected_paths), \"fallback_paths\": list(scoped[0].fallback_paths),\n    \"inference_note\": note, \"positive_paths\": positive, \"negative_paths\": negative,\n    \"manifest_default\": manifest_default, \"manifest_named_job\": manifest_named,\n    \"named_manifest_probe_is_not_a_new_manifest_classifier\": True,\n    \"kernel_or_pytest_execution\": False,\n    \"packing_measurement_claim\": False,\n}, sort_keys=True))\n"
+env=dict(os.environ,GIT_OPTIONAL_LOCKS='0',GIT_NO_LAZY_FETCH='1',PYTHONDONTWRITEBYTECODE='1')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def git(*args):
+ p=subprocess.run(['git','--no-lazy-fetch','--no-optional-locks','-C',str(ROOT),*args],capture_output=True,env=env)
+ assert p.returncode==0,(args,p.returncode,p.stderr.decode(errors='replace')[:500]);return p.stdout
+def new(p,b):
+ assert not p.exists(),str(p);p.parent.mkdir(parents=True,exist_ok=True)
+ with p.open('xb') as f:f.write(b)
+ assert p.read_bytes()==b
+started=now();previous=(CACHE/'pro004-kernel-native-validation-001.json').read_bytes()
+assert sha(previous)=='7ae2fd0082870f15aad38583c4b2dd066e0508c5f3151baaf4c9ab93146c3ed3'
+prior=json.loads(previous)
+assert [x['exit_code'] for x in prior['commands']]==[0,0,1]
+old_log=(ROOT/prior['commands'][2]['streams']['stdout']['path']).read_bytes()
+assert sha(old_log)==prior['commands'][2]['streams']['stdout']['sha256']
+assert b'ValueError: gmi-source-diagnostic-kernel derives no closure' in old_log and b'1 failed, 3 passed' in old_log
+assert git('rev-parse','HEAD').decode().strip()==HEAD
+pins=prior['source_and_ci_pins'];assert all(sha((ROOT/p).read_bytes())==h for p,h in pins.items())
+status=git('status','--porcelain=v1','--untracked-files=all').decode()
+paths=[line[3:] for line in status.splitlines()];assert len(paths)==len(set(paths))==49
+assert all(p.startswith(PREFIX) or p in ['.github/ci/legacy-jobs.yml','tests/test_ci_pack.py','tests/test_gmi_source_diagnostic_kernel.py'] for p in paths)
+assert not git('ls-files','--others','--ignored','--exclude-standard').strip()
+git('add','--',*paths)
+assert set(git('diff','--cached','--no-renames','--name-only').decode().splitlines())==set(paths)
+assert git('ls-files','--error-unmatch','--','tests/test_gmi_source_diagnostic_kernel.py').decode().strip()=='tests/test_gmi_source_diagnostic_kernel.py'
+assert sha(PROBE.encode())=='2734c656da48e22ebdecdd0c257d488d5694a19b78674cb4949e6e832a682af0'
+assert not WORK.exists();WORK.mkdir()
+new(WORK/'EXISTING_SELECTOR_PROBE.py',PROBE.encode())
+commands=[
+ ('native-selector-probe',[sys.executable,'-B','-'],PROBE.encode()),
+ ('staged-closure-check',[sys.executable,'-B','-m','pytest','tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure','-q','-p','no:cacheprovider','--basetemp',str(WORK/'pytest-ci-closure')],None)
+]
+rows=[]
+for label,cmd,input_bytes in commands:
+ at=now();p=subprocess.run(cmd,cwd=ROOT,env=env,capture_output=True,input=input_bytes);ends=now();streams={}
+ for stream,b in [('stdout',p.stdout),('stderr',p.stderr)]:
+  filename='kernel-'+label+'-002.'+stream+'.log'
+  new(WORK/filename,b);new(ROOT/(PREFIX+'native_validation/'+filename),b)
+  streams[stream]={'path':PREFIX+'native_validation/'+filename,'byte_length':len(b),'sha256':sha(b)}
+ row={'label':label,'command':cmd,'stdin_sha256':None if input_bytes is None else sha(input_bytes),'started_at':at,'finished_at':ends,'exit_code':p.returncode,'streams':streams}
+ rows.append(row)
+ print(json.dumps({'stage':label,'exit':p.returncode,'stdout_bytes':len(p.stdout),'stderr_bytes':len(p.stderr),'stdout_tail':p.stdout.decode(errors='replace')[-1300:]}),flush=True)
+ if p.returncode!=0:break
+unchanged=all(sha((ROOT/p).read_bytes())==h for p,h in pins.items())
+ignored=git('ls-files','--others','--ignored','--exclude-standard').decode()
+record={'schema':'economic_network.kernel_native_staged_ci_validation/v1','operation_id':'gmi-economic-source-diagnostic-20261009-pro-004','started_at':started,'finished_at':now(),'head_before':HEAD,'head_after':git('rev-parse','HEAD').decode().strip(),'prior_failed_receipt_sha256':sha(previous),'prior_failure_retained_unchanged':(CACHE/'pro004-kernel-native-validation-001.json').read_bytes()==previous,'correction':'Stage the already reviewed new files so the incumbent git-ls-files inventory can discover the canonical suite','source_change_for_correction':False,'staged_paths':paths,'selector_probe_sha256':sha(PROBE.encode()),'executions':rows,'all_requested_checks_passed':len(rows)==2 and all(x['exit_code']==0 for x in rows),'previous_kernel_117_pass_not_repeated':True,'previous_manifest_validation_and_three_other_ci_passes_not_repeated':True,'source_and_ci_pins_unchanged':unchanged,'source_pin_count':len(pins),'ignored_paths':ignored,'fresh_test_storage':str(WORK),'full_pack_execute_called':False,'git_commit_or_push':False}
+rb=(json.dumps(record,indent=2,sort_keys=True)+'\n').encode()
+new(CACHE/'pro004-kernel-ci-staged-validation-002.json',rb)
+new(ROOT/(PREFIX+'native_validation/kernel-ci-staged-validation-002.json'),rb)
+print(json.dumps({'stage':'STAGED_CI_VALIDATION_COMPLETE','checks_passed':record['all_requested_checks_passed'],'pins_unchanged':unchanged,'receipt_sha256':sha(rb)}),flush=True)
+assert record['all_requested_checks_passed'] and unchanged and record['head_after']==HEAD and not ignored

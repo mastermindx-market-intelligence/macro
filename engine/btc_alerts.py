@@ -89,7 +89,8 @@ CONVICTION = {
     "override_release": {"tier": "act",     "signal": None,         "whipsaw": None},
     "market_mode":      {"tier": "context", "signal": None,         "whipsaw": "market_mode"},
     "leadership":       {"tier": "context", "signal": None,         "whipsaw": "alt_cycle_leader"},
-    # forward impulse radar (engine/btc_impulse_radar.py) — act-tier LEADING crosses
+    # forward impulse radar (engine/btc_impulse_radar.py) — act tier while the re-check passes
+    # the leg; _apply_leg_gate prints any other leg as context
     "impulse_warn_down":   {"tier": "act",   "signal": None, "whipsaw": None},
     "impulse_trigger_down":{"tier": "act",   "signal": None, "whipsaw": None},
     "impulse_warn_up":     {"tier": "act",   "signal": None, "whipsaw": None},
@@ -129,7 +130,7 @@ def _edge_zh_from_verdict(v: str) -> str:
     if not v:
         return ""
     if v.startswith("CONFIRMED"):
-        return "经验证的优势 — 在市场的前后两半段均成立。"
+        return "实测优势 — 在市场的前后两半段均成立。"
     if v.startswith("DIRECTIONAL"):
         return "信心较低 — 该优势在 2021 年（ETF 时代）后减弱。"
     if v.startswith("CONTEXT"):
@@ -184,14 +185,14 @@ def _conviction(type_: str) -> dict:
         edge_zh = ("持续极端时具逆向性 — 有提示意义但未经证实；"
                    "高风险区间的前瞻收益中等且依赖周期。")
     elif type_ == "flash_crash":
-        edge = "Real-time risk event — act on it, don't wait for confirmation."
-        edge_zh = "实时风险事件 — 应立即行动，无需等待确认。"
+        edge = "Intraday risk event — act on it, don't wait for confirmation."
+        edge_zh = "盘中风险事件 — 应立即行动，无需等待确认。"
     elif type_ == "override_release":
         edge = ("Pre-committed structural release rule — registered in advance and "
-                "fired mechanically; sizing returns to the engine's validated "
+                "fired mechanically; sizing returns to the engine's own "
                 "strategy output.")
         edge_zh = ("预先承诺的结构性解除规则——事先登记、机械触发；"
-                   "仓位交还给引擎经验证的策略输出。")
+                   "仓位交还给引擎自身的策略输出。")
     elif type_ in ("impulse_warn_down", "impulse_trigger_down"):
         edge = ("Observed BTC impulse precursor fire. Predictive and action use "
                 "requires its current Signal Lab evidence passport. BLIND to "
@@ -208,10 +209,10 @@ def _conviction(type_: str) -> dict:
         edge = ("OI-crowding de-risk nudge — funding-INDEPENDENT (breaks the "
                 "cascade AND-gate). LOW-CONVICTION: open interest is anti-predictive "
                 "standalone (measured lift ~0.36) — a 'fuel building' context flag, "
-                "not a validated crash call.")
+                "not a tested crash call.")
         edge_zh = ("持仓拥挤减仓提示 — 与资金费率无关（突破连环清算的与门）。"
                    "低信心：未平仓合约单独使用为反向指标（实测 lift 约 0.36）— "
-                   "仅为“燃料堆积”背景标记，而非经验证的下跌信号。")
+                   "仅为“燃料堆积”背景标记，而非已测实的下跌信号。")
     wk = c["whipsaw"]
     if wk:
         w = (cal.get("whipsaw", {}) or {}).get(wk, {})
@@ -435,6 +436,22 @@ _IMPULSE_TYPES = {"impulse_warn_down", "impulse_trigger_down", "impulse_warn_up"
 _IMPULSE_IDENTITIES = {"d2", "d3", "u1", "d2+d3"}
 
 
+_GATED_COPY = {
+    "d2": ("Research-stage cross: vol-of-vol jolt",
+           "DVOL intraday-range spike (unusually large versus its own history).",
+           "研究阶段信号：波动率跳升", "DVOL 日内振幅骤升（相对自身历史异常偏大）。"),
+    "d3": ("Research-stage cross: SOPR profit-take spike",
+           "Aggregate SOPR profit-taking spike (unusually large versus its own history) while price is up.",
+           "研究阶段信号：SOPR 获利了结骤升", "价格上涨之际总体 SOPR 获利了结骤升（相对自身历史异常偏大）。"),
+    "u1": ("Research-stage cross: SOPR capitulation",
+           "Aggregate SOPR capitulation (unusually deep versus its own history) after a deep drop.",
+           "研究阶段信号：SOPR 投降", "深跌之后总体 SOPR 投降（相对自身历史异常偏深）。"),
+    "d2d3": ("Research-stage co-fire: vol-jolt + SOPR spike",
+             "Both legs crossed on the same day.",
+             "研究阶段信号：波动跳升 + SOPR 骤升", "两条腿在同一天同时突破。"),
+}
+
+
 def impulse_identity(event: dict) -> str | None:
     """Exact typed identity for a persisted impulse event, never headline-derived."""
     context = event.get("context") or {}
@@ -469,15 +486,55 @@ def _issue_time_claim(event: dict) -> dict:
     }
 
 
+def _apply_impulse_display(event: dict, passport: dict, *, severity_key="severity") -> dict:
+    """Apply display fields from an already resolved passport, without reading a gate.
+
+    Both the raw alert reader and triage use this projection. Original issue-time
+    claims stay separate; a denied row cannot retain an action headline or home-feed
+    severity, and qualified recovery cannot retain yesterday's demotion marker.
+    """
+    from engine import signal_evidence
+
+    event.update(signal_evidence.current_projection(passport))
+    if passport.get("claim_eligible") is True:
+        event.pop("leg_gate", None)
+        original = event.get("original_claim")
+        original = original if isinstance(original, dict) else {}
+        severity = original.get("severity")
+        if isinstance(severity, str) and severity in {"high", "medium", "info"}:
+            event[severity_key] = severity
+        for name in ("headline", "detail", "headline_zh", "detail_zh"):
+            value = original.get(name)
+            if isinstance(value, str) and value:
+                event[name] = value
+        return event
+
+    event[severity_key] = "info"
+    event["leg_gate"] = passport.get("status") or "evidence_unavailable"
+    key = passport.get("identity")
+    key = "d2d3" if key == "d2+d3" else key
+    head, detail, head_zh, detail_zh = _GATED_COPY.get(key, (
+        "Research-stage BTC impulse observation", "Current evidence cannot identify this leg.",
+        "研究阶段 BTC 脉冲观察", "当前证据无法识别此腿。",
+    ))
+    px = _f((event.get("context") or {}).get("price"))
+    suffix = f" BTC ${px:,.0f}." if px is not None and np.isfinite(px) else ""
+    event.update(headline=head, detail=detail + suffix,
+                 headline_zh=head_zh, detail_zh=detail_zh + suffix)
+    return event
+
+
 def _attach_impulse_evidence(event: dict, identity: str, *, board_date,
                              source_asof: str | None, gate: dict) -> dict:
     """Project current permission without rewriting the historical occurrence."""
-    from engine import signal_evidence
+    from engine import alert_time, signal_evidence
 
     if not isinstance(event.get("original_claim"), dict):
         event["original_claim"] = _issue_time_claim(event)
+    clocks = alert_time.normalize_event(event)
     passport = signal_evidence.impulse_passport(
-        identity, event_at=event.get("ts"), event_precision="date",
+        identity, event_at=clocks["event_ts"] or clocks["event_date"],
+        event_precision=clocks["date_precision"],
         board_date=board_date, source_asof=source_asof, gate=gate,
     )
     event["observed_tier"] = event["original_claim"].get("tier") or event.get("tier", "act")
@@ -492,7 +549,7 @@ def _attach_impulse_evidence(event: dict, identity: str, *, board_date,
     context = dict(event.get("context") or {})
     context.update({"evidence_key": identity, "direction": passport["direction"]})
     event["context"] = context
-    event.update(signal_evidence.current_projection(passport))
+    _apply_impulse_display(event, passport)
     return event
 
 
@@ -715,7 +772,7 @@ def compute_all_events(sig: pd.DataFrame | None = None, *, gate: dict | None = N
     # Other stale sig-derived state transitions remain replaceable by recomputation;
     # impulse rows are immutable observations whose present authority is overlaid
     # from this build's one frozen gate receipt.
-    existing = load_events()
+    existing = _read_event_rows()
     by_id = {e["id"]: e for e in events if e.get("id")}
     for prior in existing:
         event_id = prior.get("id")
@@ -763,7 +820,8 @@ def write_events(events: list[dict]) -> None:
             fh.write(json.dumps(e) + "\n")
 
 
-def load_events() -> list[dict]:
+def _read_event_rows() -> list[dict]:
+    """Read persisted occurrences without applying a second gate or display clock."""
     p = _path()
     if not p.exists():
         return []
@@ -776,6 +834,28 @@ def load_events() -> list[dict]:
             except json.JSONDecodeError:
                 continue
     return out
+
+
+def _apply_leg_gate(events: list[dict], *, gate=None, board_date=None) -> list[dict]:
+    """Compatibility entry point over the single current-evidence passport authority."""
+    if not any(event.get("type") in _IMPULSE_TYPES for event in events):
+        return events
+    from engine import signal_evidence
+
+    gate_receipt = signal_evidence.load_btc_gate() if gate is None else gate
+    evaluation = board_date if board_date is not None else datetime.now(timezone.utc).date()
+    for event in events:
+        if event.get("type") in _IMPULSE_TYPES:
+            _attach_impulse_evidence(
+                event, impulse_identity(event) or "unknown", board_date=evaluation,
+                source_asof=event.get("source_asof"), gate=gate_receipt,
+            )
+    return events
+
+
+def load_events(*, gate=None, board_date=None) -> list[dict]:
+    """Current public view; persisted rows and their original claims remain untouched."""
+    return _apply_leg_gate(_read_event_rows(), gate=gate, board_date=board_date)
 
 
 def rebuild(sig: pd.DataFrame | None = None) -> list[dict]:

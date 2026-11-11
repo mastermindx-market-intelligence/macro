@@ -956,6 +956,7 @@
   }
   handleHash();
   window.addEventListener('hashchange', handleHash);
+  window.addEventListener('mmx:shell-location', handleHash);
 
   /* ---- Column sort (sl-table) ---- */
   function cellVal(tr, i){

@@ -1,172 +1,164 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-14",
-  "generated_at": "2026-09-16T10:30:03.676012+00:00",
+  "as_of": "2026-11-10",
+  "generated_at": "2026-11-11T16:17:20.664641+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-14-ISRG-20260916103003-1",
-      "ticker": "ISRG",
-      "name": null,
+      "id": "2026-11-10-AMZN-20261111161720-1",
+      "ticker": "AMZN",
+      "name": "Amazon.Com Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The deterministic verdict is neutral with no clear edge; the only activated driver is entry (off-high, RSI), which is a timing read, not a validated forward return signal. The -36.3% off-high and FRESH BUY board state look constructive on price, but the accounting watch flag and crowded, stretched Health Care basket argue for restraint.",
+      "horizon_d": 20,
+      "thesis": "The daily turn and positive trend are offset by a mixed weekly regime, left-translated prior cycle and contracting-liquidity risk control. The unvalidated rank supplies no basis for expecting relative outperformance.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "driver: entry only (off-high, RSI, urgency=caution)",
-        "caution: accounting quality watch",
-        "caution: Health Care basket crowded and stretched",
-        "selection z 51st pct \u2014 no rank edge"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily bottoming; weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Above 50DMA and 200DMA; MACD positive",
+        "Macro-risk: contracting US net liquidity"
       ],
-      "dissent": "Insider buying plus a fresh SUE (z=1.77, 17 days old) and positive revisions could re-rate the name if the tape keeps rewarding leaders; a shallow pullback from deep off-high levels often resumes trend.",
+      "dissent": "Strong quality, earnings growth and an intact price trend could sustain leadership despite the macro and cycle cautions.",
       "falsifier": {
-        "text": "Price breaks back above its recent consolidation and the Health Care basket stops deteriorating.",
+        "text": "A confirmed weekly upturn accompanied by sustained outperformance versus the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-26",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-14-BRK-B-20260916103003-2",
-      "ticker": "BRK-B",
-      "name": null,
+      "id": "2026-11-10-UBER-20261111161720-2",
+      "ticker": "UBER",
+      "name": "Uber Technologies Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Deterministic verdict is neutral; the board flag is HOLD \u2014 EXTENDED with urgency 'now', meaning the engine already warns against chasing. Quality z is negative with accounting watch and a deteriorating Financials basket, so the risk controls lean against fresh exposure even though there is no bearish signal strong enough for a cautious lean.",
+      "horizon_d": 20,
+      "thesis": "The risk controls support watching the daily bottoming attempt, but not assuming relative upside while the weekly picture is mixed and price remains below its 200-day average. Selection is essentially cross-sectionally neutral and is not a forecast.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "board: HOLD \u2014 EXTENDED, urgency now",
-        "quality z -0.92 (36th pct), accounting watch",
-        "caution: Financials basket deteriorating",
-        "caution: broad tape under stress"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis 63rd percentile; not blocked",
+        "Above 50DMA but 3.8% below 200DMA",
+        "Momentum context z-score -1.34",
+        "Macro-risk elevated"
       ],
-      "dissent": "Near highs with modest -2.7% off-high and positive revisions (z=0.97) means the trend could simply persist; Berkshire has not broken down technically.",
+      "dissent": "The rejected low, improving 10-day average and strong cash generation could turn this into a durable recovery before the weekly signal confirms.",
       "falsifier": {
-        "text": "Price breaks above recent highs and the Financials basket stops deteriorating.",
+        "text": "A weekly trend confirmation with price reclaiming and holding above the 200-day average while outperforming the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-26",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-14-EBAY-20260916103003-3",
-      "ticker": "EBAY",
-      "name": null,
+      "id": "2026-11-10-TTWO-20261111161720-3",
+      "ticker": "TTWO",
+      "name": "Take Two Interactive Softwre",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Verdict is neutral; the TURN SIGNALED board state is a momentum inflection warning, but it is paired with a positive entry driver (urgency now, off-high, RSI) and no clear bearish factor. The Consumer Discretionary basket is below trend and accounting is flagged watch, so there is no constructive edge, yet the signal is too mixed to justify a cautious lean.",
+      "horizon_d": 20,
+      "thesis": "The daily buy setup is real, but the risk reshape argues against a directional call: the weekly trend is unconfirmed, the prior cycle topped early and its sector basket is below long-term trend. Those bearish checks are not yet enough to short an improving tape.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "board: TURN SIGNALED",
-        "caution: Consumer Discretionary basket below long-term trend",
-        "accounting watch flag",
-        "SUE z -0.09 (40 days old) \u2014 no earnings edge"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily bottoming with positive MACD",
+        "Weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Sector basket below long-term trend"
       ],
-      "dissent": "The TURN SIGNALED flag is an early warning that momentum is rolling over; if the basket keeps lagging, the -7.8% off-high could extend into a genuine breakdown.",
+      "dissent": "Holding above both major moving averages with a clean accounting flag could allow the rebound to become sustained leadership.",
       "falsifier": {
-        "text": "Price breaks below the recent turn pivot and the Consumer Discretionary basket stays below trend.",
+        "text": "A confirmed weekly uptrend and sustained relative outperformance versus the S&P 500 despite continued sector weakness.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-26",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-14-ASO-20260916103003-4",
-      "ticker": "ASO",
-      "name": null,
+      "id": "2026-11-10-CNMD-20261111161720-4",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Verdict is neutral; TURN SIGNALED with urgency caution warns of a possible momentum reversal, but quality is the only activated driver (accounting clean) and the Retail basket is explicitly below trend. The lottery-spike flag adds idiosyncratic risk, so there is no constructive case, yet no clean bearish break exists yet.",
+      "horizon_d": 15,
+      "thesis": "The short-term turn is offset by a late investor phase, left-translated prior cycle and the entry axis's lottery-spike risk control. With neutral selection and sharply deteriorating earnings, the evidence does not support expecting either relative leadership or failure.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "board: TURN SIGNALED, urgency caution",
-        "caution: Retail basket below long-term trend",
-        "entry flags: lottery-spike present",
-        "revisions z -1.02 \u2014 negative"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis includes lottery-spike",
+        "Weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Net-income growth -64.4%"
       ],
-      "dissent": "Fresh SUE (z=0.75, 6 days old) and clean accounting could support a base if the Retail basket stabilizes; the drift is up at price 54.25.",
+      "dissent": "Price is above both major averages and near its high, so momentum could persist even without supportive fundamentals.",
       "falsifier": {
-        "text": "Price breaks below the recent turn pivot and Retail basket weakness accelerates.",
+        "text": "A weekly trend confirmation followed by sustained outperformance versus the S&P 500 without another lottery-like price spike.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-13",
+      "check_by": "2026-12-01",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-14-REXR-20260916103003-5",
-      "ticker": "REXR",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "The verdict is neutral but the underlying signal is actually adverse: SUE z is -3.0 (a large negative earnings surprise just 17 days old) with momentum z -1.0, while TURN SIGNALED and a -11% drawdown warn of a rolling top. The strong entry z (off-high, vol-squeeze) is a setup for continuation lower, not a reversal, so the risk call should shade negative relative to the S&P 500.",
-      "evidence": [
-        "SUE z -3.0, 17 days old \u2014 large negative surprise",
-        "momentum z -1.0 (context)",
-        "board: TURN SIGNALED, urgency now",
-        "off-high -11.0%",
-        "revisions z 1.09 \u2014 but does not offset SUE shock"
-      ],
-      "dissent": "Positive revisions (z=1.09) and a vol-squeeze entry pattern could mark a tactical bottom if the tape is genuinely calm and the REIT sector catches a bid.",
-      "falsifier": {
-        "text": "Price reclaims its 50-day average and the vol-squeeze resolves upward with a higher low.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "REXR",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-26",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-14-ENSG-20260916103003-6",
-      "ticker": "ENSG",
-      "name": null,
-      "lean": "constructive",
+      "id": "2026-11-10-ABNB-20261111161720-5",
+      "ticker": "ABNB",
+      "name": "Airbnb Inc Class A",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The deterministic verdict is Constructive \u2014 building a base, with all four drivers active (earnings/surprise, entry, quality, tailwind). The SUE z of 2.71 is a strong positive earnings surprise, and the TURN SIGNALED board state at a -18.9% drawdown is consistent with a base forming, not a top. I keep conviction low because the accounting-watch flag and the desk's 0.565 constructive hit rate are sobering.",
+      "horizon_d": 20,
+      "thesis": "This is a bullish, with-trend leader, so extension alone is not grounds for a bearish relative call. The validated risk reshape says not to chase because price is stretched above long-term trend amid contracting liquidity and a crowded sector, while the overall verdict remains neutral.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "drivers: earnings \u00b7 insider \u00b7 revisions, entry, quality, tailwind",
-        "SUE z 2.71, 50 days old",
-        "selection z 60th pct \u2014 supportive",
-        "entry z 60th pct (off-high, RSI)"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh buy; bullish weekly agreement",
+        "26.0% above 200DMA and 1.9% below 52-week high",
+        "Entry axis 43rd percentile with extended and over-200DMA flags",
+        "Crowded and stretched sector basket"
       ],
-      "dissent": "The accounting watch flag plus a TURN SIGNALED board state could mean the base is not complete; if momentum z stays negative and price fails to hold the recent low, the constructive verdict fails.",
+      "dissent": "High quality, strong cash flow and intact momentum could keep compounding relative gains despite the extension brake.",
       "falsifier": {
-        "text": "Price makes a lower low below the current base and the accounting concerns harden.",
+        "text": "A decisive loss of the 50-day average followed by sustained underperformance versus the S&P 500.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "ENSG",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-26",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-10-JAZZ-20261111161720-6",
+      "ticker": "JAZZ",
+      "name": "Jazz Pharmaceuticals",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The leader designation and intact momentum argue against shorting it merely because the daily cycle is stretched. The accounting warning, negative earnings and unconfirmed weekly turn make a constructive relative call equally difficult, so the risk-controlled stance is neutral pending verification.",
+      "evidence": [
+        "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "Daily phase stretched; RSI 67",
+        "Above 50DMA and 200DMA; MACD positive",
+        "Quality flag: accounting warn",
+        "Net margin -8.3% and net-income growth -163.6%"
+      ],
+      "dissent": "Strong revisions and persistent leader momentum could dominate the accounting concern and produce continued relative strength.",
+      "falsifier": {
+        "text": "A weekly uptrend confirmation with sustained S&P 500 outperformance after the accounting warning remains unresolved.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-01",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

@@ -27,6 +27,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -239,15 +240,22 @@ def _load_exclusions() -> dict:
             "bots": bots, "geo_overrides": geo}
 
 
-def _excluded_cte() -> str:
+def _excluded_cte(*, focus_visitors: bool = False) -> str:
     """CTE bodies (excl_users, excl_geo_ips, excl_ips, excl_vids, excl_seed, excl_link,
     excluded) — always syntactically valid regardless of config. `excluded` is the set of
     visitor_id cookies to hide: the operator's own (via registered email, a home-location IP,
     a listed IP, a listed cookie id, or a loopback IP — see _LOOPBACK_IPS) PLUS the cookies
     linked to them by shared device fingerprint or routable IP."""
     cfg = _load_exclusions()
-    if cfg["emails"]:
-        emails = ",".join(_sql_str(e) for e in cfg["emails"])
+    # Only pages projects OUTPUT IDs; global seeds/anchors/customer history stay intact.
+    target_focus = " and e2.visitor_id in (select visitor_id from focus_visitors)" if focus_visitors else ""
+    seed_focus = " where visitor_id in (select visitor_id from focus_visitors)" if focus_visitors else ""
+    # The site administrator is the operator, not a customer. Always suppress the
+    # exact registered admin identity and its linked cookies from visitor analytics.
+    # Preserve the private exclusion config for additional operator identities.
+    operator_emails = set(cfg["emails"]) | {"admin@mastermind-x.com"}
+    if operator_emails:
+        emails = ",".join(_sql_str(e) for e in sorted(operator_emails))
         users_body = f"select id from auth.users where lower(email) in ({emails})"
     else:
         users_body = "select id from auth.users where false"
@@ -274,11 +282,31 @@ def _excluded_cte() -> str:
         f"excl_geo_ips as ({geo_body}), "
         f"excl_ips as ({ips_body}), "
         f"excl_vids as ({vids_body}), "
-        "excl_seed as (select distinct e.visitor_id from public.analytics_events e "
-        "  where e.visitor_id is not null and (e.user_id in (select id from excl_users) "
-        "  or e.ip in (select ip from excl_geo_ips) or e.ip in (select ip from excl_ips) "
-        "  or e.visitor_id in (select visitor_id from excl_vids) "
-        f"  or e.ip in ({','.join(_LOOPBACK_IPS)}))), "
+        # The seed is the same shape as `excl_link` below, and had the same defect: an OR
+        # across FIVE different columns is not a join Postgres can hash or merge on, so it
+        # planned the only thing left — one seq scan of the entire store evaluating four
+        # hashed subplans per row. Measured on production 2026-11-09 (302,456 rows / 192 MB)
+        # this CTE alone was 7,056ms, the largest remaining term in the Visitors fold after
+        # `ident` got its index. `a or b` over a set we only read as DISTINCT visitor_id is
+        # `a` UNION `b`, and each arm on its own is a plain membership test that an index can
+        # drive (visitor_user / ip / visitor / ip respectively), so the same rows now come
+        # back from five short index probes. Same rows: both forms read the same predicate
+        # over the same table, and UNION de-duplicates exactly as `select distinct` did.
+        "excl_seed as ("
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.user_id in (select id from excl_users) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_geo_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.ip in (select ip from excl_ips) and e.visitor_id is not null "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        "    where e.visitor_id in (select visitor_id from excl_vids) "
+        "  union "
+        "  select e.visitor_id from public.analytics_events e "
+        f"    where e.ip in ({','.join(_LOOPBACK_IPS)}) and e.visitor_id is not null), "
         # An OR across two DIFFERENT join keys is not a join Postgres can hash or merge,
         # so it planned the only thing left: a nested loop evaluating the predicate for
         # every (event x anchor) pair. Measured on production 2026-08-26 — 58,702 rows
@@ -297,19 +325,27 @@ def _excluded_cte() -> str:
         "    join (select distinct fp from public.analytics_events "
         "          where visitor_id in (select visitor_id from excl_seed) "
         "            and fp is not null) kf on kf.fp = e2.fp "
-        "  where e2.visitor_id is not null and e2.fp is not null "
+        f"  where e2.visitor_id is not null and e2.fp is not null{target_focus} "
         "  union "
         "  select e2.visitor_id from public.analytics_events e2 "
         "    join (select distinct ip from public.analytics_events "
         "          where visitor_id in (select visitor_id from excl_seed) "
         f"            and {_routable('ip')}) ki on ki.ip = e2.ip "
-        f"  where e2.visitor_id is not null and {_routable('e2.ip')}), "
-        "excluded as (select visitor_id from excl_seed "
-        "             union select visitor_id from excl_link)"
+        f"  where e2.visitor_id is not null and {_routable('e2.ip')}{target_focus}), "
+        # Implicit fingerprint/IP linkage must never hide a *different, verified*
+        # account merely because that customer shares a VPN exit or household IP
+        # with the operator. Preserve explicit exclusion seeds (e.g. configured
+        # IPs, cookies and registered operator accounts) without this restriction.
+        f"excluded as (select visitor_id from excl_seed{seed_focus} "
+        "             union select l.visitor_id from excl_link l "
+        "               where not exists (select 1 from public.analytics_events e3 "
+        "                 where e3.visitor_id = l.visitor_id "
+        "                   and e3.user_id is not null "
+        "                   and e3.user_id not in (select id from excl_users)))"
     )
 
 
-def _bot_cte() -> str:
+def _bot_cte(window_minutes: int | None = None, *, include_search: bool = False) -> str:
     """CTE bodies (bot_ips, fp_farm, bots) — the visitor_ids that look like crawlers/automation.
     Signals: config bot IPs, a bot user-agent, a datacenter-but-not-VPN IP, a known crawler
     network org, a known crawler network ASN, or a farm fingerprint. Patterns come from the
@@ -327,8 +363,29 @@ def _bot_cte() -> str:
         fanout = int(bots_cfg.get("fp_fanout", _FP_FANOUT))
     except (TypeError, ValueError):
         fanout = _FP_FANOUT
+    focus = ""
+    focus_prefix = ""
+    if window_minutes:
+        minutes = int(window_minutes)
+        focus_parts = [
+            "select distinct visitor_id from public.analytics_events "
+            f"where visitor_id is not null and created_at > now() - interval '{minutes} minutes'"
+        ]
+        if include_search:
+            focus_parts.append(
+                "select distinct anon_id as visitor_id from public.search_events "
+                f"where anon_id is not null and created_at > now() - interval '{minutes} minutes'"
+            )
+        focus_prefix = (
+            "focus_visitors as (" + " union ".join(focus_parts) + "), "
+            "focus_fp as (select distinct e.fp from public.analytics_events e "
+            "where e.visitor_id in (select visitor_id from focus_visitors) and e.fp is not null), ")
+        focus = " and visitor_id in (select visitor_id from focus_visitors)"
+    farm_where = "where fp is not null"
+    if window_minutes:
+        farm_where += " and fp in (select fp from focus_fp)"
     farm_body = (
-        "select fp from public.analytics_events where fp is not null group by fp "
+        f"select fp from public.analytics_events {farm_where} group by fp "
         f"having count(distinct visitor_id) >= {fanout} and count(distinct ip) >= {fanout}"
         if fanout >= 2 else "select null::text as fp where false")
     # A prefix the operator manually relabelled (geo_overrides) is a curated REAL user —
@@ -338,6 +395,7 @@ def _bot_cte() -> str:
     keep_clause = (" and not (" + " or ".join(f"e.ip like {_sql_str(p + '%')}" for p in keep) + ")"
                    if keep else "")
     return (
+        focus_prefix +
         f"bot_ips as ({ips_body}), "
         f"fp_farm as ({farm_body}), "
         # Every signal below is a function of (visitor_id, ua, ip, fp) plus the ip_geo
@@ -351,7 +409,7 @@ def _bot_cte() -> str:
         # keeps the cost tied to how many distinct devices exist rather than to how
         # much they browsed.
         "bot_sig as (select distinct visitor_id, ua, ip, fp from public.analytics_events "
-        "  where visitor_id is not null), "
+        f"  where visitor_id is not null{focus}), "
         "bots as (select distinct e.visitor_id from bot_sig e "
         "  left join public.ip_geo g on g.ip = e.ip "
         "  where e.visitor_id is not null and ("
@@ -418,15 +476,32 @@ def _candidate_cte(window_minutes: int | None = None) -> str:
 
 
 def _cte(include_ident: bool = False, include_candidate: bool = False,
-         candidate_window: int | None = None) -> str:
+         candidate_window: int | None = None, bot_window: int | None = None,
+         bot_include_search: bool = False, focus_excluded: bool = False) -> str:
     """Full `with …` prefix: the excluded-visitor + bot chains, optionally preceded by `ident`
     and followed by the soft candidate-identity chain (which requires `ident`). `candidate_window`
-    (minutes) bounds the candidate scans to the surface's window."""
+    (minutes) bounds the candidate scans to the surface's window.
+
+    `focus_excluded` bounds the `excluded` chain to the surface's window, the same shape
+    `_pages_cte` already uses. It requires `bot_window`, because the bot chain is what
+    declares `focus_visitors` and the bounded exclusion reads it — so the bot chain is
+    emitted FIRST. Row-identical for every surface that passes it: those surfaces only
+    ever read in-window events, so an excluded cookie with no in-window event cannot
+    change a row. Measured on production 2026-11-10, the unbounded `excl_link` arm was
+    1,452ms / 81,810 buffers scanning 123,819 rows across the WHOLE store; bounding it
+    to the window took the full Visitors fold 3.31s -> 2.23s and 318,790 -> 253,016
+    buffers, with the payload byte-identical."""
     parts = []
     if include_ident or include_candidate:
         parts.append(_IDENT_CTE)
-    parts.append(_excluded_cte())
-    parts.append(_bot_cte())
+    if focus_excluded:
+        if not bot_window:
+            raise ValueError("focus_excluded requires bot_window (it declares focus_visitors)")
+        parts.append(_bot_cte(bot_window, include_search=bot_include_search))
+        parts.append(_excluded_cte(focus_visitors=True))
+    else:
+        parts.append(_excluded_cte())
+        parts.append(_bot_cte(bot_window, include_search=bot_include_search))
     if include_candidate:
         parts.append(_candidate_cte(candidate_window))
     return "with " + ", ".join(parts) + " "
@@ -499,6 +574,20 @@ def status() -> dict:
 
 
 _QUERY_TIMEOUT_S = 9
+_OVERVIEW_ALLTIME_TIMEOUT_S = 0.75
+
+# Sort/hash memory for one analytics statement. This instance ships OLTP defaults —
+# work_mem is 2MB — while the visit fold sorts ~19k wide rows per statement, so every one
+# of those sorts spilled to disk. That cost was invisible to EXPLAIN: it is not a bad plan,
+# it is a sort that cannot fit, and no index reaches a window fold. Measured on production
+# 2026-11-09 through this endpoint (24h, median of 2, same statements):
+#     default 2MB   13,848ms      SET LOCAL 8MB   4,329ms      SET LOCAL 16MB   6,580ms
+# work_mem is an UPPER BOUND that a node only allocates when it actually sorts or hashes,
+# so the prelude is inert for the small panels. 16MB rather than 8MB because Sessions (the
+# wider fold) still measured 9.7s at 8MB against 6.1s at 16MB. The panel fans out at most
+# 6 statements at once, so the worst case is ~192MB of transient sort memory on a box with
+# 224MB of shared_buffers; it is set per statement, not per session, and does not leak.
+_QUERY_PRELUDE = "set local work_mem = '16MB'; "
 
 # Whole-surface budget. Every panel here is a chain of round trips to the Supabase
 # Management API, and admin.mastermind-x.com is served THROUGH a CDN edge (see the
@@ -528,6 +617,14 @@ _QUERY_TIMEOUT_S = 9
 _REQUEST_BUDGET_S = 10.0
 _DEADLINE: contextvars.ContextVar[float | None] = contextvars.ContextVar(
     "fp_deadline", default=None)
+# Per-query and per-surface overrides, set only by the background warmer (below). They
+# exist because the warmer is the one caller nobody waits on, so it may exceed the panel
+# budget that protects the operator's request. Context-local, so a warm pass can never
+# widen the budget of a concurrent operator request.
+_BASE_TIMEOUT: contextvars.ContextVar[float | None] = contextvars.ContextVar(
+    "fp_base_timeout", default=None)
+_BUDGET_OVERRIDE: contextvars.ContextVar[float | None] = contextvars.ContextVar(
+    "fp_budget_override", default=None)
 
 # The management endpoint is one shared upstream; a handful of concurrent statements
 # per surface is the point, a stampede is not.
@@ -566,26 +663,49 @@ def _parallel(**thunks):
         return {name: fut.result() for name, fut in futures.items()}
 
 
-def _query(sql: str):
+def _query(sql: str, timeout_cap_s: float | None = None):
     pat = settings.supabase_pat()
     if not (pat and requests):
         return None
     ref = settings.supabase_project_ref()
-    timeout = _QUERY_TIMEOUT_S
+    base = _BASE_TIMEOUT.get() or _QUERY_TIMEOUT_S
+    timeout = base
     remaining = _remaining_budget()
     if remaining is not None:
         if remaining <= 0:
             raise TimeoutError(
                 f"analytics query budget exhausted ({_REQUEST_BUDGET_S:.0f}s) — "
                 "narrow the time window and retry")
-        timeout = max(1.0, min(float(_QUERY_TIMEOUT_S), remaining))
-    r = requests.post(
-        f"{_API}/projects/{ref}/database/query",
-        headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
-        json={"query": sql}, timeout=timeout)
+        timeout = max(1.0, min(float(base), remaining))
+    if timeout_cap_s is not None:
+        timeout = min(timeout, max(0.5, float(timeout_cap_s)))
+    try:
+        r = requests.post(
+            f"{_API}/projects/{ref}/database/query",
+            headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
+            json={"query": _QUERY_PRELUDE + sql}, timeout=timeout)
+    except requests.exceptions.Timeout:
+        # urllib3's own wording ("HTTPSConnectionPool(host='api.supabase.com', port=443):
+        # Read timed out. (read timeout=9.0)") was reaching the operator verbatim. It names
+        # the TRANSPORT, which is the wrong place to look: measured on production 2026-11-09,
+        # a bare `select 1` through this endpoint answers in 1.4s while one full-store scan
+        # takes 9-31s — so a read timeout here is the STATEMENT outrunning the budget, not the
+        # network. Say that, and say which budget.
+        raise TimeoutError(
+            f"analytics query did not finish within {timeout:.1f}s "
+            "(Supabase Management API) — a full-store scan outran the panel budget; "
+            "narrow the window and retry") from None
     if not (200 <= r.status_code < 300):   # the query endpoint answers 201 on success
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
     return r.json()
+
+
+def _optional_query(sql: str, *, timeout_cap_s: float, default):
+    """Best-effort secondary metric. Core panel queries must still fail truthfully."""
+    try:
+        return _query(sql, timeout_cap_s=timeout_cap_s)
+    except Exception:  # noqa: BLE001 — secondary metric must not blank the whole panel
+        return default
 
 
 def _days(v, default: int = 7) -> int:
@@ -636,7 +756,8 @@ def _guard(fn):
     # Open the surface's budget here, so every _query underneath it — including the
     # ones _parallel runs on worker threads — shares one deadline rather than each
     # getting its own independent 20s.
-    token = _DEADLINE.set(time.monotonic() + _REQUEST_BUDGET_S)
+    budget = _BUDGET_OVERRIDE.get() or _REQUEST_BUDGET_S
+    token = _DEADLINE.set(time.monotonic() + budget)
     try:
         return {"ok": True, **fn()}
     except Exception as e:  # noqa: BLE001
@@ -645,68 +766,132 @@ def _guard(fn):
         _DEADLINE.reset(token)
 
 
+# ── Background warm ────────────────────────────────────────────────────────────
+# The two heaviest panels fold a 216MB table against a 224MB shared_buffers, so their
+# pages do not stay resident between visits. Measured on production 2026-11-10: the
+# Visitors fold is 2.2s warm and 23.4s cold, and the panel budget is 9s (the edge proxy
+# hangs up below 15s, so the budget cannot simply be raised). A cold panel therefore
+# fails before it can warm itself, and every retry starts cold again — the deadlock the
+# operator sees as "Couldn't load this panel". This loop breaks it: it re-runs the two
+# panels on a timer so their pages stay hot, and it is the only caller allowed to exceed
+# the panel budget, because nobody is waiting on it. Set ANALYTICS_WARM_INTERVAL_S=0 to
+# disable; the interval is the only knob that costs the shared store anything.
+_WARM_INTERVAL_S = float(os.environ.get("ANALYTICS_WARM_INTERVAL_S") or 120)
+_WARM_QUERY_TIMEOUT_S = float(os.environ.get("ANALYTICS_WARM_QUERY_TIMEOUT_S") or 60)
+_WARM_BUDGET_S = float(os.environ.get("ANALYTICS_WARM_BUDGET_S") or 90)
+
+
+def warm_panels() -> None:
+    """One warm pass over the two heaviest panels. Never raises."""
+    try:
+        if not status()["configured"]:
+            return
+    except Exception:  # noqa: BLE001 — a warm pass must never take the server down
+        return
+    t_base = _BASE_TIMEOUT.set(_WARM_QUERY_TIMEOUT_S)
+    t_budget = _BUDGET_OVERRIDE.set(_WARM_BUDGET_S)
+    try:
+        for fn in (visitors, sessions):
+            try:
+                fn(limit=100, minutes=1440)
+            except Exception:  # noqa: BLE001 — one panel failing must not stop the other
+                pass
+    finally:
+        _BUDGET_OVERRIDE.reset(t_budget)
+        _BASE_TIMEOUT.reset(t_base)
+
+
+def start_warmer() -> threading.Thread | None:
+    """Start the daemon warm loop. Returns the thread, or None when disabled."""
+    if _WARM_INTERVAL_S <= 0:
+        return None
+
+    def loop():
+        while True:
+            warm_panels()
+            time.sleep(_WARM_INTERVAL_S)
+
+    thread = threading.Thread(target=loop, name="fp-analytics-warm", daemon=True)
+    thread.start()
+    return thread
+
+
 # ---------- surfaces ----------
 def overview(days=7, minutes=None, gap=None) -> dict:
     m = _win(minutes, days, 10080)
     g = _gap(gap)
     trunc, fmt = _bucket(m)
-    # Truncate AFTER converting to the display zone so a "day" is a local midnight-to-midnight
-    # day, not a UTC one (which would split the operator's evening across two bars).
-    dt = f"date_trunc('{trunc}', {_lt('e.created_at')})"
+    # The five live-window projections share the same identity/exclusion/bot population.
+    # Compute that population ONCE inside one SQL statement instead of paying for the same
+    # classifier in five concurrent Management-API requests. On production's 106k-row
+    # analytics table this cut the 24h core fold from ~2.5-3.2s to ~1.0s.
+    dt = f"date_trunc('{trunc}', {_lt('created_at')})"
     def run():
-        # 'visitors' counts PEOPLE (canonical identity), not raw cookies. The operator's own
-        # hidden cookies (excluded) AND crawlers (bots) are dropped so the headline counts
-        # reflect real humans and match the tables below.
         human = f"and {_not_excluded('e')} and {_not_a_bot('e')}"
-        # Six independent statements — none reads another's result — so they go out as
-        # one wave. This is the tab the console opens by default, and serially it was
-        # the slowest surface in the console.
-        r = _parallel(
-            win=lambda: (_query(_cte(include_ident=True) +
-                "select count(*)::int as events, "
-                f"{_CANON_VISITORS}, "
-                "count(*) filter (where e.type in ('pageview','route'))::int as pageviews, "
-                "count(*) filter (where e.type='ticker_view')::int as ticker_views, "
-                "count(*) filter (where e.type='search')::int as searches "
-                "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"where e.created_at > now() - interval '{m} minutes' {human}") or [{}])[0],
-            # 'sessions' counts VISITS, not raw per-tab session_ids, so the headline agrees with
-            # the Sessions tab (which stitches tabs/origins) instead of triple-counting a hop.
-            sessions=lambda: (_query(_cte(include_ident=True) +
-                f"select count(*) filter (where b = 1)::int as sessions from ("
-                f"  select {_visit_break(g)} as b from ("
-                "    select coalesce(i.uid, e.visitor_id) as canon, e.created_at, e.id "
-                "    from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"    where e.visitor_id is not null and e.created_at > now() - interval '{m} minutes' "
-                f"    {human}) y) z") or [{}])[0].get("sessions"),
-            alltime=lambda: (_query(_cte(include_ident=True) +
-                f"select count(*)::int as events, {_CANON_VISITORS} "
-                "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"where {_not_excluded('e')} and {_not_a_bot('e')}") or [{}])[0],
-            # Bots filtered out of the window (shown separately so detection is transparent).
-            bots=lambda: (_query(_cte() +
-                "select count(distinct e.visitor_id)::int as visitors, count(*)::int as events "
-                "from public.analytics_events e "
-                f"where e.created_at > now() - interval '{m} minutes' and {_not_excluded('e')} "
-                "and e.visitor_id in (select visitor_id from bots)") or [{}])[0],
-            by_site=lambda: _query(_cte(include_ident=True) +
-                f"select e.site, count(*)::int as events, {_CANON_VISITORS} "
-                "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"where e.created_at > now() - interval '{m} minutes' {human} "
-                "group by e.site order by events desc, e.site") or [],
-            daily=lambda: _query(_cte(include_ident=True) +
-                f"select to_char({dt},'{fmt}') as day, "
-                f"{_CANON_VISITORS}, count(*)::int as events "
-                "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"where e.created_at > now() - interval '{m} minutes' {human} "
-                f"group by {dt} order by {dt}") or [],
+        core_sql = (
+            _cte(include_ident=True, bot_window=m)
+            + ", he as (select e.*, i.uid, coalesce(i.uid,e.visitor_id) as canon "
+              "from public.analytics_events e left join ident i on i.visitor_id=e.visitor_id "
+            + f"where e.created_at > now() - interval '{m} minutes' {human}), "
+            + "vb as (select canon,created_at,id,"
+            + _visit_break(g)
+            + " as b from he where visitor_id is not null) "
+            + "select "
+            + "(select json_build_object("
+              "'events',count(*)::int,"
+              "'visitors',count(distinct canon)::int,"
+              "'pageviews',count(*) filter (where type in ('pageview','route'))::int,"
+              "'ticker_views',count(*) filter (where type='ticker_view')::int,"
+              "'searches',count(*) filter (where type='search')::int"
+              ") from he) as win, "
+            + "(select count(*) filter (where b=1)::int from vb) as sessions, "
+            + "(select coalesce(json_agg(row_to_json(x)),'[]'::json) from ("
+              "select site,count(*)::int as events,count(distinct canon)::int as visitors "
+              "from he group by site order by events desc,site) x) as by_site, "
+            + "(select coalesce(json_agg(row_to_json(x)),'[]'::json) from ("
+            + f"select to_char({dt},'{fmt}') as day,"
+              "count(distinct canon)::int as visitors,count(*)::int as events "
+            + f"from he group by {dt} order by {dt}) x) as daily, "
+            + "(select json_build_object("
+              "'visitors',count(distinct e.visitor_id)::int,"
+              "'events',count(*)::int) "
+              "from public.analytics_events e "
+            + f"where e.created_at > now() - interval '{m} minutes' "
+              f"and {_not_excluded('e')} "
+              "and e.visitor_id in (select visitor_id from bots)) as bots"
         )
-        win = r["win"]
-        win["sessions"] = r["sessions"]
-        return {"days": round(m / 1440, 2), "minutes": m, "window": win,
-                "alltime": r["alltime"], "bots": r["bots"],
-                "by_site": r["by_site"], "daily": r["daily"], "tz": _TZ,
-                "tz_label": _tz_label(), "visit_gap_min": g}
+        core = (_query(core_sql) or [{}])[0] or {}
+        # The all-time count runs AFTER the core fold, never beside it. It is a full-history
+        # scan of a 192MB table against a 224MB shared_buffers, capped at 0.75s — so it is
+        # cancelled part-way through after having pulled most of the store through the cache
+        # and evicted the pages the MANDATORY statement was about to read. Run concurrently it
+        # made the panel it decorates slower: measured on production 2026-11-09, overview
+        # returned in 3.55s on a warm pool and then failed its 9s budget on five consecutive
+        # calls once this probe had run, and the next Visitors/Sessions statements came back
+        # at 9.1s instead of 3.3s. It is explicitly "context, not a render dependency", so it
+        # may not cost the number the operator actually opens the panel for.
+        alltime = (_optional_query(
+            _cte(include_ident=True)
+            + f"select count(*)::int as events, {_CANON_VISITORS} "
+              "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
+              f"where {_not_excluded('e')} and {_not_a_bot('e')}",
+            timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S,
+            default=[],
+        ) or [{}])[0]
+        win = core.get("win") or {}
+        win["sessions"] = core.get("sessions")
+        return {
+            "days": round(m / 1440, 2),
+            "minutes": m,
+            "window": win,
+            "alltime": alltime,
+            "bots": core.get("bots") or {},
+            "by_site": core.get("by_site") or [],
+            "daily": core.get("daily") or [],
+            "tz": _TZ,
+            "tz_label": _tz_label(),
+            "visit_gap_min": g,
+        }
     return _guard(run)
 
 
@@ -718,16 +903,31 @@ def overview(days=7, minutes=None, gap=None) -> dict:
 # the exclusion CTEs above changed it, and Guangzhou and Singapore (both 4 visitors)
 # swapped places on the Map tab with no data behind the move. Found 2026-08-26 while
 # verifying that rewrite; the instability predates it.
+def _pages_cte(minutes: int) -> str:
+    """Reuse the native bot focus while projecting exclusion OUTPUT only.
+
+    Preserve configuration-read order and every global historical classifier.
+    SQL declares focus before its pages-only exclusion consumers.
+    """
+    excluded = _excluded_cte(focus_visitors=True)
+    bots = _bot_cte(minutes)
+    return "with " + bots + ", " + excluded + " "
+
+
 def pages(days=7, limit=25, minutes=None) -> dict:
     m, n = _win(minutes, days, 10080), _limit(limit, 25)
     def run():
-        rows = _query(_cte() +
-            "select site, coalesce(path,'(none)') as path, "
-            "count(*) filter (where type in ('pageview','route'))::int as views, "
-            "count(distinct visitor_id)::int as visitors, "
-            "round(avg(dwell_ms) filter (where dwell_ms is not null))::int as avg_dwell_ms "
-            f"from public.analytics_events where created_at > now() - interval '{m} minutes' "
-            f"and {_not_excluded('')} and {_not_a_bot('')} "
+        rows = _query(_pages_cte(m) +
+            "select e.site, coalesce(e.path,'(none)') as path, "
+            "count(*) filter (where e.type in ('pageview','route'))::int as views, "
+            "count(distinct e.visitor_id)::int as visitors, "
+            "round(avg(e.dwell_ms) filter (where e.dwell_ms is not null))::int as avg_dwell_ms "
+            f"from public.analytics_events e where e.created_at > now() - interval '{m} minutes' "
+            # Both native membership sets exclude NULL IDs. Anti-membership therefore
+            # keeps the same NULL-visitor rows without an OR-wrapped NOT IN subplan.
+            # Keep all historical classifier evidence and every event type for dwell.
+            "and not exists (select 1 from excluded x where x.visitor_id = e.visitor_id) "
+            "and not exists (select 1 from bots b where b.visitor_id = e.visitor_id) "
             "group by 1,2 order by views desc nulls last, 1, 2 "
             f"limit {n}") or []
         return {"days": round(m / 1440, 2), "minutes": m, "pages": rows}
@@ -738,13 +938,13 @@ def geo(days=30, limit=200, minutes=None) -> dict:
     m, n = _win(minutes, days, 43200), _limit(limit, 200)
     def run():
         r = _parallel(
-            countries=lambda: _query(_cte() +
+            countries=lambda: _query(_cte(bot_window=m) +
                 "select coalesce(g.country,'(unknown)') as country, g.country_code, "
                 "count(distinct e.visitor_id)::int as visitors, count(*)::int as events "
                 "from public.analytics_events e left join public.ip_geo g on g.ip = e.ip "
                 f"where e.created_at > now() - interval '{m} minutes' and {_not_excluded('e')} and {_not_a_bot('e')} "
                 "group by 1,2 order by visitors desc nulls last, 1, 2") or [],
-            cities=lambda: _query(_cte() +
+            cities=lambda: _query(_cte(bot_window=m) +
                 "select g.city, g.region, g.country_code, g.lat, g.lon, "
                 "count(distinct e.visitor_id)::int as visitors "
                 "from public.analytics_events e join public.ip_geo g on g.ip = e.ip "
@@ -785,7 +985,8 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("s.is_bot = 0")          # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
-        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m) +
+        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
+                           bot_window=m, focus_excluded=True) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
             # signed-in visitor's separate macro/terminal cookies stitch into one visit.
             ", ev as (select e.id, e.session_id, e.visitor_id, e.site, e.ip, e.type, e.created_at, "
@@ -866,8 +1067,8 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
             # A cookie signed into by 2+ DIFFERENT accounts (shared/kiosk device) is
             # AMBIGUOUS — excluded from the auto-merge so one person's activity is never
             # silently reassigned to another; those events stay under the cookie.
-            "with " + _IDENT_CTE +
-            ", " + _excluded_cte() + ", " + _bot_cte() + ", " + _candidate_cte(m) +
+            _cte(include_ident=True, include_candidate=True, candidate_window=m,
+                 bot_window=m, focus_excluded=True) +
             # ev: every (non-hidden) event tagged with its canonical identity (uid if known, else mm_aid)
             ", ev0 as ("
             "  select e.id, e.session_id, e.ip, e.created_at, e.visitor_id, i.uid, "
@@ -979,7 +1180,7 @@ def flow(days=7, limit=40, minutes=None) -> dict:
     m, n = _win(minutes, days, 10080), _limit(limit, 40, 200)
     def run():
         rows = _query(
-            "with " + _excluded_cte() + ", " + _bot_cte() + ", ev as (select session_id, path, "
+            "with " + _excluded_cte() + ", " + _bot_cte(m) + ", ev as (select session_id, path, "
             "  lag(path) over (partition by session_id order by id) as prev "
             "  from public.analytics_events "
             f"  where type in ('pageview','route') and path is not null and {_not_excluded('')} and {_not_a_bot('')} "
@@ -997,18 +1198,18 @@ def terminal(days=7, limit=25, minutes=None) -> dict:
     def run():
         no_bot_search = "(anon_id is null or anon_id not in (select visitor_id from bots))"
         r = _parallel(
-            searches=lambda: _query(_cte() +
+            searches=lambda: _query(_cte(bot_window=m, bot_include_search=True) +
                 "select symbol as ticker, count(*)::int as searches, "
                 "count(distinct coalesce(user_id::text, anon_id, ip))::int as visitors "
                 f"from public.search_events where created_at > now() - interval '{m} minutes' "
                 f"and {_not_excluded_search()} and {no_bot_search} "
                 f"group by 1 order by searches desc, 1 limit {n}") or [],
-            views=lambda: _query(_cte() +
+            views=lambda: _query(_cte(bot_window=m, bot_include_search=True) +
                 "select ticker, count(*)::int as views, count(distinct visitor_id)::int as visitors "
                 "from public.analytics_events where type='ticker_view' and ticker is not null "
                 f"and created_at > now() - interval '{m} minutes' and {_not_excluded('')} and {_not_a_bot('')} "
                 f"group by 1 order by views desc, 1 limit {n}") or [],
-            totals=lambda: (_query(_cte() +
+            totals=lambda: (_query(_cte(bot_window=m, bot_include_search=True) +
                 "select (select count(*)::int from public.search_events "
                 f"  where created_at > now() - interval '{m} minutes' and {_not_excluded_search()} and {no_bot_search}) as search_total, "
                 "(select count(*)::int from public.analytics_events where type='ticker_view' "
@@ -1147,12 +1348,12 @@ def realtime() -> dict:
         # This one is POLLED every 15s while the Analytics tab is open, so halving its
         # round trips halves a cost the console pays continuously, not just on open.
         r = _parallel(
-            now=lambda: (_query(_cte() +
+            now=lambda: (_query(_cte(bot_window=5) +
                 "select count(distinct visitor_id)::int as visitors, "
                 "count(distinct session_id)::int as sessions, count(*)::int as events "
                 "from public.analytics_events where created_at > now() - interval '5 minutes' "
                 f"and {_not_excluded('')} and {_not_a_bot('')}") or [{}])[0],
-            recent=lambda: _apply_geo_overrides(_query(_cte() +
+            recent=lambda: _apply_geo_overrides(_query(_cte(bot_window=15) +
                 "select e.type, e.site, coalesce(e.path,'') as path, e.ticker, e.ip, "
                 f"to_char({_lt('e.created_at')},'HH24:MI:SS') as t, g.city, g.country_code "
                 "from public.analytics_events e left join public.ip_geo g on g.ip = e.ip "

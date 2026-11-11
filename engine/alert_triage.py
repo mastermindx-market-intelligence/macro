@@ -367,8 +367,13 @@ def priority(tier: str, band: str, age_days: float | None, ca_tag: str) -> tuple
     return max(0, min(100, score)), comp
 
 
+# The page's pill for a BTC leg the radar's re-check scores zero (btc_alerts._apply_leg_gate).
+_LEG_GATE_VERDICT = {"demoted": "no_edge", "insufficient_n": "underpowered"}
+
+
 def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
                 reg: dict, rule_sc: dict | None = None, detail: str = "", *,
+                leg_gate: str | None = None,
                 passport: dict | None = None,
                 validation_evidence: dict | None = None) -> dict:
     """Honest evidence block.
@@ -433,6 +438,11 @@ def _validation(source: str, type_: str, engine_edge: str, engine_edge_zh: str,
                 "note": note, "note_zh": note_zh,
                 "current_permitted": eligible, "evidence_anchor": anchor,
                 "passport": passport, "direction": passport.get("direction")}
+
+    # Legacy display compatibility never grants current permission.
+    if leg_gate:
+        return {**base, "verdict": _LEG_GATE_VERDICT.get(leg_gate, "documented"),
+                "note": engine_edge, "note_zh": engine_edge_zh or engine_edge}
 
     # The alert rule's own forward-SPY event study.
     rk = _rule_key(source, type_, detail)
@@ -608,7 +618,7 @@ def _store_state(mod) -> tuple[str, str | None]:
     try:
         return (READ_OK_ZERO, None) if mod._path().exists() else (READ_NO_COVERAGE, None)
     except Exception as e:  # noqa: BLE001
-        return READ_OK_ZERO, f"store path unresolved: {type(e).__name__}"
+        return READ_UNAVAILABLE, f"store path unresolved: {type(e).__name__}"
 
 
 def _window_date(clocks: dict, ev: dict) -> date | None:
@@ -698,7 +708,10 @@ def _jsonl_raw(source: str, today: date, cutoff: date,
             "watchlist": "watchlist_alerts",
         }[source]
         m = mod_obj = __import__("engine." + mod, fromlist=[mod])
-        for e in m.load_events():
+        # This assembler applies one frozen gate after recurrence grouping.
+        # Read original Vector rows so another clock cannot pre-demote their display.
+        events = m._read_event_rows() if source == "vector" else m.load_events()
+        for e in events:
             clocks = alert_time.normalize_event(e)
             wd = _window_date(clocks, e)
             if wd is not None and wd < cutoff:
@@ -722,6 +735,7 @@ def _jsonl_raw(source: str, today: date, cutoff: date,
                 "detail_zh": e.get("detail_zh") or e.get("detail", ""),
                 "anchor": e.get("anchor") or "#timeline",
                 "edge": e.get("edge", ""), "edge_zh": e.get("edge_zh", ""),
+                **({"leg_gate": e["leg_gate"]} if e.get("leg_gate") else {}),
                 "event_id": e.get("id"),
                 "context": dict(e.get("context") or {}),
                 "evidence": e.get("evidence"),
@@ -1301,10 +1315,20 @@ def build_triage(days: int = 30, today: date | None = None,
 
     BOARD DAY: this is a US cross-asset desk, so "today" is the New York day, not UTC's.
     At 2026-08-20T00:30Z New York is still 2026-08-19 20:30 — the board must not have
-    rolled over.  Everything downstream (recency points, "today / 1d ago", new_today, the
-    catalyst countdown, the 7-day fire volume) reads THIS date.
+    rolled over.  Board display (recency points, "today / 1d ago", new_today, the
+    catalyst countdown, the 7-day fire volume) reads THIS date. BTC permission
+    separately honors the evidence passport's UTC expiry boundary.
     """
-    today = today or alert_time.board_date(now)
+    # The board keeps its New York display/recency day. BTC permission expires at
+    # the passport's stated UTC midnight, so an evening board cannot extend it.
+    # An explicit day remains the intentional replay seam for both projections.
+    permission_date = today
+    if today is None:
+        clock = now if now is not None else datetime.now(timezone.utc)
+        if clock.tzinfo is None:
+            clock = clock.replace(tzinfo=timezone.utc)
+        permission_date = clock.astimezone(timezone.utc).date()
+        today = alert_time.board_date(clock)
     cutoff = today - timedelta(days=days)
     reg = _registry_index()
     rule_sc = _rule_scorecard()
@@ -1375,9 +1399,9 @@ def build_triage(days: int = 30, today: date | None = None,
             identity = btc_alerts.impulse_identity(rep)
             passport = signal_evidence.impulse_passport(
                 identity or "unknown",
-                event_at=rep.get("event_ts") or rep.get("event_date") or rep.get("ts"),
+                event_at=rep.get("event_ts") or rep.get("event_date"),
                 event_precision=rep.get("date_precision"),
-                board_date=today, source_asof=rep.get("source_asof"),
+                board_date=permission_date, source_asof=rep.get("source_asof"),
                 gate=impulse_gate,
             )
             rep.update({
@@ -1388,7 +1412,7 @@ def build_triage(days: int = 30, today: date | None = None,
                 "validation_asof": passport.get("validation_asof"),
                 "event_expires_on": passport.get("event_expires_on"),
             })
-            rep.update(signal_evidence.current_projection(passport))
+            btc_alerts._apply_impulse_display(rep, passport, severity_key="raw_sev")
         tier = rep["tier"]
         band = severity_band(tier, rep["raw_sev"])
         # #42: measured-IC severity — the hardcoded band is a prior; a spine-measured null /
@@ -1399,6 +1423,7 @@ def build_triage(days: int = 30, today: date | None = None,
             rep["source"], rep["type"], rep.get("edge", ""), rep.get("edge_zh", ""),
             reg, rule_sc, rep.get("detail", ""), passport=passport,
             validation_evidence=rep.get("validation_evidence"),
+            leg_gate=rep.get("leg_gate"),
         )
         # v2: DEMOTE-ONLY corroboration cap — an isolated, unvalidated one-off can't
         # sit at the same volume as a confirmed / backtested signal.  Bare recurrence is

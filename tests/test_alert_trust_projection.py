@@ -56,7 +56,7 @@ def test_emitter_loads_one_gate_snapshot_and_keeps_raw_ids_and_original_claim(mo
     def load():
         calls["n"] += 1
         return _gate(d2="demoted")
-    monkeypatch.setattr("engine.btc_impulse_radar_backtest.load_gate", load)
+    monkeypatch.setattr("engine.signal_evidence.load_btc_gate", load)
 
     rows = btc_alerts.impulse_radar_events(sig, board_date=date(2026, 9, 10))
     assert calls["n"] == 1
@@ -110,7 +110,7 @@ def test_persisted_issue_time_claim_survives_recomputation_of_same_id(monkeypatc
     old["headline"] = "Original persisted headline"
     old["detail"] = "Original persisted detail"
     old["edge"] = "Original persisted predictive claim"
-    monkeypatch.setattr(btc_alerts, "load_events", lambda: [old])
+    monkeypatch.setattr(btc_alerts, "_read_event_rows", lambda: [old])
 
     rows = btc_alerts.compute_all_events(sig, gate=_gate(d2="demoted"), board_date=date(2026, 9, 10))
     row = next(r for r in rows if r["id"] == old["id"])
@@ -128,7 +128,7 @@ def test_jsonl_normalizer_preserves_typed_provenance(monkeypatch):
     raw["direction"] = "down"
     raw["signal_id"] = "btc_impulse.d2"
     raw["original_claim"] = {"headline": "issued", "event_id": raw["id"]}
-    monkeypatch.setattr(btc_alerts, "load_events", lambda: [raw])
+    monkeypatch.setattr(btc_alerts, "_read_event_rows", lambda: [raw])
     out = at._jsonl_raw("vector", date(2026, 9, 10), date(2026, 8, 1), {})
     row = out["events"][0]
     assert row["event_id"] == raw["id"]
@@ -158,8 +158,8 @@ def test_arbitrary_vector_prose_is_not_calibration_evidence():
 
 def test_current_impulse_passport_controls_tier_action_priority_and_exact_link(monkeypatch):
     event = _event()
-    monkeypatch.setattr(btc_alerts, "load_events", lambda: [event])
-    monkeypatch.setattr("engine.btc_impulse_radar_backtest.load_gate", lambda: _gate(d2="demoted"))
+    monkeypatch.setattr(btc_alerts, "_read_event_rows", lambda: [event])
+    monkeypatch.setattr("engine.signal_evidence.load_btc_gate", lambda: _gate(d2="demoted"))
     # Isolate every other source and the backdrop so this is a real assembler test,
     # not a dependency on the repository's mutable data snapshot.
     monkeypatch.setattr(at, "_load_context", lambda: {"_state": at.READ_OK, "cross_asset": {}, "risk_backdrop": {}})
@@ -301,8 +301,8 @@ def test_denied_legacy_impulse_moves_issue_time_authority_out_of_live_fields(mon
     event["edge"] = stale
     event["edge_zh"] = "经验证的领先前兆；应尽早行动。"
     event["forward"] = "Reduce risk now."
-    monkeypatch.setattr(btc_alerts, "load_events", lambda: [event])
-    monkeypatch.setattr("engine.btc_impulse_radar_backtest.load_gate", lambda: _gate(d2="demoted"))
+    monkeypatch.setattr(btc_alerts, "_read_event_rows", lambda: [event])
+    monkeypatch.setattr("engine.signal_evidence.load_btc_gate", lambda: _gate(d2="demoted"))
     monkeypatch.setattr(at, "_load_context", lambda: {
         "_state": at.READ_OK, "cross_asset": {}, "risk_backdrop": {},
     })
@@ -367,7 +367,7 @@ def test_rebuild_retains_unreproduced_persisted_impulse_as_history(monkeypatch):
     monkeypatch.setattr(btc_alerts, "impulse_radar_events", lambda *_, **__: [])
     monkeypatch.setattr(btc_alerts, "leverage_derisk_events", lambda *_: [])
     monkeypatch.setattr(btc_alerts, "flash_events", lambda *_: [])
-    monkeypatch.setattr(btc_alerts, "load_events", lambda: [old])
+    monkeypatch.setattr(btc_alerts, "_read_event_rows", lambda: [old])
     monkeypatch.setattr(btc_alerts.store, "read", lambda *_: None)
 
     rows = btc_alerts.compute_all_events(
