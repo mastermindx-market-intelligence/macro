@@ -1,0 +1,17 @@
+{"binary":"mmx-workspace","operation":"repositories","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":1631,"exit":0,"stdout_bytes":1529,"stderr_bytes":0}
+{"binary":"mmx-workspace","operation":"status","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":27433,"exit":0,"stdout_bytes":910,"stderr_bytes":0}
+{"binary":"git","operation":"rev-parse","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":56,"exit":0,"stdout_bytes":100,"stderr_bytes":0}
+{"binary":"git","operation":"symbolic-ref","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":57,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"rev-parse","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":62,"exit":0,"stdout_bytes":41,"stderr_bytes":0}
+{"binary":"git","operation":"remote","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":57,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"diff-index","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":132,"exit":0,"stdout_bytes":0,"stderr_bytes":0}
+{"binary":"git","operation":"diff-files","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":3113,"code":1,"signal":null,"killed":false,"stdout_bytes":0,"stderr_bytes":0}
+{"binary":"git","operation":"ls-files","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":3118,"exit":0,"stdout_bytes":44904,"stderr_bytes":0}
+{"binary":"git","operation":"remote","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":46,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"-c","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":42,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"-c","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":38,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"-c","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":136,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"-c","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":47,"exit":0,"stdout_bytes":61,"stderr_bytes":0}
+{"binary":"git","operation":"-c","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":542,"exit":0,"stdout_bytes":0,"stderr_bytes":0}
+{"binary":"git","operation":"rev-parse","timeout_ms":45000,"max_buffer":1048576,"elapsed_ms":47,"exit":0,"stdout_bytes":118,"stderr_bytes":0}
+{"outcome":"READ_ONLY_STATUS","head":"a739405d248e3e985c6215067878028f8403fad9","publication_state":"NOT_APPLIED","ready_to_push":false,"clean":false}

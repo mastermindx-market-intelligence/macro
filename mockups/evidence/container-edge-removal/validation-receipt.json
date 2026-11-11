@@ -1,0 +1,136 @@
+{
+  "schema": "mastermind.container_edge_validation.v1",
+  "recorded_at": "2026-11-11T12:14:42.331047+00:00",
+  "status": "SOURCE_QUALIFIED_EW_RECAPTURE_PENDING",
+  "governing_pin": "c42e812e4a754d7a95efd954441d3f01607a7fb5",
+  "pr": 10654,
+  "checks": [
+    {
+      "name": "initial source/render/state focused",
+      "passed": 52,
+      "exit_code": 0
+    },
+    {
+      "name": "changed Jinja parsing",
+      "parsed": 128
+    },
+    {
+      "name": "changed standalone JavaScript syntax",
+      "checked": 10
+    },
+    {
+      "name": "changed-line design guard",
+      "blocking_findings": 0
+    },
+    {
+      "name": "runtime style injection census",
+      "unchanged_counts": 20
+    },
+    {
+      "name": "GMI BEA physical browser",
+      "passed": 22,
+      "exit_code": 0
+    },
+    {
+      "name": "Macro T11 exact renderer-collapse parity",
+      "passed": 30,
+      "exit_code": 0
+    },
+    {
+      "name": "pinned P0B verifier",
+      "primary_cases": 96,
+      "degraded_cases": 32,
+      "owner_empty_pngs": 16,
+      "exit_code": 0
+    },
+    {
+      "name": "P0B first-frame suite",
+      "passed": 120,
+      "exit_code": 0
+    },
+    {
+      "name": "final estate guard and hub glance",
+      "passed": 52,
+      "exit_code": 0
+    },
+    {
+      "name": "final affected parity",
+      "passed": 11,
+      "exit_code": 0
+    },
+    {
+      "name": "template/site sync",
+      "matched_pairs": 161,
+      "exit_code": 0
+    },
+    {
+      "name": "asset references",
+      "missing": 0,
+      "exit_code": 0
+    },
+    {
+      "name": "consumer residual audit",
+      "pages": 15179,
+      "reachable_assets": 394,
+      "decorative_residual_groups": 0,
+      "missing_assets": 0,
+      "superseded_references": 0
+    },
+    {
+      "name": "combined browser matrix",
+      "pages_or_scenarios": 24,
+      "captured_states": 208
+    },
+    {
+      "name": "published interactions",
+      "passed": 12,
+      "screenshots": 12,
+      "exit_code": 0
+    },
+    {
+      "name": "UI evidence gate before final typography recapture",
+      "exit_code": 0,
+      "note": "Repeated on final receipt before publication; see final UI gate log."
+    },
+    {
+      "name": "legacy style contracts and frozen-guard semantic rejection",
+      "passed": 9,
+      "subtests_passed": 2,
+      "exit_code": 0
+    },
+    {
+      "name": "International transmission exact migration guard",
+      "passed": 1,
+      "exit_code": 0
+    },
+    {
+      "name": "EW-P4 Node glance behavior",
+      "passed": 22,
+      "exit_code": 0
+    },
+    {
+      "name": "press render replay against published estate",
+      "passed": 1,
+      "exit_code": 0,
+      "note": "No blog pages rewritten and no assets outside owner scope after materializing two exact canonical free-content CSS objects."
+    },
+    {
+      "name": "final material UI evidence gate",
+      "exit_code": 0,
+      "captured_states_verified": 208,
+      "owned_ui_paths": 15522,
+      "note": "Rebased relocated product manifest paths and verified original screenshot hashes; final gate passes."
+    }
+  ],
+  "invalid_exploratory_run": {
+    "assertions_passed": 666,
+    "exit_code": 1,
+    "counted_as_clean": false,
+    "reason": "Concurrent owned consumer writes introduced Git status entries while MM_DATA_GUARD was observing. No market-data refresh; final affected parity and estate guard ran clean after writes.",
+    "log": "logs/repaired-parity-tests.log"
+  },
+  "browser_scope": "Representative public/static and explicitly documented existing fixtures; no real-account or production acceptance claim.",
+  "preserved": "Status text/values, chart axes and marks, diagram/stage connectors, neutral structural separators, keyboard focus, reduced-motion behavior and invisible mobile hit areas.",
+  "source_bindings": "input-bindings.json",
+  "release_state": "Draft PR; legacy style expectations repaired; exact-source EW-P4 68-shot recapture and final CI remain."
+}

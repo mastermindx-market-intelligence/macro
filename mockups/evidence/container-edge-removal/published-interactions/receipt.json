@@ -1,0 +1,251 @@
+{
+  "schema": "mastermind.container_edge_published_interactions.v1",
+  "honesty": "Loopback static public UI; external requests aborted; no account. Actual scene-motion mm-terminal-tick animation observed during reason, paused at its transparent start; no source styles or phase attributes overridden. Current product chapter font-weight verified as 800.",
+  "cases": [
+    {
+      "page": "products/market-terminal.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "state": "scene tick transparent start",
+      "computed": {
+        "background": "oklab(0 0 0 / 0)",
+        "backgroundAlpha": 0,
+        "shadow": "rgba(255, 255, 255, 0.09) 0px 0px 0px 1px inset",
+        "symbolWeight": "800",
+        "animations": [
+          {
+            "name": "mm-terminal-tick",
+            "delay": 0,
+            "duration": 1550,
+            "currentTime": 0
+          }
+        ],
+        "phase": "reason"
+      },
+      "screenshot": "terminal-selected-1440-dark.png",
+      "sha256": "d57396c68169e1afc0259486db24f462d46fec3bbdeb7b2f431d71119e8354ce"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "state": "keyboard focus",
+      "computed": {
+        "pseudo": "none",
+        "focusVisible": true,
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "rgba(16, 24, 40, 0.03) 0px 1px 2px 0px, rgba(16, 24, 40, 0.04) 0px 2px 4px -1px, rgba(16, 24, 40, 0.01) 0px 0.776281px 1.9407px -0.38814px"
+      },
+      "screenshot": "dashboard-focus-1440-dark.png",
+      "sha256": "ff1d5417837e980a69b7d9e7a04be0a50de5cbf6b97c1182f75fb95330ff2a8a"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "state": "neutral callout",
+      "computed": {
+        "left": "1px",
+        "right": "1px",
+        "leftColor": "rgb(223, 227, 233)",
+        "rightColor": "rgb(223, 227, 233)"
+      },
+      "screenshot": "dashboard-callout-1440-dark.png",
+      "sha256": "b45defede2c80d7c03ef6ed695740b319ad3d8b3d450beed5cae6f9312e2c723"
+    },
+    {
+      "page": "products/market-terminal.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "state": "scene tick transparent start",
+      "computed": {
+        "background": "oklab(0 0 0 / 0)",
+        "backgroundAlpha": 0,
+        "shadow": "rgba(255, 255, 255, 0.09) 0px 0px 0px 1px inset",
+        "symbolWeight": "800",
+        "animations": [
+          {
+            "name": "mm-terminal-tick",
+            "delay": 0,
+            "duration": 1550,
+            "currentTime": 0
+          }
+        ],
+        "phase": "reason"
+      },
+      "screenshot": "terminal-selected-1440-light.png",
+      "sha256": "9c0e8f1559fd77fab15ed34eb3fd2f0db0b41026ac3a8dfdeeec73dd04a93a6d"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "state": "keyboard focus",
+      "computed": {
+        "pseudo": "none",
+        "focusVisible": true,
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "rgba(16, 24, 40, 0.03) 0px 1px 2px 0px, rgba(16, 24, 40, 0.04) 0px 2px 4px -1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+      },
+      "screenshot": "dashboard-focus-1440-light.png",
+      "sha256": "034ca3f9ca542742c369b487c49003ed6614a64425b8789a288e62516f7aebd7"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "state": "neutral callout",
+      "computed": {
+        "left": "1px",
+        "right": "1px",
+        "leftColor": "rgb(223, 227, 233)",
+        "rightColor": "rgb(223, 227, 233)"
+      },
+      "screenshot": "dashboard-callout-1440-light.png",
+      "sha256": "b45defede2c80d7c03ef6ed695740b319ad3d8b3d450beed5cae6f9312e2c723"
+    },
+    {
+      "page": "products/market-terminal.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "state": "scene tick transparent start",
+      "computed": {
+        "background": "oklab(0 0 0 / 0)",
+        "backgroundAlpha": 0,
+        "shadow": "rgba(255, 255, 255, 0.09) 0px 0px 0px 1px inset",
+        "symbolWeight": "800",
+        "animations": [
+          {
+            "name": "mm-terminal-tick",
+            "delay": 0,
+            "duration": 1550,
+            "currentTime": 0
+          }
+        ],
+        "phase": "reason"
+      },
+      "screenshot": "terminal-selected-390-dark.png",
+      "sha256": "b5c4e3d4614638c73b86913db4177630661c9e8e4a55133356c88ede27b6e4bf"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "state": "keyboard focus",
+      "computed": {
+        "pseudo": "none",
+        "focusVisible": true,
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "rgba(16, 24, 40, 0.03) 0px 1px 2px 0px, rgba(16, 24, 40, 0.04) 0px 2px 4px -1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+      },
+      "screenshot": "dashboard-focus-390-dark.png",
+      "sha256": "b4b2d25d4fde3ee738bad58183a4bc63c1e23982d040b75ce50ead3c23e61d8b"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "state": "neutral callout",
+      "computed": {
+        "left": "1px",
+        "right": "1px",
+        "leftColor": "rgb(223, 227, 233)",
+        "rightColor": "rgb(223, 227, 233)"
+      },
+      "screenshot": "dashboard-callout-390-dark.png",
+      "sha256": "0ee3f46fe49af5f4ca433009349128d2d26716f0e2123afcfb2a7f84d93963e7"
+    },
+    {
+      "page": "products/market-terminal.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "state": "scene tick transparent start",
+      "computed": {
+        "background": "oklab(0 0 0 / 0)",
+        "backgroundAlpha": 0,
+        "shadow": "rgba(255, 255, 255, 0.09) 0px 0px 0px 1px inset",
+        "symbolWeight": "800",
+        "animations": [
+          {
+            "name": "mm-terminal-tick",
+            "delay": 0,
+            "duration": 1550,
+            "currentTime": 0
+          }
+        ],
+        "phase": "reason"
+      },
+      "screenshot": "terminal-selected-390-light.png",
+      "sha256": "5882c76bd23c843b1ef2430a41968ab144aa4ebb339be5183f9054757e5d685d"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "state": "keyboard focus",
+      "computed": {
+        "pseudo": "none",
+        "focusVisible": true,
+        "outline": "solid",
+        "outlineWidth": "2px",
+        "shadow": "rgba(16, 24, 40, 0.03) 0px 1px 2px 0px, rgba(16, 24, 40, 0.04) 0px 2px 4px -1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+      },
+      "screenshot": "dashboard-focus-390-light.png",
+      "sha256": "67df13b339edfc20da3621f02bf739329daa8144816e6218fb10980484479789"
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "state": "neutral callout",
+      "computed": {
+        "left": "1px",
+        "right": "1px",
+        "leftColor": "rgb(223, 227, 233)",
+        "rightColor": "rgb(223, 227, 233)"
+      },
+      "screenshot": "dashboard-callout-390-light.png",
+      "sha256": "0ee3f46fe49af5f4ca433009349128d2d26716f0e2123afcfb2a7f84d93963e7"
+    }
+  ],
+  "passed": 12
+}

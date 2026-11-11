@@ -1032,7 +1032,7 @@ def test_export_payload_carries_doctrine_without_logic():
 
 # SIC-ADJ-02 / SIC-V4-C01: the production template line that already renders each ZH word.
 _DOCTRINE_ZH_ORIGIN = {
-    "get_ready": ("templates/china_altdata.html.j2", 227),
+    "get_ready": ("templates/china_altdata.html.j2", 226),
     "watch":     ("templates/stage_analysis.html.j2", 1497),
     "protect":   ("templates/stage_analysis.html.j2", 1499),
     "aside":     ("templates/stage_analysis.html.j2", 1500),

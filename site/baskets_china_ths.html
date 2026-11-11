@@ -51,11 +51,11 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/0b250b70.css?v=0b250b70">
-<link rel="stylesheet" href="macro-desk.css?v=23dc8daa">
+<link rel="stylesheet" href="theme.css?v=fbd43fb7">
+<link rel="stylesheet" href="assets/css/84519129.css?v=84519129">
+<link rel="stylesheet" href="macro-desk.css?v=2c8e02a9">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="preload" as="style" href="navigation-refresh.css?v=38e922e9">
 </head>
 <body class="macro-desk page-baskets">
 
@@ -64,7 +64,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css?v=38e922e9">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -930,7 +930,7 @@ function renderSemisChip(){
   const c=BASKETS.ai_semis_confirmer;
   if(!c||!c.state||c.state==='unavailable'){ host.innerHTML=''; return; }
   const col=c.on===true?'var(--up)':'var(--muted)';
-  host.innerHTML=`<div class="semis-chip" style="border-left:3px solid ${col}">
+  host.innerHTML=`<div class="semis-chip" style="border:1px solid var(--line);">
     <b style="color:${col}">${c.on?'⚡':'·'} ${_bl(esc(c.label_en||('AI-semis confirmer: '+c.state)),esc(c.label_zh||c.label_en||''))}</b>
     ${c.as_of?`<span class="muted" style="font-size:11px">${_bl('as of','截至')} ${esc(c.as_of)}</span>`:''}
     <span class="sx-tag">${_bl('cross-market confirmer — global semis momentum context, not a buy signal','跨市场确认信号 — 全球半导体动量背景，非买入信号')}</span>
@@ -967,6 +967,6 @@ function boot(){
 }
 if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
 </script>
-<script src="theme.js?v=aa83d371" defer></script>
+<script src="theme.js?v=7b79ec00" defer></script>
 </body>
 </html>

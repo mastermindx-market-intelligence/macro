@@ -285,6 +285,33 @@ _FUNCTIONAL_PSEUDO = {
 }
 
 
+
+# Retained direct-source assets and embedded builder CSS are part of the website.
+# These files are read as text; no market builder is executed.
+_DIRECT_UI_SOURCES = (
+    "scripts/build_vector.py",  # ci-trigger-closure: data — embedded CSS text, never imported
+    "site/products/mastermind-ai.html",
+    "site/products/market-dashboards.html",
+    "site/products/market-terminal.html",
+    "site/learn.html",
+    "site/financial_lineage.html",
+    "site/coming-soon.html",
+    "site/_mockup_ccw_credit_desk.html",
+    "site/start.html",
+    "site/cycle.css",
+    "site/radar_panel.js",
+    "site/scene-motion.css",
+    "site/odds.css",
+)
+_FUNCTIONAL_LEFT["site/odds.css"] = (".od-fm-tbl th.hsep, .od-fm-tbl td.hsep",)
+_FUNCTIONAL_PSEUDO.update({
+    "site/products/mastermind-ai.html": (".stgm .seg::before", ".ma-core::before"),
+    "site/products/market-dashboards.html": (".stgm .seg::before", ".md-tp::before", ".md-assets::before", ".md-eng::before"),
+    "site/products/market-terminal.html": (".stgm .seg::before",),
+    "site/cycle.css": (".cyc-grp-3 + .cyc-grp-3::before",),
+})
+
+
 def _estate_sources():
     for directory in ("templates", "app"):
         for path in sorted((ROOT / directory).rglob("*")):
@@ -293,6 +320,19 @@ def _estate_sources():
                     or path.name.startswith(("plotly-", "lightweight-charts"))):
                 continue
             yield path.relative_to(ROOT).as_posix(), path.read_text(encoding="utf-8")
+
+    for name in _DIRECT_UI_SOURCES:
+        path = ROOT / name
+        text = path.read_text(encoding="utf-8")
+        yield name, text
+        # A retained source page may have had its own stylesheet externalized.
+        # Inspect its fingerprinted sheets under the page owner's identity.
+        if path.suffix == ".html":
+            refs = set(re.findall(r"(?:\.\./)?assets/css/[0-9a-f]{8}\.css", text))
+            for ref in sorted(refs):
+                asset = (path.parent / ref).resolve()
+                asset.relative_to(ROOT / "site")
+                yield name, asset.read_text(encoding="utf-8")
 
 
 def _blank_source(match):

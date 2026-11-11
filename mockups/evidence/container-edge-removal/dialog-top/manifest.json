@@ -1,0 +1,394 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-11T10:44:03Z",
+  "honesty": {
+    "access": "Local rendered fixture using the existing risk_radar_workspace_browser MMXAccessPreview test boundary; no real account/session and no external requests.",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "surrounding_dashboard": "Synthetic existing test VM; committed brief content."
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:58688/live/release_publications.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:58688/live.js",
+          "text": "WebSocket connection to 'ws://127.0.0.1:58688/ws/tape' failed: Error during WebSocket handshake: Unexpected response code: 404"
+        },
+        {
+          "source_url": "http://127.0.0.1:58688/api/brain/me",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58688/live/release_publications.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:58688/api/brain/me"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 844,
+            "elements_wider_than_viewport": 2,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 36,
+        "payload_bytes_total": 725488,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 39,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 614
+      },
+      "page_id": "macro_edge_fixture.html",
+      "registry_route": "/macro_edge_fixture.html",
+      "route": "/macro_edge_fixture.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "fixture_registered",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 221148,
+          "captured": true,
+          "file": "png/a468643a197823f6.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "a468643a197823f68ff6a559bebc4c7e205247cf1325b2c0150eddd213769e99",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7337584203565725,
+            "inp_proxy_ms": 352,
+            "lcp_ms": 392,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1915409
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 201418,
+          "captured": true,
+          "file": "png/282eb238f6fd7928.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "282eb238f6fd7928174896cc47cd14ed6b6368e585fbce444b824b12d7e94d91",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7541118842063452,
+            "inp_proxy_ms": 304,
+            "lcp_ms": 316,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1915409
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 250745,
+          "captured": true,
+          "file": "png/9ebfa2bee9791c90.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "9ebfa2bee9791c9072d4f22c5b0a693ff5ef4bce899f7a2863a8e3716343c0ed",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.7470548600729273,
+            "inp_proxy_ms": 272,
+            "lcp_ms": 792,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1915409
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 234969,
+          "captured": true,
+          "file": "png/cfda045bbcf643aa.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "cfda045bbcf643aa94d267c5d9338b9aa3e7a5c72cb8d81e0b1087f567e13254",
+          "theme": "light",
+          "timing": {
+            "cls": 0.7206263762548627,
+            "inp_proxy_ms": 176,
+            "lcp_ms": 680,
+            "resource_count": 38,
+            "server_timing": [],
+            "transfer_bytes": 1915409
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 89815,
+          "captured": true,
+          "file": "png/39de5530e0a21957.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "39de5530e0a21957196bbcf30bfd1c35dca76a6b37caad429c9a2ff1bc4bba63",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.515916950803143,
+            "inp_proxy_ms": 232,
+            "lcp_ms": 288,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1891209
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 85228,
+          "captured": true,
+          "file": "png/49a6750ad26cae3c.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "49a6750ad26cae3c52f8e560ae42d9d70e4402169ea9e115f39863b399e21ef4",
+          "theme": "light",
+          "timing": {
+            "cls": 0.5151127498388833,
+            "inp_proxy_ms": 200,
+            "lcp_ms": 2932,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1891209
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 94155,
+          "captured": true,
+          "file": "png/5d04f1d3902e77cf.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "5d04f1d3902e77cf5e85186d4b8a42d516665593c06f35460d628c6533ebb3fb",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.5158367929015708,
+            "inp_proxy_ms": 144,
+            "lcp_ms": 440,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1891209
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "fixture_registered",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 89556,
+          "captured": true,
+          "file": "png/12d918e41107b69a.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "12d918e41107b69a19f9d255482f1e48cf8818aae7cdefb795c677cae6d7d482",
+          "theme": "light",
+          "timing": {
+            "cls": 0.5744282103808762,
+            "inp_proxy_ms": 128,
+            "lcp_ms": 264,
+            "resource_count": 37,
+            "server_timing": [],
+            "transfer_bytes": 1891209
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/macro_edge_fixture.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 353,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/macro-10654-whole-site-rails-proof-a739405d-20261111",
+    "resolved_sha_or_none": "a739405d248e3e985c6215067878028f8403fad9",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/macro-10654-whole-site-rails-proof-a739405d-20261111 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/site"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "driver_scenario": "real card click in local registered-state fixture",
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

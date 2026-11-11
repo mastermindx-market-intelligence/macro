@@ -1,0 +1,24 @@
+{
+  "source_commit": "a739405d248e3e985c6215067878028f8403fad9",
+  "input_basis": "existing published JSON/configuration; direct production template contracts",
+  "flow_link_membership_count": 0,
+  "flow_link_fallback": "production None fallback; link parity not claimed",
+  "outputs": [
+    {
+      "path": "site/china_intel.html",
+      "sha256": "4ac8b3cbcf5ac1b060240fada558de0f40ddab8837a4eb535b856a8fb2b71845"
+    },
+    {
+      "path": "site/flow_velocity.html",
+      "sha256": "79ce3a4a9d72db2290bc7769d8d2c2a5b0cbdf989d3332a35ccaf19f1f4ba7fe"
+    },
+    {
+      "path": "site/watchlist.html",
+      "sha256": "58e2ff49603bda659273c871241097f1ffebeeeb959b32636b9ea3b67c0e5e72"
+    },
+    {
+      "path": "site/ontology.html",
+      "sha256": "b9d0a5f4b76c0ec0ccbf55ba37ff2133678c1b99e0bd35be31b9b2cff0f50402"
+    }
+  ]
+}

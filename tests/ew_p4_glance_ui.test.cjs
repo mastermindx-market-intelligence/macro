@@ -231,7 +231,7 @@ test('the glance is prepended to the early-context output and does not alter it'
 });
 
 test('the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders', () => {
-  assert.ok(src.includes('.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);'));
+  assert.ok(src.includes('.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle,var(--panel2,var(--card)));'));
   assert.ok(!src.includes('.rc-ec-stale,.rc-ec-conflict{border-left:'));
   // B1: no runtime-injected glance styles; the governed stylesheet carries them
   assert.ok(!src.includes('.rc-ew{') && !/\.rc-ew[\w-]*(?::[\w-]+)?\s*[,{]/.test(src));

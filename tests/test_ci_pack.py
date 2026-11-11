@@ -6002,7 +6002,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 138, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
@@ -6011,7 +6011,13 @@ PACKING_PROBE_MAX_PACKS = 10
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
-    """The measured before/after this wave exists to produce.
+    """PR #10654 broadens the existing container-edge guard to all templates.
+
+    Exact c7f08871 plan: index 138 jobs / 5970 weight-seconds, versus the
+    prior ceiling 137 / 5966; this funds precisely that existing 4-second
+    guard. The other two probes and ten-pack maximum remain unchanged.
+
+    The measured before/after this wave exists to produce.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

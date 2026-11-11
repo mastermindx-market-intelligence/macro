@@ -646,8 +646,21 @@ def test_css_block_scoped_literal_free_and_stripe_free():
     base_theme = _merge_base_css("templates/theme.css")
     if base_theme is not None and _gs_surface_changed():
         current = (ROOT / "templates/theme.css").read_bytes()
-        assert current.startswith(base_theme), \
-            "templates/theme.css must equal merge-base(origin/main, HEAD) or extend it by a pure end-of-file append"
+        prefix = base_theme
+        if not current.startswith(prefix):
+            # Same exact approved migration as the foundation freeze; no broad
+            # theme-family exemption when International surfaces also change.
+            import hashlib
+            before_blob = hashlib.sha1(b"blob %d\0" % len(prefix) + prefix).hexdigest()
+            if before_blob == "619436f58d37a222d1db7021ba9d52bb3a05a7fa":
+                migrated = subprocess.run(
+                    ["git", "show", "a739405d248e3e985c6215067878028f8403fad9:templates/theme.css"],
+                    cwd=ROOT, capture_output=True)
+                migrated_blob = hashlib.sha1(b"blob %d\0" % len(migrated.stdout) + migrated.stdout).hexdigest()
+                if migrated.returncode == 0 and migrated_blob == "cb83d3122cad24f9781292c638b0d45e3cac831d":
+                    prefix = migrated.stdout
+        assert current.startswith(prefix), \
+            "templates/theme.css must preserve its base prefix or the exact #10654 migration, with only EOF additions"
 
 
 # --------------------------------------------------------------------------

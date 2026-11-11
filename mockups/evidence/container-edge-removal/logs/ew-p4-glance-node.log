@@ -1,0 +1,30 @@
+✔ state parity against expected.json, EN and ZH (39.811917ms)
+✔ EN and ZH state words on the glance (6.980584ms)
+✔ stricter id rule: lib-valid rotobs_XYZ stays UI-unreadable (1.647916ms)
+✔ O06: a view counts only with its source-owned ledger receipt (3.198625ms)
+✔ a lib-valid, receipted view for a later session is unreadable and claims no id (0.35975ms)
+✔ no observation: missing early_context is unavailable, aged context is stale (10.357666ms)
+✔ legs withheld when the 2-session window mismatches, shown when only 20s is missing (1.421083ms)
+✔ conflicting horizons carry the conflict sentence as text (2.039208ms)
+✔ dynamic strings are escaped; a script payload in pair_id never appears raw (2.052666ms)
+✔ input is never mutated and the shared escape helper is optional (3.236459ms)
+✔ study uses native details/summary and carries the full record (0.825042ms)
+✔ correction and withdrawal keep the original in history (0.698458ms)
+✔ no title= attributes and no consent controls in the rendered output (5.503125ms)
+✔ no forecast/odds/sizing language anywhere in the rendered glance output (10.456417ms)
+✔ loading shell says Checking — never a calm word — and precedes the fetch (0.211167ms)
+✔ fetch/parse failure renders the scoped unavailable state (0.1345ms)
+✔ the glance is prepended to the early-context output and does not alter it (0.214625ms)
+✔ the pre-existing rc-ec edge stripe is repaired, rc-ew uses even borders (2.363583ms)
+✔ repair wave B: separator, routes and a single both-fell sentence (0.886583ms)
+✔ repair wave C: bilingual study rows, separated history, escaped record fields (6.412417ms)
+✔ review r1: explicit keys, non-object wrapper, monospace id (0.942583ms)
+✔ EW-P4-FU: blank pair_id and calendar-invalid dates are unreadable; real dates pass (8.576375ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 352.040917

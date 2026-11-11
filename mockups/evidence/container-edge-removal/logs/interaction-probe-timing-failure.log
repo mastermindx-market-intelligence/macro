@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/mockups/evidence/container-edge-removal/probe_published_interactions.py", line 28, in <module>
+    assert state['background'] in ('transparent','rgba(0, 0, 0, 0)'),state
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'background': 'color(srgb 0.121569 0.545098 0.254902 / 0.16)', 'shadow': 'rgba(255, 255, 255, 0.09) 0px 0px 0px 1px inset', 'symbolWeight': '800', 'animations': []}

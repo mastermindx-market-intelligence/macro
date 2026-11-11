@@ -1,0 +1,139 @@
+{
+  "changes": [
+    {
+      "path": "site/products/mastermind-ai.html",
+      "before": "00dea37add66ad7d0c40d8ff4f8989acba937ae6563d690e2dd755c754f9c3e0",
+      "after": "bf9ccd76782ed61b13a93bac68bf1e87c99c4d937a7caf852b3b34158d85cd13"
+    },
+    {
+      "path": "site/products/market-dashboards.html",
+      "before": "94adbd7af1d927a216874b829d237edd3995d3ae005eefc4ba902e6f9937e221",
+      "after": "89a5683ea7f3caa1999f64f682ff732599c5a989570a3ed8e333d41be076fb4a"
+    },
+    {
+      "path": "site/products/market-terminal.html",
+      "before": "8bbe159ddd876a9a5340df34a6e65f1a7b2fa6caec6b3c3507532e72d4853c07",
+      "after": "153ceabf3e994f47596e1124869727474eb659edba85f2ce331573d690a807ba"
+    },
+    {
+      "path": "site/scene-motion.css",
+      "before": "f426716d3023fd35c994970dac141089fe7a5414e523f00fcf9d91cd4d222dd6",
+      "after": "ef422784f0247f482000a1928d11ad86675a2bbb394ceadf28c6167945105781"
+    },
+    {
+      "path": "site/radar_panel.js",
+      "before": "d5ba031eb1ce9be130c3da863d374fb61dab14b4287ebfe46ddb5e705064fc2d",
+      "after": "eb9eaaa7d5f1b1ebc2070e203479604bbd53b38409fb1a3c07f34af85fe23580"
+    },
+    {
+      "path": "site/cycle.css",
+      "before": "231bf145f094e64b082aad1a4f55ea36dc2d0cfc54493763d7dfdec65e8b6d5c",
+      "after": "b4b8053fe98132c1de68d2f79f768250ff39fd61d6b5070b4691dd805af89776"
+    },
+    {
+      "path": "scripts/build_vector.py",
+      "before": "dbb643866d0d096be8308e819773d8104b1c083616ab6346440fada23e68d4d4",
+      "after": "0dda16538b0785045cdbff091fea1c07de0941f05771bfeeaacb0d27d7223260"
+    },
+    {
+      "path": "site/assets/css/6b9ea2ae.css",
+      "from_path": "site/assets/css/3ba1e7fa.css",
+      "before": "3ba1e7fae70f351ac7ee7a66eb666b1a36a63f840c4f2d5d56aacd04f228f145",
+      "after": "6b9ea2aeef8ad8693e1f8d9edb2915c8fe67894f8c48107333bcc261b8169703"
+    },
+    {
+      "path": "site/assets/css/9bb7d784.css",
+      "from_path": "site/assets/css/9a7074ed.css",
+      "before": "9a7074ed759cf28cd7006c1b1e5a55efd62b073d9eb31adc0fcbf7ce762dabc2",
+      "after": "9bb7d784ec77e7823d9e934df91843ee28e71d53baefd36f5290e6e9c7b59a96"
+    },
+    {
+      "path": "site/assets/css/b8a49e83.css",
+      "from_path": "site/assets/css/a8e92904.css",
+      "before": "a8e92904e6657bc61b06af51a1985cc36bf37cb944ce9017f65041b5c368fbac",
+      "after": "b8a49e83c0d5d4a03730528549c2e8bdbbeabcaea46145998005151c5f98caa0"
+    },
+    {
+      "path": "site/assets/css/83cafc46.css",
+      "from_path": "site/assets/css/665fc434.css",
+      "before": "665fc4346040ba06e61634a417c782398ee00d11e2c3f0a57227b3f2e45c949e",
+      "after": "83cafc4637647b56f7d443df5400bb035d2b1d8875ee64d716dfaaa7205b0445"
+    },
+    {
+      "path": "site/assets/css/2319aac0.css",
+      "from_path": "site/assets/css/0a22a76e.css",
+      "before": "0a22a76edbbf01c760a062624215067429a05d45c537aebfd44640ddbd28ffbf",
+      "after": "2319aac0fca1ef50195315fc76d5054f5cff59c119975b9c3f1e763d6362b4d8"
+    },
+    {
+      "path": "site/assets/css/afaee035.css",
+      "from_path": "site/assets/css/4697ea5f.css",
+      "before": "4697ea5fba45509ccd6c65b956bbad4b3aff18e87d1e2a83fe94065556fd487f",
+      "after": "afaee03563bead036fb79a2af3a744e7eb8cc266cac214380602b621bb60d5a0"
+    },
+    {
+      "path": "site/fund_scion.html",
+      "before": "c6c5bb0497fec56a6e57ca28b43931df8bd3e20f015afc4a09a299ff0e58081b",
+      "after": "d58bbe2b06b1ab9d7ab387276ef4cddf2a1d9db153222947c4df2a4b9bbfd32f"
+    },
+    {
+      "path": "site/_mockup_ccw_credit_desk.html",
+      "before": "62d850b3c7e75b7af2a9eef3c5bfb827e81bf154765cf0b019c16d65830b3f28",
+      "after": "6a2e5f1321a6fb565f613d271881c3cc42d8f77dc759d900b5c9bcbe8a01458f"
+    },
+    {
+      "path": "site/start.html",
+      "before": "ffa124e5db0084e6d881b2f840de4fbe4d32c957b5843784e040c50b168ed25c",
+      "after": "14fb49bd67f394f5260a2b2481b1ec85f94d9893150615c79d023e951b8d5619"
+    },
+    {
+      "path": "site/learn.html",
+      "before": "525a64f968a83fc97d810fbfb7dec5050d8e74b3aa8a95bc521ea427e286894d",
+      "after": "50f22dac7d6b856a2cda33da189530aea7e60a92ae8a4f609c9c4e96941aadae"
+    },
+    {
+      "path": "site/coming-soon.html",
+      "before": "9bf303af48a2772409d529dc5c971c530cd62e71e9947da76c5c4f07e9d9b7b0",
+      "after": "2467821c3403e6b3b31935f3198f67deccd552821a90f507d6ea0ed179b1db26"
+    },
+    {
+      "path": "site/financial_lineage.html",
+      "before": "3ae456a74e024ab12c73058503147d81116358caea902414e2dee6944d5cbccc",
+      "after": "9c0ce3eaae9bad7495062234739f96ab8d40fce9784ecd6bebb0bd8a308269f2"
+    }
+  ],
+  "renamed": {
+    "3ba1e7fa": "6b9ea2ae",
+    "9a7074ed": "9bb7d784",
+    "a8e92904": "b8a49e83",
+    "665fc434": "83cafc46",
+    "0a22a76e": "2319aac0",
+    "4697ea5f": "afaee035"
+  },
+  "preserved_functional": [
+    "product stage sequence",
+    "AI entry-point connectors",
+    "Intraday Flow center axis",
+    "dashboard branching and engine-bus connectors",
+    "cycle column separators",
+    "odds grouped-table separator",
+    "start-page mobile hit area"
+  ],
+  "follow_up": {
+    "reason": "Correct shared current-chapter declaration delimiter and strengthen current label to 800; recaptured all three product routes.",
+    "changes": [
+      {
+        "path": "site/products/market-dashboards.html",
+        "sha256": "3b2656191da2775a6c2570cb3b11264fe3df70f874abb410d6615c6f3db7aa64"
+      },
+      {
+        "path": "site/products/market-terminal.html",
+        "sha256": "46f6628b3dcb338637ceb3401879576cedeacf001fe5b4650214cf0fedf82855"
+      },
+      {
+        "path": "site/products/mastermind-ai.html",
+        "sha256": "fbb6fb91d9b52b3f2f684ce0163e2dbe8c842441d0afa387948b4ceea3c2e848"
+      }
+    ]
+  }
+}
