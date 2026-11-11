@@ -171,19 +171,26 @@ CRYPTO_NAMES = {
     "COIN": "Coinbase",
 }
 
-# Union universe read by `_etf_closes`; `compute_exposure` tags CRYPTO_NAMES → "Crypto",
+# Union universe read by `_etf_panels`; `compute_exposure` tags CRYPTO_NAMES → "Crypto",
 # the rest → "ETF". Keys are unique across the two maps.
 ETF_UNIVERSE = list(ETF_NAMES) + list(CRYPTO_NAMES)
 
 
-def _etf_closes() -> pd.DataFrame:
-    """Close matrix for the curated ETF universe (only those cached in data/yahoo)."""
+def _etf_panels() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Prices and returns formed on each cached ETF/crypto source's own calendar.
+
+    Crypto adds weekend rows to the combined panel. Compute returns first so those
+    outer-union rows do not erase Monday equity returns. Explicit missing prices
+    on a source's own calendar remain missing and are never bridged.
+    """
     cols: dict[str, pd.Series] = {}
+    returns: dict[str, pd.Series] = {}
     for sym in ETF_UNIVERSE:
         df = store.read("yahoo", sym)
         if df is not None and "close" in getattr(df, "columns", []):
             cols[sym] = df["close"].astype(float)
-    return pd.DataFrame(cols).sort_index() if cols else pd.DataFrame()
+            returns[sym] = cols[sym].pct_change(fill_method=None).replace([np.inf, -np.inf], np.nan)
+    return pd.DataFrame(cols).sort_index(), pd.DataFrame(returns).sort_index()
 
 
 # --------------------------------------------------------------------------- #
@@ -320,6 +327,11 @@ def _betas_on_window(R_w: pd.DataFrame, G_w: pd.DataFrame, minp: int,
         if n < minp:
             continue
         x, y = design[mask][:, active], returns[mask, i]
+        # A globally active factor can become constant on this ticker's support.
+        # Check before centering: a rounded nonzero mean can otherwise fabricate
+        # a tiny, nonzero column and make an unidentified fit appear full rank.
+        if not np.all(np.any(x != x[0], axis=0)):
+            continue
         with np.errstate(over="ignore", invalid="ignore"):
             xc, yc = x - x.mean(axis=0), y - y.mean()
             scale = np.linalg.norm(xc, axis=0)
@@ -328,7 +340,10 @@ def _betas_on_window(R_w: pd.DataFrame, G_w: pd.DataFrame, minp: int,
             continue
         # Normalize columns before the rank decision so differing factor units do
         # not determine identifiability; solve all active coefficients jointly.
-        coef, _, rank, _ = np.linalg.lstsq(xc / scale, yc, rcond=1e-12)
+        try:
+            coef, _, rank, _ = np.linalg.lstsq(xc / scale, yc, rcond=1e-12)
+        except np.linalg.LinAlgError:
+            continue
         if rank != int(active.sum()):
             continue
         with np.errstate(over="ignore", invalid="ignore"):
@@ -357,21 +372,23 @@ def _betas_on_window(R_w: pd.DataFrame, G_w: pd.DataFrame, minp: int,
 
 
 def stock_betas(closes: pd.DataFrame, F: pd.DataFrame, *, window: int, min_obs: int,
-                max_abs: float) -> dict:
+                max_abs: float, returns: pd.DataFrame | None = None) -> dict:
     """Orthogonal multivariate factor betas for every stock in `closes`, estimated on
-    the trailing `window` finite factor rows, in the covariance model's basis."""
+    the trailing `window` finite factor rows, in the covariance model's basis.
+    Mixed-calendar callers supply returns formed before combining price sources."""
     if closes is None or closes.empty or F.empty:
         return {"betas": {}, "n": {}}
     F_w = _finite_factors(F).tail(window)
     if len(F_w) < min_obs:
         return {"betas": {}, "n": {}}
     G_w = orthogonalize_factors(F_w)
-    R_w = _stock_returns(closes).reindex(F_w.index)
+    R = _stock_returns(closes) if returns is None else returns
+    R_w = R.replace([np.inf, -np.inf], np.nan).reindex(F_w.index)
     return _betas_on_window(R_w, G_w, min_obs, max_abs)
 
 
 def raw_betas(closes: pd.DataFrame, F: pd.DataFrame, *, window: int, min_obs: int,
-              max_abs: float) -> dict:
+              max_abs: float, returns: pd.DataFrame | None = None) -> dict:
     """UNIVARIATE betas to each RAW (non-orthogonal) factor — one regressor at a time.
     These over-count shared variance (don't sum them), but each is the right total
     derivative for a single-factor SHOCK and the baseline the orthogonal set improves
@@ -381,7 +398,8 @@ def raw_betas(closes: pd.DataFrame, F: pd.DataFrame, *, window: int, min_obs: in
     Fw = _finite_factors(F).tail(window)
     if len(Fw) < min_obs:
         return {}
-    R_w = _stock_returns(closes).reindex(Fw.index)
+    R = _stock_returns(closes) if returns is None else returns
+    R_w = R.replace([np.inf, -np.inf], np.nan).reindex(Fw.index)
     out: dict[str, dict] = {str(t): {} for t in R_w if R_w[t].notna().sum() >= min_obs}
     for k in Fw.columns:
         g = Fw[k].to_numpy(dtype=float)
@@ -553,20 +571,24 @@ def compute_exposure(asof=None, closes: pd.DataFrame | None = None) -> dict | No
     if asof is not None:
         closes = closes.loc[:pd.Timestamp(asof)]
 
-    etf = _etf_closes()                                   # add common ETFs (SPY/QQQ/sectors/…)
+    returns = _stock_returns(closes)
+    etf, etf_returns = _etf_panels()                       # preserve each source calendar
     if not etf.empty:
         if asof is not None:
             etf = etf.loc[:pd.Timestamp(asof)]
+            etf_returns = etf_returns.loc[:pd.Timestamp(asof)]
         closes = pd.concat([closes, etf], axis=1, sort=False)
         closes = closes.loc[:, ~closes.columns.duplicated()].sort_index()
+        returns = pd.concat([returns, etf_returns], axis=1, sort=False)
+        returns = returns.loc[:, ~returns.columns.duplicated()].sort_index()
     etf_set = set(ETF_UNIVERSE)
 
     win, minp, max_abs = int(cfg["window_d"]), int(cfg["min_obs"]), float(cfg["max_abs_beta"])
-    res = stock_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs)
+    res = stock_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs, returns=returns)
     if not res["betas"]:
         log.warning("factor_exposure: no betas estimated")
         return None
-    rb = raw_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs)
+    rb = raw_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs, returns=returns)
     fcov = factor_cov(F, window=win)
     keys = list(fcov.columns)
 

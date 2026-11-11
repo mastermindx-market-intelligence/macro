@@ -116,11 +116,13 @@ def stability(F: pd.DataFrame, closes: pd.DataFrame, *, win: int, horizon: int,
     grid = month_grid(idx, warmup=win, horizon=horizon)
     keys = [k for k in fe.FACTOR_ORDER if k in F.columns]
     if len(grid) < 4:
-        return {"error": f"grid too short ({len(grid)})", "rebalances": len(grid)}
+        return {"error": f"grid too short ({len(grid)})", "rebalances": 0,
+                "planned_rebalances": len(grid)}
 
     per_stock = {k: [] for k in keys}                     # cross-sectional persistence per date
     agg = {K: {k: [] for k in keys} for K in basket_sizes}
     fwd_minp = max(horizon // 2, 20)
+    evaluated = []
 
     for d in grid:
         before = F.loc[F.index <= d].tail(win)
@@ -136,6 +138,7 @@ def stability(F: pd.DataFrame, closes: pd.DataFrame, *, win: int, horizon: int,
                                   fwd_minp, max_abs)["betas"]
         if not bin_ or not bfw:
             continue
+        evaluated.append(d)
         for k in keys:
             si, sf = _beta_series(bin_, k), _beta_series(bfw, k)
             per_stock[k].append(_spearman(si, sf))
@@ -155,9 +158,13 @@ def stability(F: pd.DataFrame, closes: pd.DataFrame, *, win: int, horizon: int,
         s = pd.Series(xs).dropna()
         return (round(float(s.mean()), 3), len(s)) if len(s) else (None, 0)
 
+    if len(evaluated) < 4:
+        return {"error": f"too few fitted rebalances ({len(evaluated)})",
+                "rebalances": len(evaluated), "planned_rebalances": len(grid)}
     ps = {k: dict(zip(("persist", "n"), mean_n(per_stock[k]))) for k in keys}
     ag = {K: {k: mean_n(agg[K][k])[0] for k in keys} for K in basket_sizes}
-    return {"rebalances": len(grid), "span": f"{grid[0].date()}..{grid[-1].date()}",
+    return {"rebalances": len(evaluated), "planned_rebalances": len(grid),
+            "span": f"{evaluated[0].date()}..{evaluated[-1].date()}",
             "horizon": horizon, "win": win, "per_stock": ps, "by_basket": ag,
             "basket_sizes": basket_sizes}
 
@@ -257,7 +264,8 @@ def render(F, col, stab, exp, args) -> str:
     if stab.get("error"):
         L += [f"_skipped — {stab['error']}_", ""]
     else:
-        L += [f"Span {stab['span']} · {stab['rebalances']} monthly rebalances · estimate on "
+        L += [f"Span {stab['span']} · {stab['rebalances']} fitted monthly rebalances "
+              f"from {stab['planned_rebalances']} planned dates · estimate on "
               f"{stab['win']}d, realize on next {stab['horizon']}d. Cross-sectional rank "
               f"correlation between in-sample and next-period beta (1 = perfectly persistent, "
               f"0 = no observed rank association):", "",

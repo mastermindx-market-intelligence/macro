@@ -26,7 +26,7 @@ Most-correlated raw factor pairs: mkt–growth 0.93, mkt–size 0.82, growth–s
 
 ## 2. Out-of-sample beta stability (single-stock)
 
-Span 2024-10-31..2026-05-29 · 20 monthly rebalances · estimate on 252d, realize on next 63d. Cross-sectional rank correlation between in-sample and next-period beta (1 = perfectly persistent, 0 = no observed rank association):
+Span 2024-10-31..2026-05-29 · 20 fitted monthly rebalances from 20 planned dates · estimate on 252d, realize on next 63d. Cross-sectional rank correlation between in-sample and next-period beta (1 = perfectly persistent, 0 = no observed rank association):
 
 | factor | persistence | n |
 |---|--:|--:|
@@ -66,15 +66,34 @@ Median single-stock R² over 1503 names: market-only **0.068** → +style (growt
 
 ## 5. Repair qualification and reproducibility
 
-This run replaces the pre-repair report (blob `e5939a9988d426506ebf07db4183d64a72545749`). The earlier figures used the defective estimator/harness and a different historical sample; the difference between old and new numbers is not an isolated estimate of the repair's causal effect.
+This renewed run supersedes the evidence at #11057 head `18a163ae30656d4031bb0bee89e2c4ffd56bf6a0` and the pre-repair report blob `e5939a9988d426506ebf07db4183d64a72545749`. The original pre-repair figures used a different estimator and historical sample; those differences are not an isolated estimate of the repair's causal effect.
 
 - Input commit: `fc2dffe6a9e564ac8c4338418afe585afd5afad2`.
-- Exact executed estimator blob: `a48bf85c0daab0e67b7c6817a5bd9b6b9b0862e3`.
-- Exact executed harness blob: `f8eb1bd328f300e04a6e03dd9e712c62de287a85`.
-- Full run completed on 2026-11-11 in 315.18 seconds. Parameters: 252 return observations, 63 strictly future observations, minimum 126 in-sample / 31 forward observations, coefficient cap ±5, 200 random baskets per size per date, seed 7; basket sizes 1/5/10/20/40.
-- The native broad-close loader read 776 price rows and 1,552 names and disclosed ten fresher-tier column selections. It retained its existing merge/stitch policy. The latest fit admitted 1,503 names. No external provider was called.
-- [Machine-readable measurements and input/source manifest](factor-exposure-phase0.json) identify all twelve consumed parquet blobs and the exact loader, validation and configuration sources.
-- The two already-enrolled factor suites passed 41 tests with no skips, including the store-backed snapshot/ETF/crypto cases. The original estimator/harness failed 22 of the 23 new regression cases. A final four-case native consumer run passed after confidence metadata was updated.
-- Actual `compute_exposure` JSON was consumed by the complete Factor Exposure and RiskCore JavaScript programs. Complete and gapped identical-market books recover market beta 1, R² 1, residual volatility 0 and an S&P −5% scenario of −5.0% in English and Chinese. Calm/stress covariance, unavailable-rank coverage, provenance, thin-book hiding and honest-empty retraction were exercised. This is source/consumer proof, not browser pixels, authentication or deployment proof.
+- Executed estimator: `4f066f0eb120b3d0dd4d006991cc1be99bacc61e`; executed harness: `f2ec6ce06a61a7226ed9c7b2316a7d9d26bd0ec1`.
+- The full study completed on 2026-11-11 in **195.56 seconds**: 252 return observations, 63 strictly future observations, minimum 126 in-sample / 31 forward observations, coefficient cap ±5, 200 baskets per size/date, seed 7, basket sizes 1/5/10/20/40.
+- Twenty of twenty planned monthly dates produced fits. Factor-specific finite-correlation counts are reported separately. The stock-only loader read 776 price rows and 1,552 names, disclosed the existing ten fresher-tier selections and admitted 1,503 latest fits. Its merge/stitch policy is unchanged.
+- [Machine measurements and input/source manifest](factor-exposure-phase0.json) bind all 12 Phase0 parquet inputs, the 45 populated fixture data files used for the producer comparison, and the exact loader/configuration sources. No provider acquisition was performed.
+- The two existing code-enrolled Factor suites passed **53 tests, zero skips, 19.60s**. Against the previous published head, the incremental counterexample set produced **10 failures / 3 passes**: mixed-calendar returns, genuine missing prices, nonzero support-constant coverage, solver failure containment and fitted-date counts. Earlier original-source evidence (22 failures / 1 pass) remains separately identified in the JSON.
+- Actual native exporter JSON reaches the complete Factor Exposure and RiskCore programs. Mixed-calendar complete/gapped trackers recover self-beta 1, R² 1, residual volatility 0 and S&P −5% shocks of −5.0% in English and Chinese. The suite also retains calm/stress covariance, unmodeled-rank abstention, provenance, thin-book hiding and honest-empty retraction. This is native source/consumer proof; browser pixels, authentication and deployment are not claimed.
 
-All nine persistence measurements have 20 contributing periods. The legacy display tiers and scopes remain explicitly **not requalified**; no new classification thresholds were chosen from these results. The displayed provisional notice also applies to cached payloads with missing evidence metadata. These frozen prices end at the stated historical factor date and do not establish current portfolio exposure.
+## 6. Composition of the overlapping repairs
+
+[The source comparison](https://github.com/mastermindx-market-intelligence/macro/issues/11016#issuecomment-6803489378) identified complementary fixes in #11053 and #11057. This report retains #11057 as the source carrier and incorporates source-calendar returns, fitted-date accounting and bounded solver containment from [#11053 at 74b30ffa](https://github.com/mastermindx-market-intelligence/macro/pull/11053). It preserves #11057's fixed in-sample transform applied forward, scaled raw-shock calculation, numerical risk guards and provisional confidence treatment. An explicit pre-centering check also prevents nonzero support constants from fabricating modeled coverage.
+
+The donor's [original report](https://github.com/mastermindx-market-intelligence/macro/blob/74b30ffa4d614258d630172b4986864a338f896b/reports/factor-exposure-validation-2026-11-11.md) remains historical evidence. Its forward-basis persistence measurements are superseded by this fixed-basis replay.
+
+The paired native exporter comparison uses identical frozen inputs and the exact previous/new estimator sources:
+
+| Producer property | Previous published source | Composed source |
+|---|---:|---:|
+| Modeled names, including ETFs/crypto |1,538|1,538|
+| SPY observations |197|252|
+| SPY market/raw-market beta,R² |1/1/1|1/1/1|
+| SPY residual volatility |0|0|
+| Bitcoin observations/self-beta |252/1|252/1|
+| Names gaining observations |—|1,536|
+| Names losing observations |—|0|
+
+The median gain is 55 observations; the two unchanged counts are the continuously traded crypto sources. Both payloads serialize with strict JSON. Calm and stress covariance matrices are identical. The exporter universe of 1,538 names and stock-only Phase0 fit count of 1,503 are distinct populations.
+
+The renewed fixed-basis Phase0 collinearity, persistence, basket and explanatory measurements match the prior #11057 study. All nine persistence measurements have 20 contributing periods. Legacy display tiers and scopes remain explicitly **not requalified**; no confidence threshold or promotion was selected from this replay. Frozen factor prices end on 2026-09-25 and do not establish current portfolio exposure.

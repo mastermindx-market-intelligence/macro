@@ -432,3 +432,76 @@ def test_issue11016_phase0_preserves_returns_future_boundary_and_basis(monkeypat
             pd.testing.assert_frame_equal(basis, fe.orthogonalize_apply(frame, transform))
             assert minp == floor and len(basis) == len(frame)
         assert calls[2*j+1][1].index.min() > date
+
+
+@pytest.mark.parametrize("constant", [0.0, 0.1])
+def test_issue11016_support_constant_factor_is_unmodeled(constant):
+    idx = _idx(252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    growth = pd.Series(np.r_[np.tile([.02, -.01], 63), np.full(126, constant)], index=idx)
+    returns = market.where(np.arange(252) >= 126).to_frame("UNIDENTIFIED")
+    result = fe._betas_on_window(returns, pd.DataFrame({"mkt": market, "growth": growth}), 126, 5)
+    assert result == {"betas": {}, "n": {}}
+
+
+def test_issue11016_solver_failure_omits_only_failed_ticker(monkeypatch):
+    factors = pd.DataFrame({"mkt": np.linspace(-.02, .02, 160)}, index=_idx(160))
+    returns = pd.DataFrame({"FAILED": factors.mkt, "GOOD": 2 * factors.mkt})
+    native = np.linalg.lstsq
+    calls = []
+
+    def fail_first(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise np.linalg.LinAlgError("controlled nonconvergence")
+        return native(*args, **kwargs)
+
+    monkeypatch.setattr(np.linalg, "lstsq", fail_first)
+    result = fe._betas_on_window(returns, factors, 126, 5.0)
+    assert len(calls) == 2
+    assert result["n"] == {"GOOD": 160}
+    assert result["betas"] == {"GOOD": {"mkt": 2.0, "r2": 1.0, "idio_vol": 0.0, "n": 160}}
+
+
+def test_phase0_does_not_count_calendar_dates_without_stock_fits():
+    from scripts import factor_exposure_phase0 as phase
+
+    idx = pd.bdate_range("2020-01-01", periods=700)
+    factors = pd.DataFrame({"mkt": np.tile([-.01, .01], 350)}, index=idx)
+    closes = pd.DataFrame({"MISSING": np.nan}, index=idx[-500:])
+    result = phase.stability(factors, closes, win=80, horizon=40, minp=40,
+                             max_abs=5, basket_sizes=[1], n_baskets=0)
+    assert result["rebalances"] == 0
+    assert result["error"] == "too few fitted rebalances (0)"
+
+
+def test_issue11016_phase0_counts_only_successfully_fitted_dates(monkeypatch):
+    from scripts import factor_exposure_phase0 as phase
+
+    rng = np.random.default_rng(11028)
+    idx = _idx(800)
+    market = pd.Series(rng.normal(0, .01, len(idx)), index=idx)
+    factors = market.to_frame("mkt").iloc[::2]
+    closes = pd.DataFrame({f"S{i}": 100 * (1 + (.5 + i/20) * market).cumprod()
+                           for i in range(12)})
+    closes.iloc[:221] = np.nan
+    decisions = list(factors.index[[60, 100, 160, 220, 280, 340]])
+    monkeypatch.setattr(phase, "month_grid", lambda *args, **kwargs: decisions)
+    result = phase.stability(factors, closes, win=80, horizon=40, minp=50,
+                             max_abs=5, basket_sizes=[1], n_baskets=0)
+    assert result["planned_rebalances"] == 6
+    assert result["rebalances"] == 4
+    assert result["span"] == f"{decisions[2].date()}..{decisions[-1].date()}"
+    assert result["per_stock"]["mkt"] == {"persist": 1.0, "n": 4}
+
+
+def test_issue11016_short_grid_has_no_fitted_rebalances(monkeypatch):
+    from scripts import factor_exposure_phase0 as phase
+
+    factors = pd.DataFrame({"mkt": np.linspace(-.01, .01, 200)}, index=_idx(200))
+    closes = _issue11016_prices(factors.rename(columns={"mkt": "SAME"}))
+    monkeypatch.setattr(phase, "month_grid", lambda *args, **kwargs: list(factors.index[[80, 100, 120]]))
+    result = phase.stability(factors, closes, win=80, horizon=40, minp=40,
+                             max_abs=5, basket_sizes=[1], n_baskets=0)
+    assert result["rebalances"] == 0 and result["planned_rebalances"] == 3
+    assert result["error"] == "grid too short (3)"
