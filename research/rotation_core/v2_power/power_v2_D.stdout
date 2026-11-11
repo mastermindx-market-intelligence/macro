@@ -1,0 +1,16 @@
+{
+ "note": "variance only; full-tilt proxy (H1 tilts away from equal weight, so its active risk is at most this)",
+ "D_years": 21.96,
+ "D_se_annual": 0.0162,
+ "D_tracking_error": 0.0853,
+ "mde80_holm_m3": {
+  "D_only_seen_not_confirmatory": 0.0481,
+  "pre1998_1928_1997_70y": 0.027,
+  "holdout_2020_2025_6y": 0.0921,
+  "pooled_pre1998_plus_2020_2025": 0.0259,
+  "forward_5y": 0.1009,
+  "forward_10y": 0.0713
+ },
+ "years_needed_for_2pp": 127.2,
+ "years_needed_for_1pp": 508.9
+}

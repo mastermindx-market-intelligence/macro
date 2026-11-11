@@ -1,164 +1,154 @@
-# Rotation Core — protocol header v2 (DRAFT revision 1, NOT FROZEN)
+# Rotation Core — protocol header v2 (DRAFT revision 2, NOT FROZEN)
 
-> **Power.**
-> - **H2 cannot detect a 2 pp/yr effect.** It is H-only (6.85 years), and its minimum detectable effect at 80 % power is about **8.2 pp/yr**.
-> - **H1's primary statistic** can detect about **1.1 pp/yr** on the pooled L+H sample (1.3 under Holm m = 2).
-> - **H1's full joint rule** (pooled significance, H > 0 and both L eras > 0) needs about **1.5 pp/yr** for 80 % power.
-> - These are projections from D variance, scaled by years. Whether L's per-year variance is higher or lower than D's is unknown.
+> **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. Minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only:
+>
+> | Window | MDE (pp/yr) |
+> |---|---|
+> | Pre-1998 + 2020–2025 pooled | 2.6 |
+> | 2020–2025 alone | 9.2 |
+> | Five forward years | 10.1 |
+> | Ten forward years | 7.1 |
+>
+> Detecting 2 pp/yr would take about 127 clean years; 1 pp/yr about 509.
+>
+> The historical tier is a **low-power falsification screen**. 1926–2019 has already been examined for this question by v1 and by Pro run B, including near neighbours of H1 on 1998–2019. **2020–2025 is the only window not yet examined, and it contains about two stress episodes.**
 
-**Status.** This draft has been through one separate-context review. The parent freezes it after folding in three inputs:
-- the Sector Intelligence yardstick and signal shortlist;
-- their Kimi review of v1;
-- Pro run A.
-
-**Freeze procedure.**
-- Every change goes in a logged diff, committed before the frozen JSON, with its source and reason.
-- No computation of any kind on L or H before freeze.
-- Changed or added rules raise the `rotation_core_v2` trial budget and are listed in the contamination disclosure.
-- Each confirmation stage runs once at the frozen hash.
-
-Where this file and `protocol_header_v2.DRAFT.json` differ, the JSON governs.
+**Basis.** Written on the corrected engine (`0dfec2426e`). No v2 outcome has been computed. The parent freezes; the trial ledger is declared at freeze. Where this Markdown and `protocol_header_v2.DRAFT.json` differ, the JSON governs.
 
 ## Question
 
-When conditions turn bad, does rotating out of broad equity leadership into the defensive sectors (staples, utilities, health care) add value? Cash is an option, not the default. Value here means beating holding the same market exposure without rotating.
+When conditions turn bad, does tilting from equal weight toward low-beta industries, and back toward high-beta industries, on a two-key signal beat holding the same average mix after costs?
 
-## Hypotheses
+## Prior examination (disclosed, so none of this is called clean)
 
-**Testing order (proposed): fixed sequence at α = 0.05.** H1 is tested first. H2 is tested only if H1 is rejected. This keeps H1 at full α while H2 stays confirmatory.
+- **v1:** market timing 1928–1997; sector rules 1998–2019; the Stage D correction moved no conclusion.
+- **Pro run B:** ten rules on the French 49 industries, 1926–2019, all negative.
+  - Its R7 (breadth divergence) and R8 (washout re-entry) are near neighbours of H1.
+  - Its R6 (confluence into defensives) is the near twin of the H3 Sector Intelligence suggested.
+  - Counted as 10 consumed trials. Its numbers are cited only after the local reproduction matches its tables (worker running).
+- **`research/DEFENSIVE_ROTATION.md` on Macro main:** a defensive-rotation test on the same funds, headline window 2015-01-01 → 2026-06-18, FALSIFIED / DISPLAY-ONLY. 2020–2025 is untouched by this rule, not by the organisation.
+- **2026:** H1 and H2 were shaped by Sector Intelligence's 2026 replay, so 2026 is reported, never scored.
+- **What the lead saw of run B:** some of its per-rule era rows (R5–R8), while reading the file to record its trials. No v2 parameter was chosen from them.
+- **Kill records cited, not rebuilt:** KILL-DEFENSIVE-FLOOR-BUNDLE, KILL-RS-DISPERSION-GATES, KILL-ROTATION-CYCLE-CONFLUENCE, KILL-HINDENBURG-OMEN, KILL-MCO-THRUST, KILL-FUSED-COMPOSITE.
+- **Sector Intelligence's leave-outs** are kept, with their records.
+- **Rates, credit spread and SPY-minus-RSP:** descriptive splits only, never in a trigger.
 
-The parent may instead choose:
-- Holm m = 2 over {H1, H2}, which costs H1 about 12 % in minimum detectable effect; or
-- H2 as descriptive only.
+## Construction (Ken French 49 industries, daily)
 
-| Id | One rule | Primary statistic | Samples |
-|---|---|---|---|
-| **H1** | ^GSPC < SMA200 at close t → equal-weight defensive leg; otherwise equal-weight risk-on leg. The switch executes at the next close when the state changes. Within each leg, rebalance at month-end (decided at the last session of the month, executed at the next close), drifting in between. Always fully invested. | **Beta-matched rotation value.** On days H1 holds the defensive leg, compare it with β_t × risk-on leg + (1 − β_t) × cash. Here β_t is the defensive leg's trailing 252-session beta to the risk-on leg, lagged one day, using at least 200 observations and clipped to [0, 1.5]. On risk-on days the difference is 0. The statistic is the annualised mean difference. | **L + H pooled** |
-| **H2** | v1 J1-E unchanged: SPY goes to cash only when T and real-time Sahm ≥ 0.50 agree. | H2 minus a static SPY/cash mix at H2's mean weight | **H only** |
-| third | **Not included.** J3-C's primary contrast was weak on D, it has no long sample, and its minimum detectable effect would be about 11 pp/yr. The reviewer agreed. | — | — |
+**File facts (checked 2026-11-11):**
+- The file carries both value- and equal-weighted daily returns, from 1926-07-01.
+- Industries with data: 40 in 1926, 43 from 1940, 49 from 1970. Over 1928–1950, 43 have some data and 37 are complete.
+- **366 industry-days are missing after the industry became eligible, across 8 industries, up to 2019.** This confirms run B's finding.
+- The file is built from the monthly CRSP update, about 4 weeks after month-end. On 2026-11-10 it ran to 2026-09-30.
+- **Consequences:**
+  - 2026 can be reported on this construction only to 2026-09-30.
+  - The rule as tested cannot be run live from this file (see the forward tier).
+
+**Seal.**
+- The 2020+ part of every French industry file is sealed by path. Each full file was hashed unopened and locked in `sealed_post2019/`.
+- The working copies are truncated at 2019-12-31 using the date field only.
+- Nobody on our side has computed anything on French industry data after 2019. The 2020+ data opens once, for the confirmatory run.
+
+**Gap rule (no imputation).**
+- An industry enters a leg only after 252 valid daily returns.
+- An industry-day with a missing return is dropped from that day's leg average and breadth, and counted.
 
 **Legs.**
-- **D/H:**
-  - **Risk-on:** equal weight of all eligible SPDR sectors. XLRE and XLC join at the first month-end after their 253rd session.
-  - **Defensive:** XLP, XLU and XLV.
-- **L (Ken French 12 industries, value-weighted daily):**
-  - **Risk-on:** all 12 industries.
-  - **Defensive:** NoDur, Utils and Hlth.
+- **Formation:** each month-end, each eligible industry's beta to the market is measured over the 252 sessions ending t−1.
+- **Offence:** top third by beta. **Defence:** bottom third. That is 16 industries each from 1970, fewer before.
+- **Base:** equal weight of all eligible industries.
 
-**Why the primary statistic changed (review blocker).** The draft's original contrast compared H1 with a static mix of its two legs. That contrast still contained T's market timing, because the risk-on leg has the higher beta. v1 had already measured T's market timing on L (the 200-day rule against cash), so a pooled test would mostly have re-tested it. The beta-matched statistic removes that term and asks only whether defensives beat equal market exposure during T's risk-off spells.
+**Breadth stand-ins.**
+- **(i)** Share of offence industries above their own 50-session SMA. Steps are about 6.25 pp, and every grid threshold is a multiple of that step.
+- **(ii)** Narrowness: equal- minus value-weighted industry return over 60 sessions.
 
-The old static-mix contrast X1 is kept as a secondary result. It now uses H1's month-end calendar, so it is no longer rebalanced daily.
+## Hypotheses (one Holm family, m = 3)
 
-## Why H1 is built this way (D evidence)
-
-- **Risk-on leg = equal-weight sectors.** No D sector-selection rule beat equal weight. SPY would add a cap-weight bet the defensive leg lacks. A "high-beta set" would have to be chosen from D outcomes.
-- **Defensive leg = the trio.** Peak to trough, the trio beat SPY in all five D episodes that have SPDR data: +31.5, +19.2, +12.9, +9.6 and +10.7 pp.
-- **Switch on risk state, not sector momentum.** At the 2000 and 2007 peaks, the D sector-momentum rules did not hold the trio as a group.
-- **T rather than crisis-only J1-E.** J1-E got out before the trough in only 2 of 6 D episodes. It never left equities in 2011, 2015–16 or 2018Q4, which are the episodes where the trio won by 9.6–12.9 pp.
-- **Faster trigger.** With cash as the fallback, T's false risk-off calls cost 3.73 % per calm year on D. With defensives as the fallback, a false call costs only the spread between the risk-on and defensive legs. Defensives have the lower market beta, so they keep part of any rise. That asymmetry is the argument for using the faster T rather than J1-E.
-- **T rather than trend-and-credit.** Trend-and-credit exited on the same dates as T in all six D episodes. Its lower false-pivot count matters less once false calls are cheap. Credit data also only starts in 1986, which would make H1 H-only.
-- **Ancestor disclosure.** H1 descends from v1 J2-E: the same switch, but with the J1-E trigger and a monthly cadence. J2-E's D result was seen: +0.39 %/yr over equal-weight sectors. Changing to T and a daily cadence came after that result, which is why D has no confirmatory role.
-
-## Samples and cleanness
-
-**D (1998–2019).** Seen. Used for design only.
-
-**L: `12_Industry_Portfolios_Daily.csv`, value-weighted, returns 1928-10-17 → 1997-12-31.**
-- **Size:** 18,423 sessions (69.2 years), including 1,158 Saturdays before 1952.
-- **Why this file:** v1 had already declared it as the long-history file, and it has no missing cells.
-- **Mapping is not one-to-one:**
-  - NoDur is SIC "consumer nondurables". It includes food, beverages and tobacco, but also textiles, apparel, toys and some publishing. It excludes household products.
-  - Utils and Hlth are close analogues of XLU and XLV.
-- **Staples sensitivity (descriptive):** the 17-industry Food portfolio with Utils and the 12-industry Hlth. The 17-industry file has no health group, so it cannot carry the whole trio.
-- **Calendar:**
-  - ^GSPC is aligned to French dates as-of: the last ^GSPC close dated on or before each French date.
-  - Annualisation uses each year's observed sessions.
-  - Pooling weights each sample by years.
-
-**L eras.** 1928-10 → 1945 and 1946 → 1997. H1 must be positive in both (LAW-ERA-SPLIT).
-
-**H.** Returns 2020-01-02 → 2026-11-06, the v1 data pin. No dates are excluded: v1's burned dates applied only to J4. H has not been computed by Rotation Core.
-
-**What is clean on L:**
-- **H1 primary statistic: largely clean.** It removes T's market timing, and no industry-level return has ever been computed on L. Not clean for the trigger: T's path and its market-level timing were seen in v1. General knowledge of the published history also applies.
-- **H2: not clean.** J1-E was run on 1960–1997, and real-time Sahm has no long real-time substitute. H2 is H-only.
-- **Existing outputs on the French industry panels: none.** v1's J2_L tier was deferred and never run, no worker produced industry returns, and Macro main has no consumer of these files. Only the raw CSVs exist, in scratch.
-
-## Declared comparators (every book; descriptive)
-
-- **Comparators:** SPY; RSP (from 2003-05); the risk-on leg alone; the defensive leg alone; X1; X2.
-- **Capture:** full-period monthly up/down capture, and stress-episode capture against SPY and RSP, pooled and per episode.
-- **Stress episodes:**
-  - **L:** 1929–32, 1937, 1962, 1966, 1969–70, 1973–74, 1980–82, 1987, 1990.
-  - **H:** 2020, 2022, 2025, and 2026 by its v1 rule.
-  - All drawdowns of 15 % or more.
-
-**Descriptive variants:** H1 with the trend-and-credit trigger (H only); H1 with the J1-E trigger; T computed on the French market index; the staples sensitivity.
-
-## Decision rule
-
-**H1 primary test.**
-- A sample-stratified stationary bootstrap: L and H are each resampled independently (block 21, sensitivity 63, B = 10,000).
-- Seeds: L 20261111, H 20261112, H2 20261113.
-- Pooled statistic = (Y_L × mean_L + Y_H × mean_H) / (Y_L + Y_H), with Y in years. L carries about 91 % of the weight.
-- Requiring H > 0 and both L eras > 0 is what stops one period carrying the result. At a true 1.5 pp/yr the joint rule passes about 80 % of the time; at 1.0 pp/yr it is closer to a coin flip.
-
-**L1 accepted historical, H1.** All of:
-- significant pooled;
-- effect ≥ +1.0 pp/yr;
-- H > 0 and both L eras > 0;
-- the significance and effect conditions still hold at 2× costs;
-- pooled stress capture against SPY ≤ 0.80, where pooled stress capture = (product of (1 + H1 return) over all named episodes − 1) ÷ (the same for SPY);
-- H1 CAGR ≥ risk-on leg CAGR − 1.0 pp/yr on L and on H separately.
-
-**L1 accepted historical, H2.** All of:
-- significant on H;
-- effect ≥ +1.0 pp/yr;
-- holds at 2× costs;
-- max drawdown ≤ 0.70 × SPY's;
-- CAGR ≥ SPY − 2.0 pp/yr.
-
-H2's realistic outcome is L0. H's largest drawdown, in February–March 2020, ended before real-time Sahm could confirm.
-
-**L0.** Anything else. A null is reported as "not detectable" with its power line.
-
-**L2.** L1, then at least 252 forward sessions under the unchanged hash, containing a SPY drawdown of 10 % or more. **Owner: QLedger**, with one claim per decision. Nothing is written to QLedger, Reflex Registry or Chronicle unless L1 is earned.
-
-## Power (D variance only)
-
-Scripts and their exact output are committed in `v2_power/` with SHA256SUMS. No point estimate was printed.
-
-| | D SE (ann.) | MDE80 |
+| Id | Rule | Primary contrast |
 |---|---|---|
-| H1 beta-matched, pooled L+H | 0.89 % (19.9 D years) | **1.14 pp** fixed-sequence; 1.28 pp Holm m = 2; 1.19 pp L only; 3.79 pp H only |
-| H1 full joint rule | — | about 1.5 pp at 80 % |
-| H2, H only | 1.85 % | **8.2 pp** |
+| **H1** | **ARMED:** the offence/defence relative line is within h % of its 126-session high **and** breadth (i) is ≥ b pp below its own 126-session peak. **DEFEND** (defence leg) when, while armed, the line closes below its 50-session SMA. **ATTACK** (offence leg) when breadth (i) washes out to ≤ 25 % and recovers above 25 % within 20 sessions. Otherwise base. Grid h ∈ {3, 5} %, b ∈ {25, 37.5} pp: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
+| **H2** | H1 minus the identical rule without the breadth key (price-only control, same h) | paired daily difference |
+| **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
+| *ablation* | H1 with bills in place of the defence leg on identical dates: **mandatory, reported, not tested** | — |
 
-Formula: SE_sample = SE_D × √(D years ÷ sample years); MDE = (z₁₋α + z₀.₈) × SE.
+**H1 against R7.** R7 is prior negative evidence against H1's breadth key. H1 differs in three ways:
+- it requires a second key, a break of the relative line after arming;
+- its legs are beta-sorted and re-formed monthly from data to t−1, not fixed named groups;
+- it starts from equal weight.
 
-## Unchanged from v1, and dropped
+**Arming check (point G, 1998–2019, signals only, no returns computed).**
+- The armed fraction on breadth (i) is 7.6–19.7 % across the grid.
+- The price key alone is on 37–50 % of sessions, so breadth removes more than half of the price-key days.
+- Not degenerate, so (i) is kept. Stand-in (ii), at 6.9–9.8 %, is recorded and not used.
 
-**Unchanged:** harness, costs (5 bp ETF, 10 bp French), t+1 execution, metrics and data pin.
+**H3 choice.** Sector Intelligence's trend-and-Sahm with defensives is the near twin of run B's R6, which showed no benefit. R5 is the simplest direct control, and I have no better-motivated candidate.
 
-**Trial ledger:** `rotation_core_v2` is declared at freeze with a budget of 11. The deflated-Sharpe count also carries v1's 36.
+## Yardsticks (every window)
 
-**Dropped:** sector RS velocity, graded MTF, J4.
+- SPY (French market before 1993).
+- RSP (from 2003; before that, the equal-weight market proxy, stated).
+- Equal weight of all industries: the base.
+- **The exposure-matched static mix: binding.**
 
-## Review dispositions
+**Per-episode table, descriptive, no extra trial.** For H1 and its price-only control: was ARMED on at the price peak, and how many sessions before or after the peak did the trigger fire?
 
-Review file: `/home/ubuntu2/tmp/rotation-core/review/V2_DRAFT_REVIEW.md` (Opus, separate context, draft at `89c521cc7f`).
+## Two tiers
 
-| # | Finding | Disposition |
-|---|---|---|
-| 1 BLOCKER | The pooled test mostly re-tests T's market timing, already seen on L | **Accepted.** Beta-matched primary statistic; X1 kept as secondary; L-clean text rewritten |
-| 2 | H1's ancestor J2-E not disclosed | **Accepted.** Disclosed with its D number |
-| 3 | NoDur ≠ staples; 17-industry file and v1 pre-declaration not mentioned | **Accepted.** Honest SIC description; 17-industry staples sensitivity declared; v1 pre-declaration cited |
-| 4 | X1 rebalanced daily, H1 monthly | **Accepted.** X1 on H1's calendar |
-| 5 | Saturdays on L; session count | **Accepted.** 18,423 sessions; year-based annualisation and weighting |
-| 6 | Decision rule rationale and power overstated | **Accepted.** Rationale rewritten; joint-rule power stated |
-| 7 | Era split missing | **Accepted.** Two L eras, both must be positive |
-| 8 | H2 foreclosed on H; it costs H1 power | **Accepted in part.** Fixed-sequence testing proposed; Holm or H2-descriptive left to the parent |
-| 9 | Freeze-time inputs are an open forking path | **Accepted.** Logged-diff freeze procedure and run-once rule |
-| 10 | About ten definitions too loose | **Accepted.** Month-end, warm-up, XLRE/XLC entry, w_on, seeds, block-63 reporting-only, 2× cost re-test, CAGR reference, pooled stress capture, calendar alignment, run-once all defined. *Data sha pins are written at freeze.* |
-| 11 | General-knowledge contamination on L | **Accepted.** Disclosed |
-| MINORs | Wording, D-only citations, seed mismatch, power formula | **Accepted.** Five-episode wording; "did not hold the trio as a group"; beta argument without a non-D number; seed disclosed; formula printed |
+**Historical tier.**
+- **Selection:** on 1998–2019.
+- **Opening:** one opening of 2020–2025, plus pre-1998 (1928–1997).
+- **Not scored:** 2026 is reported only (industries to 2026-09-30).
+- **Pass:** all of the following.
+  - Holm p < 0.05 on the pooled contrast.
+  - Point estimate > 0 in pre-1998, in 2020–2025, and in both pre-1998 eras (1928–45 and 1946–97).
+  - Drawdown no worse than the matched mix.
+  - Holds at 2× costs.
+- **Best label:** "survives falsification on history". Never "confirmed", and never a product claim.
+
+**Tradable second confirmation.**
+- Both keys are computed on the industry portfolios. Only execution moves to the SPDR sector funds.
+- **Fund legs:** three highest and three lowest trailing-252-session-beta funds, data to t−1, re-formed monthly, among funds with at least 252 sessions of history.
+- **Workability:** nine funds from 1998-12 make three per leg workable from 1999-12. XLRE (2016-10) and XLC (2019-06) enter by the 252-session rule only, with no special case.
+- **Named mapping:** XLK against XLP/XLU/XLV is reported beside it as descriptive only, labelled as carrying hindsight.
+- **Veto:** a pass on industries with a negative fund point estimate in 2020–2025 is reported as **"signal not shown to be tradable"**.
+- **My view:** this does not weaken the test, because it can only remove passes. With three funds per leg the veto is noisy and will sometimes fire on noise.
+
+**Forward tier (the only tier that can support "called it before it happened").**
+- **Rules and record:**
+  - Rules and inputs are frozen at freeze, and a dated nightly record starts when the implementation is ready.
+  - 2026 entries are rehearsal only. The first scored formation is the first full month after freeze and readiness.
+  - One efficacy read at 5 years. Quarterly checks cover completeness and clocks only; there is no tuning from interim looks.
+- **Owner: QLedger.** One claim per decision or state change, recording:
+  - family;
+  - decided_at and exec_at;
+  - state and weights;
+  - header sha and commit;
+  - matched-mix definition;
+  - input vintage timestamps;
+  - falsifier.
+- **Input contract, in member terms.** Sector Intelligence's nightly per-member file carries, from its first night:
+  - S&P 500 membership flag and GICS sector as of that night, with the source named;
+  - trailing 60-session total return;
+  - price vintage timestamp;
+  - index weight from their daily fund-holdings snapshots, held from 2026-06-11 and carrying the snapshot's own date.
+
+  The roster is the vendor subsector members plus that night's S&P 500 members.
+  - **Legs:** sector funds, chosen by the trailing-beta rule.
+  - **Breadth:** the share of the leg's sectors' S&P 500 members above their own 50-session SMA, on that night's roster.
+  - **Narrowness:** equal- minus cap-weight member return over 60 sessions.
+    - **Fallback, decided before the first scored night and not after:** if the weight field proves unusable, use equal weight within sector minus the sector fund's return.
+  - **Two measurements, not one series.** The historical industry stand-in and the forward member breadth are two measurements of the same idea, not one continuing series. The vendor subsector tree is descriptive only.
+- **Missing before it can start:**
+  - PR #11024 merged;
+  - the per-member price-state file landed;
+  - the weight source confirmed (otherwise the fallback);
+  - a nightly issuer writing QLedger claims from the frozen v2 code;
+  - 50 nightly states per member before breadth is defined.
+
+## Trial ledger at freeze
+
+- **`rotation_core_v2`:** 9 (H1 grid 4, H2, H3, cash ablation, tradable version, named mapping).
+- **Run B:** 10 consumed, negative.
+- **Carried:** v1's 36.
+
+Harness: the corrected v1 engine; t+1 execution; stationary bootstrap block 21 (sensitivity 63), B = 10,000. Nothing here sizes, gates or trades.
