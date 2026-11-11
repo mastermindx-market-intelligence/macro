@@ -4,9 +4,8 @@ tactical asset-allocation strategies (Conservative / Moderate / Aggressive).
 This is the "full-freedom" tier the single-asset timers cannot reach: it allocates across
 EVERY asset class (US equity + growth, Treasuries, IG/HY credit, gold + copper, crypto)
 with no fixed weights, scoring each name by a FOUR-factor conviction and sizing the whole
-book to a target volatility with leverage — harvesting the one edge that is robust
-out-of-sample: cross-asset diversification + trend + carry + regime-rotation, levered to
-the chosen risk. The three profiles share ONE engine and differ ONLY by the risk knobs
+book toward a target volatility, subject to final position and gross-exposure limits.
+The three profiles share ONE engine and differ ONLY by the risk knobs
 (target vol, leverage cap, per-name cap).
 
 Per-asset conviction (each ~[-1,1]; floored at 0 → long-only book):
@@ -17,12 +16,13 @@ Per-asset conviction (each ~[-1,1]; floored at 0 → long-only book):
                    roro does the reverse) — the second-order, regime-conditioning layer
   X-MOM   (0.15) — cross-asset relative momentum (overweight the recent leaders)
 Sizing: per-asset inverse-vol (risk parity) → conviction tilt → per-name cap → scale the
-book to the profile's target vol → leverage cap → weekly rebalance.
+book toward the profile's target vol → leverage cap → final per-name cap → weekly hold.
+Released exposure is not redistributed. The limits can prevent the volatility target
+from being reached and do not guarantee diversification or a particular drawdown.
 
-Validated (5-agent research + OOS): Moderate beats SPY on all three full-sample
-(CAGR 11.6 / Sharpe 1.08 / MaxDD −24 vs 10.9 / 0.62 / −55). Honest framing: the Sharpe &
-drawdown edge is the robust, OOS-stable part (≈1.5-2× SPY's Sharpe); the raw-CAGR beat is
-era-dependent. Net of cost + financing; benchmarks = SPY B&H and 60/40 (SPY/IEF).
+Performance is computed from the current engine and input window, net of modeled costs
+and financing, against SPY B&H and 60/40 (SPY/IEF). The split-half flag tests CAGR only.
+The macro frame contains revised data; its two-row lag is not a point-in-time guarantee.
 """
 from __future__ import annotations
 
@@ -47,24 +47,24 @@ PROFILES: dict[str, dict] = {
     "conservative": {"target_vol": 0.07, "max_lev": 1.2, "w_cap": 0.30, "icon": "🛟",
                      "label_en": "Conservative", "label_zh": "保守", "bench": "6040",
                      "goal_en": "Preserve capital", "goal_zh": "保全资本",
-                     "thesis_en": "Capital-preservation GTAA — diversified, lightly levered; ~1.5× the 60/40 Sharpe at about half the drawdown, for a comparable return.",
-                     "thesis_zh": "资本保全型全球配置——分散、轻杠杆；夏普约为 60/40 的 1.5 倍、回撤约为其一半，收益相当。",
-                     "blurb_en": "The risk dials are turned all the way down: a low 7% target volatility, barely any leverage (1.2× cap), and a tight 30% per-name limit force broad diversification. The goal is not to win the bull market — it is to compound through every regime with a fraction of the drawdown, beating a classic 60/40 portfolio on risk-adjusted terms.",
-                     "blurb_zh": "风险旋钮全部调到最低：7% 的低目标波动率、几乎不加杠杆（1.2× 上限）、以及 30% 的严格单一上限，强制广泛分散。目标不是在牛市中获胜——而是以极小的回撤穿越每一种周期复利增长，在风险调整后跑赢经典的 60/40 组合。"},
+                     "thesis_en": "Conservative GTAA — 7% target volatility, up to 1.2× gross exposure and a final 30% limit per asset.",
+                     "thesis_zh": "保守型全球配置——7% 目标波动率、最高 1.2× 总敞口、最终单一资产权重上限 30%。",
+                     "blurb_en": "The lowest risk settings in this engine: a 7% volatility target, 1.2× gross-exposure cap and 30% final per-asset limit. Allocation released by the caps is left unallocated and modeled as cash when gross exposure is below 100%. Compare the measured return, Sharpe and drawdown with 60/40 below; these limits do not guarantee a particular return or drawdown.",
+                     "blurb_zh": "本引擎最低的风险设定：7% 波动率目标、1.2× 总敞口上限、30% 最终单一资产上限。上限释放的配置不再分配；总敞口低于 100% 时，余额按现金建模。下方列示与 60/40 的实际回测收益、夏普和回撤对比；这些上限不保证特定收益或回撤。"},
     "moderate": {"target_vol": 0.12, "max_lev": 1.6, "w_cap": 0.40, "icon": "⚖️",
                  "label_en": "Moderate", "label_zh": "均衡", "bench": "spy",
                  "goal_en": "Balanced growth", "goal_zh": "均衡增长",
-                 "thesis_en": "Balanced GTAA — S&P-like return at ~1.7× the Sharpe and less than half the drawdown.",
-                 "thesis_zh": "均衡型全球配置——接近标普的收益，但夏普约 1.7 倍、回撤不到一半。",
-                 "blurb_en": "The balanced setting: a 12% target volatility, up to 1.6× leverage and a 40% per-name cap. It aims to match the S&P 500's long-run return while taking far less risk to get it — roughly 1.7× the index's Sharpe and less than half its worst drawdown. The flagship default.",
-                 "blurb_zh": "均衡设定：12% 目标波动率、最高 1.6× 杠杆、40% 单一上限。目标是在承担远更低风险的前提下，匹配标普500 的长期收益——约为指数夏普的 1.7 倍、最大回撤不到其一半。旗舰默认档。"},
+                 "thesis_en": "Balanced GTAA — 12% target volatility, up to 1.6× gross exposure and a final 40% limit per asset.",
+                 "thesis_zh": "均衡型全球配置——12% 目标波动率、最高 1.6× 总敞口、最终单一资产权重上限 40%。",
+                 "blurb_en": "The default setting combines a 12% volatility target with a 1.6× gross-exposure cap and 40% final per-asset limit. The caps take precedence over the target, so some signals can leave substantial cash. The historical comparison with the S&P 500 below is calculated from this capped book.",
+                 "blurb_zh": "默认档结合 12% 波动率目标、1.6× 总敞口上限和 40% 最终单一资产上限。上限优先于目标，因此部分信号可能留下较多现金。下方与标普500 的历史对比由这一受限组合计算。"},
     "aggressive": {"target_vol": 0.22, "max_lev": 2.5, "w_cap": 0.55, "icon": "🚀",
                    "label_en": "Aggressive", "label_zh": "进取", "bench": "spy",
                    "goal_en": "Maximum growth", "goal_zh": "增长最大化",
-                   "thesis_en": "Maximum-growth GTAA — levers the highest-conviction trends to beat the S&P on CAGR with a higher Sharpe.",
-                   "thesis_zh": "增长最大化全球配置——对最高信念的趋势加杠杆，在年化与夏普上跑赢标普。",
-                   "blurb_en": "The dials are opened up: a 22% target volatility, up to 2.5× leverage and a 55% per-name cap let the book concentrate hard into the highest-conviction trends. It is built to out-compound the S&P 500 on raw CAGR — at a Sharpe still well above the index, because the same vol-targeting and trend gate cut exposure before crashes.",
-                   "blurb_zh": "旋钮全部打开：22% 目标波动率、最高 2.5× 杠杆、55% 单一上限，让组合能够大力集中于最高信念的趋势。它旨在以原始年化跑赢标普500——而夏普仍远高于指数，因为同样的波动率目标与趋势门控会在崩盘前削减敞口。"},
+                   "thesis_en": "Aggressive GTAA — 22% target volatility, up to 2.5× gross exposure and a final 55% limit per asset.",
+                   "thesis_zh": "进取型全球配置——22% 目标波动率、最高 2.5× 总敞口、最终单一资产权重上限 55%。",
+                   "blurb_en": "The highest risk settings: a 22% volatility target, 2.5× gross-exposure cap and 55% final per-asset limit. These settings permit larger positions and financing, but the final caps can keep exposure below the target. Returns and drawdowns depend on the realized signals and market path; the measured S&P 500 comparison is shown below.",
+                   "blurb_zh": "最高的风险设定：22% 波动率目标、2.5× 总敞口上限和 55% 最终单一资产上限。这些设定允许更大的仓位及融资，但最终上限可能使敞口低于目标。收益和回撤取决于实际信号与市场路径；下方列示与标普500 的实测对比。"},
 }
 DEFAULT_PROFILE = "moderate"
 _START = pd.Timestamp("2007-05-01")        # HYG inception (credit sleeve live); BTC weight is 0 pre-2014
@@ -81,8 +81,8 @@ _LAG = 2                                    # business-day lag on the (revised) 
 FACTORS: list[dict] = [
     {"key": "trend", "weight": W_TREND, "icon": "📈",
      "name_en": "Trend", "name_zh": "趋势", "tag_en": "the workhorse", "tag_zh": "主力引擎",
-     "desc_en": "Multi-horizon time-series momentum on each asset — is it in an uptrend across the 1-to-12-month lookbacks? The single most robust, most-replicated edge in all of asset pricing, and the engine's largest weight.",
-     "desc_zh": "对每个资产的多周期时间序列动量——在 1 至 12 个月的回看窗口中是否处于上升趋势？这是整个资产定价中最稳健、被复现最多的优势，也是引擎中权重最大的因子。",
+     "desc_en": "Multi-horizon time-series momentum on each asset — is it in an uptrend across the 1-to-12-month lookbacks? Trend has the largest weight in this engine; its contribution is combined with carry, regime and relative momentum.",
+     "desc_zh": "对每个资产的多周期时间序列动量——在 1 至 12 个月的回看窗口中是否处于上升趋势？趋势是本引擎中权重最大的因子，并与套息、周期及相对动量结合。",
      "src_en": "Price · TSMOM", "src_zh": "价格 · TSMOM"},
     {"key": "carry", "weight": W_CARRY, "icon": "💰",
      "name_en": "Carry", "name_zh": "套息", "tag_en": "get paid to wait", "tag_zh": "持有获酬",
@@ -129,10 +129,12 @@ PIPELINE: list[dict] = [
      "zh": "按信念倾斜——最强信号被加码"},
     {"icon": "🧢", "en": "Cap each name at the profile's per-name limit",
      "zh": "每个标的设单一上限（按风险档）"},
-    {"icon": "📐", "en": "Scale the whole book to the profile's target volatility",
-     "zh": "将整个组合缩放至风险档的目标波动率"},
-    {"icon": "🔧", "en": "Cap total leverage, then hold one week and repeat",
-     "zh": "限制总杠杆，持有一周后重复"},
+    {"icon": "📐", "en": "Scale the whole book toward the profile's target volatility",
+     "zh": "将整个组合朝风险档的目标波动率缩放"},
+    {"icon": "🔧", "en": "Cap gross exposure, then reapply the final per-asset limit without redistribution",
+     "zh": "限制总敞口，再执行最终单一资产上限，不重新分配释放的配置"},
+    {"icon": "📅", "en": "Hold targets for five input rows; the backtest applies them on the next bar",
+     "zh": "目标仓位持有五个观测行；回测从下一根价格柱执行"},
 ]
 
 
@@ -215,8 +217,8 @@ def _conviction(P: pd.DataFrame) -> pd.DataFrame:
 
 
 def _weights(P: pd.DataFrame, prof: dict) -> pd.DataFrame:
-    """Inverse-vol, conviction-tilted weights → per-name cap → book vol-target →
-    leverage cap → weekly rebalance."""
+    """Inverse-vol, conviction-tilted weights → raw cap → book vol-target →
+    leverage cap → final per-name cap → weekly hold (no redistribution)."""
     cal = P.index
     ret = P.pct_change()
     conv = _conviction(P)
@@ -231,6 +233,9 @@ def _weights(P: pd.DataFrame, prof: dict) -> pd.DataFrame:
     W = raw.mul((prof["target_vol"] / port_vol).clip(upper=3.0), axis=0)
     gross = W.abs().sum(axis=1)
     W = W.mul((prof["max_lev"] / gross.replace(0, np.nan)).clip(upper=1.0).fillna(1.0), axis=0).fillna(0.0)
+    # Volatility scaling can undo the raw cap. Enforce the final position limit
+    # without redistributing released exposure or increasing the gross book.
+    W = W.clip(upper=prof["w_cap"])
     hold = pd.Series(False, index=cal)
     hold.iloc[::_REBAL] = True
     return W.where(hold).ffill().fillna(0.0)

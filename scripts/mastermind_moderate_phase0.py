@@ -1,6 +1,7 @@
 """Phase-0 VERIFY: Mastermind GTAA (Moderate) — Track-A live-engine validation. READ-ONLY.
 
-Candidate proposed for signal_lab tier SCORED. The SCORED bar for a *timed allocation*:
+Historical diagnostics for the signal_lab CONFIRMER; these do not automatically promote
+the strategy or establish incremental timing alpha. The diagnostics include:
   * DSR >= 0.90 (>= 0.95 'survives') on the realized, net-of-cost, levered book
   * same-sign split-half (already in engine via active_alloc.split_half_oos)
   * leave-one-crisis-out: the Sharpe/MaxDD edge over the DUMB baseline survives dropping
@@ -9,13 +10,14 @@ Candidate proposed for signal_lab tier SCORED. The SCORED bar for a *timed alloc
     cross-asset book)
   * honest-N adequate (count independent crises, not rows)
 
-This re-runs the LIVE engine (engine/masterminds.py) — no re-implementation — and layers
+This re-runs the native engine (engine/masterminds.py) — no re-implementation — and layers
 the gates engine.backtest() does not itself compute (DSR, leave-one-crisis-out, baseline
-deltas). It also re-confirms the realized 60/40 + 30% TSMOM overlay DSR that the
-tsmom-overlay-phase0.md report names masterminds as the promotion path for.
+deltas). The separately reported 60/40 + 30% TSMOM overlay study is not rerun here and
+its DSR is not evidence for this GTAA book.
 
-No look-ahead: the engine already lags signals (backtest_portfolio acts next bar via
-shift(1)); we only post-process its realized net-return series.
+The backtest applies targets next bar via shift(1). Revised macro history, including
+carry inputs, still limits point-in-time interpretation; lags and ablations do not
+establish that all data were available in their present form at each historical date.
 
 Run:  ./.venv/bin/python scripts/mastermind_moderate_phase0.py
 """
@@ -33,6 +35,7 @@ import pandas as pd  # noqa: E402
 
 from engine import masterminds as mm  # noqa: E402
 from engine import active_alloc as aa  # noqa: E402
+from engine.trial_ledger import TrialLedger  # noqa: E402
 from engine.validation import (  # noqa: E402
     ret_moments, deflated_sharpe, dsr_verdict, block_bootstrap_ci,
     purged_folds, _sharpe, _maxdd,
@@ -46,9 +49,21 @@ CRISES = [("2008 GFC", "2008-09-01", "2009-03-31"),
           ("2018Q4", "2018-10-01", "2018-12-31"),
           ("2020 COVID", "2020-02-19", "2020-03-31"),
           ("2022 bear", "2022-01-01", "2022-10-31")]
-# n_trials for the DSR haircut: the engine ships 3 risk profiles, each a config we
-# could have picked as "the best". Honest trial count >= the profiles surfaced.
-N_TRIALS = 3
+# Consume the existing ledger family; validation never registers or appends trials.
+TRIAL_FAMILY = "mastermind_moderate_phase0"
+
+
+def _trial_context(path: Path | None = None) -> tuple[TrialLedger, int]:
+    path = path if path is not None else Path(__file__).resolve().parent.parent / "data" / "trial_ledger.jsonl"
+    ledger = TrialLedger(path=path)
+    if ledger.load_error or ledger.corrupt_lines:
+        raise RuntimeError("GTAA trial ledger could not be read completely")
+    if not (ledger.declared_budget(TRIAL_FAMILY) or ledger.literal_n(TRIAL_FAMILY)):
+        raise RuntimeError("GTAA trial budget is missing; qualification cannot infer a count")
+    count = ledger.effective_n(TRIAL_FAMILY)
+    if count < len(mm.PROFILES):
+        raise RuntimeError("GTAA trial budget is smaller than the exposed profile count")
+    return ledger, count
 
 
 def m_from_net(net: pd.Series) -> dict:
@@ -67,7 +82,7 @@ def fmt(label, m, w=26):
 
 def main() -> None:
     print("=" * 100)
-    print("MASTERMIND GTAA (MODERATE) — Track-A Phase-0 VERIFY (live engine, READ-ONLY)")
+    print("MASTERMIND GTAA (MODERATE) — Track-A Phase-0 VERIFY (native engine, READ-ONLY)")
     print("=" * 100)
 
     P = mm._prices()
@@ -100,16 +115,21 @@ def main() -> None:
     print(f"  beats SPY  on Sharpe? {beats_spy_sharpe}   on MaxDD? {beats_spy_dd}")
     print(f"  beats 60/40 on Sharpe? {beats_64_sharpe}   on MaxDD? {beats_64_dd}")
 
-    # ---- DSR on the realized levered book (n_trials = profiles) ------------
-    print(f"\n### DEFLATED SHARPE — realized moderate net returns, n_trials={N_TRIALS} (risk profiles)")
+    # ---- DSR on the realized levered book, using the existing trial budget ----
+    ledger, n_trials = _trial_context()
+    print(f"\n### DEFLATED SHARPE — realized moderate net returns, n_trials={n_trials} (existing trial ledger)")
+    print(f"  family={TRIAL_FAMILY}; itemized={ledger.literal_n(TRIAL_FAMILY)}; "
+          f"declared={ledger.declared_budget(TRIAL_FAMILY)}")
     mom = ret_moments(net)
     sr_d, sk, ku, n = mom
-    d = deflated_sharpe(sr_d, sk, ku, n, n_trials=N_TRIALS, trading_year=ANN)
+    d = deflated_sharpe(sr_d, sk, ku, n, ledger=ledger, family=TRIAL_FAMILY, trading_year=ANN)
     print(f"  SR(annual)={d['sr_annual']:+.2f}  SR0(annual,haircut)={d['sr0_annual']:+.2f}  "
           f"skew={d['skew']:+.2f}  kurt={d['kurt']:.1f}  T={d['T']}")
     print(f"  DSR = {d['dsr']:.4f}  -> {dsr_verdict(d['dsr'])}")
     # also report DSR with a heavier haircut (treat the whole knob-grid as trials)
     for nt in (8, 16):
+        if nt <= n_trials:
+            continue
         dd = deflated_sharpe(sr_d, sk, ku, n, n_trials=nt, trading_year=ANN)
         print(f"  (sensitivity: n_trials={nt:2d} -> DSR={dd['dsr']:.4f})")
 
@@ -133,8 +153,10 @@ def main() -> None:
     h2_beats = s2y["sharpe"] > spy2["sharpe"] and s2y["maxdd"] > spy2["maxdd"]
     print(f"  Sharpe same-sign across halves: {same_sharpe}")
     print(f"  H1 beats SPY (Sharpe&DD): {h1_beats}    H2 beats SPY (Sharpe&DD): {h2_beats}")
-    print(f"  (engine split_half_oos CAGR-robust flag: {r['oos'].get('robust')} — "
-          f"CAGR beat is NOT robust, as spec warned; we score Sharpe/MaxDD)")
+    half_result = ("wins both CAGR halves" if r['oos'].get('robust') else
+                   "does not win both CAGR halves" if 'robust' in r['oos'] else
+                   "split-half CAGR result unavailable")
+    print(f"  engine split_half_oos CAGR-robust flag: {r['oos'].get('robust')} — {half_result}")
 
     # ---- purged CV ---------------------------------------------------------
     print("\n### PURGED 5-FOLD CV (embargo=63d) — no fold should flip the Sharpe edge vs SPY")
@@ -175,8 +197,8 @@ def main() -> None:
     for nm, a, b in CRISES:
         print(f"  {nm:<20}{cum(net, a, b):>11.1f}%{cum(b6040, a, b):>9.1f}%{cum(spy_bh, a, b):>9.1f}%")
 
-    # ---- robustness: kill the regime layer (the only revised-macro-data leg) ----
-    print("\n### ROBUSTNESS — headline with the macro REGIME layer DISABLED (lookahead guard)")
+    # ---- ablation: remove regime, retaining the unchanged revised-data carry leg ----
+    print("\n### ABLATION — macro REGIME layer DISABLED; revised-data carry retained")
     M = mm
     orig = M._conviction
 
@@ -204,12 +226,17 @@ def main() -> None:
         sc2 = M.backtest("moderate", P=P)["scorecard"]
         print(f"  no-regime : Sharpe={sc2['sharpe']}  MaxDD={sc2['maxdd']}  CAGR={sc2['cagr']}  "
               f"(vs full {sc['sharpe']}/{sc['maxdd']}/{sc['cagr']})")
-        print("  -> the edge survives without the revised-macro regime leg = not a lookahead artifact")
+        no_regime = m_from_net(sc2['net'])
+        print(f"  no-regime beats SPY on Sharpe? {no_regime['sharpe'] > spy_m['sharpe']} "
+              f"on MaxDD? {no_regime['maxdd'] > spy_m['maxdd']}")
+        print(f"  no-regime beats 60/40 on Sharpe? {no_regime['sharpe'] > b64_m['sharpe']} "
+              f"on MaxDD? {no_regime['maxdd'] > b64_m['maxdd']}")
+        print("  Revised-data carry remains. This ablation does not establish point-in-time correctness.")
     finally:
         M._conviction = orig
 
     print("\n" + "=" * 100)
-    print("PROMOTION-PATH LEG: re-run scripts/tsmom_phase0.py for the 60/40+30% overlay DSR 0.9952")
+    print("SEPARATE HISTORICAL STUDY: 60/40+30% TSMOM overlay DSR 0.9952; not rerun here or attributed to GTAA.")
     print("=" * 100)
 
 

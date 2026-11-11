@@ -21,21 +21,13 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
+import pytest
 
 from scripts import build_masterminds as bmm
 
 _ROOT = Path(__file__).resolve().parent.parent
 _PKS = ("conservative", "moderate", "aggressive")
 _ASOF = "2026-10-16"
-
-# Seed's exact non-robust EN wording (byte-reference for the F2b regression guard).
-_SEED_NONROBUST_EN = (
-    "The robust, out-of-sample-stable edge is the SHARPE (~{m}\u00d7 the benchmark) and the "
-    "drawdown; the full-sample CAGR also beats here, but that part is era-dependent (it does "
-    "not win in both halves). This is genuine risk-adjusted alpha, levered \u2014 not just "
-    "more risk."
-)
-
 
 def _committed_res():
     """The three res-shaped dicts of the committed record, inline."""
@@ -205,7 +197,49 @@ def test_verdict_keeps_the_full_sample_beat_when_true():
     sc = bmm._bench_scorecard("moderate", res["moderate"]["scorecard"],
                               res["moderate"].get("bench6040"))[0]
     en = bmm._verdict("moderate", res["moderate"]["oos"], sc)[0]
-    assert en == _SEED_NONROBUST_EN.format(m="1.7")
+    assert "full-sample CAGR also beats here (11.32% vs 10.78%)" in en
+    assert "does not win in both halves" in en
+    assert "~1.7× the benchmark" in en
+    assert "out-of-sample-stable" not in en and "alpha" not in en
+
+
+@pytest.mark.parametrize("robust", [False, True])
+def test_cagr_win_does_not_invent_sharpe_or_drawdown_superiority(robust):
+    sc = dict(_committed_res()["moderate"]["scorecard"], sharpe=.3,
+              hodl_sharpe=.6, maxdd=-60.0, hodl_maxdd=-30.0)
+    en, zh = bmm._verdict("moderate", {"robust": robust}, sc)
+    assert "beats" in en and "跑赢" in zh
+    assert "0.3 vs 0.6" in en and "-60.0% vs -30.0%" in en
+    assert "0.3 对 0.6" in zh and "-60.0% 对 -30.0%" in zh
+    assert "out-of-sample-stable" not in en and "alpha" not in en and "shallower" not in en
+    assert "优势" not in zh and "浅得多" not in zh
+    assert ("BOTH backtest halves" in en) is robust
+
+
+@pytest.mark.parametrize("benchmark_sharpe", [0.0, -.3])
+def test_nonpositive_benchmark_sharpe_uses_values_without_a_multiple(benchmark_sharpe):
+    res = _committed_res()["moderate"]
+    res["scorecard"]["hodl_sharpe"] = benchmark_sharpe
+    card = bmm._rich_card("moderate", res)
+    en, zh = bmm._verdict("moderate", res["oos"], res["scorecard"])
+    assert card["sharpe_mult"] is None
+    assert f"1.05 vs {benchmark_sharpe}" in en
+    assert f"1.05 对 {benchmark_sharpe}" in zh
+    assert "×" not in en and "倍" not in zh
+
+
+def test_missing_split_half_evidence_is_unavailable_not_a_failed_test():
+    res = _committed_res()
+    for row in res.values():
+        row.pop("oos")
+    cards = _cards(res)
+    en, zh = bmm._honest_note(cards)
+    assert "unavailable" in en and "暂不可用" in zh
+    assert "no profile beats" not in en and "only" not in en
+    assert all(not card["robust"] for card in cards)
+    en, zh = bmm._verdict("moderate", {}, res["moderate"]["scorecard"])
+    assert "unavailable" in en and "暂不可用" in zh
+    assert "does not win in both halves" not in en
 
 # ── W23-L14: detail page names the flat assets, prints the instrument, shows Time invested ──
 
