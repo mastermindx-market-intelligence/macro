@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - site/china.html
+manifest: mockups/evidence/china-frozen-real-build-7592/manifest.json

@@ -1,0 +1,16 @@
+{
+  "raw_source_commit": "266bc4287a6b938be4c379ad4deb59252a379533",
+  "integrated_base": "3aab373c9f6bbcff3c890a5035362dc7828fb3ae",
+  "source_mode": "sealed actual builder output normalized by existing publication owners; isolated asset snapshot",
+  "page_path": "site/china.html",
+  "page_sha256": "9ef807c46f503da0a7f125a4ce7cfa4c5d20335cddfe49acd15ed071f41d3451",
+  "page_bytes": 259001,
+  "artifact_unchanged_during_capture": true,
+  "screenshot_cases": 8,
+  "console_errors": 0,
+  "failed_responses": 0,
+  "document_overflow": false,
+  "risk_card": "Pullback Risk 回撤风险 HIGH 高 94 /100 Breadth breakdown (all-boats) 广度普跌（普跌） ≥5% dip odds ≥5%回撤概率 50% Economic slowdown 经济放缓 Weak 疲弱 Protect capital: raise cash, no new chases. 保住本金：提高现金、勿追新高。",
+  "production": false,
+  "fresh_collection": false
+}

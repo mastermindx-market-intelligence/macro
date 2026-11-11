@@ -1,0 +1,18 @@
+{
+  "raw_source_head": "266bc4287a6b938be4c379ad4deb59252a379533",
+  "integrated_base": "3aab373c9f6bbcff3c890a5035362dc7828fb3ae",
+  "raw_bytes": 443300,
+  "normalized_bytes": 259001,
+  "normalized_sha256": "9ef807c46f503da0a7f125a4ce7cfa4c5d20335cddfe49acd15ed071f41d3451",
+  "created_assets": [
+    "site/assets/css/fea32970.css"
+  ],
+  "pipeline": [
+    "lib.pages.inject_text",
+    "lib.pages.externalize_css_text",
+    "lib.pages.externalize_js_text",
+    "scripts.optimize_assets.make_optimizer"
+  ],
+  "pruned_assets": false,
+  "production": false
+}

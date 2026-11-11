@@ -1,0 +1,3747 @@
+{
+  "candidate_binding": {
+    "basis": "actual candidate bytes; capture manifest HEAD is the checkout base",
+    "css": {
+      "site/assets/css/ad3fe3b7.css": {
+        "bytes": 182997,
+        "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "new": false,
+        "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+      },
+      "site/assets/css/f7e9b02b.css": {
+        "bytes": 1908,
+        "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+        "new": false,
+        "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+      }
+    },
+    "manual_visual_review": false,
+    "native_publication": "ordered parents [original_head,input_base], final tree/commit/ref bound by the PR publication receipt",
+    "page": {
+      "bytes": 261006,
+      "git_blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+      "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+    },
+    "source": [
+      {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "path": ".github/ci/legacy-jobs.yml",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "path": "collectors/china_breadth.py",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "path": "engine/china_tier1.py",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "path": "scripts/build_china.py",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "path": "templates/china.html.j2",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "path": "tests/test_china_archetype_d_s1.py",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "path": "tests/test_china_breadth_coverage.py",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "path": "tests/test_ci_pack.py",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "path": "tests/test_risk_radar_dlg_country_wiring.py",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    ]
+  },
+  "fresh_actual_capture": {
+    "after": {
+      ".github/ci/legacy-jobs.yml": {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "collectors/china_breadth.py": {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      "engine/china_tier1.py": {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      "lib/pages.py": {
+        "bytes": 38933,
+        "git_blob": "db175c463a31828263b57a3287afba661439a765",
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      "lib/shared_shell.py": {
+        "bytes": 5407,
+        "git_blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+      },
+      "scripts/build_china.py": {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      "scripts/capture_page_evidence.py": {
+        "bytes": 114040,
+        "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+        "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+      },
+      "scripts/optimize_assets.py": {
+        "bytes": 11756,
+        "git_blob": "62d7daf72add439d4880e1f0533b45524d4f141d",
+        "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+      },
+      "site/assets/css/ad3fe3b7.css": {
+        "bytes": 182997,
+        "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+      },
+      "site/assets/css/f7e9b02b.css": {
+        "bytes": 1908,
+        "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+        "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+      },
+      "site/china.html": {
+        "bytes": 261006,
+        "git_blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+        "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+      },
+      "site/factordata/china_standouts.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      },
+      "templates/china.html.j2": {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      "tests/test_china_archetype_d_s1.py": {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      "tests/test_china_breadth_coverage.py": {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      "tests/test_ci_pack.py": {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      "tests/test_risk_radar_dlg_country_wiring.py": {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    },
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "before": {
+      ".github/ci/legacy-jobs.yml": {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "collectors/china_breadth.py": {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      "engine/china_tier1.py": {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      "lib/pages.py": {
+        "bytes": 38933,
+        "git_blob": "db175c463a31828263b57a3287afba661439a765",
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      "lib/shared_shell.py": {
+        "bytes": 5407,
+        "git_blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+      },
+      "scripts/build_china.py": {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      "scripts/capture_page_evidence.py": {
+        "bytes": 114040,
+        "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+        "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+      },
+      "scripts/optimize_assets.py": {
+        "bytes": 11756,
+        "git_blob": "62d7daf72add439d4880e1f0533b45524d4f141d",
+        "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+      },
+      "site/assets/css/ad3fe3b7.css": {
+        "bytes": 182997,
+        "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+      },
+      "site/assets/css/f7e9b02b.css": {
+        "bytes": 1908,
+        "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+        "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+      },
+      "site/china.html": {
+        "bytes": 261006,
+        "git_blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+        "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+      },
+      "site/factordata/china_standouts.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      },
+      "templates/china.html.j2": {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      "tests/test_china_archetype_d_s1.py": {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      "tests/test_china_breadth_coverage.py": {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      "tests/test_ci_pack.py": {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      "tests/test_risk_radar_dlg_country_wiring.py": {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    },
+    "blocked_requests": [],
+    "browser_closed": true,
+    "browser_executable": "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+    "browser_executable_identity": {
+      "bytes": 163329264,
+      "git_blob": "c6d3ed940fb8ae7bb8003f0e36efdcab63e0c515",
+      "sha256": "7687bff7cb2db075f250e6d5848bbc8838cac3802ac3952a899c574f8eccab45"
+    },
+    "browser_version": "151.0.7922.34",
+    "candidate_binding": "actual uncommitted candidate bytes; manifest Git HEAD describes the checkout base",
+    "candidate_bytes_unchanged": true,
+    "capture_exit_code": 0,
+    "capture_owner": "scripts/capture_page_evidence.py",
+    "console_errors": [],
+    "failed_responses": [],
+    "manifest": {
+      "bytes": 11416,
+      "git_blob": "bb2707a13c3da5e8733903e9dabd76bd784c0aef",
+      "sha256": "9b153bebab16410b7fbeae0ca2682faee4038bbaeb06d60f0eebf7cd09800e53"
+    },
+    "network_boundary": {
+      "errno": 1,
+      "loopback_pair": true,
+      "outside_test_net_denied": true
+    },
+    "observed_cells": [
+      {
+        "applied_locale": "en",
+        "applied_theme": "dark",
+        "cell": "macro:china|desktop|en|dark|anonymous",
+        "error": null,
+        "height": 900,
+        "loaded": true,
+        "locale": "en",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 2017,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 430
+        },
+        "theme": "dark",
+        "viewport": "desktop",
+        "width": 1440
+      },
+      {
+        "applied_locale": "en",
+        "applied_theme": "light",
+        "cell": "macro:china|desktop|en|light|anonymous",
+        "error": null,
+        "height": 900,
+        "loaded": true,
+        "locale": "en",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 2017,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 430
+        },
+        "theme": "light",
+        "viewport": "desktop",
+        "width": 1440
+      },
+      {
+        "applied_locale": "zh",
+        "applied_theme": "dark",
+        "cell": "macro:china|desktop|zh|dark|anonymous",
+        "error": null,
+        "height": 900,
+        "loaded": true,
+        "locale": "zh",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 2018,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 233
+        },
+        "theme": "dark",
+        "viewport": "desktop",
+        "width": 1440
+      },
+      {
+        "applied_locale": "zh",
+        "applied_theme": "light",
+        "cell": "macro:china|desktop|zh|light|anonymous",
+        "error": null,
+        "height": 900,
+        "loaded": true,
+        "locale": "zh",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 2018,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 233
+        },
+        "theme": "light",
+        "viewport": "desktop",
+        "width": 1440
+      },
+      {
+        "applied_locale": "en",
+        "applied_theme": "dark",
+        "cell": "macro:china|mobile|en|dark|anonymous",
+        "error": null,
+        "height": 844,
+        "loaded": true,
+        "locale": "en",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 4115,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 1,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 405
+        },
+        "theme": "dark",
+        "viewport": "mobile",
+        "width": 390
+      },
+      {
+        "applied_locale": "en",
+        "applied_theme": "light",
+        "cell": "macro:china|mobile|en|light|anonymous",
+        "error": null,
+        "height": 844,
+        "loaded": true,
+        "locale": "en",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 4115,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 405
+        },
+        "theme": "light",
+        "viewport": "mobile",
+        "width": 390
+      },
+      {
+        "applied_locale": "zh",
+        "applied_theme": "dark",
+        "cell": "macro:china|mobile|zh|dark|anonymous",
+        "error": null,
+        "height": 844,
+        "loaded": true,
+        "locale": "zh",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 4016,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 1,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 214
+        },
+        "theme": "dark",
+        "viewport": "mobile",
+        "width": 390
+      },
+      {
+        "applied_locale": "zh",
+        "applied_theme": "light",
+        "cell": "macro:china|mobile|zh|light|anonymous",
+        "error": null,
+        "height": 844,
+        "loaded": true,
+        "locale": "zh",
+        "observed": {
+          "asof_present": false,
+          "document_height_px": 4016,
+          "duplicate_heading_texts": [],
+          "elements_wider_than_viewport": 0,
+          "heading_counts": {
+            "h1": 0,
+            "h2": 0,
+            "h3": 0,
+            "h4": 0,
+            "h5": 0,
+            "h6": 0
+          },
+          "horizontal_overflow": false,
+          "long_paragraph_count": 0,
+          "panel_count": 13,
+          "raw_slug_hit_count": 0,
+          "raw_slug_hits": [],
+          "section_count": 0,
+          "source_present": true,
+          "todo_placeholder_hit_count": 0,
+          "todo_placeholder_hits": [],
+          "visible_word_count": 214
+        },
+        "theme": "light",
+        "viewport": "mobile",
+        "width": 390
+      }
+    ],
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "production": false,
+    "request_failures": [],
+    "sandbox_profile": {
+      "bytes": 327,
+      "git_blob": "6d0d7f18651502d12c776b2e9808ab478d4a96dc",
+      "sha256": "6dc59a845d2fccbe1c6746403e6ddb0a8299840504fd68e44791c70d7d936ffe"
+    },
+    "schema": "mastermind.pr7592.current_capture.v1",
+    "screenshots": [
+      {
+        "bytes": 509861,
+        "file": "2bce6cb84d5707ca.png",
+        "height": 2017,
+        "locale": "en",
+        "sha256": "2bce6cb84d5707cac6a89ccc278d7f68f2250c14f2d76ff84490ab2ff3247f3e",
+        "theme": "dark",
+        "width": 1440
+      },
+      {
+        "bytes": 412491,
+        "file": "438e3fdfeb53f7a9.png",
+        "height": 2017,
+        "locale": "en",
+        "sha256": "438e3fdfeb53f7a97c81289775752860f95f8fefb4e93b78fb591088c872d571",
+        "theme": "light",
+        "width": 1440
+      },
+      {
+        "bytes": 510458,
+        "file": "00d88b29c5e0f5ee.png",
+        "height": 2018,
+        "locale": "zh",
+        "sha256": "00d88b29c5e0f5eee17bcdd9db1cc38b845e830e57867368550745cf1f2189e3",
+        "theme": "dark",
+        "width": 1440
+      },
+      {
+        "bytes": 419133,
+        "file": "633e8b36cdff178c.png",
+        "height": 2018,
+        "locale": "zh",
+        "sha256": "633e8b36cdff178cf68563c472a1cf8fec147bd3525b40221f3f1914ad827fc7",
+        "theme": "light",
+        "width": 1440
+      },
+      {
+        "bytes": 391510,
+        "file": "f12152098bed23af.png",
+        "height": 4115,
+        "locale": "en",
+        "sha256": "f12152098bed23afecddf2e3299f744193db20eb80e5489c4c84528bc2635b6d",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "bytes": 340972,
+        "file": "ac67a559b24a9160.png",
+        "height": 4115,
+        "locale": "en",
+        "sha256": "ac67a559b24a91605773e44bc214af89befaec0bb7309d7a0e1d2a09bac5a0b1",
+        "theme": "light",
+        "width": 390
+      },
+      {
+        "bytes": 393227,
+        "file": "e0f480cb200a2581.png",
+        "height": 4016,
+        "locale": "zh",
+        "sha256": "e0f480cb200a25819e59a5b2669913e95f68af575eb57a4b19e40c27570e39cc",
+        "theme": "dark",
+        "width": 390
+      },
+      {
+        "bytes": 344223,
+        "file": "2c47344b124c381e.png",
+        "height": 4016,
+        "locale": "zh",
+        "sha256": "2c47344b124c381e231f4527642bf629edc5e4ecf8f73eb238e68eaf5cf3e312",
+        "theme": "light",
+        "width": 390
+      }
+    ],
+    "servers": [
+      {
+        "closed": true,
+        "port": 62754
+      }
+    ],
+    "smells": {
+      "bytes": 3883,
+      "git_blob": "56c975b5613bb9f5f4793c7b755ac6f66c91118c",
+      "sha256": "a469b7a3ab70c8ba441a8c946aeebadf3f207f224c334b2340a480a56a5c17fc"
+    },
+    "status": "eight_actual_rest_cells_verified"
+  },
+  "fresh_build": {
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "board_before": {
+      "bytes": 9938051,
+      "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+      "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+    },
+    "changed_site_data": [
+      "data/china_regime/regime_history.parquet",
+      "data/risk_radar/scorecard.json",
+      "site/china.html",
+      "site/china_allocation.html",
+      "site/china_history.html",
+      "site/china_lookup.html",
+      "site/china_news.html",
+      "site/china_stocks.html",
+      "site/riskdata/scorecard.json",
+      "site/sectors/159928.SZ.html",
+      "site/sectors/159992.SZ.html",
+      "site/sectors/512170.SS.html",
+      "site/sectors/512200.SS.html",
+      "site/sectors/512400.SS.html",
+      "site/sectors/512660.SS.html",
+      "site/sectors/512690.SS.html",
+      "site/sectors/512760.SS.html",
+      "site/sectors/512800.SS.html",
+      "site/sectors/512880.SS.html",
+      "site/sectors/512980.SS.html",
+      "site/sectors/515000.SS.html",
+      "site/sectors/515030.SS.html",
+      "site/sectors/515220.SS.html",
+      "site/sectors/515250.SS.html",
+      "site/sectors/515790.SS.html"
+    ],
+    "child_pid": 34575,
+    "command": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/offline-proof.sb",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+      "-m",
+      "scripts.build_china"
+    ],
+    "completed_at": "2026-11-11T21:42:50.214588+00:00",
+    "configured_lane": {
+      "CHINA_FAST_RENDER": "1",
+      "RENDER_NO_DRIP": "1",
+      "collector_lane_flags": "absent"
+    },
+    "dependencies_preserved": true,
+    "dependency_before": {
+      "data/china_board_breadth/breadth.parquet": {
+        "bytes": 7554,
+        "git_blob": "f53b7617fa833e6557034672e8da4b3ee1bed78c",
+        "sha256": "9a0607301e79234d02a14befcc19d9f3ec687b01f7a1834cbc4a2862273ff8a5"
+      },
+      "data/china_breadth/breadth.parquet": {
+        "bytes": 158387,
+        "git_blob": "90babb59c24b776348bef0a9fef3ae227bdd5ffe",
+        "sha256": "9338ee2ead792bbd2b84e7ccbe84874bb4a5fb6fdf549e447607c4967bccafc5"
+      },
+      "data/china_market_state/latest.json": {
+        "bytes": 10823,
+        "git_blob": "a9b0ec26aac533640fcc1e92bb68ef768226cc1b",
+        "sha256": "07921af47e5c66a14915cce7c06109d8c721b589df684082a76e2b740e72d7c6"
+      },
+      "scripts/capture_page_evidence.py": {
+        "bytes": 114040,
+        "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+        "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+      },
+      "site/factordata/china_setups.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "site/factordata/china_standouts.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      }
+    },
+    "environment_keys": [
+      "CHINA_FAST_RENDER",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "GIT_NO_LAZY_FETCH",
+      "GIT_OPTIONAL_LOCKS",
+      "HOME",
+      "LANG",
+      "LOGNAME",
+      "MPLCONFIGDIR",
+      "PATH",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONPYCACHEPREFIX",
+      "RENDER_NO_DRIP",
+      "TMPDIR",
+      "USER",
+      "XDG_CACHE_HOME"
+    ],
+    "exit_code": 0,
+    "log_sha256": "b39c51dee694bb05b95ec52fa7a48db00684c44738137c6911f3fc7f423f3e26",
+    "network_probe": {
+      "loopback_connect_errno": 1,
+      "network_denied": true
+    },
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "page": {
+      "bytes": 445410,
+      "git_blob": "65471bc9e3d2d0c48aafbe133a815422a6b0e79d",
+      "sha256": "8c7805a814277baa530dd3fe182485da3e30e6e4140ac31ed44f0d3650b00024"
+    },
+    "profile_sha256": "2b22542d703d8bf74ea686668fab595919bd844592645a084d01d41eca2d4c84",
+    "seconds": 23.67,
+    "source_before": {
+      ".github/ci/legacy-jobs.yml": {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "collectors/china_breadth.py": {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      "engine/china_tier1.py": {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      "scripts/build_china.py": {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      "templates/china.html.j2": {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      "tests/test_china_archetype_d_s1.py": {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      "tests/test_china_breadth_coverage.py": {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      "tests/test_ci_pack.py": {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      "tests/test_risk_radar_dlg_country_wiring.py": {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    },
+    "source_preserved": true,
+    "started_at": "2026-11-11T21:42:26.532305+00:00",
+    "untracked_site_data_after": [],
+    "untracked_site_data_before": []
+  },
+  "fresh_capture_process": {
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "finished_at": "2026-11-11T21:43:31.386946+00:00",
+    "mode": "browser",
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "profile_sha256": "6dc59a845d2fccbe1c6746403e6ddb0a8299840504fd68e44791c70d7d936ffe",
+    "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "source_and_input_fingerprints_unchanged": true,
+    "source_and_inputs_before": {
+      ".github/ci/legacy-jobs.yml": {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "collectors/china_breadth.py": {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      "data/china_board_breadth/breadth.parquet": {
+        "bytes": 7554,
+        "git_blob": "f53b7617fa833e6557034672e8da4b3ee1bed78c",
+        "sha256": "9a0607301e79234d02a14befcc19d9f3ec687b01f7a1834cbc4a2862273ff8a5"
+      },
+      "data/china_breadth/breadth.parquet": {
+        "bytes": 158387,
+        "git_blob": "90babb59c24b776348bef0a9fef3ae227bdd5ffe",
+        "sha256": "9338ee2ead792bbd2b84e7ccbe84874bb4a5fb6fdf549e447607c4967bccafc5"
+      },
+      "data/china_market_state/latest.json": {
+        "bytes": 10823,
+        "git_blob": "a9b0ec26aac533640fcc1e92bb68ef768226cc1b",
+        "sha256": "07921af47e5c66a14915cce7c06109d8c721b589df684082a76e2b740e72d7c6"
+      },
+      "engine/china_tier1.py": {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      "scripts/build_china.py": {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      "scripts/capture_page_evidence.py": {
+        "bytes": 114040,
+        "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+        "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+      },
+      "site/assets/css/ad3fe3b7.css": {
+        "bytes": 182997,
+        "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+      },
+      "site/assets/css/f7e9b02b.css": {
+        "bytes": 1908,
+        "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+        "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+      },
+      "site/china.html": {
+        "bytes": 261006,
+        "git_blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+        "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+      },
+      "site/factordata/china_setups.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "site/factordata/china_standouts.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      },
+      "templates/china.html.j2": {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      "tests/test_china_archetype_d_s1.py": {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      "tests/test_china_breadth_coverage.py": {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      "tests/test_ci_pack.py": {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      "tests/test_risk_radar_dlg_country_wiring.py": {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    },
+    "started_at": "2026-11-11T21:42:53.321657+00:00",
+    "steps": [
+      {
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-f",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/loopback-capture.sb",
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/capture-current.py"
+        ],
+        "log": {
+          "bytes": 766,
+          "git_blob": "9a8fc74c9ab498980503672a07ef641a8af97c55",
+          "sha256": "6d876f64c3e84d0c41d3cdcb21db50208ddf9386843c5724360645f41ccdc427"
+        },
+        "pid": 36122,
+        "receipt": {
+          "bytes": 19392,
+          "git_blob": "7545cd0f1162dc13d6f4c26427d95a0fdbe6dce2",
+          "sha256": "87e33999d7a39be0293de0628a51050c4d00405478bec30508b694d9b4572474"
+        },
+        "returncode": 0,
+        "seconds": 38.03,
+        "step": "actual-capture"
+      }
+    ]
+  },
+  "fresh_normalization": {
+    "assets": {
+      "site/assets/css/ad3fe3b7.css": {
+        "bytes": 182997,
+        "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "new": false,
+        "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+      },
+      "site/assets/css/f7e9b02b.css": {
+        "bytes": 1908,
+        "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+        "new": false,
+        "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+      }
+    },
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "completed_at": "2026-11-11T21:42:53.085538+00:00",
+    "equal_to_receiving_page": false,
+    "final_page": {
+      "bytes": 261006,
+      "git_blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+      "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+    },
+    "fixed_point": true,
+    "incidental_outputs_preserved_and_restored": [
+      {
+        "built": {
+          "bytes": 100621,
+          "git_blob": "9f277e9a7e98362ec57de66f75bc4db67077427e",
+          "sha256": "e19ed6d836a027ec228194ea1e105f940b6238f05f51af4b22197e4018b5a543"
+        },
+        "path": "data/china_regime/regime_history.parquet",
+        "restored": {
+          "bytes": 100621,
+          "git_blob": "1c175346d2431de015d0e12c93fc0ede7b725efe",
+          "sha256": "254e94c65adaf4e19cc27893656f8a82e2baef4216d67cb79958226b37dbbb67"
+        }
+      },
+      {
+        "built": {
+          "bytes": 29799,
+          "git_blob": "56498571523e828c0b80dced7d211c39c916fd0d",
+          "sha256": "197d95c10710bdd358456a0e3976320ab967eaa0c6664106000b8019de1eaa4f"
+        },
+        "path": "data/risk_radar/scorecard.json",
+        "restored": {
+          "bytes": 29799,
+          "git_blob": "e05eea367bd6778763f186e6883578927b32c154",
+          "sha256": "ff4f404ec061ebc2fa3b3dad5d7831a22f7fe607a91701bde754247c2efe7dae"
+        }
+      },
+      {
+        "built": {
+          "bytes": 189277,
+          "git_blob": "486389f0728b073a193897b7167e9f66fe96f5f3",
+          "sha256": "1c77c945599f0da20146fbc16539abf50b551f171365f906c43abfd7e8be2b2d"
+        },
+        "path": "site/china_allocation.html",
+        "restored": {
+          "bytes": 154508,
+          "git_blob": "632ea1db607020ed4973c5535125ca19fe85f6ea",
+          "sha256": "335531dab27fb0b8b5a03dadb5ef0cb7002c4bec7d885c92989b34e8a36c5eec"
+        }
+      },
+      {
+        "built": {
+          "bytes": 434196,
+          "git_blob": "24402d2bc195ed1876b67c393bf607fd0627f5e2",
+          "sha256": "8eaddbbb766e917d85731e75550c99c1f2cc22ccc58e402addb07593fee0e023"
+        },
+        "path": "site/china_history.html",
+        "restored": {
+          "bytes": 431634,
+          "git_blob": "d6d656a8cbe4b9ec592de57aa9e790831464bed8",
+          "sha256": "6572c6b606398301526bab414a06957b0def7fe3986b01f32b18fef96ea856de"
+        }
+      },
+      {
+        "built": {
+          "bytes": 133885,
+          "git_blob": "97fd76e6ea2d1a038da93f27e78c2f1e1bd7c507",
+          "sha256": "fe2ea232497fc65589a435e0965b7c31fec690c8250eb5f003b565ccb51e27bd"
+        },
+        "path": "site/china_lookup.html",
+        "restored": {
+          "bytes": 106708,
+          "git_blob": "e55712abd479d2832190912bad75d9e1b1c546ec",
+          "sha256": "e896b3ad36b23cadaf29519690cabf7c175c4cc9b93c4e57849fe8c718850b14"
+        }
+      },
+      {
+        "built": {
+          "bytes": 80087,
+          "git_blob": "818cfea94f8230bb6663911ffe21f50b6390985e",
+          "sha256": "536929113f9bd0b6d114db0f2b80c9114078bb4adf4fc13d2474451c5757b3f4"
+        },
+        "path": "site/china_news.html",
+        "restored": {
+          "bytes": 61715,
+          "git_blob": "b458dcfd2e46e40186f9c2f61c91deab320065d3",
+          "sha256": "8739387db4ca5c4d3ff55c8b764430408a116d3ec83dd371deb6d8eff71ff526"
+        }
+      },
+      {
+        "built": {
+          "bytes": 2724816,
+          "git_blob": "962f3cab2c365b1f5a28491a521056e738e1a7a9",
+          "sha256": "f4e066381790260e0d4e136e7dd1468a4ecdfe0ac8021293cbc046751dda089f"
+        },
+        "path": "site/china_stocks.html",
+        "restored": {
+          "bytes": 2535658,
+          "git_blob": "4946ff4cf37bed22e01bcc2a7f06fa89f75ff008",
+          "sha256": "173a253190fd9730ac2bedccff99246cf42cec41b7ae32e29de373e5b002b7e6"
+        }
+      },
+      {
+        "built": {
+          "bytes": 29799,
+          "git_blob": "56498571523e828c0b80dced7d211c39c916fd0d",
+          "sha256": "197d95c10710bdd358456a0e3976320ab967eaa0c6664106000b8019de1eaa4f"
+        },
+        "path": "site/riskdata/scorecard.json",
+        "restored": {
+          "bytes": 29799,
+          "git_blob": "64da658a9861e0a2abbc956a159d161566c93b82",
+          "sha256": "4dc1928b8286e3c249edac80a2fb3346b25e4d48826fcb03527f44cb8fbbaada"
+        }
+      },
+      {
+        "built": {
+          "bytes": 88167,
+          "git_blob": "094df93324c3687ae9d07894c695802a30b490ab",
+          "sha256": "1b6d4fe72acfb5dbe90302ee6dd389f4c25224b58b3ac9c8ad5873b9a8c46c16"
+        },
+        "path": "site/sectors/159928.SZ.html",
+        "restored": {
+          "bytes": 80374,
+          "git_blob": "73491a963362d1c24ab8b62c7dae35b12836bd54",
+          "sha256": "65a05edd4af4ee0f718fd65468d10927b5418004d8619b8bb55c9c7c2b402750"
+        }
+      },
+      {
+        "built": {
+          "bytes": 67611,
+          "git_blob": "eed6445757b2c5fc1d8164573b414806edf45891",
+          "sha256": "0f2bc095f8f9dcfb9da8e1564ebaf93cb6fd7945591b6f551e66a65a8faf0915"
+        },
+        "path": "site/sectors/159992.SZ.html",
+        "restored": {
+          "bytes": 63435,
+          "git_blob": "a6a8ae229d0acf7eb7658b971a3985c9ae8285fa",
+          "sha256": "47c0915f8053ee9204d1f28b52dc9cbb71f129882fe3ea48e8acd825c7437b59"
+        }
+      },
+      {
+        "built": {
+          "bytes": 92252,
+          "git_blob": "501e6eb7104421d4aa9be9b3f682e7f82fa2cb6a",
+          "sha256": "f8fb6907cdf305872b02446de86cfaff5669125f4c5d84d5eef4551dd9e3fc0b"
+        },
+        "path": "site/sectors/512170.SS.html",
+        "restored": {
+          "bytes": 83706,
+          "git_blob": "d40849c3610cb100234a320eea0e0e3f836dfca0",
+          "sha256": "ef61b14f21cd5fdf2b00c7c7508bce56daa58f83bd1e23854f76db2e756375cd"
+        }
+      },
+      {
+        "built": {
+          "bytes": 81264,
+          "git_blob": "ba113a928ab64e17d782c0bdaa248e4b2050d03b",
+          "sha256": "a29dcf85cea40977f3b3380ee5a97aa11e2d78d23d7897661673515429c0395e"
+        },
+        "path": "site/sectors/512200.SS.html",
+        "restored": {
+          "bytes": 81597,
+          "git_blob": "ab0286037e54a633a67c617a23d2e7843877771f",
+          "sha256": "c1b43fd6c1c936903b442044b7c48e10aa79f9b7365a16a4d970f273bf8c0c88"
+        }
+      },
+      {
+        "built": {
+          "bytes": 89272,
+          "git_blob": "2a0c75f7798c74cafb3f82ee325c19a9d3abd7e9",
+          "sha256": "efaf9e7252aba9d8ce36e2ac4deacc39054eb08a772307c1727d29846cd177bd"
+        },
+        "path": "site/sectors/512400.SS.html",
+        "restored": {
+          "bytes": 81495,
+          "git_blob": "2a1a99d9fe61c57712b791678a440ce5142940f5",
+          "sha256": "3f5e580b4fbc5409dad98141c205d2262439e8ac9a81e9b36a0979aa76d41490"
+        }
+      },
+      {
+        "built": {
+          "bytes": 89208,
+          "git_blob": "a36a286df95b5bca221f4d0e163b829dda43c247",
+          "sha256": "4afc03904c327df28b2f1c6c60d139ab050f624c7a42b75a11c0e9ec61117583"
+        },
+        "path": "site/sectors/512660.SS.html",
+        "restored": {
+          "bytes": 81336,
+          "git_blob": "0f4732da6c3760e331f8d9d7f07d8b1d6cc82739",
+          "sha256": "98bd2ed2336b4ece81f4086dbeb48456f039f130e45af458b37f2726bf667e33"
+        }
+      },
+      {
+        "built": {
+          "bytes": 87606,
+          "git_blob": "040e672caa79aceab1019ac1c8a8b50d3c38f780",
+          "sha256": "4e686a835bb2c2b168bd22a55b06d0c28207e3c1aa8ee675659003e3e85ed2ef"
+        },
+        "path": "site/sectors/512690.SS.html",
+        "restored": {
+          "bytes": 83064,
+          "git_blob": "ce579933f28b042842a927950e73e97013269207",
+          "sha256": "b60d7362a54bcfe7542f42b6a3c29252ae9f07f7d05914294efd25b72f370ff8"
+        }
+      },
+      {
+        "built": {
+          "bytes": 93737,
+          "git_blob": "c9aa4def2e5fde6f899a529278def33545c67f95",
+          "sha256": "c5272869bc0dee6b57dee538cb24cd54d1be606c01e4a1206bfd290b09c7c5e2"
+        },
+        "path": "site/sectors/512760.SS.html",
+        "restored": {
+          "bytes": 85239,
+          "git_blob": "9619662c6063a3f7d7c672b7912f6ea4cab53ed7",
+          "sha256": "6f49efb980f7da52488b23095fa38b3834e12177191fb7a9a0b02cb2c4337e3e"
+        }
+      },
+      {
+        "built": {
+          "bytes": 100235,
+          "git_blob": "0b3771ec5a1239bda0c5f2815e5a09c4c6916948",
+          "sha256": "0d921b3ab0c298b746cc0e4f14da5bba8185a8c8898fab65f0852bcd28abf8ed"
+        },
+        "path": "site/sectors/512800.SS.html",
+        "restored": {
+          "bytes": 90197,
+          "git_blob": "f08000e07f9f4164d6bacc2b63ec9621dd6b05af",
+          "sha256": "19f5439abe52fe056ed87c6f7888fa56f82ae00583605fbf600cd332d7e5d544"
+        }
+      },
+      {
+        "built": {
+          "bytes": 93664,
+          "git_blob": "65d10c8c77839dfa101fc0d80e7b59222ae657a0",
+          "sha256": "7f559c29f499deff71052580d8cebb3e9ec377eb672e0c8d168da45661e2accc"
+        },
+        "path": "site/sectors/512880.SS.html",
+        "restored": {
+          "bytes": 85139,
+          "git_blob": "2cde03927c33e0ba367b33296400b65758ccb45c",
+          "sha256": "7cee89173b783f4eccedff84b89759b6c50018e909417b687f43a54441cd8d44"
+        }
+      },
+      {
+        "built": {
+          "bytes": 83846,
+          "git_blob": "dae2808cf675d6f4876df8c750d268f62fb354b4",
+          "sha256": "4d81ca89eb518d4f0c43aaaed48ce05dbce2400bbd8496dc56c7d1943da36bc3"
+        },
+        "path": "site/sectors/512980.SS.html",
+        "restored": {
+          "bytes": 76786,
+          "git_blob": "07e46c13d18d9d53e2bdf79bf067a72bdea2ab68",
+          "sha256": "0e08ca53c4e93fb1e44143b0c9c698203d3e55baa4a1477d0ed0debda8ca4837"
+        }
+      },
+      {
+        "built": {
+          "bytes": 91853,
+          "git_blob": "53b3b5b300e1bae2257fb9e929def4dd4d054c28",
+          "sha256": "3ef0b9dc7effbdebb315edf95d748cf6319c01e86ed71170107e4f2a6dd7597c"
+        },
+        "path": "site/sectors/515000.SS.html",
+        "restored": {
+          "bytes": 83323,
+          "git_blob": "a814a8dfd0224237c92695bf30fc6dd58047aca1",
+          "sha256": "507dfcdaaed361aa3e0101b30c8b37bf3d792a0741ee6ff510571bb3b16c2a9b"
+        }
+      },
+      {
+        "built": {
+          "bytes": 87628,
+          "git_blob": "795de5c8121d8b4a2c9c44730d2fca8923a7354d",
+          "sha256": "0022d44153e1802989863ddb1668f6b0270e04ec637571eec9cbe7dc67183b0e"
+        },
+        "path": "site/sectors/515030.SS.html",
+        "restored": {
+          "bytes": 79844,
+          "git_blob": "514e6fcf0387c49351c2fab4c9b60ac65ce7dfc9",
+          "sha256": "597e2a3f5caede21d29c13490e19c852121c28caa8705c04162bcfb85a928116"
+        }
+      },
+      {
+        "built": {
+          "bytes": 87476,
+          "git_blob": "fa781b7ffffe158d8aedd6c9bb0c027ebe742677",
+          "sha256": "1b3ee0b6d0490f884493e6578cbb7456b1bab73d5c394f01cc06709fb3cf620d"
+        },
+        "path": "site/sectors/515220.SS.html",
+        "restored": {
+          "bytes": 79632,
+          "git_blob": "32703302f70f2075d842436bd228ffb5821070ec",
+          "sha256": "90fe164f151e4876b962d1f0d6f51edf72b12958b79dfec747a702022cf6342a"
+        }
+      },
+      {
+        "built": {
+          "bytes": 89222,
+          "git_blob": "3a0ca3cfb591088644497f0aae487f8424f0001e",
+          "sha256": "bcf63df6abfca33cbcf80de6904b67e752deb19632f7dd868061a1a17aa3e119"
+        },
+        "path": "site/sectors/515250.SS.html",
+        "restored": {
+          "bytes": 81422,
+          "git_blob": "56f53fd1afc3b7c7fad14c2deb84b61fe57a0669",
+          "sha256": "8fd4bd9b76d77fa641f8d2fea5942c8d8fd1a4b6ed4958582fc51dfe62d559a0"
+        }
+      },
+      {
+        "built": {
+          "bytes": 89399,
+          "git_blob": "fe88924d653fc70d27b17f5293bca8f9d64a2e47",
+          "sha256": "deb50be84ed93971ac308b2376751c75b5c8faa0163e9eee979ede4c7a38428a"
+        },
+        "path": "site/sectors/515790.SS.html",
+        "restored": {
+          "bytes": 81660,
+          "git_blob": "235c5dfc3e5fe210846c277fdcbf7afd4faace57",
+          "sha256": "3b01adc9a259ea5778f30a3bbf6bde17e7177f93b35a048f1d08f264692e7a0e"
+        }
+      }
+    ],
+    "new_site_files": [],
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "owners": {
+      "lib/pages.py": {
+        "bytes": 38933,
+        "git_blob": "db175c463a31828263b57a3287afba661439a765",
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      "scripts/externalize_css.py": {
+        "bytes": 15935,
+        "git_blob": "226d48369b19043d2b841f3acf99bfaeee88100a",
+        "sha256": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c"
+      },
+      "scripts/optimize_assets.py": {
+        "bytes": 11756,
+        "git_blob": "62d7daf72add439d4880e1f0533b45524d4f141d",
+        "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+      }
+    },
+    "profile_sha256": "2b22542d703d8bf74ea686668fab595919bd844592645a084d01d41eca2d4c84",
+    "pruned_assets": false,
+    "raw_page": {
+      "bytes": 445410,
+      "git_blob": "65471bc9e3d2d0c48aafbe133a815422a6b0e79d",
+      "sha256": "8c7805a814277baa530dd3fe182485da3e30e6e4140ac31ed44f0d3650b00024"
+    },
+    "receiving_main_page": {
+      "bytes": 261006,
+      "git_blob": "32dec91e98f21c757508b67f3ddb6f152e25fe05",
+      "sha256": "89b1e2924e692df764e26ac3a3add48182b0f2d3665806338886ffe6f9932f60"
+    },
+    "site_data_diff": [
+      "site/china.html"
+    ],
+    "source_and_input_preserved": true,
+    "started_at": "2026-11-11T21:42:51.748526+00:00"
+  },
+  "fresh_output_guards": {
+    "after": {
+      ".github/ci/legacy-jobs.yml": {
+        "blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "bytes": 2680952,
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "site/china.html": {
+        "blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+        "bytes": 261006,
+        "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+      },
+      "templates/china.html.j2": {
+        "blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "bytes": 383800,
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      }
+    },
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "before": {
+      ".github/ci/legacy-jobs.yml": {
+        "blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "bytes": 2680952,
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      "site/china.html": {
+        "blob": "235f569f319ca4f397dccdd8af74db8569943e37",
+        "bytes": 261006,
+        "sha256": "ddf19fdf0a7cb75a5527403b3ffb267f7c64168961f7f87fa3b60814809ab572"
+      },
+      "templates/china.html.j2": {
+        "blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "bytes": 383800,
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      }
+    },
+    "candidate_bytes_unchanged": true,
+    "catalog": {
+      "evidence_class": "reused_unchanged_catalog",
+      "forced_owner": [
+        "china-board-breadth"
+      ],
+      "loaded_jobs": 401,
+      "owners": 401,
+      "packing_source_unchanged": true,
+      "source_commit": "0c1f310036c20b5676c25e1ff904677243463b33",
+      "status": "passed",
+      "suites": [
+        "tests/test_china_board_breadth.py",
+        "tests/test_market_heatmap.py",
+        "tests/test_sp500_heatmap_intraday_clock.py",
+        "tests/test_china_breadth_coverage.py"
+      ],
+      "unchanged_siblings": 400,
+      "weights": [
+        8,
+        10
+      ]
+    },
+    "checks": [
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "-m",
+          "scripts.check_ms_board_coherence",
+          "site/china.html"
+        ],
+        "log_sha256": "276f3c25bc3d6d6ab6bf1b9b67f95ac821a392fb3ada516560a938858b787fb8",
+        "name": "board-coherence",
+        "returncode": 0,
+        "seconds": 0.123
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "-m",
+          "scripts.check_inline_js",
+          "site/china.html",
+          "templates/china.html.j2"
+        ],
+        "log_sha256": "0e8571fe20cf5fa45be716cdfaf21dc75dd372202afc8431a53acc8da177eff4",
+        "name": "inline-js",
+        "returncode": 0,
+        "seconds": 0.493
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "-c",
+          "\nfrom pathlib import Path\nimport json\nfrom scripts import check_site_asset_refs as refs\nmissing=refs.find_dangling(Path('site').resolve())\nowned={target:['china.html'] for target,pages in missing.items() if 'china.html' in pages}\nhard={t:p for t,p in owned.items() if not refs._TICKER_PAGE_RE.match(t)}\nsoft={t:p for t,p in owned.items() if refs._TICKER_PAGE_RE.match(t)}\nprint(json.dumps({'scope':'china.html via existing find_dangling parser/resolver','hard':hard,'soft_ticker_warnings':soft},sort_keys=True))\nraise SystemExit(1 if hard else 0)\n"
+        ],
+        "log_sha256": "7391cd868f1563167d3e5bde52b3ba64bb074f1c71ad122bf61222f97b4517bc",
+        "name": "asset-references",
+        "returncode": 0,
+        "seconds": 42.489
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "-m",
+          "scripts.check_design_system",
+          "--mode",
+          "enforce-added",
+          "--root",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053",
+          "--diff-file",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/china-ui.diff"
+        ],
+        "log_sha256": "37aeb0da115470c281cd507407b8975e19c5169d9836a625402f7807c30290e0",
+        "name": "design-added-lines",
+        "returncode": 0,
+        "seconds": 3.9
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "-m",
+          "scripts.check_ui_visual_evidence",
+          "--repo-root",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053",
+          "--diff-file",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/china-ui.diff"
+        ],
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name": "visual-evidence",
+        "returncode": 0,
+        "seconds": 0.242
+      }
+    ],
+    "current_browser_proof": {
+      "actual_cells": 8,
+      "receipt": {
+        "blob": "7545cd0f1162dc13d6f4c26427d95a0fdbe6dce2",
+        "bytes": 19392,
+        "sha256": "87e33999d7a39be0293de0628a51050c4d00405478bec30508b694d9b4572474"
+      },
+      "synthetic_cases": 8,
+      "synthetic_evidence_class": "historical_reuse_unchanged_source_fixture_and_resources",
+      "synthetic_receipt": {
+        "blob": "ad2ef1d8a98d413234171c8dd148344fe298f8b7",
+        "bytes": 8434,
+        "sha256": "1448f681b68783f73e4e4b85fb67f9257965978ece4276e622d17d5c4b8f4fcf"
+      },
+      "synthetic_source_commit": "0c1f310036c20b5676c25e1ff904677243463b33"
+    },
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "passed": true,
+    "ui_diff": {
+      "blob": "e51f4eab761ee42bdfb275fd4fe38f029c5b9f07",
+      "bytes": 2568,
+      "sha256": "e900ae3d7b3f0a9cc80e3368d5ed754faf5ad2f33526de15f400748c5b0a361f"
+    }
+  },
+  "fresh_pipeline": {
+    "base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "finished_at": "2026-11-11T21:44:18.948993+00:00",
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "started_at": "2026-11-11T21:42:25.216019+00:00",
+    "status": "all_requested_proof_steps_passed",
+    "steps": [
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/build-current.py"
+        ],
+        "log": {
+          "bytes": 2014,
+          "git_blob": "4ef6bec3eecb7ac2a5186957c7749ecdd1288de3",
+          "sha256": "2240e9489858c691318479cd4c0c2e04eca0b43d9b968a9f4083660a899c8f6c"
+        },
+        "pid": 34525,
+        "returncode": 0,
+        "seconds": 26.083,
+        "step": "build"
+      },
+      {
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-f",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/offline-proof.sb",
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/normalize-current.py"
+        ],
+        "log": {
+          "bytes": 1063,
+          "git_blob": "fd4e770edf0692f7f1d3ede1a8069af7de372968",
+          "sha256": "dab97f3c2822a53eb21aec876207e4b674c9001b474ce577a7f46388da65e823"
+        },
+        "pid": 35961,
+        "returncode": 0,
+        "seconds": 1.799,
+        "step": "normalize"
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/qualify-current.py",
+          "browser"
+        ],
+        "log": {
+          "bytes": 991,
+          "git_blob": "9489a40b4e5857e5e65f1b8e8d908b3ab5410786",
+          "sha256": "b3f2a66afda5e3622d5678f2f2351675b6ec616d44741c6fecd409239ad85484"
+        },
+        "pid": 36110,
+        "returncode": 0,
+        "seconds": 38.296,
+        "step": "capture"
+      },
+      {
+        "argv": [
+          "/usr/bin/sandbox-exec",
+          "-f",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/offline-proof.sb",
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/qualify-guards.py"
+        ],
+        "log": {
+          "bytes": 3745,
+          "git_blob": "c99794951bb24adba37b1dd752c209ac0c8c6f20",
+          "sha256": "7897e7d46d77bc4a98a9363b3fd2d5f0eb2bcb5258545e7c4ca63ff20ada7dc8"
+        },
+        "pid": 37785,
+        "returncode": 0,
+        "seconds": 47.553,
+        "step": "guards"
+      }
+    ]
+  },
+  "helpers": {
+    "build-current.py": {
+      "bytes": 4412,
+      "content": "from pathlib import Path\nimport datetime,hashlib,importlib.metadata,json,os,subprocess,sys,time\nw=Path(\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\");p=w/'.7592-refresh-proof';py=\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python\";base='8d6a5e115a72ef93cfa779e15c1689957c27cc9e'\ndef ident(f):\n b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\nsrc=json.loads((p/'source-composition.json').read_text())\nassert not (p/'build-start.json').exists()\nfor item in src['source']:assert ident(w/item['path'])['sha256']==item['sha256'],item['path']\nfor name,item in src['input_dependencies'].items():assert ident(w/name)==item,name\nfor name in ['tmp','cache','mpl','pycache']:(p/name).mkdir(exist_ok=True)\nenv={k:os.environ[k] for k in ['HOME','LANG','TZ','PATH','USER','LOGNAME'] if k in os.environ}\nenv.update({'PATH':str(Path(py).parent)+':/opt/homebrew/bin:'+env.get('PATH',''),'TMPDIR':str(p/'tmp'),'XDG_CACHE_HOME':str(p/'cache'),'MPLCONFIGDIR':str(p/'mpl'),'PYTHONPYCACHEPREFIX':str(p/'pycache'),'PYTHONDONTWRITEBYTECODE':'1','GIT_NO_LAZY_FETCH':'1','GIT_OPTIONAL_LOCKS':'0','RENDER_NO_DRIP':'1','CHINA_FAST_RENDER':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_CONFIG_NOSYSTEM':'1'})\nprofile=p/'offline-proof.sb'\nprobe_code=\"import socket,json; s=socket.socket(); code=s.connect_ex(('127.0.0.1',9)); s.close(); print(json.dumps({'loopback_connect_errno':code,'network_denied':code in (1,13)})); assert code in (1,13)\"\nprobe=subprocess.run(['/usr/bin/sandbox-exec','-f',str(profile),py,'-c',probe_code],cwd=w,env=env,check=True,capture_output=True,text=True)\ndef git(*args):return subprocess.run(['git',*args],cwd=w,env=env,check=True,capture_output=True).stdout\nassert git('rev-parse','HEAD').decode().strip()==base\nassert git('diff','--name-only','--','site','data').strip()==b''\nuntracked_before=git('ls-files','--others','--exclude-standard','--','site','data').decode().splitlines()\nargs=['/usr/bin/sandbox-exec','-f',str(profile),py,'-m','scripts.build_china']\nreport={'operation':src['operation'],'base':base,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':args,'profile_sha256':ident(profile)['sha256'],'board_before':ident(w/'site/factordata/china_standouts.json'),'source_before':{x['path']:{k:x[k] for k in ('git_blob','sha256','bytes')} for x in src['source']},'dependency_before':src['input_dependencies'],'environment_keys':sorted(env),'configured_lane':{'RENDER_NO_DRIP':'1','CHINA_FAST_RENDER':'1','collector_lane_flags':'absent'},'network_probe':json.loads(probe.stdout),'untracked_site_data_before':untracked_before}\n(p/'build-start.json').write_text(json.dumps(report,indent=2)+'\\n');start=time.monotonic()\nwith (p/'build.log').open('w') as out:\n proc=subprocess.Popen(args,cwd=w,env=env,stdout=out,stderr=subprocess.STDOUT)\n report['child_pid']=proc.pid;(p/'build-start.json').write_text(json.dumps(report,indent=2)+'\\n')\n print(json.dumps({'build_child_pid':proc.pid,'started_at':report['started_at'],'network_probe':report['network_probe']}),flush=True);rc=proc.wait()\nreport.update(exit_code=rc,seconds=round(time.monotonic()-start,3),completed_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),log_sha256=ident(p/'build.log')['sha256'],page=ident(w/'site/china.html'))\nreport['source_preserved']=all(ident(w/name)==item for name,item in report['source_before'].items())\nreport['dependencies_preserved']=all(ident(w/name)==item for name,item in report['dependency_before'].items())\nreport['changed_site_data']=git('diff','--name-only','--','site','data').decode().splitlines()\nreport['untracked_site_data_after']=git('ls-files','--others','--exclude-standard','--','site','data').decode().splitlines()\n(p/'build-result.json').write_text(json.dumps(report,indent=2)+'\\n');(p/'raw-china.html').write_bytes((w/'site/china.html').read_bytes())\nfor line in (p/'build.log').read_text(errors='replace').splitlines()[-12:]:print(line[:900],flush=True)\nprint(json.dumps({k:report[k] for k in ('child_pid','exit_code','seconds','completed_at','log_sha256','page','source_preserved','dependencies_preserved','changed_site_data','untracked_site_data_after')}),flush=True)\nassert report['source_preserved'] and report['dependencies_preserved']\nsys.exit(rc)\n",
+      "git_blob": "5b82e8ed9bfdda4ac5da1c77ea449608939d0c80",
+      "sha256": "2e2ca9faf4ad0e6b1fe42b25d64af9a1a3ba5d0d17e1f3eebc677416033a43b2"
+    },
+    "capture-current.py": {
+      "bytes": 8604,
+      "content": "from pathlib import Path\nimport errno, hashlib, json, os, socket, struct, sys, traceback\nfrom urllib.parse import urlsplit\nR = Path(__file__).resolve().parents[1]\nos.chdir(R)\nsys.path.insert(0, str(R))\nfrom scripts import capture_page_evidence as capture\nfrom playwright.sync_api import sync_playwright\nD = R / \".7592-refresh-proof\"\nOUT = R / \"mockups/evidence/china-current-7592-20261111-c4-main8d6\"\nPROOF = D / \"current-capture-proof.json\"\nCHROME = Path(\"/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell\")\ndef identity(path):\n    b = path.read_bytes()\n    return {\"git_blob\": hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest(),\n            \"sha256\": hashlib.sha256(b).hexdigest(), \"bytes\": len(b)}\nowned = [\"collectors/china_breadth.py\", \"scripts/build_china.py\", \"templates/china.html.j2\",\n         \"tests/test_china_archetype_d_s1.py\", \"engine/china_tier1.py\",\n         \"tests/test_risk_radar_dlg_country_wiring.py\", \"tests/test_china_breadth_coverage.py\",\n         \".github/ci/legacy-jobs.yml\", \"site/china.html\", \"site/assets/css/ad3fe3b7.css\",\n         \"site/assets/css/f7e9b02b.css\", \"site/factordata/china_standouts.json\",\n         \"scripts/capture_page_evidence.py\", \"templates/_aibrief_body.html.j2\",\n         \"templates/_aibrief_css.j2\", \"tests/test_ci_pack.py\", \"lib/pages.py\",\n         \"scripts/optimize_assets.py\", \"lib/shared_shell.py\"]\nproof = {\"schema\":\"mastermind.pr7592.current_capture.v1\", \"production\":False,\n         \"base\":\"8d6a5e115a72ef93cfa779e15c1689957c27cc9e\",\n         \"candidate_binding\":\"actual uncommitted candidate bytes; manifest Git HEAD describes the checkout base\",\n         \"capture_owner\": \"scripts/capture_page_evidence.py\",\n         \"browser_executable\":str(CHROME), \"blocked_requests\":[], \"request_failures\":[],\n         \"observed_cells\":[], \"servers\":[], \"browser_closed\":False}\nservers = []\nstate = {\"origin\":None, \"cell\":None}\nbefore = {}\ndef save():\n    PROOF.write_text(json.dumps(proof, ensure_ascii=False, sort_keys=True, indent=2)+\"\\n\")\nclass GuardedBrowser:\n    def __init__(self, browser):\n        self.browser = browser\n    def new_context(self, **kwargs):\n        ctx = self.browser.new_context(**kwargs)\n        def route_request(route):\n            url = urlsplit(route.request.url)\n            if (url.scheme, url.netloc) == state[\"origin\"]:\n                route.continue_()\n            else:\n                proof[\"blocked_requests\"].append({\"cell\":state[\"cell\"],\"url\":route.request.url})\n                route.abort(\"blockedbyclient\")\n        ctx.route(\"**/*\", route_request)\n        ctx.on(\"requestfailed\", lambda req: proof[\"request_failures\"].append(\n            {\"cell\":state[\"cell\"],\"url\":req.url,\"failure\":req.failure}))\n        return ctx\n    def close(self):\n        self.browser.close()\n        proof[\"browser_closed\"] = not self.browser.is_connected()\nclass Driver(capture._PlaywrightDriver):\n    def capture(self, *, url, cell, timeout_s):\n        parsed = urlsplit(url)\n        assert parsed.scheme == \"http\" and parsed.hostname == \"127.0.0.1\"\n        state[\"origin\"] = (parsed.scheme, parsed.netloc)\n        state[\"cell\"] = cell.cell_id\n        observation = super().capture(url=url, cell=cell, timeout_s=timeout_s)\n        proof[\"observed_cells\"].append({\n            \"cell\":cell.cell_id, \"viewport\":cell.viewport,\"width\":cell.width,\"height\":cell.height,\n            \"theme\":cell.theme,\"locale\":cell.locale,\"loaded\":observation.loaded,\n            \"applied_theme\":observation.applied_theme,\"applied_locale\":observation.applied_locale,\n            \"observed\":observation.observed,\"error\":observation.error})\n        save()\n        return observation\ndef factory(*, headless, user_agent, observer_config, settle_ms):\n    manager = sync_playwright().start()\n    try:\n        browser = manager.chromium.launch(executable_path=str(CHROME), headless=headless)\n    except Exception as exc:\n        manager.stop()\n        raise capture.CaptureUnavailable(str(exc)) from exc\n    proof[\"browser_version\"] = browser.version\n    return Driver(manager, GuardedBrowser(browser), user_agent, observer_config, settle_ms)\noriginal_serve = capture.serve_site_dir\ndef tracked_serve(site_dir):\n    httpd, port = original_serve(site_dir)\n    servers.append((httpd,port))\n    return httpd,port\ncapture.serve_site_dir = tracked_serve\nexit_code = 1\ntry:\n    assert not OUT.exists(), \"Fresh evidence path already exists; reconcile before any further capture.\"\n    assert CHROME.is_file() and os.access(CHROME, os.X_OK)\n    with socket.socket() as server:\n        server.bind((\"127.0.0.1\",0)); server.listen(1)\n        with socket.socket() as client:\n            client.settimeout(2); client.connect(server.getsockname())\n            peer,_ = server.accept(); peer.close()\n    with socket.socket() as outside:\n        outside.settimeout(1)\n        try:\n            outside.connect((\"192.0.2.1\",443))\n        except OSError as exc:\n            assert exc.errno in (errno.EPERM,errno.EACCES), repr(exc)\n            proof[\"network_boundary\"]={\"loopback_pair\":True,\"outside_test_net_denied\":True,\"errno\":exc.errno}\n        else:\n            raise AssertionError(\"Outside destination was unexpectedly reachable\")\n    proof[\"sandbox_profile\"] = identity(R/\".7592-refresh-proof/loopback-capture.sb\")\n    before = {p:identity(R/p) for p in owned}\n    assert before[\"site/china.html\"] == json.loads((D/\"normalization-proof.json\").read_text())[\"final_page\"]\n    proof[\"browser_executable_identity\"] = identity(CHROME)\n    proof[\"operation\"] = \"macro-pr7592-refresh8d6-20261111-c4-2f7053\"\n    proof[\"before\"] = before\n    save()\n    code = capture.main([\"--site-dir\",str(R/\"site\"),\"--routes\",\"/china.html\",\"--max-pages\",\"1\",\n                         \"--viewports\",\"desktop,mobile\",\"--locales\",\"en,zh\",\"--themes\",\"dark,light\",\n                         \"--settle-ms\",\"1200\",\"--timeout-s\",\"30\",\"--output-dir\",str(OUT),\n                         \"--manifest\",str(OUT/\"manifest.json\"),\"--smells\",str(OUT/\"smells.json\")],\n                        driver_factory=factory)\n    proof[\"capture_exit_code\"] = code\n    assert code == 0\n    manifest = json.loads((OUT/\"manifest.json\").read_text())\n    assert manifest[\"schema\"] == \"mastermind.p0_evidence.v2\"\n    assert manifest[\"totals\"][\"states_attempted\"] == manifest[\"totals\"][\"states_captured\"] == 8\n    assert len(manifest[\"pages\"]) == 1\n    states = manifest[\"pages\"][0][\"states\"]\n    assert len(states) == 8\n    checked = []\n    for item in states:\n        assert item[\"captured\"]\n        assert item[\"applied_theme\"] == item[\"theme\"]\n        assert item[\"applied_locale\"] == item[\"locale\"]\n        png = (OUT/item[\"file\"]).resolve()\n        assert png.is_relative_to(OUT)\n        raw = png.read_bytes()\n        assert raw[:8] == b\"\\x89PNG\\r\\n\\x1a\\n\"\n        assert hashlib.sha256(raw).hexdigest() == item[\"sha256\"]\n        assert len(raw) == item[\"bytes\"]\n        width,height = struct.unpack(\">II\",raw[16:24])\n        assert (width,height) == (item[\"width\"],item[\"height\"])\n        checked.append({\"file\":item[\"file\"],\"sha256\":item[\"sha256\"],\"bytes\":len(raw),\n                        \"width\":width,\"height\":height,\"theme\":item[\"theme\"],\"locale\":item[\"locale\"]})\n    proof[\"screenshots\"] = checked\n    proof[\"console_errors\"] = manifest[\"pages\"][0].get(\"console_errors\",[])\n    proof[\"failed_responses\"] = manifest[\"pages\"][0].get(\"failed_responses\",[])\n    proof[\"manifest\"] = identity(OUT/\"manifest.json\")\n    proof[\"smells\"] = identity(OUT/\"smells.json\")\n    proof[\"status\"] = \"eight_actual_rest_cells_verified\"\n    exit_code = 0\nexcept BaseException as exc:\n    proof[\"status\"] = \"failed\"\n    proof[\"exception\"] = type(exc).__name__+\": \"+str(exc)\n    traceback.print_exc()\nfinally:\n    for httpd,port in servers:\n        httpd.shutdown()\n        httpd.server_close()\n        refused = False\n        with socket.socket() as probe:\n            probe.settimeout(1)\n            try: probe.connect((\"127.0.0.1\",port))\n            except ConnectionRefusedError: refused = True\n        proof[\"servers\"].append({\"port\":port,\"closed\":refused})\n    after = {p:identity(R/p) for p in before}\n    proof[\"after\"] = after\n    proof[\"candidate_bytes_unchanged\"] = bool(before) and before == after\n    if before and before != after:\n        exit_code = 1\n        proof[\"status\"] = \"candidate_bytes_changed\"\n    save()\n    print(json.dumps({k:proof.get(k) for k in (\"status\",\"capture_exit_code\",\"network_boundary\",\n        \"browser_version\",\"browser_closed\",\"candidate_bytes_unchanged\",\"servers\",\"exception\")},indent=2))\nsys.exit(exit_code)\n",
+      "git_blob": "cb6917557d4260542bf1210e2fac7386cb185078",
+      "sha256": "a74be46db31fe53510924403a93d75079161f0dfc248873d6ab03999980c830a"
+    },
+    "loopback-capture.sb": {
+      "bytes": 327,
+      "content": "(version 1)\n(allow default)\n(deny network*)\n(deny file-write*)\n(allow file-write* (subpath \"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\"))\n(allow file-write* (literal \"/dev/null\"))\n(allow network-outbound (remote ip \"localhost:*\"))\n(allow network-inbound (local ip \"localhost:*\"))\n",
+      "git_blob": "6d0d7f18651502d12c776b2e9808ab478d4a96dc",
+      "sha256": "6dc59a845d2fccbe1c6746403e6ddb0a8299840504fd68e44791c70d7d936ffe"
+    },
+    "normalize-current.py": {
+      "bytes": 4881,
+      "content": "from pathlib import Path\nimport datetime,hashlib,json,os,subprocess,sys\nw=Path(\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\");p=w/'.7592-refresh-proof';os.chdir(w);sys.path.insert(0,str(w))\nbase='8d6a5e115a72ef93cfa779e15c1689957c27cc9e';page=w/'site/china.html'\ndef ident(f):\n b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\ndef git(*args):return subprocess.run(['git',*args],cwd=w,check=True,capture_output=True).stdout\nbuild=json.loads((p/'build-result.json').read_text());src=json.loads((p/'source-composition.json').read_text())\nassert build['exit_code']==0 and build['source_preserved'] and build['dependencies_preserved']\nassert ident(page)==build['page']\nassert git('diff','--name-only','--','site','data').decode().splitlines()==build['changed_site_data']\nassert git('ls-files','--others','--exclude-standard','--','site','data').decode().splitlines()==build['untracked_site_data_after']==[]\nassert not (p/'normalization-start.json').exists()\nreport={'base':base,'operation':src['operation'],'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'profile_sha256':ident(p/'offline-proof.sb')['sha256'],'raw_page':ident(page),'owners':{'lib/pages.py':ident(w/'lib/pages.py'),'scripts/externalize_css.py':ident(w/'scripts/externalize_css.py'),'scripts/optimize_assets.py':ident(w/'scripts/optimize_assets.py')},'assets':{},'incidental_outputs_preserved_and_restored':[],'pruned_assets':False}\n(p/'normalization-start.json').write_text(json.dumps(report,indent=2)+'\\n')\nfrom lib.pages import externalize_css_text,externalize_js_text,write_page,dbase_prefix\nfrom scripts.externalize_css import MIN_BYTES\nfrom scripts.optimize_assets import make_optimizer\nassert MIN_BYTES==1024\nprefix=dbase_prefix(page)\ndef asset(text,suffix):\n raw=text.encode('utf-8')\n if len(raw)<MIN_BYTES:return None\n short=hashlib.sha256(raw).hexdigest()[:8];rel='site/assets/'+suffix+'/'+short+'.'+suffix;dst=w/rel\n assert dst.resolve().is_relative_to((w/'site/assets').resolve())\n new=not dst.exists()\n if new:dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(raw)\n else:assert dst.read_bytes()==raw,'Content-address collision or noncanonical bytes: '+rel\n report['assets'][rel]={**ident(dst),'new':new}\n return prefix+'assets/'+suffix+'/'+short+'.'+suffix+'?v='+short\ndef normalize(text):\n text=externalize_css_text(text,lambda css,index,media:asset(css,'css'))\n text=externalize_js_text(text,lambda js,index:asset(js,'js'))\n write_page(page,text,encoding='utf-8')\n text=make_optimizer(w/'site')(page.read_text(encoding='utf-8'),page.parent)\n write_page(page,text,encoding='utf-8')\n return page.read_bytes()\nfirst=normalize(page.read_text(encoding='utf-8'))\nassert normalize(first.decode('utf-8'))==first,'Normalization did not reach a fixed point'\nreport['fixed_point']=True\nfor name in build['changed_site_data']:\n if name=='site/china.html':continue\n f=w/name;built=f.read_bytes();dst=p/'incidental-built'/name;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(built)\n original=git('show',base+':'+name);expected=git('rev-parse',base+':'+name).decode().strip()\n assert hashlib.sha1(b'blob '+str(len(original)).encode()+b'\\0'+original).hexdigest()==expected\n f.write_bytes(original)\n assert ident(f)['git_blob']==expected\n report['incidental_outputs_preserved_and_restored'].append({'path':name,'built':ident(dst),'restored':ident(f)})\nfor row in src['source']:assert ident(w/row['path'])['sha256']==row['sha256'],row['path']\nfor name,item in src['input_dependencies'].items():assert ident(w/name)==item,name\nreport['source_and_input_preserved']=True;report['final_page']=ident(page)\nreport['receiving_main_page']=ident(p/'receiving-main-china.html')\nreport['equal_to_receiving_page']=page.read_bytes()==(p/'receiving-main-china.html').read_bytes()\nreport['site_data_diff']=git('diff','--name-only','--','site','data').decode().splitlines()\nassert report['site_data_diff']==(['site/china.html'] if not report['equal_to_receiving_page'] else [])\nreport['new_site_files']=git('ls-files','--others','--exclude-standard','--','site','data').decode().splitlines()\nassert set(report['new_site_files'])=={n for n,a in report['assets'].items() if a['new']}\nreport['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()\n(p/'normalization-proof.json').write_text(json.dumps(report,indent=2)+'\\n')\n(p/'qualified-china.html').write_bytes(page.read_bytes())\nprint(json.dumps({k:report[k] for k in ('base','fixed_point','assets','pruned_assets','source_and_input_preserved','final_page','receiving_main_page','equal_to_receiving_page','site_data_diff','new_site_files','completed_at')}),flush=True)\nprint('INCIDENTAL_OUTPUTS_RESTORED',len(report['incidental_outputs_preserved_and_restored']),flush=True)\n",
+      "git_blob": "56f210cef8713f5c927fa0441549479ab0f8bc3f",
+      "sha256": "48815a19238418f7be25d33ce740f6a4c24c849355b2b47f7f8354e3534a4b22"
+    },
+    "offline-proof.sb": {
+      "bytes": 227,
+      "content": "(version 1)\n(allow default)\n(deny network*)\n(deny file-write*)\n(allow file-write* (subpath \"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\"))\n(allow file-write* (literal \"/dev/null\"))\n",
+      "git_blob": "8e1a3d8a46f234994f90182f28a34a78c1f82d3f",
+      "sha256": "2b22542d703d8bf74ea686668fab595919bd844592645a084d01d41eca2d4c84"
+    },
+    "prepare-source.py": {
+      "bytes": 4298,
+      "content": "from pathlib import Path\nimport os,sys,subprocess,json,hashlib,datetime,time,shutil\nW=Path(\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\");OLD=Path(\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053\");P=W/'.7592-refresh-proof'\nM='8d6a5e115a72ef93cfa779e15c1689957c27cc9e';OP='macro-pr7592-refresh8d6-20261111-c4-2f7053'\nplan=json.loads((P/'source-plan.json').read_text())\ndef ident(f):\n b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\nassert subprocess.check_output(['git','rev-parse','HEAD'],cwd=W,text=True).strip()==M\nallowed={r['path'] for r in plan['source']}\nassert set(subprocess.check_output(['git','diff','--name-only'],cwd=W,text=True).splitlines())<=allowed\nfor row in plan['source']:\n f=W/row['path'];src=OLD/row['path']\n assert ident(src)=={k:row[k] for k in ('git_blob','sha256','bytes')}\n pre=plan['main_source_entries'][row['path']]\n assert not f.is_symlink()\n dst=P/'source-before'/row['path']\n if f.exists() and ident(f)['git_blob']==row['git_blob']:\n  if pre:assert dst.is_file() and ident(dst)['git_blob']==pre['sha'],row['path']\n  continue\n if pre:\n  assert f.is_file() and ident(f)['git_blob']==pre['sha'],row['path']\n  assert not dst.exists()\n  dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,dst)\n else:\n  assert not f.exists() and not dst.exists(),row['path']\n f.parent.mkdir(parents=True,exist_ok=True)\n shutil.copyfile(src,f);assert ident(f)['git_blob']==row['git_blob']\nmaterialization=[]\nfor prefix in ['data','mockups']:\n args=[\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python\",'scripts/worktree_sparse.py','add',prefix];log=P/('materialize-'+prefix+'.log');start=time.monotonic()\n with log.open('wb') as f:\n  proc=subprocess.Popen(args,cwd=W,stdout=f,stderr=subprocess.STDOUT)\n  (P/('materialize-'+prefix+'-start.json')).write_text(json.dumps({'argv':args,'pid':proc.pid,'base':M,'operation':OP})+'\\n')\n  print(json.dumps({'step':'materialize-'+prefix,'pid':proc.pid}),flush=True);rc=proc.wait()\n result={'argv':args,'pid':proc.pid,'returncode':rc,'seconds':round(time.monotonic()-start,3),'log':ident(log)}\n (P/('materialize-'+prefix+'-result.json')).write_text(json.dumps(result,indent=2)+'\\n')\n materialization.append(result);assert rc==0,log.read_text()[-2000:]\nshutil.copyfile(W/'site/china.html',P/'receiving-main-china.html')\nraw=subprocess.check_output(['git','ls-tree','-rz',M,'--',*[r['path'] for r in plan['original_paths']]],cwd=W)\nentries={}\nfor item in raw.split(b'\\0'):\n if not item:continue\n meta,name=item.decode().split('\\t',1);mode,kind,sha=meta.split(' ')\n entries[name]={'mode':mode,'type':kind,'sha':sha}\nrows=[]\nfor item in plan['original_paths']:\n main=entries.get(item['path'])\n strategy='compose_page' if item['path']=='site/china.html' else 'already_main' if main and main['sha']==item['sha'] else 'reuse_candidate'\n if main:assert main['mode']=='100644' and main['type']=='blob'\n rows.append({'path':item['path'],'candidate_blob':item['sha'],'main_entry':main,'mode':'100644','strategy':strategy})\nassert len(rows)==100\ncounts={s:sum(r['strategy']==s for r in rows) for s in ('compose_page','already_main','reuse_candidate')}\nsource={'operation':OP,'B':'3a14c93979e780e5f880643efc88b3e1f1625f74','H':'0c1f310036c20b5676c25e1ff904677243463b33','M':M,'source':plan['source'],'input_dependencies':{name:ident(W/name) for name in plan['input_paths']},'rows':rows,'counts':counts,'materialization':materialization,'preparation_recovery':json.loads((P/'prepare-first-attempt.json').read_text()),'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}\nfor row in source['source']:assert ident(W/row['path'])['git_blob']==row['git_blob']\nassert source['input_dependencies']['site/factordata/china_standouts.json']['git_blob']=='3757e2df5136a145b05693f0be231fc4eb652f81'\n(P/'source-composition.json').write_text(json.dumps(source,indent=2)+'\\n')\nprint(json.dumps({'status':'source_prepared','counts':counts,'source_objects':len(source['source']),'input_dependencies':source['input_dependencies'],'materialization':materialization},sort_keys=True),flush=True)\n",
+      "git_blob": "31bf6bf05d8cb01ce3163d9d45b27ff3a9c2c3d9",
+      "sha256": "6be77bae10048547db49fccdd248b849b88db8fe5aa4356e9ec7d7cf74500218"
+    },
+    "qualify-current.py": {
+      "bytes": 4088,
+      "content": "from pathlib import Path\nimport datetime,hashlib,importlib.metadata,json,os,subprocess,sys,time,xml.etree.ElementTree as ET\nw=Path(\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\");p=w/'.7592-refresh-proof';py=\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python\";mode=sys.argv[1]\nassert mode == 'browser'\nsrc=json.loads((p/'source-composition.json').read_text());norm=json.loads((p/'normalization-proof.json').read_text())\ndef ident(f):\n b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\nexpected={r['path']:{k:r[k] for k in ('git_blob','sha256','bytes')} for r in src['source']};expected.update(src['input_dependencies']);expected['site/china.html']=norm['final_page']\nfor name,a in norm['assets'].items():expected[name]={k:a[k] for k in ('git_blob','sha256','bytes')}\nfor name,a in expected.items():assert ident(w/name)==a,name\ntarget=p/(mode+'-qualification.json');assert not target.exists()\ntemp=w/('.t-'+mode);temp.mkdir(exist_ok=False)\nenv={k:os.environ[k] for k in ('HOME','LANG','TZ','PATH','USER','LOGNAME') if k in os.environ}\nenv.update({'PATH':str(Path(py).parent)+':/opt/homebrew/bin:'+env.get('PATH',''),'TMPDIR':str(temp),'MAC_CHROMIUM_TMPDIR':str(temp),'XDG_CACHE_HOME':str(p/'cache'),'MPLCONFIGDIR':str(p/'mpl'),'PYTHONPYCACHEPREFIX':str(p/'pycache'),'PYTHONDONTWRITEBYTECODE':'1','GIT_NO_LAZY_FETCH':'1','GIT_OPTIONAL_LOCKS':'0','GIT_CONFIG_GLOBAL':'/dev/null','GIT_CONFIG_NOSYSTEM':'1','PYTHON':py})\nprofile=p/'loopback-capture.sb';steps=[('actual-capture',[py,str(p/'capture-current.py')])]\nreport={'operation':src['operation'],'base':src['M'],'mode':mode,'profile_sha256':ident(profile)['sha256'],'source_and_inputs_before':expected,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'python':sys.version,'steps':[]}\nfor name,command in steps:\n argv=['/usr/bin/sandbox-exec','-f',str(profile),*command];log=p/(name+'.log');assert not log.exists();start=time.monotonic()\n with log.open('w') as out:\n  proc=subprocess.Popen(argv,cwd=w,env=env,stdout=out,stderr=subprocess.STDOUT)\n  report['active']={'step':name,'pid':proc.pid,'argv':argv};target.write_text(json.dumps(report,indent=2)+'\\n')\n  print(json.dumps({'step':name,'pid':proc.pid,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}),flush=True);rc=proc.wait()\n entry={'step':name,'pid':proc.pid,'argv':argv,'returncode':rc,'seconds':round(time.monotonic()-start,3),'log':ident(log)}\n junit=p/(name+'.xml')\n if junit.exists():\n  root=ET.parse(junit).getroot();suites=[root] if root.tag=='testsuite' else list(root.iter('testsuite'))\n  entry['junit']={k:sum(int(s.get(k,0)) for s in suites) for k in ('tests','failures','errors','skipped')}\n report['steps'].append(entry);report.pop('active',None);target.write_text(json.dumps(report,indent=2)+'\\n')\n print(json.dumps(entry),flush=True)\n for line in log.read_text(errors='replace').splitlines()[-13:]:print(line[:700],flush=True)\n if rc:print('PROOF_STOPPED_ON_FAILURE',flush=True);sys.exit(rc)\n if mode=='browser':\n  f=p/('current-capture-proof.json' if name=='actual-capture' else 'synthetic-current-result.json');e=json.loads(f.read_text())\n  assert e['candidate_bytes_unchanged'] and e['browser_closed']\n  assert all(not e.get(k) for k in ('blocked_requests','request_failures','console_errors','failed_responses'))\n  if name=='actual-capture':assert e['status']=='eight_actual_rest_cells_verified' and all(x['closed'] for x in e['servers'])\n  else:assert e['status']=='passed' and len(e['cases'])==8 and e['local_server_closed']\n  entry['receipt']=ident(f);target.write_text(json.dumps(report,indent=2)+'\\n')\nfor name,a in expected.items():assert ident(w/name)==a,name\nreport['source_and_input_fingerprints_unchanged']=True;report['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();target.write_text(json.dumps(report,indent=2)+'\\n')\nprint(mode.upper()+'_QUALIFICATION_COMPLETE',flush=True)\n",
+      "git_blob": "77f5c456a183cfd0b897d333cb7f8143ecc0b951",
+      "sha256": "87053e93e02542cbad71a6fbe551610212321a7bfdc8e01a461107e5792fced5"
+    },
+    "qualify-guards.py": {
+      "bytes": 4434,
+      "content": "from pathlib import Path\nimport hashlib,json,os,shlex,subprocess,sys,time,traceback,yaml\nR=Path(__file__).resolve().parents[1];os.chdir(R);sys.path.insert(0,str(R))\nD=R/\".7592-refresh-proof\";base=\"8d6a5e115a72ef93cfa779e15c1689957c27cc9e\"\ndef ident(p):\n b=p.read_bytes()\n return {\"blob\":hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest(),\n         \"sha256\":hashlib.sha256(b).hexdigest(),\"bytes\":len(b)}\npaths=[\"templates/china.html.j2\",\"site/china.html\",\".github/ci/legacy-jobs.yml\"]\nbefore={p:ident(R/p) for p in paths}\nassert before[\"site/china.html\"][\"blob\"]==json.loads((D/\"normalization-proof.json\").read_text())[\"final_page\"][\"git_blob\"]\nassert before[\".github/ci/legacy-jobs.yml\"][\"blob\"]==\"89853928d8bb8f352f9913026a184dd7ab8db572\"\nproof={\"base\":base,\"before\":before,\"checks\":[],\"operation\":\"macro-pr7592-refresh8d6-20261111-c4-2f7053\"}\nassert not (D/\"guard-proof.json\").exists()\nactual=json.loads((D/\"current-capture-proof.json\").read_text());synthetic=json.loads((D/\"synthetic-reused-from-0c1f310.json\").read_text())\nassert actual[\"status\"]==\"eight_actual_rest_cells_verified\" and actual[\"candidate_bytes_unchanged\"] and actual[\"browser_closed\"] and all(x[\"closed\"] for x in actual[\"servers\"])\nassert synthetic[\"status\"]==\"passed\" and len(synthetic[\"cases\"])==8 and synthetic[\"browser_closed\"] and synthetic[\"local_server_closed\"] and synthetic[\"candidate_bytes_unchanged\"]\nproof[\"current_browser_proof\"]={\"actual_cells\":len(actual[\"observed_cells\"]),\"synthetic_cases\":len(synthetic[\"cases\"]),\"receipt\":ident(D/\"current-capture-proof.json\"),\"synthetic_receipt\":ident(D/\"synthetic-reused-from-0c1f310.json\")}\ndef run(name,argv):\n started=time.monotonic()\n result=subprocess.run(argv,cwd=R,capture_output=True,text=True)\n raw=result.stdout+result.stderr\n log=D/(name+\".log\");log.write_text(raw)\n item={\"name\":name,\"argv\":argv,\"returncode\":result.returncode,\n       \"seconds\":round(time.monotonic()-started,3),\"log_sha256\":hashlib.sha256(log.read_bytes()).hexdigest()}\n proof[\"checks\"].append(item)\n print(json.dumps(item),flush=True);print(raw[-2000:],flush=True)\n return result\ndiff=subprocess.run([\"git\",\"diff\",\"--no-ext-diff\",\"--unified=0\",base,\"--\",\"templates/china.html.j2\",\"site/china.html\"],check=True,capture_output=True).stdout\ndiffpath=D/\"china-ui.diff\";diffpath.write_bytes(diff)\nproof[\"ui_diff\"]=ident(diffpath)\nprior=json.loads((D/\"guards-reused-from-0c1f310.json\").read_text())\nassert prior[\"catalog\"][\"status\"]==\"passed\"\nproof[\"catalog\"]={**prior[\"catalog\"],\"evidence_class\":\"reused_unchanged_catalog\",\"source_commit\":\"0c1f310036c20b5676c25e1ff904677243463b33\"}\nproof[\"current_browser_proof\"][\"synthetic_evidence_class\"]=\"historical_reuse_unchanged_source_fixture_and_resources\"\nproof[\"current_browser_proof\"][\"synthetic_source_commit\"]=\"0c1f310036c20b5676c25e1ff904677243463b33\"\npython=sys.executable\nrun(\"board-coherence\",[python,\"-m\",\"scripts.check_ms_board_coherence\",\"site/china.html\"])\nrun(\"inline-js\",[python,\"-m\",\"scripts.check_inline_js\",\"site/china.html\",\"templates/china.html.j2\"])\nasset_code=\"\"\"\nfrom pathlib import Path\nimport json\nfrom scripts import check_site_asset_refs as refs\nmissing=refs.find_dangling(Path('site').resolve())\nowned={target:['china.html'] for target,pages in missing.items() if 'china.html' in pages}\nhard={t:p for t,p in owned.items() if not refs._TICKER_PAGE_RE.match(t)}\nsoft={t:p for t,p in owned.items() if refs._TICKER_PAGE_RE.match(t)}\nprint(json.dumps({'scope':'china.html via existing find_dangling parser/resolver','hard':hard,'soft_ticker_warnings':soft},sort_keys=True))\nraise SystemExit(1 if hard else 0)\n\"\"\"\nrun(\"asset-references\",[python,\"-c\",asset_code])\nrun(\"design-added-lines\",[python,\"-m\",\"scripts.check_design_system\",\"--mode\",\"enforce-added\",\"--root\",str(R),\"--diff-file\",str(diffpath)])\nrun(\"visual-evidence\",[python,\"-m\",\"scripts.check_ui_visual_evidence\",\"--repo-root\",str(R),\"--diff-file\",str(diffpath)])\nproof[\"after\"]={p:ident(R/p) for p in paths}\nproof[\"candidate_bytes_unchanged\"]=proof[\"before\"]==proof[\"after\"]\nproof[\"passed\"]=proof[\"catalog\"][\"status\"]==\"passed\" and all(x[\"returncode\"]==0 for x in proof[\"checks\"]) and proof[\"candidate_bytes_unchanged\"]\n(D/\"guard-proof.json\").write_text(json.dumps(proof,indent=2)+\"\\n\")\nprint(\"GUARD_PROOF\",json.dumps({\"passed\":proof[\"passed\"],\"catalog\":proof[\"catalog\"],\"candidate_bytes_unchanged\":proof[\"candidate_bytes_unchanged\"]}),flush=True)\nraise SystemExit(0 if proof[\"passed\"] else 1)\n",
+      "git_blob": "4be0becd733770d2f30d99964f7459f9d3982919",
+      "sha256": "4adc038a88b60040c239799e61c48c24d8c8c90f3984495c224a0fe2ac8a34c9"
+    },
+    "run-proof-pipeline.py": {
+      "bytes": 3474,
+      "content": "from pathlib import Path\nimport os,sys,subprocess,json,hashlib,datetime,time,shutil\nW=Path(\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053\");P=W/'.7592-refresh-proof';OLD=Path(\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053\")/'.7592-integration-proof'\nPY=\"/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python\";OUT=W/'mockups/evidence/china-current-7592-20261111-c4-main8d6'\ndef ident(f):\n b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\nassert not (P/'pipeline-start.json').exists()\nsrc=json.loads((P/'source-composition.json').read_text());assert src['M']=='8d6a5e115a72ef93cfa779e15c1689957c27cc9e'\nshutil.copyfile(OLD/'synthetic-current-result.json',P/'synthetic-reused-from-0c1f310.json')\nshutil.copyfile(OLD/'guard-proof.json',P/'guards-reused-from-0c1f310.json')\nassert ident(P/'synthetic-reused-from-0c1f310.json')['git_blob']=='ad2ef1d8a98d413234171c8dd148344fe298f8b7'\nenv={k:os.environ[k] for k in ('HOME','LANG','TZ','PATH','USER','LOGNAME') if k in os.environ}\nfor d in ['tmp','cache','mpl','pycache']:(P/d).mkdir(exist_ok=True)\nenv.update({'PATH':str(Path(PY).parent)+':/opt/homebrew/bin:'+env.get('PATH',''),'TMPDIR':str(P/'tmp'),'XDG_CACHE_HOME':str(P/'cache'),'MPLCONFIGDIR':str(P/'mpl'),'PYTHONPYCACHEPREFIX':str(P/'pycache'),'PYTHONDONTWRITEBYTECODE':'1','GIT_NO_LAZY_FETCH':'1','GIT_OPTIONAL_LOCKS':'0','GIT_CONFIG_GLOBAL':'/dev/null','GIT_CONFIG_NOSYSTEM':'1'})\noff=['/usr/bin/sandbox-exec','-f',str(P/'offline-proof.sb')]\nsteps=[('build',[PY,str(P/'build-current.py')]),('normalize',[*off,PY,str(P/'normalize-current.py')]),('capture',[PY,str(P/'qualify-current.py'),'browser']),('guards',[*off,PY,str(P/'qualify-guards.py')])]\nreport={'operation':src['operation'],'base':src['M'],'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'steps':[]}\n(P/'pipeline-start.json').write_text(json.dumps(report)+'\\n')\nfor name,argv in steps:\n if name=='guards':\n  (OUT/'EVIDENCE.yml').write_text('schema: mastermind.page_evidence_receipt.v1\\nchanged_paths:\\n  - templates/china.html.j2\\n  - site/china.html\\nmanifest: mockups/evidence/china-current-7592-20261111-c4-main8d6/manifest.json\\n')\n log=P/('pipeline-'+name+'.log');started=time.monotonic()\n with log.open('wb') as f:\n  child=subprocess.Popen(argv,cwd=W,env=env,stdout=f,stderr=subprocess.STDOUT)\n  report['active']={'step':name,'pid':child.pid,'argv':argv};(P/'pipeline-result.json').write_text(json.dumps(report,indent=2)+'\\n')\n  print(json.dumps(report['active']),flush=True);rc=child.wait()\n report['steps'].append({'step':name,'pid':child.pid,'argv':argv,'returncode':rc,'seconds':round(time.monotonic()-started,3),'log':ident(log)})\n report.pop('active',None);(P/'pipeline-result.json').write_text(json.dumps(report,indent=2)+'\\n')\n print(json.dumps(report['steps'][-1]),flush=True)\n if rc:\n  for line in log.read_text(errors='replace').splitlines()[-20:]:print(line[:1200],flush=True)\n  raise SystemExit(rc)\nreport['finished_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();report['status']='all_requested_proof_steps_passed'\n(P/'pipeline-result.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint(json.dumps({'status':report['status'],'page':ident(W/'site/china.html'),'steps':report['steps']}),flush=True)\n",
+      "git_blob": "02318ceb5841cdf60930f54a4fbbeec840e077f5",
+      "sha256": "135844a6c4a9db4f7549bdecc83edec6ce4fd8ec42b3e133d49df9c7b7aca7d8"
+    }
+  },
+  "historical_reuse": {
+    "previous_evidence_directories": "All prior source/evidence paths retained exactly; no historical receipt or PNG rewritten",
+    "prior_312_cases": "Historical overlapping evidence, not an additional unique count",
+    "source_commit": "0c1f310036c20b5676c25e1ff904677243463b33",
+    "synthetic": {
+      "after": {
+        "engine/china_tier1.py": {
+          "bytes": 20594,
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+        },
+        "scripts/build_china.py": {
+          "bytes": 123671,
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+        },
+        "site/china.html": {
+          "bytes": 261006,
+          "git_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+          "sha256": "fa2d5e15411ca2f94e825017f7bfb3da60a2b2e417601cc70f41435abd40e6b9"
+        },
+        "templates/_aibrief_body.html.j2": {
+          "bytes": 16080,
+          "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+          "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+        },
+        "templates/_aibrief_css.j2": {
+          "bytes": 14923,
+          "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+          "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+        },
+        "templates/china.html.j2": {
+          "bytes": 383800,
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+        },
+        "templates/china_risk_state_live.js": {
+          "bytes": 12267,
+          "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+          "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1"
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "bytes": 20881,
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+        }
+      },
+      "base": "3a14c93979e780e5f880643efc88b3e1f1625f74",
+      "before": {
+        "engine/china_tier1.py": {
+          "bytes": 20594,
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+        },
+        "scripts/build_china.py": {
+          "bytes": 123671,
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+        },
+        "site/china.html": {
+          "bytes": 261006,
+          "git_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+          "sha256": "fa2d5e15411ca2f94e825017f7bfb3da60a2b2e417601cc70f41435abd40e6b9"
+        },
+        "templates/_aibrief_body.html.j2": {
+          "bytes": 16080,
+          "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+          "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+        },
+        "templates/_aibrief_css.j2": {
+          "bytes": 14923,
+          "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+          "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+        },
+        "templates/china.html.j2": {
+          "bytes": 383800,
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+        },
+        "templates/china_risk_state_live.js": {
+          "bytes": 12267,
+          "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+          "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1"
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "bytes": 20881,
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+        }
+      },
+      "blocked_requests": [],
+      "browser_closed": true,
+      "browser_executable": "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+      "browser_executable_identity": {
+        "bytes": 163329264,
+        "git_blob": "c6d3ed940fb8ae7bb8003f0e36efdcab63e0c515",
+        "sha256": "7687bff7cb2db075f250e6d5848bbc8838cac3802ac3952a899c574f8eccab45"
+      },
+      "browser_version": "151.0.7922.34",
+      "candidate_bytes_unchanged": true,
+      "cases": [
+        {
+          "applied": {
+            "locale": "en",
+            "theme": "dark"
+          },
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "height": 900,
+          "horizontal_overflow": false,
+          "locale": "en",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "Unavailable",
+          "theme": "dark",
+          "width": 1440
+        },
+        {
+          "applied": {
+            "locale": "zh",
+            "theme": "dark"
+          },
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "height": 900,
+          "horizontal_overflow": false,
+          "locale": "zh",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "暂不可用",
+          "theme": "dark",
+          "width": 1440
+        },
+        {
+          "applied": {
+            "locale": "en",
+            "theme": "light"
+          },
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "height": 900,
+          "horizontal_overflow": false,
+          "locale": "en",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "Unavailable",
+          "theme": "light",
+          "width": 1440
+        },
+        {
+          "applied": {
+            "locale": "zh",
+            "theme": "light"
+          },
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "height": 900,
+          "horizontal_overflow": false,
+          "locale": "zh",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "暂不可用",
+          "theme": "light",
+          "width": 1440
+        },
+        {
+          "applied": {
+            "locale": "en",
+            "theme": "dark"
+          },
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "height": 844,
+          "horizontal_overflow": false,
+          "locale": "en",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "Unavailable",
+          "theme": "dark",
+          "width": 390
+        },
+        {
+          "applied": {
+            "locale": "zh",
+            "theme": "dark"
+          },
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "height": 844,
+          "horizontal_overflow": false,
+          "locale": "zh",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "暂不可用",
+          "theme": "dark",
+          "width": 390
+        },
+        {
+          "applied": {
+            "locale": "en",
+            "theme": "light"
+          },
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "height": 844,
+          "horizontal_overflow": false,
+          "locale": "en",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "Unavailable",
+          "theme": "light",
+          "width": 390
+        },
+        {
+          "applied": {
+            "locale": "zh",
+            "theme": "light"
+          },
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "height": 844,
+          "horizontal_overflow": false,
+          "locale": "zh",
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "slowdown": "暂不可用",
+          "theme": "light",
+          "width": 390
+        }
+      ],
+      "console_errors": [],
+      "failed_responses": [],
+      "feed": {
+        "built": "2026-11-11T17:00:00Z",
+        "display": {
+          "label_en": "Risk-off",
+          "label_zh": "避险",
+          "score": 38,
+          "verdict": "RISK_OFF"
+        },
+        "live_active": false,
+        "nightly": {
+          "headline_en": "Synthetic refreshed headline",
+          "headline_zh": "合成刷新标题",
+          "verdict": "RISK_OFF"
+        },
+        "nightly_asof": "2026-11-11",
+        "realtime": false,
+        "schema": "china_risk_state.v1"
+      },
+      "fixture_html": {
+        "bytes": 290940,
+        "git_blob": "ea09d302afa8c4d92b4e3058522f7c85e6651285",
+        "sha256": "e13cd7fe9dec759bc2b5fca2248831ac1d5a32447328d11442c8aaa0ee911fc1"
+      },
+      "fixture_notice": "Rendered from the actual current test helper; the injected feed is synthetic.",
+      "local_server_closed": true,
+      "operation": "macro-pr7592-integration-20261111-c4-2f7053",
+      "outside_test_net_denied": {
+        "denied": true,
+        "errno": 1
+      },
+      "production": false,
+      "proof_class": "synthetic_full_page_browser",
+      "request_failures": [],
+      "schema": "mastermind.pr7592.synthetic_interaction.v1",
+      "status": "passed"
+    },
+    "synthetic_evidence_class": "unchanged source/fixture/runtime resources; no new synthetic browser execution",
+    "test_evidence_class": "unchanged source and synthetic inputs; no new test execution",
+    "tests": {
+      "base": "3a14c93979e780e5f880643efc88b3e1f1625f74",
+      "finished_at": "2026-11-11T20:59:24.115553+00:00",
+      "mode": "tests",
+      "operation": "macro-pr7592-integration-20261111-c4-2f7053",
+      "profile_sha256": "5ccec32401748e5b4f589817da89590ce7147c7921f87141b7f34cc737a704c3",
+      "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+      "source_and_input_fingerprints_unchanged": true,
+      "source_and_inputs_before": {
+        ".github/ci/legacy-jobs.yml": {
+          "bytes": 2680952,
+          "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+          "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+        },
+        "collectors/china_breadth.py": {
+          "bytes": 6539,
+          "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+          "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+        },
+        "data/china_board_breadth/breadth.parquet": {
+          "bytes": 7554,
+          "git_blob": "f53b7617fa833e6557034672e8da4b3ee1bed78c",
+          "sha256": "9a0607301e79234d02a14befcc19d9f3ec687b01f7a1834cbc4a2862273ff8a5"
+        },
+        "data/china_breadth/breadth.parquet": {
+          "bytes": 158387,
+          "git_blob": "90babb59c24b776348bef0a9fef3ae227bdd5ffe",
+          "sha256": "9338ee2ead792bbd2b84e7ccbe84874bb4a5fb6fdf549e447607c4967bccafc5"
+        },
+        "data/china_market_state/latest.json": {
+          "bytes": 10823,
+          "git_blob": "a9b0ec26aac533640fcc1e92bb68ef768226cc1b",
+          "sha256": "07921af47e5c66a14915cce7c06109d8c721b589df684082a76e2b740e72d7c6"
+        },
+        "engine/china_tier1.py": {
+          "bytes": 20594,
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+        },
+        "scripts/build_china.py": {
+          "bytes": 123671,
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+        },
+        "scripts/capture_page_evidence.py": {
+          "bytes": 114040,
+          "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+          "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+        },
+        "site/assets/css/ad3fe3b7.css": {
+          "bytes": 182997,
+          "git_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+          "sha256": "ad3fe3b731f5f8b17a26fe1653271e93320a06592bd0e6e263baafe0305a7abb"
+        },
+        "site/assets/css/f7e9b02b.css": {
+          "bytes": 1908,
+          "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+          "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+        },
+        "site/china.html": {
+          "bytes": 261006,
+          "git_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+          "sha256": "fa2d5e15411ca2f94e825017f7bfb3da60a2b2e417601cc70f41435abd40e6b9"
+        },
+        "site/factordata/china_setups.json": {
+          "bytes": 9938209,
+          "git_blob": "33ddcd6f378cfcf00f12ef67f8ecc320e9de0ec5",
+          "sha256": "9d6208cc14a31a19e73bbc0ba343fe931d1c4617e061c12b0f8a1d98e05c549a"
+        },
+        "site/factordata/china_standouts.json": {
+          "bytes": 9938209,
+          "git_blob": "33ddcd6f378cfcf00f12ef67f8ecc320e9de0ec5",
+          "sha256": "9d6208cc14a31a19e73bbc0ba343fe931d1c4617e061c12b0f8a1d98e05c549a"
+        },
+        "templates/_aibrief_body.html.j2": {
+          "bytes": 16080,
+          "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+          "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+        },
+        "templates/_aibrief_css.j2": {
+          "bytes": 14923,
+          "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+          "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+        },
+        "templates/china.html.j2": {
+          "bytes": 383800,
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "bytes": 20881,
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+        },
+        "tests/test_china_breadth_coverage.py": {
+          "bytes": 10420,
+          "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+          "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+        },
+        "tests/test_ci_pack.py": {
+          "bytes": 519446,
+          "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+          "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+        },
+        "tests/test_risk_radar_dlg_country_wiring.py": {
+          "bytes": 34010,
+          "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+          "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+        }
+      },
+      "started_at": "2026-11-11T20:56:27.189957+00:00",
+      "steps": [
+        {
+          "argv": [
+            "/usr/bin/sandbox-exec",
+            "-f",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053/.7592-integration-proof/offline-proof.sb",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "pytest",
+            "tests/test_china_archetype_d_s1.py",
+            "tests/test_risk_radar_dlg_country_wiring.py",
+            "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+            "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+            "-q",
+            "--basetemp",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053/.7592-integration-proof/pytest-current-tmp",
+            "--junitxml",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053/.7592-integration-proof/affected-render-and-packing.xml",
+            "-o",
+            "log_file=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053/.7592-integration-proof/affected-render-and-packing-pytest.log",
+            "-o",
+            "cache_dir=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-integration-20261111-c4-2f7053/.7592-integration-proof/pytest-cache"
+          ],
+          "junit": {
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "tests": 147
+          },
+          "log": {
+            "bytes": 272,
+            "git_blob": "955556664e55aff9357b44ffcb057bd0e38e1ee3",
+            "sha256": "531758564aed10bd0e84db9fb115d87409e4648487ebc1bc1c275b166ffc8a58"
+          },
+          "pid": 93645,
+          "returncode": 0,
+          "seconds": 176.887,
+          "step": "affected-render-and-packing"
+        }
+      ]
+    }
+  },
+  "input_base": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+  "input_base_tree": "428e3a334b1b131a4340de59a01c9193cff8079b",
+  "input_change": {
+    "complete_comparison_identity": {
+      "bytes": 1344084,
+      "git_blob": "3882f07f9949e68c0303998854ed2b6aa1472cd0",
+      "sha256": "945d80cbfae10486048d09a9076fb02c420bd00c702a645f643bfcaf30898c6e"
+    },
+    "delta_count": 8417,
+    "new": {
+      "bytes": 9938051,
+      "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+      "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+    },
+    "old": {
+      "bytes": 9938209,
+      "git_blob": "33ddcd6f378cfcf00f12ef67f8ecc320e9de0ec5",
+      "sha256": "9d6208cc14a31a19e73bbc0ba343fe931d1c4617e061c12b0f8a1d98e05c549a"
+    },
+    "reproduction": "Compare parsed immutable board blobs identified above; the native materialization and exact diff helper are retained.",
+    "sample": [
+      {
+        "new": -0.04,
+        "old": -0.0401,
+        "path": "/board_track/by_horizon/21d/top_decile_fwd"
+      },
+      {
+        "new": null,
+        "old": "asia",
+        "path": "/coverage/lane"
+      },
+      {
+        "new": 1655,
+        "old": 1646,
+        "path": "/data_outage/checked/universe_prev"
+      },
+      {
+        "new": 0.0,
+        "old": -0.5,
+        "path": "/data_outage/checked/universe_shrink_pct"
+      },
+      {
+        "path": "/data_outage/metrics/featured",
+        "removed": {
+          "current": 0,
+          "drop_pct": 100.0,
+          "previous": 24
+        }
+      },
+      {
+        "new": "same-day microstructure coverage 0.0% (<80%); same-day reversal input unavailable or incomplete (0.0% actionable coverage); board prices 1 session(s) behind. Probable data/collector coverage gap. The featured shelf is incomplete — treat with caution.",
+        "old": "featured 24→0 (100% drop); same-day microstructure coverage 0.0% (<80%); same-day reversal input unavailable or incomplete (0.0% actionable coverage); board prices 1 session(s) behind. Probable data/collector coverage gap. The featured shelf is incomplete — treat with caution.",
+        "path": "/data_outage/reason"
+      },
+      {
+        "new": "当日微观结构覆盖率0.0%（低于80%）；当日反转输入缺失或不完整（可操作标的覆盖率0.0%）；看板价格落后1个交易日。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。",
+        "old": "精选标的 24→0 （下降100%）；当日微观结构覆盖率0.0%（低于80%）；当日反转输入缺失或不完整（可操作标的覆盖率0.0%）；看板价格落后1个交易日。可能存在数据或采集覆盖缺口，精选区并不完整，请谨慎参考。",
+        "path": "/data_outage/reason_zh"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/0/basket_cycle/asof"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/1/basket_cycle/asof"
+      },
+      {
+        "new": 268,
+        "old": 265,
+        "path": "/forming/1/board_rank"
+      },
+      {
+        "new": 268,
+        "old": 265,
+        "path": "/forming/1/score_rank"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/2/basket_cycle/asof"
+      },
+      {
+        "new": 288,
+        "old": 286,
+        "path": "/forming/2/board_rank"
+      },
+      {
+        "new": 16.62,
+        "old": 16.72,
+        "path": "/forming/2/intel/score"
+      },
+      {
+        "new": 0.291,
+        "old": 0.292,
+        "path": "/forming/2/intel/signal_core"
+      },
+      {
+        "new": 16.62,
+        "old": 16.72,
+        "path": "/forming/2/intel_interest_score"
+      },
+      {
+        "new": 288,
+        "old": 286,
+        "path": "/forming/2/score_rank"
+      },
+      {
+        "new": "Interest 16.6 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "old": "Interest 16.7 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "path": "/forming/2/why_ranked"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/3/basket_cycle/asof"
+      },
+      {
+        "new": 292,
+        "old": 290,
+        "path": "/forming/3/board_rank"
+      },
+      {
+        "new": 292,
+        "old": 290,
+        "path": "/forming/3/score_rank"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/4/basket_cycle/asof"
+      },
+      {
+        "new": 293,
+        "old": 291,
+        "path": "/forming/4/board_rank"
+      },
+      {
+        "new": 293,
+        "old": 291,
+        "path": "/forming/4/score_rank"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/5/basket_cycle/asof"
+      },
+      {
+        "new": 294,
+        "old": 292,
+        "path": "/forming/5/board_rank"
+      },
+      {
+        "new": 294,
+        "old": 292,
+        "path": "/forming/5/score_rank"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/6/basket_cycle/asof"
+      },
+      {
+        "new": 296,
+        "old": 294,
+        "path": "/forming/6/board_rank"
+      },
+      {
+        "new": 14.14,
+        "old": 14.24,
+        "path": "/forming/6/intel/score"
+      },
+      {
+        "new": 0.247,
+        "old": 0.249,
+        "path": "/forming/6/intel/signal_core"
+      },
+      {
+        "new": 14.14,
+        "old": 14.24,
+        "path": "/forming/6/intel_interest_score"
+      },
+      {
+        "new": 296,
+        "old": 294,
+        "path": "/forming/6/score_rank"
+      },
+      {
+        "new": "Interest 14.1 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "old": "Interest 14.2 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "path": "/forming/6/why_ranked"
+      },
+      {
+        "new": "2026-11-10",
+        "old": "2026-11-09",
+        "path": "/forming/7/basket_cycle/asof"
+      },
+      {
+        "new": 297,
+        "old": 295,
+        "path": "/forming/7/board_rank"
+      },
+      {
+        "new": 24.45,
+        "old": 24.5,
+        "path": "/forming/7/intel/score"
+      },
+      {
+        "new": 24.45,
+        "old": 24.5,
+        "path": "/forming/7/intel_interest_score"
+      },
+      {
+        "new": 297,
+        "old": 295,
+        "path": "/forming/7/score_rank"
+      },
+      {
+        "new": "Interest 24.4 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "old": "Interest 24.5 (order: v3 fallback) · Prophet 52.0: signal 0.0 + entry 20.0 + runway 15.0 + bottom 8.0 + reversal 0.0",
+        "path": "/forming/7/why_ranked"
+      }
+    ]
+  },
+  "limits": [
+    "Only receiving-main data/marketing and generated site changed; complete source roots, China persisted inputs and the declared synthetic scope are identical.",
+    "The generated board JSON changed 8417 values, so old actual captures were not transferred. This directory contains eight fresh actual captures.",
+    "Twenty-four incidental tracked builder outputs were backed up and restored to input_base. Existing CSS is retained, no assets pruned.",
+    "One source-preparation attempt stopped because a declared new feature test has no main preimage. It exited1 positively; exact already-copied files and original backups were reconciled before completing the declared add.",
+    "No provider refresh, rights retry, authenticated access, manual screenshot review, production deployment, served-production acceptance, runtime performance or trading authority is established.",
+    "Current-head natural CI and existing MOG/release predicates remain required; older green CI is not acceptance of this commit."
+  ],
+  "logs": {
+    "actual-capture.log": {
+      "bytes": 766,
+      "git_blob": "9a8fc74c9ab498980503672a07ef641a8af97c55",
+      "sha256": "6d876f64c3e84d0c41d3cdcb21db50208ddf9386843c5724360645f41ccdc427",
+      "text": "outcome: captured\npages: 1  states: 8/8 captured\nmanifest: /Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/mockups/evidence/china-current-7592-20261111-c4-main8d6/manifest.json\nsmells: /Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/mockups/evidence/china-current-7592-20261111-c4-main8d6/smells.json\n{\n  \"status\": \"eight_actual_rest_cells_verified\",\n  \"capture_exit_code\": 0,\n  \"network_boundary\": {\n    \"loopback_pair\": true,\n    \"outside_test_net_denied\": true,\n    \"errno\": 1\n  },\n  \"browser_version\": \"151.0.7922.34\",\n  \"browser_closed\": true,\n  \"candidate_bytes_unchanged\": true,\n  \"servers\": [\n    {\n      \"port\": 62754,\n      \"closed\": true\n    }\n  ],\n  \"exception\": null\n}\n"
+    },
+    "asset-references.log": {
+      "bytes": 107,
+      "git_blob": "f1af097bffea19fad682e8922dd13d7e89ce93dd",
+      "sha256": "7391cd868f1563167d3e5bde52b3ba64bb074f1c71ad122bf61222f97b4517bc",
+      "text": "{\"hard\": {}, \"scope\": \"china.html via existing find_dangling parser/resolver\", \"soft_ticker_warnings\": {}}\n"
+    },
+    "board-coherence.log": {
+      "bytes": 43,
+      "git_blob": "14f26e60f48d23184776173a3fed43de523e7394",
+      "sha256": "276f3c25bc3d6d6ab6bf1b9b67f95ac821a392fb3ada516560a938858b787fb8",
+      "text": "ms-board coherence: OK (1 page(s) scanned)\n"
+    },
+    "build.log": {
+      "bytes": 2734,
+      "git_blob": "a2d0028282c8f512911c7a389ae19e5e4cf5b417",
+      "sha256": "b39c51dee694bb05b95ec52fa7a48db00684c44738137c6911f3fc7f423f3e26",
+      "text": "INFO china regime Q3 (Stagflation) conf=0.14 liq=contracting cycle=mid\nINFO cycles: loaded fitted bands from /Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/data/regime/cycle_bands_fit.json\nINFO cycles: equity dc_band override (36, 42) → (23, 44) (fitted)\nINFO cycles: equity ic_band_w override (16, 26) → (13, 25) (fitted)\nINFO cycles: loaded ladder risk calibration from /Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/data/regime/ladder_risk_calibration.json (validated=False, any_bound=False)\nWARNING organ-rider: unknown basket id 'cn_semis' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_ai_compute' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_consumer_elec' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_software' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_battery' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_solar' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_autos' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_robotics' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_baijiu' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_insurers' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_gold' — using slug as name\nWARNING organ-rider: unknown basket id 'cn_metals' — using slug as name\nINFO China theme action availability: UNAVAILABLE\nINFO risk_radar_scorecard: wrote scorecard (graded_n: us=65, cn=39, hk=44, ca=39, kr=27, jp=25, tw=27, in=26, au=31, gb=29, ez=29)\nINFO china leaderboard: no-network rerender; skipping ephemeral fetch\nINFO china alpha: 1707 names, 11 sectors\nINFO china stock library: no-network rerender; reusing persisted board\nWARNING china reversal: too few names after screens (0)\nINFO china lowvol: 1713 names, 16 in sleeve (screened {'st': 1, 'illiquid': 0, 'flat': 1})\nINFO cn theme tape: 5 themes shown\nINFO using persisted China Prophet v2 fallback (0 featured)\nINFO china stocks: reversion_desk loaded (0 picks)\nINFO china score_log: last 11 of 75 rows -> ms_history\nINFO theme_graph.rights_use: capture refused (SOURCE_FAMILY_UNRESOLVED)\nINFO W3C capture refused: ['SOURCE_FAMILY_UNRESOLVED']\nINFO W3C China source unavailable: ['CAPTURE_RIGHTS_UNAVAILABLE']\nINFO wrote site/china.html (419 KB, 16 sectors)\nINFO wrote site/china_news.html (72 KB)\nINFO wrote site/china_stocks.html (2545 KB)\nINFO wrote site/china_lookup.html + chinastockdata/\nINFO wrote china_history.html (117 regime periods)\nINFO china sector drill-down: constituent panel = china_search (1855 names)\nINFO wrote 16 china sector pages\n"
+    },
+    "design-added-lines.log": {
+      "bytes": 279,
+      "git_blob": "a86cf22a991f3ffcb2c8e40aeeaed7fefb30c4f4",
+      "sha256": "37aeb0da115470c281cd507407b8975e19c5169d9836a625402f7807c30290e0",
+      "text": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25294 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25294)\n"
+    },
+    "inline-js.log": {
+      "bytes": 138,
+      "git_blob": "0f00e08c0a904683bd10fccd3625ca8382ad805a",
+      "sha256": "0e8571fe20cf5fa45be716cdfaf21dc75dd372202afc8431a53acc8da177eff4",
+      "text": "check_inline_js: OK — checked 2 file(s) under site/china.html, templates/china.html.j2; inline scripts and on*= handlers parse cleanly.\n"
+    },
+    "visual-evidence.log": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
+  },
+  "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+  "original_head": "0c1f310036c20b5676c25e1ff904677243463b33",
+  "production": false,
+  "receipt_identities": {
+    "browser-qualification.json": {
+      "bytes": 5784,
+      "git_blob": "59d0a1311a6f6b5b8c6a580e84ab07a28b780a1e",
+      "sha256": "79e9e4e1038aeed2fd885bb274fcd73fb9e495addd349ba0688dd4b5dc454afe"
+    },
+    "build-result.json": {
+      "bytes": 6462,
+      "git_blob": "ce7b566d78b3041a2d5713b400a0377909de29ce",
+      "sha256": "33ad6656353272662e16035074fd2debed011f325a6ba045b5fc261cd1d2e3d7"
+    },
+    "current-capture-proof.json": {
+      "bytes": 19392,
+      "git_blob": "7545cd0f1162dc13d6f4c26427d95a0fdbe6dce2",
+      "sha256": "87e33999d7a39be0293de0628a51050c4d00405478bec30508b694d9b4572474"
+    },
+    "guard-proof.json": {
+      "bytes": 5933,
+      "git_blob": "7707f8194691ecb46006c78bb20e26412cc4e948",
+      "sha256": "5750eea9decb20aa13ce20a0324f340058333ed39817d32d2c15ba5bbc83b98c"
+    },
+    "normalization-proof.json": {
+      "bytes": 13239,
+      "git_blob": "1887b7cb42f4337be7df4c35f7b7202e7b0406b5",
+      "sha256": "a2d7543c094a43ef105a5f9aa908287f31535bd72008a1b37ff487ae54076496"
+    },
+    "pipeline-result.json": {
+      "bytes": 3017,
+      "git_blob": "4dc532f53ded1c0cb6f94e5f36c8e7190d2d518c",
+      "sha256": "735e23dfa9b49c2557a0c554f276235e41ace50f10624dfb7246f8c1e484d2c3"
+    },
+    "source-composition.json": {
+      "bytes": 33058,
+      "git_blob": "33749d50d795e070ca8fa07a27486b05ca19968a",
+      "sha256": "479fd534108636e405d67ad36a92b8bf259313a041e56506ce4a1882c793612f"
+    },
+    "source-proof-reuse.json": {
+      "bytes": 16519,
+      "git_blob": "563e68e718a5f337ddb18c1cc88defe5aa5ffb14",
+      "sha256": "03640e6d1f48e3fc34cd035886ad744133c5293e47f1c1f94523cc1c1812c1b7"
+    }
+  },
+  "recorded_at": "2026-11-11T21:49:51.978699+00:00",
+  "schema": "mastermind.pr7592.current_build.v1",
+  "source_composition": {
+    "B": "3a14c93979e780e5f880643efc88b3e1f1625f74",
+    "H": "0c1f310036c20b5676c25e1ff904677243463b33",
+    "M": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "completed_at": "2026-11-11T21:39:46.121966+00:00",
+    "counts": {
+      "already_main": 1,
+      "compose_page": 1,
+      "reuse_candidate": 98
+    },
+    "input_dependencies": {
+      "data/china_board_breadth/breadth.parquet": {
+        "bytes": 7554,
+        "git_blob": "f53b7617fa833e6557034672e8da4b3ee1bed78c",
+        "sha256": "9a0607301e79234d02a14befcc19d9f3ec687b01f7a1834cbc4a2862273ff8a5"
+      },
+      "data/china_breadth/breadth.parquet": {
+        "bytes": 158387,
+        "git_blob": "90babb59c24b776348bef0a9fef3ae227bdd5ffe",
+        "sha256": "9338ee2ead792bbd2b84e7ccbe84874bb4a5fb6fdf549e447607c4967bccafc5"
+      },
+      "data/china_market_state/latest.json": {
+        "bytes": 10823,
+        "git_blob": "a9b0ec26aac533640fcc1e92bb68ef768226cc1b",
+        "sha256": "07921af47e5c66a14915cce7c06109d8c721b589df684082a76e2b740e72d7c6"
+      },
+      "scripts/capture_page_evidence.py": {
+        "bytes": 114040,
+        "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+        "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+      },
+      "site/factordata/china_setups.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "site/factordata/china_standouts.json": {
+        "bytes": 9938051,
+        "git_blob": "3757e2df5136a145b05693f0be231fc4eb652f81",
+        "sha256": "56c9dbbec28cbe1885354b3c88d281088fc73d104ceae9d8294d787c1d41c103"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      }
+    },
+    "materialization": [
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "scripts/worktree_sparse.py",
+          "add",
+          "data"
+        ],
+        "log": {
+          "bytes": 35,
+          "git_blob": "cfa58fa4eefd76ab72489acb8756fc8c0ff9ae47",
+          "sha256": "3371430cd9db274673d915a50dc14a3c5bf1e19c80eb9f295233d817fdd3744b"
+        },
+        "pid": 22910,
+        "returncode": 0,
+        "seconds": 46.992
+      },
+      {
+        "argv": [
+          "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+          "scripts/worktree_sparse.py",
+          "add",
+          "mockups"
+        ],
+        "log": {
+          "bytes": 38,
+          "git_blob": "0aea5827561eaeecedc84748fd0ba99a7624edc6",
+          "sha256": "ad48e96188fc9278fdfb5df4643551875fb7e4846c97bc675320cf0641155a15"
+        },
+        "pid": 25309,
+        "returncode": 0,
+        "seconds": 17.384
+      }
+    ],
+    "operation": "macro-pr7592-refresh8d6-20261111-c4-2f7053",
+    "preparation_recovery": {
+      "cause": "A deliberately new feature test has no receiving-main preimage; preparation incorrectly assumed every source path exists.",
+      "exit_code": 1,
+      "log": "[Reading 14 new lines (total: 14 lines)]\n\nTraceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/prepare-source.py\", line 13, in <module>\n    assert ident(f)['git_blob']==plan['main_source_entries'][row['path']]['sha'],row['path']\n           ~~~~~^^^\n  File \"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/.7592-refresh-proof/prepare-source.py\", line 7, in ident\n    b=f.read_bytes();return {'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py\", line 777, in read_bytes\n    with self.open(mode='rb', buffering=0) as f:\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py\", line 771, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr7592-refresh8d6-20261111-c4-2f7053/tests/test_china_breadth_coverage.py'\n\n✅ Process completed with exit code 1 (runtime: 0.68s)",
+      "phase": "source composition before data/mockups materialization",
+      "pid": 20560,
+      "repair": "Reconcile each exact target. Preserve already-applied exact source files, require existing original backups to match main, and add only the declared new test. No ref or execution replay."
+    },
+    "rows": [
+      {
+        "candidate_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "b68f93a812c85ddaea5dad71c295c51659b7d371",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": ".github/ci/legacy-jobs.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c5029a0bafb4407e4d742e7ba1ba66f0e1a62951",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "agentos/decisions/DEC-CHINA-INTEGRITY-EXCEPTIONAL-REVIEW-WAIVER-20260921.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "f0ade6de9a3755189c7ab2b688b5deb832b85ea4",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "agentos/handoffs/GREY-DEER-CHINA-MACRO-INTEGRITY-2026-09-21.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "11af432f69520932c0f474e007b0c1d88d6e10f7",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "collectors/china_breadth.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "c3c7b544e15cad901e68ad909984d54c781071a7",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "engine/china_tier1.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "9045c9a033d3be4d73ffda4491fbcd1abbb3a751",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/4d3beb54a580c2f1.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c93bece4ee311ca144d601dafb863cc8740baf8e",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/5c8184306806daa0.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "633459d39bc5ad3735ec4fd8fb77c5526e290b84",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/76c33b44eeebbaaa.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "eff48074b70168bb065bc0df46b9cb5ae411ba0b",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/8b0bc19f1ac414ff.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "65edc1b4bd3a8c178c9daf2b30c29ccc95b0d2cc",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "2bd94f117560eec0da69b03409259e0de85720d6",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/README.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "db5f2b237d3326ab60022207be4f3cba2383bd39",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/bdc6034f0e536bec.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "dabfc46a97826ed8a3abcf41887105b158b05017",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/build-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "01479df8ee59aaeed0887fa5a10f7258a01a778e",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/d09140124c854869.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "d0419136142fda6bde75901ad2cf08aaed20ca1a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/d5caf1152a8c7954.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "d36f5b524896765b313f506397138ff7ba7f11a6",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/f6f6e8b9e1226bd6.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ad2ef1d8a98d413234171c8dd148344fe298f8b7",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/interaction-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "583f6efbd98b0439a1cd5bb83e0d4ab42a0c8358",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "2e8c166106dac6260e18479b619a65e25b14a107",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main3a14/smells.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "0ee346100a61657092c45cd699571d41c6f260e0",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/0315198ee5c62e96.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "04945ed1bc34fabc1d4f7fcd947d7a8408f1c634",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/2bf40d6cd67f378e.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "1f4bf0ecc83820c1db79b4c96ef95e08a8b3d7aa",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/4e10043e3f818d95.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "bdf5a6b44f87256b32d9b7fd1d74f47468269a0a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/4e3fe7dd23d9d7d5.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "469405d77e4a793e65e509ac1913effef41b93c9",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/795769bca53f6e84.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ec3508ad456905cdc94e6303b6946e30eac600a9",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/881ff636dd0fbd41.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "11b08607c79d0e1461f744b5a9ce8e00382a07d6",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b2edfd3e8652f4aad43b529fb339bed0e6dfbcd9",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/be4ac8c17625e6c1.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "aea5fe537ef6e58d480d5798022d15fc01b80f3a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/build-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "9afd0730a2fb05ea9ff75d348001710369a403fb",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/f30e177103b1e690.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "688d5b2acb497da2b233efc1682cb20f81c79265",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ff45650bf0d8b13ac75ee7fe4bc96013437334fd",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4-main63/smells.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "492abd4358d60472b154b7e4933f800c752ca5d2",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/2ac15102181eb5e6.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "a401db98b2d6693c2165907776ae16db6ca98107",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/36afde8abd7be949.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "94341754a7a4d23fe20a059cea58dfba442585ec",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/87e6b32908cdd03a.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "822686719ca860e83bc806133a1299866b3e7a33",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/883a50cab0005fb4.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b37718a13ff3928557e85d28057ce1d9f100d399",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "4ac813850c966591fc010f559d80811a752fcbc9",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/bba85f5358f874a0.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "8ebe33f22b228efc2cac7b04f7f90c19cd4eb3b7",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/build-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "23f1c853460e1e26d91b0b5f1b678b0474543093",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/c1c59139e7456afd.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "3e963fd5474e027752b91cdcc9646ea422265d10",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/c66e1e19523b0590.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "abd86a9690a127d18bb27d5b1ffd6b1bc13c3926",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/e41a3a846fa4e3b8.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c89272f0c01f09508619dd1ea8340a94d68069d3",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/interaction-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ae63dc35b896299c1dc98985606911b93b93b198",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "cdd9ffe25eaa99d33a89154f4a24117500604098",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-current-7592-20261111-c4/smells.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c5b65e9cef142fe1110c78a0dab4a4e65168726a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/030c8f73f5054df2.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "bd843d5c10ab99038c9e3b6a9f938500a94dd222",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/24ddca68688f532c.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "656956093ebd18e40ee83cdbd718f58046d1364a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/37d0b05feb44b662.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "016912822977bd4c8930699ebdbf69e3d8453851",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/41a400e21a43e2c3.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "bc7171e28ba07a92fb7c4795728113210ae08d7d",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/7013b552c58f6f65.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "96d8a96f0f9eac38fa041fe03b07e04629ffd1ae",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/793ed56d3312c3c0.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "21219841dde7d257bc3a57f8612dad2348382a26",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/8091ca9f83871a70.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b9b61daa34c5dba8be9d06bfa4a81571b734603b",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "3245b8de29a554b2f61c9762b8bf3279169badbb",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/adac5f720a26328c.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "7773b56efcd10662b94e1b311a0c561074d4e4c0",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/build-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "afc3779dd53586e1d8ee4283b92b7b69c077d898",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ade15db067dbc99507f4f8c797e9216fa51be50b",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-frozen-real-build-7592/smells.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "af8502357dcac35e075488f616aefa29aaeeca10",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/5007563ff7c4daf5.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "2db87624d73679ed26ab6b101da7cf727be3a157",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/7071b49ad40eca58.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "96c4cdee15ffc89ef1e4e20eaf01a87c4d36fe1c",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/8a616cd8ae908db1.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "42bc3658dcb4951db5eeb6098f1c24a6176e3040",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/8bbf31d0aa4aac20.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "146eb0079668c0881728f50690e464c00cf241b7",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c466b2a9be06b4a203e3a08aac69b87bb977594c",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/ad29d08aada90058.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "28bf9f6e827c1ee37d16c2805642b57ecc8b6ae1",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/b36a5c6eef647bef.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "a2562b0448e9eba831b8c76329d98f766cff06cb",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/cdfacb3a9f07e4d0.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ebb2bd3d747477e73a035ba111fcb11eab8b492f",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/fbb10f639cdfdea8.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "e2de8b7da420f0fc549c061a23fe27ae56726153",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/interaction-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "275fce170895289987d36771e28282f36069906a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-integrity-7592/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "0c02c9b250b9e9855fdbcebbe95845fbc4644dae",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/14684159273a7d63.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "74b84d9c7cf2863a963e690b6c67ab922170fffe",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/1fdfcb9ba60886f2.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "988c33b86b9337820c891207ee2731ca09f52127",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/4a5105224d743639.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "79dbc28cf488a72cba938fe488ab2c89cb1a6e4d",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/5e7e8111e5cabc84.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b0fc30b05eca5bf8c773cc971230cafd99155fb1",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/79de2471b3eaa396.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "72e697cb1e253e4b11a40cee300fc2696f5eea58",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/8be91d2ca6d6f94d.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "f987ceb176953a404b5808d8047e2178e8c6dfd0",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/EVIDENCE.yml",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "1c83d176fc8c9d61f9986eded6655a38b364d8f9",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/build-proof.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "7ebc5759b2ab707cf3b61a018356aa32b560bb1a",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/c009bdcc48901604.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "a12110c7a18f52f57a92a94f835a59616c488320",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/dfdc04a19019bbc8.png",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c5255cf2c21d32d00f303fe598c1c17b57508d29",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/manifest.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "9aa5207aac7315b9dbd76ebd272ad2aa7f235a89",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "mockups/evidence/china-normalized-release-7592/smells.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "974af44d2ee0598f3d2418c420f0e1bb47520113",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/NORMALIZED_RELEASE.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "4ec20548fe59a16b01066c1c64cb9aac54861e9d",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/README.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "3155ad830b8c74138991685c46fe9503124825af",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/REAL_BUILD_PROOF.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b887e889f2a75d1e413cc456a3da8c2e6cd8d9eb",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/REVIEW_REPAIR.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "6c8a8f9388494759e3c331afc3aaf88cdba555e3",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/UI_TRUTH_REPAIR.md",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "6d87f26059d0721ad9cb46d7fbf92b3e7d4d5bdf",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/capture_truth_cases.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "6822605c6b2e65509df47f6b01ec2b11edd4ed7e",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/independent_review_r1.txt",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "e2f380f56e9398dd0f63933978e844ce3359aba4",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/normalized-release-receipt.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "c6ca5a412bf8281152a8f8c3007345237b465046",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/real_input_probe.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "4fd9d6bb4e837971abc10932a6fe12a3cc0f861c",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/real_input_receipt.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "4ed7bd297ddf0ab84e95409cf9b96326316cabab",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/real_slowdown_receipt.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ffc951b558d4c685bc06ba3d1e3a081d952de4a3",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "research/grey_deer/china_breadth_coverage_20260921/review_repair_receipt.json",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "b09987f6f7d159e253e7adbb8afe5c04f91b6553",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "scripts/build_china.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "94d6c6015718cdf9e0131dcfc40a1de79d0a3dc3",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "site/assets/css/ad3fe3b7.css",
+        "strategy": "already_main"
+      },
+      {
+        "candidate_blob": "31a9429a98e7cd0f0ae4a61bf9b34ee074fd9d14",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "site/assets/css/fea32970.css",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "32dec91e98f21c757508b67f3ddb6f152e25fe05",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "site/china.html",
+        "strategy": "compose_page"
+      },
+      {
+        "candidate_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "cb8b6c8741cd85a6637d76a24fe7d4e4a7b8b00f",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "templates/china.html.j2",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "baa50c2643b34b76814a2876c6462a134e60365d",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "tests/test_china_archetype_d_s1.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "main_entry": null,
+        "mode": "100644",
+        "path": "tests/test_china_breadth_coverage.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "89c9d99733f7c7559646401e2dbf06dfe8595097",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "tests/test_ci_pack.py",
+        "strategy": "reuse_candidate"
+      },
+      {
+        "candidate_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "main_entry": {
+          "mode": "100644",
+          "sha": "dc083091231beb6f079ee063220f11d6a23a2ebe",
+          "type": "blob"
+        },
+        "mode": "100644",
+        "path": "tests/test_risk_radar_dlg_country_wiring.py",
+        "strategy": "reuse_candidate"
+      }
+    ],
+    "source": [
+      {
+        "bytes": 2680952,
+        "git_blob": "89853928d8bb8f352f9913026a184dd7ab8db572",
+        "path": ".github/ci/legacy-jobs.yml",
+        "sha256": "0003134e8159d9a1f4371608295fc3cfd4fa150c3fc442de4a199ea93af82928"
+      },
+      {
+        "bytes": 6539,
+        "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+        "path": "collectors/china_breadth.py",
+        "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+      },
+      {
+        "bytes": 20594,
+        "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+        "path": "engine/china_tier1.py",
+        "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+      },
+      {
+        "bytes": 123671,
+        "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+        "path": "scripts/build_china.py",
+        "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+      },
+      {
+        "bytes": 383800,
+        "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+        "path": "templates/china.html.j2",
+        "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+      },
+      {
+        "bytes": 20881,
+        "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+        "path": "tests/test_china_archetype_d_s1.py",
+        "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+      },
+      {
+        "bytes": 10420,
+        "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+        "path": "tests/test_china_breadth_coverage.py",
+        "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+      },
+      {
+        "bytes": 519446,
+        "git_blob": "746b2722f3370f4a095814ddc9715b47fbf5de7c",
+        "path": "tests/test_ci_pack.py",
+        "sha256": "84e24493c6599817392f1335f386e5b4a1ded457584772bbb0fb9ca51e014ce8"
+      },
+      {
+        "bytes": 34010,
+        "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+        "path": "tests/test_risk_radar_dlg_country_wiring.py",
+        "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+      }
+    ]
+  },
+  "source_pin": "517138ca65c14ad4262f7f937352ae08a0415d76",
+  "source_proof_reuse": {
+    "changed_data_children": [
+      "marketing"
+    ],
+    "changed_root_children": [
+      "data",
+      "site"
+    ],
+    "data_trees": [
+      {
+        "entries": 467,
+        "sha": "6d34a62e201cb8482dcc9a88316d55ac8e7438b6",
+        "truncated": false
+      },
+      {
+        "entries": 467,
+        "sha": "49bc12bf6f7be3cc55e97a0fe7ec0cb48406d1dd",
+        "truncated": false
+      }
+    ],
+    "limits": "Historical accepted source/synthetic scope only; actual board JSON differs, requiring fresh real page build/capture.",
+    "previous_qualification_commit": "0c1f310036c20b5676c25e1ff904677243463b33",
+    "qualified_main": "3a14c93979e780e5f880643efc88b3e1f1625f74",
+    "receiving_main": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "reused_synthetic_cases": 8,
+    "reused_test_cases": 147,
+    "root_trees": [
+      {
+        "entries": 57,
+        "sha": "19db4b502ee33fe692cd124356581426b57f3c43",
+        "truncated": false
+      },
+      {
+        "entries": 57,
+        "sha": "428e3a334b1b131a4340de59a01c9193cff8079b",
+        "truncated": false
+      }
+    ],
+    "unchanged_root_children": [
+      {
+        "mode": "040000",
+        "path": ".agents",
+        "sha": "548266517bd4009e524650700ebc36d25ce8520a",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/548266517bd4009e524650700ebc36d25ce8520a"
+      },
+      {
+        "mode": "040000",
+        "path": ".claude",
+        "sha": "4160df0a1278e5eccad189059eaf296ca10e1509",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/4160df0a1278e5eccad189059eaf296ca10e1509"
+      },
+      {
+        "mode": "040000",
+        "path": ".codex",
+        "sha": "3b04426ffedd9382a7118d54520e459eb01a9d97",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/3b04426ffedd9382a7118d54520e459eb01a9d97"
+      },
+      {
+        "mode": "040000",
+        "path": ".cursor",
+        "sha": "f54853f04cc203414e9476533653091bb3e3bd89",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/f54853f04cc203414e9476533653091bb3e3bd89"
+      },
+      {
+        "mode": "100644",
+        "path": ".env.example",
+        "sha": "a7b55ca3636601e6b99d59835ca6376ea6d8dd47",
+        "size": 1598,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/a7b55ca3636601e6b99d59835ca6376ea6d8dd47"
+      },
+      {
+        "mode": "100644",
+        "path": ".gitattributes",
+        "sha": "1e2c31c071ba53a2e1b284a3c0b8891a61200eef",
+        "size": 8102,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/1e2c31c071ba53a2e1b284a3c0b8891a61200eef"
+      },
+      {
+        "mode": "040000",
+        "path": ".github",
+        "sha": "ec402e5518e567dee7c2231a7612a0993570b721",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/ec402e5518e567dee7c2231a7612a0993570b721"
+      },
+      {
+        "mode": "100644",
+        "path": ".gitignore",
+        "sha": "c18341fc539ff82f0c31461ffb8489666d8cb0b8",
+        "size": 44061,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/c18341fc539ff82f0c31461ffb8489666d8cb0b8"
+      },
+      {
+        "mode": "040000",
+        "path": ".grok",
+        "sha": "896a2ac9ba085f1dddb9acb5e2a4b88fcd6076e4",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/896a2ac9ba085f1dddb9acb5e2a4b88fcd6076e4"
+      },
+      {
+        "mode": "040000",
+        "path": ".warp",
+        "sha": "c3f10e518fccdd6bb1f9db3b6449a596e80f1c58",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/c3f10e518fccdd6bb1f9db3b6449a596e80f1c58"
+      },
+      {
+        "mode": "100644",
+        "path": "ACCOUNTS_SETUP.md",
+        "sha": "a1d0022fa7ce6aa93939a2fbba08bdde2a2b7bb3",
+        "size": 7704,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/a1d0022fa7ce6aa93939a2fbba08bdde2a2b7bb3"
+      },
+      {
+        "mode": "100644",
+        "path": "AGENTS.md",
+        "sha": "547589f46c66a36ac02fc7313245b35f0d7fcd77",
+        "size": 35364,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/547589f46c66a36ac02fc7313245b35f0d7fcd77"
+      },
+      {
+        "mode": "100644",
+        "path": "CLAUDE.md",
+        "sha": "755b3b612ffe243e3bd4bbb2a40563d10b7fe588",
+        "size": 27722,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/755b3b612ffe243e3bd4bbb2a40563d10b7fe588"
+      },
+      {
+        "mode": "100644",
+        "path": "DECISIONS.md",
+        "sha": "8cd9830cc6c70075b02722e8eaba989f0158f280",
+        "size": 114002,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/8cd9830cc6c70075b02722e8eaba989f0158f280"
+      },
+      {
+        "mode": "100644",
+        "path": "LIMITATIONS.md",
+        "sha": "155cc00de7a0e810d8c13391472f0ee747bbf337",
+        "size": 38960,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/155cc00de7a0e810d8c13391472f0ee747bbf337"
+      },
+      {
+        "mode": "100644",
+        "path": "MIGRATION.md",
+        "sha": "5a36816aa69c28e20f468a5c89140d027299f198",
+        "size": 13076,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/5a36816aa69c28e20f468a5c89140d027299f198"
+      },
+      {
+        "mode": "100644",
+        "path": "README.md",
+        "sha": "35aab0531188fa1431fa5d8ec8d311fa112f9129",
+        "size": 13206,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/35aab0531188fa1431fa5d8ec8d311fa112f9129"
+      },
+      {
+        "mode": "100644",
+        "path": "WATCHLIST.md",
+        "sha": "46390e6047f9f2e013daa80223c7057534de70ac",
+        "size": 8266,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/46390e6047f9f2e013daa80223c7057534de70ac"
+      },
+      {
+        "mode": "040000",
+        "path": "admin",
+        "sha": "3186b13c9daa7baa386b8c8649fd8c5f033199d3",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/3186b13c9daa7baa386b8c8649fd8c5f033199d3"
+      },
+      {
+        "mode": "040000",
+        "path": "agentos",
+        "sha": "a10483aed70edcc67748f5ce49ee8e496c548450",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/a10483aed70edcc67748f5ce49ee8e496c548450"
+      },
+      {
+        "mode": "040000",
+        "path": "app",
+        "sha": "44b3bc33841e2493a6ebff305170681cc0db42db",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/44b3bc33841e2493a6ebff305170681cc0db42db"
+      },
+      {
+        "mode": "040000",
+        "path": "artifacts",
+        "sha": "39e70b72717a7c052eca2f7ba0a49f43f00ec4aa",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/39e70b72717a7c052eca2f7ba0a49f43f00ec4aa"
+      },
+      {
+        "mode": "040000",
+        "path": "browser",
+        "sha": "4073e957df0349ab819af9aa16160d06f4b7c086",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/4073e957df0349ab819af9aa16160d06f4b7c086"
+      },
+      {
+        "mode": "040000",
+        "path": "calibration",
+        "sha": "52cb1349ceb46abd41f3e54e1bd1c8abd9350304",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/52cb1349ceb46abd41f3e54e1bd1c8abd9350304"
+      },
+      {
+        "mode": "040000",
+        "path": "collectors",
+        "sha": "60dc2d12dd31b5cfa46ddb1ff43c580e4bda0636",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/60dc2d12dd31b5cfa46ddb1ff43c580e4bda0636"
+      },
+      {
+        "mode": "100644",
+        "path": "config.yml",
+        "sha": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "size": 496073,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/5be75249c98033d7ee0fbe55928713b1f50af627"
+      },
+      {
+        "mode": "040000",
+        "path": "config",
+        "sha": "92f117f67e19f919001aefef280aaa998f3445b2",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/92f117f67e19f919001aefef280aaa998f3445b2"
+      },
+      {
+        "mode": "040000",
+        "path": "content",
+        "sha": "c0352cb99f088366fcc438e0caf94c9c8de2e876",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/c0352cb99f088366fcc438e0caf94c9c8de2e876"
+      },
+      {
+        "mode": "040000",
+        "path": "contracts",
+        "sha": "052ea4463c266720eec553ebe7d765157a29330e",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/052ea4463c266720eec553ebe7d765157a29330e"
+      },
+      {
+        "mode": "040000",
+        "path": "design_refs",
+        "sha": "281baafc63d0d473ed1dc9a66136e5aef144d9ba",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/281baafc63d0d473ed1dc9a66136e5aef144d9ba"
+      },
+      {
+        "mode": "040000",
+        "path": "docs",
+        "sha": "bc01f1627c3b735360af35ff379f5f0b4981f2ed",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/bc01f1627c3b735360af35ff379f5f0b4981f2ed"
+      },
+      {
+        "mode": "040000",
+        "path": "engine",
+        "sha": "07e13ee2fcead2bf1f43f1ad7ec9cba1b1b7163a",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/07e13ee2fcead2bf1f43f1ad7ec9cba1b1b7163a"
+      },
+      {
+        "mode": "040000",
+        "path": "finviz_themes",
+        "sha": "c85e9e247b3cd2e77116d7c692c6fe9958879c73",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/c85e9e247b3cd2e77116d7c692c6fe9958879c73"
+      },
+      {
+        "mode": "040000",
+        "path": "handoffs",
+        "sha": "43c222c1aaf0338348794fd06e35e2a175199022",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/43c222c1aaf0338348794fd06e35e2a175199022"
+      },
+      {
+        "mode": "040000",
+        "path": "knowledge",
+        "sha": "bffbe02075c38a9bd9d9379d5cf201af577244b7",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/bffbe02075c38a9bd9d9379d5cf201af577244b7"
+      },
+      {
+        "mode": "040000",
+        "path": "lib",
+        "sha": "829af95dc42f067a2043ffeac2f207a55be73d8f",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/829af95dc42f067a2043ffeac2f207a55be73d8f"
+      },
+      {
+        "mode": "040000",
+        "path": "mockups",
+        "sha": "47e76a276f607ea5427399b5ad9bb88117e30c4e",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/47e76a276f607ea5427399b5ad9bb88117e30c4e"
+      },
+      {
+        "mode": "040000",
+        "path": "ops",
+        "sha": "da7c302f3da307647f73fc849280c5eee9bf3f6e",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/da7c302f3da307647f73fc849280c5eee9bf3f6e"
+      },
+      {
+        "mode": "040000",
+        "path": "orch",
+        "sha": "ea22e53d5b164124b10aa91417546eaffd901333",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/ea22e53d5b164124b10aa91417546eaffd901333"
+      },
+      {
+        "mode": "040000",
+        "path": "plugins",
+        "sha": "c0b6fad96299f83960c57c95ba9ebcfe026f2788",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/c0b6fad96299f83960c57c95ba9ebcfe026f2788"
+      },
+      {
+        "mode": "040000",
+        "path": "properties",
+        "sha": "216fe51d45f86c5c5e83d9f8d5affeeaf30e18d8",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/216fe51d45f86c5c5e83d9f8d5affeeaf30e18d8"
+      },
+      {
+        "mode": "040000",
+        "path": "reports",
+        "sha": "b3085e8759b20d5918d96942724c962526ea9fdb",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/b3085e8759b20d5918d96942724c962526ea9fdb"
+      },
+      {
+        "mode": "100644",
+        "path": "requirements.txt",
+        "sha": "bdb554b5a46f8f717ab0e1db3c7ed9c27e57a67a",
+        "size": 3510,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/bdb554b5a46f8f717ab0e1db3c7ed9c27e57a67a"
+      },
+      {
+        "mode": "040000",
+        "path": "requirements",
+        "sha": "162d87334ba367c41de2faec9f1a17290c2e68bb",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/162d87334ba367c41de2faec9f1a17290c2e68bb"
+      },
+      {
+        "mode": "040000",
+        "path": "research",
+        "sha": "d40f9ed34a262d20fff430f7f384c6790f27788e",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/d40f9ed34a262d20fff430f7f384c6790f27788e"
+      },
+      {
+        "mode": "040000",
+        "path": "returns",
+        "sha": "f2485ea401ec2d036399bac7d7aa68b9a128002c",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/f2485ea401ec2d036399bac7d7aa68b9a128002c"
+      },
+      {
+        "mode": "040000",
+        "path": "scripts",
+        "sha": "acbe7f767d98d3df71b1251b509ebbe933a5601d",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/acbe7f767d98d3df71b1251b509ebbe933a5601d"
+      },
+      {
+        "mode": "040000",
+        "path": "templates",
+        "sha": "37f873a4aa535b3e0d6ed00e24910e48740956f2",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/37f873a4aa535b3e0d6ed00e24910e48740956f2"
+      },
+      {
+        "mode": "040000",
+        "path": "tests",
+        "sha": "aec07f3e6e3be556bc0c8d4379f325e95f950513",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/aec07f3e6e3be556bc0c8d4379f325e95f950513"
+      },
+      {
+        "mode": "040000",
+        "path": "tools",
+        "sha": "d154cd5e0f5fb545513a35fab8a521482182473d",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/d154cd5e0f5fb545513a35fab8a521482182473d"
+      },
+      {
+        "mode": "040000",
+        "path": "ux-evidence",
+        "sha": "71cac55aa587afe801f381ebb0a9447b23568153",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/71cac55aa587afe801f381ebb0a9447b23568153"
+      },
+      {
+        "mode": "100644",
+        "path": "vercel.json",
+        "sha": "87056607badcfceb2dddb95864942180b10c438f",
+        "size": 104,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/87056607badcfceb2dddb95864942180b10c438f"
+      },
+      {
+        "mode": "040000",
+        "path": "verify_shots",
+        "sha": "c869562b5175562177b21e69819e7e7e1dc28859",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/c869562b5175562177b21e69819e7e7e1dc28859"
+      },
+      {
+        "mode": "040000",
+        "path": "worker",
+        "sha": "e64ab94e77e84b4fc7ba09041f25d4117e9d9b5c",
+        "type": "tree",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/e64ab94e77e84b4fc7ba09041f25d4117e9d9b5c"
+      },
+      {
+        "mode": "100644",
+        "path": "wrangler.toml",
+        "sha": "9ffb466ccb7a6eaecea16e8cab0c4e65fb2146cf",
+        "size": 1840,
+        "type": "blob",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/9ffb466ccb7a6eaecea16e8cab0c4e65fb2146cf"
+      }
+    ]
+  },
+  "status": "qualified_generated_input_refresh"
+}

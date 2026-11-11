@@ -1,0 +1,27 @@
+{
+  "base_head": "f03d40273145356bde2f73ef8b979f5e5a9754c6",
+  "source_sha256": {
+    "collectors/china_breadth.py": "03a7555336a4f35e73590629de6bd5c224fa9b32244a9981a9e2f4f3db989c76",
+    "tests/test_china_breadth_coverage.py": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+  },
+  "review": {
+    "session": "6eec35bc-5e25-4ca5-9c8a-cfd4eff880cb",
+    "model": [
+      "claude-opus-5"
+    ],
+    "verdict": "PARTIAL",
+    "num_turns": 21,
+    "duration_ms": 388487,
+    "raw_sha256": "0bf9d7c7aeb0a8726c424692b452ac603ba78309a9e5d56e74ea8e26c8b2fa0b",
+    "tests_executed_by_reviewer": false
+  },
+  "validation": {
+    "python": "3.12.13",
+    "pandas": "3.0.6",
+    "numpy": "2.5.3",
+    "original_tests": "17 passed",
+    "cache_red": "7 failed, 17 passed",
+    "repaired_five_suite_regression": "94 passed, no warnings",
+    "real_input": "receipt byte-identical; source through 2026-09-04; not production proof"
+  }
+}

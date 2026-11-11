@@ -1,0 +1,27 @@
+{
+  "source": "/Users/chriswong/Documents/Cluade/macro-main/data/china_search/closes.parquet",
+  "source_sha256": "5511066901c020a8a5d8345dad6286168c924696622ef2dc4b4c50c7d9353cab",
+  "input_rows": 1270,
+  "input_asof": "2026-09-04 00:00:00",
+  "configured_names": 82,
+  "available_columns": 76,
+  "kind": "stored-input canary, not a live collector refresh",
+  "latest_quote_count": 75,
+  "ma_eligible": {
+    "50": 75,
+    "200": 75
+  },
+  "status": "accepted",
+  "original_math_unchanged": true,
+  "output_asof": "2026-09-04 00:00:00",
+  "latest_breadth": {
+    "n_members": 75.0,
+    "pct_above_50": 45.333333333333336,
+    "pct_above_200": 36.0,
+    "nh": 0.0,
+    "nl": 0.0,
+    "adv": 53.0,
+    "dec": 21.0,
+    "ad_line": -4639.0
+  }
+}

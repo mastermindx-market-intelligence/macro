@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - site/china.html
+  - site/assets/css/ad3fe3b7.css
+manifest: mockups/evidence/china-current-7592-20261111-c4-main3a14/manifest.json

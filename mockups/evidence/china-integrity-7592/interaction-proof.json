@@ -1,0 +1,122 @@
+{
+  "proof_class": "synthetic_full_page_browser",
+  "production": false,
+  "browser_executable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "cases": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    }
+  ],
+  "html_sha256": "8895f881721547f6aafd9b0302f5b89a22db52cc4e5116cbccd09c40dfee3f0a",
+  "source_sha256": {
+    "engine/china_tier1.py": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79",
+    "scripts/build_china.py": "8e1e3488220494393f6e7ec8d9f83c9701ab5e09a5b73c576d9e59dd28067f6e",
+    "templates/china.html.j2": "055a16af209fc8c45a6e89b00efd8bba519fc78e9bfaf1ea02d0cb7ddc650e99",
+    "templates/china_risk_state_live.js": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+    "tests/test_china_archetype_d_s1.py": "5ca33d21b5ebbe80453252bfe2b7a520cf349a96fa65a2d09908629fbaa0b106"
+  },
+  "feed": {
+    "schema": "china_risk_state.v1",
+    "built": "2026-09-18T20:00:00Z",
+    "nightly_asof": "2026-09-18",
+    "live_active": false,
+    "realtime": false,
+    "display": {
+      "score": 38,
+      "verdict": "RISK_OFF",
+      "label_en": "Risk-off",
+      "label_zh": "避险"
+    },
+    "nightly": {
+      "verdict": "RISK_OFF",
+      "headline_en": "Synthetic refreshed headline",
+      "headline_zh": "合成刷新标题"
+    }
+  },
+  "local_server_closed": true
+}
