@@ -5998,7 +5998,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
@@ -6008,6 +6008,23 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10974, measured Bonds missing-data coverage):
+    Own contract run 43082222452 / job 130737410087 tested c0c624ea04b0,
+    subject 3529d32f0237 on base bf5893b869a6. Its paired native probes
+    measured index 137 jobs / 5968 weight / 10 packs against 137/5966/10
+    on base, with no newly selected owner. Free-content 137/5989/10 and
+    Prophet 131/5724/10 were unchanged. The complete contract report had
+    one introduced packing finding, zero inherited, and no remaining
+    unwired-suite or import-closure finding.
+    Existing ccw-w4-credit-desk runs the 34-case missing-data suite
+    alongside its four retained suites; command accounting is 10 -> 12.
+    Account only for the measured index +2: 5966 -> 5968. Preserve free
+    5989, Prophet 5724, job ceilings 137/138/131, ten packs, selectors,
+    assertions, every runtime/admission control and all provenance below.
+    This is the original hosted planner measurement, not a new local test
+    or full workflow pass. The corrected source needs its own natural CI.
+    https://github.com/mastermindx-market-intelligence/macro/actions/runs/43082222452/job/130737410087
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
