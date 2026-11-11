@@ -1,0 +1,365 @@
+{
+  "schema": "mastermind.container_edge_main_integration.v1",
+  "source_snapshot": "97abae6fa8f17bdb71f8670d59d1ba43497e3ae7",
+  "main": "c58c69bf42786f29c8857550bdb244d08da35240",
+  "previous_base": "65f534bdc1369d2496f8e044a90636997e223392",
+  "resolved": [
+    {
+      "path": "site/aibrief.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "e8d4fd74082c4c16a91fb443a9e50975b0dd312d7405f22985413738c30fcad3",
+          "upstream_sha256": "d0dd477c78d4617af948d0eecc946d29421b0913605864dd9f22bd029ffd2b3d"
+        },
+        {
+          "ours_sha256": "712be5c4cf245515536f93382640f97455213a23470832ea422b4c2a97f95ace",
+          "upstream_sha256": "3e6724602535a11f427a4e266375adad2de76cca876dbcac795c241c393283bd"
+        }
+      ],
+      "before_sha256": "bb2dd9fe7a7c3455ebd3915084d8bca24e87c438795131abaa29b448594ca7c1",
+      "resolved_sha256": "40a6ca024a260f3f4f4496874b243284f95ba6cf2d8d9c1f9d9a3c6e74cc352b"
+    },
+    {
+      "path": "site/crypto.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "0cbe5c0194bb59e056dcffa36f3a357d631d1b807524f3d202879c0aefe58962",
+          "upstream_sha256": "7f9f26888fe29615f34e7ed5908b160502c8c18f2c67f13cb8a0b7e22b687d22"
+        }
+      ],
+      "before_sha256": "bee396f9a184cab210a70c3987c178909f86cdd6205650a0d3435e94863eb1ba",
+      "resolved_sha256": "9a88b0fd5404d1c8da1dd45ded60be4f01e019977986b15880db3d8d33caef64"
+    },
+    {
+      "path": "site/etfs.html",
+      "resolution": "exact upstream generated HTML; apply reviewed presentation projection next",
+      "hunks": [],
+      "before_sha256": "a4f8520e0fc5b66c64a6e24c3e771a0817e3c6a7ccfa085875c57560a8182bd9",
+      "resolved_sha256": "cef52c67cf01cfbf37a69534c87c4868531556cbcbdbebd10a46dd65ec3fe0be"
+    },
+    {
+      "path": "site/help.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "c1604b94242ad42453ce9378706b7f8cb4123cd047d4cb263a38b0d33c3aa831",
+          "upstream_sha256": "c8f190a7b66670957dc73bb62d84146bd024ba446ea67349ce0534327786a1ce"
+        }
+      ],
+      "before_sha256": "f1f5c44d469cdd6f89ee7fa032218019522d2a05d8af8843ac4324ea87f1d31e",
+      "resolved_sha256": "728517fb72c6278b7b99cfa99c36b9bc5cff836d82c7b4ea6dbb512143c6671b"
+    },
+    {
+      "path": "site/macro_business_activity.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "af799e56211d620fd021471a19115738e9d32b8452f163b40e6b970ee350cb28",
+      "resolved_sha256": "460a8885c2ed8b4df5553ad2fc9360ff01e2c613e7ca6ea2d84847c9a403d714"
+    },
+    {
+      "path": "site/macro_capital_structure.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "9c59c34b471c6f9a5869a0b251a05d52e797550f8d2220ccff687b9f39503a75",
+      "resolved_sha256": "4266cafc90bad8fcbd021c1b46aac279ac291f9623e1856b50cc8c5b5e4b15d4"
+    },
+    {
+      "path": "site/macro_consumer_payments.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "ef430ef51f3e89deb8bceda3bd2b1fae8406bb21bfba67d4295ec93721a36aab",
+      "resolved_sha256": "e6498ce23ed916b555fc2bfb36dca1c1c90f9824b41019d9713855f364bfbe18"
+    },
+    {
+      "path": "site/macro_financial_conditions.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "1b7892a85a1ddbd6cce05cfe9e8bd3d94a1d12249b8916e778852f4acc3aafac",
+      "resolved_sha256": "75e05e3c5c63b16192b82c7f29e481a1455e04ff35af4e8836ac5a1d5fc9266f"
+    },
+    {
+      "path": "site/macro_growth_real_economy.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "09d65dd40ec05dc148e016502f274ae819768a8eb536ed375867ac4a79ee8666",
+      "resolved_sha256": "4523124b54a1cbc14f05e7a7b2afffb65dba1db36b6fb53ef4f01ccfba55b871"
+    },
+    {
+      "path": "site/macro_housing_real_estate.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "ef00115010498801717b989b48275766b29a30f27029d6bcfe8d02346957d7f8",
+      "resolved_sha256": "f0c3b4bfba0f5b8d0d85ff3cef5319bfb9a4b84ee560564bb1d518fec498c009"
+    },
+    {
+      "path": "site/macro_inflation_system.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "9fd887aef662ba2da39de1c9451da231bf2d2f8f6b7ac6e308a991bfe4dec731",
+      "resolved_sha256": "d5819f4e53aea524f40fb499c5742e30b677180f30150867d966e0fc3683d469"
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "2e6a7228e8b41861f684b2ff365589a0140c3484000b86a675ced08aa9dfb64a",
+      "resolved_sha256": "e2f2f75d3f82865499cee88a2e61e5fd6947d35e91b46b36c6dcc13aebaee5ae"
+    },
+    {
+      "path": "site/macro_liquidity_central_banks.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "1ae83ed4c33d7ee13ee72d246637f18a53f60f3b5dd528ed6655bdf86d7a6ef4",
+      "resolved_sha256": "01074a2080e66b4a1a31708dd699b5bdfd01e2ef302b40c753e5c20404a946c5"
+    },
+    {
+      "path": "site/macro_liquidity_regime.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "f945bb5830668d5049158f2c9e5f6946ce585e7a57dcd6c45f352d03440155fd",
+          "upstream_sha256": "a223d93180446649d2be38800663872702982dd640605f3282e2b98cfed7b9ba"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "c0fc6f9f24d4303d482b1c4c3cf793611280cc524f1c3287c5612118c4715b1c",
+      "resolved_sha256": "874ccbbd74d2ec29b63ec17425d9a342f701fa01a77b3c6b1149d918685eae5d"
+    },
+    {
+      "path": "site/macro_monetary.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "0664843f016c34aa78a606b29906e3e25bbd2334106c022dc443c72bc52b8733",
+          "upstream_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "before_sha256": "9a10a70eb283c4e6251ab3a452d6cf9ba5328ab25e7224363d602a6e93d472bd",
+      "resolved_sha256": "4423a613d6689eb3841fd92ce2bc37d3445b95ce55beb948834dcbbf3bbbf81f"
+    },
+    {
+      "path": "site/macro_monetary_policy.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "c9d2692fb0debfc83bb188cf9d6171ddbeb1a0fe87edfc14d326bdf9a198c110",
+      "resolved_sha256": "8a917ca64272972ce416a02561a68a1a7aa1a6cc8daacafb6a7922ef5e8617eb"
+    },
+    {
+      "path": "site/macro_national_debt_liabilities.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "02a3372cbaf0ce971de4a1bb2b38527f157855e622529b50017f0d87f295011c",
+      "resolved_sha256": "951016fefca67e79aa2f9d6ac3b7a3cfca76f0229ea814061c077c1221fdac4c"
+    },
+    {
+      "path": "site/macro_rates_curves.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "024dbd8ff301274c5e4ce07e19e6e458fa422d7171a44138130de91058f6295e",
+      "resolved_sha256": "eb685b300a519ccab63a0d0a0f2120a96ab5a8f5f8d240a169fff96577d4d19e"
+    },
+    {
+      "path": "site/macro_trade_flows.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "a9ef12f93c46f451f346589071b93bf7d9fb1e483d504681ceaecffa69760af8",
+          "upstream_sha256": "5d3dbb1685c4041fef340af93e29eb98cc3c75ff3b63fbd7c872294e51e3d66e"
+        },
+        {
+          "ours_sha256": "921d55af7ef890ab072954c392bcd85e2502f4463a68acfdee547ff36ec24e5a",
+          "upstream_sha256": "6b3c66579d89a4ca2bc40784ecbf44cf99717343ca4b38d97ea70627456b8ddf"
+        }
+      ],
+      "before_sha256": "7eaf120803b255fcf393bbe907528f816bf0e63148d1102ada862fd8d0903ccd",
+      "resolved_sha256": "f61903a711b8d0dd7a488fe7071232a1d9a70c6f70807f6acfa4e51ad40efee5"
+    },
+    {
+      "path": "site/quant_lab.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "02453ec6915261d25085fcc22312235147a3b850653be890b2e4d1190bf671b9",
+          "upstream_sha256": "d0b1f54da57705d21a894ba4321f2e5490a3030fe7a3ecc90cd864569142253a"
+        }
+      ],
+      "before_sha256": "870de2e036604a0b5f742ed192cb9b0379107e4ce20dcd90e1e4fa188290effc",
+      "resolved_sha256": "3c70057f567226b8ea16170f5b5be9f7fdbbe9c3039cf0fb795c745545c8a395"
+    },
+    {
+      "path": "site/reference.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "107f0ad63781c2457696da660a2a2fae82c07154882463c8c405d54584681efb",
+          "upstream_sha256": "0d033510a8cbd1ab27d944301eadca8fc41fd0f1d91cc275a5527f68ec65b63d"
+        }
+      ],
+      "before_sha256": "d6ed043bd07c26e0cc4b6668aecb87318564fae8901f8b936515ee14f84f0ae9",
+      "resolved_sha256": "f828b29a4306ae87ef0a41d051ac8175016d7d0ec32480adcb36fc96c738f41b"
+    },
+    {
+      "path": "site/special_situations.html",
+      "resolution": "exact upstream generated HTML; apply reviewed presentation projection next",
+      "hunks": [],
+      "before_sha256": "fabebbd467f0ee002a67677d02de5d780973345d4a4ed28bcb0d36713fc6a178",
+      "resolved_sha256": "f6ccd351254c05e3dc9b6cdaff0e09621eb5c4997791e99c098b46df42784368"
+    },
+    {
+      "path": "site/start.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "2c1469bec567c98698b0c5d918cf619c0e91bccc552ffbb9e6313abab1dcdd02",
+          "upstream_sha256": "95fc6e9fe71619a71725d87dd6fd8c1d8bb9c2d4b7a82cc68910a9df9e3b4a16"
+        }
+      ],
+      "before_sha256": "99094e53db93e6c64f45dfcb811b120076b64da44832bfd55a59f15302e4f88e",
+      "resolved_sha256": "2d59dbe311d45a2df4a1d520dc08468ed356ce653080bb5d6702aa9441bed7b3"
+    },
+    {
+      "path": "site/us_stocks.html",
+      "resolution": "exact upstream generated HTML; apply reviewed presentation projection next",
+      "hunks": [],
+      "before_sha256": "1a6acd8f7142d0c670c75af0e489867335ccbde35cdea77ef9395417d85f2b40",
+      "resolved_sha256": "0ba23207701eb895b9c2085963245f9895cd17b230ce2b6101f1eb5acb5751ec"
+    },
+    {
+      "path": "site/vector.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "68f97e337f52df8575346a7a91587f413ebaff2fd4dc71775257d665888e155b",
+          "upstream_sha256": "0a0c800ea413cd5b9c43710bf20a1b297a42f7846bbb5a4990199ee09c692332"
+        }
+      ],
+      "before_sha256": "17667ef3dbf294b52d7c579373ff8e9cd22c64886efd394bdb9580ba6c247608",
+      "resolved_sha256": "a0642ecd311f1136f06e500b29ffbfc5316b52ac23155a56476446c8f781f08a"
+    },
+    {
+      "path": "site/watchlist.html",
+      "resolution": "upstream refreshed content/timestamps in conflict hunks; retain clean merged presentation",
+      "hunks": [
+        {
+          "ours_sha256": "75921d8cc562020ec992de8456adf84717389bcc6c56f1223806299b1cf1dabf",
+          "upstream_sha256": "53707238a9ea492d746e31a0d43b9a37050c1812d22e66ba88c1e837c4276e45"
+        }
+      ],
+      "before_sha256": "37adfbf702a4df1c019b5b5974112aff5b862132888d50e49df3dbabe6e908ac",
+      "resolved_sha256": "47124182eb158d7f6446ad335d4c1c4284aae4620fd880675a11241f0e4e511a"
+    }
+  ]
+}

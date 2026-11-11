@@ -1,0 +1,51 @@
+{
+  "schema": "mastermind.container_edge_projection_resume.v1",
+  "original_process": 77118,
+  "disposition": "owned local process interrupted after partial deterministic projection; no external publication",
+  "input_tree": "ea50f6dc572275cc56f9bdce4d92a35dc145ef83",
+  "upstream_main": "c58c69bf42786f29c8857550bdb244d08da35240",
+  "changes": [
+    {
+      "path": "site/canada.html",
+      "before_sha256": "180314abfc9a38a4ff2d60dc6b78748611b985e524a2ad58008b5611ac500503",
+      "after_sha256": "11599a29d72d8fd148e1556e10fe24e7a0eeb9553168d25425c2f038ccdac91b",
+      "bytes": 251274
+    },
+    {
+      "path": "site/canada_stocks.html",
+      "before_sha256": "c5994e50eb2d12e988cecf293480b6bdfb35e2e62d944c70e042932c8178cad1",
+      "after_sha256": "d72d72d789edf5a85cb930fd98dd87315ad663fb1a817982cf893d87112a8c04",
+      "bytes": 184127
+    },
+    {
+      "path": "site/china.html",
+      "before_sha256": "fcf9d188383b76143a3c41e18d0f19e15659d6d4600bbcef148827e143a96822",
+      "after_sha256": "c28359f990a65c42352f7a12c69a1f6893ac9ca023ff0bd0e686e1277c954a61",
+      "bytes": 264186
+    },
+    {
+      "path": "site/china_stocks.html",
+      "before_sha256": "3b6312fedccd8c99ca0c03aec7870dafff3cd2fb4fbc632046eaf2b786b9d235",
+      "after_sha256": "a218148742e3d2d8251e5e8b259cfab5ed0d8631d7794ddd7e59b6cd79d1a6e1",
+      "bytes": 2875903
+    },
+    {
+      "path": "site/etfs.html",
+      "before_sha256": "cef52c67cf01cfbf37a69534c87c4868531556cbcbdbebd10a46dd65ec3fe0be",
+      "after_sha256": "dfd7cc755e1041290020a9c8c80c44a46ebc3780c3db1ab3f3d1191faa03045d",
+      "bytes": 119237
+    },
+    {
+      "path": "site/special_situations.html",
+      "before_sha256": "f6ccd351254c05e3dc9b6cdaff0e09621eb5c4997791e99c098b46df42784368",
+      "after_sha256": "69146613db68d58175e886015bfa254ecddfb754b7063394b46c3861b9b7cdf9",
+      "bytes": 116044
+    },
+    {
+      "path": "site/us_stocks.html",
+      "before_sha256": "0ba23207701eb895b9c2085963245f9895cd17b230ce2b6101f1eb5acb5751ec",
+      "after_sha256": "1e0099d0c53759b8fd36384e35a46e9205c761d738a222ec7b5082c1ee174872",
+      "bytes": 739042
+    }
+  ]
+}
