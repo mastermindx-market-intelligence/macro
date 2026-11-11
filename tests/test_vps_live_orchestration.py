@@ -116,6 +116,108 @@ DOL_JULY_30_LISTING = b"""
 """
 
 
+def _claims_identity_event(day="2026-07-30"):
+    return {"event_id": "claims:" + day, "type": "CLAIMS", "date": day,
+            "time_et": "08:30", "label": "Initial jobless claims", "is_context_only": True}
+
+
+def _claims_identity_tick(monkeypatch, body, *, state=None, day="2026-07-30", hour=15, minute=0):
+    event = _claims_identity_event(day)
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *a, **k: [event])
+    if state is None:
+        state = {"coverage_started_at_by_type": {"CLAIMS": day + "T12:00:00+00:00"},
+                 "sources": {}, "publications": {}}
+    now = datetime.fromisoformat(day).replace(hour=hour, minute=minute, tzinfo=timezone.utc)
+    return wrp.detect(now=now, state=state, fetcher=lambda *a: _http_result(body))
+
+
+def test_claims_identity_undated_or_other_week_listing_cannot_publish(monkeypatch):
+    for body in (
+        DOL_JULY_30_LISTING.replace(b"20260730", b"20260723").replace(b"July 30, 2026", b"July 23, 2026"),
+        DOL_JULY_30_LISTING.replace(b"20260730", b"20260806").replace(b"July 30, 2026", b"August 6, 2026"),
+        CLAIMS_JULY_30_PAGE,  # raw claims-shaped page is not a dated listing entry
+        DOL_JULY_30_LISTING.replace(b"July 30, 2026", b"July 23, 2026"),  # even with matching URL
+        DOL_JULY_30_LISTING.replace(b"July 30, 2026", b"July 32, 2026"),
+    ):
+        _, payload = _claims_identity_tick(monkeypatch, body)
+        assert not any(row.get("data_ready") for row in payload["publications"])
+        assert all("actual" not in row for row in payload["publications"])
+
+
+def test_claims_identity_wrong_reference_week_cannot_be_verified(monkeypatch):
+    _, payload = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING.replace(b"July 25", b"July 18"))
+    row = payload["publications"][0]
+    assert row["status"] == "published_unparsed" and row["data_ready"] is False
+    assert "actual" not in row
+
+
+def test_claims_identity_printed_date_supports_dol_path_forms(monkeypatch):
+    for path in (b"/newsroom/releases/eta/eta20260730", b"/index.php/newsroom/releases/eta/eta20260730", b"/node/186182"):
+        body = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", path)
+        _, payload = _claims_identity_tick(monkeypatch, body)
+        row = payload["publications"][0]
+        assert row["data_ready"] is True
+        assert row["actual"]["initial_claims"] == 219_000
+        assert row["source_document_date"] == "2026-07-30"
+        assert row["source_url"] == "https://www.dol.gov/index.php" + path.decode().removeprefix("/index.php")
+        assert wrp._claims_publication_is_bound(row)
+
+
+def test_claims_identity_node_needs_own_date_not_another_nodes_date(monkeypatch):
+    other = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", b"/node/111")
+    other = other.replace(b"July 30, 2026", b"July 23, 2026").replace(b"219,000", b"999,000")
+    correct = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", b"/node/222")
+    correct = correct.replace(b"<h3>", b"<img src='icon.png'><br/><h3>")
+    _, payload = _claims_identity_tick(monkeypatch, other + correct)
+    row = payload["publications"][0]
+    assert row["actual"]["initial_claims"] == 219_000
+    assert row["source_url"].endswith("/node/222")
+
+
+def test_claims_identity_holiday_and_year_boundary_reference(monkeypatch):
+    for day, printed, week, expected in (
+        ("2026-11-25", b"November 25, 2026", b"November 21", "November 21, 2026"),
+        ("2026-01-02", b"January 2, 2026", b"December 27", "December 27, 2025"),
+    ):
+        body = DOL_JULY_30_LISTING.replace(b"20260730", day.replace("-", "").encode())
+        body = body.replace(b"July 30, 2026", printed).replace(b"July 25", week)
+        _, payload = _claims_identity_tick(monkeypatch, body, day=day)
+        row = payload["publications"][0]
+        assert row["data_ready"] is True
+        assert row["actual"]["reference_period"] == expected
+        assert all(metric["period"] == expected for metric in row["actual"]["metrics"])
+
+
+def test_claims_identity_withdraws_retained_bad_value_and_existing_retry_recovers(monkeypatch):
+    source_url = "https://www.dol.gov/index.php/newsroom/releases/eta"
+    bad = {**_claims_identity_event(), "source_id": "dol_claims", "status": "published",
+           "data_ready": True, "source_url": source_url, "source_sha256": "a" * 64,
+           "content_sha256": "a" * 64, "verified_at": "2026-07-30T12:30:41+00:00",
+           "actual": {"initial_claims": 194000, "reference_period": "July 18, 2026", "source_url": source_url}}
+    state = {"coverage_started_at_by_type": {"CLAIMS": "2026-07-30T12:00:00+00:00"},
+             "sources": {}, "publications": {"claims:2026-07-30": bad}}
+    old_listing = DOL_JULY_30_LISTING.replace(b"20260730", b"20260723")
+    state2, payload = _claims_identity_tick(monkeypatch, old_listing, state=state, hour=23, minute=15)
+    row = payload["publications"][0]
+    assert row["status"] == "published_unparsed" and row["data_ready"] is False
+    assert "actual" not in row and "verified_at" not in row
+    assert row["source_url"] == source_url and row["source_sha256"] == "a" * 64
+    assert "withdrawn" in row["note"]
+    assert bad["data_ready"] is True  # never mutate the caller's prior observation
+    _, recovered = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING, state=state2, hour=23, minute=30)
+    row = recovered["publications"][0]
+    assert row["data_ready"] is True and row["actual"]["initial_claims"] == 219_000
+    assert wrp._claims_publication_is_bound(row)
+
+
+def test_claims_identity_keeps_verified_facts_when_listing_rolls_forward(monkeypatch):
+    state, payload = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING)
+    before = dict(payload["publications"][0])
+    future_listing = DOL_JULY_30_LISTING.replace(b"20260730", b"20260806").replace(b"July 30, 2026", b"August 6, 2026")
+    _, payload2 = _claims_identity_tick(monkeypatch, future_listing, state=state, minute=15)
+    assert payload2["publications"][0] == before
+
+
 def _bls_cpi_feed(*, event_date: str, content: str = CPI_ENTRY_TEXT) -> bytes:
     return f"""
     <feed xmlns="http://www.w3.org/2005/Atom">

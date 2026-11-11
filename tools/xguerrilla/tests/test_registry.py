@@ -340,6 +340,66 @@ def test_validate_document_typeerror_guard():
         registry.validate_document([])
 
 
+# GitHub token shapes carry `_`, which the pre-widening base64 class excluded, so
+# a real token in a *value* (innocent key name) passed the no-credentials scan.
+GITHUB_TOKENS = {
+    "ghp_": "ghp_16C7e42F292c6912E7710c838347Ae178B4a9z",
+    "gho_": "gho_16C7e42F292c6912E7710c838347Ae178B4a9z",
+    "ghu_": "ghu_16C7e42F292c6912E7710c838347Ae178B4a9z",
+    "ghs_": "ghs_16C7e42F292c6912E7710c838347Ae178B4a9z",
+    "ghr_": "ghr_16C7e42F292c6912E7710c838347Ae178B4a9z",
+    "github_pat_": "github_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz012345",
+}
+
+
+@pytest.mark.parametrize("prefix", sorted(GITHUB_TOKENS))
+def test_github_token_value_refused(prefix):
+    """Each prefix is refused by name, on a value whose key is innocent."""
+    doc = base_doc()
+    doc["entries"][0]["recovery_owner"] = GITHUB_TOKENS[prefix]
+    errors = registry.validate_document(doc)
+    assert len(errors) == 1, errors
+    assert_mention(errors, "credential-like github token value")
+    # The message must name the prefix that MATCHED, not merely list the family:
+    # a hit attributed to the wrong family sends the operator to the wrong token.
+    assert_mention(errors, f"({prefix}…)")
+    for other in sorted(set(GITHUB_TOKENS) - {prefix}):
+        assert other not in errors[0], f"{prefix} refusal leaked {other}: {errors[0]}"
+
+
+@pytest.mark.parametrize("value", [
+    "_" * 40,
+    "-" * 40,
+    "abcDEF012_-" * 4,  # 44 chars across the full base64url alphabet
+])
+def test_base64url_shaped_value_refused(value):
+    """The generic class widened to base64url: `_`/`-` at 32+ chars refuse."""
+    doc = base_doc()
+    doc["entries"][0]["recovery_owner"] = value
+    errors = registry.validate_document(doc)
+    assert len(errors) == 1, errors
+    assert_mention(errors, "credential-like base64-looking value")
+
+
+def test_receipt_sha256_value_still_exempt_after_base64url_widening():
+    """The trap: a bare 64-hex digest also matches the widened 32+ class."""
+    assert registry.BASE64ISH_RE.match(SHA), \
+        "precondition: the widened class does match a bare sha256 digest"
+    doc = base_doc()
+    doc["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                   binding=base_binding("admitted"))
+    assert doc["entries"][0]["admission_receipt"]["sha256"] == SHA
+    assert doc["domains"][0]["admission_receipt"]["sha256"] == SHA
+    assert registry.validate_document(doc) == []
+
+
+def test_seat_identifier_value_still_validates():
+    doc = base_doc()
+    assert doc["entries"][0]["recovery_owner"] == "seat:marketing"
+    assert doc["domains"][0]["recovery_owner"] == "seat:marketing"
+    assert registry.validate_document(doc) == []
+
+
 # ------------------------------------------------------------ binding plane
 
 
