@@ -2906,7 +2906,20 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
         <div class="hkx-plain">{{ t('A plain-English read that takes the China and Hong Kong dashboards together — the same shared brief used on the China page.','综合解读中国与香港看板的白话摘要 — 与中国页面共用同一份简报。') }}</div>
         {# ABX v2 — the ONE shared body renderer (China lens; HK shares the China brief). #}
         {% if china_brief and (china_brief.get('summary') or china_brief.get('tldr') or china_brief.get('regime_read')) %}
-        {% call aib.aibrief_body(china_brief, 'china', show_catalysts=False) %}
+        {# Truthful freshness chip (AI-brief consumer-freshness v2): the VM key is the VERIFIED lens entry of
+           site/aibrief_freshness.json, or None -> no chip (an unverifiable age is never asserted). Classes are
+           the shared governed .aib2-cadence family (already included on this page); the .aib2 wrapper only
+           scopes its theme variables. The macro below gets refresh_days blanked so its own raw (unverified)
+           cadence claim cannot render beside this one. #}
+        {% set _bf = china_brief_freshness if china_brief_freshness is defined else none %}
+        {% if _bf is mapping %}
+        <div class="aib2" style="margin:0 0 10px"><span class="aib2-cadence{{ ' aib2-cadence--stale' if _bf.get('stale') }}" data-aibrief-freshness="{{ 'stale' if _bf.get('stale') else 'fresh' }}">
+          {%- if _bf.get('stale') -%}<span class="l-en">Last generated {{ _bf.get('generated_date') }}</span><span class="l-zh">上次生成 {{ _bf.get('generated_date') }}</span>
+          {%- elif _bf.get('refresh_days') == 1 -%}<span class="l-en">Updates daily</span><span class="l-zh">每日更新</span>
+          {%- else -%}<span class="l-en">Updates every {{ _bf.get('refresh_days') }} days</span><span class="l-zh">每{{ _bf.get('refresh_days') }}天更新</span>{%- endif -%}
+        </span></div>
+        {% endif %}
+        {% call aib.aibrief_body(dict(china_brief, refresh_days=none), 'china', show_catalysts=False) %}
         <div class="hkx-receipt">{{ t('Research context only — never a buy or sell signal. Generated nightly; the same brief appears on the China dashboard.','仅供研究参考 — 绝非买卖信号。每晚生成；同一份简报也出现在中国看板。') }}</div>
         {% endcall %}
         {% else %}
