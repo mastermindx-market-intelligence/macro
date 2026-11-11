@@ -45,8 +45,9 @@ TREE = [
         {"key": "oilservices", "name": "Oil Services", "members": ["NOFILE"]},
     ]},
 ]
-#: vendor distinct = AAA, DECK, SHORT, NOFILE; sp500 active = AAA, IDXONLY
-EXPECTED_ROWS = 5
+#: vendor distinct = AAA, DECK, SHORT, NOFILE; sp500 active = AAA, IDXONLY,
+#: BRK-B, BF-B (class shares, dash form) and NULLSEC (null sector)
+EXPECTED_ROWS = 8
 
 
 def _write_yahoo(yahoo_dir: Path, ticker: str, closes: list[float],
@@ -94,6 +95,15 @@ LEDGER_ROWS = [
      "first_seen": "2026-06-13", "last_seen": "2026-11-11", "active": True},
     {"ticker": "IDXONLY", "group": "sp500", "name": "I", "sector": "Financials",
      "first_seen": "2026-06-13", "last_seen": "2026-11-11", "active": True},
+    # class shares in DASH form — the snapshot holds the DOT form (BRK.B/BF.B)
+    {"ticker": "BRK-B", "group": "sp500", "name": "Berkshire B", "sector": "Financials",
+     "first_seen": "2026-06-13", "last_seen": "2026-11-11", "active": True},
+    {"ticker": "BF-B", "group": "sp500", "name": "Brown-Forman B",
+     "sector": "Consumer Staples",
+     "first_seen": "2026-06-13", "last_seen": "2026-11-11", "active": True},
+    # a null ledger sector must stay null — never the strings "None"/"nan"
+    {"ticker": "NULLSEC", "group": "sp500", "name": "N", "sector": None,
+     "first_seen": "2026-06-13", "last_seen": "2026-11-11", "active": True},
     {"ticker": "GONE", "group": "sp500", "name": "G", "sector": "Energy",
      "first_seen": "2026-06-13", "last_seen": "2026-08-01", "active": False},
     {"ticker": "MID", "group": "sp400", "name": "M", "sector": "Industrials",
@@ -136,6 +146,12 @@ def _build(tmp_path: Path):
          "market_value": None, "as_of": "2026-06-11"},
         {"ticker": "DECK", "name": "D", "weight_pct": 0.25, "shares": 10.0,
          "market_value": 1_000.0, "as_of": "2026-06-11"},
+        # class shares in DOT form, exactly as the vendor file writes them;
+        # the ledger above spells the same members BRK-B / BF-B
+        {"ticker": "BRK.B", "name": "Berkshire Hathaway B", "weight_pct": 1.75,
+         "shares": 100.0, "market_value": None, "as_of": "2026-06-11"},
+        {"ticker": "BF.B", "name": "Brown-Forman B", "weight_pct": 0.03,
+         "shares": 10.0, "market_value": 2_000.0, "as_of": "2026-06-11"},
     ])
     # a LATER snapshot that must never be read for asof 2026-11-11
     _write_spy(spy, "2026-11-20", [
@@ -164,7 +180,8 @@ class TestHandComputedFields:
         meta, file_rows = _read(p)
         assert meta["row_count"] == EXPECTED_ROWS == len(file_rows)
         assert sorted(r["ticker"] for r in file_rows) == \
-            ["AAA", "DECK", "IDXONLY", "NOFILE", "SHORT"]
+            ["AAA", "BF-B", "BRK-B", "DECK", "IDXONLY", "NOFILE", "NULLSEC",
+             "SHORT"]
 
     def test_50_and_200_row_ratios_hand_computed(self, tmp_path):
         """AAA: last close 120; the last 50 closes are 49x100 + 120 = 5020
@@ -288,6 +305,24 @@ class TestUnionRoster:
         meta = _read(p)[0]
         assert meta["index_weights"]["snapshot_date"] is None
 
+    def test_dot_form_snapshot_ticker_keys_reach_dash_form_roster(self, tmp_path):
+        """The holdings file spells class shares BRK.B / BF.B; the roster
+        (ledger) spells them BRK-B / BF-B. Without key normalisation the
+        lookup misses and the weight goes null even though the source holds
+        it — exactly the silent null the capture must not write. The row keeps
+        the roster's dash-form identity; the dot form never earns its own row."""
+        _, p, _ = _write(tmp_path)
+        rows = {r["ticker"]: r for r in _read(p)[1]}
+        assert rows["BRK-B"]["index_weight_pct"] == 1.75
+        assert rows["BRK-B"]["index_market_value"] is None
+        assert rows["BRK-B"]["index_weight_snapshot_date"] == "2026-06-11"
+        assert rows["BF-B"]["index_weight_pct"] == 0.03
+        assert rows["BF-B"]["index_market_value"] == 2_000.0
+        assert rows["BF-B"]["index_weight_snapshot_date"] == "2026-06-11"
+        assert "BRK.B" not in rows and "BF.B" not in rows  # no duplicate rows
+        assert rows["BRK-B"]["in_sp500"] is True
+        assert rows["BRK-B"]["gics_sector"] == "Financials"
+
 
 # ------------------------------------------------------------------ #
 # (c) immutability + determinism
@@ -367,6 +402,18 @@ class TestNullsNotFills:
         written, p, rows = write_member_price_state(ASOF, FETCHED_AT, TREE, **kw)
         assert written is True and rows == 4  # AAA, DECK, SHORT, NOFILE
         assert all(r["in_sp500"] is False for r in _read(p)[1])
+
+    def test_null_ledger_sector_is_null_not_a_fill_string(self, tmp_path):
+        """A ledger row whose sector is null must surface a NULL gics_sector —
+        astype(str) would write the literal strings "None"/"nan", a fill-shaped
+        value that would masquerade as a real sector downstream."""
+        _, p, _ = _write(tmp_path)
+        rows = {r["ticker"]: r for r in _read(p)[1]}
+        assert rows["NULLSEC"]["in_sp500"] is True
+        assert rows["NULLSEC"]["gics_sector"] is None
+        assert rows["NULLSEC"]["gics_sector"] not in ("None", "nan", "NaT")
+        # a real sector on the same run stays its exact string
+        assert rows["AAA"]["gics_sector"] == "Information Technology"
 
 
 # ------------------------------------------------------------------ #

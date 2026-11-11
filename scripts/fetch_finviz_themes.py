@@ -726,6 +726,41 @@ def _read_price_facts(yahoo_dir: Path, ticker: str) -> "tuple[tuple | None, str 
     return facts, vintage
 
 
+def _snapshot_ticker_key(t: object) -> str:
+    """Dash-form key for keying an index-holdings snapshot by ticker.
+
+    The holdings snapshots write class shares in dot form (``BRK.B``, ``BF.B``)
+    while every roster source (vendor tree, membership ledger) uses dash form
+    (``BRK-B``, ``BF-B``). Both the snapshot WRITE and the per-row LOOKUP go
+    through this one normalisation, so the two spellings can never miss each
+    other and silently null a weight the source actually holds.
+    """
+    return str(t).replace(".", "-")
+
+
+def _is_null(v) -> bool:
+    """True when a ledger cell is null, for every null spelling pandas can
+    hand back from parquet — None, float NaN, NaT, and NA-like objects that
+    refuse comparison (``bool(pd.NA != pd.NA)`` raises). Stdlib-only so this
+    module keeps importing without pandas."""
+    if v is None:
+        return True
+    try:
+        return bool(v != v)  # NaN/NaT are the values not equal to themselves
+    except TypeError:
+        return True
+
+
+def _ledger_strs(col) -> list[str | None]:
+    """Stringify a ledger column with nulls kept as None.
+
+    ``astype(str)`` would turn a null sector or ticker into the literal string
+    ``"None"``/``"nan"`` — a fill-shaped value that breaks the nulls-not-fills
+    rule. Each null maps to None so the output field is null.
+    """
+    return [None if _is_null(v) else str(v) for v in col.tolist()]
+
+
 def write_member_price_state(
     asof: str,
     fetched_at_utc: str,
@@ -814,8 +849,12 @@ def write_member_price_state(
     if led_p.exists():
         led = pd.read_parquet(led_p)
         led = led[(led["group"] == "sp500") & led["active"].astype(bool)]
-        sp500 = set(led["ticker"].astype(str))
-        sp500_sector = dict(zip(led["ticker"].astype(str), led["sector"].astype(str)))
+        led_tickers = _ledger_strs(led["ticker"])
+        led_sectors = _ledger_strs(led["sector"])
+        # a null ticker cannot be a roster key — it is dropped, never "None"
+        sp500 = {t for t in led_tickers if t is not None}
+        sp500_sector = {t: s for t, s in zip(led_tickers, led_sectors)
+                        if t is not None}
         if len(led):
             ledger_last_seen = pd.to_datetime(led["last_seen"]).max()
             ledger_last_seen = ledger_last_seen.strftime("%Y-%m-%d")
@@ -834,7 +873,7 @@ def write_member_price_state(
         snap_date = max(stems)
         sdf = pd.read_parquet(spy_d / f"{snap_date}.parquet")
         for r in sdf.itertuples(index=False):
-            t = str(getattr(r, "ticker", ""))
+            t = _snapshot_ticker_key(getattr(r, "ticker", ""))
             try:
                 w = float(getattr(r, "weight_pct"))
             except (TypeError, ValueError):
@@ -857,6 +896,7 @@ def write_member_price_state(
                   file=sys.stderr)
             read_errors += 1
             price, vintage = None, None
+        snap_key = _snapshot_ticker_key(ticker)
         row = _price_state_row(
             asof, ticker,
             sorted(vendor_themes.get(ticker, set())) or None,
@@ -864,7 +904,7 @@ def write_member_price_state(
             ticker in sp500,
             sp500_sector.get(ticker),
             price,
-            (snap_date, *snap[ticker]) if ticker in snap and snap_date else None,
+            (snap_date, *snap[snap_key]) if snap_key in snap and snap_date else None,
         )
         row["price_vintage"] = vintage
         rows.append(row)
