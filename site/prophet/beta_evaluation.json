@@ -9,8 +9,8 @@
   "frozen_on": "2026-11-11"
  },
  "code": {
-  "commit": "12f295e8899bc23fd3e03c0ee2c3cebb86aa7898",
-  "harness_dirty": true,
+  "commit": "f1314c9a4966192f651d8a2c392f562367ba01d9",
+  "harness_dirty": false,
   "module": "engine/prophet_beta_evaluation.py",
   "runner": "scripts/run_prophet_beta_evaluation.py",
   "bootstrap": {
