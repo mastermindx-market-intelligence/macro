@@ -63,9 +63,9 @@ test("chart geometry stays anchored to its retained snapshot", () => {
 test("child selection preserves a retained parent even outside filters", () => {
   const s=state([request("p","model-a",{agent_id:"parent"}),
     request("c","model-b",{agent_id:"child",parent_agent_id:"parent"})]);
-  s.selected={kind:"consumer",id:"child"};s.model="model-b";
+  s.selected={kind:"consumer",id:"agent:child"};s.model="model-b";
   const html=ui.consumerView(s);
-  assert.match(html,/data-id="parent" data-reveal-parent="true"/);
+  assert.match(html,/data-id="agent:parent" data-reveal-parent="true"/);
   assert.match(html,/retained, outside current selection/);
   assert.doesNotMatch(html,/not observed in retained history/);
 });
@@ -81,12 +81,12 @@ test("session ID collision is not proof that a parent agent was retained", () =>
 test("following a retained parent reveals it and clears incompatible filters", () => {
   const s=state([request("p","model-a",{agent_id:"parent"}),
     request("c","model-b",{agent_id:"child",parent_agent_id:"parent"})]);
-  s.selected={kind:"consumer",id:"child"};s.model="model-b";s.query="child";s.status="waiting";
+  s.selected={kind:"consumer",id:"agent:child"};s.model="model-b";s.query="child";s.status="waiting";
   const nodes=attachDom(s);
-  const selected={dataset:{select:"consumer",id:"parent",revealParent:"true"}};
+  const selected={dataset:{select:"consumer",id:"agent:parent",revealParent:"true"}};
   ui.handleClick(s,{target:{closest:selector=>selector==="[data-select]"?selected:null}});
-  assert.equal(s.selected.id,"parent");assert.equal(s.model,"all");assert.equal(s.status,"all");assert.equal(s.query,"");
-  assert.match(nodes.get(".cf-view").innerHTML,/data-id="parent"/);
+  assert.equal(s.selected.id,"agent:parent");assert.equal(s.model,"all");assert.equal(s.status,"all");assert.equal(s.query,"");
+  assert.match(nodes.get(".cf-view").innerHTML,/data-id="agent:parent"/);
   assert.match(nodes.get(".cf-inspector-body").innerHTML,/<b>1<\/b><small>Observed calls/);
 });
 
@@ -104,4 +104,33 @@ test("provider active count and inspector honor model, state and search filters"
   s.status="all";s.query="absent-consumer";
   ui.renderInspector(s);
   assert.match(nodes.get(".cf-inspector-body").innerHTML,/<b>0<\/b><small>Observed calls/);
+});
+
+test("parent navigation separates agents from sessions with the same ID", () => {
+  const s=state([request("session-request","model-b",{session_id:"parent"}),
+    request("parent-request","model-a",{agent_id:"parent"}),
+    request("child-request","model-b",{agent_id:"child",parent_agent_id:"parent"})]);
+  const html=ui.consumerView(s);
+  assert.match(html,/3 known consumers/);
+  const parent=html.match(/data-select="consumer" data-id="([^"]+)" data-reveal-parent="true"/);
+  assert.ok(parent,"the actual retained agent must provide a parent link");
+  s.model="model-b";s.status="waiting";s.query="child";
+  const nodes=attachDom(s);
+  const selected={dataset:{select:"consumer",id:parent[1],revealParent:"true"}};
+  ui.handleClick(s,{target:{closest:selector=>selector==="[data-select]"?selected:null}});
+  const inspector=nodes.get(".cf-inspector-body").innerHTML;
+  assert.match(inspector,/<b>1<\/b><small>Observed calls/);
+  assert.match(inspector,/data-id="parent-request"/);
+  assert.doesNotMatch(inspector,/data-id="session-request"|data-id="child-request"/);
+  assert.match(nodes.get(".cf-view").innerHTML,/Caller-reported agent/);
+  assert.doesNotMatch(nodes.get(".cf-view").innerHTML,/SDK session<\/small>/);
+
+  // Selecting the separate session isolates it in the opposite direction too.
+  s.selected={kind:"consumer",id:"session:parent"};
+  ui.renderInspector(s);
+  assert.match(nodes.get(".cf-inspector-body").innerHTML,/data-id="session-request"/);
+  assert.doesNotMatch(nodes.get(".cf-inspector-body").innerHTML,/data-id="parent-request"/);
+  s.status="waiting";
+  ui.renderInspector(s);
+  assert.match(nodes.get(".cf-inspector-body").innerHTML,/<h2>Consumer parent<\/h2>/);
 });

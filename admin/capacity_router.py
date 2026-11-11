@@ -65,7 +65,10 @@ def panel(minutes=15, *, path=None, now=None):
     observed_s = max(1, min(minutes * 60, data["generated_at"] - data["started_at"]))
     latencies = [(r["first_content_at"] - r["started_at"]) * 1000 for r in recent
                  if r["first_content_at"] is not None and r["started_at"] is not None]
-    consumers = {r["agent_id"] or r["session_id"] for r in data["active"] if r["agent_id"] or r["session_id"]}
+    consumers = {
+        ("agent", r["agent_id"]) if r["agent_id"] else ("session", r["session_id"])
+        for r in data["active"] if r["agent_id"] or r["session_id"]
+    }
     active_unknown = sum(not (r["agent_id"] or r["session_id"]) for r in data["active"])
     data["summary"] = {
         "active_requests": len(data["active"]) + data["totals"]["overflow_active"],

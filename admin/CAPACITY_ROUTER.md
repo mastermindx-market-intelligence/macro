@@ -21,6 +21,8 @@ accepted windows are 5, 15, 60 and 120 minutes.
   in the incumbent router remain authoritative.
 - Known sessions and caller-reported agent/parent/project relationships. Unknown
   identity is shown as unattributed. SDK account IDs are never treated as sessions.
+  Agent and session identities remain distinct even when their pseudonyms match;
+  following a retained parent selects only that agent's traffic.
 - Global summary metrics cover the whole router; filters apply to the views and
   inspector. Provider response/attempt counters explicitly retain process scope.
 - Unknown-only minute buckets use hollow markers; reported zero remains zero.
