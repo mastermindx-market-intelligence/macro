@@ -20,7 +20,7 @@ Rotation Core asks whether the signals Mastermind already computes can call risk
 
 - `engine/`: `rotation_core_evaluation.py`, `rotation_core_j4.py`, `rotation_core_v2.py`
 - `scripts/`: `run_rotation_core_v1.py`, `rotation_core_report.py`, `run_rotation_core_v2.py`, `freeze_rotation_core_v2.py`
-- `tests/`: `test_rotation_core_evaluation.py` (39), `test_rotation_core_v2.py` (10)
+- `tests/`: `test_rotation_core_evaluation.py` (39), `test_rotation_core_v2.py` (11)
 - `research/rotation_core/`: v1 header (json, md), census, phase-2 plan and additions, hold-out ruling, Stage D results (original, superseded) and corrected, PRO_RUN_A adjudication and fixtures, run B reproduction, v2 header (frozen files replace the drafts), v2 power and arming scripts with stdout and sha sums, French seal hashes, freeze plan, release template, this draft.
 - `data/trial_ledger.jsonl`: three appended `declared_budget` rows only.
 

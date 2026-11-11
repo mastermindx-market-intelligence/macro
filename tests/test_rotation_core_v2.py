@@ -38,12 +38,15 @@ def _setup(n=420, drop_at=None, wash=None, start="2010-01-04"):
     rel = np.ones(n)
     if drop_at is not None:
         rel[drop_at:] = 0.9
-    br = np.full(n, 0.5); runp = np.zeros(n)
+    br = np.full(n, 0.5)
     if wash:
-        f, L = wash
+        f, L = wash[:2]
         br[f:f + L] = 0.2
-        runp[f + L] = L
-    bd = {"br": pd.Series(br, index=s), "bmax": pd.Series(1.0, index=s), "wash_run_prev": pd.Series(runp, index=s)}
+        if len(wash) > 2:
+            br[f + wash[2]] = 0.1                 # the spell's low
+    rl, fl = v2.washout_spells(br)
+    bd = {"br": pd.Series(br, index=s), "bmax": pd.Series(1.0, index=s), "wash_run_prev": pd.Series(rl, index=s),
+          "wash_from_low": pd.Series(fl, index=s)}
     return s, pd.Series(rel, index=s), bd
 
 
@@ -53,13 +56,22 @@ def test_same_day_defend_and_attack_defend_wins_and_counted():
     assert st.iloc[300] == v2.DEFEND and log["conflicts"] == 1
 
 
-def test_washout_clock_from_first_close_and_expiry():
-    s, rel, bd = _setup(wash=(250, 20))
+def test_washout_trough_clock():
+    # long spell (60 closes) whose low is 10 closes before recovery: fires
+    s, rel, bd = _setup(wash=(250, 60, 50))
     st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
-    assert st.iloc[270] == v2.ATTACK and log["wash_fired"] == 1
-    s, rel, bd = _setup(wash=(250, 21))
+    assert st.iloc[310] == v2.ATTACK and log["wash_fired"] == 1
+    # same spell with its low 40 closes before recovery: slow crawl back, no ATTACK
+    s, rel, bd = _setup(wash=(250, 60, 20))
     st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
     assert (st.dropna() != v2.ATTACK).all() and log["wash_expired"] == 1
+
+
+def test_washout_spells_tie_uses_earliest_low_and_only_past_closes():
+    sh = np.array([0.5, 0.2, 0.1, 0.1, 0.2, 0.3, 0.5])
+    rl, fl = v2.washout_spells(sh)
+    assert rl[5] == 4 and fl[5] == 3            # low at index 2 (earliest tie), recovery at 5
+    assert np.isnan(rl[:5]).all() and np.isnan(rl[6])
 
 
 def test_attack_exits_at_first_month_end_63_sessions_after_entry():

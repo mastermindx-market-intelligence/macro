@@ -1,4 +1,4 @@
-# Rotation Core — protocol header v2 (DRAFT revision 4, NOT FROZEN)
+# Rotation Core — protocol header v2 (DRAFT revision 5, NOT FROZEN)
 
 > **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. H1's minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only, using its actual time in tilt (67–71 % of sessions):
 >
@@ -71,7 +71,7 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 
 | Id | Rule | Primary contrast |
 |---|---|---|
-| **H1** | Base: equal weight (NEUTRAL). **ARMED:** relative line within h % of its 126-session high **and** breadth (i) at least b below its 126-session maximum (both on current members). **DEFEND** (defence leg): armed within the last 21 sessions and the relative line closes below its 50-session SMA. **ATTACK** (offence leg): a washout spell (consecutive closes with breadth ≤ 25 %, clock from its first close) ends above 25 % after 20 sessions or fewer; a longer spell fires nothing. Grid h ∈ {3, 5} %, b ∈ {25, 37.5}: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
+| **H1** | Base: equal weight (NEUTRAL). **ARMED:** relative line within h % of its 126-session high **and** breadth (i) at least b below its 126-session maximum (both on current members). **DEFEND** (defence leg): armed within the last 21 sessions and the relative line closes below its 50-session SMA. **ATTACK** (offence leg): a washout spell starts at the first close with breadth ≤ 25 % and runs while closes stay ≤ 25 %; ATTACK confirms on the first close above 25 % if it is within 20 sessions of the spell's **lowest** close (earliest if tied). Otherwise no ATTACK and the state in force continues. Grid h ∈ {3, 5} %, b ∈ {25, 37.5}: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
 | **H2** | "Breadth in the arming key adds information": H1 minus the identical rule with breadth removed from ARMED only. The washout breadth is in both arms. | paired daily difference |
 | **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
 | *ablation* | H1 with bills in place of the defence leg on identical dates: **mandatory, reported, not tested** | — |
@@ -83,7 +83,7 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 - **Same-day DEFEND trigger and ATTACK confirm:** DEFEND wins, and the day is counted.
 - **Re-triggering the state already in force** is ignored and does not reset its clock. (Lead's decision; the rulings did not cover it.)
 
-**Fixed settings, not in the grid:** arming memory 21 sessions; ATTACK minimum hold 63 sessions; washout threshold 25 % and maximum spell 20 sessions; breadth SMA 50; look-back 126; trigger SMA 50.
+**Fixed settings, not in the grid:** arming memory 21 sessions; ATTACK minimum hold 63 sessions; washout threshold 25 %; recovery within 20 sessions of the spell's lowest close; breadth SMA 50; look-back 126; trigger SMA 50.
 
 **Grid selection.** Highest 1998–2019 excess over the matched mix; exact ties go to the more conservative setting (smaller h, then larger b). H2's price-only control and the cash ablation inherit the selected point; there is no second selection.
 
@@ -92,24 +92,28 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 - its legs are beta-sorted and re-formed monthly from data to t−1, not fixed named groups;
 - it starts from equal weight.
 
-**Signals-only table (1998–2019, rev 4 rules, no returns computed; `v2_power/signals_table_D.*`).**
+**Signals-only table (1998–2019, rev 5 rules, trough clock, no returns computed; `v2_power/signals_table_D.*`).**
 
-| Book | Armed share (no memory / with 21) | DEFEND entries/yr | ATTACK entries/yr | Share N / D / A | Median, longest spell N / D / A | Washouts fired / expired | Same-day conflicts |
-|---|---|---|---|---|---|---|---|
-| H1 h3 b25.0 | 11.8% / 33.5% | 2.55 | 2.91 | 32% / 15% / 53% | 22,115 / 12,52 / 63,84 | 157 / 22 | 0 |
-| price_only h3 b25.0 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 157 / 22 | 0 |
-| H1 h3 b37.5 | 7.6% / 26.9% | 2.23 | 2.87 | 33% / 14% / 53% | 28,150 / 13,52 / 64,84 | 157 / 22 | 0 |
-| price_only h3 b37.5 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 157 / 22 | 0 |
-| H1 h5 b25.0 | 19.7% / 47.7% | 3.32 | 3.10 | 30% / 21% / 49% | 21,115 / 12,79 / 36,84 | 157 / 22 | 0 |
-| price_only h5 b25.0 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 157 / 22 | 0 |
-| H1 h5 b37.5 | 13.7% / 40.5% | 3.05 | 3.10 | 31% / 19% / 49% | 23,115 / 12,79 / 36,84 | 157 / 22 | 0 |
-| price_only h5 b37.5 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 157 / 22 | 0 |
+| Book | Armed share (no memory / with 21) | DEFEND entries/yr | ATTACK entries/yr | Share N / D / A | Median, longest spell N / D / A | Same-day conflicts |
+|---|---|---|---|---|---|---|
+| H1 h3 b25.0 | 11.8% / 33.5% | 2.55 | 2.91 | 32% / 15% / 53% | 22,115 / 12,52 / 63,84 | 0 |
+| price_only h3 b25.0 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 0 |
+| H1 h3 b37.5 | 7.6% / 26.9% | 2.23 | 2.87 | 33% / 14% / 53% | 28,150 / 13,52 / 64,84 | 0 |
+| price_only h3 b37.5 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 0 |
+| H1 h5 b25.0 | 19.7% / 47.7% | 3.32 | 3.10 | 30% / 21% / 49% | 21,115 / 12,79 / 39,84 | 0 |
+| price_only h5 b25.0 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 0 |
+| H1 h5 b37.5 | 13.7% / 40.5% | 3.05 | 3.10 | 31% / 19% / 50% | 23,115 / 12,79 / 39,84 | 0 |
+| price_only h5 b37.5 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 0 |
 
+**Washout spells (same for every grid point and arm):** 179 spells; length median 3, longest 59, 22 longer than 20 sessions; sessions from low to recovery median 2, longest 54; **164 fire ATTACK (92%), 15 do not.**
+
+- **The 20-session limit does little work:** ATTACK confirms on nearly every washout spell. Reported, not adjusted.
 - The earlier 7.6–19.7 % armed shares were **without** the 21-session memory; with it they are 27–48 % (price-only 53–65 %).
-- Every grid point fires both states; DEFEND enters 2.2–3.3 times a year. No grid point is degenerate.
-- **ATTACK is held about half of all sessions.** The washout fires often (157 fired, 22 expired) and each ATTACK holds about 63 sessions, so H1 is mostly an offence tilt with defensive episodes, not mostly equal weight. This is what the rule as ruled does; no parameter was adjusted.
+- Every grid point fires both states; DEFEND enters 2.2–3.3 times a year. None is degenerate.
+- **ATTACK is held about half of all sessions** (47–53 %), so H1 is mostly an offence tilt with defensive episodes, not mostly equal weight.
 - Same-day conflicts: none. The price-only control does not depend on b.
 - **Descriptive split:** H1's excess over the matched mix will be reported separately for DEFEND, ATTACK and NEUTRAL days (no extra trial).
+- **Revision note:** the washout clock was changed from the spell's first close to its lowest close at draft stage, on Sector Intelligence's clarification of its own proposal, before any return was computed. A counts-only table and a variance-only power line under the first-close clock had already been pushed in revision 4 (`1faa76396b`) before the ruling arrived; that variant is not reported here.
 
 **H3 choice.** Sector Intelligence's trend-and-Sahm with defensives is the near twin of run B's R6, which showed no benefit. R5 is the simplest direct control, and I have no better-motivated candidate.
 

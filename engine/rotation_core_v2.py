@@ -1,6 +1,6 @@
 """Rotation Core v2 — two-key defensive-rotation evaluation on Ken French 49 industries (corrected v1 engine).
 
-Implements protocol_header_v2 (draft rev 4; the frozen JSON governs once it exists). Pure functions; research only.
+Implements protocol_header_v2 (draft rev 5; the frozen JSON governs once it exists). Pure functions; research only.
 Nothing here sizes, gates, ranks, alerts or trades.
 
 Seal: any input path under `sealed_post2019/` is refused unless research/rotation_core/HOLDOUT_RELEASE_v2.json is
@@ -179,15 +179,38 @@ ATTACK_MIN_HOLD = 63     # fixed (R1), not in the grid
 WASH_LO, WASH_MAX = 0.25, 20
 
 
+def washout_spells(sh: np.ndarray, lo: float = WASH_LO):
+    """For each close i: if close i is the first close above `lo` after a run of closes <= `lo` (a spell ending at
+    i-1), return the spell length and the sessions from the spell's lowest close (earliest if tied) to i.
+    Otherwise NaN. Uses only closes <= i."""
+    n = len(sh); run_len = np.full(n, np.nan); from_low = np.full(n, np.nan)
+    start = None; low_i = None
+    for i in range(n):
+        v = sh[i]
+        if np.isfinite(v) and v <= lo:
+            if start is None:
+                start, low_i = i, i
+            elif v < sh[low_i]:
+                low_i = i
+        else:
+            if start is not None and np.isfinite(v):
+                run_len[i] = i - start
+                from_low[i] = i - low_i
+            if np.isfinite(v):
+                start, low_i = None, None
+    return run_len, from_low
+
+
 def current_leg_breadth(vw: pd.DataFrame, legs: Legs, lookback: int = 126, n: int = 50) -> dict:
     """R2: for each day t, breadth history over the look-back is recomputed on the CURRENT leg's members.
     Returns per-day arrays: br (today), br_max126 (max over t-125..t on current members), wash_run_prev (length of
-    the run of closes <= WASH_LO on current members ending at t-1), n_members."""
+    the washout spell ending at t-1 when t is its recovery close), wash_from_low (sessions from that spell's lowest
+    close to t), n_members."""
     lvl = (1 + vw.fillna(0)).cumprod().where(vw.notna().cumsum() > 0)
     sma = lvl.rolling(n, min_periods=n).mean()
     above = (lvl > sma).astype(float).where(sma.notna() & vw.notna())
     s = vw.index
-    br = pd.Series(np.nan, index=s); bmax = br.copy(); run_prev = br.copy(); nm = br.copy()
+    br = pd.Series(np.nan, index=s); bmax = br.copy(); run_prev = br.copy(); from_low = br.copy(); nm = br.copy()
     keys = pd.DatetimeIndex(sorted(legs.formed))
     for j, t in enumerate(keys):
         a_ = s.get_loc(t) + 1
@@ -198,24 +221,22 @@ def current_leg_breadth(vw: pd.DataFrame, legs: Legs, lookback: int = 126, n: in
         lo = max(0, a_ - lookback - 400)
         sh = above.iloc[lo:z][mem].mean(axis=1, skipna=True).to_numpy(dtype=float)
         mx = pd.Series(sh).rolling(lookback, min_periods=lookback).max().to_numpy()
-        low = np.nan_to_num(sh, nan=1.0) <= WASH_LO
-        runs = np.zeros(len(sh), dtype=int)
-        for i in range(len(sh)):
-            runs[i] = runs[i - 1] + 1 if (low[i] and i > 0) else (1 if low[i] else 0)
+        rl, fl = washout_spells(sh)
         k0 = a_ - lo
         br.iloc[a_:z] = sh[k0:]
         bmax.iloc[a_:z] = mx[k0:]
-        run_prev.iloc[a_:z] = runs[k0 - 1:len(sh) - 1]
+        run_prev.iloc[a_:z] = rl[k0:]
+        from_low.iloc[a_:z] = fl[k0:]
         nm.iloc[a_:z] = len(mem)
-    return {"br": br, "bmax": bmax, "wash_run_prev": run_prev, "n_members": nm}
+    return {"br": br, "bmax": bmax, "wash_run_prev": run_prev, "wash_from_low": from_low, "n_members": nm}
 
 
 def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = True,
               arm_memory: int = ARM_MEMORY, return_log: bool = False):
     """H1 / price-only control state decided at each close, draft rev 4 rules R1-R5.
     Entry: DEFEND when armed within the last `arm_memory` sessions and the relative line crosses below its 50-session
-    SMA; ATTACK when a washout spell (consecutive closes with breadth <= 25%, clock from the FIRST close) of <= 20
-    sessions ends with a close above 25%. Same-day DEFEND and ATTACK: DEFEND wins (counted).
+    SMA; ATTACK on the first close above 25% after a washout spell (consecutive closes <= 25%) if that close is
+    within 20 sessions of the spell's lowest close (earliest if tied). Same-day DEFEND and ATTACK: DEFEND wins (counted).
     Exits: DEFEND -> ATTACK at an ATTACK confirm, or -> NEUTRAL at the first month-end (after the entry day) on which
     the relative line closes above its SMA50. ATTACK -> DEFEND at a DEFEND trigger, or -> NEUTRAL at the first
     month-end at least 63 sessions after entry. A state is never exited on its entry day. Re-triggering the state
@@ -223,7 +244,8 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
     s = rel.index
     hi = rel.rolling(126, min_periods=126).max()
     sma = rel.rolling(50, min_periods=50).mean()
-    br, bmax, runp = bd["br"].reindex(s), bd["bmax"].reindex(s), bd["wash_run_prev"].reindex(s)
+    br, bmax = bd["br"].reindex(s), bd["bmax"].reindex(s)
+    runp, fromlow = bd["wash_run_prev"].reindex(s), bd["wash_from_low"].reindex(s)
     near = (rel >= (1 - h / 100) * hi)
     armed = near & ((br <= bmax - b / 100 + 1e-12) if use_breadth else True)
     armed = armed & hi.notna() & (bmax.notna() if use_breadth else True)
@@ -231,7 +253,7 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
     month_end = (pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s).values
     cross_dn = ((rel < sma) & (rel.shift(1) >= sma.shift(1))).values
     above_sma = (rel > sma).values
-    br_v, runp_v = br.values, runp.values
+    runp_v, fromlow_v = runp.values, fromlow.values
     st = np.full(len(s), np.nan)
     log = {"conflicts": 0, "wash_fired": 0, "wash_expired": 0, "armed": armed.values.copy()}
     state, entry_i = NEUTRAL, None
@@ -241,8 +263,8 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
             continue
         defend = bool(armed_recent.iloc[i]) and bool(cross_dn[i])
         attack = False
-        if np.isfinite(br_v[i]) and br_v[i] > WASH_LO and np.isfinite(runp_v[i]) and runp_v[i] > 0:
-            if runp_v[i] <= WASH_MAX:
+        if np.isfinite(runp_v[i]) and runp_v[i] > 0:          # recovery close of a washout spell
+            if fromlow_v[i] <= WASH_MAX:                        # trough clock (final R3)
                 attack = True; log["wash_fired"] += 1
             else:
                 log["wash_expired"] += 1

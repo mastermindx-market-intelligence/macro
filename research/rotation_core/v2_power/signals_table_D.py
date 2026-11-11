@@ -36,22 +36,26 @@ for h, b in v2.GRID:
                "share": {k: round(float((x == v).mean()), 3) for k, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))},
                "spell_median_longest": {k: ([int(np.median(spells(x, v))), int(max(spells(x, v)))] if spells(x, v) else None)
                                         for k, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}}
-        # washout and conflicts counted over D only: recount on the D slice
-        stD, logD = v2.h1_states(rel, bd, h, b, use_breadth=ub, return_log=True)
         row["washout_fired_all_years"] = log["wash_fired"]; row["washout_expired_all_years"] = log["wash_expired"]
         row["same_day_conflicts_all_years"] = log["conflicts"]
         out["grid"][f"{tag} h{h} b{b}"] = row
-# D-only washout / conflict counts: rebuild with inputs truncated to D start - warmup
-cut = rel.index[rel.index.get_indexer([pd.Timestamp("1998-01-02")], method="bfill")[0] - 400]
+# item (d): washout spells ending (recovering) inside 1998-2019, on current-leg breadth (identical for all grid points
+# and both arms: breadth and legs do not depend on h, b or the arming key)
+rl, fl = bd["wash_run_prev"][D], bd["wash_from_low"][D]
+rec = rl.notna() & (rl > 0)
+L, F = rl[rec].astype(int), fl[rec].astype(int)
+out["washout_spells_1998_2019"] = {"spells": int(rec.sum()), "length_median": int(L.median()), "length_longest": int(L.max()),
+    "length_over_20": int((L > 20).sum()), "sessions_low_to_recovery_median": int(F.median()),
+    "sessions_low_to_recovery_longest": int(F.max()), "fire_attack_confirm": int((F <= 20).sum()),
+    "do_not_fire": int((F > 20).sum())}
+first = rel.index[D][0]
 for h, b in v2.GRID:
     for ub, tag in ((True, "H1"), (False, "price_only")):
-        st, log = v2.h1_states(rel, bd, h, b, use_breadth=ub, return_log=True)
-        st0, log0 = v2.h1_states(rel[rel.index < "1998-01-02"], {k: s[s.index < "1998-01-02"] for k, s in bd.items()}, h, b,
-                                 use_breadth=ub, return_log=True)
+        _, log = v2.h1_states(rel, bd, h, b, use_breadth=ub, return_log=True)
+        _, log0 = v2.h1_states(rel[rel.index < first], {k: x[x.index < first] for k, x in bd.items()}, h, b,
+                               use_breadth=ub, return_log=True)
         r = out["grid"][f"{tag} h{h} b{b}"]
-        r["washout_fired_D"] = log["wash_fired"] - log0["wash_fired"]
-        r["washout_expired_D"] = log["wash_expired"] - log0["wash_expired"]
         r["same_day_conflicts_D"] = log["conflicts"] - log0["conflicts"]
         for k in ("washout_fired_all_years", "washout_expired_all_years", "same_day_conflicts_all_years"):
-            r.pop(k)
+            r.pop(k, None)
 print(json.dumps(out, indent=1))
