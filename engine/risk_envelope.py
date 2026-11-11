@@ -104,6 +104,7 @@ names it.  No new weighted risk number is minted anywhere in this file.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from dataclasses import dataclass, field
@@ -643,6 +644,12 @@ def _rotation_context(sources: Sequence[SourceRead]) -> dict[str, Any]:
         "excluded_reason": (src.detail.get("excluded_reason") if src else "source_missing"),
         "display_only": True,
     }
+    # Display-only recorded observation view (rotation_observation_view/v1), carried
+    # verbatim for the Radar glance only when the source read admitted it. Its own
+    # date decides stale/current in the consumer, so it is not gated on `usable`;
+    # it never feeds stage, hazard, confluence or policy. Absent key = no view.
+    if src is not None and src.role == ROLE_CONTEXT and "latest_observation" in src.detail:
+        out["latest_observation"] = copy.deepcopy(src.detail["latest_observation"])
     receipt = src.detail.get("source_clock_receipt") if src else None
     if isinstance(receipt, Mapping) and receipt:
         out["source_clock_receipt"] = dict(receipt)

@@ -368,10 +368,20 @@ def _extract_contractors(text: str) -> tuple[list[dict[str, Any]], str | None]:
     if not match:
         return [], None
     list_text = _clean_text(match.group(1))
-    entries = [part.strip() for part in re.split(r";\s*|,\s+and\s+(?=[A-Z])", list_text) if part.strip()]
-    contractors: list[dict[str, Any]] = []
     marker = ", located in "
+    entries: list[str] = []
+    for clause in re.split(r";\s*", list_text):
+        # A located firm's comma-and may introduce a second city. Split only
+        # when the following clause has its own location marker, before the
+        # next comma-and boundary. Semicolons remain contractor separators.
+        separator = (
+            r",\s+and\s+(?=[A-Z](?:(?!,\s+and\s+).)*?,\s+located\s+in\s+)"
+            if marker in clause else r",\s+and\s+(?=[A-Z])"
+        )
+        entries.extend(part.strip() for part in re.split(separator, clause) if part.strip())
+    contractors: list[dict[str, Any]] = []
     for entry in entries:
+        entry = re.sub(r"^and\s+(?=[A-Z])", "", entry)
         idx = entry.find(marker)
         if idx == -1:
             contractors.append({

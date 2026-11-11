@@ -115,7 +115,17 @@ def _model_call(system, user, *, model_id, max_tokens):
         },
         "authority": "descriptive_research_only",
     }
-    return json.dumps(rio), "fixture-provider", f"served-{model_id}"
+    catalog = json.loads(user.split("EVIDENCE CATALOG:\n", 1)[1].split("\n\n", 1)[0])
+    selections = []
+    for claim in rio["claims"]:
+        quote = claim["evidence"][0]["quote_span"]
+        unit = next(unit for unit in catalog["units"] if unit["text"] == quote)
+        selections.append({"evidence_id": unit["evidence_id"], **{
+            key: claim[key] for key in ("numbers", "entities", "horizon", "explicit")}})
+    selected = {"selector": catalog["catalog_version"], "document": identity,
+                "catalog_sha256": catalog["catalog_sha256"], "selections": selections,
+                "analysis": rio["analysis"]}
+    return json.dumps(selected), "fixture-provider", f"served-{model_id}"
 
 
 def _counting_call(counter):

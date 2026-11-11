@@ -81,13 +81,39 @@ def test_excluded_cte_contains_emails_and_location(monkeypatch):
     assert "'::1'" in cte
 
 
-def test_excluded_cte_empty_config_is_valid_and_matches_nothing(monkeypatch):
+def test_excluded_cte_empty_config_still_hides_registered_operator(monkeypatch):
     monkeypatch.setattr(a, "_load_exclusions",
                         lambda: {"emails": [], "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": []})
     cte = a._excluded_cte()
-    assert "auth.users where false" in cte
+    # The exact operator account is excluded even when the optional private config is absent.
+    assert "lower(email) in (\'admin@mastermind-x.com\')" in cte
     assert "ip_geo where false" in cte
     assert "as ip where false" in cte      # empty excl_ips
+
+
+def test_operator_email_is_merged_with_private_exclusions_without_duplicates(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": ["other@example.com", "admin@mastermind-x.com"],
+        "locations": [], "ips": [], "visitor_ids": [], "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    assert "lower(email) in ('admin@mastermind-x.com','other@example.com')" in cte
+    assert cte.count("'admin@mastermind-x.com'") == 1
+
+
+def test_implicit_operator_link_does_not_exclude_other_registered_accounts(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": [],
+    })
+    cte = a._excluded_cte()
+    # An explicit seed is still hidden; otherwise a shared fingerprint/IP only
+    # hides a linked cookie when it has no authenticated *other* account owner.
+    assert "excluded as (select visitor_id from excl_seed" in cte
+    assert "union select l.visitor_id from excl_link l" in cte
+    assert "where not exists (select 1 from public.analytics_events e3" in cte
+    assert "e3.visitor_id = l.visitor_id" in cte
+    assert "e3.user_id not in (select id from excl_users)" in cte
 
 
 # ---- surface functions: SQL generation (network monkeypatched) -------------
@@ -420,6 +446,40 @@ def test_request_budget_stays_under_the_edge_origin_pull_timeout():
     """
     assert a._REQUEST_BUDGET_S <= 12.0
     assert a._QUERY_TIMEOUT_S <= a._REQUEST_BUDGET_S
+
+
+def test_pages_uses_null_safe_anti_membership_without_changing_classifiers(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.pages(days=30, limit=500)
+    assert len(seen["all"]) == 1
+    sql = seen["sql"]
+    outer = sql.rsplit("select e.site", 1)[1]
+    assert "e.created_at > now() - interval '43200 minutes'" in outer
+    assert "not exists (select 1 from excluded x where x.visitor_id = e.visitor_id)" in outer
+    assert "not exists (select 1 from bots b where b.visitor_id = e.visitor_id)" in outer
+    assert "not in" not in outer and "left join" not in outer
+    assert "count(distinct e.visitor_id)" in outer
+    assert "avg(e.dwell_ms)" in outer
+    assert "group by 1,2 order by views desc nulls last, 1, 2 limit 500" in outer
+    # Pages now projects only classifier OUTPUT IDs. Historical seeds/anchors,
+    # customer protection and the unchanged bot block still classify those IDs.
+    assert sql.startswith(a._pages_cte(43200))
+    global_exclusions = a._excluded_cte()
+    focused_exclusions = a._excluded_cte(focus_visitors=True)
+    historical_prefix = global_exclusions.split("excl_link as (", 1)[0]
+    assert focused_exclusions.startswith(historical_prefix)
+    customer_guard = "where not exists (select 1 from public.analytics_events e3 "
+    assert focused_exclusions.split(customer_guard, 1)[1] == global_exclusions.split(customer_guard, 1)[1]
+    assert focused_exclusions.count("and e2.visitor_id in (select visitor_id from focus_visitors)") == 2
+    assert "excluded as (select visitor_id from excl_seed where visitor_id in (select visitor_id from focus_visitors)" in focused_exclusions
+    assert sql.count(a._bot_cte(43200)) == 1
+    # The seed is now five index-driven membership arms rather than one OR across five
+    # columns. The null guard has to survive that rewrite on EVERY arm, or a NULL
+    # visitor_id would enter `excluded` and the anti-membership would stop being null-safe.
+    # (The excl_vids arm reads a literal text[] list, so it is non-null by construction.)
+    assert a._excluded_cte().count("and e.visitor_id is not null") == 4
+    assert "where e2.visitor_id is not null" in a._excluded_cte()
+    assert "where e.visitor_id is not null" in a._bot_cte(43200)
 
 def test_all_windowed_analytics_surfaces_bound_bot_history(monkeypatch):
     cases = [

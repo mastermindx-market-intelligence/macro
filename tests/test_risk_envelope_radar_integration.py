@@ -152,6 +152,7 @@ def _live_fixture():
     e=source_envelope()
     e.update(source_session='2026-09-19', revision='live_provisional', precedence='live',
         live_active=True, built='2026-09-19 15:00:00 UTC', stale_after_min=5,
+        stale_after='2026-09-19T15:05:00Z',
         overlays={'settled_bundle_id':'test-settled-bundle'},
         live_transition={'candidate_stage':'FRAGILE', 'stable_stage':'FRAGILE', 'pending':None})
     return e
