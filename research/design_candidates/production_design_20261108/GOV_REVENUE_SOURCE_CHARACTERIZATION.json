@@ -1,0 +1,140 @@
+{
+  "schema": "paper.government_revenue_source_characterization.v1",
+  "status": "CURRENT_HELPER_BEHAVIOR_REPRODUCED_NOT_FIX_ACCEPTANCE",
+  "environment": {
+    "python": "3.12.14",
+    "pandas": "2.2.3"
+  },
+  "sources": {
+    "macro/engine/government_revenue/point_in_time.py": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "sha": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+      "sha256": "bb747d91fcdcf2a7b7773dcc14c80a40f7d5aab344b41953ea5225b9af981a3a"
+    },
+    "macro/engine/government_revenue/metrics.py": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "sha": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+      "sha256": "2ab30708459613c958b0a923ee6597ab2206795d027b31582551ef77cc85a787"
+    },
+    "terminal/ingest/alerts_engine.py": {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "sha": "5107f4d84e26aefc540c8c99e0ea3803770f1bb3",
+      "sha256": "d08569144973ac96cfcb9561533c77b5552219a9abbbf251ead1ea031f355d0a"
+    }
+  },
+  "clock_characterization": {
+    "request": "2026-11-09T12:00:00Z",
+    "strict_cutoff": "2026-11-09T12:00:00+00:00",
+    "metrics_cutoff": "2026-11-09T23:59:59.999999+00:00",
+    "strict_visible_ids": [
+      "A"
+    ],
+    "metrics_visible_ids": [
+      "A",
+      "B",
+      "D"
+    ],
+    "strict_knowledge_only_visible_ids": [
+      "A",
+      "D"
+    ],
+    "date_control": {
+      "request": "2026-11-09",
+      "strict_cutoff": "2026-11-09T23:59:59.999999999+00:00",
+      "metrics_cutoff": "2026-11-09T23:59:59.999999+00:00",
+      "visible_ids": [
+        "A",
+        "B",
+        "D"
+      ],
+      "endpoint_precision_identical": false
+    }
+  },
+  "legacy_price_characterization": [
+    {
+      "name": "First evaluation already below",
+      "last": 303.0,
+      "basis": "eod",
+      "fired": true,
+      "value": 303.0,
+      "note": "price 303.0 below 304.0 (eod)",
+      "next_state": null,
+      "transition_proven": false
+    },
+    {
+      "name": "Exactly at the threshold",
+      "last": 304.0,
+      "basis": "eod",
+      "fired": false,
+      "value": 304.0,
+      "note": "",
+      "next_state": null,
+      "transition_proven": false
+    },
+    {
+      "name": "Gap below the lower example level",
+      "last": 293.0,
+      "basis": "eod",
+      "fired": true,
+      "value": 293.0,
+      "note": "price 293.0 below 304.0 (eod)",
+      "next_state": null,
+      "transition_proven": false
+    },
+    {
+      "name": "Live quote selected ahead of manifest",
+      "last": 303.0,
+      "basis": "live",
+      "fired": true,
+      "value": 303.0,
+      "note": "price 303.0 below 304.0 (live)",
+      "next_state": null,
+      "transition_proven": false
+    },
+    {
+      "name": "No available price",
+      "last": null,
+      "basis": null,
+      "fired": null,
+      "value": null,
+      "note": "no price available",
+      "next_state": null,
+      "transition_proven": false
+    }
+  ],
+  "r5_crossing_requirements": [
+    {
+      "prior_verified_regular_close": 305,
+      "new_verified_regular_close": 303,
+      "expected_new_crossing": true
+    },
+    {
+      "prior_verified_regular_close": 304,
+      "new_verified_regular_close": 293,
+      "expected_new_crossing": true
+    },
+    {
+      "prior_verified_regular_close": null,
+      "new_verified_regular_close": 303,
+      "expected_new_crossing": false,
+      "reason": "Seed the baseline; no historical replay."
+    },
+    {
+      "prior_verified_regular_close": 303,
+      "new_verified_regular_close": 302,
+      "expected_new_crossing": false
+    },
+    {
+      "prior_verified_regular_close": 305,
+      "new_verified_regular_close": 304,
+      "expected_new_crossing": false
+    }
+  ],
+  "limits": [
+    "Controlled fixtures; no claim that a current live R5 view leaks future data.",
+    "Effective cutoff was intentionally supplied for historical state. A calendar may show future effective events known by its knowledge cutoff.",
+    "Only Data.last and legacy price evaluation were executed. Quote acquisition, evaluation vintage, disarming, suite dispatch, API admission, persistence, fire receipts, outbox and delivery were not executed.",
+    "A helper return of fired=true is not evidence that an alert fired or delivered in the installed system.",
+    "The R5 crossing examples remain build acceptance requirements; this script does not implement an alert condition."
+  ]
+}

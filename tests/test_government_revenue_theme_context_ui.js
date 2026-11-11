@@ -14,10 +14,12 @@ test('per-call auth, same-principal last-good refresh and403 clearing',async()=>
 test('logout/account switch discards delayed old read and cannot overwrite new403',async()=>{env();let subject='fixture-a',resolves=[];const h=host(),listeners={};global.addEventListener=(name,fn)=>{listeners[name]=fn;};const c=ui.create({host:()=>h,authSubject:()=>subject,fetch:()=>new Promise(r=>resolves.push(r))});c.mount();const old=c.load();await new Promise(setImmediate);subject='';listeners['mdx-auth']({detail:{user:null}});assert.equal(c.state().status,'locked');subject='fixture-b';c.setAuthSubject(subject);const current=c.load();await new Promise(setImmediate);resolves[1]({ok:false,status:403});await current;resolves[0]({ok:true,json:async()=>copy()});await old;assert.equal(c.state().status,'locked');assert.equal(c.state().content_id,null);assert.doesNotMatch(h.innerHTML,/gr-theme-item/);});
 test('source context completeness cannot be inferred from labels or source count',()=>{const x=copy();x.themes[0].research_state='SOURCE_CONTEXT_COMPLETE';assert.equal(ui.validate(x),false);});
 
-function disclosureHost(){
-  let html='',nodes=[],focusNodes=[];
-  return {get innerHTML(){return html;},set innerHTML(value){html=value;nodes=Array.from(value.matchAll(/<details\b([^>]*)>/g),m=>{const key=/data-theme-disclosure="([^"]+)"/.exec(m[1]);return key?{open:/\bopen(?:\s|=|$)/.test(m[1]),getAttribute(name){return name==='data-theme-disclosure'?key[1]:null;}}:null;}).filter(Boolean);focusNodes=Array.from(value.matchAll(/<[^>]+data-theme-focus="([^"]+)"[^>]*>/g),m=>({getAttribute(name){return name==='data-theme-focus'?m[1]:null;},focus(){global.document.activeElement=this;}}));},querySelectorAll(selector){if(selector==='[data-theme-disclosure][open]'||selector==='details[open]')return nodes.filter(n=>n.open);if(selector==='[data-theme-disclosure]')return nodes;if(selector==='[data-theme-focus]')return focusNodes;return[];},contains(node){return nodes.includes(node)||focusNodes.includes(node);},querySelector(){return null;}};
+function disclosureHost(doc=()=>global.document){
+  let html='',nodes=[],focusNodes=[],anchors=[];
+  function node(attrs){const values=Object.fromEntries(Array.from(attrs.matchAll(/([a-z-]+)="([^"]*)"/g),m=>[m[1],m[2].replace(/&amp;/g,'&').replace(/&quot;/g,'"')])),listeners={};return {open:/\bopen(?:\s|=|$)/.test(attrs),getAttribute(name){return values[name]??null},hasAttribute(name){return Object.hasOwn(values,name)},addEventListener(name,fn){listeners[name]=fn},click(event){if(listeners.click)listeners.click(event)},focus(){doc().activeElement=this}};}
+  return {get innerHTML(){return html;},set innerHTML(value){html=value;nodes=Array.from(value.matchAll(/<details\b([^>]*)>/g),m=>node(m[1])).filter(n=>n.hasAttribute('data-theme-disclosure'));const tags=Array.from(value.matchAll(/<(?:a|summary)\b[^>]*>/g),m=>{const n=node(m[0]);n.isLink=m[0].startsWith('<a ');const section=value.slice(0,m.index).match(/aria-labelledby="themeTitle-([^"]+)"/g);n.theme=section&&section.at(-1).slice(28,-1);return n;});focusNodes=tags.filter(n=>n.hasAttribute('data-theme-focus'));anchors=tags.filter(n=>n.isLink);},querySelectorAll(selector){if(selector==='[data-theme-disclosure][open]'||selector==='details[open]')return nodes.filter(n=>n.open);if(selector==='[data-theme-disclosure]')return nodes;if(selector==='[data-theme-focus]')return focusNodes;if(selector==='[data-theme-issuer]')return anchors.filter(n=>n.hasAttribute('data-theme-issuer'));if(selector==='a')return anchors;return[];},contains(n){return nodes.includes(n)||focusNodes.includes(n);},querySelector(){return null;}};
 }
+
 function defaultText(html){
   let at=0,result='',closed=[];
   for(const match of html.matchAll(/<\/?details\b[^>]*>/g)){
@@ -28,6 +30,62 @@ function defaultText(html){
   if(!closed.some(Boolean))result+=html.slice(at);
   return result.replace(/<[^>]+>/g,'');
 }
+
+// Real rendered source anchor -> real issuer controller -> real page restoration.
+// This DOM/history harness is offline; it makes no browser or live-auth claim.
+function themeJourney(options={}){
+  const vm=require('node:vm'),page=fs.readFileSync(process.env.GOV_THEME_PAGE||path.join(__dirname,'../templates/government-revenue-page.js.j2'),'utf8');
+  let url=new URL('https://local.test/government_revenue.html?issuer=LHX&mode=awards&ticker=IRDM&item=award%3Akept&agency=Navy&campaign=read#source'),position=0;
+  const entries=[{url:url.href,state:options.snapshot||{foreign:{kept:true},governmentRevenue:{schema:1,q:'Navy',truth:'official'}}}],listeners=[];
+  const location={get href(){return url.href},get search(){return url.search},get pathname(){return url.pathname},get hash(){return url.hash}};
+  const history={get state(){return entries[position].state},replaceState(state,_title,next){url=new URL(next,url);entries[position]={url:url.href,state}},pushState(state,_title,next){url=new URL(next,url);entries.splice(++position);entries.push({url:url.href,state})}};
+  const controls={};function control(id){return controls[id]||(controls[id]={value:'',focus(){document.activeElement=this}});}
+  const document={activeElement:null,documentElement:{getAttribute(){return options.lang||'en'}},querySelectorAll(){return[]},querySelector(selector){return control(selector)}};
+  const ctx={URL,URLSearchParams,console,document,location,history,state:{mode:'awards',selected:'award:kept',ticker:'IRDM',agency:'Navy',q:'Navy',truth:'official'},pendingSelection:'',missingCandidateSelection:'',identityGeneration:null,$:control,preserveFilterValue(){},closeTopOverlay(){},activateMode(){},tr:en=>en,addEventListener(type,fn){if(type==='popstate')listeners.push(fn)}};
+  ctx.window=ctx;vm.createContext(ctx);
+  for(const file of ['government-revenue-investor.js','government-revenue-theme-context.js'])vm.runInContext(fs.readFileSync(file.endsWith('theme-context.js')&&process.env.GOV_THEME_SOURCE||path.join(__dirname,'../templates',file),'utf8'),ctx);
+  ctx.investorUI=ctx.createGovernmentRevenueInvestor({host});ctx.investorUI.mount();
+  const h=disclosureHost(()=>document),factory=ctx.createGovernmentRevenueThemeContext;
+  ctx.createGovernmentRevenueThemeContext=api=>factory(Object.assign(api,{host:()=>h,authSubject:()=>options.subject||'member-a',fetch:options.fetch||(async()=>({ok:true,json:async()=>options.payload||copy()}))}));
+  vm.runInContext(page.slice(page.indexOf('  var themeUI='),page.indexOf('\n  function companyBridgeSection')),ctx);
+  for(const name of ['syncUrl','restoreUrl','restoreHistoryView']){const start=page.indexOf('  function '+name+'('),end=page.indexOf('\n  function ',start+1);vm.runInContext(page.slice(start,end),ctx);}
+  listeners.push(ctx.restoreHistoryView);ctx.syncUrl(false,true);
+  return {ctx,h,entries,document,get url(){return url},move(delta){position+=delta;url=new URL(entries[position].url);listeners.forEach(fn=>fn())},anchor(){return h.querySelectorAll('a').find(n=>n.theme==='munitions_replenishment'&&new URL(n.getAttribute('href'),'https://local.test').searchParams.get('issuer')==='LMT')},open(){for(const n of h.querySelectorAll('[data-theme-disclosure]'))n.open=n.getAttribute('data-theme-disclosure').startsWith('munitions_replenishment:')},opened(){return h.querySelectorAll('details[open]').map(n=>n.getAttribute('data-theme-disclosure'))}};
+}
+function plainClick(extra={}){return Object.assign({button:0,defaultPrevented:false,preventDefault(){this.defaultPrevented=true}},extra);}
+test('theme journey: rendered issuer click and Back/Forward retain desk, disclosures and focus',async()=>{
+  for(const lang of ['en','zh']){
+    const j=themeJourney({lang});await j.ctx.themeUI.load();j.open();const expected=j.opened(),anchor=j.anchor();assert.ok(anchor,'Actual theme company anchor must exist');anchor.focus();const event=plainClick();anchor.click(event);
+    assert.equal(event.defaultPrevented,true);assert.equal(j.entries.length,2);assert.equal(j.url.searchParams.get('issuer'),'LMT');assert.equal(j.url.searchParams.get('ticker'),'IRDM');assert.equal(j.url.searchParams.get('item'),'award:kept');assert.equal(j.url.hash,'#defenseInvestorTitle');assert.equal(j.ctx.history.state.governmentRevenue.q,'Navy');assert.equal(j.ctx.history.state.governmentRevenue.truth,'official');assert.equal(j.ctx.history.state.governmentRevenueTheme,undefined);assert.equal(j.ctx.investorUI.state().ticker,'LMT');
+    assert.doesNotMatch(JSON.stringify(j.entries[0].state.governmentRevenueTheme),/https:|member-a|cik:/,'History stores semantic public view state only');
+    j.h.innerHTML='';j.move(-1);assert.deepEqual(j.opened(),expected);assert.equal(j.document.activeElement.getAttribute('data-theme-focus'),anchor.getAttribute('data-theme-focus'));assert.equal(j.ctx.state.q,'Navy');assert.equal(j.ctx.state.truth,'official');assert.equal(j.url.hash,'#source');assert.equal(j.ctx.investorUI.state().ticker,'LHX');
+    j.move(1);assert.equal(j.document.activeElement,j.document.querySelector('#defenseInvestor [data-investor-ticker="LMT"]'));assert.equal(j.ctx.state.ticker,'IRDM');
+    j.move(-1);j.ctx.pendingSelection='';j.ctx.state.selected='award:next';j.ctx.syncUrl(true);assert.equal(j.ctx.history.state.governmentRevenueTheme,undefined);assert.equal(j.entries[0].state.governmentRevenueTheme.content_id,fixture.content_id);
+  }
+});
+test('theme journey: modifiers retain real href and default navigation without history mutation',async()=>{
+  const j=themeJourney();await j.ctx.themeUI.load();const anchor=j.anchor();assert.ok(anchor);const before=j.ctx.history.state,url=j.url.href;
+  for(const extra of [{ctrlKey:true},{metaKey:true},{shiftKey:true},{altKey:true},{button:1},{defaultPrevented:true}]){const e=plainClick(extra);anchor.click(e);assert.equal(j.ctx.history.state,before);assert.equal(j.url.href,url);assert.equal(j.entries.length,1);}
+  assert.equal(new URL(anchor.getAttribute('href'),url).searchParams.get('issuer'),'LMT');
+});
+test('theme journey: an already rendered anchor uses the current workspace after further filtering',async()=>{
+  const j=themeJourney();await j.ctx.themeUI.load();const anchor=j.anchor();
+  j.ctx.state.selected='award:new';j.ctx.state.q='ship';j.ctx.state.truth='linked';j.ctx.state.agency='Army';j.ctx.syncUrl(true);anchor.click(plainClick());
+  assert.equal(j.url.searchParams.get('item'),'award:new');assert.equal(j.url.searchParams.get('agency'),'Army');assert.equal(j.ctx.history.state.governmentRevenue.q,'ship');assert.equal(j.ctx.history.state.governmentRevenue.truth,'linked');j.move(-1);assert.equal(j.ctx.state.selected,'award:new');assert.equal(j.ctx.state.agency,'Army');assert.equal(j.ctx.state.q,'ship');
+});
+test('theme journey: cold return requires same validated generation and preserves foreign state',async()=>{
+  const j=themeJourney();await j.ctx.themeUI.load();j.open();j.anchor().click(plainClick());assert.ok(j.entries[0].state.governmentRevenueTheme,'Navigation must retain an origin snapshot');const snapshot=structuredClone(j.entries[0].state);
+  const cold=themeJourney({snapshot});await cold.ctx.themeUI.load();assert.ok(cold.opened().includes('munitions_replenishment:sources'));assert.equal(cold.document.activeElement.getAttribute('data-theme-focus'),snapshot.governmentRevenueTheme.focus);assert.equal(cold.ctx.history.state.foreign.kept,true);
+  const changed=copy();changed.content_id='gptd1-'+'f'.repeat(24);const stale=themeJourney({snapshot,payload:changed});await stale.ctx.themeUI.load();assert.deepEqual(stale.opened(),[]);assert.equal(stale.document.activeElement,null);
+  const invalid=themeJourney({snapshot:{...snapshot,governmentRevenueTheme:{...snapshot.governmentRevenueTheme,expanded:['not-a-theme:sources']}}});await invalid.ctx.themeUI.load();assert.deepEqual(invalid.opened(),[]);
+});
+test('theme journey: late response, changed focus, locked read and account switch cannot resurrect origin focus',async()=>{
+  const j=themeJourney();await j.ctx.themeUI.load();j.open();j.anchor().click(plainClick());assert.ok(j.entries[0].state.governmentRevenueTheme,'Navigation must retain an origin snapshot');const snapshot=structuredClone(j.entries[0].state);
+  let resolve;const late=themeJourney({snapshot,fetch:()=>new Promise(r=>{resolve=r})});const pending=late.ctx.themeUI.load();await new Promise(setImmediate);late.ctx.state.selected='award:next';late.ctx.syncUrl(true);resolve({ok:true,json:async()=>copy()});await pending;assert.deepEqual(late.opened(),[]);assert.equal(late.document.activeElement,null);
+  const focus=themeJourney({snapshot});const focused=focus.document.querySelector('user-selected');focused.focus();await focus.ctx.themeUI.load();assert.equal(focus.document.activeElement,focused);
+  const locked=themeJourney({snapshot,fetch:async()=>({ok:false,status:403})});await locked.ctx.themeUI.load();assert.equal(locked.ctx.history.state.governmentRevenueTheme,undefined);assert.equal(locked.ctx.themeUI.state().content_id,null);
+  const switched=themeJourney({snapshot});switched.ctx.themeUI.setAuthSubject('member-b');await switched.ctx.themeUI.load();assert.equal(switched.ctx.history.state.governmentRevenueTheme,undefined);assert.deepEqual(switched.opened(),[]);
+});
 test('theme narratives and sources stay complete inside native closed disclosures while typed reasons remain visible',async()=>{
   for(const lang of ['en','zh']){
     env(lang);const x=copy(),h=disclosureHost(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>x})});await c.load();
