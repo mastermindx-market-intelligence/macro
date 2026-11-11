@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,15 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (FINRA paired-volume admission, issue #11050):
+    Enroll tests/test_short_volume.py in the existing c19-wp24-consumer-states
+    CODE owner and add its collector/test selectors. The unchanged estimator
+    measures that owner 4 -> 6: the same two commands, one additional test path.
+    Fund only its +2 contribution: 5966/5989/5724 -> 5968/5991/5726.
+    Preserve every other owner, all job/pack ceilings and admission controls.
+    This is isolated owner accounting; natural CI must qualify the composed
+    source and actual packing probes. No unmerged carrier cost is pre-funded.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
