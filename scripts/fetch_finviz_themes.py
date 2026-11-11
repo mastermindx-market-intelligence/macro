@@ -46,6 +46,16 @@ PIT ARCHIVAL (added 2026-07-04, append-only, zero breaking changes):
   2026-11-11 — nothing earlier exists or can be synthesized. Non-fatal on
   failure: the board and the two archives above must not be put at risk by the
   member capture.
+* ``data/themes_heatmap/member_price_state/<asof>.jsonl.gz`` — one gzip'd
+  JSON-lines FILE per NYSE session (added 2026-11-11, lane 10): one row per
+  DISTINCT ticker in the union of the vendor subsector memberships and that
+  night's S&P 500 members, carrying each member's raw price state read from
+  stores the repository already keeps (data/yahoo daily files, the universe
+  membership ledger, dated SPY holdings snapshots) — 50/200-row average ratios,
+  20/63/252-row high/low flags, 60-session total return, index membership and
+  weight facts. Capture-only raw facts: nulls where a store has no value, never
+  a fill or a carry-forward. Immutable, atomic and byte-deterministic exactly
+  like the member perf archive; non-fatal on failure for the same reason.
 
 Staging note: daily.yml stages ``data/`` broadly (``git add data/``), so the
 .jsonl files and the member archive directory are picked up automatically — no
@@ -72,6 +82,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -100,6 +111,19 @@ PERF_PATH = OUT_DIR / "perf_snapshot.json"
 SUBSECTOR_PERF_HISTORY_PATH = OUT_DIR / "subsector_perf_history.jsonl"
 TREE_HISTORY_PATH = OUT_DIR / "tree_history.jsonl"
 MEMBER_PERF_ARCHIVE_DIR = OUT_DIR / "member_perf_archive"
+# Member price state (2026-11-11, lane 10): one row per DISTINCT ticker in the
+# union of the vendor subsector memberships and that night's S&P 500 members.
+# The three stores below are read as-written the night this runs (all three are
+# refreshed inside the same nightly collect pass, BEFORE this fetch step) and
+# are injectable so tests can point the whole bundle at tmp_path — same
+# motivation as _RefreshPaths.
+MEMBER_PRICE_STATE_DIR = OUT_DIR / "member_price_state"
+PRICE_STATE_YAHOO_DIR = ROOT / "data" / "yahoo"
+PRICE_STATE_UNIVERSE_LEDGER = ROOT / "data" / "universe" / "membership.parquet"
+PRICE_STATE_SPY_HOLDINGS_DIR = ROOT / "data" / "etf_holdings" / "SPY"
+#: the step's own elapsed seconds merge into this EXISTING nightly record —
+#: see _record_price_state_elapsed.
+PRICE_STATE_RUN_STATUS = ROOT / "data" / "run_status.json"
 TREE_REFRESH_RECEIPTS_DIR = OUT_DIR / "tree_refresh_receipts"
 # The probation queue is a data-plane sidecar shared with the theme graph
 # (plan §4). This module only ever APPENDS `kind=key_rename` rows to it and
@@ -583,9 +607,384 @@ def write_member_perf_archive(
     return True, p, len(rows)
 
 
-# --------------------------------------------------------------------------- #
-# --refresh-tree: paths, fetch layer
-# --------------------------------------------------------------------------- #
+def _price_state_row(
+    asof: str,
+    ticker: str,
+    themes: list[str] | None,
+    subsectors: list[str] | None,
+    in_sp500: bool,
+    gics_sector: str | None,
+    price: "tuple | None",
+    weight: "tuple[str, float | None, float | None] | None",
+) -> dict:
+    """Assemble one roster row from its already-collected raw facts.
+
+    ``price`` is ``(n_rows, last_date, close_price, close, tail_closes)`` from
+    the ticker's stored daily price file; ``weight`` is
+    ``(snapshot_date, weight_pct, market_value)`` from the index snapshot.
+    Both may be None (no file / no admissible snapshot) and any single fact
+    inside them may be None — nulls are written, never fills.
+    """
+    row: dict = {
+        "asof": asof, "ticker": ticker,
+        "theme": themes, "subsector": subsectors,
+        "in_sp500": in_sp500, "gics_sector": gics_sector,
+        "last_price_date": None, "close_price": None, "close": None,
+        "close_over_sma_50": None, "close_over_sma_200": None,
+        "is_high_20d": None, "is_low_20d": None,
+        "is_high_63d": None, "is_low_63d": None,
+        "is_high_252d": None, "is_low_252d": None,
+        "total_return_60d": None,
+        "n_price_rows": None, "price_vintage": None,
+        "index_weight_pct": None, "index_market_value": None,
+        "index_weight_snapshot_date": None,
+    }
+    if weight is not None:
+        snap_date, w_pct, m_val = weight
+        row["index_weight_snapshot_date"] = snap_date
+        row["index_weight_pct"] = w_pct
+        row["index_market_value"] = m_val
+    if price is None:
+        return row
+    n_rows, last_date, close_price, close, closes = price
+    row["n_price_rows"] = n_rows
+    row["last_price_date"] = last_date
+    row["close_price"] = close_price
+    row["close"] = close
+    if closes is None or not closes:
+        return row
+    last = closes[-1]
+
+    def _f(v: float | None) -> float | None:
+        return float(v) if v is not None and math.isfinite(v) else None
+
+    def _window(n: int) -> list[float] | None:
+        if len(closes) < n:
+            return None
+        w = closes[-n:]
+        return w if all(math.isfinite(v) for v in w) else None
+
+    for n, key in ((50, "close_over_sma_50"), (200, "close_over_sma_200")):
+        w = _window(n)
+        if w is not None and _f(last) is not None and sum(w) != 0:
+            row[key] = _f(last / (sum(w) / n))
+    for n, hi_key, lo_key in ((20, "is_high_20d", "is_low_20d"),
+                              (63, "is_high_63d", "is_low_63d"),
+                              (252, "is_high_252d", "is_low_252d")):
+        w = _window(n)
+        if w is not None and _f(last) is not None:
+            row[hi_key] = (last == max(w))
+            row[lo_key] = (last == min(w))
+    if len(closes) >= 61 and _f(closes[-61]) not in (None, 0.0):
+        row["total_return_60d"] = _f(last / closes[-61] - 1.0)
+    return row
+
+
+def _read_price_facts(yahoo_dir: Path, ticker: str) -> "tuple[tuple | None, str | None]":
+    """Raw price facts from the ticker's stored daily file, as it stands.
+
+    Returns ``(facts, vintage)``: ``facts`` is
+    ``(n_rows, last_date, close_price, close, tail_closes)`` or None when no
+    file exists (an empty file yields facts with n_rows 0 and null members);
+    ``vintage`` is the file's own mtime as ISO-8601 UTC (the price vintage).
+    ``n_rows`` is the file's full row count, while ``tail_closes`` carries only
+    the last 252 adjusted closes — the largest window any field needs — which
+    keeps the read off the multi-decade history (the store contract guarantees
+    ascending order; that is verified, and a violating file is sorted rather
+    than trusted). Non-finite values stay in place and null exactly the windows
+    they touch; no value is ever carried forward or imputed.
+    """
+    import pandas as pd  # lazy: keeps module import stdlib-only (nightly installs it)
+
+    p = yahoo_dir / f"{ticker}.parquet"
+    if not p.exists():
+        return None, None
+    df = pd.read_parquet(p, columns=["close", "close_price"])
+    vintage = datetime.fromtimestamp(p.stat().st_mtime, tz=timezone.utc) \
+        .isoformat(timespec="seconds")
+    if df is None or len(df) == 0:
+        return (0, None, None, None, None), vintage
+    if not df.index.is_monotonic_increasing:
+        df = df.sort_index()
+    n_rows = len(df)
+    last = df.iloc[-1]
+    last_date = None
+    try:
+        ts = pd.Timestamp(df.index[-1])
+        if pd.notna(ts):
+            last_date = ts.strftime("%Y-%m-%d")
+    except Exception:  # noqa: BLE001 — a non-timestamp index is a store defect, not a crash
+        last_date = None
+
+    def _num(v) -> float | None:
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return f if math.isfinite(f) else None
+
+    closes = [float(v) for v in df["close"].tail(252).tolist()] if "close" in df else []
+    facts = (n_rows, last_date, _num(last.get("close_price")), _num(last.get("close")),
+             closes)
+    return facts, vintage
+
+
+def _snapshot_ticker_key(t: object) -> str:
+    """Dash-form key for keying an index-holdings snapshot by ticker.
+
+    The holdings snapshots write class shares in dot form (``BRK.B``, ``BF.B``)
+    while every roster source (vendor tree, membership ledger) uses dash form
+    (``BRK-B``, ``BF-B``). Both the snapshot WRITE and the per-row LOOKUP go
+    through this one normalisation, so the two spellings can never miss each
+    other and silently null a weight the source actually holds.
+    """
+    return str(t).replace(".", "-")
+
+
+def _is_null(v) -> bool:
+    """True when a ledger cell is null, for every null spelling pandas can
+    hand back from parquet — None, float NaN, NaT, and NA-like objects that
+    refuse comparison (``bool(pd.NA != pd.NA)`` raises). Stdlib-only so this
+    module keeps importing without pandas."""
+    if v is None:
+        return True
+    try:
+        return bool(v != v)  # NaN/NaT are the values not equal to themselves
+    except TypeError:
+        return True
+
+
+def _ledger_strs(col) -> list[str | None]:
+    """Stringify a ledger column with nulls kept as None.
+
+    ``astype(str)`` would turn a null sector or ticker into the literal string
+    ``"None"``/``"nan"`` — a fill-shaped value that breaks the nulls-not-fills
+    rule. Each null maps to None so the output field is null.
+    """
+    return [None if _is_null(v) else str(v) for v in col.tolist()]
+
+
+def write_member_price_state(
+    asof: str,
+    fetched_at_utc: str,
+    tree: list,
+    dir_path: Path | None = None,
+    yahoo_dir: Path | None = None,
+    ledger_path: Path | None = None,
+    spy_holdings_dir: Path | None = None,
+) -> tuple[bool, Path, int]:
+    """Write one session's per-MEMBER price state to ``member_price_state/<asof>.jsonl.gz``.
+
+    Returns ``(written, path, row_count)`` — ``written`` is False when the session
+    file already exists (skip, never overwrite; immutable once written, same rule
+    as the perf archive).
+
+    Capture-ONLY (2026-11-11, lane 10, COO ruling 6 + amendment 1): raw facts
+    read from stores the repository already keeps, exactly as they stand the
+    night this runs — no threshold, no share-of-group, no aggregate, no label.
+
+    Roster (amendment 1): ONE ROW PER DISTINCT TICKER in the union of (a) the
+    vendor subsector memberships of the committed tree (the same ``tree`` the
+    perf archive joins; membership itself is PIT-archived in tree_history.jsonl)
+    and (b) that night's S&P 500 members from the dated membership ledger the
+    repository keeps — ``data/universe/membership.parquet`` (group ``sp500``,
+    ``active``; refreshed by engine/universe_history.update_membership inside
+    the same nightly collect pass that runs before this fetch). A ticker in
+    several subsectors yields ONE row whose ``theme``/``subsector`` fields carry
+    its sorted distinct membership keys — the per-membership rows live in the
+    perf archive; a ticker only in the index carries null keys.
+
+    Price facts per row come from the stored daily price file
+    ``data/yahoo/<TICKER>.parquet`` as it stands that night: date of its last
+    price row (written with its REAL last date even when that is not the session
+    date — never carried forward), ``close_price`` (split-adjusted,
+    dividend-unadjusted) and ``close`` (total-return adjusted) on that row,
+    ``close`` divided by its 50- and 200-row simple average (adjusted series),
+    whether that close is the highest/lowest of the last 20/63/252 rows, the
+    60-session total return (adjusted series, needs 61 closes), the number of
+    price rows, and the file's own modification timestamp as the price vintage.
+    No file, or fewer rows than a window needs -> nulls for those fields, never
+    an error, never a fill.
+
+    Index facts (amendment 1): S&P 500 membership flag and GICS sector from the
+    membership ledger (its sector column is the Wikipedia S&P 500 constituents
+    table's GICS sector via collectors/breadth.py); index weight and market
+    value from the latest SPY holdings snapshot dated the session or EARLIER
+    (``data/etf_holdings/SPY/<date>.parquet``; a LATER snapshot is never used,
+    and the snapshot's own date is carried on every row). No admissible
+    snapshot, or a column the snapshot leaves null -> nulls; nothing derived.
+
+    File shape mirrors the perf archive: gzip JSON lines, first line a meta
+    record carrying the fetch timestamp and each source's own date once per
+    file; mtime=0 so the payload is byte-deterministic; fixed-name .tmp +
+    ``os.replace`` so a killed run can never leave a torn session file. First
+    date 2026-11-11 — nothing earlier exists or is synthesized. A per-ticker
+    read failure nulls that ticker's price facts (counted in meta) and never
+    aborts the file; anything this function cannot recover from propagates to
+    main()'s failure-isolated step, which logs loudly and never fails the board
+    or the archives.
+    """
+    d = dir_path if dir_path is not None else MEMBER_PRICE_STATE_DIR
+    y_dir = yahoo_dir if yahoo_dir is not None else PRICE_STATE_YAHOO_DIR
+    led_p = ledger_path if ledger_path is not None else PRICE_STATE_UNIVERSE_LEDGER
+    spy_d = spy_holdings_dir if spy_holdings_dir is not None else PRICE_STATE_SPY_HOLDINGS_DIR
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f"{asof}.jsonl.gz"
+    if p.exists():
+        return False, p, 0
+
+    import pandas as pd  # lazy — see _read_price_facts
+
+    # --- roster: vendor memberships + that night's S&P 500 members ---------- #
+    vendor_themes: dict[str, set] = {}
+    vendor_subs: dict[str, set] = {}
+    for t in tree or []:
+        theme_key = t.get("key")
+        for s in t.get("subsectors") or []:
+            sub_key = s.get("key")
+            for m in s.get("members") or []:
+                vendor_themes.setdefault(m, set()).add(theme_key)
+                vendor_subs.setdefault(m, set()).add(sub_key)
+
+    sp500: set[str] = set()
+    sp500_sector: dict[str, str] = {}
+    ledger_last_seen = None
+    if led_p.exists():
+        led = pd.read_parquet(led_p)
+        led = led[(led["group"] == "sp500") & led["active"].astype(bool)]
+        led_tickers = _ledger_strs(led["ticker"])
+        led_sectors = _ledger_strs(led["sector"])
+        # a null ticker cannot be a roster key — it is dropped, never "None"
+        sp500 = {t for t in led_tickers if t is not None}
+        sp500_sector = {t: s for t, s in zip(led_tickers, led_sectors)
+                        if t is not None}
+        if len(led):
+            ledger_last_seen = pd.to_datetime(led["last_seen"]).max()
+            ledger_last_seen = ledger_last_seen.strftime("%Y-%m-%d")
+    union = sorted(set(vendor_themes) | sp500)
+
+    # --- index weights: latest snapshot dated asof or EARLIER ---------------- #
+    snap: dict[str, tuple[float | None, float | None]] = {}
+    snap_date = None
+    stems = []
+    if spy_d.exists():
+        for f in spy_d.glob("*.parquet"):
+            m = re.fullmatch(r"(\d{4}-\d{2}-\d{2})", f.stem)
+            if m and m.group(1) <= asof:
+                stems.append(m.group(1))
+    if stems:
+        snap_date = max(stems)
+        sdf = pd.read_parquet(spy_d / f"{snap_date}.parquet")
+        for r in sdf.itertuples(index=False):
+            t = _snapshot_ticker_key(getattr(r, "ticker", ""))
+            try:
+                w = float(getattr(r, "weight_pct"))
+            except (TypeError, ValueError):
+                w = None
+            try:
+                mv = float(getattr(r, "market_value"))
+            except (TypeError, ValueError):
+                mv = None
+            snap[t] = (w if w is not None and math.isfinite(w) else None,
+                       mv if mv is not None and math.isfinite(mv) else None)
+
+    # --- rows ---------------------------------------------------------------- #
+    rows: list[dict] = []
+    read_errors = 0
+    for ticker in union:
+        try:
+            price, vintage = _read_price_facts(y_dir, ticker)
+        except Exception as e:  # noqa: BLE001 — one bad parquet must not lose the night
+            print(f"::warning::member price state: price read failed for {ticker}: {e!r}",
+                  file=sys.stderr)
+            read_errors += 1
+            price, vintage = None, None
+        snap_key = _snapshot_ticker_key(ticker)
+        row = _price_state_row(
+            asof, ticker,
+            sorted(vendor_themes.get(ticker, set())) or None,
+            sorted(vendor_subs.get(ticker, set())) or None,
+            ticker in sp500,
+            sp500_sector.get(ticker),
+            price,
+            (snap_date, *snap[snap_key]) if snap_key in snap and snap_date else None,
+        )
+        row["price_vintage"] = vintage
+        rows.append(row)
+
+    n_priced = sum(1 for r in rows if r["n_price_rows"] is not None)
+    meta = {
+        "asof": asof, "fetched_at_utc": fetched_at_utc,
+        "source": "finviz-themes+universe-membership-ledger",
+        "row_count": len(rows),
+        "sp500_roster": {
+            "path": "data/universe/membership.parquet", "group": "sp500",
+            "select": "active",
+            "ledger_last_seen": ledger_last_seen,
+            "sector_source": "data/breadth/constituents.parquet "
+                             "(Wikipedia S&P 500 constituents, GICS sector) "
+                             "via engine/universe_history.py",
+        },
+        "index_weights": {"path": "data/etf_holdings/SPY", "snapshot_date": snap_date,
+                          "rule": "latest snapshot dated asof or earlier"},
+        "price_store": {"path": "data/yahoo", "vintage": "per-file mtime UTC"},
+        "counts": {"vendor_members": len(vendor_themes), "sp500_active": len(sp500),
+                   "union": len(union), "priced": n_priced,
+                   "price_read_errors": read_errors},
+    }
+    lines = [json.dumps(meta, separators=(",", ":"))]
+    lines.extend(json.dumps(r, separators=(",", ":")) for r in rows)
+    payload = gzip.compress(("\n".join(lines) + "\n").encode("utf-8"),
+                            compresslevel=9, mtime=0)
+    tmp = d / f"{asof}.jsonl.gz.tmp"
+    tmp.write_bytes(payload)
+    os.replace(tmp, p)
+    return True, p, len(rows)
+
+
+def _record_price_state_elapsed(seconds: float, status: str, rows: int) -> None:
+    """Merge this step's own elapsed seconds into ``data/run_status.json``
+    under ``sources.member_price_state`` — a record the nightly ALREADY writes
+    and commits (config.yml ``storage.run_status_file``; same literal the
+    timings module reads). The collect job's ``nightly_timings.py finish``
+    (W-L1) copies each source's ``elapsed_sec`` into the
+    ``data/ops/nightly_timings/collect.jsonl`` row it already appends, so the
+    first nightly run after merge proves the runtime figure (check E1) with NO
+    new file. Read-merge-write of the one key, exactly like collect.py's own
+    status merge, so no other source's health is ever touched. Telemetry law:
+    this can never fail the step — any failure is one ``::warning`` and the
+    night proceeds. The write is atomic — temp file in the same directory,
+    then ``os.replace`` (this module's own pattern for its outputs) — so a
+    kill or full disk mid-write can never leave the shared record truncated;
+    a failed write leaves the previous record byte-intact and no temp behind.
+    """
+    tmp = PRICE_STATE_RUN_STATUS.with_name(PRICE_STATE_RUN_STATUS.name + ".tmp")
+    try:
+        doc: dict = {}
+        if PRICE_STATE_RUN_STATUS.exists():
+            doc = json.loads(PRICE_STATE_RUN_STATUS.read_text())
+        if not isinstance(doc, dict):
+            doc = {}
+        sources = doc.get("sources")
+        if not isinstance(sources, dict):
+            sources = {}
+        sources["member_price_state"] = {
+            "status": status,
+            "rows": rows,
+            "elapsed_sec": round(seconds, 1),
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        }
+        doc["sources"] = sources
+        PRICE_STATE_RUN_STATUS.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps(doc, indent=2, default=str))
+        os.replace(tmp, PRICE_STATE_RUN_STATUS)
+    except Exception as e:  # noqa: BLE001 — telemetry must never fail the step
+        try:
+            tmp.unlink(missing_ok=True)  # best effort — never leave a temp behind
+        except OSError:
+            pass
+        print(f"::warning::member price state: elapsed-seconds record failed "
+              f"({e!r}) — non-fatal", file=sys.stderr)
 
 @dataclass(frozen=True)
 class _RefreshPaths:
@@ -1840,6 +2239,35 @@ def main() -> None:
         print(f"::error::member perf archive FAILED (asof={asof}): {e!r} — non-fatal "
               "by design; the snapshot and the subsector/tree PIT archives above "
               "are unaffected", file=sys.stderr)
+
+    # --- member price state (2026-11-11, lane 10; capture-only) --------------- #
+    # ISOLATED like the member perf archive above: this step must never fail or
+    # slow the board or any archive — an error is a LOUD annotation and the night
+    # proceeds. Reads only stores the repository already keeps (no new network
+    # fetch): data/yahoo per-ticker daily files, the universe membership ledger
+    # and the dated SPY holdings snapshots, each refreshed earlier in this same
+    # nightly collect pass. Same session-dedup rule: an existing session file is
+    # skipped, never overwritten. The step times ITSELF and merges its elapsed
+    # seconds into the run_status record the nightly already writes, so the
+    # collect job's timings finish carries the figure into collect.jsonl (the
+    # 20 s gate becomes runner-proven from the first nightly, check E1).
+    _ps_t0 = time.perf_counter()
+    try:
+        ps_written, ps_path, ps_rows = write_member_price_state(
+            asof, fetched_at_utc, tree)
+        _record_price_state_elapsed(
+            time.perf_counter() - _ps_t0,
+            "written" if ps_written else "skipped", ps_rows)
+        if ps_written:
+            print(f"member_price_state/{ps_path.name}: wrote {ps_rows} rows "
+                  f"({ps_path.stat().st_size / 1024:.1f} KB)")
+        else:
+            print(f"member_price_state/{ps_path.name}: skipped (session file exists)")
+    except Exception as e:  # noqa: BLE001 — non-fatal by design (see above)
+        _record_price_state_elapsed(time.perf_counter() - _ps_t0, "error", 0)
+        print(f"::error::member price state FAILED (asof={asof}): {e!r} — non-fatal "
+              "by design; the snapshot, the subsector/tree PIT archives and the "
+              "member perf archive above are unaffected", file=sys.stderr)
 
 
 if __name__ == "__main__":

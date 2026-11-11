@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_726),
+    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_728),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (lane 10, member price state suite accounting): the local
+    in-process estimator — this test's own packing_probe_measurements over the
+    registered tree — measured all three probes exactly +2 over the #11024
+    re-based ceilings: index 5,970 > 5,968, free 5,991 > 5,989, Prophet
+    5,728 > 5,726, with no newly selected job, job ceilings retained and no
+    pack-count breach. The +2 is the suite token for
+    tests/test_member_price_state.py appended to the same
+    fetch-finviz-owning step in .github/ci/legacy-jobs.yml that already
+    carries its sibling tests/test_member_perf_archive.py (same module,
+    same subject; its synthetic parquet fixtures load pandas + pyarrow, both
+    already on that step's install line). Apply that contribution to
+    5968/5989/5726 -> 5970/5991/5728, retaining job ceilings — stacking on,
+    never loosening or reverting, the #11024 numbers below. This is the
+    gate's prescribed status-record edit for this PR's own introduced
+    finding; natural successor CI must qualify this head.
 
     2026-11-11 (PR #11024, member perf archive suite accounting):
     contract-delta run 43004476995 measured head 743645ca94ae against
