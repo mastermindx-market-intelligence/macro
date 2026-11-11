@@ -122,7 +122,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "dfa00923344d21899038e0abd66c7f7810833de07e86878cb6e2c2011c7bbe01"
+          "sha256": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -132,12 +132,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "39bcfc476d735343bb72f582691bfb8e9dc9d085191f0a181d98e23422a19c3e"
-        },
-        {
-          "path": "templates/_risk_radar_pullback_depth.html.j2",
-          "role": "jinja_template",
-          "sha256": "c4d2f15e41a86afaa51d509a98285e19fe49432634c8a3e8c7acc4b47d4f6d08"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -426,12 +421,12 @@
         {
           "path": "templates/_aibrief_body.html.j2",
           "role": "jinja_template",
-          "sha256": "bde4c19d5f511f478bea3b725626d1fe6bc6e3054755504171fcd4fd3534eadd"
+          "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
         },
         {
           "path": "templates/_aibrief_css.j2",
           "role": "jinja_template",
-          "sha256": "1c341bc8204ba2203cd6f1953419a58ace9ccc8c3048767658d276072cde5d81"
+          "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
         },
         {
           "path": "templates/_cmd_hero.css.j2",
@@ -476,7 +471,7 @@
         {
           "path": "templates/_risk_radar_card.html.j2",
           "role": "jinja_template",
-          "sha256": "dfa00923344d21899038e0abd66c7f7810833de07e86878cb6e2c2011c7bbe01"
+          "sha256": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
         },
         {
           "path": "templates/_risk_radar_dlg.css.j2",
@@ -486,12 +481,7 @@
         {
           "path": "templates/_risk_radar_dlg.html.j2",
           "role": "jinja_template",
-          "sha256": "39bcfc476d735343bb72f582691bfb8e9dc9d085191f0a181d98e23422a19c3e"
-        },
-        {
-          "path": "templates/_risk_radar_pullback_depth.html.j2",
-          "role": "jinja_template",
-          "sha256": "c4d2f15e41a86afaa51d509a98285e19fe49432634c8a3e8c7acc4b47d4f6d08"
+          "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
         },
         {
           "path": "templates/_seo_head.html.j2",
@@ -510,7 +500,7 @@
         }
       ],
       "output": "hk_stocks.html",
-      "output_sha256": "5ef8af3c3f7d34013955e452a6d169091cc3a8cbc381c5207411fd0cad3ba3d0",
+      "output_sha256": "8a5126f0c7bc2645ed03fa2eb621cc6d343c9567c8d41ce58f87119e203da021",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -643,7 +633,7 @@
             "sha256": "bc7ae67276a8a7c677af1ab1f69a8c08e6304a3a9b904285abd2454f5356c0e7"
           },
           "output": "hk_stocks.html",
-          "output_sha256": "5ef8af3c3f7d34013955e452a6d169091cc3a8cbc381c5207411fd0cad3ba3d0",
+          "output_sha256": "8a5126f0c7bc2645ed03fa2eb621cc6d343c9567c8d41ce58f87119e203da021",
           "owner_population": {
             "board": 39,
             "intersection": [],
@@ -779,7 +769,7 @@
             "sha256": "7f3de426f8a9f756fa155df0fc0dfe5685ed3280579dbbd25817c22f5ed441b9"
           },
           "output": "hk_stocks.null-buy.html",
-          "output_sha256": "fd8bbc976f2892615ff3c3c63fb9dd337a6e919746dc822b12a51e27edccf792",
+          "output_sha256": "865728437b19fe887ba3bd7a93c7cc2376c7a7d921050ce5aaa4e7decdb45454",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -915,7 +905,7 @@
             "sha256": "5229a4fca6654bf6be5c88f015225586f11104cd49c1ab1726c52a35c8dc1ecf"
           },
           "output": "hk_stocks.watch-only.html",
-          "output_sha256": "399ec47f29c3887fcf8eb180d166cf24174636130f52b819353c4e2e81de5f78",
+          "output_sha256": "57b9e86ebfcc3d09ee3d6dd45a38190b5fcc335185acb23bd1822b4a3e99fd7f",
           "owner_population": {
             "board": 36,
             "intersection": [],
