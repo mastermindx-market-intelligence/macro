@@ -589,12 +589,37 @@ def _check_density_gate(theme_df: pd.DataFrame, theme: str) -> tuple[bool, str]:
 
     # Rolling 21d check on latest window
     recent = t.tail(_DENSITY_ROLL)
-    avg_n_bonds = recent["n_bonds"].mean() if "n_bonds" in recent.columns else 0.0
-    avg_match_ratio = (
-        (recent["matched_n"] / recent["n_bonds"].replace(0, np.nan)).mean()
-        if "matched_n" in recent.columns and "n_bonds" in recent.columns
-        else 0.0
-    )
+
+    # Coverage must be truthful: 21 rows are not 21 observation dates when the
+    # source repeats a date. Duplicate dates may not manufacture history
+    # (CCW §2.5-7).
+    n_distinct_dates = int(recent["as_of"].nunique(dropna=True))
+    if n_distinct_dates < _DENSITY_ROLL:
+        return False, (
+            f"{n_distinct_dates} distinct dates in last {_DENSITY_ROLL} rows "
+            "(density gate: insufficient distinct observation dates)"
+        )
+
+    # Counts must be finite observations. A window whose counts are entirely
+    # missing used to pass both thresholds, because every comparison against
+    # NaN is False, and +inf cleared the bond-count floor; neither is evidence
+    # of coverage. Non-finite rows are treated as no observation, never as
+    # qualifying coverage.
+    avg_n_bonds = 0.0
+    avg_match_ratio = 0.0
+    if "n_bonds" in recent.columns:
+        n_bonds = pd.to_numeric(recent["n_bonds"], errors="coerce")
+        n_bonds = n_bonds[np.isfinite(n_bonds)]
+        if n_bonds.empty:
+            return False, "no finite n_bonds observations (density gate: no bond-count coverage)"
+        avg_n_bonds = float(n_bonds.mean())
+    if "matched_n" in recent.columns and "n_bonds" in recent.columns:
+        matched = pd.to_numeric(recent["matched_n"], errors="coerce")
+        denom = pd.to_numeric(recent["n_bonds"], errors="coerce").replace(0, np.nan)
+        ratio = (matched / denom).replace([np.inf, -np.inf], np.nan).dropna()
+        if ratio.empty:
+            return False, "no finite matched_n observations (density gate: no repricing coverage)"
+        avg_match_ratio = float(ratio.mean())
 
     if avg_n_bonds < _DENSITY_N_MIN:
         return False, f"avg n_bonds {avg_n_bonds:.1f} < {_DENSITY_N_MIN} (density gate: too few bonds)"

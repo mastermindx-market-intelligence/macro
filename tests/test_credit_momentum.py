@@ -229,6 +229,109 @@ class TestDensityGate:
         open_, _ = _check_density_gate(df, "test_theme")
         assert open_ is True
 
+    # --- coverage-truthfulness cases (macro #11012) ------------------------
+    # A 21-row window is not 21 observations: all-missing counts produced NaN
+    # means that cleared both thresholds, +inf cleared the bond floor, and
+    # repeated dates faked the 21-date floor.
+
+    def _gate_df(self, n_bonds, matched_n, dates) -> pd.DataFrame:
+        return pd.DataFrame({
+            "as_of": list(dates),
+            "theme": ["test_theme"] * len(dates),
+            "n_bonds": n_bonds,
+            "matched_n": matched_n,
+        })
+
+    def _dates(self, n: int):
+        base = pd.Timestamp(date(2026, 1, 1))
+        return [base + pd.Timedelta(days=i) for i in range(n)]
+
+    def test_gate_closed_all_bond_counts_missing(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([np.nan] * n, [7] * n, self._dates(n))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"all-missing n_bonds must close the gate; got: {reason}"
+        assert "n_bonds" in reason.lower()
+
+    def test_gate_closed_all_match_counts_missing(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([10] * n, [np.nan] * n, self._dates(n))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"all-missing matched_n must close the gate; got: {reason}"
+        assert "matched_n" in reason.lower() or "repricing" in reason.lower()
+
+    def test_gate_closed_both_count_columns_missing(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([np.nan] * n, [np.nan] * n, self._dates(n))
+        open_, _ = _check_density_gate(df, "test_theme")
+        assert open_ is False
+
+    def test_gate_closed_infinite_bond_counts(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([np.inf] * n, [7] * n, self._dates(n))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"+inf n_bonds must close the gate; got: {reason}"
+        assert "n_bonds" in reason.lower(), f"must close on bond-count coverage, not a side effect: {reason}"
+
+    def test_gate_closed_infinite_match_counts(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([10] * n, [np.inf] * n, self._dates(n))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"+inf matched_n must close the gate; got: {reason}"
+
+    def test_gate_open_with_isolated_non_finite_observation(self):
+        """Non-finite rows are no observation, not qualifying coverage: one
+        +inf row must not poison an otherwise valid finite window."""
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        n_bonds = [10] * n
+        n_bonds[-3] = np.inf
+        n_bonds[-4] = np.nan
+        df = self._gate_df(n_bonds, [7] * n, self._dates(n))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is True, f"finite window with two non-finite rows should stay open: {reason}"
+
+    def test_gate_closed_one_date_repeated_21_times(self):
+        from engine.credit_momentum import _check_density_gate
+        one = pd.Timestamp(date(2026, 1, 5))
+        df = self._gate_df([10] * 21, [7] * 21, [one] * 21)
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"21 copies of one date must close the gate; got: {reason}"
+        assert "distinct" in reason.lower()
+
+    def test_gate_closed_two_dates_repeated(self):
+        from engine.credit_momentum import _check_density_gate
+        a, b = pd.Timestamp(date(2026, 1, 5)), pd.Timestamp(date(2026, 1, 6))
+        dates = [a if i % 2 == 0 else b for i in range(22)]
+        df = self._gate_df([10] * 22, [7] * 22, dates)
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False, f"two repeated dates must close the gate; got: {reason}"
+        assert "distinct" in reason.lower()
+
+    def test_gate_closed_missing_n_bonds_column(self):
+        """Pre-existing behaviour: an absent count column closes the gate."""
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = pd.DataFrame({
+            "as_of": self._dates(n),
+            "theme": ["test_theme"] * n,
+            "matched_n": [7] * n,
+        })
+        open_, _ = _check_density_gate(df, "test_theme")
+        assert open_ is False
+
+    def test_gate_closed_zero_bonds(self):
+        from engine.credit_momentum import _check_density_gate
+        n = 25
+        df = self._gate_df([0] * n, [0] * n, self._dates(n))
+        open_, _ = _check_density_gate(df, "test_theme")
+        assert open_ is False
+
 
 # ---------------------------------------------------------------------------
 # Test 3: Composition-change suppression
