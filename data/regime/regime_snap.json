@@ -1,20 +1,21 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": -0.844,
+  "roro": -0.728,
   "cap_recent": true,
   "fear_built": 0.741,
-  "roro_velocity": 0.657,
-  "vel_pctile": 0.992,
-  "legs_up": 2,
+  "roro_velocity": 0.63,
+  "vel_pctile": 0.988,
+  "legs_up": 3,
   "legs_total": 7,
   "flipped_legs": [
     "vix",
+    "hy_oas",
     "vix_term"
   ],
-  "days_since_last_snap": 13,
-  "fear_rebuilding": true,
-  "vix_term": 0.955,
+  "days_since_last_snap": 14,
+  "fear_rebuilding": false,
+  "vix_term": 0.943,
   "status": "building",
   "gates": {
     "velocity": true,
@@ -30,6 +31,11 @@
       "zh": "\u6ce2\u52a8\u7387 VIX"
     },
     {
+      "key": "hy_oas",
+      "en": "HY credit spread",
+      "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u5229\u5dee"
+    },
+    {
       "key": "vix_term",
       "en": "VIX term structure",
       "zh": "VIX \u671f\u9650\u7ed3\u6784"
@@ -42,14 +48,14 @@
     "lean": "unclear",
     "confidence": "low",
     "checks": {
-      "catalyst": "No legible structural or verbal catalyst for durable relief; the stated driver is an oil decline, while the headlines provide no signed deal, actual policy shift, or hard-data surprise explaining the snap.",
-      "premium": "Little fear premium appears unwound: only 2 of 7 legs have flipped, the snap is still building, and fear is rebuilding.",
-      "washout": "A real recent washout is indicated by capitulation present and elevated fear built, although the current move has not matured into a confirmed snap.",
-      "follow_through": "Follow-through looks doubtful because confirmation is confined to VIX and its term structure, with most cross-asset legs unconfirmed and fear rebuilding."
+      "catalyst": "No legible structural or verbal relief catalyst; headlines instead show persistent inflation and renewed rate-hike expectations.",
+      "premium": "Only three of seven legs have flipped, so much of the fear premium appears intact; relief magnitude is unavailable.",
+      "washout": "Capitulation is present after substantial fear accumulation and extreme velocity, indicating a real washout rather than a shallow dip.",
+      "follow_through": "Next-session confirmation is uncertain because the snap is still building, equities face a near-5% 10-year yield, and the driver mix lacks a durable catalyst."
     },
-    "read": "The setup comes out of a genuine washout, but the relief remains narrow and its catalyst is not legible. Without broader confirmation or a structural catalyst, next-session durability cannot be judged confidently.",
+    "read": "The washout is credible, but the relief move is incomplete and has no identifiable structural catalyst. Treat durability as unclear until broader legs confirm or a hard catalyst emerges.",
     "model": "deepseek-v4-pro",
-    "generated_at": "2026-11-10T12:06:59.907388+00:00",
+    "generated_at": "2026-11-11T08:25:43.380216+00:00",
     "degraded_reason": null,
     "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
   }
