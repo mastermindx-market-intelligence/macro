@@ -105,6 +105,21 @@ jobs:
             /data/ai_costs/usage.jsonl
             /config.yml
           sparse-checkout-cone-mode: false
+      - name: checkout identity guard (fail-closed on queue-shadow)
+        # QUEUE-SHADOW GUARD (2026-11-09). fences.yml is mixed-trigger
+        # (pull_request + push), so its truth is the EVENT HEAD, not a branch:
+        # on a PR that is GitHub's synthetic merge commit, on a main push it is the
+        # pushed commit. A queue-ref push would otherwise let this pack evaluate
+        # the fence guards it ships itself (.github/, scripts/, config.yml) out of a
+        # speculative tree. Fail closed if the workspace is not the event head.
+        run: |
+          set -euo pipefail
+          workspace_sha="$(git rev-parse HEAD)"
+          if [ "$workspace_sha" != "$GITHUB_SHA" ]; then
+            echo "::error::checkout identity mismatch — workspace HEAD ${workspace_sha} != event head ${GITHUB_SHA}; refusing to evaluate fences on a shadow tree (fail-closed)." >&2
+            exit 1
+          fi
+          echo "checkout identity verified: ${workspace_sha} == event head ${GITHUB_SHA}."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -337,6 +352,16 @@ jobs:
         with:
           filter: blob:none
           fetch-depth: 0
+      - name: checkout identity guard (fail-closed on queue-shadow)
+        # QUEUE-SHADOW GUARD (2026-11-09): event-head truth, fail closed.
+        run: |
+          set -euo pipefail
+          workspace_sha="$(git rev-parse HEAD)"
+          if [ "$workspace_sha" != "$GITHUB_SHA" ]; then
+            echo "::error::checkout identity mismatch — workspace HEAD ${workspace_sha} != event head ${GITHUB_SHA}; refusing to evaluate fences on a shadow tree (fail-closed)." >&2
+            exit 1
+          fi
+          echo "checkout identity verified: ${workspace_sha} == event head ${GITHUB_SHA}."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -371,6 +396,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: checkout identity guard (fail-closed on queue-shadow)
+        # QUEUE-SHADOW GUARD (2026-11-09): event-head truth, fail closed.
+        run: |
+          set -euo pipefail
+          workspace_sha="$(git rev-parse HEAD)"
+          if [ "$workspace_sha" != "$GITHUB_SHA" ]; then
+            echo "::error::checkout identity mismatch — workspace HEAD ${workspace_sha} != event head ${GITHUB_SHA}; refusing to evaluate fences on a shadow tree (fail-closed)." >&2
+            exit 1
+          fi
+          echo "checkout identity verified: ${workspace_sha} == event head ${GITHUB_SHA}."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -386,6 +421,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: checkout identity guard (fail-closed on queue-shadow)
+        # QUEUE-SHADOW GUARD (2026-11-09): event-head truth, fail closed.
+        run: |
+          set -euo pipefail
+          workspace_sha="$(git rev-parse HEAD)"
+          if [ "$workspace_sha" != "$GITHUB_SHA" ]; then
+            echo "::error::checkout identity mismatch — workspace HEAD ${workspace_sha} != event head ${GITHUB_SHA}; refusing to evaluate fences on a shadow tree (fail-closed)." >&2
+            exit 1
+          fi
+          echo "checkout identity verified: ${workspace_sha} == event head ${GITHUB_SHA}."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
