@@ -473,7 +473,11 @@ def test_pages_uses_null_safe_anti_membership_without_changing_classifiers(monke
     assert focused_exclusions.count("and e2.visitor_id in (select visitor_id from focus_visitors)") == 2
     assert "excluded as (select visitor_id from excl_seed where visitor_id in (select visitor_id from focus_visitors)" in focused_exclusions
     assert sql.count(a._bot_cte(43200)) == 1
-    assert "where e.visitor_id is not null" in a._excluded_cte()
+    # The seed is now five index-driven membership arms rather than one OR across five
+    # columns. The null guard has to survive that rewrite on EVERY arm, or a NULL
+    # visitor_id would enter `excluded` and the anti-membership would stop being null-safe.
+    # (The excl_vids arm reads a literal text[] list, so it is non-null by construction.)
+    assert a._excluded_cte().count("and e.visitor_id is not null") == 4
     assert "where e2.visitor_id is not null" in a._excluded_cte()
     assert "where e.visitor_id is not null" in a._bot_cte(43200)
 
