@@ -1,0 +1,13 @@
+{
+  "schema": "mastermind.container_edge_refreshed_merge.v1",
+  "source_head": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "main": "43b5acdb0d0f264091f5aa33c129625fd0b28b8c",
+  "render_main": "5e2f0530a7c5c95a0e461e81edac02cd1133acfa",
+  "previous_main": "cbdc7c613dc60bec3238c9972b7f850a57eb3b76",
+  "prior_prepared_tree": "5bf0674701de9d226a5e222eeb31f2733335dc72",
+  "prior_native_commit_result": "NOT_APPLIED / PROTECTED_BASE_MISMATCH_OR_UNAVAILABLE; same carrier target readback proved HEAD unchanged and origin/main advanced",
+  "recovery": "Preserved local proof receipts, aborted only the owned uncommitted merge, then merged current protected base through the same local Git owner",
+  "merge_exit_code": 128,
+  "merge_output": "fatal: remote error: upload-pack: not our ref 0311463169533f12692b3c255af27d38cc7171ea\nfatal: could not fetch ad8b44af0283a114aed44c82780633dee2525dfb from promisor remote\n",
+  "unresolved": []
+}

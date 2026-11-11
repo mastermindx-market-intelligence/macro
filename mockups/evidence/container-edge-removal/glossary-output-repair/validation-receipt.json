@@ -1,0 +1,47 @@
+{
+  "schema": "mastermind.container_edge_glossary_validation.v1",
+  "checks": [
+    {
+      "name": "public-render-fastlane",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_public_render_fastlane.py",
+        "tests/test_help_directory.py",
+        "tests/test_help_directory_contract.py",
+        "tests/test_workflow_publish_chains.py",
+        "tests/test_build_market_memory_page.py",
+        "tests/test_glossary.py",
+        "tests/test_glossary_contract.py",
+        "tests/test_glossary_letter_rail_js.py",
+        "tests/test_finance_intelligence_site_wiring.py",
+        "tests/test_consumer_cyclical_plnt_site_wiring.py",
+        "tests/test_sector_central_paper.py",
+        "tests/test_si_workspace_shell.py",
+        "tests/test_sector_central_data_is_sync.py",
+        "--deselect",
+        "tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model",
+        "-q",
+        "-rs"
+      ],
+      "exit_code": 0,
+      "seconds": 22.36,
+      "log": "mockups/evidence/container-edge-removal/glossary-output-repair/public-render-fastlane.log"
+    },
+    {
+      "name": "regime-history-us",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "pytest",
+        "tests/test_regime_history_us_site_wiring.py",
+        "-q",
+        "-rs"
+      ],
+      "exit_code": 0,
+      "seconds": 2.47,
+      "log": "mockups/evidence/container-edge-removal/glossary-output-repair/regime-history-us.log"
+    }
+  ]
+}

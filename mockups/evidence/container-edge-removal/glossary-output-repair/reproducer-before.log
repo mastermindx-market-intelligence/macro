@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________ test_site_pair_matches_a_fresh_render_of_the_template _____________
+tests/test_glossary_contract.py:299: in test_site_pair_matches_a_fresh_render_of_the_template
+    assert fresh_body == on_disk_body
+E   assert '\n\n<!DOCTYP...ody>\n</html>' == '\n\n<!DOCTYP...ody>\n</html>'
+E     
+E     Skipping 3835 identical leading characters in diff, use -v to show
+E     + link rel="stylesheet" href="assets/css/dfb3c710.css">
+E     + 
+E     + 
+E     + <link rel="stylesheet" href="assets/css/17c15c21.css">
+E     - link rel="preload" as="style" href="product-nav-icons.css">...
+E     
+E     ...Full output truncated (1362 lines hidden), use '-vv' to show
+
+NOTE: sparse worktree — verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_glossary_contract.py::test_site_pair_matches_a_fresh_render_of_the_template
+1 failed in 2.62s

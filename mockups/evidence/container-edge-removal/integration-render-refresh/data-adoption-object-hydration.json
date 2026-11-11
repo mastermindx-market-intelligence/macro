@@ -1,0 +1,46 @@
+{
+  "adopted_main": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "scope": "Immutable Git object hydration only; no refs, config, credentials or product working files changed",
+  "objects": [
+    {
+      "sha": "1e386134f6eb9c3764aa6ef5ded170b10b349713",
+      "bytes": 1665,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/1e386134f6eb9c3764aa6ef5ded170b10b349713"
+    },
+    {
+      "sha": "fe51be2f2635bab02616c202609c0bd8ad7d5e72",
+      "bytes": 20597,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/fe51be2f2635bab02616c202609c0bd8ad7d5e72"
+    },
+    {
+      "sha": "4a61fdb125b6c9e8f73bc7b8cf2a43548a6d64c7",
+      "bytes": 3300,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/4a61fdb125b6c9e8f73bc7b8cf2a43548a6d64c7"
+    },
+    {
+      "sha": "198a0ad03a37a59c9dd8492eaafd556feafbeaee",
+      "bytes": 26050,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/198a0ad03a37a59c9dd8492eaafd556feafbeaee"
+    },
+    {
+      "sha": "8a8e739d3e3932fe61a203133541acdf51b1d0c0",
+      "bytes": 754909,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/8a8e739d3e3932fe61a203133541acdf51b1d0c0"
+    },
+    {
+      "sha": "7c9750dda88cadfaecaacc4cab20a9490f65c5ac",
+      "bytes": 139670,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/7c9750dda88cadfaecaacc4cab20a9490f65c5ac"
+    },
+    {
+      "sha": "0ed549fd5778d53a898966e77bf0be68b9f545c0",
+      "bytes": 54729,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/0ed549fd5778d53a898966e77bf0be68b9f545c0"
+    },
+    {
+      "sha": "a42a1a617ef68fb843ae5faff009a1c1452c9c68",
+      "bytes": 43156,
+      "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/a42a1a617ef68fb843ae5faff009a1c1452c9c68"
+    }
+  ]
+}

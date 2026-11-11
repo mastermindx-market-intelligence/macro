@@ -1,0 +1,76 @@
+{
+  "schema": "mastermind.container_edge_glossary_finalization.v1",
+  "parent_native_head": "debc1a865aa491166ea78d9eaf5357b3c04369b7",
+  "published_candidate_head": "0d26e84a15a0578d15bc1521021676d547d2aaf2",
+  "ci_run": 43032587201,
+  "ci_job": 130564015541,
+  "before_sha256": "56c82507fa03af6576a3186facd03f37bac98f666c2c80ff0994a3002315202f",
+  "after_sha256": "d39252413987969a01dce89a41fcb9a1616012992c0765bdf62016b76320aff1",
+  "owners": {
+    "inject_data_base": 0,
+    "externalize_css": 1,
+    "optimize_assets": 0
+  },
+  "main_content_identical": true,
+  "script_tags_identical_except_cache_stamps": true,
+  "banner_tag_identical": true,
+  "style_bytes_preserved_in_hashed_assets": true,
+  "remaining_inline_style_blocks": 0,
+  "copied_named_assets": [
+    "product-nav-icons.css",
+    "shared_shell.css",
+    "shared_shell_bridge.js",
+    "theme.css",
+    "theme.js",
+    "wh_banner.js"
+  ],
+  "new_assets": [
+    "site/assets/css/dfb3c710.css"
+  ],
+  "referenced_assets": [
+    {
+      "path": "site/assets/css/17c15c21.css",
+      "sha256": "17c15c21896e380b01e52053c9a315788f59b7f1e27f0008c665d72085b72ca7",
+      "new": false
+    },
+    {
+      "path": "site/assets/css/dfb3c710.css",
+      "sha256": "dfb3c7103106b74189739f2fbc63e605e86d75f93d8289b7f530d9eafd60b300",
+      "new": true
+    },
+    {
+      "path": "site/product-nav-icons.css",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "new": false
+    },
+    {
+      "path": "site/shared_shell.css",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "new": false
+    },
+    {
+      "path": "site/shared_shell_bridge.js",
+      "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+      "new": false
+    },
+    {
+      "path": "site/theme.css",
+      "sha256": "fbd43fb7e5e91109dbf2c65c8a11e7912442b1842b033c8337d38283988ba8c7",
+      "new": false
+    },
+    {
+      "path": "site/theme.js",
+      "sha256": "7b79ec0065ad46f32d47d2b6f531fba6e4dbe1618b44c0f5f9e53c42803a4a2a",
+      "new": false
+    },
+    {
+      "path": "site/wh_banner.js",
+      "sha256": "2fd3e543c1c19dfdf175bc6e2fd3d13915d4f73246e24a3ae893bbf938431bfc",
+      "new": false
+    }
+  ],
+  "scope": [
+    "site/glossary.html",
+    "site/assets/css/dfb3c710.css"
+  ]
+}

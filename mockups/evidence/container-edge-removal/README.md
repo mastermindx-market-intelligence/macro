@@ -33,9 +33,9 @@ Normal render schedules do not cover every retained page. The projection applies
 
 `consumer-projection-catalog.json` identifies source transformations, while the projection receipt records matched consumers and hashes. The projection inspected 15,179 HTML pages and 394 reachable assets, changed 14,530 consumers, and minted 134 fingerprints. Dedicated Basket Detail, Bonds and inherited Alt Data CSS use the established template bytes/constants. Separately classified direct-source repairs cover product pages, cycle/radar styles, Learn, Start, Financial Lineage, Coming Soon and retained mockup/fund consumers.
 
-The final consumer audit records **15,179 pages, 394 reachable assets, zero decorative residual groups, zero missing assets and zero superseded references**. It classifies retained functional lines explicitly. The canonical template/site synchronizer reports **161 matched pairs** and the canonical asset-reference checker reports no gaps.
+The original consumer audit recorded **15,179 pages and 394 reachable assets**. The current-main refresh audit records **15,179 pages, 395 reachable assets, zero decorative residual groups, zero missing assets and zero superseded references**. It classifies retained functional lines explicitly. The canonical template/site synchronizer reports **161 matched pairs** and the canonical asset-reference checker reports no gaps.
 
-No collector or model refresh is used. Typed embedded JSON payloads are asserted unchanged during projection; this assertion does not claim equivalence for arbitrary executable bootstrap code. The final Git diff contains no market-data file changes. `input-bindings.json` binds the final source and rendered inputs by SHA-256; capture manifests honestly identify the nearest Git HEAD rather than pretending dirty working-tree captures were produced by a future commit.
+No collector or model refresh is used. Typed embedded JSON payloads are asserted unchanged during projection; this assertion does not claim equivalence for arbitrary executable bootstrap code. The presentation change contains no market-data file changes relative to the integrated main baseline; incoming main data is preserved exactly. `input-bindings.json` binds the final source and rendered inputs by SHA-256; capture manifests honestly identify the nearest Git HEAD rather than pretending dirty working-tree captures were produced by a future commit.
 
 ## Validation and reproduction
 
@@ -58,3 +58,17 @@ The press replay now passes without rewriting any blog page. Two exact CSS objec
 The existing EW-P4 browser owner completed all 68 cases and five contact sheets from source snapshot 80460a463f728946c18f0d1de3bc4b535f0002dd. All 31 registered render inputs were verified against that commit before and after capture. The current receipt binds the actual screenshots and current source bytes; the previous receipt is retained here and original images remain in Git history. The complete EW-P4 regression file passes 164 tests.
 
 The managed publisher saved the source snapshot through its original exact-HEAD commit after bounded standard Git index preparation. No publisher configuration, timeout, permission, remote or release control changed.
+
+## Current-main release candidate and CI repair
+
+The first published CI run, `43032587201` at PR head `0d26e84a15a0578d15bc1521021676d547d2aaf2`, found one reproducible glossary render-contract failure as well as hosted-runner and dependency-installation failures. The exact logs and result fragments remain under `ci/43032587201/`; they are not represented as passing or retried results.
+
+The glossary now uses the existing public-page build, CSS externalization and asset optimizer. The repair preserves its content and daily banner, emits the correct CSS fingerprint and canonical preload ordering, and passes the complete owning public-render suite (**333 passed, 1 existing deselection**) plus the separate US Regime History test. The reproducer, intermediate failure and clean final logs are retained in `glossary-output-repair/`. No assertion was weakened.
+
+A later scheduled render and its current data were integrated through `43b5acdb0d0f264091f5aa33c129625fd0b28b8c`, followed by upstream CI registration and data through `54b903f7b45ddf8000a8ab432d6ac1edd63be896`. The qualified site audit reports **15,179 HTML pages, 395 reachable assets and 457 unique style blocks**, with zero decorative residuals, missing assets or retired references. All 161 template/site pairs match. Typed JSON, external data, generated JavaScript and all 31 EW-P4 render inputs retain their qualified bindings. The actual-diff UI-evidence gate passes.
+
+The final adoption changes only five published data JSON files relative to the qualified site tree; every presentation byte remains identical. The only CI conflict combines the owned container-edge job with the incoming ticker-news regression registration. Its focused packing and reconnect tests pass (**3 passed**). Exact source blobs, data overlays, conflict resolutions and proof reuse are recorded in `integration-render-refresh/`.
+
+The Canada `.cau-row + .cau-row` horizontal separator remains functional. Its accepted CSS asset was removed from an overly broad asset-retirement mapping only after exact content and live-consumer qualification. The pre-correction failure and final zero-residual audit are both retained. Decorative rail detection remains unchanged.
+
+These receipts establish local source, render and interaction qualification. Fresh exact-head CI, controller-owned merge and production served-byte/browser acceptance are still separate obligations. No CI retry, release label or production acceptance is implied by this checkpoint.

@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "tests/test_ticker_news_snapshot_cursor_reconnect.py"
+  ],
+  "exit_code": 0,
+  "seconds": 120.08,
+  "log": "mockups/evidence/container-edge-removal/integration-render-refresh/ci-adoption-test.log",
+  "source_main": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "bindings": {
+    ".github/ci/legacy-jobs.yml": "1e92336803f0d106e60a682de004f1b261ca3c8a",
+    "tests/test_ci_pack.py": "4d3f0d1293cdf26dd19503f83b8185c476da42c0",
+    "tests/test_ticker_news_snapshot_cursor_reconnect.py": "7c97b263901e2264cb3ca67cbd952bd81bac69e6"
+  }
+}

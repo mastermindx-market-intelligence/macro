@@ -1,0 +1,19 @@
+{
+  "path": "tests/test_ci_pack.py",
+  "before_sha256": "bedc9021033cd7c1bee2903089b1e29ed327f3e331480a9ead35214864f564af",
+  "after_sha256": "601d72b7a83c919ac0e15b2bd4b77a15851e40ba16541cccc09c8b8326ee03bb",
+  "index": [
+    138,
+    5970
+  ],
+  "free_content": [
+    138,
+    5989
+  ],
+  "prophet": [
+    131,
+    5724
+  ],
+  "max_packs": 10,
+  "resolution": "Retain owned index accounting and accept incoming free-content accounting; both complete comment histories retained."
+}

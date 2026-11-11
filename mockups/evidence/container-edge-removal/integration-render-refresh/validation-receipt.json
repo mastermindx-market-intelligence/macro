@@ -1,0 +1,39 @@
+{
+  "schema": "mastermind.container_edge_render_refresh_validation.v1",
+  "main": "43b5acdb0d0f264091f5aa33c129625fd0b28b8c",
+  "accepted_reference": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "checks": [
+    {
+      "name": "preservation",
+      "exit_code": 0,
+      "seconds": 22.3,
+      "log": "mockups/evidence/container-edge-removal/integration-render-refresh/preservation.log"
+    },
+    {
+      "name": "template-sync",
+      "exit_code": 0,
+      "seconds": 0.55,
+      "log": "mockups/evidence/container-edge-removal/integration-render-refresh/template-sync.log"
+    },
+    {
+      "name": "glossary-parity",
+      "exit_code": 0,
+      "seconds": 3.35,
+      "log": "mockups/evidence/container-edge-removal/integration-render-refresh/glossary-parity.log"
+    },
+    {
+      "name": "consumer-audit",
+      "exit_code": 0,
+      "seconds": 96.14,
+      "log": "mockups/evidence/container-edge-removal/integration-render-refresh/consumer-audit.log"
+    },
+    {
+      "name": "ui-evidence",
+      "exit_code": 0,
+      "seconds": 16.05,
+      "log": "mockups/evidence/container-edge-removal/integration-render-refresh/ui-evidence.log"
+    }
+  ],
+  "overall": "passed",
+  "mapping_correction": "functional-asset-retention.json"
+}
