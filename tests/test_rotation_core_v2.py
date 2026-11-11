@@ -393,3 +393,70 @@ def test_F3_false_pivot_uses_held_state_not_decided_state():
     bk = rc.simulate(tgt, R, pd.Series(0.0, index=s_), 0.0, "f3", equity_cols=("OFF", "DEF", "BASE"))
     w = run.held_risk_on(bk)
     assert w.round(9).tolist() == [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]   # DEFEND decided day 2 is held from day 3's close
+
+
+# ------------------------------------------------------------------ R16 S2-S4, S9, S10
+def test_S2_no_trivial_arming_or_trigger_right_after_first_formation():
+    s_ = pd.bdate_range("2001-01-01", periods=300)
+    R = pd.DataFrame(np.nan, index=s_, columns=["OFF", "DEF", "BASE"])
+    R.iloc[272:] = 0.0
+    R.iloc[273, 0] = -0.01                            # their reproduction: 1% dip two sessions after formation
+    legs = v2.Legs({s_[271]: (["A"], ["B"], ["A", "B"])}, R, R.notna().astype(int), 0)
+    rel = v2.relative_line(legs)
+    assert rel.iloc[:272].isna().all()
+    bd = {"br": pd.Series(0.5, index=s_), "bmax": pd.Series(1.0, index=s_),
+          "wash_run_prev": pd.Series(np.nan, index=s_), "wash_from_low": pd.Series(np.nan, index=s_)}
+    st, log = v2.h1_states(rel, bd, 3, 25, return_log=True)
+    assert (st.dropna() == v2.NEUTRAL).all() and st.iloc[273] == v2.NEUTRAL
+    assert st.iloc[:272].isna().all() and st.iloc[272] == v2.NEUTRAL
+
+
+def test_S2_h3_momentum_needs_126_formed_sessions():
+    s_ = pd.bdate_range("2001-01-01", periods=420)
+    R = pd.DataFrame(np.nan, index=s_, columns=["OFF", "DEF", "BASE"]); R.iloc[272:] = 0.001
+    legs = v2.Legs({s_[271]: (["A"], ["B"], ["A", "B"])}, R, R.notna().astype(int), 0)
+    st = v2.h3_states(legs)
+    assert st.iloc[: 272 + 126].isna().all()
+
+
+def test_S3_sma_over_last_50_observed_closes_and_missing_day_excluded():
+    s_ = pd.bdate_range("2001-01-01", periods=80)
+    x = pd.Series(0.01, index=s_); x.iloc[60] = np.nan
+    lvl, sma = v2.observed_level_sma(x.to_frame("A"), 50)
+    obs = (1 + x.dropna()).cumprod()
+    assert np.isnan(lvl.iloc[60, 0]) and np.isnan(sma.iloc[60, 0])
+    assert sma.iloc[79, 0] == pytest.approx(obs.iloc[-50:].mean())
+    assert lvl.iloc[61, 0] == pytest.approx(1.01 ** 61)          # carries: 61 observed returns, no 0% close
+
+
+def test_S4_held_leg_hand_example():
+    blk = np.array([[1.0, -0.5], [-0.5, 1.0]])
+    eq = np.prod(1 + blk.mean(axis=1)) - 1
+    held = np.prod(1 + v2.held_leg_returns(blk)) - 1
+    assert eq == pytest.approx(0.5625) and held == pytest.approx(0.0)
+
+
+def test_S4_drift_reading_replaces_all_three_legs():
+    R = pd.DataFrame({c: [0.1 * i] for i, c in enumerate(["OFF", "DEF", "BASE", "OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"])})
+    d = v2.base_view(R, "drift")
+    assert d.iloc[0].tolist() == pytest.approx([0.3, 0.4, 0.5]) and list(d.columns) == ["OFF", "DEF", "BASE"]
+
+
+def test_S9_arming_memory_boundary_21_sessions():
+    n = 200; s_ = pd.bdate_range("2001-01-01", periods=n)
+    for age, expect in ((21, v2.DEFEND), (22, v2.NEUTRAL)):
+        rel = pd.Series(1.0, index=s_); rel.iloc[180:] = 0.9          # cross-down at 180
+        br = pd.Series(1.0, index=s_); br.iloc[180 - age] = 0.5         # breadth key armed only at 180-age
+        bd = {"br": br, "bmax": pd.Series(1.0, index=s_), "wash_run_prev": pd.Series(np.nan, index=s_),
+              "wash_from_low": pd.Series(np.nan, index=s_)}
+        assert v2.h1_states(rel, bd, 5, 25).iloc[180] == expect, age
+
+
+def test_S10_leg_observed_if_any_member_has_a_close_simulate_states_defers_otherwise():
+    s_ = pd.bdate_range("2001-01-01", periods=5)
+    R = pd.DataFrame(0.0, index=s_, columns=["OFF", "DEF", "BASE", "OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"])
+    V = pd.DataFrame(1, index=s_, columns=R.columns); V.loc[s_[2], "DEF"] = 0      # no DEF member closed on day 2
+    legs = v2.Legs({}, R, V, 0)
+    st = pd.Series([0, 1, np.nan, np.nan, np.nan], index=s_, dtype=float)
+    bk = v2.simulate_states(st, legs, pd.Series(0.0, index=s_), s_[0], s_[-1])
+    assert bk.meta["deferred_executions"] == 1 and bk.traded.iloc[2] == 0 and bk.traded.iloc[3] > 0

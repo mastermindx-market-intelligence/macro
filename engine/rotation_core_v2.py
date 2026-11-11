@@ -259,6 +259,19 @@ class Legs:
     dropped_industry_days: int
 
 
+def held_leg_returns(blk: np.ndarray) -> np.ndarray:
+    """Equal weights at the first row, then held (drifting); a missing member-day is dropped from that day's
+    average and its weight carries unchanged."""
+    w = np.full(blk.shape[1], 1.0 / blk.shape[1])
+    out = np.full(blk.shape[0], np.nan)
+    for d_ in range(blk.shape[0]):
+        ok = np.isfinite(blk[d_])
+        if ok.any():
+            out[d_] = float((w[ok] * blk[d_][ok]).sum() / w[ok].sum())
+            w = w.copy(); w[ok] = w[ok] * (1 + blk[d_][ok]); w = w / w.sum()
+    return out
+
+
 def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252, min_pairs: int = 200,
               fee_bp: float = FEE_INDUSTRY_BP, leg_size: int | None = None, fixed: tuple | None = None) -> Legs:
     """Industries: legs = top / bottom third by trailing beta. Funds (F4): leg_size=3. fixed=(offence, defence)
@@ -292,8 +305,10 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
         k = leg_size if leg_size is not None else len(bs) // 3
         formed[t] = (list(bs.index[-k:]), list(bs.index[:k]), list(bs.index))
     keys = pd.DatetimeIndex(sorted(formed))
-    R = pd.DataFrame(np.nan, index=s, columns=["OFF", "DEF", "BASE", "BASE_DRIFT"])
-    V = pd.DataFrame(0, index=s, columns=["OFF", "DEF", "BASE", "BASE_DRIFT"])
+    cols = ["OFF", "DEF", "BASE", "OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"]
+    R = pd.DataFrame(np.nan, index=s, columns=cols)
+    V = pd.DataFrame(0, index=s, columns=cols)
+    unique_dropped = set()
     dropped = 0
     prev = None
     fee = fee_bp / 1e4
@@ -305,37 +320,45 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
         for col, mem in zip(["OFF", "DEF", "BASE"], legs):
             blk = vw.loc[days, mem]
             ok = blk.notna()
-            dropped += int((~ok).sum().sum())
+            if col == "BASE":                 # S8: unique industry-days (the base contains every eligible member)
+                for c_ in blk.columns[(~ok).any(axis=0).values]:
+                    for d_ in blk.index[~ok[c_].values]:
+                        unique_dropped.add((c_, d_))
             R.loc[days, col] = blk.mean(axis=1, skipna=True)     # missing industry-day dropped, not imputed
             V.loc[days, col] = ok.sum(axis=1)
             if prev is not None and len(days):
                 old = set(prev[["OFF", "DEF", "BASE"].index(col)])
                 repl = len(set(mem) - old) / max(1, len(mem))
                 R.loc[days[0], col] = (1 + R.loc[days[0], col]) / (1 + 2 * repl * fee) - 1   # re-formation cost
-        # R14(b): BASE_DRIFT = same members, equal weights at the month's first session, then drifting
-        mem = legs[2]
+        # R14(b) / S4: drift reading for ALL three legs: equal weights at the month's first session, then held
         if len(days):
-            blk = vw.loc[days, mem].to_numpy(dtype=float)
-            w = np.full(len(mem), 1.0 / len(mem))
-            out = np.full(len(days), np.nan)
-            for d_ in range(len(days)):
-                ok = np.isfinite(blk[d_])
-                if ok.any():
-                    out[d_] = float((w[ok] * blk[d_][ok]).sum() / w[ok].sum())
-                    w = w.copy(); w[ok] = w[ok] * (1 + blk[d_][ok]); w = w / w.sum()
-            R.loc[days, "BASE_DRIFT"] = out
-            V.loc[days, "BASE_DRIFT"] = V.loc[days, "BASE"]
-            if prev is not None:
-                repl = len(set(mem) - set(prev[2])) / max(1, len(mem))
-                R.loc[days[0], "BASE_DRIFT"] = (1 + R.loc[days[0], "BASE_DRIFT"]) / (1 + 2 * repl * fee) - 1
+            for col, mem in zip(["OFF", "DEF", "BASE"], legs):
+                R.loc[days, col + "_DRIFT"] = held_leg_returns(vw.loc[days, mem].to_numpy(dtype=float))
+                V.loc[days, col + "_DRIFT"] = V.loc[days, col]
+                if prev is not None:
+                    repl = len(set(mem) - set(prev[["OFF", "DEF", "BASE"].index(col)])) / max(1, len(mem))
+                    R.loc[days[0], col + "_DRIFT"] = (1 + R.loc[days[0], col + "_DRIFT"]) / (1 + 2 * repl * fee) - 1
         prev = legs
-    return Legs(formed, R, V, dropped)
+    return Legs(formed, R, V, len(unique_dropped))
+
+
+def observed_level_sma(vw: pd.DataFrame, n: int = 50) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """S3: per industry, the level is defined only on observed closes (a missing day is not a close; the level
+    carries across it without a 0% close), and the SMA is the mean of the last n OBSERVED levels. Both are NaN on
+    a missing day, so the industry drops out of that day's breadth numerator and denominator."""
+    lvl = pd.DataFrame(np.nan, index=vw.index, columns=vw.columns)
+    sma = lvl.copy()
+    for c in vw.columns:
+        x = vw[c].dropna()
+        lv = (1 + x).cumprod()
+        lvl.loc[lv.index, c] = lv.values
+        sma.loc[lv.index, c] = lv.rolling(n, min_periods=n).mean().values
+    return lvl, sma
 
 
 def breadth_i(vw: pd.DataFrame, legs: Legs, n: int = 50) -> pd.Series:
     """Share of the offence leg's industries above their own 50-session SMA (missing industry-days dropped)."""
-    lvl = (1 + vw.fillna(0)).cumprod().where(vw.notna().cumsum() > 0)
-    sma = lvl.rolling(n, min_periods=n).mean()
+    lvl, sma = observed_level_sma(vw, n)
     above = (lvl > sma).astype(float).where(sma.notna() & vw.notna())
     out = pd.Series(np.nan, index=vw.index)
     keys = pd.DatetimeIndex(sorted(legs.formed))
@@ -349,7 +372,9 @@ def breadth_i(vw: pd.DataFrame, legs: Legs, n: int = 50) -> pd.Series:
 
 def relative_line(legs: Legs) -> pd.Series:
     r = legs.returns
-    return (1 + r["OFF"].fillna(0)).cumprod() / (1 + r["DEF"].fillna(0)).cumprod()
+    started = (r["OFF"].notna() & r["DEF"].notna()).cumsum() > 0
+    line = (1 + r["OFF"].fillna(0)).cumprod() / (1 + r["DEF"].fillna(0)).cumprod()
+    return line.where(started)            # S2: no flat padding before the first formed leg
 
 
 # --------------------------------------------------------------------------- state machines (draft rev 4)
@@ -386,8 +411,7 @@ def current_leg_breadth(vw: pd.DataFrame, legs: Legs, lookback: int = 126, n: in
     Returns per-day arrays: br (today), br_max126 (max over t-125..t on current members), wash_run_prev (length of
     the washout spell ending at t-1 when t is its recovery close), wash_from_low (sessions from that spell's lowest
     close to t), n_members."""
-    lvl = (1 + vw.fillna(0)).cumprod().where(vw.notna().cumsum() > 0)
-    sma = lvl.rolling(n, min_periods=n).mean()
+    lvl, sma = observed_level_sma(vw, n)
     above = (lvl > sma).astype(float).where(sma.notna() & vw.notna())
     s = vw.index
     br = pd.Series(np.nan, index=s); bmax = br.copy(); run_prev = br.copy(); from_low = br.copy(); nm = br.copy()
@@ -443,9 +467,13 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
            "armed": armed.values.copy(), "exit": {"DEFEND_by_ATTACK": 0, "DEFEND_by_month_end_above_sma": 0,
                                                   "ATTACK_by_DEFEND": 0, "ATTACK_by_63_month_end": 0}}
     state, entry_i = NEUTRAL, None
-    ready = (hi.notna() & sma.notna() & bmax.notna()).values
+    formed_n = rel.notna().cumsum()
+    ready = (hi.notna() & sma.notna() & bmax.notna() & (formed_n >= 126)).values   # S2
+    has_legs = rel.notna().values
     for i in range(len(s)):
         if not ready[i]:
+            if has_legs[i]:
+                st[i] = NEUTRAL               # S2: legs exist, look-backs not yet full -> NEUTRAL and unarmed
             continue
         defend = bool(armed_recent.iloc[i]) and bool(cross_dn[i])
         attack = False
@@ -482,7 +510,8 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
 
 def h3_states(legs: Legs) -> pd.Series:
     r = legs.returns
-    lo = (1 + r["OFF"].fillna(0)).cumprod(); ld = (1 + r["DEF"].fillna(0)).cumprod()
+    started = (r["OFF"].notna() & r["DEF"].notna()).cumsum() > 0
+    lo = (1 + r["OFF"].fillna(0)).cumprod().where(started); ld = (1 + r["DEF"].fillna(0)).cumprod().where(started)
     m126 = (lo / lo.shift(126)) - (ld / ld.shift(126))
     s = r.index
     me = pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s
@@ -506,10 +535,9 @@ def targets_from_states(st: pd.Series, cash_for_defend: bool = False) -> pd.Data
 def base_view(legs_r: pd.DataFrame, base: str = "eq") -> pd.DataFrame:
     """R14: 'eq' = equal weight every session over the month's set (code reading); 'drift' = equal at month start,
     drifting. Returns OFF/DEF/BASE columns with BASE from the chosen reading."""
-    out = legs_r[["OFF", "DEF", "BASE"]].copy()
-    if base == "drift":
-        out["BASE"] = legs_r["BASE_DRIFT"]
-    return out
+    if base == "drift":                    # S4: all three legs drift; signals stay on the governing reading
+        return legs_r[["OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"]].set_axis(["OFF", "DEF", "BASE"], axis=1)
+    return legs_r[["OFF", "DEF", "BASE"]].copy()
 
 
 # --------------------------------------------------------------------------- F4: tradable fund tier
