@@ -82,13 +82,17 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-10-29"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-11-09"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-10-30",
+    "board_as_of": "2026-11-10",
     "coverage": {
       "identical": 0,
       "matured": 0,
@@ -107,16 +111,16 @@
     },
     "n_coverage_rows": 0,
     "n_family_rows": 0,
-    "n_paired_rows": 1931,
+    "n_paired_rows": 2166,
     "paired": {
-      "identical": 1888,
+      "identical": 2123,
       "matured": 0,
       "revisions_refused": 0,
       "stamps": 0,
       "written": 0
     },
     "reconstruction_refused": [
-      "2026-10-30",
+      "2026-11-10",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -139,12 +143,15 @@
       "2026-10-21",
       "2026-10-22",
       "2026-10-23",
-      "2026-10-29"
+      "2026-10-29",
+      "2026-10-30",
+      "2026-11-06",
+      "2026-11-09"
     ],
-    "require_stamp": "2026-10-30",
+    "require_stamp": "2026-11-10",
     "same_stamp_revisions_refused": [],
     "sessions_written": {
-      "identical": 30,
+      "identical": 34,
       "matured": 0,
       "refused": 0,
       "written": 0
@@ -153,7 +160,7 @@
   "latest_session": {
     "liveness": "session_missing",
     "reason": "candidate session missing from the durable store; not pulled from Pages",
-    "stamp_date": "2026-10-30"
+    "stamp_date": "2026-11-10"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [
@@ -172,11 +179,19 @@
     {
       "reason": "candidate session missing from the durable store; not pulled from Pages",
       "stamp_date": "2026-10-30"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-11-06"
+    },
+    {
+      "reason": "candidate session missing from the durable store; not pulled from Pages",
+      "stamp_date": "2026-11-10"
     }
   ],
-  "n_degraded_or_unpaired": 20,
-  "n_missing": 4,
-  "paired_sessions_accrued": 30,
+  "n_degraded_or_unpaired": 21,
+  "n_missing": 6,
+  "paired_sessions_accrued": 34,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -12071,14 +12086,31 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-10-14"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "330bbd3e2503baa608f7ecba8a177000e49ddd46cf37049b58daac878413821c",
+      "grain": "coverage",
+      "incoming_fingerprint": "cc10f051e73bedfab10750fad1d7aca20aeef4a0e966cbf5917b5c4f8eb89cc8",
+      "key": [
+        "2026-11-03",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-11-03"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 240,
-    "n_family_rows": 240,
+    "n_coverage_rows": 272,
+    "n_family_rows": 272,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 29
+  "unmatured_sessions": 33
 }

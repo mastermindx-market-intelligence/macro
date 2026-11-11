@@ -2,31 +2,31 @@
   "schema": "policy_intent_desk.v1",
   "is_context_only": true,
   "lens": "realpolitik",
-  "generated_at": "2026-11-01T23:32:32.167862+00:00",
-  "state_asof": "2026-11-01",
+  "generated_at": "2026-11-11T13:35:43.275210+00:00",
+  "state_asof": "2026-11-11",
   "model": "deepseek-v4-pro",
-  "regime_context": "The policy regime is a sequencing campaign: the Fed banks hawkish credibility now while Treasury structurally suppresses front-end yields, holding easing as inflation-gated optionality. The consensus 'coordinated dovish pivot' read diverges from revealed interest \u2014 Warsh keeps his inflation mandate first and the market is still priced slightly more dovish than the Fed.",
-  "regime_context_zh": "\u653f\u7b56\u4f53\u5236\u662f\u4e00\u573a\u5206\u9636\u6bb5\u63a8\u8fdb\u7684\u884c\u52a8\uff1a\u7f8e\u8054\u50a8\u5f53\u524d\u79ef\u7d2f\u9e70\u6d3e\u4fe1\u8a89\uff0c\u8d22\u653f\u90e8\u5219\u7ed3\u6784\u6027\u538b\u4f4e\u524d\u7aef\u6536\u76ca\u7387\uff0c\u5c06\u5bbd\u677e\u4f5c\u4e3a\u4ee5\u901a\u80c0\u4e3a\u6761\u4ef6\u7684\u671f\u6743\u4fdd\u7559\u3002\u5e02\u573a\u5171\u8bc6\u7684\u201c\u534f\u8c03\u8f6c\u9e3d\u201d\u89e3\u8bfb\u4e0e\u6240\u63ed\u793a\u7684\u5b9e\u9645\u5229\u76ca\u5b58\u5728\u5206\u6b67\u2014\u2014\u6c83\u4ec0\u4ecd\u5c06\u901a\u80c0\u4f7f\u547d\u7f6e\u4e8e\u9996\u4f4d\uff0c\u800c\u5e02\u573a\u5b9a\u4ef7\u4ecd\u6bd4\u7f8e\u8054\u50a8\u7565\u5fae\u504f\u9e3d\u3002",
+  "regime_context": "\u653f\u7b56\u4f53\u5236\u662f\u2018\u9ad8\u5229\u7387\u4fe1\u8a89 + \u7ed3\u6784\u6027\u538b\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u2019\u7684\u6392\u5e8f\u5f0f\u64cd\u4f5c\uff1aWarsh \u8054\u50a8\u4ee5\u901a\u80c0\u4e3a\u9996\u8981\u76ee\u6807\u3001\u6de1\u5316\u524d\u77bb\u6307\u5f15\u5e76\u4fdd\u7559\u52a0\u606f\u9009\u62e9\u6743\uff0c\u800c Bessent \u8d22\u653f\u7aef\u7528\u77ed\u503a\u53d1\u884c\u3001\u4e70\u56de\u548c\u505a\u5e02\u5546\u6539\u9769\u538b\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u3002\u5171\u8bc6\u53d9\u4e8b\u628a\u5b83\u8bfb\u6210\u6709\u5e8f\u7684\u2018\u8054\u50a8-\u8d22\u653f\u90e8\u534f\u540c\u2019\uff0c\u4f46\u66f4\u53ef\u80fd\u662f\u6fc0\u52b1\u5bf9\u9f50\u800c\u975e\u6b63\u5f0f\u534f\u8c03\uff1b\u8fd1\u671f\u4f0a\u6717\u505c\u706b\u7834\u88c2\u63a8\u9ad8\u6cb9\u4ef7\u8ba9\u6ede\u80c0\u88c2\u53e3\u6269\u5927\uff0c\u800c\u5e02\u573a\u5bf9 9 \u6708\u52a0\u606f\u7684\u5b9a\u4ef7\u4e0e\u2018\u8d22\u653f\u7aef\u53ea\u60f3\u538b\u4f4e\u6536\u76ca\u7387\u3001\u4e0d\u60f3\u627f\u62c5\u901a\u80c0\u540d\u58f0\u2019\u7684\u8bc9\u6c42\u5e76\u5b58\u3002",
+  "regime_context_zh": "\u653f\u7b56\u4f53\u5236\u662f\u2018\u9ad8\u5229\u7387\u4fe1\u8a89 + \u7ed3\u6784\u6027\u538b\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u2019\u7684\u6392\u5e8f\u5f0f\u64cd\u4f5c\uff1aWarsh \u8054\u50a8\u4ee5\u901a\u80c0\u4e3a\u9996\u8981\u76ee\u6807\u3001\u6de1\u5316\u524d\u77bb\u6307\u5f15\u5e76\u4fdd\u7559\u52a0\u606f\u9009\u62e9\u6743\uff0c\u800c Bessent \u8d22\u653f\u7aef\u7528\u77ed\u503a\u53d1\u884c\u3001\u4e70\u56de\u548c\u505a\u5e02\u5546\u6539\u9769\u538b\u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u3002\u5171\u8bc6\u53d9\u4e8b\u628a\u5b83\u8bfb\u6210\u6709\u5e8f\u7684\u2018\u8054\u50a8-\u8d22\u653f\u90e8\u534f\u540c\u2019\uff0c\u4f46\u66f4\u53ef\u80fd\u662f\u6fc0\u52b1\u5bf9\u9f50\u800c\u975e\u6b63\u5f0f\u534f\u8c03\uff1b\u8fd1\u671f\u4f0a\u6717\u505c\u706b\u7834\u88c2\u63a8\u9ad8\u6cb9\u4ef7\u8ba9\u6ede\u80c0\u88c2\u53e3\u6269\u5927\uff0c\u800c\u5e02\u573a\u5bf9 9 \u6708\u52a0\u606f\u7684\u5b9a\u4ef7\u4e0e\u2018\u8d22\u653f\u7aef\u53ea\u60f3\u538b\u4f4e\u6536\u76ca\u7387\u3001\u4e0d\u60f3\u627f\u62c5\u901a\u80c0\u540d\u58f0\u2019\u7684\u8bc9\u6c42\u5e76\u5b58\u3002",
   "theses": [
     {
-      "id": "2026-11-01-20261101233232-1",
+      "id": "2026-11-11-20261111133543-1",
       "actor": "admin",
       "subject": "XLE",
       "lean": "overweight",
       "conviction": "low",
-      "horizon_d": 42,
-      "thesis": "The Iran ceasefire collapse re-primes the energy inflow that already made XLE the top Q1 ETF-flow sector; the oil spike is realized and the admin's re-escalation posture keeps headline risk bid.",
-      "thesis_zh": "\u4f0a\u6717\u505c\u706b\u7834\u88c2\u91cd\u65b0\u70b9\u71c3\u4e86\u6b64\u524d\u5df2\u4f7fXLE\u6210\u4e3aQ1\u8d44\u91d1\u6d41\u5165\u6700\u591a\u677f\u5757\u7684\u80fd\u6e90\u914d\u7f6e\uff1b\u6cb9\u4ef7\u98d9\u5347\u5df2\u5151\u73b0\uff0c\u800c\u653f\u5e9c\u518d\u5ea6\u5347\u7ea7\u7684\u59ff\u6001\u4f7f\u80fd\u6e90\u677f\u5757\u6301\u7eed\u83b7\u5f97\u5730\u7f18\u98ce\u9669\u6ea2\u4ef7\u3002",
+      "horizon_d": 30,
+      "thesis": "\u4f0a\u6717\u505c\u706b\u7834\u88c2\u5df2\u5b9e\u73b0\u6cb9\u4ef7\u4e0a\u884c\u51b2\u51fb\uff0c\u80fd\u6e90\u662f Q1 \u4ee5\u6765\u9996\u6b21\u9886\u5148 ETF \u6d41\u5165\u7684\u884c\u4e1a\uff0cBessent \u9700\u8981\u6cb9\u4ef7\u6e29\u548c\u4e0a\u884c\u6765\u7ef4\u6301\u2018\u5f3a\u7f8e\u5143 + \u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u2019\u7684\u8d22\u653f\u518d\u878d\u8d44\u7a97\u53e3\uff1bXLE \u76f8\u5bf9 SPY \u5728\u519b\u4e8b\u51b2\u7a81\u91cd\u71c3\u80cc\u666f\u4e0b\u4ecd\u6709\u4e0a\u884c\u5f39\u6027\u3002",
+      "thesis_zh": "\u4f0a\u6717\u505c\u706b\u7834\u88c2\u5df2\u5b9e\u73b0\u6cb9\u4ef7\u4e0a\u884c\u51b2\u51fb\uff0c\u80fd\u6e90\u662f Q1 \u4ee5\u6765\u9996\u6b21\u9886\u5148 ETF \u6d41\u5165\u7684\u884c\u4e1a\uff0cBessent \u9700\u8981\u6cb9\u4ef7\u6e29\u548c\u4e0a\u884c\u6765\u7ef4\u6301\u2018\u5f3a\u7f8e\u5143 + \u4f4e\u5b9e\u9645\u6536\u76ca\u7387\u2019\u7684\u8d22\u653f\u518d\u878d\u8d44\u7a97\u53e3\uff1bXLE \u76f8\u5bf9 SPY \u5728\u519b\u4e8b\u51b2\u7a81\u91cd\u71c3\u80cc\u666f\u4e0b\u4ecd\u6709\u4e0a\u884c\u5f39\u6027\u3002",
       "evidence": [
-        "Iran/Middle East theater: ceasefire COLLAPSED 7/8, Brent ~$80 intraday",
-        "Energy was TOP ETF-inflow sector Q1 2026 on conflict rotation",
-        "Recent track record: XLE overweight hit +0.1012"
+        "Iran / Middle East theater: ceasefire collapsed 7/8, Brent spiked ~$80 intraday, energy top ETF-inflow sector Q1 2026",
+        "admin thesis: Bessent's 'strong dollar while cutting' FX bridge + manufactured demand + Iran haven bid",
+        "market quad Reflation; XLE recent track-record hits (0.0562, 0.07)"
       ],
-      "dissent": "A rapid de-escalation or Hormuz status-quo confirmation would unwind the risk premium fast, and XLE is explicitly flagged as headline-fragile.",
-      "dissent_zh": "\u82e5\u8fc5\u901f\u964d\u7ea7\u6216\u970d\u5c14\u6728\u5179\u6d77\u5ce1\u72b6\u51b5\u88ab\u786e\u8ba4\u7ef4\u6301\u5e38\u6001\uff0c\u98ce\u9669\u6ea2\u4ef7\u5c06\u5feb\u901f\u56de\u843d\uff0c\u4e14XLE\u672c\u8eab\u88ab\u660e\u786e\u6807\u8bb0\u4e3a\u5bf9\u65b0\u95fb\u9ad8\u5ea6\u654f\u611f\u3002",
+      "dissent": "\u6cb9\u4ef7\u4e0a\u884c\u82e5\u52a0\u901f\u5230\u6ede\u80c0\u533a\u95f4\uff0c\u4f1a\u8feb\u4f7f\u8054\u50a8 9 \u6708\u52a0\u606f\u5e76\u538b\u5236\u98ce\u9669\u8d44\u4ea7\uff0cXLE \u7684\u7edd\u5bf9 beta \u4f1a\u88ab SPY \u4e0b\u8dcc\u62d6\u7d2f\uff1b\u4e14\u505c\u706b\u968f\u65f6\u53ef\u80fd\u91cd\u65b0\u8fbe\u6210\uff0c\u539f\u6cb9\u6ea2\u4ef7\u4f1a\u5feb\u901f\u56de\u5410\u3002",
+      "dissent_zh": "\u6cb9\u4ef7\u4e0a\u884c\u82e5\u52a0\u901f\u5230\u6ede\u80c0\u533a\u95f4\uff0c\u4f1a\u8feb\u4f7f\u8054\u50a8 9 \u6708\u52a0\u606f\u5e76\u538b\u5236\u98ce\u9669\u8d44\u4ea7\uff0cXLE \u7684\u7edd\u5bf9 beta \u4f1a\u88ab SPY \u4e0b\u8dcc\u62d6\u7d2f\uff1b\u4e14\u505c\u706b\u968f\u65f6\u53ef\u80fd\u91cd\u65b0\u8fbe\u6210\uff0c\u539f\u6cb9\u6ea2\u4ef7\u4f1a\u5feb\u901f\u56de\u5410\u3002",
       "falsifier": {
-        "text": "XLE lags SPY by 5% or more over a 30-day stretch without a new escalation headline",
-        "text_zh": "\u572830\u65e5\u7a97\u53e3\u5185\uff0c\u82e5\u65e0\u65b0\u7684\u5347\u7ea7\u65b0\u95fb\uff0cXLE\u843d\u540eSPY\u8fbe\u52305%\u6216\u4ee5\u4e0a",
+        "text": "XLE \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8f93 5% \u4ee5\u4e0a",
+        "text_zh": "XLE \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8f93 5% \u4ee5\u4e0a",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "XLE",
@@ -34,31 +34,31 @@
           "via": "direct",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 42
+          "horizon_d": 30
         }
       },
-      "check_by": "2026-12-29"
+      "check_by": "2026-12-23"
     },
     {
-      "id": "2026-11-01-20261101233232-2",
+      "id": "2026-11-11-20261111133543-2",
       "actor": "fed",
       "subject": "TLT",
-      "lean": "underweight",
+      "lean": "avoid",
       "conviction": "low",
-      "horizon_d": 63,
-      "thesis": "Warsh holds the hawkish line with a >70% September hike probability and sticky core PCE; front-end yield suppression is explicit, but long duration bears the inflation-mandate credibility risk.",
-      "thesis_zh": "\u6c83\u4ec0\u575a\u5b88\u9e70\u6d3e\u7acb\u573a\uff0c9\u6708\u52a0\u606f\u6982\u7387\u8d85\u8fc770%\u4e14\u6838\u5fc3PCE\u7c98\u6ede\uff1b\u524d\u7aef\u6536\u76ca\u7387\u6291\u5236\u662f\u660e\u786e\u7684\uff0c\u4f46\u957f\u4e45\u671f\u8d44\u4ea7\u627f\u62c5\u901a\u80c0\u4f7f\u547d\u4fe1\u8a89\u98ce\u9669\u3002",
+      "horizon_d": 42,
+      "thesis": "Warsh \u5728 Sintra \u4fdd\u6301\u9e70\u6d3e\u3001\u901a\u80c0\u6570\u636e\u8d70\u70ed\u4e14\u5e02\u573a\u5b9a\u4ef7 9 \u6708\u52a0\u606f\u6982\u7387\u4e0a\u5347\uff0c\u957f\u7aef\u540d\u4e49\u6536\u76ca\u7387\u9762\u4e34\u4e0a\u884c\u538b\u529b\uff1b\u8d22\u653f\u7aef\u7ed3\u6784\u6027\u538b\u4f4e\u7684\u662f\u77ed\u7aef\u5b9e\u9645\u6536\u76ca\u7387\uff0c\u957f\u503a TLT \u5728\u6ede\u80c0\u98ce\u9669\u4e0b\u5904\u4e8e\u4e0d\u5229\u4f4d\u7f6e\u3002",
+      "thesis_zh": "Warsh \u5728 Sintra \u4fdd\u6301\u9e70\u6d3e\u3001\u901a\u80c0\u6570\u636e\u8d70\u70ed\u4e14\u5e02\u573a\u5b9a\u4ef7 9 \u6708\u52a0\u606f\u6982\u7387\u4e0a\u5347\uff0c\u957f\u7aef\u540d\u4e49\u6536\u76ca\u7387\u9762\u4e34\u4e0a\u884c\u538b\u529b\uff1b\u8d22\u653f\u7aef\u7ed3\u6784\u6027\u538b\u4f4e\u7684\u662f\u77ed\u7aef\u5b9e\u9645\u6536\u76ca\u7387\uff0c\u957f\u503a TLT \u5728\u6ede\u80c0\u98ce\u9669\u4e0b\u5904\u4e8e\u4e0d\u5229\u4f4d\u7f6e\u3002",
       "evidence": [
-        "CME FedWatch >70% Sept hike probability after Iran strikes",
-        "May core PCE +0.3% m/m, 3.4% y/y \u2014 highest since Oct-2023",
-        "Warsh Sintra: 'prices are too high', withheld forward guidance",
-        "Recent track record: TLT underweight hit -0.0719"
+        "May PCE: core +0.3% m/m, 3.4% y/y; headline 4.1% y/y",
+        "CME FedWatch >70% probability of Sept hike; real 10y 2.29% staging phase",
+        "Warsh Sintra: 'prices are too high'; declined to signal July; buried forward guidance",
+        "track record: TLT avoid hit 0.0126 (Nov-03), underweight hit 0.0115 (Oct-23)"
       ],
-      "dissent": "If the June labor crack widens into a September payrolls collapse, the data-driven pivot reopens and long duration front-runs the easing path.",
-      "dissent_zh": "\u82e56\u6708\u5c31\u4e1a\u75b2\u8f6f\u6269\u5927\u4e3a9\u6708\u975e\u519c\u6570\u636e\u584c\u9677\uff0c\u6570\u636e\u9a71\u52a8\u7684\u8f6c\u5411\u5c06\u91cd\u65b0\u5f00\u542f\uff0c\u957f\u4e45\u671f\u8d44\u4ea7\u4f1a\u63d0\u524d\u53cd\u6620\u5bbd\u677e\u8def\u5f84\u3002",
+      "dissent": "\u7ed3\u6784\u6027\u538b\u4f4e\u6536\u76ca\u7387\u662f\u8d22\u653f\u7aef\u516c\u5f00\u653f\u7b56\u76ee\u6807\uff0c\u82e5\u4e70\u56de\u4e0e T-bill \u5316\u6301\u7eed\uff0c\u957f\u7aef\u6536\u76ca\u7387\u53ef\u80fd\u88ab\u610f\u5916\u538b\u4f4e\uff1b\u7ecf\u6d4e\u82e5\u56e0\u5c31\u4e1a\u6076\u5316\u5feb\u901f\u8f6c\u5f31\uff0c\u907f\u9669\u4e70\u76d8\u4f1a\u63a8\u9ad8 TLT\u3002",
+      "dissent_zh": "\u7ed3\u6784\u6027\u538b\u4f4e\u6536\u76ca\u7387\u662f\u8d22\u653f\u7aef\u516c\u5f00\u653f\u7b56\u76ee\u6807\uff0c\u82e5\u4e70\u56de\u4e0e T-bill \u5316\u6301\u7eed\uff0c\u957f\u7aef\u6536\u76ca\u7387\u53ef\u80fd\u88ab\u610f\u5916\u538b\u4f4e\uff1b\u7ecf\u6d4e\u82e5\u56e0\u5c31\u4e1a\u6076\u5316\u5feb\u901f\u8f6c\u5f31\uff0c\u907f\u9669\u4e70\u76d8\u4f1a\u63a8\u9ad8 TLT\u3002",
       "falsifier": {
-        "text": "TLT outperforms SPY by 3% or more and market-implied end-2026 fed funds falls below 3.8%",
-        "text_zh": "TLT\u8dd1\u8d62SPY\u8fbe3%\u6216\u4ee5\u4e0a\uff0c\u4e14\u5e02\u573a\u9690\u542b\u76842026\u5e74\u5e95\u8054\u90a6\u57fa\u91d1\u5229\u7387\u8dcc\u78343.8%",
+        "text": "TLT \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8d62 5% \u4ee5\u4e0a",
+        "text_zh": "TLT \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8d62 5% \u4ee5\u4e0a",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "TLT",
@@ -66,88 +66,57 @@
           "via": "direct",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 63
+          "horizon_d": 42
         }
       },
-      "check_by": "2027-01-27"
+      "check_by": "2027-01-08"
     },
     {
-      "id": "2026-11-01-20261101233232-3",
-      "actor": "admin",
-      "subject": "SMH",
+      "id": "2026-11-11-20261111133543-3",
+      "actor": "fed",
+      "subject": "XLF",
       "lean": "overweight",
       "conviction": "low",
-      "horizon_d": 84,
-      "thesis": "The advanced-chip tariff and the China de-risking mandate fund the domestic semiconductor onshoring bid; the SCOTUS strike-down did not unwind the tariff-protection premium, contingent on a clean Section 301 handoff.",
-      "thesis_zh": "\u5148\u8fdb\u82af\u7247\u5173\u7a0e\u4e0e\u4e2d\u56fd\u53bb\u98ce\u9669\u5316\u8981\u6c42\u4e3a\u56fd\u5185\u534a\u5bfc\u4f53\u672c\u571f\u5316\u63d0\u4f9b\u8d44\u91d1\u652f\u6301\uff1b\u6700\u9ad8\u6cd5\u9662\u7684\u5426\u51b3\u5e76\u672a\u6d88\u9664\u5173\u7a0e\u4fdd\u62a4\u6ea2\u4ef7\uff0c\u524d\u63d0\u662f301\u6761\u6b3e\u7684\u66ff\u6362\u80fd\u987a\u5229\u5b8c\u6210\u3002",
+      "horizon_d": 30,
+      "thesis": "\u8054\u50a8\u9e70\u6d3e\u7ef4\u6301\u9ad8\u5229\u7387\u4e14\u8d22\u653f\u7aef\u63a8\u8fdb eSLR \u6539\u9769\u4e0e\u505a\u5e02\u5546\u4e2d\u4ecb\u6539\u9769\uff0c\u5229\u597d\u94f6\u884c/\u505a\u5e02\u5546\u5229\u5dee\u4e0e\u4ea4\u6613\u6536\u5165\uff1b\u91d1\u878d\u677f\u5757\u5728\u518d\u901a\u80c0\u8c61\u9650\u4e14\u52a0\u606f\u5b9a\u4ef7\u4e0a\u884c\u65f6\u901a\u5e38\u6709\u76f8\u5bf9\u6536\u76ca\u3002",
+      "thesis_zh": "\u8054\u50a8\u9e70\u6d3e\u7ef4\u6301\u9ad8\u5229\u7387\u4e14\u8d22\u653f\u7aef\u63a8\u8fdb eSLR \u6539\u9769\u4e0e\u505a\u5e02\u5546\u4e2d\u4ecb\u6539\u9769\uff0c\u5229\u597d\u94f6\u884c/\u505a\u5e02\u5546\u5229\u5dee\u4e0e\u4ea4\u6613\u6536\u5165\uff1b\u91d1\u878d\u677f\u5757\u5728\u518d\u901a\u80c0\u8c61\u9650\u4e14\u52a0\u606f\u5b9a\u4ef7\u4e0a\u884c\u65f6\u901a\u5e38\u6709\u76f8\u5bf9\u6536\u76ca\u3002",
       "evidence": [
-        "China tech-war theater: onshoring bid persists contingent on Section 301 handoff",
-        "25% advanced-chip tariff stays in force (open prediction)",
-        "Domestic semiconductors/fabs rotation theme",
-        "Recent track record: SMH overweight hit +0.0138"
+        "financials/dealer banks rotation theme: 'FACT mechanism \u00b7 INFERENCE proxies'",
+        "open prediction: concrete eSLR-reform progress from banking regulator",
+        "market fed_path_gap: market \u2248 Fed, end-2026 gap -12bp; hike-majority pricing supports NIM",
+        "Bessent dealer-intermediation reform + funding alignment"
       ],
-      "dissent": "A messy Section 301 replacement or a broader China tech truce that trims the tariff-protection premium would undercut the onshoring bid.",
-      "dissent_zh": "\u82e5301\u6761\u6b3e\u66ff\u6362\u8fc7\u7a0b\u6df7\u4e71\uff0c\u6216\u4e2d\u7f8e\u79d1\u6280\u4f11\u6218\u524a\u5f31\u4e86\u5173\u7a0e\u4fdd\u62a4\u6ea2\u4ef7\uff0c\u672c\u571f\u5316\u914d\u7f6e\u903b\u8f91\u5c06\u53d7\u5230\u51b2\u51fb\u3002",
+      "dissent": "\u82e5\u6ede\u80c0\u6076\u5316\u5bfc\u81f4\u8870\u9000\u9884\u671f\u5347\u6e29\u3001\u4fe1\u7528\u5229\u5dee\u8d70\u9614\uff0c\u94f6\u884c\u80a1\u4f1a\u56e0\u4fe1\u8d37\u635f\u5931\u62c5\u5fe7\u8dd1\u8f93\u5927\u76d8\uff1b\u4e14 XLF \u8fd1\u671f\u672a\u63a5\u53d7\u8fc7\u8003\u8bc4\uff0c\u65b9\u5411\u51c6\u786e\u7387\u50a8\u5907\u4e0d\u8db3\u3002",
+      "dissent_zh": "\u82e5\u6ede\u80c0\u6076\u5316\u5bfc\u81f4\u8870\u9000\u9884\u671f\u5347\u6e29\u3001\u4fe1\u7528\u5229\u5dee\u8d70\u9614\uff0c\u94f6\u884c\u80a1\u4f1a\u56e0\u4fe1\u8d37\u635f\u5931\u62c5\u5fe7\u8dd1\u8f93\u5927\u76d8\uff1b\u4e14 XLF \u8fd1\u671f\u672a\u63a5\u53d7\u8fc7\u8003\u8bc4\uff0c\u65b9\u5411\u51c6\u786e\u7387\u50a8\u5907\u4e0d\u8db3\u3002",
       "falsifier": {
-        "text": "SMH lags SPY by 5% or Section 301 replacement is postponed past the 60-day mark",
-        "text_zh": "SMH\u843d\u540eSPY\u8fbe5%\uff0c\u6216301\u6761\u6b3e\u66ff\u6362\u88ab\u63a8\u8fdf\u8d85\u8fc760\u5929",
+        "text": "XLF \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8f93 5% \u4ee5\u4e0a",
+        "text_zh": "XLF \u76f8\u5bf9 SPY \u5728\u68c0\u67e5\u65e5\u524d\u8dd1\u8f93 5% \u4ee5\u4e0a",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "SMH",
+          "subject_ticker": "XLF",
           "vs": "SPY",
           "via": "direct",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 84
+          "horizon_d": 30
         }
       },
-      "check_by": "2027-02-25"
-    },
-    {
-      "id": "2026-11-01-20261101233232-4",
-      "actor": "fed",
-      "subject": "KBE",
-      "lean": "avoid",
-      "conviction": "low",
-      "horizon_d": 63,
-      "thesis": "Regional banks sit in the crossfire of a hawkish Fed and Treasury's front-end yield suppression; the eSLR-reform channel is still only a proposal, not a rule, and the recent KBE overweight miss shows the trade has not worked in this regime.",
-      "thesis_zh": "\u5730\u533a\u94f6\u884c\u5904\u4e8e\u7f8e\u8054\u50a8\u9e70\u6d3e\u7acb\u573a\u4e0e\u8d22\u653f\u90e8\u524d\u7aef\u6536\u76ca\u7387\u6291\u5236\u7684\u5939\u51fb\u4e2d\uff1beSLR\u6539\u9769\u6e20\u9053\u4ecd\u53ea\u662f\u63d0\u6848\u800c\u975e\u89c4\u5219\uff0c\u4e14\u8fd1\u671fKBE\u8d85\u914d\u7684\u5931\u8bef\u8868\u660e\u8be5\u4ea4\u6613\u5728\u6b64\u4f53\u5236\u4e0b\u672a\u80fd\u594f\u6548\u3002",
-      "evidence": [
-        "Financials/dealer banks rotation theme \u2014 FACT mechanism but no rule progress",
-        "eSLR-reform only a 'proposed or final rule' open prediction, not yet realized",
-        "Recent track record: KBE overweight miss -0.0818"
-      ],
-      "dissent": "If a concrete eSLR reform rule lands from a banking regulator, regional banks could re-rate sharply as the funding-cost drag clears.",
-      "dissent_zh": "\u82e5\u94f6\u884c\u76d1\u7ba1\u673a\u6784\u51fa\u53f0\u5177\u4f53\u7684eSLR\u6539\u9769\u89c4\u5219\uff0c\u968f\u7740\u8d44\u91d1\u6210\u672c\u538b\u529b\u89e3\u9664\uff0c\u5730\u533a\u94f6\u884c\u53ef\u80fd\u5927\u5e45\u91cd\u4f30\u3002",
-      "falsifier": {
-        "text": "KBE outperforms SPY by 4% or more following a concrete eSLR rule from a banking regulator",
-        "text_zh": "\u5728\u94f6\u884c\u76d1\u7ba1\u673a\u6784\u51fa\u53f0\u5177\u4f53eSLR\u89c4\u5219\u540e\uff0cKBE\u8dd1\u8d62SPY\u8fbe4%\u6216\u4ee5\u4e0a",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "KBE",
-          "vs": "SPY",
-          "via": "direct",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 63
-        }
-      },
-      "check_by": "2027-01-27"
+      "check_by": "2026-12-23"
     }
   ],
   "track_record": {
     "schema": "ai_desk_track_record.v1",
-    "as_of": "2026-10-21",
-    "scored_total": 16,
-    "open": 34,
+    "as_of": "2026-11-09",
+    "scored_total": 28,
+    "open": 25,
     "unscored_soft": 3,
     "expired": 0,
     "overall": {
-      "n": 16,
-      "hits": 9,
-      "misses": 7,
-      "hit_rate": 0.562,
-      "dir_accuracy": 0.375
+      "n": 28,
+      "hits": 13,
+      "misses": 15,
+      "hit_rate": 0.464,
+      "dir_accuracy": 0.286
     },
     "by_conviction": {
       "high": {
@@ -165,20 +134,20 @@
         "dir_accuracy": null
       },
       "low": {
-        "n": 16,
-        "hits": 9,
-        "misses": 7,
-        "hit_rate": 0.562,
-        "dir_accuracy": 0.375
+        "n": 28,
+        "hits": 13,
+        "misses": 15,
+        "hit_rate": 0.464,
+        "dir_accuracy": 0.286
       }
     },
     "by_kind": {
       "rel_return": {
-        "n": 16,
-        "hits": 9,
-        "misses": 7,
-        "hit_rate": 0.562,
-        "dir_accuracy": 0.375
+        "n": 28,
+        "hits": 13,
+        "misses": 15,
+        "hit_rate": 0.464,
+        "dir_accuracy": 0.286
       },
       "level": {
         "n": 0,
@@ -190,114 +159,121 @@
     },
     "by_regime": {
       "Goldilocks": {
-        "n": 11,
+        "n": 16,
         "hits": 4,
-        "misses": 7,
-        "hit_rate": 0.364,
-        "dir_accuracy": 0.182
+        "misses": 12,
+        "hit_rate": 0.25,
+        "dir_accuracy": 0.125
       },
       "Reflation": {
-        "n": 5,
-        "hits": 5,
+        "n": 9,
+        "hits": 7,
+        "misses": 2,
+        "hit_rate": 0.778,
+        "dir_accuracy": 0.556
+      },
+      "Stagflation": {
+        "n": 2,
+        "hits": 2,
         "misses": 0,
         "hit_rate": 1.0,
-        "dir_accuracy": 0.8
+        "dir_accuracy": 0.5
       }
     },
-    "calibration_note": "16 scored, hit-rate 0.562 (directional accuracy 0.375).",
+    "calibration_note": "28 scored, hit-rate 0.464 (directional accuracy 0.286).",
     "recent": [
       {
-        "id": "2026-07-17-022918-2",
-        "subject": "ITA",
+        "id": "2026-08-09-20260810023850-3",
+        "subject": "OKLO",
         "lean": "overweight",
         "conviction": "low",
         "outcome": "miss",
-        "realized": -0.1041,
-        "check_by": "2026-10-09"
+        "realized": -0.5348,
+        "check_by": "2026-11-04"
       },
       {
-        "id": "2026-08-09-20260810023850-1",
+        "id": "2026-07-02-092100-3",
+        "subject": "SMH",
+        "lean": "overweight",
+        "conviction": "low",
+        "outcome": "miss",
+        "realized": -0.2613,
+        "check_by": "2026-11-05"
+      },
+      {
+        "id": "2026-07-02-092100-2",
+        "subject": "OKLO",
+        "lean": "overweight",
+        "conviction": "low",
+        "outcome": "miss",
+        "realized": -0.6168,
+        "check_by": "2026-11-05"
+      },
+      {
+        "id": "2026-09-04-20260904114239-3",
+        "subject": "TLT",
+        "lean": "avoid",
+        "conviction": "low",
+        "outcome": "hit",
+        "realized": 0.0126,
+        "check_by": "2026-11-03"
+      },
+      {
+        "id": "2026-09-04-20260904114239-1",
         "subject": "XLE",
         "lean": "overweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": 0.1012,
-        "check_by": "2026-10-06"
+        "realized": 0.0562,
+        "check_by": "2026-11-03"
       },
       {
-        "id": "2026-07-10-080843-5",
-        "subject": "SMH",
+        "id": "2026-09-12-20260912092224-2",
+        "subject": "XLE",
         "lean": "overweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": 0.0138,
-        "check_by": "2026-10-02"
+        "realized": 0.07,
+        "check_by": "2026-10-23"
       },
       {
-        "id": "2026-07-10-080843-3",
-        "subject": "SMR",
-        "lean": "overweight",
-        "conviction": "low",
-        "outcome": "miss",
-        "realized": -0.1656,
-        "check_by": "2026-10-02"
-      },
-      {
-        "id": "2026-07-10-080843-2",
-        "subject": "KBE",
-        "lean": "overweight",
-        "conviction": "low",
-        "outcome": "miss",
-        "realized": -0.0818,
-        "check_by": "2026-10-02"
-      },
-      {
-        "id": "2026-08-01-022230-4",
-        "subject": "GLD",
-        "lean": "underweight",
-        "conviction": "low",
-        "outcome": "hit",
-        "realized": 0.0163,
-        "check_by": "2026-09-29"
-      },
-      {
-        "id": "2026-08-01-022230-1",
+        "id": "2026-09-12-20260912092224-1",
         "subject": "TLT",
         "lean": "underweight",
         "conviction": "low",
         "outcome": "hit",
-        "realized": -0.0719,
-        "check_by": "2026-09-29"
+        "realized": 0.0115,
+        "check_by": "2026-10-23"
       },
       {
-        "id": "2026-07-02-092100-4",
-        "subject": "GLD",
-        "lean": "underweight",
+        "id": "2026-08-01-022230-3",
+        "subject": "XAR",
+        "lean": "overweight",
         "conviction": "low",
-        "outcome": "hit",
-        "realized": 0.0262,
-        "check_by": "2026-09-24"
+        "outcome": "miss",
+        "realized": -0.097,
+        "check_by": "2026-10-28"
       },
       {
-        "id": "2026-07-02-092100-1",
+        "id": "2026-07-25-015718-2",
         "subject": "ITA",
         "lean": "overweight",
         "conviction": "low",
         "outcome": "miss",
-        "realized": -0.108,
-        "check_by": "2026-09-24"
+        "realized": -0.1248,
+        "check_by": "2026-10-21"
       },
       {
-        "id": "2026-07-25-015718-3",
-        "subject": "XLF",
+        "id": "2026-07-25-015718-1",
+        "subject": "SMR",
         "lean": "overweight",
         "conviction": "low",
         "outcome": "miss",
-        "realized": -0.0541,
-        "check_by": "2026-09-22"
+        "realized": -0.3664,
+        "check_by": "2026-10-21"
       }
     ],
-    "calibration_note_zh": "\u5df2\u8bc4\u5206 16 \u6761\uff0c\u547d\u4e2d\u7387 0.562\uff08\u65b9\u5411\u51c6\u786e\u7387 0.375\uff09\u3002"
+    "calibration_note_zh": "\u5df2\u8bc4\u5206 28 \u6761\uff0c\u547d\u4e2d\u7387 0.464\uff08\u65b9\u5411\u51c6\u786e\u7387 0.286\uff09\u3002"
   },
   "confidence": "low",
   "degraded_reason": null,
@@ -306,10 +282,10 @@
   "passport": {
     "state": "measured",
     "earned": true,
-    "label_en": "measured \u00b7 n=16",
-    "label_zh": "\u5df2\u9a8c\u8bc1 \u00b7 n=16",
-    "n": 16,
-    "hit_rate": 0.4375,
+    "label_en": "measured \u00b7 n=28",
+    "label_zh": "\u5df2\u9a8c\u8bc1 \u00b7 n=28",
+    "n": 28,
+    "hit_rate": 0.3929,
     "detail": "",
     "last_validated": null,
     "expected_max_age_days": null,

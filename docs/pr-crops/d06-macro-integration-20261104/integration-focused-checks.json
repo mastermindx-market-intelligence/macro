@@ -1,0 +1,30 @@
+[
+  {
+    "name": "inline-js",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_inline_js.py",
+      "site/market_structure.html",
+      "site/spvector.html"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 0.29,
+    "log": "/tmp/d06-macro-c4-11l44i0i/integration-inline-js.log",
+    "tail": "check_inline_js: OK \u2014 checked 2 file(s) under site/market_structure.html, site/spvector.html; inline scripts and on*= handlers parse cleanly.\n"
+  },
+  {
+    "name": "focused-tests",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_d06_market_structure.py",
+      "tests/test_d06_spvector.py"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 8.93,
+    "log": "/tmp/d06-macro-c4-11l44i0i/integration-focused-tests.log",
+    "tail": "...........................                                              [100%]\n27 passed in 6.09s\n"
+  }
+]
