@@ -55,12 +55,26 @@ def history_transcript(workspace: DataWorkspace, *, ref: str, expected_version: 
         effects='read-only raw-source projection; no transcript intake, role inference, source or publication writes')
 
 
+
+def _payems_binding(workspace: DataWorkspace, ref: str, version: str, digest: str) -> None:
+    from engine.neuralweb.market_memory_history_payems_vintage import SOURCE_REF
+    # This is an already-bound original Data OS source family, not a request
+    # for the caller to supply an absolute path, root, URL or provider.
+    if type(ref) is not str or ref != SOURCE_REF:
+        raise WorkspaceError('HISTORY_PAYEMS_SOURCE_REF_REQUIRED')
+    workspace._split_ref(ref)
+    if (type(version) is not str or not re.fullmatch(r'statv1:[a-f0-9]{64}', version)
+            or type(digest) is not str or not _HEX.fullmatch(digest)):
+        raise WorkspaceError('INVALID_HISTORY_PAYEMS_BINDING')
+
 def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
                     manifest_sha256: str, macro_ref: str | None=None,
                     macro_sha256: str | None=None, reveal_outcomes: bool=False,
                     filings_ref: str | None=None, filings_sha256: str | None=None,
                     filings_offset: int=0, transcripts_ref: str | None=None,
-                    transcripts_version: str | None=None, transcripts_offset: int=0) -> dict:
+                    transcripts_version: str | None=None, transcripts_offset: int=0,
+                    payems_ref: str | None=None, payems_version: str | None=None,
+                    payems_sha256: str | None=None, payems_max_periods: int=12) -> dict:
     from engine.neuralweb.market_memory_history import HistoricalExperienceError
     from engine.neuralweb.market_memory_history_archive import read_day_from_reader
     from engine.neuralweb.market_memory_history_dossier import compose_daily_dossier
@@ -75,7 +89,10 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
             or (filings_ref is None and filings_offset != 0)
             or (transcripts_ref is None)!=(transcripts_version is None)
             or type(transcripts_offset) is not int or not 0 <= transcripts_offset <= 500000
-            or (transcripts_ref is None and transcripts_offset != 0)):
+            or (transcripts_ref is None and transcripts_offset != 0)
+            or len({payems_ref is None, payems_version is None, payems_sha256 is None}) != 1
+            or type(payems_max_periods) is not int or not 1 <= payems_max_periods <= 24
+            or (payems_ref is None and payems_max_periods != 12)):
         raise WorkspaceError('INVALID_HISTORY_BINDING')
     root,parts=workspace._split_ref(ref)
     if parts[-1]!='manifest.json':raise WorkspaceError('HISTORY_MANIFEST_REF_REQUIRED')
@@ -96,6 +113,8 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
             raise WorkspaceError('INVALID_HISTORY_BINDING')
     if transcripts_ref is not None:
         _transcript_binding(workspace, transcripts_ref, transcripts_version)
+    if payems_ref is not None:
+        _payems_binding(workspace, payems_ref, payems_version, payems_sha256)
     prefix=root.alias+':'+('/'.join(parts[:-1])+'/' if len(parts)>1 else '')
     source_files=[]
     def read_bound(bound_ref: str, limit: int) -> bytes:
@@ -135,7 +154,24 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
                 record = {**source, 'projection_sha256':transcripts['metadata_projection_sha256'],
                           'projection_hash_basis':transcripts['hash_scope']}
             source_files.append(record)
-        result=compose_daily_dossier(market,macro,filings=filings,transcripts=transcripts)
+        payems = None
+        if payems_ref is not None:
+            from engine.neuralweb.market_memory_history_payems_vintage import (
+                MAX_SOURCE_BYTES, read_payems_bytes,
+            )
+            with workspace._file(payems_ref, payems_version) as (stream, source):
+                if source['file_bytes'] > MAX_SOURCE_BYTES:
+                    raise WorkspaceError('HISTORY_PAYEMS_SOURCE_BYTE_BUDGET_EXCEEDED')
+                raw = stream.read(MAX_SOURCE_BYTES + 1)
+                if len(raw) != source['file_bytes'] or len(raw) > MAX_SOURCE_BYTES:
+                    raise WorkspaceError('HISTORY_PAYEMS_SOURCE_BYTE_BUDGET_EXCEEDED')
+                payems = read_payems_bytes(raw, date,
+                    source_ref=payems_ref, source_version=payems_version,
+                    source_sha256=payems_sha256, max_periods=payems_max_periods)
+                observed = {**source, 'content_sha256': hashlib.sha256(raw).hexdigest()}
+            source_files.append(observed)
+        result=compose_daily_dossier(market,macro,filings=filings,
+                                     transcripts=transcripts,payems=payems)
     except HistoricalExperienceError:
         raise WorkspaceError('HISTORY_SOURCE_OR_CONTRACT_INVALID') from None
     request={'ref':ref,'manifest_sha256':manifest_sha256,'date':date,
@@ -145,6 +181,9 @@ def history_dossier(workspace: DataWorkspace, *, ref: str, date: str,
     if transcripts_ref is not None:
         request.update(transcripts_ref=transcripts_ref, transcripts_version=transcripts_version,
                        transcripts_offset=transcripts_offset)
+    if payems_ref is not None:
+        request.update(payems_ref=payems_ref, payems_version=payems_version,
+                       payems_sha256=payems_sha256, payems_max_periods=payems_max_periods)
     receipt_input={'query':request,'sources':[{'ref':r['ref'],'file_version':r['file_version'],
                     'content_sha256':r['content_sha256'],
                     **({'projection_sha256':r['projection_sha256']} if 'projection_sha256' in r else {})}
