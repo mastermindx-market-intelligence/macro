@@ -1332,19 +1332,75 @@ def _locally_missing_blobs(work: Path, sha: str) -> list[str]:
         for line in _git(work, "ls-tree", "-r", sha).splitlines()
         if line.split()[1] == "blob"
     ]
-    probe = subprocess.run(
-        ["git", "cat-file", "--batch-check"],
-        cwd=work,
-        input="".join(f"{oid}\n" for oid in oids),
-        capture_output=True,
-        text=True,
-        env={**os.environ, "GIT_NO_LAZY_FETCH": "1"},
+    # --missing=print disables promisor fetching on older supported Git too.
+    # GIT_NO_LAZY_FETCH only arrived in Git 2.45; cat-file can otherwise
+    # hydrate the fixture while trying to prove that its blobs are absent.
+    missing = {
+        line[1:].split()[0]
+        for line in _git(work, "rev-list", "--objects", "--missing=print", sha).splitlines()
+        if line.startswith("?")
+    }
+    return [oid for oid in oids if oid in missing]
+
+
+def test_missing_blob_probe_preserves_absence_without_no_lazy_fetch_support(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Exercise the older-Git behavior with real local promisor fetching."""
+    work, base, _head = _blobless_partial_clone(tmp_path)
+    expected = next(
+        line.split()[2]
+        for line in _git(work, "ls-tree", "-r", base).splitlines()
+        if line.endswith("\tchanged.txt")
     )
-    return [
-        line.split(" ", 1)[0]
-        for line in probe.stdout.splitlines()
-        if line.endswith(" missing")
-    ]
+    original_run = subprocess.run
+
+    def without_no_lazy_fetch(*args, **kwargs):
+        # Simulate a Git version that does not implement this environment
+        # variable; all Git operations still execute against the real fixture.
+        env = dict(kwargs.get("env", os.environ))
+        env.pop("GIT_NO_LAZY_FETCH", None)
+        kwargs["env"] = env
+        return original_run(*args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", without_no_lazy_fetch)
+    first = _locally_missing_blobs(work, base)
+    assert expected in first
+    assert _locally_missing_blobs(work, base) == first
+
+
+def test_missing_blob_probe_accepts_a_complete_local_clone(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    base, _head = _small_repository(source)
+    assert _locally_missing_blobs(source, base) == []
+
+
+def test_missing_blob_probe_propagates_git_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A nonzero probe must not be reported as a complete clone. Use a real
+    # subprocess exit so the checked Git wrapper, not a mocked return, decides.
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    git = bin_dir / "git"
+    git.write_text(
+        f"#!{sys.executable}\n"
+        "import sys\n"
+        "if sys.argv[1] == 'ls-tree':\n"
+        f"    print('100644 blob {SHA_TREE}\\tfixture.txt')\n"
+        "else:\n"
+        "    print('missing-object probe failed', file=sys.stderr)\n"
+        "    raise SystemExit(23)\n",
+        encoding="utf-8",
+    )
+    git.chmod(0o755)
+    monkeypatch.setenv("PATH", str(bin_dir) + os.pathsep + os.environ["PATH"])
+    with pytest.raises(subprocess.CalledProcessError) as error:
+        _locally_missing_blobs(tmp_path, SHA_BASE)
+    assert error.value.returncode == 23
+    assert "missing-object probe failed" in error.value.stderr
 
 
 def test_base_replay_checks_out_a_base_sha_inside_a_partial_clone(

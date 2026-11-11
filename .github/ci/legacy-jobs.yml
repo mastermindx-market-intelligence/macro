@@ -1398,7 +1398,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -18371,7 +18371,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel
