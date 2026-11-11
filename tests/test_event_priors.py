@@ -728,3 +728,143 @@ class TestM4M5Gates:
         assert any(e[0] == "MRNA" for e in phase3_events), (
             f"Phase-3 start for non-halted trial should still emit; got: {phase3_events}"
         )
+
+
+class TestBenchmarkIntegrity:
+    """Excess returns retain the ticker-defined anchor and full horizon."""
+
+    @staticmethod
+    def panel(periods=300):
+        days = pd.bdate_range("2024-01-02", periods=periods)
+        closes = pd.DataFrame({"AAA": 100 * np.exp(.01 * np.arange(periods))}, index=days)
+        spy = pd.Series(100., index=days)
+        return closes, spy
+
+    @pytest.mark.parametrize("kind", ["absent", "empty", "all_invalid"])
+    def test_unavailable_benchmark_never_becomes_raw_excess(self, kind):
+        closes, spy = self.panel()
+        if kind == "absent":
+            spy = None
+        elif kind == "empty":
+            spy = pd.Series(dtype=float)
+        else:
+            spy[:] = np.nan
+        date = closes.index[20]
+        assert bep.car_for_event("AAA", date, closes, spy, 20) == (None, None, False)
+        cell = bep.aggregate_episodes([("AAA", date)], closes, spy, 20, "synthetic")
+        assert cell["insufficient"] and cell["n_studiable"] == 0
+        assert "benchmark" in cell["null_reason"].lower()
+        assert cell.get("mean_excess_pct") is None
+        assert cell.get("win_rate") is None
+
+    @pytest.mark.parametrize("delay", [1, 5, 6])
+    def test_benchmark_must_not_move_the_ticker_anchor(self, delay):
+        closes, spy = self.panel(40)
+        closes["AAA"] = [100.] + [120.] * 39
+        spy.iloc[:delay] = np.nan
+        assert bep.car_for_event("AAA", closes.index[0], closes, spy, 20) == (None, None, False)
+
+    @pytest.mark.parametrize("series", ["stock", "benchmark"])
+    @pytest.mark.parametrize("bad_price", [np.nan, np.inf, 0., -100.])
+    def test_fixed_endpoint_must_have_both_valid_prices(self, series, bad_price):
+        closes, spy = self.panel(40)
+        closes["AAA"] = [100.] * 20 + [120.] * 20
+        if series == "stock":
+            closes.loc[closes.index[20], "AAA"] = bad_price
+        else:
+            spy.iloc[20] = bad_price
+        assert bep.car_for_event("AAA", closes.index[0], closes, spy, 20) == (None, None, False)
+
+    @pytest.mark.parametrize("bad_price", [0., -100.])
+    def test_nonpositive_ticker_entry_is_rejected_without_reanchoring(self, bad_price):
+        closes, spy = self.panel(40)
+        closes.loc[closes.index[0], "AAA"] = bad_price
+        assert bep.car_for_event("AAA", closes.index[0], closes, spy, 20) == (None, None, False)
+        assert bep.max_drawdown_in_window("AAA", closes.index[0], closes, 20) is None
+
+    @pytest.mark.parametrize("h", [5, 20, 60])
+    def test_complete_control_and_existing_ticker_suspension_keep_full_horizon(self, h):
+        closes, spy = self.panel()
+        spy = 100 * np.exp(.004 * np.arange(len(spy))) * pd.Series(1., index=spy.index)
+        date = closes.index[20]
+        car, drift, ok = bep.car_for_event("AAA", date, closes, spy, h)
+        assert ok and car == pytest.approx(.006 * h)
+        assert drift == pytest.approx(.006 * bep.PRE_WINDOW)
+        closes.loc[closes.index[20:23], "AAA"] = np.nan
+        delayed, _, ok = bep.car_for_event("AAA", date, closes, spy, h)
+        assert ok and delayed == pytest.approx(.006 * h)
+        closes.loc[closes.index[20:26], "AAA"] = np.nan
+        assert bep.car_for_event("AAA", date, closes, spy, h) == (None, None, False)
+
+    def test_interior_gaps_do_not_change_valid_endpoints(self):
+        closes, spy = self.panel(80)
+        spy.iloc[22:26] = np.nan
+        car, _, ok = bep.car_for_event("AAA", closes.index[20], closes, spy, 20)
+        assert ok and car == pytest.approx(.2)
+        spy.iloc[21:39] = np.nan
+        assert bep.car_for_event("AAA", closes.index[20], closes, spy, 20) == (None, None, False)
+
+    @pytest.mark.parametrize("series", ["stock", "benchmark"])
+    def test_missing_pre_window_start_only_withholds_pre_drift(self, series):
+        closes, spy = self.panel(80)
+        if series == "stock":
+            closes.loc[closes.index[10], "AAA"] = np.nan
+        else:
+            spy.iloc[10] = np.nan
+        car, drift, ok = bep.car_for_event("AAA", closes.index[20], closes, spy, 20)
+        assert ok and car == pytest.approx(.2)
+        assert drift is None, "an optional pre-window must not silently start a session late"
+
+    @pytest.mark.parametrize("kind", ["absent", "empty", "all_invalid", "late_start", "missing_endpoint", "complete_flat", "complete_identical"])
+    def test_actual_producer_persistence_and_context_reader(self, kind, tmp_path, monkeypatch):
+        from engine import special_situations as reader
+
+        closes, spy = self.panel()
+        offsets = list(range(20, 220, 25))
+        events = [("AAA", str(closes.index[i].date()), "synthetic") for i in offsets]
+        if kind == "absent":
+            spy = None
+        elif kind == "empty":
+            spy = pd.Series(dtype=float)
+        elif kind == "all_invalid":
+            spy[:] = np.nan
+        elif kind == "late_start":
+            for i in offsets:
+                spy.iloc[i:i + 6] = np.nan
+        elif kind == "missing_endpoint":
+            spy.iloc[[i + 20 for i in offsets]] = np.nan
+        elif kind == "complete_identical":
+            spy = closes["AAA"].copy()
+
+        if kind in {"absent", "empty", "all_invalid"}:
+            def no_backfill(*args, **kwargs):
+                raise AssertionError("unavailable benchmark must null-print before price backfill")
+            monkeypatch.setattr(bep, "_fetch_event_prices", no_backfill)
+        # Real producer, serializer and reader; only the storage location moves.
+        monkeypatch.setattr(bep, "_OUT_DIR", tmp_path / "special_situations" / "event_priors")
+        monkeypatch.setattr(reader.config, "data_dir", lambda: tmp_path)
+        produced = bep.compute_prior_for_type("synthetic", events, closes, spy)
+        artifact = bep.persist_prior(produced)
+        persisted = json.loads(artifact.read_text())
+        loaded = reader.get_event_priors_context()["synthetic"]
+        assert loaded == persisted == produced
+        assert loaded["schema"] == "ss_event_priors.v2"
+        assert loaded["is_context_only"] is True and reader.SCORED is False
+        json.dumps(loaded, allow_nan=False)
+
+        if kind in {"absent", "empty", "all_invalid"}:
+            assert loaded["insufficient"] is True
+            assert "benchmark" in loaded["null_reason"].lower()
+            assert loaded["priors"] == {}
+        else:
+            for group in ("_pooled", "synthetic"):
+                cell = loaded["priors"][group]["h20d"]
+                if kind in {"late_start", "missing_endpoint"}:
+                    assert cell["insufficient"] and cell["n_studiable"] == 0
+                    assert "window" in cell["null_reason"].lower()
+                    assert cell.get("mean_excess_pct") is None
+                    assert cell.get("win_rate") is None
+                else:
+                    assert not cell["insufficient"] and cell["n_studiable"] == 8
+                    expected = 0. if kind == "complete_identical" else 20.
+                    assert cell["mean_excess_pct"] == pytest.approx(expected, abs=1e-12)

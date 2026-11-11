@@ -199,6 +199,15 @@ def _spy_series(closes: pd.DataFrame) -> pd.Series | None:
 # Core CAR / pre-drift engine (excess vs SPY)
 # ---------------------------------------------------------------------------
 
+_BENCHMARK_UNAVAILABLE = (
+    "SPY benchmark unavailable: excess returns require finite positive benchmark prices."
+)
+
+
+def _benchmark_available(spy: pd.Series | None) -> bool:
+    return spy is not None and bool((np.isfinite(spy) & (spy > 0)).any())
+
+
 def car_for_event(ticker: str, event_date: pd.Timestamp,
                   closes: pd.DataFrame, spy: pd.Series | None, h: int,
                   pre: int = PRE_WINDOW) -> tuple[float | None, float | None, bool]:
@@ -207,8 +216,11 @@ def car_for_event(ticker: str, event_date: pd.Timestamp,
     Returns (excess_car, pre_drift, studiable).
 
     Suspension rule: need a valid ticker print within SUSP_MAX sessions after
-    event_date; the same must hold for SPY. Requires >= h/2 valid bars in window."""
-    if ticker not in closes.columns:
+    event_date. SPY must have a valid price at that same entry and the exact
+    entry+h endpoint; benchmark gaps cannot move either economic bound.
+    Requires >= h/2 paired valid bars in the window (and at least three).
+    Missing pre-window endpoints withhold only the optional pre-event drift."""
+    if spy is None or spy.empty or ticker not in closes.columns:
         return None, None, False
     s = closes[ticker].dropna()
     if s.empty:
@@ -235,44 +247,30 @@ def car_for_event(ticker: str, event_date: pd.Timestamp,
         return None, None, False
 
     win_days = cal[fill_pos:end_pos + 1]
-    sub = s.reindex(win_days).dropna()
-
-    # SPY window
-    if spy is not None:
-        spy_sub = spy.reindex(win_days).dropna()
-        common = sub.index.intersection(spy_sub.index)
-    else:
-        common = sub.index
-
-    if len(common) < max(3, h // 2):
+    paired = pd.concat([s.reindex(win_days), spy.reindex(win_days)], axis=1)
+    valid = (np.isfinite(paired) & (paired > 0)).all(axis=1)
+    if (not valid.iloc[0] or not valid.iloc[-1]
+            or int(valid.sum()) < max(3, h // 2)):
         return None, None, False
 
-    sub_c = sub.reindex(common)
-    excess_car: float
-    if spy is not None:
-        spy_c = spy_sub.reindex(common)
-        excess_car = float(
-            np.log(sub_c.iloc[-1] / sub_c.iloc[0])
-            - np.log(spy_c.iloc[-1] / spy_c.iloc[0])
-        )
-    else:
-        excess_car = float(np.log(sub_c.iloc[-1] / sub_c.iloc[0]))
+    # Log differences avoid an overflowing price ratio at finite endpoints.
+    excess_car = float(
+        (np.log(paired.iloc[-1, 0]) - np.log(paired.iloc[0, 0]))
+        - (np.log(paired.iloc[-1, 1]) - np.log(paired.iloc[0, 1]))
+    )
 
     # pre-event drift
     pre_lo = max(0, fill_pos - pre)
     pdays = cal[pre_lo:fill_pos + 1]
-    ps = s.reindex(pdays).dropna()
     pre_drift: float | None = None
-    if spy is not None and len(pdays) >= 3:
-        pi = spy.reindex(pdays).dropna()
-        pc = ps.index.intersection(pi.index)
-        if len(pc) >= 3:
+    if len(pdays) >= 3:
+        pre_pair = pd.concat([s.reindex(pdays), spy.reindex(pdays)], axis=1)
+        pre_valid = (np.isfinite(pre_pair) & (pre_pair > 0)).all(axis=1)
+        if pre_valid.iloc[0] and pre_valid.iloc[-1] and int(pre_valid.sum()) >= 3:
             pre_drift = float(
-                np.log(ps.reindex(pc).iloc[-1] / ps.reindex(pc).iloc[0])
-                - np.log(pi.reindex(pc).iloc[-1] / pi.reindex(pc).iloc[0])
+                (np.log(pre_pair.iloc[-1, 0]) - np.log(pre_pair.iloc[0, 0]))
+                - (np.log(pre_pair.iloc[-1, 1]) - np.log(pre_pair.iloc[0, 1]))
             )
-    elif len(pdays) >= 3 and len(ps) >= 3:
-        pre_drift = float(np.log(ps.iloc[-1] / ps.iloc[0]))
 
     return excess_car, pre_drift, True
 
@@ -344,8 +342,9 @@ def aggregate_episodes(events: list[tuple[str, pd.Timestamp]],
     all_tickers = {t for t, _ in events}
     studiable_tickers: set[str] = set()
     ep_records: list[tuple[pd.Timestamp, str, float, float | None]] = []
+    benchmark_missing = not _benchmark_available(spy)
 
-    for tkr, ev_date in events:
+    for tkr, ev_date in ([] if benchmark_missing else events):
         ev_ts = pd.Timestamp(ev_date).normalize()
         car, pre_drift, ok = car_for_event(tkr, ev_ts, closes, spy, h)
         if ok:
@@ -358,6 +357,8 @@ def aggregate_episodes(events: list[tuple[str, pd.Timestamp]],
         return {
             "h": h, "n_events": 0, "n_studiable": 0,
             "n_imputed_zero": int(n_imputed), "insufficient": True,
+            "null_reason": (_BENCHMARK_UNAVAILABLE if benchmark_missing else
+                            "No events have a valid SPY-matched fixed-horizon price window."),
         }
 
     edf = pd.DataFrame(ep_records, columns=["episode", "ticker", "car", "pre_drift"])
@@ -807,6 +808,12 @@ def compute_prior_for_type(
     if not events_raw:
         base["insufficient"] = True
         base["null_reason"] = "No events found in data sources."
+        base["priors"] = {}
+        return base
+
+    if not _benchmark_available(spy):
+        base["insufficient"] = True
+        base["null_reason"] = _BENCHMARK_UNAVAILABLE
         base["priors"] = {}
         return base
 
