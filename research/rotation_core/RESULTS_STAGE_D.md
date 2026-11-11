@@ -1,0 +1,383 @@
+# Rotation Core — Stage D results (development window only; hold-out sealed)
+
+Header `af2a09886132…` (commit 623f0a4623); code `d3382be6db`; computed 2026-11-11T09:36:50Z. Schema `rotation_core.evaluation/v1`. All `may_*` flags are false. Every number is a fraction unless marked; intervals are 95% stationary-bootstrap.
+
+**Release:** every job is **L0 descriptive** in Stage D (G4 sealed). Candidates clearing G1, G2, G3 and G5 on D are listed per job; that is the parent's stated condition for opening H.
+
+## J1 — market risk state (SPY vs cash)
+
+Window D: 1998-01-02 → 2019-12-31.
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| J1-A | +5.86% | +10.3% | 0.42 | -28.2% | 0.50 / 0.38 | 0.29 | 0.56 | 4.69 | +0.23% | 0.265 |
+| J1-A-IEF | +8.21% | +11.2% | 0.59 | -26.0% | 0.50 / 0.25 | 0.21 | 1.00 | 9.43 | +0.47% | 0.563 |
+| J1-B | +7.37% | +12.6% | 0.48 | -35.5% | 0.69 / 0.56 | 0.43 | 0.78 | 6.33 | +0.32% | 0.354 |
+| J1-B-IEF | +8.89% | +13.1% | 0.57 | -26.1% | 0.68 / 0.45 | 0.37 | 1.00 | 12.61 | +0.63% | 0.524 |
+| J1-C | +5.03% | +8.8% | 0.39 | -18.6% | 0.43 / 0.31 | 0.21 | 0.49 | 5.78 | +0.29% | 0.211 |
+| J1-C-IEF | +7.47% | +10.1% | 0.58 | -19.3% | 0.41 / 0.15 | 0.12 | 1.00 | 11.61 | +0.58% | 0.536 |
+| J1-D | +4.29% | +10.3% | 0.28 | -31.1% | 0.56 / 0.51 | 0.34 | 0.68 | 12.85 | +0.64% | 0.095 |
+| J1-D-IEF | +6.01% | +10.7% | 0.42 | -22.1% | 0.52 / 0.37 | 0.26 | 1.00 | 25.63 | +1.28% | 0.262 |
+| J1-E | +10.60% | +15.0% | 0.62 | -28.3% | 0.89 / 0.66 | 0.62 | 0.88 | 1.05 | +0.05% | 0.615 |
+| J1-E-IEF | +11.56% | +15.3% | 0.67 | -27.3% | 0.89 / 0.60 | 0.58 | 1.00 | 2.05 | +0.10% | 0.696 |
+| B3 | +6.51% | +11.5% | 0.44 | -22.6% | 0.62 / 0.48 | 0.36 | 0.71 | 7.51 | +0.38% | 0.295 |
+| B1 | +7.51% | +19.1% | 0.38 | -55.2% | 1.00 / 1.00 | 1.00 | 1.00 | 0.05 | +0.00% | 0.200 |
+| B2 | +7.13% | +10.6% | 0.52 | -32.2% | 0.61 / 0.48 | 0.54 | 1.00 | 0.29 | +0.01% | 0.442 |
+| B4 | +7.05% | +13.4% | 0.44 | -42.7% | 0.82 / 0.77 | 0.65 | 0.86 | 1.47 | +0.07% | 0.284 |
+| J1-I1 | +8.69% | +12.6% | 0.58 | -38.5% | 0.79 / 0.63 | 0.57 | 0.77 | 1.39 | +0.07% | 0.532 |
+| J1-I2 | +6.70% | +15.2% | 0.38 | -44.9% | 0.86 / 0.85 | 0.77 | 0.89 | 4.21 | +0.21% | 0.203 |
+
+Confirmatory family (Holm within family):
+
+| Test | Observed | 95% CI | p (raw) | p (Holm) | E1 / E2 | SE | MDE80 (Holm) | Detectable? |
+|---|---|---|---|---|---|---|---|---|
+| J1-A:P1 | +0.31% | [-3.17, +3.84] | 0.4297 | 1.0000 | +1.43% / -2.16% | +1.79% | +6.12% | no |
+| J1-A:P2 | -0.021 | [-0.329, +0.277] | 0.5465 | 1.0000 | -0.000 / -0.048 | 0.155 | 0.530 | no |
+| J1-B:P1 | +0.39% | [-3.36, +4.28] | 0.4191 | 1.0000 | +2.04% / -2.61% | +1.97% | +6.74% | no |
+| J1-B:P2 | 0.034 | [-0.132, +0.187] | 0.3449 | 1.0000 | 0.034 / 0.059 | 0.081 | 0.278 | no |
+| J1-C:P1 | -0.13% | [-3.66, +3.37] | 0.5227 | 1.0000 | +0.84% / -2.87% | +1.81% | +6.18% | no |
+| J1-C:P2 | -0.058 | [-0.326, +0.210] | 0.6585 | 1.0000 | -0.039 / -0.116 | 0.138 | 0.471 | no |
+| J1-D:P1 | -2.02% | [-5.45, +1.53] | 0.8778 | 1.0000 | -0.18% / -5.34% | +1.78% | +6.09% | no |
+| J1-D:P2 | -0.167 | [-0.325, -0.018] | 0.9807 | 1.0000 | -0.133 / -0.192 | 0.079 | 0.269 | no |
+| J1-E:P1 | +2.96% | [-0.44, +6.75] | 0.0614 | 0.6139 | +4.43% / +0.09% | +1.85% | +6.32% | no |
+| J1-E:P2 | 0.177 | [-0.063, +0.418] | 0.0742 | 0.6677 | 0.161 / 0.207 | 0.123 | 0.421 | no |
+
+| Candidate | Gates (✓ met, ✗ not, · not evaluated) | Clears G1+G2+G3+G5 on D |
+|---|---|---|
+| J1-A | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✓ G6:✗ G6:✓ G6:✗ G7:✓ | no |
+| J1-B | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✓ G6:✗ G6:✓ G6:✗ G7:✓ | no |
+| J1-C | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✗ G6:✗ G6:✓ G6:✗ G7:✓ | no |
+| J1-D | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✗ G6:✗ G6:✓ G6:✗ G7:✓ | no |
+| J1-E | G1:✗ G2:✓ G3:✓ G4:· G5:✗ G6:✓ G6:✓ G6:✓ G6:✓ G6:✗ G6:✓ G7:✓ | no |
+
+- J1-A:P1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/10; minimum detectable 0.0612 per year (fraction)).
+- J1-A:P2: this test could not have detected an effect of 0.1 Sharpe (80% power at the Holm threshold alpha/10; minimum detectable 0.53 Sharpe).
+- J1-B:P1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/10; minimum detectable 0.0674 per year (fraction)).
+- J1-B:P2: this test could not have detected an effect of 0.1 Sharpe (80% power at the Holm threshold alpha/10; minimum detectable 0.278 Sharpe).
+- J1-C:P1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/10; minimum detectable 0.0618 per year (fraction)).
+- J1-C:P2: this test could not have detected an effect of 0.1 Sharpe (80% power at the Holm threshold alpha/10; minimum detectable 0.471 Sharpe).
+- J1-D:P1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/10; minimum detectable 0.0609 per year (fraction)).
+- J1-D:P2: this test could not have detected an effect of 0.1 Sharpe (80% power at the Holm threshold alpha/10; minimum detectable 0.269 Sharpe).
+- J1-E:P1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/10; minimum detectable 0.0632 per year (fraction)).
+- J1-E:P2: this test could not have detected an effect of 0.1 Sharpe (80% power at the Holm threshold alpha/10; minimum detectable 0.421 Sharpe).
+
+### Post-hoc descriptive: vs SPY and RSP, full period vs stress episodes (not a header comparator; no test)
+
+| Book | Bench | Window | CAGR (bench) | Sharpe (bench) | MaxDD (bench) | Up/Down cap. full | Stress capture pooled | Up cap. outside stress |
+|---|---|---|---|---|---|---|---|---|
+| B1 | SPY | 1998-01-05→2019-12-31 | +7.51% (+7.52%) | 0.38 (0.38) | -55.2% (-55.2%) | 1.00/1.00 | 1.00 | 1.00 |
+| B2 | SPY | 1998-01-05→2019-12-31 | +7.13% (+7.52%) | 0.52 (0.38) | -32.2% (-55.2%) | 0.61/0.48 | 0.70 | 0.60 |
+| B3 | SPY | 1998-01-05→2019-12-31 | +6.51% (+7.52%) | 0.44 (0.38) | -22.6% (-55.2%) | 0.62/0.48 | 0.53 | 0.65 |
+| B4 | SPY | 1998-01-05→2019-12-31 | +7.05% (+7.52%) | 0.44 (0.38) | -42.7% (-55.2%) | 0.82/0.77 | 0.88 | 0.82 |
+| J1-A | SPY | 1998-01-05→2019-12-31 | +5.86% (+7.52%) | 0.42 (0.38) | -28.2% (-55.2%) | 0.50/0.38 | 0.27 | 0.51 |
+| J1-B | SPY | 1998-01-05→2019-12-31 | +7.37% (+7.52%) | 0.48 (0.38) | -35.5% (-55.2%) | 0.69/0.56 | 0.62 | 0.72 |
+| J1-C | SPY | 1998-01-05→2019-12-31 | +5.03% (+7.52%) | 0.39 (0.38) | -18.6% (-55.2%) | 0.43/0.31 | 0.12 | 0.44 |
+| J1-D | SPY | 1998-01-05→2019-12-31 | +4.29% (+7.52%) | 0.28 (0.38) | -31.1% (-55.2%) | 0.56/0.51 | 0.57 | 0.59 |
+| J1-E | SPY | 1998-01-05→2019-12-31 | +10.60% (+7.52%) | 0.62 (0.38) | -28.3% (-55.2%) | 0.89/0.66 | 0.74 | 0.89 |
+| J1-A-IEF | SPY | 1998-01-05→2019-12-31 | +8.21% (+7.52%) | 0.59 (0.38) | -26.0% (-55.2%) | 0.50/0.25 | -0.29 | 0.48 |
+| J1-B-IEF | SPY | 1998-01-05→2019-12-31 | +8.89% (+7.52%) | 0.57 (0.38) | -26.1% (-55.2%) | 0.68/0.45 | 0.37 | 0.69 |
+| J1-C-IEF | SPY | 1998-01-05→2019-12-31 | +7.47% (+7.52%) | 0.58 (0.38) | -19.3% (-55.2%) | 0.41/0.15 | -0.64 | 0.40 |
+| J1-D-IEF | SPY | 1998-01-05→2019-12-31 | +6.01% (+7.52%) | 0.42 (0.38) | -22.1% (-55.2%) | 0.52/0.37 | 0.23 | 0.54 |
+| J1-E-IEF | SPY | 1998-01-05→2019-12-31 | +11.56% (+7.52%) | 0.67 (0.38) | -27.3% (-55.2%) | 0.89/0.60 | 0.63 | 0.88 |
+| J1-I1 | SPY | 1998-01-05→2019-12-31 | +8.69% (+7.52%) | 0.58 (0.38) | -38.5% (-55.2%) | 0.79/0.63 | 0.76 | 0.79 |
+| J1-I2 | SPY | 1998-01-05→2019-12-31 | +6.70% (+7.52%) | 0.38 (0.38) | -44.9% (-55.2%) | 0.86/0.85 | 0.94 | 0.87 |
+| B1 | RSP | 2003-05-02→2019-12-31 | +9.99% (+11.13%) | 0.55 (0.58) | -55.2% (-59.9%) | 0.87/0.86 | 0.95 | 0.87 |
+| B2 | RSP | 2003-05-02→2019-12-31 | +8.26% (+11.13%) | 0.73 (0.58) | -32.2% (-59.9%) | 0.52/0.41 | 0.59 | 0.52 |
+| B3 | RSP | 2003-05-02→2019-12-31 | +7.60% (+11.13%) | 0.61 (0.58) | -21.9% (-59.9%) | 0.60/0.52 | 0.43 | 0.61 |
+| B4 | RSP | 2003-05-02→2019-12-31 | +9.96% (+11.13%) | 0.72 (0.58) | -34.8% (-59.9%) | 0.75/0.68 | 0.74 | 0.75 |
+| J1-A | RSP | 2003-05-02→2019-12-31 | +8.14% (+11.13%) | 0.71 (0.58) | -18.6% (-59.9%) | 0.52/0.39 | 0.22 | 0.52 |
+| J1-B | RSP | 2003-05-02→2019-12-31 | +9.39% (+11.13%) | 0.73 (0.58) | -17.2% (-59.9%) | 0.65/0.51 | 0.43 | 0.65 |
+| J1-C | RSP | 2003-05-02→2019-12-31 | +6.38% (+11.13%) | 0.58 (0.58) | -18.6% (-59.9%) | 0.48/0.40 | 0.22 | 0.47 |
+| J1-D | RSP | 2003-05-02→2019-12-31 | +5.88% (+11.13%) | 0.51 (0.58) | -16.9% (-59.9%) | 0.55/0.52 | 0.43 | 0.55 |
+| J1-E | RSP | 2003-05-02→2019-12-31 | +12.30% (+11.13%) | 0.83 (0.58) | -19.3% (-59.9%) | 0.80/0.62 | 0.60 | 0.79 |
+| J1-A-IEF | RSP | 2003-05-02→2019-12-31 | +10.23% (+11.13%) | 0.83 (0.58) | -15.7% (-59.9%) | 0.52/0.26 | -0.15 | 0.49 |
+| J1-B-IEF | RSP | 2003-05-02→2019-12-31 | +10.37% (+11.13%) | 0.78 (0.58) | -17.8% (-59.9%) | 0.63/0.43 | 0.20 | 0.63 |
+| J1-C-IEF | RSP | 2003-05-02→2019-12-31 | +8.22% (+11.13%) | 0.69 (0.58) | -17.1% (-59.9%) | 0.46/0.27 | -0.15 | 0.43 |
+| J1-D-IEF | RSP | 2003-05-02→2019-12-31 | +6.71% (+11.13%) | 0.57 (0.58) | -17.8% (-59.9%) | 0.51/0.41 | 0.19 | 0.51 |
+| J1-E-IEF | RSP | 2003-05-02→2019-12-31 | +12.76% (+11.13%) | 0.84 (0.58) | -19.3% (-59.9%) | 0.81/0.61 | 0.53 | 0.78 |
+| J1-I1 | RSP | 2003-05-02→2019-12-31 | +11.41% (+11.13%) | 0.89 (0.58) | -18.3% (-59.9%) | 0.70/0.51 | 0.54 | 0.70 |
+| J1-I2 | RSP | 2003-05-02→2019-12-31 | +8.97% (+11.13%) | 0.61 (0.58) | -44.9% (-59.9%) | 0.76/0.73 | 0.83 | 0.76 |
+
+### Pivot table (D episodes; 2020, 2022, 2025, 2026 sealed in H)
+
+- **B1** — E1998: never out (strategy -19% vs market -19%); E2000_02: never out (strategy -48% vs market -48%); E2008_09: never out (strategy -55% vs market -55%); E2011: never out (strategy -19% vs market -19%); E2015_16: never out (strategy -13% vs market -13%); E2018Q4: never out (strategy -19% vs market -19%). Calm-period false pivots: 0.00/calm-yr, cost +0.00%/calm-yr.
+- **B3** — E1998: out 30 sessions after the top having lost -13%; back 17 sessions after the bottom, missing +9%; E2000_02: out 23 sessions before the top; back 654 sessions before the bottom; E2008_09: out 45 sessions before the top; back 399 sessions before the bottom; E2011: out 66 sessions after the top having lost -7%; back 19 sessions after the bottom, missing +17%; E2015_16: out 7 sessions before the top; back 148 sessions before the bottom; E2018Q4: out 16 sessions after the top having lost -6%; back 48 sessions before the bottom. Calm-period false pivots: 2.85/calm-yr, cost +3.73%/calm-yr.
+- **B4** — E1998: never out (strategy -14% vs market -19%); E2000_02: out 27 sessions after the top having lost -5%; back 608 sessions before the bottom; E2008_09: out 240 sessions after the top having lost -20%; back 33 sessions before the bottom; E2011: out 70 sessions after the top having lost -12%; back 18 sessions after the bottom, missing +17%; E2015_16: out 36 sessions after the top having lost -8%; back 96 sessions before the bottom; E2018Q4: never out (strategy -15% vs market -19%). Calm-period false pivots: 0.28/calm-yr, cost -0.03%/calm-yr.
+- **J1-A** — E1998: out 73 sessions before the top; back 169 sessions after the bottom, missing +41%; E2000_02: out 33 sessions before the top; back 669 sessions before the bottom; E2008_09: out 62 sessions before the top; back 40 sessions after the bottom, missing +34%; E2011: out 35 sessions after the top having lost -6%; back 64 sessions before the bottom; E2015_16: out 213 sessions before the top; back 55 sessions after the bottom, missing +14%; E2018Q4: out 56 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 1.98/calm-yr, cost +3.59%/calm-yr.
+- **J1-B** — E1998: out 30 sessions after the top having lost -13%; back 17 sessions after the bottom, missing +9%; E2000_02: out 22 sessions before the top; back 654 sessions before the bottom; E2008_09: out 45 sessions before the top; back 399 sessions before the bottom; E2011: out 66 sessions after the top having lost -7%; back 19 sessions after the bottom, missing +17%; E2015_16: out 7 sessions before the top; back 148 sessions before the bottom; E2018Q4: out 16 sessions after the top having lost -6%; back 48 sessions before the bottom. Calm-period false pivots: 1.74/calm-yr, cost +1.81%/calm-yr.
+- **J1-C** — E1998: out 73 sessions before the top; back 169 sessions after the bottom, missing +41%; E2000_02: out 33 sessions before the top; back 669 sessions before the bottom; E2008_09: out 62 sessions before the top; back 59 sessions after the bottom, missing +40%; E2011: out 35 sessions after the top having lost -6%; back 64 sessions before the bottom; E2015_16: out 213 sessions before the top; back 55 sessions after the bottom, missing +14%; E2018Q4: out 56 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 3.04/calm-yr, cost +5.66%/calm-yr.
+- **J1-D** — E1998: out 12 sessions after the top having lost -8%; back 38 sessions after the bottom, missing +12%; E2000_02: out 38 sessions before the top; back 674 sessions before the bottom; E2008_09: out 51 sessions before the top; back 397 sessions before the bottom; E2011: out 30 sessions before the top; back 137 sessions before the bottom; E2015_16: out 28 sessions before the top; back 169 sessions before the bottom; E2018Q4: out 58 sessions before the top; back 122 sessions before the bottom. Calm-period false pivots: 6.19/calm-yr, cost +6.01%/calm-yr.
+- **J1-E** — E1998: never out (strategy -19% vs market -19%); E2000_02: out 330 sessions after the top having lost -20%; back 191 sessions before the bottom; E2008_09: out 152 sessions after the top having lost -8%; back 59 sessions after the bottom, missing +40%; E2011: never out (strategy -19% vs market -19%); E2015_16: never out (strategy -13% vs market -13%); E2018Q4: never out (strategy -19% vs market -19%). Calm-period false pivots: 0.35/calm-yr, cost +0.31%/calm-yr.
+- **J1-I1** — E1998: never out (strategy -13% vs market -19%); E2000_02: out 48 sessions after the top having lost -2%; back 560 sessions before the bottom; E2008_09: out 26 sessions before the top; back 342 sessions before the bottom; E2011: never out (strategy -16% vs market -19%); E2015_16: out 51 sessions after the top having lost -6%; back 77 sessions before the bottom; E2018Q4: out 56 sessions after the top having lost -6%; back 34 sessions after the bottom, missing +17%. Calm-period false pivots: 0.28/calm-yr, cost +0.37%/calm-yr.
+- **J1-I2** — E1998: never out (strategy -16% vs market -19%); E2000_02: never out (strategy -44% vs market -48%); E2008_09: out 283 sessions after the top having lost -37%; back 70 sessions before the bottom; E2011: never out (strategy -15% vs market -19%); E2015_16: never out (strategy -12% vs market -13%); E2018Q4: never out (strategy -16% vs market -19%). Calm-period false pivots: 0.00/calm-yr, cost +0.00%/calm-yr.
+
+J1* selected on D: **J1-E** (P1 observed: J1-A +0.31%, J1-B +0.39%, J1-C -0.13%, J1-D -2.02%, J1-E +2.96%, B3 -0.05%)
+
+## J2 — sector rotation (SPDRs)
+
+Window D: 1999-12-31 → 2019-12-31.
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B5 | +7.56% | +17.7% | 0.41 | -53.3% | 0.96 / 0.89 | 0.90 | 1.00 | 0.37 | +0.02% | 0.217 |
+| B6 | +7.09% | +18.3% | 0.38 | -45.8% | 0.89 / 0.81 | 0.84 | 1.00 | 5.44 | +0.27% | 0.179 |
+| B7 | +6.41% | +17.6% | 0.35 | -50.7% | 0.85 / 0.83 | 0.79 | 1.00 | 7.02 | +0.35% | 0.147 |
+| J2-A | +5.12% | +17.9% | 0.28 | -52.9% | 0.88 / 0.90 | 0.81 | 1.00 | 10.02 | +0.50% | 0.087 |
+| J2-B | +3.78% | +18.9% | 0.21 | -60.8% | 0.89 / 0.99 | 0.87 | 1.00 | 16.41 | +0.82% | 0.046 |
+| J2-C | +5.71% | +18.3% | 0.31 | -59.3% | 0.92 / 0.93 | 0.86 | 1.00 | 15.57 | +0.78% | 0.109 |
+| J2-D | +3.73% | +19.0% | 0.20 | -55.0% | 0.87 / 0.95 | 0.92 | 1.00 | 11.91 | +0.60% | 0.045 |
+| B1 | +6.03% | +19.0% | 0.32 | -55.2% | 1.00 / 1.00 | 1.00 | 1.00 | 0.05 | +0.00% | 0.119 |
+| J2-I1 | +6.04% | +17.8% | 0.33 | -51.2% | 0.87 / 0.83 | 0.83 | 1.00 | 11.23 | +0.56% | 0.127 |
+
+Confirmatory family (Holm within family):
+
+| Test | Observed | 95% CI | p (raw) | p (Holm) | E1 / E2 | SE | MDE80 (Holm) | Detectable? |
+|---|---|---|---|---|---|---|---|---|
+| J2-A:Q1 | -2.26% | [-5.13, +0.53] | 0.9421 | 1.0000 | -2.38% / -2.15% | +1.44% | +4.81% | no |
+| J2-A:Q2 | -1.93% | [-5.39, +1.59] | 0.8599 | 1.0000 | -3.43% / -0.42% | +1.80% | +6.02% | no |
+| J2-B:Q1 | -3.35% | [-6.32, -0.43] | 0.9877 | 1.0000 | -4.89% / -1.82% | +1.49% | +4.98% | no |
+| J2-B:Q2 | -3.02% | [-7.31, +1.42] | 0.9168 | 1.0000 | -5.95% / -0.09% | +2.21% | +7.40% | no |
+| J2-C:Q1 | -1.62% | [-4.21, +0.91] | 0.8934 | 1.0000 | -3.16% / -0.09% | +1.31% | +4.37% | no |
+| J2-C:Q2 | -1.29% | [-5.03, +2.48] | 0.7452 | 1.0000 | -4.21% / +1.64% | +1.93% | +6.46% | no |
+| J2-D:Q1 | -3.39% | [-6.01, -0.86] | 0.9937 | 1.0000 | -3.34% / -3.44% | +1.31% | +4.36% | no |
+| J2-D:Q2 | -3.05% | [-6.40, +0.36] | 0.9635 | 1.0000 | -4.40% / -1.71% | +1.72% | +5.75% | no |
+
+| Candidate | Gates (✓ met, ✗ not, · not evaluated) | Clears G1+G2+G3+G5 on D |
+|---|---|---|
+| J2-A | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✗ G6:✗ G7:✓ | no |
+| J2-B | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✗ G6:✗ G6:✗ G7:✓ | no |
+| J2-C | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✗ G6:✗ G6:✗ G7:✓ | no |
+| J2-D | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G6:✗ G6:✗ G7:✓ | no |
+
+- J2-A:Q1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0481 per year (fraction)).
+- J2-A:Q2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0602 per year (fraction)).
+- J2-B:Q1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0498 per year (fraction)).
+- J2-B:Q2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.074 per year (fraction)).
+- J2-C:Q1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0437 per year (fraction)).
+- J2-C:Q2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0646 per year (fraction)).
+- J2-D:Q1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0436 per year (fraction)).
+- J2-D:Q2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/8; minimum detectable 0.0575 per year (fraction)).
+
+### Episode holdings (D episodes)
+
+- **E2000_02** (peak 2000-03-24, trough 2002-10-09): SPY -47.5%, XLP/XLU/XLV -16.1% (trio − SPY +31.5%).
+  - B5: at peak {'XLB': 0.11, 'XLE': 0.106, 'XLF': 0.121, 'XLI': 0.115, 'XLK': 0.115, 'XLP': 0.103, 'XLU': 0.104, 'XLV': 0.111, 'XLY': 0.113}; at trough {'XLB': 0.108, 'XLE': 0.114, 'XLF': 0.105, 'XLI': 0.108, 'XLK': 0.113, 'XLP': 0.121, 'XLU': 0.098, 'XLV': 0.12, 'XLY': 0.112}
+  - B6: at peak {'XLB': 0.332, 'XLE': 0.321, 'XLK': 0.347}; at trough {'XLB': 0.318, 'XLV': 0.353, 'XLY': 0.329}
+  - B7: at peak {'XLK': 0.338, 'XLV': 0.328, 'XLY': 0.334}; at trough {'XLP': 0.342, 'XLV': 0.34, 'XLY': 0.318}
+  - J2-A: at peak {'XLE': 0.32, 'XLK': 0.345, 'XLV': 0.335}; at trough {'XLP': 0.342, 'XLV': 0.34, 'XLY': 0.318}
+  - J2-B: at peak {'XLE': 0.31, 'XLF': 0.354, 'XLK': 0.336}; at trough {'XLP': 0.342, 'XLV': 0.34, 'XLY': 0.318}
+  - J2-C: at peak {'XLK': 0.338, 'SPY': 0.662}; at trough {'XLP': 0.342, 'XLV': 0.34, 'XLY': 0.318}
+  - J2-D: at peak {'XLK': 0.338, 'SPY': 0.662}; at trough {'SPY': 1.0}
+  - J2-I1: at peak {'XLK': 1.0}; at trough {'SPY': 1.0}
+  - J2-E: at peak {'XLB': 0.11, 'XLE': 0.106, 'XLF': 0.121, 'XLI': 0.115, 'XLK': 0.115, 'XLP': 0.103, 'XLU': 0.104, 'XLV': 0.111, 'XLY': 0.113}; at trough {'XLP': 0.356, 'XLU': 0.29, 'XLV': 0.354}
+  - J5-A: at peak {'XLB': 0.11, 'XLE': 0.106, 'XLF': 0.121, 'XLI': 0.115, 'XLK': 0.115, 'XLP': 0.103, 'XLU': 0.104, 'XLV': 0.111, 'XLY': 0.113}; at trough {}
+- **E2008_09** (peak 2007-10-09, trough 2009-03-09): SPY -55.2%, XLP/XLU/XLV -36.0% (trio − SPY +19.2%).
+  - B5: at peak {'XLB': 0.111, 'XLE': 0.109, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.11, 'XLU': 0.112, 'XLV': 0.111, 'XLY': 0.112}; at trough {'XLB': 0.116, 'XLE': 0.118, 'XLF': 0.101, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.112, 'XLU': 0.107, 'XLV': 0.115, 'XLY': 0.11}
+  - B6: at peak {'XLB': 0.336, 'XLE': 0.33, 'XLI': 0.334}; at trough {'XLP': 0.336, 'XLU': 0.32, 'XLV': 0.344}
+  - B7: at peak {'XLE': 0.33, 'XLI': 0.334, 'XLK': 0.336}; at trough {'XLP': 0.336, 'XLU': 0.32, 'XLV': 0.344}
+  - J2-A: at peak {'XLE': 0.33, 'XLI': 0.334, 'XLK': 0.336}; at trough {'XLK': 0.33, 'XLV': 0.342, 'XLY': 0.328}
+  - J2-B: at peak {'XLB': 0.334, 'XLE': 0.328, 'XLU': 0.337}; at trough {'XLK': 0.33, 'XLV': 0.342, 'XLY': 0.328}
+  - J2-C: at peak {'XLB': 0.336, 'XLE': 0.331, 'XLP': 0.333}; at trough {'XLK': 0.33, 'XLV': 0.342, 'XLY': 0.328}
+  - J2-D: at peak {'XLE': 0.33, 'XLI': 0.334, 'XLK': 0.336}; at trough {'SPY': 1.0}
+  - J2-I1: at peak {'XLI': 1.0}; at trough {'SPY': 1.0}
+  - J2-E: at peak {'XLB': 0.111, 'XLE': 0.109, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.11, 'XLU': 0.112, 'XLV': 0.111, 'XLY': 0.112}; at trough {'XLP': 0.336, 'XLU': 0.32, 'XLV': 0.344}
+  - J5-A: at peak {'XLB': 0.111, 'XLE': 0.109, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.11, 'XLU': 0.112, 'XLV': 0.111, 'XLY': 0.112}; at trough {}
+- **E2011** (peak 2011-04-29, trough 2011-10-03): SPY -18.6%, XLP/XLU/XLV -5.7% (trio − SPY +12.9%).
+  - B5: at peak {'XLB': 0.11, 'XLE': 0.109, 'XLF': 0.107, 'XLI': 0.11, 'XLK': 0.111, 'XLP': 0.114, 'XLU': 0.112, 'XLV': 0.115, 'XLY': 0.112}; at trough {'XLB': 0.111, 'XLE': 0.111, 'XLF': 0.111, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.111, 'XLU': 0.111, 'XLV': 0.111, 'XLY': 0.111}
+  - B6: at peak {'XLE': 0.329, 'XLI': 0.333, 'XLY': 0.338}; at trough {'XLE': 0.333, 'XLP': 0.333, 'XLY': 0.333}
+  - B7: at peak {'XLB': 0.334, 'XLE': 0.331, 'XLI': 0.335}; at trough {'XLP': 0.333, 'XLU': 0.333, 'XLV': 0.333}
+  - J2-A: at peak {'XLE': 0.326, 'XLI': 0.33, 'XLV': 0.343}; at trough {'XLK': 0.333, 'XLP': 0.333, 'XLU': 0.333}
+  - J2-B: at peak {'XLP': 0.334, 'XLU': 0.329, 'XLV': 0.337}; at trough {'XLK': 0.333, 'XLP': 0.333, 'XLU': 0.333}
+  - J2-C: at peak {'XLI': 0.332, 'SPY': 0.668}; at trough {'XLK': 0.333, 'XLP': 0.333, 'XLU': 0.333}
+  - J2-D: at peak {'XLE': 0.326, 'XLI': 0.33, 'XLV': 0.343}; at trough {'XLU': 0.333, 'SPY': 0.667}
+  - J2-I1: at peak {'XLB': 0.124, 'XLF': 0.12, 'XLI': 0.124, 'XLK': 0.125, 'XLP': 0.127, 'XLU': 0.125, 'XLV': 0.129, 'XLY': 0.125}; at trough {'XLU': 1.0}
+  - J2-E: at peak {'XLB': 0.11, 'XLE': 0.109, 'XLF': 0.107, 'XLI': 0.11, 'XLK': 0.111, 'XLP': 0.114, 'XLU': 0.112, 'XLV': 0.115, 'XLY': 0.112}; at trough {'XLB': 0.111, 'XLE': 0.111, 'XLF': 0.111, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.111, 'XLU': 0.111, 'XLV': 0.111, 'XLY': 0.111}
+  - J5-A: at peak {'XLB': 0.11, 'XLE': 0.109, 'XLF': 0.107, 'XLI': 0.11, 'XLK': 0.111, 'XLP': 0.114, 'XLU': 0.112, 'XLV': 0.115, 'XLY': 0.112}; at trough {'XLB': 0.111, 'XLE': 0.111, 'XLF': 0.111, 'XLI': 0.111, 'XLK': 0.111, 'XLP': 0.111, 'XLU': 0.111, 'XLV': 0.111, 'XLY': 0.111}
+- **E2015_16** (peak 2015-07-20, trough 2016-02-11): SPY -13.0%, XLP/XLU/XLV -3.4% (trio − SPY +9.6%).
+  - B5: at peak {'XLB': 0.106, 'XLE': 0.105, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.115, 'XLP': 0.114, 'XLU': 0.113, 'XLV': 0.112, 'XLY': 0.112}; at trough {'XLB': 0.116, 'XLE': 0.109, 'XLF': 0.106, 'XLI': 0.114, 'XLK': 0.109, 'XLP': 0.113, 'XLU': 0.116, 'XLV': 0.111, 'XLY': 0.107}
+  - B6: at peak {'XLK': 0.338, 'XLV': 0.331, 'XLY': 0.33}; at trough {'XLK': 0.331, 'XLP': 0.343, 'XLY': 0.325}
+  - B7: at peak {'XLK': 0.338, 'XLV': 0.331, 'XLY': 0.33}; at trough {'XLK': 0.322, 'XLP': 0.334, 'XLU': 0.343}
+  - J2-A: at peak {'XLF': 0.334, 'XLV': 0.334, 'XLY': 0.333}; at trough {'XLK': 0.322, 'XLP': 0.334, 'XLU': 0.343}
+  - J2-B: at peak {'XLB': 0.321, 'XLF': 0.34, 'XLY': 0.339}; at trough {'XLE': 0.324, 'XLP': 0.333, 'XLU': 0.343}
+  - J2-C: at peak {'XLF': 0.334, 'XLY': 0.333, 'SPY': 0.333}; at trough {'XLP': 0.333, 'XLU': 0.342, 'SPY': 0.324}
+  - J2-D: at peak {'XLV': 0.334, 'XLY': 0.333, 'SPY': 0.333}; at trough {'XLP': 0.333, 'XLU': 0.342, 'SPY': 0.324}
+  - J2-I1: at peak {'XLF': 0.249, 'XLK': 0.254, 'XLV': 0.249, 'XLY': 0.248}; at trough {'XLP': 0.493, 'XLU': 0.507}
+  - J2-E: at peak {'XLB': 0.106, 'XLE': 0.105, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.115, 'XLP': 0.114, 'XLU': 0.113, 'XLV': 0.112, 'XLY': 0.112}; at trough {'XLB': 0.116, 'XLE': 0.109, 'XLF': 0.106, 'XLI': 0.114, 'XLK': 0.109, 'XLP': 0.113, 'XLU': 0.116, 'XLV': 0.111, 'XLY': 0.107}
+  - J5-A: at peak {'XLB': 0.106, 'XLE': 0.105, 'XLF': 0.112, 'XLI': 0.111, 'XLK': 0.115, 'XLP': 0.114, 'XLU': 0.113, 'XLV': 0.112, 'XLY': 0.112}; at trough {'XLB': 0.116, 'XLE': 0.109, 'XLF': 0.106, 'XLI': 0.114, 'XLK': 0.109, 'XLP': 0.113, 'XLU': 0.116, 'XLV': 0.111, 'XLY': 0.107}
+- **E2018Q4** (peak 2018-09-20, trough 2018-12-24): SPY -19.3%, XLP/XLU/XLV -8.7% (trio − SPY +10.7%).
+  - B5: at peak {'XLB': 0.102, 'XLE': 0.1, 'XLF': 0.1, 'XLI': 0.102, 'XLK': 0.098, 'XLP': 0.101, 'XLU': 0.098, 'XLV': 0.101, 'XLY': 0.099, 'XLRE': 0.098}; at trough {'XLB': 0.101, 'XLE': 0.094, 'XLF': 0.097, 'XLI': 0.097, 'XLK': 0.098, 'XLP': 0.102, 'XLU': 0.109, 'XLV': 0.1, 'XLY': 0.098, 'XLRE': 0.104}
+  - B6: at peak {'XLE': 0.335, 'XLK': 0.331, 'XLY': 0.333}; at trough {'XLK': 0.33, 'XLV': 0.337, 'XLY': 0.333}
+  - B7: at peak {'XLE': 0.335, 'XLY': 0.333, 'XLRE': 0.331}; at trough {'XLP': 0.33, 'XLU': 0.35, 'XLV': 0.321}
+  - J2-A: at peak {'XLU': 0.328, 'XLV': 0.339, 'XLY': 0.332}; at trough {'XLP': 0.33, 'XLU': 0.35, 'XLV': 0.321}
+  - J2-B: at peak {'XLU': 0.328, 'XLV': 0.339, 'XLY': 0.332}; at trough {'XLB': 0.331, 'XLV': 0.328, 'XLRE': 0.342}
+  - J2-C: at peak {'XLU': 0.328, 'XLV': 0.339, 'XLY': 0.332}; at trough {'XLP': 0.33, 'XLU': 0.35, 'XLV': 0.321}
+  - J2-D: at peak {'XLU': 0.328, 'XLV': 0.339, 'XLY': 0.332}; at trough {'XLP': 0.33, 'XLU': 0.35, 'XLV': 0.321}
+  - J2-I1: at peak {'XLB': 0.255, 'XLP': 0.254, 'XLU': 0.245, 'XLRE': 0.246}; at trough {'XLP': 0.247, 'XLU': 0.262, 'XLV': 0.24, 'XLRE': 0.251}
+  - J2-E: at peak {'XLB': 0.102, 'XLE': 0.1, 'XLF': 0.1, 'XLI': 0.102, 'XLK': 0.098, 'XLP': 0.101, 'XLU': 0.098, 'XLV': 0.101, 'XLY': 0.099, 'XLRE': 0.098}; at trough {'XLB': 0.101, 'XLE': 0.094, 'XLF': 0.097, 'XLI': 0.097, 'XLK': 0.098, 'XLP': 0.102, 'XLU': 0.109, 'XLV': 0.1, 'XLY': 0.098, 'XLRE': 0.104}
+  - J5-A: at peak {'XLB': 0.102, 'XLE': 0.1, 'XLF': 0.1, 'XLI': 0.102, 'XLK': 0.098, 'XLP': 0.101, 'XLU': 0.098, 'XLV': 0.101, 'XLY': 0.099, 'XLRE': 0.098}; at trough {'XLB': 0.101, 'XLE': 0.094, 'XLF': 0.097, 'XLI': 0.097, 'XLK': 0.098, 'XLP': 0.102, 'XLU': 0.109, 'XLV': 0.1, 'XLY': 0.098, 'XLRE': 0.104}
+
+J2* selected on D: **B5**.
+
+## J3 — cross-asset rotation
+
+Window D: 2007-02-28 → 2019-12-31.
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B8 | +5.30% | +11.2% | 0.44 | -33.5% | 0.48 / 0.44 | 0.47 | 1.00 | 0.45 | +0.02% | 0.154 |
+| B9 | +4.00% | +7.1% | 0.47 | -10.5% | 0.25 / 0.17 | 0.14 | 0.65 | 1.98 | +0.10% | 0.178 |
+| B10 | +6.64% | +14.7% | 0.45 | -20.9% | 0.69 / 0.65 | 0.44 | 1.00 | 3.04 | +0.15% | 0.161 |
+| J3-A | +6.23% | +13.4% | 0.46 | -27.8% | 0.47 / 0.38 | 0.28 | 0.95 | 3.53 | +0.18% | 0.165 |
+| J3-B | +3.84% | +6.5% | 0.48 | -8.7% | 0.24 / 0.17 | 0.13 | 0.63 | 3.00 | +0.15% | 0.191 |
+| J3-C | +8.14% | +12.8% | 0.61 | -19.7% | 0.47 / 0.26 | 0.20 | 0.86 | 5.86 | +0.29% | 0.332 |
+| J3-I1 | +4.36% | +5.9% | 0.61 | -8.3% | 0.22 / 0.09 | 0.09 | 0.52 | 2.19 | +0.11% | 0.334 |
+| B1 | +8.90% | +19.4% | 0.49 | -55.2% | 1.00 / 1.00 | 1.00 | 1.00 | 0.08 | +0.00% | 0.202 |
+| B2 | +7.79% | +10.4% | 0.69 | -32.2% | 0.61 / 0.48 | 0.52 | 1.00 | 0.33 | +0.02% | 0.449 |
+
+Confirmatory family (Holm within family):
+
+| Test | Observed | 95% CI | p (raw) | p (Holm) | E1 / E2 | SE | MDE80 (Holm) | Detectable? |
+|---|---|---|---|---|---|---|---|---|
+| J3-A:R1 | +1.13% | [-3.83, +5.99] | 0.3278 | 0.9833 | +0.37% / +1.35% | +2.50% | +8.10% | no |
+| J3-A:R2 | +2.76% | [-2.16, +7.45] | 0.1268 | 0.6339 | -3.59% / +4.57% | +2.45% | +7.93% | no |
+| J3-B:R1 | -0.15% | [-2.61, +2.59] | 0.5294 | 1.0000 | +4.26% / -1.42% | +1.32% | +4.29% | no |
+| J3-B:R2 | -0.20% | [-1.55, +1.18] | 0.6166 | 1.0000 | -1.51% / +0.18% | +0.70% | +2.26% | no |
+| J3-C:R1 | +3.33% | [-2.32, +9.23] | 0.1276 | 0.6339 | +13.06% / +0.54% | +2.95% | +9.54% | no |
+| J3-C:R2 | +4.48% | [+0.69, +8.23] | 0.0112 | 0.0672 | +8.97% / +3.20% | +1.92% | +6.21% | no |
+
+| Candidate | Gates (✓ met, ✗ not, · not evaluated) | Clears G1+G2+G3+G5 on D |
+|---|---|---|
+| J3-A | G1:✗ G2:✓ G3:✓ G4:· G5:✗ G6:✗ G6:✓ G7:✓ | no |
+| J3-B | G1:✗ G2:✗ G3:✗ G4:· G5:✗ G6:✗ G6:✓ G7:✓ | no |
+| J3-C | G1:✗ G2:✓ G3:✓ G4:· G5:✗ G6:✗ G6:✓ G7:✓ | no |
+
+- J3-A:R1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.081 per year (fraction)).
+- J3-A:R2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.0793 per year (fraction)).
+- J3-B:R1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.0429 per year (fraction)).
+- J3-B:R2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.0226 per year (fraction)).
+- J3-C:R1: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.0954 per year (fraction)).
+- J3-C:R2: this test could not have detected an effect of 0.01 per year (fraction) (80% power at the Holm threshold alpha/6; minimum detectable 0.0621 per year (fraction)).
+
+### Post-hoc descriptive: vs SPY and RSP, full period vs stress episodes (not a header comparator; no test)
+
+| Book | Bench | Window | CAGR (bench) | Sharpe (bench) | MaxDD (bench) | Up/Down cap. full | Stress capture pooled | Up cap. outside stress |
+|---|---|---|---|---|---|---|---|---|
+| B1 | SPY | 2007-03-01→2019-12-31 | +8.90% (+8.87%) | 0.49 (0.49) | -55.2% (-55.2%) | 1.00/1.00 | 1.00 | 1.00 |
+| B2 | SPY | 2007-03-01→2019-12-31 | +7.79% (+8.87%) | 0.69 (0.49) | -32.2% (-55.2%) | 0.61/0.48 | 0.62 | 0.59 |
+| B8 | SPY | 2007-03-01→2019-12-31 | +5.30% (+8.87%) | 0.44 (0.49) | -33.5% (-55.2%) | 0.48/0.44 | 0.55 | 0.45 |
+| B9 | SPY | 2007-03-01→2019-12-31 | +4.00% (+8.87%) | 0.47 (0.49) | -10.5% (-55.2%) | 0.25/0.17 | 0.03 | 0.22 |
+| B10 | SPY | 2007-03-01→2019-12-31 | +6.64% (+8.87%) | 0.45 (0.49) | -20.9% (-55.2%) | 0.69/0.65 | 0.63 | 0.68 |
+| J3-A | SPY | 2007-03-01→2019-12-31 | +6.23% (+8.87%) | 0.46 (0.49) | -27.8% (-55.2%) | 0.47/0.38 | 0.49 | 0.43 |
+| J3-B | SPY | 2007-03-01→2019-12-31 | +3.84% (+8.87%) | 0.48 (0.49) | -8.7% (-55.2%) | 0.24/0.17 | 0.04 | 0.21 |
+| J3-C | SPY | 2007-03-01→2019-12-31 | +8.14% (+8.87%) | 0.61 (0.49) | -19.7% (-55.2%) | 0.47/0.26 | -0.34 | 0.40 |
+| J3-I1 | SPY | 2007-03-01→2019-12-31 | +4.36% (+8.87%) | 0.61 (0.49) | -8.3% (-55.2%) | 0.22/0.09 | -0.06 | 0.19 |
+| B1 | RSP | 2007-03-01→2019-12-31 | +8.90% (+8.77%) | 0.49 (0.47) | -55.2% (-59.9%) | 0.90/0.87 | 0.95 | 0.91 |
+| B2 | RSP | 2007-03-01→2019-12-31 | +7.79% (+8.77%) | 0.69 (0.47) | -32.2% (-59.9%) | 0.54/0.41 | 0.59 | 0.53 |
+| B8 | RSP | 2007-03-01→2019-12-31 | +5.30% (+8.77%) | 0.44 (0.47) | -33.5% (-59.9%) | 0.44/0.39 | 0.52 | 0.41 |
+| B9 | RSP | 2007-03-01→2019-12-31 | +4.00% (+8.77%) | 0.47 (0.47) | -10.5% (-59.9%) | 0.23/0.15 | 0.03 | 0.20 |
+| B10 | RSP | 2007-03-01→2019-12-31 | +6.64% (+8.77%) | 0.45 (0.47) | -20.9% (-59.9%) | 0.62/0.58 | 0.60 | 0.62 |
+| J3-A | RSP | 2007-03-01→2019-12-31 | +6.23% (+8.77%) | 0.46 (0.47) | -27.8% (-59.9%) | 0.43/0.34 | 0.46 | 0.41 |
+| J3-B | RSP | 2007-03-01→2019-12-31 | +3.84% (+8.77%) | 0.48 (0.47) | -8.7% (-59.9%) | 0.22/0.14 | 0.04 | 0.19 |
+| J3-C | RSP | 2007-03-01→2019-12-31 | +8.14% (+8.77%) | 0.61 (0.47) | -19.7% (-59.9%) | 0.44/0.24 | -0.33 | 0.38 |
+| J3-I1 | RSP | 2007-03-01→2019-12-31 | +4.36% (+8.77%) | 0.61 (0.47) | -8.3% (-59.9%) | 0.20/0.08 | -0.06 | 0.17 |
+
+## J4 — amplification (L0 cap)
+
+Formations 1999-12-31 → 2015-12-31; price sources {'cache': 1065, 'fetched': 174, 'suspect_intervals_masked': 207, 'collision_excluded': 37, 'missing': 597}.
+- J4-A Δ (leading − lagging selection spread): -1.63%/yr, CI [-7.16, +4.39], p 0.7027, Holm 1.0000; E1/E2 -0.59% / -3.32%. this test could not have detected an effect of 0.02 per year (fraction) (80% power at the Holm threshold alpha/2; minimum detectable 0.083 per year (fraction)).
+- J4-B book excess: -2.97%/yr, CI [-7.27, +1.60], Holm 1.0000; at 2× costs -3.57%.
+- Treatments: {'i_exclude_unpriced': -0.01633557890003079, 'iii_minus30_terminal': -0.01633557890003079}; GICS-assignment sensitivity {'J4-A_ann': -0.028918590210838556, 'J4-B_ann': -0.04096315337853187}.
+- Priced share by year: 1999: 46%, 2000: 47%, 2001: 48%, 2002: 50%, 2003: 51%, 2004: 52%, 2005: 53%, 2006: 55%, 2007: 58%, 2008: 60%, 2009: 62%, 2010: 65%, 2011: 66%, 2012: 68%, 2013: 70%, 2014: 71%, 2015: 73%
+
+## J5 / J2-E (descriptive in D; J1*/J2* were selected on D, so these D numbers are in-sample)
+
+J1* = J1-E, J2* = B5. Point differences in D: J5-A_minus_J1star_on_SPY +0.97%, J5-B_minus_J5-A +1.68%, J2-E_minus_J2star +0.39%
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| J2-E | +8.32% | +15.9% | 0.48 | -38.3% | 0.90 / 0.77 | 0.77 | 1.00 | 0.87 | +0.04% | 0.323 |
+| J5-A | +10.55% | +13.4% | 0.70 | -18.5% | 0.83 / 0.54 | 0.51 | 0.87 | 1.41 | +0.07% | 0.684 |
+| J5-B | +12.33% | +14.0% | 0.79 | -18.5% | 0.85 / 0.46 | 0.47 | 0.98 | 3.11 | +0.16% | 0.812 |
+
+## Incumbents (replication only, L0)
+
+- J1-I1:vsX: +1.68%, Holm p 0.6711
+- J1-I1:SharpeVsB3: 0.131, Holm p 1.0000
+- J1-I2:vsX: -0.61%, Holm p 1.0000
+- J1-I2:SharpeVsB3: -0.065, Holm p 1.0000
+- J2-I1:vsB5: -1.39%, Holm p 1.0000
+- J2-I1:vsB6: -1.06%, Holm p 1.0000
+- J3-I1:vsX3: +0.91%, Holm p 1.0000
+- J3-I1:vsB9: +0.27%, Holm p 1.0000
+- Availability: {'J1-I1': {'status': 'evaluated', 'source': '/home/ubuntu2/tmp/rotation-core/incumbents/spvector_glide.parquet', 'first_weight': '1998-01-02'}, 'J1-I2': {'status': 'evaluated', 'source': '/home/ubuntu2/tmp/rotation-core/incumbents/risk_radar_gross.parquet', 'first_weight': '1998-01-02'}}; J2-I1 evaluated
+
+## Long-history descriptive tier (index-level, L0)
+
+### price_rules_1928_1997 (from 1928-10-16)
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B1 | +9.42% | +16.3% | 0.43 | -84.1% | 1.00 / 1.00 | 1.00 | 1.00 | 0.01 | +0.00% | n/a |
+| B3 | +10.75% | +10.6% | 0.70 | -51.5% | 0.64 / 0.41 | 0.42 | 0.65 | 5.27 | +0.26% | n/a |
+| J1-D | +10.18% | +9.5% | 0.71 | -37.0% | 0.63 / 0.39 | 0.40 | 0.63 | 9.39 | +0.47% | n/a |
+| B4 | +9.13% | +12.1% | 0.50 | -67.3% | 0.87 / 0.83 | 0.69 | 0.91 | 0.83 | +0.04% | n/a |
+
+- **B1** — L1929_32: never out (strategy -84% vs market -84%); L1937: never out (strategy -51% vs market -51%); L1962: never out (strategy -28% vs market -28%); L1966: never out (strategy -20% vs market -20%); L1969_70: never out (strategy -37% vs market -37%); L1973_74: never out (strategy -48% vs market -48%); L1980_82: never out (strategy -20% vs market -20%); L1987: never out (strategy -33% vs market -33%); L1990: never out (strategy -21% vs market -21%). Calm-period false pivots: 0.00/calm-yr, cost +0.00%/calm-yr.
+- **B3** — L1929_32: out 43 sessions after the top having lost -19%; back 673 sessions before the bottom; L1937: out 38 sessions after the top having lost -8%; back 203 sessions before the bottom; L1962: out 79 sessions after the top having lost -5%; back 55 sessions before the bottom; L1966: out 15 sessions after the top having lost -4%; back 130 sessions before the bottom; L1969_70: out 53 sessions after the top having lost -8%; back 290 sessions before the bottom; L1973_74: out 57 sessions before the top; back 491 sessions before the bottom; L1980_82: out 109 sessions after the top having lost -4%; back 320 sessions before the bottom; L1987: out 37 sessions after the top having lost -15%; back 127 sessions after the bottom, missing +23%; L1990: out 60 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 2.67/calm-yr, cost +2.22%/calm-yr.
+- **J1-D** — L1929_32: out 39 sessions after the top having lost -9%; back 706 sessions before the bottom; L1937: out 11 sessions after the top having lost -5%; back 304 sessions before the bottom; L1962: out 57 sessions before the top; back 191 sessions before the bottom; L1966: out 9 sessions after the top having lost -2%; back 128 sessions before the bottom; L1969_70: out 22 sessions after the top having lost -5%; back 324 sessions before the bottom; L1973_74: out 59 sessions before the top; back 489 sessions before the bottom; L1980_82: out 9 sessions after the top having lost -9%; back 419 sessions before the bottom; L1987: out 33 sessions after the top having lost -8%; back 36 sessions before the bottom; L1990: out 59 sessions before the top; back 110 sessions before the bottom. Calm-period false pivots: 5.10/calm-yr, cost +2.52%/calm-yr.
+- **B4** — L1929_32: out 43 sessions after the top having lost -14%; back 801 sessions before the bottom; L1937: out 167 sessions after the top having lost -21%; back 82 sessions before the bottom; L1962: out 118 sessions after the top having lost -18%; back 3 sessions after the bottom, missing +5%; L1966: never out (strategy -20% vs market -20%); L1969_70: never out (strategy -35% vs market -37%); L1973_74: never out (strategy -41% vs market -48%); L1980_82: never out (strategy -18% vs market -20%); L1987: out 39 sessions after the top having lost -26%; back 1 sessions before the bottom; L1990: never out (strategy -18% vs market -21%). Calm-period false pivots: 0.27/calm-yr, cost +0.71%/calm-yr.
+
+### sahm_rule_1960_1997 (from 1960-01-15)
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B1 | +11.60% | +12.8% | 0.47 | -48.2% | 1.00 / 1.00 | 1.00 | 1.00 | 0.03 | +0.00% | n/a |
+| B3 | +12.55% | +8.9% | 0.72 | -17.3% | 0.72 / 0.46 | 0.49 | 0.69 | 5.41 | +0.27% | n/a |
+| J1-E | +11.62% | +11.9% | 0.50 | -34.0% | 0.91 / 0.84 | 0.87 | 0.93 | 1.50 | +0.08% | n/a |
+
+- **B1** — L1962: never out (strategy -28% vs market -28%); L1966: never out (strategy -20% vs market -20%); L1969_70: never out (strategy -37% vs market -37%); L1973_74: never out (strategy -48% vs market -48%); L1980_82: never out (strategy -20% vs market -20%); L1987: never out (strategy -33% vs market -33%); L1990: never out (strategy -21% vs market -21%). Calm-period false pivots: 0.00/calm-yr, cost +0.00%/calm-yr.
+- **B3** — L1962: out 79 sessions after the top having lost -5%; back 55 sessions before the bottom; L1966: out 15 sessions after the top having lost -4%; back 130 sessions before the bottom; L1969_70: out 53 sessions after the top having lost -8%; back 290 sessions before the bottom; L1973_74: out 57 sessions before the top; back 491 sessions before the bottom; L1980_82: out 109 sessions after the top having lost -4%; back 320 sessions before the bottom; L1987: out 37 sessions after the top having lost -15%; back 127 sessions after the bottom, missing +23%; L1990: out 60 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 2.63/calm-yr, cost +2.10%/calm-yr.
+- **J1-E** — L1962: never out (strategy -28% vs market -28%); L1966: never out (strategy -20% vs market -20%); L1969_70: out 239 sessions after the top having lost -10%; back 111 sessions before the bottom; L1973_74: out 317 sessions after the top having lost -22%; back 97 sessions before the bottom; L1980_82: out 109 sessions after the top having lost -4%; back 320 sessions before the bottom; L1987: never out (strategy -33% vs market -33%); L1990: never out (strategy -21% vs market -21%). Calm-period false pivots: 0.66/calm-yr, cost +0.64%/calm-yr.
+
+### credit_rules_1987_1997 (from 1987-01-06)
+
+| Book | CAGR | Vol | Sharpe | MaxDD | Up / Down cap. | Beta | Mean weight | Traded/yr | Costs/yr | DSR |
+|---|---|---|---|---|---|---|---|---|---|---|
+| B1 | +15.29% | +14.1% | 0.72 | -33.1% | 1.00 / 1.00 | 1.00 | 1.00 | 0.09 | +0.00% | n/a |
+| B3 | +13.88% | +10.5% | 0.80 | -14.6% | 0.82 / 0.72 | 0.55 | 0.82 | 4.99 | +0.25% | n/a |
+| J1-A | +7.50% | +11.0% | 0.25 | -29.4% | 0.59 / 0.72 | 0.60 | 0.58 | 12.15 | +0.61% | n/a |
+| J1-B | +13.19% | +12.8% | 0.63 | -29.4% | 0.89 / 0.92 | 0.81 | 0.92 | 3.54 | +0.18% | n/a |
+| J1-C | +8.16% | +8.2% | 0.37 | -14.6% | 0.52 / 0.52 | 0.34 | 0.49 | 13.60 | +0.68% | n/a |
+
+- **B1** — L1987: never out (strategy -33% vs market -33%); L1990: never out (strategy -21% vs market -21%). Calm-period false pivots: 0.00/calm-yr, cost +0.00%/calm-yr.
+- **B3** — L1987: out 37 sessions after the top having lost -15%; back 127 sessions after the bottom, missing +23%; L1990: out 60 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 2.44/calm-yr, cost +1.94%/calm-yr.
+- **J1-A** — L1987: out 41 sessions after the top having lost -26%; back 4 sessions before the bottom; L1990: out 42 sessions before the top; back 102 sessions before the bottom. Calm-period false pivots: 5.41/calm-yr, cost +5.72%/calm-yr.
+- **J1-B** — L1987: out 41 sessions after the top having lost -26%; back 4 sessions before the bottom; L1990: out 15 sessions after the top having lost -10%; back 45 sessions before the bottom. Calm-period false pivots: 1.22/calm-yr, cost +0.30%/calm-yr.
+- **J1-C** — L1987: out 37 sessions after the top having lost -15%; back 127 sessions after the bottom, missing +23%; L1990: out 60 sessions before the top; back 108 sessions before the bottom. Calm-period false pivots: 6.63/calm-yr, cost +7.37%/calm-yr.
+
+## Deviations
+
+- [pre_outcome_access_restriction] H sealed until a parent-written HOLDOUT_RELEASE_v1.json is committed; Stage D truncates every input at 2019-12-31 (J4 formations <= 2015-12). Narrows access only; header unchanged.
+- [pre_outcome_addition] Pivot tables and J2 episode holdings cover D episodes only; G4 and the H half of G6 not evaluated; all G6 rows D-only and provisional.
+- [pre_outcome_addition] Power lines (SE, MDE80 at Holm alpha/m).
+- [pre_outcome_addition] DSR trial count = sum of ledger effective_n over rotation_core_v1, thematic_rotation_phase0, cross_asset_phase0, index_direction_phase0 (124), ledger blob pinned at 623f0a4623.
+- [pre_outcome_addition] Long-history J1 tier remainder (French market 1928-1997; Sahm rule from 1960; DBAA-DGS10 credit from 1987).
+- [deferred] J2_industry_etf (16 industry ETFs): deferred, not run, no result (parent acknowledged 2026-11-11; J2 in this run covers the SPDR sector ETFs only, not industries). J2_L (French 12 industries) and J3_L (proxy tier): deferred, not run, no result.
+- [post_hoc_descriptive] RSP (equal-weight S&P 500) is not a header comparator. J1/J3 lines vs SPY and RSP and stress-episode capture are labelled post-hoc descriptive, are in no test family and affect no gate. RSP starts 2003-05-01, so its lines cover 2003-05..2019-12 only.
+- [self_reviewed] Re-review findings N1, N2, F6 were fixed and self-reviewed (no third review), per the lead's call acknowledged by the parent.
+- [pre_outcome_addition] Pivot presentation; J2 episode holdings; J4 implementation details; interior missing-close forward fill.
+- [implementation] Fixed before any outcome: X rebuilt per era; pivot start-up spell and spells starting in D's last 63 sessions excluded from false pivots (counted as undetermined_sealed); deviations recorded; block-63 and block-6 sensitivities; incumbent Holm at m=8 with unavailable tests at p=1; J4 keeps whole-interval masking of every identity-suspect interval (re-review N1: reused tickers) - conservative, lowers coverage; J4 S&P 1500 sensitivity from 2013; J4 eras by label date; J4 statistics over formations with a finite delta; exit-before-trough strict and 3 H episodes; clip logging; one-way turnover, TE and IR per contrast; ledger pinned; dirty-harness refusal; G6 rows labelled provisional.
+- [convention] J5-B and B2 bond leg = VFITX before 2002-08-01 then IEF (header B2 rule applied consistently); GLD eligible for J5-B's defensive leg from its 253rd session (2005-11).
+- [post_outcome_logging_fix] After the first Stage D run, the J4 clip-log 'examples' list was found to list (ticker, first-session) pairs instead of the clipped (ticker, date) pairs (pandas stack keeps NaN). The list was fixed and Stage D re-run once; every statistic was verified identical to the first run (only examples, timestamps, code commit and input hashes of the code differ).
+- [convention] Bootstrap seeds: base 20261110 with family offsets (+1000 J2, +2000 J3, +3000 FI, +4000 J4, +500000 block sensitivity); chunks use seed+k, so adjacent tests share random streams (common random numbers, no bias).
+
+## Limitations
+
+- Stage D only: every number covers the development window; the hold-out (2020-01-02 onward) is sealed and was not computed.
+- Adjusted closes are today's restatement of dividends and splits, not as-published prices.
+- About six named stress episodes fall in D; per-episode pivot results are descriptions, not statistics.
+- A null here usually means 'not detectable with this sample' - read each contrast's power line.
+- J4 uses survivor-heavy Yahoo prices; members without prices are excluded and counted (priced share < 85%).
+- Incumbent models were designed on this history; their results are in-sample replications (L0).
+- Long-history tier is index-level (Ken French market, ^GSPC), with no tradable instrument; descriptive only.
+- Nothing here is a call, forecast, ranking, gate, size or trade.
