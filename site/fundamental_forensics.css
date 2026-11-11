@@ -1543,16 +1543,7 @@ a.ff-receipt-link {
 }
 
 .ff-disclosure-card::before,
-.ff-redline-card::before {
-  position: absolute;
-  top: 12px;
-  bottom: 12px;
-  left: 0;
-  width: 3px;
-  border-radius: 0 4px 4px 0;
-  background: var(--ff-source);
-  content: "";
-}
+.ff-redline-card::before {content:none;}
 
 .ff-disclosure-card:hover,
 .ff-redline-card:hover {
@@ -2197,16 +2188,7 @@ body.ff-modal-open #mmb-boot {
   background: linear-gradient(118deg, color-mix(in srgb, var(--ff-gate-ink) 9%, transparent), transparent 62%);
 }
 
-.ff-gate-state::before {
-  position: absolute;
-  top: 26px;
-  bottom: 24px;
-  left: 0;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--ff-gate-ink);
-  content: "";
-}
+.ff-gate-state::before {content:none;}
 
 .ff-gate-state[data-state="upgrade"] { --ff-gate-ink: var(--ff-review); }
 .ff-gate-state[data-state="unavailable"] { --ff-gate-ink: var(--ff-watch); }
@@ -2520,7 +2502,7 @@ html[data-theme="light"] .ff-gate-slot-index { background: #fff; }
 
 @media (max-width: 700px) {
   .ff-gate-state { padding: 20px 16px 20px 19px; }
-  .ff-gate-state::before { top: 20px; bottom: 20px; }
+  .ff-gate-state::before {content:none;}
   .ff-gate-state h2 { font-size: 21px; }
   .ff-gate-stance { font-size: 12.5px; }
   .ff-gate-actions { flex-direction: column; align-items: stretch; }

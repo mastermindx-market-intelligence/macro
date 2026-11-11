@@ -247,11 +247,10 @@
      position/clip live on .nbcard (not a.nbcard): div.nbcard variants (venue-demand
      picks) must contain their own absolute stripe, else it escapes to an ancestor. */
   .nbcard { position: relative; overflow: hidden; }
-  .nbcard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; pointer-events: none;
-                    background: linear-gradient(90deg, var(--muted), transparent); opacity: .6; }
-  .nbcard.nb-up::before { background: linear-gradient(90deg, var(--up), color-mix(in srgb, var(--up) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-down::before { background: linear-gradient(90deg, var(--down), color-mix(in srgb, var(--down) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-caution::before { background: linear-gradient(90deg, var(--warn), color-mix(in srgb, var(--warn) 30%, transparent)); opacity: 1; }
+  .nbcard::before {content:none;}
+  .nbcard.nb-up::before {content:none;}
+  .nbcard.nb-down::before {content:none;}
+  .nbcard.nb-caution::before {content:none;}
   .nb-top { display: flex; align-items: baseline; gap: 6px; }
   .nb-tk { font-weight: 800; font-size: 14px; color: var(--text); letter-spacing: .01em; }
   .nb-nm { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
@@ -324,7 +323,7 @@
      for a stance with no direction in it. */
   .nb-stage-hd { grid-column: 1 / -1; display: flex; align-items: baseline; flex-wrap: wrap;
                  gap: 3px 9px; margin: 15px 0 4px; padding: 5px 11px 5px 9px;
-                 border-left: 3px solid var(--sgc, var(--muted)); border-radius: 0 8px 8px 0;
+                 border:1px solid var(--line); border-radius:var(--r-ctl,8px);
                  background: linear-gradient(90deg,
                    color-mix(in srgb, var(--sgc, var(--muted)) 12%, transparent), transparent 62%); }
   .nb-stage-hd:first-child { margin-top: 2px; }
@@ -437,10 +436,10 @@
      ran-lane amber, and the move column sits BEHIND the reason, never above it.
      Row geometry is the ran lane's, deliberately — same family, quieter voice. */
   .pbv { margin-top: 17px; }
-  .pbr-r.pbr-veto { border-left: 2px solid color-mix(in srgb, var(--pv-avoid) 45%, var(--line));
+  .pbr-r.pbr-veto { border:1px solid var(--line);
            background: color-mix(in srgb, var(--pv-avoid) 4%, transparent); }
   .pbr-r.pbr-veto:hover { border-color: color-mix(in srgb, var(--pv-avoid) 45%, var(--line));
-           border-left-color: color-mix(in srgb, var(--pv-avoid) 70%, var(--line)); }
+            }
   /* the block reason gets its own line: it is a full sentence, and squeezing it
      onto the identity row would truncate the one thing this lane exists to say */
   .pbv-why { flex: 1 1 100%; font-size: 10.5px; line-height: 1.5;
@@ -600,12 +599,12 @@
   .bignum { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
   /* fired alerts (ported from the US/China dashboard) */
   .alert { display: block; padding: 10px 13px; border-radius: 8px; margin: 8px 0;
-           background: var(--panel2, var(--panel)); border-left: 3px solid var(--muted);
+           background: var(--panel2, var(--panel)); border:1px solid var(--line);
            color: var(--text); transition: transform .12s, box-shadow .12s; }
   a.alert:hover { transform: translateX(2px); box-shadow: 0 3px 14px rgba(0,0,0,.22); }
-  .alert-high { border-left-color: var(--down); }
-  .alert-warn { border-left-color: var(--warn); }
-  .alert-info { border-left-color: var(--info); }
+  .alert-high {  }
+  .alert-warn {  }
+  .alert-info {  }
   .alert-head { display: flex; align-items: baseline; gap: 8px; }
   .alert-ico { font-size: 15px; flex: none; line-height: 1; }
   .alert-head b { font-size: 13.5px; color: var(--text); }
@@ -844,9 +843,9 @@
      card stays ALIVE via an accent keyed to the entry-window state. */
   .nb-cscore { filter: saturate(.55); opacity: .82; font-size: 11px; min-width: 24px; }
   /* entry-window state drives the TOP stripe (overrides the base state stripe) */
-  .nbcard.ew-open-now::before { background: linear-gradient(90deg, color-mix(in srgb, var(--up) 62%, var(--line)), transparent); opacity: 1; }
-  .nbcard.ew-pullback::before { background: linear-gradient(90deg, color-mix(in srgb, var(--g-cold) 55%, var(--line)), transparent); opacity: 1; }
-  .nbcard.ew-wait::before { background: linear-gradient(90deg, color-mix(in srgb, var(--muted) 40%, var(--line)), transparent); opacity: .85; }
+  .nbcard.ew-open-now::before {content:none;}
+  .nbcard.ew-pullback::before {content:none;}
+  .nbcard.ew-wait::before {content:none;}
   .nbcard.ew-open-now:hover { box-shadow: 0 3px 16px color-mix(in srgb, var(--up) 20%, transparent); }
 {% include "_cmd_hero.css.j2" %}
 {% include "_market_state.css.j2" %}
@@ -866,7 +865,7 @@
   #hk-command-panel .cp-sec{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 7px;font-weight:700}
   #hk-command-panel .cp-forces{display:grid;grid-template-columns:repeat(auto-fit,minmax(256px,1fr));gap:6px;margin-bottom:14px}
   #hk-command-panel .cp-force{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:8px;background:var(--panel2);
-    border:1px solid var(--line);border-left:3px solid var(--c,var(--muted))}
+    border:1px solid var(--line);}
   #hk-command-panel .cp-force .ic{font-size:13px;line-height:1;flex:0 0 auto}
   #hk-command-panel .cp-force .nm{font-size:12px;font-weight:700;flex:0 0 auto;white-space:nowrap}
   #hk-command-panel .cp-force .dt{font-size:11px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -954,11 +953,11 @@
   /* row accents by stage / group */
   .st-row-entry td { background:color-mix(in srgb,var(--up) 4%,transparent); }
   .st-row-entry td.st-sticky-col { background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .st-row-entry td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .st-row-ran td:first-child { box-shadow:inset 3px 0 0 var(--muted); }
-  .st-row-ready td:first-child { box-shadow:inset 3px 0 0 var(--link); }
-  .st-row-basing td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--link) 45%,var(--muted)); }
-  .st-row-falling td:first-child { box-shadow:inset 3px 0 0 var(--down); }
+  .st-row-entry td:first-child { box-shadow:none; }
+  .st-row-ran td:first-child { box-shadow:none; }
+  .st-row-ready td:first-child { box-shadow:none; }
+  .st-row-basing td:first-child { box-shadow:none; }
+  .st-row-falling td:first-child { box-shadow:none; }
   .st-row-falling td { color:var(--muted); }
 
   /* sort arrow */
@@ -1213,7 +1212,7 @@
   body.page-hk .hkx-frw .co{font-weight:650;color:var(--text);white-space:nowrap}
   body.page-hk .hkx-frw .rd{color:var(--muted);font-size:11.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   body.page-hk .hkx-frw .dt{color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
-  body.page-hk .hkx-warm{font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--info) 6%,transparent);border-left:2px solid color-mix(in srgb,var(--info) 40%,transparent);border-radius:0 8px 8px 0;padding:9px 12px;margin:2px 0}
+  body.page-hk .hkx-warm{font-size:12px;color:var(--muted);background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:9px 12px;margin:2px 0}
   body.page-hk .hkx-fresh{font-size:10.5px;color:var(--muted);margin-top:6px;opacity:.85}
   body.page-hk .hkx-lbl{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:8px 0 4px}
   body.page-hk .hkx-foot{font-size:10.5px;color:var(--muted);margin-top:9px;border-top:1px solid rgba(255,255,255,.05);padding-top:7px}
@@ -1278,7 +1277,7 @@
   body.page-hk .hkx-sep{height:1px;background:rgba(255,255,255,.07);margin:14px 0}
   body.page-hk .hkx-eyebrow{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
   body.page-hk .hkx-eyebrow:first-child{margin-top:0}
-  body.page-hk .hkx-plain{font-size:12.5px;color:var(--muted);background:rgba(91,155,240,.06);border-left:2px solid rgba(91,155,240,.4);border-radius:0 8px 8px 0;padding:8px 12px;margin:2px 0 14px}
+  body.page-hk .hkx-plain{font-size:12.5px;color:var(--muted);background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;margin:2px 0 14px}
   body.page-hk .hkx-plain b{color:var(--text);font-weight:650}
   body.page-hk .hkx-frow{display:grid;grid-template-columns:180px 1fr 48px;gap:12px;align-items:center;padding:7px 0;font-size:12.5px}
   body.page-hk .hkx-frow .fread{font-size:11px;color:var(--muted)}
@@ -3248,7 +3247,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
   <style>
   /* ---- HKRV-W3: leadership banner + turn chip ---- */
   .hkrv-banner { margin: 0 0 10px; padding: 13px 16px; border-radius: 10px;
-    border-left: 4px solid var(--warn);
+    border:1px solid var(--line);
     background: color-mix(in srgb, var(--warn) 9%, var(--panel));
     border-top: 1px solid color-mix(in srgb, var(--warn) 28%, var(--line));
     border-right: 1px solid color-mix(in srgb, var(--warn) 28%, var(--line));

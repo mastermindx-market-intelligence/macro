@@ -1,0 +1,65 @@
+INFO asset-optimized 8 file(s)
+[
+  {
+    "label": "basket-detail",
+    "asset": "site/assets/css/de0146c6.css",
+    "sha256": "de0146c6d814f7b4f9b9646cf9d50ba82cc0d63713e0440b73db8eb559813822",
+    "old": [
+      "de0146c6"
+    ],
+    "page_count": 0
+  },
+  {
+    "label": "bonds",
+    "asset": "site/assets/css/3c442c52.css",
+    "sha256": "3c442c52a8d60d736df175a4da4838246f15b4caa119f1f5db1c677525186d2b",
+    "old": [
+      "3c442c52"
+    ],
+    "page_count": 0
+  },
+  {
+    "label": "alt-data-inherited",
+    "asset": "site/assets/css/c76d5c8a.css",
+    "sha256": "c76d5c8a0142819b6b9d8778548235bd43e9289994f189b327f90421835e2b02",
+    "old": [
+      "c76d5c8a"
+    ],
+    "page_count": 0
+  }
+]
+{"repaired_files": 1, "renamed_import_dependencies": 0}
+{"finalized": true, "canonical_asset_stamp_files": 8, "canonical_glossary_retained": true}
+{"starting": "preservation"}
+{"name": "preservation", "exit_code": 0, "seconds": 20.85, "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/preservation.log"}
+{"html_visited": 0, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 3000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 6000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 9000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 12000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 15000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"data_differences": 0, "typed_json_mismatches": 0, "approved_script_differences": 465, "historical_structure_differences": 12, "unexplained_scripts": [], "ew_equal": 31, "ew_inputs": 31, "product_inputs_equal": true, "bound_files": 15523, "unchanged_bound_files": 12137}
+
+{"starting": "template-sync"}
+{"name": "template-sync", "exit_code": 0, "seconds": 0.58, "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/template-sync.log"}
+template↔site sync OK (161 pairs checked)
+
+{"starting": "glossary-parity"}
+{"name": "glossary-parity", "exit_code": 0, "seconds": 3.22, "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/glossary-parity.log"}
+..                                                                       [100%]
+2 passed in 2.25s
+
+{"starting": "consumer-audit"}
+{"name": "consumer-audit", "exit_code": 0, "seconds": 73.84, "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/consumer-audit.log"}
+audited_pages 0 unique_residuals 0
+audited_pages 3000 unique_residuals 0
+audited_pages 6000 unique_residuals 0
+audited_pages 9000 unique_residuals 0
+audited_pages 12000 unique_residuals 0
+audited_pages 15000 unique_residuals 0
+{"schema": "mastermind.container_edge_consumer_audit.v1", "pages": 15179, "reachable_assets": 395, "unique_blocks": 457, "functional": {"functional_pseudo": 56, "functional_left": 19, "functional_shadow": 2}, "missing_assets": [], "superseded_references": [], "unique_residuals": 0}
+
+{"starting": "ui-evidence"}
+{"name": "ui-evidence", "exit_code": 0, "seconds": 17.3, "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/ui-evidence.log"}
+
+RENDER_REFRESH_VERIFIED

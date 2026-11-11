@@ -23,7 +23,7 @@
 .rc-ew[data-ew-state="unreadable"],
 .rc-ew[data-ew-state="withdrawn"],
 .rc-ew[data-ew-state="partial"],
-.rc-ew[data-ew-state="conflicting"] {background:var(--surface-warn-subtle);}
+.rc-ew[data-ew-state="conflicting"] {background:var(--surface-warn-subtle,var(--panel2,var(--card)));}
 .rc-ew-head {margin:0; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; font-size:var(--fs-sm); color:var(--ink-1,var(--text));}
 .rc-ew-scope {font-weight:600;}
 .rc-ew-state {font-weight:600; color:var(--text);}

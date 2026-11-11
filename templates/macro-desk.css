@@ -124,15 +124,7 @@ body.macro-desk.page-sector-central .scc-section-h {
   padding-bottom: var(--desk-sp-3);
   border-bottom: 1px solid var(--desk-hair-strong);
 }
-body.macro-desk.page-sector-central .scc-section-h::before {
-  content: "";
-  grid-row: 1 / span 2;
-  width: 3px;
-  height: 24px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, var(--link),
-    color-mix(in srgb, var(--link) 35%, transparent));
-}
+body.macro-desk.page-sector-central .scc-section-h::before {content:none;}
 body.macro-desk.page-sector-central .scc-section-h :is(h2, .scc-section-sub) {
   grid-column: 2;
 }

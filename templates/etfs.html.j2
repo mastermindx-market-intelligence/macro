@@ -69,10 +69,10 @@ html[data-theme="light"] body{background:#e9ecf3}
    carries its colour in --rail so one pair of rules covers all of them. */
 .card{--rail:var(--accent)}.tile{--rail:var(--tc,var(--accent))}
 .rrc{--rail:var(--rc,var(--accent))}.fc{--rail:var(--lift)}
-.card,.tile,.rrc,.fc{box-shadow:inset 3px 0 0 var(--rail)}
+.card,.tile,.rrc,.fc{box-shadow:none}
 html[data-theme="light"] .card,html[data-theme="light"] .tile,
 html[data-theme="light"] .rrc,html[data-theme="light"] .fc{
-  box-shadow:inset 3px 0 0 var(--rail),var(--lift-shadow)}
+  box-shadow:var(--lift-shadow)}
 html[data-theme="light"] .shelf details{box-shadow:var(--lift-shadow)}
 /* zh 红涨绿跌 (operator ruling): accumulate/trim are DIRECTION reads → swap. */
 html[data-lang="zh"]{--lift:#e58a97;--drag:#54c39a}

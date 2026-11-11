@@ -1,0 +1,425 @@
+{
+  "source_commit": "a739405d248e3e985c6215067878028f8403fad9",
+  "scenario": "real AI Brief card click; actual dialog and scroll",
+  "surrounding_dashboard": "existing synthetic dashboard render fixture",
+  "brief": "unchanged committed site/master_brief.json",
+  "capture_region": "top",
+  "observations": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 1440,
+      "dialogLeft": 0,
+      "dialogRight": 1440,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": 1440,
+      "dialogLeft": 0,
+      "dialogRight": 1440,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 1440,
+      "dialogLeft": 0,
+      "dialogRight": 1440,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 1440,
+      "dialogLeft": 0,
+      "dialogRight": 1440,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 390,
+      "dialogLeft": 0,
+      "dialogRight": 390,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": 390,
+      "dialogLeft": 0,
+      "dialogRight": 390,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 390,
+      "dialogLeft": 0,
+      "dialogRight": 390,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(58, 65, 80)",
+          "rightColor": "rgb(58, 65, 80)"
+        }
+      ],
+      "region": "top"
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 390,
+      "dialogLeft": 0,
+      "dialogRight": 390,
+      "panels": [
+        {
+          "classes": "aib2-stance aib2-stance--accent",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--conflicts",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--tx",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full aib2-card--playbook",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        },
+        {
+          "classes": "aib2-card aib2-card--full",
+          "left": "1px",
+          "right": "1px",
+          "leftColor": "rgb(192, 196, 205)",
+          "rightColor": "rgb(192, 196, 205)"
+        }
+      ],
+      "region": "top"
+    }
+  ]
+}

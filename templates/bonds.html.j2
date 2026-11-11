@@ -116,9 +116,8 @@ html[data-theme="dark"] body::before{
 /* section headers — quiet kicker + colored rail + hairline fading to the edge --- */
 .sec-head{display:flex;align-items:center;gap:12px;margin:44px 0 16px;padding:0;
   font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.11em}
-.sec-head::before{content:"";flex:none;width:3px;height:16px;border-radius:2px;
-  background:var(--accent-grad)}
-.sec-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--grid),transparent)}
+.sec-head::before{content:none;}
+.sec-head::after{content:none;}
 
 /* cards — glass, floating, gentle hover lift ------------------------------ */
 .card{background:var(--card);border:1px solid var(--card-brd);border-radius:var(--r-lg);
@@ -349,7 +348,7 @@ html[data-theme="light"] :is(
 .mx-stance-warn{color:var(--ink-warn);border-color:color-mix(in srgb,var(--ink-warn) 34%,transparent);background:color-mix(in srgb,var(--ink-warn) 12%,var(--panel))}
 .mx-stance-down{color:var(--ink-down);border-color:color-mix(in srgb,var(--ink-down) 34%,transparent);background:color-mix(in srgb,var(--ink-down) 12%,var(--panel))}
 .mx-stance-muted{color:var(--muted);border-color:color-mix(in srgb,var(--muted) 34%,transparent);background:color-mix(in srgb,var(--muted) 12%,var(--panel))}
-.mx-callout{border-left:2px solid var(--ink-warn);background:var(--panel2);padding:8px 12px;
+.mx-callout{border:1px solid var(--line);background:var(--panel2);padding:8px 12px;
   margin-top:12px;max-width:56ch;font-size:13px;border-radius:0 var(--r-sm) var(--r-sm) 0}
 .mx-callout b{color:var(--ink-warn)}
 html[data-theme="light"] .mx-vh{
@@ -359,7 +358,7 @@ html[data-theme="light"] .mx-vh{
 html[data-theme="light"] .mx-vh-word{color:var(--ink)}
 html[data-theme="light"] .mx-callout{
   background:color-mix(in srgb,var(--ink-warn) 4%,var(--card));
-  box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 6%,transparent);border-left-width:3px}
+  box-shadow:var(--card-shadow);}
 html[data-theme="dark"] .bhg-fill{stroke:color-mix(in srgb,var(--up) 55%,transparent);filter:none}
 html[data-theme="light"] .bhg-fill{stroke:var(--up);filter:none}
 
@@ -912,11 +911,11 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
 /* 3px top-stripe severity accent — uses severity tokens (--red/--amber/--green/--faint)
    NOT direction tokens, so zh directional colour swap NEVER fires here (R13). */
 .cs-card{position:relative;overflow:hidden}
-.cs-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;pointer-events:none;opacity:0}
-.cs-amber::before{background:linear-gradient(90deg,var(--amber),color-mix(in srgb,var(--amber) 30%,transparent));opacity:1}
-.cs-red::before{background:linear-gradient(90deg,var(--red),color-mix(in srgb,var(--red) 30%,transparent));opacity:1}
-.cs-calm::before{background:linear-gradient(90deg,var(--green),color-mix(in srgb,var(--green) 30%,transparent));opacity:1}
-.cs-neutral::before{background:linear-gradient(90deg,var(--faint),color-mix(in srgb,var(--faint) 30%,transparent));opacity:1}
+.cs-card::before{content:none;}
+.cs-amber::before{content:none;}
+.cs-red::before{content:none;}
+.cs-calm::before{content:none;}
+.cs-neutral::before{content:none;}
 /* hero */
 .cc-hero-state{font-size:40px;font-weight:800;letter-spacing:-.02em;margin:6px 0 4px;line-height:1;color:var(--ink)}
 .cc-verdict-lead{font-size:15px;color:var(--text);line-height:1.5;margin:8px 0 0}
@@ -949,11 +948,11 @@ html[data-theme="dark"] .cc-sub-calm{color:#4ade80}
 /* theme tiles */
 .cc-theme-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:4px}
 .cc-tile{background:var(--card);border:1px solid var(--grid);border-radius:14px;padding:16px;position:relative;overflow:hidden;cursor:help}
-.cc-tile::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;pointer-events:none;opacity:0}
-.cc-tile.t-amber::before{background:linear-gradient(90deg,var(--amber),color-mix(in srgb,var(--amber) 30%,transparent));opacity:1}
-.cc-tile.t-red::before{background:linear-gradient(90deg,var(--red),color-mix(in srgb,var(--red) 30%,transparent));opacity:1}
-.cc-tile.t-calm::before{background:linear-gradient(90deg,var(--green),color-mix(in srgb,var(--green) 30%,transparent));opacity:1}
-.cc-tile.t-neutral::before{background:linear-gradient(90deg,var(--faint),color-mix(in srgb,var(--faint) 30%,transparent));opacity:1}
+.cc-tile::before{content:none;}
+.cc-tile.t-amber::before{content:none;}
+.cc-tile.t-red::before{content:none;}
+.cc-tile.t-calm::before{content:none;}
+.cc-tile.t-neutral::before{content:none;}
 .cc-tile .t-name{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
 .cc-tile .t-val{font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1;margin-bottom:4px}
 .cc-tile .t-sub{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}

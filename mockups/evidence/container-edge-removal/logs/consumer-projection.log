@@ -1,0 +1,14 @@
+assets_changed 25
+assets_changed 50
+assets_changed 75
+assets_changed 100
+assets_changed 125
+pages_scanned 0 changed 135
+pages_scanned 2000 changed 1989
+pages_scanned 4000 changed 3632
+pages_scanned 6000 changed 5632
+pages_scanned 8000 changed 7352
+pages_scanned 10000 changed 9352
+pages_scanned 12000 changed 11352
+pages_scanned 14000 changed 13352
+{"pages": 15179, "assets": 394, "changed": 14530, "renamed": 134, "applied_rules": 226}

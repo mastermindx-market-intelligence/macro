@@ -146,7 +146,7 @@ html[data-theme="light"] .sc-mbtn.on, html[data-theme="light"] .sc-sbtn.on { col
 /* turns/legs timeline — each clickable leg reveals its narrative below */
 .sc-legs { display: flex; flex-direction: column; gap: 5px; max-height: 320px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; }
 .sc-leg { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 9px;
-  background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--lc, var(--muted));
+  background: var(--panel2); border: 1px solid var(--line); 
   border-radius: 9px; padding: 7px 11px; cursor: pointer; transition: border-color .16s, background .16s, transform .12s; }
 .sc-leg:hover { border-color: color-mix(in srgb, var(--c, var(--link)) 45%, var(--line)); transform: translateX(2px); }
 .sc-leg.open { border-color: color-mix(in srgb, var(--c, var(--link)) 60%, var(--line));
@@ -348,8 +348,8 @@ html[data-theme="light"] .sc-bchip.on { color: #fff; }
 
 /* prominent projected next-turn card */
 .sc-fcast { margin-top: 12px; padding: 11px 13px; border-radius: 11px; border: 1px solid var(--line);
-  background: var(--panel2, var(--panel)); border-left: 3px solid var(--muted); }
-.sc-fcast.pk { border-left-color: var(--down); } .sc-fcast.tr { border-left-color: var(--up); }
+  background: var(--panel2, var(--panel));  }
+.sc-fcast.tr {  }
 .sc-fcast-hd { display: flex; align-items: center; gap: 7px; }
 .sc-fcast-ar { font-size: 15px; font-weight: 800; }
 .sc-fcast.pk .sc-fcast-ar { color: var(--ink-down, var(--down)); } .sc-fcast.tr .sc-fcast-ar { color: var(--ink-up, var(--up)); }
@@ -501,7 +501,7 @@ html[data-theme="light"] .sc-openpage { color: #fff; }
 
 /* ---- Cycle DNA panel — the front-loaded "history rhymes" / predictive read ---- */
 /* padding-left clears the accent border-left so the heading/text never touch the blue rule */
-.sc-dna { border-left: 3px solid color-mix(in srgb, var(--link) 55%, var(--line)); padding-left: 13px; }
+.sc-dna { border:1px solid var(--line); padding-left: 13px; }
 .sc-dna .cyc-lbl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sc-dna-conf { font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
   padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); background: var(--panel2); }

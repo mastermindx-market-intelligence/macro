@@ -1,0 +1,4486 @@
+{
+  "schema": "mastermind.container_edge_integration_preservation.v1",
+  "main": "c58c69bf42786f29c8857550bdb244d08da35240",
+  "accepted_reference": "97abae6fa8f17bdb71f8670d59d1ba43497e3ae7",
+  "unchanged_html_files": 10,
+  "changed_html_files_checked": 15169,
+  "executable_script_pairs_checked": 61125,
+  "published_data_file_differences": [],
+  "typed_json_mismatches": [],
+  "approved_executable_script_differences": [
+    {
+      "path": "site/baskets_china_ths.html",
+      "script_index": 2,
+      "main_sha256": "cc63245bdbb303bee6d9f48d474bad9b4215c55e5bf563df38b2e8cc2cf8b066",
+      "current_sha256": "bb2767c50fbd5e7737ef25faf999776b943774edcbc0bcbdbada53a3c746c7f2",
+      "main_bytes": 361981,
+      "current_bytes": 361982,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/committee.html",
+      "script_index": 4,
+      "main_sha256": "839bf9ac6b56bbdb534d4cf46bbac56ddd1a8e7131ec8aeff831b7846c0f6169",
+      "current_sha256": "a06b9f0e0d2093e82e287fb90047906134f6466f195cc3bfce38d23d418677cb",
+      "main_bytes": 213163,
+      "current_bytes": 213117,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/sector_central_china.html",
+      "script_index": 5,
+      "main_sha256": "0956d6cb926060ea697847a46e73281d1e9bcf3a868c37d27c5fbaebc14d8208",
+      "current_sha256": "623e3399914f96cdf905c625d82b5231fd48fadbc1733efb2294f24ed8aebb7f",
+      "main_bytes": 42161,
+      "current_bytes": 42162,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/aerospace-defense.html",
+      "script_index": 2,
+      "main_sha256": "64bc17d5fb4d386b7ec0050295a9ad4f0b3a174f59b38fcfb9a2f96fadc74c82",
+      "current_sha256": "a30f20fbd800c65a9375063f771c3fd007c0dd104b8e94086b2c92dd95ccee69",
+      "main_bytes": 16076,
+      "current_bytes": 16036,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/agricultural-inputs.html",
+      "script_index": 2,
+      "main_sha256": "0e7cf47a7f5313cd543d6f1d3856423a385da8f41ac1976eb16d01005b32d57b",
+      "current_sha256": "0fede48f8f8f8f03bb8c182baf89bde61b9dca7c501af29c195a5545c621004b",
+      "main_bytes": 14221,
+      "current_bytes": 14181,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/airlines.html",
+      "script_index": 2,
+      "main_sha256": "b50015327e0ce52f56c56796078825f050b6b010dbb49e40bc8f098640c02ebb",
+      "current_sha256": "c73e3734a4b028240db091939a3978ab35514f39a477ccaca98744d49efa981c",
+      "main_bytes": 14131,
+      "current_bytes": 14091,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/apparel-retail.html",
+      "script_index": 2,
+      "main_sha256": "3175a0e44ee8531d150069c0ab43e06a4eb04d0d09f80888a56c0c892c58382c",
+      "current_sha256": "7d2c9da353aff0ee2d997e8c2fcf8e90a55e0166ae6567a68ad73df6df305356",
+      "main_bytes": 14243,
+      "current_bytes": 14203,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/asset-management.html",
+      "script_index": 2,
+      "main_sha256": "9ed3fcabf4e0e904fecbd822c1f74c0acec7bf63205c032dbcdd7df5b725f655",
+      "current_sha256": "cbf062b9ad647be6cbcc92061fa933a42723ab6e745f7eb0fdc9dcb05fb9ecb1",
+      "main_bytes": 16478,
+      "current_bytes": 16438,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/auto-manufacturers.html",
+      "script_index": 2,
+      "main_sha256": "e9ccb70423cd270f6b96170d206be194c4dc9f60159c2f88e84727f3e135a987",
+      "current_sha256": "ab4f5f5750797c550737734f62282e38a46e9185a1775d7be0480bf7eade88c9",
+      "main_bytes": 14270,
+      "current_bytes": 14230,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-ai-agents.html",
+      "script_index": 2,
+      "main_sha256": "26e3a68a2081f3d38269f859e52842f625d1a928f1423b931fc10ab234040c4d",
+      "current_sha256": "357d603feb94d0be1f862630447ad5b762522387961f36ed31c5790241275e64",
+      "main_bytes": 18267,
+      "current_bytes": 18227,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-ai-infra.html",
+      "script_index": 2,
+      "main_sha256": "f8414ff7c900bc2b8efe38b73828a127c2229cac80ac8f0ed909a601e4487fee",
+      "current_sha256": "7d5a06ecccee4e3160dc076e911fab649893db6ad4185b7c764a1b78ee8f3bd2",
+      "main_bytes": 33929,
+      "current_bytes": 33889,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-ai-neoclouds.html",
+      "script_index": 2,
+      "main_sha256": "85bdd52e1f1e9b075ab5ebfb915973b5c47ca5a213b54b94f83cb42d6972a27b",
+      "current_sha256": "9a3050a2ca86e88c76ee313075f6123a5d62c980c8efe4ef2a65303247e365fd",
+      "main_bytes": 16840,
+      "current_bytes": 16800,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-ai-semiconductors.html",
+      "script_index": 2,
+      "main_sha256": "8940fd459279fc79024b9d5d98ca8604a2358cbc0cc3940f9fe077aa35daaa2b",
+      "current_sha256": "ecc385c5f06906d5bbc2e73edc04b49bcd284e610c26f2db900f6f7515e6f110",
+      "main_bytes": 22516,
+      "current_bytes": 22476,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-ai-software.html",
+      "script_index": 2,
+      "main_sha256": "59ef15c8c6e3a02f3d688ac4fbbbdb25ad5f6ddc207210c41b1faa8a717dfbe9",
+      "current_sha256": "d5085bc85ddf91afda1da0d9c14e4cd7ceb2186a1b40f41cd11502ab22fba8f5",
+      "main_bytes": 28389,
+      "current_bytes": 28349,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-big-pharma.html",
+      "script_index": 2,
+      "main_sha256": "86c01beb55e1e354a20e0df39486334a259ec4cec2b7c4f03d14edc5ac07dd65",
+      "current_sha256": "d42e38ea11ebb29ee8d7c0367ec17515c91029b5680ce35b80fb52ae3cd5f873",
+      "main_bytes": 19857,
+      "current_bytes": 19817,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-critical-minerals.html",
+      "script_index": 2,
+      "main_sha256": "166f8bcc72d9dc4492d635c111b6b3d8ce9dcdcb51f80da521e3e3ff4cb021bd",
+      "current_sha256": "0ae04c1812dd372b09b2e4b3e6e13e8457e1dd4531035dce6bc0e17ea4863e00",
+      "main_bytes": 17041,
+      "current_bytes": 17001,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-crypto-rails.html",
+      "script_index": 2,
+      "main_sha256": "b62c01ad1698434afaeb71ecd797d5515ad15e33b32b5fc527bebd15d41d48b3",
+      "current_sha256": "2dd2dce08619de1da4a9b390b0a267bbb21b8726d475ebb57c96ce2ed91a7009",
+      "main_bytes": 18555,
+      "current_bytes": 18515,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-crypto.html",
+      "script_index": 2,
+      "main_sha256": "2d93b1f75a59fbae79afe903ae66c129627852aaf46ebf96cc89d5e29656e923",
+      "current_sha256": "53b64cc16efb221e4b58ef5fbe58d252bb92dcf79191cc756748d7f287a20a0c",
+      "main_bytes": 16778,
+      "current_bytes": 16738,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-cybersecurity.html",
+      "script_index": 2,
+      "main_sha256": "619bfa3c026715e35b5aaa7a889b0125baffe1b82698d731cf7aa8becbfb1b97",
+      "current_sha256": "90eb49af104413e7775f5964e1e2f94d2c0a6edc2d5da49856ae08dbe3beb516",
+      "main_bytes": 17855,
+      "current_bytes": 17815,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-data-center-power.html",
+      "script_index": 2,
+      "main_sha256": "c0ad62b978b2d51e73773128b3a763366cf761eaf762b26f0c4fe1e64cd4eb0b",
+      "current_sha256": "0bbd77218136eea2ac5ccf5f736466b62843ca0ab3ff889f115b8f1fa82ef456",
+      "main_bytes": 19958,
+      "current_bytes": 19918,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-defense.html",
+      "script_index": 2,
+      "main_sha256": "1c6daf10c8b06933319487ec35e4b53c2e3d72f719a5103c69e3d034aaa1a7e1",
+      "current_sha256": "83efdeb57df52fe1f2fe28db19c85d9eeff1a9c58a4fe25bf8d35e9368b48894",
+      "main_bytes": 25991,
+      "current_bytes": 25951,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-defensives.html",
+      "script_index": 2,
+      "main_sha256": "11658be9bd40e0b50f5e527d3bc707040b821920800ca41ee149f9c207b9bd47",
+      "current_sha256": "b88e21b34aad9b4e9f11b64574e587adfff097529b456d1afb5e49583815cb3d",
+      "main_bytes": 26737,
+      "current_bytes": 26697,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-energy-complex.html",
+      "script_index": 2,
+      "main_sha256": "d8b36829c29e2996c24ba59d06f8d4839972f4298012ca4bf8bd6f8df8da6730",
+      "current_sha256": "7e9719129944b95168645bdf8206cffb67ad819d77d204202421b786f8e4fc01",
+      "main_bytes": 27129,
+      "current_bytes": 27089,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-gold-miners.html",
+      "script_index": 2,
+      "main_sha256": "83f1bc1b4e78a6c7fa76d47eec6de0f18ccac3453235eb6c2cc87168fec5893f",
+      "current_sha256": "5633b35a85ffcdf558539806f4fc8026907c06bd662e32adaede83ebb174628f",
+      "main_bytes": 16508,
+      "current_bytes": 16468,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-housing.html",
+      "script_index": 2,
+      "main_sha256": "59199ecb48da2c2e93265b3355e05d5cab0adfaca94b2f16c4c1fac08a903b98",
+      "current_sha256": "9eacdff5ae74fd8038c4b98322f806e862ab9e31d53b5a655808bcf39c48437c",
+      "main_bytes": 22479,
+      "current_bytes": 22439,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-industrial-distribution.html",
+      "script_index": 2,
+      "main_sha256": "740a9539c587bd9a2449c74845e51a21d4e3ff2e81c75e5ac617c9f3ddd84c4b",
+      "current_sha256": "c5accfacc7810eb30bf816fa96c5ddd999e7d5e4b087b6f3e7a6db0a18bd8d76",
+      "main_bytes": 19836,
+      "current_bytes": 19796,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-insurance.html",
+      "script_index": 2,
+      "main_sha256": "e6ef317e5a27f6b8bd8fe9d83f69a3e1df1914103f94fe527e28a50a3b73403d",
+      "current_sha256": "d6274767f25c72ba1455a11575befb0be43ea22a67e49aafa2e115a87d57d8ea",
+      "main_bytes": 26257,
+      "current_bytes": 26217,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-mag7.html",
+      "script_index": 2,
+      "main_sha256": "b4add367b921cf3c7420b4a8b50386b4ca83a792d7d6d75df3eae68d2f9f4ba0",
+      "current_sha256": "345ecbe982850fd590af6e422b63f6e61155897135d52c0109c16026c0a088ec",
+      "main_bytes": 19572,
+      "current_bytes": 19532,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-managed-care.html",
+      "script_index": 2,
+      "main_sha256": "c1837448dfe8438b1e10114b4ff3e3f25092988116c11db6f39603dac4d0824d",
+      "current_sha256": "48d9865a90e249189bde148a59b6da56eabcfa3808e7ae510521d234c5e11ce8",
+      "main_bytes": 18748,
+      "current_bytes": 18708,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-memory-storage.html",
+      "script_index": 2,
+      "main_sha256": "8fcc71d478c59c1c669b51b6ed6ceb94bc0281bccfeb82330292f124cf380354",
+      "current_sha256": "83c9001ba406e7d57ecf2365a4e181966279d024ab2e70f3d7a2ad58bba3daab",
+      "main_bytes": 16756,
+      "current_bytes": 16716,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-non-ai-software.html",
+      "script_index": 2,
+      "main_sha256": "3d12b3ce293021b49459b857546f34787aa13b6664fbda9ced232047f462cd1b",
+      "current_sha256": "910ce4d0a692088a7a880052a9c4028f48e97f81445871f56655533683f28698",
+      "main_bytes": 21187,
+      "current_bytes": 21147,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-non-ai-tech.html",
+      "script_index": 2,
+      "main_sha256": "c426b799c634f0c209a1273e1604dc22110009af485134d105c3c15f4cfb0aa9",
+      "current_sha256": "558b8deb80780f3146d69d3d631f659027e01cfb6c77fc093496d3f0ac86c7c1",
+      "main_bytes": 22984,
+      "current_bytes": 22944,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-nuclear-power.html",
+      "script_index": 2,
+      "main_sha256": "eb322ff33a0091933373a724ea49861447c4ee6b27272d18c9e543956f46f958",
+      "current_sha256": "c03989945d95171af3fc0d947e25bab03f72eede9c5da5821e331bd06ccde728",
+      "main_bytes": 20689,
+      "current_bytes": 20649,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-obesity-glp1.html",
+      "script_index": 2,
+      "main_sha256": "eaa1c3b36feeaa5b230d2c9cfb5d6035084774e6ad18a19a5a7ee48be28aa711",
+      "current_sha256": "60723e8ecbde6ae2c6d0fbdbd0b9ae9aa260ae60f81a45300c18c4ccdcf39c20",
+      "main_bytes": 19641,
+      "current_bytes": 19601,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-payments-fintech.html",
+      "script_index": 2,
+      "main_sha256": "823f202f115d126f648b8ee454706728b0269712eaa42da210e320428682ebc9",
+      "current_sha256": "448138b141120da14af45c33834c0391a53609c874d7ca7b2d172c917e147da0",
+      "main_bytes": 24895,
+      "current_bytes": 24855,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-pgm-miners.html",
+      "script_index": 2,
+      "main_sha256": "59424b194c6e59edbc78357d461de168bbd728d45d4601da0784f9ec24787c1c",
+      "current_sha256": "bfb2d4f61328b1764f3f89ba7abe719f5a9fbb35c75621af9d8f40931f0e7138",
+      "main_bytes": 14433,
+      "current_bytes": 14393,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-power-grid.html",
+      "script_index": 2,
+      "main_sha256": "5111365bb6fa4aaae9171c508e9a6d8f9da0df4e660fbc8f55c5c68aba08a9a1",
+      "current_sha256": "ccb0a90e3ce46a2fe2939cf3f9f0b4bb991948b399433452eeed2c7c1b073c79",
+      "main_bytes": 33338,
+      "current_bytes": 33298,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-quantum-computing.html",
+      "script_index": 2,
+      "main_sha256": "8b0fd39efb31463d8d7cd82faddfe42ead3bd6c9805af2ac1203a3811690b948",
+      "current_sha256": "6f9e35a189aef951c0afa9ea62b421aaf7d45147b2725036ee1b80e7e62da422",
+      "main_bytes": 19827,
+      "current_bytes": 19787,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-regional-banks.html",
+      "script_index": 2,
+      "main_sha256": "3964d440dd34588e42899f15885e2fe5c6012745fde28e148e85ab6aacff7fc9",
+      "current_sha256": "1ab53cd6f5e1f444e1364243ef764de2fcde1595e06c04c4f1e9557c3efde36a",
+      "main_bytes": 21898,
+      "current_bytes": 21858,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-reshoring.html",
+      "script_index": 2,
+      "main_sha256": "56c6428b635e12c33f1b301d91aebabd0515d287e025d439ea229b3e60321e24",
+      "current_sha256": "589f96ff89f7bfb347bc7f285c15a1dd8260b4e90cc507a53892c9abe011cb3c",
+      "main_bytes": 27894,
+      "current_bytes": 27854,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-retail.html",
+      "script_index": 2,
+      "main_sha256": "739885b0de42caa281445c29d65861a62d7750a2540a356aaca3e83e54388067",
+      "current_sha256": "8b036987323d37b75de0a52cfa153984db36010d7bc4f5d570af44cb9c5e83c6",
+      "main_bytes": 24966,
+      "current_bytes": 24926,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-robotics-automation.html",
+      "script_index": 2,
+      "main_sha256": "12e5bde40372512aa1a4e304428df9738dca84bed242a764ac78f6da5ed95e7d",
+      "current_sha256": "531f1db0e31d9da8917eabe9449007b182b5888da44df9cba525ae84cfcc617d",
+      "main_bytes": 22106,
+      "current_bytes": 22066,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-semicap-equipment.html",
+      "script_index": 2,
+      "main_sha256": "26ba873ab5870b1d08eeb813f749fdf8492df1a4f8be29db83dca05cd7f8cf16",
+      "current_sha256": "f0cd3218a4e225c1a87d7bf7a9dd6779c06996ef8f708a38f7392c3f3a60f914",
+      "main_bytes": 19944,
+      "current_bytes": 19904,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-silver-miners.html",
+      "script_index": 2,
+      "main_sha256": "c11cbe9a35de7619a9b758052a7adb742eaa2194d0cb3d89e6f8762da0504738",
+      "current_sha256": "60bd4d21dd0c793490954c7f1faaa607b1f271349861a8c20ec3b8633420e955",
+      "main_bytes": 15246,
+      "current_bytes": 15206,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-space-economy.html",
+      "script_index": 2,
+      "main_sha256": "65e8f6415d0146e2a73b108db289fe3b4cd82a3c36b4e7bebd28d94bdb2ff0d9",
+      "current_sha256": "344fc0561df4e717dea965de4dd9cce743c21e573fea337aea6df54b7153928a",
+      "main_bytes": 18105,
+      "current_bytes": 18065,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-travel.html",
+      "script_index": 2,
+      "main_sha256": "c4e7d9dab92cbf9f4b07fd71bdcfa2e938be82e1905df42d900db3c58970edeb",
+      "current_sha256": "a5708e837505d72de57b367054e3cdab35f37531fcfe7c8445a8f82ffd525954",
+      "main_bytes": 26244,
+      "current_bytes": 26204,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-uranium-miners.html",
+      "script_index": 2,
+      "main_sha256": "4bce875e4deaa3e3ed4da5b3d72ae1f6249e9194ab6e12fd1885ef490577d2a5",
+      "current_sha256": "16bd2d1a828122445bd58a6617f2a7edd01a43f09367af446e642d35ebb11c5d",
+      "main_bytes": 16741,
+      "current_bytes": 16701,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-comm.html",
+      "script_index": 2,
+      "main_sha256": "6aea3cb898a9cffde0e5efff9ac0f8bdfffe016dc0056d293573fb0926d66e16",
+      "current_sha256": "7be7284659c2fa2eb8650edf5bfc176f5523e6eb0bd7e1c1602a3d9b2218fecb",
+      "main_bytes": 21037,
+      "current_bytes": 20997,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-discretionary.html",
+      "script_index": 2,
+      "main_sha256": "4fc7c93a4dd11012c5332b0b13407e2feedb5027af1f5ff75bffe6d88ae549e7",
+      "current_sha256": "270f7b4087d4014b1abcae5800a17b95bc3637d7e3e262463fe829fda23e6eca",
+      "main_bytes": 36659,
+      "current_bytes": 36619,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-energy.html",
+      "script_index": 2,
+      "main_sha256": "cfa8866b1464c1d4de874b5dbc103ed514397d540506649506aaac9815e7cb68",
+      "current_sha256": "b01307afb55c9116d7ba051f84326779893735c1cea7a6521dd0195c655aed50",
+      "main_bytes": 26935,
+      "current_bytes": 26895,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-financials.html",
+      "script_index": 2,
+      "main_sha256": "292f0ddaa08a64c8b0047bfa4fb8a00e550984affd39dba8f7b0ef31182bbe79",
+      "current_sha256": "3e784d1d4e1ee74833b4913a985414d3b169cba9faf11b89498fae7f602259b4",
+      "main_bytes": 50943,
+      "current_bytes": 50903,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-health.html",
+      "script_index": 2,
+      "main_sha256": "4b71126d2c8c1a56f9630143ba0b350aea35534bc521e597208fa4a9cdf13acf",
+      "current_sha256": "e4e9d5a05ea66b68ecf7300a0be0e7f8b9ae3d903312379675d4e593046a66f1",
+      "main_bytes": 36732,
+      "current_bytes": 36692,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-industrials.html",
+      "script_index": 2,
+      "main_sha256": "1d95a6c60db81c90aa6115362f0f36aba98c3f2a50030efb91d654c2ef076507",
+      "current_sha256": "48d4bfccac04c5b514f6ed7554239c91c748b9dcb62cbea9affa6942ca091148",
+      "main_bytes": 55297,
+      "current_bytes": 55257,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-materials.html",
+      "script_index": 2,
+      "main_sha256": "a2186c24c115c8adaa5179095d46b6cf02c0179ef56f71ea53b06d570ae7c40a",
+      "current_sha256": "873cc7eff007517bd21a52174f7df9b87b1110c43824460365a29315b68e4b2f",
+      "main_bytes": 20199,
+      "current_bytes": 20159,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-realestate.html",
+      "script_index": 2,
+      "main_sha256": "425de55b658d16c3a465c3ed98da6601a2ef5124e155113c5879be52254272c9",
+      "current_sha256": "e0d4925af738e8e9b088c2306ed1985c76ca4b2cc7e551c8ec4586f83cf7e4b5",
+      "main_bytes": 19790,
+      "current_bytes": 19750,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-staples.html",
+      "script_index": 2,
+      "main_sha256": "3f2ef4dde619e2bb31f1e2a72893e2e8a99117e41663b9f0ae7fa80bdd35e005",
+      "current_sha256": "fb79c60ff0f935a274b9b754722e59085f8b40b9bb28f7c585fabbc043417311",
+      "main_bytes": 30547,
+      "current_bytes": 30507,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-tech.html",
+      "script_index": 2,
+      "main_sha256": "822527a35514b866591ea029e6714697af1f6227b83a6121f888dfa2af089905",
+      "current_sha256": "4f7e520c16213dddda9adf4ed5f15ff50a9f8c2fa6faddeabdbe6d02671946dd",
+      "main_bytes": 59002,
+      "current_bytes": 58962,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/b-us-sector-utilities.html",
+      "script_index": 2,
+      "main_sha256": "8081d60c56fc375c9b6466dd10f3c14c4dcda80ab06901d6bd3f4f90a930e5a1",
+      "current_sha256": "9ad670b354d817048b511456fe88a0f874f13d45a19e613ddd7fd1f7c36ed28c",
+      "main_bytes": 25893,
+      "current_bytes": 25853,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/banks-diversified.html",
+      "script_index": 2,
+      "main_sha256": "0512347a3ead291fed03c02e43c75c195c72714d51609b799c49177315649c88",
+      "current_sha256": "17b21a191068bccdff1ba53d39ffb0db279648d39b11d374bda936d68439d553",
+      "main_bytes": 14474,
+      "current_bytes": 14434,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/banks-regional.html",
+      "script_index": 2,
+      "main_sha256": "bb62c62e3f35b3519a341223373abb73d3edb4f53cd94356f96a487b58df2e42",
+      "current_sha256": "3a7cd72f9c22e61ec2e0c338bdf68f9d839c099f3ee1101cd61075cebd73760c",
+      "main_bytes": 15454,
+      "current_bytes": 15414,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/beverages-non-alcoholic.html",
+      "script_index": 2,
+      "main_sha256": "29654f919d11e8e20bb25f1c0f80bd3516f2ac4d9b87197e1c738d9d493a6f6c",
+      "current_sha256": "ebfcdbb7474a16559270cf0808017a2960a626ece11a78a31e36af4657a561cf",
+      "main_bytes": 14652,
+      "current_bytes": 14612,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/biotechnology.html",
+      "script_index": 2,
+      "main_sha256": "12b441754d37627a610139caa58e3452341b0232055cdd3e839aeb9893d0829a",
+      "current_sha256": "1b604de87312cc17f1992a9cc3a823db8bb1251ac8bd106f5f1c8fced2e14bd0",
+      "main_bytes": 14315,
+      "current_bytes": 14275,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/building-materials.html",
+      "script_index": 2,
+      "main_sha256": "32714580a8462e737e514f7d0c22b6e653b95a81edcb2937352ca38e319012a0",
+      "current_sha256": "b5235137ca493f7f30f8ff0b4337b734041e595f89e61d83f2bb5dd7eebd5e4e",
+      "main_bytes": 14257,
+      "current_bytes": 14217,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/building-products-equipment.html",
+      "script_index": 2,
+      "main_sha256": "5fca013764f0aa59a20efe295aee58bed65c456f944d0309318c1c5993ac79fe",
+      "current_sha256": "64694918d79c6a019cb4298ab49fbc90102bfbbd9d1674bb5a9f9c953ca755d7",
+      "main_bytes": 14499,
+      "current_bytes": 14459,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/capital-markets.html",
+      "script_index": 2,
+      "main_sha256": "b6145a98e1fe805f40d8e600d32937684ce5310f708b65eb1e52f72ad36b0f5c",
+      "current_sha256": "5f237cf1c93e2080be76c2a36ca041710080616419cfefc56496135b80ce6410",
+      "main_bytes": 14843,
+      "current_bytes": 14803,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/communication-equipment.html",
+      "script_index": 2,
+      "main_sha256": "381f6921b76b87df3696cc23fbf315960cc9e90362573c998456ae29c1a8f999",
+      "current_sha256": "44ce1146807c7537bc58fc42c6f6d5d6d8e048af49f0f2c9bc9f708ecb5070f9",
+      "main_bytes": 15073,
+      "current_bytes": 15033,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/computer-hardware.html",
+      "script_index": 2,
+      "main_sha256": "481d796fc64273c6775849640f39df412141bedb7ed526f964c3f3311140a774",
+      "current_sha256": "e22a29b71fdd76080f14d807dbf67b1ea232d5ac82be167211bb9def9e943f6a",
+      "main_bytes": 15051,
+      "current_bytes": 15011,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/credit-services.html",
+      "script_index": 2,
+      "main_sha256": "4b83fb510258fa420932e493dcb7322a3110b7c629a7413ff81e8a4cb417227a",
+      "current_sha256": "4a848ebd4c9a488491dfea60f178fd8318fe3d4d1f91f6472a03b7b027eb9b07",
+      "main_bytes": 15780,
+      "current_bytes": 15740,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/diagnostics-research.html",
+      "script_index": 2,
+      "main_sha256": "2ff291e2336c9aa54993811ad7fc91fef8e2dc447fcef6e0b76f8e7fdee894bc",
+      "current_sha256": "9fcbbe968ac0544d2735ae2a637fd290a982127514cd03df34112460856d2dd4",
+      "main_bytes": 16001,
+      "current_bytes": 15961,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/discount-stores.html",
+      "script_index": 2,
+      "main_sha256": "262043df77bafeac7df4d643fffd5740541959af1c5b61f5d1de3d41a5a99101",
+      "current_sha256": "a2d2898a1d55ac45041933631e00436de6c158ebd5010d6f94df29d3221bfb78",
+      "main_bytes": 14581,
+      "current_bytes": 14541,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/drug-manufacturers-general.html",
+      "script_index": 2,
+      "main_sha256": "83c9df7c7cc950f437e50dace9a4e887cacf3259132a4ce72a2b0b2e2af6bf25",
+      "current_sha256": "2921f35e197f388529450175720aeac13b22c84b521355b268c3b39cbe51eb07",
+      "main_bytes": 15392,
+      "current_bytes": 15352,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/electrical-equipment-parts.html",
+      "script_index": 2,
+      "main_sha256": "79a7e3d3091d397369d44f748a0eac9364389c0739373c652161f62efae904d5",
+      "current_sha256": "e124c1052e826473e0d9c9e15f0c3e92ad0819140d5113d48fd5cb38b403543e",
+      "main_bytes": 14262,
+      "current_bytes": 14222,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/electronic-components.html",
+      "script_index": 2,
+      "main_sha256": "fdf2d214ee8f02f3cb49e2af885992a1a5ffa3a36b6530613ef509e6a1af7e5b",
+      "current_sha256": "b1f2a80724a3c5de16a66f2d71e2378ecffd14df1d556bdb476c6a1820be581d",
+      "main_bytes": 14907,
+      "current_bytes": 14867,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/engineering-construction.html",
+      "script_index": 2,
+      "main_sha256": "1d5afca3cf82f55398a38f0dddd0ddba960d5d960895e27863af97c0bf95a66d",
+      "current_sha256": "e813cd93b8f85d8050c391e05c8760a0841c46effb69edc2fe0041ceb6251a88",
+      "main_bytes": 14492,
+      "current_bytes": 14452,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/entertainment.html",
+      "script_index": 2,
+      "main_sha256": "292fc30820b577cb8c07647c0b0187874ff0b4e5f0373a27110232e0da8338b0",
+      "current_sha256": "d27a3ed17d10c28ba27e04edc41f0b8956526a63ba4675f5c002818ec335193d",
+      "main_bytes": 15642,
+      "current_bytes": 15602,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/farm-heavy-construction-machinery.html",
+      "script_index": 2,
+      "main_sha256": "7cf428f54f01b1ce419806a120ce411909f27aaa54879c0dc88200228066c9b1",
+      "current_sha256": "6d0b45ae8fc20bb9d97d606a887daf9eca970164ff48c80cc44ef59a1380fb1a",
+      "main_bytes": 14265,
+      "current_bytes": 14225,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/financial-data-stock-exchanges.html",
+      "script_index": 2,
+      "main_sha256": "a5e327122bb043e32fa7676f189ec13af7d58c0794cbfcd52828b289632cb63e",
+      "current_sha256": "0b553bb4bf4aeaeef020293f7e40fa485d3d24d57c399f9a9cabb9ba4191698d",
+      "main_bytes": 15263,
+      "current_bytes": 15223,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/healthcare-plans.html",
+      "script_index": 2,
+      "main_sha256": "8c4467dafa2b674540d5dd14e271e7b7dffa819963c81c7797063a5cc13442c5",
+      "current_sha256": "adf3a7653ec98eb3d0e69783932ea8596e5c9a02779680b8592bb37e8b11cd3c",
+      "main_bytes": 14793,
+      "current_bytes": 14753,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/household-personal-products.html",
+      "script_index": 2,
+      "main_sha256": "16a81c3ec3dc3306cc76dfbf1ff2e256ff818b7392352d0b587b43a32af85381",
+      "current_sha256": "c8686c45ac3fe4a44c6de5c927faae60de128560ae7d2d38d14164dcff9cbe76",
+      "main_bytes": 15048,
+      "current_bytes": 15008,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/industrial-distribution.html",
+      "script_index": 2,
+      "main_sha256": "0a9702c1cb17f256351a3dfbacaa9908683e6fd4d0c1701809f23968ebf90a34",
+      "current_sha256": "76d785c5478b8bf6a7807f72b2dc626fe23184a8050c8574d1c365fff0f56459",
+      "main_bytes": 14225,
+      "current_bytes": 14185,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/information-technology-services.html",
+      "script_index": 2,
+      "main_sha256": "caec8b3bda402d9f00e2d75dcd9e5d92518b5e6c54af7ae6747025e3997e76e6",
+      "current_sha256": "b9b7cbe9d928a4489d0f781aef3e830000437491569193566117f3a57f335156",
+      "main_bytes": 15277,
+      "current_bytes": 15237,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/insurance-brokers.html",
+      "script_index": 2,
+      "main_sha256": "54965b0594dbb4706d459e5f50e581e3d4dc319f902bbe5a56bde57b7e50a56c",
+      "current_sha256": "2d7f99793bf44ea0784bab7a00b7222ada480961244d47b61aa2d93a586d03e1",
+      "main_bytes": 14603,
+      "current_bytes": 14563,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/insurance-diversified.html",
+      "script_index": 2,
+      "main_sha256": "a59dad575cb2c35462228a2b15c64fd22049738479c3238385299ae1eaf29a56",
+      "current_sha256": "0296ee877c7e158f386112cf64d194789965704ba55005890bdbc28304be5ed5",
+      "main_bytes": 14388,
+      "current_bytes": 14348,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/insurance-life.html",
+      "script_index": 2,
+      "main_sha256": "5a9158f746b9bdc7f15ed7bc6e02c9e11727e4bb7500002d967a96bb825556da",
+      "current_sha256": "cc8d10bf4b45c93083d9048f111b3189bd89e0d1009e6588bdb48f9b0e22fe7d",
+      "main_bytes": 14378,
+      "current_bytes": 14338,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/insurance-property-casualty.html",
+      "script_index": 2,
+      "main_sha256": "6c4039de623518633a7182867ced1d9ef55a008d6b7bb719772bd552fa7444d3",
+      "current_sha256": "06d3ddbf05eaa63fd4857e9a9ae16d290c37969307853009a227cd86b99a4cd4",
+      "main_bytes": 15035,
+      "current_bytes": 14995,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/integrated-freight-logistics.html",
+      "script_index": 2,
+      "main_sha256": "f929212874722c773e368c6d93b915ecb861076f21911433f4349ec9f537b40e",
+      "current_sha256": "c2831ab5632f4dcd9f90161101b26f5c0a8c58244a7433a05df9fa1556b52c79",
+      "main_bytes": 14910,
+      "current_bytes": 14870,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/internet-content-information.html",
+      "script_index": 2,
+      "main_sha256": "1fe9b336ae02a7c323d21feb3528fbf6c22af07edbaf868af176978e5e308e9a",
+      "current_sha256": "b666b154c7bb5dd2dbed1ce95afcb83e5d08a375014ef87d0d4fd7770d867340",
+      "main_bytes": 14270,
+      "current_bytes": 14230,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/medical-care-facilities.html",
+      "script_index": 2,
+      "main_sha256": "8a7cd2bc6d57276edeeb25b87b2b89fc65ea776bb7595c8aee685c2c27e63e11",
+      "current_sha256": "6aa23af44d8614446267099868bd3fc68ce96e989616ddaeae1e260a6cd18d23",
+      "main_bytes": 14204,
+      "current_bytes": 14164,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/medical-devices.html",
+      "script_index": 2,
+      "main_sha256": "1aa3b7b2408765107db582df35e8b3577371766d73e62a47c28bd57bdfa7ea61",
+      "current_sha256": "81df2343a5ed76746d8fd59a30662a6dcf71fa5da8bc253c60f257cfc8d97a8a",
+      "main_bytes": 16020,
+      "current_bytes": 15980,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/medical-distribution.html",
+      "script_index": 2,
+      "main_sha256": "8a281af23df17c1125143946e746a416ae72c877bc87cd0c9d79911b6a696f38",
+      "current_sha256": "d928e17e845407e1a6d0cd3892be26ecc3e76b5df055876bc16467d303a24238",
+      "main_bytes": 14369,
+      "current_bytes": 14329,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/medical-instruments-supplies.html",
+      "script_index": 2,
+      "main_sha256": "d770aea7e73ee939bcb3606908855f05351ba40a4046d31265e8d6124b1417cd",
+      "current_sha256": "af77ad274a6ae2b718fad65314f5d35c53477b193306f3f9c7a8b3362531003a",
+      "main_bytes": 15056,
+      "current_bytes": 15016,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/oil-gas-e-p.html",
+      "script_index": 2,
+      "main_sha256": "41a70fc61f32c849cd4d14346b7d14e610017abe1a44d3705b1dec994d5140ac",
+      "current_sha256": "985efb4dcc872e2082224f1de0ec6cae76d05df03d29adfbb116753baab237fd",
+      "main_bytes": 15432,
+      "current_bytes": 15392,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/oil-gas-equipment-services.html",
+      "script_index": 2,
+      "main_sha256": "b74fc72b9de625fd86b914f444472b1c6fbcd46fd9c2da4a61ad944b5d66ea1f",
+      "current_sha256": "f9c15ccc1c0a21e18ace1dada3269f05b72d44522dfbced25cbb27c2eff79374",
+      "main_bytes": 14218,
+      "current_bytes": 14178,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/oil-gas-midstream.html",
+      "script_index": 2,
+      "main_sha256": "7c1d6ecf328e6c2c58d84c4b2628a332e92167d990f8b368e6b2d5d0ae37bcf6",
+      "current_sha256": "70b0ce2af3349f8b74ee3df501c7c90b098458fdbb0f8e8e39b246db3ee24fe3",
+      "main_bytes": 14422,
+      "current_bytes": 14382,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/oil-gas-refining-marketing.html",
+      "script_index": 2,
+      "main_sha256": "cdda4ce7cc9914656fef0289695d96fcd78c0158ee48adb7b39b9c24f45c0b18",
+      "current_sha256": "c4483f167e29c1ce959a8f05b47c8b40abf64a31c8462e7e56259996b92ee55b",
+      "main_bytes": 14167,
+      "current_bytes": 14127,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/packaged-foods.html",
+      "script_index": 2,
+      "main_sha256": "0d226d0de48bc05068a564cd1d8a78f8dc42ec811c6bc986dce41a2dfb0a4b7d",
+      "current_sha256": "d43870ca597f91d6c25d32ea612a15eba1288299179d5759ebcb2133daf8d4e3",
+      "main_bytes": 15217,
+      "current_bytes": 15177,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/packaging-containers.html",
+      "script_index": 2,
+      "main_sha256": "2055d25ad72a0120a8ca356079e3749d07245e1017b6601ebdb9e73c62d41d7e",
+      "current_sha256": "55c9b3bc4a84ce45bc60eb679b7a6c08a68ac83900e33348e408025f8464e8ba",
+      "main_bytes": 14770,
+      "current_bytes": 14730,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/railroads.html",
+      "script_index": 2,
+      "main_sha256": "4e011f72d584cbc406163c3556f206d12e5abf14a75c409edcc961892e9ffda7",
+      "current_sha256": "04a053df9fb5105b864caddc9caad57564d0b718666d7660dbc19769dffe4e3d",
+      "main_bytes": 14380,
+      "current_bytes": 14340,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/reit-healthcare-facilities.html",
+      "script_index": 2,
+      "main_sha256": "8fa283a5f9a3636748db6252dc3266535fbb31af084d520b60ca931cb92195a1",
+      "current_sha256": "76914d45d9283b6cb556be3b95021ce1564e2d4e1b607fc3e168b527f5ecc756",
+      "main_bytes": 14207,
+      "current_bytes": 14167,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/reit-industrial.html",
+      "script_index": 2,
+      "main_sha256": "118788c1305cc7bce63f9d845eabf72291c178355c91056691fdebce63a544ef",
+      "current_sha256": "c8377764e0f9945c423e63d469e09c76a4963ce24554a55776017c5824f71be2",
+      "main_bytes": 14161,
+      "current_bytes": 14121,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/reit-residential.html",
+      "script_index": 2,
+      "main_sha256": "2df0b364b5b7204490fcb48c1d84da15599273b94b2459af220791fc43bd5ce6",
+      "current_sha256": "e536992884b773ebf4cf0fe1c6dfc8ec715c4c1ddf2134fb7aa220f49fc2c5df",
+      "main_bytes": 15032,
+      "current_bytes": 14992,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/reit-retail.html",
+      "script_index": 2,
+      "main_sha256": "ed4fe71ea8cf2efdef80d12b70d28a79e52dc7e325121554e2336b39ec2dc01d",
+      "current_sha256": "a104c90db5d1ec670ee3c56f780cacbdbda0b0482a56c42d4aff64bc54def222",
+      "main_bytes": 14557,
+      "current_bytes": 14517,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/reit-specialty.html",
+      "script_index": 2,
+      "main_sha256": "b8312727c4c403a36b8bac4be2bf806682c3e1df4cb58838ae031ab6ad0cec53",
+      "current_sha256": "5716f410f9c61787a8f5f8c67787197afcf67e0bb18cd9ea2ee377bee5ca7d68",
+      "main_bytes": 15203,
+      "current_bytes": 15163,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/residential-construction.html",
+      "script_index": 2,
+      "main_sha256": "53aeb10fe46070afc9b02155ac7c19ed22e4613c032be5f1d2efd13d8be07ba7",
+      "current_sha256": "d263665b8df3cc533135d09db0a17b8388db0eddc4dc96336c47f9e4aebb1705",
+      "main_bytes": 14670,
+      "current_bytes": 14630,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/resorts-casinos.html",
+      "script_index": 2,
+      "main_sha256": "576af2c468a7d3b1c26b5035a71411aac83e6a698071f9d5709aa881db2d7190",
+      "current_sha256": "bd526a41391092b48bfd64d704490e12614716d6aad836f8e5107ff1a55598d8",
+      "main_bytes": 14265,
+      "current_bytes": 14225,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/restaurants.html",
+      "script_index": 2,
+      "main_sha256": "fc39cc8e4cef7bd36dbcd1e06872609264f289b3288efc6017c0200902c360bd",
+      "current_sha256": "5e8c9b95c2eea61baaad995866cbb5840cb85c0ee2b6c924310f964f1fcdb2a2",
+      "main_bytes": 14766,
+      "current_bytes": 14726,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/scientific-technical-instruments.html",
+      "script_index": 2,
+      "main_sha256": "c82d6146a4d1e942d9e14ae6e8d29954d3914024a800dfa44981e2083bdcf57a",
+      "current_sha256": "51efc54047d5784e225525aa204dbb4a46ecbe80960f514454b2ff4ba66a43fe",
+      "main_bytes": 14484,
+      "current_bytes": 14444,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/semiconductor-equipment-materials.html",
+      "script_index": 2,
+      "main_sha256": "4e8b497e5a4d0c76282ecdd6c22330c55d44b603a99ad14e87bf76a5b9e9a170",
+      "current_sha256": "144fc972edf3196ade8db0fd52dc5fc2f0b354d4c685703c91f5017702f220df",
+      "main_bytes": 14689,
+      "current_bytes": 14649,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/semiconductors.html",
+      "script_index": 2,
+      "main_sha256": "58b2c31aa253ad3568311f3f14e4ea764b61b0c91dec1bd34bab5204fa0be483",
+      "current_sha256": "c31af4b19ae40313e5e4f27052fec1f13db181afb5f4d6dd7560b22808138404",
+      "main_bytes": 16492,
+      "current_bytes": 16452,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/software-application.html",
+      "script_index": 2,
+      "main_sha256": "a0c13444c8985bbb51c7c8559197ea974cf8a652b54b7ce41a849469821d5561",
+      "current_sha256": "43eddb5bba1a0e9d58b6c6e34bbb2d6d8e3dcde7c950cb1d22b47033c2155d65",
+      "main_bytes": 15816,
+      "current_bytes": 15776,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/software-infrastructure.html",
+      "script_index": 2,
+      "main_sha256": "155cacb624da14055b6f86fb7439d0bdce57683b6e744d54541219922bffea0c",
+      "current_sha256": "c5e7aacd0a4e480e6d5fb0b31b26bf5657f244055f846d42efd651b408fd60d3",
+      "main_bytes": 16678,
+      "current_bytes": 16638,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/specialty-chemicals.html",
+      "script_index": 2,
+      "main_sha256": "ec60fae2bf657909de7218224b724ec45e330ce3f4c59be39085c1600a4b5599",
+      "current_sha256": "fbb31d7e926f7c9924a727b449aa93c18e294dc192151e97569af0fb6ee095d5",
+      "main_bytes": 15414,
+      "current_bytes": 15374,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/specialty-industrial-machinery.html",
+      "script_index": 2,
+      "main_sha256": "988cfcce07be7dcb2e28ebcdbb6907ab73d4cdaca995d2eebedf7a2bf449ac5e",
+      "current_sha256": "d53cf25325cd9caac200a07f0aa68b988e2bdb4e9e58264fac876e40a369242e",
+      "main_bytes": 17613,
+      "current_bytes": 17573,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/specialty-retail.html",
+      "script_index": 2,
+      "main_sha256": "07df21b7a33a77d4d0ef1f3c62f59579bcd8da5117f07a3c45692daef5b5aebb",
+      "current_sha256": "2f755a675a43ae42d16dede7a43173e29fd90a8ef31d465913794a112e4c612b",
+      "main_bytes": 15203,
+      "current_bytes": 15163,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/telecom-services.html",
+      "script_index": 2,
+      "main_sha256": "4554774b37e752fc4288cc7f27c9b1eb3d347aeeb35621ec126e9b846154c805",
+      "current_sha256": "82b237345b84c09b968f1d1b483d584bce07bbd4973b5982073a7602459ab135",
+      "main_bytes": 14842,
+      "current_bytes": 14802,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/travel-services.html",
+      "script_index": 2,
+      "main_sha256": "7a1ee2fe669c078641c93c2072219f6cc7a70cd9ccaea4049d28f745da9f820d",
+      "current_sha256": "7e77003160fe7d5c68bee00b474d04d58809ba3577700e38914eca9b502eacf3",
+      "main_bytes": 14811,
+      "current_bytes": 14771,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector/utilities-regulated-electric.html",
+      "script_index": 2,
+      "main_sha256": "9d236e458418c0460588453867a3344e7d6a1e44c3626ff459db7f52eaf0274a",
+      "current_sha256": "664328bd6da41a85a6374799057b596691d8031ebff3dbe4738d6c1c546ee853",
+      "main_bytes": 18277,
+      "current_bytes": 18237,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-adv-pkg.html",
+      "script_index": 2,
+      "main_sha256": "28ebf4d4a286f2f9b8ca0c87447ee2bc834d932cfc01e71746b19e09f161c812",
+      "current_sha256": "c8b3a9fb344afe6bdcccd24739e64d78ff85af4b67f75a9d9e152a7bbf512d82",
+      "main_bytes": 30146,
+      "current_bytes": 30106,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-aesthetics.html",
+      "script_index": 2,
+      "main_sha256": "1eed1e3059fcc887fead3ea76308d734fa9032f69f4d6dcbe07fdf4476e9d51d",
+      "current_sha256": "6b22ec0901d1f5d71d82ba94b2c31458eb19bc8a1997253a1292605d3c772728",
+      "main_bytes": 31609,
+      "current_bytes": 31569,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-ai.html",
+      "script_index": 2,
+      "main_sha256": "805fbc751ad6d371acdfc48e1a7ea8dd38396a5281463f93ec1e57fc6d74ae10",
+      "current_sha256": "8f387a1e1a1e24737626d7c9604c2bd5080a309462a47ebd932aa6905862d660",
+      "main_bytes": 31113,
+      "current_bytes": 31073,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-aidc.html",
+      "script_index": 2,
+      "main_sha256": "bdbc510710eb04fa55515c48260fe7f020a10c5f15cc0e8686074e00ae91f26d",
+      "current_sha256": "65e3ecb98f50967103c7096170bc7137e17c3eee6115e35c27a18b03a82935d5",
+      "main_bytes": 91030,
+      "current_bytes": 90990,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-appliances.html",
+      "script_index": 2,
+      "main_sha256": "6ae349b4330aeb0decd1c6b2b940c9575da56b8d31ee5ef30d76e482763d6a89",
+      "current_sha256": "26cafcef9a4d754aa6139c6c387ae040f9efa5d9b4f504453426cc22baed54bf",
+      "main_bytes": 22657,
+      "current_bytes": 22617,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-auto-elec.html",
+      "script_index": 2,
+      "main_sha256": "21ce195031793ade542504e3b39076ef299c48d90b2a1c82ed179bb5a3ae6cc8",
+      "current_sha256": "819a06044ea28e3b18e96154952428e506b337400058819dc88e195415a57bf4",
+      "main_bytes": 34677,
+      "current_bytes": 34637,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-autonomous.html",
+      "script_index": 2,
+      "main_sha256": "d3a61e889e3a021d70fb2e73022ac03367291b43c01f3f881e02132acd5d9161",
+      "current_sha256": "bc4d6d029592b311c4d36401f3aad83489e9756e3081b02bbfae5a5e8a36dd22",
+      "main_bytes": 30629,
+      "current_bytes": 30589,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-baijiu.html",
+      "script_index": 2,
+      "main_sha256": "7d4f949f643ac65415f8b0c28648521a6a306eb24ae5601f8f62f4f8ece3e53d",
+      "current_sha256": "287c2e7412cf6aac677dda0bb36ecb3827ff8f6c32318b1b18d06e934d2b782c",
+      "main_bytes": 20687,
+      "current_bytes": 20647,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-bci.html",
+      "script_index": 2,
+      "main_sha256": "8fb7b7b4231c457bdfc898bc7aa1f98b128394550a7f0ce1b1f4ae761aaefe60",
+      "current_sha256": "b4ee9a499e14935692ba3e287671e4d96a668db356a146228dbebd6d91147106",
+      "main_bytes": 35406,
+      "current_bytes": 35366,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-charging.html",
+      "script_index": 2,
+      "main_sha256": "395067e3b8ad6698576adc3ea86453af34a6ed230baefc16ff11443336fe3232",
+      "current_sha256": "a970ac4748214c3fcf1e065301109af817965bdc59dea5c47a1fd50869074b6f",
+      "main_bytes": 75324,
+      "current_bytes": 75284,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-coal.html",
+      "script_index": 2,
+      "main_sha256": "70d48fc5129d23a7e28efb9704d4b0a65aaa72156577b3728f8197fabe34962e",
+      "current_sha256": "b52f05c0327e3fa6a712935ace2cc81308d5755d8ead1c6cec6983e1b896f4cc",
+      "main_bytes": 21481,
+      "current_bytes": 21441,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-consumer-elec.html",
+      "script_index": 2,
+      "main_sha256": "1aaf8d71b64cb3a34ab9c3dfb144dc64296269ebff774304f822d10ecd4ced48",
+      "current_sha256": "f403dd13fe852f40b6bef3e4945c80cb8b963ab1f730dd32c3efa077e58b57cc",
+      "main_bytes": 31969,
+      "current_bytes": 31929,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-cpo.html",
+      "script_index": 2,
+      "main_sha256": "6d8d0576f9edd9526ea67781d250b5464fa44636a2be4430a413618e964dcb0d",
+      "current_sha256": "f890596027d53822591722c764c2b6992ba348701096ec6a889979b0b2c72824",
+      "main_bytes": 85050,
+      "current_bytes": 85010,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-cross-border.html",
+      "script_index": 2,
+      "main_sha256": "924fadd91ff4fd8971513c29df8aae41efaa5ea868b3449cd7f28c9c3d1cf2ff",
+      "current_sha256": "dbb0055818b11713498d0005570c9ca9f120a0b313b72816cd9e950c26682cb0",
+      "main_bytes": 47755,
+      "current_bytes": 47715,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-defense.html",
+      "script_index": 2,
+      "main_sha256": "97eb2c361f23f114c1a284eefce1c51ea104273894685f1cc8fb2821fc0d3eec",
+      "current_sha256": "35ab663495762e43daf143bf6bf99d639dd600752e4f863e62b6173c0263abed",
+      "main_bytes": 51334,
+      "current_bytes": 51294,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-die-cast.html",
+      "script_index": 2,
+      "main_sha256": "66c4904c47a5eac028b6f7720667ff711c57093d9c74693948235e11b98bf939",
+      "current_sha256": "54931c4b510f8dcc9cd688ca6274f4ce4b64560a3a7f7ea0077b1f3682e8b69b",
+      "main_bytes": 35458,
+      "current_bytes": 35418,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-digital-curr.html",
+      "script_index": 2,
+      "main_sha256": "1a53f79b069963229090c7cab49f9df70d901132dd765d90e5c5b56419ffd7db",
+      "current_sha256": "ee95fac7ab3e32d2a4b37bc1aded1a2ed8794698e4f174e7f25f9a9c1642acb2",
+      "main_bytes": 41675,
+      "current_bytes": 41635,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-fintech.html",
+      "script_index": 2,
+      "main_sha256": "210750673ad9ca8674246a0efc6b0213c5e4d2144dc76899190fe5e09e4ef172",
+      "current_sha256": "90303fa02fc0875f8bbf481dbe05cf2d4f119b772781b76357b38ae111f399e5",
+      "main_bytes": 40724,
+      "current_bytes": 40684,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-fusion.html",
+      "script_index": 2,
+      "main_sha256": "5e147cc17742321234063fd64a491d80b0a1db68592a0436737cb59f4c889e3b",
+      "current_sha256": "a8128ff29f722310a2fbe8077f8990cad10dab0dc1b7b1ccfaff19dd19be65e0",
+      "main_bytes": 41221,
+      "current_bytes": 41181,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-gold.html",
+      "script_index": 2,
+      "main_sha256": "3aa63281645b17bae5a25134ceddb2b62985f090c3816966d5e34c6f9515dc30",
+      "current_sha256": "deca539a8cede422de2be30e51804d33b3678334a4cd2d70262db432c671b2dd",
+      "main_bytes": 31948,
+      "current_bytes": 31908,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-humanoid.html",
+      "script_index": 2,
+      "main_sha256": "fb1e33dab20059944fabc49b609da385a2e8edfc1226eab218d274bb33905bb4",
+      "current_sha256": "5f16bfab72fe462c6cd534114c818b3e2444b657b09d8e818008062df2855885",
+      "main_bytes": 77800,
+      "current_bytes": 77760,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-hydrogen.html",
+      "script_index": 2,
+      "main_sha256": "4d0be7477fccde14cb2848cdc7d138c0972f323fee66403c3429fb87241781dc",
+      "current_sha256": "bfe5dacb18bf3fb4ac6247523d399d1db819cf9b4dd10adf185310faa31cad6e",
+      "main_bytes": 52083,
+      "current_bytes": 52043,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-innovative-rx.html",
+      "script_index": 2,
+      "main_sha256": "312f1c9292f8bd0aa2e58c0afe3179ff9e090c9fc8f08a17dafbeef4123a32d8",
+      "current_sha256": "109bdbb91f3997c4d66f484c6153221f2dc3b8eb66c6eb2e03e9669bade3fad2",
+      "main_bytes": 17908,
+      "current_bytes": 17868,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-liquid-cool.html",
+      "script_index": 2,
+      "main_sha256": "7cf971131919e6f51a27c18c84ae21db140a6326208706c264368b661672fa1c",
+      "current_sha256": "27e89adefbaece8e16e1a45f09069c6ec0ad580230b706181d47957a8683cca1",
+      "main_bytes": 56591,
+      "current_bytes": 56551,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-litho.html",
+      "script_index": 2,
+      "main_sha256": "d228fce66f694b59fbd6d4a9f0e15c4b6e0c3017bf848eb906a9d5e7d6bb60fc",
+      "current_sha256": "a51981b5f94869bdfb66372128ba17d5e7a3f5aead7ca02df43565c30ed3898f",
+      "main_bytes": 30493,
+      "current_bytes": 30453,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-low-altitude.html",
+      "script_index": 2,
+      "main_sha256": "35f15d2012972d8d080eb0b516b352a0de0ad6e93549571e117a4bffbb856cd7",
+      "current_sha256": "8f5bfb86c1d302875ead762082f97af603b24cb891f4bae6483edb9d453bdb7b",
+      "main_bytes": 70904,
+      "current_bytes": 70864,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-machine-tool.html",
+      "script_index": 2,
+      "main_sha256": "61ce46a9d15eb34afdb63cc5ece482faa4cb80578fb854da3ceb10742cfd07dd",
+      "current_sha256": "ff72232c44473a1b958b0167a48d79d7e0698e1c6a8aa2d0d04e18e7edd1155b",
+      "main_bytes": 34895,
+      "current_bytes": 34855,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-med-devices.html",
+      "script_index": 2,
+      "main_sha256": "9f2d71d5e935f5a78a9e1d59f4b6ffe7d1eab0c4e775231d5c27078d6c3bf1e9",
+      "current_sha256": "10b5a0d24c6a18ff2ee0b6b6284f9173feb47c9e7da5e55bfd0bef7974eb799a",
+      "main_bytes": 43657,
+      "current_bytes": 43617,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-nev.html",
+      "script_index": 2,
+      "main_sha256": "8b37c6d87894a272416882c2918e16b6a35a1231c130933660a45ef5a6828348",
+      "current_sha256": "845d77c5105257e83d838c72a8fd6a21aa915446a8b9b4f603f0f3b0a845a829",
+      "main_bytes": 69732,
+      "current_bytes": 69692,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-nuclear.html",
+      "script_index": 2,
+      "main_sha256": "b94109139322af69244f2f54eb49862b694cbc2fcde0c5db906b30614fbe48bf",
+      "current_sha256": "f88a42dd398da821b6f12f7f54c8d40ba3afd3ae02bcf6b1a82e509d7d42985c",
+      "main_bytes": 24268,
+      "current_bytes": 24228,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-pcb.html",
+      "script_index": 2,
+      "main_sha256": "1ce6091ca71a44996b338dcc0d12344771a35ccf4cc6f442f8f4f808d315012a",
+      "current_sha256": "79744f2d029da92a24755ecb4059be4859b10b3e89214d5b4c47bbd8371f89df",
+      "main_bytes": 39783,
+      "current_bytes": 39743,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-prepared-food.html",
+      "script_index": 2,
+      "main_sha256": "7a51c7881d7326aedb0facd611d706240be3016f2ee7e233a32ce45e8647485e",
+      "current_sha256": "e9ada1d8e87eaba5b55ba98a17a508d76278f8ec4d630e66a4d9df16464b2a56",
+      "main_bytes": 16223,
+      "current_bytes": 16183,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-quantum.html",
+      "script_index": 2,
+      "main_sha256": "e49b9ee8036312cea07fb2712f998f96ae5a9adcecdabda087df0f4477bacbd8",
+      "current_sha256": "2ef95f49e3bda0c69be83bb408caf86ea5ed73d26fc121236a61d4d2b212a9fa",
+      "main_bytes": 50600,
+      "current_bytes": 50560,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-rare-earth.html",
+      "script_index": 2,
+      "main_sha256": "b68bf404de1a92decb2b98e4c1289f10862ca7fe8d29f5447287da15c9e03e1e",
+      "current_sha256": "7e572255d075643bfe21e89008509939a9c82a0c35875902a97d1ac9c8e5bdce",
+      "main_bytes": 26596,
+      "current_bytes": 26556,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-robotics.html",
+      "script_index": 2,
+      "main_sha256": "c7ed341b4f738f4b5bc3ae94dc6b7956cbf1171a7170ea63cb8fe69a034a6b2c",
+      "current_sha256": "2da85beaace63f14cd30a21e1dd89ade362dd80663db70bbeeb1a4f7389b960e",
+      "main_bytes": 50711,
+      "current_bytes": 50671,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-satnav.html",
+      "script_index": 2,
+      "main_sha256": "e1e4310c8d343996325872ff954f5a8ee3903358e072bd9ae8d60798673a6cc7",
+      "current_sha256": "865a7638f46914a195acb1edf8ea8af648b7551a96995d116bfe03dd1f1efb23",
+      "main_bytes": 44001,
+      "current_bytes": 43961,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-sic.html",
+      "script_index": 2,
+      "main_sha256": "058400565a9d35d032c9f5e0c7d0cc673d0fae1295573be91e3884032be07167",
+      "current_sha256": "10adbb9d318cc85ab515883a08954d80d23042bbddc89de3fba1d56d76200325",
+      "main_bytes": 56499,
+      "current_bytes": 56459,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-solar.html",
+      "script_index": 2,
+      "main_sha256": "f40ebcf95545ffc5ef0fcca0397042220f69563061ee6d8148d98e3fada76f53",
+      "current_sha256": "e6284c56b7d5a5acd4db4e729f6a357d4f5a420e48c4e9d42e44c14f979768b6",
+      "main_bytes": 32742,
+      "current_bytes": 32702,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-solid-state.html",
+      "script_index": 2,
+      "main_sha256": "d3de786bcbb162e4c61085f6043859c3c3ca8cd85be43419a80bf2fa704517b2",
+      "current_sha256": "4fadb2b19e07e4f1c95f967eacd99da3c9d22e7cb5e2c8a9e82859a2eeb863db",
+      "main_bytes": 42678,
+      "current_bytes": 42638,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-space.html",
+      "script_index": 2,
+      "main_sha256": "23132805580b68142b97cba076c44851374fa3f4315fcd55f8123d18ff3246fc",
+      "current_sha256": "497e022bdf868d5eac4e0446235bf796df232c2ef4eb4c0aa3fb1854b6667962",
+      "main_bytes": 55284,
+      "current_bytes": 55244,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-storage-chip.html",
+      "script_index": 2,
+      "main_sha256": "c2d5848156054e4ea649664de04e8db73b184c951ddb1ca8334e57bb4491498a",
+      "current_sha256": "5cb2b8ed0ad1b189c556c0354efdda9cb3437aa196351578e6af42fc3c2723c2",
+      "main_bytes": 42587,
+      "current_bytes": 42547,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-storage-ess.html",
+      "script_index": 2,
+      "main_sha256": "657375aea523b0e65bee032aa5c0735ead3f3d225f70a95e0c0c7ca3fe6483bb",
+      "current_sha256": "50ee36954cbd10d39d7b113a3ec698442c5f5e1a48a242e0072d7c14e8a6cb83",
+      "main_bytes": 60150,
+      "current_bytes": 60110,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-synbio.html",
+      "script_index": 2,
+      "main_sha256": "393b2559e7bbe81f4544e8abf32cc3bc861c638dc27df3ec47ab825f0a68c6ae",
+      "current_sha256": "55ba8fbc7efd15d37276d859751cd76a1790445409d761e47f70d6a358e9825e",
+      "main_bytes": 18277,
+      "current_bytes": 18237,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-uhv.html",
+      "script_index": 2,
+      "main_sha256": "0d61ed3ebe1e30cdc551d2274fff4920ad77cc4ac5ceda05dcd5ab3151480163",
+      "current_sha256": "72122d93b950693463f285ee642e36b7eea1a039d3d128e950971515651a0c45",
+      "main_bytes": 34819,
+      "current_bytes": 34779,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-vpp.html",
+      "script_index": 2,
+      "main_sha256": "37f4d662754699f35ca4235d07e9cab5e474928ac9aca79be1efa556dc456c12",
+      "current_sha256": "61c6f70137f5ba7a06ff0d171582da99270b32f0d12da1d2c3fe6fd395f66da0",
+      "main_bytes": 41734,
+      "current_bytes": 41694,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-wind.html",
+      "script_index": 2,
+      "main_sha256": "c0fb6303b79f777dd487b48cca0484b72fcbe7cba21642e6cd68d2be4a8319e2",
+      "current_sha256": "0fbf2627cec5dae60f107b626429fa73a461938eed7546064ded854fa8522e31",
+      "main_bytes": 40158,
+      "current_bytes": 40118,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/ths-xinchuang.html",
+      "script_index": 2,
+      "main_sha256": "5108f7f3a26fc3d049e8d0840877ce2539eff04c7901953eae8a78270307243c",
+      "current_sha256": "3ecd10f705469df46afd2a391f0a5b950e2b91e9269c3b1e1b2c729723d3b957",
+      "main_bytes": 49515,
+      "current_bytes": 49475,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300019.html",
+      "script_index": 2,
+      "main_sha256": "21b7f0a7bb29cb35a17273749d19113d718188b010b1d8397d1bebf5825f2175",
+      "current_sha256": "4a01185cbaba61ff813380ebc3b8bd15634621b6c45f5956721b0adb99bc39bf",
+      "main_bytes": 29679,
+      "current_bytes": 29639,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300037.html",
+      "script_index": 2,
+      "main_sha256": "6a0f94ea8c7ba23f6886c46b8629ef81de2fd422b8fe052238e3be487cbb2d3a",
+      "current_sha256": "c6500434f1712242d7c1f9ab56bce5f33a3b37da67b8bb1e16dd7a6e6c8e991d",
+      "main_bytes": 42264,
+      "current_bytes": 42224,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300084.html",
+      "script_index": 2,
+      "main_sha256": "8ae4dd6a41a40b5576bc5f1725c1856cf2368b3f9d1ec646e4318b6c654debc9",
+      "current_sha256": "91dd5d8fe979a0e7fb68d738027a3cdbe6a3cdcfe959f12bb4a96d38618b267d",
+      "main_bytes": 32344,
+      "current_bytes": 32304,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300085.html",
+      "script_index": 2,
+      "main_sha256": "23df409f3cffb66c1fdd3a8909592ae543141de1759d131150a1624bc55ca982",
+      "current_sha256": "0b3e82fd7fd6b2b8c3bc637794cc004c2bb0b3929e05b93a815567fad94d67d3",
+      "main_bytes": 36255,
+      "current_bytes": 36215,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300087.html",
+      "script_index": 2,
+      "main_sha256": "56591adbe23ef8898e2b095dd61c0aae9eb7db90a06da9195e741f51d95dc418",
+      "current_sha256": "de7df160efcb9a3cd989ebdd48b6877e5c6b9df0243d75a4c74455bec6a42b9a",
+      "main_bytes": 20537,
+      "current_bytes": 20497,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300098.html",
+      "script_index": 2,
+      "main_sha256": "680c2909830ace5a497b77b35496ebf1dd4d72c4f58adfadb7e1e425606e4e59",
+      "current_sha256": "ad936301ae93d996545442e5c5f140115dada997e81414e2b07786b88fcc2dba",
+      "main_bytes": 22819,
+      "current_bytes": 22779,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300105.html",
+      "script_index": 2,
+      "main_sha256": "abfd1991819f7715c645af9003007f8be43502fc1d509c930ee9b08a80dce646",
+      "current_sha256": "51ff2ec5f0fcdc0bdd37049cb28c1c5ba568cb4eb81a2258b25b43439f9b2cdb",
+      "main_bytes": 46770,
+      "current_bytes": 46730,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300106.html",
+      "script_index": 2,
+      "main_sha256": "b74f28b8ba2e011022421269d47d3c0ddf7436e77a495db8761ec7f754db01f3",
+      "current_sha256": "25a0c6fdfd178033ff8cd829c7353e587ee1db1e3548e68c10ac3a9a5d868833",
+      "main_bytes": 25363,
+      "current_bytes": 25323,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300127.html",
+      "script_index": 2,
+      "main_sha256": "49503e8925a8724ec0913f362342b08694a46081e1b19c7d04c4714ad4c47bb7",
+      "current_sha256": "4ff84d7b7a2e9e01791f0cf1798516e145e66f1dc0e4bad23e440e26e581c44e",
+      "main_bytes": 48402,
+      "current_bytes": 48362,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300168.html",
+      "script_index": 2,
+      "main_sha256": "2384511a702da588dc24e3c82a30eab91af44e1e35dc9557377b0b9d4373771f",
+      "current_sha256": "fab6cd3060bd2dfb360e834e4dff1d9902c9d060a46a3077e2ccb58af0f4b072",
+      "main_bytes": 49313,
+      "current_bytes": 49273,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300180.html",
+      "script_index": 2,
+      "main_sha256": "f1e2eb52fdf7381dc3aee678efc14246208a073ce95a1e8724f7cbb69c240b43",
+      "current_sha256": "8f89ec96f3f7b90213b476e80fd23f18c95a5f8a6efea79a902cc749c025257a",
+      "main_bytes": 30698,
+      "current_bytes": 30658,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300188.html",
+      "script_index": 2,
+      "main_sha256": "81ddb7e0968aceaf1f4cafd275b3e181359617d53dccc10c7c4065a735e3289e",
+      "current_sha256": "beb7ca8aa16eb5c70539e4a83c8694253e68701b5528f7009ea2a74432a0e746",
+      "main_bytes": 53871,
+      "current_bytes": 53831,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300220.html",
+      "script_index": 2,
+      "main_sha256": "b0c98798bf3689d29b1884aaf093b12e7a41cb0dfd7f1c471a4707cb31f1c0bc",
+      "current_sha256": "77ceb3bb137bf4c813eab822a1309cafea9a0d666c81c0dfd34b924b6d2d70f5",
+      "main_bytes": 22000,
+      "current_bytes": 21960,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300223.html",
+      "script_index": 2,
+      "main_sha256": "9d0728cdb60f7aa9f18a738a5694a9c7728e454cdeb39a7c35b5029990f676e2",
+      "current_sha256": "2ec9fe76b172919fd9fc2be2dd22b8476732037716104572e705d6448f745876",
+      "main_bytes": 17033,
+      "current_bytes": 16993,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300236.html",
+      "script_index": 2,
+      "main_sha256": "39f42b80fea33b07c879c8c760e4a3a631d0fb22acadebb8943778893f2f9d8b",
+      "current_sha256": "d4e2de22de633dbd139eca19030ad118b0106f7da7517ff547a285e102e7180f",
+      "main_bytes": 29156,
+      "current_bytes": 29116,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300309.html",
+      "script_index": 2,
+      "main_sha256": "a93d18f77aab648150e95d91bb87ba349d1386678c949f8ffb24ebac1f515e0c",
+      "current_sha256": "9f00bbd507d32555d9995fa4cef9ab341e856463f0d97c2501d8e6c7fc6b5d87",
+      "main_bytes": 71034,
+      "current_bytes": 70994,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300345.html",
+      "script_index": 2,
+      "main_sha256": "f85b67af85ead656f857b33f024aa33a322efca41f0022266b36eaad350b9870",
+      "current_sha256": "302be9b47b28dce50a04835cfe265a6fafcaec293dad681148109a3b12c74e39",
+      "main_bytes": 41069,
+      "current_bytes": 41029,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300352.html",
+      "script_index": 2,
+      "main_sha256": "0e586ae7c52b51be96a31467d094f774f837700c5a24375da1e10223c63ae204",
+      "current_sha256": "7e32e6604c0b94e5b056df7919fcef6d1a3a43c6bdb45e63a06cc018324dfa3c",
+      "main_bytes": 32353,
+      "current_bytes": 32313,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300358.html",
+      "script_index": 2,
+      "main_sha256": "b53325871d7552e2d8bfa1593bdb20c2d205ed52969a99bc3c0854f20c24b160",
+      "current_sha256": "d51cc5530449ad6e796d75c19505763b787c936a3b984e348dfb2d6fdf4133d8",
+      "main_bytes": 28951,
+      "current_bytes": 28911,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300378.html",
+      "script_index": 2,
+      "main_sha256": "e4531ef4d637d73814e96714f170a3485568b5da04f6eacaf0d4fdb051d76468",
+      "current_sha256": "7b701954e420c81bce6e56ba6ced3edd510fa63915be9af78e2f1ad24bbe4eae",
+      "main_bytes": 78667,
+      "current_bytes": 78627,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300386.html",
+      "script_index": 2,
+      "main_sha256": "716f156bf78f941ed83a01c80ae27dd884d841553c949ce69d7b6ba70adfc41a",
+      "current_sha256": "5e7af3acdb3fd0367d701accf664d8e7536aeb6e5fb1bc67ff058d63915f5602",
+      "main_bytes": 24709,
+      "current_bytes": 24669,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300402.html",
+      "script_index": 2,
+      "main_sha256": "82f8aef52110f7feb60267dde320c7d828366dd6edc61abce7087be773da0b67",
+      "current_sha256": "4884396228553cee6b41477f335b4adfa8f87419c45dde3bb33666046f80a43c",
+      "main_bytes": 27053,
+      "current_bytes": 27013,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300419.html",
+      "script_index": 2,
+      "main_sha256": "720bd5398ce693aad3d4993f4b2ef73ace0c3d1c7a8bab3817809eb4cfb9dcc2",
+      "current_sha256": "3d72169dd3dbbb857363a90ded3633d05980f4e1c6845e8d5ab2385825f42880",
+      "main_bytes": 48778,
+      "current_bytes": 48738,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300451.html",
+      "script_index": 2,
+      "main_sha256": "981c02dd0f90d9022f98c3bf51002cd329f30c4754fc605828c5530fe8076f4b",
+      "current_sha256": "7258fafd1ad4526195d613be0ca726256ce76ac9c57a72a27315470f5e22d05b",
+      "main_bytes": 21406,
+      "current_bytes": 21366,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300642.html",
+      "script_index": 2,
+      "main_sha256": "b98ad5f30e2a7875a7c020765e114e32654cf7357ef5fe0c1c4a3f32da5d74dc",
+      "current_sha256": "3377b74592066151f3416159da64c89371660e987f969afbc8ec43199271f7c6",
+      "main_bytes": 73803,
+      "current_bytes": 73763,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300682.html",
+      "script_index": 2,
+      "main_sha256": "e268ce0bdd0a4940d2a6bc6a82a1592ee756f1c274fec54a7eb5a9c57ace0f60",
+      "current_sha256": "d6a5834c999ef82d52192343aa5cf564fbd32054673f89cf5d59444fbe3da57a",
+      "main_bytes": 74145,
+      "current_bytes": 74105,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300704.html",
+      "script_index": 2,
+      "main_sha256": "ac3a57174ce1ec270404eff17d7cb5777af2482125f1c1a2db982a37bf2d2aa7",
+      "current_sha256": "37d51340ab1150d2918fb41215174502adb8ab8033e8084dfc7afc7ae78d9826",
+      "main_bytes": 35058,
+      "current_bytes": 35018,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300723.html",
+      "script_index": 2,
+      "main_sha256": "7202389238abc5f356fdd6a94843a452acf05b40887e7480b0dca1b7e15632ca",
+      "current_sha256": "0ca0c87532b66f604ae0f187508704974348a6e030ba557a24c4e0524197c939",
+      "main_bytes": 36402,
+      "current_bytes": 36362,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300756.html",
+      "script_index": 2,
+      "main_sha256": "4d13051fc9a45184b38e440fcd833ccadf5d57435c4b5eac523de5cba60a02ab",
+      "current_sha256": "fd34c51505e4ee65231dc134a267b3a24090438a71a457e84d5b40f3d32408ff",
+      "main_bytes": 68889,
+      "current_bytes": 68849,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300795.html",
+      "script_index": 2,
+      "main_sha256": "24e19a49e915060462f4461f13fa10a0d5b4c6f7030981d9e2e13ef8ed2be142",
+      "current_sha256": "a1dd32a75f8434ef53e8fda7219e7cda904db967abe4ddc1482eef78153beb20",
+      "main_bytes": 28304,
+      "current_bytes": 28264,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300800.html",
+      "script_index": 2,
+      "main_sha256": "614a5977d99f2411a4e39542115f63bb9357c77eed7baf39c41b325c0773049e",
+      "current_sha256": "f9993a11c17736e1ee9b0a44a24ebdb8e5851f50d325a8b2b016be7e59d90096",
+      "main_bytes": 34393,
+      "current_bytes": 34353,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300806.html",
+      "script_index": 2,
+      "main_sha256": "2560a424715ef1cea127f6a5ea1d786252a5eee4831928cabc0a4ab88ded7043",
+      "current_sha256": "490092c3e470b8ba789c00bae86b7012d4a23de7b52e4b90e310a0c5db13071b",
+      "main_bytes": 31572,
+      "current_bytes": 31532,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300809.html",
+      "script_index": 2,
+      "main_sha256": "15a702897c69a594f511f25e812da5486c62ffbc5516251bb44d391d856ed784",
+      "current_sha256": "11932cb497d26488b1dc0d7e8475e07e243c0023df2033807348a2bb1280da50",
+      "main_bytes": 35679,
+      "current_bytes": 35639,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300836.html",
+      "script_index": 2,
+      "main_sha256": "8235204b2242d109d6301d9b61cc2940602afdbb359ebdf17b753a4ae9282a8e",
+      "current_sha256": "d0d0b4ea5d557d2088596bb19e62384926d9d8b1de296bbe5e250ac9b06bdb1b",
+      "main_bytes": 52781,
+      "current_bytes": 52741,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300843.html",
+      "script_index": 2,
+      "main_sha256": "a5ac6c77e5bcb1312e560d9f742c78cd0ff7c8bb4f5035ce77790883088089e9",
+      "current_sha256": "7c1d41ac17457a710328e3c1d2b35da8d04a295bd3dc9d0d93365fcb64c0ac35",
+      "main_bytes": 48528,
+      "current_bytes": 48488,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300845.html",
+      "script_index": 2,
+      "main_sha256": "411bcbc49f081ee28b735aab2572d77686234572f4b5f01d2212f08b43e4a32b",
+      "current_sha256": "5f7afce117c4798cdb768b02de38cdc0d5c9fa2745581237fc975ba21dc83f97",
+      "main_bytes": 18569,
+      "current_bytes": 18529,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300858.html",
+      "script_index": 2,
+      "main_sha256": "ea7186da2281e207dd09af9a54199898e7c79227394059cdb9b0bafd6c823921",
+      "current_sha256": "5cfa9b04f6b0fcb0e6dcb0b0e133f72f6966f71d625427d5934a2123684b94b3",
+      "main_bytes": 19780,
+      "current_bytes": 19740,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300889.html",
+      "script_index": 2,
+      "main_sha256": "6dad04d9f675de1acd063bf28b5bd90a2eef5a8f288feb41b80c08bb2fed20a8",
+      "current_sha256": "1a3a8b47f48e0ca7482d0d668fd0050a1df6dd895ed189d11cb69da6896ba000",
+      "main_bytes": 60522,
+      "current_bytes": 60482,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300890.html",
+      "script_index": 2,
+      "main_sha256": "a9c929adcfb9ac18f0d111263a7349e6d776d2e38a757236837aac3bc45406ad",
+      "current_sha256": "675a4e9b6da1ee5f7f9b6ebdf305f43520d52b353de160bb5400c6cf86969984",
+      "main_bytes": 40836,
+      "current_bytes": 40796,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300917.html",
+      "script_index": 2,
+      "main_sha256": "0fc8d3e6d89ddb271402d3e8505fa9ca291aceabfb5243aa8ba92a8adabafd23",
+      "current_sha256": "1d7a6eeaa8ba3e4874fd976d4bba994e05ecc9efafe69f6ec4e44af5f7a60955",
+      "main_bytes": 39099,
+      "current_bytes": 39059,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300920.html",
+      "script_index": 2,
+      "main_sha256": "b6006dde353d09f7fd8b500ac5b2f5e7a7a3427e698dcb27e403fee31968f481",
+      "current_sha256": "bb819690632d5bd6dfc5b82746979f7cea2386c7343ae6929a941592eef9e36b",
+      "main_bytes": 55277,
+      "current_bytes": 55237,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300926.html",
+      "script_index": 2,
+      "main_sha256": "0a4a834e1776790e2159a4b12327b991a4d0f33397d34c76d9aa5c7772b5105b",
+      "current_sha256": "71e41ebe7f5397b2822d829ef6200fa8a846d8a8e69e87c810744133680c1400",
+      "main_bytes": 29004,
+      "current_bytes": 28964,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300931.html",
+      "script_index": 2,
+      "main_sha256": "17d9f906d698eb6f21ddd0cd1bee7ff2fb22f4d497b4716ca3ea253cf90e82b0",
+      "current_sha256": "bc0dcb8576b63c7fa2ed76513e2fb3c1a59e08e5c25fc3bd7ccd4a482ec6f8da",
+      "main_bytes": 30941,
+      "current_bytes": 30901,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300973.html",
+      "script_index": 2,
+      "main_sha256": "14dc15a57d4519f973b8e544d66c60699dac7f1700d675163d04c73f7e253d9d",
+      "current_sha256": "1849a74006ba3e4a56393593df6776d94c180188cb6b30fe2b4a80e69c0e2218",
+      "main_bytes": 21396,
+      "current_bytes": 21356,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc300983.html",
+      "script_index": 2,
+      "main_sha256": "9a59860bea9864c26230116eebaf428bc6eab6cf4ee0e8b0f59f759cc20ac00a",
+      "current_sha256": "195ba4aefb3a3653bca73e79d3243912e1cfcca2176e455d60dc844aa2668a8f",
+      "main_bytes": 18371,
+      "current_bytes": 18331,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301016.html",
+      "script_index": 2,
+      "main_sha256": "5fdbd38c4c41a13992b90d3c1931bdcd85f8f58d71e4486f44f0e9fb2ced1a6c",
+      "current_sha256": "843f985fc9dc837d02966107d9e157a3714ccabbe061bce18ed5bf2b1e8e4082",
+      "main_bytes": 72730,
+      "current_bytes": 72690,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301050.html",
+      "script_index": 2,
+      "main_sha256": "1ce0af559b291e49cbbcf4e4c248b5cc5b0565aec8a7d7b148fcac5e330445c5",
+      "current_sha256": "6908227143f0af1a67878b8eca81e5ae33639377a864c9446b6f9421f38fcc52",
+      "main_bytes": 29683,
+      "current_bytes": 29643,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301085.html",
+      "script_index": 2,
+      "main_sha256": "33ed9ed3121c33d6188999aa6f5e10ea3371d1a4c3471a7df6856f96d95daebb",
+      "current_sha256": "43531dcda9727d3d6ee27c524572775d6a532c21db92bdc446aec59fbd4e414a",
+      "main_bytes": 53447,
+      "current_bytes": 53407,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301096.html",
+      "script_index": 2,
+      "main_sha256": "a9a10404c29b59479410018118da67c76b303924f9394cc589866d88b2c3fd15",
+      "current_sha256": "0a3486ce0faafaf59371ec28b09f77a1f9bf237efa9cb58b002187a72717759a",
+      "main_bytes": 37687,
+      "current_bytes": 37647,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301104.html",
+      "script_index": 2,
+      "main_sha256": "07046c7a6a03d300d0a487b613c5467e35b977ba76ce7881cc5b16fc11203107",
+      "current_sha256": "bded674aab6a3e38c321d8af70db33d6b75d49a52229f18d97a6ae78f04da2f2",
+      "main_bytes": 21494,
+      "current_bytes": 21454,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301117.html",
+      "script_index": 2,
+      "main_sha256": "9e55db594679835e8adc46ddb91efdf98ab33bc1e78e27a2fdacaa76d541d9b9",
+      "current_sha256": "ff83e1a916b22a368269a46b74ee8a917ace387472ecd8e73b4387b6e772aa4a",
+      "main_bytes": 22941,
+      "current_bytes": 22901,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301121.html",
+      "script_index": 2,
+      "main_sha256": "8a2aabf831481ed2b857fae2b63da93fffea28ea1e31b21e389b704901bc124c",
+      "current_sha256": "31efca89c9adc8c70d31441f8d045abb891e3cefc4e4b07096243e7b83e4ae98",
+      "main_bytes": 57853,
+      "current_bytes": 57813,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301146.html",
+      "script_index": 2,
+      "main_sha256": "c489068ae3eb3d2eed708f6f6056fd949a1972f923341c33a307577f033d44f5",
+      "current_sha256": "f8a64402b6200556a7854b90a0ed3ea210a541567bd019ed1dd42e89e6d9361c",
+      "main_bytes": 24797,
+      "current_bytes": 24757,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301154.html",
+      "script_index": 2,
+      "main_sha256": "16bc4f4051ff6adfa3533b774a6922708481893302cb7fe559160124a3994d4d",
+      "current_sha256": "9c30bf90fa1d2a6339f5fbc2848107c7f7448923c1496ffc3e44f5b29c544650",
+      "main_bytes": 28816,
+      "current_bytes": 28776,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301166.html",
+      "script_index": 2,
+      "main_sha256": "f758f09885fdda34edde16f2e5d9561dffee30fd94cbfb76977610f721f1097c",
+      "current_sha256": "bb8d050150d9177eb2b6ce20893864fe42ec72112f4e893967741d4673ade7a1",
+      "main_bytes": 43770,
+      "current_bytes": 43730,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301171.html",
+      "script_index": 2,
+      "main_sha256": "9837083c6423600591f05d8a7bb4f04356bf6b3133ac12aed911ea6e9819c80d",
+      "current_sha256": "a270da4d66dc21d1e1205d9b799fe3ac973e88ac82b6a157489c49972e249ab2",
+      "main_bytes": 19166,
+      "current_bytes": 19126,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301174.html",
+      "script_index": 2,
+      "main_sha256": "f67f83091243ad9a9881194a0850eb97973ae78965a3ff88d1ad6f93be0b8ef6",
+      "current_sha256": "379c5f5ad0ea4ee029cddc104f1dc9e90d7fdc515189b25176bba775f7e2a730",
+      "main_bytes": 28027,
+      "current_bytes": 27987,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301175.html",
+      "script_index": 2,
+      "main_sha256": "13df55edf22ecb0ef27dcd0100dec816ba291d8bcafd187158e43d3a0d6c5b25",
+      "current_sha256": "fad0bb1bdee1149cb7637681da1d842ad6acac4fe539dffc63111e3427fefb4f",
+      "main_bytes": 43890,
+      "current_bytes": 43850,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301179.html",
+      "script_index": 2,
+      "main_sha256": "bb1756c6a6ee84ee4fc5fc55fa3a6ddee87841a93cf72dbcfc9347f84dce4c17",
+      "current_sha256": "714bb6012bde3bd26d01526f077c10bed529a32cba6bfb23cefa700190b64cdd",
+      "main_bytes": 26781,
+      "current_bytes": 26741,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301227.html",
+      "script_index": 2,
+      "main_sha256": "73b29501f434901abed01684594b145021dd50306846b83ed8d1e8fddd64e54d",
+      "current_sha256": "5edf5849e74c24d3d5c3f11f71ef838ce67ba84c50624c4335841560f1d8ad07",
+      "main_bytes": 38826,
+      "current_bytes": 38786,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301236.html",
+      "script_index": 2,
+      "main_sha256": "fbdb8c99dff91150edc3631384b6e701fb73238b5fd8e82f201b5280b55a9f30",
+      "current_sha256": "7b45c406bade6e02fd1e33eb36887ca7d86b78283b4bd2bdc7b014f8f65d4bfb",
+      "main_bytes": 34494,
+      "current_bytes": 34454,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301248.html",
+      "script_index": 2,
+      "main_sha256": "a3571e5a9e2ce061435c1c5eac785566b5cef4c76a48330dc0e7d77f10a5d63f",
+      "current_sha256": "74891c7c4aa0028b13ace49c5ee3ff408ea337f10e920240e41120e7747d3ca0",
+      "main_bytes": 30032,
+      "current_bytes": 29992,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301252.html",
+      "script_index": 2,
+      "main_sha256": "87f1666c6247333ce337349474d779082d963be64d665a799d0678ff7b6439f8",
+      "current_sha256": "1cade617cfcefe617c92c927bde8f2a54eefc89842f8911b2174635e09c786fe",
+      "main_bytes": 31911,
+      "current_bytes": 31871,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301278.html",
+      "script_index": 2,
+      "main_sha256": "858feeb37a45e337f1950d477b792cb9ae546af1f13db09e961c89a3be457170",
+      "current_sha256": "6c85173386560da642b37f2ddf9348da559a1e3eb0329d5cf1a1b910076b3297",
+      "main_bytes": 43425,
+      "current_bytes": 43385,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301279.html",
+      "script_index": 2,
+      "main_sha256": "edce426da5cb1bff0811a67f5047322c276f9a010286a1939c373ae1f6167746",
+      "current_sha256": "32666a342861378157d9f1c126af1bc0b00ddf628471f850848fc5bfa9029b8a",
+      "main_bytes": 19674,
+      "current_bytes": 19634,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301346.html",
+      "script_index": 2,
+      "main_sha256": "20f1dbffd71c7e3d8cb2277efbdb116f455876ad545a6304457b757ad1153d7c",
+      "current_sha256": "26617e3db977d2f158eacd437eecc6dd802da47972eb10b546f0cdb1f9567bce",
+      "main_bytes": 22250,
+      "current_bytes": 22210,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301365.html",
+      "script_index": 2,
+      "main_sha256": "38c4e105470dcb076198a96fc2b9b333a54f2b45f91bccbedcba99d5694071e2",
+      "current_sha256": "70445014aa27d143d05e99fa162505eab7a037e3f8439d6576cb465cddc5f8f7",
+      "main_bytes": 49654,
+      "current_bytes": 49614,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301377.html",
+      "script_index": 2,
+      "main_sha256": "1a7aa6d7816624895760d87d1d72f4d6780b9cba51dcb6a6b06fd69af4e2a0c7",
+      "current_sha256": "fe2d0ef9db6a6bc3a6a70d504cb2669aa84493aa346a2027da93c1aa561c984b",
+      "main_bytes": 18326,
+      "current_bytes": 18286,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301402.html",
+      "script_index": 2,
+      "main_sha256": "fa461dbdb91eeb642033c4265def73d33c22920a46de4b2884d76af26ed59b66",
+      "current_sha256": "36a657f5d79ab6ab999f1aee66654ac0667dc491c7db336e58dba033d5daed3b",
+      "main_bytes": 18825,
+      "current_bytes": 18785,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301424.html",
+      "script_index": 2,
+      "main_sha256": "e168498a3519564e65c817fabab8a673244d8066ee353dbeadc944aff535df92",
+      "current_sha256": "05b938d882b0e580b1862ed22a8ae06ff7099e5d025b6b6f1735fdd76bb35275",
+      "main_bytes": 28502,
+      "current_bytes": 28462,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301491.html",
+      "script_index": 2,
+      "main_sha256": "f3f22324622f8e9312246335db766309495e9f8f333ec8d6615d4e1704d1daaa",
+      "current_sha256": "8107fe3fc665d1186d383a324aef62f3fa8455e95ff04afd862fa149c950590f",
+      "main_bytes": 34816,
+      "current_bytes": 34776,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301494.html",
+      "script_index": 2,
+      "main_sha256": "bf08d3ec551e59bc392bbfda55cf4719cbe5149a12e0bf9ef044e86bb7355018",
+      "current_sha256": "dc93c16149628dea00e7fdafe96d9996f6b1960efafed284f3cae5cd49fa7209",
+      "main_bytes": 38098,
+      "current_bytes": 38058,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301511.html",
+      "script_index": 2,
+      "main_sha256": "0b34049645c2e01c009711ba02937bd6b6e8b2274e4678791792b82f9f044f43",
+      "current_sha256": "85556b0ce14fb1c469e015aa58a2ca973774c1d1d0ab69a8915d2771b6769482",
+      "main_bytes": 34130,
+      "current_bytes": 34090,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301546.html",
+      "script_index": 2,
+      "main_sha256": "0a32e979c5e453738685db68e46ba4890b0f8532431d429a1a63268743152b2c",
+      "current_sha256": "a2c18f9d2ed3745ca70652888462d06a4dfc554be35ab3c01090722d0c6d259f",
+      "main_bytes": 53737,
+      "current_bytes": 53697,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301558.html",
+      "script_index": 2,
+      "main_sha256": "d2354bce50b93fbea9e98f8c27ffdd1de056fe5a7d15464669f5dd48e54c4fa5",
+      "current_sha256": "6984c374595cb97cadd2fa8cc162dc4ce8b21e0cd995a5e1553836d27ec55e8c",
+      "main_bytes": 81944,
+      "current_bytes": 81904,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301576.html",
+      "script_index": 2,
+      "main_sha256": "a768cf97ee3ae81debd572d2a6a1aedbe797a69bc7a122bbf0906ef8ebb50065",
+      "current_sha256": "6acf359e571d90bf82a20e8dc48731ba7655c6468f50f497d40cdf44b6e3c889",
+      "main_bytes": 19501,
+      "current_bytes": 19461,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301577.html",
+      "script_index": 2,
+      "main_sha256": "736d9ad779c50e86819bf71e0eb9d67af330f5f72b39dc462cbfa86dc19fac13",
+      "current_sha256": "396512b8b7020bcad3098e4ee67f55796005497ac35d7bce2b155e89ce81fc89",
+      "main_bytes": 38213,
+      "current_bytes": 38173,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301582.html",
+      "script_index": 2,
+      "main_sha256": "4fcb64062402d0a00e476aed6355e996b2993ceebdad341d89fca26064c25f4f",
+      "current_sha256": "bfbb105d2c91f9244eb43ae2716e40a24826e2bd5837cd40d5d5df53ee881dd6",
+      "main_bytes": 35307,
+      "current_bytes": 35267,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301628.html",
+      "script_index": 2,
+      "main_sha256": "bdc7998c20db36ba6b3c031c3afec8e54d6121abd5fdc78dbe4ca85f0cb7944e",
+      "current_sha256": "52d1871e6d48d2cd1cc33ea8084e9fc7e6d3f7b3c97d60523163f971e7eb295f",
+      "main_bytes": 23029,
+      "current_bytes": 22989,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301715.html",
+      "script_index": 2,
+      "main_sha256": "6a8c583569f6ddcecbe50d731bd7407b16e07625e706c50ad7049c231df6576e",
+      "current_sha256": "4557803f69eee4f6fbc4921eec1ea28d4996b63046d57d42b2e1ad20dcbd8c76",
+      "main_bytes": 33617,
+      "current_bytes": 33577,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301780.html",
+      "script_index": 2,
+      "main_sha256": "3a920d69529d3b1d43b5b8bdc0253b5a8deaf9d5c92bf3b96671be5c0d84818c",
+      "current_sha256": "39192608b5cd34278462f5dc4cf114a88c17354beba8d068356a0cc249df875e",
+      "main_bytes": 85816,
+      "current_bytes": 85776,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301786.html",
+      "script_index": 2,
+      "main_sha256": "3b4979bae0fa20603d584090f0371f8696411fc22d3bb8033847cedc1f5907c9",
+      "current_sha256": "4461fd57b39f8c1d0e80caffcab881a28e3ffef0a3845eb7c0fa00a4e22512eb",
+      "main_bytes": 45261,
+      "current_bytes": 45221,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc301797.html",
+      "script_index": 2,
+      "main_sha256": "5e9a8954eaf617ae63764ff4f2011fcfc6ca7bd0e903fdf1dcd72602497545d0",
+      "current_sha256": "6cb443e8a471409860143ac7c545fa74dce8d45dbe6cbddc5a5577c85e22845c",
+      "main_bytes": 36616,
+      "current_bytes": 36576,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302010.html",
+      "script_index": 2,
+      "main_sha256": "404759191a70cbf9eb5e24e2f20e331725710f2d359db9eee4a9f2cd9cb8061d",
+      "current_sha256": "9ef588ba827c03f815d495866390fb3bb0d4ea1b2f3b26648197f4929eadf30b",
+      "main_bytes": 71409,
+      "current_bytes": 71369,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302027.html",
+      "script_index": 2,
+      "main_sha256": "105d30afa13e773947eb633c35197be89aff193c5ad1966c41ab5f53eb4e73de",
+      "current_sha256": "7b7455b7eae476281a0496c623d07f4bcbc533e0f793449b0b63a4bbbbda378a",
+      "main_bytes": 25346,
+      "current_bytes": 25306,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302045.html",
+      "script_index": 2,
+      "main_sha256": "f10633579f4ca81a5a6379bb77ebc3246ce6f3f054577f96e34067b4996dadd3",
+      "current_sha256": "f83f1dfa55356716b3a1a641e5f1fe6b2c5419eca858e3b8a70be17729f0617d",
+      "main_bytes": 60371,
+      "current_bytes": 60331,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302046.html",
+      "script_index": 2,
+      "main_sha256": "d83bfaf38468463da655d244abfff51cae3ac0962a505032e87d6f9d7843220a",
+      "current_sha256": "4536726e55ce645758ca6e9d9d672f799f84abd0dc9f402d9ed1dd2be939865a",
+      "main_bytes": 19438,
+      "current_bytes": 19398,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302131.html",
+      "script_index": 2,
+      "main_sha256": "adc6d7187ad2771475165e762cf3feb0a6ac0e7fa77dbb422e52a64d557ef16c",
+      "current_sha256": "4569740ec7f9d8bbeb2ae43831e5f37b87a2a9a1979f1120fd484ded8be91037",
+      "main_bytes": 52455,
+      "current_bytes": 52415,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302174.html",
+      "script_index": 2,
+      "main_sha256": "13689a56c0ebfd9e52ce47139a9d361c6cf61deeb3848848fc5465e0af482959",
+      "current_sha256": "abb81ff09c724d0ae02dd45a3e9bd91c26898776c6a68abf8138389752cbc535",
+      "main_bytes": 23731,
+      "current_bytes": 23691,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc302182.html",
+      "script_index": 2,
+      "main_sha256": "470bb86cc596e7a594157be5d00ae8bd3e0897d5df91540cecad908d1c46e006",
+      "current_sha256": "57452d1729d1205857c656f67e4c13d0f1c5c258ff5a8b6229027830bd341690",
+      "main_bytes": 38093,
+      "current_bytes": 38053,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc306398.html",
+      "script_index": 2,
+      "main_sha256": "e0268a4ac6ba8fdfe45ff1bbd2d22dde0e0a27f6c93ee6b569dde6bd4dff4768",
+      "current_sha256": "49ba83ed008f31081c8af8370051e22af54d25d926ad2b6798e5737d4e469ce9",
+      "main_bytes": 21807,
+      "current_bytes": 21767,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc306750.html",
+      "script_index": 2,
+      "main_sha256": "be181e15ae701d8bdb9bc65aad99fb725cfefc26c86862ce4d06ea4d339df5e3",
+      "current_sha256": "96b1cfaefa279f9e3a501574a06d856d012cced4dd49b8cba9aab1a9939466e6",
+      "main_bytes": 32709,
+      "current_bytes": 32669,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc306912.html",
+      "script_index": 2,
+      "main_sha256": "8f8cca505a1385db95f4691f692c0f9bcee347c6cd2bb27acde6dd1fc63fe3fa",
+      "current_sha256": "9c7d9694bc4ffc61f8d1f12b5b4207bae8e6ff4042f573f80f3578d028439825",
+      "main_bytes": 47067,
+      "current_bytes": 47027,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc307512.html",
+      "script_index": 2,
+      "main_sha256": "ad38ee27021414390c6e890a2c208bde8ede2a05ef7743ae632b52f227a5de64",
+      "current_sha256": "c43185ebfbe153e518c01e514166880463eee1d55a176e44e768755bc0500cfb",
+      "main_bytes": 26460,
+      "current_bytes": 26420,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc307550.html",
+      "script_index": 2,
+      "main_sha256": "e3ee6faca08ccaeaddaa2520bac30ede3f80d168b7515bd7b10f31a48a5556ec",
+      "current_sha256": "74678d9c0f349ae9865ee1eb1654166d5f34ce82d7069f3e4b818bdb19f9d243",
+      "main_bytes": 20715,
+      "current_bytes": 20675,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc307816.html",
+      "script_index": 2,
+      "main_sha256": "1e4e15e5be35e8ae0b6ff61a81ff396b43ca589919c5fa5dc6cb766598ffa4aa",
+      "current_sha256": "c2ab670dae849b34b2b55ab3fa9fb0d06308d0c6a803fcd04ae6a423056635e4",
+      "main_bytes": 47982,
+      "current_bytes": 47942,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc307954.html",
+      "script_index": 2,
+      "main_sha256": "3ea3f4493233b147c89deaa3729f43c17ef117d89ef43720212c902dba9a4944",
+      "current_sha256": "db05eb67121a2bf4ff0298c97c9e5a134e4ac1b030cf1642b9182efe691fdb2e",
+      "main_bytes": 69168,
+      "current_bytes": 69128,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308202.html",
+      "script_index": 2,
+      "main_sha256": "0b753ca6422df155338b6a5472ad91b947621d2082cb1faba46c464d567a5e40",
+      "current_sha256": "dd0eb12971ebe6b3ed5532e0fae00ffe582816de98409a787fc4b5a5a40dbbea",
+      "main_bytes": 19903,
+      "current_bytes": 19863,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308300.html",
+      "script_index": 2,
+      "main_sha256": "9f22fa3356b79436c7367d65162d6c05d839f21e1f730726e25c4da8b34cf831",
+      "current_sha256": "dfe96030bb86727c6fa0e0e22abad4cb084cbf44d74b634d66b6d8e3b598e9b8",
+      "main_bytes": 44139,
+      "current_bytes": 44099,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308366.html",
+      "script_index": 2,
+      "main_sha256": "1fe49d491032999203b4d04dfcb862dcdda29c7866d06e3fcbb5bcb647630e81",
+      "current_sha256": "1f859b3c866a52446395f1e7a6be5895758339e89bdd2d74df083f73c7f53169",
+      "main_bytes": 74073,
+      "current_bytes": 74033,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308428.html",
+      "script_index": 2,
+      "main_sha256": "f01bf75cd2e5660007f23c453c7730d1d2eed18057e6dc335d3c405aa3d871db",
+      "current_sha256": "d308ac610891f3753d749f18486e2283995ba783c93c0daabfa0bdb61d978b48",
+      "main_bytes": 21396,
+      "current_bytes": 21356,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308432.html",
+      "script_index": 2,
+      "main_sha256": "a986fec2901c9479b55c91b2602cd5f3fb534c4c8f6c2f3193ef3aac74f50a18",
+      "current_sha256": "4da87a0c9e50e1eee0dbdf320dd522e0c7e4e82faed3084235d6e9bb07eaf883",
+      "main_bytes": 30528,
+      "current_bytes": 30488,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308467.html",
+      "script_index": 2,
+      "main_sha256": "293ddcbfd89f81def5005f6decf6b0c63e11a6223e429110e0f043db10429621",
+      "current_sha256": "02c50d95187a7f7f034935b5e402a5cdb357c74535759970ccb0ce5596eb9d66",
+      "main_bytes": 42424,
+      "current_bytes": 42384,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308479.html",
+      "script_index": 2,
+      "main_sha256": "2ff8f80a4f1ca79aad3888ecc1c456457dd4b71f7fc581dc233ff4f1562538fe",
+      "current_sha256": "9b471daf924a53858b4fa9855de1e09621804253b407abfae037abf0e42c6ffc",
+      "main_bytes": 65979,
+      "current_bytes": 65939,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308525.html",
+      "script_index": 2,
+      "main_sha256": "ec3b0cb75146b0c6fadabae249f81b661eb400b3f1c0ff1e97a7f30e8bab1dac",
+      "current_sha256": "a37c4546265ad8443b5a983eab4336d614c9de308c8b48f629c74699163ae13a",
+      "main_bytes": 42869,
+      "current_bytes": 42829,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308527.html",
+      "script_index": 2,
+      "main_sha256": "00ee14bfd6e7b0abb30b2f7616736e84ae0cd0e94b8a6fe572836a5a2d3c2f92",
+      "current_sha256": "f997c496df1afa6c855c445872e426bf692d512ea0b4003d44cecd7f1e291110",
+      "main_bytes": 46438,
+      "current_bytes": 46398,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308531.html",
+      "script_index": 2,
+      "main_sha256": "4d1cae82220b8200f7395c17d18c6a576107d52df0480fa43d57fdf4a1cc458a",
+      "current_sha256": "0eb95a1792ade9dba3a488f7cdeb6be304cb18dd50936d48fcff5bed648ad1df",
+      "main_bytes": 54481,
+      "current_bytes": 54441,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308555.html",
+      "script_index": 2,
+      "main_sha256": "bb9b200b55e7b6d913080e5348aba195812b820997d89c18cfb8380b87f474e8",
+      "current_sha256": "f63d2cf89c7605dc9f6391cecd670eafebe4bb7bf33b13e6ffa926a16e507069",
+      "main_bytes": 19174,
+      "current_bytes": 19134,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308582.html",
+      "script_index": 2,
+      "main_sha256": "dcad1fb1ad37b0f0e5b6ea612e1853af4e9bd8cf0dc901304f5f142df9a8d9ee",
+      "current_sha256": "5c3127f818fb34260fb8c8c0c37fd4eda4854477096f93e542077fe0899cadc4",
+      "main_bytes": 30502,
+      "current_bytes": 30462,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308588.html",
+      "script_index": 2,
+      "main_sha256": "ba48f7c0dd449aedb2f98cacb80aec50780b2139060c7b7b21fd462a0d25b98c",
+      "current_sha256": "12699acc5e43e44b796cf99b4c3ab0352149b7fe995f17c8bd6c63bcda928d40",
+      "main_bytes": 21085,
+      "current_bytes": 21045,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308606.html",
+      "script_index": 2,
+      "main_sha256": "fa40d986f75d28a9bd0c9bd1ea5eb04a7f6ea78de40061753cd341675a0be194",
+      "current_sha256": "896a3bbe6688b05a1cc8037a4a44bc26bfe2151025cc649ed3633e844ae33cb1",
+      "main_bytes": 54746,
+      "current_bytes": 54706,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308612.html",
+      "script_index": 2,
+      "main_sha256": "f710d12ee7962bfc028ca7ef73bc2a86b7c5267916a59bbd58ecf4dae7f0b10c",
+      "current_sha256": "c3e69391dd1cdb973aafc01c095cf0f729b72d6ae61b7a37729bf67a674b64ca",
+      "main_bytes": 49127,
+      "current_bytes": 49087,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308614.html",
+      "script_index": 2,
+      "main_sha256": "865fffa4e6a5fd7f3ca2f52a39b7bcba176d55abc8d31ba5cc7082839fb57ad1",
+      "current_sha256": "40d928b6582ec53e80e455711fb410cfe5fb773912384f1f8661d79a868c6148",
+      "main_bytes": 21328,
+      "current_bytes": 21288,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308628.html",
+      "script_index": 2,
+      "main_sha256": "da627686120d41c2f74deb74b5caaeabe3c88429a996c497f64b607670eb410a",
+      "current_sha256": "f2f679e814632aab98b7f833059076e2590a8b302e6be62ea0a84e10fc6175b3",
+      "main_bytes": 33859,
+      "current_bytes": 33819,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308630.html",
+      "script_index": 2,
+      "main_sha256": "a24e1af3ab88c0e81f24328a00f2bb5ff67b7cacf724901e6ccbc32747123a30",
+      "current_sha256": "c51e9b19684d11b7aa3224ed6675fe844c97671ba3594b41fd9078dbbb339c08",
+      "main_bytes": 26399,
+      "current_bytes": 26359,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308634.html",
+      "script_index": 2,
+      "main_sha256": "39c7e25c92e56a06435ae7a611b7407eeaebb4363c9b97eefb0f5de3437ad9f5",
+      "current_sha256": "bbdd48559d96a8f8eacbc9c7657ed4045651b2fd43cbafc06bc0d2f12392d780",
+      "main_bytes": 41165,
+      "current_bytes": 41125,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308657.html",
+      "script_index": 2,
+      "main_sha256": "537080f7332b3dad4bc1ca66f0a92478bad80b3a88032c3c0347b3a1db604aef",
+      "current_sha256": "df345d25a02bb8b383b0fa114cf3b16050257cfdf00da136e1a58a63aaf69733",
+      "main_bytes": 19467,
+      "current_bytes": 19427,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308690.html",
+      "script_index": 2,
+      "main_sha256": "f1352c24ca527494d6c789ddd73441155329656a68abfad05912336dcfa8f431",
+      "current_sha256": "ebd165981fe8b8499a41528eeff72946771ef6fa5455fcbbef273c9ef1faf203",
+      "main_bytes": 53837,
+      "current_bytes": 53797,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308708.html",
+      "script_index": 2,
+      "main_sha256": "5a87e693b01c89e4f207647d0aed431ce049327033b16f482608b9b3d7b8bf49",
+      "current_sha256": "7ec6fb24aa93e643cfd5f870af6b6361427d9ceac944be10c41cba23ed666327",
+      "main_bytes": 21713,
+      "current_bytes": 21673,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308718.html",
+      "script_index": 2,
+      "main_sha256": "fc22322ae8959675b7b8a9f521c6d14abb2f4d0097ca5569bfd9f5a134619cb4",
+      "current_sha256": "7007dd8157648e5cddec9d8166f6dd944a2071aeedd49ca81c3df5c6a6c75b3a",
+      "main_bytes": 45091,
+      "current_bytes": 45051,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308725.html",
+      "script_index": 2,
+      "main_sha256": "ac8f3c3f86ad450889aa918cec62455ba72306debccc44406619dca586a14279",
+      "current_sha256": "20f975fa4befcacb0a5076a5b8b6deb88d157d7d02a5f91e65822c128d0dcb94",
+      "main_bytes": 54731,
+      "current_bytes": 54691,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308731.html",
+      "script_index": 2,
+      "main_sha256": "1553533916d5d52137b08f71d2e9b171ac35dfa6a4456cf74e8ba0095b6f8e75",
+      "current_sha256": "93b639884fbbf18261a84d3f5ea82b8ae83fc8739830aa5188e318dba43ddeba",
+      "main_bytes": 58793,
+      "current_bytes": 58753,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308732.html",
+      "script_index": 2,
+      "main_sha256": "f61febce82f04fbcea8b5dbe338d1ee4f3eb15736b7a0a81489e7d3665e4f3bb",
+      "current_sha256": "8f6c8ee403a50ff57d967ba507e3d4fdc78b81d2b5d238e49fe394adb972fa62",
+      "main_bytes": 24199,
+      "current_bytes": 24159,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308748.html",
+      "script_index": 2,
+      "main_sha256": "8f165fcedc7b8b5cbe64fcdc7eb3010ff0524cbb8eb013d1a57fd7c6a72fdd23",
+      "current_sha256": "469eed5253808ae76128a957c82679336ec0f3646c6f33b16bf403c9d887479c",
+      "main_bytes": 31656,
+      "current_bytes": 31616,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308752.html",
+      "script_index": 2,
+      "main_sha256": "bd17465121152177a310ec713c2a34b55f90f9e2dfaaf4ac4a10c224bf71eba7",
+      "current_sha256": "a69fdb4ab43b2607a0e208e0c70710b24c118713e6e9f1e633e0a1ac203e0f7d",
+      "main_bytes": 69464,
+      "current_bytes": 69424,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308753.html",
+      "script_index": 2,
+      "main_sha256": "6c6f349f2d04dc09ecc51f9cfef7c3f55617d46db7dc3c2a6c4409d1d8f26eba",
+      "current_sha256": "1e5603afce2aa907859982d122bbc5812f1abd3fb9eaf9ec1cd8d0cf45d8238a",
+      "main_bytes": 33281,
+      "current_bytes": 33241,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308775.html",
+      "script_index": 2,
+      "main_sha256": "761a9ba829324fa483e9acc168b301097b98d7e2344472579ec1ea742b8c49a3",
+      "current_sha256": "13f7a7f67c9cab3e4d436576cd99e89a88916d2cb6c3a14abf4f2f3c2f5f7877",
+      "main_bytes": 24042,
+      "current_bytes": 24002,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308791.html",
+      "script_index": 2,
+      "main_sha256": "a7983803523ce6b2107e30ab79e41dc40fc7a684946f04a731bdaf15f37d55d8",
+      "current_sha256": "84974a11e5265de4840a93b9ccb707d2500a4176d479a3b37f1a5d11b6afc908",
+      "main_bytes": 53793,
+      "current_bytes": 53753,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308794.html",
+      "script_index": 2,
+      "main_sha256": "e45c1cbdd336db12ef6f0edf050644f9ef7c5baf3e28788d24d8cb27186053ab",
+      "current_sha256": "3d6e7c3366edb89cd431d33c00ea10dcc6340b79e4666b6afe47e253df239039",
+      "main_bytes": 52772,
+      "current_bytes": 52732,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308801.html",
+      "script_index": 2,
+      "main_sha256": "529ca1aebf30438905893a664ba584d162c86f05019f43b18b14928434fffa07",
+      "current_sha256": "4ecbf0c43faa61eab4033fcbc203d9083e046d012b81937a672ba2dded64524c",
+      "main_bytes": 71453,
+      "current_bytes": 71413,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308803.html",
+      "script_index": 2,
+      "main_sha256": "3200db16d1126bbff6bd31a11099921a78a536469f69b23ffbc131954221a06e",
+      "current_sha256": "f3fd83ecd828570904813b5ec54921b90f90b55df8b03c8cd1c34e677ebcc6e5",
+      "main_bytes": 32099,
+      "current_bytes": 32059,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308805.html",
+      "script_index": 2,
+      "main_sha256": "35542ae4a73fab177b861ced3dcd011a5c117c4b4f7ffd9271f6ba4c78c04da4",
+      "current_sha256": "6d35b98febca0f9ecc5a3c773f9979cf8ee913e4864497a852ef9d135d389a96",
+      "main_bytes": 41885,
+      "current_bytes": 41845,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308806.html",
+      "script_index": 2,
+      "main_sha256": "f3d01b648c44864406a1e462277830c445b92a2ce19f03b761c5af40f0a8ccc8",
+      "current_sha256": "b0a92d1694013035d4467128b8a06491a4a1ed7f675c07a7981bd29f152cc684",
+      "main_bytes": 29930,
+      "current_bytes": 29890,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308810.html",
+      "script_index": 2,
+      "main_sha256": "4fb0a2e924117dd0573f12350bbfc6462f29cc11d2230ade5f202cef9667935f",
+      "current_sha256": "2fa5bc195cb39bf80012a773edbb2feeef38fa9f31ff4806b6a70d986e5311ba",
+      "main_bytes": 32572,
+      "current_bytes": 32532,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308818.html",
+      "script_index": 2,
+      "main_sha256": "62ec41dc08dbf6438c0c1531b48a2d90106155854a014750c6b3a4ebc71ec495",
+      "current_sha256": "6fa2e3b5be88f7e23749661e7f23beb85424bb7321c069f6e622b29969605e99",
+      "main_bytes": 20667,
+      "current_bytes": 20627,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308822.html",
+      "script_index": 2,
+      "main_sha256": "55146962b4ff84dcdb0e6dd980c2f1a77e80855c5edfebdab30e8ef5282601a3",
+      "current_sha256": "dd689ef6a8fae7a77be7b02200948e52254938a0a537b50fe7c4187e5d70f408",
+      "main_bytes": 19579,
+      "current_bytes": 19539,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308828.html",
+      "script_index": 2,
+      "main_sha256": "929b0f5a41f4064b8058a2f03133d0eb05cd866ce7676e19edcd75d28e047fa3",
+      "current_sha256": "9144543d19b80d7863cc9d242c51534b3f9dfae96f19c468e913cd5dbed0a1e1",
+      "main_bytes": 88143,
+      "current_bytes": 88103,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308850.html",
+      "script_index": 2,
+      "main_sha256": "010e63049da7e1ed4d0831f5b6cf65299b898570dfe27882bc9e7e7bae11cd24",
+      "current_sha256": "c69a44f13d7522c78de6e174cca9419b1d6b552e99fc925f05e8adcd5dd2e2a0",
+      "main_bytes": 31141,
+      "current_bytes": 31101,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308864.html",
+      "script_index": 2,
+      "main_sha256": "8d305c7face4e42836093efb5b163d1dc6ad07a0c9da8f32af74609905026678",
+      "current_sha256": "c7d72893487ccb34150ddf5e1ba0aac514ed3684c224b3f0db6b4f46002ba07a",
+      "main_bytes": 33372,
+      "current_bytes": 33332,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308869.html",
+      "script_index": 2,
+      "main_sha256": "f990f15355fe6635290181d5ccf6235ddd5c3d7f1955449dd902df2203206470",
+      "current_sha256": "ed397d13fc63182071cff0cb02b3448b81f374c49921bdea01ec3bd664a02a86",
+      "main_bytes": 30035,
+      "current_bytes": 29995,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308870.html",
+      "script_index": 2,
+      "main_sha256": "7a8036b18a6157c6ac11631dc6cb978420905907ceb2e0cb0569f8bbdb77331b",
+      "current_sha256": "6df55bea8beb3ad03093ebedb5cc379a2f17d13301d1c80ab706c10d1eda822d",
+      "main_bytes": 50109,
+      "current_bytes": 50069,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308883.html",
+      "script_index": 2,
+      "main_sha256": "e905da9591d2234da4e65f1d8a868f219ea7a49e06e2bcaf4aebe33bacd1c9f8",
+      "current_sha256": "691df6a9b85e992b50972a9dbbad3a962f5536d81186b84ec79fc19d9caa1383",
+      "main_bytes": 42951,
+      "current_bytes": 42911,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308887.html",
+      "script_index": 2,
+      "main_sha256": "72fd30d453834f8087050fd4e37881d7c7efeb0779056e0b0c6a70811fba9282",
+      "current_sha256": "304c5d7e2a9dbb07c75fa145d3a545af01f1a7135e86b0343aa63111d60b918b",
+      "main_bytes": 42256,
+      "current_bytes": 42216,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308893.html",
+      "script_index": 2,
+      "main_sha256": "7f31aadefaa678287575b2454bfdbbd2b442436ab2bdbcf2d97a18fd7873d8a0",
+      "current_sha256": "275ea2a8f47965e97da9408bbaa374007f87bd871de53fde75689198381aabdb",
+      "main_bytes": 17833,
+      "current_bytes": 17793,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308901.html",
+      "script_index": 2,
+      "main_sha256": "f9362974066b215657004de75eb9b3459202cfb4fc4a753beef7f9260501fcc6",
+      "current_sha256": "82414f8a4fbb744814f911779c408917b834cbd2d338bf5b571e36ffea9c5b04",
+      "main_bytes": 25363,
+      "current_bytes": 25323,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308915.html",
+      "script_index": 2,
+      "main_sha256": "7b49d3372e8e21cdee36a0ea4cc592fae9574b3708dbd9b5e22d780c9971ac76",
+      "current_sha256": "92556c20bada09f0720946587c4ae463fda473ccd5123a11972f63ad53bbcf12",
+      "main_bytes": 23621,
+      "current_bytes": 23581,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308941.html",
+      "script_index": 2,
+      "main_sha256": "226862724554a8f498b08b477ded87bf8594b8d65d1ac8b34ac1cd2392ffc1c3",
+      "current_sha256": "6f41028f5bafeeb6f1726e66c5614242c2aa03d3e6b07076f116cbef6f743947",
+      "main_bytes": 22377,
+      "current_bytes": 22337,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308972.html",
+      "script_index": 2,
+      "main_sha256": "b0373fd1100eec9e6acfb1dbb0090e5a5b9f772464b7d1ec29ceb5bdc6d9f850",
+      "current_sha256": "db0bc6e995aad20ce015e41a356a5675c85fe6932d55b202c795eb8764b4bb33",
+      "main_bytes": 44680,
+      "current_bytes": 44640,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308977.html",
+      "script_index": 2,
+      "main_sha256": "3350f4ace31b433bbb5d9b1aa85c21f9b87144e94e8ee438b68b389f931b092f",
+      "current_sha256": "ec861821c46dda49586e3b0a24032ff908a04c7581c239063c7fb9bfed89b3ed",
+      "main_bytes": 32009,
+      "current_bytes": 31969,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308991.html",
+      "script_index": 2,
+      "main_sha256": "615deb228c2e656115b76916ae02f0127a61d93d86802cfb58d20922a79f16cd",
+      "current_sha256": "97942672e9af21c5eb418a22d50e8e5b876b9db3e1b5f6d3dbf88a98a3cffa10",
+      "main_bytes": 38367,
+      "current_bytes": 38327,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc308992.html",
+      "script_index": 2,
+      "main_sha256": "3f1fc3115a7806a100f538291b30ca9e1c6a8ea596b88160a5b4bef32169b07d",
+      "current_sha256": "336ef634fc2b67f8d72ba5bd731542305c6a0d933a675539c7e4de93cd4d51b3",
+      "main_bytes": 35082,
+      "current_bytes": 35042,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309000.html",
+      "script_index": 2,
+      "main_sha256": "e19d838384ceb24d4b8933b2aca32fce91f4da24e62ef5648a9e3cebd5d8cc34",
+      "current_sha256": "db5483e68fe2247393669ae6329688a5b8619db789a49035fd0bf73c57018b98",
+      "main_bytes": 39942,
+      "current_bytes": 39902,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309030.html",
+      "script_index": 2,
+      "main_sha256": "748a50c91b673cb89c3c5c512928dbd9e21b50aeb7b5b2f41502861fe7f03eec",
+      "current_sha256": "8e8be67a2d51646fff8109decbaf6cb2024b76f6226d3e87f2f70252e3370234",
+      "main_bytes": 22368,
+      "current_bytes": 22328,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309034.html",
+      "script_index": 2,
+      "main_sha256": "4f115ad57a4d0cf6b311488a0aca657b89ba43c8ac337d34a713ad5335ff79b2",
+      "current_sha256": "9758325a22766f94b9d790b693d6106f771cb37d13a8cfe01df0bea08241b4fc",
+      "main_bytes": 48657,
+      "current_bytes": 48617,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309037.html",
+      "script_index": 2,
+      "main_sha256": "b7c1f1d0c9c9215a6c42dd18b93a51bf16cca7ad2f8ce80bc5b7c852c42b6e7c",
+      "current_sha256": "d64c978cd11cccc0cd8fc5f4832a891fb5478f0be0c188af18167aed98b3d675",
+      "main_bytes": 30667,
+      "current_bytes": 30627,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309051.html",
+      "script_index": 2,
+      "main_sha256": "65802052db3d2a4d329ca537b46b3937683dec2ecf92dc5688ed59ccdbb39a5a",
+      "current_sha256": "05dc025c1b52e9bffe797c829a9070ae1cbc3ebda9555f6a733fd12e8e202472",
+      "main_bytes": 57771,
+      "current_bytes": 57731,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309055.html",
+      "script_index": 2,
+      "main_sha256": "c2ccf2f1b1fba83b2c14d7a933f78bab3ec19da104545a4b63b5f303c8eac1b0",
+      "current_sha256": "92f082735850234d7393539c86d24e54011a175194b173a2a22241533d57c9a5",
+      "main_bytes": 53516,
+      "current_bytes": 53476,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309056.html",
+      "script_index": 2,
+      "main_sha256": "3e737133a3b1b6c85c1085754ff7aedb91f419ca055cb5dc5eff3901f04cc6ed",
+      "current_sha256": "17803e656a5a9927eab33c62b0f490fbe7e83a4891df880a9086653a11db0fa3",
+      "main_bytes": 30461,
+      "current_bytes": 30421,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309060.html",
+      "script_index": 2,
+      "main_sha256": "5b063824518a8538ed445fd0d614191a0afec3d9dd859d83a8590ef4a04c7269",
+      "current_sha256": "0bf15e7cab82ec650c6cef665307013c0f0e415eed228605d109ada93a01855e",
+      "main_bytes": 49034,
+      "current_bytes": 48994,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309062.html",
+      "script_index": 2,
+      "main_sha256": "09441328ad8f0ba2b1a7d42627cba063abe3946819c8bd9befcbc0684f335f15",
+      "current_sha256": "ba9f6ee57427bf75aadfbace1ce9b5d8bdd5435f95f3a5038fbd60c8a2ea9501",
+      "main_bytes": 25442,
+      "current_bytes": 25402,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309065.html",
+      "script_index": 2,
+      "main_sha256": "5fb3092fa3df99e50ce554daff06d6fdb8fe4a606d6f19a2ad7a19d0031f008a",
+      "current_sha256": "d9427f76a1ba993b39a850359a7a5eba7a2560bcbff2955655f78d5b46da02cd",
+      "main_bytes": 71136,
+      "current_bytes": 71096,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309066.html",
+      "script_index": 2,
+      "main_sha256": "68ec912c51ec114353c5d89cc91cd27d6339854c82f9f8fae0a27af4b84296fd",
+      "current_sha256": "3e93dac3d0da5f41ed9f1d08fae1c3834838ccdff9fc4bf4816188c2d4a88a00",
+      "main_bytes": 35252,
+      "current_bytes": 35212,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309068.html",
+      "script_index": 2,
+      "main_sha256": "80772a506ec7a435eff06cd0060d022c4ab5790f5934e555f4bf54c89089923a",
+      "current_sha256": "21515e138cf18657b4f1176a8c4131784b16d8fd9b03ef3c430ff193e16719aa",
+      "main_bytes": 56917,
+      "current_bytes": 56877,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309084.html",
+      "script_index": 2,
+      "main_sha256": "268599c7e3552b3b13efd0878f0ff380f26dc41907ae3354ae0823bc143327b5",
+      "current_sha256": "067fd51f071f43ec633669092a5885c7c933840c26d54acec1a3e081a8726bdb",
+      "main_bytes": 36705,
+      "current_bytes": 36665,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309086.html",
+      "script_index": 2,
+      "main_sha256": "260e4aee337fd52e1b7619cda9c4464743c686cfa7381e67fe0ce043377feffa",
+      "current_sha256": "6d1af2a38ddfdd646fb239e093b88a6c962c9dfc609018d43bc517f646509454",
+      "main_bytes": 49350,
+      "current_bytes": 49310,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309089.html",
+      "script_index": 2,
+      "main_sha256": "f586ad323037d8692d97d9f475a52548ced2e6562aedb836333ebe4da7ec3754",
+      "current_sha256": "462aef8eddb957352beb3c6102d3af58816dbbe55b55a334efd2208751cdb90f",
+      "main_bytes": 58014,
+      "current_bytes": 57974,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309092.html",
+      "script_index": 2,
+      "main_sha256": "5540d383f298251fb0a05c54c0710ba112a8b312a2867b6c7b92e66d836820d2",
+      "current_sha256": "2e520d95448d37f0976d2274d2792626044c6c68b448b48073c22af0e938c3d1",
+      "main_bytes": 65123,
+      "current_bytes": 65083,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309093.html",
+      "script_index": 2,
+      "main_sha256": "010e74fa04ab831d3a1c780ed68431314ec277440041fe97f0687566af74560d",
+      "current_sha256": "0811b7365e49683f761ab9f94f233836692204593990c9f21cecfbf45056a2bb",
+      "main_bytes": 28163,
+      "current_bytes": 28123,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309104.html",
+      "script_index": 2,
+      "main_sha256": "6dc7e91417385d70a3d4a142429b8a1906a7af227e90604a2c34ad64647c1a5a",
+      "current_sha256": "768231f4713bd3f51aba0effc7fea0c7c911a714ce1f3e5be4a5de82d72ae356",
+      "main_bytes": 48270,
+      "current_bytes": 48230,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309106.html",
+      "script_index": 2,
+      "main_sha256": "8d446ec12581b3ed4ffa48aa4ade88252f27901cdcf6398cb091f9ad9f8b2ffc",
+      "current_sha256": "4b0292b7b977098ea596f3e69aa57661a8d8eb1501ef634664ccca7cfb521961",
+      "main_bytes": 38656,
+      "current_bytes": 38616,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309113.html",
+      "script_index": 2,
+      "main_sha256": "65df4a08ee10a5e89d118c6bd770f2582f7a4cf4f88455eb2b749c0bc318ba9d",
+      "current_sha256": "dfb3edb2b4ac98c6ba3eb6be4fce680854eab91bd9cdfcea1799739ec6558b82",
+      "main_bytes": 40075,
+      "current_bytes": 40035,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309120.html",
+      "script_index": 2,
+      "main_sha256": "d1ccd7132845ca7a6537eed10af7267dd5e87f36b1e2f9e2cbb1f86ed2c60d39",
+      "current_sha256": "8ec266aa9120fe165f0aa866a0d01aa535c6dca93cf689fb927e0c2015b48082",
+      "main_bytes": 43320,
+      "current_bytes": 43280,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309121.html",
+      "script_index": 2,
+      "main_sha256": "68b6dd6475dc1814dc4a41a2d67bcce8cb72f53505cf165d7281ba4ee343a29c",
+      "current_sha256": "d394fea98e7202381fbed11eeeed3e578ec0ff977798e5a529a39d780f71270e",
+      "main_bytes": 60873,
+      "current_bytes": 60833,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309127.html",
+      "script_index": 2,
+      "main_sha256": "fb34c7fb62467c0856f914a726cd87e2b1980282c91b1754dd7b92a78b147c7f",
+      "current_sha256": "df42db88a05b7653fdd3d28886a04fc664d8898e435b806c9c7a3676ab677b30",
+      "main_bytes": 45812,
+      "current_bytes": 45772,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309128.html",
+      "script_index": 2,
+      "main_sha256": "257e6d55aa4e81871a9f46d8977447c621e7406d2ffa825c18cabf6ad191659f",
+      "current_sha256": "97d044f53c3b70e1f80f33d1d8244bfd9f7a73d79313cf41124a013dfdecef2c",
+      "main_bytes": 32395,
+      "current_bytes": 32355,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309134.html",
+      "script_index": 2,
+      "main_sha256": "4a50a7a35e18e22154a704603db14cf668d20f141b75200d1fd48c358512703a",
+      "current_sha256": "3933a05351d2187a835a54a61e765141beab2217f918a109b3ef09a2706543ec",
+      "main_bytes": 41608,
+      "current_bytes": 41568,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309136.html",
+      "script_index": 2,
+      "main_sha256": "5c51870792ac10126a3c83d2c8a30d0bf1ef056709333ef4e786ade8643fff96",
+      "current_sha256": "07df4506c7c6b30b57fb62a8e953435af782ddbe7c5881b124023b14f2a843e7",
+      "main_bytes": 34471,
+      "current_bytes": 34431,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309151.html",
+      "script_index": 2,
+      "main_sha256": "8438ca692ba2217fb76b97e7c8ef23eddb9cca0f19f683514d45edcb783b03a3",
+      "current_sha256": "2284f044d4b9d332ee4d2ecf49283dab6190a83e9ee4b51c355d5bc54879bd46",
+      "main_bytes": 49805,
+      "current_bytes": 49765,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309152.html",
+      "script_index": 2,
+      "main_sha256": "0afb1faeada6113b58293039ae5b546e62a1d8ebdcbc8bec0e2032ae75c76628",
+      "current_sha256": "ae1f36f2e2fa23bb4ab3c67158f3e015a11a2b838e6e8b974b04250ba1bde51d",
+      "main_bytes": 60254,
+      "current_bytes": 60214,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309154.html",
+      "script_index": 2,
+      "main_sha256": "b0b78b5134d3133e1794d3ad3e83cf700feeed5f6c351c1276fa2a67a42a0b71",
+      "current_sha256": "fbade3b2a289c5a19cccd64246581d670cbe45dacd4f1f148a616d7edf051ca9",
+      "main_bytes": 36515,
+      "current_bytes": 36475,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309164.html",
+      "script_index": 2,
+      "main_sha256": "a82a243f94c86df99719863da97d481870288b45d6c354d47a72d2b784c755c3",
+      "current_sha256": "8a5b331f9743e6b83c9f70e55e22ec23eab5adcb9647ee4cbfd08f408fa7cc0c",
+      "main_bytes": 36114,
+      "current_bytes": 36074,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309167.html",
+      "script_index": 2,
+      "main_sha256": "aefe3473ccecf7b13c12804a294b84a5279996069588be9f1d90a8d5825725f6",
+      "current_sha256": "f81fbd0da3ef99760a4bc64ee9c57340dcb8b451d1529bf794cfa2191edba0f7",
+      "main_bytes": 40389,
+      "current_bytes": 40349,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309169.html",
+      "script_index": 2,
+      "main_sha256": "383ba7004f6e882ea29df2538968d69175ae6bfc2ecc1ae1e154a36ee5dc97bb",
+      "current_sha256": "47f3742dbf454619aaeaabfdaf888d55a0bdb7399d2fb4c6d8fc67c7d23a840f",
+      "main_bytes": 29718,
+      "current_bytes": 29678,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309170.html",
+      "script_index": 2,
+      "main_sha256": "c7dd3eb937a9a8c6625f6e5199edf05c71b28020f69b4a964438a8a8f200df74",
+      "current_sha256": "946f18576b1811dbc8859574fdea7fb75ea2b39bc13375e492d0e4d09bbe3a3e",
+      "main_bytes": 25643,
+      "current_bytes": 25603,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309177.html",
+      "script_index": 2,
+      "main_sha256": "8d9acae42449483ebeeb7de693c7ed84171a532310571acb657fbd3d22a55853",
+      "current_sha256": "afdf701a0f9c78d09ef21250dcd42ffbbd4fe5792b698c08f5f4e95e69df72bb",
+      "main_bytes": 34090,
+      "current_bytes": 34050,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309183.html",
+      "script_index": 2,
+      "main_sha256": "7f8071ff902ac9a32172c6f7d26f7aadf9e7d858fa624460556feda789036df8",
+      "current_sha256": "0b13798c9df2e03ac61a747e54f4ddacbfa81da8a78a0cb6c168cb22055cf2b2",
+      "main_bytes": 82480,
+      "current_bytes": 82440,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309184.html",
+      "script_index": 2,
+      "main_sha256": "de7a722aacb5765c949b0dc9a93033b4d4c006419d546697a1fa7fc2c7ce7d5b",
+      "current_sha256": "e9da9f1e66add842adcaa9d90ccb41fcca4da99ba92f0ae43409af1b32ddd9fb",
+      "main_bytes": 84021,
+      "current_bytes": 83981,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309187.html",
+      "script_index": 2,
+      "main_sha256": "bd1422f0633d402203590d04788ed98ccbff49aaa202222e2d7572bc1a16f4de",
+      "current_sha256": "96092088e6bff869ad088964227f31971cb770fcf512d3ff2c092ca284bb28fe",
+      "main_bytes": 62092,
+      "current_bytes": 62052,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309261.html",
+      "script_index": 2,
+      "main_sha256": "cbb9799065116404d92a2eab9aa268f69a6fcd8dea7a5ce0a6a31b66dff55a7f",
+      "current_sha256": "f7739d7e204190bc509b63d863d160480c2b9b558ce98fd4378d71dfd58f4521",
+      "main_bytes": 27542,
+      "current_bytes": 27502,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_china/thsc309264.html",
+      "script_index": 2,
+      "main_sha256": "888d1e2255ae8b55dad937fb76a8ce38220ca2875a445594bb9b58693e3dafca",
+      "current_sha256": "8f58fa54010642cc3149fba42a998aee7e71c173af4789f3700193e3be7c99f4",
+      "main_bytes": 72836,
+      "current_bytes": 72796,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-ai-power-neoclouds.html",
+      "script_index": 2,
+      "main_sha256": "0241454e1ab0013fc33fc4d1074f35747c649a72c06341f229c1afad94da27fd",
+      "current_sha256": "5711a8d665d399ab2c01c9574b16921fd76bf61682175a7aabca84f62c9c0cf3",
+      "main_bytes": 14588,
+      "current_bytes": 14548,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-consumer-mobility.html",
+      "script_index": 2,
+      "main_sha256": "9dc0ec44df22aa353d33cd10dd504d0c08e261dcf8f84114df74522a39555fdc",
+      "current_sha256": "0f70d6b1cac2600eda9ecdeda6d5a94aed3417b6ae36d3ea8d9fa7f103e0d9a9",
+      "main_bytes": 15859,
+      "current_bytes": 15819,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-defensives-extech.html",
+      "script_index": 2,
+      "main_sha256": "ffa419036e2fd511c2f34237cac3347575dd66978923ca880e7bc27756423b96",
+      "current_sha256": "7e6590205f5da1e1dc50242fbd2c4ad71482b8b94dc13bd08dd2c94779b22310",
+      "main_bytes": 17418,
+      "current_bytes": 17378,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-healthcare-biotech.html",
+      "script_index": 2,
+      "main_sha256": "e63407edda3155396c526c4812f86bd19c309930e4a8c0cebf5587c96870bc77",
+      "current_sha256": "6fda5c95c18d47aa2e48fca6a6fb93a00d04b20ae0e8ef7a219250040adc3d4a",
+      "main_bytes": 14983,
+      "current_bytes": 14943,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-internet-platforms.html",
+      "script_index": 2,
+      "main_sha256": "54f10081e2d557fd7c62b7ebb7d8725c1e0ba2d9d2eb62bd9b872e24e380d6b2",
+      "current_sha256": "1279053dd35def7dcce609ef5ee7c89df5978e98d8afeca2c02949a9eb57b4e1",
+      "main_bytes": 14766,
+      "current_bytes": 14726,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_nasdaq/amalg-megacap-anchors.html",
+      "script_index": 2,
+      "main_sha256": "86082b99916b55e7bdf0ae5ef29d6c9547a36e21755fc27dd48126d9a0f2baf9",
+      "current_sha256": "833f41f7693cd55e76f63cca1ddd41205fe221b08c2f546c1b9d653170aa3dec",
+      "main_bytes": 15396,
+      "current_bytes": 15356,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/advertising-agencies.html",
+      "script_index": 2,
+      "main_sha256": "dad7eda19cbf528a7d27907f9525cdf9765a69a710e6609edd240b72f08fb2bf",
+      "current_sha256": "d18c3d322f14e1191778afa2e4f3634f87995c3e69b63a59718da4ae801b6617",
+      "main_bytes": 15692,
+      "current_bytes": 15652,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/aerospace-defense.html",
+      "script_index": 2,
+      "main_sha256": "01ea46281efc12c3931fcc61b2c7fcb8b09ae39acb9215a3fdb895edaf9ed38a",
+      "current_sha256": "1eaea24cc9f7e8d6c1c8207ef55ebb7a5279821b3e5d3571ba6639740039b3e1",
+      "main_bytes": 19265,
+      "current_bytes": 19225,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/airlines.html",
+      "script_index": 2,
+      "main_sha256": "6d12a1d369abcb6ac15af530291706f1d2d8f8a81ad98517cd167e3af6bc9863",
+      "current_sha256": "1b4e6a07ae8538f3e115502689fad27a49e54c89774ceb486d552fa271183c63",
+      "main_bytes": 14908,
+      "current_bytes": 14868,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-basic-materials.html",
+      "script_index": 2,
+      "main_sha256": "b2dbcb9273ed1349e5c309c90e43e536533f77bce0054b527feb6f5b1321012d",
+      "current_sha256": "7b9074a9c27eb9c60a18a053a0df5bf4e07d476090c3811ca0fa24cee144a06d",
+      "main_bytes": 31780,
+      "current_bytes": 31740,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-communication-services.html",
+      "script_index": 2,
+      "main_sha256": "b2c9d65e4453c5ed2bd3b0bf90bc2d99616ac3e36ec45795deeedededd76663e",
+      "current_sha256": "523f3539e2c6d18625541aa1764698086abcf876456ad8151334e34f778c1009",
+      "main_bytes": 28558,
+      "current_bytes": 28518,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-consumer-cyclical.html",
+      "script_index": 2,
+      "main_sha256": "d5d4932020841c6d20d572f467ad7f479b1c2dbc5d253660f711240b1169528a",
+      "current_sha256": "ceb12ea8e0876c0582c1f4348aa21d6fe19d2c9d7759bdda1a6759d6a42b4d89",
+      "main_bytes": 52453,
+      "current_bytes": 52413,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-consumer-defensive.html",
+      "script_index": 2,
+      "main_sha256": "2dbfc036ffc3702d320d76c1d3b6ca5ecb57823f939fff6d649782a1f5a3d5a3",
+      "current_sha256": "a30e3ac596d4f486e3c9df752f981659fecbccbeec7cc8bfc316dedcfdcc4ccb",
+      "main_bytes": 27470,
+      "current_bytes": 27430,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-energy.html",
+      "script_index": 2,
+      "main_sha256": "c1703f6ca31a7c48edbfbccc49ee4af28f213424fe1ae8e8d694da1c5c7555fb",
+      "current_sha256": "6739b0939de9a4a7b8311d9340bc25e73c95a906702efb8cc72a14478adc7b46",
+      "main_bytes": 32058,
+      "current_bytes": 32018,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-financial.html",
+      "script_index": 2,
+      "main_sha256": "16a14011b6ec721c0f754ba9425c83a89a06e977b17e73c25adbbe556fc02719",
+      "current_sha256": "0c02a3511632181ade02b9a77b35e96f881c6e92cb7acdda6a29bcf78b0a1514",
+      "main_bytes": 87416,
+      "current_bytes": 87376,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-healthcare.html",
+      "script_index": 2,
+      "main_sha256": "767cd4dfcdbee5c503d29bb0b93c05ce8e3053a0398797cf585c1aeb2e7a9ab8",
+      "current_sha256": "ea4a01f19baba46a9bdaf81dc5320dfa028263d3922e332b2b361cfff910499b",
+      "main_bytes": 98014,
+      "current_bytes": 97974,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-industrials.html",
+      "script_index": 2,
+      "main_sha256": "5f3529934e73cf35b16ddb2b16614f6ba9b50a13b5af740d5f44bf338042445e",
+      "current_sha256": "9889802a6e60b3ff9cb0d2176773ba614a5347d05a9222b79e0c3722af2da22b",
+      "main_bytes": 63863,
+      "current_bytes": 63823,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-real-estate.html",
+      "script_index": 2,
+      "main_sha256": "b0393f00f70a413d08ea5eb4af64d6a7243c5464cde22cbbfcc4a7e90c84441c",
+      "current_sha256": "43dd8450bb3acc736789d2548643a5715c314edfb16e8bdccf1c10b948cf118e",
+      "main_bytes": 38856,
+      "current_bytes": 38816,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-technology.html",
+      "script_index": 2,
+      "main_sha256": "5adb1fa874a07d62d7617533ef9075f7d9587390758c73a75a4b6815d321328f",
+      "current_sha256": "2cdc143d77ea818bd34d6f9d168054046b338d7a5aa9ed06bf2be13a9ef6e4a9",
+      "main_bytes": 64184,
+      "current_bytes": 64144,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/amalg-utilities.html",
+      "script_index": 2,
+      "main_sha256": "42c7c8f1d874cf91a01f4770d438d6a041fe4974f0d000545c14b2dba7d86436",
+      "current_sha256": "14476fd38faae1456ee43cae05ce6602ae5b9a056fa33c18fa38f95e8a07c767",
+      "main_bytes": 19834,
+      "current_bytes": 19794,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/apparel-manufacturing.html",
+      "script_index": 2,
+      "main_sha256": "a4a991075644e872a617cef4d6de2f836b38c6de72279ab053cf90fdaa9d3f60",
+      "current_sha256": "8c34f166d28a18b3562ac2b5135368ef82a76a644fd94988497de687d1a65574",
+      "main_bytes": 15616,
+      "current_bytes": 15576,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/apparel-retail.html",
+      "script_index": 2,
+      "main_sha256": "8878b1a049c57a72950f02646b8a2e36bce427fe668f686fd7209e4a9af2311a",
+      "current_sha256": "9c09383abcc5f1a35d5481f5221829546d97b15ba46e348455e2ca4c9434123e",
+      "main_bytes": 17205,
+      "current_bytes": 17165,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/asset-management.html",
+      "script_index": 2,
+      "main_sha256": "717d559e636bda5f7fb86a49ce47f8e26a29b42cd0e8015f5c0f455423151d12",
+      "current_sha256": "206a9fe41b784e27d10979b1340903d2573d0f9fcbef10b23e0b5de579363349",
+      "main_bytes": 17809,
+      "current_bytes": 17769,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/auto-parts.html",
+      "script_index": 2,
+      "main_sha256": "a7b666f477d4e22a5695f882523dd412d64f6853922a6a82f2ee158091741f58",
+      "current_sha256": "54c0d859b23ab880e2a3cbde1e4a2ce8452ab9ce2b537e938cd72dc9f83d2cd4",
+      "main_bytes": 19037,
+      "current_bytes": 18997,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/auto-truck-dealerships.html",
+      "script_index": 2,
+      "main_sha256": "86f1e9b9ae8fc152850c4162232a7141eb90d30a364eeeb92dc538d17ba212d0",
+      "current_sha256": "2fa2e465c28768e48bb232b7a28ae180e1e4c52f9a6fe0aff78ae3021ed1fc89",
+      "main_bytes": 15583,
+      "current_bytes": 15543,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/banks-regional.html",
+      "script_index": 2,
+      "main_sha256": "3a081bff5a64ee043cd2cfed7685eb697283381ec5a4147ce73ccc402453caaf",
+      "current_sha256": "5cc5f0fd985dd03bb7dd5a3ab2420f5c197ced9a76f768a5b731d33c38d044e9",
+      "main_bytes": 61401,
+      "current_bytes": 61361,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/biotechnology.html",
+      "script_index": 2,
+      "main_sha256": "4dfa3b9e0b27375a192d72bdd105c064d8a5fe51a7218504f58b304a753d88c2",
+      "current_sha256": "98b1411bbe8504d584e7a7aa429af3480072d705df39976bd9b0757bfb2efbf7",
+      "main_bytes": 63048,
+      "current_bytes": 63008,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/broadcasting.html",
+      "script_index": 2,
+      "main_sha256": "a25667aa589a16c0f929f7f5f68094d4c188da40bcc1fe5aecd0051968318f2e",
+      "current_sha256": "218897652a02c31f461642bc1cd3e60cdfcf82898fd0152151eaaf693c761317",
+      "main_bytes": 15128,
+      "current_bytes": 15088,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/building-materials.html",
+      "script_index": 2,
+      "main_sha256": "a3e7934ca3cadd0d84d038298e311f647fda38da1eeb84fae8f52c7690a119e1",
+      "current_sha256": "c52fed8288a58da5eb498fca800b1a58a72534342c056b8552e823a9fa91cd24",
+      "main_bytes": 14737,
+      "current_bytes": 14697,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/building-products-equipment.html",
+      "script_index": 2,
+      "main_sha256": "74f3ce4ed1e7aff5669e97a746174320f8f5370a51465fdd1801e4108517f23c",
+      "current_sha256": "a5c33b915517ebeace096b85681de6d0ae77e118254a07670f5e5b7b776b681e",
+      "main_bytes": 16051,
+      "current_bytes": 16011,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/capital-markets.html",
+      "script_index": 2,
+      "main_sha256": "6a077971af1c690794bc8725028c29a66e340cdf7c48ef52657bb040b87c5f08",
+      "current_sha256": "85e8e8f2513bb0b8eef86f25286ebfcfcfc683f4b2fc52c9e11eee1701058b3d",
+      "main_bytes": 17825,
+      "current_bytes": 17785,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/chemicals.html",
+      "script_index": 2,
+      "main_sha256": "b4aafcb959acc28cfa21d2e61e213a027aa826b3554f9853bef3f7e813f5bbf5",
+      "current_sha256": "6291ba6c12647010feaf81e77a52ff17ae0691dc90673febe64229d3f66c651a",
+      "main_bytes": 15303,
+      "current_bytes": 15263,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/communication-equipment.html",
+      "script_index": 2,
+      "main_sha256": "62667940a50b66285a1b239c8b8d5ab2517a52d997b5a4d0b4e02d11bebd3224",
+      "current_sha256": "3cd3f550c2cea4257abeccff62aea4ce176372a2e0eea8da3f2e8afb88016b42",
+      "main_bytes": 17042,
+      "current_bytes": 17002,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/computer-hardware.html",
+      "script_index": 2,
+      "main_sha256": "af6f9bf76885ace52c686f2f8943768d14f2756618581114c39eef7e8fa32cf4",
+      "current_sha256": "1bea3a777d7092bdb657e3265009c71a0bbb1c9573c12b779cbd2a68a186299d",
+      "main_bytes": 15612,
+      "current_bytes": 15572,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/conglomerates.html",
+      "script_index": 2,
+      "main_sha256": "63c04c591ae1ac0e1abbe426c70db9d1b00dd1b812f89c057268d5c08b0fe925",
+      "current_sha256": "6df9183b6b278ade57b72637a67c170fdc96712c23cf01454a04ea66525bb9df",
+      "main_bytes": 15940,
+      "current_bytes": 15900,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/credit-services.html",
+      "script_index": 2,
+      "main_sha256": "531997836010abc72fde81f7e799e7bc7681af292dd93791294ef3a2d3bc23aa",
+      "current_sha256": "ccaf101238b54bf578d46036b63769e6131a6a7b1ac2165925baba016f5a3220",
+      "main_bytes": 17977,
+      "current_bytes": 17937,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/diagnostics-research.html",
+      "script_index": 2,
+      "main_sha256": "7c56609a6ea2cc8aedc091a817530ebc213db397f1d3bc043589addb37149fe3",
+      "current_sha256": "111096c3fa0ace020287784cb062a3f2942495c76c5d29674722ecac43176bb0",
+      "main_bytes": 16153,
+      "current_bytes": 16113,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/drug-manufacturers-specialty-generic.html",
+      "script_index": 2,
+      "main_sha256": "b61f69214f0180d2f761d6dc8465ea82aa2001b31d41793749ee525aef580a08",
+      "current_sha256": "7ddf7f7d6f30928b38a0749bc1e79f1c9457c9c867ab118436be0e2dc6d03462",
+      "main_bytes": 20332,
+      "current_bytes": 20292,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/education-training-services.html",
+      "script_index": 2,
+      "main_sha256": "9f2c3d9d142515f82db3fed94f85aacd6eecc2ec4dc7d9ff8979627b7702d159",
+      "current_sha256": "f271e4d3b5955c9d4b398d4fdd7321dab34f7b2363eccc135183dfa794eb7069",
+      "main_bytes": 16480,
+      "current_bytes": 16440,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/electrical-equipment-parts.html",
+      "script_index": 2,
+      "main_sha256": "efc3c9d6a9186331cde1605e94e814e84bbb3a69c6b1733bc6943fda36232b40",
+      "current_sha256": "503f7a1a6a16a93f497b0fb3fcb52204ad94609048a16c7691462388320bcdd7",
+      "main_bytes": 17041,
+      "current_bytes": 17001,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/electronic-components.html",
+      "script_index": 2,
+      "main_sha256": "f94852ed2f4ca3dd4ccdf7ac596130c48c4283675592ff347e7aa86179f8a54c",
+      "current_sha256": "85c0f753a36de392f8ea551f7389cf962f03ae52a232c28cf5432171542e7539",
+      "main_bytes": 17350,
+      "current_bytes": 17310,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/engineering-construction.html",
+      "script_index": 2,
+      "main_sha256": "03bd6b74f9336f4b493c3e7639b2328265b701f387c746094e1eec08608f4988",
+      "current_sha256": "9ad8d302ab7b816107439291f93114e515a97b9cd7d779e32c4acb5ee64a52ea",
+      "main_bytes": 17641,
+      "current_bytes": 17601,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/entertainment.html",
+      "script_index": 2,
+      "main_sha256": "29c6eba8bf7c744b0753827e1afaaca642b2948a95e87808c8904a541c020469",
+      "current_sha256": "d4ad0e504e2b8f84b54a76b493ab50c29dbdd1089aaf5046c305509ac2176003",
+      "main_bytes": 16122,
+      "current_bytes": 16082,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/farm-heavy-construction-machinery.html",
+      "script_index": 2,
+      "main_sha256": "4daf5f40143d3799910cd2621f04a2c908880e82a7e6f95965168db8efed8a86",
+      "current_sha256": "76712383690fbe50433dfe563d1d060d1cd566a44fb07a55a2612f27c75451ba",
+      "main_bytes": 16176,
+      "current_bytes": 16136,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/farm-products.html",
+      "script_index": 2,
+      "main_sha256": "76be79bcaa1a4d1f4e6322b3a055d74ff4abafdbcaf42983db73500fbb1dfa11",
+      "current_sha256": "6a447db0c811d3d5fdda32945bf54a4121ee9cb903d240a5204e38a9ad14f038",
+      "main_bytes": 15185,
+      "current_bytes": 15145,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/footwear-accessories.html",
+      "script_index": 2,
+      "main_sha256": "67051f0009eaa5d046662ec4c64744d313422c353be2cfcbb86d065f342a8ffe",
+      "current_sha256": "8e1c55ef7268d8e10d735c4c5523648f232553973728dda51faf7811ec086eb7",
+      "main_bytes": 14885,
+      "current_bytes": 14845,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/furnishings-fixtures-appliances.html",
+      "script_index": 2,
+      "main_sha256": "4f24c123d5f356551f1f4e5f0da9fe4888e52fde32d73b270ac3707ac8384c94",
+      "current_sha256": "4fceb2e4f5a47be6009396a8d4881be9e14b1c3a96229ffeb175fa3285088296",
+      "main_bytes": 16161,
+      "current_bytes": 16121,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/gambling.html",
+      "script_index": 2,
+      "main_sha256": "6e5c85bbf2427ec96cab69c08e480bae88b47750634d7a97fb3f7911f3c84282",
+      "current_sha256": "39b6e52ba8c4b43d1e3a7cb25cb1a251633f73e26f8f3706bb11c8cbcd35f6f6",
+      "main_bytes": 14744,
+      "current_bytes": 14704,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/gold.html",
+      "script_index": 2,
+      "main_sha256": "d97645f0c6745d4f6f0f2663322ed1e1911bcc6c528f95e0ee11b31f3e93b992",
+      "current_sha256": "f976aa9970878575bf4c187bac43e7c8b9949bdd3a7713bb9e86f937fee4b224",
+      "main_bytes": 15907,
+      "current_bytes": 15867,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/grocery-stores.html",
+      "script_index": 2,
+      "main_sha256": "7e01a2f79cc17c17c106673ddf125f41c8a7758e007de894841efb3ee3e62ac7",
+      "current_sha256": "077fa87dd16b56cec2e623d92765dfb8a5e43c963946276bb0a7fa006563fd26",
+      "main_bytes": 14934,
+      "current_bytes": 14894,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/health-information-services.html",
+      "script_index": 2,
+      "main_sha256": "a18eea8f0e9b36b3c123ce3646a5db9f79a4c14c2d84898e23a4cb54edbec275",
+      "current_sha256": "d0def2e5d0834ab15533eadd068a73fa97ddd1eef584c63d84c4a6f8152f7528",
+      "main_bytes": 17997,
+      "current_bytes": 17957,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/household-personal-products.html",
+      "script_index": 2,
+      "main_sha256": "4428909074732daa422d75a5eb8b073b8e22f4590691209c905b9640da0c4329",
+      "current_sha256": "74c407e1204788b9aca87564b565b0789ebaf7b6bfdafa47d387a4883ab4e6c0",
+      "main_bytes": 15972,
+      "current_bytes": 15932,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/industrial-distribution.html",
+      "script_index": 2,
+      "main_sha256": "f01e9f19f49972be35083322526762c5762524cfcc7e6a60428bd4d48a094a86",
+      "current_sha256": "4384a3297400b5c3e924bd4578ca36ea69fef743ce7dfdc1bf0d0d83833a177e",
+      "main_bytes": 15760,
+      "current_bytes": 15720,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/information-technology-services.html",
+      "script_index": 2,
+      "main_sha256": "92c544bbb44d2460de9ef03246ee33762b0ef54ba42ca2c16a95ec44b49ca8d3",
+      "current_sha256": "2d778b2d2ac7b3a18d5bafbe1fd5039dfe149cf8c60d399cacaae12e6946bc69",
+      "main_bytes": 18310,
+      "current_bytes": 18270,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/insurance-brokers.html",
+      "script_index": 2,
+      "main_sha256": "2c024739994a539966941b553c8d3ccebe252daa78ec8a0b7aaa55980825306c",
+      "current_sha256": "118fcddc45e4726fa70e15cad93c236aaa2a7383b271a3e854cb349988f8396e",
+      "main_bytes": 15060,
+      "current_bytes": 15020,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/insurance-life.html",
+      "script_index": 2,
+      "main_sha256": "a0b020c68035aa84d192afdce9a582d4420097770079c2cba458aea262db8541",
+      "current_sha256": "4895ea0912c301d704529d5b2354c966f80dcc8b95381a13db7460ce9dd2df33",
+      "main_bytes": 15124,
+      "current_bytes": 15084,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/insurance-property-casualty.html",
+      "script_index": 2,
+      "main_sha256": "8f1c2e53bf1fc717ababb71e885c46f1a2204cc893896a8addeddd42341ef585",
+      "current_sha256": "e9a1ea80399c64e49d6d491be28d17f79d7da269f393b8755821def33bf1b9fa",
+      "main_bytes": 18880,
+      "current_bytes": 18840,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/insurance-specialty.html",
+      "script_index": 2,
+      "main_sha256": "4e495e98d6914ebeecaf06d32c31421990e578d9f813907d5703baa38bcac9af",
+      "current_sha256": "e7dc1ad2c60252458a65e92ab5c0dfee263c866354514fe4421a3772f08233a7",
+      "main_bytes": 15778,
+      "current_bytes": 15738,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/integrated-freight-logistics.html",
+      "script_index": 2,
+      "main_sha256": "62aa511704c66c97aa0cc66216a8dccc927019d90e102696503d22dbef947009",
+      "current_sha256": "9a9e80394b8ed9d7bc122a806a1a0ed92550e3f9984c9c6ec2f2120475e1a600",
+      "main_bytes": 15171,
+      "current_bytes": 15131,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/internet-content-information.html",
+      "script_index": 2,
+      "main_sha256": "088ce888e02f1846019bb4dca281be0e79ae851816f23a4818f83ee01b63aeb4",
+      "current_sha256": "1bb64666b8af9ff4c0067acad6316cb2adda8a6b88e0312d26c42c2da2b6828f",
+      "main_bytes": 18098,
+      "current_bytes": 18058,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/internet-retail.html",
+      "script_index": 2,
+      "main_sha256": "9520fb0f99bac375bce56ad93b546b42a7bb46cdff29660fa943414e6024da29",
+      "current_sha256": "d1f2662d1e4df9106b7ddb5137551cfcbdc8d8985d6bcba4518035353e578d9e",
+      "main_bytes": 14719,
+      "current_bytes": 14679,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/leisure.html",
+      "script_index": 2,
+      "main_sha256": "c7f3dd0b59cda66ad441704edd9444e8389d4a647af13559854bfc7d8a6bb065",
+      "current_sha256": "050bd98417b687558b9bc0b746f0406047ff8fd77eed4b2ab9fa7462981a7ad6",
+      "main_bytes": 16376,
+      "current_bytes": 16336,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/luxury-goods.html",
+      "script_index": 2,
+      "main_sha256": "8d48d410e8683cb70a42a4d5b1e65e6f40c77d326385e01106fa9caef64c22cb",
+      "current_sha256": "264442115e69fa2788835251040686db406aa1b3ffd5c276609fdd702830c867",
+      "main_bytes": 14757,
+      "current_bytes": 14717,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/marine-shipping.html",
+      "script_index": 2,
+      "main_sha256": "b6753e600fe3f23bf1231470098810d929710204b09f5547d551f8cba750cf27",
+      "current_sha256": "7975797c26f44159ffe30f418caa24c38820c9827a2f8bf5fb124207e9fbe8c4",
+      "main_bytes": 15884,
+      "current_bytes": 15844,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/medical-care-facilities.html",
+      "script_index": 2,
+      "main_sha256": "744f93b9577ff7fded334ab0ad7aca71042716e39f27d1390ba34afb3c403938",
+      "current_sha256": "7eac7ed11743a7402bfaea73a05dd070c0d63f357bca01dc8947a2af8bfe24cf",
+      "main_bytes": 19034,
+      "current_bytes": 18994,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/medical-devices.html",
+      "script_index": 2,
+      "main_sha256": "711288bc7ae68cea4421a70fabd225d949a37e34297b35620d7379d90924e391",
+      "current_sha256": "7957e3c792d8f6ceeecaddc9ae425692850bf682e973c3e2464d518c621fdbc9",
+      "main_bytes": 24950,
+      "current_bytes": 24910,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/medical-instruments-supplies.html",
+      "script_index": 2,
+      "main_sha256": "af0cbb8217743a7094b50b709c00a7d1f35e723662d42a9bf16e4b6c0291d4a3",
+      "current_sha256": "ad725c306d5d2ae86e7c99e3ec8ae86303191cf9c78ce3b23ba7d01144af51d3",
+      "main_bytes": 17597,
+      "current_bytes": 17557,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/metal-fabrication.html",
+      "script_index": 2,
+      "main_sha256": "6fba3731c0b19c429ca24104151e17dec60383e66033b9cd7fabbcef4a6b3730",
+      "current_sha256": "102450e92b703e397ec0196505e967c13568a84a53005eef807f88712ee931d8",
+      "main_bytes": 15589,
+      "current_bytes": 15549,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/mortgage-finance.html",
+      "script_index": 2,
+      "main_sha256": "8ae46e73a6cc71ffe3c1b4b61f3588e81ac3e3bab606bb9f375648d92132ec12",
+      "current_sha256": "930ace1f2d3b88668715661e94de6a6e557f7b6a8d6fd48871d3ec0a7781d029",
+      "main_bytes": 14962,
+      "current_bytes": 14922,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/oil-gas-drilling.html",
+      "script_index": 2,
+      "main_sha256": "fcf12d4fb79fa92f38b556672d850d30ae3baf0949d9a649e276045bce8b8dd2",
+      "current_sha256": "0dd61e5b26efab4f4006235ce9f80b27b0c29347145e27751dae2dfd304c847b",
+      "main_bytes": 15524,
+      "current_bytes": 15484,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/oil-gas-e-p.html",
+      "script_index": 2,
+      "main_sha256": "3be35a0f5994f0cb7ccdfd607f1d3398b1cdf03426cd8b3d574a882e1f81368a",
+      "current_sha256": "c1717dad8eb26798e3bb816e04958e0cdc55d1cf361691a97104e1b1974ab5ef",
+      "main_bytes": 19157,
+      "current_bytes": 19117,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/oil-gas-equipment-services.html",
+      "script_index": 2,
+      "main_sha256": "08d723956d8ddb02a7f0d4eceae30432b413fc2144d427f25d25a1ccb97a88b4",
+      "current_sha256": "5f8ea5cd01d1cb912a14955acc5ea8841632a6efe314c0284c22c94a1d85c239",
+      "main_bytes": 19108,
+      "current_bytes": 19068,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/oil-gas-midstream.html",
+      "script_index": 2,
+      "main_sha256": "78beec0013e23ca9c6ad033bd294011c113879b16ae7fe9a40c7160bcadc45c1",
+      "current_sha256": "c89ab84a4d3074d0237fd6d1bdb800f87f6ab645f2927919397316d98daa4542",
+      "main_bytes": 16305,
+      "current_bytes": 16265,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/oil-gas-refining-marketing.html",
+      "script_index": 2,
+      "main_sha256": "ba1e10538c92ff09f6595a192d2286ba9004335aae13aaba273ed55da99f503d",
+      "current_sha256": "8ddb5a7db49db581df905ecac3210342e2d0a2671c24b1b1223d2bd110fd04be",
+      "main_bytes": 14893,
+      "current_bytes": 14853,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/other-industrial-metals-mining.html",
+      "script_index": 2,
+      "main_sha256": "e137cddcf6ec183c822bd477164ae07f2da971c804e59b060dc76c3abf9dc787",
+      "current_sha256": "0d213d70bda61491e769fab6b57a69fc4fd2407e7b0f3114833e8a2d2ddaa0ab",
+      "main_bytes": 15844,
+      "current_bytes": 15804,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/packaged-foods.html",
+      "script_index": 2,
+      "main_sha256": "d60263124558765ec98b54cd9cc3c34b2339429585f2b84afaff2f193db18010",
+      "current_sha256": "f0b533da761cac5d2ac8cedcdacc1ac40aa3bce45ef86cc810f0eae0170c906e",
+      "main_bytes": 17612,
+      "current_bytes": 17572,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/packaging-containers.html",
+      "script_index": 2,
+      "main_sha256": "8dd7743a579a786a99fcae052f149018d2b7c5c569b731fc7a42f75cb4e38a5f",
+      "current_sha256": "875802df01f12040a4ce7057e12de316f1dfb6d30803f09a91825c07894bb93f",
+      "main_bytes": 15093,
+      "current_bytes": 15053,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/pollution-treatment-controls.html",
+      "script_index": 2,
+      "main_sha256": "cff4c8affdf6ac7a4f3f57dcc9cd4a204931930cee66cad4f98e91b439b6fe8b",
+      "current_sha256": "93fbef115634c0c16828a7e6b1253e6fb231ab95cd579ec2e604d190954a9c54",
+      "main_bytes": 14812,
+      "current_bytes": 14772,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/real-estate-services.html",
+      "script_index": 2,
+      "main_sha256": "ee6b96a5b9a0dde2a803c6fd46278dc0612e47a3b5fe300f4d6a981ab35bc085",
+      "current_sha256": "90bc736f86d0d373af81724e4ff6f0488a75c9b5c61511c54ea5f111abf38d3a",
+      "main_bytes": 16810,
+      "current_bytes": 16770,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/recreational-vehicles.html",
+      "script_index": 2,
+      "main_sha256": "b563b8021b36f3dd4a90880993aaa2719be2f275a39993db0f91d60fadb2b85e",
+      "current_sha256": "23d6ee7d7c149680eeefae3e9156033dace0f38f184abe58ee7cfa2c59c0a82c",
+      "main_bytes": 15413,
+      "current_bytes": 15373,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-diversified.html",
+      "script_index": 2,
+      "main_sha256": "95a8b24a46088434957882c7bc178e9a2cb449b238cf5e5c05a10299f902a127",
+      "current_sha256": "5d2b8844674192cc56e360ec5727298f449e5ba2c4e5532ad1b93f4fc00a7be6",
+      "main_bytes": 16188,
+      "current_bytes": 16148,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-healthcare-facilities.html",
+      "script_index": 2,
+      "main_sha256": "eb5adb1a6fc8fb60d18686f0fcc2195b2e8771b7ee7c2e11cda218c264c932a0",
+      "current_sha256": "8e886c981d35508bb511c27abf023a2892743e78a7533aa8d54731fce10a7ea6",
+      "main_bytes": 15578,
+      "current_bytes": 15538,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-hotel-motel.html",
+      "script_index": 2,
+      "main_sha256": "d87b57fd57b94830044874ab12e88f4b20cfa0a4856caaa4b6131ef8e01cc4b8",
+      "current_sha256": "9b2acc1ed935d612a18e821b98bf785ee97a3a964dae7f4d86ebb9e7031fb15e",
+      "main_bytes": 16112,
+      "current_bytes": 16072,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-industrial.html",
+      "script_index": 2,
+      "main_sha256": "3771980358acc0866be8c263d40ddde40f8b841418d49985ada8a787a1beae0d",
+      "current_sha256": "5632cc5e838f9d4e2bd6bf9f1025f01a8400d677f897b8a35c1cc9027d0223f0",
+      "main_bytes": 14654,
+      "current_bytes": 14614,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-mortgage.html",
+      "script_index": 2,
+      "main_sha256": "38e46494e752352173cca39165bed9f7f4828abefcbe6aeb14787d8ec59c182c",
+      "current_sha256": "a894e5005ef78459b3225cee7b39d3d46565219bdb74a8b44016efe11341d358",
+      "main_bytes": 19188,
+      "current_bytes": 19148,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-office.html",
+      "script_index": 2,
+      "main_sha256": "11fa642440d1105e444eb79ff21fe8abfe7a82fea08f489b90c658eedc8189a6",
+      "current_sha256": "e64bb41b813e6223cec04bfef4f1d2949ab18b9bd5c67add20fd0a8620555791",
+      "main_bytes": 15930,
+      "current_bytes": 15890,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-residential.html",
+      "script_index": 2,
+      "main_sha256": "ca889e9d27cca9d64a183225d4461629fbab7f76fb08b259acf76b07284f8270",
+      "current_sha256": "9087c0b8ecdeeab07a2ccc7e8e5f20e4bc77e83b68ee84fd0b4de7828de96031",
+      "main_bytes": 15128,
+      "current_bytes": 15088,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/reit-retail.html",
+      "script_index": 2,
+      "main_sha256": "6820c633d62ced2de1848c5086362edd53f141d10c6130d90c3fe8d232c3041c",
+      "current_sha256": "1f128b55293b9b0bc6f6050e4978b82e39e9d2edd279f67e6e729f03ab05954b",
+      "main_bytes": 17148,
+      "current_bytes": 17108,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/rental-leasing-services.html",
+      "script_index": 2,
+      "main_sha256": "578e68c89666748e038e9863ae4eba185a02099ea3889f543894a1ef5b90b280",
+      "current_sha256": "d6713c79b7bfb1f115847735da7fd46f8218349ea0e1ecc308fb5e2ba646556f",
+      "main_bytes": 15408,
+      "current_bytes": 15368,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/residential-construction.html",
+      "script_index": 2,
+      "main_sha256": "44aa41c9f0b705ad2ea1d323ba816755878f28553559fe375142d4718f83c2f6",
+      "current_sha256": "462420511537b03f2832f9ff83898e9e2fb160ecff781241381e834a332a5f21",
+      "main_bytes": 16211,
+      "current_bytes": 16171,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/resorts-casinos.html",
+      "script_index": 2,
+      "main_sha256": "a150ba91863720749546ff0c2945226702c6038319eb4ad4f7aa6202b1ed6169",
+      "current_sha256": "f744656a61db49dc7be870457e29e012ebc7976802b75283c8d55d49b608d182",
+      "main_bytes": 14890,
+      "current_bytes": 14850,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/restaurants.html",
+      "script_index": 2,
+      "main_sha256": "4828c153d8053ee7039b3cf6a4f52079d6101df39309bfb4437b3a53a15348de",
+      "current_sha256": "a9848ee19ab7cbf860b05a5e31f51924388a0d4ca0cc911ff7f0e42823965667",
+      "main_bytes": 17955,
+      "current_bytes": 17915,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/scientific-technical-instruments.html",
+      "script_index": 2,
+      "main_sha256": "a481e1974b16c0595132a03db1b3adb7bdda6ecefebfa2d442abcdc683801254",
+      "current_sha256": "098f4a3217e6ad5cf1a2ab4aed80edcc2cc4fb83ba9852af06cb58f43af0a731",
+      "main_bytes": 14918,
+      "current_bytes": 14878,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/security-protection-services.html",
+      "script_index": 2,
+      "main_sha256": "b993ea43aa2ecb95811a98cdacd81a03495e243c61042f347c84258f23db3e40",
+      "current_sha256": "41742ecfe8e02c401636ea39a7b594511f7f0852c6e769e63a73858a665e1d32",
+      "main_bytes": 15312,
+      "current_bytes": 15272,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/semiconductor-equipment-materials.html",
+      "script_index": 2,
+      "main_sha256": "e19b022cf0dd486aa847e124f68ff5edda6f10877b7c38a6fdcadf0e7a8df804",
+      "current_sha256": "f51142b7192b4244829b871200836fc39548c68c5a473f38785efa9ac4eda766",
+      "main_bytes": 16664,
+      "current_bytes": 16624,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/semiconductors.html",
+      "script_index": 2,
+      "main_sha256": "8e5ef0691be8f9d26b306ef0d7b14773d197056caafb01bd484035a1ba91a4de",
+      "current_sha256": "7041c6072a1507cc6f6f2d637a72d7971b49eba9183f429bf37e704c20e82d6d",
+      "main_bytes": 17852,
+      "current_bytes": 17812,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/software-application.html",
+      "script_index": 2,
+      "main_sha256": "6c039a3152b7e0feac9c1d565c8ae0e263779e3b25dcecf4c40f0cbfb9040072",
+      "current_sha256": "6750ea8f0eba921e1139092278fd5c11c8acda99690be2f2070bfae17f795128",
+      "main_bytes": 28813,
+      "current_bytes": 28773,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/software-infrastructure.html",
+      "script_index": 2,
+      "main_sha256": "eae3ab81e59e4fa7fa12020e6df214e81f55bb7dd1f404187c8ca06eed031201",
+      "current_sha256": "5832c5ee5a14c4ef002d5cc538fb758f552528eac6fa204e81aaf21b66972335",
+      "main_bytes": 24608,
+      "current_bytes": 24568,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/solar.html",
+      "script_index": 2,
+      "main_sha256": "977a1f60b728d71baf05f903035ccc6e442a5910c6a017a010aa854c9d651ce7",
+      "current_sha256": "8a183584c279573bc14ac3e615d7a72ad2a4f33864df33ce61dd1b02f62078ef",
+      "main_bytes": 14932,
+      "current_bytes": 14892,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/specialty-business-services.html",
+      "script_index": 2,
+      "main_sha256": "f2f8cdd2f5569a4e5bcc53ec1103453f8e85f8ce87735281cd9c7d7859010203",
+      "current_sha256": "274704adc55205cbd2975befe2bc0375e7776a591727b53daf97cf269768c788",
+      "main_bytes": 17565,
+      "current_bytes": 17525,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/specialty-chemicals.html",
+      "script_index": 2,
+      "main_sha256": "0bc2f0207da78f50bea5dedd1f8f363970efae567c7190595c209d33c9fc3cd8",
+      "current_sha256": "63f76297cb9a6952b26fcd063d9aeb6c40fa5b8a8198b7bbfdd9f83a08c2525f",
+      "main_bytes": 20199,
+      "current_bytes": 20159,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/specialty-industrial-machinery.html",
+      "script_index": 2,
+      "main_sha256": "a8030fe545949d0e28a151faf9e2bb42e8402ec660e07e7e722805d8cba5c80a",
+      "current_sha256": "bf0ca3398d70911bbcf9b651a299eb5d373d999fd58fb5989df3fdd9f5153c7d",
+      "main_bytes": 18885,
+      "current_bytes": 18845,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/specialty-retail.html",
+      "script_index": 2,
+      "main_sha256": "0273d9c811c6ad37c9d1ef6eb70ffdbe10d8e79d97153ad0795152cb099dc15d",
+      "current_sha256": "50c9fe15b21c820e69c54a596c598cf7c6b50655eca36f7f19ce015f30962e12",
+      "main_bytes": 16981,
+      "current_bytes": 16941,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/staffing-employment-services.html",
+      "script_index": 2,
+      "main_sha256": "03c07a1e9bfccc5fb34d635661113177dcdd5f3861306bf7abc60b53aa9b9c14",
+      "current_sha256": "1afb891b8d36a53ba59e2646f9f2d7565fd0f9eb943aa306180726817c4fbdec",
+      "main_bytes": 15530,
+      "current_bytes": 15490,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/telecom-services.html",
+      "script_index": 2,
+      "main_sha256": "c7967ae6041f4aa9500756600b9465923c59d14a283b38bc2321aef4b24610d8",
+      "current_sha256": "0bf42ce569b70c1f7f4fecaf00bef5c2814128203092118c499424b7294cfa73",
+      "main_bytes": 17052,
+      "current_bytes": 17012,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/trucking.html",
+      "script_index": 2,
+      "main_sha256": "57a4adc3180665ea457c7eea216b4b1072e109add34509ffddfa8fea57802b6a",
+      "current_sha256": "4e707b6c0ad9c29d9751ce6dfd65a36e23a9b9696a8a0871871ed33d8a63d56c",
+      "main_bytes": 15289,
+      "current_bytes": 15249,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/uranium.html",
+      "script_index": 2,
+      "main_sha256": "f46314b4d0a8cc587c5926bd5cbc311a6d1791e2e7586d8b63b738a920bfd8a9",
+      "current_sha256": "6221808ac208cf6e4aaf31d59f10f4636995d0d429eb479dd29164103a3ee337",
+      "main_bytes": 14686,
+      "current_bytes": 14646,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/utilities-regulated-electric.html",
+      "script_index": 2,
+      "main_sha256": "c8563dbe4bb7492bfbfba0031cb5a58efec33a19c3e46663083e43f2a444c0ea",
+      "current_sha256": "b759aea1af423a4b1771ffc578b2de7f171741b431e0c4725e0640d3221da44d",
+      "main_bytes": 14998,
+      "current_bytes": 14958,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/utilities-regulated-gas.html",
+      "script_index": 2,
+      "main_sha256": "6a7d8944ae56b0df38465ff5aaf3137b715f4cb4f301138e7f3c1468309640e8",
+      "current_sha256": "abd42e2e215032d89013eae58d5211c3c5b28edd0fc19fe977bf0d0cd71327b4",
+      "main_bytes": 15799,
+      "current_bytes": 15759,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/utilities-regulated-water.html",
+      "script_index": 2,
+      "main_sha256": "86dd6c43e849b62c9a8a2f788b2942283f51348311f5bd66cb0ab3b1fb77b6fc",
+      "current_sha256": "704c52accb35f93fb621554f6d6fbe89ab0a74ad2a16f61c6f61204dd95286c9",
+      "main_bytes": 15287,
+      "current_bytes": 15247,
+      "reason": "exact approved static UI transformation"
+    },
+    {
+      "path": "site/subsector_russell/waste-management.html",
+      "script_index": 2,
+      "main_sha256": "95d314d241cc10a66a2025ea69ee36b46e357217dce8a591b7e04739c1762610",
+      "current_sha256": "06cfea0e8f1135e5a54b784d72c09fce053c046d5d5e56891f93762f2bc1311e",
+      "main_bytes": 14930,
+      "current_bytes": 14890,
+      "reason": "exact approved static UI transformation"
+    }
+  ],
+  "unexplained_executable_script_differences": [
+    {
+      "path": "site/macro/fragments/consumer.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/credit.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/debt.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/growth.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/housing.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/inflation.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/jobs.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/money.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/policy.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/rates.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/macro/fragments/trade.html",
+      "reason": "nonempty executable script count differs",
+      "main": 1,
+      "current": 0
+    },
+    {
+      "path": "site/options.html",
+      "reason": "nonempty executable script count differs",
+      "main": 3,
+      "current": 4
+    }
+  ],
+  "ew_render_inputs": [
+    {
+      "path": "site/rotation_events.js",
+      "actual_blob": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+      "expected_blob": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+      "equal": true
+    },
+    {
+      "path": "templates/_risk_envelope_band.css.j2",
+      "actual_blob": "f82d4290cf03bdf30b2c1ba49fe7f358b1daae1e",
+      "expected_blob": "f82d4290cf03bdf30b2c1ba49fe7f358b1daae1e",
+      "equal": true
+    },
+    {
+      "path": "templates/_risk_envelope_band.html.j2",
+      "actual_blob": "57af6f51d5f68d30eae9e7e913efd258c306681f",
+      "expected_blob": "57af6f51d5f68d30eae9e7e913efd258c306681f",
+      "equal": true
+    },
+    {
+      "path": "templates/rotation_events.js",
+      "actual_blob": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+      "expected_blob": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/conflict_20s.json",
+      "actual_blob": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
+      "expected_blob": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/corrected.json",
+      "actual_blob": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
+      "expected_blob": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/expected.json",
+      "actual_blob": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
+      "expected_blob": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/journey_b_both_fell.json",
+      "actual_blob": "6f65172c44453228dfc26f39b59c93163e02d3e9",
+      "expected_blob": "6f65172c44453228dfc26f39b59c93163e02d3e9",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/journey_c_envelope_1d253e1d.json",
+      "actual_blob": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
+      "expected_blob": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
+      "actual_blob": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
+      "expected_blob": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
+      "actual_blob": "7644ff22b6490d1f52c525c20026472c65010c82",
+      "expected_blob": "7644ff22b6490d1f52c525c20026472c65010c82",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_ratio.json",
+      "actual_blob": "608562757447a71e569c63ad72d3c1e3e60f6f54",
+      "expected_blob": "608562757447a71e569c63ad72d3c1e3e60f6f54",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/observed_rise.json",
+      "actual_blob": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
+      "expected_blob": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/partial_missing_20s.json",
+      "actual_blob": "33c0d74f9dbce45e46e001a7569169c83422fdce",
+      "expected_blob": "33c0d74f9dbce45e46e001a7569169c83422fdce",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/partial_window_mismatch.json",
+      "actual_blob": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
+      "expected_blob": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/reversal.json",
+      "actual_blob": "a5db3baed08990c12abfc655e774c347b0b6ee85",
+      "expected_blob": "a5db3baed08990c12abfc655e774c347b0b6ee85",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/stale_obs.json",
+      "actual_blob": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
+      "expected_blob": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/withdrawn.json",
+      "actual_blob": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
+      "expected_blob": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
+      "equal": true
+    },
+    {
+      "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
+      "actual_blob": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
+      "expected_blob": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
+      "actual_blob": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+      "expected_blob": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
+      "actual_blob": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+      "expected_blob": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
+      "equal": true
+    },
+    {
+      "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
+      "actual_blob": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+      "expected_blob": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
+      "equal": true
+    },
+    {
+      "path": "templates/rotation_glance.css",
+      "actual_blob": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+      "expected_blob": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+      "equal": true
+    },
+    {
+      "path": "site/rotation_glance.css",
+      "actual_blob": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+      "expected_blob": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+      "equal": true
+    },
+    {
+      "path": "templates/theme.css",
+      "actual_blob": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+      "expected_blob": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+      "equal": true
+    },
+    {
+      "path": "templates/dashboard.html.j2",
+      "actual_blob": "890fe316377688eb624a59ea14e118a7071838c3",
+      "expected_blob": "890fe316377688eb624a59ea14e118a7071838c3",
+      "equal": true
+    },
+    {
+      "path": "templates/_risk_radar_workspace.html.j2",
+      "actual_blob": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+      "expected_blob": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+      "equal": true
+    },
+    {
+      "path": "templates/sector_central.html.j2",
+      "actual_blob": "c6bc18eb01b200a68f4368ffd99eca874581fbb5",
+      "expected_blob": "c6bc18eb01b200a68f4368ffd99eca874581fbb5",
+      "equal": true
+    },
+    {
+      "path": "templates/si_workspace.js",
+      "actual_blob": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+      "expected_blob": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+      "equal": true
+    },
+    {
+      "path": "site/theme.css",
+      "actual_blob": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+      "expected_blob": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+      "equal": true
+    },
+    {
+      "path": "site/si_workspace.js",
+      "actual_blob": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+      "expected_blob": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+      "equal": true
+    }
+  ],
+  "product_presentation_inputs": [
+    {
+      "path": "site/products/mastermind-ai.html",
+      "sha256": "fbb6fb91d9b52b3f2f684ce0163e2dbe8c842441d0afa387948b4ceea3c2e848",
+      "equal_to_accepted": true
+    },
+    {
+      "path": "site/products/market-dashboards.html",
+      "sha256": "3b2656191da2775a6c2570cb3b11264fe3df70f874abb410d6615c6f3db7aa64",
+      "equal_to_accepted": true
+    },
+    {
+      "path": "site/products/market-terminal.html",
+      "sha256": "46f6628b3dcb338637ceb3401879576cedeacf001fe5b4650214cf0fedf82855",
+      "equal_to_accepted": true
+    },
+    {
+      "path": "site/scene-motion.css",
+      "sha256": "ef422784f0247f482000a1928d11ad86675a2bbb394ceadf28c6167945105781",
+      "equal_to_accepted": true
+    },
+    {
+      "path": "site/scene-motion.js",
+      "sha256": "5ce10d9af0a33d627cef7254a85615a392dee1da01458197fb6abf3a855483f9",
+      "equal_to_accepted": true
+    }
+  ]
+}

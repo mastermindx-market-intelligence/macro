@@ -15,10 +15,8 @@
   border-radius:15px;background:linear-gradient(120deg,color-mix(in srgb,var(--mx-tier-accent) 11%,var(--panel)),var(--panel) 68%);
   box-shadow:0 16px 40px -28px color-mix(in srgb,var(--mx-tier-accent) 72%,transparent)
 }
-.mx-tier-gate::before{content:"";position:absolute;z-index:-1;width:260px;height:260px;right:-95px;top:-165px;
-  border-radius:50%;background:color-mix(in srgb,var(--mx-tier-accent) 12%,transparent);filter:blur(2px)}
-.mx-tier-gate::after{content:"";position:absolute;left:23px;right:23px;top:0;height:1px;
-  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--mx-tier-accent) 75%,transparent),transparent)}
+.mx-tier-gate::before{content:none;}
+.mx-tier-gate::after{content:none;}
 /* --ink-tier is the TEXT grade of the tier accent; the raw violet measures
    3.64-4.35:1 in light and 3.79-4.38:1 in dark, under the §14 floor in BOTH themes,
    and it is printed as the eyebrow and the plan line. --mx-tier-fill is the
@@ -46,7 +44,7 @@ html[data-theme="light"] .mx-tier-gate--prophet{--ink-tier:#5b3fc4}
 .mx-tier-signin:hover{color:var(--text)}
 @media(max-width:620px){
   .mx-tier-gate{grid-template-columns:1fr;gap:16px;margin-top:14px;padding:18px}
-  .mx-tier-gate::after{left:18px;right:18px}
+  .mx-tier-gate::after{content:none;}
   .mx-tier-copy b{font-size:17px}
   .mx-tier-actions{width:100%;min-width:0}
   .mx-tier-primary{width:100%;padding:13px 16px}

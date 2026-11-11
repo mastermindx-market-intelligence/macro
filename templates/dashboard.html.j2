@@ -389,12 +389,12 @@
   .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; }
 
   .alert { display: block; padding: 10px 13px; border-radius: 8px; margin: 8px 0;
-           background: var(--panel2); border-left: 3px solid var(--muted);
+           background: var(--panel2); border:1px solid var(--line);
            color: var(--text); transition: transform .12s, box-shadow .12s; }
   a.alert:hover { transform: translateX(2px); box-shadow: 0 3px 14px rgba(0,0,0,.22); }
-  .alert-act { border-left-color: var(--act); }
-  .alert-warn { border-left-color: var(--warn); }
-  .alert-info { border-left-color: var(--info); }
+  .alert-act {  }
+  .alert-warn {  }
+  .alert-info {  }
   .alert-head { display: flex; align-items: baseline; gap: 8px; }
   .alert-ico { font-size: 15px; flex: none; line-height: 1; }
   .alert-head b { font-size: 13.5px; color: var(--text); }
@@ -567,10 +567,9 @@
   .ab-shock-ic { color: var(--ink-warn, var(--warn)); }
   .ab-shock-ic .ic-svg { width: 14px; height: 14px; display: inline-block; vertical-align: -.17em; }
   #action-board .help .tip .ic-svg { width: 12px; height: 12px; display: inline-block; vertical-align: -.14em; }
-  /* Lane header — accent top bar via ::before (anv2-lane-hd idiom) */
+  /* Lane header — identity rides the icon + name ink, never an edge bar
+     (Chairman rule 2026-10-18, docs/DESIGN_DOCTRINE.md §3). */
   .acth { padding: 10px 13px 8px; border-bottom: 1px solid var(--line); position: relative; }
-  .acth::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-                  border-radius: 14px 14px 0 0; background: var(--act-accent); }
   .acth-title-row { display: flex; align-items: center; gap: 5px; }
   .acth-icon { display: flex; line-height: 1; flex: none; color: var(--act-accent-ink, var(--act-accent)); }
   .acth-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -674,15 +673,15 @@
 
   /* regime stance verdict: let-winners-run … look-for-a-change */
   .stance { margin: 12px 0 2px; padding: 11px 13px; border-radius: 10px;
-            border: 1px solid var(--line); border-left: 3px solid var(--muted);
+            border: 1px solid var(--line); 
             background: var(--panel2); }
-  .stance-run   { border-left-color: var(--up);
+  .stance-run   { 
                   background: color-mix(in srgb, var(--up) 7%, var(--panel2)); }
-  .stance-hold  { border-left-color: var(--warn);
+  .stance-hold  { 
                   background: color-mix(in srgb, var(--warn) 7%, var(--panel2)); }
-  .stance-shift { border-left-color: var(--orange);
+  .stance-shift { 
                   background: color-mix(in srgb, var(--orange) 8%, var(--panel2)); }
-  .stance-reset { border-left-color: var(--info);
+  .stance-reset { 
                   background: color-mix(in srgb, var(--info) 9%, var(--panel2)); }
   .stance-hd { display: flex; align-items: center; gap: 9px; }
   .stance-ico { font-size: 17px; line-height: 1; flex: none; }
@@ -905,7 +904,7 @@
      thing in both and are the right home for a stance with no direction in it. */
   .nb-stage-hd { grid-column: 1 / -1; display: flex; align-items: baseline; flex-wrap: wrap;
                  gap: 3px 9px; margin: 15px 0 4px; padding: 5px 11px 5px 9px;
-                 border-left: 3px solid var(--sgc, var(--muted)); border-radius: 0 8px 8px 0;
+                 border:1px solid var(--line); border-radius:var(--r-ctl,8px);
                  background: linear-gradient(90deg,
                    color-mix(in srgb, var(--sgc, var(--muted)) 12%, transparent), transparent 62%); }
   .nb-stage-hd:first-child { margin-top: 2px; }
@@ -1203,11 +1202,7 @@
      compliance is having nothing to disable). If motion is ever added here, the kill block
      must name ::before explicitly. */
   .panel[data-boardstate] { position: relative; }
-  .panel[data-boardstate="ahead"]::before {
-    content: ""; position: absolute; left: -1px; right: -1px; top: -1px;
-    height: 2px; border-radius: 14px 14px 0 0; pointer-events: none;
-    background: repeating-linear-gradient(90deg,
-      color-mix(in srgb, var(--prov) 78%, transparent) 0 15px, transparent 15px 24px); }
+  .panel[data-boardstate="ahead"]::before {content:none;}
   /* SLOT B — one line under the header. Four mutually exclusive contents (provisional
      stance / confirmation receipt / last-confirmed stance / markets-closed stance), never
      two at once, so the header height moves by at most a rounding wobble and the board
@@ -1311,12 +1306,8 @@
                border: none; border-radius: 7px; background: var(--panel); color: var(--muted);
                font-size: 18px; line-height: 1; cursor: pointer; }
   .nb-more-x:hover { color: var(--text); background: color-mix(in srgb, var(--line) 55%, transparent); }
-  /* state accent as a TOP gradient stripe (RIPENING-shelf idiom) — not a left border */
-  .nbcard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; pointer-events: none;
-                    background: linear-gradient(90deg, var(--muted), transparent); opacity: .6; }
-  .nbcard.nb-up::before { background: linear-gradient(90deg, var(--up), color-mix(in srgb, var(--up) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-down::before { background: linear-gradient(90deg, var(--down), color-mix(in srgb, var(--down) 30%, transparent)); opacity: 1; }
-  .nbcard.nb-caution::before { background: linear-gradient(90deg, var(--warn), color-mix(in srgb, var(--warn) 30%, transparent)); opacity: 1; }
+  /* No state stripe on any edge (Chairman rule 2026-10-18): state rides the
+     card's labeled semantic text, never a container edge. */
   .nb-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; row-gap: 3px; }
   .nb-tk { font-weight: 800; font-size: 14px; color: var(--text); letter-spacing: .01em; flex: none; }
   .nb-nm { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis;
@@ -1846,11 +1837,6 @@
   /* row accents by lane */
   .st-row-bottoming td { background:color-mix(in srgb,var(--up) 4%,transparent); }
   .st-row-bottoming td.st-sticky-col { background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .st-row-bottoming td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .st-row-continuation td:first-child { box-shadow:inset 3px 0 0 var(--link); }
-  .st-row-trend td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--link) 55%,var(--up)); }
-  .st-row-recovery td:first-child { box-shadow:inset 3px 0 0 color-mix(in srgb,var(--g-cold) 65%,var(--muted)); }
-  .st-row-watch td:first-child { box-shadow:inset 3px 0 0 var(--muted); }
   .st-row-watch td { color:var(--muted); }
   /* sort arrow */
   .st-sarrow { font-size:8px; margin-left:2px; opacity:.28; }
@@ -1955,9 +1941,7 @@
   body.page-macro .panel > h2 { margin: 0 0 var(--sp-4); padding: 0 0 var(--sp-3);
     border-bottom: var(--rule) solid var(--hair-strong);
     display: flex; align-items: center; gap: 11px; flex-wrap: wrap; }
-  body.page-macro .panel > h2::before { content: ""; flex: none; align-self: center;
-    width: 3px; height: 18px; border-radius: 2px;
-    background: linear-gradient(180deg, var(--rail), color-mix(in srgb, var(--rail) 35%, transparent)); }
+  body.page-macro .panel > h2::before {content:none;}
   html[data-lang="zh"] body.page-macro h2 { letter-spacing: 0; }
   body.page-macro h3 { font-size: var(--fs-h3); font-weight: 700; letter-spacing: 0;
     color: var(--ink-1); text-transform: none; }
@@ -2149,8 +2133,7 @@
     align-items: center; gap: 9px; font-size: 14px; font-weight: 700; color: var(--ink-1);
     line-height: 1.35; }
   body.page-macro details.fold > summary::-webkit-details-marker { display: none; }
-  body.page-macro details.fold > summary::before { content: ""; flex: none; width: 3px; height: 14px;
-    border-radius: 1.5px; background: var(--link); }
+  body.page-macro details.fold > summary::before {content:none;}
   /* Wave E — Data health: green observed-OK / amber attention / gray neutral or unavailable. */
   body.page-macro details.fold.health-strip > summary::before { width: 9px; height: 9px; border-radius: 50%; }
   body.page-macro details.fold.health-ok > summary::before { background: var(--up, #22d97a);
@@ -2178,7 +2161,7 @@
   body.page-macro .cb-tab:hover { color: var(--ink-1); border-color: color-mix(in srgb, var(--link) 45%, var(--hair)); }
   body.page-macro .cb-radio:checked + .cb-tab { color: var(--ink-1); background: var(--tile);
     border-color: color-mix(in srgb, var(--link) 55%, var(--hair));
-    box-shadow: inset 0 -2px 0 0 var(--link); }
+  }
   body.page-macro .cb-radio:focus-visible + .cb-tab { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset: 2px; }
   /* a full-width hairline divider that wraps right after the tab row, above the panes */
   body.page-macro .cb-tabs::after { content: ""; order: 1; flex-basis: 100%; height: var(--rule);
@@ -2208,7 +2191,7 @@
      only floating risk surface on the page — the acute dislocation filter above no
      longer floats. The early-warning that LEADS the credit gauge; the dislocation
      strip is the late, falling-knife filter. */
-  body.page-macro #risk-state { scroll-margin-top: 16px; border-left: 4px solid var(--rs); }
+  body.page-macro #risk-state { scroll-margin-top: 16px; border:1px solid var(--line); }
   body.page-macro #risk-state.rs-float { order: -1; }
   /* Perf: loud-state pulse = pseudo animating ONLY opacity (compositor); the old
      box-shadow keyframes repainted the panel every frame (2026-07-21 mobile audit). */
@@ -2245,7 +2228,7 @@
   .sh-div { color: var(--muted); font-size: 12px; padding: 0 2px; }
   /* Market Risk Radar v2 (engine/risk_radar.py) — the PRIMARY top-of-page risk read. Floats above
      the regime hero (below the acute dislocation filter) and pulses when the gated loud banner fires. */
-  body.page-macro #risk-radar { scroll-margin-top: 16px; border-left: 4px solid var(--rr); }
+  body.page-macro #risk-radar { scroll-margin-top: 16px; border:1px solid var(--line); }
   body.page-macro #risk-radar.rr-float { order: -1; }
   /* rr-loud pulse: shares the compositor pseudo defined beside #risk-state above */
   body.page-macro #risk-radar .rr-head { font-size: 20px; font-weight: 800; color: var(--rr); letter-spacing: .2px; }
@@ -2326,10 +2309,10 @@
   .plo-authority{font-weight:600}
   .plo-state{padding:10px 0 2px;font-weight:600}
   .plo-rows{display:grid;gap:7px;margin-top:10px}
-  .plo-row{display:grid;grid-template-columns:minmax(54px,76px) minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--hair,var(--line));border-left:3px solid color-mix(in srgb,var(--link) 62%,var(--line));border-radius:var(--r-ctl,8px);background:var(--panel)}
-  .plo-row[data-state="PULLBACK"]{border-left-color:color-mix(in srgb,var(--warn) 72%,var(--line))}
-  .plo-row[data-state="RESET_TURN"]{border-left-color:color-mix(in srgb,var(--ok) 72%,var(--line))}
-  .plo-row[data-state="RESUMED"]{border-left-color:color-mix(in srgb,var(--muted) 72%,var(--line))}
+  .plo-row{display:grid;grid-template-columns:minmax(54px,76px) minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel)}
+  .plo-row[data-state="PULLBACK"]{}
+  .plo-row[data-state="RESET_TURN"]{}
+  .plo-row[data-state="RESUMED"]{}
   .plo-ticker{font-family:var(--num);font-size:13px;font-weight:800;letter-spacing:.02em}
   .plo-copy{font-size:12px;line-height:1.45;color:var(--text)}
   .plo-zone{font-family:var(--num);font-size:11px;color:var(--muted);white-space:nowrap}
@@ -2482,7 +2465,7 @@
   html[data-theme="light"] body.page-stocks .pbr-r.pbr-warm{
     background:color-mix(in srgb,#b98a2b 7%,#fff);
     border-color:color-mix(in srgb,#b98a2b 26%,#dde2ea);
-    border-left:3px solid #b98a2b;
+    border:1px solid var(--line);
   }
   html[data-theme="light"] body.page-stocks .pbr-wl{ color:#7a5a14; }
 
@@ -2707,7 +2690,7 @@
     body.page-macro .ms-front>.rrx>.rrx-main .rrx-ramp{align-items:flex-end}
     body.page-macro .ms-front>.rrx>.rrx-main .rrx-tk{height:44px;flex:0 0 44px;min-height:44px}
     body.page-macro .ms-front>.rrx>.rrx-side{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;
-      padding-left:20px;border-left:1px solid color-mix(in srgb,var(--rc) 22%,var(--line))}
+      padding-left:20px;border-left:1px solid var(--line)}
     body.page-macro .ms-front>.ms-head{grid-area:head}
     body.page-macro .ms-front>.ms-top{grid-area:state;margin-top:14px}
     body.page-macro .ms-front>.ms-tape{grid-area:tape}
@@ -2759,7 +2742,7 @@
   }
   body.page-macro .ms-red .v-thesis{background:linear-gradient(120deg,var(--down) 0%,color-mix(in srgb,var(--down) 60%,var(--warn)) 45%,var(--warn) 85%);-webkit-background-clip:text;background-clip:text}
   body.page-macro .ms-yellow .v-thesis{background:linear-gradient(120deg,var(--warn) 0%,color-mix(in srgb,var(--warn) 55%,var(--info)) 50%,var(--info) 90%);-webkit-background-clip:text;background-clip:text}
-  body.page-macro .v-flip{margin:12px 0 0;padding:1px 0 1px 11px;border-left:2px solid color-mix(in srgb,var(--warn) 55%,transparent);
+  body.page-macro .v-flip{margin:12px 0 0;padding:1px 0 1px 11px;border:1px solid var(--line);
     background:none;font-size:12px;line-height:1.45;color:var(--ink-3)}
   body.page-macro .v-override{margin:10px 0 0;display:flex;align-items:flex-start;gap:7px;padding:8px 11px;border-radius:7px;
     border:var(--rule) solid color-mix(in srgb,var(--act) 38%,var(--hair));background:color-mix(in srgb,var(--act) 11%,transparent);
@@ -3613,7 +3596,6 @@ body.page-macro .sx-island{
   transform-style:preserve-3d;
   background:var(--panel);
   background-image:linear-gradient(160deg,rgba(255,255,255,.025) 0%,transparent 60%);
-  border-top-color:color-mix(in srgb,var(--isle-color,var(--info)) 55%,rgba(255,255,255,.6));
   box-shadow:none;
   transition:
     box-shadow .4s cubic-bezier(.34,1.08,.64,1),
@@ -3642,7 +3624,6 @@ body.page-macro .sx:not([data-open]) .sx-island{
   background:var(--panel);
   border-width:2px;
   border-color:color-mix(in srgb,var(--isle-color,var(--info)) 70%,transparent);
-  border-top-color:var(--isle-color,var(--info));
   box-shadow:
     var(--island-shadow-tight),
     var(--island-shadow-mid),
@@ -6537,7 +6518,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
   padding:14px 16px 12px;border-radius:var(--r-card);
   background:color-mix(in srgb, var(--text) 4%, transparent);
   border:1px solid var(--line);
-  border-left:2px solid var(--rkc-c,var(--ok));
+  
 }
 #dlg-risk .riskdlg-brief[data-rk-state="calm"],
 #dlg-risk .riskdlg-brief[data-rk-state="unknown"]{--rkc-c:var(--ok);}
@@ -7180,16 +7161,16 @@ body.page-macro.mx4-grid #sx-news-v2 .sxg-face.mx5-card-face .mx5-alerts-list{
 body.page-macro.mx4-grid .mx5-alert-item{
   position:relative;display:flex;align-items:flex-start;gap:11px;
   padding:12px 26px 12px 23px;border-bottom:1px solid rgba(255,255,255,.05);
-  border-left:3px solid transparent;
+  border:1px solid var(--line);
   transition:background .18s ease;
 }
 body.page-macro.mx4-grid .mx5-alert-item:last-child{border-bottom:none;}
 /* left severity accent bar per row + glass row hover */
 body.page-macro.mx4-grid .mx5-alert-item.warn{
-  background:rgba(245,158,11,.04);border-left-color:var(--mx5-warn,#f59e0b);
+  background:var(--surface-warn-subtle,var(--panel2,var(--card)));
 }
 body.page-macro.mx4-grid .mx5-alert-item.info{
-  border-left-color:color-mix(in srgb,var(--ink-3,#8a93a3) 40%,transparent);
+  
 }
 body.page-macro.mx4-grid .mx5-alert-item:hover{background:rgba(255,255,255,.03);}
 body.page-macro.mx4-grid .mx5-alert-item.warn:hover{background:rgba(245,158,11,.07);}
@@ -7323,8 +7304,6 @@ body.page-macro.mx4-grid .wnx-card{
   text-decoration:none;overflow:hidden;
   transition:transform .16s ease,border-color .2s ease,background .2s ease,box-shadow .25s ease;
 }
-body.page-macro.mx4-grid .wnx-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--wnx-c);opacity:.85;border-radius:0 2px 2px 0;}
 body.page-macro.mx4-grid .wnx-card:hover,
 body.page-macro.mx4-grid .wnx-card:focus-visible{
   transform:translateY(-2px);outline:none;
@@ -7930,8 +7909,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
                             else ['an override on the market-state call', '市场状态判定上的覆盖规则']) if _mx5_ghost else none) %}
     {# Score color variable class #}
     {% set _mx5_sc_cls = 'mx5-score-green' if MS.color == 'green' else ('mx5-score-yellow' if MS.color == 'yellow' else 'mx5-score-red') %}
-    {# state colour as a TOKEN so it flips in zh (红涨绿跌); var() only resolves in
-       style="", NOT in bare SVG presentation attributes — every consumer below must
+    {# state colour as a TOKEN so it flips in zh (红涨绿跌); var() only resolves in, NOT in bare SVG presentation attributes — every consumer below must
        paint via style (or be covered by a CSS rule), never via stroke=/fill= attrs. #}
     {% set _mx5_sc_col = 'var(--up)' if MS.color == 'green' else ('var(--warn)' if MS.color == 'yellow' else 'var(--down)') %}
     {% set _mx5_sc_glow = 'color-mix(in srgb,var(--up) 70%,transparent)' if MS.color == 'green' else ('color-mix(in srgb,var(--warn) 70%,transparent)' if MS.color == 'yellow' else 'color-mix(in srgb,var(--down) 70%,transparent)') %}
@@ -9269,8 +9247,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       var(--panel2);
     border:1px solid color-mix(in srgb,var(--line) 82%,var(--text) 18%);border-radius:18px;
     box-shadow:0 28px 80px -30px rgba(2,8,23,.58),0 12px 30px -22px rgba(2,8,23,.5),inset 0 1px 0 color-mix(in srgb,#fff 58%,transparent)}
-  .rr-modal::before{content:"";position:absolute;z-index:-1;inset:0 0 auto;height:3px;
-    background:linear-gradient(90deg,var(--accent,var(--up)),color-mix(in srgb,var(--accent,var(--up)) 16%,transparent) 64%,transparent)}
   .rr-modal-hdr{position:relative;padding:24px 72px 17px 28px}
   .rr-modal-close{position:absolute;top:18px;right:20px;background:color-mix(in srgb,var(--panel) 78%,transparent);
     border:1px solid color-mix(in srgb,var(--line) 82%,transparent);font-size:18px;cursor:pointer;
@@ -9449,7 +9425,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   .rr-shadow-label{font-size:10px;font-weight:740;text-transform:uppercase;
     letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
   .rr-shadow-warn{font-size:9.5px;color:var(--ink-down, var(--down));font-style:italic;
-    border-left:2px solid var(--down);padding-left:6px;margin-top:4px;line-height:1.4}
+    border:1px solid var(--line);padding-left:6px;margin-top:4px;line-height:1.4}
   .rr-shadow-retired{font-size:10.5px;color:var(--muted);line-height:1.45}
   /* surprise anatomy mini-table */
   .rr-anatomy-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:4px}
@@ -11897,7 +11873,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% set _fgv5_label_en = _fgv5.get('label_en') or ('Neutral' if _fgv5_dial >= 40 and _fgv5_dial <= 60 else ('Greed' if _fgv5_dial > 60 else 'Fear')) %}
   {% set _fgv5_label_zh = _fgv5.get('label_zh') or {'Extreme Fear':'极度恐慌','Fear':'恐慌','Neutral':'中性','Greed':'贪婪','Extreme Greed':'极度贪婪'}.get(_fgv5_label_en, _fgv5_label_en) %}
   {# greed zone = bullish → --up (red in zh), fear zone = bearish → --down (green in zh);
-     var() needs style="", not SVG presentation attrs — needle paints via style below #}
+     var() needs, not SVG presentation attrs — needle paints via style below #}
   {% set _fgv5_col = 'var(--up)' if _fgv5_dial > 60 else ('var(--down)' if _fgv5_dial < 40 else 'var(--warn)') %}
   {# text twin: dial strokes/fills keep the vivid hue; the zone LABEL takes the text-grade ink #}
   {% set _fgv5_ink = 'var(--ink-up,var(--up))' if _fgv5_dial > 60 else ('var(--ink-down,var(--down))' if _fgv5_dial < 40 else 'var(--ink-warn,var(--warn))') %}
@@ -15946,8 +15922,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   #week-ahead .cal-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
   #week-ahead .cal-ev{flex:1 1 0;min-width:124px;border:1px solid var(--line);
     border-radius:8px;padding:8px 11px;background:var(--panel2)}
-  #week-ahead .cal-ev.cal-high{border-left-color:var(--down)}
-  #week-ahead .cal-ev.cal-med{border-left-color:var(--warn)}
+  #week-ahead .cal-ev.cal-high{}
+  #week-ahead .cal-ev.cal-med{}
   #week-ahead .cal-date{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--text)}
   #week-ahead .cal-lbl{font-size:12.5px;font-weight:600;margin:3px 0 2px;line-height:1.25}
   #week-ahead .cal-meta{font-size:10.5px;color:var(--muted)}
@@ -16329,7 +16305,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% if market_state and market_state.radar and market_state.radar.is_loud %}
     {% set rd = market_state.radar %}
     {% set rdcol = 'var(--down)' if rd.state == 'risk-off' else ('var(--orange)' if rd.state == 'elevated' else 'var(--warn)') %}
-    <p class="muted" style="font-size:11.5px;margin:8px 0 0;border-left:3px solid {{ rdcol }};padding-left:9px">
+    <p class="muted" style="font-size:11.5px;margin:8px 0 0;border:1px solid var(--line);padding-left:9px">
       {{ t('This macro/credit gauge is slow and lagging — a low read here is not an all-clear.', '此宏观/信用指标为慢速、滞后指标 — 低读数并不代表解除警报。') }}
       {{ t('The leading, near-term Risk Radar above is louder', '上方领先的近期风险雷达更为响亮') }}
       (<b style="color:{{ rdcol }}">{{ t(rd.state|upper, rd.state_zh) }}{% if rd.top_score is not none %} {{ rd.top_score }}/100{% endif %}</b>{% if rd.label_en %} — {{ t(rd.label_en, rd.label_zh) }}{% endif %}){{ t(' — it is the ≤21-day read to trust for timing.', ' — 它是择时应信赖的≤21日读数。') }}
@@ -16487,7 +16463,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   body.page-stocks .stk-ctx-strip{
     display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;
     padding:9px 14px;margin-bottom:12px;
-    border:1px solid var(--line);border-left:4px solid var(--muted);
+    border:1px solid var(--line);
     border-radius:8px;background:var(--panel2);
     font-size:12.5px;line-height:1.35;color:color-mix(in srgb,var(--text) 72%,transparent);
   }
@@ -16521,13 +16497,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     color:var(--ink-link,var(--link));text-decoration:none;
   }
   body.page-stocks .stk-ctx-strip .scx-more:hover{text-decoration:underline;}
-  body.page-stocks .stk-ctx-strip.ctx-green{border-left-color:var(--up);}
+  body.page-stocks .stk-ctx-strip.ctx-green{}
   body.page-stocks .stk-ctx-strip.ctx-green .scx-dot{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 22%,transparent);}
   body.page-stocks .stk-ctx-strip.ctx-green .scx-state{color:var(--ink-up,var(--up));}
-  body.page-stocks .stk-ctx-strip.ctx-yellow{border-left-color:var(--warn);}
+  body.page-stocks .stk-ctx-strip.ctx-yellow{}
   body.page-stocks .stk-ctx-strip.ctx-yellow .scx-dot{background:var(--warn);box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 22%,transparent);}
   body.page-stocks .stk-ctx-strip.ctx-yellow .scx-state{color:var(--ink-warn,var(--warn));}
-  body.page-stocks .stk-ctx-strip.ctx-red{border-left-color:var(--down);}
+  body.page-stocks .stk-ctx-strip.ctx-red{}
   body.page-stocks .stk-ctx-strip.ctx-red .scx-dot{background:var(--down);box-shadow:0 0 0 3px color-mix(in srgb,var(--down) 22%,transparent);}
   body.page-stocks .stk-ctx-strip.ctx-red .scx-state{color:var(--ink-down,var(--down));}
   </style>

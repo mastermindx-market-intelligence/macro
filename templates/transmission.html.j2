@@ -84,7 +84,7 @@ a{color:var(--ink-link, var(--blue));text-decoration:none}
   transition:transform .18s ease,box-shadow .2s ease,border-color .2s ease;animation:txUp .55s cubic-bezier(.2,.7,.3,1) both}
 .tx-ch:nth-child(2){animation-delay:.06s}.tx-ch:nth-child(3){animation-delay:.12s}
 .tx-ch:hover{transform:translateY(-2px);box-shadow:0 10px 28px -14px rgba(9,17,40,.28)}
-.tx-ch::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--chc)}
+.tx-ch::before{content:none;}
 .tx-ch.ch-rates{--chc:var(--ch-rates)}.tx-ch.ch-infl{--chc:var(--ch-infl)}.tx-ch.ch-usd{--chc:var(--ch-usd)}
 .tx-ch .ch-eyebrow{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--chc)}
 .tx-ch .ch-state{font-size:29px;font-weight:800;letter-spacing:-.028em;color:var(--ink);line-height:1.12;margin:10px 0 2px}
@@ -213,11 +213,11 @@ table.gate td.num{text-align:right;font-variant-numeric:tabular-nums}
 .bd-tag.bd-fall{background:rgba(211,11,11,.10);color:var(--ink-act, var(--red))}
 .bd-tag.bd-rise{background:rgba(26,127,67,.12);color:var(--ink-ok, var(--green))}
 .bd b.dn{color:var(--ink-act, var(--red))} .bd b.up{color:var(--ink-ok, var(--green))}
-.bd-badge{margin-top:12px;padding:12px 14px;border-radius:12px;border-left:4px solid var(--faint);background:color-mix(in srgb,var(--grid) 40%,var(--card))}
+.bd-badge{margin-top:12px;padding:12px 14px;border-radius:var(--r-card,12px);border:1px solid var(--line);background:var(--panel2)}
 .bd-badge-h{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.bd-liquidity{border-left-color:var(--red)} .bd-growth{border-left-color:var(--amber)}
-.bd-real_rate{border-left-color:var(--amber)} .bd-oil{border-left-color:var(--teal)}
-.bd-reflation{border-left-color:var(--blue)} .bd-quiet{border-left-color:var(--faint)}
+.bd-liquidity{} .bd-growth{}
+.bd-real_rate{} .bd-oil{}
+.bd-reflation{} .bd-quiet{}
 .site-footer{max-width:1180px;margin:30px auto 0;padding:18px 20px;border-top:1px solid var(--grid);display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px}
 
 /* zh 红涨绿跌 (operator ruling 2026-07-21): DIRECTION classes only are swapped below.
@@ -250,7 +250,7 @@ html[data-theme="dark"]{--drag:#e58a97;--lift:#54c39a}
 .sec-head .sh-dot{width:8px;height:8px;border-radius:3px;background:var(--sh-c,var(--faint));display:inline-block;align-self:center}
 .rv-card{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:22px;position:relative;overflow:hidden;
   animation:txUp .55s cubic-bezier(.2,.7,.3,1) both}
-.rv-card::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--accent,var(--blue))}
+.rv-card::before{content:none;}
 .rv-take{display:flex;align-items:center;gap:12px 14px;flex-wrap:wrap;margin:0 0 15px}
 .rv-take .ln{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.45;flex:1;min-width:240px}
 .rv-take .ln b{color:var(--ink);font-weight:800}

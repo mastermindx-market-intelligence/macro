@@ -1,0 +1,16 @@
+pages_scanned 0 changed 2
+pages_scanned 2000 changed 7
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/mockups/evidence/container-edge-removal/integrate_main_consumers.py", line 56, in <module>
+    exec(compile(code,str(E/'project_consumers.py'),'exec'),{'__name__':'__main__','__file__':str(E/'project_consumers.py')})
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/mockups/evidence/container-edge-removal/project_consumers.py", line 98, in <module>
+    assert data_blocks(before)==data_blocks(after),(rel,'embedded JSON changed')
+                                ~~~~~~~~~~~^^^^^^^
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/mockups/evidence/container-edge-removal/project_consumers.py", line 83, in <lambda>
+    data_blocks=lambda s:re.findall(r'<script\b[^>]*type=[\"\']application/(?:ld\+)?json[\"\'][^>]*>(.*?)</script>',s,re.I|re.S)
+                         ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/re/__init__.py", line 278, in findall
+    return _compile(pattern, flags).findall(string)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+KeyboardInterrupt

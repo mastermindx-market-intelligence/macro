@@ -198,8 +198,8 @@ body.estate a:hover{text-decoration:underline; text-underline-offset:3px;}
    threads all seven diagrams — in options, the zero-line is where meaning inverts.
    Static by design (reduced-motion-safe, deterministic render). */
 .est-prose figure.sig-fig{margin:22px 0; max-width:var(--measure);}
-.sig-stage{position:relative; width:100%; border:1px solid var(--hair-strong);
-  border-left:3px solid var(--rail); border-radius:var(--r-md); background:
+.sig-stage{position:relative; width:100%; border:1px solid var(--line);
+   border-radius:var(--r-md); background:
     linear-gradient(180deg, color-mix(in srgb,var(--link) 4%,transparent), transparent 60%),
     var(--tile); box-shadow:var(--ms); padding:16px 18px; overflow:hidden;}
 .sig-stage svg{display:block; width:100%; height:auto; color:var(--ink-3);
@@ -320,9 +320,7 @@ html[data-lang="zh"] .est-ctrls .lang-toggle .zh-opt{color:var(--text);
   line-height:1.28; letter-spacing:-.01em; margin:38px 0 14px; scroll-margin-top:76px;
   display:flex; align-items:center; gap:11px; padding:0 0 var(--sp-3);
   border-bottom:1px solid var(--hair-strong);}
-.est-prose h2::before{content:""; flex:none; align-self:center; width:3px; height:19px;
-  border-radius:2px; background:linear-gradient(180deg, var(--rail),
-    color-mix(in srgb, var(--rail) 35%, transparent));}
+.est-prose h2::before{content:none;}
 .est-prose h2 .est-h2-mark{font-family:var(--num); font-variant-numeric:tabular-nums;
   font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--ink-3); flex:none;}
 html[data-lang="zh"] .est-prose h2{letter-spacing:0;}
@@ -338,7 +336,7 @@ html[data-lang="zh"] .est-prose h2{letter-spacing:0;}
   border:1px solid var(--hair-strong); border-radius:5px; padding:1px 6px;}
 .est-prose a{border-bottom:1px solid color-mix(in srgb,var(--link) 40%,transparent); text-decoration:none;}
 .est-prose a:hover{border-bottom-color:var(--link); text-decoration:none;}
-.est-prose blockquote{margin:18px 0; padding:4px 0 4px 20px; border-left:3px solid var(--rail);
+.est-prose blockquote{margin:18px 0; padding:4px 0 4px 20px; border:1px solid var(--line);
   color:var(--ink-1); font-style:italic; opacity:.94;}
 
 /* callouts — lead / warn / key (house colours, mono heading label) */
@@ -347,19 +345,19 @@ html[data-lang="zh"] .est-prose h2{letter-spacing:0;}
 .est-prose .callout .co-h{display:block; margin-bottom:4px; font-family:var(--num);
   font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;}
 .est-prose .callout p{margin:6px 0;} .est-prose .callout > :first-child.co-h + p{margin-top:0;}
-.est-prose .callout.lead{border-left:4px solid var(--link);}
+.est-prose .callout.lead{border:1px solid var(--line);}
 .est-prose .callout.lead .co-h{color:var(--link);}
-.est-prose .callout.warn{border-left:4px solid var(--warn);
+.est-prose .callout.warn{border:1px solid var(--line);
   background:color-mix(in srgb,var(--warn) 8%,var(--panel2));}
 .est-prose .callout.warn .co-h{color:var(--warn);}
-.est-prose .callout.key{border-left:4px solid var(--ok);
+.est-prose .callout.key{border:1px solid var(--line);
   background:color-mix(in srgb,var(--ok) 9%,var(--panel2));}
 .est-prose .callout.key .co-h{color:var(--ok);}
 
 /* formula — the desk's chalk line. Mono, on a faint tile with an accent edge. */
 .est-prose .formula{font-family:var(--num); font-variant-numeric:tabular-nums;
   font-size:var(--fs-md); line-height:1.7; background:var(--tile);
-  border:1px solid var(--hair-strong); border-left:3px solid var(--rail);
+  border:1px solid var(--line); 
   border-radius:var(--r-md); padding:16px 18px; margin:18px 0; overflow-x:auto;
   max-width:var(--measure); color:var(--ink-1); letter-spacing:.005em;}
 .est-prose .formula strong{color:var(--link); font-weight:700;}

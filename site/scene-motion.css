@@ -236,7 +236,7 @@ html[data-motion-page="market-terminal"] #watchlists .mt-wl .r.tick{animation:no
 html[data-motion-page="market-terminal"] #watchlists[data-mm-phase="reason"] .mt-wl .r.tick{
   animation:mm-terminal-tick 1.55s ease both}
 html[data-motion-page="market-terminal"] #watchlists[data-mm-phase="resolve"] .mt-wl .r.sel{
-  box-shadow:inset 2px 0 0 var(--pl-ac),0 0 0 2px rgba(89,128,255,.11)}
+  box-shadow:inset 0 0 0 1px var(--pl-hr),0 0 0 2px rgba(89,128,255,.11)}
 @keyframes mm-terminal-tick{
   0%{background:transparent}
   34%,72%{background:color-mix(in srgb,var(--q-green) 24%,transparent)}

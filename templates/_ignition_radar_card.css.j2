@@ -7,7 +7,7 @@
   .igx { --ic-col: var(--ok);
          display: grid; gap: 12px; margin: 12px 0 2px; padding: 15px 18px;
          border-radius: 12px; background: var(--panel); border: 1px solid var(--line);
-         border-left: 4px solid var(--ic-col); font-size: 12.5px; line-height: 1.4;
+          font-size: 12.5px; line-height: 1.4;
          box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 16px 32px -24px rgba(0,0,0,.4); }
   .igx.igx-ignited { --ic-col: var(--ok);
          background: color-mix(in srgb, var(--ok) 4%, var(--panel)); }
@@ -77,7 +77,7 @@
      IGNITION RADAR STRIP (.igs) — compact span12 variant (us_stocks page).
      Rides the page's .panel card chrome; adds only a state-tinted left accent.
      ========================================================================== */
-  .igs { --ic-col: var(--muted); border-left: 4px solid var(--ic-col); }
+  .igs { --ic-col: var(--muted); border:1px solid var(--line); }
   .igs.igs-ignited { --ic-col: var(--ok); }
   .igs.igs-warming { --ic-col: var(--warn); }
   /* header row */

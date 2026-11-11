@@ -133,16 +133,16 @@
 .sv-sec-h { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 14px 0 6px; }
 .sv-evidence { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
 .sv-dim {
-  background: var(--panel2); border: 1px solid var(--line); border-left-width: 3px;
+  background: var(--panel2); border: 1px solid var(--line); 
   border-radius: 8px; padding: 7px 10px; min-width: 0;
 }
 .sv-dim-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
 .sv-dim-val { font-size: 13.5px; font-weight: 650; color: var(--text); margin-top: 1px; }
 .sv-dim-gloss { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
-.sv-t-good { border-left-color: var(--up); }
-.sv-t-bad { border-left-color: var(--down); }
-.sv-t-warn { border-left-color: var(--warn); }
-.sv-t-neutral { border-left-color: var(--muted); }
+.sv-t-good .sv-dim-val { color:var(--ink-up,var(--up)); }
+.sv-t-bad .sv-dim-val { color:var(--ink-down,var(--down)); }
+.sv-t-warn .sv-dim-val { color:var(--ink-warn,var(--warn)); }
+.sv-t-neutral .sv-dim-val { color:var(--muted); }
 
 /* ---- Layer 2b: country slot cards ---- */
 .sv-country { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 10px 0; }
@@ -211,11 +211,7 @@
 .sv-group > summary {
   font-size: 13.5px; text-transform: none; letter-spacing: 0; font-weight: 650;
   color: var(--text); padding: 13px 14px; margin: 6px 0 0;
-  border-left: 3px solid var(--muted); border-radius: 0;
+  border:1px solid var(--line); border-radius: 0;
   background: color-mix(in srgb, var(--panel2) 60%, transparent);
 }
 .sv-group > summary:hover { background: var(--panel2); }
-#result > details:nth-of-type(1) > summary { border-left-color: #8b5cf6; }
-#result > details:nth-of-type(2) > summary { border-left-color: var(--up); }
-#result > details:nth-of-type(3) > summary { border-left-color: var(--link); }
-#result > details:nth-of-type(4) > summary { border-left-color: var(--muted); }

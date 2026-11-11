@@ -6,7 +6,7 @@
   .mctx b { font-weight:650; }
   .mctx .mc-k { color:var(--muted); }
   .desk { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:13px; }
-  .tcard { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--tc,#888);
+  .tcard { background:var(--panel); border:1px solid var(--line); 
     border-radius:11px; padding:12px 13px 11px; scroll-margin-top:14px; transition:border-color .15s; }
   .tcard:hover { border-color:var(--muted); }
   .tcard .top { display:flex; align-items:center; gap:8px; }
@@ -42,7 +42,7 @@
      tags (shape-read labels) are dropped here to keep the dense card legible when narrow. */
   @media (max-width:680px){
     .desk { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
-    .desk .tcard { padding:9px 9px 8px; border-left-width:3px; border-radius:9px; }
+    .desk .tcard { padding:9px 9px 8px;  border-radius:var(--r-card,12px); }
     .desk .tcard .top { gap:5px; }
     .desk .tcard .nm { font-size:12.5px; }
     .desk .tcard .sc { font-size:17px; } .desk .tcard .sc small { font-size:9px; }
@@ -181,8 +181,8 @@
   .pulse-grp { white-space:normal; }
   .pulse-grp a { color:var(--ink-link, var(--link)); text-decoration:none; }
   .pulse-grp a:hover { text-decoration:underline; }
-  .pulse-size { border:1px solid color-mix(in srgb, var(--warn) 45%, var(--line));
-    border-left:3px solid var(--warn); border-radius:7px; padding:2px 8px;
+  .pulse-size { border:1px solid var(--line);
+     border-radius:var(--r-ctl,8px); padding:2px 8px;
     background:color-mix(in srgb, var(--warn) 8%, transparent); cursor:default; }
 
   /* ---- Leadership Health (display-only shape/fragility reads) ---- */
@@ -267,7 +267,7 @@
     .ign-strip { background:var(--panel); border:1px solid var(--line); border-radius:11px; padding:10px 12px; margin:6px 0 6px; }
     .ign-note { font-size:11px; color:var(--muted); font-style:italic; margin:2px 0 9px; line-height:1.45; max-width:96ch; }
     .ign-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
-    .ign-card { border:1px solid var(--line); border-left:3px solid var(--ic,#888); border-radius:9px; padding:9px 10px; background:var(--panel2); }
+    .ign-card { border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:9px 10px; background:var(--panel2); }
     .ign-card .ic-top { display:flex; align-items:baseline; gap:8px; }
     .ign-card .ic-rk { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; }
     .ign-card .ic-nm { font-weight:640; font-size:12.5px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

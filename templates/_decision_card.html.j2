@@ -67,10 +67,7 @@
       var(--panel);
     box-shadow:0 22px 64px rgba(0,0,0,.34),0 3px 12px rgba(0,0,0,.18);
   }
-  .row-pop:has(> .row-pop-decision)::before{
-    content:"";display:block;height:3px;position:sticky;top:0;z-index:2;
-    background:linear-gradient(90deg,var(--link),color-mix(in srgb,var(--link) 12%,transparent));
-  }
+  .row-pop:has(> .row-pop-decision)::before{content:none;}
   .row-pop-decision{display:block}
   .row-pop-decision-hd{
     display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;

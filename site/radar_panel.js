@@ -109,7 +109,7 @@
       ".rp-lane.rp-lane-empty-lane{opacity:.6}",
       ".rp-lane-h{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between}",
       ".rp-lane-cnt{color:var(--muted);font-weight:400}",
-      ".rp-lchip{font-size:11px;padding:3px 6px;border-left:2px solid;border-radius:0 4px 4px 0;background:color-mix(in srgb,var(--panel) 60%,transparent);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+      ".rp-lchip{font-size:11px;padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:color-mix(in srgb,var(--panel) 60%,transparent);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
       ".rp-lmore{font-size:10px;color:var(--link);cursor:pointer;padding:2px 6px;opacity:.8;border:none;background:none}",
       ".rp-lane-mt{color:var(--muted);font-size:11px;opacity:.5;padding:2px 0}",
       /* spotlight section */
@@ -470,13 +470,13 @@
         var cap = 3;
         chips.slice(0, cap).forEach(function (f) {
           var s = st(f.state);
-          lh += '<div class="rp-lchip" style="border-left-color:' + linfo.c + '" title="' + esc(f.name) + '">' + bi(f.name || f.basket, f.name_zh || f.name || f.basket) + "</div>";
+          lh += '<div class="rp-lchip" style="color:' + linfo.c + '" title="' + esc(f.name) + '">' + bi(f.name || f.basket, f.name_zh || f.name || f.basket) + "</div>";
         });
         if (chips.length > cap) {
           var extra = chips.length - cap;
           lh += '<div id="rp-lane-ex-' + li + '" style="display:none">';
           chips.slice(cap).forEach(function (f) {
-            lh += '<div class="rp-lchip" style="border-left-color:' + linfo.c + '">' + bi(f.name || f.basket, f.name_zh || f.name || f.basket) + "</div>";
+            lh += '<div class="rp-lchip" style="color:' + linfo.c + '">' + bi(f.name || f.basket, f.name_zh || f.name || f.basket) + "</div>";
           });
           lh += "</div>";
           lh += '<button class="rp-lmore" onclick="(function(btn){var ex=document.getElementById(\'rp-lane-ex-' + li + '\');var open=ex.style.display!==\'none\';ex.style.display=open?\'none\':\'block\';btn.innerHTML=open?\'+' + extra + ' <span class=l-en>more</span><span class=l-zh>更多</span>\':"<span class=l-en>collapse</span><span class=l-zh>收起</span>"})(this)">+' + extra + " " + bi("more", "更多") + "</button>";

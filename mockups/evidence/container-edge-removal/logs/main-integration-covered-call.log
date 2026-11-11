@@ -1,0 +1,18 @@
+✔ templates/calculators/covered_call.html.j2: ordinary trade renders and copies the annualized value (29.522125ms)
+✔ templates/calculators/covered_call.html.j2: overflow to an unavailable value never throws and refreshes every field (1.692ms)
+✔ templates/calculators/covered_call.html.j2: blank and zero days withhold annualization without throwing (3.785542ms)
+✔ templates/calculators/covered_call.html.j2: the copied line carries exactly the displayed values (3.264667ms)
+✔ templates/calculators/covered_call.html.j2: negative control — the pre-fix renderer throws on the same input (3.638625ms)
+✔ site/tools/calculators/covered-call.html: ordinary trade renders and copies the annualized value (3.169166ms)
+✔ site/tools/calculators/covered-call.html: overflow to an unavailable value never throws and refreshes every field (1.346541ms)
+✔ site/tools/calculators/covered-call.html: blank and zero days withhold annualization without throwing (4.152375ms)
+✔ site/tools/calculators/covered-call.html: the copied line carries exactly the displayed values (2.355208ms)
+✔ site/tools/calculators/covered-call.html: negative control — the pre-fix renderer throws on the same input (3.435833ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 183.647417

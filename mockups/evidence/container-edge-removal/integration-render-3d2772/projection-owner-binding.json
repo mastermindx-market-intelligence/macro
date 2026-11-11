@@ -1,0 +1,13 @@
+{
+  "source_recipe": "mockups/evidence/container-edge-removal/project_integrated_consumers.py",
+  "source_recipe_sha256": "5f337bf81179692bd639bbb653f2ccdc568a7d9bab56f815307766a8a238b2f3",
+  "adapted_recipe_sha256": "909507a9bd992d532cd0a2006fb7d5b481c55865b59cad5bb9e5801b1dc3e895",
+  "main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "accepted_reference": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "changes": [
+    "explicit refs",
+    "new receipt paths",
+    "prepared input tree",
+    "complete-pass accounting"
+  ]
+}

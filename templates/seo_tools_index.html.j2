@@ -19,8 +19,7 @@
   /* ── regime-rail section header (the estate signature) ─────────────────────── */
   .th-sech{display:flex; align-items:center; gap:11px; margin:0 0 16px;
     padding:0 0 var(--sp-3); border-bottom:1px solid var(--hair-strong);}
-  .th-sech::before{content:""; flex:none; align-self:center; width:3px; height:18px; border-radius:2px;
-    background:linear-gradient(180deg, var(--rail), color-mix(in srgb,var(--rail) 35%,transparent));}
+  .th-sech::before{content:none;}
   .th-sech .sh-n{font-family:var(--num); font-variant-numeric:tabular-nums; font-size:var(--fs-label);
     font-weight:700; letter-spacing:.06em; color:var(--ink-3);}
   .th-sech .sh-t{font-family:var(--font-ui); font-size:calc(var(--fs-h2) + 1px); font-weight:700;
@@ -35,12 +34,10 @@
   .th-card{display:flex; flex-direction:column; border:1px solid var(--hair-strong); border-radius:var(--r-lg);
     padding:18px 20px 18px; background:var(--panel); box-shadow:var(--ms); text-decoration:none;
     position:relative; overflow:hidden; transition:transform .2s cubic-bezier(.2,.7,.3,1),border-color .2s,box-shadow .2s;}
-  .th-card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
-    background:linear-gradient(180deg, var(--rail), color-mix(in srgb,var(--rail) 22%,transparent));
-    opacity:0; transition:opacity .2s;}
+  .th-card::before{content:none;}
   .th-card:hover{transform:translateY(-3px); border-color:color-mix(in srgb,var(--link) 46%,var(--hair-strong));
     box-shadow:0 18px 38px -20px color-mix(in srgb,var(--link) 42%,transparent); text-decoration:none;}
-  .th-card:hover::before{opacity:1;}
+  .th-card:hover::before{content:none;}
   .th-card .tc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
   .th-card .tc-glyph{flex:none; width:56px; height:36px; margin:-1px -2px 0 0;}
   .th-card .tc-title{font-family:var(--font-ui); font-size:calc(var(--fs-md) + 3px); font-weight:700;
@@ -56,8 +53,8 @@
 
   /* ── featured spreadsheet — a wider machined panel with accent edge ───────── */
   .th-feat{display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px;
-    border:1px solid color-mix(in srgb,var(--link) 26%,var(--hair-strong)); border-radius:var(--r-lg);
-    border-left:3px solid var(--rail); padding:22px 24px; box-shadow:var(--ms); background:
+    border:1px solid var(--line); border-radius:var(--r-lg);
+     padding:22px 24px; box-shadow:var(--ms); background:
       radial-gradient(130% 150% at 100% 0%, color-mix(in srgb,var(--link) 9%,transparent), transparent 58%),
       var(--panel);
     text-decoration:none; transition:transform .2s,border-color .2s,box-shadow .2s;}

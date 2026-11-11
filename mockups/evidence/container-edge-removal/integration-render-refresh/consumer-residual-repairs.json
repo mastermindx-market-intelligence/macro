@@ -1,0 +1,13 @@
+{
+  "repairs": [
+    {
+      "path": "site/canada.html",
+      "reason": "Canada accepted separator parity",
+      "before": "9245a381a83d9a0708e329d866374ee998e20b3840548b253d4bc78c87996637",
+      "after": "ed02f2908fc9ba3cbeba605b3f54e1fbf7f8a004358ac844acf442b200699e1c"
+    }
+  ],
+  "renamed_import_dependencies": [],
+  "finance_state_labels": true,
+  "china_context_labels": true
+}

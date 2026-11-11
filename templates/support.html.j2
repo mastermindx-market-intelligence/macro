@@ -133,8 +133,7 @@ html[data-lang="zh"] .slip .k{ letter-spacing:.04em;
 .ticket{ position:relative; border:1px solid var(--glass-brd); border-radius:16px;
   background:var(--surface); box-shadow:var(--card-shadow); overflow:hidden; }
 /* the routing rail — 3px accent edge; turns --ok on success, --act on error */
-.ticket::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
-  background:var(--accent,var(--info)); transition:background .25s ease; }
+.ticket::before{content:none;}
 html[data-form="success"] .ticket{ --accent:var(--ok); }
 html[data-form="error"]   .ticket{ --accent:var(--act); }
 

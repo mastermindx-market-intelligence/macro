@@ -1,0 +1,18 @@
+{
+  "head": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "merge_exit_code": 1,
+  "seconds": 16.1,
+  "merge_head": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "conflicts": [
+    "site/confluence_screener.html",
+    "site/crypto.html",
+    "site/etfs.html",
+    "site/quant_lab.html",
+    "site/us_stocks.html",
+    "site/us_track_record.html",
+    "site/vector.html",
+    "site/watchlist.html"
+  ],
+  "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/merge.log"
+}

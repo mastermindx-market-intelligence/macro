@@ -75,8 +75,8 @@
   .tierhead { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:2px 0 8px; }
   .tierhead h2 { margin:0; } .tierhead .bl { font-size:12px; color:var(--muted); max-width:64ch; }
   .yes { color:var(--ink-up, var(--up)); font-weight:700; } .no { color:var(--muted); }
-  .grave { border-left:3px solid var(--down); }
-  .win   { border-left:3px solid var(--up); }
+  .grave { border:1px solid var(--line); }
+  .win   { border:1px solid var(--line); }
   details.method summary { cursor:pointer; font-weight:600; }
   details.method dl { margin:8px 0 0; } details.method dt { font-weight:600; margin-top:7px; }
   details.method dd { margin:1px 0 0; color:var(--muted); font-size:12.5px; }
@@ -93,7 +93,7 @@
   table.sl-table thead th.sorted::after { content:" ↓"; font-size:9px; }
   table.sl-table thead th.sorted.asc::after { content:" ↑"; }
   .ovl-note { font-size:11.5px; color:var(--muted); margin:-2px 0 9px; max-width:80ch;
-    border-left:2px solid color-mix(in srgb,var(--link) 45%,var(--line)); padding-left:9px; }
+    border:1px solid var(--line); padding-left:9px; }
   .frontier-note { font-size:12px; color:var(--muted); max-width:86ch; margin:0 0 10px; }
   .frontier-table td { padding-top:8px; padding-bottom:8px; }
   .frontier-table .sig { font-size:12.5px; }
@@ -152,7 +152,7 @@
   .frontier-count { font-size:11px; color:var(--muted); margin-top:4px; }
   /* D2: Signal Foundry machine-lane panel */
   .sf-dark-note { font-size:12.5px; color:var(--muted); padding:8px 0; }
-  .sf-disclaimer { font-size:11.5px; color:var(--muted); border-left:2px solid var(--line);
+  .sf-disclaimer { font-size:11.5px; color:var(--muted); border:1px solid var(--line);
     padding-left:9px; margin:6px 0 10px; max-width:80ch; }
   .sf-funnel { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
   .sf-funnel-chip { font-size:12px; padding:4px 10px; border-radius:18px;
@@ -186,7 +186,7 @@
   .sf-detail.open { display:table-row; }
   .sf-detail > td { padding:8px 12px 12px; background:var(--panel2); border-top:none;
     font-size:12.5px; }
-  .sf-docket-note { font-size:12px; color:var(--muted); border-left:2px solid var(--up);
+  .sf-docket-note { font-size:12px; color:var(--muted); border:1px solid var(--line);
     padding-left:9px; margin:8px 0 4px; }
 </style>
 </head>
@@ -279,7 +279,7 @@
 
   {# A2: data-driven adjudication events, rendered generically #}
   {%- for adj in adjudications %}
-  <div class="frontier-note" style="border-left:3px solid var(--line);padding-left:10px;margin-top:10px">
+  <div class="frontier-note" style="border:1px solid var(--line);padding-left:10px;margin-top:10px">
     <strong>{{ t(adj.get('title', adj.date), adj.get('title_zh', adj.get('title', adj.date))) }}</strong>
     {%- if adj.get('waves') %}
     {%- for w in adj.waves %}
@@ -302,7 +302,7 @@
     {%- endif %}
     {%- if adj.get('day3_results') %}
     {%- set d3 = adj.day3_results %}
-    <div style="margin-top:10px;border-left:3px solid var(--accent,#4a9);padding-left:10px">
+    <div style="margin-top:10px;border:1px solid var(--line);padding-left:10px">
       <strong>{{ t(d3.label, d3.label_zh) }}</strong>
       {{ t(d3.families_tested~' families tested → '~d3.pass_count~' PASS, '~d3.accrue_count~' ACCRUE, '~d3.directional_fail_count~' DIRECTIONAL FAIL, '~d3.park_count~' PARK, '~d3.null_count~' NULL, gaming DATA-BLOCKED.',
            d3.families_tested~'个家族测试 → '~d3.pass_count~' 通过, '~d3.accrue_count~' 积累中, '~d3.directional_fail_count~' 方向性否决, '~d3.park_count~' 暂存, '~d3.null_count~' 无效, 博彩数据受阻。') }}

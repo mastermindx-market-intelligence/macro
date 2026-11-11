@@ -34,10 +34,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Technology (Equal-Weight) — Intelligence Detail</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="../theme.css?v=9bd171a6">
-<link rel="stylesheet" href="../assets/css/e89f427d.css?v=e89f427d">
+<link rel="stylesheet" href="../theme.css?v=fbd43fb7">
+<link rel="stylesheet" href="../assets/css/d809d3f0.css?v=d809d3f0">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="../navigation-refresh.css?v=edfd821b">
+<link rel="preload" as="style" href="../navigation-refresh.css?v=38e922e9">
 </head>
 <body>
 
@@ -47,7 +47,7 @@
 
 
 
-    <link rel="stylesheet" href="../navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="../navigation-refresh.css?v=38e922e9">
     <div class="nav-links">
     
     <a class="nav-brand" href="../start.html" aria-label="MASTERMINDX — Home">
@@ -357,7 +357,7 @@ function render() {
     + '<div class="id-mini"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
 
   h += '<section class="id-group-read"><div class="id-group-read-copy"><h2>' + L('Group read','整体读数') + '</h2><p>' + actionRead + ' · ' + reasonRead + '</p></div><div class="id-callout">' + (reliability === 'low' ? L('Judge members individually','请逐一判断成分股') : setupState) + '</div></section>';
-  if (reliability === 'low') h += '<div class="action" style="border-left-color:var(--orange)">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
+  if (reliability === 'low') h += '<div class="action">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
 
   h += '<nav class="id-nav" aria-label="Detail sections"><a href="#overview">' + L('Overview','概览') + '</a><a href="#structure">' + L('Structure','结构') + '</a><a href="#members">' + L('Members','成分') + '</a><a href="#evidence">' + L('Evidence','证据') + '</a></nav>';
 
@@ -408,6 +408,6 @@ function render() {
 render();
 document.addEventListener('langchange', render);
 </script>
-<script src="../theme.js?v=aa83d371" defer></script>
+<script src="../theme.js?v=7b79ec00" defer></script>
 </body>
 </html>

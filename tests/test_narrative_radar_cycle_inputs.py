@@ -83,7 +83,7 @@ def test_no_new_css_colour_literal_or_color_mix():
     styles = re.findall(r"<style>(.*?)</style>", _TEMPLATE.read_text(encoding="utf-8"), re.S)
     assert len(styles) == 1
     assert len(re.findall(r"#[0-9a-fA-F]{3,8}\b", styles[0])) == 31
-    assert styles[0].count("color-mix(") == 26
+    assert styles[0].count("color-mix(") == 25  # the decorative honesty-banner rail was retired
 
 
 def test_both_languages_present_one_visible():

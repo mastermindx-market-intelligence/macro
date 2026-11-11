@@ -1,0 +1,11 @@
+{
+  "schema": "mastermind.merge_object_availability.v1",
+  "hydrated_object": {
+    "sha": "ad8b44af0283a114aed44c82780633dee2525dfb",
+    "bytes": 55301,
+    "source": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/blobs/ad8b44af0283a114aed44c82780633dee2525dfb",
+    "product_worktree_mutated": false
+  },
+  "objects_checked": 165405,
+  "missing": []
+}

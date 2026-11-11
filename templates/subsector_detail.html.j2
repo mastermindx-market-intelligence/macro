@@ -24,7 +24,7 @@ a{text-decoration:none;color:inherit}
 .pill.neutral{color:var(--muted)}
 .tier{display:inline-flex;align-items:center;font-weight:800;font-size:10px;padding:3px 7px;border-radius:var(--r-ctl,8px);color:var(--bg);white-space:nowrap}
 .tier.T1{background:var(--up)}.tier.T2{background:var(--ok)}.tier.T3{background:var(--info)}.tier.T4{background:var(--g-mid)}.tier.none{background:var(--g-mid);color:var(--muted)}
-.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--link);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}
+.action{color:var(--text);font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);padding:10px 12px;margin:10px 0}
 .id-hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr);gap:12px;margin:4px 0 12px}
 .id-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);padding:18px}
 .id-eyebrow{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--link)}
@@ -166,7 +166,7 @@ function render() {
     + '<div class="id-mini"><div class="k">' + L('Coverage','覆盖') + '</div><div class="v">' + coverage + '</div></div><div class="id-mini"><div class="k">' + L('Method','方法') + '</div><div class="v">' + L('Equal-weight','等权') + '</div></div></div></div></section>';
 
   h += '<section class="id-group-read"><div class="id-group-read-copy"><h2>' + L('Group read','整体读数') + '</h2><p>' + actionRead + ' · ' + reasonRead + '</p></div><div class="id-callout">' + (reliability === 'low' ? L('Judge members individually','请逐一判断成分股') : setupState) + '</div></section>';
-  if (reliability === 'low') h += '<div class="action" style="border-left-color:var(--orange)">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
+  if (reliability === 'low') h += '<div class="action">' + L('⚠ Low-confidence: fewer than 6 priced members means this equal-weight read can be driven by 1–2 stocks. The aggregate stays descriptive; judge the members individually.', '⚠ 低可信：有价成分少于6只时，等权读数可能由1-2只个股主导。整体读数仅供描述，请逐一判断成分股。') + '</div>';
 
   h += '<nav class="id-nav" aria-label="Detail sections"><a href="#overview">' + L('Overview','概览') + '</a><a href="#structure">' + L('Structure','结构') + '</a><a href="#members">' + L('Members','成分') + '</a><a href="#evidence">' + L('Evidence','证据') + '</a></nav>';
 

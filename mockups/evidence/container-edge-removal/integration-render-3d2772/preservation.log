@@ -1,0 +1,7 @@
+{"html_visited": 0, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 3000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 6000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 9000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 12000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"html_visited": 15000, "typed_mismatches": 0, "unknown_scripts": 0}
+{"data_differences": 0, "typed_json_mismatches": 0, "approved_script_differences": 465, "historical_structure_differences": 12, "unexplained_scripts": [], "ew_equal": 31, "ew_inputs": 31, "product_inputs_equal": true, "bound_files": 15523, "unchanged_bound_files": 12137}

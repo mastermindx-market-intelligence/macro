@@ -78,11 +78,11 @@ html[data-theme="light"] .rf-q:focus { box-shadow:0 0 0 3px color-mix(in srgb, v
 
 .rf-fams { list-style:none; margin:var(--sp-2,8px) 0 0; padding:0; }
 .rf-fam { display:flex; width:100%; align-items:center; gap:var(--sp-2,8px); background:none;
-  border:0; border-left:2px solid transparent; color:var(--muted); cursor:pointer;
+  border:1px solid var(--line);  color:var(--muted); cursor:pointer;
   padding:var(--sp-2,8px) var(--sp-2,8px); font:500 var(--fs-sm)/1.3 var(--font-ui);
   text-align:left; min-height:40px; border-radius:0; }
 .rf-fam:hover { color:var(--text); }
-.rf-fam[aria-pressed="true"] { color:var(--text); border-left-color:var(--link); font-weight:700; }
+.rf-fam[aria-pressed="true"] { color:var(--text);  font-weight:700; }
 .rf-fam-n { flex:1; min-width:0; }
 .rf-fam-c { color:var(--muted); font-size:var(--fs-label); flex:none; }
 .rf-fam.is-zero { opacity:.4; }
@@ -197,7 +197,7 @@ html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow
 .rf-blk p, .rf-blk li { margin:var(--sp-1,4px) 0 0; }
 .rf-def { font-size:var(--fs-md); }
 .rf-dep { margin:0 0 var(--sp-3,12px); padding:var(--sp-2,8px) var(--sp-3,12px);
-  border-left:2px solid var(--line); color:var(--muted); font-size:var(--fs-sm); }
+  border:1px solid var(--line); color:var(--muted); font-size:var(--fs-sm); }
 .rf-alias { margin:0; color:var(--muted); font-size:var(--fs-sm); }
 .rf-basis { margin:var(--sp-3,12px) 0 0; font-size:var(--fs-sm); }
 .rf-basis-v { margin-left:var(--sp-2,8px); color:var(--text); }
@@ -270,7 +270,7 @@ html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow
    LIGHT: a bare muted line on white reads as unstyled body text, so light adds a
    --panel2 recess to make it legibly a STATE. Same rail, different material. */
 .rf-unlinked { color:var(--muted); font-size:var(--fs-sm); margin:var(--sp-1,4px) 0 0;
-  border-left:2px solid var(--line); padding-left:var(--sp-2,8px); }
+  border:1px solid var(--line); padding-left:var(--sp-2,8px); }
 html[data-theme="light"] .rf-unlinked { background:var(--panel2);
   border-radius:0 var(--r-ctl,8px) var(--r-ctl,8px) 0;
   padding:var(--sp-2,8px) var(--sp-3,12px); }

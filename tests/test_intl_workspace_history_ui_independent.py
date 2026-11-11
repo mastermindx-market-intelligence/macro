@@ -256,7 +256,10 @@ def test_css_is_static_scoped_and_does_not_mint_tokens_or_fetch():
     assert '[data-theme="light"] .intl-history__result' in css
     assert '[data-theme="light"] .intl-history__boundary' in css
     assert '[data-theme="light"] .intl-history :is(input,select)' in css
-    assert 'border-inline-start:3px solid var(--link)' in css
+    notice = re.search(r'\.intl-history__notice\s*\{([^}]+)\}', css).group(1)
+    assert 'border:1px solid var(--line)' in notice
+    assert 'background:var(--panel2)' in notice
+    assert 'border-inline-start:3px solid var(--link)' not in css
     assert 'var(--card-shadow)' in css
     assert '.style.' not in controller
     assert 'insertRule' not in controller

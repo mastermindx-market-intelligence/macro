@@ -177,13 +177,13 @@ def test_css_has_two_art_directions_and_zero_colour_literals():
     assert ".fi-scrim" in css
     assert "prefers-reduced-motion" in css
 
-    # Freshness rail/pip mechanism for both themes. Dark uses a ::before
-    # pip with glow; light suppresses the pip and uses a 3px border-left
-    # rail instead — verified by the data-state-freshness + ::before rules
-    # and the [data-theme="light"] override.
+    # Local freshness remains visible in both art directions and has words.
     assert ".fi-section-head[data-state-freshness]" in css
-    assert ".fi-section-head::before" in css
-    assert "[data-theme=\"light\"] .fi-section-head::before { display: none" in css
+    assert ".fi-freshness-label" in css
+    assert "[data-theme=\"light\"] .fi-section-head::before { display: none" not in css
+    js = (TEMPLATES / "finance_intelligence.js").read_text(encoding="utf-8")
+    assert "labelFor('freshness', value)" in js
+    assert "setSectionFreshness(reratingHead, fs)" in js
     assert "fi-step-dot" in css
     assert ".fi-rerating-steps::before" in css
     assert ".fi-rerating-step[data-active=\"true\"] .fi-step-dot" in css
@@ -1032,3 +1032,4 @@ def test_w20a_committed_lists_live_in_the_kept_sections() -> None:
         slice_html = _w20a_section_slice(html, other)
         assert 'class="fi-falsifiers"' not in slice_html
         assert 'class="fi-hint-roster"' not in slice_html
+

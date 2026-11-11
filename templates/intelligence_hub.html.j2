@@ -441,8 +441,7 @@
   .ecards{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(272px,1fr)); }
   .ecard{ position:relative; padding:14px 15px 13px; overflow:hidden;
     display:flex; flex-direction:column; }
-  .ecard.lead::before{ content:""; position:absolute; inset:0 auto 0 0; width:2px;
-    background:var(--accent,var(--info)); }
+  .ecard.lead::before{content:none;}
   /* the figure stays pinned to the top-right corner however far the chips wrap */
   .ecard .et{ display:flex; align-items:baseline; gap:8px 7px; flex-wrap:wrap; padding-right:38px; }
   .ecard .et .score, .ecard .et .dscore{ position:absolute; top:12px; right:15px; margin:0; }

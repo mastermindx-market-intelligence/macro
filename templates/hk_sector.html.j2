@@ -26,13 +26,13 @@
   .lad { display:inline-block; padding:2px 10px; border-radius:11px; font-weight:700; font-size:12px;
          background:color-mix(in srgb, var(--c, var(--muted)) 16%, var(--panel)); color:color-mix(in srgb, var(--c, var(--muted)) 82%, var(--text)); }
   .lad.up { --c:var(--up); } .lad.down { --c:var(--down); } .lad.flat { --c:var(--muted); }
-  .entrybar { display:flex; gap:10px; align-items:flex-start; margin:10px 0 4px; padding:9px 12px; border-radius:9px; background:var(--panel2); border-left:4px solid var(--muted); font-size:14px; }
+  .entrybar { display:flex; gap:10px; align-items:flex-start; margin:10px 0 4px; padding:9px 12px; border-radius:var(--r-card,12px); background:var(--panel2); border:1px solid var(--line); font-size:14px; }
   .entrytag { font-weight:800; font-size:12px; padding:3px 9px; border-radius:7px; background:var(--panel); border:1px solid var(--line); white-space:nowrap; }
-  .urg-now .entrytag{background:var(--up);color:#fff;} .urg-now{border-left-color:var(--up);}
-  .urg-imminent .entrytag{background:var(--g-cold);color:#fff;} .urg-imminent{border-left-color:var(--g-cold);}
-  .urg-caution .entrytag{background:var(--warn);color:#1a1a1a;} .urg-caution{border-left-color:var(--warn);}
-  .urg-exit .entrytag{background:var(--down);color:#fff;} .urg-exit{border-left-color:var(--down);}
-  .agewhen { margin:6px 0; padding:7px 11px; border-radius:8px; background:var(--panel2); border-left:3px solid var(--link); font-size:13px; color:var(--text); }
+  .urg-now .entrytag{background:var(--up);color:var(--text-on-dark);} .urg-now{}
+  .urg-imminent .entrytag{background:var(--g-cold);color:var(--text-on-dark);} .urg-imminent{}
+  .urg-caution .entrytag{background:var(--warn);color:var(--text-on-light);} .urg-caution{}
+  .urg-exit .entrytag{background:var(--down);color:var(--text-on-dark);} .urg-exit{}
+  .agewhen { margin:6px 0; padding:7px 11px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); font-size:13px; color:var(--text); }
   .agechip { font-size:11px; font-weight:700; padding:2px 7px; border-radius:9px; background:var(--panel); color:var(--muted); border:1px solid var(--line); white-space:nowrap; }
   .cyclebox { margin:8px 0; padding:9px 12px; border-radius:9px; background:var(--panel2); font-size:13px; line-height:1.6; }
   .card { background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:11px 13px; margin:9px 0; }

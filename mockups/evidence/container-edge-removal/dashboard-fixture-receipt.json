@@ -1,0 +1,17 @@
+{
+  "source_commit": "a739405d248e3e985c6215067878028f8403fad9",
+  "purpose": "capture-only template fixture; never publish these synthetic dashboard HTML files",
+  "surrounding_dashboard": "existing tests.test_dashboard_template_render._base_vm synthetic fixture",
+  "brief_source": "site/master_brief.json",
+  "brief_sha256": "41e33b561cecf67e870c635c0d3e384b1836371b7bfe26b847e1d9bd38e6af25",
+  "outputs": [
+    {
+      "path": "site/macro_edge_fixture.html",
+      "sha256": "5f6a6bb2e35cf9473c7d0f67562ac524805d0fc2f758d94516325f0879a90a13"
+    },
+    {
+      "path": "site/stocks_edge_fixture.html",
+      "sha256": "ca440fec37e836cfc8c89cade6dbb3556b65f0469be2c0904653a274a79f8ff0"
+    }
+  ]
+}

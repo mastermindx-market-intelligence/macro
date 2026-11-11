@@ -121,8 +121,8 @@
   .tk { display:inline-flex; flex-direction:column; gap:2px; padding:7px 12px; border-radius:10px; background:var(--panel); border:1px solid var(--line); }
   .tk .nm { font-weight:700; font-size:13px; }
   .tk .cd { font-size:10px; color:var(--muted); font-family:ui-monospace,Menlo,monospace; }
-  .tk.long { border-left:3px solid #1f9a55; } .tk.short { border-left:3px solid #d23f3f; }
-  html[data-lang="zh"] .tk.long { border-left-color:#d23f3f; } html[data-lang="zh"] .tk.short { border-left-color:#1f9a55; }
+  .tk.long { border:1px solid var(--line); } .tk.short { border:1px solid var(--line); }
+  html[data-lang="zh"] .tk.long {  } html[data-lang="zh"] .tk.short {  }
   /* ── chains ── */
   .chain { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 15px; margin:10px 0; }
   .chain .hd { display:flex; align-items:center; gap:9px; font-weight:700; font-size:13.5px; }
@@ -134,7 +134,7 @@
   .leg { font-size:11px; padding:3px 8px; border-radius:7px; background:var(--panel2); border:1px solid var(--line); }
   .leg.on { color:#1f9a55; border-color:#1f9a5544; } .leg.off { color:var(--muted); opacity:.6; }
   /* ── misc ── */
-  .digest { white-space:pre-wrap; font:12px/1.55 ui-monospace,Menlo,monospace; background:var(--panel2); border:1px solid var(--line); border-left:4px solid var(--link); border-radius:12px; padding:13px 15px; margin:12px 0; }
+  .digest { white-space:pre-wrap; font:12px/1.55 ui-monospace,Menlo,monospace; background:var(--panel2); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:13px 15px; margin:12px 0; }
   .xmit { border-radius:12px; padding:13px 16px; margin:16px 0; border:1px solid var(--line); background:var(--panel2); font-size:13px; line-height:1.6; }
   .xmit code { font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:var(--ink-link, var(--link)); }
   .strip { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
@@ -183,7 +183,7 @@
   /* ── discovery queue ── */
   .disc-queue { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin:12px 0; }
   .disc-card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
-  .disc-card.off-desk { border-left:3px solid #8b5cf6; }
+  .disc-card.off-desk { border:1px solid var(--line); }
   .disc-card .disc-ticker { font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--ink-link, var(--link)); font-weight:700; }
   .disc-card .disc-name { font-size:12.5px; font-weight:700; margin:3px 0; }
   .disc-card .disc-reason { font-size:11px; color:var(--muted); margin-top:3px; line-height:1.4; }
@@ -467,6 +467,7 @@
     {% for f in b.flagged_tickers %}
     <span class="tk {{ 'long' if f.side=='long-context' else 'short' }}">
       <span class="nm">{{ f.name or f.ticker }}</span>
+      <span class="cd">{{ t("Long context", "多头背景") if f.side == "long-context" else t("Short context", "空头背景") }}</span>
       <span class="cd">{{ f.ticker }}{% if f.surfaces %} · {{ f.surfaces|join('+') }}{% endif %}</span>
     </span>
     {% endfor %}
@@ -486,7 +487,7 @@
   {% endfor %}
   {% if b.analysis.cross_refs %}
   {% for x in b.analysis.cross_refs %}
-  <div class="xmit" style="border-left:4px solid var(--warn)">⚠ {{ bl(x.tag_en, x.tag_zh) }}</div>
+  <div class="xmit" style="border:1px solid var(--line);">⚠ {{ bl(x.tag_en, x.tag_zh) }}</div>
   {% endfor %}
   {% endif %}
   {% endif %}

@@ -1,0 +1,140 @@
+Run: https://github.com/mastermindx-market-intelligence/macro/actions/runs/43057303734/job/130651318148
+Subject head: bf7de965767cdfc2cd82d976bac3dd0243e56d50
+Tested merge: 69b6d7dbc7a369bc0424a14f78d6812990f0a031
+Original decoded log: job-130651318148.log
+Original decoded log SHA256: 5a33e6a3928c6299d11fbffb9f5bfba59c1b3fe7ef65971f1fe479f7e0f43950
+Original decoded log bytes: 355110
+
+EXACT TESTED SOURCE
+File: .github/ci/legacy-jobs.yml
+Git blob: 1e92336803f0d106e60a682de004f1b261ca3c8a
+Source: https://github.com/mastermindx-market-intelligence/macro/blob/69b6d7dbc7a369bc0424a14f78d6812990f0a031/.github/ci/legacy-jobs.yml
+Both setup semantic step_spec_sha256: 599923c90b0ae63d3675884351d89ad5d503a185ac27ef4a5d7e7c9ea1472db8
+SOURCE 12115:       - name: install observation browser
+SOURCE 12116:         run: python -m playwright install --with-deps chromium
+SOURCE 12117:       - name: Prophet observation discovery — full-population search, access failure and theme geometry
+SOURCE 12118:         run: python -m pytest tests/test_prophet_observations_browser.py -q
+SOURCE 47132:       - name: Install Chromium for the scan-card browser contract
+SOURCE 47133:         run: python -m playwright install --with-deps chromium
+SOURCE 47134:       - name: Anonymous scan, rights, consent and first-value UX
+SOURCE 47135:         run: >-
+SOURCE 47136:           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+
+SELECTED ORIGINAL LOG LINES (omitted spans are not reproduced)
+
+--- original lines 3091-3098 ---
+3091: 2026-11-11T16:50:27.6814327Z ##[group]prophet-lab — install observation browser
+3092: 2026-11-11T16:50:27.9629657Z Installing dependencies...
+3093: 2026-11-11T16:50:27.9695272Z Switching to root user to install dependencies...
+3094: 2026-11-11T16:50:28.0435006Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+3095: 2026-11-11T16:50:28.1259902Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+3096: 2026-11-11T16:50:28.1830273Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [764 kB]
+3097: 2026-11-11T16:50:28.2086278Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [693 kB]
+3098: 2026-11-11T16:50:28.2165382Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]
+
+--- original lines 3106-3107 ---
+3106: 2026-11-11T16:52:47.7126671Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease
+3107: 2026-11-11T16:52:47.7127143Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+
+--- original lines 3117-3125 ---
+3117: 2026-11-11T16:53:48.3225775Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease
+3118: 2026-11-11T16:53:48.3226268Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+3119: 2026-11-11T16:53:52.4927330Z Fetched 1473 kB in 3min 20s (7355 B/s)
+3120: 2026-11-11T16:53:53.4627471Z Reading package lists...
+3121: 2026-11-11T16:53:53.4759064Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+3122: 2026-11-11T16:53:53.4759994Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+3123: 2026-11-11T16:53:53.4760910Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+3124: 2026-11-11T16:53:53.4762076Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+3125: 2026-11-11T16:53:53.4762780Z W: Some index files failed to download. They have been ignored, or old ones used instead.
+
+--- original lines 3183-3191 ---
+3183: 2026-11-11T16:53:53.8947773Z The following NEW packages will be installed:
+3184: 2026-11-11T16:53:53.8948390Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+3185: 2026-11-11T16:53:53.8955056Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+3186: 2026-11-11T16:53:53.8955531Z   xfonts-utils
+3187: 2026-11-11T16:53:53.9137184Z 0 upgraded, 9 newly installed, 0 to remove and 3 not upgraded.
+3188: 2026-11-11T16:53:53.9137657Z Need to get 21.1 MB of archives.
+3189: 2026-11-11T16:53:53.9138209Z After this operation, 79.5 MB of additional disk space will be used.
+3190: 2026-11-11T16:53:53.9138834Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+3191: 2026-11-11T16:54:06.2185182Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+
+--- original lines 3208-3217 ---
+3208: 2026-11-11T16:55:17.6236990Z Get:3 https://archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+3209: 2026-11-11T16:55:20.1126702Z Get:4 https://archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+3210: 2026-11-11T16:55:20.9588662Z Get:5 https://archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+3211: 2026-11-11T16:55:21.2358876Z Get:6 https://archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+3212: 2026-11-11T16:55:21.7358024Z Get:7 https://archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+3213: 2026-11-11T16:55:22.4280203Z Get:8 https://archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+3214: 2026-11-11T16:55:22.6267138Z Get:9 https://archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+3215: 2026-11-11T16:55:27.7758113Z Get:10 https://archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+3216: 2026-11-11T16:55:28.5802808Z Fetched 21.1 MB in 1min 34s (223 kB/s)
+3217: 2026-11-11T16:55:28.6037841Z Selecting previously unselected package fonts-ipafont-gothic.
+
+--- original lines 3266-3275 ---
+3266: 2026-11-11T16:55:31.1205604Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+3267: 2026-11-11T16:55:31.1310099Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+3268: 2026-11-11T16:55:31.1324079Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+3269: 2026-11-11T16:55:31.1336461Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+3270: 2026-11-11T16:55:31.1348819Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+3271: 2026-11-11T16:55:31.1570425Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+3272: 2026-11-11T16:55:31.1583677Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+3273: 2026-11-11T16:55:31.1597788Z Setting up xfonts-utils (1:7.7+6build3) ...
+3274: 2026-11-11T16:55:31.1632760Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+3275: 2026-11-11T16:55:31.1898156Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+
+--- original lines 3289-3289 ---
+3289: 2026-11-11T16:55:32.8689220Z Downloading Chrome for Testing 158.0.8127.18 (playwright chromium v1254) from https://cdn.playwright.dev/builds/cft/158.0.8127.18/linux64/chrome-linux64.zip
+
+--- original lines 3301-3301 ---
+3301: 2026-11-11T16:55:36.3210764Z Chrome for Testing 158.0.8127.18 (playwright chromium v1254) downloaded to /home/runner/.cache/ms-playwright/chromium-1254
+
+--- original lines 3314-3315 ---
+3314: 2026-11-11T16:55:36.7142725Z FFmpeg (playwright ffmpeg v1013) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1013
+3315: 2026-11-11T16:55:36.7145086Z Downloading Chrome Headless Shell 158.0.8127.18 (playwright chromium-headless-shell v1254) from https://cdn.playwright.dev/builds/cft/158.0.8127.18/linux64/chrome-headless-shell-linux64.zip
+
+--- original lines 3327-3330 ---
+3327: 2026-11-11T16:55:39.2590294Z Chrome Headless Shell 158.0.8127.18 (playwright chromium-headless-shell v1254) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1254
+3328: 2026-11-11T16:55:39.2768607Z ##[endgroup]
+3329: 2026-11-11T16:55:39.2858077Z ##[group]prophet-lab — Prophet observation discovery — full-population search, access failure and theme geometry
+3330: 2026-11-11T16:55:48.4255645Z ...................                                                      [100%]
+
+--- original lines 3337-3338 ---
+3337: 2026-11-11T16:55:48.4260973Z 19 passed, 1 warning in 8.66s
+3338: 2026-11-11T16:55:48.6357239Z ##[endgroup]
+
+--- original lines 3568-3594 ---
+3568: 2026-11-11T16:56:47.0531945Z ##[group]catalyst-loop-integrated — Install Chromium for the scan-card browser contract
+3569: 2026-11-11T16:56:47.3256893Z Installing dependencies...
+3570: 2026-11-11T16:56:47.3335708Z Switching to root user to install dependencies...
+3571: 2026-11-11T16:56:47.3868172Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+3572: 2026-11-11T16:56:47.4254766Z Hit:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+3573: 2026-11-11T16:56:47.4277900Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+3574: 2026-11-11T16:56:47.4290245Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+3575: 2026-11-11T16:56:47.4359442Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+3576: 2026-11-11T16:56:47.4382449Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+3577: 2026-11-11T16:56:47.5707749Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1444 kB]
+3578: 2026-11-11T16:56:47.5819871Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [315 kB]
+3579: 2026-11-11T16:56:47.5851089Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1711 kB]
+3580: 2026-11-11T16:56:47.5923262Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [344 kB]
+3581: 2026-11-11T16:56:47.5977075Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1879 kB]
+3582: 2026-11-11T16:56:47.6109133Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [429 kB]
+3583: 2026-11-11T16:56:47.6135056Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [50.7 kB]
+3584: 2026-11-11T16:56:47.6176666Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+3585: 2026-11-11T16:56:47.6620762Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1160 kB]
+3586: 2026-11-11T16:56:47.6671691Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [234 kB]
+3587: 2026-11-11T16:56:47.7126120Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+3588: 2026-11-11T16:56:47.7228474Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+3589: 2026-11-11T16:56:47.7248993Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1729 kB]
+3590: 2026-11-11T16:56:47.7317843Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [396 kB]
+3591: 2026-11-11T16:56:47.7340453Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [45.4 kB]
+3592: 2026-11-11T16:56:47.7352085Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+3593: 2026-11-11T16:56:48.5603369Z Fetched 11.6 MB in 1s (10.7 MB/s)
+3594: 2026-11-11T16:56:49.5082169Z Reading package lists...
+
+--- original lines 3631-3633 ---
+3631: 2026-11-11T16:56:49.9347674Z 0 upgraded, 0 newly installed, 0 to remove and 40 not upgraded.
+3632: 2026-11-11T16:56:49.9736553Z ##[endgroup]
+3633: 2026-11-11T16:56:49.9825436Z ##[group]catalyst-loop-integrated — Anonymous scan, rights, consent and first-value UX
+
+--- original lines 3649-3649 ---
+3649: 2026-11-11T16:57:08.7656291Z 619 passed, 1 xfailed, 1 warning, 16 subtests passed in 18.18s

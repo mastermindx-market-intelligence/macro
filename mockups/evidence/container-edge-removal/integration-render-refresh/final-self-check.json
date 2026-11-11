@@ -1,0 +1,36 @@
+{
+  "schema": "mastermind.container_edge_final_self_check.v1",
+  "head": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "main": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "merge_head": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "no_conflicts": true,
+  "data_exact_main": true,
+  "whitespace_advisory": {
+    "whole_change": {
+      "advisory_bytes": 404990,
+      "paths": 59,
+      "exact_previously_qualified_or_upstream_blob_bindings": {
+        "qualified_tree": 59,
+        "previous_source": 0,
+        "incoming_main": 0
+      },
+      "unbound_paths": []
+    },
+    "integration_delta": {
+      "advisory_bytes": 11631,
+      "paths": 40,
+      "exact_previously_qualified_or_upstream_blob_bindings": {
+        "qualified_tree": 40,
+        "previous_source": 0,
+        "incoming_main": 0
+      },
+      "unbound_paths": []
+    }
+  },
+  "reference_trees": {
+    "qualified_tree": "f20caedf5522e5c72b1523d8d629c50ecab4e884",
+    "previous_source": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+    "incoming_main": "54b903f7b45ddf8000a8ab432d6ac1edd63be896"
+  },
+  "scope": "Whitespace advisories are retained, not claimed clean. Every affected file is exact previously qualified or incoming-main content; current final assembly adds no unbound file changes. No styling/source output is rewritten for this advisory."
+}

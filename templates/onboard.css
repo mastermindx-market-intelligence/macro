@@ -305,12 +305,8 @@ html.obm-lock #mmb-launch{opacity:0;pointer-events:none;transition:opacity .15s 
   position:relative;display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));
   align-items:stretch;gap:7px;padding-left:9px;
 }
-.obm-row::before{                    /* the tier's spine — fills when the row lights */
-  content:"";position:absolute;left:0;top:3px;bottom:3px;width:2px;border-radius:2px;
-  background:var(--st-hair-2);transform:scaleY(.42);transform-origin:top;
-  transition:transform .45s cubic-bezier(.22,.8,.3,1),background .35s;
-}
-.obm-row.obm-on::before{background:var(--row-hue);transform:scaleY(1)}
+.obm-row::before{content:none;}
+.obm-row.obm-on::before{content:none;}
 .obm-row-lbl{
   display:flex;align-items:center;font-family:var(--display);font-weight:800;
   font-size:8px;letter-spacing:.14em;color:var(--st-faint);white-space:nowrap;

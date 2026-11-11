@@ -84,7 +84,7 @@ html[data-theme="dark"] .tag{background:#163024;color:#7fd6a6}
 .pill{display:inline-block;padding:5px 12px;border-radius:9px;font-weight:700;font-size:13px;color:#fff}
 .sleevetiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:900px){.sleevetiles{grid-template-columns:repeat(2,1fr)}}
-.sleevetile{background:var(--bg);border:1px solid var(--grid);border-radius:12px;padding:13px 14px;border-left:4px solid var(--c,var(--muted))}
+.sleevetile{background:var(--bg);border:1px solid var(--grid);border-radius:var(--r-card,12px);padding:13px 14px;}
 .sleevetile .nm{font-size:12.5px;font-weight:700;color:var(--ink)}
 .sleevetile .px{font-size:18px;font-weight:800;color:var(--ink);margin-top:4px}
 .sleevetile .meta{font-size:11.5px;color:var(--muted);margin-top:3px}
@@ -102,7 +102,7 @@ html[data-theme="dark"] .tag{background:#163024;color:#7fd6a6}
 .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
 .tbl td,.tbl th{padding:7px 10px;border-bottom:1px solid var(--grid);text-align:left}
 .tbl td.n{text-align:right;font-variant-numeric:tabular-nums}
-.note{border-left:3px solid var(--amber);padding:6px 0 6px 14px;margin:8px 0;color:var(--text);font-size:13.5px}
+.note{border:1px solid var(--line);padding:6px 0 6px 14px;margin:8px 0;color:var(--text);font-size:13.5px}
 .note.r{border-color:var(--red)} .note.b{border-color:var(--blue)} .note.g{border-color:var(--green)}
 .minibar{height:24px;border-radius:7px;overflow:hidden;display:flex;font-size:11px;font-weight:700;color:#fff}
 .minibar div{display:flex;align-items:center;justify-content:center;min-width:0}

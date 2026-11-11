@@ -1,0 +1,20 @@
+{
+  "schema": "mastermind.container_edge_ci_first_failure.v1",
+  "workflow_run_id": 43057303734,
+  "attempt": 1,
+  "subject_head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50",
+  "tested_tree_sha": "69b6d7dbc7a369bc0424a14f78d6812990f0a031",
+  "base_sha": "fc2dffe6a9e564ac8c4338418afe585afd5afad2",
+  "plan_artifact_id": 13873120093,
+  "pack9_artifact_id": 13873312957,
+  "pack9_job_id": 130651318176,
+  "full_job_log_sha256": "323bba7c2199766b2a518dc222af2d4b2bc534ace0dbd6956c4ca4975e3a65d2",
+  "failure": "ontology-explorer browser setup timed out at 600 seconds; native download failures FETCH; completion response/descendant settlement unknown; installation never started by this path",
+  "source_assertion_failure_observed": false,
+  "original_semantic_unknown_preserved": true,
+  "retry_dispatched": false,
+  "cause": "Exact selected endpoint and transfer cause are not present in the retained evidence. DNS, mirror, TLS and network causes are not inferred.",
+  "scope": "Initial terminal pack9 diagnosis while the same original run continues. This is not a final run result.",
+  "source_repair": "None; existing one-shot acquisition recovery already attempted. Other packs may provide independent concrete diagnostic evidence.",
+  "baseline_change": "Integrated54b to testedfc2 contains35 data/stockbrief JSON paths only; no presentation/source/control changes."
+}

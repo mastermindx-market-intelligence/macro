@@ -62,7 +62,7 @@
       semiPill = '<span class="pill">' + L(esc(semi.label_en), zh);
       semiPill += '</span>';
     }
-    return '<a class="card" style="border-left-color:' + col + '" href="' + (g.chart_key ? detailHref(g) : '#') + '">'
+    return '<a class="card" href="' + (g.chart_key ? detailHref(g) : '#') + '">'
       + '<div class="top"><div><div class="nm">' + nameCell(g.label, g.label_zh) + '</div><div class="sct">' + nameCell(g.sector, g.sector_zh) + ' · ' + (g.n_priced || g.n_members) + ' ' + L('names', '只') + relBadge(g) + '</div></div>' + tierBadge(e.tier) + '</div>'
       + '<div class="row2">' + regimePill(r) + (e.tier ? '<span class="pill buy">' + L('ENTRY', '入场') + '</span>' : '') + '<span style="color:var(--muted);font-size:11px">' + freshTxt(e) + '</span></div>'
       + '<div class="meta">' + (r.rs_60d != null ? L('vs CSI 300, 60d', '近60日 对沪深300') + ' ' + signed(r.rs_60d) : '') + '</div>'

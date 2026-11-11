@@ -79,8 +79,8 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="stylesheet" href="../onboard.css?v=74613ad9">
-<link rel="stylesheet" href="../landing.css?v=c1ea6263">
+<link rel="stylesheet" href="../onboard.css?v=d56c38fa">
+<link rel="stylesheet" href="../landing.css?v=411b6941">
 <style>
 /* ════════════════════════════════════════════════════════════════
    PRODUCT-PAGE SHARED LAYER — identical bytes on all three pages.
@@ -94,9 +94,9 @@
   font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transition:color .15s}
 .chap-x i{font-style:normal;font-weight:800;font-size:.66rem;color:var(--faint)}
 .chap-x:hover{color:var(--muted)}
-.chap-x.on{color:var(--ink);position:relative}
+.chap-x.on{color:var(--ink);position:relative;font-weight:800;}
 .chap-x.on i{color:var(--pg-accent,var(--blue))}
-.chap-x.on::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:2px;border-radius:2px;background:var(--pg-accent,var(--blue))}
+.chap-x.on::after{content:none;}
 
 /* ── product hero ── */
 .phero{padding:clamp(46px,7vw,84px) 0 clamp(30px,4.5vw,56px)}
@@ -161,7 +161,7 @@
 .est-crumb .sep{color:var(--hair-2)}
 
 /* ── honesty callout (access & limitations) ── */
-.callout{border:1px solid var(--hair-2);border-left:3px solid var(--q-gold);background:var(--gold-wash);
+.callout{border:1px solid var(--hair-2);background:var(--gold-wash);
   border-radius:var(--r);padding:16px 18px;margin:18px 0}
 .callout .co-h{display:block;font-family:var(--display);font-weight:800;font-size:.86rem;color:var(--ink);margin-bottom:6px}
 .callout p{margin:0;font-size:.92rem;line-height:1.55;color:var(--ink-soft)}
@@ -458,7 +458,7 @@ html[data-lang="zh"] .ma-meter,html[data-lang="zh"] .ma-protag,html[data-lang="z
 html.still .ma-thread>*,html.still .ma-plot .cn,html.still .ma-plot .lvl,html.still .ma-spark{animation:none}
 html.still .ma-spark{left:calc(100% - 14px);opacity:1}
 </style>
-<link rel="stylesheet" href="../scene-motion.css?v=f426716d">
+<link rel="stylesheet" href="../scene-motion.css?v=ef422784">
 </head>
 <body>
 <nav class="nav" aria-label="Main">
@@ -1151,6 +1151,6 @@ LANG.apply(LANG.cur());
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';</script>
 <script src="../mm_brain.js?v=62cc8547" defer></script>
 <script src="../onboard.js?v=617b2faf" defer></script>
-<script defer data-whb data-root="../" src="../wh_banner.js?v=b1207f44"></script>
+<script defer data-whb data-root="../" src="../wh_banner.js?v=2fd3e543"></script>
 </body>
 </html>

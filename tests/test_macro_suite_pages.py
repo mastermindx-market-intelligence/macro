@@ -998,6 +998,29 @@ def test_bond_desk_cycle_phase_tokens_have_reviewed_pairs() -> None:
         assert labels.value_pair(token) == pair, token
 
 
+def test_business_cycle_phase_and_depth_breadth_copy_are_reviewed() -> None:
+    """Business-activity phase + contradiction copy renders reviewed EN/ZH (2026-11-03).
+
+    The 2026-11-03 regime bake moved `business_cycle_phase` to "contraction"
+    and fired the breadth-only depth/breadth contradiction for the first time;
+    the ZH twin stayed "Contraction" and the contradiction fell back to the
+    placeholder sentence (main, ci-pack-4).
+    """
+    from engine.market_os.macro_workspaces import business_activity
+    from lib.macro_suite_zh_parity import apply_zh_parity
+
+    phases = {"Expansion": "扩张", "Slowdown": "放缓", "Contraction": "收缩", "Recovery": "复苏"}
+    for en, zh in phases.items():
+        assert apply_zh_parity({"en": en, "zh": en}) == {"en": en, "zh": zh}, en
+    for depth, breadth in ((True, False), (False, True)):
+        cycle = {"recession_signal": {"available": True, "conditions": {"depth": depth, "breadth": breadth}}}
+        text = business_activity._detect_contradiction(cycle)
+        assert labels.lookup_plain_producer(text["en"]) is not None, (depth, breadth)
+        rendered = labels.apply_plain_pair({"en": text["en"], "zh": text["zh"]})[0]
+        assert rendered["en"] != labels.PLAIN_FALLBACK["en"], (depth, breadth)
+        assert not labels.machine_text_hits(rendered["en"]), (depth, breadth)
+
+
 def test_suite_section_navigation_uses_only_the_existing_shell_candidate() -> None:
     """Execute the shipped IIFE, including initial boot and accepted-location events.
 

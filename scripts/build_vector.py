@@ -2497,9 +2497,7 @@ html[data-theme="light"] .glass{background:color-mix(in srgb,var(--panel) 90%,tr
 /* one radius for every glass surface on the hub — out-specifies theme.css's
    `html body .card{border-radius:12px}` so cards match the clock, alerts + tooltip */
 .wrap .glass{border-radius:16px}
-.acc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
- background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 22%,transparent));
- transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.acc::before{content:none;}
 .acc::after{content:'';position:absolute;inset:0;z-index:-1;opacity:0;
  background:radial-gradient(360px 180px at 100% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 68%);transition:opacity .25s ease}
 
@@ -2726,8 +2724,7 @@ a:focus-visible,.links a:focus-visible,.ha-item summary:focus-visible{outline:2p
 .gd-isl .body::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
  background:linear-gradient(140deg,rgba(255,255,255,.62),rgba(255,255,255,.06) 40%,rgba(0,0,0,.16));
  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px;opacity:.95}
-.gd-isl .body::after{content:'';position:absolute;left:16%;right:16%;bottom:-.5px;height:2.5px;border-radius:2px;
- background:var(--qc);box-shadow:0 0 10px var(--qc),0 0 3px var(--qc);opacity:calc(.35 + .65*var(--f,1))}
+.gd-isl .body::after{content:none;}
 .gd-isl .body:hover,.gd-isl .body:focus-visible{outline:none;border-color:color-mix(in srgb,var(--qc) 62%,var(--line));
  box-shadow:inset 0 1px 0 rgba(255,255,255,.66),inset 0 -9px 15px rgba(0,0,0,.32),0 14px 30px -10px rgba(0,0,0,.72),0 7px 22px -6px color-mix(in srgb,var(--qc) 62%,transparent)}
 .gd-isl.sel .body{border-color:color-mix(in srgb,var(--qc) 70%,var(--line))}

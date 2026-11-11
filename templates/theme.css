@@ -156,6 +156,14 @@
   --gbtn-sheen:     rgba(255,255,255,.09);
   /* Retained evidence states share the canonical theme surfaces. */
   --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
+  /* Quiet semantic surfaces; labels retain the status and directional meaning. */
+  --surface-info-subtle: color-mix(in srgb, var(--info) 6%, var(--panel));
+  --surface-ok-subtle: color-mix(in srgb, var(--ok) 6%, var(--panel));
+  --surface-act-subtle: color-mix(in srgb, var(--act) 6%, var(--panel));
+  --surface-up-subtle: color-mix(in srgb, var(--up) 8%, var(--panel));
+  --surface-down-subtle: color-mix(in srgb, var(--down) 8%, var(--panel));
+  --text-on-dark: #fff;
+  --text-on-light: #1a1a1a;
   --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
   /* ── Macro Command tints (templates/macro_command.css) ────────────────────
      color-mix on an added surface line is enforce-added-illegal; the mixes
@@ -1029,26 +1037,19 @@ html body :is(a.actitem, a.idx-alloc, .nbcard, a.scard):hover {
 .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item)::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: -1; opacity: 0;
   transition: opacity .3s ease;
-  background:
-    radial-gradient(130% 150% at 0% 50%, color-mix(in srgb, var(--link, var(--blue, #5b9dff)) 18%, transparent), transparent 62%),
-    linear-gradient(90deg, color-mix(in srgb, var(--link, var(--blue, #5b9dff)) 10%, transparent), color-mix(in srgb, #9b8cff 7%, transparent) 70%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent); }
-.nav-dd-menu a:not(.nm-feat):not(.nav-mega-item)::after {
-  content: ""; position: absolute; left: 3px; top: 50%; transform: translateY(-50%);
-  height: 0; width: 2.5px; border-radius: 3px; z-index: -1; opacity: 0;
-  background: linear-gradient(color-mix(in srgb, var(--link, var(--blue, #5b9dff)) 90%, #fff), #9b8cff);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--link, var(--blue, #5b9dff)) 70%, transparent);
-  transition: height .3s cubic-bezier(.2,.7,.3,1), opacity .3s ease; }
+  background:var(--panel2,var(--card));
+  box-shadow:none; }
+.nav-dd-menu a:not(.nm-feat):not(.nav-mega-item)::after {content:none;}
 .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item):hover { transform: translateX(2px); }
 .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item):hover::before,
 .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item).active::before { opacity: 1; }
 .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item):hover::after,
-.nav-dd-menu a:not(.nm-feat):not(.nav-mega-item).active::after { height: 56%; opacity: 1; }
+.nav-dd-menu a:not(.nm-feat):not(.nav-mega-item).active::after {content:none;}
 @keyframes navCaretBreath { 0%,100% { opacity: .45; transform: translateX(0); } 50% { opacity: .9; transform: translateX(2px); } }
 @media (prefers-reduced-motion: reduce) {
   .nav-dd-menu .nav-sub > a.nav-sub-trig .caret-r { animation: none; }
   .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item):hover { transform: none; }
-  .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item)::after { transition: none; } }
+  .nav-dd-menu a:not(.nm-feat):not(.nav-mega-item)::after {content:none;} }
 
 @media (max-width: 560px) {   /* no hover on touch — render the submenu inline-expanded */
   .nav-dd { display: block; }
@@ -1211,7 +1212,7 @@ html body :is(a.actitem, a.idx-alloc, .nbcard, a.scard):hover {
    synthesis page (aibrief.html). Replaces the old inline AI Master Brief panel on the
    macro / China / Hong Kong / Bitcoin dashboards. Rendered as a clickable .panel/.card. */
 .aibrief-card { display: flex; align-items: center; gap: 14px; text-decoration: none;
-  color: inherit; border-left: 3px solid var(--link); cursor: pointer;
+  color: inherit; border:1px solid var(--line); cursor: pointer;
   transition: border-color .15s, transform .16s ease, box-shadow .18s ease; }
 .aibrief-card:hover { transform: translateY(-1px);
   box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--link) 42%, transparent); }
@@ -1264,7 +1265,7 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
    and the zh red/green swap both apply automatically. */
 .verdict { display: flex; align-items: center; gap: 14px 16px; flex-wrap: wrap;
   padding: 14px 18px; border-radius: 14px; background: var(--panel2);
-  border: 1px solid var(--line); border-left: 6px solid var(--c, var(--muted));
+  border: 1px solid var(--line); 
   margin: 12px 0 14px; }
 .verdict .v-act { font-size: 23px; font-weight: 800; line-height: 1.05;
   letter-spacing: .005em; color: var(--c, var(--text)); white-space: nowrap; }
@@ -1388,9 +1389,9 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
 }
 
 /* pinned standing read — the ladder's current call, top of the feed */
-.af-pin { border: 1px solid color-mix(in srgb, var(--c, var(--info)) 32%, var(--line));
+.af-pin { border:1px solid var(--line);
   background: color-mix(in srgb, var(--c, var(--info)) 8%, var(--panel));
-  border-left: 4px solid var(--c, var(--info)); border-radius: 12px;
+   border-radius:var(--r-card,12px);
   padding: 11px 14px; margin-bottom: 14px; }
 .af-pin.dir-up { --c: var(--ink-up); } .af-pin.dir-down { --c: var(--ink-down); }
 .af-pin.dir-neutral { --c: var(--muted); }
@@ -1562,7 +1563,7 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
 /* S1 HTF-sponsorship badge (display-only, rank-neutral, 2026-07-06) */
 .sig-gate.sig-htf-s1 { --c: #7c6ece; font-size:10px; font-weight:800; letter-spacing:.3px; }
 .sig-gate .sig-w { font-size:9.5px; font-weight:700; letter-spacing:.2px; opacity:.7;
-  padding-left:3px; border-left:1px solid color-mix(in srgb, var(--c, var(--muted)) 30%, transparent); }
+  padding-left:3px; border-left:1px solid var(--line); }
 /* provisional-basis marker (W6 #22): a T3 fresh fire is graded on an incomplete resample
    bucket and repaints at a measured 9.4% US / 0% CN (post-N=2 persistence hardening) — flagged wherever the tier renders
    (_sig_badge, Top-setups strip, discovery chip). Dashed border = tentative by design. */
@@ -1646,8 +1647,6 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
 @media (prefers-reduced-motion:reduce) { .lst-ovl, .lst-ovl-modal { transition:none; } }
 .lst-ovl-hd { --lane:var(--muted); position:relative; display:flex; align-items:flex-start;
   gap:10px; padding:14px 16px 11px; border-bottom:1px solid var(--line); }
-.lst-ovl-hd::before { content:""; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg, var(--lane), transparent 70%); }
 .lst-ovl-title { font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   color:var(--lane); line-height:1.3; }
 .lst-ovl-count { margin-left:6px; font-size:11px; font-weight:600; color:var(--muted);
@@ -1734,7 +1733,6 @@ body.lst-ovl-lock .act-pop { z-index:12000; }
    Lane accent: buy=green, pull=blue, bot=amber, red=red.
    Mobile: single-column ≤560px; board label 12px nowrap at 390px.
    =========================================================================== */
-.anv2-board { }
 .anv2-hd { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
 .anv2-hd h2 { font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin:0; display:flex; align-items:center; gap:8px; flex-wrap:nowrap; white-space:nowrap; }
 @media (max-width:390px) { .anv2-hd h2 { font-size:12px; } }
@@ -1749,13 +1747,9 @@ body.lst-ovl-lock .act-pop { z-index:12000; }
 @media (max-width:560px)  { .anv2-grid { grid-template-columns:1fr; } }
 /* individual lane card */
 .anv2-lane { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
-/* accent top bar */
+/* lane header — identity rides the title ink + icon, never an edge bar
+   (Chairman rule 2026-10-18, docs/DESIGN_DOCTRINE.md §3) */
 .anv2-lane-hd { padding:10px 13px 8px; border-bottom:1px solid var(--line); position:relative; }
-.anv2-lane-hd::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; background:var(--anv2-accent,var(--muted)); }
-.anv2-lane--buy   { --anv2-accent: var(--up); }
-.anv2-lane--pull  { --anv2-accent: var(--info); }
-.anv2-lane--bot   { --anv2-accent: var(--warn); }
-.anv2-lane--red   { --anv2-accent: var(--down); }
 .anv2-lane-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; display:flex; align-items:center; gap:5px; white-space:nowrap; }
 .anv2-lane--buy   .anv2-lane-title { color:var(--ink-up); }
 .anv2-lane--pull  .anv2-lane-title { color:var(--ink-info); }
@@ -1873,9 +1867,9 @@ html[data-theme="light"] .anv2-chip-turn { color:color-mix(in srgb,#3dd6c8 40%,v
 /* Zone band */
 .rip-zone { padding:14px 16px; border-bottom:1px solid var(--line); }
 .rip-zone:last-child { border-bottom:none; }
-.rip-zone.rz-ready  { background:color-mix(in srgb,var(--up) 5%,var(--panel)); border-left:3px solid var(--up); }
-.rip-zone.rz-basing { background:var(--panel); border-left:3px solid color-mix(in srgb,var(--muted) 40%,var(--line)); }
-.rip-zone.rz-fall   { background:color-mix(in srgb,var(--down) 5%,var(--panel)); border-left:3px solid var(--down); }
+.rip-zone.rz-ready  { background:color-mix(in srgb,var(--up) 5%,var(--panel)); border:1px solid var(--line); }
+.rip-zone.rz-basing { background:var(--panel); border:1px solid var(--line); }
+.rip-zone.rz-fall   { background:color-mix(in srgb,var(--down) 5%,var(--panel)); border:1px solid var(--line); }
 
 /* Zone header row — uses .nb-shelf-hdr accent-left-border idiom */
 .rip-zone-hdr { display:flex; align-items:center; gap:9px; margin-bottom:12px; flex-wrap:wrap; }
@@ -2271,72 +2265,39 @@ html[data-lang="zh"] .mx-ladder:not(.mx-ladder--board) .mx-lad-total small.l-en 
   left:0; right:0; bottom:0; height:3px; background:var(--text); }
 .mx-ladder--board .mx-cell[aria-pressed="true"] .mx-cell-l { color:var(--text); }
 
-/* ── THE SIX-WEIGHT LIFECYCLE GRAMMAR ────────────────────────────────────────
-   ONE grammar, two scales, in two different places:
-     .mx-cap  — a full-bleed 3px cap at the top of a LADDER CELL. Ladder only:
-                the card's top cap was repealed so it would stop competing with
-                the chart for the card's head, and that repeal is law. The cap's
-                base rule and its content:"" are therefore SCOPED to .mx-cell,
-                which makes the law structural — a .mx-cap emitted anywhere else
-                generates no box at all rather than a stray 3px artefact.
-     .mx-mark — the same six weights at inline scale (26x8px), for the card's
-                lifecycle fact column, the table cell and the absence line.
-   So the ladder-to-card link is carried by the INLINE MARK, not by a shared cap:
-   the same six weights on both surfaces, each at the scale that surface can
-   afford. Identical grammar, deliberately non-identical geometry. */
-.mx-cell > .mx-cap { position:absolute; top:0; left:0; right:0; height:3px;
-  color:var(--text); pointer-events:none; }
+/* Inline lifecycle glyphs accompany printed state labels. Container-edge
+   caps have been retired; chart marks and full selection outlines remain. */
 .mx-mark { position:relative; display:inline-block; width:26px; height:8px; flex:none;
   color:var(--text); vertical-align:middle; }
-.mx-cell > .mx-cap::before, .mx-mark::before { content:""; position:absolute; inset:0; }
+.mx-mark::before { content:""; position:absolute; inset:0; }
 
 /* Watch — dashed hairline: a signal fired, nothing is committed */
-.mx-cap--watch::before  { background:repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 9px); }
 .mx-mark--watch::before { top:3px; height:2px;
   background:repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6.5px); }
 /* Ready — half filled: the plan is armed, the position is not open yet */
-.mx-cap--ready::before  { background:linear-gradient(90deg, currentColor 0 50%,
-  color-mix(in srgb, currentColor 16%, transparent) 50%); }
 .mx-mark--ready::before { top:2.5px; height:3px;
   background:linear-gradient(90deg, currentColor 0 50%,
   color-mix(in srgb, currentColor 20%, transparent) 50%); }
 /* Entered — solid: a live commitment */
-.mx-cap--entered::before  { background:currentColor; }
 .mx-mark--entered::before { top:2.5px; height:3px; background:currentColor; }
 /* Delivering — the SAME commitment weight as Entered, not a re-encoding, with the
    first target it has reached marked at the end of the run. Entered is a plain
    bar; Delivering is a bar that arrives somewhere. (Before this distinction
    existed, the one difference a holder cares about most had no visual difference
    at all.) */
-.mx-cap--delivering::before { background:currentColor; }
-/* .mx-cell-scoped like the base rule: this ::after declares its own content, so an
-   unscoped copy would paint a stray currentColor bar outside a ladder and falsify
-   the containment law the base rule establishes. */
-.mx-cell > .mx-cap--delivering::after { content:""; position:absolute; right:0; top:0;
-  width:22%; height:6px; background:currentColor; }
 .mx-mark--delivering::before { top:2.5px; height:3px; background:currentColor; }
 .mx-mark--delivering::after { content:""; position:absolute; right:0; top:0;
   width:5px; height:8px; border-radius:1px; background:currentColor; }
 /* Overtime — solid muted: the declared window expired, the plan is still open */
-.mx-cap--overtime::before  { background:color-mix(in srgb, currentColor 34%, transparent); }
 .mx-mark--overtime::before { top:2.5px; height:3px;
   background:color-mix(in srgb, currentColor 42%, transparent); }
 /* Invalidated — hollow + struck: the plan's own stated void level was hit */
-.mx-cap--invalidated::before { top:1px; bottom:0; background:transparent;
-  border-top:1px solid color-mix(in srgb, currentColor 60%, transparent);
-  border-bottom:1px solid color-mix(in srgb, currentColor 60%, transparent); }
-/* .mx-cell-scoped for the same reason as Delivering's ::after above. */
-.mx-cell > .mx-cap--invalidated::after { content:""; position:absolute; left:0; right:0; top:1.5px;
-  height:1px; background:repeating-linear-gradient(90deg, currentColor 0 5px, transparent 5px 10px); }
 .mx-mark--invalidated::before { top:2.5px; height:3px; background:transparent;
   border:1px solid color-mix(in srgb, currentColor 62%, transparent); }
 .mx-mark--invalidated::after { content:""; position:absolute; left:-1px; right:-1px;
   top:3.5px; height:1px; background:currentColor; transform:rotate(-9deg); }
 /* Resolved — neutral outline: graded out, archive weight */
-.mx-cap--resolved, .mx-mark--resolved { color:var(--muted); }
-.mx-cap--resolved::before { top:1px; bottom:0; background:transparent;
-  border-top:1px solid color-mix(in srgb, var(--muted) 52%, transparent);
-  border-bottom:1px solid color-mix(in srgb, var(--muted) 52%, transparent); }
+.mx-mark--resolved { color:var(--muted); }
 .mx-mark--resolved::before { top:2.5px; height:3px; background:transparent;
   border:1px solid color-mix(in srgb, var(--muted) 55%, transparent); }
 
@@ -2494,10 +2455,10 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
 
 /* account sheet: alert delivery preferences (B-F08-1a) */
 .mmacc-alerts{position:relative;padding-left:14px}
-.mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}
-.mmacc-alerts[data-on="true"]::before{background:linear-gradient(180deg,var(--ok),color-mix(in srgb,var(--ok) 26%,transparent));box-shadow:0 0 10px -3px color-mix(in srgb,var(--ok) 55%,transparent)}
-.mmacc-alerts[data-state="unknown"]::before{background:color-mix(in srgb,var(--muted) 40%,transparent);box-shadow:none}
-.mmacc-alerts[data-quiet="true"]::after{content:"";position:absolute;left:0;bottom:13px;width:2px;height:34%;border-radius:var(--r-ctl,8px);background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--ok) 70%,transparent) 0 4px,transparent 4px 8px)}
+.mmacc-alerts::before{content:none;}
+.mmacc-alerts[data-on="true"]::before{content:none;}
+.mmacc-alerts[data-state="unknown"]::before{content:none;}
+.mmacc-alerts[data-quiet="true"]::after{content:none;}
 .mmacc-k-lead{color:var(--text);font-weight:600}
 .mmacc-sublabel{font-size:var(--fs-label,11px);font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:12px 0 6px}
 button.mmacc-switch{width:34px;height:20px;border-radius:var(--r-pill,999px);background:var(--panel2);border:1px solid var(--line);position:relative;flex:none;padding:0;cursor:pointer;opacity:1;font-family:var(--font-ui,inherit);transition:background .18s ease,border-color .18s ease}
@@ -2517,7 +2478,7 @@ button.mmacc-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in
 .mmacc-hint-off,.mmacc-hint-unknown,.mmacc-hint-none{margin-top:7px}
 .mmacc-hint-unknown{color:var(--ink-warn,var(--warn))}
 :root[data-theme="light"] .mmacc-alerts{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:11px 12px 11px 14px;box-shadow:var(--card-shadow)}
-:root[data-theme="light"] .mmacc-alerts[data-on="true"]::before{background:var(--ok);box-shadow:none}
+:root[data-theme="light"] .mmacc-alerts[data-on="true"]::before{content:none;}
 :root[data-theme="light"] button.mmacc-switch[aria-checked="true"]::after{background:var(--panel);border:1px solid color-mix(in srgb,var(--text) 12%,transparent)}
 :root[data-theme="light"] .mmacc-time,:root[data-theme="light"] .mmacc-select{background:var(--panel)}
 @media (max-width:560px){.mmacc-timepair{gap:6px}.mmacc-time{flex:1 1 100%}.mmacc-timesep{display:none}}

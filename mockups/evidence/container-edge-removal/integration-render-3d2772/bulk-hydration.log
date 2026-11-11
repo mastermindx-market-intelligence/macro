@@ -1,0 +1,4 @@
+fatal: bad revision 'f2484d90566aed4aa22db70dfb02228cf1252778'
+error: failed to close rev-list's stdin: Broken pipe
+error: https://github.com/mastermindx-market-intelligence/macro.git did not send all necessary objects
+

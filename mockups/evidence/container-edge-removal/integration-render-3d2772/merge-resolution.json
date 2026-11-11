@@ -1,0 +1,87 @@
+{
+  "head": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "resolutions": [
+    {
+      "path": "site/confluence_screener.html",
+      "before_sha256": "11de16fccec2008d62d7ca6c329e6ca76323ce140ec61a42f9982793a1dc8560",
+      "after_sha256": "f39931caebca87da625af6993fb8a1fd297dde9e10f28ce7d19d6c710d21eea6",
+      "method": "fresh-main conflict hunk with clean merged presentation retained; canonical optimizer restores owned cache stamps",
+      "hunks": [
+        {
+          "ours_sha256": "df67069232970aef6dce8769251dbc49a0c8e44d38d59f85a5c1c7c0da745736",
+          "theirs_sha256": "af4b7862f353cacd461c5e266d456329b692bb292d6a44d5a1a4c2d0fc183a94"
+        }
+      ]
+    },
+    {
+      "path": "site/crypto.html",
+      "before_sha256": "8dbf5896292063b1db97b968641e4dab1f85cd888a33214ae49391ac8debd20d",
+      "after_sha256": "23ccf661382ee8811d372cf5585d8badaa2d161211b8489f5af1b28da21e7df7",
+      "method": "fresh-main conflict hunk with clean merged presentation retained; canonical optimizer restores owned cache stamps",
+      "hunks": [
+        {
+          "ours_sha256": "bee2acdf0b7fd198e93cee8512d67d2834e7832c423e7416085d47eaf0aaa4bc",
+          "theirs_sha256": "4c41e8da945b126cfe040ce1f57f09b57cabce25ab6d69e69727e5fcf0899504"
+        }
+      ]
+    },
+    {
+      "path": "site/etfs.html",
+      "before_sha256": "59bfe60c55affc0b9996a68f1c114aea6aeea8a22bb12b750ad483ee58b93511",
+      "after_sha256": "fc6cee46de412f35761cd0de8b98d97fb679b3175daa14a1bd4d539467ca2379",
+      "method": "fresh-main binary-attribute HTML, followed by approved presentation projection"
+    },
+    {
+      "path": "site/quant_lab.html",
+      "before_sha256": "9f22a487e6d1b4e454f9617adf3a7d9145a8c164a5adabeb11bda6a63c41dff5",
+      "after_sha256": "eec8eedd96b1f2a4731225921970bc83ffffb176a24d252316b27b2f936f6187",
+      "method": "fresh-main conflict hunk with clean merged presentation retained; canonical optimizer restores owned cache stamps",
+      "hunks": [
+        {
+          "ours_sha256": "97a1a609e90e5715e48a4900e4c89b45971e3dc1536d676465a0ae1a773bbbd3",
+          "theirs_sha256": "538c0f62c241507f86b7d34b8670dcee9d7ff3a8ffa65870794fba1b22c799e0"
+        }
+      ]
+    },
+    {
+      "path": "site/us_stocks.html",
+      "before_sha256": "9846c00a79d5dec381b8a4ec755665f6e2786ef4a995871362470940df952d6b",
+      "after_sha256": "d0ec0a90c85269c2ea15b8a90993f8c190e339d0d3a5ea3d4357f876ed3290f7",
+      "method": "fresh-main binary-attribute HTML, followed by approved presentation projection"
+    },
+    {
+      "path": "site/us_track_record.html",
+      "before_sha256": "56db8051b19529bcd089e0bd33a1cc441ea73c4f708e40920455fa5d1a475099",
+      "after_sha256": "826df412fb04d329d620bd6ad337571b55df6054a97432946e015875dc22acf7",
+      "method": "retain verified canonical CSS hunk; all fresh body bytes equal and clean-merged metadata retained",
+      "main_body_equals_accepted_body": true,
+      "main_raw_css_matches_historical_asset": "1e6fe012.css",
+      "accepted_asset": "a011dc5f.css"
+    },
+    {
+      "path": "site/vector.html",
+      "before_sha256": "fe5286971415e7065a335c4f8b7bda6836cdfb371a9d9e00c704bea12ab4456c",
+      "after_sha256": "26ba40f512f0b5a6099e2c8588b4b70405808497c102c454638aab13bc97e26e",
+      "method": "fresh-main conflict hunk with clean merged presentation retained; canonical optimizer restores owned cache stamps",
+      "hunks": [
+        {
+          "ours_sha256": "b055d2cd124ff66d9ae108c87091e34527d4fc151e30ea89bff0a723a1ab1d64",
+          "theirs_sha256": "759429f4163b29274fa535ecba7eac2a5e874ac791614e0631435cb7972635d3"
+        }
+      ]
+    },
+    {
+      "path": "site/watchlist.html",
+      "before_sha256": "3248eb140760f165061d4e82004055a0b14c10051365d1dc05f5390a1b271858",
+      "after_sha256": "18b67bfae44725a5419e24758981c1d6b62c1d1b0e1d16caf213378e2d492897",
+      "method": "fresh-main conflict hunk with clean merged presentation retained; canonical optimizer restores owned cache stamps",
+      "hunks": [
+        {
+          "ours_sha256": "408ba132afec4642c298a4bfef75f448a3bd0403bf692b5eb977a7cd01fe69b7",
+          "theirs_sha256": "d205cfb4811f5673ff257f990ac49b095c8a9321c897a77203327057c638fa43"
+        }
+      ]
+    }
+  ]
+}

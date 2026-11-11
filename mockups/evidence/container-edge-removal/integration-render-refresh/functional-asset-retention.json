@@ -1,0 +1,13 @@
+{
+  "schema": "mastermind.container_edge_functional_asset_retention.v1",
+  "asset": "site/assets/css/65788f85.css",
+  "asset_sha256": "65788f85e132d97345579ac6ce8fd5e3cf7d64b986b9e91c622a5de5a4eafef2",
+  "accepted_reference": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "exact_accepted_bytes": true,
+  "consumers": [
+    "site/canada.html"
+  ],
+  "unused_neutral_variant": "site/assets/css/d4935829.css",
+  "only_candidate_delta": "Existing finite Canada repair restores the accepted horizontal border-top; this asset is not globally superseded.",
+  "decorative_left_audit_residuals": 0
+}

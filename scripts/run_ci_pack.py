@@ -3581,8 +3581,10 @@ def prepare_canonical_main(
     acquisition with valid bindings but insufficient ancestry earns a deeper rung.
     Filter only this canonical acquisition, with child-only declarations so Git
     does not persist a partial-clone policy on the fully materialized checkout.
-    Required guard objects must be present offline before returning. There is no
-    transport retry, private timeout, workspace restoration, or replay.
+    Required guard objects must be present offline before returning. The only
+    other transport is one exact-ID fetch of merge-base frozen blobs that the
+    filter withheld because the tested tree changed them. There is no transport
+    retry, private timeout, workspace restoration, or replay.
     """
     if base_ref != "main":
         raise RuntimeError("canonical-main preparation requires base_ref='main'")
@@ -3650,14 +3652,38 @@ def prepare_canonical_main(
                 raise RuntimeError("canonical-main required object identity unavailable")
             required("cat-file", "-e", f"{oid}^{{commit}}")
             required("cat-file", "-e", f"{oid}^{{tree}}")
-        for ref in (canonical_base, tested_tree_sha):
+        base_blobs: set[str] = set()
+        tested_blobs: set[str] = set()
+        for ref, bucket in ((canonical_base, base_blobs), (tested_tree_sha, tested_blobs)):
             for path in frozen_paths:
                 entry = required("ls-tree", ref, "--", path)
                 fields = entry.split()
                 if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
                         or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
                     raise RuntimeError("canonical-main required frozen object unavailable")
-                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+                bucket.add(fields[2])
+        # When the tested change edits a frozen path, its merge-base blob is
+        # absent from the tested tree, and the canonical blob:none fetch
+        # withholds it. Acquire exactly those base-side blobs once, with the
+        # flags Git's own promisor fetch uses; the materialized tested tree
+        # must already hold every tested-side blob.
+        withheld = sorted(
+            oid for oid in base_blobs - tested_blobs
+            if _git_cmd(root, git_env, "cat-file", "-e", f"{oid}^{{blob}}").returncode != 0
+        )
+        if withheld:
+            print(
+                "::notice title=international-workspace-browser::acquiring "
+                f"{len(withheld)} merge-base frozen blob(s) the filtered fetch withheld",
+                flush=True,
+            )
+            subprocess.run(
+                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                 "--no-write-fetch-head", "--filter=blob:none", "origin", *withheld],
+                cwd=root, env=fetch_env, check=True,
+            )
+        for oid in sorted(base_blobs | tested_blobs):
+            required("cat-file", "-e", f"{oid}^{{blob}}")
 
     for depth in _EXACT_TESTED_TREE_DEPTHS:
         check_bindings()

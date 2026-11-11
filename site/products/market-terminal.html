@@ -80,8 +80,8 @@
     "url": "https://www.mastermind-x.com/products/market-terminal.html"
   }
 }</script>
-<link rel="stylesheet" href="../onboard.css?v=74613ad9">
-<link rel="stylesheet" href="../landing.css?v=c1ea6263">
+<link rel="stylesheet" href="../onboard.css?v=d56c38fa">
+<link rel="stylesheet" href="../landing.css?v=411b6941">
 <style>
 /* ════════════════════════════════════════════════════════════════
    PRODUCT-PAGE SHARED LAYER — identical bytes on all three pages.
@@ -95,9 +95,9 @@
   font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);transition:color .15s}
 .chap-x i{font-style:normal;font-weight:800;font-size:.66rem;color:var(--faint)}
 .chap-x:hover{color:var(--muted)}
-.chap-x.on{color:var(--ink);position:relative}
+.chap-x.on{color:var(--ink);position:relative;font-weight:800;}
 .chap-x.on i{color:var(--pg-accent,var(--blue))}
-.chap-x.on::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:2px;border-radius:2px;background:var(--pg-accent,var(--blue))}
+.chap-x.on::after{content:none;}
 
 /* ── product hero ── */
 .phero{padding:clamp(46px,7vw,84px) 0 clamp(30px,4.5vw,56px)}
@@ -162,7 +162,7 @@
 .est-crumb .sep{color:var(--hair-2)}
 
 /* ── honesty callout (access & limitations) ── */
-.callout{border:1px solid var(--hair-2);border-left:3px solid var(--q-gold);background:var(--gold-wash);
+.callout{border:1px solid var(--hair-2);background:var(--gold-wash);
   border-radius:var(--r);padding:16px 18px;margin:18px 0}
 .callout .co-h{display:block;font-family:var(--display);font-weight:800;font-size:.86rem;color:var(--ink);margin-bottom:6px}
 .callout p{margin:0;font-size:.92rem;line-height:1.55;color:var(--ink-soft)}
@@ -360,7 +360,7 @@
 .mt-system-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .mt-system-card{position:relative;min-height:138px;padding:15px;border:1px solid var(--hair);border-radius:13px;background:var(--panel);
   box-shadow:var(--sh-card);overflow:hidden}
-.mt-system-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sys,var(--blue))}
+.mt-system-card::before{content:none;}
 .mt-system-card .num{font-family:var(--fig);font-size:9px;font-weight:800;letter-spacing:.1em;color:var(--sys,var(--blue))}
 .mt-system-card h4{margin:15px 0 7px;font-family:var(--display);font-size:13px;color:var(--ink)}
 .mt-system-card p{margin:0;font-size:11.5px;line-height:1.48;color:var(--muted)}
@@ -381,7 +381,8 @@
 .mt-wl .r .sy{font-weight:600;color:rgba(255,255,255,.88)}
 .mt-wl .r .la,.mt-wl .r .ch{text-align:right}
 .mt-wl .r .la{color:rgba(255,255,255,.72)}
-.mt-wl .r.sel{background:color-mix(in srgb,var(--blue) 16%,transparent);box-shadow:inset 2px 0 0 var(--pl-ac)}
+.mt-wl .r.sel .sy{font-weight:800}
+.mt-wl .r.sel{background:color-mix(in srgb,var(--blue) 16%,transparent);box-shadow:inset 0 0 0 1px var(--pl-hr)}
 .mt-wl .r.tick{background:color-mix(in srgb,var(--q-green) 16%,transparent)}
 .rv.in .mt-wl .r.tick{animation:mtTick 2.6s ease-in-out .6s infinite}
 @keyframes mtTick{0%,72%{background:color-mix(in srgb,var(--q-green) 16%,transparent)}90%,100%{background:transparent}}
@@ -508,7 +509,7 @@ html.still .mt-suite-player .mt-suite-dot{animation:none!important}
   .mt-system-card h4{margin-top:9px}
 }
 </style>
-<link rel="stylesheet" href="../scene-motion.css?v=f426716d">
+<link rel="stylesheet" href="../scene-motion.css?v=ef422784">
 </head>
 <body class="pg-terminal">
 <nav class="nav" aria-label="Main">
@@ -1519,6 +1520,6 @@ LANG.apply(LANG.cur());
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';</script>
 <script src="../mm_brain.js?v=62cc8547" defer></script>
 <script src="../onboard.js?v=617b2faf" defer></script>
-<script defer data-whb data-root="../" src="../wh_banner.js?v=b1207f44"></script>
+<script defer data-whb data-root="../" src="../wh_banner.js?v=2fd3e543"></script>
 </body>
 </html>

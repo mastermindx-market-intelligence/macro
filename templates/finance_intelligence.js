@@ -728,19 +728,31 @@
   // Mirror top-level freshness.state onto the what-changed section head pip
   // (E.4 freshness mirroring rule). The rerating stepper head mirrors the
   // selected slice's freshness.state.
+  function setSectionFreshness(head, value) {
+    head.setAttribute('data-state-freshness', value || '');
+    var label = head.querySelector('.fi-freshness-label');
+    if (!label) {
+      label = document.createElement('span');
+      label.className = 'fi-freshness-label';
+      head.appendChild(label);
+    }
+    label.textContent = value ? labelFor('freshness', value) : '';
+    label.hidden = !value;
+  }
+
   function mirrorFreshness() {
     var d = state.doc;
     if (!d) return;
     var whatChangedHead = $('#what-changed > .fi-section-head');
     if (whatChangedHead && d.freshness) {
-      whatChangedHead.setAttribute('data-state-freshness', d.freshness.state || '');
+      setSectionFreshness(whatChangedHead, d.freshness.state);
     }
     var reratingHead = $('#rerating-map > .fi-section-head');
     if (reratingHead) {
       var slice = findSlice(state.sliceId);
       var fs = slice && slice.freshness && slice.freshness.state;
       if (!fs && d.freshness) fs = d.freshness.state;
-      reratingHead.setAttribute('data-state-freshness', fs || '');
+      setSectionFreshness(reratingHead, fs);
     }
   }
 
@@ -1765,6 +1777,7 @@
       renderHero();
       renderWhatChanged();
       renderSliceSelector();
+      mirrorFreshness();
       renderRerating();
       renderSystem();
       renderAtlas();

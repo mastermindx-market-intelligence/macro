@@ -1,0 +1,82 @@
+........................................................................ [ 21%]
+................................................................F....... [ 43%]
+........................................................................ [ 64%]
+........................................................................ [ 86%]
+.............................................                            [100%]
+=================================== FAILURES ===================================
+____________ test_site_pair_matches_a_fresh_render_of_the_template _____________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5634/test_site_pair_matches_a_fresh0')
+
+    def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
+        """The committed site/glossary.html is NOT a raw render of the template.
+    
+        The public-render lane (scripts/ci/public_render.sh) commits what its
+        post-render sweeps leave behind: dashboard-bot commit d8c4cca1
+        "render-public: public pages + asset stamps" (2026-09-12 17:10Z, four
+        minutes after #6909 squashed this test in) lifted the page's inline
+        ``<style>`` into ``assets/css/<hash>.css`` links and stamped theme.css /
+        theme.js ``?v=<hash>``, and every later render does the same. Comparing a
+        raw ``build_public_pages.build`` render against that page was red on main
+        from d8c4cca1 on (first hit: #6958 trusted-executor-pack-3). So the fresh
+        render is put through the lane's own sweeps (see
+        ``_finalize_like_render_lane``) and the page's named local assets are copied
+        beside it first, so the ``?v=`` stamps hash the bytes the lane hashed. The
+        committed page stays exactly as the lane writes it — re-committing a raw
+        render would flip back at the bot's next run. HTML comments are still
+        stripped on both sides, as before, so a future generated-at comment cannot
+        trip the pair.
+    
+        The ``?v=<8 hex>`` stamps are the lane's cache-busters, and each one is
+        derived from the CURRENT bytes of the asset it names — site/theme.css,
+        site/theme.js and site/product-nav-icons.css. Those files are not this
+        page's contract: the committed page carries the stamps of the lane's LAST
+        run, and the dashboard-bot restamps them on its next render-public run, so
+        any theme.css change that lands in between would turn this test red for the
+        whole fleet (theme.css changed five times on 2026-09-06..09 alone). The
+        ``?v=`` query is therefore normalised away on BOTH sides before the compare
+        (seat ruling on review F1). The ``assets/css/<hash>.css`` link NAME is kept
+        as-is: that hash is of this page's own inline CSS, so a change there is a
+        genuine drift signal (the same regex also drops the duplicate ``?v=`` query
+        that link carries, but the hash lives in the filename and is still
+        asserted).
+    
+        The ``data-whb`` banner tag is normalised away on both sides for the same
+        lane-ownership reason the ``?v=`` stamp is: only daily.yml runs
+        ``inject_wh_banner``, so the fresh render never carries it while the
+        committed page must. Its PRESENCE on the committed page is pinned by
+        ``test_committed_glossary_page_carries_the_alert_banner_script`` — without
+        that pair, this test is blind to a regeneration that drops the banner from
+        the live public page (review round 2, BLOCKER 1).
+        """
+        from scripts import build_public_pages
+        out = tmp_path / "site"
+        build_public_pages.build(out)
+        page = out / "glossary.html"
+        _copy_named_local_assets(page, config.site_dir(), out)
+        _finalize_like_render_lane(out)
+        site_path = config.site_dir() / "glossary.html"
+        on_disk = site_path.read_text(encoding="utf-8")
+        fresh = _carry_committed_wh_banner(page.read_text(encoding="utf-8"), on_disk)
+        fresh_body = re.sub(r"<!--.*?-->", "", fresh, flags=re.S)
+        on_disk_body = re.sub(r"<!--.*?-->", "", on_disk, flags=re.S)
+        fresh_body = re.sub(r"\?v=[0-9a-f]{8}", "", fresh_body)
+        on_disk_body = re.sub(r"\?v=[0-9a-f]{8}", "", on_disk_body)
+        fresh_body = _WHB_TAG_RE.sub("", fresh_body)
+        on_disk_body = _WHB_TAG_RE.sub("", on_disk_body)
+>       assert fresh_body == on_disk_body
+E       assert '\n\n<!DOCTYP...ody>\n</html>' == '\n\n<!DOCTYP...ody>\n</html>'
+E         
+E         Skipping 3835 identical leading characters in diff, use -v to show
+E         Skipping 100121 identical trailing characters in diff, use -v to show
+E         - link rel="preload" as="style" href="product-nav-icons.css">
+E         - <link rel="stylesheet" href="assets/css/dfb3c710.css">
+E         ? -
+E         + link rel="stylesheet" href="assets/css/dfb3c710.css">...
+E         
+E         ...Full output truncated (5 lines hidden), use '-vv' to show
+
+tests/test_glossary_contract.py:299: AssertionError
+
+NOTE: sparse worktree — verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+1 failed, 332 passed, 1 deselected in 48.83s

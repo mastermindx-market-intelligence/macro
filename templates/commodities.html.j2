@@ -138,9 +138,9 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cov-panel { padding: 6px 0; }
 .cov-rows { list-style: none; margin: 0; padding: 0; }
 .cov-row { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px 22px; align-items: start;
-  padding: 14px 18px 13px 16px; border-top: 1px solid var(--line); border-left: 2px solid var(--line2); }
+  padding: 14px 18px 13px 16px; border-top: 1px solid var(--line); border:1px solid var(--line); }
 .cov-row:first-child { border-top: 0; }
-.cov-covered { border-left-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.cov-covered {  background: var(--surface-info-subtle,var(--panel2,var(--card))); }
 .cov-partial { border-left-style: dashed; }
 .cov-none    { border-left-style: dotted; }
 .cov-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
@@ -184,7 +184,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
   .cov-reads { grid-template-columns: 1fr; gap: 8px; }
 }
 /* light = research workspace: the wash is removed; emphasis moves to rule + weight */
-[data-theme='light'] .cov-covered { background: transparent; border-left-width: 3px; }
+[data-theme='light'] .cov-covered { background: transparent;  }
 [data-theme='light'] .cov-covered .cov-fam { font-weight: 650; }
 [data-theme='light'] .cov-state { background: var(--panel2); }
 [data-theme='light'] .cov-covered .cov-state { background: color-mix(in srgb, var(--blue) 7%, transparent); border-color: color-mix(in srgb, var(--blue) 28%, transparent); }
@@ -393,24 +393,24 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 [data-theme='light'] .sw-extended { border-width: 1.5px; }
 .hgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 9px; }
 .cell {
-  background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--line2);
+  background: var(--panel2); border: 1px solid var(--line); 
   border-radius: 8px; padding: 9px 11px; position: relative; overflow: hidden;
   transition: transform .15s, border-color .15s, box-shadow .15s;
   cursor: default;
 }
 .cell:hover { transform: translateY(-1px); border-color: var(--line2); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
-.cell.c-up   { border-left-color: var(--up); }
-.cell.c-dn   { border-left-color: var(--dn); }
-.cell.c-flat { border-left-color: var(--line2); }
+.cell.c-up   {  }
+.cell.c-dn   {  }
+.cell.c-flat {  }
 /* post-stack: consolidate */
 /* Blow-off = amber FILL (wash + bar). Dark: luminance mix; light: tint, no glow. */
 .cell.c-blowoff {
-  border-left-color: var(--amb);
+  
   background: color-mix(in srgb, var(--amb) 16%, var(--panel2));
 }
 /* Board-stretched + normal shock: amber EDGE only, no fill wash, default bar. */
-.cell.c-extended { border-left-color: var(--amb); }
-.cell.c-washout { border-left-color: var(--blue); }
+.cell.c-extended {  }
+.cell.c-washout {  }
 [data-theme='light'] .cell.c-blowoff {
   background: color-mix(in srgb, var(--amb) 10%, var(--panel2));
   box-shadow: none;
@@ -532,7 +532,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cgp-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 18px; margin-top:10px; }
 .cgp-detail-grid > div { display:flex; flex-direction:column; gap:2px; min-width:0; overflow-wrap:anywhere; }
 .cgp-note { color:var(--faint); font-size:11.5px; line-height:1.55; margin:10px 0 0; }
-.cgp-empty { margin-top:14px; border-left:3px solid var(--line2); padding:10px 12px; background:var(--panel2); }
+.cgp-empty { margin-top:14px; border:1px solid var(--line); padding:10px 12px; background:var(--panel2); }
 .cgp-empty p { margin:5px 0 0; color:var(--mut); font-size:12.5px; }
 html[data-theme='light'] .cgp { background:var(--panel); backdrop-filter:none; -webkit-backdrop-filter:none;
                                 box-shadow:var(--card-shadow,none); }
@@ -706,7 +706,7 @@ html[data-theme="light"] :is(
 
 {% if oil_episode %}
 <!-- Cross-asset read (display-tier CONTEXT, not a scored signal): oil trend-episode -> Canadian energy (XEG). engine/trend_episode.py + research/COMMODITY_C1R2_OIL_XEG_PREREG.md -->
-<div class="panel2" style="display:flex;gap:11px;align-items:flex-start;margin:0 0 14px;border-left:3px solid var(--line2)">
+<div class="panel2" style="display:flex;gap:11px;align-items:flex-start;margin:0 0 14px;border:1px solid var(--line);">
   {#- DOCTRINE §1/Law 2-3: this panel is TIER 1. The shipped copy printed
       "slope-z -0.61", "n=32, t=+2.75, q=0.009", "(C1b, provisional)" and
       "not a gauntleted signal (C1-R2 pre-registration)" at rest — four banned

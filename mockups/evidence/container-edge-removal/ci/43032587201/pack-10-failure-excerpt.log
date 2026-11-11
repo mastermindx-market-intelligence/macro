@@ -1,0 +1,52 @@
+2026-11-11T14:05:09.3226964Z Ign:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T14:05:09.3252108Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease
+2026-11-11T14:05:09.3252841Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:05:24.8393197Z Ign:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T14:05:26.3779200Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T14:05:29.3493623Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T14:05:29.3494136Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:05:43.9344574Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T14:05:49.3658023Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T14:05:49.3658524Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:12:56.2617242Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-scalable/xfonts-scalable_1.0.3-1.3_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:12:56.2618050Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+2026-11-11T14:12:56.2627406Z Failed to install browsers
+2026-11-11T14:12:56.2627872Z Error: Installation process exited with code: 100
+2026-11-11T14:12:56.2771210Z ##[endgroup]
+2026-11-11T14:12:56.2810010Z ##[error]forex-r26-consumer: step 'install isolated Forex browser' exited 1
+2026-11-11T14:37:27.0560673Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-encodings/xfonts-encodings_1.0.5-0ubuntu2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:37:27.0562370Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7%2b6build3_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:37:27.0564153Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/x/xfonts-cyrillic/xfonts-cyrillic_1.0.5%2bnmu1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:37:27.0565867Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-scalable/xfonts-scalable_1.0.3-1.3_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T14:37:27.0567175Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+2026-11-11T14:37:27.0582999Z Failed to install browsers
+2026-11-11T14:37:27.0583362Z Error: Installation process exited with code: 100
+2026-11-11T14:37:27.1175036Z ##[endgroup]
+2026-11-11T14:37:27.1211141Z ##[error]international-dislocation-explorer: step 'install browser test dependencies' exited 1
+2026-11-11T14:41:59.2652294Z .............................................                            [100%]
+2026-11-11T14:41:59.2653147Z =================================== FAILURES ===================================
+2026-11-11T14:41:59.2664695Z ____________ test_site_pair_matches_a_fresh_render_of_the_template _____________
+2026-11-11T14:41:59.2665112Z 
+2026-11-11T14:41:59.2677544Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-73/test_site_pair_matches_a_fresh0')
+2026-11-11T14:41:59.2678096Z 
+2026-11-11T14:41:59.2678422Z     def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
+2026-11-11T14:41:59.2679139Z         """The committed site/glossary.html is NOT a raw render of the template.
+2026-11-11T14:41:59.2679668Z     
+2026-11-11T14:41:59.2680127Z         The public-render lane (scripts/ci/public_render.sh) commits what its
+2026-11-11T14:41:59.3515580Z E           </html>
+2026-11-11T14:41:59.3515589Z 
+2026-11-11T14:41:59.3515757Z tests/test_glossary_contract.py:299: AssertionError
+2026-11-11T14:41:59.3515900Z 1 failed, 332 passed, 1 deselected in 21.14s
+2026-11-11T14:41:59.3783954Z ##[endgroup]
+2026-11-11T14:41:59.3820024Z ##[error]public-render-fastlane: step 'public fastlane split + rendered pricing copy pins' exited 1
+2026-11-11T14:42:01.4477239Z ##[group]dependency environment attempt 1 — pip install pytest pyyaml jsonschema
+2026-11-11T14:57:19.4032426Z   - international-dislocation-explorer: step 'install browser test dependencies' exited 1
+2026-11-11T14:57:19.4033272Z   - public-render-fastlane: step 'public fastlane split + rendered pricing copy pins' exited 1
+2026-11-11T14:57:19.4276268Z ##[error]Process completed with exit code 1.
+2026-11-11T14:57:19.4351423Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-11T14:57:19.4351944Z with:
+2026-11-11T14:57:19.4352139Z   name: ci-semantic-pack-43032587201-10
+2026-11-11T14:57:20.9433775Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T14:57:20.9475155Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T14:57:21.0024119Z Cleaning up orphan processes
+2026-11-11T14:57:21.0447915Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/download-artifact@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

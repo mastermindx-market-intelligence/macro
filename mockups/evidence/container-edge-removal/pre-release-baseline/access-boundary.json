@@ -1,0 +1,20 @@
+{
+  "schema": "mastermind.container_edge_pre_release_access_boundary.v1",
+  "baseline_commit": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "observed_at": "2026-11-11T16:23:57.826044+00:00",
+  "scope": "Pre-release production baseline, not acceptance of the rail-removal candidate.",
+  "public_html_matches": 3,
+  "matched_resources": 22,
+  "observed_resources": 23,
+  "access_limited_path": "site/risk_radar_workspace.css",
+  "access_control_source_bindings": {
+    "config/site_access.yml": "28a06a56f6452b975885793a08f3520913828fa4",
+    "app/deploy/Caddyfile": "0669b9501fb02a8838f8db961f4a2327ea4424da",
+    "app/regwall.py": "f5d28050873019d1b4c20fa92ae85a796ef88a55"
+  },
+  "classification": "Consistent with existing registration-protected asset default; deployed denial layer and gated styling are not established. No auth or product files changed.",
+  "probe_change": "Optional --access-limits consumes an ancestral baseline receipt and records known CSS 401 boundaries without replaying requests. Full passed remains false; exit 3 means all attempted public resources match but a known access boundary remains.",
+  "probe_before_sha256": "33494b2b6b5ab429edb5d4ba3bde87153f9cb55c6d0894d4420fe73292ee82ec",
+  "probe_after_sha256": "a237bb674f9801ebae51748fc378a00221cbb27f464fe8361cc03738d70225a6",
+  "verification": "Python compile passed; baseline schema/count/path and exact access-control Git blobs checked. No duplicate HTTP probe issued."
+}

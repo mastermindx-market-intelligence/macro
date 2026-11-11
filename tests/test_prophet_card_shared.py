@@ -822,7 +822,7 @@ def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():
     env = _r18_env()
     card = env.get_template("_prophet_card.html.j2").module
     css = str(card.pv_css())
-    assert hashlib.sha256(css.encode()).hexdigest() == "e7dd2cf07a44230d9a1b9a82b335943070ca0bad76e6fc7c1b99aa0625a12258"
+    assert hashlib.sha256(css.encode()).hexdigest() == "a0648ff5b6cbee3e09a13990a12ca147194b7fd50b73f853211ecc593cb2d292"
     assert ".pvs-audit" not in css
     assert ".pvs-audit" in str(card.pv_css(setup_detail=True))
 

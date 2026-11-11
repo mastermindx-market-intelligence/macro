@@ -1,0 +1,47 @@
+{
+  "source_commit": "a739405d248e3e985c6215067878028f8403fad9",
+  "input_basis": "committed data/site artifacts materialized at the exact source commit; no collector refresh",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.build_aibrief"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 8.7,
+      "log": "build_aibrief.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.build_finance_intelligence_page"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 1.95,
+      "log": "build_finance_intelligence_page.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.build_macro_suite_pages"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 5.44,
+      "log": "build_macro_suite_pages.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.build_government_revenue",
+        "--site-only"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 56.52,
+      "log": "build_government_revenue.log"
+    }
+  ]
+}

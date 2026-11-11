@@ -1,0 +1,122 @@
+{
+  "source_head": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "main": "43b5acdb0d0f264091f5aa33c129625fd0b28b8c",
+  "resolved": [
+    {
+      "path": "site/crypto.html",
+      "mode": "fresh main content in conflict hunks; clean merged presentation retained",
+      "before_sha256": "f5fd20bdb3868978701d2c7e18a9a536da61a91425a012cd3c5afc03ee91d523",
+      "after_sha256": "5e33c8af3c097b493388315c2e0da2bdb002e61b972bffa6dfc00fd50c79e48d",
+      "hunks": [
+        {
+          "ours_sha256": "ddbb70c498cd01cc6c275084330df69a0c5e89e89fc15d27bc633d6afe123ce8",
+          "main_sha256": "8d2e6ca74d665a79edc6273862d20253d386808d80aa0ed26be04a3997f55073",
+          "main_bytes": 90850
+        }
+      ]
+    },
+    {
+      "path": "site/etfs.html",
+      "mode": "exact fresh upstream generated page; apply the approved presentation next",
+      "before_sha256": "a8cff24663641d444d7853ff699c3d0be80109e2290852efb8e63cd9361c35ac",
+      "after_sha256": "e736101ba1555cfdddea4cae3a08e0350197c7e652c0966d5ff938d771c60f00",
+      "hunks": []
+    },
+    {
+      "path": "site/quant_lab.html",
+      "mode": "fresh main content in conflict hunks; clean merged presentation retained",
+      "before_sha256": "0f58f2b9a9df28fd392e14c1415efa6c3f7a10fb14e4fea9c5369566545b9e6a",
+      "after_sha256": "812af9827fe75e16c2d0f46dbfd836478a9b30417f6d471d165cfe19af435dc7",
+      "hunks": [
+        {
+          "ours_sha256": "291ea31c3a8110a1dcfcaaaeb5b939748b3e4654c67ecef638930916841835d5",
+          "main_sha256": "971620b7620d0dc226bb9ba0ba573471a318ae614ba58c25a7cf985405bc27d3",
+          "main_bytes": 133
+        }
+      ]
+    },
+    {
+      "path": "site/special_situations.html",
+      "mode": "exact fresh upstream generated page; apply the approved presentation next",
+      "before_sha256": "950138af8b3dcef274e4a32ddc405b8cce52f72e151524f7ce8a52a466a34d2d",
+      "after_sha256": "a3fc7d78df46b60886e95dd19b217df84136a3d00cc6d2dbe1f406c5306b41c4",
+      "hunks": []
+    },
+    {
+      "path": "site/us_stocks.html",
+      "mode": "exact fresh upstream generated page; apply the approved presentation next",
+      "before_sha256": "383846f2471d81ad1e771c777f6271f57adb69c00e1b1a45cf24ab263ba22005",
+      "after_sha256": "9fead3d46f63f00f3b665eea46a5473c113bdcd9cdafb29c9faf42ef7bef0ee0",
+      "hunks": []
+    },
+    {
+      "path": "site/vector.html",
+      "mode": "fresh main content in conflict hunks; clean merged presentation retained",
+      "before_sha256": "f40d57241c4bd28e095fbf70d0f41fb7aafe7b42bfdf87f205ffac018fa4d78c",
+      "after_sha256": "2bad5fda0c81e99c351b54d49d199827e2625534238b653f2d720da484284d90",
+      "hunks": [
+        {
+          "ours_sha256": "2814cabc687a2eea71aa13297442181a730f0fa3799de2a97647a516a2a1f189",
+          "main_sha256": "a16b9d89c9a513a912131baabc720ff04f3dc3acd02a13ae1dbdcf156f4dcb0a",
+          "main_bytes": 111093
+        }
+      ]
+    },
+    {
+      "path": "site/watchlist.html",
+      "mode": "fresh main content in conflict hunks; clean merged presentation retained",
+      "before_sha256": "d8e5bd43341d8456a2e45e9b08efa85e90fff13665ca161263f9c82e38af3546",
+      "after_sha256": "24823d5412b9b0313540271dcc728ec0d1f6e2daa471039a19eeb610d28e3bc1",
+      "hunks": [
+        {
+          "ours_sha256": "dbb2e4da6837d4029eea1304e05361de60b81a82f7e3667944f3400c6021707c",
+          "main_sha256": "e91001901eb25e4e145e2ef116f4d42a2908fcd90ab6788f0be14e46501076ac",
+          "main_bytes": 205
+        }
+      ]
+    }
+  ],
+  "canonical_glossary_retained": true,
+  "accepted_direct_source_inputs_unchanged": [
+    "site/products/mastermind-ai.html",
+    "site/products/market-dashboards.html",
+    "site/products/market-terminal.html",
+    "site/fund_scion.html",
+    "site/_mockup_ccw_credit_desk.html",
+    "site/start.html",
+    "site/learn.html",
+    "site/coming-soon.html",
+    "site/financial_lineage.html",
+    "site/scene-motion.css",
+    "site/scene-motion.js",
+    "site/radar_panel.js",
+    "site/cycle.css"
+  ],
+  "generated_js_exact_main": [
+    {
+      "path": "site/cycledata/cycle_engine.js",
+      "sha256": "edc1fbe3e50aa1a7b0e294ca580c479aeb627c61d280cec1395d2d328f00ef93",
+      "exact_main": true
+    },
+    {
+      "path": "site/marketsdata/markets_engine.js",
+      "sha256": "e0b9476d0d871792a3b7d8334324b67eca91fe5780722741f709e4401b2cf276",
+      "exact_main": true
+    },
+    {
+      "path": "site/measurementdata/measurement_data.js",
+      "sha256": "239250a7387fa8d62a85a36dc7a6beee4b44d4abe78138b7c3e75e8d8e64fbc9",
+      "exact_main": true
+    },
+    {
+      "path": "site/regimedata/regime_prior.js",
+      "sha256": "4bc5250daec7a0fc4ebc6a478eea57369b162a1297f966cc1f6fcac99284c7c5",
+      "exact_main": true
+    },
+    {
+      "path": "site/sector_central_data.js",
+      "sha256": "17ada5fed01b8a8db39a7e535ef56a8a379d653fbb736ed4db0632e4ba39a97b",
+      "exact_main": true
+    }
+  ]
+}

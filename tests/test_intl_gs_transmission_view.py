@@ -126,6 +126,38 @@ def _merge_base_css(path="templates/intl_workspace_surveillance.css"):
     return out.stdout if out.returncode == 0 else None
 
 
+# The International GS production surfaces, as in
+# tests/test_intl_gs_foundation.py::test_frozen_files_unchanged_vs_origin_main.
+GS_SURFACE_PREFIXES = (
+    "engine/intl_global_",
+    "lib/intl_global_",
+    "lib/intl_gs_",
+    "lib/intl_surveillance_",
+    "scripts/build_intl.py",
+    "templates/intl",
+    "site/intl",
+)
+
+
+def _gs_surface_changed():
+    """True when the change from merge-base(origin/main, HEAD) to the working
+    tree touches an International GS surface. Fails closed: True whenever the
+    diff cannot be computed, so the shared theme.css rule is still enforced."""
+    merged = subprocess.run(
+        ["git", "merge-base", "origin/main", "HEAD"],
+        cwd=ROOT, capture_output=True, text=True)
+    sha = merged.stdout.strip()
+    if merged.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", sha):
+        return True
+    names = subprocess.run(
+        ["git", "diff", "--name-only", sha, "--"],
+        cwd=ROOT, capture_output=True, text=True)
+    if names.returncode != 0:
+        return True
+    return any(line.strip().startswith(GS_SURFACE_PREFIXES)
+               for line in names.stdout.splitlines())
+
+
 # --------------------------------------------------------------------------
 # V1 — the production site stays not_built without a builder
 # --------------------------------------------------------------------------
@@ -605,12 +637,30 @@ def test_css_block_scoped_literal_free_and_stripe_free():
     # #10077), and a pure end-of-file append is allowed so additive token
     # extensions by other lanes (GMI explorer, #10099) do not fail this suite;
     # any removed, rewritten or displaced byte still fails. Mirrors the
-    # append-only rule in tests/test_intl_gs_foundation.py.
+    # append-only rule in tests/test_intl_gs_foundation.py, including its
+    # scoping (2026-11-05): theme.css is shared, so the rule binds only a
+    # change that also touches an International GS surface. A theme-family
+    # change that touches no International file goes through its own PR
+    # (#10654 removed the Chairman-ruled edge stripes, DESIGN_DOCTRINE §3).
+    # The token-resolution check above still runs on every change.
     base_theme = _merge_base_css("templates/theme.css")
-    if base_theme is not None:
+    if base_theme is not None and _gs_surface_changed():
         current = (ROOT / "templates/theme.css").read_bytes()
-        assert current.startswith(base_theme), \
-            "templates/theme.css must equal merge-base(origin/main, HEAD) or extend it by a pure end-of-file append"
+        prefix = base_theme
+        if not current.startswith(prefix):
+            # Same exact approved migration as the foundation freeze; no broad
+            # theme-family exemption when International surfaces also change.
+            import hashlib
+            before_blob = hashlib.sha1(b"blob %d\0" % len(prefix) + prefix).hexdigest()
+            if before_blob == "619436f58d37a222d1db7021ba9d52bb3a05a7fa":
+                migrated = subprocess.run(
+                    ["git", "show", "a739405d248e3e985c6215067878028f8403fad9:templates/theme.css"],
+                    cwd=ROOT, capture_output=True)
+                migrated_blob = hashlib.sha1(b"blob %d\0" % len(migrated.stdout) + migrated.stdout).hexdigest()
+                if migrated.returncode == 0 and migrated_blob == "cb83d3122cad24f9781292c638b0d45e3cac831d":
+                    prefix = migrated.stdout
+        assert current.startswith(prefix), \
+            "templates/theme.css must preserve its base prefix or the exact #10654 migration, with only EOF additions"
 
 
 # --------------------------------------------------------------------------

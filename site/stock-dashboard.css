@@ -580,7 +580,7 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-an-hd.avoid {
 /* Selected row: --link rail + the existing low-alpha tint. Rail is an inset
    shadow, not a border, so selecting a row never reflows the grid. */
 html[data-theme=light] .mx-stockdash--ca .ca-v36-an-row.is-active {
-  box-shadow: inset 2px 0 0 var(--link);
+  box-shadow: none;
 }
 
 /* Dashed hairlines are a dark-plane idiom; on white they read as dotted noise.
@@ -669,7 +669,7 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-filter {
 
 html[data-theme=light] .mx-stockdash--ca .ca-v36-lead-col-h { background: var(--bg); }
 html[data-theme=light] .mx-stockdash--ca .ca-v36-lead-row.is-active {
-  box-shadow: inset 3px 0 0 var(--link);
+  box-shadow: none;
 }
 /* Breadth measure reads as an instrument on light, not a stray underline: a
    full-width 1px hairline TRACK (companion ::before — the measure itself is
@@ -1070,7 +1070,7 @@ html[data-theme=light] .mx-stockdash--hk .hk-v37-an-hd.buy { background: color-m
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-hd.near { background: color-mix(in srgb, var(--ink-link, var(--link)) 4%, transparent); }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-hd.wait { background: color-mix(in srgb, var(--ink-pv-wait, var(--pv-wait)) 4%, transparent); }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-hd.avoid { background: color-mix(in srgb, var(--ink-pv-avoid, var(--pv-avoid)) 4%, transparent); }
-html[data-theme=light] .mx-stockdash--hk .hk-v37-an-row.is-active { box-shadow: inset 2px 0 0 var(--link); }
+html[data-theme=light] .mx-stockdash--hk .hk-v37-an-row.is-active { box-shadow: none; }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-go { border-left-style: solid; border-left-color: color-mix(in srgb, var(--line) 60%, transparent); }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-more { border-top-style: solid; border-top-color: color-mix(in srgb, var(--line) 70%, transparent); }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-an-more:hover { color: var(--ink-link, var(--link)); }
@@ -1088,7 +1088,7 @@ html[data-theme=light] .mx-stockdash--hk .hk-v37-seg { background: color-mix(in 
 html[data-theme=light] .mx-stockdash--hk .hk-v37-seg button[aria-selected=true] {
   background: var(--panel); border-color: var(--line); box-shadow: var(--card-shadow);
 }
-html[data-theme=light] .mx-stockdash--hk .hk-v37-lead-row.is-active { box-shadow: inset 3px 0 0 var(--link); }
+html[data-theme=light] .mx-stockdash--hk .hk-v37-lead-row.is-active { box-shadow: none; }
 html[data-theme=light] .mx-stockdash--hk .hk-v37-lead-row::before {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--line);
 }

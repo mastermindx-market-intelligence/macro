@@ -15,8 +15,7 @@
 {% block base_css %}
   .wh-hero { max-width:1060px; margin:16px auto 0; background:var(--panel); border:1px solid var(--line);
              border-radius:16px; padding:24px 28px; position:relative; overflow:hidden; box-shadow:var(--card-shadow); }
-  .wh-hero::before { content:""; position:absolute; inset:0 0 auto 0; height:4px;
-             background:linear-gradient(90deg,#1f4ea8,color-mix(in srgb,#1f4ea8 22%,transparent)); }
+  .wh-hero::before {content:none;}
   .wh-kick { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-link, var(--link)); margin:0 0 8px; font-weight:700; }
   .wh-hero h1 { font-size:27px; line-height:1.18; margin:0 0 8px; letter-spacing:-.01em; }
   .wh-hero p.sub { font-size:14.5px; color:var(--text); opacity:.82; margin:0; max-width:80ch; }
@@ -81,8 +80,7 @@
   /* Treasury Watch panel — the TGA liquidity read (money-green → gold accent) */
   .wh-tre { max-width:1060px; margin:22px auto 0; background:var(--panel); border:1px solid var(--line);
             border-radius:16px; padding:22px 24px; box-shadow:var(--card-shadow); position:relative; overflow:hidden; }
-  .wh-tre::before { content:""; position:absolute; inset:0 0 auto 0; height:4px;
-            background:linear-gradient(90deg,#1f7a4e,#2f8f6f 55%,#d9a441); }
+  .wh-tre::before {content:none;}
   .wh-tre .tk { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-link, var(--link)); margin:0 0 6px; font-weight:700; }
   .wh-tre h2 { font-size:19px; line-height:1.2; margin:0 0 4px; letter-spacing:-.01em; }
   .wh-tre p.sub { font-size:13px; color:var(--text); opacity:.78; margin:0 0 14px; max-width:78ch; }
@@ -109,7 +107,7 @@
   .wh-chip.mut   { color:var(--muted); }
   html[data-theme="dark"] .wh-chip.green { color:#3fc07e; }
   .wh-tre .impulse { font-size:13.5px; line-height:1.55; margin:12px 0; padding:10px 13px;
-             background:var(--panel2); border-radius:10px; border-left:3px solid #2f8f6f; }
+             background:var(--panel2); border-radius:var(--r-card,12px); border:1px solid var(--line); }
   .wh-tre .sparkwrap { margin:12px 0 2px; }
   .wh-tre .sparkcap { display:flex; justify-content:space-between; font-size:10.5px; color:var(--muted);
              margin:0 0 4px; font-variant-numeric:tabular-nums; }

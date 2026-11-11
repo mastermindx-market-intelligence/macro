@@ -3792,12 +3792,18 @@ def _cm_commit(root, path, content, message):
     return _cm_git(root, 'rev-parse', 'HEAD')
 
 
-def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False):
+def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False,
+                distinct_frozen=False, shared_edit=False):
     """main is ahead of tested's first parent; tested itself diverges from main.
 
     Both tested parents meet at main-2, 22 first-parent edges behind main-24.
     A depth-one checkout therefore requires multiple completed deepen fetches.
     Plain local-path clone is intentionally avoided: it ignores --depth.
+
+    ``distinct_frozen`` gives every frozen path its own baseline blob, so one
+    path's blob can no longer stand in for another's. ``shared_edit`` edits the
+    shared theme entry on the feature side without an International GS surface:
+    the guard must compare it (both blobs present) and accept it.
     """
     source = parent / 'source'
     source.mkdir()
@@ -3811,7 +3817,8 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     for path in _CM_FROZEN_PATHS:
         dest = source / path
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text('frozen baseline\n', encoding='utf-8')
+        dest.write_text(f'{path} baseline\n' if distinct_frozen else 'frozen baseline\n',
+                        encoding='utf-8')
     _cm_git(source, 'add', '.')
     _cm_git(source, 'commit', '-qm', 'frozen baseline')
     if old_history:
@@ -3832,6 +3839,8 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
         _cm_commit(source, 'templates/intl/fixture-surface.html.j2', 'gs surface\n',
                    'change gs surface')
         _cm_commit(source, _CM_FROZEN_PATHS[0], 'changed by feature\n', 'change frozen file')
+    if shared_edit:
+        _cm_commit(source, _CM_FROZEN_PATHS[0], 'shared edit by feature\n', 'edit shared entry')
     feature = _cm_git(source, 'rev-parse', 'HEAD')
     _cm_git(source, 'switch', '-qc', 'tested', commits[24])
     _cm_git(source, 'merge', '--no-ff', '-qm', 'synthetic tested merge', 'feature')
@@ -4125,6 +4134,42 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         self.assertEqual(len(removed), 1)
         self.assertEqual(len(f['fetches']), 1)
         self.assert_head(f)
+
+    def test_filtered_canonical_fetch_acquires_base_side_frozen_blob(self):
+        # ci run 42449275993 (pack 3): the PR edited a shared frozen entry, so
+        # the merge-base side of that path is a blob the tested tree does not
+        # hold, and blob:none withheld it. Real filtering needs allowFilter on
+        # the source; distinct baselines stop another path's blob standing in.
+        for pre_ladder in (False, True):
+            with self.subTest(pre_ladder=pre_ladder):
+                f = self.fixture(distinct_frozen=True, shared_edit=True)
+                _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
+                _cm_git(f['source'], 'config', 'uploadpack.allowAnySHA1InWant', 'true')
+                if pre_ladder:
+                    # The unfiltered depth ladder _prepare_provided_actions runs first.
+                    _cm_git(f['checkout'], 'fetch', '--no-recurse-submodules', '--no-tags',
+                            '--depth=2', 'origin', f['tested'])
+                    _cm_git(f['checkout'], 'fetch', '--no-recurse-submodules', '--no-tags',
+                            '--depth=8', 'origin', f['tested'])
+                base_blob = _cm_git(f['source'], 'rev-parse',
+                                    f['parents'][0] + ':' + _CM_FROZEN_PATHS[0])
+                self.assertNotEqual(base_blob, _cm_git(
+                    f['checkout'], 'rev-parse', f['tested'] + ':' + _CM_FROZEN_PATHS[0]))
+                self.assertEqual(_cm_prepare(f), f['canonical'])
+                self.assert_head(f)
+                # A local unfiltered ladder already supplies the blob, so no
+                # exact-ID fetch follows; CI's ladder did not, hence both cases.
+                acquired = [c for c in f['fetches'] if base_blob in c]
+                self.assertEqual(len(acquired), 0 if pre_ladder else 1)
+                for command in acquired:
+                    self.assertIn('--filter=blob:none', command)
+                    self.assertIn('--no-write-fetch-head', command)
+                    self.assertEqual(command[-1], base_blob)
+                self.assertEqual(_cm_git(f['checkout'], 'rev-parse', 'origin/main'), f['canonical'])
+                guards = _cm_frozen_namespace(f['checkout'])
+                self.assertEqual(guards['_frozen_base'](), f['parents'][0])
+                for path in _CM_FROZEN_PATHS:
+                    guards['test_frozen_files_unchanged_vs_origin_main'](path)
 
     def test_missing_origin_main_acquires_actual_canonical_tip(self):
         f = self.fixture()
