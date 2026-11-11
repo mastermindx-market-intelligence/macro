@@ -75,3 +75,15 @@ def write_final_md(res, path):
                   f"{w.get('gate_commit')}; acknowledged {w.get('acknowledged_at')}."]
     L += ["", res["descriptive_only"], "", res["data_provenance"], "", res["reporting_rule_i"], "", res["independence"], ""]
     open(path, "w").write("\n".join(L) + "\n")
+
+
+def write_ledger_status_md(st, path):
+    """R25.1(c): what the remote ledger proves, default-closed; published under S6."""
+    L = ["# Rotation Core v2 — ledger status (what the remote run ledger proves)", "",
+         f"**Headline:** {st['headline']}", "",
+         "A Phase-A-clean run with no gate record (stage 1) or no FINAL (stage 2) on the remote is CLOSED by rule "
+         "R25.1 from the moment PHASE_A_CLEAN was pushed, until an identical rerun pushes a record.", "",
+         "| Ledger START | Stage | Engine commit | Status |", "|---|---|---|---|"]
+    for r in st["runs"]:
+        L.append(f"| {r['start_index']} | {r['stage']} | `{str(r['engine_commit'])[:12]}` | {r['status']} |")
+    open(path, "w").write("\n".join(L) + "\n")

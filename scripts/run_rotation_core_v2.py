@@ -653,6 +653,19 @@ def record_phase_a(ledger, start_index: int, A: dict) -> dict:
 
 
 PHASE_B_SURVIVABLE = (MemoryError, OSError, KeyboardInterrupt)     # R21.1 (LedgerPushFailed is an OSError)
+HARD_EXIT_CODE = 5
+
+
+def _hard_exit(msg: str) -> None:
+    """R25.1(b): from the first sealed statistic to the pushed record, every exception ends here: a fixed message with
+    the exception TYPE only (no traceback, no value), then os._exit, so no live frame holding results survives."""
+    import os, sys
+    try:
+        sys.stdout.flush(); sys.stderr.flush()
+    except BaseException:
+        pass
+    os.write(2, (msg.rstrip() + "\n").encode())
+    os._exit(HARD_EXIT_CODE)
 
 
 def _survivable_not_refusal(e) -> bool:
@@ -674,7 +687,7 @@ def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, 
     start = start_entry(spec["stage"], release_sha, engine_commit, inputs_sha)
     v2.start_allowed(ledger.entries(), start, release)
     s = ledger.append(start, precheck=lambda cur: v2.start_allowed(cur, start, release))     # R23.1 N2
-    out(f"WITNESS start_commit {ledger.last_commit}")                                        # R22.3
+    out(f"WITNESS start_commit {ledger.last_commit} branch {ledger.branch}")                  # R22.3, R26.5
     try:
         prep = prepare_pre1998(ind_path, fact_path, spec, selection, root)
         A = phase_a([(spec["name"], prep)])
@@ -689,7 +702,7 @@ def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, 
         out(f"INTEGRITY_ABORT recorded as ledger entry {pa['index']}: no gate statistic computed, no sign; "
             "not a stage-1 gate result (R19 item 1)")
         return dict(pa, integrity_abort=True)
-    try:                                                   # ---- Phase B (R21.1)
+    try:                                                   # ---- Phase B (R21.1, R24.1(b), R25.1(b))
         R = pre1998_stats(prep, B_)
         signs = R["signs"]
         gate_open, per = gate_decision(signs, tuple(spec["eras"]))
@@ -697,36 +710,35 @@ def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, 
         status["H2"] = "NOT SHOWN (decided at the final conjunction)" if gate_open else "FAILED (closed gate, amendment f)"
         sha = v2.magnitudes_sha(R["magnitudes"])
     except BaseException as e:
-        if _survivable_not_refusal(e):
-            raise SystemExit(f"stage 1 failed in Phase B: {type(e).__name__} (message withheld); the Phase-A-clean "
-                             "entry stands: only the identical rerun is permitted (R20.1, R21.1)") from None
-        if not isinstance(e, Exception):
-            raise
-        # R21.1/R24.1(b): once an era excess may exist, a failure can depend on it: record a CLOSED gate, type only.
         tname = type(e).__name__
+        if _survivable_not_refusal(e) or not isinstance(e, Exception):
+            _hard_exit(f"stage 1 failed in Phase B: {tname}; the Phase-A-clean entry stands: closed by rule R25.1 until "
+                       "the identical rerun records a result (R20.1, R21.1)")
+        # R21.1/R24.1(b): once an era excess may exist, a failure can depend on it: record a CLOSED gate, type only.
         closed_by = "phase_b_refusal" if isinstance(e, v2.SealedRefusal) else "phase_b_exception"
         try:
             ledger.append({"kind": "GATE", "start_index": s["index"], "utc": _now(), "gate_open": False,
                            "closed_by": closed_by, "exception_type": tname})
-        except v2.LedgerPushFailed:
-            raise SystemExit(f"stage 1 failed in Phase B ({tname}); the closed-gate push did not confirm: its state is "
-                             "UNKNOWN; the next invocation's fetch decides, and a gate record on the remote is final "
-                             "(R22.4(2))") from None
+        except BaseException as e2:
+            _hard_exit(f"stage 1 failed in Phase B ({tname}); the closed-gate push did not complete "
+                       f"({type(e2).__name__}): state UNKNOWN; the next invocation's fetch decides, and a gate record on "
+                       "the remote is final (R22.4(2), R25.1)")
         out(f"GATE closed_by {closed_by} {tname}")
-        raise SystemExit(f"stage 1: Phase B raised {tname}; a closed gate is recorded (R21.1)") from None
-    rec = {"kind": "GATE", "start_index": s["index"], "utc": _now(), "selected_setting": R["magnitudes"]["selected_setting"],
-           "gate_signs": signs, "integrity": R["integrity"], "hypothesis_status": status,
-           "gate_rule": "open iff H1 or H3 has exactly its eight signs, all '+': positive excess over its era-alone "
-                        "matched mix in both eras under both leg readings in both the base and the strict cost run",
-           "gate_open": bool(gate_open), "magnitudes_sha256": sha, "seeds": seeds_record()}
-    if spec is not PRE_SPEC:
-        rec["window"] = spec["name"]
-    try:
+        _hard_exit(f"stage 1: Phase B raised {tname}; a closed gate is recorded (R21.1)")
+    try:                                                   # the record push: R25.1(b)
+        rec = {"kind": "GATE", "start_index": s["index"], "utc": _now(),
+               "selected_setting": R["magnitudes"]["selected_setting"],
+               "gate_signs": signs, "integrity": R["integrity"], "hypothesis_status": status,
+               "gate_rule": "open iff H1 or H3 has exactly its eight signs, all '+': positive excess over its era-alone "
+                            "matched mix in both eras under both leg readings in both the base and the strict cost run",
+               "gate_open": bool(gate_open), "magnitudes_sha256": sha, "seeds": seeds_record()}
+        if spec is not PRE_SPEC:
+            rec["window"] = spec["name"]
         g = ledger.append(rec)
-    except v2.LedgerPushFailed:
-        raise SystemExit("stage 1: the gate record's push did not confirm; nothing about signs is printed or written. "
-                         "Its state is UNKNOWN: the next invocation's fetch decides; if the gate record is on the "
-                         "remote it is final (R22.4(2))") from None
+    except BaseException as e:
+        _hard_exit(f"stage 1: the gate record's push did not complete ({type(e).__name__}); nothing about signs is "
+                   "printed or written. Its state is UNKNOWN: the next invocation's fetch decides; if the gate record is "
+                   "on the remote it is final, otherwise the run is closed by rule R25.1 (R22.4(2))")
     out(f"WITNESS gate_commit {ledger.last_commit} ledger_index {g['index']}")              # R22.3, before any sign
     for k in sorted(signs):
         out(f"GATE_SIGN {k.replace('|', ' ')} {signs[k]}")
@@ -993,7 +1005,7 @@ def confirm_command(ledger, r2: dict, release_sha: str, engine_commit: str, pre_
     start = start_entry("stage2", release_sha, engine_commit, inputs_sha)
     v2.start_allowed(ledger.entries(), start, r2)
     s = ledger.append(start, precheck=lambda cur: v2.start_allowed(cur, start, r2))         # R23.1 N2
-    out(f"WITNESS start_commit {ledger.last_commit}")
+    out(f"WITNESS start_commit {ledger.last_commit} branch {ledger.branch}")
     g = r2["_gate_latest"]
     try:
         res = final_evaluation(pre_ind, full_ind, fact, fund_dir, g["magnitudes_sha256"], g["gate_signs"], ledger,
@@ -1011,19 +1023,22 @@ def confirm_command(ledger, r2: dict, release_sha: str, engine_commit: str, pre_
             ledger.append({"kind": "FINAL", "start_index": s["index"], "utc": _now(),
                            "verdicts": {h_: "FAIL" for h_ in HYPS}, "closed_by": e.closed_by,
                            "exception_type": tname})
-        except v2.LedgerPushFailed:
-            raise SystemExit(f"stage 2 failed in Phase B ({tname}); the FINAL push did not confirm: state UNKNOWN, the "
-                             "next invocation's fetch decides (R22.4(2))") from None
+        except BaseException as e2:
+            _hard_exit(f"stage 2 failed in Phase B ({tname}); the FINAL push did not complete ({type(e2).__name__}): "
+                       "state UNKNOWN, the next invocation's fetch decides; otherwise closed by rule R25.1 (R22.4(2))")
         out(f"FINAL closed_by {e.closed_by} {tname}: every hypothesis FAIL (R21.1, R24.1)")
-        return {"phase_b_exception": tname, "verdicts": {h_: {"verdict": "FAIL"} for h_ in HYPS}}
-    rec = {"kind": "FINAL", "start_index": s["index"], "utc": _now(),
-           "verdicts": {h_: v["verdict"] for h_, v in res["verdicts"].items()},
-           "results_sha256": v2.magnitudes_sha(res)}
-    try:
+        _hard_exit(f"stage 2: Phase B raised {tname}; FINAL with every hypothesis FAIL is recorded (R21.1, R24.1)")
+    except BaseException as e:                                       # R25.1(b): no live frame holding results
+        _hard_exit(f"stage 2 failed ({type(e).__name__}); state as recorded on the remote: a Phase-A-clean run "
+                   "with no FINAL is closed by rule R25.1")
+    try:                                                   # the record push: R25.1(b)
+        rec = {"kind": "FINAL", "start_index": s["index"], "utc": _now(),
+               "verdicts": {h_: v["verdict"] for h_, v in res["verdicts"].items()},
+               "results_sha256": v2.magnitudes_sha(res)}
         ledger.append(rec)
-    except v2.LedgerPushFailed:
-        raise SystemExit("stage 2: the FINAL push did not confirm; nothing is printed or written; state UNKNOWN, the "
-                         "next invocation's fetch decides (R22.4(2))") from None
+    except BaseException as e:
+        _hard_exit(f"stage 2: the FINAL push did not complete ({type(e).__name__}); nothing is printed or written; "
+                   "state UNKNOWN, the next invocation's fetch decides; otherwise closed by rule R25.1 (R22.4(2))")
     res["witnessed"] = r2.get("witnessed")                       # R22.3: cited in the result text
     return res
 
@@ -1074,7 +1089,7 @@ def check_rehearsal_input(buf) -> None:
 def temporary_remote(td: Path):
     """A temporary bare remote and clone for the rehearsal ledger; never the real ledger."""
     def g(*a, cwd):
-        subprocess.run(["git", *a], cwd=cwd, capture_output=True, check=True)
+        subprocess.run([v2.tool("git"), *a], cwd=cwd, capture_output=True, check=True)
     import subprocess
     origin, work = Path(td) / "origin.git", Path(td) / "work"
     g("init", "-q", "--bare", str(origin), cwd=td)
@@ -1107,6 +1122,68 @@ def rehearsal_command(ind, fac, out=print, B_=B_STAGE, engine_commit=None) -> di
     return e
 
 
+# ---------------------------------------------------------------------------- R25.1(c) default-closed ledger status
+R25_CLOSED = "closed by rule R25.1: Phase A clean, no record on the remote"
+
+
+def ledger_status(entries: list) -> dict:
+    """The historical-tier status the ledger proves. A Phase-A-clean run with no record (and no stage-2 A2 abort),
+    not later completed by a run of the same identity, is CLOSED from the moment PHASE_A_CLEAN is pushed: stage 1 ->
+    historical tier FAIL; stage 2 -> every hypothesis FAIL."""
+    runs = v2._runs(entries)
+    rows, s1_closed, s1_open, s2 = [], None, None, None
+    for i, r in enumerate(runs):
+        st = r["start"]["stage"]
+        later = any(v2._identity(x["start"]) == v2._identity(r["start"]) and x["record"] is not None for x in runs[i + 1:])
+        if r["outcome"] is None:
+            res = "started; no Phase A outcome (no result)"
+        elif r["outcome"]["kind"] == "INTEGRITY_ABORT":
+            res = "INTEGRITY_ABORT at Phase A (no result)"
+        elif v2._a2_abort(r):
+            res = f"INTEGRITY_ABORT at Phase A2: {r['a2'].get('reason')} (no result)"
+        elif r["record"] is None:
+            res = "superseded by an identical rerun with a record" if later else (
+                "historical tier FAIL, " + R25_CLOSED if st == "stage1" else "every hypothesis FAIL, " + R25_CLOSED)
+        elif r["record"]["kind"] == "GATE":
+            res = "gate OPEN" if r["record"]["gate_open"] is True else (
+                "historical tier FAIL (gate closed" + (f", {r['record']['closed_by']}" if r["record"].get("closed_by") else "") + ")")
+        else:
+            v = r["record"]["verdicts"]
+            res = "FINAL: " + ", ".join(f"{h} {x}" for h, x in v.items()) + (
+                f" ({r['record']['closed_by']})" if r["record"].get("closed_by") else "")
+        rows.append({"start_index": r["start"]["index"], "stage": st, "engine_commit": r["start"]["engine_commit"],
+                     "status": res})
+        if st == "stage1":
+            if "FAIL" in res and s1_closed is None:
+                s1_closed = res
+            if res == "gate OPEN":
+                s1_open = res
+        elif st == "stage2" and ("FAIL" in res or res.startswith("FINAL")):
+            s2 = res
+    head = s2 or s1_closed or s1_open or "no result recorded"
+    return {"headline": head, "runs": rows}
+
+
+def check_witness(r2: dict, led, ctx) -> None:
+    """R26.5: the witness block is load-bearing."""
+    import json
+    w = r2.get("witnessed")
+    need = ("branch", "release_commit", "start_commit", "gate_commit", "witness_utc")
+    if not isinstance(w, dict) or any(not w.get(k) for k in need):
+        raise v2.SealedRefusal("refused: the stage-2 release's witnessed block is incomplete")
+    if w["gate_commit"] != r2.get("gate_commit") or w["branch"] != ctx.branch:
+        raise v2.SealedRefusal("refused: witnessed gate_commit or branch differs from the release")
+    gate = r2["_gate_latest"]
+    start_commit = led.commit_adding_entry(gate["start_index"])
+    if w["start_commit"] != start_commit:
+        raise v2.SealedRefusal("refused: witnessed start_commit is not the commit that recorded the stage-1 START")
+    start = next(e for e in led.entries() if e["index"] == gate["start_index"])
+    rel = str(Path(ctx.release1).resolve().relative_to(Path(ctx.root).resolve()))
+    added = [c for c, b in v2.file_versions(rel, led.remote_sha, ctx.root) if v2.sha256_bytes(b) == start["release_sha256"]]
+    if not added or w["release_commit"] != added[0]:
+        raise v2.SealedRefusal("refused: witnessed release_commit is not the commit that added the stage-1 release")
+
+
 class Ctx:
     """Every path and host hook `main` uses. The real entry point builds it from constants only; `main(_ctx=...)` is
     for tests (R23.6), never set from the command line or the environment."""
@@ -1120,6 +1197,8 @@ class Ctx:
         self.B = B_STAGE
         self.final_j, self.final_m, self.stage1_published = FINAL_J, FINAL_M, STAGE1_PUBLISHED
         self.selection_rerun_j, self.selection_rerun_m = SELECTION_RERUN_J, SELECTION_RERUN_M
+        self.ledger_status_j = ROOT / "research/rotation_core/results_v2_ledger_status.json"
+        self.ledger_status_m = ROOT / "research/rotation_core/RESULTS_V2_LEDGER_STATUS.md"
         self.__dict__.update(kw)
         if self.stage2_inputs is None:
             self.stage2_inputs = stage2_inputs(self.fund_dir)
@@ -1141,7 +1220,8 @@ def verified_ledger(ctx=None) -> tuple:
     record (activity chain, ruleset) checked before anything else; local == remote; every release version mapped;
     every ledger version a prefix; the whole ledger replayed under the state rules."""
     ctx = ctx or Ctx()
-    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url)
+    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url,
+                       code_root=ROOT)
     sha = led.fetch()
     led.host_record = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
     led.require_local_equals_remote()
@@ -1153,18 +1233,48 @@ def verified_ledger(ctx=None) -> tuple:
     return led, sha, entries
 
 
+SEALED_STAGES = ("pre1998", "confirm")
+
+
+def start_checks(argv: list, _ctx) -> None:
+    """Before anything else: R26.2 no sealed stage with the real context while pytest is loaded; R25.1(a) -E enforced,
+    not interactive; R26.1 leftover private object directories removed unread; R26.4 environment; R26.3 import
+    environment and untracked/ignored code files."""
+    if _ctx is None and "pytest" in sys.modules and any(a in SEALED_STAGES for a in argv):
+        raise SystemExit("refused: a sealed stage is never run with the real context while pytest is loaded (R26.2)")
+    if not sys.flags.ignore_environment or sys.flags.inspect or sys.flags.interactive:
+        raise SystemExit("refused: run as `python -E scripts/run_rotation_core_v2.py ...` (ignore_environment set, "
+                         "not interactive, no inspect) (R25.1(a))")
+    v2.cleanup_leftover_object_dirs()
+    v2.check_env_vars()
+    v2.check_import_environment(ROOT)
+    v2.check_worktree_code(ROOT)
+
+
 def main(argv=None, _ctx=None) -> int:
     import json
+    argv = list(sys.argv[1:] if argv is None else argv)
+    start_checks(argv, _ctx)
     ctx = _ctx or Ctx()
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--stage", choices=["select", "pre1998", "confirm"])
     ap.add_argument("--manifest", choices=["stage1", "stage2"], help="print input sha256 and library versions only")
+    ap.add_argument("--ledger-report", action="store_true",
+                    help="R25.1(c): write the status the remote ledger proves (default-closed) and print its headline")
     ap.add_argument("--rehearsal", action="store_true",
                     help="R21.6: the full stage-1 command on the open 1998-2019 window against a temporary remote")
     ap.add_argument("--dry-run-stage1-fixture", action="store_true",
                     help="stage 1 end to end on in-memory synthetic inputs from the committed generator (no path)")
     a = ap.parse_args(argv)
+    if a.ledger_report:
+        led, sha, entries = verified_ledger(ctx)
+        st = ledger_status(entries)
+        Path(ctx.ledger_status_j).write_text(json.dumps(dict(st, ledger_head=sha), indent=1) + "\n")
+        from scripts.rotation_core_v2_report import write_ledger_status_md
+        write_ledger_status_md(st, ctx.ledger_status_m)
+        print("ledger status:", st["headline"])
+        return 0
     if a.manifest:
         ins = ctx.stage1_inputs if a.manifest == "stage1" else ctx.stage2_inputs
         man = {}
@@ -1208,6 +1318,7 @@ def main(argv=None, _ctx=None) -> int:
         v2.on_remote(ctx.release2, sha, ctx.root)
         r2 = v2.verify_release2(r, entries)
         v2.check_release_pins(r2, sha, ctx.root, led)               # R22.2: branch head and gate commit
+        check_witness(r2, led, ctx)                                  # R26.5
         ctx.engine_check(r2["engine_commit"])
         with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
             ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)
@@ -1233,6 +1344,16 @@ def main(argv=None, _ctx=None) -> int:
         return 0
     ap.print_help()
     return 2
+
+
+def phase_a_ast_digest() -> dict:
+    """R25.2: normalised syntax-tree sha256 of each Phase A function (positions excluded)."""
+    import ast, inspect, textwrap
+    return {n: v2.sha256_bytes(ast.dump(ast.parse(textwrap.dedent(inspect.getsource(globals()[n]))),
+                                        include_attributes=False).encode()) for n in PHASE_A_FUNCTIONS}
+
+
+v2.register_phase_a(phase_a_ast_digest())              # computed at start; in versions() and every ledger entry
 
 
 if __name__ == "__main__":

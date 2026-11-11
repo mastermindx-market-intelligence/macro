@@ -8,6 +8,7 @@ import pytest
 from engine import rotation_core_evaluation as rc
 from engine import rotation_core_v2 as v2
 from tests.rotation_core_v2_fixture import make_fixture, make_fund_fixture, fixture_texts
+import scripts.run_rotation_core_v2  # noqa: E402,F401  (registers the Phase A digest before any fixture runs)
 
 ORIG_SELECTION = v2.ROOT / "research/rotation_core/results_v2_selection.json"
 IND, FAC = "49_Industry_Portfolios_Daily.csv", "F-F_Research_Data_Factors_daily.csv"
@@ -16,6 +17,33 @@ IND, FAC = "49_Industry_Portfolios_Daily.csv", "F-F_Research_Data_Factors_daily.
 @pytest.fixture(autouse=True)
 def _sel(monkeypatch):
     monkeypatch.setattr(v2, "SELECTION_RESULT", ORIG_SELECTION)
+    for k in list(os.environ):                             # R26.4: the runner refuses inherited GIT_/GH_/proxy vars
+        if k.startswith(("GIT_", "GH_")) or k.lower() in v2.PROXY_VARS:
+            monkeypatch.delenv(k)
+    import scripts.run_rotation_core_v2 as run
+    def hard_exit(msg):                                    # R25.1(b): in-process tests observe the exit as SystemExit;
+        raise SystemExit(msg)                              # the real os._exit is tested in a subprocess
+    monkeypatch.setattr(run, "_hard_exit", hard_exit)
+
+
+PY = sys.executable
+
+
+def _clean_env(**extra):
+    env = {k: v for k, v in os.environ.items()
+           if not (k.startswith(("GIT_", "GH_", "PYTHON")) or k.lower() in v2.PROXY_VARS)}
+    env.update(extra)
+    return env
+
+
+def _py(args, cfg=None, tmp=None, flags=("-E",), env=None, stdin=None):
+    """Run the runner (or the test driver) in a real interpreter, as the command line does."""
+    if cfg is not None:
+        cp = Path(tmp) / f"cfg_{abs(hash(json.dumps(cfg, default=str)))}.json"
+        cp.write_text(json.dumps(cfg, default=str))
+        args = [str(v2.ROOT / "tests/rotation_core_v2_driver.py"), str(cp)]
+    return subprocess.run([PY, *flags, *args], cwd=str(v2.ROOT), capture_output=True, text=True,
+                          env=env or _clean_env(), stdin=stdin if stdin is not None else subprocess.DEVNULL)
 
 
 @pytest.fixture(scope="module")
@@ -104,6 +132,7 @@ def test_O1_states_identical_at_10_and_20bp_signal_line_computed_once(fx, pre):
 def _no_magnitude(text):
     """No decimal number outside the library-version lines (versions are not magnitudes)."""
     body = "\n".join(ln for ln in text.splitlines() if " version " not in ln)
+    body = re.sub(r"\b[RSOF]\d+(\.\d+)*(\([^)]*\))?", "", body)        # rule references such as R25.1(b)
     return not re.search(r"\d\.\d", body)
 
 
@@ -413,6 +442,51 @@ PHASE_A_COMPARES = {   # finite checks, strict-book <= base-book, legs >= legs, 
     "idx >= pd.Timestamp(wa)", "idx[0] < pd.Timestamp(wa)", "ls >= lb - TOL", "np.abs(Ws - Wb) > 1e-09",
     "np.count_nonzero(m) == 0", "np.count_nonzero(m) > 0", "rs <= rb + TOL", "v != 0"}
 PHASE_A_ARITH = {"rb + TOL", "lb - TOL", "Ws - Wb"}     # tolerance shifts and the same-book weight difference
+PHASE_A_ASSIGNS = {
+"C_all = rf.reindex(idx).to_numpy(dtype=float)",
+"L_all = LR.reindex(idx)[LEG_COLS_R].to_numpy(dtype=float)",
+"V_all = valid.reindex(idx).to_numpy()",
+"W_all = bk.holdings[LEG_COLS_R].to_numpy(dtype=float)",
+"Wb = bb[k].holdings[LEG_COLS_R].to_numpy(dtype=float)[m]",
+"Ws = bs[k].holdings.reindex(idx)[LEG_COLS_R].to_numpy(dtype=float)[m]",
+"bb, Lb = runs[reading, 'base']",
+"bb, _ = runs[reading, 'base']",
+"bs, Ls = runs[reading, 'strict']",
+"bs, _ = runs[reading, 'strict']",
+"cash_only = ~np.any(held, axis=1)",
+"held = W_all[m] > TOL",
+"ib = Lb.index",
+"idx = bb[k].returns.index",
+"idx = bk.returns.index",
+"key = f'{k}|{w}|{reading}|{cost}'",
+"lb = Lb[LEG_COLS_R].to_numpy(dtype=float)[mb]",
+"ls = Ls.reindex(ib)[LEG_COLS_R].to_numpy(dtype=float)[mb]",
+"m = (idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z))",
+"m = (idx >= pd.Timestamp(wa)) & (idx <= pd.Timestamp(wz))",
+"mb = (ib >= pd.Timestamp(a)) & (ib <= pd.Timestamp(z))",
+"n += int(np.count_nonzero(np.abs(Ws - Wb) > 1e-09))",
+"n += int(np.count_nonzero(ok & ~(ls >= lb - TOL)))",
+"n += int(np.count_nonzero(~(rs <= rb + TOL)))",
+"n = 0",
+"nan, unobs, warm = ({}, {}, {})",
+"nan[key] = np.count_nonzero(~np.isfinite(r_all[m])) + np.count_nonzero(~np.isfinite(W_all[m])) + np.count_nonzero(held & ~np.isfinite(L_all[m])) + np.count_nonzero(cash_only & ~np.isfinite(C_all[m])) + int(np.count_nonzero(m) == 0)",
+"nonzero = sorted((f'{name}|{kind}|{k}' for name, w in out['windows'].items() for kind, d in w.items() for k, v in d.items() if v != 0))",
+"ok = np.isfinite(lb) & np.isfinite(ls)",
+"out = {'windows': {}, 'strict_inequality_violations': 0, 'executions_identical_across_cost_runs': True}",
+"out['clean'] = not nonzero",
+"out['executions_identical_across_cost_runs'] &= states_identical_across_costs(p['runs'])",
+"out['nonzero'] = nonzero",
+"out['strict_inequality_violations'] += phase_a_strict(p['runs'], p['a'], p['z'])",
+"out['windows'][name] = w",
+"r_all = bk.returns.to_numpy(dtype=float)",
+"rb = bb[k].returns.to_numpy(dtype=float)[m]",
+"rs = bs[k].returns.reindex(idx).to_numpy(dtype=float)[m]",
+"st = states[ST_OF_BOOK[k]].reindex(idx).to_numpy(dtype=float)",
+"unobs[key] = int(np.count_nonzero(held & (V_all[m] == 0)))",
+"valid = legs.valid[LEG_COLS_R]",
+"w = phase_a_window(p['runs'], p['legs'], p['states'], p['rf'], p['a'], p['z'], p['windows'])",
+"warm[key] = int(np.count_nonzero(~np.isfinite(st[m]))) + int(not (np.count_nonzero(m) > 0 and idx[0] < pd.Timestamp(wa)))"
+}   # R25.2/R26.6
 REDUCTIONS = {"sum", "mean", "prod", "cumsum", "cumprod", "max", "min", "std", "nansum", "nanmean", "average", "var",
               "median", "quantile"}
 
@@ -438,6 +512,8 @@ def phase_a_violations(src: str) -> list:
             name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else "?"
             if name in REDUCTIONS or name not in PHASE_A_CALLS:
                 bad.append(f"call {name}")
+        elif isinstance(n, (ast.Assign, ast.AugAssign)) and ast.unparse(n) not in PHASE_A_ASSIGNS:
+            bad.append(f"assign {ast.unparse(n)}")               # rebinding a trusted name (R25.2 cases)
         elif isinstance(n, ast.Compare) and ast.unparse(n) not in PHASE_A_COMPARES:
             bad.append(f"compare {ast.unparse(n)}")
         elif isinstance(n, ast.BinOp):
@@ -581,16 +657,15 @@ def test_R20_case3_signs_reach_the_ledger_before_stdout(fx):
     assert order[0] == ("ledger", "START")
 
 
-def test_R20_case4_fixture_dry_run_takes_no_path(monkeypatch, capsys):
+def test_R20_case4_fixture_dry_run_takes_no_path():
     import scripts.run_rotation_core_v2 as run, inspect
     assert list(inspect.signature(run.fixture_dry_run).parameters) == ["out", "B_", "selection"]   # no path
-    monkeypatch.setattr(sys, "argv", ["run", "--dry-run-stage1-fixture", "/home/ubuntu2/tmp/rotation-core/data/french/le2019"])
-    with pytest.raises(SystemExit):                                         # argparse: the flag takes no argument
-        run.main()
-    capsys.readouterr()
-    monkeypatch.setattr(sys, "argv", ["run", "--dry-run-stage1-fixture"])
-    assert run.main() == 0
-    out = capsys.readouterr().out.strip().splitlines()
+    r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture",
+             "/home/ubuntu2/tmp/rotation-core/data/french/le2019"])
+    assert r.returncode != 0 and "unrecognized arguments" in r.stderr                  # the flag takes no argument
+    r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])
+    assert r.returncode == 0, r.stderr[-400:]
+    out = r.stdout.strip().splitlines()
     assert len(out) > 40 and all(ln.startswith("FIXTURE ") for ln in out)
     assert _no_magnitude("\n".join(out)) and any("PHASE_A CLEAN" in ln for ln in out)
 
@@ -779,8 +854,11 @@ def test_R22_force_push_back_before_start_is_refused_without_the_activity_check(
            {"id": 2, "activity_type": "push", "before": h0, "after": gate_head, "ref": "refs/heads/b", "timestamp": "t2"},
            {"id": 3, "activity_type": "force_push", "before": gate_head, "after": h0, "ref": "refs/heads/b",
             "timestamp": "t3"}]
-    with pytest.raises(v2.SealedRefusal, match="force_push"):
-        v2.check_activity(log, sha, h0, lambda a, b: True, "refs/heads/b")
+    real_isanc = lambda a, b: v2._git("merge-base", "--is-ancestor", a, b, check=False, root=fresh).returncode == 0
+    with pytest.raises(v2.SealedRefusal, match="force_push"):      # R26.6: real ancestry on the real fresh clone
+        v2.check_activity(log, sha, h0, real_isanc, "refs/heads/b")
+    with pytest.raises(v2.SealedRefusal):                         # even without the force_push label: the gate
+        v2.check_activity(log[:2] + [dict(log[2], activity_type="push")], sha, h0, real_isanc, "refs/heads/b")
 
 
 def test_R22_delete_and_recreate_is_refused_without_the_activity_check(tmp_path):
@@ -1191,37 +1269,15 @@ def _edge_late_fail(t):
     return _slow(t)
 
 
-def _host_stub(work, branch):
-    """TEST-ONLY host API (R23.6): the activity chain is the temporary remote's own first-parent history from its
-    creation; the branch rules and the ruleset are present and active. The real entry point never sets this."""
-    def api(path, paginate=False):
-        if "/activity" in path:
-            shas = subprocess.run(["git", "-C", str(work), "rev-list", "--first-parent", "--reverse",
-                                   f"refs/remotes/origin/{branch}"], capture_output=True, check=True).stdout.decode().split()
-            ref = f"refs/heads/{branch}"
-            log = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": shas[0], "ref": ref,
-                    "timestamp": "2026-11-11T00:00:00Z"}]
-            log += [{"id": i + 1, "activity_type": "push", "before": shas[i - 1], "after": shas[i], "ref": ref,
-                     "timestamp": f"2026-11-11T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(1, len(shas))]
-            return log
-        if "/rules/branches/" in path:
-            return [{"type": "non_fast_forward"}, {"type": "deletion"}]
-        if "/rulesets/" in path:
-            return {"id": v2.RULESET_ID, "enforcement": "active", "bypass_actors": [], "updated_at": "stub"}
-        raise AssertionError(path)
-    return api
-
-
 def _commit_push(g, work, name, doc):
     (work / name).write_text(json.dumps(doc, indent=1))
     g("add", name, cwd=work); g("commit", "-q", "-m", name, cwd=work); g("push", "-q", "origin", "b", cwd=work)
     return g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
 
 
-def _e2e(d, edge, fund_sign=1.0, B_=200, capture=None):
-    """R23.6: through the real entry point main() with the real GitLedger on a temporary bare remote. Only the
-    host-API checks are a stub (ctx.host_api), and the engine-commit check (this test tree is not a commit)."""
-    import shutil, scripts.run_rotation_core_v2 as run
+def _e2e_setup(d, edge=None, fund_sign=1.0, B_=200):
+    """A temporary bare remote and clone with the selection file and a pushed stage-1 release; fixtures outside it."""
+    import shutil, hashlib
     d = Path(d)
     origin, work, g = _git_env(d)
     shutil.copy(ORIG_SELECTION, work / "sel.json")
@@ -1233,47 +1289,50 @@ def _e2e(d, edge, fund_sign=1.0, B_=200, capture=None):
     s1_in = {"industries_le2019": pre / IND, "factors": full / FAC}
     s2_in = {"industries_full": full / IND, "industries_le2019": pre / IND, "factors": full / FAC,
              **{f"yahoo_{t}": funds / f"{t}.parquet" for t in ["SPY", "RSP"] + v2.FUNDS}}
-    ctx = run.Ctx(root=work, ledger_path=work / "ledger.json", branch="b", remote_url=str(origin),
-                  release1=work / "r1.json", release2=work / "r2.json", selection=work / "sel.json",
-                  ind_d=pre / IND, ind_full=full / IND, fact=full / FAC, fund_dir=funds, stage1_inputs=s1_in,
-                  stage2_inputs=s2_in, sealed_paths=[], sealed_recorded={}, host_api=_host_stub(work, "b"),
-                  anchor=sel_commit, engine_check=lambda c: None, B=B_, final_j=d / "final.json",
-                  final_m=d / "final.md", stage1_published=d / "published.json")
-    import hashlib
-    _commit_push(g, work, "r1.json", {
+    ctx = {"root": work, "ledger_path": work / "ledger.json", "branch": "b", "remote_url": str(origin),
+           "release1": work / "r1.json", "release2": work / "r2.json", "selection": work / "sel.json",
+           "ind_d": pre / IND, "ind_full": full / IND, "fact": full / FAC, "fund_dir": funds,
+           "stage1_inputs": s1_in, "stage2_inputs": s2_in, "anchor": sel_commit, "B": B_,
+           "final_j": d / "final.json", "final_m": d / "final.md", "stage1_published": d / "published.json",
+           "ledger_status_j": d / "status.json", "ledger_status_m": d / "status.md",
+           "host_stub": True, "engine_stub": True}
+    r1_commit = _commit_push(g, work, "r1.json", {
         "windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
         "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "E1",
         "selection_results_commit": sel_commit,
         "selection_results_sha256": hashlib.sha256((work / "sel.json").read_bytes()).hexdigest(),
         "inputs_sha256": {k: v2.sha256_file(p) for k, p in s1_in.items()}, "versions": v2.versions(),
         "branch_head_at_release": sel_commit})
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        assert run.main(["--stage", "pre1998"], _ctx=ctx) == 0
-    out1 = buf.getvalue().splitlines()
+    return {"d": d, "origin": origin, "work": work, "g": g, "ctx": ctx, "r1_commit": r1_commit, "s2_in": s2_in}
+
+
+def _e2e(d, edge, fund_sign=1.0, B_=200, capture=None):
+    """R23.6/R25.1(a): through the real entry point main() in a real `python -E` subprocess (the test driver), with
+    the real GitLedger on a temporary bare remote. Only the host API and the engine-commit check are stubbed."""
+    S = _e2e_setup(d, edge, fund_sign, B_)
+    d, work, g, ctx = S["d"], S["work"], S["g"], S["ctx"]
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": ctx}, d)
+    assert r.returncode == 0, r.stderr[-800:]
+    out1 = r.stdout.splitlines()
+    w1 = next(ln.split() for ln in out1 if ln.startswith("WITNESS start_commit"))
     gate_commit = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS gate_commit"))
-    start_commit = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS start_commit"))
+    assert w1[3:] == ["branch", "b"]
     ents = json.loads((work / "ledger.json").read_text())["entries"]
     head = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
     _commit_push(g, work, "r2.json", {
         "windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256, "engine_commit": "E1",
         "ledger_prefix_len": len(ents), "ledger_prefix_chain_sha256": v2.chain_hash(ents),
         "branch_head_at_release": head, "gate_commit": gate_commit,
-        "inputs_sha256": {k: v2.sha256_file(p) for k, p in s2_in.items()}, "versions": v2.versions(),
-        "witnessed": {"start_commit": start_commit, "gate_commit": gate_commit, "acknowledged_at": "test"}})
-    mp = pytest.MonkeyPatch()
-    if capture is not None:                       # R21.4: record every stream key the final run draws from
-        orig = rc.stationary_bootstrap_indices
-        def spy(n, b, block, seed):
-            capture.append(tuple(seed.spawn_key) if isinstance(seed, np.random.SeedSequence) else seed)
-            return orig(n, b, block, seed)
-        mp.setattr(rc, "stationary_bootstrap_indices", spy)
-    try:
-        buf2 = io.StringIO()
-        with contextlib.redirect_stdout(buf2):
-            assert run.main(["--stage", "confirm"], _ctx=ctx) == 0
-    finally:
-        mp.undo()
+        "inputs_sha256": {k: v2.sha256_file(p) for k, p in S["s2_in"].items()}, "versions": v2.versions(),
+        "witnessed": {"branch": "b", "release_commit": S["r1_commit"], "start_commit": w1[2],
+                      "gate_commit": gate_commit, "witness_utc": "2026-11-11T16:00Z", "acknowledged_at": "test"}})
+    cfg = {"argv": ["--stage", "confirm"], "ctx": ctx}
+    if capture is not None:
+        cfg["capture_keys"] = str(d / "keys.json")
+    r = _py([], cfg, d)
+    assert r.returncode == 0, r.stderr[-800:]
+    if capture is not None:
+        capture.extend(tuple(k) for k in json.loads((d / "keys.json").read_text()))
     res = json.loads((d / "final.json").read_text())
     led_entries = json.loads((work / "ledger.json").read_text())["entries"]
     gate = next(e for e in led_entries if e["kind"] == "GATE")
@@ -1301,7 +1360,7 @@ def test_R20_10_planted_edge_must_pass(e2e_pass):
                                         "FINAL"]
     assert ents[-1]["verdicts"]["H3"] == "survives falsification on history"
     assert all(e["host"]["ruleset_id"] == v2.RULESET_ID for e in ents)              # R22.1/R23.2 recorded
-    assert res["witnessed"]["acknowledged_at"] == "test"
+    assert res["witnessed"]["acknowledged_at"] == "test" and res["witnessed"]["branch"] == "b"
 
 
 def test_R20_10_planted_edge_fails_only_on_the_2020_2025_sign_legs(tmp_path):
@@ -1422,10 +1481,10 @@ def _confirm_with_planted(open_stage1, monkeypatch, target, exc):
         raise exc
     monkeypatch.setattr(run, target, boom)
     lines = []
-    with v2.stage2_opened([], recorded={}):
-        res = run.confirm_command(led, r2, "q1", "E1", pre / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
-                                  out=lines.append)
-    return res, led.entries(), lines
+    with v2.stage2_opened([], recorded={}), pytest.raises(SystemExit) as ei:     # R25.1(b): ends in the hard exit
+        run.confirm_command(led, r2, "q1", "E1", pre / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
+                            out=lines.append)
+    return str(ei.value), led.entries(), lines
 
 
 def test_R21_1_stage2_phase_b_exception_records_final_all_fail(open_stage1, monkeypatch):
@@ -1433,7 +1492,7 @@ def test_R21_1_stage2_phase_b_exception_records_final_all_fail(open_stage1, monk
     f = ents[-1]
     assert [x["kind"] for x in ents][-4:] == ["START", "PHASE_A_CLEAN", "REPRODUCTION_OK", "FINAL"]
     assert f["closed_by"] == "phase_b_exception" and f["exception_type"] == "ZeroDivisionError"
-    assert f["verdicts"] == {"H1": "FAIL", "H2": "FAIL", "H3": "FAIL"} and res["phase_b_exception"] == "ZeroDivisionError"
+    assert f["verdicts"] == {"H1": "FAIL", "H2": "FAIL", "H3": "FAIL"} and "ZeroDivisionError" in res
     with pytest.raises(v2.SealedRefusal):
         v2.start_allowed(ents, _start("stage2", "q2", "E1"), {})
 
@@ -1485,34 +1544,35 @@ def test_R24_1_ledger_order_a2_before_final():
 
 
 # ------------------------------------------------------------------ R24.5 the command line runs the real checks
-def test_R24_5_main_without_ctx_runs_the_real_host_and_engine_checks(monkeypatch):
-    """Needs the network and the authenticated `gh` on the host (as the real run does)."""
+def test_R24_5_R26_2_real_hooks_with_an_absent_release_path(tmp_path):
+    """R26.2: the context's release path is an absent path; the host check (real `gh`, network) and the engine-commit
+    check are the real ones. Runs in a real `python -E` subprocess."""
+    out = tmp_path / "calls.json"
+    r = _py([], {"mode": "real_hooks", "out": str(out)}, tmp_path)
+    assert r.returncode == 0, r.stderr[-600:]
+    calls = json.loads(out.read_text())
+    assert calls["host_api_is_none"] is True and calls["ruleset_id"] == v2.RULESET_ID
+    assert calls["engine_check_is_real"] is True
+    assert "__absent_release_for_tests__.json" in calls["refusal"]
+
+
+def test_R26_2_no_context_sealed_stage_under_pytest_refuses_even_with_a_release(tmp_path, monkeypatch):
     import scripts.run_rotation_core_v2 as run
-    calls = {}
-    real_host, real_s1 = v2.host_checks, v2.stage1_release
-    def host_spy(*a, **k):
-        calls["host_api"] = a[2] if len(a) > 2 else k.get("api")
-        calls["host_record"] = real_host(*a, **k)
-        return calls["host_record"]
-    def s1_spy(*a, **k):
-        calls["engine_check"] = k.get("engine_check")
-        return real_s1(*a, **k)
-    monkeypatch.setattr(v2, "host_checks", host_spy)
-    monkeypatch.setattr(v2, "stage1_release", s1_spy)
-    with pytest.raises(v2.SealedRefusal) as ei:
-        run.main(["--stage", "pre1998"])
-    assert calls["host_api"] is None and calls["host_record"]["ruleset_id"] == v2.RULESET_ID      # the real API
-    assert calls["engine_check"] is v2.check_engine_commit                                       # the real check
-    assert "HOLDOUT_RELEASE_v2.json" in str(ei.value)                                            # then: no release
+    origin, work, g = _git_env(tmp_path)
+    rel = work / "HOLDOUT_RELEASE_v2.json"; rel.write_text(json.dumps({"windows_released": [v2.W_PRE]}))
+    g("add", rel.name, cwd=work); g("commit", "-q", "-m", "release", cwd=work)
+    monkeypatch.setattr(v2, "RELEASE", rel)                       # a release EXISTS (temporary repository only)
+    for stage in ("pre1998", "confirm"):
+        with pytest.raises(SystemExit, match="pytest"):
+            run.main(["--stage", stage])
 
 
-def test_R24_5_no_option_or_environment_variable_sets_the_test_context(capsys):
+def test_R24_5_no_option_or_environment_variable_sets_the_test_context():
     import inspect, scripts.run_rotation_core_v2 as run
-    with pytest.raises(SystemExit):
-        run.main(["--help"])
-    help_text = capsys.readouterr().out
-    assert not re.search(r"ctx|host|engine.check|stub|anchor", help_text, re.I)
-    for f in (run.main, run.Ctx, run.verified_ledger, run.run_once_guard):
+    r = _py(["scripts/run_rotation_core_v2.py", "--help"])
+    assert r.returncode == 0
+    assert not re.search(r"ctx|host|engine.check|stub|anchor", r.stdout, re.I)
+    for f in (run.main, run.Ctx, run.verified_ledger, run.run_once_guard, run.start_checks):
         src = inspect.getsource(f)
         assert "os.environ" not in src and "getenv" not in src and "environ[" not in src
     assert inspect.signature(run.main).parameters["_ctx"].default is None
@@ -1587,3 +1647,264 @@ def test_R21_6_window_text_keeps_only_dated_lines_in_range():
     run.check_rehearsal_input(w)
     vw, _ = v2.load_french_industries(w, "2019-12-31")
     assert vw.index.min() >= pd.Timestamp("1996-01-02") and vw.index.max() <= pd.Timestamp("2019-12-31")
+
+
+# ------------------------------------------------------------------ R25.1(a) -E enforced
+def test_R25_1a_the_runner_refuses_without_E_or_when_interactive():
+    for flags, env in (((), None), (("-E", "-i"), None), ((), _clean_env(PYTHONINSPECT="1"))):
+        r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], flags=flags, env=env)
+        assert "R25.1(a)" in (r.stdout + r.stderr) and "GATE_SIGN" not in r.stdout, (flags, r.stderr[-300:])
+    r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])
+    assert r.returncode == 0
+
+
+# ------------------------------------------------------------------ R25.1(b) + R26.1 through main() in a real process
+def _assert_no_leak(work, lines_out, err):
+    assert "Traceback" not in err and "GATE_SIGN" not in lines_out and _no_magnitude(lines_out + err)
+    unreachable = subprocess.run([v2.tool("git"), "-C", str(work), "fsck", "--unreachable", "--no-reflogs"],
+                                 capture_output=True, text=True).stdout.split()
+    for o in (x for x in unreachable if len(x) == 40):
+        body = subprocess.run([v2.tool("git"), "-C", str(work), "cat-file", "-p", o], capture_output=True).stdout
+        assert b"gate_open" not in body, "a GATE blob reached the real object store"
+    import glob, tempfile
+    assert not glob.glob(str(Path(tempfile.gettempdir()) / (v2.OBJ_DIR_PREFIX + "*")))
+
+
+@pytest.mark.parametrize("plant", ["fetch_fail_before_gate", "reject_push_before_gate"])
+def test_R25_1b_R26_1_failed_record_push_after_clean_phase_b_exits_with_type_only_and_leaves_nothing(tmp_path, plant):
+    S = _e2e_setup(tmp_path, None, 1.0, 20)
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": S["ctx"], "plant": plant, "origin": str(S["origin"])}, tmp_path)
+    assert r.returncode == 5, (r.returncode, r.stderr[-500:])
+    err = r.stderr.strip().splitlines()
+    assert len(err) == 1 and ("SealedRefusal" in err[0] or "LedgerPushFailed" in err[0]) and "push" in err[0]
+    _assert_no_leak(S["work"], r.stdout, r.stderr)
+    gone = S["origin"].with_name(S["origin"].name + ".gone")
+    if gone.exists():
+        gone.rename(S["origin"])
+    led = _gled(S["work"], S["origin"]); led.fetch()
+    assert [e["kind"] for e in led.entries()] == ["START", "PHASE_A_CLEAN"]
+
+
+def test_R26_1_in_process_failed_push_leaves_no_gate_blob_and_no_object_dir(fx, tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v2 as run
+    led = run.temporary_remote(tmp_path)
+    origin = tmp_path / "origin.git"
+    orig = run.pre1998_stats
+    def planted(*a, **k):
+        res = orig(*a, **k)
+        h = origin / "hooks" / "pre-receive"; h.write_text("#!/bin/sh\nexit 1\n"); h.chmod(0o755)
+        return res
+    monkeypatch.setattr(run, "pre1998_stats", planted)
+    with pytest.raises(SystemExit, match="push did not complete"):
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+    _assert_no_leak(tmp_path / "work", "", "")
+
+
+def test_R26_1_leftover_object_dirs_removed_unread(tmp_path):
+    import tempfile
+    d = Path(tempfile.mkdtemp(prefix=v2.OBJ_DIR_PREFIX)); (d / "x").write_text("never read")
+    assert v2.cleanup_leftover_object_dirs() >= 1 and not d.exists()
+
+
+# ------------------------------------------------------------------ R25.1(c) default closed, and published
+def _status_ledger(stage1_record=None, stage2=False):
+    led = v2.MemoryLedger()
+    s_ = led.append(_start(rel="r1")); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    if stage1_record is not None:
+        led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": stage1_record,
+                    "gate_open": v2.gate_decision(stage1_record)[0], "magnitudes_sha256": "d" * 64})
+    if stage2:
+        q = led.append(_start("stage2", "q1", "E1")); led.append({"kind": "PHASE_A_CLEAN", "start_index": q["index"]})
+        led.append({"kind": "REPRODUCTION_OK", "start_index": q["index"]})
+    return led.entries()
+
+
+def test_R25_1c_phase_a_clean_without_record_is_closed_in_the_report(tmp_path):
+    import scripts.run_rotation_core_v2 as run
+    from scripts.rotation_core_v2_report import write_ledger_status_md
+    st = run.ledger_status(_status_ledger())
+    assert st["headline"] == "historical tier FAIL, " + run.R25_CLOSED
+    st2 = run.ledger_status(_status_ledger(_all_plus(), stage2=True))
+    assert st2["headline"] == "every hypothesis FAIL, " + run.R25_CLOSED
+    with pytest.raises(v2.SealedRefusal):                           # stage 2 can never start on a clean-no-record
+        v2.start_allowed(_status_ledger(), _start("stage2", "q1", "E1"), {})
+    write_ledger_status_md(st, tmp_path / "s.md")
+    assert run.R25_CLOSED in (tmp_path / "s.md").read_text()
+    # the identical rerun is the only thing that changes it
+    ents = _status_ledger()
+    led = v2.MemoryLedger(ents); s_ = led.append(_start(rel="r1"))
+    led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _all_plus(), "gate_open": True,
+                "magnitudes_sha256": "d" * 64})
+    assert run.ledger_status(led.entries())["headline"] == "gate OPEN"
+
+
+def test_R25_1c_ledger_report_through_main_on_a_ledger_ending_in_phase_a_clean(tmp_path):
+    S = _e2e_setup(tmp_path, None, 1.0, 20)
+    led = _gled(S["work"], S["origin"]); led.fetch()
+    rsha = v2.sha256_file(S["work"] / "r1.json")
+    s_ = led.append(dict(_start(rel=rsha))); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    r = _py([], {"argv": ["--ledger-report"], "ctx": S["ctx"]}, tmp_path)
+    assert r.returncode == 0, r.stderr[-500:]
+    assert "R25.1" in r.stdout
+    st = json.loads((tmp_path / "status.json").read_text())
+    assert st["headline"].startswith("historical tier FAIL") and "R25.1" in (tmp_path / "status.md").read_text()
+
+
+# ------------------------------------------------------------------ R25.2 Phase A pinned by syntax-tree hash
+PHASE_A_AST_SHA256 = {
+ "phase_a_window": "14469b40ce70b96fc0bf742a6aa83dcdc3bda8bf04ad847810222f20e55c3139",
+ "phase_a_strict": "9bb8090404b6377d9b2745f7f8960a2b2412b78734e364168fb3864f493567b7",
+ "phase_a": "886092b6ceae491b20d87d7e9a4ee0805d04a74a64f0f8f5d0310823e40a576e",
+ "states_identical_across_costs": "0825b22238947827140f0ddc3f252e8e6b54b005d8d11b4445d5f7cfe414686e"
+}
+
+
+def test_R25_2_phase_a_syntax_tree_hashes_are_pinned_and_recorded():
+    import scripts.run_rotation_core_v2 as run
+    assert run.phase_a_ast_digest() == PHASE_A_AST_SHA256
+    assert v2.versions()["phase_a_ast_sha256"] == PHASE_A_AST_SHA256
+    led = v2.MemoryLedger(); e = led.append(_start())
+    assert e["phase_a_ast_sha256"] == PHASE_A_AST_SHA256
+
+
+@pytest.mark.parametrize("src", [
+    'def f(bb, LR, m):\n    rb = LR["OFF"].to_numpy()[m]\n    rs = bb.returns.to_numpy()[m]\n'
+    '    return np.count_nonzero(~(rs <= rb + TOL))',
+    "def f(r_all, m):\n    W_all = r_all\n    return np.count_nonzero(W_all[m] > TOL)"])
+def test_R25_2_reader_rebinding_cases_fail_the_guard(src):
+    assert any(v.startswith("assign") for v in phase_a_violations(src))
+
+
+# ------------------------------------------------------------------ R25.3 git and gh by absolute path
+def test_R25_3_tools_resolved_once_by_absolute_path_and_recorded(tmp_path, monkeypatch):
+    assert v2.tool("git") == "/usr/bin/git" and v2.tool("gh") == "/usr/bin/gh"
+    t = v2.versions()["tools"]
+    assert t["git"]["path"] == "/usr/bin/git" and t["git"]["version"].startswith("git version")
+    assert t["gh"]["path"] == "/usr/bin/gh" and t["gh"]["version"].startswith("gh version")
+    d = tmp_path / "bin"; d.mkdir(); f = d / "faketool"; f.write_text("#!/bin/sh\n"); f.chmod(0o775)
+    monkeypatch.setattr(v2, "TOOL_DIRS", (str(d),)); monkeypatch.setattr(v2, "_TOOLS", {})
+    with pytest.raises(v2.SealedRefusal, match="writable"):
+        v2.tool("faketool")
+    with pytest.raises(v2.SealedRefusal, match="not found"):
+        v2.tool("absent")
+
+
+# ------------------------------------------------------------------ R25.5 an object body fails closed
+def test_R25_5_object_body_is_a_plain_refusal():
+    for bad in ({"message": "Not Found"}, ["Not Found"], [1, 2], None):
+        with pytest.raises(v2.SealedRefusal, match="unexpected"):
+            v2.check_activity(bad, "a" * 40, "a" * 40, lambda a, b: True, "refs/heads/b")
+    with pytest.raises(v2.SealedRefusal, match="unexpected"):
+        v2.host_checks("a" * 40, api=lambda path, paginate=False: {"message": "Not Found"} if "activity" in path else [])
+
+
+# ------------------------------------------------------------------ R26.3 untracked / ignored code, re-checked at the record
+def test_R26_3_untracked_py_at_the_repository_root_refuses_through_main():
+    probe = v2.ROOT / f"zz_r26_probe_{os.getpid()}.py"
+    probe.write_text("x = 1\n")
+    try:
+        r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])
+        assert r.returncode != 0 and probe.name in r.stderr and "untracked or ignored code file" in r.stderr
+    finally:
+        probe.unlink()
+
+
+def test_R26_3_record_push_rechecks_the_worktree(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = v2.GitLedger(root=work, path=work / "ledger.json", branch="b", remote_url=str(origin), code_root=work)
+    led.fetch(); s_ = led.append(_start()); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    (work / ".gitignore").write_text("*.so\n"); (work / "evil.so").write_text("x")
+    with pytest.raises(v2.SealedRefusal, match="evil.so"):
+        led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _closed(), "gate_open": False,
+                    "magnitudes_sha256": "d" * 64})
+    (work / "evil.so").unlink(); (work / "__pycache__").mkdir(); (work / "__pycache__" / "ok.pyc").write_text("x")
+    led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _closed(), "gate_open": False,
+                "magnitudes_sha256": "d" * 64})
+
+
+# ------------------------------------------------------------------ R26.4 git / gh redirection
+def test_R26_4_inherited_variables_refused(monkeypatch):
+    v2.check_env_vars()
+    for k in ("GIT_EDITOR", "GIT_SSH_COMMAND", "GH_TOKEN", "GH_HOST", "https_proxy", "HTTPS_PROXY", "ALL_PROXY",
+              "http_proxy"):
+        monkeypatch.setenv(k, "x")
+        with pytest.raises(v2.SealedRefusal, match=k):
+            v2.check_env_vars()
+        monkeypatch.delenv(k)
+
+
+def test_R26_4_git_config_redirections_refused(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    v2.check_remote_identity(work, str(origin))
+    for key, val in (("http.proxy", "http://p:1"), ("https.proxy", "http://p:1"), ("core.gitProxy", "x"),
+                     ("core.sshCommand", "ssh -v"), ("http.sslVerify", "false"),
+                     ("http.https://github.com.sslVerify", "false"), ("http.https://github.com.proxy", "http://p")):
+        g("config", key, val, cwd=work)
+        with pytest.raises(v2.SealedRefusal):
+            v2.check_remote_identity(work, str(origin))
+        g("config", "--unset", key, cwd=work)
+    g("config", "http.sslVerify", "true", cwd=work)
+    v2.check_remote_identity(work, str(origin))
+
+
+def test_R26_4_gh_called_with_hostname(monkeypatch):
+    seen = {}
+    class R:
+        returncode, stdout = 0, b"[]"
+    def fake(cmd, **k):
+        seen["cmd"] = cmd; return R()
+    monkeypatch.setattr(v2.subprocess, "run", fake)
+    v2.gh_api("/x")
+    assert seen["cmd"][:4] == ["/usr/bin/gh", "api", "--hostname", "github.com"]
+
+
+# ------------------------------------------------------------------ R26.5 witness checked
+def test_R26_5_witness_block_is_checked_against_the_ledger_and_the_release_history(tmp_path):
+    import scripts.run_rotation_core_v2 as run
+    origin, work, g = _git_env(tmp_path)
+    r1 = _commit_push(g, work, "r1.json", {"windows_released": [v2.W_PRE]})
+    led = _gled(work, origin); led.fetch()
+    rsha = v2.sha256_file(work / "r1.json")
+    s_ = led.append(_start(rel=rsha)); start_commit = led.last_commit
+    led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _all_plus(), "gate_open": True,
+                "magnitudes_sha256": "d" * 64})
+    gate_commit = led.last_commit
+    ctx = run.Ctx(root=work, branch="b", release1=work / "r1.json")
+    good = {"branch": "b", "release_commit": r1, "start_commit": start_commit, "gate_commit": gate_commit,
+            "witness_utc": "t"}
+    r2 = {"gate_commit": gate_commit, "_gate_latest": led.entries()[-1], "witnessed": good}
+    run.check_witness(r2, led, ctx)
+    for k, bad in (("branch", "other"), ("release_commit", start_commit), ("start_commit", gate_commit),
+                   ("gate_commit", start_commit), ("witness_utc", "")):
+        with pytest.raises(v2.SealedRefusal):
+            run.check_witness(dict(r2, witnessed=dict(good, **{k: bad})), led, ctx)
+    with pytest.raises(v2.SealedRefusal):
+        run.check_witness({k: v for k, v in r2.items() if k != "witnessed"}, led, ctx)
+
+
+# ------------------------------------------------------------------ R26.6 activity ancestry, raw-line loaders
+def test_R26_6_activity_push_must_be_a_fast_forward_in_local_history(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    c0 = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    (work / "a").write_text("1"); g("add", "a", cwd=work); g("commit", "-q", "-m", "a", cwd=work)
+    c1 = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    g("checkout", "-q", "--orphan", "z", cwd=work); (work / "z").write_text("z"); g("add", "z", cwd=work)
+    g("commit", "-q", "-m", "z", cwd=work)
+    cz = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    isanc = lambda a, b: v2._git("merge-base", "--is-ancestor", a, b, check=False, root=work).returncode == 0
+    ok = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": c0, "ref": "refs/heads/b",
+           "timestamp": "t1"},
+          {"id": 2, "activity_type": "push", "before": c0, "after": c1, "ref": "refs/heads/b", "timestamp": "t2"}]
+    v2.check_activity(ok, c1, c0, isanc, "refs/heads/b")
+    bad = ok + [{"id": 3, "activity_type": "push", "before": c1, "after": cz, "ref": "refs/heads/b", "timestamp": "t3"}]
+    with pytest.raises(v2.SealedRefusal, match="fast-forward"):
+        v2.check_activity(bad, cz, c0, isanc, "refs/heads/b")
+
+
+def test_R26_6_market_loader_drops_lines_after_the_end_before_any_parse(tmp_path):
+    ind, fac = fixture_texts(start="1996-01-02", end="1997-12-31", n_ind=6)
+    p = tmp_path / "f.csv"; p.write_text(fac + "19980102,NOT,A,NUMBER,AT_ALL\n")
+    mkt, rf = v2.load_french_market(p, "1997-12-31")
+    assert mkt.index.max() <= pd.Timestamp("1997-12-31") and len(mkt) > 400

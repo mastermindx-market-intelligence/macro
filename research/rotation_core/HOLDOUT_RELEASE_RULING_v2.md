@@ -421,7 +421,7 @@ The reviewer's 79 at `0eeca4f5ea` were the first four files. The lead's 118 incl
    - The entry count and the sha256 of the canonical (type, before, after) list are recorded in every ledger entry (`host`).
    - On the real branch at `343347ea6b`: 34 entries, one chain, anchor inside, ruleset active.
 2. **No forced fetch.** The refspec has no `+`, so a non-fast-forward remote refuses. Each release pins `branch_head_at_release`, which must be an ancestor of the fetched head. The stage-2 release also pins `gate_commit`, which must be an ancestor and must contain the latest GATE entry.
-   - **Declared limit (R24.2):** a fresh clone rewound exactly to the release head is caught only by the host layers (ruleset 27041175 and the activity log's `force_push` entry) and by the outside witness, not by the local ancestry pin. The three layers are: the ruleset forbids the rewind; the activity log records it; the witness holds the shas outside this repository. Tests cover the host layers.
+   - **Declared limit (R24.2, restated by R25.4):** the local layers (non-forced fetch, ancestry pins) miss ANY rewrite whose new head still descends from `branch_head_at_release`. Examples: a rewind to the START commit, or a rewind plus re-appended commits, seen from a fresh clone. The ruleset (27041175, which forbids the rewind), the activity log (which records it as `force_push`) and the outside witness (which holds the shas outside this repository) catch all of them. Tests cover the host layers.
 3. **Outside witness.**
    - The runner prints `WITNESS start_commit <40-hex>` after START, and `WITNESS gate_commit <40-hex> ledger_index <n>` after a successful GATE push and before any sign.
    - The stage-2 release carries `witnessed` (the two shas and the acknowledgement times, filled by the CEO); the final result text cites it.
@@ -482,3 +482,60 @@ python -E scripts/run_rotation_core_v2.py --stage confirm
 5. **The test context:** accepted, with tests that:
    - `main()` called as the command line calls it (no `_ctx`) runs the REAL host check (`api` None, so `gh api`) and passes the REAL engine-commit check to the release check, then refuses for lack of a release;
    - the argument parser exposes no option, and `main`, `Ctx`, `verified_ledger` and `run_once_guard` read no environment variable, that could set the test context.
+
+## R25 — seen but unrecorded; Phase A pin; tools (CEO, after the reader's delta on `0f45b94510`)
+
+0. **Accepted as built:** an exception during the stage-2 reproduction of stage 1 is INTEGRITY_ABORT, reason `stage1_reproduction_exception`.
+1. **Seen but unrecorded.**
+   - (a) **`-E` is enforced.** The runner refuses before anything else unless `sys.flags.ignore_environment` is set and `sys.flags.inspect` and `sys.flags.interactive` are both zero.
+   - (b) **No live frame after a failure.** From the first sealed statistic to the pushed record, every `BaseException` ends in `_hard_exit`: one fixed line with the exception TYPE only (no traceback, no value), then `os._exit(5)`. This covers Phase B and the GATE, REPRODUCTION_OK and FINAL appends, including a fetch failing inside `append` after Phase B (the reader's case, now a test through `main()` in a real `python -E` process). The R21.1/R24.1 classification of which record is written is unchanged.
+   - (c) **Default-closed.** A PHASE_A_CLEAN with no GATE (stage 1) or no FINAL (stage 2) on the remote is a closed result for every purpose, from the moment PHASE_A_CLEAN is pushed, with no time window, until an identical rerun pushes a record.
+     - `--ledger-report` prints and writes it (`results_v2_ledger_status.json`, `RESULTS_V2_LEDGER_STATUS.md`): historical tier FAIL, or every hypothesis FAIL, "closed by rule R25.1: Phase A clean, no record on the remote". It publishes under S6.
+     - Stage 2 can never start on it.
+     - The identical rerun stays permitted and is the only thing that can change it.
+   - (d) Superseded by R26.1: fixed, not declared.
+2. **Phase A pinned by syntax-tree hash.**
+   - The normalised syntax-tree sha256 of each Phase A function (`ast.dump`, no positions) is computed by the runner at import. It is written into `versions()` (pinned by the release) and into every ledger entry, and pinned in the test.
+   - The development guard also allowlists every assignment in the four functions, so the reader's two rebinding cases fail it (tests).
+   - Remaining gaps (`Subscript`, the argument of `int(...)`) are covered by the hash pin.
+3. **`git` and `gh` by absolute path.** Each is resolved once, never through PATH, as `/usr/bin/<name>` or `/usr/local/bin/<name>`. It must have its real path under one of those directories and not be writable by group or other. Both are called by that path everywhere; path and `--version` are recorded in `versions()`.
+4. **Wording:** R24.2's declared limit is restated as the reader found it (see R22.2 above).
+5. **An object body fails closed.** A 200 response whose body is an object (or whose entries are not activity objects) is a `SealedRefusal` with a plain message, before START.
+
+## R26 — the Sector Intelligence reader on `0f45b94510` (CEO)
+
+1. **A failed push leaves nothing on disk.**
+   - Inside `GitLedger.append`, every object is written into a private object directory (`tempfile.mkdtemp`, mode 700, prefix `rc_ledger_objects_`). It is used as `GIT_OBJECT_DIRECTORY` with `GIT_ALTERNATE_OBJECT_DIRECTORIES` pointing at the real store, for `hash-object`, `read-tree`, `update-index`, `write-tree`, `commit-tree` and `push` only.
+   - The directory is removed in every outcome inside `append` (a `finally` that runs before the exception leaves `append`, so before any `_hard_exit`). The fetch after a successful push brings the objects into the real store.
+   - Every invocation, before anything else, deletes leftover directories with that prefix without reading them.
+   - **Declared limit:** process death between `hash-object` and the push leaves the directory until the next invocation; default-closed (R25.1(c)) covers it.
+   - Tests, in a real process and in-process: after a failed record push, `git fsck --unreachable --no-reflogs` on the real store shows no blob containing `gate_open`, and no private directory remains.
+2. **The suite can never run a sealed stage.**
+   - The runner refuses `--stage pre1998` and `--stage confirm` with the real context whenever `pytest` is in `sys.modules` (module presence; refusal only).
+   - The real-hooks test runs with a context whose release path is an absent path inside the repository, every other hook real.
+   - **Run instruction:** after the release commit, the suite is not run on the run host until that stage's record is on the remote.
+3. **The import check is repeated.** The loaded-module check runs at start and again inside `append` immediately before every GATE, REPRODUCTION_OK and FINAL push. At those same points (and at start) the runner refuses any untracked or ignored `*.py`, `*.pth`, `*.so`, or `*.pyc` outside `__pycache__`, anywhere in the working tree (`git status --porcelain --untracked-files=all --ignored`). The reader's case, an untracked `X.py` at the repository root, is tested through `main()`.
+4. **Redirecting `git` or `gh`.**
+   - Any inherited `GIT_*` or `GH_*` variable, and `HTTP_PROXY`, `HTTPS_PROXY` or `ALL_PROXY` in either case, refuses.
+   - Git config at any scope refuses when it carries `http.proxy` (also per-URL), `https.proxy`, `core.gitProxy`, `core.sshCommand` or `http[.<url>].sslVerify=false`, in addition to the `insteadOf` pair.
+   - `gh` is called with `--hostname github.com`.
+   - This host's authentication does not depend on a refused variable: `gh` reads `~/.config/gh/hosts.yml`, and git uses the credential helper `!/usr/bin/gh auth git-credential` from `~/.gitconfig`.
+   - The run shell must not export `GIT_EDITOR` or any other `GIT_*`/`GH_*` variable.
+5. **The witness is load-bearing.** The stage-2 runner refuses unless `witnessed` has `branch`, `release_commit`, `start_commit`, `gate_commit` and `witness_utc`, with:
+   - `witnessed.gate_commit == gate_commit` and `witnessed.branch == BRANCH`;
+   - `witnessed.start_commit` equal to the remote commit that recorded the stage-1 START;
+   - `witnessed.release_commit` equal to the commit that added the stage-1 release used by that START.
+
+   The first WITNESS line carries the branch: `WITNESS start_commit <sha> branch <branch>`.
+6. **Notes.**
+   - `check_activity` also requires every `push` entry to be a fast-forward (`is_ancestor(before, after)`) in the real local history. The fresh-clone test uses real ancestry on a real temporary repository; only the activity JSON is hand-built.
+   - **Declared:** if the host ever drops old activity entries, every run stops; only a new ruling changes that.
+   - **Loaders:** the industry and market loaders decide by the date field alone and drop lines after the window's end before any split, numeric parse or DataFrame. `repro_check` is byte-identical after the change.
+
+**Sealed-run command lines (unchanged; `-E` now enforced):**
+
+```
+python -E scripts/run_rotation_core_v2.py --stage pre1998
+python -E scripts/run_rotation_core_v2.py --stage confirm
+python -E scripts/run_rotation_core_v2.py --ledger-report
+```

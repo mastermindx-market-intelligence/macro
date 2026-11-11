@@ -56,10 +56,10 @@ def _committed_clean(path: Path, root: Path = None) -> bool:
     except ValueError:
         return False                                   # outside the repo: never counts as committed
     try:
-        subprocess.run(["git", "-C", str(root), "ls-files", "--error-unmatch", rel], check=True, capture_output=True)
+        subprocess.run([tool("git"), "-C", str(root), "ls-files", "--error-unmatch", rel], check=True, capture_output=True)
     except subprocess.CalledProcessError:
         return False
-    out = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", rel], capture_output=True).stdout
+    out = subprocess.run([tool("git"), "-C", str(root), "status", "--porcelain", "--", rel], capture_output=True).stdout
     return out.strip() == b""
 
 
@@ -108,8 +108,102 @@ class LedgerPushFailed(SealedRefusal):
     pass
 
 
+RECORD_KINDS = ("GATE", "REPRODUCTION_OK", "FINAL")
+OBJ_DIR_PREFIX = "rc_ledger_objects_"
+PROXY_VARS = ("http_proxy", "https_proxy", "all_proxy")
+
+
+def check_env_vars() -> None:
+    """R26.4: no inherited GIT_* / GH_* variable and no proxy variable (either case)."""
+    import os
+    for k in os.environ:
+        if k.startswith(("GIT_", "GH_")) or k.lower() in PROXY_VARS:
+            raise SealedRefusal(f"refused: the environment variable {k} is set")
+
+
+def cleanup_leftover_object_dirs() -> int:
+    """R26.1: delete leftover private object directories of a killed run, WITHOUT reading their contents."""
+    import glob, shutil, tempfile
+    n = 0
+    for d in glob.glob(str(Path(tempfile.gettempdir()) / (OBJ_DIR_PREFIX + "*"))):
+        shutil.rmtree(d, ignore_errors=True); n += 1
+    return n
+
+
+CODE_SUFFIXES = (".py", ".pth", ".so", ".pyc")
+
+
+def check_worktree_code(root: Path = None) -> None:
+    """R26.3: no untracked OR ignored *.py, *.pth, *.so, or *.pyc outside __pycache__, anywhere in the working tree."""
+    root = Path(root or ROOT)
+    r = _git("status", "--porcelain", "--untracked-files=all", "--ignored", root=root, check=False)
+    if r.returncode != 0:
+        raise SealedRefusal("refused: git status failed")
+    for ln in r.stdout.decode(errors="replace").splitlines():
+        if not ln.startswith(("?? ", "!! ")):
+            continue
+        path = ln[3:].strip().strip('"')
+        if path.endswith(".pyc") and "__pycache__/" in path:
+            continue
+        if path.endswith(CODE_SUFFIXES) or path.endswith("/"):
+            if path.endswith("/"):                         # an untracked/ignored directory listed whole
+                import os
+                for dp, _, fs in os.walk(root / path):
+                    for f in fs:
+                        if f.endswith(CODE_SUFFIXES) and not (f.endswith(".pyc") and "__pycache__" in dp):
+                            raise SealedRefusal(f"refused: untracked or ignored code file {Path(dp, f)}")
+                continue
+            raise SealedRefusal(f"refused: untracked or ignored code file {path}")
+
+
+TOOL_DIRS = ("/usr/bin", "/usr/local/bin")
+_TOOLS: dict = {}
+
+
+def tool(name: str) -> str:
+    """R25.3: `git` / `gh` resolved once, never through PATH: the first of /usr/bin/<name>, /usr/local/bin/<name>
+    whose REAL path lies under one of those directories and is not writable by group or other."""
+    import os, stat
+    if name in _TOOLS:
+        return _TOOLS[name]
+    for d in TOOL_DIRS:
+        p = os.path.join(d, name)
+        if os.path.exists(p):
+            real = os.path.realpath(p)
+            if not any(real.startswith(x + os.sep) for x in TOOL_DIRS):
+                raise SealedRefusal(f"refused: {name} resolves outside {TOOL_DIRS}")
+            if os.stat(real).st_mode & (stat.S_IWGRP | stat.S_IWOTH):
+                raise SealedRefusal(f"refused: {name} is writable by group or other")
+            _TOOLS[name] = real
+            return real
+    raise SealedRefusal(f"refused: {name} not found in {TOOL_DIRS}")
+
+
+_TOOL_VERSIONS: dict = {}
+
+
+def tool_versions() -> dict:
+    """R25.3: path and `--version` of git and gh, recorded in versions() (pinned by the release)."""
+    if not _TOOL_VERSIONS:
+        for n in ("git", "gh"):
+            p = tool(n)
+            v = subprocess.run([p, "--version"], capture_output=True).stdout.decode().splitlines()
+            _TOOL_VERSIONS[n] = {"path": p, "version": v[0] if v else ""}
+    return dict(_TOOL_VERSIONS)
+
+
 def _git(*a, check=True, root=None, env=None, input=None) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", "-C", str(root or ROOT), *a], capture_output=True, check=check, env=env, input=input)
+    return subprocess.run([tool("git"), "-C", str(root or ROOT), *a], capture_output=True, check=check, env=env,
+                          input=input)
+
+
+# R25.2: the normalised syntax-tree sha256 of each Phase A function, registered by the runner at import; carried in
+# versions() (pinned by the release) and in every ledger entry.
+_PHASE_A = {"ast_sha256": None}
+
+
+def register_phase_a(digest: dict) -> None:
+    _PHASE_A["ast_sha256"] = dict(digest)
 
 
 def check_import_environment(root: Path = ROOT, commit: str | None = None) -> None:
@@ -167,9 +261,17 @@ def check_remote_identity(root: Path = ROOT, url: str = REMOTE_URL) -> None:
     import os
     if any(k.startswith("GIT_CONFIG") for k in os.environ):
         raise SealedRefusal("refused: a GIT_CONFIG* variable is set")
+    check_env_vars()
     r = _git("config", "--get-regexp", r"^url\..*\.(insteadof|pushinsteadof)$", check=False, root=root)
     if r.stdout.strip():
         raise SealedRefusal("refused: a url.*.insteadOf / pushInsteadOf rewrite is configured")
+    r = _git("config", "--get-regexp", r"^(http\..*proxy|https\.proxy|http\.proxy|core\.gitproxy|core\.sshcommand)$",
+             check=False, root=root)
+    if r.stdout.strip():
+        raise SealedRefusal("refused: a git proxy or ssh-command override is configured")
+    r = _git("config", "--get-regexp", r"^http\.(.*\.)?sslverify$", check=False, root=root)
+    if any(ln.split()[-1].lower() in ("false", "0", "no", "off") for ln in r.stdout.decode().splitlines() if ln.split()):
+        raise SealedRefusal("refused: http sslVerify is disabled in git config")
     for args in (("remote", "get-url", REMOTE), ("remote", "get-url", "--push", REMOTE)):
         got = _git(*args, check=False, root=root).stdout.decode().strip()
         if got != url:
@@ -236,7 +338,7 @@ def versions() -> dict:
     return {"python": platform.python_version(), "numpy": numpy.__version__, "pandas": pandas.__version__,
             "pyarrow": pyarrow.__version__, "scipy": scipy.__version__,
             "sitecustomize_sha256": sha256_file(sc) if sc else None, "pth_count": pth_digest()[0],
-            "pth_sha256": pth_digest()[1]}
+            "pth_sha256": pth_digest()[1], "tools": tool_versions(), "phase_a_ast_sha256": _PHASE_A["ast_sha256"]}
 
 
 def site_dirs() -> list:
@@ -259,8 +361,10 @@ def check_manifest(r: dict, inputs: dict) -> dict:
     got = {k: sha256_file(p) for k, p in inputs.items()}
     if r.get("inputs_sha256") != got:
         raise SealedRefusal("refused: input file hashes differ from the release manifest")
-    if r.get("versions") != versions():
-        raise SealedRefusal("refused: library versions differ from the release manifest")
+    want, got_v = r.get("versions") or {}, versions()
+    if want != got_v:
+        keys = sorted(k for k in set(want) | set(got_v) if want.get(k) != got_v.get(k))
+        raise SealedRefusal(f"refused: library versions differ from the release manifest (keys: {', '.join(keys)})")
     return got
 
 
@@ -462,6 +566,8 @@ def check_release_history(versions_by_file: dict, entries: list) -> dict:
 
 class MemoryLedger:
     """In-memory ledger for the fixture dry run and tests (never a release path)."""
+    branch = "memory"
+
     def __init__(self, entries=None, fail_on=()):
         self._e = list(entries or []); self.fail_on = set(fail_on)
         self.last_commit, self.host_record = None, None
@@ -476,6 +582,7 @@ class MemoryLedger:
             raise LedgerPushFailed(f"refused: pushing the {entry['kind']} ledger entry failed")
         if self.host_record is not None:
             entry = dict(entry, host=self.host_record)
+        entry = dict(entry, phase_a_ast_sha256=_PHASE_A["ast_sha256"])
         e = dict(entry, index=len(self._e), prev_chain_sha256=chain_hash(self._e) if self._e else None)
         self._e.append(e)
         self.last_commit = f"memory-{e['index']}"
@@ -487,8 +594,9 @@ class GitLedger:
     fetched remote head (the working tree is not touched), pushes it, and refuses to go on if the push fails. Only
     after a successful push is the local branch fast-forwarded. Starts only when the local HEAD equals the fetched
     remote head."""
-    def __init__(self, root: Path = ROOT, path: Path = LEDGER, branch: str = BRANCH, remote_url: str = REMOTE_URL):
-        self.root, self.branch, self.remote_url = Path(root), branch, remote_url
+    def __init__(self, root: Path = ROOT, path: Path = LEDGER, branch: str = BRANCH, remote_url: str = REMOTE_URL,
+                 code_root: Path = ROOT):
+        self.root, self.branch, self.remote_url, self.code_root = Path(root), branch, remote_url, Path(code_root)
         self.rel = str(Path(path).resolve().relative_to(self.root.resolve()))
         self.remote_sha = None
         self.last_commit = None
@@ -512,6 +620,14 @@ class GitLedger:
             return []
         return json.loads(b.stdout)["entries"]
 
+    def commit_adding_entry(self, index: int) -> str | None:
+        """R26.5: the first remote commit whose ledger holds entry `index`."""
+        import json
+        for c, b in file_versions(self.rel, self.remote_sha, self.root):
+            if len(json.loads(b)["entries"]) > index:
+                return c
+        return None
+
     def entries(self) -> list:
         if self.remote_sha is None:
             raise SealedRefusal("refused: ledger read before a fetch")
@@ -532,17 +648,32 @@ class GitLedger:
             precheck(cur)
         if self.host_record is not None:
             entry = dict(entry, host=self.host_record)
+        entry = dict(entry, phase_a_ast_sha256=_PHASE_A["ast_sha256"])
         e = dict(entry, index=len(cur), prev_chain_sha256=chain_hash(cur) if cur else None)
-        blob = _git("hash-object", "-w", "--stdin", input=ledger_doc(cur + [e]), root=self.root).stdout.decode().strip()
-        with tempfile.TemporaryDirectory() as td:
-            env = dict(os.environ, GIT_INDEX_FILE=str(Path(td) / "index"))
+        if e["kind"] in RECORD_KINDS:                       # R26.3: the environment again, right before a record
+            check_import_environment(ROOT)                   # where the running code lives
+            check_worktree_code(self.code_root)
+        # R26.1: every object of this entry is written into a private object directory (mode 700) layered over the
+        # real store, used only by these child calls, and removed in every outcome before this method returns or
+        # raises. The real store receives the objects only through the fetch after a successful push.
+        real_objects = _git("rev-parse", "--path-format=absolute", "--git-path", "objects",
+                            root=self.root).stdout.decode().strip()
+        td = tempfile.mkdtemp(prefix=OBJ_DIR_PREFIX, dir=tempfile.gettempdir())
+        try:
+            env = dict(os.environ, GIT_OBJECT_DIRECTORY=td, GIT_ALTERNATE_OBJECT_DIRECTORIES=real_objects,
+                       GIT_INDEX_FILE=str(Path(td) / "index"))
+            blob = _git("hash-object", "-w", "--stdin", input=ledger_doc(cur + [e]), root=self.root,
+                        env=env).stdout.decode().strip()
             _git("read-tree", self.remote_sha, root=self.root, env=env)
             _git("update-index", "--add", "--cacheinfo", f"100644,{blob},{self.rel}", root=self.root, env=env)
             tree = _git("write-tree", root=self.root, env=env).stdout.decode().strip()
-        msg = (f"rotation-core run ledger: {e['kind']} (index {e['index']})\n\nWritten by the runner (R20.1).\n\n"
-               "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n").encode()
-        c = _git("commit-tree", tree, "-p", self.remote_sha, input=msg, root=self.root).stdout.decode().strip()
-        p = _git("push", "-q", REMOTE, f"{c}:refs/heads/{self.branch}", check=False, root=self.root)
+            msg = (f"rotation-core run ledger: {e['kind']} (index {e['index']})\n\nWritten by the runner (R20.1).\n\n"
+                   "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n").encode()
+            c = _git("commit-tree", tree, "-p", self.remote_sha, input=msg, root=self.root, env=env).stdout.decode().strip()
+            p = _git("push", "-q", REMOTE, f"{c}:refs/heads/{self.branch}", check=False, root=self.root, env=env)
+        finally:
+            import shutil
+            shutil.rmtree(td, ignore_errors=True)
         if p.returncode != 0:
             raise LedgerPushFailed(f"refused: pushing the {e['kind']} ledger entry did not confirm; its state is "
                                    "UNKNOWN until the next invocation's fetch decides (R22.4(2))")
@@ -560,8 +691,11 @@ ZERO_SHA = "0" * 40
 
 def gh_api(path: str, paginate: bool = False):
     """The authenticated `gh api` already on the host. Fails closed: any non-zero exit or unparsable body raises."""
-    import json
-    cmd = ["gh", "api", "-H", "Accept: application/vnd.github+json", path]
+    import json, os
+    for v in ("GH_HOST", "GH_REPO"):
+        if os.environ.get(v):
+            raise SealedRefusal(f"refused: {v} is set")
+    cmd = [tool("gh"), "api", "--hostname", "github.com", "-H", "Accept: application/vnd.github+json", path]
     if paginate:
         cmd[2:2] = ["--paginate", "--jq", ".[] | @json"]
     r = subprocess.run(cmd, capture_output=True)
@@ -578,8 +712,12 @@ def gh_api(path: str, paginate: bool = False):
 def check_activity(entries: list, remote_sha: str, anchor: str, is_ancestor, ref: str) -> dict:
     """R22.1(b)-(d) on the branch activity log (oldest first). The log keeps deleted history and records force_push,
     branch_deletion and a second branch_creation (probe on fable/rotation-core-ledger-probe-20261111, 15:22Z)."""
+    need = {"id", "activity_type", "before", "after", "ref", "timestamp"}
     if not isinstance(entries, list) or not entries:
-        raise SealedRefusal("refused: the branch activity log is empty or unreadable")
+        raise SealedRefusal("refused: the branch activity log is not a non-empty list (unexpected API response)")
+    if not all(isinstance(e, dict) and need <= set(e) for e in entries):
+        raise SealedRefusal("refused: the branch activity log has entries of an unexpected shape (unexpected API "
+                            "response)")
     es = sorted(entries, key=lambda e: (e["timestamp"], e["id"]))
     if any(e.get("ref") != ref for e in es):
         raise SealedRefusal("refused: the activity log contains another ref")
@@ -590,6 +728,8 @@ def check_activity(entries: list, remote_sha: str, anchor: str, is_ancestor, ref
     for p, e in zip(es, es[1:]):
         if e["before"] != p["after"]:
             raise SealedRefusal("refused: the activity log is not one unbroken chain")
+        if not is_ancestor(e["before"], e["after"]):                 # R26.6: every push a fast-forward, locally
+            raise SealedRefusal("refused: an activity push is not a fast-forward in the local history")
     if es[-1]["after"] != remote_sha:
         raise SealedRefusal("refused: the newest activity entry is not the fetched head")
     # the anchor lies inside the chain: an `after` contains it and that entry's `before` does not (the freeze commit
@@ -813,9 +953,10 @@ def load_french_market(path, end) -> tuple[pd.Series, pd.Series]:
     endk = pd.Timestamp(end).strftime("%Y%m%d")
     rows = []
     for ln in _lines(path):
-        p = [x.strip() for x in ln.split(",")]
-        if len(p[0]) == 8 and p[0].isdigit() and p[0] <= endk:
-            rows.append(p)
+        k = ln.split(",", 1)[0].strip()                    # R26.6: the date field alone decides, before any split
+        if not (len(k) == 8 and k.isdigit() and k <= endk):
+            continue
+        rows.append([x.strip() for x in ln.split(",")])
     idx = pd.to_datetime([r[0] for r in rows], format="%Y%m%d")
     mkt = pd.Series([float(r[1]) + float(r[4]) for r in rows], index=idx) / 100
     rf = pd.Series([float(r[4]) for r in rows], index=idx) / 100
