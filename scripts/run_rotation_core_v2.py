@@ -75,6 +75,7 @@ def main() -> int:
         return 0
     if not FROZEN.exists():
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
+    v2.verify_header_v2(FROZEN)
     if a.stage == "confirm":
         v2.seal_guard(IND_FULL)        # raises unless the parent's release is committed
         raise SystemExit("confirm stage: wire the released windows per HOLDOUT_RELEASE_v2.json (post-release task)")

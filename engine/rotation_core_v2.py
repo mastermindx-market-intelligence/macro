@@ -21,7 +21,19 @@ from engine import rotation_core_evaluation as rc
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = ROOT / "research/rotation_core/HOLDOUT_RELEASE_v2.json"
 SEALED_MARK = "sealed_post2019"
-GRID = [(3, 25.0), (3, 37.5), (5, 25.0), (5, 37.5)]      # (h near-high %, b breadth-drop pp)
+FROZEN_V2_SHA256 = "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728"
+HEADER_V2 = ROOT / "research/rotation_core/protocol_header_v2.json"
+GRID = [(3, 25.0), (3, 37.5), (5, 25.0), (5, 37.5)]
+
+
+def verify_header_v2(path=HEADER_V2, expected: str = FROZEN_V2_SHA256) -> dict:
+    """Refuse any header bytes other than the frozen v2 header."""
+    import hashlib, json
+    raw = Path(path).read_bytes()
+    got = hashlib.sha256(raw).hexdigest()
+    if got != expected:
+        raise rc.HeaderMismatch(f"protocol header v2 sha256 {got} != frozen {expected}")
+    return json.loads(raw)      # (h near-high %, b breadth-drop pp)
 FEE_INDUSTRY_BP = 10.0
 FEE_FUND_BP = 5.0
 

@@ -176,3 +176,13 @@ def test_R12_near_low_formula_is_the_literal_mirror():
     src = inspect.getsource(v2.h1_states)
     assert "near = (rel >= (1 - h / 100) * hi)" in src
     assert "near_low = (rel <= (1 + h / 100) * lo126)" in src and "rolling(126, min_periods=126).min()" in src
+
+
+def test_frozen_v2_header_accepted_and_one_byte_change_refused(tmp_path):
+    from engine import rotation_core_evaluation as rc
+    h = v2.verify_header_v2()
+    assert h["status"].startswith("FROZEN")
+    raw = bytearray(v2.HEADER_V2.read_bytes()); raw[-2] = ord(" ") if raw[-2] != ord(" ") else ord("\t")
+    bad = tmp_path / "h.json"; bad.write_bytes(bytes(raw))
+    with pytest.raises(rc.HeaderMismatch):
+        v2.verify_header_v2(bad)
