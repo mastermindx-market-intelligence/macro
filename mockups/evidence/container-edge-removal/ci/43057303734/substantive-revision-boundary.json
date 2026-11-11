@@ -1,0 +1,49 @@
+{
+  "schema": "mastermind.container_edge_substantive_revision_boundary.v1",
+  "original_run": 43057303734,
+  "original_subject": "bf7de965767cdfc2cd82d976bac3dd0243e56d50",
+  "original_tested_merge": "69b6d7dbc7a369bc0424a14f78d6812990f0a031",
+  "completed_packs": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "completed_logical_jobs": 328,
+  "raw_candidate_step_counts": {
+    "passed": 612,
+    "failed": 2,
+    "not_run_prior_failure": 4,
+    "infrastructure_blocked": 92
+  },
+  "canonical_gate_verdict": null,
+  "pending_pack_at_172649_utc": 0,
+  "source_assertion_failures_observed": 0,
+  "native_unknown_packs": [
+    9,
+    11
+  ],
+  "direct_dns_setup_failure_packs": [
+    3,
+    10
+  ],
+  "hosted_design_guard_passed": true,
+  "hosted_glossary_suite": "333 passed,1 existing deselection; separate US Regime test passed",
+  "later_acquisition_evidence": "Pack7 ordinary setup and pack3/10 BASE-replay setup later succeeded. This is path-scoped availability evidence, not candidate proof for withheld tests or settlement of native completions.",
+  "qualified_native_source": "08e0de87cfb76d9d5c971d8b68c3b5a6c63fbf47",
+  "qualified_main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "additional_main": "63cd9355cb289990e7549bcbd8480089f9caa5f1",
+  "additional_main_delta": "19 data-only paths; no presentation/control source changes",
+  "publication_reason": "The original PR head is now merge-conflicted after a substantive scheduled render. The verified source refresh resolves those conflicts and must receive its own exact-head CI.",
+  "planned_transition": "Publish the substantive updated source through the existing PR CAS. Normal workflow concurrency may supersede any still-active original pack. Preserve its actual terminal/cancelled gate separately; do not relabel old results or manually replay native handles.",
+  "manual_retry_or_cancel_issued": false,
+  "merge_on_green_armed": false,
+  "production_acceptance": false
+}

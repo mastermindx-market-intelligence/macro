@@ -1,0 +1,63 @@
+1760: 2026-11-11T16:44:49.5811252Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease
+1761: 2026-11-11T16:44:49.5812546Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1762: 2026-11-11T16:44:49.5814340Z Ign:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease
+1765: 2026-11-11T16:45:09.6072950Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease
+1766: 2026-11-11T16:45:09.6073588Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1767: 2026-11-11T16:45:29.6258853Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease
+1768: 2026-11-11T16:45:29.6259549Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1769: 2026-11-11T16:45:29.6302602Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease
+1770: 2026-11-11T16:45:49.6582562Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease
+1771: 2026-11-11T16:45:49.6583564Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1772: 2026-11-11T16:45:52.2900146Z Fetched 1473 kB in 3min 20s (7354 B/s)
+1773: 2026-11-11T16:45:53.4928305Z Reading package lists...
+1774: 2026-11-11T16:45:53.5075259Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1775: 2026-11-11T16:45:53.5077419Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1776: 2026-11-11T16:45:53.5079639Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1777: 2026-11-11T16:45:53.5081754Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1778: 2026-11-11T16:45:53.5083298Z W: Some index files failed to download. They have been ignored, or old ones used instead.
+1857: 2026-11-11T16:49:54.2249295Z Err:2 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1
+1858: 2026-11-11T16:49:54.2251018Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1859: 2026-11-11T16:49:54.2324304Z Ign:3 https://archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2
+1860: 2026-11-11T16:50:14.0216283Z Err:3 https://security.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2
+1861: 2026-11-11T16:50:14.0217117Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1862: 2026-11-11T16:50:14.0221040Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1
+1865: 2026-11-11T16:50:34.2795132Z Err:4 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1
+1866: 2026-11-11T16:50:34.2795935Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1867: 2026-11-11T16:50:34.2801760Z Ign:5 https://archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1
+1869: 2026-11-11T16:50:54.3007501Z Err:5 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1
+1870: 2026-11-11T16:50:54.3009011Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1871: 2026-11-11T16:50:54.3029487Z Ign:6 https://archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8
+1874: 2026-11-11T16:51:14.3275817Z Err:6 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8
+1875: 2026-11-11T16:51:14.3277023Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1876: 2026-11-11T16:51:34.1129664Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1
+1878: 2026-11-11T16:51:34.3496386Z Err:7 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2
+1879: 2026-11-11T16:51:34.3497410Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1880: 2026-11-11T16:51:54.1370275Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1882: 2026-11-11T16:51:54.3741043Z Err:8 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3
+1883: 2026-11-11T16:51:54.3742225Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1884: 2026-11-11T16:52:14.3956967Z Err:9 https://security.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1
+1885: 2026-11-11T16:52:14.3958223Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1886: 2026-11-11T16:52:14.3959317Z Ign:10 https://archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1887: 2026-11-11T16:52:34.4201572Z Err:10 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1888: 2026-11-11T16:52:34.4202682Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1889: 2026-11-11T16:52:34.4264277Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-ipafont/fonts-ipafont-gothic_00303-21ubuntu1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1890: 2026-11-11T16:52:34.4265909Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/f/fonts-freefont/fonts-freefont-ttf_20211204%2bsvn4273-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1891: 2026-11-11T16:52:34.4267400Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-tlwg/fonts-tlwg-loma-otf_0.7.3-1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1892: 2026-11-11T16:52:34.4269150Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/u/unifont/fonts-unifont_15.1.01-1build1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1893: 2026-11-11T16:52:34.4270707Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-wqy-zenhei/fonts-wqy-zenhei_0.9.45-8_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1894: 2026-11-11T16:52:34.4272256Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-encodings/xfonts-encodings_1.0.5-0ubuntu2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1895: 2026-11-11T16:52:34.4273952Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7%2b6build3_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1896: 2026-11-11T16:52:34.4275507Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/x/xfonts-cyrillic/xfonts-cyrillic_1.0.5%2bnmu1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1897: 2026-11-11T16:52:34.4276997Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-scalable/xfonts-scalable_1.0.3-1.3_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1898: 2026-11-11T16:52:34.4278564Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+2822: 2026-11-11T17:14:39.3212757Z ...............................                                          [100%]
+2823: 2026-11-11T17:14:39.3214223Z 31 passed in 283.75s (0:04:43)
+2824: 2026-11-11T17:14:39.4197261Z ##[endgroup]
+2896: 2026-11-11T17:18:56.3470791Z Removing tests/__pycache__/
+2897: 2026-11-11T17:18:56.3517912Z CI_PACK_FAILED_JOBS=[]
+2898: 2026-11-11T17:19:10.3168386Z 
+2899: 2026-11-11T17:19:10.3169441Z CI_PACK_FAILED_JOBS=["international-dislocation-explorer"]
+2900: 2026-11-11T17:19:10.3170297Z Legacy CI failures:
+2948: 2026-11-11T17:19:11.5793274Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2949: 2026-11-11T17:19:11.6400303Z Cleaning up orphan processes
+2950: 2026-11-11T17:19:11.6994440Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/download-artifact@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
