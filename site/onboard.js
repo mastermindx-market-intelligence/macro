@@ -26,6 +26,12 @@
   if (window.__mmOnboard) return;            // idempotent (defer + possible double-include)
   window.__mmOnboard = true;
 
+  var _onboardScript = document.currentScript;
+  var _sharedRootHint = _onboardScript && _onboardScript.getAttribute &&
+    _onboardScript.getAttribute("data-mmx-shared-bundle") === "onboard" &&
+    _onboardScript.getAttribute("data-mmx-shared-root");
+  if (!/^(?:\.\/|(?:\.\.\/)+)$/.test(_sharedRootHint)) _sharedRootHint = "";
+
   // ── constants ──────────────────────────────────────────────────────────────
   var STEP_ACCOUNT = 1, STEP_PREFS = 2, STEP_PLAN = 3, STEP_BILLING = 4, STEP_DONE = 5;
   var SS_STASH = "mm.onboardLanding";        // per-tab wizard stash (this surface)
@@ -561,7 +567,18 @@
     if (_themeLoad) return _themeLoad;
     _themeLoad = new Promise(function (resolve) {
       var s = document.createElement("script");
-      s.src = "theme.js"; s.defer = true;
+      s.src = _sharedRootHint ? new URL(_sharedRootHint + "theme.js", location.href).href : "theme.js";
+      s.defer = true;
+      if (_sharedRootHint) {
+        var prefix = _sharedRootHint === "./" ? "" : _sharedRootHint;
+        var alias = _onboardScript.getAttribute("data-mmx-shared-theme") || "";
+        if (alias.indexOf(prefix) === 0 && /^assets\/js\/([0-9a-f]{8})\.js\?v=\1$/.test(alias.slice(prefix.length))) {
+          s.src = new URL(alias, location.href).href;
+          s.setAttribute("data-mmx-shared-bundle", "theme");
+          s.setAttribute("data-mmx-shared-root", _sharedRootHint);
+          s.setAttribute("data-mmx-shared-onboard", _onboardScript.getAttribute("data-mmx-shared-onboard") || "");
+        }
+      }
       s.onload = function () {
         restoreLightOnlyHostTheme();
         resolve(window.MDXAuth || null);
@@ -2655,6 +2672,7 @@
   // and loginDest() pointed at `<dir>/start.html`. Same technique theme.js already
   // uses for its watchlist link.
   function _pfx() {
+    if (_sharedRootHint) return _sharedRootHint;
     try {
       var s = document.querySelector('script[src$="onboard.js"],script[src*="onboard.js?"],script[src$="theme.js"],script[src*="theme.js?"]');
       if (s) {

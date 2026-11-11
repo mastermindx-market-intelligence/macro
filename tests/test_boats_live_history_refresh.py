@@ -13,6 +13,12 @@ from scripts import refresh_boats_live_history as live
 NOW = datetime(2026, 10, 20, 2, 1, tzinfo=timezone.utc)
 
 
+def write_private(path, text):
+    """Valid private input fixtures must not depend on the runner umask."""
+    path.write_text(text)
+    path.chmod(0o600)
+
+
 def interest(symbol="AMD", at=NOW, session="2026-10-20"):
     return {"schema": bridge_module.INTEREST_SCHEMA, "symbol": symbol,
             "session_date": session, "requested_at_utc": at.isoformat()}
@@ -114,6 +120,17 @@ def test_private_bridge_reads_only_bounded_regular_interest(private_root, tmp_pa
     other.write_text(json.dumps(interest()))
     other.chmod(0o600)
     target.symlink_to(other)
+    result = bridge_module.exchange(private_root, {"operation": "read"})
+    assert result["interests"] == [] and result["rejected"] == 1
+
+
+@pytest.mark.parametrize("mode", [0o620, 0o602, 0o666])
+def test_private_bridge_rejects_writable_interest(private_root, mode):
+    target = private_root / "requests" / "AMD.json"
+    write_private(target, json.dumps(interest()))
+    target.chmod(mode)
+    with pytest.raises(ValueError, match="not a bounded regular file"):
+        bridge_module.read_regular(target, 1_000_000)
     result = bridge_module.exchange(private_root, {"operation": "read"})
     assert result["interests"] == [] and result["rejected"] == 1
 

@@ -101,8 +101,12 @@ def browser_page(tmp_path, monkeypatch):
         if "/" not in asset and asset.endswith((".css", ".js")) and source.is_file():
             (path.parent / asset).write_bytes(source.read_bytes())
     (path.parent / "forex_account_owner.js").write_bytes(AUTH_FIXTURE.read_bytes())
-    html = html.replace('<script src="theme.js"></script>',
-                        '<script src="theme.js"></script><script src="forex_account_owner.js"></script>')
+    html, injected = re.subn(
+        r'(<script\b[^<>]*\ssrc="theme\.js"[^<>]*></script>)',
+        r'\1<script src="forex_account_owner.js"></script>',
+        html,
+    )
+    assert injected == 1, "expected exactly one raw theme.js script for the Forex account-owner fixture"
     path.write_text(html)
     contexts, errors, external = [], [], []
     with sync_playwright() as playwright:

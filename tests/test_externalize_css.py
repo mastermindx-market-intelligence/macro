@@ -893,3 +893,212 @@ def test_the_bundle_route_does_not_excuse_theme_css(tmp_path):
     """theme.css is in the bundle's list, and every page must still link it."""
     _bundle_tree(tmp_path, _BUNDLE_LINK, _BUILDER)
     assert _orphaned_paired_stylesheets(tmp_path) == ["theme.css"]
+
+
+def test_selected_linked_bundles_are_published_and_restamped(tmp_path):
+    import hashlib
+    from scripts.check_site_asset_refs import find_dangling
+    from scripts.optimize_assets import make_optimizer
+
+    site = tmp_path / "site"
+    lesson = site / "learn/options/lesson.html"
+    lesson.parent.mkdir(parents=True)
+    for support_asset in ("data_base.js", "shared_shell.css", "shared_shell_bridge.js"):
+        (site / support_asset).touch()
+    theme = site / "theme.js"
+    onboard = site / "onboard.js"
+    theme.write_text(_BIG_JS)
+    onboard.write_text(_BIG_JS.replace("var a", "var b"))
+    root = site / "forex.html"
+    untouched = site / "unrelated.html"
+    marked_theme = '<script data-mmx-shared-bundle="theme" src="theme.js" defer></script>'
+    marked_onboard = '<script data-mmx-shared-bundle="onboard" src="onboard.js" defer></script>'
+    old_theme = '<script src="theme.js" defer></script>'
+    # A single directly linked theme can still load its explicit companion.
+    root.write_text(f"<html><head>{marked_theme}</head></html>")
+    lesson.write_text(
+        "<html><head>" + (marked_theme + marked_onboard).replace('src="', 'src="../../') + "</head></html>"
+    )
+    untouched.write_text(f"<html><head>{old_theme}</head></html>")
+
+    def alias_for(named):
+        digest = hashlib.sha256(named.read_bytes()).hexdigest()[:8]
+        relative = f"assets/js/{digest}.js"
+        assert (site / relative).read_bytes() == named.read_bytes()
+        return f"{relative}?v={digest}"
+
+    assert externalize(site) == 2
+    theme_url = alias_for(theme)
+    onboard_url = alias_for(onboard)
+    assert f'src="{theme_url}" defer' in root.read_text()
+    assert f'data-mmx-shared-onboard="{onboard_url}"' in root.read_text()
+    assert f'src="{onboard_url}"' not in root.read_text()
+    assert 'data-mmx-shared-root="./"' in root.read_text()
+    assert f'src="../../{theme_url}" defer' in lesson.read_text()
+    assert f'src="../../{onboard_url}" defer' in lesson.read_text()
+    assert 'data-mmx-shared-root="../../"' in lesson.read_text()
+    assert old_theme in untouched.read_text()
+    assert find_dangling(site) == {}
+    assert externalize(site) == 0
+    optimize_page = make_optimizer(site)
+    optimized = optimize_page(lesson.read_text(), lesson.parent)
+    assert f'src="../../{theme_url}" defer' in optimized
+    assert f'data-mmx-shared-onboard="../../{onboard_url}"' in optimized
+    assert optimize_page(optimized, lesson.parent) == optimized
+
+    theme.write_text(_BIG_JS.replace("var a", "var c"))
+    assert externalize(site) == 2
+    assert f'src="{alias_for(theme)}"' in root.read_text()
+    assert theme_url not in root.read_text()
+    assert externalize(site) == 0
+    (site / onboard_url.split("?")[0]).unlink()
+    assert "forex.html" in find_dangling(site)[onboard_url.split("?")[0]]
+
+
+@pytest.mark.parametrize("page_name", ["forex.html", "news.html"])
+def test_final_pair_sync_rebinds_public_alias_and_shell_gate_refuses_stale_bytes(tmp_path, page_name):
+    import hashlib
+    from scripts.check_site_asset_refs import find_dangling, main as check_refs
+    from scripts.check_template_site_sync import check
+    from scripts.inject_shared_shell import run as check_shell
+    from lib.shared_shell import copy_shared_shell_asset
+
+    site = tmp_path / "site"
+    site.mkdir()
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    theme = site / "theme.js"
+    named = site / "onboard.js"
+    template = templates / "onboard.js"
+    theme.write_text(_BIG_JS)
+    named.write_text(_BIG_JS.replace("var a", "var b"))
+    template.write_text(_BIG_JS.replace("var a", "var c"))
+    (site / "data_base.js").touch()
+    copy_shared_shell_asset(site)
+    page = site / page_name
+    page.write_text('<html><head><script data-mmx-shared-bundle="theme" src="theme.js" defer></script></head></html>')
+    untouched = site / "other.html"
+    untouched.write_text('<script src="theme.js" defer></script>')
+    # The early generic check sees the actual fresh, marked Jinja source.
+    assert check_refs([str(site)]) == 0
+    assert externalize(site) == 1
+    old = page.read_bytes()
+
+    assert check(tmp_path, fix=True) == ["onboard.js"]
+    assert named.read_bytes() == template.read_bytes()
+    digest = hashlib.sha256(named.read_bytes()).hexdigest()[:8]
+    target = f"assets/js/{digest}.js"
+    assert f'data-mmx-shared-onboard="{target}?v={digest}"' in page.read_text()
+    assert (site / target).read_bytes() == named.read_bytes()
+    assert old != page.read_bytes()
+    assert untouched.read_text() == '<script src="theme.js" defer></script>'
+    assert check_refs([str(site)]) == 0
+    check_shell(site, check=True)
+
+    # An out-of-order named-byte write can leave every old reference resolvable.
+    named.write_text(_BIG_JS.replace("var a", "var d"))
+    assert find_dangling(site) == {}
+    before = {p: p.read_bytes() for p in site.rglob("*") if p.is_file()}
+    assert check_refs([str(site)]) == 0
+    with pytest.raises(ValueError, match="Shared Shell bundle bindings"):
+        check_shell(site, check=True)
+    assert {p: p.read_bytes() for p in site.rglob("*") if p.is_file()} == before
+
+
+
+@pytest.fixture
+def optimized_shared_bundle_lesson(tmp_path):
+    from scripts.optimize_assets import make_optimizer
+
+    site = tmp_path / "site"
+    lesson = site / "learn/options/page.html"
+    lesson.parent.mkdir(parents=True)
+    (site / "theme.js").write_text(_BIG_JS)
+    (site / "onboard.js").write_text(_BIG_JS.replace("var a", "var b"))
+    lesson.write_text(
+        '<html><head><script data-mmx-shared-bundle="theme" src="../../theme.js"></script>'
+        '<script data-mmx-shared-bundle="onboard" src="../../onboard.js" defer></script></head></html>'
+    )
+    assert externalize(site) == 1
+    optimize = make_optimizer(site)
+    optimized = optimize(lesson.read_text(), lesson.parent)
+    lesson.write_text(optimized)
+    return site, lesson, optimized
+
+
+def test_raw_classic_bundle_stays_bound_after_optimizer_adds_defer(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    # The ordinary optimizer appends defer after already-emitted data attributes.
+    first_marked = optimized.split('data-mmx-shared-bundle="theme"', 1)[1].split("</script>", 1)[0]
+    assert first_marked.index("data-mmx-shared-onboard") < first_marked.index("defer")
+    assert reconcile_shared_bundles(site) == []
+    assert reconcile_shared_bundles(site, fix=True) == []
+    assert lesson.read_text() == optimized
+
+    root_attr = 'data-mmx-shared-root="../../"'
+    for invalid_attrs in (
+        root_attr + " " + root_attr,
+        root_attr + " DATA-MMX-SHARED-ROOT='../../'",
+        "data-mmx-shared-root=../../",
+    ):
+        invalid = optimized.replace(root_attr, invalid_attrs, 1)
+        lesson.write_text(invalid)
+        assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+        assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+        assert lesson.read_text() == invalid
+
+
+def test_bundle_binding_ignores_attribute_text_inside_a_quoted_value(optimized_shared_bundle_lesson):
+    from html.parser import HTMLParser
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    root_attr = 'data-mmx-shared-root="../../"'
+    note = "data-note='prefix " + root_attr + " suffix'"
+    fake = optimized.replace(root_attr, note, 1)
+    lesson.write_text(fake)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == []
+    repaired = lesson.read_text()
+    assert note in repaired and repaired != fake
+    assert reconcile_shared_bundles(site) == []
+
+    class MarkedScripts(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.roots = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "script" and ("data-mmx-shared-bundle", "theme") in attrs:
+                self.roots.extend(value for key, value in attrs if key == "data-mmx-shared-root")
+
+    parser = MarkedScripts()
+    parser.feed(repaired)
+    assert parser.roots == ["../../"]
+
+
+def test_bundle_binding_refuses_an_attribute_glued_to_src(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    first_src_end = optimized.index('"', optimized.index('src="../../assets/js/') + len('src="'))
+    glued = optimized[:first_src_end + 1] + 'DATA-MMX-SHARED-ROOT="../"' + optimized[first_src_end + 1:]
+    lesson.write_text(glued)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+    assert lesson.read_text() == glued
+
+
+def test_bundle_binding_requires_html_whitespace_at_attribute_boundaries(optimized_shared_bundle_lesson):
+    from lib.shared_shell import reconcile_shared_bundles
+
+    site, lesson, optimized = optimized_shared_bundle_lesson
+    root_attr = ' data-mmx-shared-root="../../"'
+    assert root_attr in optimized
+    glued = optimized.replace(root_attr, '\u00a0' + root_attr.lstrip(), 1)
+    lesson.write_text(glued)
+    assert reconcile_shared_bundles(site) == ["learn/options/page.html"]
+    assert reconcile_shared_bundles(site, fix=True) == ["learn/options/page.html"]
+    assert lesson.read_text() == glued

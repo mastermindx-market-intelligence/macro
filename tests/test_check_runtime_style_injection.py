@@ -16,6 +16,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import scripts.check_runtime_style_injection as RSI
@@ -273,3 +275,74 @@ def test_selftest_literal_substring_present_in_source():
     # "selftest" to confirm a registered selftest:true script actually has one.
     src = Path(RSI.__file__).read_text(encoding="utf-8")
     assert "selftest" in src
+
+
+# The public emitter publishes exactly these named bundle bytes at their
+# content-addressed paths. These are still one runtime-style owner each.
+def _shared_alias(root: Path, role: str, text: str) -> Path:
+    from lib.shared_shell import hashed_js_url
+
+    data = (text + "// retained bundle padding " + "x" * 1024 + "\n").encode()
+    _write(root, f"site/{role}.js", data.decode())
+    site = root / "site"
+    url = hashed_js_url(site / "assets" / "js", data)
+    assert url is not None
+    return site / url.split("?", 1)[0]
+
+
+def test_shared_alias_counts_its_named_owner_once(tmp_path, monkeypatch, capsys):
+    _shared_alias(tmp_path, "theme", "document.createElement('style');\n")
+    _shared_alias(tmp_path, "onboard", "const clean = true;\n")
+    baseline = {"site/theme.js": {"create_style": 1}}
+    _write(tmp_path, RSI.BASELINE_PATH_REL, json.dumps({"files": baseline}))
+    monkeypatch.setattr(RSI, "ROOT", tmp_path)
+
+    assert RSI.main([]) == 0
+    capsys.readouterr()
+    assert RSI.main(["--emit-baseline", "--generated-from", "fixed"]) == 0
+    assert json.loads(capsys.readouterr().out)["files"] == baseline
+
+
+@pytest.mark.parametrize("bad_entry", ["different clean bytes", "symlink"])
+def test_shared_alias_refuses_invalid_expected_identity(tmp_path, monkeypatch, capsys, bad_entry):
+    alias = _shared_alias(tmp_path, "theme", "document.createElement('style');\n")
+    alias.unlink()
+    if bad_entry == "symlink":
+        alias.symlink_to(tmp_path / "site/theme.js")
+    else:
+        alias.write_text("const clean = true;\n")
+    _write(tmp_path, RSI.BASELINE_PATH_REL, json.dumps({"files": {"site/theme.js": {"create_style": 1}}}))
+    monkeypatch.setattr(RSI, "ROOT", tmp_path)
+
+    for args in ([], ["--emit-baseline", "--generated-from", "fixed"]):
+        assert RSI.main(args) == 1
+        assert "runtime-style-injection-alias-integrity" in capsys.readouterr().out
+
+
+def test_shared_alias_cannot_exempt_an_unknown_hash_or_directory(tmp_path):
+    alias = _shared_alias(tmp_path, "theme", "document.createElement('style');\n")
+    for unknown in ("site/assets/js/deadbeef.js", f"site/other/{alias.name}"):
+        _write(tmp_path, unknown, alias.read_text())
+    discovered = RSI.discover_counts(tmp_path)
+    assert discovered == {
+        "site/theme.js": {"create_style": 1},
+        "site/assets/js/deadbeef.js": {"create_style": 1},
+        f"site/other/{alias.name}": {"create_style": 1},
+    }
+    violations, stale = RSI.evaluate(discovered, {"site/theme.js": {"create_style": 1}})
+    assert len(violations) == 2
+    assert stale == []
+
+
+@pytest.mark.parametrize(("actual", "allowed"), [(2, 1), (1, 2)])
+def test_shared_alias_keeps_named_owner_over_and_stale_checks(tmp_path, actual, allowed):
+    _shared_alias(tmp_path, "theme", "document.createElement('style');\n" * actual)
+    counts = RSI.discover_counts(tmp_path)
+    assert counts == {"site/theme.js": {"create_style": actual}}
+    violations, stale = RSI.evaluate(counts, {"site/theme.js": {"create_style": allowed}})
+    if actual > allowed:
+        assert len(violations) == 1 and "site/theme.js" in violations[0]
+        assert stale == []
+    else:
+        assert violations == []
+        assert stale == [("site/theme.js", "create_style", actual, allowed)]

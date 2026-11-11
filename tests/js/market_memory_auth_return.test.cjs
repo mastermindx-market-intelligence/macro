@@ -82,12 +82,29 @@ test('Google launcher does not propagate an off-origin return target',async()=>{
 test('signin resume waits for incumbent session exchange before leaving the callback',async()=>{const target='/market_memory.html?mm_context=exact';const x=onboardReturnHarness('?onboard=resume&code=synthetic&ret='+encodeURIComponent(target));const old=x.loc.href;const p=x.ctx.resumeSignin();await tick();assert.equal(x.loc.href,old);x.settle({data:{session:{user:{id:'fixture'}}}});await p;assert.equal(x.loc.pathname,'/market_memory.html');assert.equal(x.loc.searchParams.get('mm_context'),'exact');assert.equal(x.loc.searchParams.has('code'),false);assert.equal(x.opens.length,0);});
 for(const response of [{data:{session:null}},{error:{message:'synthetic failure'},data:{session:{}}}])test('failed provider exchange keeps the callback and exposes signin recovery',async()=>{const x=onboardReturnHarness('?onboard=resume&code=synthetic');const old=x.loc.href;const p=x.ctx.resumeSignin();await tick();x.settle(response);await p;assert.equal(x.loc.href,old);assert.equal(x.opens.length,1);assert.equal(x.opens[0][0],'signin');});
 
+function loadThemeOnboard(ctx) {
+ const src = script('theme.js');
+ const assetStart = src.indexOf('  var _mmThemeScript =');
+ const assetEnd = src.indexOf('  var _mmOverlaySrc =', assetStart);
+ const onboardStart = src.indexOf('  function _mmOpenOnboard(');
+ const onboardEnd = src.indexOf('  function _sdWireCta(', onboardStart);
+ assert.ok(assetStart >= 0 && assetEnd > assetStart, 'theme asset prelude must exist');
+ assert.ok(onboardStart >= 0 && onboardEnd > onboardStart, 'theme onboarding helper must exist');
+ // These two tests are legacy pages with an ordinary, unmarked theme script.
+ ctx.document.currentScript = {
+  src: new URL('/theme.js', ctx.location.href).href,
+  getAttribute: () => null,
+ };
+ vm.runInContext(
+  src.slice(assetStart, assetEnd) + sharedShellHelpers('theme') + src.slice(onboardStart, onboardEnd),
+  ctx,
+ );
+}
 function lazyFallbackHarness(query, bridge) {
- const src=script('theme.js'),code=src.slice(src.indexOf('  function _mmOpenOnboard('),src.indexOf('  function _sdWireCta('));
  const loc=new URL('https://macro.example/market_memory.html'+query),timers=[],scripts=[];
  const nav={get href(){return loc.href;},set href(value){loc.href=new URL(value,loc.href).href;},get origin(){return loc.origin;},get pathname(){return loc.pathname;},get search(){return loc.search;}};
- const ctx={URL,location:nav,window:{MMXSharedShell:bridge},_mmSharedAssetRoot:'/',setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
- vm.createContext(ctx);vm.runInContext(sharedShellHelpers('theme')+code,ctx);ctx._mmOpenOnboard('signin');return {loc,timers,scripts};
+ const ctx={URL,location:nav,window:{MMXSharedShell:bridge},setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
+ vm.createContext(ctx);loadThemeOnboard(ctx);ctx._mmOpenOnboard('signin');return {loc,timers,scripts};
 }
 for(const edge of ['error','timeout'])test('shared lazy signin '+edge+' preserves exact Market Memory fallback intent',()=>{
  const target='/market_memory.html?mm_mode=saved&mm_query=exact&mm_issuer_input=&mm_lang=zh';
@@ -114,13 +131,13 @@ function settingsEntryHarness(query, ready) {
  const location={get href(){return live.href;},set href(value){live.href=new URL(value,live.href).href;},get origin(){return live.origin;},get pathname(){return live.pathname;},get search(){return live.search;},get searchParams(){return live.searchParams;}};
  const window={location,history:{state:null,replaceState(_s,_u,target){location.href=new URL(target,location.origin).href;}},
   sessionStorage:{getItem:k=>saved[k]||null,setItem:(k,v)=>{saved[k]=v;},removeItem:k=>{delete saved[k];}}};
- const ctx={window,location,URL,URLSearchParams,_mmSharedAssetRoot:'/',setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},
+ const ctx={window,location,URL,URLSearchParams,setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout:()=>{},
   document:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}}};
  vm.createContext(ctx);vm.runInContext(script('market_memory_intent.js'),ctx);
  // Preserve an older ordinary SPY intent, then navigate to the exact source.
  const incoming=location.href;location.href='https://macro.example/market_memory.html?ticker=SPY';window.MarketMemoryIntent.syncReturn();location.href=incoming;
  if(ready)window.MMOnboard={open:mode=>opens.push(mode)};
- const theme=script('theme.js');vm.runInContext(sharedShellHelpers('theme')+theme.slice(theme.indexOf('  function _mmOpenOnboard('),theme.indexOf('  function _sdWireCta(')),ctx);
+ loadThemeOnboard(ctx);
  const expected=window.MarketMemoryIntent.target();ctx._mmOpenOnboard('signin');
  return {ctx,window,location,saved,opens,scripts,timers,expected};
 }

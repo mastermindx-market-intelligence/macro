@@ -41,6 +41,7 @@ import re
 import shlex
 import signal
 import shutil
+import stat
 import subprocess
 import sys
 import sysconfig
@@ -4383,6 +4384,58 @@ class ExecutionProfileError(RuntimeError):
     """
 
 
+def _mapped_tool_cache_library_dir(
+    prefix: Path, declared: Path, library_names: Sequence[str]
+) -> Path | None:
+    """Prove a relocated tool-cache libdir against the running Linux interpreter."""
+    if (
+        sys.version_info[:3] != (3, 12, 13)
+        or platform.machine() != "x86_64"
+        or prefix.parts[-3:] != ("Python", "3.12.13", "x64")
+        or not declared.is_absolute()
+        or ".." in declared.parts
+        or declared.name != "lib"
+    ):
+        return None
+
+    library_dir = prefix / "lib"
+    try:
+        if library_dir.resolve(strict=True) != library_dir:
+            return None
+        with Path("/proc/self/maps").open(encoding="utf-8", errors="surrogateescape") as maps:
+            limit = 1024 * 1024
+            mappings = maps.read(limit + 1)
+        if len(mappings) > limit:
+            return None
+    except OSError:
+        return None
+
+    for name in library_names:
+        if Path(name).name != name or name in {".", ".."}:
+            continue
+        try:
+            library = (library_dir / name).resolve(strict=True)
+            info = library.stat()
+        except OSError:
+            continue
+        if library.parent != library_dir or not stat.S_ISREG(info.st_mode):
+            continue
+
+        device = (os.major(info.st_dev), os.minor(info.st_dev))
+        for row in mappings.splitlines():
+            fields = row.split(maxsplit=5)
+            if len(fields) != 6 or fields[5] != str(library) or "x" not in fields[1]:
+                continue
+            try:
+                major, minor = (int(part, 16) for part in fields[3].split(":"))
+                inode = int(fields[4])
+            except ValueError:
+                continue
+            if (major, minor) == device and inode == info.st_ino:
+                return library_dir
+    return None
+
+
 def _selected_python_loader_environment() -> dict[str, str]:
     """Derive the Linux loader path from the attested interpreter itself.
 
@@ -4392,9 +4445,27 @@ def _selected_python_loader_environment() -> dict[str, str]:
     runner-local alias while ``sysconfig`` reports its canonical tool-cache path,
     so preserve an ambient alias only after proving it resolves to the declared
     directory inside ``sys.base_prefix`` and contains a declared Python SONAME.
+    A relocated tool-cache build can retain a missing build-time LIBDIR. In
+    that case require the declared library's exact live executable mapping.
     """
     if platform.system() != "Linux":
         return {}
+
+    checks = {
+        "base_prefix": "not_checked",
+        "libdir": "not_checked",
+        "containment": "not_checked",
+        "soname": "not_checked",
+        "runner_contract": RUNNER_CONTRACT,
+        "python_version": ".".join(map(str, sys.version_info[:3])),
+    }
+
+    def refusal(message: str) -> ExecutionProfileError:
+        # This detail enters the existing bounded base_replay result.
+        # Emit only stage outcomes and the versioned runner identity.
+        diagnostic = json.dumps(checks, separators=(",", ":"))
+        return ExecutionProfileError(f"{message}; python_loader={diagnostic}")
+
     raw_library_dir = sysconfig.get_config_var("LIBDIR")
     raw_library_names = [
         sysconfig.get_config_var("LDLIBRARY"),
@@ -4404,19 +4475,34 @@ def _selected_python_loader_environment() -> dict[str, str]:
         name for name in raw_library_names if isinstance(name, str) and name
     ]
     if not isinstance(raw_library_dir, str) or not raw_library_dir:
-        raise ExecutionProfileError("selected Python does not declare LIBDIR")
+        checks["libdir"] = "undeclared"
+        raise refusal("selected Python does not declare LIBDIR")
     if not library_names:
-        raise ExecutionProfileError(
-            "selected Python does not declare LDLIBRARY or INSTSONAME"
-        )
+        checks["soname"] = "undeclared"
+        raise refusal("selected Python does not declare LDLIBRARY or INSTSONAME")
+
+    checking = "base_prefix"
     try:
         prefix = Path(sys.base_prefix).resolve(strict=True)
-        declared_library_dir = Path(raw_library_dir).resolve(strict=True)
+        checks["base_prefix"] = "resolved"
+        checking = "libdir"
+        declared = Path(raw_library_dir)
+        try:
+            declared_library_dir = declared.resolve(strict=True)
+        except FileNotFoundError:
+            mapped_dir = _mapped_tool_cache_library_dir(prefix, declared, library_names)
+            if mapped_dir is None:
+                raise
+            return {"LD_LIBRARY_PATH": str(mapped_dir)}
+        checks["libdir"] = "resolved"
+        checking = "containment"
         declared_library_dir.relative_to(prefix)
-    except (OSError, ValueError) as exc:
-        raise ExecutionProfileError(
+    except (OSError, ValueError):
+        checks[checking] = "outside" if checking == "containment" else "unresolved"
+        raise refusal(
             "selected Python library directory is outside selected interpreter prefix"
-        ) from exc
+        ) from None
+    checks["containment"] = "within"
 
     candidates: list[Path] = []
     for entry in os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep):
@@ -4432,10 +4518,8 @@ def _selected_python_loader_environment() -> dict[str, str]:
     for candidate in candidates:
         if any((candidate / name).is_file() for name in library_names):
             return {"LD_LIBRARY_PATH": str(candidate)}
-    raise ExecutionProfileError(
-        "selected Python shared library is absent: "
-        f"{declared_library_dir} ({', '.join(library_names)})"
-    )
+    checks["soname"] = "absent"
+    raise refusal("selected Python shared library is absent")
 
 
 def _node_major_version() -> int | None:

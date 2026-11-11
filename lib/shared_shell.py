@@ -7,6 +7,7 @@ content-versioned and otherwise follows the existing template/site asset owner.
 from __future__ import annotations
 
 import hashlib
+import logging
 import re
 from functools import lru_cache
 from html.parser import HTMLParser
@@ -135,3 +136,135 @@ def inject_shared_shell_text(html: str, prefix: str = "", *, version: str | None
         + END
     )
     return html[:at] + block + html[at:]
+
+
+log = logging.getLogger(__name__)
+MIN_BYTES = 1024  # smaller inline blocks are cheaper than a request
+_JS_SUBDIR = ("assets", "js")
+_SHARED_ROLES = ("theme", "onboard")
+SHARED_BUNDLE_ROOT_PAGES = ("forex.html", "news.html")
+_HTML_SPACE = " \t\n\r\f"
+_SHARED_TAG_RE = re.compile(
+    r"""<script(?=[ \t\n\r\f>])((?:[^'">]|"[^"]*"|'[^']*')*)>([ \t\n\r\f]*)</script>""",
+    re.ASCII | re.IGNORECASE,
+)
+SHARED_ROLE_RE = re.compile(r'[ \t\n\r\f]data-mmx-shared-bundle="(theme|onboard)"')
+_SCRIPT_ATTR_RE = re.compile(
+    r"""[ \t\n\r\f]+([^ \t\n\r\f"'=<>`/]+)"""
+    r"""(?:[ \t\n\r\f]*=[ \t\n\r\f]*(?:"([^"]*)"|'[^']*'|[^ \t\n\r\f"'=<>`]+))?"""
+)
+_SHARED_ATTRS = {"src", "data-mmx-shared-bundle", "data-mmx-shared-root",
+                 "data-mmx-shared-theme", "data-mmx-shared-onboard"}
+_SHARED_ALIAS_RE = re.compile(r"assets/js/([0-9a-f]{8})\.js\?v=\1")
+
+
+def hashed_js_url(js_root: Path, data: bytes, *, write: bool = True) -> str | None:
+    if len(data) < MIN_BYTES:
+        return None
+    h = hashlib.sha256(data).hexdigest()[:8]
+    dst = js_root / f"{h}.js"
+    if write and not dst.exists():
+        try:
+            js_root.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(data)
+        except OSError as error:
+            log.warning("write js %s failed: %s", dst.name, error)
+            return None
+    return f"assets/js/{h}.js?v={h}"
+
+
+def shared_bundle_urls(site_dir: Path, js_root: Path, *, write: bool = True) -> dict[str, str]:
+    """Bind both linked aliases to final, already-emitted public bundle bytes."""
+    urls = {}
+    for role in _SHARED_ROLES:
+        try:
+            raw = (site_dir / f"{role}.js").read_bytes()
+            url = hashed_js_url(js_root, raw, write=write)
+            if url is None or (site_dir / url.split("?", 1)[0]).read_bytes() != raw:
+                return {}
+        except OSError:
+            return {}
+        urls[role] = url
+    return urls
+
+
+def bind_shared_bundles(text: str, prefix: str, urls: dict[str, str]) -> str:
+    """Rewrite explicitly marked classic tags and keep their timing/position."""
+    bound_tags = 0
+
+    def replace_tag(match):
+        nonlocal bound_tags
+        attrs, body = match.groups()
+        if not SHARED_ROLE_RE.search(attrs):
+            return match[0]
+
+        owned = {}
+        offset = 0
+        for token in _SCRIPT_ATTR_RE.finditer(attrs):
+            if token.start() != offset:
+                raise ValueError("malformed shared bundle script attributes")
+            offset = token.end()
+            name = token[1].lower()
+            if name not in _SHARED_ATTRS:
+                continue
+            if name in owned:
+                raise ValueError("duplicate shared bundle binding")
+            if token[2] is None:
+                raise ValueError("malformed shared bundle binding")
+            owned[name] = token
+        if attrs[offset:].strip(_HTML_SPACE):
+            raise ValueError("malformed shared bundle script attributes")
+
+        role = owned.get("data-mmx-shared-bundle")
+        src = owned.get("src")
+        if role is None or role[2] not in urls or src is None or not src[2].startswith(prefix):
+            raise ValueError("malformed shared bundle script tag")
+        path = src[2][len(prefix):]
+        if (not re.fullmatch(rf"{role[2]}\.js(?:\?v=[0-9a-f]{{8}})?", path)
+                and not _SHARED_ALIAS_RE.fullmatch(path)):
+            raise ValueError("malformed shared bundle script tag")
+        bound_tags += 1
+        values = {"src": prefix + urls[role[2]], "data-mmx-shared-root": prefix or "./"}
+        values.update((f"data-mmx-shared-{name}", prefix + urls[name]) for name in _SHARED_ROLES)
+        changes = [(token.start(2), token.end(2), values.pop(name))
+                   for name, token in owned.items() if name in values]
+        # Replace values in place, even when the optimizer appended defer.
+        for start, end, value in sorted(changes, reverse=True):
+            attrs = attrs[:start] + value + attrs[end:]
+        attrs += "".join(f' {name}="{value}"' for name, value in values.items())
+        return f"<script{attrs}>{body}</script>"
+
+    updated = _SHARED_TAG_RE.sub(replace_tag, text)
+    if bound_tags != len(SHARED_ROLE_RE.findall(text)):
+        raise ValueError("malformed shared bundle script tag")
+    return updated
+
+
+def reconcile_shared_bundles(site_dir: Path, *, fix: bool = False) -> list[str]:
+    """Rebind opted-in pages after the last named copy, or report mismatches read-only."""
+    urls = None
+    invalid = []
+    root_pages = [site_dir / page for page in SHARED_BUNDLE_ROOT_PAGES]
+    for html in [*root_pages, *sorted((site_dir / "learn").rglob("*.html"))]:
+        if not html.is_file():
+            continue
+        rel = html.relative_to(site_dir)
+        try:
+            text = html.read_bytes().decode("utf-8")
+            if not SHARED_ROLE_RE.search(text):
+                continue
+            if urls is None:
+                urls = shared_bundle_urls(site_dir, site_dir.joinpath(*_JS_SUBDIR), write=fix)
+            if not urls:
+                invalid.append(rel.as_posix())
+                continue
+            bound = bind_shared_bundles(text, "../" * (len(rel.parts) - 1), urls)
+            if bound != text:
+                if fix:
+                    # The finalized page already carries its shim and other stamps.
+                    html.write_bytes(bound.encode("utf-8"))
+                else:
+                    invalid.append(rel.as_posix())
+        except (OSError, ValueError):
+            invalid.append(rel.as_posix())
+    return invalid

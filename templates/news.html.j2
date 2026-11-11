@@ -1,4 +1,5 @@
 {% extends "report_base.html.j2" %}
+{% block theme_script_attributes %} data-mmx-shared-bundle="theme"{% endblock %}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}

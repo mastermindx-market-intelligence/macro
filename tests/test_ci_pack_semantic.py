@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import importlib.util
+import io
 import json
 import os
 import shlex
@@ -2033,6 +2034,69 @@ def test_selected_python_loader_environment_preserves_the_attested_tool_cache_al
     }
 
 
+@pytest.mark.parametrize(
+    "fault",
+    [None, "wrong_inode", "wrong_device", "foreign", "deleted", "no_map", "unreadable", "wrong_version", "resolved_outside"],
+)
+def test_selected_python_loader_environment_proves_relocated_mapped_library(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fault: str | None
+) -> None:
+    prefix = (tmp_path / "Python" / "3.12.13" / "x64").resolve()
+    library_dir = prefix / "lib"
+    library_dir.mkdir(parents=True)
+    library = library_dir / "libpython3.12.so.1.0"
+    library.write_bytes(b"fixture")
+    (library_dir / "libpython3.12.so").symlink_to(library.name)
+    old_dir = tmp_path / "retired-build-prefix" / "lib"
+    if fault == "resolved_outside":
+        old_dir.mkdir(parents=True)
+    foreign_dir = tmp_path / "foreign"
+    foreign_dir.mkdir()
+    foreign = foreign_dir / library.name
+    foreign.write_bytes(b"foreign")
+    mapped = foreign if fault == "foreign" else library
+    info = mapped.stat()
+    device = os.major(info.st_dev) + (fault == "wrong_device")
+    inode = info.st_ino + (fault == "wrong_inode")
+    mapping = f"1000-2000 r-xp 00000000 {device:x}:{os.minor(info.st_dev):x} {inode} {mapped}"
+    if fault == "deleted":
+        mapping += " (deleted)"
+
+    original_open = Path.open
+
+    def open_path(candidate: Path, *args: object, **kwargs: object):
+        if candidate == Path("/proc/self/maps"):
+            if fault == "unreadable":
+                raise PermissionError("private map denied")
+            return io.StringIO("" if fault == "no_map" else mapping + "\n")
+        return original_open(candidate, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", open_path)
+    monkeypatch.setattr(PACK.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(PACK.platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(PACK.sys, "base_prefix", str(prefix))
+    monkeypatch.setattr(PACK.sys, "version_info", (3, 12, 12 if fault == "wrong_version" else 13))
+    monkeypatch.setattr(
+        PACK.sysconfig,
+        "get_config_var",
+        lambda name: {
+            "LIBDIR": str(old_dir),
+            "LDLIBRARY": "libpython3.12.so",
+            "INSTSONAME": library.name,
+        }.get(name),
+    )
+    monkeypatch.setenv("LD_LIBRARY_PATH", str(foreign_dir))
+
+    if fault is None:
+        assert PACK._selected_python_loader_environment() == {
+            "LD_LIBRARY_PATH": str(library_dir)
+        }
+    else:
+        with pytest.raises(PACK.ExecutionProfileError, match="outside selected interpreter") as refusal:
+            PACK._selected_python_loader_environment()
+        assert str(tmp_path) not in str(refusal.value)
+
+
 def test_selected_python_loader_environment_refuses_a_library_outside_the_prefix(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -2088,6 +2152,83 @@ def test_selected_python_loader_environment_refuses_missing_library_metadata_or_
 
     with pytest.raises(PACK.ExecutionProfileError, match=message):
         PACK._selected_python_loader_environment()
+
+
+@pytest.mark.parametrize(
+    ("fault", "expected"),
+    [
+        ("prefix", ("unresolved", "not_checked", "not_checked", "not_checked")),
+        ("libdir", ("resolved", "unresolved", "not_checked", "not_checked")),
+        ("outside", ("resolved", "resolved", "outside", "not_checked")),
+        ("soname", ("resolved", "resolved", "within", "absent")),
+    ],
+)
+def test_base_replay_loader_refusal_records_safe_prelaunch_diagnostics(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fault: str, expected: tuple[str, ...]
+) -> None:
+    prefix = tmp_path / "private-prefix"
+    library_dir = (tmp_path / "private-outside") if fault == "outside" else prefix / "lib"
+    if fault != "prefix":
+        prefix.mkdir()
+    if fault not in {"prefix", "libdir"}:
+        library_dir.mkdir()
+    library_name = "private-libpython.so"
+    if fault == "outside":
+        (library_dir / library_name).write_bytes(b"fixture")
+
+    monkeypatch.setattr(PACK.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(PACK.sys, "base_prefix", str(prefix))
+    monkeypatch.setattr(
+        PACK.sysconfig,
+        "get_config_var",
+        lambda name: {"LIBDIR": str(library_dir), "LDLIBRARY": library_name}.get(name),
+    )
+    monkeypatch.setenv("LD_LIBRARY_PATH", str(tmp_path / "private-ambient"))
+    monkeypatch.setenv("GITHUB_TOKEN", "private-token")
+
+    base_root = tmp_path / "base"
+    (base_root / "scripts").mkdir(parents=True)
+    (base_root / ".github" / "ci").mkdir(parents=True)
+    (base_root / "scripts" / "run_ci_pack.py").write_text("# exact-base runner\n")
+    (base_root / ".github" / "ci" / "legacy-jobs.yml").write_text("jobs: {}\n")
+
+    @contextlib.contextmanager
+    def base_worktree(*_args: object, **_kwargs: object) -> Iterator[Path]:
+        yield base_root
+
+    def never_launch(*_args: object, **_kwargs: object) -> None:
+        pytest.fail("a refused loader profile must not launch the exact-base runner")
+
+    monkeypatch.setattr(PACK, "_exact_base_worktree", base_worktree)
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", never_launch)
+    job = _job("alpha", [{"name": "proof alpha", "run": "false"}])
+    plan = _plan([job], changed=["engine/example.py"])
+    digest = PACK.semantic_job_digest(job)
+    step = {**PACK.semantic_step_specs(job)[0].plan_dict(), "outcome": "failed"}
+    PACK._run_exact_base_replays(
+        root=tmp_path,
+        plan=plan,
+        records=[{"logical_job_id": job.job_id, "job_exec_sha256": digest, "steps": [step]}],
+        budget_seconds=60,
+    )
+
+    replay = step["base_replay"]
+    assert replay["tested_tree_sha"] == SHA_BASE and replay["outcome"] == "unavailable"
+    classification, detail = SEMANTIC.classify_head_failure(
+        logical_job_id=job.job_id,
+        head_job_exec_sha256=digest,
+        head_step=step,
+        expected_base_sha=SHA_BASE,
+    )
+    assert classification == "unknown" and detail == replay["detail"]
+    assert str(tmp_path) not in detail and "private-" not in detail
+    _, marker, encoded = detail.partition("; python_loader=")
+    assert marker
+    assert json.loads(encoded) == dict(
+        zip(("base_prefix", "libdir", "containment", "soname"), expected, strict=True),
+        runner_contract=PACK.RUNNER_CONTRACT,
+        python_version=".".join(map(str, sys.version_info[:3])),
+    )
 
 
 def test_replay_process_never_invents_time_after_the_shared_deadline(

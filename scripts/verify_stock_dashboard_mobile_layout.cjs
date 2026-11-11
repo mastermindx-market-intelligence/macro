@@ -2237,6 +2237,7 @@ async function main() {
   // otherwise identical owner-empty captures. The receipt stores exact bytes.
   const launch = {
     headless: true,
+    chromiumSandbox: true,
     args: [
       "--disable-skia-runtime-opts",
       "--disable-partial-raster",

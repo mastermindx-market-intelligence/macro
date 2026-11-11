@@ -471,6 +471,53 @@ def test_material_diff_with_no_receipt_reds(tmp_path, capsys):
     assert out.startswith("::error") or "::error" in out
 
 
+
+@pytest.fixture
+def verified_theme_alias(tmp_path):
+    line = "document.createElement('style');"
+    body = (line + "\n") * 320
+    digest = hashlib.sha256(body.encode()).hexdigest()[:8]
+    source = tmp_path / "site/theme.js"
+    alias = tmp_path / f"site/assets/js/{digest}.js"
+    alias.parent.mkdir(parents=True)
+    source.write_text(body)
+    alias.write_text(body)
+    return source, alias, line
+
+
+def test_verified_shared_alias_uses_existing_owner_diff(tmp_path, verified_theme_alias):
+    source, alias, line = verified_theme_alias
+    alias_diff = _inline_style_diff(line, alias.relative_to(tmp_path).as_posix())
+    assert guard.evaluate(alias_diff, tmp_path) == []
+
+    owner_diff = _inline_style_diff(line, source.relative_to(tmp_path).as_posix())
+    findings = guard.evaluate(owner_diff + alias_diff, tmp_path)
+    assert len(findings) == 1
+    assert "'site/theme.js' has no committed EVIDENCE.yml" in findings[0]
+
+
+@pytest.mark.parametrize("case", ["unknown", "mismatched", "symlink", "missing_owner"])
+def test_invalid_shared_alias_keeps_visual_evidence_gate(tmp_path, verified_theme_alias, case):
+    source, alias, line = verified_theme_alias
+    if case == "unknown":
+        alias = alias.rename(alias.with_name("00000000.js"))
+    elif case == "mismatched":
+        alias.write_text(alias.read_text() + "// changed bytes")
+    elif case == "symlink":
+        alias.unlink()
+        alias.symlink_to(source)
+    else:
+        source.unlink()
+
+    relative = alias.relative_to(tmp_path).as_posix()
+    findings = guard.evaluate(_inline_style_diff(line, relative), tmp_path)
+    assert len(findings) == 1
+    assert relative in findings[0]
+    if case in {"mismatched", "symlink"}:
+        assert "not the regular byte-exact alias" in findings[0]
+    else:
+        assert "has no committed EVIDENCE.yml" in findings[0]
+
 def test_receipt_with_wrong_manifest_schema_reds(tmp_path, capsys):
     manifest = make_manifest(schema="mastermind.ui_visual_evidence.v1")
     write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)

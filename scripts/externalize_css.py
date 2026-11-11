@@ -58,10 +58,17 @@ from lib.pages import (  # noqa: E402
     externalize_js_text,
     write_page,
 )
+from lib.shared_shell import (  # noqa: E402
+    MIN_BYTES,
+    SHARED_BUNDLE_ROOT_PAGES,
+    SHARED_ROLE_RE,
+    bind_shared_bundles,
+    hashed_js_url,
+    shared_bundle_urls,
+)
 
 log = logging.getLogger("externalize_css")
 
-MIN_BYTES = 1024  # below this, an inline block is cheaper than a request
 _CSS_SUBDIR = ("assets", "css")
 _JS_SUBDIR = ("assets", "js")
 _HASH_STEM_RE = re.compile(r"[0-9a-f]{6,64}")
@@ -193,6 +200,7 @@ def externalize(site_dir: Path) -> int:
     referenced: Set[str] = set()  # css hashes still linked by some page
     referenced_js: Set[str] = set()  # js hashes still loaded by some page
     pages_changed = 0
+    shared_urls = None
     # Pairs always ship at the site ROOT, so match on the full path — a sub-dir
     # page that happens to be named index.html is a normal page and IS swept.
     skip = {site_dir / name for name in _paired_page_names(site_dir)}
@@ -235,19 +243,8 @@ def externalize(site_dir: Path) -> int:
             return f"{_prefix}assets/css/{h}.css?v={h}"
 
         def make_js_src(js: str, index: int, _prefix: str = prefix) -> Optional[str]:
-            data = js.encode("utf-8")
-            if len(data) < MIN_BYTES:
-                return None
-            h = hashlib.sha256(data).hexdigest()[:8]
-            dst = js_root / f"{h}.js"
-            if not dst.exists():
-                try:
-                    js_root.mkdir(parents=True, exist_ok=True)
-                    dst.write_text(js, encoding="utf-8")
-                except OSError as e:
-                    log.warning("write js %s failed: %s", dst.name, e)
-                    return None
-            return f"{_prefix}assets/js/{h}.js?v={h}"
+            url = hashed_js_url(js_root, js.encode("utf-8"))
+            return _prefix + url if url is not None else None
 
         try:
             new = externalize_css_text(text, make_href)
@@ -258,6 +255,15 @@ def externalize(site_dir: Path) -> int:
             new = externalize_js_text(new, make_js_src)
         except Exception as e:  # noqa: BLE001
             log.warning("externalize js failed for %s (%s)", html.name, e)
+        relative = html.relative_to(site_dir)
+        if (relative.parts[0] == "learn" or relative.as_posix() in SHARED_BUNDLE_ROOT_PAGES) and SHARED_ROLE_RE.search(new):
+            if shared_urls is None:
+                shared_urls = shared_bundle_urls(site_dir, js_root)
+            if shared_urls:
+                try:
+                    new = bind_shared_bundles(new, prefix, shared_urls)
+                except ValueError as error:
+                    log.warning("shared bundle binding failed for %s (%s)", html.name, error)
         # record every hash the FINAL page links/loads (new refs + any from a prior run)
         referenced.update(_REF_RE.findall(new))
         referenced_js.update(_JS_REF_RE.findall(new))
