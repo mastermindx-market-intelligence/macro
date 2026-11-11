@@ -52,6 +52,18 @@ class Integrity(unittest.TestCase):
         r=pd.DataFrame({'M':[0,0,np.nan],'RF':[0,0,0.]},index=idx)
         t=pd.DataFrame({'M':[1,1,1.],'RF':[0,0,0.]},index=idx)
         with self.assertRaises(ValueError):simulate(t,r)
+    def test_unknown_not_imputed_and_weights_restore(self):
+        idx=pd.date_range('1980-01-01',periods=4)
+        r=pd.DataFrame({'M':[0,0,np.nan,.1],'RF':[0,0,0.,0.]},index=idx)
+        t=pd.DataFrame({'M':[1,1,1.,1.],'RF':[0,0,0.,0.]},index=idx)
+        out=simulate(t,r,allow_unknown=True)
+        self.assertTrue(np.isnan(out['return'].iloc[2]))
+        self.assertTrue(np.isnan(out.turnover.iloc[2]))
+        self.assertAlmostEqual(out['return'].iloc[3],.1)
+    def test_ambiguous_cd_still_has_known_equity(self):
+        t=pd.DataFrame({'A':[1.,np.nan,1.],'M':[0.,np.nan,0.],'RF':[0.,np.nan,0.]})
+        q=causal_exposure_target(t,always_equity=True)
+        np.testing.assert_allclose(q.M,1.)
     def test_holm_and_starting_drawdown(self):
         np.testing.assert_allclose(holm([.01,.03,.2]),[.03,.06,.2])
         self.assertAlmostEqual(maxdd([-.2,.1]),-.2)

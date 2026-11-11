@@ -1,0 +1,16 @@
+{
+  "same_result_bytes_after_reporting_repairs": {
+    "results.csv": true,
+    "episodes.csv": true,
+    "episode_transitions.csv": true,
+    "rate_conditions.csv": true,
+    "h1_common_sample.csv": true
+  },
+  "original_result_sha256": {
+    "results.csv": "8a2e2e891898ff3a49131973c165d5fe4e7f53b6f3b960b986c87d94450c0f41",
+    "episodes.csv": "2847a09a54baea608ee21cd25498ec8c67d0d4cf31f0cd3bd877a4b88cc1ce1d",
+    "episode_transitions.csv": "554635c2c30379371991e6f6ac7d457af096efbfc8b4c72b4a1953fb186b58f3",
+    "rate_conditions.csv": "615021e56ce06eab7fbc20271df7204b737c983f36ec391bf75844500b1c2974",
+    "h1_common_sample.csv": "307735dc75b9b7959ec9dc529bd22e97a310a548a3bf48bffb3fdaed663bc7f6"
+  }
+}

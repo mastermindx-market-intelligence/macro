@@ -1,0 +1,18 @@
+source,table,first,last,rows,columns,missing_cells
+factors,,1926-07-01,2019-12-31,24643,4.0,0.0
+momentum,,1926-11-03,2019-12-31,24542,1.0,0.0
+size,Average Value Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,19.0,24643.0
+size,Average Equal Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,19.0,24643.0
+ind12,Average Value Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,12.0,0.0
+ind12,Average Equal Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,12.0,0.0
+ind17,Average Value Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,17.0,0.0
+ind17,Average Equal Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,17.0,0.0
+ind49,Average Value Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,49.0,67250.0
+ind49,Average Equal Weighted Returns -- Daily,1926-07-01,2019-12-31,24643,49.0,67250.0
+BAA,,1919-01-01,2019-12-01,1212,,0.0
+BAA10YM,,1953-04-01,2019-12-01,801,,0.0
+GS10,,1953-04-01,2019-12-01,801,,0.0
+TB3MS,,1934-01-01,2019-12-01,1032,,0.0
+UNRATE,,1948-01-01,2019-12-01,864,,0.0
+Shiller,,1871-01-01,2019-12-01,1788,,
+S&P500_price,,1927-12-30,2019-12-31,23109,,

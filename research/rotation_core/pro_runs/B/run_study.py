@@ -15,6 +15,17 @@ from episodes import ERAS,WINDOWS,calm_stats,episode_tables,rate_diagnostics
 ROOT=Path(__file__).resolve().parent
 OUT=ROOT/'out'
 
+def identified_segment(frame):
+    """Longest contiguous known-return segment; selection uses only missingness."""
+    valid=frame['return'].notna().to_numpy()
+    best=(0,0);start=None
+    for i,ok in enumerate(np.r_[valid,False]):
+        if ok and start is None:start=i
+        elif not ok and start is not None:
+            if i-start>best[1]-best[0]:best=(start,i)
+            start=None
+    return frame.iloc[best[0]:best[1]]
+
 def main():
     OUT.mkdir(exist_ok=True)
     print('loading cutoff-filtered public inputs',flush=True)
@@ -23,41 +34,57 @@ def main():
     print('simulating frozen rules and identical-path cost stress',flush=True)
     choices,paths,stress,b3,passive,targets=run_rules(data)
     cov=coverage(data);cov.to_csv(OUT/'coverage.csv',index=False)
+    pd.DataFrame(data['missing_records']).to_csv(OUT/'missing_observations.csv',index=False)
     rows=[];passive_rows=[]
     for era,a,b in ERAS+[('ALL','1926-07-01','2019-12-31')]:
         print('paired bootstrap',era,flush=True)
         for rid in RULES:
-            path=paths[rid].loc[a:b].dropna(subset=['return']);idx=path.index
+            first=paths[rid]['return'].first_valid_index()
+            frame=paths[rid].loc[max(pd.Timestamp(a),first):b] if first is not None else paths[rid].iloc[:0]
+            missing=int(frame['return'].isna().sum())
+            path=identified_segment(frame);idx=path.index
             if len(path)<252:
                 rows.append({'era':era,'rule':rid,'n':len(path),'status':'insufficient','p_raw':1.})
                 continue
             m=data['gross'].M.reindex(idx);e=data['E49'].reindex(idx)
             exposure=b3[rid].reindex(idx)
-            row={'era':era,'rule':rid,'name':RULES[rid],**metrics(path,m)}
-            comparisons=contrast(path['return'],{'M':m,'E49':e,'B3':exposure['return']})
+            row={'era':era,'rule':rid,'name':RULES[rid],'coverage_status':'FULL_AVAILABLE' if missing==0 else 'PARTIAL_SEGMENT','unknown_sessions_in_era':missing,**metrics(path,m)}
+            refs={'M':m,'B3':exposure['return']}
+            if e.notna().all():refs['E49']=e
+            comparisons=contrast(path['return'],refs)
             for ref,vals in comparisons.items():
                 for key,value in vals.items():row[ref+'_'+key]=value
             row['B2_exact_EW']='UNAVAILABLE'
             row['B3_equity']=exposure.equity.mean()
             row['market_cagr']=np.expm1(np.log1p(m).sum()/years(idx))
-            row['E49_cagr']=np.expm1(np.log1p(e).sum()/years(idx))
+            row['E49_cagr']=np.expm1(np.log1p(e).sum()/years(idx)) if e.notna().all() else np.nan
             row['B3_cagr']=np.expm1(np.log1p(exposure['return']).sum()/years(idx))
             stressed=metrics(stress[rid].loc[idx],m)
             for field in ['cagr','vol','maxdd','up_capture','down_capture','turnover']:
                 row['stress_'+field]=stressed[field]
             if rid not in ['R1','R2','R3','R4']:
                 p=passive['MIX'].loc[idx,'return']
-                cmp=contrast(path['return'],{'MIX':p})['MIX']
-                for key,value in cmp.items():row['MIX_'+key]=value
+                if p.notna().all():
+                    cmp=contrast(path['return'],{'MIX':p})['MIX']
+                    for key,value in cmp.items():row['MIX_'+key]=value
+            row['primary_p_raw']=row['B3_p_raw'] if missing==0 else 1.
             rows.append(row)
         for name,path in passive.items():
-            p=path.loc[a:b].dropna(subset=['return']);idx=p.index
-            if len(p):passive_rows.append({'era':era,'reference':name,**metrics(p,data['gross'].M.reindex(idx))})
+            frame=path.loc[a:b];first=frame['return'].first_valid_index()
+            frame=frame.loc[first:] if first is not None else frame.iloc[:0]
+            p=identified_segment(frame);idx=p.index
+            if len(p):passive_rows.append({'era':era,'reference':name,'coverage_status':'FULL_AVAILABLE' if frame['return'].notna().all() else 'PARTIAL_SEGMENT',**metrics(p,data['gross'].M.reindex(idx))})
     results=pd.DataFrame(rows)
     selected=results.era.ne('ALL')
     assert selected.sum()==30
-    results.loc[selected,'p_holm30']=holm(results.loc[selected,'B3_p_raw'].fillna(1).to_numpy())
+    results.loc[selected,'p_holm30']=holm(results.loc[selected,'primary_p_raw'].fillna(1).to_numpy())
     results.to_csv(OUT/'results.csv',index=False,float_format='%.10g')
+    primary=results.loc[selected].copy()
+    partial=primary.coverage_status.eq('PARTIAL_SEGMENT')
+    preserve=['era','rule','name','coverage_status','unknown_sessions_in_era','B2_exact_EW','primary_p_raw','p_holm30']
+    primary.loc[partial,[c for c in primary.columns if c not in preserve]]=np.nan
+    primary.to_csv(OUT/'primary_era_results.csv',index=False,float_format='%.10g')
+    results.loc[selected&results.coverage_status.eq('PARTIAL_SEGMENT')].to_csv(OUT/'partial_segments.csv',index=False,float_format='%.10g')
     pd.DataFrame(passive_rows).to_csv(OUT/'passive_references.csv',index=False,float_format='%.10g')
     print('common-sample H1 comparisons',flush=True)
     h1=[]
@@ -93,6 +120,6 @@ def main():
         audit[rid]=paths[rid]['return'];audit[rid+'_B3']=b3[rid]['return']
     pd.DataFrame(audit).to_pickle(ROOT/'audit_paths.pkl')
     choices.to_pickle(ROOT/'audit_choices.pkl')
-    print('COMPLETE: 40 rule rows, 30 primary tests; all dates <=2019-12-31',flush=True)
+    print('COMPLETE: 40 rule/segment rows, 30 primary family slots; all dates <=2019-12-31',flush=True)
 
 if __name__=='__main__':main()

@@ -43,14 +43,14 @@ def episode_tables(data,choices,paths):
         c=total(passivegross.C.loc[down]);d=total(passivegross.D.loc[down])
         cu=total(passivegross.C.loc[up]);du=total(passivegross.D.loc[up])
         rr={**a,'C_down':c,'D_down':d,'D_minus_C_down':d-c,'C_recovery':cu,'D_recovery':du,'D_minus_C_recovery':du-cu}
-        for field in ['nominal','real','spread','nominal_high','real_high','credit','bill_yield','curve_inverted']:
+        # Publish only derived regime flags, never raw FRED levels or price rows.
+        for field in ['nominal_high','real_high','credit','curve_inverted']:
             rr[field+'_peak']=data['macro'].iloc[pi][field]
             rr[field+'_trough']=data['macro'].iloc[ti][field]
         for group in ['C','D']:
             rr[group+'_members_peak']=int(data['counts'].iloc[pi][group])
         if len(data['spx']):
             sp=data['spx'].reindex(idx).ffill()
-            rr['spx_peak_level']=sp.iloc[pi];rr['spx_trough_level']=sp.iloc[ti]
             rr['spx_price_return_same_dates']=sp.iloc[ti]/sp.iloc[pi]-1
         relative.append(rr)
         for rid in RULES:
@@ -60,31 +60,35 @@ def episode_tables(data,choices,paths):
             entries=np.flatnonzero((off.shift(1,fill_value=False)&on).to_numpy())
             r=paths[rid]['return']
             row={'episode':name,'rule':rid,'peak':str(a['peak'].date()),'trough':str(a['trough'].date()),'exit_status':'NA','exit_days':np.nan,'exit_date':None,'entry_status':'NA','entry_days':np.nan,'entry_date':None,'drawdown_avoided':np.nan,'upside_missed':np.nan,'recovery_n':a['recovery_n']}
-            if s.iloc[pi] in [onasset,offasset] and r.iloc[pi:ei+1].notna().all():
+            exit_i=None
+            if s.iloc[pi] in [onasset,offasset]:
                 if off.iloc[pi]:
                     row['exit_status']='PRE';pool=exits[exits<=pi];exit_i=int(pool[-1]) if len(pool) else None
                 else:
                     pool=exits[(exits>pi)&(exits<=ti)];exit_i=int(pool[0]) if len(pool) else None
                     row['exit_status']='EXIT' if exit_i is not None else 'NONE'
                 if exit_i is not None:row.update(exit_days=exit_i-pi,exit_date=str(idx[exit_i].date()))
+            if s.iloc[ti] in [onasset,offasset]:
                 if on.iloc[ti]:
                     row['entry_status']='ON';pool=entries[entries<=ti];entry_i=int(pool[-1]) if len(pool) else None
                 else:
                     pool=entries[(entries>ti)&(entries<=ei)];entry_i=int(pool[0]) if len(pool) else None
                     row['entry_status']='ENTRY' if entry_i is not None else 'NONE'
                 if entry_i is not None:row.update(entry_days=entry_i-ti,entry_date=str(idx[entry_i].date()))
-                row['drawdown_avoided']=maxdd(r.loc[down])-maxdd(market.loc[down])
-                row['upside_missed']=total(market.loc[up])-total(r.loc[up])
+            if r.loc[down].notna().all():row['drawdown_avoided']=maxdd(r.loc[down])-maxdd(market.loc[down])
+            if r.loc[up].notna().all():row['upside_missed']=total(market.loc[up])-total(r.loc[up])
             rows.append(row)
             # Every transition in the calendar window, not only the selected exit.
-            for j in exits:
-                if not pd.Timestamp(a['window_start'])<=idx[j]<=pd.Timestamp(a['window_end']):continue
-                if j<63 or j+63>=len(idx):continue
-                before=idx[j-62:j+1];after=idx[j+1:j+64]
-                cb=total(passivegross.C.loc[before]);db=total(passivegross.D.loc[before]);ca=total(passivegross.C.loc[after]);da=total(passivegross.D.loc[after])
-                prior=db-cb;future=da-ca
-                verdict='anticipator' if prior<=0 and future>0 else ('follower' if prior>0 and future>0 else 'no_forward_defensive_lead')
-                lead.append({'episode':name,'rule':rid,'execution':str(idx[j].date()),'days_from_peak':int(j-pi),'D_minus_C_prior63':prior,'D_minus_C_next63':future,'description':verdict})
+            candidates={int(j) for j in exits if pd.Timestamp(a['window_start'])<=idx[j]<=pd.Timestamp(a['window_end'])}
+            if exit_i is not None:candidates.add(exit_i)
+            for j in sorted(candidates):
+                prior=future=np.nan
+                if j>=63:
+                    before=idx[j-62:j+1];prior=total(passivegross.D.loc[before])-total(passivegross.C.loc[before])
+                if j+63<len(idx):
+                    after=idx[j+1:j+64];future=total(passivegross.D.loc[after])-total(passivegross.C.loc[after])
+                verdict='unavailable' if not np.isfinite(prior+future) else ('follower' if prior>0 else ('anticipator' if future>0 else 'no_forward_defensive_lead'))
+                lead.append({'episode':name,'rule':rid,'execution':str(idx[j].date()),'days_from_peak':int(j-pi),'D_minus_C_prior63':prior,'D_minus_C_next63':future,'description':verdict,'designated_exit':j==exit_i,'within_window':pd.Timestamp(a['window_start'])<=idx[j]<=pd.Timestamp(a['window_end'])})
     return pd.DataFrame(rows),pd.DataFrame(relative),pd.DataFrame(lead)
 
 def rate_diagnostics(data):

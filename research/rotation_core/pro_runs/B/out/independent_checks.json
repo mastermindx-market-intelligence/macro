@@ -1,0 +1,14 @@
+{
+  "independent_vectorized_market_rules_max_abs_error": {
+    "R1": 0.0,
+    "R2": 0.0,
+    "R3": 0.0,
+    "R4": 0.0
+  },
+  "checked_rows": {
+    "R1": 24443,
+    "R2": 16510,
+    "R3": 17882,
+    "R4": 16510
+  }
+}

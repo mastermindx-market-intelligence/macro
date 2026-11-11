@@ -15,3 +15,4 @@ This clarifies the frozen instruction "invalidate the affected calculation"; it 
 - The lead/follow table retains all window transitions and the designated PRE exit. A prior63 D-minus-C>0 is a follower regardless of the subsequent sign; next63 continuation is a separate field.
 
 This is a material coverage limitation, not a repair that claims to complete missing historical evidence. The final report must distinguish requested full eras from the descriptive clean segments.
+

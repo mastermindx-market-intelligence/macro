@@ -1,0 +1,165 @@
+{
+  "rule_count": 10,
+  "primary_family": 30,
+  "bootstrap_resamples": 5000,
+  "block_sessions": 252,
+  "seed": 20261111,
+  "cutoff": "2019-12-31",
+  "data_sessions": 24643,
+  "calm_years": [
+    1927,
+    1944,
+    1945,
+    1949,
+    1951,
+    1952,
+    1954,
+    1955,
+    1956,
+    1958,
+    1959,
+    1961,
+    1963,
+    1964,
+    1965,
+    1967,
+    1968,
+    1972,
+    1976,
+    1977,
+    1983,
+    1985,
+    1986,
+    1988,
+    1989,
+    1991,
+    1992,
+    1993,
+    1994,
+    1995,
+    1996,
+    1997,
+    2004,
+    2005,
+    2006,
+    2013,
+    2014,
+    2017,
+    2019
+  ],
+  "strict_stock_equal_weight_market": "unavailable; E49 is explicitly only an equal-industry proxy",
+  "vintages": "current-vintage conservatively lagged, not real-time",
+  "source_manifest": [
+    {
+      "source": "factors",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+      "bytes": 178326,
+      "sha256": "96c23b88e651cbfff3740a53f8225e59ee39893371e96385a1d8125ec2cd9c89"
+    },
+    {
+      "source": "momentum",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Momentum_Factor_daily_CSV.zip",
+      "bytes": 85338,
+      "sha256": "e56d5bc845544e2993e77353b12c611cfce3149ef754f9b59fc67904ddadd369"
+    },
+    {
+      "source": "size",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Portfolios_Formed_on_ME_Daily_CSV.zip",
+      "bytes": 1568032,
+      "sha256": "ec992e0687117877a617e5900ad21ff212a846276fe0e67ddcbe23197d3d1202"
+    },
+    {
+      "source": "ind12",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/12_Industry_Portfolios_daily_CSV.zip",
+      "bytes": 1094305,
+      "sha256": "d11f87b42f301ea931d1ddc823d3e2125aba4c8310eeeec43f96554e98b1ebb4"
+    },
+    {
+      "source": "ind17",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/17_Industry_Portfolios_daily_CSV.zip",
+      "bytes": 1510861,
+      "sha256": "c20b1ccb5bc22b7137938854499f81c74a88694e95af224bf8d0189c0f846f34"
+    },
+    {
+      "source": "ind49",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/49_Industry_Portfolios_daily_CSV.zip",
+      "bytes": 4177116,
+      "sha256": "b9d36d571e968d71f7b03207e7fed6398554f953719b8c1bf3ee3ad8d00e7520"
+    },
+    {
+      "source": "ind49monthly",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/49_Industry_Portfolios_CSV.zip",
+      "bytes": 489861,
+      "sha256": "d1a3b0b9896e1e633ed2aa85e24ca144d7998f8ab2ff344e2379383ebeb7b836"
+    },
+    {
+      "source": "shiller",
+      "url": "https://img1.wsimg.com/blobby/go/e5e77e0b-59d1-44d9-ab25-4763ac982e53/downloads/1449043e-a1ed-4e2e-8e9c-7b9a2a064493/ie_data.xls?ver=1791297298731",
+      "bytes": 1675264,
+      "sha256": "98a54927942e842ec07ffe73000998e793953708c345b6b27bb363e9ada8366a"
+    },
+    {
+      "source": "spx_yahoo",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=-1372723200&period2=1577836800&interval=1d",
+      "bytes": 2479458,
+      "sha256": "a9775080c159e472a629bb1e67a829ff281075329202b03a931e2cc8c1f84650"
+    },
+    {
+      "source": "BAA",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA&cosd=1919-01-01&coed=2019-12-31",
+      "bytes": 19573,
+      "sha256": "b3d4da61a3641230d5f8b1eb45de94447b852beee2456bc94500ffd9cf6b810f"
+    },
+    {
+      "source": "BAA10YM",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA10YM&cosd=1919-01-01&coed=2019-12-31",
+      "bytes": 12841,
+      "sha256": "45ec7f0912fcdaf85ec032356ef423ff35ac861d7f1b1470d79d6ddda5375b9c"
+    },
+    {
+      "source": "GS10",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=GS10&cosd=1919-01-01&coed=2019-12-31",
+      "bytes": 12910,
+      "sha256": "feec492cbccd0c48a67f22b27531e5501ad8697dcf3c9156c9ae06188771dd23"
+    },
+    {
+      "source": "TB3MS",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=TB3MS&cosd=1919-01-01&coed=2019-12-31",
+      "bytes": 16569,
+      "sha256": "8b38509688719eb5164e5c5a1ff3628cac321c5256e42dbde0fc626a7564bebf"
+    },
+    {
+      "source": "UNRATE",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=UNRATE&cosd=1919-01-01&coed=2019-12-31",
+      "bytes": 12995,
+      "sha256": "6161d3568cfb1e403d893d0c372966e5b2578eec2b186c46d0a608ac21054642"
+    }
+  ],
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "pandas": "2.2.3",
+  "code_sha256": {
+    "run_study.py": "b8e8755c540117ee3659cdd87a3b2495a412c1dcb77d44860435b27ac75ef999",
+    "render_report.py": "b9613c5c41161b6dc1a4571932debd172e4d2e05e3c6458bf25baca61058ab79",
+    "inference.py": "66d94012c43fe533656c069990f501d590047f556a508457b05f632a7674fd7a",
+    "episodes.py": "b8ddf6ee2dcecb133e158cdf3bfb60f1dc3555757499a2b0c7c8b8f7240b072b",
+    "test_integrity.py": "89af3b4fdc6b8872992577be4bb265213cecc4736b0b70d45d4e24f7e81f1e40",
+    "verify_results.py": "cd38713f75104bf0639f7da10331cad2da956b95b4f23a8dc06b760fce0c0747",
+    "inputs.py": "6ec442b2b8122f5d3ee146516e986dde3797a2fffebc2173b60aaf05dc7602a0",
+    "acquire.py": "07f6a3324859ffcea58bec9113067254655463c40c54c947068ad389fdbc8015",
+    "engine.py": "d33022149461c1cfbbc4ccab171dfb72fad536bd054c9421a5865e0e0a402c07"
+  },
+  "protocol_sha256": "f81ff37b05f000e936ede01a91e85d551e9495ca70b7201c73c91647381e2c5e",
+  "postrun_documentation": {
+    "numerical_logic_changed": false,
+    "description": "Simulator module docstring corrected for frozen target-notional cost approximation; report presentation and limitation disclosures finalized after the numerical run. Original execution code hashes are retained above.",
+    "final_source_sha256": {
+      "render_report.py": "f4950eb3a44540f98a4d1c690cbb9baf2fd6e1dac74136499b5b91e50a4eb900",
+      "engine.py": "e446df91264d8d569c82c0ed03aaa381d21017207c8549038f124059d6e0444d"
+    }
+  },
+  "runtime_package_versions_added_after_run": {
+    "scipy": "1.17.0",
+    "xlrd": "2.0.1"
+  }
+}

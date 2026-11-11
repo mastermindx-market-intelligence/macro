@@ -100,6 +100,7 @@ def load():
     assert factors.notna().all().all()
     observed=vw.notna().rolling(200,min_periods=200).sum().eq(200)
     targets={}
+    missing_records=[]
     gross={}
     counts={}
     for group,names,min_count in [('C',C_NAMES,10),('D',D_NAMES,4)]:
@@ -112,8 +113,10 @@ def load():
         targets[group]=target
         prev=target.shift(1)
         missing=(vw.isna() & prev.fillna(0).gt(0)).any(axis=1)
-        if missing.any():raise ValueError('Missing held industry in gross sleeve')
-        gross[group]=(prev*vw).sum(axis=1,min_count=1).where(prev.notna().all(axis=1))
+        for date in missing.index[missing]:
+            members=list(vw.columns[(vw.loc[date].isna() & prev.loc[date].fillna(0).gt(0)).to_numpy()])
+            missing_records.append({'source':'VW49','sleeve':group,'date':str(date.date()),'members':','.join(members)})
+        gross[group]=(prev*vw).sum(axis=1,min_count=1).where(prev.notna().all(axis=1)&~missing)
     m=factors['Mkt-RF']+factors['RF']
     gross['M']=m
     gross=pd.DataFrame(gross)
@@ -141,10 +144,13 @@ def load():
     macro=pd.DataFrame({k:known_monthly(s,idx,lag) for k,(s,lag) in conditions.items()})
     # E49 weights are lagged available industry membership, NOT stock weights.
     eqw=ew.notna().astype(float).div(ew.notna().sum(axis=1),axis=0).shift(1)
-    if (ew.isna() & eqw.fillna(0).gt(0)).any().any():raise ValueError('Unexpected missing E49 member')
-    e49=(eqw*ew).sum(axis=1,min_count=1)
+    eqmissing=(ew.isna() & eqw.fillna(0).gt(0)).any(axis=1)
+    for date in eqmissing.index[eqmissing]:
+        members=list(ew.columns[(ew.loc[date].isna() & eqw.loc[date].fillna(0).gt(0)).to_numpy()])
+        missing_records.append({'source':'EW49','sleeve':'E49','date':str(date.date()),'members':','.join(members)})
+    e49=(eqw*ew).sum(axis=1,min_count=1).where(~eqmissing)
     assets=vw.copy();assets['M']=m;assets['RF']=factors['RF']
-    return {'index':idx,'factors':factors,'vw':vw,'ew':ew,'eligible':observed,'targets':targets,'gross':gross,'price':price,'breadth':breadth,'macro':macro,'assets':assets,'E49':e49,'counts':pd.DataFrame(counts),'shiller':monthly,'spx':spx()}
+    return {'index':idx,'factors':factors,'vw':vw,'ew':ew,'eligible':observed,'targets':targets,'gross':gross,'price':price,'breadth':breadth,'macro':macro,'assets':assets,'E49':e49,'counts':pd.DataFrame(counts),'shiller':monthly,'spx':spx(),'missing_records':missing_records}
 
 def coverage(data):
     rows=[]

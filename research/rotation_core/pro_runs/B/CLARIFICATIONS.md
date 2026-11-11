@@ -8,3 +8,4 @@ Recorded after protocol v1 commit ba5ae1e353c6f9738bbf8936b9032e71c747b9ba, befo
 4. ON-at-trough re-entry rows also retain the last executed re-entry date and its negative signed session offset when present, so premature re-entries are visible.
 5. If an unavailable rule has no eligible calm years, false pivots/year is NA, not zero. Era/pooled returns never backfill an unavailable signal.
 6. Passive C/D/mix diagnostics use identical eligible industry targets, delay and costs, and are evaluated on the candidate's exact scored dates. They are fixed references, not allocation-rule trials.
+
