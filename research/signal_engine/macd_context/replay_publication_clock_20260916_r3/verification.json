@@ -1,0 +1,60 @@
+{
+  "kind": "macd_reference_producer_qualification_and_ci_wiring",
+  "skillpack_sha": "e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48",
+  "base_source_sha": "c359ed4403c9b8a8d097a8839c99448188618298",
+  "head_before": "b72178fa16db09d4cba7df48a97c4d649bcaa38c",
+  "replay_source_unchanged": true,
+  "tests": 199,
+  "ci_step_pid": 73442,
+  "contract_delta_pid": 60217,
+  "introduced_findings": 0,
+  "inherited_findings": 0,
+  "remote_ci_accepted": false,
+  "independent_review_accepted": false,
+  "full_control_reexecuted": false,
+  "blocked_security_census_reexecuted": false,
+  "file_hashes": {
+    "ci_wiring.json": "ff561ebb9e0d06a24117cbae74a42dfd748610aecac9e2ef3716b5cb331c3d0c",
+    "original_contract_failure.json": "06fad0bdba3a8ae84bc43e431a3f46fd29417e5d479ba4f8b5e7b20fcc94dcec",
+    "historical_job_excerpt.json": "cd4b6401f44d491ae82d61c90bbaf79c41204b65a6a34d4c734129bddadb898e",
+    "reference_producer_metadata.json": "3ad88b9fdd00d084a352cb9bcdcf6e73965c484447adf735e1b906e016451723",
+    "historical_environment_excerpt.json": "a561c591423d2fa9dc9489d91a04c2e9649cbadef690baa41064b9cec540c094",
+    "current_research_environment.json": "3f2dcc2a7eed116af0d8cf045f5f7c12ffc228901a7ad4aad1d6603bdfe4961f",
+    "producer_path_excerpts.json": "ac8b086a5930b9c568bf8bf118419ab9a67bedbce4c602f7fea5700fcf91effa",
+    "ci-step.log": "ebcc0de1e46a4859f9beba3203d9d1587c852127300263381d51d014f9d6e856",
+    "ci-step.xml": "287ac2a6c790e912237aba2861cb3f87a1aafbaaa0f58c76c7d4a8edd78d90e2",
+    "contract-delta.log": "4f8b1e953f5466fc89639496168049194ac5da23e3ae5684b613a60ff37cffe2",
+    "recovery-final.log": "3d607c55a640952a7c42bd3938d7fb544f80777937834f3b094a82cff3e2350b",
+    "recovery-final.xml": "3945f3c46af1351ea1a02db8d76de00c9dd2332796cb61c63892ac32c5f56be3",
+    "cache_lineage_qualification.json": "1ba580dee537aef7ad3b2862613bd998b09ad1bddb6075a2ed32851c902c98fc",
+    "recovery-agentos-final.log": "7d25bbbc57b9684450d084be53ad50f9bd18a70f82d3e001dbc6aa92b2b0d3b0"
+  },
+  "report_sha256": "17f5a7d7a759efa3ef709218c57fcf8a02d65231951fde6aa2fc4a87cfa25551",
+  "handoff_sha256": "741689fcde1f61f6d06b6afb51d30873114673477f877404c289ae8a9b662a15",
+  "save_reconciliation": {
+    "current_skillpack_sha": "5ee11ab1e993616f3568cfca4069cb21fa61fd8f",
+    "main_comparison_sha": "ec44523d17eedeea35bdf4513a0d4843a4e81a64",
+    "original_file_hashes_matched": 10,
+    "original_report_and_handoff_hashes_matched": true,
+    "original_exit_status": "unavailable",
+    "replay_step_tests": 199,
+    "replay_step_process": 37952,
+    "source_repair_unchanged": true,
+    "cache_lineage_process": 44353,
+    "additional_archive_source_inspection": "PLATFORM_BLOCKED_NOT_RETRIED",
+    "source_published": false,
+    "agentos_repeat_attempt": {
+      "process": 37952,
+      "result": "timed_out_after_90_seconds",
+      "test_step_result": "199_passed",
+      "earlier_same_bytes_validation": "process29134_reported_0_errors_98_warnings",
+      "new_final_validation": {
+        "process": 60285,
+        "exit_code": 0,
+        "errors": 0,
+        "warnings": 98
+      }
+    },
+    "contract_delta_status": "Prior exact-manifest/source proof retained; remote CI remains a separate gate."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "kind": "input_equality_only",
+  "vintage_sha": "ff745b1ab54256b0188688cc5815e6675e4edef5",
+  "through": "2026-07-15",
+  "rows": [
+    {
+      "path": "data/yahoo/SPY.parquet",
+      "source_sha256": "583e61bfc184b349c8dd2bfe4df6971ac4e214a793212b5e0dcc7993c5961712",
+      "retained_sha256": "cf3edbb520bc4360b200ac08ad10a3cd801639ee44ce189073357574e7116c46",
+      "equal_frames": true,
+      "source_rows": 8421,
+      "retained_rows": 8421,
+      "common_rows": 8421,
+      "close_value_changes": 0
+    },
+    {
+      "path": "data/yahoo/_VIX.parquet",
+      "source_sha256": "7d8bbed6cb05024d2f635fc49a3f0db19cf1e8420389cf9b5ec625bd6b86b942",
+      "retained_sha256": "225c411a7d694a8d6298cd1f38abcdb262c9b8360443873b44d9e4c026d27854",
+      "equal_frames": true,
+      "source_rows": 9202,
+      "retained_rows": 9202,
+      "common_rows": 9202,
+      "close_value_changes": 0
+    }
+  ],
+  "returns_recomputed": false
+}

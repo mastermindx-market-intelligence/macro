@@ -1,0 +1,11 @@
+{
+  "kind": "synthetic_preexisting_board_noop_probe",
+  "owner_sha256": "e0ca629d09bce191852a11abb61eb7791370b5fb2c8db41f6d243edf45df3e34",
+  "builder_command": "python -c pass",
+  "accepted_without_producing_board": true,
+  "board_bytes_unchanged": true,
+  "board_mtime_unchanged": true,
+  "returned_cache_equals_preexisting_board": true,
+  "real_market_data_read": false,
+  "production_effect": false
+}

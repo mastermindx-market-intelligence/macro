@@ -1,0 +1,79 @@
+{
+  "status": "APPENDED_IN_ISOLATED_PR_WORKSPACE",
+  "canonical_default_branch_applied": false,
+  "family": "macd_context_cycle",
+  "ledger_path": "data/trial_ledger.jsonl",
+  "owner_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+  "source_base_commit": "984a14537259626628dea5636bd5b7fe21f25958",
+  "before_sha256": "7a82e5b7766a7f2bbeb9e8c46bb57ab0b9a1b32d262a853944d093645769f119",
+  "after_sha256": "7b6d1d8d3c7346e460631383158095ddc25e95e8c38c5fc25d77af951ebd7708",
+  "before_rows": 1674,
+  "after_rows": 1681,
+  "prior_bytes_preserved": true,
+  "append": {
+    "budget_appended": true,
+    "configs_appended": 6,
+    "literal_n": 6,
+    "effective_n": 6502
+  },
+  "second_identical_dry_run_appended_zero": true,
+  "exposure_interpretation": "Retrospective minimum exposure floor: 6496 generated diagnostic views in original/expanded/repair/benchmark/contrast research, plus six declared recorded-score strata. Not a count of independent tests or certification of complete hypothesis exposure. No correlation credit or significance/promotion claim; broader family adjudication may only raise this floor.",
+  "scientific_promotion": false,
+  "outcome_association_computed": false,
+  "planned_configs": [
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "bottoming-alignment",
+      "price_basis": "adjusted",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    },
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "bottoming-alignment",
+      "price_basis": "unadjusted",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    },
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "bottoming-alignment",
+      "price_basis": "unverified_pre_20260806",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    },
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "confluence",
+      "price_basis": "adjusted",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    },
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "confluence",
+      "price_basis": "unadjusted",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    },
+    {
+      "study": "recorded_d21_h21",
+      "ranker": "us_prophet_v1",
+      "price_basis": "adjusted",
+      "estimand": "equal_date_spearman_raw_return",
+      "horizon": 21,
+      "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+      "authority": "descriptive_only_not_yet_executed"
+    }
+  ]
+}

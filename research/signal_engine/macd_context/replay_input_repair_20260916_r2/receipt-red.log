@@ -1,0 +1,14 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_pipeline_receipt_retains_control_input_restoration ____________
+tests/test_prophet_pit_replay_sparse_inputs.py:186: in test_pipeline_receipt_retains_control_input_restoration
+    assert result['restored_vintage_inputs']['control']['data/yahoo/SPY.parquet']['source_commit'] == sha
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'restored_vintage_inputs'
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_pipeline_receipt_retains_control_input_restoration
+1 failed, 11 deselected in 1.60s

@@ -1,0 +1,23 @@
+{
+  "skillpack_sha": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "code_hashes": {
+    "scripts/prophet_pit_replay.py": "6cb1798216fd6c81b4c61c08f91dd634d28434c7bd45e3cf61d17f7b9cb3ee3e",
+    "tests/test_prophet_pit_replay.py": "cd9935d9916479603c226847261098c33f2363c6a30a359020ebbd48be73a4df",
+    "tests/test_prophet_pit_replay_alpha_result.py": "4294dc35747464c0c435299c8d938c01241bd13aacd3b4aee57c6d53baa27bca",
+    "tests/test_prophet_pit_replay_sparse_inputs.py": "dbed553998016babbd26796015a7b53c4de1255e94f85e46422dfe1fe1810e12",
+    ".github/ci/legacy-jobs.yml": "50b4a38f9a4530ed1eeb7a909f89c181b30f9990f43f8e484396d0a751873bf7"
+  },
+  "command": [
+    "/opt/homebrew/bin/python3",
+    "-m",
+    "pytest",
+    "tests/test_prophet_pit_replay.py",
+    "tests/test_prophet_pit_replay_alpha_result.py",
+    "tests/test_prophet_pit_replay_sparse_inputs.py",
+    "-q",
+    "--tb=short",
+    "--basetemp=/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-resumed-final",
+    "--junitxml=/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/resumed-final.xml"
+  ],
+  "exit_code": 0
+}

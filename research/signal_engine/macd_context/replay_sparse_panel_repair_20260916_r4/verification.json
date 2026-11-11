@@ -1,0 +1,37 @@
+{
+  "kind": "MACD_REPLAY_R4_RESUMED_SOURCE_VERIFICATION",
+  "parent_state": "PARTIAL",
+  "head_before": "9513a4d9353362c6e02fe56a402008f49b44b049",
+  "skillpack_sha": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "source_sha256": "6cb1798216fd6c81b4c61c08f91dd634d28434c7bd45e3cf61d17f7b9cb3ee3e",
+  "sparse_test_sha256": "dbed553998016babbd26796015a7b53c4de1255e94f85e46422dfe1fe1810e12",
+  "test_run_pid": 15113,
+  "tests": 237,
+  "failures": 0,
+  "errors": 0,
+  "test_exit_code": 0,
+  "test_elapsed_seconds": 53.69,
+  "exact_source_receipt": "resumed-final-source.json",
+  "junit_evidence": "resumed-final.xml",
+  "test_log": "resumed-final.log",
+  "earlier_candidate_receipt": "verification_before_resume.json",
+  "earlier_fixture_copies_are_current": false,
+  "resumed_fixture_file_inspection": "PLATFORM_BLOCKED; not retried, split, or rerouted",
+  "packaging_note": "Process21038 copied the run logs and preserved the earlier receipt, then stopped at the fixture-count assertion. Its later planned fixture copying and handoff update did not complete. No final fixture-file collection is claimed.",
+  "ledger_unchanged_sha256": "7b6d1d8d3c7346e460631383158095ddc25e95e8c38c5fc25d77af951ebd7708",
+  "historical_market_control_run": false,
+  "independent_review_accepted": false,
+  "production_or_trade_changes": false,
+  "evidence_copy_normalization": {
+    "file": "tail-precedence-red.xml",
+    "raw_host_sha256": "3726bef81bde596629de9efdf7e58682814ccc214481b2a5b4d121e96c23586e",
+    "published_sha256": "1d9c33dc625cecce319e1d5581ef116d2924858336455d6e276f6d9f905cafbb",
+    "change": "trim trailing ASCII whitespace in repository XML copy only; raw host output preserved"
+  },
+  "agentos_validation": {
+    "process": 26188,
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 98
+  }
+}

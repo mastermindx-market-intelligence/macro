@@ -1,0 +1,87 @@
+{
+  "kind": "reference_producer_source_and_availability_metadata",
+  "revisions": {
+    "trigger": {
+      "sha": "1f72b8743c36ae76f9098ab03b8e48bfde3458dc",
+      "blobs": {
+        ".github/workflows/engine-render.yml": "3da29057d155a6b657dcf7fd1ee0bda017c287a4",
+        "engine/entry_signal.py": "e511a912fc7e6def0b028c8120463c3453d507ae",
+        "engine/residual_alpha.py": "d3cbcd0208b50f77209b01337f0e32a327931aa5",
+        "engine/stock_score.py": "8c4797a4425165966a4fbf3ca089c3b91a760b0c",
+        "requirements.txt": "3d6a661666375c9cb4376fbe513b5bb63ad6bb75",
+        "scripts/build_site.py": "b236622c8a698f23c8a4425686ada4931d91af42",
+        "scripts/build_stock_library.py": "6f66a3a63bc612300d4e42ab27bbb4af3be80d75"
+      }
+    },
+    "executed_checkout": {
+      "sha": "413d6e9038f2ac12ee231e6e067ef4d400fff2a3",
+      "blobs": {
+        ".github/workflows/engine-render.yml": "3da29057d155a6b657dcf7fd1ee0bda017c287a4",
+        "engine/entry_signal.py": "e511a912fc7e6def0b028c8120463c3453d507ae",
+        "engine/residual_alpha.py": "d3cbcd0208b50f77209b01337f0e32a327931aa5",
+        "engine/stock_score.py": "8c4797a4425165966a4fbf3ca089c3b91a760b0c",
+        "requirements.txt": "3d6a661666375c9cb4376fbe513b5bb63ad6bb75",
+        "scripts/build_site.py": "b236622c8a698f23c8a4425686ada4931d91af42",
+        "scripts/build_stock_library.py": "6f66a3a63bc612300d4e42ab27bbb4af3be80d75"
+      }
+    },
+    "publication": {
+      "sha": "f1f127e1ecbd24cad018af190be4793b60eb6fcc",
+      "blobs": {
+        ".github/workflows/engine-render.yml": "3da29057d155a6b657dcf7fd1ee0bda017c287a4",
+        "engine/entry_signal.py": "e511a912fc7e6def0b028c8120463c3453d507ae",
+        "engine/residual_alpha.py": "d3cbcd0208b50f77209b01337f0e32a327931aa5",
+        "engine/stock_score.py": "8c4797a4425165966a4fbf3ca089c3b91a760b0c",
+        "requirements.txt": "3d6a661666375c9cb4376fbe513b5bb63ad6bb75",
+        "scripts/build_site.py": "b236622c8a698f23c8a4425686ada4931d91af42",
+        "scripts/build_stock_library.py": "6f66a3a63bc612300d4e42ab27bbb4af3be80d75"
+      }
+    },
+    "replay_vintage": {
+      "sha": "ff745b1ab54256b0188688cc5815e6675e4edef5",
+      "blobs": {
+        ".github/workflows/engine-render.yml": "3da29057d155a6b657dcf7fd1ee0bda017c287a4",
+        "engine/entry_signal.py": "e511a912fc7e6def0b028c8120463c3453d507ae",
+        "engine/residual_alpha.py": "d3cbcd0208b50f77209b01337f0e32a327931aa5",
+        "engine/stock_score.py": "8c4797a4425165966a4fbf3ca089c3b91a760b0c",
+        "requirements.txt": "3d6a661666375c9cb4376fbe513b5bb63ad6bb75",
+        "scripts/build_site.py": "b236622c8a698f23c8a4425686ada4931d91af42",
+        "scripts/build_stock_library.py": "6f66a3a63bc612300d4e42ab27bbb4af3be80d75"
+      }
+    }
+  },
+  "remote_metadata": {
+    "run": {
+      "id": 29589773634,
+      "event": "push",
+      "head_sha": "1f72b8743c36ae76f9098ab03b8e48bfde3458dc",
+      "created_at": "2026-07-17T14:52:22Z",
+      "run_started_at": "2026-07-17T14:52:22Z",
+      "updated_at": "2026-07-17T17:45:14Z",
+      "status": "completed",
+      "conclusion": "success",
+      "path": ".github/workflows/engine-render.yml",
+      "run_attempt": 1
+    },
+    "artifacts": {
+      "total_count": 0,
+      "artifacts": []
+    },
+    "breadth_cache": {
+      "total_count": 0,
+      "entries": []
+    }
+  },
+  "source_paths_compared": [
+    "scripts/build_stock_library.py",
+    "scripts/build_site.py",
+    "engine/entry_signal.py",
+    "engine/stock_score.py",
+    "engine/residual_alpha.py",
+    "requirements.txt",
+    ".github/workflows/engine-render.yml"
+  ],
+  "complete_source_closure_certified": false,
+  "market_prices_read": false,
+  "outcomes_computed": false
+}

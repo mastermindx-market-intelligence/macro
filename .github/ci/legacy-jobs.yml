@@ -33071,7 +33071,12 @@ jobs:
       # 2026-10-13: consolidate the historical groups above into one actual pytest
       # process. Keep every full-suite file and order; pytest still names each
       # failed node. All 311 nodes equal the six original command collections.
-      - name: Board source clocks, outcome ledgers, accountability, continuity and Canada binding
+      # 2026-11-11: keep all three complete synthetic PIT suites in this
+      # unfiltered pytest process, after the original 19 files. The separate
+      # Today command retains its existing -k filter; no PIT cases are excluded.
+      # One process reports every file even if an earlier file fails, and avoids
+      # adding another interpreter invocation to this existing CODE owner.
+      - name: Board source clocks, outcome ledgers, accountability, continuity, Canada binding and PIT replay
         run: >-
           python -m pytest
           tests/test_prophet_plan_chronology_audit.py
@@ -33093,7 +33098,11 @@ jobs:
           tests/test_us_board_snapshot_readers_build.py
           tests/test_us_board_snapshot_readers_grade.py
           tests/test_us_board_snapshot_reader_census.py
+          tests/test_prophet_pit_replay.py
+          tests/test_prophet_pit_replay_alpha_result.py
+          tests/test_prophet_pit_replay_sparse_inputs.py
           -q
+
 
 
   unrun-intl-libraries:
@@ -37372,7 +37381,7 @@ jobs:
       # 2026-08-14, CN/HK 2026-08-17, the US disclosed-gap/session-invalid refusals)
       # are exercised directly against this checkout, not a network call.
       - name: prophet PIT replay harness (truncate/overlay/fence, vintage resolution, disclosed-gap guard, registry, receipt idempotence, verify-collisions ordering)
-        run: python -m pytest tests/test_prophet_pit_replay.py -q
+        run: python -m pytest tests/test_prophet_pit_replay.py tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay_sparse_inputs.py -q
       # US absorb hook (scripts/grade_us_board.py::absorb_pending_replays) — same
       # subject/job as the harness above; wired together so a change to the
       # pending/v1 schema or the harness's session ordering fails in one place.

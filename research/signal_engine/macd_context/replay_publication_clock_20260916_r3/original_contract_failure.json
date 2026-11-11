@@ -1,0 +1,20 @@
+{
+  "check_id": 104958128535,
+  "head": "b72178fa16db09d4cba7df48a97c4d649bcaa38c",
+  "annotations": [
+    {
+      "path": ".github",
+      "start_line": 13,
+      "annotation_level": "failure",
+      "title": "contract-delta",
+      "message": "tests/test_prophet_pit_replay_sparse_inputs.py is a new pytest suite named by no run: step in any workflow \u2014 wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml"
+    },
+    {
+      "path": ".github",
+      "start_line": 12,
+      "annotation_level": "failure",
+      "title": "contract-delta",
+      "message": "tests/test_prophet_pit_replay_alpha_result.py is a new pytest suite named by no run: step in any workflow \u2014 wire it into the job that owns its subject in .github/ci/legacy-jobs.yml, or add a reasoned row to config/unrun_test_waivers.yml"
+    }
+  ]
+}

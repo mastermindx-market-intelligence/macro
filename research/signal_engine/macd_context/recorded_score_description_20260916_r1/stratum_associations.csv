@@ -1,0 +1,7 @@
+ranker,price_basis,rows,signal_dates,defined_dates,undefined_dates,finite_pairs,missing_pairs,equal_date_mean_spearman
+bottoming-alignment,adjusted,166,7,7,0,166,0,-0.08225342165734144
+bottoming-alignment,unadjusted,27,7,6,1,27,0,-0.19267444567891148
+bottoming-alignment,unverified_pre_20260806,34,1,1,0,34,0,-0.34024019985179216
+confluence,adjusted,512,9,9,0,512,0,-0.21807706159704818
+confluence,unadjusted,10,4,2,2,10,0,-0.17142857142857143
+us_prophet_v1,adjusted,74,1,1,0,74,0,-0.17574685789611694

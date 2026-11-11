@@ -1,0 +1,650 @@
+{
+  "source_sha": "413d6e9038f2ac12ee231e6e067ef4d400fff2a3",
+  "excerpts": {
+    "scripts/build_site.py": [
+      {
+        "line": 2936,
+        "text": "    from engine.cycles import LADDER, STATE_DISPLAY, analyze"
+      },
+      {
+        "line": 2937,
+        "text": "    from engine.holdings_signals import accumulation_signals"
+      },
+      {
+        "line": 2938,
+        "text": "    from engine.playbook import SECTOR_NAMES"
+      },
+      {
+        "line": 2939,
+        "text": "    from engine.setups import US_ALPHA_WEIGHT, sue_confirmer, timing_tilt"
+      },
+      {
+        "line": 2940,
+        "text": "    from scripts.build_stock_library import current_liquidity, current_macro"
+      },
+      {
+        "line": 2941,
+        "text": ""
+      },
+      {
+        "line": 2942,
+        "text": "    # per-ticker sector-neutral residual alpha (already computed by build_alpha_data"
+      },
+      {
+        "line": 2943,
+        "text": "    # and passed in) \u2014 used to enrich the front-page \"Standout individual stocks\""
+      },
+      {
+        "line": 2944,
+        "text": "    # cards with an alpha sector rank + reversal overlay and an alpha-aware setup"
+      },
+      {
+        "line": 2945,
+        "text": "    # score (selection \u00d7 timing). Absent => cards fall back to pure cycle timing."
+      },
+      {
+        "line": 2946,
+        "text": "    alpha_pt = (alpha or {}).get(\"per_ticker\", {})"
+      },
+      {
+        "line": 2947,
+        "text": "    # confirmer legs on those same cards: a distinct-insider Form-4 BUY cluster"
+      },
+      {
+        "line": 2948,
+        "text": "    # (insider_signals.json, written by build_insider_data just above), the cross-"
+      },
+      {
+        "line": 2949,
+        "text": "    # sectional factor composite (factors.json table) as a light tiebreaker, and the"
+      },
+      {
+        "line": 2950,
+        "text": "    # validated SUE earnings-momentum z (factors.json table 'sue') as an earnings-"
+      },
+      {
+        "line": 2951,
+        "text": "    # drift confirmer. All additive + graceful \u2014 absent => the card omits that chip."
+      },
+      {
+        "line": 2981,
+        "text": "    # read AND the accumulation overlay (so the overlay ladder matches the card)."
+      },
+      {
+        "line": 2982,
+        "text": "    liq = current_liquidity()"
+      },
+      {
+        "line": 2983,
+        "text": "    drag = current_macro()"
+      },
+      {
+        "line": 2984,
+        "text": "    # benchmark + feed window for each ETF's alert timeline (the ladder log itself"
+      },
+      {
+        "line": 2985,
+        "text": "    # is written by build_stock_library, where these ETFs also live \u2014 no re-write)"
+      },
+      {
+        "line": 2986,
+        "text": "    _spy = store.read(\"yahoo\", \"SPY\")"
+      },
+      {
+        "line": 2987,
+        "text": "    _bench = _spy[\"close\"] if _spy is not None else None"
+      },
+      {
+        "line": 2988,
+        "text": "    _acfg = config.load().get(\"alerts\", {})"
+      },
+      {
+        "line": 2989,
+        "text": "    _adays = int(_acfg.get(\"ticker_timeline_days\", 120))"
+      },
+      {
+        "line": 2990,
+        "text": "    _amax = int(_acfg.get(\"ticker_max_events\", 50))"
+      },
+      {
+        "line": 2991,
+        "text": "    tpl = env.get_template(\"sector.html.j2\")"
+      },
+      {
+        "line": 2992,
+        "text": "    outdir = site / \"sectors\""
+      },
+      {
+        "line": 2993,
+        "text": "    outdir.mkdir(parents=True, exist_ok=True)"
+      },
+      {
+        "line": 2994,
+        "text": "    # Policy-shock de-escalation state (PS-R3: display de-escalation only \u2014 no sizing/reordering)"
+      },
+      {
+        "line": 2995,
+        "text": "    _shock_path = site / \"live\" / \"shock_state.json\""
+      },
+      {
+        "line": 2996,
+        "text": "    _shock_state: dict | None = None"
+      },
+      {
+        "line": 3622,
+        "text": "            log.info(\"wrote factor_betas.json (%d names)\", exp.get(\"n\", 0))"
+      },
+      {
+        "line": 3623,
+        "text": "    except Exception as e:  # noqa: BLE001 \u2014 additive, never fatal"
+      },
+      {
+        "line": 3624,
+        "text": "        log.error(\"factor_betas.json failed: %s\", e)"
+      },
+      {
+        "line": 3625,
+        "text": "    # broad \"Top setups\" board (selection \u00d7 timing across the full S&P 1500),"
+      },
+      {
+        "line": 3626,
+        "text": "    # written by build_stock_library at the END of the prior build_site run \u2014"
+      },
+      {
+        "line": 3627,
+        "text": "    # additive + graceful: absent (first run) => the board simply doesn't render."
+      },
+      {
+        "line": 3628,
+        "text": "    top_setups = None"
+      },
+      {
+        "line": 3629,
+        "text": "    _sp = site / \"factordata\" / \"setups.json\""
+      },
+      {
+        "line": 3630,
+        "text": "    if _sp.exists():"
+      },
+      {
+        "line": 3631,
+        "text": "        try:"
+      },
+      {
+        "line": 3632,
+        "text": "            top_setups = json.loads(_sp.read_text())"
+      },
+      {
+        "line": 3633,
+        "text": "        except Exception as e:  # noqa: BLE001 \u2014 additive, never fatal"
+      },
+      {
+        "line": 3634,
+        "text": "            log.warning(\"setups.json unreadable (%s)\", e)"
+      },
+      {
+        "line": 3635,
+        "text": "    # WIDE \"Standout individual stocks\" board (~80-120 names ranked by the validated"
+      },
+      {
+        "line": 3636,
+        "text": "    # alpha leg, each carrying the unified Conviction profile/verdict). Written by"
+      },
+      {
+        "line": 3637,
+        "text": "    # build_stock_library at the END of the prior run (one-build lag, like setups.json,"
+      },
+      {
+        "line": 3638,
+        "text": "    # surfaced via the card's as_of). Absent (first run) => the strip degrades to the"
+      },
+      {
+        "line": 3639,
+        "text": "    # action_board notable cards below."
+      },
+      {
+        "line": 3640,
+        "text": "    us_standouts = None"
+      },
+      {
+        "line": 3641,
+        "text": "    _us = site / \"factordata\" / \"us_standouts.json\""
+      },
+      {
+        "line": 3642,
+        "text": "    if _us.exists():"
+      },
+      {
+        "line": 3643,
+        "text": "        try:"
+      },
+      {
+        "line": 3644,
+        "text": "            us_standouts = json.loads(_us.read_text())"
+      },
+      {
+        "line": 3645,
+        "text": "        except Exception as e:  # noqa: BLE001 \u2014 additive, never fatal"
+      },
+      {
+        "line": 3646,
+        "text": "            log.warning(\"us_standouts.json unreadable (%s)\", e)"
+      },
+      {
+        "line": 3647,
+        "text": "    # W4 stock-personality slim attach: thread chart+mode chips into us_standouts buy cards"
+      },
+      {
+        "line": 3648,
+        "text": "    # (inside .nb-more expander only per guardrail 16; fail-open if JSON absent or malformed)."
+      },
+      {
+        "line": 4528,
+        "text": "            from scripts.translate_profiles import main as translate_profiles"
+      },
+      {
+        "line": 4529,
+        "text": "            translate_profiles()"
+      },
+      {
+        "line": 4530,
+        "text": "        except Exception as e:  # noqa: BLE001 \u2014 translation is optional, never break the build"
+      },
+      {
+        "line": 4531,
+        "text": "            log.warning(\"profile translation step failed (%s); blurbs stay English\", e)"
+      },
+      {
+        "line": 4532,
+        "text": "        from scripts.build_stock_library import main as build_library"
+      },
+      {
+        "line": 4533,
+        "text": "        build_library()"
+      },
+      {
+        "line": 4534,
+        "text": ""
+      },
+      {
+        "line": 4535,
+        "text": "        # Bespoke single-stock chart data: a compact per-ticker OHLC JSON"
+      },
+      {
+        "line": 4536,
+        "text": "        # (site/ohlc/<T>.json) read client-side by chart.js. Pure serialisation of"
+      },
+      {
+        "line": 4537,
+        "text": "        # price data already on disk (no engine compute) and depends on the stock"
+      },
+      {
+        "line": 4538,
+        "text": "        # index.json the library just wrote, so it runs right after. Garnish \u2014"
+      },
+      {
+        "line": 4539,
+        "text": "        # never break the build if it fails; charts just degrade to \"no data\"."
+      },
+      {
+        "line": 4540,
+        "text": "        try:"
+      },
+      {
+        "line": 4541,
+        "text": "            from scripts.build_chart_data import build_us as build_chart_data"
+      },
+      {
+        "line": 4542,
+        "text": "            from scripts.build_chart_data import emit_intraday"
+      },
+      {
+        "line": 4543,
+        "text": "            n_chart, n_candle = build_chart_data(site)"
+      }
+    ],
+    ".github/workflows/engine-render.yml": [
+      {
+        "line": 173,
+        "text": "        # freshly recomputed engine outputs (regime/latest.json was just"
+      },
+      {
+        "line": 174,
+        "text": "        # updated by engine.run above).  O(50ms) \u2014 negligible on the render"
+      },
+      {
+        "line": 175,
+        "text": "        # budget.  Resilient: a failure keeps the last committed world_state"
+      },
+      {
+        "line": 176,
+        "text": "        # and never blocks the render."
+      },
+      {
+        "line": 177,
+        "text": "        # git add site/ in the commit step below does NOT cover data/neuralweb/;"
+      },
+      {
+        "line": 178,
+        "text": "        # the express lane commits site/ only, so world_state.json is NOT"
+      },
+      {
+        "line": 179,
+        "text": "        # committed here \u2014 it is a working-tree side-effect that gets discarded"
+      },
+      {
+        "line": 180,
+        "text": "        # exactly like the other data/ writes (regime_history, ledger appends)."
+      },
+      {
+        "line": 181,
+        "text": "        # The nightly daily.yml run recomputes and commits it under data/."
+      },
+      {
+        "line": 182,
+        "text": "        # This step exists so world_state is FRESH in memory for any builder"
+      },
+      {
+        "line": 183,
+        "text": "        # that reads it during the render (the builders run after this step and"
+      },
+      {
+        "line": 184,
+        "text": "        # read data/neuralweb/world_state.json from the working tree)."
+      },
+      {
+        "line": 185,
+        "text": "        run: python -m scripts.build_world_state || echo \"::warning::build_world_state failed (non-fatal) \u2014 keeping last committed world_state\""
+      },
+      {
+        "line": 186,
+        "text": "      - name: build mastermind context (NW bridge)"
+      },
+      {
+        "line": 187,
+        "text": "        if: always()"
+      },
+      {
+        "line": 188,
+        "text": "        # NW \u2192 Mastermind bridge W1: compile data/neuralweb/mastermind_context.json and"
+      },
+      {
+        "line": 267,
+        "text": "          # COMMITTED artifact on disk (the last daily's write); the page renders the last"
+      },
+      {
+        "line": 268,
+        "text": "          # nightly's cycle data rather than a fresh recompute \u2014 matching the express lane's"
+      },
+      {
+        "line": 269,
+        "text": "          # stated contract (\"re-render from committed data\"). Call AFTER band so cl_baskets"
+      },
+      {
+        "line": 270,
+        "text": "          # has completed. Additive (returns 0 on any failure), so it can never break the deploy."
+      },
+      {
+        "line": 271,
+        "text": "          # Ledger-safe: this lane's commit step is `git add site/` ONLY (engine-render.yml:340),"
+      },
+      {
+        "line": 272,
+        "text": "          # so data/sector_central/calls.parquet is discarded; the nightly daily.yml run is the"
+      },
+      {
+        "line": 273,
+        "text": "          # sole advancer of that forward ledger."
+      },
+      {
+        "line": 274,
+        "text": "          central() { run_py \"US sector central intelligence (build_sector_central)\" scripts.build_sector_central; }"
+      },
+      {
+        "line": 275,
+        "text": ""
+      },
+      {
+        "line": 276,
+        "text": "          band() {"
+      },
+      {
+        "line": 277,
+        "text": "            local ART=\"$RUNNER_TEMP/band\"; rm -rf \"$ART\"; mkdir -p \"$ART\""
+      },
+      {
+        "line": 278,
+        "text": "            brun() {"
+      },
+      {
+        "line": 279,
+        "text": "              local slug=\"$1\" label=\"$2\" mod=\"$3\"; shift 3"
+      },
+      {
+        "line": 280,
+        "text": "              local t0 t1 rc"
+      },
+      {
+        "line": 281,
+        "text": "              t0=$(date +%s)"
+      },
+      {
+        "line": 282,
+        "text": "              { echo \"$label\"; python -m \"$mod\" \"$@\" 2>&1; } > \"$ART/$slug.log\"; rc=$?"
+      },
+      {
+        "line": 444,
+        "text": "          python3 scripts/check_ms_board_coherence.py --heal-from HEAD || true"
+      },
+      {
+        "line": 445,
+        "text": "          exit 1"
+      },
+      {
+        "line": 446,
+        "text": "      - name: inject data-base shim (site-wide; a re-render would strip it otherwise)"
+      },
+      {
+        "line": 447,
+        "text": "        run: python -m scripts.inject_data_base || echo \"data-base shim inject skipped (additive)\""
+      },
+      {
+        "line": 448,
+        "text": "      - name: commit rendered site (site/ ONLY \u2014 never data/, so every ledger stays pristine)"
+      },
+      {
+        "line": 449,
+        "text": "        if: always()"
+      },
+      {
+        "line": 450,
+        "text": "        run: |"
+      },
+      {
+        "line": 451,
+        "text": "          git config user.name \"dashboard-bot\""
+      },
+      {
+        "line": 452,
+        "text": "          git config user.email \"actions@users.noreply.github.com\""
+      },
+      {
+        "line": 453,
+        "text": "          # ONLY site/ \u2014 never data/ or reports/. engine.run + the builders touch data/ in the"
+      },
+      {
+        "line": 454,
+        "text": "          # working tree (regime recompute, ledger appends, cache writes); committing NONE of it"
+      },
+      {
+        "line": 455,
+        "text": "          # keeps the nightly the single advancer of every forward-accountability ledger."
+      },
+      {
+        "line": 456,
+        "text": "          git add site/"
+      },
+      {
+        "line": 457,
+        "text": "          git add -f site/stockbrief 2>/dev/null || true"
+      },
+      {
+        "line": 458,
+        "text": "          if git diff --cached --quiet; then echo \"no rendered-site changes to commit\"; exit 0; fi"
+      },
+      {
+        "line": 459,
+        "text": "          git commit -m \"engine-render: regime recompute + re-render $(date -u +%F) (scope=${{ github.event.inputs.scope || 'all' }})\""
+      },
+      {
+        "line": 460,
+        "text": "          # --autostash: we commit site/ ONLY, leaving the render's throwaway data/ writes"
+      },
+      {
+        "line": 461,
+        "text": "          # unstaged; a plain `pull --rebase` refuses on a dirty tree and silently failed"
+      },
+      {
+        "line": 462,
+        "text": "          # EVERY push. Autostash parks them, rebases, restores. This push is the only path"
+      },
+      {
+        "line": 463,
+        "text": "          # to the live site (VPS serves committed main; no Pages-artifact fallback)."
+      },
+      {
+        "line": 464,
+        "text": "          for i in 1 2 3 4 5; do"
+      },
+      {
+        "line": 465,
+        "text": "            # pre-sync collision sweep (render.yml / #2252): a mid-run commit on origin/main can"
+      },
+      {
+        "line": 466,
+        "text": "            # TRACK a path this job wrote as an UNTRACKED side-effect \u2014 the rebase checkout then"
+      },
+      {
+        "line": 467,
+        "text": "            # refuses (\"untracked working tree files would be overwritten\") and --autostash can't"
+      },
+      {
+        "line": 473,
+        "text": "            git fetch origin main || true"
+      },
+      {
+        "line": 474,
+        "text": "            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \\"
+      },
+      {
+        "line": 475,
+        "text": "                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \\"
+      },
+      {
+        "line": 476,
+        "text": "              | while IFS= read -r f; do rm -f -- \"$f\" || true; done"
+      },
+      {
+        "line": 477,
+        "text": "            if git pull --rebase --autostash -X theirs origin main; then"
+      },
+      {
+        "line": 478,
+        "text": "              # post-rebase template\u2194site re-sync (ui.template_site_sync). -X theirs can"
+      },
+      {
+        "line": 479,
+        "text": "              # resurrect this run's checkout-time template copies over a reword that merged"
+      },
+      {
+        "line": 480,
+        "text": "              # MID-RENDER: 2026-07-07 incident \u2014 run 28835838497 (110 min, checkout"
+      },
+      {
+        "line": 481,
+        "text": "              # 9208ef4920) pushed 2ae709f9f0, whose site/sector_cycles.js was byte-identical"
+      },
+      {
+        "line": 482,
+        "text": "              # to the CHECKOUT-TIME template blob, reverting #1793's de-escalation merged"
+      },
+      {
+        "line": 483,
+        "text": "              # 20 min earlier. templates/ is now fresh post-rebase main \u2014 re-copy the"
+      },
+      {
+        "line": 484,
+        "text": "              # plain-copy page assets from it and fold any delta into a follow-up commit."
+      },
+      {
+        "line": 485,
+        "text": "              python -m scripts.check_template_site_sync --fix || true"
+      },
+      {
+        "line": 486,
+        "text": "              # ms-board coherence guard (ui.ms_board_coherence): -X theirs resolves whole"
+      },
+      {
+        "line": 487,
+        "text": "              # conflict REGIONS toward this run's replayed render, so racing another"
+      },
+      {
+        "line": 488,
+        "text": "              # mid-render lane can stitch a hybrid Market State board \u2014 2026-07-07 commit"
+      },
+      {
+        "line": 492,
+        "text": "              # origin/main (coherent, at most one render old)."
+      },
+      {
+        "line": 493,
+        "text": "              python3 scripts/check_ms_board_coherence.py --heal-from origin/main \\"
+      },
+      {
+        "line": 494,
+        "text": "                || echo \"::warning::ms-board coherence heal incomplete (incoherent board may predate this run)\""
+      },
+      {
+        "line": 495,
+        "text": "              if ! git diff --quiet -- site/; then"
+      },
+      {
+        "line": 496,
+        "text": "                git add site/ && git commit -m \"render-sync: post-rebase guards (template re-copy + ms-board coherence)\" \\"
+      },
+      {
+        "line": 497,
+        "text": "                  || echo \"::warning::render-sync commit failed (non-fatal \u2014 pages publish gate backstops divergence)\""
+      },
+      {
+        "line": 498,
+        "text": "              fi"
+      },
+      {
+        "line": 499,
+        "text": "              if git push; then echo \"pushed engine-rendered site on attempt $i\"; exit 0; fi"
+      },
+      {
+        "line": 500,
+        "text": "            fi"
+      },
+      {
+        "line": 501,
+        "text": "            git rebase --abort 2>/dev/null || true"
+      },
+      {
+        "line": 502,
+        "text": "            echo \"engine-render push attempt $i failed (rebase/race); re-syncing\"; sleep $((i * 7))"
+      },
+      {
+        "line": 503,
+        "text": "          done"
+      },
+      {
+        "line": 504,
+        "text": "          echo \"::warning::could not push engine-rendered site after 5 attempts \u2014 the next render or the nightly will re-land it\""
+      }
+    ]
+  },
+  "scope": "static producer and publication behavior only"
+}

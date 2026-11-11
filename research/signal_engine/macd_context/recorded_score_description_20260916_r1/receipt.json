@@ -1,0 +1,38 @@
+{
+  "status": "COMPLETE_FIXED_ARCHIVE_DESCRIPTION",
+  "authority": "none",
+  "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+  "input_rows": 9614,
+  "target_rows": 823,
+  "target_dates": 18,
+  "strata": 6,
+  "outcome_association_computed": true,
+  "strategy_returns_computed": false,
+  "new_grade_or_live_store_written": false,
+  "score_fitted": false,
+  "out_of_sample_claim": false,
+  "independent_review_completed": false,
+  "historical_publication_verified": false,
+  "uncertainty_or_significance_claim": false,
+  "estimand": "equal-date mean within-date Spearman of recorded d21 vs stored H21 ret",
+  "ledger_sha256": "7b6d1d8d3c7346e460631383158095ddc25e95e8c38c5fc25d77af951ebd7708",
+  "effective_n": 6502,
+  "default_branch_accounting_merged": false,
+  "ruling_sha256": "fce44c35c14112f41d2ffd56f91c4a4d8f2bb9ff8f411412ca0b626fb2cd87f3",
+  "script_sha256": "61fe01a33e5dbac5ccf972b458f86bc68d4cdc59e8abcb147f12d000720aca84",
+  "pandas_version": "3.0.5",
+  "numpy_version": "2.5.2",
+  "limitations": [
+    "selected archived population",
+    "overlapping outcome windows",
+    "six unpooled ranker/price-basis strata",
+    "no current-v3 H21",
+    "no requested SPY-up RSP-down or SPY-below200 support",
+    "publication/input vintages not certified",
+    "not a cash-profit probability"
+  ],
+  "output_sha256": {
+    "stratum_associations.csv": "84c02e4cea9afcb3f41b9dc3810f81f543a38af72f24180ffb8259cc85aee279",
+    "date_associations.csv": "c36ed8a0a7b5ab143f6893aef6834702471191ba1dff58bce874dc529ce46c11"
+  }
+}

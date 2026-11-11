@@ -1,0 +1,45 @@
+{
+  "kind": "historical_environment_and_producer_execution_excerpt",
+  "job_id": 87936049727,
+  "raw_log_sha256": "25343df31807d5922f66bddf02df5c7f6674084b76d3570ee7265ee28b38832b",
+  "excerpt": [
+    {
+      "line": 126,
+      "text": "2026-07-17T16:22:27.6342480Z Requirement already satisfied: pandas>=2.2 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (3.0.3)"
+    },
+    {
+      "line": 127,
+      "text": "2026-07-17T16:22:27.6343860Z Requirement already satisfied: pyarrow>=16 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (25.0.0)"
+    },
+    {
+      "line": 142,
+      "text": "2026-07-17T16:22:27.6390200Z Requirement already satisfied: scikit-learn>=1.4 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from -r requirements.txt (line 17)) (1.9.0)"
+    },
+    {
+      "line": 153,
+      "text": "2026-07-17T16:22:27.6440450Z Requirement already satisfied: numpy>=1.26.0 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from pandas>=2.2->-r requirements.txt (line 1)) (2.5.1)"
+    },
+    {
+      "line": 154,
+      "text": "2026-07-17T16:22:27.6442910Z Requirement already satisfied: python-dateutil>=2.8.2 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from pandas>=2.2->-r requirements.txt (line 1)) (2.9.0.post0)"
+    },
+    {
+      "line": 163,
+      "text": "2026-07-17T16:22:27.6526480Z Requirement already satisfied: pytz>=2022.5 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from yfinance>=0.2.50->-r requirements.txt (line 6)) (2026.2)"
+    },
+    {
+      "line": 186,
+      "text": "2026-07-17T16:22:27.6714170Z Requirement already satisfied: scipy>=1.10.0 in /Users/chriswong/.cache/mm-venv-mac-builder-4/lib/python3.12/site-packages (from scikit-learn>=1.4->-r requirements.txt (line 17)) (1.18.0)"
+    },
+    {
+      "line": 379,
+      "text": "2026-07-17T16:24:45.3584020Z ##[group]regime engine (engine.run)"
+    },
+    {
+      "line": 27926,
+      "text": "2026-07-17T16:26:23.8868500Z ##[group]macro dashboard + US stocks (build_site)"
+    }
+  ],
+  "complete_dependency_lock": false,
+  "per_security_comparison": false
+}

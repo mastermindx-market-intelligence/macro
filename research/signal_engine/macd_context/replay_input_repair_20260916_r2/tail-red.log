@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_control_then_replay_restores_tail_even_when_git_blob_is_unchanged ____
+tests/test_prophet_pit_replay_sparse_inputs.py:158: in test_control_then_replay_restores_tail_even_when_git_blob_is_unchanged
+    pd.testing.assert_frame_equal(pd.read_parquet(vintage / 'data/yahoo/SPY.parquet'), old)
+E   AssertionError: DataFrame are different
+E
+E   DataFrame shape mismatch
+E   [left]:  (1, 1)
+E   [right]: (2, 1)
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_control_then_replay_restores_tail_even_when_git_blob_is_unchanged
+1 failed, 10 deselected in 2.84s

@@ -1,0 +1,20 @@
+{
+  "kind": "existing_replay_ci_wiring_repair",
+  "head_before": "b72178fa16db09d4cba7df48a97c4d649bcaa38c",
+  "main_pin": "c359ed4403c9b8a8d097a8839c99448188618298",
+  "job": "prophet-anticipation-intake",
+  "before_sha256": "0c58d3e8d563d469358239208a221b4a9732d83923fa215f2d42bb019d22a5b5",
+  "after_sha256": "50b4a38f9a4530ed1eeb7a909f89c181b30f9990f43f8e484396d0a751873bf7",
+  "run": "python -m pytest tests/test_prophet_pit_replay.py tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay_sparse_inputs.py -q",
+  "waiver_added": false,
+  "new_job_added": false,
+  "validation": {
+    "ci_step_pid": 73442,
+    "ci_step_exit": 0,
+    "tests": 199,
+    "contract_delta_pid": 60217,
+    "contract_delta_exit": 0,
+    "introduced": 0,
+    "inherited": 0
+  }
+}

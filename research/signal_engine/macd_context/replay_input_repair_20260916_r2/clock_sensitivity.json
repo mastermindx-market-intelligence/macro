@@ -1,0 +1,58 @@
+{
+  "kind": "EXACT_ARCHIVED_FUNCTION_CLOCK_SENSITIVITY",
+  "vintage_sha": "ff745b1ab54256b0188688cc5815e6675e4edef5",
+  "builder_sha256": "692821e09e38a3897a521ee73b160a4cc3e526bcf13546e6b25789aba22edb10",
+  "catalyst_sha256": "a3d4bd45c4310b0478fbd23cdd6de27ac1e0d78af111202eb23cacff8345cfb9",
+  "probe_sha256": "ccc4e6a64305d7550ec590b963544db3ada12fe578f94b9485936d1b7b11e76d",
+  "input_hashes": {
+    "data/yahoo/_VIX.parquet": "225c411a7d694a8d6298cd1f38abcdb262c9b8360443873b44d9e4c026d27854",
+    "data/regime/latest.json": "a22cf92e05827682400c6d6b6523aeffdd73d79d30c703ba05cc2dd92c04235f"
+  },
+  "inputs_unchanged": true,
+  "rows": [
+    {
+      "calendar_date": "2026-07-15",
+      "opex_days": 2,
+      "risk_overlay": {
+        "stress": 0.0,
+        "drivers": [],
+        "vix_pct": 0.1984126984126984
+      }
+    },
+    {
+      "calendar_date": "2026-07-17",
+      "opex_days": 0,
+      "risk_overlay": {
+        "stress": 0.0,
+        "drivers": [],
+        "vix_pct": 0.1984126984126984
+      }
+    },
+    {
+      "calendar_date": "2026-09-15",
+      "opex_days": 3,
+      "risk_overlay": {
+        "stress": 0.7,
+        "drivers": [
+          "fomc"
+        ],
+        "vix_pct": 0.1984126984126984
+      }
+    },
+    {
+      "calendar_date": "2026-09-16",
+      "opex_days": 2,
+      "risk_overlay": {
+        "stress": 0.7,
+        "drivers": [
+          "fomc"
+        ],
+        "vix_pct": 0.1984126984126984
+      }
+    }
+  ],
+  "board_rebuilt": false,
+  "outcomes_computed": false,
+  "runtime_clock_certified": false,
+  "limitations": "Function-level sensitivity only. Parent log dates lack timezone; the two September dates are diagnostics, not selected replay clocks."
+}
