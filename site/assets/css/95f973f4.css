@@ -94,6 +94,8 @@ html[data-theme="light"] .tt-detail{background:var(--panel);border-color:var(--l
 @media (max-width:560px){
   .tt-detail{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:70vh;border-radius:var(--r-card,12px) var(--r-card,12px) 0 0;border-bottom:0;padding:14px 16px 22px}
   .tt-detail-close{width:44px;height:44px}
+  /* Reserve scroll room for the last chip while the fixed sheet covers the bottom. */
+  body.tt-detail-open{padding-bottom:calc(70vh + 56px)}
 }
 
 /* ── DIRECT-CHIPS (theme with no sub_theme layer) ── */
