@@ -1,0 +1,286 @@
+{
+  "schema": "mastermind.container_edge_upstream_data_adoption.v1",
+  "qualified_ui_base": "c58c69bf42786f29c8857550bdb244d08da35240",
+  "final_integration_base": "0386ca72ffa9accf9ca2cb7b2ee42a5221d82b9b",
+  "source_head": "97abae6fa8f17bdb71f8670d59d1ba43497e3ae7",
+  "changed_paths": [
+    {
+      "path": "data/foresight/earliness_grades.json",
+      "sha256": "12903c6e28d3bd5b7d70678eee2f14a290fa6abb81744bf423664ae02f1384bd",
+      "blob": "4fbf0c55ebf61548843a85f12ac210abec52b8f3"
+    },
+    {
+      "path": "data/governance/mastermind_feedback_summary.json",
+      "sha256": "17dc10e9a1f553337f2379fb89d87533fa85996769c22b7240f2eb8b76b719e7",
+      "blob": "85e226caf2df80a620289f1cde57bbfbee402228"
+    },
+    {
+      "path": "data/neuralweb/attention_deterministic.json",
+      "sha256": "38a99acd4b73f2eda955438c29e9256bb644e97b999d827ad1943ddc80a31207",
+      "blob": "743fb37c2252ca6fa0a6826364f1751b8915a717"
+    },
+    {
+      "path": "data/neuralweb/daily_brief.json",
+      "sha256": "bcaf9da26ee146425147ac454248a8af92df8ec2a1baa3b23690ef933bcff76e",
+      "blob": "eb417a180696f3460c619b5bfd0e4bf49eb181dc"
+    },
+    {
+      "path": "data/neuralweb/entity_thesis_mechanism_registry.json",
+      "sha256": "54f15da353408edb6e9b8775456adfdcd57187c82cbe804b838709be28c9a2a5",
+      "blob": "ea20c04f5918a8671578388a3834c93d7b523ad4"
+    },
+    {
+      "path": "data/neuralweb/evidence_clock.json",
+      "sha256": "984e23310b82a95343aaf002361104627321808891f0d3975891ea74e40d919d",
+      "blob": "e93f627f51ea33dbf0cb32e0cf2ab50169ecfeea"
+    },
+    {
+      "path": "data/neuralweb/half_life.json",
+      "sha256": "ff22ee1c4b587ff2d0d3cf2f07d3e4e6851b69b6e4df9375d68ffa3aa32d0fd1",
+      "blob": "17510d37b3a5d129974816f758fd91aafbad19b7"
+    },
+    {
+      "path": "data/neuralweb/health.json",
+      "sha256": "6a9fbd30dbdc9bde5e0f1da4f7df66f3eb7184f74aecd7595401b861c86e786c",
+      "blob": "7e3bfa0a7d3fd761cf016907aaca80d9d980ca06"
+    },
+    {
+      "path": "data/neuralweb/kernel_estimates.parquet.envelope.json",
+      "sha256": "e2e602c3e045e7b26e85bd132d3eaf4263ae965ed8d6fd371ba62ba3f47ae4da",
+      "blob": "fcc8989452c9655d852137cb6756cb5228e435ba"
+    },
+    {
+      "path": "data/neuralweb/kernel_families.json",
+      "sha256": "e952b9ce80e5e3a654d58669516f7f0009462f913c31bc45fe60dca958c400f4",
+      "blob": "5c258084ce548c8baa66cca09816c8e4fdb80a51"
+    },
+    {
+      "path": "data/neuralweb/lagging_signals.json",
+      "sha256": "a9ec1ac001f89abcd5d666c5b9871bfb1cd6c9c727ea89c2663e9b101b225ebb",
+      "blob": "ceb5a910e826c3ed34dc1ec182d8aa713f619b30"
+    },
+    {
+      "path": "data/neuralweb/market_plane.json",
+      "sha256": "0af96a2982d3a54cf3d17704252c60fa02fad10f8baede13781635fa0fcffd01",
+      "blob": "9cb4dfde9db44cc5ceddfac8682c6a36762675c9"
+    },
+    {
+      "path": "data/neuralweb/mastermind_context.json",
+      "sha256": "3070fc275526fc5f1970f4d09ff9c905f91c7a8340726ffef761f90f8beaa737",
+      "blob": "8ac1e0aee25475ed1bfe4505f2042cfee830df26"
+    },
+    {
+      "path": "data/neuralweb/nw_health_run_history.jsonl",
+      "sha256": "0b4756e94358465ce6b23c3d345bc9374cf2800f61c19cbfcc2e0ef21b95abaf",
+      "blob": "830942944d6edd6c8db7764fd9b6ad82b63849b9"
+    },
+    {
+      "path": "data/neuralweb/spine_index.parquet",
+      "sha256": "86eb3246c2d63836203ee855ec4f2ec9c03f92aa1e561fca13d53962d1a5f1a8",
+      "blob": "ce09eefa025272f3ec554ded274634f56ae5eef6"
+    },
+    {
+      "path": "data/neuralweb/spine_index.parquet.envelope.json",
+      "sha256": "d707b8553ac2cca5476dd5e0e2b456ce77217187a8a74cf8a51a04956dc0ecd7",
+      "blob": "95664807aded2af7c5ddbba84ffa0b5ed6618a27"
+    },
+    {
+      "path": "data/neuralweb/theme_asymmetry.json",
+      "sha256": "9805c1033bcc2561f18dad7dc9ed1eda1b8e2e7cf80685cd8a91dc9f6717ab03",
+      "blob": "de754a2ff503d3f609fea8ae269456094b9379d5"
+    },
+    {
+      "path": "data/neuralweb/theme_pathways.json",
+      "sha256": "7909763ddeffb65a536014fd70a4dcf5bced48271a48fcaa79d5efaa7c441f86",
+      "blob": "10a390b9b542ee95cc4f9982547dba9524682268"
+    },
+    {
+      "path": "data/neuralweb/theme_state.json",
+      "sha256": "edbdbf89235bcda13f01cc1290ae47b14d39fc7dff6dca1c36350eb5cdfeb42a",
+      "blob": "ff97e546a9e24f84ce4c150561f0f2b01dea14a0"
+    },
+    {
+      "path": "data/neuralweb/theme_thesis_ledger.jsonl.envelope.json",
+      "sha256": "2486a2c8b1a3a3742ab114baf920b6836bc8a1fa03079cd4904ec48ee9c89fca",
+      "blob": "59e7b902eda910201b74b6cc3a3170440049ac37"
+    },
+    {
+      "path": "data/neuralweb/world_state.json",
+      "sha256": "ea9aa27aaebabe8a78b32379a93b68f898394597d66b2d62da44700b8710ea3f",
+      "blob": "931490fe2805bd6d5f287ca38d9daee707ce3ebe"
+    },
+    {
+      "path": "data/ops/nightly_timings/engine.jsonl",
+      "sha256": "7f9ba9ddab4d263ecb5aeb972ef79c225c7704a2152733b6994c12941bec6791",
+      "blob": "8b47fad76900ac2b5fc6e03cc6ef899add356047"
+    },
+    {
+      "path": "data/oracle/operator_scorecard.json",
+      "sha256": "b1fde9a166aabc055d7553ca5ae2540b859fbd502240663f0d7d4fc3b80b61f5",
+      "blob": "bf4f7c9cc14258783f3d01a02a51e648a2e8cf76"
+    },
+    {
+      "path": "data/oracle/promotion_queue.json",
+      "sha256": "927fabb1495628bdf1673bf0c9b580fcc648e77a8fe8a188476cde0e00f2ebd7",
+      "blob": "f2dd2fb29624bf7feb404481f8a4a483d9207fa6"
+    },
+    {
+      "path": "data/oracle/qual_filter_accrual.json",
+      "sha256": "706f8aaf2c5c71a3cfd5848acca7f0bc31645504973ffc736c75917c695b5f2c",
+      "blob": "d258b26733515bbeeb05955e46b4bdc791781c6a"
+    },
+    {
+      "path": "data/oracle/reversion_promotion_queue.json",
+      "sha256": "38fdb42ec16c120dd02ff5db01b8f2881faab77a91cd77f56a1076e996707e5c",
+      "blob": "58909c403e4f7e0a2ea75eb00c6277e43d7c4c99"
+    },
+    {
+      "path": "data/oracle/sentinel_state.json",
+      "sha256": "59a59304c07c7f1796d26e39a0dc7604bb9c72fc671ade29ade5d6dbd01e253b",
+      "blob": "013c350107adb96265cf5bfc96d17a728842c425"
+    },
+    {
+      "path": "data/quality/china_gold_premium.json",
+      "sha256": "11570ae684597b1f265d9ae9e386715e4c343ad123bbacf3606e24a1af9b1729",
+      "blob": "d7e4d8a707beab2c1b222e1baff5b700df4c1d3b"
+    },
+    {
+      "path": "data/rates_command/latest.json",
+      "sha256": "496cd70e06568d132a6920b4d1fa05325392daa752f1662730a98fca22c7e78f",
+      "blob": "0877c6728e078f2f4d6e79671cd3fc8d980a0739"
+    },
+    {
+      "path": "data/reflexes/options_flow_attention/firings.jsonl",
+      "sha256": "7f076b193198c995a01c8122fecb776e88a58f1ecfc3c92e028c8274f3765ab3",
+      "blob": "4477406f58c571437600e3973b9a98825ec6fd56"
+    },
+    {
+      "path": "data/research/breakaway_watch.parquet",
+      "sha256": "48bf5ad2fd43fa0707ed6a191b838a5bc8d5c2cf4fb71aa1ede6fa00176e6b8a",
+      "blob": "25e3b2f919f3cd8b4b90b2aadaa7c66910cf2642"
+    },
+    {
+      "path": "data/research/thesis_funnel_states_manifest.json",
+      "sha256": "bfa0021cf8c92dcabca8abcfe5d417e0d49bce6573d4dc9f8608e4c2abc2dd6b",
+      "blob": "38a98ce381ea3134e8c18b863578b15df61b704b"
+    },
+    {
+      "path": "data/research/winner_autopsy_manifest.json",
+      "sha256": "c2be31889a1d0938e9693dc363e2980172217ecc983ea4ddffe57aba18528a56",
+      "blob": "d0023cc3c67e12e76954460a058f820c9e658090"
+    },
+    {
+      "path": "data/research/winner_autopsy_panel.json",
+      "sha256": "87372d8089d1c14614490e54ab8e10f567db16d4db3e93630597cc80323462a6",
+      "blob": "e05649ae0cb51a70f3265ce964b0f880e63e8940"
+    },
+    {
+      "path": "data/research_factory/health.jsonl",
+      "sha256": "7f0e917c7e005a248ccd13f28d20deacbaf254e705c3f3f5e265a7d2e32dea07",
+      "blob": "6484f619382989b58b572e64e8088c2081f14480"
+    },
+    {
+      "path": "data/risk_envelope/latest.json",
+      "sha256": "c4fbb951244c3e01042f39d1351152441d4cdd44d9097b81948a47c7c827295f",
+      "blob": "aa020997b4474c700290905415e751e91958214c"
+    },
+    {
+      "path": "data/signal_sanity/baseline.jsonl",
+      "sha256": "4f8eada434fcfa60ff2a61ded3dfd2a1f700a9827d2b1d2c6a2ff1e206acb1fe",
+      "blob": "c45ec1fbefbc61363c81ac33a1bc15eb451af1c7"
+    },
+    {
+      "path": "data/signal_sanity/signal_sanity.json",
+      "sha256": "f166260ac8492dddf1c3b75e93d499df3dd74c79a7aae0cc543073b1e1bd0f30",
+      "blob": "ac9ef0682b41b3140ab92a9cae7e54d88aefbda9"
+    },
+    {
+      "path": "reports/signal-sanity.md",
+      "sha256": "7ec3e1482b2288f5f28556ef88392cad9cd0e33c89074a15f58968402993996e",
+      "blob": "2aa6c81aca97d691489995510d3f846273fab342"
+    },
+    {
+      "path": "site/basketdata/oracle_reversion_state.json",
+      "sha256": "7e7a7db2c03a068ecfc5678c5369efcba9575702064d6a313eace4c9a54afd88",
+      "blob": "966407caecf6e39641bc75f6ead790e60423b281"
+    },
+    {
+      "path": "site/basketdata/oracle_state.json",
+      "sha256": "d2c72e6798be377d081a30beea097a9a2cdd890f86ca35363fc3c1ab659c8d31",
+      "blob": "22181348b5870e7e4f37b73581a465b3ab92b355"
+    },
+    {
+      "path": "site/neuralwebdata/attention_deterministic.json",
+      "sha256": "38a99acd4b73f2eda955438c29e9256bb644e97b999d827ad1943ddc80a31207",
+      "blob": "743fb37c2252ca6fa0a6826364f1751b8915a717"
+    },
+    {
+      "path": "site/neuralwebdata/daily_brief.json",
+      "sha256": "bcaf9da26ee146425147ac454248a8af92df8ec2a1baa3b23690ef933bcff76e",
+      "blob": "eb417a180696f3460c619b5bfd0e4bf49eb181dc"
+    },
+    {
+      "path": "site/neuralwebdata/health.json",
+      "sha256": "6a9fbd30dbdc9bde5e0f1da4f7df66f3eb7184f74aecd7595401b861c86e786c",
+      "blob": "7e3bfa0a7d3fd761cf016907aaca80d9d980ca06"
+    },
+    {
+      "path": "site/neuralwebdata/market_plane.json",
+      "sha256": "0af96a2982d3a54cf3d17704252c60fa02fad10f8baede13781635fa0fcffd01",
+      "blob": "9cb4dfde9db44cc5ceddfac8682c6a36762675c9"
+    },
+    {
+      "path": "site/neuralwebdata/mastermind_context.json",
+      "sha256": "3070fc275526fc5f1970f4d09ff9c905f91c7a8340726ffef761f90f8beaa737",
+      "blob": "8ac1e0aee25475ed1bfe4505f2042cfee830df26"
+    },
+    {
+      "path": "site/neuralwebdata/theme_asymmetry.json",
+      "sha256": "9805c1033bcc2561f18dad7dc9ed1eda1b8e2e7cf80685cd8a91dc9f6717ab03",
+      "blob": "de754a2ff503d3f609fea8ae269456094b9379d5"
+    },
+    {
+      "path": "site/neuralwebdata/theme_pathways.json",
+      "sha256": "7909763ddeffb65a536014fd70a4dcf5bced48271a48fcaa79d5efaa7c441f86",
+      "blob": "10a390b9b542ee95cc4f9982547dba9524682268"
+    },
+    {
+      "path": "site/neuralwebdata/theme_state.json",
+      "sha256": "edbdbf89235bcda13f01cc1290ae47b14d39fc7dff6dca1c36350eb5cdfeb42a",
+      "blob": "ff97e546a9e24f84ce4c150561f0f2b01dea14a0"
+    },
+    {
+      "path": "site/neuralwebdata/theme_thesis.json",
+      "sha256": "c1489675932e3d5ef2248b55aa21a248df3c7c2eb50bdee62e0325fe402a730a",
+      "blob": "2027f608262b444673db19237fbd8a43e283ee27"
+    },
+    {
+      "path": "site/options_catalyst_links/2026-10-30.jsonl",
+      "sha256": "4985c86139e8306378b60eaab8a224e80fb5c15ca671f08e41401bc5048c28fc",
+      "blob": "d957fe1431c15d60c6766a9c8c8e20ec314f0ee1"
+    },
+    {
+      "path": "site/options_catalyst_links/latest.json",
+      "sha256": "f1d61c8f5a688230a13021d19c186b1e98398190ddc0c6d38d459fc3a1372fbc",
+      "blob": "b3e20d49e3a6b11f011c4065762a2fcd5890c9df"
+    },
+    {
+      "path": "site/riskdata/risk_envelope.json",
+      "sha256": "c4fbb951244c3e01042f39d1351152441d4cdd44d9097b81948a47c7c827295f",
+      "blob": "aa020997b4474c700290905415e751e91958214c"
+    },
+    {
+      "path": "site/shadow/audit.json",
+      "sha256": "88d1d1f928c49158ddfe8b52258a285691bc93aca6ae954c957f27c9408dc1be",
+      "blob": "27c7957b56b4fac0772ba2a277048c953d62e56b"
+    },
+    {
+      "path": "site/shadow/bottom_sensors_geometry_audit.json",
+      "sha256": "e8488553ae82ad5c2af4b058b10565e2c5d035c7cc61102dc85ee29cb0b07b3e",
+      "blob": "53c8d247b2082b3bd570d98f81c70844af44e459"
+    }
+  ],
+  "presentation_changes": false,
+  "method": "Exact upstream bytes adopted only after confirming the qualified working-tree bytes matched the previous base. No HTML/CSS/JS/template/probe input changed.",
+  "data_equal_to_new_main": true
+}

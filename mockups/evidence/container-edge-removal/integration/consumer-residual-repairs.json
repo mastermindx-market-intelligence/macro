@@ -1,0 +1,19 @@
+{
+  "repairs": [
+    {
+      "path": "site/canada.html",
+      "reason": "Canada accepted separator parity",
+      "before": "11599a29d72d8fd148e1556e10fe24e7a0eeb9553168d25425c2f038ccdac91b",
+      "after": "180314abfc9a38a4ff2d60dc6b78748611b985e524a2ad58008b5611ac500503"
+    },
+    {
+      "path": "site/canada_stocks.html",
+      "reason": "Canada accepted separator parity",
+      "before": "d72d72d789edf5a85cb930fd98dd87315ad663fb1a817982cf893d87112a8c04",
+      "after": "c5994e50eb2d12e988cecf293480b6bdfb35e2e62d944c70e042932c8178cad1"
+    }
+  ],
+  "renamed_import_dependencies": [],
+  "finance_state_labels": true,
+  "china_context_labels": true
+}
