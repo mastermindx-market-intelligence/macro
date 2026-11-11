@@ -58,6 +58,7 @@ from typing import Any
 import pandas as pd
 
 from engine import ledger_lane
+from engine import us_board_snapshots
 from engine import us_context_vector as ucv
 from engine import us_prophet_grades as upg
 from lib import config
@@ -1087,26 +1088,25 @@ def load_committed_structural_receipt(stamp_date: str, root: Any = None) -> dict
                 _require_structural_schema(block)
                 return block
     snapshots = repo / SNAPSHOTS_REL
-    if snapshots.exists():
+    if us_board_snapshots.exists(snapshots):
         _require_committed_source("path", snapshots)
-        with snapshots.open(encoding="utf-8") as handle:
-            for line in handle:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    item = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if not isinstance(item, Mapping):
-                    continue
-                as_of = str(item.get("as_of") or item.get("asof") or "")[:10]
-                if as_of != stamp:
-                    continue
-                block = extract_structural_receipt(item)
-                if block is not None:
-                    _require_structural_schema(block)
-                    return block
+        for line in us_board_snapshots.iter_lines(snapshots):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                item = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(item, Mapping):
+                continue
+            as_of = str(item.get("as_of") or item.get("asof") or "")[:10]
+            if as_of != stamp:
+                continue
+            block = extract_structural_receipt(item)
+            if block is not None:
+                _require_structural_schema(block)
+                return block
     return None
 
 
