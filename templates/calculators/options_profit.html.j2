@@ -165,6 +165,9 @@
     var shares = 100 * nC;
     var intrinsic = type==="call" ? Math.max(0, S - K) : Math.max(0, K - S);
     var perShare = exactPayoff===zero ? 0 : Number(exactPayoff.toString()+"e"+exponent);
+    // A nonzero exact payoff must not turn into a false break-even at the
+    // binary64 underflow boundary, even if later position scaling is large.
+    if(exactPayoff!==zero && perShare===0) return {ok:false, msg:"The per-share payoff is outside the supported numeric range."};
     var pl = perShare * shares;
     var breakeven = type==="call" ? (K + prem) : (K - prem);
     var premiumDollars = prem * shares;              // long debit paid / short credit

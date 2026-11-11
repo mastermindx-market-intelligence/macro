@@ -60,6 +60,29 @@ for(const path of paths){
    assert.equal(h.pure({type:'call',pos:'long',K,prem,nC:1,S}).perShare,want);
   }
  });
+ test(`${path}: nonzero decimal payoff below Number range refuses before scaling`,()=>{
+  const h=load(path);
+  for(const pos of ['long','short'])for(const nC of [1,1000000]){
+   const r=h.pure({type:'call',pos,K:1e-308,prem:5e-324,nC,S:1.0000000000000004e-308});
+   assert.equal(r.ok,false);assert.match(r.msg,/numeric range/);
+  }
+ });
+ test(`${path}: smallest representable payoff remains nonzero`,()=>{
+  const h=load(path);
+  for(const pos of ['long','short']){
+   const r=h.pure({type:'call',pos,K:1e-308,prem:5e-324,nC:1,S:1e-308});
+   assert.equal(r.ok,true);assert.equal(r.perShare,pos==='long'?-5e-324:5e-324);
+  }
+ });
+ test(`${path}: underflow clears prior result and copy then correction recovers`,()=>{
+  for(const legacy of [false,true])for(const pos of ['long','short']){
+   const h=load(path,{legacy});h.set({prem:3,S:110});h.copy();const before=h.writes.length;
+   h.set({pos,K:1e-308,prem:5e-324,nC:1000000,S:1.0000000000000004e-308});
+   assert.equal(h.el('out-main').textContent,'—');assert.match(h.el('out-plain').textContent,/numeric range/);
+   h.copy();assert.equal(h.writes.length,before);
+   h.set();h.copy();assert.match(h.writes.at(-1),/P\/L at expiration: \$0\.00/);
+  }
+ });
  test(`${path}: expiration-zero, scaling and capped/unlimited controls`,()=>{
   const h=load(path);for(const type of ['call','put'])for(const pos of ['long','short']){
    const r=h.pure({type,pos,K:100,prem:3,nC:2,S:0});assert.equal(r.pl,(type==='call'?-600:19400)*(pos==='long'?1:-1));
