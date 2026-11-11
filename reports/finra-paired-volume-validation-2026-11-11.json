@@ -1,0 +1,1257 @@
+{
+  "audit_script": "from pathlib import Path\nimport collections,hashlib,json,time\nimport numpy as np\nimport pandas as pd\nfrom engine import short_volume as sv\nfrom engine import stock_fundamentals as sf\nfrom lib import config\nroot=Path.cwd().resolve()\nconfig.data_dir=lambda:root/\"data\"\nstarted=time.monotonic()\nraw=pd.read_parquet(config.data_dir()/\"finra_short_volume/panel.parquet\")\npanel,state=sv.panel_state()\nassert state==sv.OBSERVED and panel is not None\ndirect=sv.signal_map(panel)\nloaded=sf._load_short_volume()\nassert direct and direct==loaded,\"catch-all reader hid an error or changed the map\"\npositioning={ticker:sf._positioning(ticker,{},None,None,sig) for ticker,sig in loaded.items()}\nout=root.parent/(root.name+\"-audit\")\nout.mkdir()\nfor name,value in [(\"signals\",direct),(\"positioning\",positioning)]:\n    (out/(name+\".json\")).write_text(json.dumps(value,sort_keys=True,allow_nan=False)+\"\\n\")\ns=pd.to_numeric(raw.short_vol,errors=\"coerce\").to_numpy(dtype=float)\nt=pd.to_numeric(raw.total_vol,errors=\"coerce\").to_numpy(dtype=float)\nbad=(~np.isfinite(s)|~np.isfinite(t)|(s<0)|(t<=0)|(s>t))\nsummary={\"source\":root.name,\"input_rows\":len(raw),\"input_tickers\":int(raw.ticker.nunique()),\"input_start\":str(raw.date.min()),\"input_end\":str(raw.date.max()),\"input_bad_pairs\":int(bad.sum()),\"signals\":len(direct),\"positioning\":len(positioning),\"states\":dict(collections.Counter(sv.ticker_state(x) for x in direct.values())),\"coverage_signals\":sum(bool(x.get(\"coverage\")) for x in direct.values()),\"seconds\":round(time.monotonic()-started,3),\"strict_json\":True,\"actual_reader_matches_direct\":True,\"hashes\":{}}\nfor name in [\"signals\",\"positioning\"]:\n    summary[\"hashes\"][name]=hashlib.sha256((out/(name+\".json\")).read_bytes()).hexdigest()\n(out/\"summary.json\").write_text(json.dumps(summary,indent=2)+\"\\n\")\nprint(json.dumps(summary),flush=True)\n",
+  "candidate_sources": [
+    {
+      "bytes": 11795,
+      "path": "collectors/finra_short_volume.py",
+      "sha": "4a9b85499f8038e54474609d773180f9a27dc8fa",
+      "sha256": "1f758b1975a306777babcc2e34ea4b187ad7f30e235a01fb08989527e227d6c0"
+    },
+    {
+      "bytes": 10363,
+      "path": "engine/short_volume.py",
+      "sha": "e5a3a23ce9021c41d101d970ed57f3f9ee27dac9",
+      "sha256": "512eaf55e2b30711c00865951fb3c820a3dc8ca344dc23d0ae18c4349a9e5920"
+    },
+    {
+      "bytes": 123881,
+      "path": "engine/stock_fundamentals.py",
+      "sha": "fed5fe31aeeda8d3665d294167483c725a4e752e",
+      "sha256": "884cbfab61bfb9a9071d3c5cb168acd7e7f72130fd87026be72ade6f3cf3f88d"
+    },
+    {
+      "bytes": 17455,
+      "path": "tests/test_short_volume.py",
+      "sha": "10e86b86632bf7563afeebd89989e5c845f0fac2",
+      "sha256": "9a7b51845649a84fe639fed54128431b2486c329127fc46849951d19e9458371"
+    }
+  ],
+  "ci_enrollment": {
+    "after": {
+      "command_chars": 161,
+      "commands": 2,
+      "test_paths": 2,
+      "weight": 6
+    },
+    "before": {
+      "command_chars": 134,
+      "commands": 2,
+      "test_paths": 1,
+      "weight": 4
+    },
+    "code_owners": 328,
+    "files": [
+      {
+        "bytes": 2681003,
+        "path": ".github/ci/legacy-jobs.yml",
+        "sha": "b50db94c6710e01677f9e301ad10ce5e2be4661f",
+        "sha256": "fa60fd428850f589444964eeffed12446b377c9c5c7407471be4c50933515874"
+      },
+      {
+        "bytes": 33733,
+        "path": "config/unrun_test_baseline.json",
+        "sha": "076391dac43d579f2f6f1cb6f8df28d8626a16ac",
+        "sha256": "990809be3ede3fdb2672642306448cb160b97489e4265b473d2f89a0a81774b3"
+      },
+      {
+        "bytes": 519048,
+        "path": "tests/test_ci_pack.py",
+        "sha": "0359805feb7eb25a016eee928ed604d88294c961",
+        "sha256": "4914b904d3778febe271fbed033671a80bb6dd2f3062834ed143b27c31e9855d"
+      }
+    ],
+    "full_tree_planner_executed": false,
+    "job_ceilings": [
+      137,
+      138,
+      131
+    ],
+    "max_packs": 10,
+    "other_owners_unchanged": 400,
+    "owner": "c19-wp24-consumer-states",
+    "owners": 401,
+    "pin": "cdb3144ea48f2a69f814560f2248123f02c97ff3",
+    "probe_ceilings_after": [
+      5968,
+      5991,
+      5726
+    ],
+    "probe_ceilings_before": [
+      5966,
+      5989,
+      5724
+    ]
+  },
+  "ci_inputs": [
+    {
+      "bytes": 260230,
+      "path": "scripts/run_ci_pack.py",
+      "sha": "fdd099b87cf72e8221372ef55de95efa2b7d284e"
+    },
+    {
+      "bytes": 76027,
+      "path": "scripts/ci_semantic_proof.py",
+      "sha": "df7e5007413584d8593bfeb69dd9b479daa99147"
+    },
+    {
+      "bytes": 5453,
+      "path": "scripts/ci_authority_paths.py",
+      "sha": "1403e7dce4cbc83178f3dc515fe2404b84655a94"
+    },
+    {
+      "bytes": 41920,
+      "path": "scripts/ci_scope_dependencies.py",
+      "sha": "4c4779479f5bb41741fe7a5db114dfe304350a8a"
+    },
+    {
+      "bytes": 50447,
+      "path": "scripts/audit_unrun_tests.py",
+      "sha": "9ae74b91a276733b2b1a310cb652a847ad5f7dc0"
+    },
+    {
+      "bytes": 7817,
+      "path": "scripts/workflow_run_source.py",
+      "sha": "b55fe2447f6a50dc6f6d160537961e77145078cb"
+    },
+    {
+      "bytes": 2217,
+      "path": "scripts/__init__.py",
+      "sha": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6"
+    },
+    {
+      "bytes": 20724,
+      "path": "scripts/ci_browser_native_setup.py",
+      "sha": "3e400c1691b5be2825237004bce42d881f2d230b"
+    },
+    {
+      "bytes": 7653,
+      "path": "scripts/ci_browser_dependency_capture.py",
+      "sha": "78f544a102c9c0cf2b5306ccc3592c4b23fe8302"
+    },
+    {
+      "bytes": 8443,
+      "path": "scripts/ci_browser_dependency_inputs.py",
+      "sha": "fa076c97c9fe389adf7ae1f032cf56490c4e06a9"
+    },
+    {
+      "bytes": 14364,
+      "path": "scripts/ci_apt_cold_acquisition.py",
+      "sha": "7d402b92c83b837fd38b965b9974b44696ff3f60"
+    },
+    {
+      "bytes": 7949,
+      "path": "scripts/ci_apt_native_plan.py",
+      "sha": "71d006c1bdf11191bb03f78605acdab09f8d5f73"
+    },
+    {
+      "bytes": 26416,
+      "path": "scripts/ci_apt_native_stage.py",
+      "sha": "2446beea8a43546c78251fdf32d8e648982229f4"
+    },
+    {
+      "bytes": 14225,
+      "path": "scripts/ci_apt_transaction_contract.py",
+      "sha": "beb8ad4e1ab758c4da5634b2c2a50fab50aee840"
+    },
+    {
+      "bytes": 2680896,
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha": "b68f93a812c85ddaea5dad71c295c51659b7d371"
+    },
+    {
+      "bytes": 33767,
+      "path": "config/unrun_test_baseline.json",
+      "sha": "0aef32511dbb3ca4851a53c6f178bd24922ad456"
+    },
+    {
+      "bytes": 518447,
+      "path": "tests/test_ci_pack.py",
+      "sha": "89c9d99733f7c7559646401e2dbf06dfe8595097"
+    }
+  ],
+  "comparison": {
+    "positioning": {
+      "after": 1545,
+      "before": 1545,
+      "byte_equal": true,
+      "changed": 0
+    },
+    "signals": {
+      "after": 1545,
+      "before": 1545,
+      "byte_equal": true,
+      "changed": 0
+    }
+  },
+  "consumer_composition": {
+    "complete": false,
+    "head": "1a346ad7aa6cfac1bb57f630e916ada3d67017ae",
+    "pull_request": 11061,
+    "required": "Display optional scoped coverage in EN/ZH, preserve nulls and valid unaffected metrics, show withheld historical z; preserve partial and genuine-zero notes."
+  },
+  "examples": {
+    "after": {
+      "all_missing": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 20,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 20,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 5,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              }
+            },
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "no_observation",
+            "trend_pp": null
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "coverage": {
+            "baseline": {
+              "n_invalid": 0,
+              "n_missing": 20,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            },
+            "history_z": {
+              "n_invalid": 0,
+              "n_missing": 20,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            },
+            "latest": {
+              "n_invalid": 0,
+              "n_missing": 1,
+              "n_rows": 1,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            },
+            "recent": {
+              "n_invalid": 0,
+              "n_missing": 5,
+              "n_rows": 5,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            }
+          },
+          "n_days": 20,
+          "ratio_baseline": null,
+          "ratio_recent": null,
+          "ratio_z": null,
+          "short_ratio": null,
+          "trend_pp": null
+        },
+        "state": "no_observation"
+      },
+      "genuine_zero": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 0.0,
+            "state": "observed_zero",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.0,
+          "trend_pp": 0.0
+        },
+        "state": "observed_zero"
+      },
+      "healthy": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "observed"
+      },
+      "invalid_infinite_total": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "latest": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "recent": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "parse_error",
+            "trend_pp": null
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "coverage": {
+            "baseline": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "parse_error"
+            },
+            "history_z": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "parse_error"
+            },
+            "latest": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 1,
+              "reason": "paired_operands",
+              "state": "parse_error"
+            },
+            "recent": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 5,
+              "reason": "paired_operands",
+              "state": "parse_error"
+            }
+          },
+          "n_days": 20,
+          "ratio_baseline": null,
+          "ratio_recent": null,
+          "ratio_z": null,
+          "short_ratio": null,
+          "trend_pp": null
+        },
+        "state": "parse_error"
+      },
+      "invalid_stored_ratio": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "coverage": {
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 20,
+                "reason": "stored_ratio",
+                "state": "parse_error"
+              },
+              "latest": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 1,
+                "reason": "stored_ratio",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "parse_error",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "coverage": {
+            "history_z": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 20,
+              "reason": "stored_ratio",
+              "state": "parse_error"
+            },
+            "latest": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 1,
+              "reason": "stored_ratio",
+              "state": "parse_error"
+            }
+          },
+          "n_days": 20,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": null,
+          "short_ratio": null,
+          "trend_pp": 0.0
+        },
+        "state": "parse_error"
+      },
+      "missing_numerators": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              }
+            },
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "unavailable",
+            "trend_pp": null
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "coverage": {
+            "baseline": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            },
+            "history_z": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            },
+            "latest": {
+              "n_invalid": 0,
+              "n_missing": 1,
+              "n_rows": 1,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            },
+            "recent": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 5,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            }
+          },
+          "n_days": 20,
+          "ratio_baseline": null,
+          "ratio_recent": null,
+          "ratio_z": null,
+          "short_ratio": null,
+          "trend_pp": null
+        },
+        "state": "unavailable"
+      },
+      "missing_totals": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 4,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              }
+            },
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "unavailable",
+            "trend_pp": null
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "coverage": {
+            "baseline": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            },
+            "history_z": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 20,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            },
+            "latest": {
+              "n_invalid": 0,
+              "n_missing": 1,
+              "n_rows": 1,
+              "reason": "paired_operands",
+              "state": "no_observation"
+            },
+            "recent": {
+              "n_invalid": 0,
+              "n_missing": 4,
+              "n_rows": 5,
+              "reason": "paired_operands",
+              "state": "unavailable"
+            }
+          },
+          "n_days": 20,
+          "ratio_baseline": null,
+          "ratio_recent": null,
+          "ratio_z": null,
+          "short_ratio": null,
+          "trend_pp": null
+        },
+        "state": "unavailable"
+      },
+      "old_invalid_pair": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-11-04",
+            "coverage": {
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 25,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 25,
+            "ratio_z": null,
+            "short_ratio_pct": 50.0,
+            "state": "parse_error",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-11-04",
+          "coverage": {
+            "history_z": {
+              "n_invalid": 1,
+              "n_missing": 0,
+              "n_rows": 25,
+              "reason": "paired_operands",
+              "state": "parse_error"
+            }
+          },
+          "n_days": 25,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": null,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "parse_error"
+      },
+      "optional_latest_absent": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": 54.0,
+            "state": "partial",
+            "trend_pp": 3.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.51,
+          "ratio_recent": 0.54,
+          "ratio_z": null,
+          "short_ratio": 0.54,
+          "trend_pp": 3.0
+        },
+        "state": "partial"
+      },
+      "rounded_positive": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 0.0,
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "_recent_nonzero": true,
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.0,
+          "trend_pp": 0.0
+        },
+        "state": "observed"
+      }
+    },
+    "before": {
+      "all_missing": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "state": "observed_zero",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "observed_zero"
+      },
+      "genuine_zero": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 0.0,
+            "state": "observed_zero",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.0,
+          "trend_pp": 0.0
+        },
+        "state": "observed_zero"
+      },
+      "healthy": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "observed"
+      },
+      "invalid_infinite_total": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "state": "observed_zero",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "observed_zero"
+      },
+      "invalid_stored_ratio": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 4.36,
+            "short_ratio_pct": 80.0,
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": 4.36,
+          "short_ratio": 0.8,
+          "trend_pp": 0.0
+        },
+        "state": "observed"
+      },
+      "missing_numerators": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "trend_pp": -30.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.4,
+          "ratio_recent": 0.1,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": -30.0
+        },
+        "state": "observed"
+      },
+      "missing_totals": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "trend_pp": 187.5
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.625,
+          "ratio_recent": 2.5,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 187.5
+        },
+        "state": "observed"
+      },
+      "old_invalid_pair": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-11-04",
+            "n_days": 25,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 50.0,
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-11-04",
+          "n_days": 25,
+          "ratio_baseline": 0.5,
+          "ratio_recent": 0.5,
+          "ratio_z": 0.0,
+          "short_ratio": 0.5,
+          "trend_pp": 0.0
+        },
+        "state": "observed"
+      },
+      "optional_latest_absent": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": null,
+            "short_ratio_pct": 54.0,
+            "state": "partial",
+            "trend_pp": 3.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.51,
+          "ratio_recent": 0.54,
+          "ratio_z": null,
+          "short_ratio": 0.54,
+          "trend_pp": 3.0
+        },
+        "state": "partial"
+      },
+      "rounded_positive": {
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-28",
+            "n_days": 20,
+            "ratio_z": 0.0,
+            "short_ratio_pct": 0.0,
+            "state": "observed_zero",
+            "trend_pp": 0.0
+          }
+        },
+        "signal": {
+          "asof": "2026-10-28",
+          "n_days": 20,
+          "ratio_baseline": 0.0,
+          "ratio_recent": 0.0,
+          "ratio_z": 0.0,
+          "short_ratio": 0.0,
+          "trend_pp": 0.0
+        },
+        "state": "observed_zero"
+      }
+    }
+  },
+  "examples_script": "from pathlib import Path\nimport json\nimport numpy as np\nimport pandas as pd\nfrom engine import short_volume as sv\nfrom engine import stock_fundamentals as sf\ndef panel(n=20):\n    return pd.DataFrame({\"date\":pd.bdate_range(\"2026-10-01\",periods=n),\"ticker\":[\"AAA\"]*n,\"short_vol\":[50.0]*n,\"total_vol\":[100.0]*n,\"short_ratio\":[0.5]*n})\ncases={}\nfor name in [\"missing_numerators\",\"missing_totals\",\"all_missing\",\"invalid_infinite_total\",\"old_invalid_pair\",\"invalid_stored_ratio\",\"genuine_zero\",\"rounded_positive\",\"optional_latest_absent\",\"healthy\"]:\n    p=panel(25 if name==\"old_invalid_pair\" else 20)\n    if name==\"missing_numerators\":p.loc[16:19,\"short_vol\"]=np.nan\n    elif name==\"missing_totals\":p.loc[16:19,\"total_vol\"]=np.nan\n    elif name==\"all_missing\":p[\"short_vol\"]=np.nan\n    elif name==\"invalid_infinite_total\":p.loc[19,\"total_vol\"]=np.inf\n    elif name==\"old_invalid_pair\":p.loc[0,\"short_vol\"]=-1\n    elif name==\"invalid_stored_ratio\":p.loc[19,\"short_ratio\"]=0.8\n    elif name==\"genuine_zero\":p[[\"short_vol\",\"short_ratio\"]]=0.0\n    elif name==\"rounded_positive\":p[\"short_vol\"],p[\"total_vol\"],p[\"short_ratio\"]=1.0,1e8,0.0\n    elif name==\"optional_latest_absent\":p.loc[19,[\"short_vol\",\"short_ratio\"]]=[70,np.nan]\n    sig=sv.signal_map(p)[\"AAA\"]\n    cases[name]={\"signal\":sig,\"state\":sv.ticker_state(sig),\"positioning\":sf._positioning(\"AAA\",{},None,None,sig)}\nroot=Path.cwd().resolve()\n(root.parent/(root.name+\"-examples.json\")).write_text(json.dumps(cases,indent=2,sort_keys=True,allow_nan=False)+\"\\n\")\nprint(json.dumps({\"source\":root.name,\"examples\":len(cases)}))\n",
+  "native_tests": {
+    "command": "python -m pytest tests/test_short_volume.py tests/test_c19_wp24_consumer_states.py tests/test_c19_wp24_superseded_generations.py -q -p no:cacheprovider",
+    "log_sha256": "98dbb46bf2d251a7dcd354e715f080ee4d3f81a6a6fcd3134263775f469bb36a",
+    "passed": 116,
+    "python": "3.14",
+    "skipped": 0
+  },
+  "original_source_red": {
+    "bytes": 78155,
+    "failed": 55,
+    "passed": 21,
+    "python": "3.12",
+    "sha256": "feb6ce6482a4acd81929bcf73b8f1b385478b00a59adf66839520d4cd7128f29",
+    "tail": "55 failed, 21 passed, 3 warnings in 2.74s"
+  },
+  "panel_after": {
+    "actual_reader_matches_direct": true,
+    "coverage_signals": 0,
+    "hashes": {
+      "positioning": "1450a8574935684fc7dc22dd30443d05947583e93d49046bc44f15c20d018f30",
+      "signals": "de0b1738d797f1bcec9a2d3ea8e196eb64d0f18921dfdb9d319e306ba3f35dec"
+    },
+    "input_bad_pairs": 0,
+    "input_end": "2026-11-10 00:00:00",
+    "input_rows": 171946,
+    "input_start": "2026-05-26 00:00:00",
+    "input_tickers": 1545,
+    "positioning": 1545,
+    "seconds": 3.678,
+    "signals": 1545,
+    "source": "after",
+    "states": {
+      "observed": 1540,
+      "partial": 5
+    },
+    "strict_json": true
+  },
+  "panel_before": {
+    "actual_reader_matches_direct": true,
+    "coverage_signals": 0,
+    "hashes": {
+      "positioning": "1450a8574935684fc7dc22dd30443d05947583e93d49046bc44f15c20d018f30",
+      "signals": "de0b1738d797f1bcec9a2d3ea8e196eb64d0f18921dfdb9d319e306ba3f35dec"
+    },
+    "input_bad_pairs": 0,
+    "input_end": "2026-11-10 00:00:00",
+    "input_rows": 171946,
+    "input_start": "2026-05-26 00:00:00",
+    "input_tickers": 1545,
+    "positioning": 1545,
+    "seconds": 1.255,
+    "signals": 1545,
+    "source": "before",
+    "states": {
+      "observed": 1540,
+      "partial": 5
+    },
+    "strict_json": true
+  },
+  "publication_parent": "1be0661c6b7edfe4088fee71ada89a6b454ba095",
+  "publication_preimages": {
+    "files": [
+      {
+        "path": "collectors/finra_short_volume.py",
+        "sha": "7e9110a3d9fcc133838130910ecdefb19f0c4d43"
+      },
+      {
+        "path": "engine/short_volume.py",
+        "sha": "ec0e47754bc15fe69df9d395a8780eec276827a9"
+      },
+      {
+        "path": "engine/stock_fundamentals.py",
+        "sha": "73e1ca9b938468befadd8cb85136c75a0b305f09"
+      },
+      {
+        "path": "tests/test_short_volume.py",
+        "sha": "9fbdb468aabc6394b002d8afc9e0e3a97f854939"
+      },
+      {
+        "path": "lib/nyse_calendar.py",
+        "sha": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3"
+      },
+      {
+        "path": "tests/test_c19_wp24_superseded_generations.py",
+        "sha": "3dbd72a2d534ecbd62c3a6e4a609c9b321f9af4b"
+      },
+      {
+        "path": "tests/test_c19_wp24_consumer_states.py",
+        "sha": "1081c13534aefd310d45d0d9cc4a6d0e80fab800"
+      },
+      {
+        "path": "collectors/finra.py",
+        "sha": "692ae66008aef0e78f5dee553a52776290c8a748"
+      },
+      {
+        "path": "collectors/ibkr_borrow.py",
+        "sha": "888d9ec5206d2d10e1f136d51e6d920076cb159c"
+      },
+      {
+        "path": "scripts/backfill_finra_short_volume.py",
+        "sha": "d8c12a855be5cd27a5af453c53a81bbc8d61045e"
+      },
+      {
+        "path": "scripts/__init__.py",
+        "sha": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6"
+      },
+      {
+        "path": "lib/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "lib/config.py",
+        "sha": "b6fc888269876242597da354aaa726c20ed95802"
+      },
+      {
+        "path": "lib/store.py",
+        "sha": "3a0985944f534be7d771c926d73eb49f53aba140"
+      },
+      {
+        "path": "engine/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "collectors/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "collectors/base.py",
+        "sha": "a958ac264aec6a49b9b971ea103f8c83e29dc6e3"
+      },
+      {
+        "path": "tests/conftest.py",
+        "sha": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc"
+      },
+      {
+        "path": "config.yml",
+        "sha": "5be75249c98033d7ee0fbe55928713b1f50af627"
+      },
+      {
+        "path": "data/finra_short_volume/panel.parquet",
+        "sha": "e81dbeeb1d89b8dfadf60c97276bc9e90fa081c1"
+      },
+      {
+        "path": "scripts/run_ci_pack.py",
+        "sha": "fdd099b87cf72e8221372ef55de95efa2b7d284e"
+      },
+      {
+        "path": "scripts/ci_semantic_proof.py",
+        "sha": "df7e5007413584d8593bfeb69dd9b479daa99147"
+      },
+      {
+        "path": "scripts/ci_authority_paths.py",
+        "sha": "1403e7dce4cbc83178f3dc515fe2404b84655a94"
+      },
+      {
+        "path": "scripts/ci_scope_dependencies.py",
+        "sha": "4c4779479f5bb41741fe7a5db114dfe304350a8a"
+      },
+      {
+        "path": "scripts/audit_unrun_tests.py",
+        "sha": "9ae74b91a276733b2b1a310cb652a847ad5f7dc0"
+      },
+      {
+        "path": "scripts/workflow_run_source.py",
+        "sha": "b55fe2447f6a50dc6f6d160537961e77145078cb"
+      },
+      {
+        "path": "scripts/ci_browser_native_setup.py",
+        "sha": "3e400c1691b5be2825237004bce42d881f2d230b"
+      },
+      {
+        "path": "scripts/ci_browser_dependency_capture.py",
+        "sha": "78f544a102c9c0cf2b5306ccc3592c4b23fe8302"
+      },
+      {
+        "path": "scripts/ci_browser_dependency_inputs.py",
+        "sha": "fa076c97c9fe389adf7ae1f032cf56490c4e06a9"
+      },
+      {
+        "path": "scripts/ci_apt_cold_acquisition.py",
+        "sha": "7d402b92c83b837fd38b965b9974b44696ff3f60"
+      },
+      {
+        "path": "scripts/ci_apt_native_plan.py",
+        "sha": "71d006c1bdf11191bb03f78605acdab09f8d5f73"
+      },
+      {
+        "path": "scripts/ci_apt_native_stage.py",
+        "sha": "2446beea8a43546c78251fdf32d8e648982229f4"
+      },
+      {
+        "path": "scripts/ci_apt_transaction_contract.py",
+        "sha": "beb8ad4e1ab758c4da5634b2c2a50fab50aee840"
+      },
+      {
+        "path": ".github/ci/legacy-jobs.yml",
+        "sha": "b68f93a812c85ddaea5dad71c295c51659b7d371"
+      },
+      {
+        "path": "config/unrun_test_baseline.json",
+        "sha": "0aef32511dbb3ca4851a53c6f178bd24922ad456"
+      },
+      {
+        "path": "tests/test_ci_pack.py",
+        "sha": "89c9d99733f7c7559646401e2dbf06dfe8595097"
+      }
+    ],
+    "parent": "1be0661c6b7edfe4088fee71ada89a6b454ba095"
+  },
+  "schema": "finra-paired-volume-validation-v1",
+  "source_inputs": [
+    {
+      "bytes": 10705,
+      "path": "collectors/finra_short_volume.py",
+      "sha": "7e9110a3d9fcc133838130910ecdefb19f0c4d43",
+      "sha256": "15cf81531bfc511efa252d7d944e2c27f599cbe5bc6a42eb564fee24e04e8d21"
+    },
+    {
+      "bytes": 5499,
+      "path": "engine/short_volume.py",
+      "sha": "ec0e47754bc15fe69df9d395a8780eec276827a9",
+      "sha256": "77c2749f0454e89764404bb61d6d6c40cd3ae764d2cbcd9029d8613f09d57f48"
+    },
+    {
+      "bytes": 123709,
+      "path": "engine/stock_fundamentals.py",
+      "sha": "73e1ca9b938468befadd8cb85136c75a0b305f09",
+      "sha256": "11a0d93c0e77646be6302cbcbdc0ca92ac72655c0ce1d118595413bc2f0f60d3"
+    },
+    {
+      "bytes": 2755,
+      "path": "tests/test_short_volume.py",
+      "sha": "9fbdb468aabc6394b002d8afc9e0e3a97f854939",
+      "sha256": "64975655d4461a1d5d702f2b93feab3ca4361d21ed789d53ad3a6c6798a4eff5"
+    },
+    {
+      "bytes": 29814,
+      "path": "lib/nyse_calendar.py",
+      "sha": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+      "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+    },
+    {
+      "bytes": 8996,
+      "path": "tests/test_c19_wp24_superseded_generations.py",
+      "sha": "3dbd72a2d534ecbd62c3a6e4a609c9b321f9af4b",
+      "sha256": "06dee1bf90c91a02b6c19eb9258c720d9908c8a154b9a3e7a82b27f528dd56eb"
+    },
+    {
+      "bytes": 9380,
+      "path": "tests/test_c19_wp24_consumer_states.py",
+      "sha": "1081c13534aefd310d45d0d9cc4a6d0e80fab800",
+      "sha256": "40d6c2a70d3c6a5b9371f4926373f963605822f6d3687cae792f069b74f6de61"
+    },
+    {
+      "bytes": 11131,
+      "path": "collectors/finra.py",
+      "sha": "692ae66008aef0e78f5dee553a52776290c8a748",
+      "sha256": "31749201a6c96688e24e06ec64c7fe6784c4c77fc4afbe7eb9d3b30158bcaf38"
+    },
+    {
+      "bytes": 13632,
+      "path": "collectors/ibkr_borrow.py",
+      "sha": "888d9ec5206d2d10e1f136d51e6d920076cb159c",
+      "sha256": "9ecdac504cebe044767ddd4c52171a8bab109fc5f03dd72ff11ae7021ee1fbe6"
+    },
+    {
+      "bytes": 13835,
+      "path": "scripts/backfill_finra_short_volume.py",
+      "sha": "d8c12a855be5cd27a5af453c53a81bbc8d61045e",
+      "sha256": "993f1909050a94ed9e15d2ca25330b6c5e6fd233476d8ab515d8b8ba82d14a38"
+    },
+    {
+      "bytes": 2217,
+      "path": "scripts/__init__.py",
+      "sha": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+      "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+    },
+    {
+      "bytes": 0,
+      "path": "lib/__init__.py",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1131,
+      "path": "lib/config.py",
+      "sha": "b6fc888269876242597da354aaa726c20ed95802",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    {
+      "bytes": 33048,
+      "path": "lib/store.py",
+      "sha": "3a0985944f534be7d771c926d73eb49f53aba140",
+      "sha256": "14907e9d2bd6e7ae6498a7cdd3f28a5764433114d10c50681828446ce7764413"
+    },
+    {
+      "bytes": 0,
+      "path": "engine/__init__.py",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "collectors/__init__.py",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 40508,
+      "path": "collectors/base.py",
+      "sha": "a958ac264aec6a49b9b971ea103f8c83e29dc6e3",
+      "sha256": "ec4d17cab2efb92a266dce2f89882d6cb7e17d1f495d184661ed3a639568ae7d"
+    },
+    {
+      "bytes": 34456,
+      "path": "tests/conftest.py",
+      "sha": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+      "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+    },
+    {
+      "bytes": 496073,
+      "path": "config.yml",
+      "sha": "5be75249c98033d7ee0fbe55928713b1f50af627",
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    },
+    {
+      "bytes": 4249822,
+      "path": "data/finra_short_volume/panel.parquet",
+      "sha": "e81dbeeb1d89b8dfadf60c97276bc9e90fa081c1",
+      "sha256": "0a745421517fbe572f5628c6a782c82a8449f0ce471b96198e1a99509937d096"
+    }
+  ],
+  "source_pin": "cdb3144ea48f2a69f814560f2248123f02c97ff3",
+  "status": "producer_native_proof_complete_consumer_composition_and_natural_CI_pending"
+}

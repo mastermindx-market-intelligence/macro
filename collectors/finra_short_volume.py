@@ -18,11 +18,12 @@ scored alpha factor.
 Append-only, deduped on (date, ticker), written to
 data/finra_short_volume/panel.parquet. We backfill a rolling window each run
 (cheap, self-healing); the merge keeps only genuinely new (date, ticker) rows.
-Keyless — degrades to 'failed' only if FINRA's CDN is unreachable.
+Keyless — an unreachable CDN or invalid tracked volume pairs fail the refresh.
 """
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime, time, timedelta, timezone
 
 import pandas as pd
@@ -96,32 +97,47 @@ def _business_days(n_calendar: int) -> list[date]:
     return out
 
 
-def _parse(text: str) -> pd.DataFrame:
+def _parse(text: str, *, universe: set[str] | None = None) -> pd.DataFrame:
     """Parse one CNMSshvol file into normalized rows. Tolerates the trailing
     footer line FINRA appends (e.g. 'Total Records ...')."""
     rows: list[dict] = []
     for line in text.splitlines():
         parts = line.split("|")
-        if len(parts) < 5 or parts[0] in ("Date", "") or not parts[0].isdigit():
-            continue
-        try:
-            short_v = float(parts[2])
-            total_v = float(parts[4])
-        except (ValueError, IndexError):
-            continue
-        if total_v <= 0:
+        if len(parts) < 2 or parts[0] in ("Date", "") or not parts[0].isdigit():
             continue
         raw = parts[1].strip()
         rows.append({
             "date": pd.Timestamp(parts[0]),
             "ticker": raw.upper(),
-            "short_vol": short_v,
-            "short_exempt": float(parts[3]) if parts[3].replace(".", "", 1).isdigit() else 0.0,
-            "total_vol": total_v,
-            "short_ratio": round(short_v / total_v, 4),
+            "short_vol": parts[2] if len(parts) > 2 else "",
+            "short_exempt": float(parts[3]) if len(parts) > 3 and parts[3].replace(".", "", 1).isdigit() else 0.0,
+            "total_vol": parts[4] if len(parts) > 4 else "",
             "_upper": raw == raw.upper(),
         })
-    return _resolve_case_collisions(pd.DataFrame(rows))
+    # Resolve security identity BEFORE numeric admission. A malformed uppercase
+    # common-share row must never disappear in favour of its mixed-case preferred.
+    df = _resolve_case_collisions(pd.DataFrame(rows))
+    if df.empty:
+        return df
+    if universe:
+        df = df[df["ticker"].isin(universe)]
+    admitted = []
+    for row in df.to_dict("records"):
+        try:
+            short_v, total_v = float(row["short_vol"]), float(row["total_vol"])
+            valid = (math.isfinite(short_v) and math.isfinite(total_v)
+                     and 0 <= short_v <= total_v)
+        except (ValueError, TypeError, OverflowError):
+            valid = False
+        if not valid:
+            raise ValueError("finra_short_volume: invalid paired volumes for "
+                             f"{row['date'].date()} {row['ticker'][:80]}")
+        if total_v == 0:  # genuine 0/0 is no observation, never observed zero
+            continue
+        row.update(short_vol=short_v, total_vol=total_v,
+                   short_ratio=round(short_v / total_v, 4))
+        admitted.append(row)
+    return pd.DataFrame(admitted, columns=["date", "ticker", *_VALUE_COLS])
 
 
 def _resolve_case_collisions(df: pd.DataFrame) -> pd.DataFrame:
@@ -210,11 +226,11 @@ class FinraShortVolumeAdapter(Adapter):
                     break                # partial run is fine; keep what we got
                 skipped += 1             # 404 = holiday/not-yet-posted
                 continue
-            df = _parse(r.text)
+            # A rejected selected response aborts the whole staged refresh before
+            # either the live panel or the change-only witness can be written.
+            df = _parse(r.text, universe=universe)
             if df.empty:
                 continue
-            if universe:
-                df = df[df["ticker"].isin(universe)]
             new_frames.append(df)
             fetched += 1
 

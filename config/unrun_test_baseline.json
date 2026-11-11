@@ -706,7 +706,6 @@
     "tests/test_share_unit_artifacts.py",
     "tests/test_shock_override_attainable.py",
     "tests/test_short_pressure.py",
-    "tests/test_short_volume.py",
     "tests/test_si_chart_deferred_until_visible.py",
     "tests/test_si_workspace_shell.py",
     "tests/test_signal_archive.py",

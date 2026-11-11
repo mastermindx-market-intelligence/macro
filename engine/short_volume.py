@@ -49,7 +49,10 @@ DTC_SENTINEL = 999.0
 
 
 def panel_state(path=None) -> tuple[pd.DataFrame | None, str]:
-    """(panel, state). The panel is non-None only when state is OBSERVED."""
+    """File-read state plus retained rows. OBSERVED means a readable container;
+    in-memory _pair_state flags qualify individual numeric observations without
+    discarding other tickers or changing the stored panel schema.
+    """
     p = path or (config.data_dir() / _PANEL[0] / _PANEL[1])
     if not p.exists():
         return None, UNAVAILABLE
@@ -64,9 +67,11 @@ def panel_state(path=None) -> tuple[pd.DataFrame | None, str]:
         return None, PARSE_ERROR
     if df.empty:
         return None, NO_OBSERVATION
-    df = df.copy()
-    df["date"] = pd.to_datetime(df["date"])
-    return df, OBSERVED
+    try:
+        return _qualify_panel(df), OBSERVED
+    except (ValueError, TypeError, OverflowError) as e:
+        log.warning("short_volume: panel calendar unreadable %s (%s)", p, e)
+        return None, PARSE_ERROR
 
 
 def load_panel(path=None) -> pd.DataFrame | None:
@@ -79,11 +84,66 @@ def ticker_state(sig: dict | None, *, baseline: int = 20) -> str:
     thin for a z-score, OBSERVED_ZERO when the recent window shorted nothing."""
     if not sig:
         return NO_OBSERVATION
+    states = {c["state"] for c in sig.get("coverage", {}).values()}
+    for state in (PARSE_ERROR, UNAVAILABLE, NO_OBSERVATION):
+        if state in states:
+            return state
     if sig.get("n_days", 0) < baseline or sig.get("ratio_z") is None:
         return PARTIAL
-    if sig.get("ratio_recent") == 0:
+    if sig.get("ratio_recent") == 0 and not sig.get("_recent_nonzero", False):
         return OBSERVED_ZERO
     return OBSERVED
+
+
+def _numeric(frame: pd.DataFrame, column: str) -> np.ndarray:
+    return pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype=float, na_value=np.nan)
+
+
+def _qualify_panel(frame: pd.DataFrame) -> pd.DataFrame:
+    """Retain every row and raw operand; qualify each pair before any slicing."""
+    frame = frame.copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    if frame["date"].isna().any():
+        raise ValueError("missing observation date")
+    short, total = _numeric(frame, "short_vol"), _numeric(frame, "total_vol")
+    short_missing = frame["short_vol"].isna().to_numpy()
+    total_missing = frame["total_vol"].isna().to_numpy()
+    # Missingness is recorded BEFORE coercion; a bad string is invalid, not absent.
+    # An independently invalid operand wins even when its counterpart is missing.
+    invalid = ((~short_missing & (~np.isfinite(short) | (short < 0)))
+               | (~total_missing & (~np.isfinite(total) | (total < 0)))
+               | (np.isfinite(short) & np.isfinite(total) & (short > total)))
+    missing = ~invalid & (short_missing | total_missing | ((short == 0) & (total == 0)))
+    states = np.full(len(frame), OBSERVED, dtype=object)
+    states[missing], states[invalid] = NO_OBSERVATION, PARSE_ERROR
+    frame["_pair_state"] = states
+    return frame
+
+
+def _scope_coverage(frame: pd.DataFrame, *, stored: bool = False) -> dict | None:
+    """Admission for one original calculation slice, never a complete-case slice.
+
+    Optional stored-ratio absence preserves the existing nan-aware estimator.
+    Nonmissing cached ratios must be finite, bounded and consistent with their
+    pair within the producer's four-decimal quantization (half a unit plus slack).
+    """
+    invalid = frame["_pair_state"].eq(PARSE_ERROR).to_numpy()
+    missing = frame["_pair_state"].eq(NO_OBSERVATION).to_numpy()
+    reason = "paired_operands"
+    if not (invalid.any() or missing.any()) and stored:
+        ratios = _numeric(frame, "short_ratio")
+        expected = _numeric(frame, "short_vol") / _numeric(frame, "total_vol")
+        present = frame["short_ratio"].notna().to_numpy()
+        invalid = present & (~np.isfinite(ratios) | (ratios < 0) | (ratios > 1)
+                             | (np.abs(ratios - expected) > 0.00005 + 1e-12))
+        reason = "stored_ratio"
+    n_invalid, n_missing = int(invalid.sum()), int(missing.sum())
+    if not (n_invalid or n_missing):
+        return None
+    state = (PARSE_ERROR if n_invalid else
+             NO_OBSERVATION if n_missing == len(frame) else UNAVAILABLE)
+    return {"state": state, "reason": reason, "n_rows": int(len(frame)),
+            "n_missing": n_missing, "n_invalid": n_invalid}
 
 
 def _ticker_signal(g: pd.DataFrame, recent: int, baseline: int) -> dict | None:
@@ -92,40 +152,68 @@ def _ticker_signal(g: pd.DataFrame, recent: int, baseline: int) -> dict | None:
         return None
     base = g.tail(baseline)
     rec = g.tail(recent)
-
-    def _vw(frame: pd.DataFrame) -> float | None:
-        tot = float(frame["total_vol"].sum())
-        return round(float(frame["short_vol"].sum()) / tot, 4) if tot > 0 else None
-
-    vw_base = _vw(base)
-    vw_rec = _vw(rec)
-    latest = g.iloc[-1]
-    if vw_base is None or vw_rec is None:
+    if base.empty or rec.empty:
         return None
+    coverage: dict[str, dict] = {}
+
+    def qualify(scope: str, frame: pd.DataFrame, *, stored: bool = False) -> bool:
+        result = _scope_coverage(frame, stored=stored)
+        if result is not None:
+            coverage[scope] = result
+            return False
+        return True
+
+    def _vw(scope: str, frame: pd.DataFrame) -> float | None:
+        if not qualify(scope, frame):
+            return None
+        short, total = _numeric(frame, "short_vol"), _numeric(frame, "total_vol")
+        # Keep ordinary arithmetic byte-compatible. Scale only if individually
+        # finite, admitted volumes overflow their sums; this is the same VW ratio.
+        with np.errstate(over="ignore", invalid="ignore"):
+            numerator, denominator = float(short.sum()), float(total.sum())
+        if not (np.isfinite(numerator) and np.isfinite(denominator)):
+            scale = float(total.max())
+            numerator, denominator = float((short / scale).sum()), float((total / scale).sum())
+        return round(numerator / denominator, 4)
+
+    vw_base = _vw("baseline", base)
+    vw_rec = _vw("recent", rec)
+    latest = g.iloc[-1]
 
     # Short ratio for z-score: use pre-computed column if available, else vw_rec
     has_col = "short_ratio" in g.columns and pd.notna(latest.get("short_ratio"))
-    short_ratio_latest = float(latest["short_ratio"]) if has_col else vw_rec
+    latest_ok = qualify("latest", g.tail(1), stored=has_col)
+    short_ratio_latest = (float(latest["short_ratio"]) if has_col else vw_rec) if latest_ok else None
+    if latest_ok and not has_col and vw_rec is None:
+        # The legacy displayed-ratio fallback depends on the recent window.
+        coverage["latest"] = dict(coverage["recent"])
 
     # Z-score vs own full history — same definition as build_darkpool_desk.py:
     # nanmean/nanstd over ALL rows, min 5 rows, 0.0 when sigma is zero.
-    if has_col and len(g) >= 5:
-        ratios = g["short_ratio"].values
+    if has_col and len(g) >= 5 and qualify("history_z", g, stored=True):
+        ratios = _numeric(g, "short_ratio")
         mu = float(np.nanmean(ratios))
         sigma = float(np.nanstd(ratios))
         ratio_z = round((short_ratio_latest - mu) / sigma, 2) if sigma > 0 else 0.0
     else:
         ratio_z = None
 
-    return {
-        "short_ratio": round(short_ratio_latest, 4),
+    result = {
+        "short_ratio": round(short_ratio_latest, 4) if short_ratio_latest is not None else None,
         "ratio_recent": vw_rec,
         "ratio_baseline": vw_base,
-        "trend_pp": round((vw_rec - vw_base) * 100, 2),
+        "trend_pp": round((vw_rec - vw_base) * 100, 2) if vw_rec is not None and vw_base is not None else None,
         "ratio_z": ratio_z,
         "n_days": int(len(g)),
         "asof": str(latest["date"].date()),
     }
+    if coverage:
+        result["coverage"] = coverage
+    if vw_rec == 0 and (_numeric(rec, "short_vol") > 0).any():
+        # Rounded-positive is not measured zero. This internal bit is not projected
+        # into positioning; ordinary healthy and genuine-zero payloads stay exact.
+        result["_recent_nonzero"] = True
+    return result
 
 
 def signal_map(panel: pd.DataFrame | None = None, *, recent: int = 5,
@@ -136,6 +224,7 @@ def signal_map(panel: pd.DataFrame | None = None, *, recent: int = 5,
         panel = load_panel()
     if panel is None or panel.empty:
         return {}
+    panel = _qualify_panel(panel)
     out: dict[str, dict] = {}
     for tk, g in panel.groupby("ticker"):
         sig = _ticker_signal(g, recent, baseline)
