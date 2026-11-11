@@ -21,6 +21,8 @@ from __future__ import annotations
 import math
 import os
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -636,6 +638,9 @@ def test_metric_boundaries(wb, rows, expected):
     assert p.cell('Dashboard','C20') == f'{valid} of {total} closed trades have valid R'
     assert p.cell('Dashboard','B3') == total
     assert p.cell('Dashboard','B9') == pnl
+    wins = sum(exit_price > 100 for _, exit_price in rows if exit_price is not None)
+    assert p.cell('Dashboard','B6') == pytest.approx(wins / total if total else 0)
+    assert p.cell('Dashboard','B18') == pytest.approx(pnl / total if total else 0)
 
 
 def test_original_examples_keep_known_metrics(wb):
@@ -667,3 +672,42 @@ def test_scope_labels_distinguish_population_and_unavailable_ratios(wb):
 def test_unsupported_formula_fails_loudly(wb):
     with pytest.raises(AssertionError,match='Unsupported function'):
         Probe(wb).eval(parse('=BOGUS(1)'), 'Dashboard')
+
+
+@pytest.mark.skipif(shutil.which('soffice') is None, reason='LibreOffice native reader is not installed')
+def test_native_reader_closed_trade_population(xlsx_path, tmp_path):
+    """Execute formulas in a real reader; the reference evaluator cannot prove compatibility."""
+    inputs = tmp_path / 'inputs'
+    outputs = tmp_path / 'outputs'
+    inputs.mkdir()
+    outputs.mkdir()
+    scenarios = {
+        'empty': ([], 0, 0, 0),
+        'win_and_open': ([(90, 110), (90, None)], 1, 1, 10),
+        'win_and_zero': ([(90, 110), (90, 100)], 2, .5, 5),
+        'loss_and_zero': ([(90, 90), (90, 100)], 2, 0, -5),
+    }
+    for name, (rows, _, _, _) in scenarios.items():
+        workbook = openpyxl.load_workbook(xlsx_path)
+        sheet = workbook['Trade Log']
+        for row in (2, 3, 4):
+            for col in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L', 'M', 'N', 'S', 'T'):
+                sheet[f'{col}{row}'] = None
+        for row, (stop, exit_price) in enumerate(rows, 2):
+            for col, value in {'D':'Long', 'F':100, 'G':stop, 'H':120, 'I':1, 'M':exit_price, 'N':0}.items():
+                sheet[f'{col}{row}'] = value
+        workbook.save(inputs / f'{name}.xlsx')
+    shutil.copyfile(xlsx_path, inputs / 'examples.xlsx')
+    profile = (tmp_path / 'profile').as_uri()
+    subprocess.run(
+        [shutil.which('soffice'), f'-env:UserInstallation={profile}', '--headless',
+         '--convert-to', 'xlsx', '--outdir', str(outputs),
+         *(str(path) for path in sorted(inputs.glob('*.xlsx')))],
+        check=True, capture_output=True, text=True, timeout=180,
+    )
+    expected = {name: values[1:] for name, values in scenarios.items()}
+    expected['examples'] = (3, 2 / 3, 1088 / 3)
+    for name, (count, win_rate, expectancy) in expected.items():
+        dashboard = openpyxl.load_workbook(outputs / f'{name}.xlsx', data_only=True)['Dashboard']
+        for address, value in [('B3', count), ('B6', win_rate), ('B18', expectancy)]:
+            assert dashboard[address].value == pytest.approx(value), (name, address)
