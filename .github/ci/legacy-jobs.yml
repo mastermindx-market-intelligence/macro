@@ -53089,7 +53089,7 @@ jobs:
 
   options-scenario-contract:
     # The existing flow-surface gate:data job does not run for ordinary code
-    # PRs. Keep the scenario contract and M02 endpoint regressions on gate:code
+    # PRs. Keep scenario, event-diagnostic and forecast regressions on gate:code
     # as well; use synthetic inputs and the existing CLI's stdout projection.
     if: ${{ false }}  # executed inside ci-pack, not as a standalone runner
     gate: code
@@ -53106,6 +53106,18 @@ jobs:
       - "scripts/build_options_scenario_surface.py"
       - "tests/__init__.py"
       - "tests/test_options_scenario_surface.py"
+      - "engine/seasonality/__init__.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_clock.py"
+      - "engine/seasonality/model.py"
+      - "engine/seasonality/program_watch.py"
+      - "engine/seasonality/prophet_bridge.py"
+      - "engine/seasonality/regime.py"
+      - "engine/seasonality/screener.py"
+      - "engine/seasonality/universe.py"
+      - "tests/test_event_hedging_diagnostics.py"
+      - "tests/test_event_hedging_evaluation.py"
+      - "tests/test_event_hedging_cli.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -53116,7 +53128,7 @@ jobs:
       - name: install scenario contract dependencies
         run: pip install pytest numpy scipy
       - name: conditional scenario and hedge-target contract regressions
-        run: python -m pytest tests/test_options_scenario_surface.py -q
+        run: python -m pytest tests/test_options_scenario_surface.py tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py tests/test_event_hedging_cli.py -q
   institutional-13f-ingestion-contracts:
     # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
     # Both suites were grandfathered dark in config/unrun_test_baseline.json while
