@@ -329,6 +329,15 @@ def test_zero_total_uppercase_winner_does_not_substitute_preferred(reverse):
 
 
 def _fixture_adapter(tmp_path, monkeypatch, responses, universe=None):
+    # run_adapter reads breaker state and writes stale-series health through
+    # run_status_file, independently of data_dir. Keep the real status reader
+    # and writer inside this fixture as well as the Parquet data.
+    fixture_cfg = dict(config.load())
+    fixture_cfg["storage"] = {
+        **fixture_cfg["storage"],
+        "run_status_file": str(tmp_path / "run_status.json"),
+    }
+    monkeypatch.setattr(config, "load", lambda: fixture_cfg)
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     monkeypatch.setattr(fsv, "_universe_tickers", lambda: {"AAA"} if universe is None else universe)
     wanted = [date.fromisoformat(day) for day in responses]
@@ -397,6 +406,8 @@ def test_valid_correction_witnesses_once_and_reread_is_noop(tmp_path, monkeypatc
     responses = {"2024-01-17": _daily(("AAA", "50", "100"))}
     adapter = _fixture_adapter(tmp_path, monkeypatch, responses)
     assert run_adapter(adapter).status in {"ok", "stale"}
+    status = json.loads((tmp_path / "run_status.json").read_text())
+    assert any(row["group"] == fsv.GROUP for row in status["stale_series"])
     assert not fsv._superseded_path().exists()
     responses["2024-01-17"] = _daily(("AAA", "60", "100"))
     assert run_adapter(adapter).status in {"ok", "stale"}
