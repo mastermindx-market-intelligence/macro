@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "produced_by": "scripts/build_site.py",
-  "produced_at": "2026-11-08T06:13:24Z",
-  "inputs_hash": "sha256:7d0e3258889d3a7400a8c44451f9807bce628c3a6c16b3a7df18926f76d63db1",
+  "produced_at": "2026-11-11T11:54:52Z",
+  "inputs_hash": "sha256:0ddae81340fde3202031ccdbe39fb21b416824fbcce84c5e4e043ee17292a075",
   "tier": "display",
   "artifact_path": "site/neuralwebdata/health_history.json",
-  "byte_sha256": "sha256:7d0e3258889d3a7400a8c44451f9807bce628c3a6c16b3a7df18926f76d63db1"
+  "byte_sha256": "sha256:0ddae81340fde3202031ccdbe39fb21b416824fbcce84c5e4e043ee17292a075"
 }

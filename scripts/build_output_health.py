@@ -165,13 +165,13 @@ def _head_blobs_uncached(root: Path) -> frozenset[str] | None:
 
 
 #: Only bodies at or below this size enter the prewarm cache. Larger bodies are
-#: drained in bounded chunks to preserve framing, then left to the per-path ladder.
+#: rejected using metadata without body transfer, then left to the per-path ladder.
 #: This bounds one retained body, not the total eligible cache or the later fallback.
 PREWARM_SIZE_CAP = 1024 * 1024
 
 
 def _prewarm_head_contents(root: Path, rels: list[str]) -> int:
-    """Fill ``read_tracked``'s cache for *rels* from ONE ``git cat-file --batch``.
+    """Warm eligible HEAD blobs using metadata first, then contents by object ID.
 
     PURELY A COST OPTIMIZATION, AND FAIL-SAFE BY CONSTRUCTION. Every entry it writes is
     byte-for-byte what ``_read_tracked_uncached`` would have returned for the same path
@@ -190,29 +190,32 @@ def _prewarm_head_contents(root: Path, rels: list[str]) -> int:
     wanted = sorted({r for r in rels if r and "\n" not in r})
     if not wanted:
         return 0
+    processes = []
+    proc = None
     try:
-        proc = subprocess.Popen(
-            ["git", "cat-file", "--batch"],
+        metadata = subprocess.Popen(
+            ["git", "cat-file", "--batch-check"],
             cwd=root,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
+        processes.append(metadata)
     except (OSError, subprocess.SubprocessError, ValueError):
         return 0
 
-    # Publish only after the batch exits cleanly, just like the former run() path.
-    # Small eligible bodies still populate the existing cache; the large tail is
-    # drained in bounded chunks without ever joining it into an aggregate buffer.
+    # Publish only after both metadata and contents streams exit cleanly.
+    # Metadata rejects ineligible bodies before Git transfers them. Pin eligible
+    # content requests to the returned object ID, not a second HEAD resolution.
     pending: dict[tuple[str, str], tuple[str | None, str]] = {}
     try:
-        if proc.stdin is None or proc.stdout is None:
+        if metadata.stdin is None or metadata.stdout is None:
             return 0
         for rel in wanted:
             # One request/response at a time avoids filling both pipe directions.
-            proc.stdin.write(f"HEAD:{rel}\n".encode("utf-8", "surrogateescape"))
-            proc.stdin.flush()
-            header = proc.stdout.readline(4097)
+            metadata.stdin.write(f"HEAD:{rel}\n".encode("utf-8", "surrogateescape"))
+            metadata.stdin.flush()
+            header = metadata.stdout.readline(4097)
             if not header.endswith(b"\n") or len(header) > 4096:
                 return 0  # truncated/oversized framing: leave the ladder untouched
             parts = header[:-1].split(b" ")
@@ -230,20 +233,32 @@ def _prewarm_head_contents(root: Path, rels: list[str]) -> int:
             size = int(parts[2])
             if size < 0:
                 return 0
-            retain = parts[1] == b"blob" and size <= PREWARM_SIZE_CAP
-            body = bytearray() if retain else None
+            if parts[1] != b"blob" or size > PREWARM_SIZE_CAP:
+                continue
+            if proc is None:
+                proc = subprocess.Popen(
+                    ["git", "cat-file", "--batch"], cwd=root,
+                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                )
+                processes.append(proc)
+            if proc.stdin is None or proc.stdout is None:
+                return 0
+            proc.stdin.write(parts[0] + b"\n")
+            proc.stdin.flush()
+            # Type, size and identity must agree with the metadata selection.
+            if proc.stdout.readline(4097) != header:
+                return 0
+            body = bytearray()
             remaining = size
             while remaining:
                 chunk = proc.stdout.read(min(remaining, 64 * 1024))
                 if not chunk or len(chunk) > remaining:
                     return 0
                 remaining -= len(chunk)
-                if body is not None:
-                    body.extend(chunk)
+                body.extend(chunk)
             if proc.stdout.read(1) != b"\n":
                 return 0  # never cache a body until its framing is complete
-            if body is None:
-                continue
             if not body:
                 # The per-path ladder treats an empty blob as absent, too.
                 pending[(str(root), rel)] = (None, "absent")
@@ -255,27 +270,38 @@ def _prewarm_head_contents(root: Path, rels: list[str]) -> int:
             pending[(str(root), rel)] = (
                 text.replace("\r\n", "\n").replace("\r", "\n"), "git"
             )
-        proc.stdin.close()
-        if proc.stdout.read(1) or proc.wait() != 0:
-            return 0
+        for child in processes:
+            child.stdin.close()
+            if child.stdout.read(1) or child.wait() != 0:
+                return 0
         _READ_CACHE.update(pending)
         return len(pending)
     except (OSError, subprocess.SubprocessError, ValueError):
         return 0
     finally:
-        for pipe in (proc.stdin, proc.stdout):
-            if pipe is not None:
-                try:
-                    pipe.close()
-                except OSError:
-                    pass
-        if proc.poll() is None:
-            proc.terminate()
+        cleanup_error = None
+        for child in processes:
+            for pipe in (child.stdin, child.stdout):
+                if pipe is not None:
+                    try:
+                        pipe.close()
+                    except OSError:
+                        pass
             try:
-                proc.wait(timeout=1)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                proc.wait()
+                if child.poll() is None:
+                    child.terminate()
+                    try:
+                        child.wait(timeout=1)
+                    except subprocess.TimeoutExpired:
+                        child.kill()
+                        child.wait()
+            except OSError as exc:
+                # A refused/failed cleanup must still surface, but cannot skip
+                # closing and reaping the other child. Never retry that signal.
+                if cleanup_error is None:
+                    cleanup_error = exc
+        if cleanup_error is not None:
+            raise cleanup_error
 
 
 def _head_blobs(root: Path) -> frozenset[str] | None:

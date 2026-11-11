@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HLIT-BULL-20261026",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 15.2,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -0.183,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 16.1,
+    "horizon_pct_used": 19.6,
     "p1": -0.789,
     "p2": -0.3945,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-11-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.1607
+  "days_elapsed": 11,
+  "tau": 0.1964
 }
