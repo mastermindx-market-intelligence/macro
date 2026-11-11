@@ -1,6 +1,6 @@
 """Rotation Core v2 — two-key defensive-rotation evaluation on Ken French 49 industries (corrected v1 engine).
 
-Implements protocol_header_v2 (draft rev 5; the frozen JSON governs once it exists). Pure functions; research only.
+Implements protocol_header_v2 (draft rev 6; the frozen JSON governs once it exists). Pure functions; research only.
 Nothing here sizes, gates, ranks, alerts or trades.
 
 Seal: any input path under `sealed_post2019/` is refused unless research/rotation_core/HOLDOUT_RELEASE_v2.json is

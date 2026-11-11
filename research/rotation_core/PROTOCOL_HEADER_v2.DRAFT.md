@@ -1,15 +1,14 @@
-# Rotation Core — protocol header v2 (DRAFT revision 5, NOT FROZEN)
+# Rotation Core — protocol header v2 (DRAFT revision 6, NOT FROZEN)
 
-> **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. H1's minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only, using its actual time in tilt (67–71 % of sessions):
+> **Power, stated first.** H1's own minimum detectable effects, from its actual time in tilt (67–71 % of sessions), at 80 % power, Holm m = 3, 1998–2019 variance only:
 >
-> | Window | H1, actual tilt (pp/yr) | Full-tilt proxy: the upper bound of the MDE |
+> | Window | H1, actual tilt (pp/yr) | Full-tilt proxy: upper bound of the MDE |
 > |---|---|---|
-> | Pre-1998 + 2020–2025 pooled | 2.0–2.2 | 2.6 |
+> | Pooled history (pre-1998 + 2020–2025) | 2.0–2.2 | 2.6 |
 > | 2020–2025 alone | 7.2–7.8 | 9.2 |
 > | Five forward years | 7.9–8.6 | 10.1 |
-> | Ten forward years | 5.6–6.1 | 7.1 |
 >
-> With the four positive-sign requirements the chance of passing at the MDE is about 63 %. DEFEND fires 2.2–3.3 times a year at every grid point, so the sample is not starved of events; the limit is variance.
+> With the four positive-sign requirements, the chance of passing is about **63 % at the detectable effect** and about **43 % at a true 2 pp/yr edge**. **A 1–2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect.**
 >
 > The historical tier is a **low-power falsification screen**. 1926–2019 has already been examined for this question by v1 and by Pro run B, including near neighbours of H1 on 1998–2019. **2020–2025 is the only window not yet examined, and it contains about two stress episodes.**
 
@@ -71,6 +70,8 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 
 | Id | Rule | Primary contrast |
 |---|---|---|
+**H1 in plain words.** On 1998–2019 industry portfolios the washout condition is a routine dip: 179 spells, about eight a year, median 3 sessions; 92 % fire ATTACK, so the 20-session limit does little work. ATTACK is held about half of all sessions; DEFEND 14–21 % of sessions, with a median spell of 12–13 sessions. **H1 is mostly an offence tilt with short defensive episodes**, and DEFEND often ends because an ATTACK fires (inferred from spell lengths and fire rates; exit reasons were not counted). These counts were seen before freeze, and no threshold was changed because of them. Re-triggering the state in force is ignored and does not reset its clock (confirmed).
+
 | **H1** | Base: equal weight (NEUTRAL). **ARMED:** relative line within h % of its 126-session high **and** breadth (i) at least b below its 126-session maximum (both on current members). **DEFEND** (defence leg): armed within the last 21 sessions and the relative line closes below its 50-session SMA. **ATTACK** (offence leg): a washout spell starts at the first close with breadth ≤ 25 % and runs while closes stay ≤ 25 %; ATTACK confirms on the first close above 25 % if it is within 20 sessions of the spell's **lowest** close (earliest if tied). Otherwise no ATTACK and the state in force continues. Grid h ∈ {3, 5} %, b ∈ {25, 37.5}: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
 | **H2** | "Breadth in the arming key adds information": H1 minus the identical rule with breadth removed from ARMED only. The washout breadth is in both arms. | paired daily difference |
 | **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
@@ -188,6 +189,13 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 | 1.0 pp/yr | 0.16 | 0.12 |
 
 The sign requirements cut the pass chance at the MDE from 80 % to about 63 %; the 2020–2025 sign (6 years) costs most of it. The drawdown and 2× cost conditions cut it further. **A fail is not evidence of no effect:** at a true 2 pp/yr edge this test fails more often than it passes.
+
+## Order of work after freeze
+
+1. Grid selection on 1998–2019 only: one run, committed.
+2. Sector Intelligence's reviewer findings on the engine are folded in as corrections, each logged. No rule, threshold or window changes; any code fix reruns step 1 and is logged as a deviation.
+3. Only then may the parent write and commit `HOLDOUT_RELEASE_v2.json`.
+4. One confirmatory run on the released windows.
 
 ## Trial ledger at freeze
 

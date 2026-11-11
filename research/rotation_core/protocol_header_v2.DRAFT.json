@@ -1,9 +1,9 @@
 {
   "schema": "rotation_core.protocol_header/v2",
   "protocol_id": "rotation-core-v2",
-  "status": "DRAFT revision 5 - NOT FROZEN. Parent rulings 11:48Z (R1-R11) with R3 replaced at 11:55Z (trough clock). No return, mean or point estimate computed.",
+  "status": "DRAFT revision 6 - NOT FROZEN. Text-only revision after the parent's 11:58Z rulings; rules frozen as written. No return, mean or point estimate computed.",
   "drafted_on_utc": "2026-11-11",
-  "power_statement_top": "A 1-2 pp/yr rotation edge cannot be shown by any test available to us. H1 with its actual tilt, Holm m=3, 80% power, from 1998-2019 variance only: about 2.0-2.2 pp/yr on pre-1998 plus 2020-2025 pooled, 7.2-7.8 on 2020-2025 alone, 7.9-8.6 after five forward years (full-tilt proxy upper bound: 2.6 / 9.2 / 10.1). With the four positive-sign requirements the pass chance at the MDE is about 63%. DEFEND fires 2.2-3.3 times a year at every grid point. The historical tier is a low-power falsification screen.",
+  "power_statement_top": "H1's own minimum detectable effects, from its actual time in tilt (67-71% of sessions), 80% power, Holm m=3, 1998-2019 variance only: 2.0-2.2 pp/yr on pooled history (pre-1998 plus 2020-2025), 7.2-7.8 pp/yr on 2020-2025 alone, 7.9-8.6 pp/yr after five forward years. Beside them, the full-tilt proxy as the upper bound of the MDE: 2.6 / 9.2 / 10.1 pp/yr. With the four positive-sign requirements the chance of passing is about 63% at the detectable effect and about 43% at a true 2 pp/yr edge. A 1-2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect. The historical tier is a low-power falsification screen.",
   "predecessors": {
     "v1": "protocol_header_v1.json sha256 af2a0988...0f32; closed at L0 (parent ruling 2026-11-11); Stage H never run; Stage D corrected after PRO_RUN_A (RESULTS_STAGE_D_CORRECTED.md, b3253a9610), no conclusion moved",
     "run_B": "Pro run B, Macro 2afbd280fe (protocol ba5ae1e353, clarifications da384adb88, missing data 85f299a57d): ten rules on Ken French 49 industries 1926-2019, all negative; counted as 10 consumed trials. Local reproduction 2026-11-11 (pro_run_B_reproduction/REPRODUCTION.md) on sealed <=2019 inputs: 3,229 of 3,229 computable cells match at printed precision, 0 mismatches, 12/12 integrity tests pass. 2,806 cells (rules R2/R4/R6/R9/R10, macro and S&P columns) could not be computed here because their inputs (FRED BAA/GS10/TB3MS, Shiller, SPX, French monthly files) are not on this host; those cells are NOT reproduced and may not be cited. Citable: only reproduced cells (price/breadth rules incl. R5, R7, R8). The worker displayed the last three monthly UNRATE observations (2026-08..10, values 4.1, 4.2, 4.1) during schema inspection, before truncation; no post-2019 value entered any computation. UNRATE is not a v2 input; disclosed.",
@@ -100,7 +100,8 @@
       "breadth_rules": {
         "R2_current_leg": "each day the 126-session breadth history (arming key and washout spell) is recomputed on the current leg's members over the look-back; never a stitched series of past legs. The relative line remains a chained return series.",
         "R5_share": "b is compared as a share of the leg's eligible industries. Step about 6.25 points with 16 offence members (from 1970); about 7-8 points before 1970 (13-14 members)."
-      }
+      },
+      "plain_description": "On 1998-2019 industry portfolios the washout condition is a routine dip: 179 spells, about eight a year, median length 3 sessions; 92% fire ATTACK, so the 20-session limit does little work. ATTACK is held about half of all sessions; DEFEND 14-21% of sessions with a median spell of 12-13 sessions. H1 is therefore mostly an offence tilt with short defensive episodes, and DEFEND often ends because an ATTACK fires (inferred from spell lengths and fire rates; exit reasons were not counted). These counts were seen before freeze; no threshold was changed because of them (parent ruling 11:58Z). Re-triggering the state in force is ignored and does not reset its clock (confirmed 11:58Z)."
     },
     "H2": {
       "name": "breadth in the arming key adds information (the washout breadth is in both arms)",
@@ -485,5 +486,11 @@
       "rev": 5,
       "text": "The washout clock was changed from first-close to the spell's lowest close at draft stage, on Sector Intelligence's clarification of its own proposal. The parent ruled it before any return was computed. Disclosure: a signals-only table (counts, no returns) and a variance-only power line had already been computed and pushed under the first-close clock in draft revision 4 (commit 1faa76396b) before the ruling reached the lead; per the ruling that variant is not reported in this header and was replaced in full."
     }
+  ],
+  "order_of_work_after_freeze": [
+    "1. Grid selection on 1998-2019 only (one run, committed).",
+    "2. Sector Intelligence's reviewer findings on the engine folded in as corrections (each logged; no rule, threshold or window changes; any code fix reruns step 1 and is logged as a deviation).",
+    "3. Only then may the parent write and commit HOLDOUT_RELEASE_v2.json.",
+    "4. One confirmatory run on the released windows."
   ]
 }
