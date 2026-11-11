@@ -1,0 +1,23 @@
+{
+  "schema": "mastermind.container_edge_ci_plan_receipt.v1",
+  "artifact_id": 13877232259,
+  "zip_sha256": "1a3868d0e065744bde222129d90f7f8136b51cf0568482ea7c28f5cd9294df28",
+  "json_sha256": "67d7b64b9dcb5791caeadb40dff4e927c74e9812bbad799793a145f01edbe1d4",
+  "binding": {
+    "schema": "ci.pack_plan.v2",
+    "workflow_run_id": "43069644153",
+    "subject_head_sha": "9cd1c665595933532a2186164deb1dce18962708",
+    "tested_tree_sha": "322b6281c25dbb5f127200d5c37fc8abcb6fa1c6",
+    "base_sha": "63cd9355cb289990e7549bcbd8480089f9caa5f1",
+    "plan_sha256": "7a0482709a5630d347a28605873d5e183f8e32caf94c46e794a810e186e366e3"
+  },
+  "logical_jobs": 329,
+  "packs": 12,
+  "skipped": 0,
+  "prior_semantic_specs_and_pack_placement_identical": true,
+  "prior_results_reused": false,
+  "last_observation": "2026-11-11T17:43:20Z",
+  "status": "in_progress",
+  "pack_start_interval": "2026-11-11T17:40:53Z through 17:40:54Z",
+  "gate_verdict": null
+}

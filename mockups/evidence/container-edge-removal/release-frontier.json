@@ -1,0 +1,70 @@
+{
+  "schema": "mastermind.container_edge_release_frontier.v1",
+  "saved_at": "2026-11-11T17:45:36.685340+00:00",
+  "mission": "Remove decorative left-edge container highlighting throughout Macro and verify the refined replacement in production.",
+  "mission_complete": false,
+  "protected_source_pin": "c42e812e4a754d7a95efd954441d3f01607a7fb5",
+  "pr": 10654,
+  "head": "9cd1c665595933532a2186164deb1dce18962708",
+  "candidate_tree": "d5b1f128c280133da5cf270ee3b70e515ed9bcc0",
+  "qualified_native_product_source": "08e0de87cfb76d9d5c971d8b68c3b5a6c63fbf47",
+  "qualified_main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "ci": {
+    "schema": "mastermind.container_edge_ci_plan_receipt.v1",
+    "artifact_id": 13877232259,
+    "zip_sha256": "1a3868d0e065744bde222129d90f7f8136b51cf0568482ea7c28f5cd9294df28",
+    "json_sha256": "67d7b64b9dcb5791caeadb40dff4e927c74e9812bbad799793a145f01edbe1d4",
+    "binding": {
+      "schema": "ci.pack_plan.v2",
+      "workflow_run_id": "43069644153",
+      "subject_head_sha": "9cd1c665595933532a2186164deb1dce18962708",
+      "tested_tree_sha": "322b6281c25dbb5f127200d5c37fc8abcb6fa1c6",
+      "base_sha": "63cd9355cb289990e7549bcbd8480089f9caa5f1",
+      "plan_sha256": "7a0482709a5630d347a28605873d5e183f8e32caf94c46e794a810e186e366e3"
+    },
+    "logical_jobs": 329,
+    "packs": 12,
+    "skipped": 0,
+    "prior_semantic_specs_and_pack_placement_identical": true,
+    "prior_results_reused": false,
+    "last_observation": "2026-11-11T17:43:20Z",
+    "status": "in_progress",
+    "pack_start_interval": "2026-11-11T17:40:53Z through 17:40:54Z",
+    "gate_verdict": null
+  },
+  "accepted_work": [
+    "whole-site decorative edge removal and refined surfaces/type/spacing",
+    "15179 HTML / 395 reachable assets / 457 style blocks; zero decorative residuals/missing assets/superseded references",
+    "161 synchronized template/site pairs; all five current-render qualification stages passed",
+    "representative 208-state browser proof plus focused interactions and owner suites",
+    "data and embedded typed JSON preserved against integrated main; five generated JS outputs match; all 31 EW inputs bound",
+    "canonical glossary repair passed owning suite locally and on prior hosted candidate"
+  ],
+  "original_ci_terminal_evidence": "de67728fa7b746ebb9b2e0b7f4fe10d8e4fd7c8f:mockups/evidence/container-edge-removal/ci/43057303734/terminal-receipt.json",
+  "held_effects": [
+    "Original native completion unknown in run43057303734 packs9/11 remains at original resources; no replay or effect inference",
+    "Prior browser-control denial remains action-scoped; do not bypass through another browser profile or credentials"
+  ],
+  "release_owner": "existing merge-on-green controller; no self-approval or direct self-merge",
+  "release_state": "not armed, not merged, not deployed; exact-head CI running",
+  "next_actions": [
+    "Consume exact-head CI semantic gate and required binding checks for9cd; diagnose or repair actual failures within grants",
+    "If the actual current-head arming predicate is clean and no binding hold exists, label only10654 merge-on-green and let the existing controller decide release",
+    "After actual accepted merge, run existing served-byte and isolated public-browser recipes; do not confuse wake or deployment receipt with production proof",
+    "Preserve the existing401 asset as access-limited without requesting it again or bypassing authentication; full closure stays false when limited",
+    "Save production results on the evidence branch and canonical PR record with readback"
+  ],
+  "do_not_redo": [
+    "accepted migration, browser matrix, owner tests or glossary repair absent changed inputs",
+    "old failed/cancelled CI reruns, native handles or duplicate observers",
+    "manual deployment, new runner/watcher/queue, blanket label cleanup or changes to10486"
+  ],
+  "return_capability_observation": {
+    "session_targets": [],
+    "fabric_adapter_available": false,
+    "fabric_background_execution": false,
+    "fabric_native_parent_wake": false,
+    "new_durable_worker_created": false,
+    "note": "Read-only capability observations; worker admission/start remain unprobed. No post-response monitoring or automatic return is claimed."
+  }
+}
