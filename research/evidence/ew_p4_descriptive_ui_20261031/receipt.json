@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_at_source_revision": "8b27e45be889576652e5fc7bf10f8f3030cb1fb0",
+        "blob_on_pr_branch": "8b27e45be889576652e5fc7bf10f8f3030cb1fb0",
         "equal": true
       },
       {
