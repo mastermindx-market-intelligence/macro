@@ -442,7 +442,7 @@
               <stop offset="100%" stop-color="var(--down)"/>
             </linearGradient>
           </defs>
-          <g id="gneedle-fg" style="transform:rotate(-27.0deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
+          <g id="gneedle-fg" style="transform:rotate(-16.200000000000003deg);transform-origin:60px 68px;transition:transform .8s cubic-bezier(.22,.9,.3,1);">
             <line x1="60" y1="68" x2="60" y2="26"
               stroke="var(--warn)"
               stroke-width="2.5" stroke-linecap="round"
@@ -452,7 +452,7 @@
         </svg>
         <div class="gauge-value flat">
           
-            <span class="l-en">Fear</span><span class="l-zh">恐惧</span>
+            <span class="l-en">Neutral</span><span class="l-zh">中性</span>
           
           <span class="help">?<span class="tip"><span class="l-en">Fear/Greed composite dial (0=Extreme Fear, 100=Extreme Greed). Wide multi-indicator composite. Technical receipts in the Mood section below.</span><span class="l-zh">恐惧/贪婪合成指针（0=极度恐惧，100=极度贪婪）。宽幅多指标合成。技术细节见下方情绪板块。</span></span></span>
         </div>
@@ -768,15 +768,15 @@
   
   <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px">
     <div>
-      <div style="font-size:32px;font-weight:800;font-family:var(--num)">35</div>
+      <div style="font-size:32px;font-weight:800;font-family:var(--num)">41</div>
       <div class="muted sm">/ 100</div>
     </div>
     <div>
-      <span class="badge" style="font-size:13px;padding:3px 10px"><span class="l-en">Fear</span><span class="l-zh">恐惧</span></span>
+      <span class="badge" style="font-size:13px;padding:3px 10px"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span>
       <div class="muted sm" style="margin-top:4px">11 <span class="l-en">legs driving it</span><span class="l-zh">项指标合成</span></div>
     </div>
     <div style="flex:1;min-width:100px">
-      <div class="pgauge"><i style="left:35%"></i></div>
+      <div class="pgauge"><i style="left:41%"></i></div>
       <div class="pends"><span><span class="l-en">Fear</span><span class="l-zh">恐惧</span></span><span><span class="l-en">Greed</span><span class="l-zh">贪婪</span></span></div>
     </div>
   </div>
@@ -819,16 +819,16 @@
   
   
   <div class="leg">
-    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">VIX trend (20d change)</span><span class="l-zh">VIX 趋势（20日变动）</span></span>
-    <div class="leg-bar"><i style="width:68.9%;background:var(--down)"></i></div>
-    <span class="muted sm" style="flex:0 0 60px;text-align:right">-2.1</span>
+    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">Safe haven demand (SPY − TLT 20d)</span><span class="l-zh">避险需求（SPY−TLT 20日）</span></span>
+    <div class="leg-bar"><i style="width:47.733333333333334%;background:var(--down)"></i></div>
+    <span class="muted sm" style="flex:0 0 60px;text-align:right">-1.4</span>
   </div>
   
   
   <div class="leg">
-    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">Safe haven demand (SPY − TLT 20d)</span><span class="l-zh">避险需求（SPY−TLT 20日）</span></span>
-    <div class="leg-bar"><i style="width:60.3%;background:var(--down)"></i></div>
-    <span class="muted sm" style="flex:0 0 60px;text-align:right">-1.8</span>
+    <span style="flex:0 0 130px;font-size:12.5px"><span class="l-en">VIX trend (20d change)</span><span class="l-zh">VIX 趋势（20日变动）</span></span>
+    <div class="leg-bar"><i style="width:29.933333333333334%;background:var(--down)"></i></div>
+    <span class="muted sm" style="flex:0 0 60px;text-align:right">-0.9</span>
   </div>
   
   
@@ -849,9 +849,9 @@
         
         <tr>
           <td class="l"><b><span class="l-en">SPX momentum (vs 125d MA)</span><span class="l-zh">标普动量（对比125日均线）</span></b></td>
-          <td>-2.61 <span class="muted sm">% above/below MA</span></td>
-          <td class="neg sm">-0.87</td>
-          <td class="sm muted">8502</td>
+          <td>-0.32 <span class="muted sm">% above/below MA</span></td>
+          <td class=" sm">-0.49</td>
+          <td class="sm muted">8503</td>
         </tr>
         
         <tr>
@@ -877,30 +877,30 @@
         
         <tr>
           <td class="l"><b><span class="l-en">Safe haven demand (SPY − TLT 20d)</span><span class="l-zh">避险需求（SPY−TLT 20日）</span></b></td>
-          <td>-10.61 <span class="muted sm">20d ret diff %</span></td>
-          <td class="neg sm">-1.81</td>
-          <td class="sm muted">6089</td>
+          <td>-8.28 <span class="muted sm">20d ret diff %</span></td>
+          <td class="neg sm">-1.43</td>
+          <td class="sm muted">6090</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX level</span><span class="l-zh">VIX 水平</span></b></td>
-          <td>25.60 <span class="muted sm">VIX points</span></td>
-          <td class="neg sm">-0.81</td>
-          <td class="sm muted">9284</td>
+          <td>20.00 <span class="muted sm">VIX points</span></td>
+          <td class=" sm">-0.07</td>
+          <td class="sm muted">9286</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX trend (20d change)</span><span class="l-zh">VIX 趋势（20日变动）</span></b></td>
-          <td>10.80 <span class="muted sm">VIX 20d delta</span></td>
-          <td class="neg sm">-2.07</td>
-          <td class="sm muted">9264</td>
+          <td>4.69 <span class="muted sm">VIX 20d delta</span></td>
+          <td class="neg sm">-0.90</td>
+          <td class="sm muted">9266</td>
         </tr>
         
         <tr>
           <td class="l"><b><span class="l-en">VIX term structure (VIX/VIX3M)</span><span class="l-zh">VIX 期限结构（VIX/VIX3M）</span></b></td>
-          <td>1.04 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
-          <td class="neg sm">-1.64</td>
-          <td class="sm muted">5111</td>
+          <td>0.95 <span class="muted sm">ratio (&gt;=1=backwardation)</span></td>
+          <td class="neg sm">-0.58</td>
+          <td class="sm muted">5112</td>
         </tr>
         
         <tr>
@@ -1137,10 +1137,10 @@
       <td class="l"><b><span class="l-en">US Dollar</span><span class="l-zh">美元</span></b></td>
       <td class="sm">
         <span class="l-en">above trend</span><span class="l-zh">趋势上方</span>
-        <span class="help">?<span class="tip"><span class="l-en">Momentum: 47/100 · 50-day: above</span><span class="l-zh">动量：47/100 · 50 日线：上方</span></span></span>
+        <span class="help">?<span class="tip"><span class="l-en">Momentum: 49/100 · 50-day: above</span><span class="l-zh">动量：49/100 · 50 日线：上方</span></span></span>
       </td>
       <td class="pos">+2.6%</td>
-      <td class="">-0.9%</td>
+      <td class="">-1.0%</td>
     </tr>
     
     </tbody>
@@ -1581,7 +1581,7 @@
     setNeedle('gneedle-inflation', -32.4);
     
     
-    setNeedle('gneedle-fg', -27.0);
+    setNeedle('gneedle-fg', -16.2);
     
     
     setNeedle('gneedle-vix', 23.0);
