@@ -43,7 +43,6 @@ class SealedRefusal(PermissionError):
 
 
 RELEASE2 = ROOT / "research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json"
-STAGE1_RESULT = ROOT / "research/rotation_core/results_v2_stage1_pre1998.json"
 W_PRE = "pre1998_1928_1997"
 W_H = "2020-01-02..2025-12-31"
 PRE_END = pd.Timestamp("1997-12-31")
@@ -70,15 +69,46 @@ def _load_release(path: Path) -> dict | None:
     return json.loads(Path(path).read_text())
 
 
+SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection.json"
+SEALED_STAGE1_DIR = Path("/home/ubuntu2/tmp/rotation-core/data/sealed_stage1")
+STAGE1_SEALED = SEALED_STAGE1_DIR / "results_v2_stage1_pre1998.json"
+STAGE1_GATE = ROOT / "research/rotation_core/results_v2_stage1_gate.json"
+
+
+def selected_setting(selection: Path = SELECTION_RESULT) -> tuple[float, float]:
+    """R13-g(i): the gate setting is read from the committed selection result, never from an argument."""
+    import json, re
+    if not _committed_clean(selection):
+        raise SealedRefusal("refused: selection result is not committed")
+    sel = json.loads(Path(selection).read_text())["selection"]["selected"]
+    m = re.fullmatch(r"h(\d+)_b([\d.]+)", sel)
+    return float(m.group(1)), float(m.group(2))
+
+
+def check_engine_commit(commit: str) -> None:
+    """Refuse unless engine, scripts and tests at HEAD are identical to `commit` and the tree is clean."""
+    for args in (["diff", "--quiet", commit, "HEAD", "--", "engine", "scripts", "tests"],
+                 ["diff", "--quiet", "HEAD", "--", "engine", "scripts", "tests"]):
+        if subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True).returncode != 0:
+            raise SealedRefusal(f"refused: engine/scripts/tests differ from release engine_commit {commit}")
+
+
 def stage1_release(release: Path = RELEASE) -> dict:
     r = _load_release(release)
     if r is None or r.get("windows_released") != [W_PRE]:
         raise SealedRefusal(f"refused: stage 1 needs a committed {Path(release).name} with windows_released exactly "
                             f"[\"{W_PRE}\"]")
+    if r.get("protocol_header_sha256") != FROZEN_V2_SHA256:
+        raise SealedRefusal("refused: release names a different header sha256")
+    h, b = selected_setting()
+    g = r.get("selected_grid_point", {})
+    if (float(g.get("h_near_high_pct", -1)), float(g.get("b_breadth_drop_pp", -1))) != (h, b):
+        raise SealedRefusal("refused: release names a configuration other than the committed selection")
+    check_engine_commit(r.get("engine_commit", "<missing>"))
     return r
 
 
-def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> dict:
+def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> dict:
     """Stage 2 opens only with a committed second release AND a committed stage-1 result that satisfies the
     release's opening condition (checked here from the file, not from the release's word)."""
     import json
@@ -86,25 +116,64 @@ def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESUL
     if r is None or r.get("windows_released") != [W_H]:
         raise SealedRefusal(f"refused: stage 2 needs a committed {Path(release2).name} with windows_released [\"{W_H}\"]")
     if not (Path(stage1_result).exists() and _committed_clean(stage1_result)):
-        raise SealedRefusal("refused: stage 2 needs the committed stage-1 result file")
+        raise SealedRefusal("refused: stage 2 needs the committed stage-1 gate file")
     res = json.loads(Path(stage1_result).read_text())
     hyps = r.get("opening_condition_hypotheses", ["H1", "H3"])
-    ok = [h for h in hyps if all(res["eras"][h][e] is not None and res["eras"][h][e] > 0 for e in ("E1_1928_1945", "E2_1946_1997"))]
+    ok = [h for h in hyps if h in res["gate_signs"] and all(res["gate_signs"][h][e] == "+" for e in ("E1_1928_1945", "E2_1946_1997"))]
     if not ok:
         raise SealedRefusal(f"refused: opening condition not met in the committed stage-1 result for {hyps}")
     r["_opened_by"] = ok
     return r
 
 
-def seal_guard(path, release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> None:
+def seal_guard(path, release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> None:
     """Any path under the seal needs a valid stage-2 release (with its opening condition met)."""
     if SEALED_MARK in str(path):
         stage2_release(release2, stage1_result)
 
 
-def assert_window(end, release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> None:
+def assert_window(end, release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> None:
     if pd.Timestamp(end) > rc.D_END:
         stage2_release(release2, stage1_result)
+
+
+def canonical_bytes(obj) -> bytes:
+    import json
+    return (json.dumps(obj, sort_keys=True, default=float, separators=(",", ":")) + "\n").encode()
+
+
+def write_sealed(obj, path: Path = STAGE1_SEALED) -> str:
+    """Write the full stage-1 results sealed (mode 000) and return their sha256. Never prints a magnitude."""
+    import hashlib, os
+    raw = canonical_bytes(obj)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        raise SealedRefusal("refused: sealed stage-1 file already exists (run once)")
+    path.write_bytes(raw); os.chmod(path, 0)
+    return hashlib.sha256(raw).hexdigest()
+
+
+def verify_reproduction(obj, expected_sha: str) -> None:
+    """Final run: its pre-1998 numbers must reproduce the sealed file byte for byte (by sha) before printing."""
+    import hashlib
+    got = hashlib.sha256(canonical_bytes(obj)).hexdigest()
+    if got != expected_sha:
+        raise SealedRefusal(f"refused: pre-1998 recomputation sha {got} != sealed {expected_sha}")
+
+
+def open_sealed_stage1(gate: Path = STAGE1_GATE, release2: Path = RELEASE2, path: Path = STAGE1_SEALED) -> dict:
+    """Readable only after a recorded gate-CLOSED result, or with a valid stage-2 release."""
+    import json, os, hashlib
+    if not (Path(gate).exists() and _committed_clean(gate)):
+        raise SealedRefusal("refused: no committed stage-1 gate file")
+    g = json.loads(Path(gate).read_text())
+    if g.get("gate_open") is not False:
+        stage2_release(release2, gate)
+    os.chmod(path, 0o400)
+    raw = Path(path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != g["sealed_sha256"]:
+        raise SealedRefusal("refused: sealed file sha does not match the committed gate file")
+    return json.loads(raw)
 
 
 def assert_stage1_window(end) -> None:
@@ -394,27 +463,50 @@ def simulate_states(st: pd.Series, legs: Legs, rf: pd.Series, start, end, cash_f
 
 
 # --------------------------------------------------------------------------- matched-mix contrast
-def matched_mix_stat(r, w, legs_r):
+def ann_factor(idx) -> float:
+    """Observed sessions per calendar year in the window (handles pre-1952 Saturday sessions)."""
+    yrs = (pd.Timestamp(idx[-1]) - pd.Timestamp(idx[0])).days / 365.25
+    return float(len(idx) / yrs) if yrs > 0 else float(rc.TRADING_DAYS)
+
+
+def window_excess(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z) -> float:
+    """THE gate / sign-leg statistic (R13-g): annualised mean daily excess of the book over its exposure-matched
+    static mix, the mix built from the book's own average weights on [a, z] alone; annualised by observed sessions
+    per year in [a, z]. One function for the gate and for the final conjunction."""
+    idx = book.returns.index
+    m = (idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z))
+    ii = idx[m]
+    r = book.returns.loc[ii].values
+    W = book.holdings.loc[ii, ["OFF", "DEF", "BASE"]].values
+    W = np.concatenate([W, 1 - W.sum(axis=1, keepdims=True)], axis=1)
+    L = np.concatenate([legs_r.loc[ii, ["OFF", "DEF", "BASE"]].fillna(0).values,
+                        cash.reindex(ii).fillna(0).values[:, None]], axis=1)
+    return float(matched_mix_stat(r[None], W[None], L[None], ann=ann_factor(ii))[0])
+
+
+def matched_mix_stat(r, w, legs_r, ann: float = rc.TRADING_DAYS):
     """Annualised mean of r - (matched static mix), mix weights = this sample's own average weights.
     r: (B, n); w: (B, n, 3) start-of-day weights in OFF/DEF/BASE; legs_r: (B, n, 3); cash = 1 - sum(w) earns 0
     in the reference only if the strategy held cash (ablation), handled by the caller via the 4th column."""
     wbar = w.mean(axis=1, keepdims=True)
     ref = (wbar * legs_r).sum(axis=2)
-    return (r - ref).mean(axis=1) * rc.TRADING_DAYS
+    return (r - ref).mean(axis=1) * ann
 
 
-def matched_contrast(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, mask, B=10_000, block=21, seed=20261111):
+def matched_contrast(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, mask, B=10_000, block=21, seed=20261111,
+                     ann: float | None = None):
     idx = book.returns.index[mask.reindex(book.returns.index).fillna(False).values]
+    ann = ann_factor(idx) if ann is None else ann
     r = book.returns.loc[idx].values
     W = book.holdings.loc[idx, ["OFF", "DEF", "BASE"]].values
     W = np.concatenate([W, 1 - W.sum(axis=1, keepdims=True)], axis=1)       # cash column
     L = np.concatenate([legs_r.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0).values,
                         cash.reindex(idx).fillna(0).values[:, None]], axis=1)
-    obs = float(matched_mix_stat(r[None], W[None], L[None])[0])
+    obs = float(matched_mix_stat(r[None], W[None], L[None], ann)[0])
     out = []
     for c in range(0, B, 1000):
         ii = rc.stationary_bootstrap_indices(len(r), min(1000, B - c), block, seed + c)
-        out.append(matched_mix_stat(r[ii], W[ii], L[ii]))
+        out.append(matched_mix_stat(r[ii], W[ii], L[ii], ann))
     dist = np.concatenate(out)
     return {"observed": obs, "ci95": rc.ci95(dist), "p_one_sided_centred": rc.centred_p(dist, obs),
             "se": float(np.nanstd(dist, ddof=1)), "finite_draws": rc.finite_draws(dist), "n": int(len(r))}

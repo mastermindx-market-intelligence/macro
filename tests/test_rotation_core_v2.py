@@ -198,71 +198,140 @@ def _rel(tmp_path, name, windows, **kw):
     p = tmp_path / name; p.write_text(_json.dumps({"windows_released": windows, **kw})); return p
 
 
-def test_stage1_requires_exactly_the_pre1998_window(tmp_path, monkeypatch):
+def _good_release(tmp_path, name="r1.json", **over):
+    body = {"windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
+            "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "X"}
+    body.update(over)
+    p = tmp_path / name; p.write_text(_json.dumps(body)); return p
+
+
+def test_stage1_release_checks_window_header_config_and_engine_commit(tmp_path, monkeypatch):
     with pytest.raises(v2.SealedRefusal):
         v2.stage1_release(tmp_path / "missing.json")
     monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
-    assert v2.stage1_release(_rel(tmp_path, "r1.json", [v2.W_PRE]))
+    monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
+    assert v2.stage1_release(_good_release(tmp_path))
+    for over in ({"windows_released": [v2.W_PRE, v2.W_H]}, {"windows_released": [v2.W_H]},
+                 {"protocol_header_sha256": "0" * 64}, {"selected_grid_point": {"h_near_high_pct": 5, "b_breadth_drop_pp": 25}}):
+        with pytest.raises(v2.SealedRefusal):
+            v2.stage1_release(_good_release(tmp_path, "bad.json", **over))
+
+
+def test_engine_commit_check_refuses_other_commit():
     with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(_rel(tmp_path, "r1b.json", [v2.W_PRE, v2.W_H]))
-    with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(_rel(tmp_path, "r1c.json", [v2.W_H]))
+        v2.check_engine_commit("4d49b23a8f0246718fd48a24b4124c35129a1cfe")      # v1 data pin: engine differs
+
+
+def test_selected_setting_read_from_committed_selection():
+    assert v2.selected_setting() == (3.0, 25.0)
 
 
 def test_uncommitted_release_never_counts(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(_rel(tmp_path, "r1.json", [v2.W_PRE]))      # exists but not committed in the repo
+        v2.stage1_release(_good_release(tmp_path))          # exists but not committed in the repo
 
 
-def test_stage1_cannot_read_1998_or_the_sealed_path(tmp_path, monkeypatch):
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+def test_stage1_cannot_read_1998_or_the_sealed_path(tmp_path):
     with pytest.raises(v2.SealedRefusal):
         v2.assert_stage1_window("1998-01-02")
     v2.assert_stage1_window("1997-12-31")
-    # with only a stage-1 release present, the sealed path stays refused
     with pytest.raises(v2.SealedRefusal):
-        v2.seal_guard(SEALED, release2=tmp_path / "no_stage2.json", stage1_result=tmp_path / "no_result.json")
+        v2.seal_guard(SEALED, release2=tmp_path / "no_stage2.json", stage1_result=tmp_path / "no_gate.json")
 
 
-def test_stage1_loader_truncates_and_runner_asserts_le_1997(tmp_path):
-    import scripts.run_rotation_core_v2 as run
-    fx = make_fixture(tmp_path / "fx", extra_after="1999-06-30")       # fixture extends past 1997
+def test_stage1_loader_truncates_at_1997(tmp_path):
+    fx = make_fixture(tmp_path / "fx", extra_after="1999-06-30")
     vw, _ = v2.load_french_industries(fx / "49_Industry_Portfolios_Daily.csv", v2.PRE_END)
     assert vw.index.max() <= v2.PRE_END
 
 
 def test_stage2_refused_without_second_release(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(tmp_path / "none.json", tmp_path / "res.json")
+        v2.stage2_release(tmp_path / "none.json", tmp_path / "gate.json")
 
 
-def _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(0.01, 0.02), h2=(0.01, 0.01)):
-    p = tmp_path / "res.json"
-    p.write_text(_json.dumps({"eras": {k: {"E1_1928_1945": v[0], "E2_1946_1997": v[1]}
-                                       for k, v in (("H1", h1), ("H3", h3), ("H2", h2))}}))
+def _gate(tmp_path, h1="+-", h3="++", h2="++", open_=True):
+    p = tmp_path / "gate.json"
+    sg = lambda x: {"E1_1928_1945": x[0], "E2_1946_1997": x[1]}
+    p.write_text(_json.dumps({"gate_signs": {"H1": sg(h1), "H3": sg(h3), "H2": sg(h2)}, "gate_open": open_,
+                              "sealed_sha256": "x"}))
     return p
 
 
-def test_stage2_checks_opening_condition_from_the_committed_result(tmp_path, monkeypatch):
+def test_stage2_checks_opening_condition_from_the_committed_gate_file(tmp_path, monkeypatch):
     monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
     r2 = _rel(tmp_path, "r2.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3"])
-    ok = v2.stage2_release(r2, _stage1_result(tmp_path))                     # H3 positive in both eras
-    assert ok["_opened_by"] == ["H3"]
-    with pytest.raises(v2.SealedRefusal):                                    # neither H1 nor H3 positive in both
-        v2.stage2_release(r2, _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(-0.02, 0.02)))
+    assert v2.stage2_release(r2, _gate(tmp_path))["_opened_by"] == ["H3"]
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage2_release(r2, _gate(tmp_path, h1="+-", h3="-+"))
     r2h2 = _rel(tmp_path, "r2b.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3", "H2"])
-    assert v2.stage2_release(r2h2, _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(-0.02, 0.02)))["_opened_by"] == ["H2"]
+    assert v2.stage2_release(r2h2, _gate(tmp_path, h1="+-", h3="-+"))["_opened_by"] == ["H2"]
 
 
 def test_stage2_release_with_wrong_window_refused(tmp_path, monkeypatch):
     monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
     with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), _stage1_result(tmp_path))
+        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), _gate(tmp_path))
 
 
-def test_stage1_runs_end_to_end_on_fixture(tmp_path):
+@pytest.fixture(scope="module")
+def blind_run(tmp_path_factory):
+    import io, contextlib
     import scripts.run_rotation_core_v2 as run
-    fx = make_fixture(tmp_path / "fx")
-    res = run.run_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=20)
-    assert set(res["eras"]) == {"H1", "H2", "H3"} and set(res["eras"]["H1"]) == {"E1_1928_1945", "E2_1946_1997"}
-    assert res["window"][1] == "1997-12-31"
+    d = tmp_path_factory.mktemp("blind")
+    fx = make_fixture(d / "fx")
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        g = run.blind_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv",
+                             d / "sealed.json", d / "gate.json", B_=20, engine_commit="fixture")
+    return d, fx, g, buf.getvalue()
+
+
+def test_stage1_stdout_has_no_magnitudes(blind_run):
+    import re
+    d, fx, g, out = blind_run
+    assert not re.search(r"\d\.\d", out), "a decimal number was printed at stage 1"
+    assert set(g["gate_signs"]["H1"].values()) <= {"+", "-"}
+
+
+def test_sealed_file_unreadable_without_stage2_release_or_closed_gate(blind_run, monkeypatch, tmp_path):
+    d, fx, g, out = blind_run
+    import os, stat
+    assert stat.S_IMODE(os.stat(d / "sealed.json").st_mode) == 0
+    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    gate_open = dict(g, gate_open=True); gp = tmp_path / "g_open.json"; gp.write_text(_json.dumps(gate_open))
+    with pytest.raises(v2.SealedRefusal):                       # open gate, no stage-2 release
+        v2.open_sealed_stage1(gp, tmp_path / "no_r2.json", d / "sealed.json")
+    gate_closed = dict(g, gate_open=False); gc = tmp_path / "g_closed.json"; gc.write_text(_json.dumps(gate_closed))
+    res = v2.open_sealed_stage1(gc, tmp_path / "no_r2.json", d / "sealed.json")   # recorded closed gate: readable
+    assert "H1" in res
+    os.chmod(d / "sealed.json", 0)
+
+
+def test_reproduction_check_fails_on_a_one_byte_difference(blind_run, monkeypatch, tmp_path):
+    import os
+    d, fx, g, out = blind_run
+    os.chmod(d / "sealed.json", 0o400)
+    raw = (d / "sealed.json").read_bytes(); os.chmod(d / "sealed.json", 0)
+    obj = _json.loads(raw)
+    v2.verify_reproduction(obj, g["sealed_sha256"])             # identical recomputation passes
+    obj["label"] = obj["label"] + " "                            # one byte
+    with pytest.raises(v2.SealedRefusal):
+        v2.verify_reproduction(obj, g["sealed_sha256"])
+
+
+def test_recomputation_on_fixture_is_byte_identical(blind_run):
+    import scripts.run_rotation_core_v2 as run
+    d, fx, g, out = blind_run
+    res, gate, integ = run.compute_pre1998(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=20)
+    v2.verify_reproduction(res, g["sealed_sha256"])
+
+
+def test_gate_statistic_is_the_same_function_as_the_era_point_estimate(blind_run):
+    import os
+    d, fx, g, out = blind_run
+    os.chmod(d / "sealed.json", 0o400); res = _json.loads((d / "sealed.json").read_bytes()); os.chmod(d / "sealed.json", 0)
+    for h_ in ("H1", "H3"):
+        for e, x in res[h_]["eras"].items():
+            assert x["window_excess"] == pytest.approx(x["observed"], abs=1e-15)      # matched_contrast == window_excess
+            assert g["gate_signs"][h_][e] == ("+" if x["window_excess"] > 0 else "-")

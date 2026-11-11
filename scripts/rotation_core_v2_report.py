@@ -24,7 +24,7 @@ def write_selection_md(res, path):
          f"frozen header `{res['header_sha256'][:12]}…`). These numbers choose the grid point and nothing else. "
          f"{res['warmup_note']}. Annualised differences; 95% stationary-bootstrap intervals (block 21, B = 10,000) on "
          "the matched-mix contrast, whose mix is rebuilt inside every resample. Industry portfolios are not tradable.", "",
-         "| Book | vs matched mix (binding) | vs SPY | vs RSP (EW proxy before 2003-05) | vs BASE (EW industries) | MaxDD vs mix | One-way turnover/yr | Costs/yr (10 bp) | False DEFEND calls / calm yr |",
+         "| Book | vs exposure-matched mix (after-the-fact attribution yardstick, not holdable; binding contrast) | vs SPY | vs RSP (EW proxy before 2003-05) | vs BASE (EW industries) | MaxDD vs mix | One-way turnover/yr | Costs/yr (10 bp) | False DEFEND calls / calm yr |",
          "|---|---|---|---|---|---|---|---|---|"]
     for k, v in res["settings"].items():
         L.append(_row(f"H1 {k}", v["H1"]))
@@ -48,7 +48,7 @@ def write_selection_md(res, path):
 def write_stage1_md(res, path):
     L = ["# Rotation Core v2 — STAGE 1 (pre-1998 confirmation window, R13)", "",
          f"{res['label']} Window {res['window'][0]} → {res['window'][1]}; selected setting {res['selected_setting']}; header "
-         f"`{res['header_sha256'][:12]}…`. Industry portfolios, not tradable. Dropped industry-days (no imputation): "
+         f"`{res['header_sha256'][:12]}…`. Industry portfolios, not tradable. The exposure-matched mix is an after-the-fact attribution yardstick, not holdable; SPY (French market), RSP (EW proxy) and equal-weight industries are the holdable yardsticks. Dropped industry-days (no imputation): "
          f"{res['dropped_industry_days']}.", "",
          "| Book | vs matched mix, full | E1 1928–45 | E2 1946–97 | vs French market | vs EW proxy | vs BASE | MaxDD vs mix | Turnover | Costs/yr | False DEFEND / calm yr |",
          "|---|---|---|---|---|---|---|---|---|---|---|"]

@@ -239,7 +239,9 @@ def simulate(targets: pd.DataFrame, rets: pd.DataFrame, cash_r: pd.Series, cost_
     v = np.zeros(k); cash = 1.0
     last_target = None
     pending = None
-    deferrals = 0; cash_rate_missing = 0
+    deferrals = 0; cash_rate_missing = 0; held_after_last = 0
+    # last observed close per asset; a position held after it is 'nominally alive' and is counted, never hidden
+    last_obs = np.array([np.max(np.where(A[:, j])[0]) if A[:, j].any() else -1 for j in range(k)])
     out_r = np.zeros(n); out_w = np.zeros(n); out_eq = np.zeros(n); out_tr = np.zeros(n); out_c = np.zeros(n)
     H = np.zeros((n, k)); HP = np.zeros((n, k))
     eq_idx = [assets.index(a) for a in equity_cols if a in assets]
@@ -251,6 +253,8 @@ def simulate(targets: pd.DataFrame, rets: pd.DataFrame, cash_r: pd.Series, cost_
         out_eq[i] = w0[eq_idx].sum() if eq_idx else 0.0
         if cash > 1e-12 and not np.isfinite(Craw[i]):
             cash_rate_missing += 1
+        if np.any((v > 1e-12) & (i > last_obs)):
+            held_after_last += 1
         v = v * (1 + R[i])
         cash = cash * (1 + C[i])
         nav_pre = float(v.sum() + cash)
@@ -287,6 +291,7 @@ def simulate(targets: pd.DataFrame, rets: pd.DataFrame, cash_r: pd.Series, cost_
     return Book(name, pd.Series(out_r, idx), pd.Series(out_w, idx), pd.Series(out_eq, idx),
                 pd.DataFrame(H, idx, assets), pd.Series(out_tr, idx), pd.Series(out_c, idx),
                 meta={"deferred_executions": deferrals, "cash_rate_missing_days_with_cash": cash_rate_missing,
+                      "days_holding_an_asset_after_its_last_close": held_after_last,
                       "equity_cols": list(equity_cols)},
                 post_holdings=pd.DataFrame(HP, idx, assets))
 
@@ -461,9 +466,10 @@ def power_line(se: float, m: int, effect: float, unit: str, alpha: float = 0.05)
     could = mde_holm <= effect
     return {"se": se, "mde80_holm": mde_holm, "mde80_unadjusted": mde_raw, "holm_m": m,
             "reference_effect": effect,
+            "method": "normal approximation; Bonferroni bound alpha/m (Holm's first step, worst case)",
             "sentence": (f"this test {'could' if could else 'could not'} have detected an effect of "
-                         f"{effect:g} {unit} (80% power at the Holm threshold alpha/{m}; minimum detectable "
-                         f"{mde_holm:.3g} {unit})")}
+                         f"{effect:g} {unit} (80% power, normal approximation at the Bonferroni bound alpha/{m}; "
+                         f"minimum detectable {mde_holm:.3g} {unit})")}
 
 
 def holm(pvals: Mapping[str, float], alpha: float = 0.05) -> dict[str, dict]:

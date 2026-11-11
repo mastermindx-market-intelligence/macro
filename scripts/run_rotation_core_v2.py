@@ -175,14 +175,13 @@ def run_selection():
     return res
 
 
-STAGE1_OUT_J = ROOT / "research/rotation_core/results_v2_stage1_pre1998.json"
-STAGE1_OUT_M = ROOT / "research/rotation_core/RESULTS_V2_STAGE1_PRE1998.md"
-SELECTED = (3, 25.0)                     # selection 1ca5228b3c (h3_b25), inherited by H2 control and ablation
-ERAS = {"E1_1928_1945": ("1928-01-01", "1945-12-31"), "E2_1946_1997": ("1946-01-01", "1997-12-31")}
+SEEDS = {"stage1": 20261113, "stage2": 20261114, "pooled": 20261115}     # R13-h: fixed per stage before any read
+B_STAGE, BLOCK, BLOCK_SENS = 10_000, 21, 63
+ERAS = {"E1_1928_1945": ("1928-01-01", "1945-12-31"), "E2_1946_1997": ("1946-01-02", "1997-12-31")}
 
 
-def run_stage1(ind_path=IND_D, fact_path=FACT, B_=10_000):
-    """Stage 1 of R13: pre-1998 only. Reads nothing dated after 1997-12-31."""
+def compute_pre1998(ind_path=IND_D, fact_path=FACT, B_=B_STAGE):
+    """Full stage-1 computation (pre-1998 only). Returns (results, gate, integrity). Reads nothing after 1997-12-31."""
     from engine import rotation_core_evaluation as rc
     import scripts.run_rotation_core_v1 as v1
     end = v2.PRE_END
@@ -193,64 +192,89 @@ def run_stage1(ind_path=IND_D, fact_path=FACT, B_=10_000):
     legs = v2.form_legs(vw, mkt)
     bd = v2.current_leg_breadth(vw, legs)
     rel = v2.relative_line(legs)
-    h, b = SELECTED
+    h, b = v2.selected_setting()                       # from the committed selection result (R13-g(i))
     st1 = v2.h1_states(rel, bd, h, b); st0 = v2.h1_states(rel, bd, h, b, use_breadth=False); st3 = v2.h3_states(legs)
     start = max([pd.Timestamp("1928-01-02")] + [x.first_valid_index() for x in (st1, st0, st3)])
+    eras = {"E1_1928_1945": (start, pd.Timestamp("1945-12-31")), "E2_1946_1997": (pd.Timestamp("1946-01-02"), end)}
     s = vw.index
     ew_proxy = ew.where(vw.notna().cumsum() >= 252).mean(axis=1)
     level = (1 + mkt.reindex(s).fillna(0)).cumprod()
     eps = {}
-    for name, (a, b2, c) in v1.LPEAK.items():
-        ep = rc.find_episode(level[(s >= start) & (s <= end)], a, b2, c)
+    for name, (a_, b2, c) in v1.LPEAK.items():
+        ep = rc.find_episode(level[(s >= start) & (s <= end)], a_, b2, c)
         if ep:
             eps[name] = ep
+    seed0 = SEEDS["stage1"]
+    books = {}
 
-    def stats(st, tag, fee=10.0, cash_def=False, seed=0):
+    def stats(st, tag, fee=10.0, cash_def=False, k=0):
         bk = v2.simulate_states(st, legs, rf, start, end, cash_for_defend=cash_def, fee_bp=fee, name=tag)
+        books[tag] = bk
         idx = bk.returns.index; r = bk.returns
         full = pd.Series(True, index=idx)
-        out = {"vs_matched_mix": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, seed=20261113 + seed), "eras": {}}
-        for e, (a, z) in ERAS.items():
-            em = pd.Series((idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z)), index=idx)
-            out["eras"][e] = v2.matched_contrast(bk, legs.returns, rf, em, B=B_, seed=20261113 + seed + 50)
+        out = {"vs_matched_mix": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, block=BLOCK, seed=seed0 + k),
+               "vs_matched_mix_block63": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, block=BLOCK_SENS, seed=seed0 + k + 1),
+               "eras": {}}
+        for e, (a_, z) in eras.items():
+            em = pd.Series((idx >= a_) & (idx <= z), index=idx)
+            out["eras"][e] = v2.matched_contrast(bk, legs.returns, rf, em, B=B_, block=BLOCK, seed=seed0 + k + 2)
+            out["eras"][e]["window_excess"] = v2.window_excess(bk, legs.returns, rf, a_, z)
         W = bk.holdings[["OFF", "DEF", "BASE"]]; wbar = W.mean(); cashbar = 1 - wbar.sum()
         mix = (legs.returns.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
-        yrs = len(r) / 252
+        yrs = len(r) / v2.ann_factor(idx)
         for nm, ref in (("vs_French_market_(SPY_yardstick)", mkt), ("vs_EW_proxy_(RSP_yardstick)", ew_proxy),
                         ("vs_BASE_equal_weight_industries", legs.returns["BASE"])):
-            out[nm] = _diff_stat(r.values, ref.reindex(idx).fillna(0).values, 20261113 + 300 + seed, B_)
+            out[nm] = _diff_stat(r.values, ref.reindex(idx).fillna(0).values, seed0 + 300 + k, B_)
         pv = rc.pivot_table((1 - (st.reindex(idx) == v2.DEFEND).astype(float)), r, mkt.reindex(idx).fillna(0),
                             level.reindex(idx), eps)
         out.update({"CAGR": _ann(r), "CAGR_matched_mix": _ann(mix), "max_drawdown": _mdd(r), "max_drawdown_matched_mix": _mdd(mix),
-                    "matched_mix_weights": {**{k: round(float(v), 4) for k, v in wbar.items()}, "cash": round(float(cashbar), 4)},
+                    "matched_mix_weights": {**{kk: round(float(v), 4) for kk, v in wbar.items()}, "cash": round(float(cashbar), 4)},
                     "turnover_one_way_per_year": float(bk.traded.sum() / yrs / 2), "costs_per_year": float(bk.costs.sum() / yrs),
-                    "deferred_executions": bk.meta["deferred_executions"],
-                    "false_DEFEND_calls_per_calm_year": pv["false_pivots_per_calm_year"],
-                    "share": {k: round(float((st.reindex(idx) == v).mean()), 3) for k, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}})
-        return bk, out
+                    "false_DEFEND_calls_per_calm_year": pv["false_pivots_per_calm_year"]})
+        return out
 
-    bk1, s1 = stats(st1, "H1", seed=1)
-    bk0, s0 = stats(st0, "H1_price_only", seed=2)
-    _, s1x = stats(st1, "H1_2x", fee=20.0, seed=3)
-    _, s3x = stats(st3, "H3_2x", fee=20.0, seed=4)
-    _, sc = stats(st1, "H1_cash_ablation", cash_def=True, seed=5)
-    _, s3 = stats(st3, "H3", seed=6)
-    idx = bk1.returns.index
-    h2 = {"full": _diff_stat(bk1.returns.values, bk0.returns.reindex(idx).fillna(0).values, 20261113 + 700, B_)}
-    for e, (a, z) in ERAS.items():
-        m = (idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z))
-        h2[e] = _diff_stat(bk1.returns.values[m], bk0.returns.reindex(idx).fillna(0).values[m], 20261113 + 710, B_)
-    eras = {"H1": {e: s1["eras"][e]["observed"] for e in ERAS}, "H3": {e: s3["eras"][e]["observed"] for e in ERAS},
-            "H2": {e: h2[e]["ann"] for e in ERAS}}
-    return {"label": "STAGE 1 of R13: pre-1998 confirmation window (previously examined by Pro run B; not clean). "
-                     "No pooled Holm p at this stage.",
-            "header_sha256": v2.FROZEN_V2_SHA256, "selected_setting": "h3_b25.0", "window": [str(start.date()), str(end.date())],
-            "dropped_industry_days": legs.dropped_industry_days,
-            "episodes": {k: {"peak": str(v["peak"].date()), "trough": str(v["trough"].date())} for k, v in eps.items()},
-            "H1": s1, "H1_at_2x_costs": s1x, "price_only_control": s0, "H2_paired_H1_minus_price_only": h2,
-            "H3": s3, "H3_at_2x_costs": s3x, "cash_ablation": sc, "eras": eras,
-            "opening_condition_H1_or_H3_positive_in_both_eras": {
-                h_: all(eras[h_][e] > 0 for e in ERAS) for h_ in ("H1", "H3")}}
+    res = {"H1": stats(st1, "H1", k=10), "H1_at_2x_costs": stats(st1, "H1_2x", fee=20.0, k=20),
+           "price_only_control": stats(st0, "H1_price_only", k=30), "price_only_at_2x": stats(st0, "H1_price_only_2x", fee=20.0, k=40),
+           "H3": stats(st3, "H3", k=50), "H3_at_2x_costs": stats(st3, "H3_2x", fee=20.0, k=60),
+           "cash_ablation": stats(st1, "H1_cash_ablation", cash_def=True, k=70)}
+    idx = books["H1"].returns.index
+    d = books["H1"].returns - books["H1_price_only"].returns.reindex(idx).fillna(0)
+    h2 = {"full": _diff_stat(d.values, np.zeros(len(d)), seed0 + 700, B_)}
+    for e, (a_, z) in eras.items():
+        m = (idx >= a_) & (idx <= z)
+        h2[e] = {"ann": float(d[m].mean() * v2.ann_factor(idx[m]))}
+    res["H2_paired_H1_minus_price_only"] = h2
+    sign = lambda x: "+" if x > 0 else "-"
+    gate = {h_: {e: sign(res[h_]["eras"][e]["window_excess"]) for e in eras} for h_ in ("H1", "H3")}
+    gate["H2"] = {e: sign(h2[e]["ann"]) for e in eras}
+    integrity = {"window": [str(start.date()), str(end.date())],
+                 "sessions_per_era": {e: int(((idx >= a_) & (idx <= z)).sum()) for e, (a_, z) in eras.items()},
+                 "offence_members_min_max": [int(bd["n_members"][idx].min()), int(bd["n_members"][idx].max())],
+                 "deferred_executions": {k_: int(v.meta["deferred_executions"]) for k_, v in books.items()},
+                 "days_holding_after_last_close": {k_: int(v.meta["days_holding_an_asset_after_its_last_close"]) for k_, v in books.items()},
+                 "dropped_industry_days": int(legs.dropped_industry_days),
+                 "state_session_counts": {k_: {nm: int((st.reindex(idx) == v).sum()) for nm, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}
+                                          for k_, st in (("H1", st1), ("price_only", st0), ("H3", st3))},
+                 "episodes_found": len(eps)}
+    res.update({"label": "STAGE 1 of R13 (pre-1998; previously examined by Pro run B; not clean). Sealed.",
+                "header_sha256": v2.FROZEN_V2_SHA256, "selected_setting": f"h{h:g}_b{b:g}", "integrity": integrity,
+                "seeds": SEEDS, "B": B_, "block": BLOCK, "block_sensitivity": BLOCK_SENS})
+    return res, gate, integrity
+
+
+def blind_stage1(ind_path, fact_path, sealed_path, gate_path, B_=B_STAGE, engine_commit=None):
+    """Compute stage 1, write everything sealed, write the gate file, print only signs, gate and counts."""
+    import json
+    res, gate, integ = compute_pre1998(ind_path, fact_path, B_)
+    sha = v2.write_sealed(res, sealed_path)
+    gate_open = any(all(gate[h_][e] == "+" for e in gate[h_]) for h_ in ("H1", "H3"))
+    g = {"schema": "rotation_core.stage1_gate/v2", "header_sha256": v2.FROZEN_V2_SHA256, "engine_commit": engine_commit,
+         "selected_setting": res["selected_setting"], "gate_signs": gate,
+         "gate_rule": "open if H1 or H3 has a positive excess over its era-alone matched mix at 10 bp in both eras",
+         "gate_open": bool(gate_open), "integrity": integ, "sealed_path": str(sealed_path), "sealed_sha256": sha}
+    Path(gate_path).write_text(json.dumps(g, indent=1) + "\n")
+    print(json.dumps({"gate_signs": gate, "gate_open": gate_open, "integrity": integ, "sealed_sha256": sha}, indent=1))
+    return g
 
 
 def main() -> int:
@@ -265,10 +289,12 @@ def main() -> int:
         if "rotation-core/data" in str(fx) or str(fx).startswith(str(ROOT)):
             raise SystemExit("refused: fixture dry run accepts only a synthetic fixture directory")
         v2.verify_header_v2(FROZEN)
-        res = run_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=50)
-        print({"window": res["window"], "keys": sorted(res), "eras_present": sorted(res["eras"]["H1"]),
-               "dropped_industry_days": res["dropped_industry_days"], "episodes": len(res["episodes"])})
-        print("stage-1 fixture dry run OK (synthetic data; no real pre-1998 statistic computed or written)")
+        out = fx / "dry_run_out"; out.mkdir(exist_ok=True)
+        for f in out.iterdir():
+            f.chmod(0o600); f.unlink()
+        blind_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv",
+                     out / "sealed_stage1.json", out / "gate.json", B_=50, engine_commit="fixture")
+        print("stage-1 fixture dry run OK (synthetic data; blind output; no real pre-1998 statistic computed)")
         return 0
     if a.dry_run:
         out = pipeline("2019-12-31", IND_D)
@@ -280,15 +306,11 @@ def main() -> int:
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
     v2.verify_header_v2(FROZEN)
     if a.stage == "pre1998":
-        import json
-        v2.stage1_release()
-        if STAGE1_OUT_J.exists():
-            raise SystemExit("refused: stage 1 already run (results_v2_stage1_pre1998.json exists); run once")
-        res = run_stage1()
-        STAGE1_OUT_J.write_text(json.dumps(res, indent=1, default=float) + "\n")
-        from scripts.rotation_core_v2_report import write_stage1_md
-        write_stage1_md(res, STAGE1_OUT_M)
-        print("wrote", STAGE1_OUT_J, STAGE1_OUT_M, "opening condition:", res["opening_condition_H1_or_H3_positive_in_both_eras"])
+        rel1 = v2.stage1_release()
+        if v2.STAGE1_GATE.exists() or v2.STAGE1_SEALED.exists():
+            raise SystemExit("refused: stage 1 already run; run once")
+        blind_stage1(IND_D, FACT, v2.STAGE1_SEALED, v2.STAGE1_GATE, engine_commit=rel1["engine_commit"])
+        print("stage 1 done: commit research/rotation_core/results_v2_stage1_gate.json; the sealed file stays unopened")
         return 0
     if a.stage in ("h2020_2025", "confirm"):
         r2 = v2.stage2_release()          # raises unless release 2 is committed and stage-1 result satisfies it

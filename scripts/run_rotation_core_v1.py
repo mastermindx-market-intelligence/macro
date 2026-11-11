@@ -207,7 +207,7 @@ def load(end) -> dict:
     avail = adj.notna()                     # RAW observed-close mask (execution and eligibility; PRO_RUN_A A01/A07)
     gaps = {}
     for t in adj.columns:
-        life = adj.index >= px[t].index.min()
+        life = (adj.index >= px[t].index.min()) & (adj.index <= px[t].index.max())   # no fill past the last close
         gaps[t] = int(adj.loc[life, t].isna().sum())
         adj.loc[life, t] = adj.loc[life, t].ffill()
     rets = adj.pct_change(fill_method=None)
