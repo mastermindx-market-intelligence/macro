@@ -168,6 +168,15 @@ class TestFailureIsolation:
                             out / "subsector_perf_history.jsonl")
         monkeypatch.setattr(fft, "TREE_HISTORY_PATH", out / "tree_history.jsonl")
         monkeypatch.setattr(fft, "MEMBER_PERF_ARCHIVE_DIR", out / "member_perf_archive")
+        # member price state (2026-11-11, lane 10): main() now writes a SECOND
+        # archive on this same path; redirect it too, or this harness writes a
+        # synthetic-roster file into the real data/ tree — where the exists→skip
+        # immutability rule would then block that date's true nightly capture.
+        monkeypatch.setattr(fft, "MEMBER_PRICE_STATE_DIR", out / "member_price_state")
+        monkeypatch.setattr(fft, "PRICE_STATE_YAHOO_DIR", out / "yahoo")
+        monkeypatch.setattr(fft, "PRICE_STATE_UNIVERSE_LEDGER",
+                            out / "membership.parquet")
+        monkeypatch.setattr(fft, "PRICE_STATE_SPY_HOLDINGS_DIR", out / "spy")
         monkeypatch.setattr(fft, "fetch_subsector_perf",
                             lambda: {"aicompute": {"1D": 1.0}, "fintech": {"1D": -2.0}})
         monkeypatch.setattr(fft, "fetch_member_perf", lambda tickers: MEMBER_PERF)

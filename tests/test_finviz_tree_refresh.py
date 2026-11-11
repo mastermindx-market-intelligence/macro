@@ -1372,6 +1372,13 @@ class TestKeyDriftTripwire:
         # member perf archive (2026-11-11): main() writes it on the perf path;
         # unredirected, the end-to-end tests would write into the real data/ dir.
         monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
+        # member price state (2026-11-11): same exposure — main() writes it on the
+        # perf path too; redirect output AND inputs so no real data/ is touched.
+        monkeypatch.setattr(ftr, "MEMBER_PRICE_STATE_DIR", tmp_path / "mps")
+        monkeypatch.setattr(ftr, "PRICE_STATE_YAHOO_DIR", tmp_path / "mps_yahoo")
+        monkeypatch.setattr(ftr, "PRICE_STATE_UNIVERSE_LEDGER",
+                            tmp_path / "mps_membership.parquet")
+        monkeypatch.setattr(ftr, "PRICE_STATE_SPY_HOLDINGS_DIR", tmp_path / "mps_spy")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
 
         # map_perf answers with ONE stale key and ONE key the tree does not carry.
@@ -1403,6 +1410,13 @@ class TestKeyDriftTripwire:
         # member perf archive (2026-11-11): main() writes it on the perf path;
         # unredirected, the end-to-end tests would write into the real data/ dir.
         monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
+        # member price state (2026-11-11): same exposure — main() writes it on the
+        # perf path too; redirect output AND inputs so no real data/ is touched.
+        monkeypatch.setattr(ftr, "MEMBER_PRICE_STATE_DIR", tmp_path / "mps")
+        monkeypatch.setattr(ftr, "PRICE_STATE_YAHOO_DIR", tmp_path / "mps_yahoo")
+        monkeypatch.setattr(ftr, "PRICE_STATE_UNIVERSE_LEDGER",
+                            tmp_path / "mps_membership.parquet")
+        monkeypatch.setattr(ftr, "PRICE_STATE_SPY_HOLDINGS_DIR", tmp_path / "mps_spy")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
         monkeypatch.setattr(ftr, "fetch_subsector_perf",
                             lambda: {"t00s0": {"1D": 1.0}, "t00s1": {"1D": 0.5}})
@@ -1465,6 +1479,13 @@ class TestMemberCoverageTripwire:
         # member perf archive (2026-11-11): main() writes it on the perf path;
         # unredirected, the end-to-end tests would write into the real data/ dir.
         monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
+        # member price state (2026-11-11): same exposure — main() writes it on the
+        # perf path too; redirect output AND inputs so no real data/ is touched.
+        monkeypatch.setattr(ftr, "MEMBER_PRICE_STATE_DIR", tmp_path / "mps")
+        monkeypatch.setattr(ftr, "PRICE_STATE_YAHOO_DIR", tmp_path / "mps_yahoo")
+        monkeypatch.setattr(ftr, "PRICE_STATE_UNIVERSE_LEDGER",
+                            tmp_path / "mps_membership.parquet")
+        monkeypatch.setattr(ftr, "PRICE_STATE_SPY_HOLDINGS_DIR", tmp_path / "mps_spy")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
         keys = [s["key"] for t in tree for s in t["subsectors"]]
         monkeypatch.setattr(ftr, "fetch_subsector_perf", lambda: {k: {"1D": 0.0} for k in keys})
