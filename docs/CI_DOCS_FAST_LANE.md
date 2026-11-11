@@ -24,18 +24,32 @@ which is outside the planner.
 
 ## The two halves
 
-1. **Trusted-base classifier** — `scripts/ci_docs_tier.py`, executed by
-   `ci-plan` from a checkout of the **default branch** (the ci-authority.yml
-   shape: pinned action SHA, `ref: default_branch`, depth 1, sparse `scripts`,
-   `persist-credentials: false`, parked under `runner.temp`). A candidate merge
-   tree never judges itself: a PR cannot edit the tier rules it benefits from.
-   The classifier reads only real git objects — the exact tested merge tree and
-   its first parent — plus the BASE tree's manifest. It never fails the job:
-   any trouble publishes `docs_tier: false` and exits 0.
+1. **Trusted-base classifier** — `scripts/ci_docs_tier.py`. `ci-plan` runs
+   the **default branch's** copy, read as a git object (`git fetch origin
+   refs/heads/<default>` then `git show FETCH_HEAD:scripts/ci_docs_tier.py`
+   into `RUNNER_TEMP`). There is no second checkout: `actions/checkout`
+   refuses a path outside the workspace, and a nested checkout inside it would
+   dirty the untracked-path inventory the planner binds. The fetch adds objects
+   only; the candidate tree and index are untouched. A failed fetch, missing
+   file, crash or absent verdict writes `docs_tier: false`, exits 0, and the
+   planner runs normal scoped selection (never 0 jobs). The classifier reads
+   only git objects: the exact tested merge, its first parent, and the BASE
+   tree's manifest and code.
 2. **Planner binding** — `build_plan(..., docs_tier_verdict=...)`; admission
    lives in `docs_tier_eligible` and every arm fails closed to the incumbent
    scoped selection (see `tests/test_ci_pack_docs_tier.py`, which pins each arm
    by plan-hash equality with the no-verdict plan).
+
+## What "trusted base" does and does not protect
+
+On `pull_request`, `ci.yml` itself and `scripts/run_ci_pack.py` come from the
+**candidate head**. A PR that edits them could skip the classifier anyway (and
+such a PR is not docs-only, so it never reaches the tier). Running the
+default-branch classifier therefore guards against **honest mistakes** in a
+PR's own classifier edit and keeps a docs PR from judging itself with rules it
+just changed. It is not a security boundary against a hostile PR. That
+boundary remains `ci-authority.yml` and `fences.yml`, which run from protected
+code on every head.
 
 ## Fail-closed arms (all refuse the tier)
 
@@ -46,9 +60,28 @@ which is outside the planner.
   unresolved. Renames are refused before the both-sides path expansion.
 - Any path that is not `.md` under `docs/`, `research/` or `agentos/` (root
   `README.md`, `engine/notes/x.md`, `.json`, `.markdown` all refuse).
-- A path in the classifier's `CONSUMED_MARKDOWN` (files suites read as data:
-  `HOUSE_LAW_CI_GUARD_SUITE.md`, `INTELLIGENCE_REGISTRY.md`) or any literal
-  `.md` path a job declares in the base manifest's `paths`/`scope` rows.
+- Any path **code reads**. The classifier derives this set at classify time
+  from the BASE tree (never the candidate's files): it scans every
+  first-party `*.py` blob, plus shell/JS/TS, the Makefile and `.github/`
+  files, and claims
+  - literal paths (`ROOT / "docs/RESTORE_RUNBOOK.md"`, `Path(..., "agentos",
+    "workstreams", "WS-X.md")`, `os.path.join(...)`, plain strings);
+  - any `*.md` basename named in a string (`DOCS / "RUNBOOK.md"`, even when
+    `DOCS` cannot be resolved statically);
+  - every directory a `glob`/`rglob`/`iterdir`/`os.walk`/`os.listdir`/
+    `os.scandir`/`glob.glob` call enumerates under a root, when its pattern can
+    yield `.md` (`research/winners/cases/*.md`, `research/` via
+    `rglob("*.md")`), and the directory of a computed `<dir> / f"{x}.md"`;
+  - the subtree of every Python file that itself lives under a root.
+  Measured on the base this PR targets: of 6,706 narrative `.md` files, 163
+  (all under `docs/`) remain eligible; `research/` and `agentos/` are
+  enumerated by code and therefore always refuse. An over-claim costs a docs PR
+  its fast lane; an under-claim would let a suite go unrun, so the scan errs
+  wide. The scan only runs after every cheap check passes (~45 s on a full
+  base).
+- Plus the curated `CONSUMED_MARKDOWN` and any literal `.md` path a job
+  declares in the base manifest's `paths`/`scope` rows.
+- Consumer scan failure (unparseable base module, unreadable blob, git error).
 - Base manifest unreadable, or no YAML reader in the classifier's interpreter.
 - Binding mismatch: verdict `base_sha`/`merge_sha` must equal the planner's
   `changed_from`/`tested_tree_sha`, and `paths_sha256`/`paths_count` must match
@@ -61,17 +94,20 @@ which is outside the planner.
 
 ## Adding a suite that reads markdown
 
-If a new suite starts reading a specific markdown file as data, add that file
-to `CONSUMED_MARKDOWN` (with the consumer named in a comment) or declare it as
-a literal `paths:` row in `.github/ci/legacy-jobs.yml` — literal manifest rows
-are picked up automatically. `tests/test_ci_docs_tier.py` re-pins the curated
-set; that list is the one hand-maintained fail-closed surface.
+Nothing to register for ordinary readers: a literal path, a basename, or a
+glob/rglob/iterdir over a narrative directory is derived automatically from
+the base tree. Only a reader the scanner cannot see (a path assembled from
+values computed at run time, with no `.md` literal and no traversal of a
+narrative directory) needs a `CONSUMED_MARKDOWN` entry or a literal `paths:`
+row in `.github/ci/legacy-jobs.yml`. The guard test
+`test_every_narrative_markdown_named_in_first_party_code_is_covered` reds if
+the scanner stops claiming a literal reader.
 
 ## Residuals
 
-- Suites that construct markdown paths dynamically (not literal, not curated)
-  could in principle read a tier-eligible file; none were found when the lane
-  shipped (grep census, 2026-11-11). `contract-delta` still censuses the whole
-  repo on every PR and remains the backstop for content-level drift.
+- A reader whose path is fully computed at run time (no `.md` literal, no
+  traversal of a narrative directory) is invisible to the static scan.
+  `contract-delta` still censuses the whole repo on every PR and remains the
+  backstop for content-level drift.
 - The classifier's scope-inference skip applies only inside the tier; every
   other plan pays inference as before.

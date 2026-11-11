@@ -27,6 +27,7 @@ Run: python3 -m pytest tests/test_ci_plan_workflow.py -q
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -140,22 +141,13 @@ def test_ci_plan_checks_out_full_history_for_the_base_diff() -> None:
     law (fail-SAFE), and every PR runs everything while the plan still reports
     success.  The regression costs the entire feature and reds nothing.
 
-    The job's SECOND checkout is the docs-tier classifier's trusted base
-    (`ref: default_branch`, depth 1, `scripts` only) and must never be the one
-    carrying the diff history: this test pins that exactly one checkout has
-    `fetch-depth: 0` and that it is the tested-tree checkout at step 0, so the
-    classifier copy cannot silently become the diff source.
+    Exactly ONE checkout: the docs-tier classifier reads its trusted copy as a
+    git object (`git show FETCH_HEAD:...`), never through a second checkout
+    (see test_ci_plan_has_no_checkout_outside_the_workspace).
     """
-    steps = _job("ci-plan")["steps"]
-    checkouts = [s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")]
-    full = [s for s in checkouts if s.get("with", {}).get("fetch-depth") == 0]
-    assert len(full) == 1, (
-        f"ci-plan needs exactly one full-history tested-tree checkout, found {len(full)} "
-        f"of {len(checkouts)} checkouts"
-    )
-    assert steps.index(full[0]) < min(
-        steps.index(s) for s in checkouts if s is not full[0]
-    ), "the full-history tested-tree checkout must precede any trusted-base checkout"
+    checkouts = [s for s in _job("ci-plan")["steps"] if str(s.get("uses", "")).startswith("actions/checkout@")]
+    assert len(checkouts) == 1, f"ci-plan should check out exactly once, found {len(checkouts)}"
+    assert checkouts[0]["with"]["fetch-depth"] == 0
 
 
 def test_ci_plan_sparse_profile_omits_only_the_measured_heavy_trees() -> None:
@@ -277,67 +269,105 @@ def test_workflow_dispatch_passes_no_changed_from_so_main_stays_full_suite() -> 
 # ─── ci-plan: the docs fast lane's trusted-base classifier ─────────────────────
 
 
-def _classifier_checkout() -> dict[str, Any]:
-    steps = _job("ci-plan")["steps"]
-    matches = [
-        s
-        for s in steps
-        if str(s.get("uses", "")) == "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
-    ]
-    assert len(matches) == 1, (
-        f"expected exactly one immutable-pinned trusted-base checkout in ci-plan, "
-        f"found {len(matches)}; the main checkout is a moving `@v4` tag"
-    )
-    return matches[0]
+def _classifier_step() -> dict[str, Any]:
+    return _step_running(_job("ci-plan"), "ci_docs_tier.py")
 
 
-def test_docs_tier_classifier_is_copied_from_trusted_base_not_the_candidate_head() -> None:
-    """The classifier may drop every legacy job, so it must not judge its own PR.
+def test_no_checkout_in_any_workflow_writes_outside_the_workspace() -> None:
+    """`actions/checkout` refuses a `path:` outside $GITHUB_WORKSPACE.
 
-    A candidate merge tree that shipped its own classifier could edit the tier
-    rules in the same PR that benefits from them.  This pins the exact
-    ci-authority.yml shape: immutable-pinned checkout of the repository's
-    DEFAULT BRANCH, depth 1, `scripts` only, no persisted credentials, PR-only —
-    and parked under `runner.temp`, never inside `$GITHUB_WORKSPACE`, so the
-    planner's git (which diffs the workspace) can never see it and a stray
-    commit cannot reach it.
+    Run 43032552219 (job 130563035378) died at ci-plan on EVERY pull request
+    because a second checkout targeted `${{ runner.temp }}/...`.  Pin it shut
+    for every checkout step in every job of ci.yml: no runner.temp, no
+    absolute path, no parent escape.
     """
-    step = _classifier_checkout()
+    for job_name, job in _workflow()["jobs"].items():
+        for step in job.get("steps", []) or []:
+            if not str(step.get("uses", "")).startswith("actions/checkout@"):
+                continue
+            path = str((step.get("with") or {}).get("path", ""))
+            assert "runner.temp" not in path and "RUNNER_TEMP" not in path, (job_name, path)
+            assert not path.startswith("/") and ".." not in path.split("/"), (job_name, path)
+
+
+def test_docs_tier_classifier_is_read_from_trusted_base_objects_not_the_candidate() -> None:
+    """The classifier may drop every legacy job, so the candidate's copy is not run.
+
+    The step fetches the DEFAULT BRANCH as objects and extracts
+    `scripts/ci_docs_tier.py` with `git show FETCH_HEAD:` into RUNNER_TEMP:
+    nothing touches the candidate working tree, index or tracked-path
+    inventory, and no checkout is involved.  No `--depth` either: the clone is
+    full-history and a shallow fetch could cut the planner's base...merge diff.
+    """
+    step = _classifier_step()
+    run = step["run"]
     assert step["if"] == "github.event_name == 'pull_request'"
-    with_ = step["with"]
-    assert with_["ref"] == "${{ github.event.repository.default_branch }}"
-    assert with_["fetch-depth"] == 1
-    assert with_["sparse-checkout"] == "scripts"
-    assert with_["persist-credentials"] is False
-    assert with_["path"] == "${{ runner.temp }}/ci-trusted-base"
+    assert step["env"]["DEFAULT_BRANCH"] == "${{ github.event.repository.default_branch }}"
+    assert 'git fetch' in run and '"refs/heads/$DEFAULT_BRANCH"' in run
+    assert "--depth" not in run, "a shallow fetch can truncate the planner's history"
+    assert 'git show "FETCH_HEAD:scripts/ci_docs_tier.py" > "$trusted"' in run
+    assert 'trusted="$RUNNER_TEMP/ci-docs-tier/ci_docs_tier.py"' in run
+    assert '"$RUNNER_TEMP/ci-plan-runner/bin/python" "$trusted"' in run
+    # Never the workspace's own copy, and no tree-mutating git verb.
+    assert "scripts/ci_docs_tier.py" not in run.replace("FETCH_HEAD:scripts/ci_docs_tier.py", "")
+    for verb in ("git checkout", "git switch", "git reset", "git restore", "git worktree", "git sparse-checkout", "git clean", "git stash"):
+        assert verb not in run, verb
     for mutable in MUTABLE_REFS:
-        assert mutable not in str(with_), f"the trusted base must not depend on {mutable}"
+        assert mutable not in str(step.get("env", {})), f"the trusted base must not depend on {mutable}"
 
 
 def test_docs_tier_classifier_step_cannot_fail_the_plan_and_fails_closed() -> None:
-    """A classifier crash must degrade to the incumbent scoped plan, never red the job.
+    """A failed fetch, missing file or classifier crash degrades to scoped selection.
 
-    `set +e` plus the explicit `exit 0` keep a classifier bug from reddening every
-    PR; the fallback verdict written when the classifier exits nonzero or
-    produces nothing must carry `docs_tier: false` so the planner's binding
-    checks (schema, digests, SHAs) cannot pass on a partial or absent file.
-    The step must also run BEFORE the plan step: a classifier that runs after
-    planning is dead weight that reds nothing when it breaks.
+    `set +e` plus the explicit `exit 0` keep classifier trouble from reddening
+    every PR.  The fetch/extract is gated so a failure skips execution, and the
+    fallback verdict written whenever no verdict exists carries
+    `docs_tier: false` — the planner then runs normal scoped selection, never
+    0 jobs.  The step must run BEFORE the plan step.
     """
     job = _job("ci-plan")
-    step = _step_running(job, "ci_docs_tier.py")
-    assert step["if"] == "github.event_name == 'pull_request'"
-    assert "set +e" in step["run"]
-    assert step["run"].rstrip().endswith("exit 0")
-    assert '"schema":"ci.docs_tier.v1"' in step["run"]
-    assert '"docs_tier":false' in step["run"], "the fallback token must be fail-closed"
-    # The classifier judges the EXACT immutable pair the planner will bind to.
+    step = _classifier_step()
+    run = step["run"]
+    assert "set +e" in run
+    assert run.rstrip().endswith("exit 0")
+    assert 'rm -f "$verdict" "$trusted"' in run, "a stale verdict must never survive"
+    assert "rc=1" in run.split("if git fetch")[0], "fetch failure must leave rc nonzero"
+    assert '[ -s "$trusted" ]' in run
+    assert 'if [ "$rc" -ne 0 ] || [ ! -s "$verdict" ]; then' in run
+    assert '"schema":"ci.docs_tier.v1"' in run
+    assert '"docs_tier":false' in run, "the fallback token must be fail-closed"
     assert step["env"]["DOCS_TIER_BASE"] == "${{ %s }}" % IMMUTABLE_BASE
     assert step["env"]["DOCS_TIER_MERGE"] == "${{ steps.identity.outputs.tested_tree_sha }}"
     assert steps_index(job, step) < steps_index(job, _plan_step())
-    # It executes the trusted copy, never the workspace's own scripts/.
-    assert "$RUNNER_TEMP/ci-trusted-base/scripts/ci_docs_tier.py" in step["run"]
-    assert step["run"].count("--workspace") == 1 and '"$GITHUB_WORKSPACE"' in step["run"]
+    assert run.count("--workspace") == 1 and '"$GITHUB_WORKSPACE"' in run
+
+
+def test_docs_tier_step_fallback_executes_under_bash_when_fetch_fails(tmp_path: Path) -> None:
+    """Execute the real step script with a git that fails: verdict is negative, exit 0."""
+    import subprocess
+
+    run = _classifier_step()["run"]
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    (fake_bin / "git").write_text("#!/bin/sh\nexit 128\n", encoding="utf-8")
+    (fake_bin / "git").chmod(0o755)
+    temp = tmp_path / "rt"
+    temp.mkdir()
+    (temp / "ci-docs-tier").mkdir()
+    (temp / "ci-docs-tier" / "verdict.json").write_text('{"docs_tier":true}', encoding="utf-8")
+    env = {
+        "PATH": f"{fake_bin}:/usr/bin:/bin",
+        "RUNNER_TEMP": str(temp),
+        "GITHUB_WORKSPACE": str(tmp_path),
+        "DOCS_TIER_BASE": "0" * 40,
+        "DOCS_TIER_MERGE": "1" * 40,
+        "DEFAULT_BRANCH": "main",
+    }
+    done = subprocess.run(["bash", "-c", run], env=env, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+    verdict = json.loads((temp / "ci-docs-tier" / "verdict.json").read_text(encoding="utf-8"))
+    assert verdict["docs_tier"] is False
+    assert verdict["reason"].startswith("classifier-error")
 
 
 def steps_index(job: dict[str, Any], step: dict[str, Any]) -> int:

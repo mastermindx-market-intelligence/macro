@@ -4769,45 +4769,57 @@ jobs:
           python -m venv "$RUNNER_TEMP/ci-plan-runner"
           "$RUNNER_TEMP/ci-plan-runner/bin/pip" install pyyaml
       # The docs fast lane's classifier is AUTHORITY over CI execution (a
-      # pure-markdown diff may select zero legacy jobs), so a candidate merge
-      # tree must not be its own judge. Exactly the ci-authority.yml shape:
-      # check out the DEFAULT BRANCH, never the candidate head, and execute
-      # only that copy. The classifier reads real git objects from the
-      # workspace above (the exact tested merge and its first parent) and
-      # publishes a bounded verdict the plan step binds to its own resolved
-      # diff by digest. `persist-credentials: false` and the sub-TEMP path
-      # keep this checkout from ever reaching the planner's git or pushes.
-      - name: check out the trusted-base docs-tier classifier
-        if: github.event_name == 'pull_request'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 1
-          sparse-checkout: scripts
-          persist-credentials: false
-          path: '${{ runner.temp }}/ci-trusted-base'
-      # NEVER FAIL THIS JOB from the classifier: an absent, unreadable or
-      # negative verdict is the fail-closed direction — the planner simply
-      # runs the incumbent scoped selection. `set +e` keeps a classifier bug
-      # from reddening every PR while the verdict file still records why.
-      - name: classify the diff for the docs fast lane
+      # pure-markdown diff may select zero legacy jobs), so the classifier
+      # executed here is the DEFAULT BRANCH's copy, read as a git OBJECT,
+      # never the candidate's file. No second `actions/checkout`: checkout
+      # refuses paths outside $GITHUB_WORKSPACE (run 43032552219 died here),
+      # and a nested checkout inside the workspace would dirty the untracked
+      # inventory the planner binds. `git fetch` adds only objects and a
+      # FETCH_HEAD ref; the candidate tree, index and tracked-path inventory
+      # are untouched. No `--depth`: this clone is full-history on purpose
+      # (fetch-depth 0 above) and a shallow fetch could write shallow-boundary
+      # entries under the planner's base...merge diff. The extracted file lives
+      # under RUNNER_TEMP.
+      #
+      # HONEST SCOPE: on pull_request this workflow file and
+      # scripts/run_ci_pack.py come from the candidate head, so a PR that
+      # edits them could bypass this classifier anyway (and such a PR is not
+      # docs-only, so it never reaches the tier). Reading the trusted copy
+      # guards against honest mistakes in a PR's own classifier edit; the
+      # real boundary remains ci-authority.yml and fences.yml.
+      #
+      # NEVER FAIL THIS JOB from the classifier: a failed fetch, missing file,
+      # crash, or absent/unreadable verdict all publish `docs_tier: false`,
+      # and the planner runs the incumbent scoped selection (never 0 jobs).
+      - name: classify the diff for the docs fast lane (trusted-base classifier)
         if: github.event_name == 'pull_request'
         shell: bash
         env:
           DOCS_TIER_BASE: ${{ steps.identity.outputs.tested_base_sha }}
           DOCS_TIER_MERGE: ${{ steps.identity.outputs.tested_tree_sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set +e
-          "$RUNNER_TEMP/ci-plan-runner/bin/python" \
-            "$RUNNER_TEMP/ci-trusted-base/scripts/ci_docs_tier.py" \
-            --workspace "$GITHUB_WORKSPACE" \
-            --base "$DOCS_TIER_BASE" \
-            --merge "$DOCS_TIER_MERGE" \
-            --out "$RUNNER_TEMP/ci-docs-tier/verdict.json"
-          rc=$?
-          if [ "$rc" -ne 0 ] || [ ! -s "$RUNNER_TEMP/ci-docs-tier/verdict.json" ]; then
-            printf '%s\n' '{"schema":"ci.docs_tier.v1","docs_tier":false,"reason":"classifier-error: nonzero exit or no verdict","base_sha":"","merge_sha":"","paths_sha256":"","paths_count":0}' \
-              > "$RUNNER_TEMP/ci-docs-tier/verdict.json"
+          mkdir -p "$RUNNER_TEMP/ci-docs-tier"
+          verdict="$RUNNER_TEMP/ci-docs-tier/verdict.json"
+          trusted="$RUNNER_TEMP/ci-docs-tier/ci_docs_tier.py"
+          rm -f "$verdict" "$trusted"
+          rc=1
+          if git fetch --quiet --no-tags --filter=blob:none origin "refs/heads/$DEFAULT_BRANCH" \
+            && git show "FETCH_HEAD:scripts/ci_docs_tier.py" > "$trusted" \
+            && [ -s "$trusted" ]; then
+            "$RUNNER_TEMP/ci-plan-runner/bin/python" "$trusted" \
+              --workspace "$GITHUB_WORKSPACE" \
+              --base "$DOCS_TIER_BASE" \
+              --merge "$DOCS_TIER_MERGE" \
+              --out "$verdict"
+            rc=$?
+          else
+            echo "::warning title=ci-docs-tier::could not read the trusted-base classifier; the plan fails closed to scoped selection"
+          fi
+          if [ "$rc" -ne 0 ] || [ ! -s "$verdict" ]; then
+            printf '%s\n' '{"schema":"ci.docs_tier.v1","docs_tier":false,"reason":"classifier-error: no trusted classifier, nonzero exit or no verdict","base_sha":"","merge_sha":"","paths_sha256":"","paths_count":0}' \
+              > "$verdict"
             echo "::warning title=ci-docs-tier::classifier did not produce a verdict; the plan fails closed to scoped selection"
           fi
           exit 0

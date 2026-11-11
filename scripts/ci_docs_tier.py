@@ -12,16 +12,19 @@ legacy jobs, leaving ``fences.yml``, ``ci-authority.yml``, ``contract-delta``
 and ``ci-gate`` as the required proof of the head.
 
 The decision to drop every legacy job is authority over CI execution, and a
-candidate merge tree must not be its own judge: this classifier is executed
-from a checkout of the repository's DEFAULT BRANCH (the same trusted-base
-shape ``ci-authority.yml`` uses), never from the pull request's copy.  It
-inspects only real git objects — the exact tested merge tree and its first
-parent — and publishes a verdict the planner binds to its own independently
-resolved changed-file list by digest.  Any doubt (unreadable manifest, odd
-status letter, rename, delete, typechange, non-markdown path, a markdown
-file some job declares as an individual literal path, or any internal
-error) publishes ``docs_tier: false`` and exits 0: the fail-closed
-direction is simply the incumbent scoped behaviour.
+candidate merge tree should not be its own judge: ``ci-plan`` executes the
+DEFAULT BRANCH's copy of this file, extracted as a git object
+(``git show FETCH_HEAD:scripts/ci_docs_tier.py``), never the pull request's
+copy.  On ``pull_request`` the workflow and planner themselves come from the
+candidate head, so this guards against honest mistakes, not a hostile PR;
+``ci-authority.yml``/``fences.yml`` remain the security boundary.  It
+inspects only real git objects — the exact tested merge tree, its first
+parent, and the BASE tree's manifest and code — and publishes a verdict the
+planner binds to its own independently resolved changed-file list by digest.
+Any doubt (unreadable manifest, odd status letter, rename, delete,
+typechange, non-markdown path, markdown that base-tree code reads, a failed
+consumer scan, or any internal error) publishes ``docs_tier: false`` and
+exits 0: the fail-closed direction is simply the incumbent scoped behaviour.
 
 Verdict fields are bounded on purpose: a path count, a digest, and one
 example path.  The full list already travels as the planner's
@@ -31,11 +34,15 @@ example path.  The full list already travels as the planner's
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
+import warnings
+from dataclasses import dataclass, field
 from pathlib import Path
 
 SCHEMA = "ci.docs_tier.v1"
@@ -47,9 +54,9 @@ MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 # Narrative roots whose markdown is inert unless a consumer names it.
 NARRATIVE_ROOTS = ("docs/", "research/", "agentos/")
 
-# Markdown files read as DATA by scripts the manifest only names as commands.
-# Each entry must carry the consumer that reads it, and each addition is a
-# review act: this list is the only hand-maintained fail-closed surface.
+# Markdown read as DATA through a path the code-derived scan below cannot see.
+# Ordinary readers need no entry: derive_consumed_markdown finds literal
+# paths, basenames and enumerated directories in the BASE tree's code.
 CONSUMED_MARKDOWN = {
     # scripts/check_house_law_registry.py --emit-docs verifies this registry
     # document against the registry table (house-law-registry{,-code}).
@@ -124,6 +131,445 @@ def manifest_literal_markdown(document: object) -> set[str]:
                     and _MD_LITERAL_RE.fullmatch(candidate)
                 ):
                     consumed.add(candidate)
+    return consumed
+
+
+# ─── code-derived consumers (B2) ────────────────────────────────────────────
+#
+# A curated list cannot keep up with ~10k first-party Python files, so the
+# classifier DERIVES the consumed set at classify time from the BASE tree's
+# own Python (read as git objects — never the candidate's files, never the
+# working tree).  It is deliberately conservative: an over-claim only costs a
+# docs PR its fast lane, an under-claim lets a suite go unrun.
+#
+# Claimed, per first-party ``*.py`` blob in the base tree:
+#   * literal paths   — any ``<root>/...md`` text anywhere in the module
+#     (strings, comments, docstrings), any string constant, or ``a / "docs" / "X.md"`` /
+#     ``Path(..., "docs", "X.md")`` / ``os.path.join`` chain, that resolves to
+#     ``<root>/...md`` (the anchor left of the first root segment is ignored,
+#     so ``ROOT / "docs" / "X.md"`` and ``tmp / "docs" / "X.md"`` both claim);
+#   * basenames       — every ``*.md`` file name mentioned in any string
+#     constant: ``DOCS / "RUNBOOK.md"`` claims RUNBOOK.md even when DOCS is
+#     not statically resolvable;
+#   * listed dirs     — the directory a ``glob``/``rglob``/``iterdir``/
+#     ``os.walk``/``os.listdir``/``os.scandir``/``glob.glob`` call enumerates,
+#     when it resolves under a root and its pattern can yield ``.md``; and the
+#     directory of a dynamic ``<dir> / f"{x}.md"`` join;
+#   * module homes    — every Python file that itself lives under a narrative
+#     root claims its own directory subtree (packets that verify themselves
+#     with ``Path(__file__).parent.rglob("*.md")``);
+#   * other code      — literal ``<root>/...md`` paths in shell, JS/TS, the
+#     Makefile and every ``.github/`` file (workflow steps, the legacy
+#     manifest's commands), by plain regex.
+# Any unparseable module that could name a root fails the WHOLE scan closed.
+
+_ROOT_NAMES = tuple(root.rstrip("/") for root in NARRATIVE_ROOTS)
+_ROOT_MENTION_RE = re.compile(r"""['"/\\](?:docs|research|agentos)['"/\\]""")
+_MD_NAME_RE = re.compile(r"[A-Za-z0-9_.\-]+\.md(?![A-Za-z0-9_])")
+_OTHER_CODE_SUFFIXES = (".sh", ".bash", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx")
+_OTHER_LITERAL_RE = re.compile(
+    r"(?<![A-Za-z0-9_.\-/])(?:docs|research|agentos)/[A-Za-z0-9_./\-]*?\.md(?![A-Za-z0-9_])"
+)
+
+
+_ATTR_TRAVERSALS = frozenset({"glob", "rglob", "iterdir"})
+_FUNC_TRAVERSALS = frozenset({"glob", "iglob", "listdir", "scandir", "walk"})
+_PATH_CTORS = frozenset({"Path", "PurePath", "PurePosixPath", "PosixPath"})
+_PATTERN_SUFFIX_RE = re.compile(r"\.([A-Za-z0-9_]{1,8})$")
+_ENV_FANOUT = 8
+_RESOLVE_DEPTH = 6
+SCAN_BLOB_BYTES_LIMIT = 512 * 1024 * 1024
+
+
+@dataclass
+class ConsumedMarkdown:
+    """The base tree's code-derived markdown consumers."""
+
+    literals: set[str] = field(default_factory=set)
+    basenames: set[str] = field(default_factory=set)
+    directories: set[str] = field(default_factory=set)
+    provenance: dict[str, str] = field(default_factory=dict)
+
+    def claims(self, path: str) -> str | None:
+        """Why ``path`` is consumed, or ``None`` when no code reads it."""
+        if path in self.literals:
+            return f"named literally by {self.provenance.get(path, 'first-party code')}"
+        name = path.rsplit("/", 1)[-1]
+        if name in self.basenames:
+            return f"basename {name} is named by {self.provenance.get('basename:' + name, 'first-party code')}"
+        parts = path.split("/")
+        for depth in range(1, len(parts)):
+            prefix = "/".join(parts[:depth])
+            if prefix in self.directories:
+                return (
+                    f"under {prefix}/, which "
+                    f"{self.provenance.get('dir:' + prefix, 'first-party code')} enumerates"
+                )
+        return None
+
+    def merge(self, other: "ConsumedMarkdown", source: str) -> None:
+        for rel in other.literals:
+            self.literals.add(rel)
+            self.provenance.setdefault(rel, source)
+        for name in other.basenames:
+            self.basenames.add(name)
+            self.provenance.setdefault("basename:" + name, source)
+        for rel in other.directories:
+            self.directories.add(rel)
+            self.provenance.setdefault("dir:" + rel, source)
+
+
+def _str_const(node: ast.AST | None) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
+
+
+def _join(left: str, right: str) -> str:
+    if not left:
+        return right
+    return left.rstrip("/") + "/" + right.lstrip("/")
+
+
+def _resolve(
+    node: ast.AST, env: dict[str, list[ast.AST]], depth: int = 0
+) -> list[tuple[str, bool]]:
+    """Candidate ``(path, complete)`` strings a path expression can denote.
+
+    ``complete`` is False when an unresolvable piece truncated the path; an
+    unresolvable LEFT anchor (``ROOT``, ``Path(__file__).parent``) resolves
+    to the empty string so the narrative tail still surfaces.
+    """
+    if depth > _RESOLVE_DEPTH:
+        return [("", False)]
+    text = _str_const(node)
+    if text is not None:
+        return [(text, True)]
+    if isinstance(node, ast.JoinedStr):
+        prefix = ""
+        for value in node.values:
+            piece = _str_const(value)
+            if piece is None:
+                return [(prefix, False)]
+            prefix += piece
+        return [(prefix, True)]
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        out: list[tuple[str, bool]] = []
+        for left, left_complete in _resolve(node.left, env, depth + 1):
+            if left and not left_complete:
+                out.append((left, False))
+                continue
+            for right, right_complete in _resolve(node.right, env, depth + 1):
+                out.append((_join(left, right), right_complete))
+        return out
+    if isinstance(node, ast.Call):
+        func = node.func
+        name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+        is_join = name == "join" and isinstance(func, ast.Attribute) and (
+            ast.unparse(func.value) in {"os.path", "path", "posixpath"}
+        )
+        if (name in _PATH_CTORS or is_join) and node.args:
+            acc: list[tuple[str, bool]] = [("", True)]
+            for arg in node.args:
+                nxt: list[tuple[str, bool]] = []
+                for prefix, complete in acc:
+                    if prefix and not complete:
+                        nxt.append((prefix, False))
+                        continue
+                    for piece, piece_complete in _resolve(arg, env, depth + 1):
+                        nxt.append((_join(prefix, piece), piece_complete))
+                acc = nxt[: _ENV_FANOUT * _ENV_FANOUT]
+            return acc
+        if name in {"resolve", "absolute", "expanduser"} and isinstance(func, ast.Attribute):
+            return _resolve(func.value, env, depth + 1)
+    if isinstance(node, ast.Name) and node.id in env:
+        out = []
+        for value in env[node.id][:_ENV_FANOUT]:
+            out.extend(_resolve(value, env, depth + 1))
+        return out or [("", False)]
+    if isinstance(node, ast.Attribute) and node.attr in env and node.attr != "parent":
+        out = []
+        for value in env[node.attr][:_ENV_FANOUT]:
+            out.extend(_resolve(value, env, depth + 1))
+        return out or [("", False)]
+    return [("", False)]
+
+
+def _narrative_tail(path: str) -> str | None:
+    """``path`` from its first narrative-root segment, if it has one there.
+
+    Only the FIRST non-empty segment may be the root: ``engine/docs/x.md`` is
+    not narrative, but an anchor-less ``docs/x.md`` (or ``./docs/x.md``) is.
+    """
+    parts = [part for part in path.replace("\\", "/").split("/") if part not in ("", ".")]
+    if parts and parts[0] in _ROOT_NAMES:
+        return "/".join(parts)
+    return None
+
+
+def _static_prefix(path: str) -> str:
+    kept: list[str] = []
+    for part in path.split("/"):
+        if any(ch in part for ch in "*?[{"):
+            break
+        kept.append(part)
+    return "/".join(kept)
+
+
+def _pattern_can_yield_markdown(pattern: str | None) -> bool:
+    if pattern is None:
+        return True
+    if ".md" in pattern:
+        return True
+    tail = pattern.rsplit("/", 1)[-1]
+    match = _PATTERN_SUFFIX_RE.search(tail)
+    if match is None:
+        return True
+    # A brace/set suffix ("*.{md,txt}", "*.m?") is not a literal suffix.
+    return any(ch in match.group(0) for ch in "*?[{")
+
+
+def _bindings(tree: ast.Module) -> dict[str, list[ast.AST]]:
+    env: dict[str, list[ast.AST]] = {}
+    for node in ast.walk(tree):
+        targets: list[ast.AST] = []
+        value: ast.AST | None = None
+        if isinstance(node, ast.Assign):
+            targets, value = list(node.targets), node.value
+        elif isinstance(node, (ast.AnnAssign, ast.AugAssign)) and node.value is not None:
+            targets, value = [node.target], node.value
+        elif isinstance(node, ast.NamedExpr):
+            targets, value = [node.target], node.value
+        elif isinstance(node, (ast.For, ast.comprehension)):
+            iterable = node.iter
+            values = (
+                list(iterable.elts)
+                if isinstance(iterable, (ast.List, ast.Tuple, ast.Set))
+                else [iterable]
+            )
+            if isinstance(node.target, ast.Name):
+                env.setdefault(node.target.id, []).extend(values)
+            continue
+        if value is None:
+            continue
+        for target in targets:
+            for leaf in target.elts if isinstance(target, (ast.Tuple, ast.List)) else [target]:
+                key = (
+                    leaf.id
+                    if isinstance(leaf, ast.Name)
+                    else leaf.attr if isinstance(leaf, ast.Attribute) else None
+                )
+                if key:
+                    env.setdefault(key, []).append(value)
+    return env
+
+
+def _traversal(node: ast.Call, env: dict[str, list[ast.AST]]) -> tuple[ast.AST | None, str | None] | None:
+    """``(receiver, pattern)`` for a directory-enumerating call, else None."""
+    func = node.func
+    if isinstance(func, ast.Attribute):
+        owner = func.value
+        module = owner.id if isinstance(owner, ast.Name) else ast.unparse(owner)
+        if func.attr in _FUNC_TRAVERSALS and module in {"glob", "os"}:
+            return _func_traversal(func.attr, node, env)
+        if func.attr in _ATTR_TRAVERSALS:
+            pattern = None
+            if func.attr != "iterdir" and node.args:
+                candidates = _resolve(node.args[0], env)
+                if len(candidates) == 1 and candidates[0][1]:
+                    pattern = candidates[0][0]
+            return owner, pattern
+        return None
+    if isinstance(func, ast.Name) and func.id in _FUNC_TRAVERSALS:
+        return _func_traversal(func.id, node, env)
+    return None
+
+
+def _func_traversal(label: str, node: ast.Call, env) -> tuple[ast.AST | None, str | None]:
+    receiver = node.args[0] if node.args else None
+    if label in {"glob", "iglob"} and receiver is not None:
+        candidates = _resolve(receiver, env)
+        pattern = candidates[0][0] if len(candidates) == 1 and candidates[0][1] else None
+        return receiver, pattern
+    return receiver, None
+
+
+def _dynamic_markdown_join(node: ast.AST) -> bool:
+    """``<dir> / f"{x}.md"`` or ``<dir> / (x + ".md")``: a computed md name."""
+    if not (isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div)):
+        return False
+    right = node.right
+    if isinstance(right, ast.JoinedStr) and len(right.values) > 1:
+        tail = _str_const(right.values[-1])
+        return tail is not None and tail.endswith(".md")
+    if isinstance(right, ast.BinOp) and isinstance(right.op, ast.Add):
+        tail = _str_const(right.right)
+        return tail is not None and tail.endswith(".md")
+    return False
+
+
+def scan_python_source(text: str, module_path: str = "") -> ConsumedMarkdown:
+    """Narrative markdown one first-party module can read.
+
+    Raises ``SyntaxError`` for an unparseable module that could name a root;
+    callers fail the whole scan closed on it.
+    """
+    found = ConsumedMarkdown()
+    home = _narrative_tail(module_path.rsplit("/", 1)[0]) if "/" in module_path else None
+    if home:
+        found.directories.add(home)
+    rooted = bool(_ROOT_MENTION_RE.search(text))
+    if not rooted and ".md" not in text:
+        return found
+    # Any literal narrative path anywhere in the text — strings, comments,
+    # docstrings — is claimed.  Comment citations over-claim on purpose: the
+    # cost is a lost fast lane, never an unrun suite.
+    for match in _OTHER_LITERAL_RE.finditer(text):
+        found.literals.add(match.group(0))
+    tree = ast.parse(text)
+    env = _bindings(tree) if rooted else {}
+    for node in ast.walk(tree):
+        text_value = _str_const(node)
+        if text_value is not None and ".md" in text_value:
+            found.basenames.update(_MD_NAME_RE.findall(text_value))
+            for token in text_value.split():
+                tail = _narrative_tail(token.strip("'\"`()[],;:"))
+                if tail and tail.endswith(".md") and not any(ch in tail for ch in "*?[{"):
+                    found.literals.add(tail)
+            continue
+        if not rooted:
+            continue
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div) or (
+            isinstance(node, ast.Call)
+            and (getattr(node.func, "id", None) in _PATH_CTORS or getattr(node.func, "attr", None) == "join")
+        ):
+            for candidate, complete in _resolve(node, env):
+                tail = _narrative_tail(candidate)
+                if tail and complete and tail.endswith(".md") and not any(ch in tail for ch in "*?[{"):
+                    found.literals.add(tail)
+            if _dynamic_markdown_join(node):
+                for candidate, _complete in _resolve(node.left, env):  # type: ignore[attr-defined]
+                    tail = _narrative_tail(candidate)
+                    if tail:
+                        found.directories.add(_static_prefix(tail).rstrip("/"))
+        if isinstance(node, ast.Call):
+            traversal = _traversal(node, env)
+            if traversal is None:
+                continue
+            receiver, pattern = traversal
+            if not _pattern_can_yield_markdown(pattern):
+                continue
+            if pattern:
+                tail = _narrative_tail(pattern)
+                if tail:
+                    found.directories.add(_static_prefix(tail).rstrip("/"))
+            if receiver is None:
+                continue
+            for candidate, _complete in _resolve(receiver, env):
+                tail = _narrative_tail(candidate)
+                if tail:
+                    found.directories.add(_static_prefix(tail).rstrip("/"))
+    found.directories.discard("")
+    return found
+
+
+def _is_other_code(path: str) -> bool:
+    return (
+        path.endswith(_OTHER_CODE_SUFFIXES)
+        or path.startswith(".github/")
+        or path == "Makefile"
+    )
+
+
+def scan_other_source(text: str) -> ConsumedMarkdown:
+    found = ConsumedMarkdown()
+    for match in _OTHER_LITERAL_RE.finditer(text):
+        found.literals.add(match.group(0))
+    return found
+
+
+def _tree_python_blobs(workspace: Path, tree: str) -> list[tuple[str, str]]:
+    raw = _git(workspace, "ls-tree", "-r", "-z", "--full-tree", tree)
+    blobs: list[tuple[str, str]] = []
+    for record in raw.split("\0"):
+        if not record:
+            continue
+        meta, _tab, path = record.partition("\t")
+        fields = meta.split()
+        if len(fields) == 3 and fields[1] == "blob" and (
+            path.endswith(".py") or _is_other_code(path)
+        ):
+            blobs.append((fields[2], path))
+    return blobs
+
+
+def _prefetch_missing(workspace: Path, oids: list[str]) -> None:
+    """Best-effort ONE-request fetch of blobs a blob:none clone lacks.
+
+    ``git cat-file --batch`` would lazily fetch each missing blob in its own
+    round trip.  Failure here is harmless: the batch read below still fetches
+    lazily, and any blob it cannot read fails the scan closed.
+    """
+    env = dict(os.environ, GIT_NO_LAZY_FETCH="1")
+    check = subprocess.run(
+        ["git", "-C", str(workspace), "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+        input="".join(oid + "\n" for oid in oids),
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+    missing = [line.split()[0] for line in check.stdout.splitlines() if line.endswith(" missing")]
+    if not missing:
+        return
+    subprocess.run(
+        ["git", "-C", str(workspace), "fetch", "--quiet", "--no-tags",
+         "--no-write-fetch-head", "--recurse-submodules=no",
+         "--filter=blob:none", "origin", "--stdin"],
+        input="".join(oid + "\n" for oid in missing),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=300,
+    )
+
+
+def derive_consumed_markdown(workspace: Path, tree: str) -> ConsumedMarkdown:
+    """Scan every first-party ``*.py`` blob of ``tree`` (the BASE commit).
+
+    Raises on any git or parse trouble; :func:`classify_workspace` turns that
+    into a negative verdict.
+    """
+    blobs = _tree_python_blobs(workspace, tree)
+    if not any(path.endswith(".py") for _oid, path in blobs):
+        raise ValueError("base tree carries no Python to scan")
+    _prefetch_missing(workspace, [oid for oid, _ in blobs])
+    batch = subprocess.run(
+        ["git", "-C", str(workspace), "cat-file", "--batch"],
+        input=b"".join(oid.encode() + b"\n" for oid, _ in blobs),
+        capture_output=True,
+        check=True,
+    ).stdout
+    if len(batch) > SCAN_BLOB_BYTES_LIMIT:
+        raise ValueError("base Python estate exceeds the scan byte limit")
+    consumed = ConsumedMarkdown()
+    offset = 0
+    for oid, path in blobs:
+        header_end = batch.index(b"\n", offset)
+        header = batch[offset:header_end].split()
+        if len(header) != 3 or header[0].decode() != oid or header[1] != b"blob":
+            raise ValueError(f"unreadable base blob for {path}")
+        size = int(header[2])
+        body = batch[header_end + 1 : header_end + 1 + size]
+        offset = header_end + 1 + size + 1
+        text = body.decode("utf-8", errors="replace").replace("\x00", "")
+        if not path.endswith(".py"):
+            consumed.merge(scan_other_source(text), path)
+            continue
+        try:
+            consumed.merge(scan_python_source(text, path), path)
+        except SyntaxError as exc:
+            raise ValueError(f"unparseable base module {path}: {exc.msg}") from exc
     return consumed
 
 
@@ -242,6 +688,21 @@ def classify_workspace(
     consumed |= manifest_literal_markdown(document)
     eligible, reason = classify_entries(entries, consumed=consumed)
     paths = _dedup_planner_order(entries)
+    if eligible:
+        # Only a diff that already passed every cheap check pays for the
+        # base-tree consumer scan; any scan trouble refuses the tier.
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                derived = derive_consumed_markdown(workspace, base)
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError, ValueError) as exc:
+            eligible, reason = False, _bounded(f"classifier-error: consumer scan failed ({exc})")
+        else:
+            for path in paths:
+                why = derived.claims(path)
+                if why is not None:
+                    eligible, reason = False, _bounded(f"{path} is read by code: {why}")
+                    break
     verdict = _verdict(eligible, reason)
     verdict["base_sha"] = base
     verdict["merge_sha"] = merge

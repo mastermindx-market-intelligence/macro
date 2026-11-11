@@ -71,7 +71,12 @@ def _commit_all(path: Path, message: str) -> str:
     return _git(path, "rev-parse", "HEAD")
 
 
-def _repository(path: Path, *, manifest: str | None = MINIMAL_MANIFEST) -> Path:
+def _repository(
+    path: Path,
+    *,
+    manifest: str | None = MINIMAL_MANIFEST,
+    code: dict[str, str] | None = None,
+) -> Path:
     """A repo whose base commit carries a manifest; returns it ready to branch."""
     path.mkdir()
     _git(path, "init", "-b", "main")
@@ -81,6 +86,11 @@ def _repository(path: Path, *, manifest: str | None = MINIMAL_MANIFEST) -> Path:
         (path / ".github" / "ci").mkdir(parents=True)
         (path / ".github" / "ci" / "legacy-jobs.yml").write_text(manifest, encoding="utf-8")
     (path / "README.md").write_text("# repo\n", encoding="utf-8")
+    # The code-derived consumer scan refuses a base with no Python at all.
+    (path / "tools").mkdir()
+    (path / "tools" / "noop.py").write_text("VALUE = 1\n", encoding="utf-8")
+    for rel, source in (code or {}).items():
+        _write(path, rel, source)
     _commit_all(path, "base")
     return path
 
@@ -212,6 +222,216 @@ def test_non_narrative_paths_refuse_the_tier(tmp_path: Path, rel: str) -> None:
     verdict = _verdict(repo, base, merge)
     assert verdict["docs_tier"] is False
     assert "not narrative markdown" in str(verdict["reason"])
+
+
+# ─── B2: markdown that first-party code reads refuses the tier ────────────────
+
+
+RESTORE_READER = """\
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
+
+def test_runbook():
+    runbook = (ROOT / "docs/RESTORE_RUNBOOK.md").read_text()
+    assert "restore" in runbook
+"""
+
+CASES_GLOBBER = """\
+from pathlib import Path
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_CASES = sorted((_REPO_ROOT / "research" / "winners" / "cases").glob("*.md"))
+"""
+
+RGLOB_SWEEP = """\
+from pathlib import Path
+
+def run_sweep(root: Path):
+    research_dir = root / "research"
+    return sorted(research_dir.rglob("*.md"))
+"""
+
+
+def test_a_literally_read_runbook_edit_refuses_the_tier(tmp_path: Path) -> None:
+    repo = _repository(
+        tmp_path / "repo", code={"tests/test_backup_user_tables.py": RESTORE_READER}
+    )
+    _write(repo, "docs/RESTORE_RUNBOOK.md", "# restore\n")
+    _commit_all(repo, "seed runbook")
+    base = _base_of(repo)
+    _write(repo, "docs/RESTORE_RUNBOOK.md", "# restore, edited\n")
+    merge = _commit_all(repo, "edit runbook")
+    verdict = _verdict(repo, base, merge)
+    assert verdict["docs_tier"] is False
+    assert "docs/RESTORE_RUNBOOK.md is read by code" in str(verdict["reason"])
+    assert "tests/test_backup_user_tables.py" in str(verdict["reason"])
+
+
+@pytest.mark.parametrize(
+    ("code", "rel"),
+    [
+        pytest.param(
+            {"tests/test_winner_autopsy.py": CASES_GLOBBER},
+            "research/winners/cases/NEW_2099.md",
+            id="glob-dir",
+        ),
+        pytest.param(
+            {"scripts/build_ruling_index.py": RGLOB_SWEEP},
+            "research/deep/nested/RULING.md",
+            id="rglob-root",
+        ),
+    ],
+)
+def test_markdown_under_an_enumerated_directory_refuses_the_tier(
+    tmp_path: Path, code: dict[str, str], rel: str
+) -> None:
+    repo = _repository(tmp_path / "repo", code=code)
+    base = _base_of(repo)
+    _write(repo, rel, "# new\n")
+    merge = _commit_all(repo, "add a case")
+    verdict = _verdict(repo, base, merge)
+    assert verdict["docs_tier"] is False
+    assert "is read by code" in str(verdict["reason"]) and "enumerates" in str(verdict["reason"])
+
+
+def test_an_unreferenced_docs_markdown_stays_eligible_beside_readers(tmp_path: Path) -> None:
+    repo = _repository(
+        tmp_path / "repo",
+        code={
+            "tests/test_backup_user_tables.py": RESTORE_READER,
+            "tests/test_winner_autopsy.py": CASES_GLOBBER,
+        },
+    )
+    base = _base_of(repo)
+    _write(repo, "docs/ZZ_UNREFERENCED_NOTE_2099.md", "# nobody reads me\n")
+    merge = _commit_all(repo, "narrative")
+    verdict = _verdict(repo, base, merge)
+    assert verdict["docs_tier"] is True, verdict["reason"]
+
+
+def test_consumers_come_from_the_base_tree_not_the_candidate(tmp_path: Path) -> None:
+    """A reader the candidate deletes still protects its file (base wins)."""
+    repo = _repository(
+        tmp_path / "repo", code={"tests/test_backup_user_tables.py": RESTORE_READER}
+    )
+    base = _base_of(repo)
+    (repo / "tests/test_backup_user_tables.py").unlink()
+    _write(repo, "docs/RESTORE_RUNBOOK.md")
+    merge = _commit_all(repo, "drop reader + edit")
+    # The delete itself refuses first; the pure scan still names the reader.
+    assert _verdict(repo, base, merge)["docs_tier"] is False
+    derived = TIER.derive_consumed_markdown(repo, base)
+    assert derived.claims("docs/RESTORE_RUNBOOK.md") is not None
+
+
+def test_an_unparseable_base_module_fails_the_scan_closed(tmp_path: Path) -> None:
+    repo = _repository(
+        tmp_path / "repo", code={"scripts/broken.py": 'DOCS = "docs/"\ndef (:\n'}
+    )
+    base = _base_of(repo)
+    _write(repo, "docs/ZZ_UNREFERENCED_NOTE_2099.md")
+    merge = _commit_all(repo, "narrative")
+    verdict = _verdict(repo, base, merge)
+    assert verdict["docs_tier"] is False
+    assert str(verdict["reason"]).startswith("classifier-error: consumer scan failed")
+
+
+def test_any_scan_exception_fails_closed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo = _repository(tmp_path / "repo")
+    base = _base_of(repo)
+    _write(repo, "docs/ZZ_UNREFERENCED_NOTE_2099.md")
+    merge = _commit_all(repo, "narrative")
+
+    def boom(*_args, **_kwargs):
+        raise OSError("simulated git failure")
+
+    monkeypatch.setattr(TIER, "derive_consumed_markdown", boom)
+    verdict = _verdict(repo, base, merge)
+    assert verdict["docs_tier"] is False
+    assert "consumer scan failed" in str(verdict["reason"])
+
+
+@pytest.mark.parametrize(
+    ("source", "path", "claimed"),
+    [
+        ('X = ROOT / "docs" / "A.md"\n', "docs/A.md", True),
+        ('X = Path(ROOT, "agentos", "workstreams", "WS-A.md")\n', "agentos/workstreams/WS-A.md", True),
+        ('X = os.path.join(R, "research", "B.md")\n', "research/B.md", True),
+        ('X = DOCS / "RUNBOOK.md"\n', "docs/ops/RUNBOOK.md", True),  # basename
+        ('D = ROOT / "agentos" / "handoffs"\nfor p in D.glob("*.md"): pass\n', "agentos/handoffs/H.md", True),
+        ('D = ROOT / "agentos" / "handoffs"\nfor p in D.iterdir(): pass\n', "agentos/handoffs/H.md", True),
+        ('import os\nfor r, d, f in os.walk(os.path.join(ROOT, "docs", "ops")): pass\n', "docs/ops/x.md", True),
+        ('import glob\nglob.glob("research/packets/*.md")\n', "research/packets/p.md", True),
+        ('D = ROOT / "docs" / "plans"\nX = D / f"{name}.md"\n', "docs/plans/p.md", True),
+        ('D = ROOT / "docs" / "evidence"\nfor p in D.glob("*.json"): pass\n', "docs/evidence/e.md", False),
+        ('X = ROOT / "engine" / "docs" / "A.md"\n', "docs/OTHER.md", False),
+        ('"""Prose naming nothing."""\nX = 1\n', "docs/A.md", False),
+    ],
+)
+def test_scanner_reference_shapes(source: str, path: str, claimed: bool) -> None:
+    found = TIER.scan_python_source(source, "scripts/example.py")
+    assert (found.claims(path) is not None) is claimed, (source, path)
+
+
+def test_python_living_under_a_root_claims_its_own_subtree() -> None:
+    found = TIER.scan_python_source("X = 1\n", "research/packet_2026/verify.py")
+    assert found.claims("research/packet_2026/README_x.md") is not None
+    assert found.claims("research/other/README_x.md") is None
+
+
+def test_non_python_code_literals_are_claimed() -> None:
+    found = TIER.scan_other_source("python x.py --doc docs/live_breadth_runbook.md\n")
+    assert found.claims("docs/live_breadth_runbook.md") is not None
+
+
+_GUARD_LITERAL = __import__("re").compile(
+    r"(?<![A-Za-z0-9_.\-/])(?:docs|research|agentos)/[A-Za-z0-9_./\-]*?\.md(?![A-Za-z0-9_])"
+)
+
+
+def test_every_narrative_markdown_named_in_first_party_code_is_covered() -> None:
+    """GUARD (B2): any tracked narrative .md whose repo path appears literally in
+    a first-party ``*.py`` is in the derived consumed set.
+
+    Independent of the scanner's AST resolution: a plain regex over every
+    present first-party Python file finds the literal mentions, and each one
+    that is a tracked narrative .md must be claimed by scanning that same
+    file.  A scanner regression that drops a literal reader reds here.
+    """
+    listed = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-files", "-z"], capture_output=True, check=True
+    ).stdout.decode("utf-8", "replace").split("\0")
+    tracked = set(listed)
+    narrative = {p for p in tracked if TIER._is_narrative_markdown(p)}
+    readers = subprocess.run(
+        ["git", "-C", str(ROOT), "grep", "-lzE", r"(docs|research|agentos)/[^ ]*\.md", "--", "*.py"],
+        capture_output=True,
+    ).stdout.decode("utf-8", "replace").split("\0")
+    readers = [r for r in readers if r and (ROOT / r).is_file()]
+    assert readers, "the guard found no first-party markdown readers at all"
+    uncovered: list[tuple[str, str]] = []
+    for rel in readers:
+        text = (ROOT / rel).read_text(encoding="utf-8", errors="replace")
+        found = TIER.scan_python_source(text, rel)
+        for match in _GUARD_LITERAL.findall(text):
+            if match in narrative and found.claims(match) is None:
+                uncovered.append((rel, match))
+    assert not uncovered, f"{len(uncovered)} literal narrative readers escape the scan: {uncovered[:10]}"
+
+
+def test_the_named_review_cases_are_claimed_by_the_real_tree() -> None:
+    """The review's concrete fail-open examples, scanned from this checkout."""
+    examples = {
+        "tests/test_backup_user_tables.py": "docs/RESTORE_RUNBOOK.md",
+        "tests/test_agentos_acceptance_basis.py": "agentos/workstreams/WS-CHAIRMAN-CONTROL-ROOM.md",
+        "tests/test_winner_autopsy.py": "research/winners/cases/ZZ_NEW_CASE_2099.md",
+        "scripts/build_ruling_index.py": "research/anything/ZZ_NEW_2099.md",
+    }
+    for reader, path in examples.items():
+        source = ROOT / reader
+        if not source.is_file():
+            pytest.skip(f"{reader} not present in this checkout")
+        found = TIER.scan_python_source(source.read_text(encoding="utf-8"), reader)
+        assert found.claims(path) is not None, (reader, path)
 
 
 @pytest.mark.parametrize("rel", sorted(TIER.CONSUMED_MARKDOWN))
