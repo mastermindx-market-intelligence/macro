@@ -73,3 +73,4 @@
 {"date": "2026-11-05", "score": 46.2, "band": "elevated", "vix_ref": 28.2, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
 {"date": "2026-11-06", "score": 44.9, "band": "elevated", "vix_ref": 25.6, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
 {"date": "2026-11-09", "score": 51.0, "band": "elevated", "vix_ref": 19.9, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
+{"date": "2026-11-10", "score": 45.6, "band": "elevated", "vix_ref": 19.5, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
