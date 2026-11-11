@@ -135,19 +135,15 @@ def snapshot() -> dict:
 
     if ar_pctile is not None and ar_pctile >= c["concentrated_pctile"]:
         verdict = "concentrated"
-        headline = (f"CONCENTRATED — {len(cluster)} of {n} markets are one bet "
-                    f"({', '.join(cluster)}). Cross-asset correlation is in the top "
-                    f"{round((1 - ar_pctile) * 100)}% of its 5y range: stacking these "
-                    f"views is doubling one liquidity/risk exposure, not diversifying.")
+        headline = "Concentration is high relative to its available history."
     elif ar_pctile is not None and ar_pctile <= c["diversified_pctile"]:
         verdict = "diversified"
-        headline = (f"DIVERSIFIED — the {n} markets are moving largely independently "
-                    f"(correlation in the bottom {round(ar_pctile * 100)}% of its 5y "
-                    f"range); separate views are genuinely separate bets.")
+        headline = "Concentration is low relative to its available history."
     else:
         verdict = "converging"
-        headline = (f"CONVERGING — cross-asset correlation is mid-range; the dominant "
-                    f"cluster ({', '.join(cluster) or '—'}) is partly one bet.")
+        headline = ("Concentration is in the middle of its available historical range."
+                    if ar_pctile is not None else "Historical concentration rank is unavailable.")
+    headline += " Historical rank alone does not establish diversification or a change in concentration."
 
     # absorption_spark_w: weekly (W-FRI last) resample of ar_hist, tail 104, rounded 3dp
     _ar_spark_w: list = []
@@ -164,8 +160,8 @@ def snapshot() -> dict:
         "asof": str(aligned.index[-1].date()),
         "verdict": verdict,                 # diversified | converging | concentrated | unknown
         # Pre-baked one-liner so a naive consumer can't reduce this leaf to a bare ratio.
-        "summary": (f"{verdict.upper()} · {round(ar_pctile, 2)} 5y-pctile"
-                    if ar_pctile is not None else verdict.upper()),
+        "summary": (f"Concentration historical percentile · {round(ar_pctile, 2)}"
+                    if ar_pctile is not None else "Historical concentration rank unavailable"),
         "headline": headline,
         "window_d": window,
         "markets": list(corr.columns),
@@ -318,3 +314,4 @@ def leadlag_snapshot() -> dict:
             "lead_asset": lead_asset,
             "stability": {"top_link": f"{top['leader']}→{top['follower']}@{top['lag']}d",
                           "held_prior_window": held, "prior_t": prior_t}}
+
