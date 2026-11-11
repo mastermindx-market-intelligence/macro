@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10727, current-main preserving composition):
+    Receiver 37ec007a retains all401 owners and its accepted +8 accounting.
+    The original Brain composition suite keeps its exact owner preimage
+    and unchanged legacy estimator contribution of +2. Preserve every prior
+    provenance paragraph and all main-side assertions, including the tracked
+    registry-seed read. Compose 5966/5987/5724 as
+    5968/5989/5726; retain137/138/131 jobs, ten packs and all
+    selection/runtime/admission limits. This is source-conservation accounting,
+    not a fresh full-tree planner or hosted pass; natural successor CI is owed.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6020,6 +6030,28 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #10727, current-main conflict composition):
+    Receiver cfd3834d retains the landed lifecycle/ownership-ledger
+    enrollment and qualified Playwright pin. Preserve that complete
+    source and both provenance histories. The unchanged owner
+    estimator measures this PR's retained unrun-brain-desks suite as +2;
+    apply it once to current 5958/5979/5716, yielding5960/5981/5718.
+    Keep 137/138/131 jobs, ten packs, all assertions, selectors,
+    commands, timeouts and admission limits. This is actual owner
+    estimator execution and source conservation, not a full-tree
+    planner or new hosted pass. Natural successor CI is required.
+
+    PR #10727 F09 conflict composition (2026-11-09):
+    Current main b84bd66a retains the independent F09 Shared Shell suite;
+    its +2 is already in 5945/5966/5703. Preserve all 94 original provider
+    dependency declarations and the existing Brain composition-suite token.
+    The actual unchanged estimator gives that owner 61 -> 63: add only its
+    separate +2 to obtain 5947/5968/5705. Keep 137/138/131 jobs, ten packs,
+    all current commands, limits and both complete provenance histories.
+    This is source-composition accounting, not a fresh full-tree planner run.
+    Prior head 4283359a actually passed CI42610951020 with 140 owners and
+    427 semantic steps; the new composed head must earn its own natural CI.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6115,6 +6147,35 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     suites, runtime deadlines and existing provenance. No unmerged sibling
     funding. This is source-composition arithmetic, not a new planner run;
     old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
+
+    PR #10727 composition with protected 86f9aa32 (2026-11-08):
+    Preserve all 397 current catalog owners, including the accepted
+    institutional-13f-ingestion-contracts and signal-builder-fail-closed
+    owners. Retain all 360 unowned blocks and current additions within
+    the seven shared owners; in particular, keep Research Price Panel's
+    three oscillator/revision suites and their explicit command arguments.
+    Apply only the original 94 missing dependency paths and one Brain
+    composition-suite argument. All five feature postimages stay exact.
+
+    The unchanged planner has no observed-duration override for this
+    Brain owner. Six run commands, 27 test-path mentions and 1157 command
+    characters give weight 61; the retained extra suite makes 28 mentions
+    and 1207 characters, weight 63. There is no 800-character boundary change.
+    Compose precisely this qualified +2 onto current 5943/5964/5701,
+    including accepted #10837's independent +20: expect 5945/5966/5703.
+    These are source-derived expectations, not a new whole-tree planning
+    measurement or runtime result. Natural successor contract-delta must
+    verify the complete current tree. Keep job caps 137/138/131, ten packs,
+    every existing assertion, selector, command, dependency, timeout and
+    admission limit. Preserve each dated measurement and composition below.
+    Publication adopts protected e326d600 after 86f9aa32. Its complete
+    three-path delta is the News handoff and freshness sentinel source/test;
+    all seven PR path preimages and the planner remain unchanged. This
+    receiving advance does not add command registrations to these probes.
+
+    Source: PR10727 issuecomment6711547356; previous exact source 5d7bb0d7
+    passed CI42474718441 with 139 owners/426 semantic steps. That older
+    tested composition does not qualify this new receiver union.
 
     2026-11-09 (#6867 preserving conflict repair on main 15364780e3f3):
     keep all 400 accepted owners and the registry/admission test additions.
@@ -6214,6 +6275,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     execution-time claim. Natural successor CI must qualify the newly
     composed tree; no padding is added.
 
+    PR #10727 composition with protected eef3d687 (2026-11-08):
+    Preserve all 395 current catalog owners and the accepted B-17 enrollment
+    measurement below. The only shared owner is ontology-explorer: retain its
+    TTI-D1 minute-reader paths and earnings-context suite, then add the two
+    original provider dependencies. Preserve the other 36 PR-owned postimages,
+    all 94 dependency additions and the Brain composition-suite argument.
+    The receiver's measured B-17 +3 and this PR's qualified Brain +2 are
+    independent: current 5923/5944/5681 becomes 5925/5946/5683. These combined
+    values are source-derived expectations, not fresh planner measurements.
+    Natural current-head contract-delta must qualify the combined tree.
+    Keep job ceilings 137/138/131, ten packs and every existing assertion,
+    command, selector, timeout and admission limit. Retain both histories below.
+
     2026-11-08 (PR #10180, measured B-17 enrollment integration):
     Fixed current c91d58b2413d plus the five unchanged recovery objects
     preserves all 395 owners. Native paired production measurements on
@@ -6233,6 +6307,73 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
     Source: PR10180 issuecomment6718493720. Original historical and
     scientific limitations remain; natural CI must qualify publication.
+
+    PR #10727 composition with protected 067c3207 (2026-11-08):
+    Preserve all 395 current catalog owners, including the accepted control-plane
+    contracts/structure/census split, Research Vault benchmark and Early Leadership
+    enrollment. Compose the 37 PR-owned blocks without replacing those accepted
+    paths, benchmark suite, new Early Leadership step or picks dependency pin;
+    retain all 94 provider dependency additions and the Brain composition suite.
+    Neither Early Leadership owner is selected by these three singleton probes:
+    their exclusive declared paths do not match, so that enrollment adds no probe
+    weight. The picks owner also retains its independent observed-time weight.
+    Main's 5920/5941/5678 already includes the benchmark's separate free-content
+    +2. Add only this PR's independently qualified two planning-weight units to
+    each probe: 5922/5943/5680. These are source-derived expectations, not fresh
+    planner measurements. Natural current-head contract-delta must qualify them.
+    Preserve job ceilings 137/138/131, ten packs, the complete current compactor
+    tests, assertions, commands, selectors, timeouts and admission limits.
+    Retain each dated PR and current-main provenance record at its original scope.
+
+    PR #10727 composition with protected f346c365 (2026-11-08):
+    Preserve all 393 current catalog owners, including the landed Options
+    scenario owner, QTUM parser coverage, complete Immune suite, retained-GSC
+    proof and current knowledge discovery coverage. The 37 PR-owned catalog
+    blocks still have exact base preimages; retain their accepted postimages,
+    adding 94 dependency paths and one brain-desks composition-suite argument.
+    This PR's independently measured two planning-weight units compose with
+    the receiver's QTUM +3 and Immune +3: current 5920/5939/5678 becomes
+    5922/5941/5680. These are source-derived expectations, not new planner
+    measurements or pytest results. Natural current-head contract-delta must
+    qualify the combined tree. Preserve job ceilings 137/138/131, ten packs,
+    all assertions, commands, selectors, timeouts and admission limits.
+    Preserve both the accepted PR history and every current-main record below.
+
+    PR #10727 conflict composition with protected07c55fb9 (2026-11-07):
+    Preserve the receiver's accepted retained-GSC free-content contribution
+    and the new press-account-claim-consumer owner. Add only this PR's
+    already qualified brain-desks composition-suite two planning-weight
+    units to the receiver's 5914/5933/5672: expect 5916/5935/5674.
+    These are source-derived expectations, not fresh planner measurements.
+    Natural current-head contract-delta must qualify this combined source,
+    including the new owner and current GSC command. Keep ceilings137/138/131,
+    ten packs, every existing command, selector, timeout and admission limit.
+    Preserve the separate earlier composition and measurement histories below.
+
+    PR #10727 conflict composition with protected335e5cc3 (2026-11-07):
+    Preserve both independent enrollments: the receiver's #10710 gateway+2
+    and this PR's already qualified brain-desks composition-suite+2. The
+    current 5914/5931/5672 include only the former; add only the latter's two
+    units to expect 5916/5933/5674. These are arithmetic source expectations,
+    not a new planner measurement. Current-head hosted contract-delta must
+    qualify the combined source. Keep job ceilings137/138/131, ten packs,
+    all current commands, selectors, timeouts and admission limits unchanged.
+    The separate historical paired measurements remain recorded below.
+
+    PR #10727 composition with protected85e299 (2026-11-07): preserve the
+    accepted #8899 provenance-suite enrollment and all current CODE owners.
+    The separate Fabric composition suite adds two planning-weight units to
+    each probe: expected index5914, free5931, Prophet5672. These combined values
+    are source-derived expectations; the new-head hosted contract-delta must
+    measure them. Keep job ceilings137/138/131 and the ten-pack bound unchanged.
+
+    Fabric production-owner composition (2026-11-04): exact tracked-tree
+    inventory at17b805dbf6e6 measured index137jobs/5914, free137jobs/5929
+    and Prophet131jobs/5670, all ten packs, against protected8b78baf69777
+    weights5912/5927/5668. Fund only the two intended test-registration weight
+    units; preserve every job-count, pack, timeout and admission bound. The
+    three probes match the hosted contract-delta shape; these estimates are
+    not runtime evidence. Sparse filesystem-only measurements are not used.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its
