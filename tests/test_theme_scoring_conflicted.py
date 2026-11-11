@@ -582,9 +582,15 @@ class TestBasketTemplateParses:
 
     def test_conflict_chip_is_written_by_the_builder(self):
         """The chip is inert markup unless the builder actually writes the key."""
-        src = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+        # Sector Intelligence lane 1 (7bb9a2691443) moved the basket action-item
+        # reducer out of scripts/build_site.py into engine/sector_action_board.py,
+        # which the Sector generation and the static builder now share; the
+        # builder delegates to it. Pin the writer at its owner and the delegation.
+        src = (ROOT / "engine" / "sector_action_board.py").read_text(encoding="utf-8")
         assert 'sector_item["conflict_chip_en"]' in src
         assert 'base_item["conflict_chip_en"]' in src
+        builder = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+        assert "from engine.sector_action_board import basket_action_items_from_inputs" in builder
 
     def test_merged_page_v1_actnow_fork_stays_deleted(self):
         """Neither dead act-board fork may return.
