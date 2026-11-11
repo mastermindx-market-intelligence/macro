@@ -4,13 +4,16 @@ import copy
 import hashlib
 import json
 import os
+import re
+import shlex
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 
 from scripts import ci_browser_native_setup as SETUP
-from scripts.ci_apt_native_plan import QUALIFIED_DRIVER
+from scripts.ci_apt_native_plan import DIRECT_PACKAGES, QUALIFIED_DRIVER
 from scripts.ci_apt_cold_acquisition import AcquisitionResult
 
 
@@ -65,6 +68,50 @@ def test_invalid_or_elapsed_original_deadline_never_launches_even_bootstrap(monk
     monkeypatch.setattr(SETUP.subprocess,'Popen',lambda *a,**k:pytest.fail('must not launch'))
     result=SETUP.run_native_setup(deadline=deadline,command_env={},expected_sources=sources(),browser_stream=None)
     assert result['outcome']=='failed' and result['timeout_settlement'] is None
+
+
+def _native_parallel_jobs():
+    manifest_path = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
+    jobs = yaml.safe_load(manifest_path.read_bytes())["jobs"]
+    return {
+        job_id: job
+        for job_id, job in jobs.items()
+        if any(step.get("acquisition") == "native_parallel" for step in job.get("steps", []))
+    }
+
+
+def test_native_parallel_enrollment_is_exactly_the_admitted_owner_jobs():
+    assert set(_native_parallel_jobs()) == {
+        "bea-gvc-current-descriptive-consumer",
+        "ontology-explorer",
+        "unrun-brain-gateway",
+    }
+
+
+@pytest.mark.parametrize("job_id", sorted(_native_parallel_jobs()))
+def test_native_parallel_browser_dependency_matches_the_native_distribution_pin(job_id):
+    # An unpinned install resolves the newest Playwright distribution, which the
+    # native acquisition tuple refuses before any package or browser effect.
+    job = _native_parallel_jobs()[job_id]
+    installs = [
+        requirements
+        for requirements in (
+            shlex.split(step["run"]) for step in job["steps"] if "pip install" in str(step.get("run", ""))
+        )
+        if any(re.fullmatch(r"playwright(?:\[[^\]]*\])?(?:[=<>!~].*)?", spec) for spec in requirements)
+    ]
+    assert len(installs) == 1
+    requirements = installs[0]
+    pins = [spec for spec in requirements if spec.startswith("playwright==")]
+    assert "playwright" not in requirements and len(pins) == 1
+    assert SETUP.qualified_direct_packages(
+        distribution_version=pins[0].split("==", 1)[1],
+        driver_version="1.64.0-beta-1791568591000",
+        bundle_sha256=QUALIFIED_DRIVER,
+        os_id="ubuntu",
+        os_version="24.04",
+        machine="x86_64",
+    ) == DIRECT_PACKAGES
 
 
 def test_native_apply_then_exact_vendor_browser_uses_same_env_and_remaining_original_total(monkeypatch):
