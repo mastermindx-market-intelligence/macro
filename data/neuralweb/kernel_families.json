@@ -1153,7 +1153,7 @@
   "generated_from": "sha256:441c6487434e035eba4e8913134ed191420f8414228f9e26e862250ccc10a2a0",
   "schema_version": 1,
   "produced_by": "engine/neuralweb/decay.py",
-  "produced_at": "2026-11-11T11:17:31Z",
+  "produced_at": "2026-11-11T12:28:16Z",
   "inputs_hash": "sha256:82e407537f37a6a343c5de2ed3112a5fb3ab1515f76baefcd57ef26c0d8b94e0",
   "tier": "infrastructure"
 }
