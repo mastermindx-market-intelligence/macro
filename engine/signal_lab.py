@@ -402,24 +402,21 @@ REGISTRY: list[dict] = [
          extra=[("history", "accruing (n small)")]),
     _row("Cross-asset TSMOM — masterminds GTAA workhorse (W=0.45)",
          "跨资产时间序列动量 — masterminds GTAA 主力因子（权重0.45）", "Cross-asset", "scored",
-         why="Cross-asset trend is the 0.45-weighted PRIMARY factor of the validated, served "
-             "masterminds GTAA (engine/masterminds.py, cross_asset_trend.tsmom_alloc) — a live "
-             "allocation that beats SPY on Sharpe (1.07 vs 0.62) and MaxDD (−24.1% vs −55.2%) over "
-             "19y with OOS-stable Sharpe in BOTH halves (0.98 / 1.15). My phase0 independently "
-             "confirms the diversified-trend sleeve as a drawdown overlay: DSR 0.9952, survives "
-             "purged-CV + leave-one-crisis-out, executable ETF-only cuts a 60/40 book's MaxDD "
-             "−10pp. Honest: the Sharpe/drawdown edge is the robust OOS part; the raw-CAGR beat is "
-             "era-dependent. (Standalone leverage-free trend ≈ buy&hold — the display row below.)",
-         why_zh="跨资产趋势是已验证、已上线的 masterminds GTAA 的 0.45 权重主力因子——该实盘配置19年间在夏普"
-                "（1.07 对 0.62）与最大回撤（−24.1% 对 −55.2%）上跑赢标普，且两半样本外夏普均稳健（0.98 / 1.15）。"
-                "我的 phase0 独立确认多元趋势作为回撤叠加：DSR 0.9952，通过净化CV与逐危机剔除，纯ETF版将60/40回撤削减约10pp。"
-                "诚实说明：夏普/回撤优势为稳健的样本外部分，原始CAGR超额依赖时代。（无杠杆独立趋势≈买入持有，见下方仅展示行。）",
-         source="tsmom-overlay-phase0.md / masterminds.py", horizon="GTAA allocation (weekly)",
-         dsr=0.9952, sharpe=1.07, wired="masterminds.html GTAA — TREND factor (W=0.45)",
-         extra=[("GTAA Moderate", "Sharpe 1.07 vs SPY 0.62 · MaxDD −24.1% vs −55.2% · 19y"),
-                ("OOS Sharpe halves", "0.98 / 1.15 (both beat SPY)"),
-                ("trend-overlay confirm", "DSR 0.995 · purged-CV + leave-one-crisis-out"),
-                ("standalone sleeve", "≈ buy&hold (display row)")]),
+         why="Cross-asset trend remains the 0.45-weighted conviction input in masterminds GTAA. "
+             "The quoted DSR 0.9952 belongs to the separate historical 60/40 + 30% trend-overlay "
+             "study; that experiment and its tier are unchanged. It does not certify the GTAA "
+             "allocation after the final per-name cap repair. Corrected GTAA measurements through "
+             "2026-11-10 are recorded separately in gtaa-final-cap-revalidation.md; Moderate remains "
+             "a confirmer because the conviction increment is not stable across fixed folds.",
+         why_zh="跨资产趋势仍是 masterminds GTAA 中权重 0.45 的信念输入。引用的 DSR 0.9952 属于独立的历史 "
+                "60/40 + 30% 趋势叠加研究；该实验与层级均未改变。它不能为最终单一上限修复后的 GTAA 配置背书。"
+                "截至 2026-11-10 的修复后 GTAA 测量另见 gtaa-final-cap-revalidation.md；因信念增量在固定分段中"
+                "并不稳定，均衡档仍为确认项。",
+         source="tsmom-overlay-phase0.md; gtaa-final-cap-revalidation.md; engine/masterminds.py",
+         horizon="GTAA allocation (weekly)", dsr=0.9952,
+         wired="masterminds.html GTAA — TREND factor (W=0.45)",
+         extra=[("DSR scope", "historical 60/40 + 30% trend overlay; not corrected GTAA"),
+                ("GTAA qualification", "separate final-cap revalidation; Moderate remains confirmer")]),
     _row("Quad × NFCI-direction scenario odds",
          "宏观四象限 × NFCI方向 情景胜率", "US macro", "confirmer",
          why="Conditioning forward SPY odds on the regime quad × NFCI direction reproduces the "
@@ -661,21 +658,27 @@ REGISTRY: list[dict] = [
          **_btc_vector_copy(_BTC_VECTOR_FROZEN)),
     _row("Mastermind GTAA (Moderate) — diversified-leverage book",
          "Mastermind 全球配置（均衡）— 多元杠杆组合", "Multi-asset", "confirmer",
-         why="Live levered vol-targeted cross-asset GTAA (~1.21× lev) beats SPY on risk-adjusted terms over 19.1y: "
-             "Sharpe 1.07 vs SPY 0.62 / 60-40 0.77, MaxDD −24.1% vs −55.2% / −31.4%, DSR 0.9999, bootstrap "
-             "P(Sharpe>0)=1.0, purged-CV 5/5, leave-one-crisis-out 6/6. BUT the adversarial incrementality test "
-             "caps it at confirmer: the IDENTICAL chassis (inverse-vol + 12% vol-target + 1.6× cap) with "
-             "conviction=1 (NO trend/carry/regime signal) already gives Sharpe 1.03 / MaxDD −27.5% — the "
-             "four-factor conviction adds only +0.04 Sharpe / +3.4pp DD and loses in 2/5 folds and ex-2008. It "
-             "credits the diversification+vol-target+leverage TRANSFORM, not timing alpha; raw-CAGR beat also "
-             "flips OOS (H2 12.8 < SPY 15.4%).",
-         why_zh="已上线的杠杆波动率目标跨资产全球配置，19.1年风险调整后跑赢标普（夏普 1.07 对 0.62，回撤 −24.1% 对 −55.2%）。"
-                "但对照检验定为确认项：同一底盘信号=1已得夏普 1.03，四因子信号仅增 +0.04 夏普——计入的是分散+波动率目标+杠杆变换，非择时阿尔法。",
-         source="mastermind-moderate-phase0.md; engine/masterminds.py", horizon="GTAA allocation (weekly)",
-         dsr=0.9999, sharpe=1.07, wired="masterminds.html / strategy_mm_moderate (LIVE)",
-         extra=[("MaxDD", "−24.1% vs SPY −55.2% / 60-40 −31.4%"),
-                ("increment over no-signal chassis", "+0.04 Sharpe / +3.4pp DD (loses 2/5 folds, ex-2008)"),
-                ("OOS CAGR", "flips (H2 12.8 < SPY 15.4%)")]),
+         why="Frozen corrected-engine measurement, 2007-05-01 through 2026-11-10: final per-name "
+             "limit 40%, gross limit 1.6x, average exposure 1.18x. Moderate Sharpe 1.06 vs SPY 0.61 "
+             "/ 60-40 0.75; MaxDD -21.6% vs -55.2% / -31.4%; DSR 0.9992 at the existing ledger "
+             "family N=8. Sharpe beats SPY in 4/5 fixed folds. The corrected identical chassis with "
+             "conviction=1 has Sharpe 1.00 and MaxDD -27.4%: conviction adds +0.056 Sharpe / +5.79pp "
+             "drawdown, but its Sharpe increment is negative in 3/5 folds and when 2008 or 2022 is "
+             "omitted. CAGR does not beat SPY in both historical halves. Keep CONFIRMER; these "
+             "revised-macro historical comparisons do not establish prospective timing alpha.",
+         why_zh="修复引擎的冻结测量，2007-05-01 至 2026-11-10：最终单一上限 40%、总敞口上限 1.6x、平均敞口 1.18x。"
+                "均衡档夏普 1.06 对 SPY 0.61 / 60-40 0.75；最大回撤 -21.6% 对 -55.2% / -31.4%；既有登记家族 "
+                "N=8 时 DSR 0.9992。固定分段中 4/5 的夏普跑赢 SPY。修复后同一底盘信念=1 时夏普 1.00、回撤 "
+                "-27.4%；信念增量为 +0.056 夏普 / +5.79pp 回撤，但在 3/5 分段及剔除 2008 或 2022 时夏普增量为负。"
+                "年化并非在两个历史半段都跑赢 SPY。维持确认项；这些修订宏观数据的历史比较不能证明未来择时阿尔法。",
+         source="gtaa-final-cap-revalidation.md; gtaa-final-cap-revalidation.json; engine/masterminds.py",
+         horizon="GTAA allocation (weekly)", dsr=0.9992, sharpe=1.06,
+         dsr_n_trials=8, dsr_basis="frozen-quote",
+         wired="masterminds.html / strategy_mm_moderate — corrected allocator; historical qualification only",
+         extra=[("Measured through", "2026-11-10; source/input identities in report"),
+                ("DSR quote basis", "N=8 existing mastermind_moderate_phase0 ledger family; not live recomputation"),
+                ("increment over no-signal chassis", "+0.056 Sharpe / +5.79pp DD; negative Sharpe increment in 3/5 folds"),
+                ("Historical CAGR halves", "H2 10.91% vs SPY 14.50%; no both-half beat")]),
     _row("Active levered commodity (silver & copper)",
          "主动杠杆商品（白银与铜）", "Commodity", "confirmer",
          why="Vol-targeted leverage-capable models that beat same-asset B&H on CAGR & Sharpe in BOTH split-halves "

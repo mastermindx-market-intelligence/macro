@@ -1,0 +1,3316 @@
+{
+  "input_pin": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "before": {
+    "conservative": {
+      "scorecard": {
+        "cagr": 7.74,
+        "hodl_cagr": 10.64,
+        "sharpe": 1.1,
+        "hodl_sharpe": 0.61,
+        "maxdd": -17.3,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 0.77,
+        "max_leverage": 1.2,
+        "turnover_annual": 8.44,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 7.47,
+          "hodl_cagr": 7.03,
+          "sharpe": 1.08,
+          "hodl_sharpe": 0.64,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 8.01,
+          "hodl_cagr": 9.4,
+          "sharpe": 1.12,
+          "hodl_sharpe": 0.87,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 0.8999999999999999,
+      "max_gross_weight": 1.2000000000000002,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 3.7
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 3.6
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 2.0
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 1.0
+        }
+      ],
+      "gross_now": 0.1,
+      "asof": "2026-11-10"
+    },
+    "moderate": {
+      "scorecard": {
+        "cagr": 11.19,
+        "hodl_cagr": 10.64,
+        "sharpe": 1.04,
+        "hodl_sharpe": 0.61,
+        "maxdd": -24.2,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 1.21,
+        "max_leverage": 1.6,
+        "turnover_annual": 14.1,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 11.78,
+          "hodl_cagr": 6.93,
+          "sharpe": 1.11,
+          "hodl_sharpe": 0.42,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 10.6,
+          "hodl_cagr": 14.5,
+          "sharpe": 0.97,
+          "hodl_sharpe": 0.83,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 0.9869031668443076,
+      "max_gross_weight": 1.6000000000000008,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 5.4
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 5.2
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 2.9
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 1.5
+        }
+      ],
+      "gross_now": 0.15,
+      "asof": "2026-11-10"
+    },
+    "aggressive": {
+      "scorecard": {
+        "cagr": 16.54,
+        "hodl_cagr": 10.64,
+        "sharpe": 0.96,
+        "hodl_sharpe": 0.61,
+        "maxdd": -35.0,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 2.02,
+        "max_leverage": 2.5,
+        "turnover_annual": 25.07,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 19.48,
+          "hodl_cagr": 6.93,
+          "sharpe": 1.11,
+          "hodl_sharpe": 0.42,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 13.67,
+          "hodl_cagr": 14.5,
+          "sharpe": 0.8,
+          "hodl_sharpe": 0.83,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 1.439114172220317,
+      "max_gross_weight": 2.500000000000001,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 8.8
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 8.5
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 4.8
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 2.5
+        }
+      ],
+      "gross_now": 0.25,
+      "asof": "2026-11-10"
+    }
+  },
+  "after": {
+    "conservative": {
+      "scorecard": {
+        "cagr": 7.88,
+        "hodl_cagr": 10.64,
+        "sharpe": 1.13,
+        "hodl_sharpe": 0.61,
+        "maxdd": -14.8,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 0.77,
+        "max_leverage": 1.2,
+        "turnover_annual": 8.2,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 7.49,
+          "hodl_cagr": 7.03,
+          "sharpe": 1.09,
+          "hodl_sharpe": 0.64,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 8.27,
+          "hodl_cagr": 9.4,
+          "sharpe": 1.17,
+          "hodl_sharpe": 0.87,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 0.3,
+      "max_gross_weight": 1.2000000000000002,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 3.7
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 3.6
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 2.0
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 1.0
+        }
+      ],
+      "gross_now": 0.1,
+      "asof": "2026-11-10"
+    },
+    "moderate": {
+      "scorecard": {
+        "cagr": 11.19,
+        "hodl_cagr": 10.64,
+        "sharpe": 1.06,
+        "hodl_sharpe": 0.61,
+        "maxdd": -21.6,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 1.18,
+        "max_leverage": 1.6,
+        "turnover_annual": 13.09,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 11.48,
+          "hodl_cagr": 6.93,
+          "sharpe": 1.11,
+          "hodl_sharpe": 0.42,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 10.91,
+          "hodl_cagr": 14.5,
+          "sharpe": 1.01,
+          "hodl_sharpe": 0.83,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 0.4,
+      "max_gross_weight": 1.6000000000000008,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 5.4
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 5.2
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 2.9
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 1.5
+        }
+      ],
+      "gross_now": 0.15,
+      "asof": "2026-11-10"
+    },
+    "aggressive": {
+      "scorecard": {
+        "cagr": 16.01,
+        "hodl_cagr": 10.64,
+        "sharpe": 0.98,
+        "hodl_sharpe": 0.61,
+        "maxdd": -31.7,
+        "hodl_maxdd": -55.2,
+        "avg_leverage": 1.88,
+        "max_leverage": 2.5,
+        "turnover_annual": 20.32,
+        "years": 19.5,
+        "time_in_market": 93.0
+      },
+      "benchmark_6040": {
+        "cagr": 8.2,
+        "sharpe": 0.75,
+        "maxdd": -31.4
+      },
+      "oos": {
+        "first": {
+          "cagr": 17.67,
+          "hodl_cagr": 6.93,
+          "sharpe": 1.11,
+          "hodl_sharpe": 0.42,
+          "beats_cagr": true
+        },
+        "second": {
+          "cagr": 14.38,
+          "hodl_cagr": 14.5,
+          "sharpe": 0.87,
+          "hodl_sharpe": 0.83,
+          "beats_cagr": false
+        },
+        "robust": false
+      },
+      "max_name_weight": 0.55,
+      "max_gross_weight": 2.500000000000001,
+      "alloc": [
+        {
+          "asset": "HYG",
+          "label_en": "High-yield credit",
+          "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+          "weight": 8.8
+        },
+        {
+          "asset": "BTC-USD",
+          "label_en": "Bitcoin",
+          "label_zh": "\u6bd4\u7279\u5e01",
+          "weight": 8.5
+        },
+        {
+          "asset": "SPY",
+          "label_en": "S&P 500",
+          "label_zh": "\u6807\u666e500",
+          "weight": 4.8
+        },
+        {
+          "asset": "HG=F",
+          "label_en": "Copper",
+          "label_zh": "\u94dc",
+          "weight": 2.5
+        }
+      ],
+      "gross_now": 0.25,
+      "asof": "2026-11-10"
+    }
+  },
+  "prices": {
+    "shape": [
+      4935,
+      9
+    ],
+    "span": [
+      "2007-05-01",
+      "2026-11-10"
+    ]
+  },
+  "conditions_nonnull": {
+    "recession_risk": 15509,
+    "drawdown_risk": 14944,
+    "roro": 14506
+  },
+  "source_manifest": {
+    "pin": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+    "files": [
+      {
+        "path": "config.yml",
+        "sha": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "bytes": 496073
+      },
+      {
+        "path": "templates/_site_nav.html.j2",
+        "sha": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+        "bytes": 3684
+      },
+      {
+        "path": "templates/mastermind_detail.html.j2",
+        "sha": "36f7d8ea6c2cc448a6d36f758eb95476a7169a34",
+        "bytes": 31331
+      },
+      {
+        "path": "templates/_interfonts.html.j2",
+        "sha": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+        "bytes": 1587
+      },
+      {
+        "path": "templates/data_base.js",
+        "sha": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+        "bytes": 2367
+      },
+      {
+        "path": "templates/_navlinks.html.j2",
+        "sha": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+        "bytes": 54533
+      },
+      {
+        "path": "templates/_state_inks.html.j2",
+        "sha": "c16e17917949d6d56944b1f90a9eaf59736ff115",
+        "bytes": 3928
+      },
+      {
+        "path": "templates/_seo_head.html.j2",
+        "sha": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+        "bytes": 2335
+      },
+      {
+        "path": "templates/masterminds.html.j2",
+        "sha": "8ebe3f5b0a86cd7966b694987e46cd874095157d",
+        "bytes": 15288
+      },
+      {
+        "path": "templates/_plotly_head.html.j2",
+        "sha": "ad5f4c3a4be89f39b5f2e6f4eac75637a2b1a04d",
+        "bytes": 606
+      },
+      {
+        "path": "templates/_vector_polish.html.j2",
+        "sha": "ba59e4be8be3999e8ea5a42fd86d6eb6f1762ce5",
+        "bytes": 24263
+      },
+      {
+        "path": "engine/active_alloc.py",
+        "sha": "e72f916889c9e6f2d3eaabbf83f8b3ff7e363d9d",
+        "bytes": 10124
+      },
+      {
+        "path": "engine/btc_options.py",
+        "sha": "f66456d43e1b77672bb686b754fa58b9c6da47c3",
+        "bytes": 5405
+      },
+      {
+        "path": "engine/strategies.py",
+        "sha": "ada13c45c5b6df4dcdd96d27c135c6c1aae9562d",
+        "bytes": 53792
+      },
+      {
+        "path": "engine/i18n.py",
+        "sha": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "bytes": 35238
+      },
+      {
+        "path": "engine/signal_frontier_docket.py",
+        "sha": "579c1ceb331a5dddca59dc93210cfb8ba43b45c5",
+        "bytes": 49264
+      },
+      {
+        "path": "engine/masterminds.py",
+        "sha": "932a9619107909d55082d9c93660c2ca2e6a8c37",
+        "bytes": 18408
+      },
+      {
+        "path": "engine/signal_lab.py",
+        "sha": "f3672079f575c4d2b4626d5f7c9a56cb23122b03",
+        "bytes": 152735
+      },
+      {
+        "path": "engine/conditions.py",
+        "sha": "d5c657d300d9d3a19d28bbb1ccf9fb5a2101f898",
+        "bytes": 64372
+      },
+      {
+        "path": "engine/indicators.py",
+        "sha": "b944d777ba284276cb11060efd1b20b743b26e08",
+        "bytes": 2777
+      },
+      {
+        "path": "engine/china_masterminds.py",
+        "sha": "7756dfbf2e13edf0d612e995ad4e7c8625a34a47",
+        "bytes": 29459
+      },
+      {
+        "path": "engine/validation.py",
+        "sha": "c9a09740cd630f920e52fd21b88ff36ff31366b6",
+        "bytes": 71729
+      },
+      {
+        "path": "engine/yield_momentum.py",
+        "sha": "051bca0e682b4a8eebe18d29468f1c346b8d124a",
+        "bytes": 38118
+      },
+      {
+        "path": "engine/rates_command_basis.py",
+        "sha": "1345e4b4f1bc2121b0ce947e4d95c14243d922f2",
+        "bytes": 53517
+      },
+      {
+        "path": "engine/inputs.py",
+        "sha": "3e03d338c20f9383a9d0153f277a9ab9f98026df",
+        "bytes": 26932
+      },
+      {
+        "path": "engine/cross_asset_trend.py",
+        "sha": "caaebc007fdf44bc10fa7ffa69d8560b3598fac2",
+        "bytes": 14088
+      },
+      {
+        "path": "engine/equity_alloc.py",
+        "sha": "ced9b9e0610e550fb9841c423dabc1045c9196a4",
+        "bytes": 23931
+      },
+      {
+        "path": "engine/canon.py",
+        "sha": "32116817bbb4c844c2c811905eb8d778482342c6",
+        "bytes": 28632
+      },
+      {
+        "path": "engine/china_strategies.py",
+        "sha": "31af5d45619633a886842f1226bd749c1fd4c2bc",
+        "bytes": 14651
+      },
+      {
+        "path": "tests/test_masterminds_hub.py",
+        "sha": "bc4b0013a48021e150371119fa064d59d7f8b797",
+        "bytes": 17670
+      },
+      {
+        "path": "tests/test_active_alloc.py",
+        "sha": "bdc4a2258b36e697f894c5b30e5b66d5684b6c52",
+        "bytes": 3991
+      },
+      {
+        "path": "tests/test_signal_lab.py",
+        "sha": "c12e1b4136b0100778c34566a0cb6fd0824d3bad",
+        "bytes": 27104
+      },
+      {
+        "path": "scripts/_active_render.py",
+        "sha": "ba9a62d9c08ca465d0754235c00c6e041d9e96cf",
+        "bytes": 3998
+      },
+      {
+        "path": "scripts/build_china_masterminds.py",
+        "sha": "6dc65d2fb92b427259ca9bf398b5d38ee0125038",
+        "bytes": 17306
+      },
+      {
+        "path": "scripts/build_masterminds.py",
+        "sha": "b0d311f44f9edad3c634203a62857d8568b69a3d",
+        "bytes": 17370
+      },
+      {
+        "path": "scripts/build_vector.py",
+        "sha": "1ac677ee6cd17b3671a75a055685e3820d0e7fee",
+        "bytes": 312900
+      },
+      {
+        "path": "scripts/build_spvector.py",
+        "sha": "60040ea13c9bae5febb9906924f23d0479b0f5e3",
+        "bytes": 19649
+      },
+      {
+        "path": "lib/site_assets.py",
+        "sha": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+        "bytes": 7180
+      },
+      {
+        "path": "lib/store.py",
+        "sha": "3a0985944f534be7d771c926d73eb49f53aba140",
+        "bytes": 33048
+      },
+      {
+        "path": "lib/pages.py",
+        "sha": "db175c463a31828263b57a3287afba661439a765",
+        "bytes": 38933
+      },
+      {
+        "path": "lib/illus.py",
+        "sha": "28ad3deaf442d4556326cd60a45b4ff62362492e",
+        "bytes": 39541
+      },
+      {
+        "path": "lib/config.py",
+        "sha": "b6fc888269876242597da354aaa726c20ed95802",
+        "bytes": 1131
+      },
+      {
+        "path": "lib/shared_shell.py",
+        "sha": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "bytes": 5407
+      },
+      {
+        "path": "data/regime/masterminds_latest.json",
+        "sha": "041acf7b42c25d7485f223b9b4cacca51b50dcef",
+        "bytes": 2597
+      },
+      {
+        "path": "engine/total_return.py",
+        "sha": "537631c57276cd21205df21dd93a5567ddbdcf63",
+        "bytes": 5486
+      },
+      {
+        "path": "templates/shared_shell.css",
+        "sha": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+        "bytes": 467
+      },
+      {
+        "path": "templates/shared_shell_bridge.js",
+        "sha": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+        "bytes": 51296
+      },
+      {
+        "path": "scripts/mastermind_moderate_phase0.py",
+        "sha": "dbe1078d8d19509d4a5e4b2aa1840efa399be719",
+        "bytes": 10733
+      },
+      {
+        "path": "data/yahoo/AAXJ.parquet",
+        "sha": "10d1774a19158153751e849f8cb16cbf27ff79a0",
+        "bytes": 121712
+      },
+      {
+        "path": "data/yahoo/ALB.parquet",
+        "sha": "ed450e1acc6c9faa83d8c6e7b09c1e3c534e5359",
+        "bytes": 210976
+      },
+      {
+        "path": "data/yahoo/ASHR.parquet",
+        "sha": "80e37e2d80417e648385938f3feac82396490ef0",
+        "bytes": 83726
+      },
+      {
+        "path": "data/yahoo/ASML.parquet",
+        "sha": "dafc3af7e4f5db754090eaab4126befe2a17640c",
+        "bytes": 218894
+      },
+      {
+        "path": "data/yahoo/AUDUSD_X.parquet",
+        "sha": "ebe38bf95f95f811655366ad4d14de844531b086",
+        "bytes": 111251
+      },
+      {
+        "path": "data/yahoo/BHP.parquet",
+        "sha": "fbac2e741a5eb594d0c5d91a8b329b5822033662",
+        "bytes": 274666
+      },
+      {
+        "path": "data/yahoo/BTC-USD.parquet",
+        "sha": "4d1b6fbc3228ec54c4dc1a9f5712963fab6d8e99",
+        "bytes": 140346
+      },
+      {
+        "path": "data/yahoo/BTC_F.parquet",
+        "sha": "bde5704a123be3de53ed04060f9e08752721cc22",
+        "bytes": 97549
+      },
+      {
+        "path": "data/yahoo/BZ_F.parquet",
+        "sha": "97593a5a61c9838bb6952a486396b444611e70e9",
+        "bytes": 123979
+      },
+      {
+        "path": "data/yahoo/CC_F.parquet",
+        "sha": "e5770f5dedafc7e5f43d64a54ea112b38555f966",
+        "bytes": 128529
+      },
+      {
+        "path": "data/yahoo/CL_F.parquet",
+        "sha": "a43f74add4cc4787368ef770b353cb22fa9a7710",
+        "bytes": 172488
+      },
+      {
+        "path": "data/yahoo/CNH_F.parquet",
+        "sha": "8cad5282cb8b1992a8c186c2e3057e1c9d3eccfe",
+        "bytes": 78799
+      },
+      {
+        "path": "data/yahoo/CNH_X.parquet",
+        "sha": "f4f7f053e686b07c5d4567075922600685c4a48a",
+        "bytes": 3495
+      },
+      {
+        "path": "data/yahoo/CQQQ.parquet",
+        "sha": "77829052540cc1dfad997413dc7b04e2bf216ae2",
+        "bytes": 104898
+      },
+      {
+        "path": "data/yahoo/CT_F.parquet",
+        "sha": "6a6b451c53c50986acb3aa454ffc79eebec21c73",
+        "bytes": 154766
+      },
+      {
+        "path": "data/yahoo/DBA.parquet",
+        "sha": "6613b4bfa17c2b89697c6ae0e568f34e16b44e14",
+        "bytes": 113510
+      },
+      {
+        "path": "data/yahoo/DBC.parquet",
+        "sha": "af38ea517fdd60c610daa049998ca21fe2c9a738",
+        "bytes": 121804
+      },
+      {
+        "path": "data/yahoo/DIA.parquet",
+        "sha": "1070f564de7f31286972e4f3f79c18bb8344051f",
+        "bytes": 205221
+      },
+      {
+        "path": "data/yahoo/DX-Y.NYB.parquet",
+        "sha": "f080fa8a3694e3a36d8d25d3910a72341dcd1588",
+        "bytes": 214689
+      },
+      {
+        "path": "data/yahoo/ECH.parquet",
+        "sha": "0aa59a8ea38cc70181632b94c0f485abfda18f5b",
+        "bytes": 121325
+      },
+      {
+        "path": "data/yahoo/EEM.parquet",
+        "sha": "86ca68115f1b6efe1c3b64352e062dcb0c5e2277",
+        "bytes": 161256
+      },
+      {
+        "path": "data/yahoo/EFA.parquet",
+        "sha": "fe982ed04b5390a0b84ba8c816562a98d27e351b",
+        "bytes": 172940
+      },
+      {
+        "path": "data/yahoo/EIDO.parquet",
+        "sha": "0cfec14c173e3071c96c61cdecf27dfab6d07a1c",
+        "bytes": 100976
+      },
+      {
+        "path": "data/yahoo/EMB.parquet",
+        "sha": "d7dac478455c6cfd044f1a37d0f0dc649a2fa401",
+        "bytes": 124671
+      },
+      {
+        "path": "data/yahoo/EMLC.parquet",
+        "sha": "3d9188b39dc5347edb55acda275dc5759eb0674e",
+        "bytes": 101819
+      },
+      {
+        "path": "data/yahoo/EPOL.parquet",
+        "sha": "12660f7e8ab094e945e102b01cf3c0f88c9bc758",
+        "bytes": 99908
+      },
+      {
+        "path": "data/yahoo/ETH-USD.parquet",
+        "sha": "6c5ec0ba4ffea8007649ce5528d433ee73d6f869",
+        "bytes": 104311
+      },
+      {
+        "path": "data/yahoo/EUFN.parquet",
+        "sha": "64f580c37a5fd767c7b1dd11a621772594a9dd99",
+        "bytes": 5980
+      },
+      {
+        "path": "data/yahoo/EURUSD_X.parquet",
+        "sha": "9973fd71ee814dc8160d2d2697584e47bfa93ad0",
+        "bytes": 123039
+      },
+      {
+        "path": "data/yahoo/EWA.parquet",
+        "sha": "201db4b975c60a613f3ae23f4d33d2ea1482d630",
+        "bytes": 170155
+      },
+      {
+        "path": "data/yahoo/EWC.parquet",
+        "sha": "18fdf5e29ac18dd4444f4ac512413fac4079654b",
+        "bytes": 178154
+      },
+      {
+        "path": "data/yahoo/EWD.parquet",
+        "sha": "ba75e8e64f7f2cd23cc449f85ec39ba9f9ee15f1",
+        "bytes": 168845
+      },
+      {
+        "path": "data/yahoo/EWG.parquet",
+        "sha": "8b36ae326a71a57c795182fbe5d1d14f492c328d",
+        "bytes": 179990
+      },
+      {
+        "path": "data/yahoo/EWH.parquet",
+        "sha": "f4452009f5ac0917401523bae53592d3224af216",
+        "bytes": 175669
+      },
+      {
+        "path": "data/yahoo/EWI.parquet",
+        "sha": "7a8fcc36077ad75fdce63bee7845294c64922349",
+        "bytes": 173408
+      },
+      {
+        "path": "data/yahoo/EWJ.parquet",
+        "sha": "05c85e488e479a32928799e0e4bfa279875fb84a",
+        "bytes": 182924
+      },
+      {
+        "path": "data/yahoo/EWL.parquet",
+        "sha": "e4d597430d18dbea4df431e519ec8549a47ed471",
+        "bytes": 174086
+      },
+      {
+        "path": "data/yahoo/EWN.parquet",
+        "sha": "fc605ab5c4725fda8acfb422a1cf6630391a0912",
+        "bytes": 163596
+      },
+      {
+        "path": "data/yahoo/EWP.parquet",
+        "sha": "442a1ef8ada11bde9425e40b985bb751438f6ea8",
+        "bytes": 176310
+      },
+      {
+        "path": "data/yahoo/EWQ.parquet",
+        "sha": "08c8ee002063b8cfcbc959aebd894e302ddcb373",
+        "bytes": 172208
+      },
+      {
+        "path": "data/yahoo/EWS.parquet",
+        "sha": "3d021fd3be551728499c1a78751927f9bd7dc142",
+        "bytes": 167212
+      },
+      {
+        "path": "data/yahoo/EWT.parquet",
+        "sha": "8270f3772ded458bce15a5e4cc88c3ed0361a183",
+        "bytes": 162596
+      },
+      {
+        "path": "data/yahoo/EWU.parquet",
+        "sha": "807a60aff3b53ffc98bfd2ca6f299ac3dc1b200c",
+        "bytes": 174123
+      },
+      {
+        "path": "data/yahoo/EWW.parquet",
+        "sha": "7f80c1eb93303b222906907e5e9e27c6e28716b0",
+        "bytes": 189579
+      },
+      {
+        "path": "data/yahoo/EWY.parquet",
+        "sha": "bd04a41f15b34f447f79ee9b5efba164f97c8284",
+        "bytes": 174155
+      },
+      {
+        "path": "data/yahoo/EWZ.parquet",
+        "sha": "7b3196181852f6bf34469341b039a94af1c78f5a",
+        "bytes": 178399
+      },
+      {
+        "path": "data/yahoo/EZA.parquet",
+        "sha": "ad9d4bf145d3e9161091b3f551884d9eaac1bc36",
+        "bytes": 150642
+      },
+      {
+        "path": "data/yahoo/FPX.parquet",
+        "sha": "de2230abfe538c043df426c84f71ab151976f23e",
+        "bytes": 122867
+      },
+      {
+        "path": "data/yahoo/FXI.parquet",
+        "sha": "1bb6a11d45840c1591522fe5ec6dbee0b5b24fec",
+        "bytes": 149904
+      },
+      {
+        "path": "data/yahoo/GBPUSD_X.parquet",
+        "sha": "3831518d6ef36b7ae289bf4998b4361ae30a7b10",
+        "bytes": 125638
+      },
+      {
+        "path": "data/yahoo/GC_F.parquet",
+        "sha": "a49ae302cc42914c624a011fe047c6e965350fdd",
+        "bytes": 157104
+      },
+      {
+        "path": "data/yahoo/GDX.parquet",
+        "sha": "1e197f2b7027f9a422ada45fdc54d22e6f1a87ba",
+        "bytes": 141504
+      },
+      {
+        "path": "data/yahoo/GDXJ.parquet",
+        "sha": "37099c17e134516987e47735853d6355e9074927",
+        "bytes": 118940
+      },
+      {
+        "path": "data/yahoo/GLD.parquet",
+        "sha": "cc7f3036c098d490a29d0ec9fe08b06860ed0180",
+        "bytes": 154302
+      },
+      {
+        "path": "data/yahoo/GSG.parquet",
+        "sha": "7ff63cc53a6cfabe20fb35f526a654c1bda6d0be",
+        "bytes": 113389
+      },
+      {
+        "path": "data/yahoo/GXC.parquet",
+        "sha": "3947f1f54a6c7a1f43ce0c77f13d2da628251f86",
+        "bytes": 121003
+      },
+      {
+        "path": "data/yahoo/HG_F.parquet",
+        "sha": "0e73a6379edbfe091d37c00ad3a39ef15649135d",
+        "bytes": 142429
+      },
+      {
+        "path": "data/yahoo/HO_F.parquet",
+        "sha": "6849e49be0ca8cb9c9413eb5485cd9cf37c82d1d",
+        "bytes": 184338
+      },
+      {
+        "path": "data/yahoo/HSBC.parquet",
+        "sha": "bfe3bc763b02cd05506bfe217abf7aad01242cb8",
+        "bytes": 181111
+      },
+      {
+        "path": "data/yahoo/HYG.parquet",
+        "sha": "4a09c5a9e2884fdb3375333b4b8c41956808ecd2",
+        "bytes": 129115
+      },
+      {
+        "path": "data/yahoo/IBB.parquet",
+        "sha": "8080bada3c4bee4c096d1e67a32ecb38e040f0b7",
+        "bytes": 178634
+      },
+      {
+        "path": "data/yahoo/IEF.parquet",
+        "sha": "bcb98a8d7d053f7a9767e1e736e9e3566f6815f1",
+        "bytes": 156559
+      },
+      {
+        "path": "data/yahoo/IGV.parquet",
+        "sha": "93bb232777eefedcdddc4a67969ff6f1f19c5ccf",
+        "bytes": 167869
+      },
+      {
+        "path": "data/yahoo/IJH.parquet",
+        "sha": "078da8e278dd24a9bd7f8dc60822e1207c26f6f6",
+        "bytes": 185575
+      },
+      {
+        "path": "data/yahoo/ILF.parquet",
+        "sha": "00cfe02f7819406a425a36fb94f511d7820b28ba",
+        "bytes": 162034
+      },
+      {
+        "path": "data/yahoo/INDA.parquet",
+        "sha": "eb4a1d1e556b6332b9a666ee40e30d3862771e17",
+        "bytes": 95980
+      },
+      {
+        "path": "data/yahoo/IPO.parquet",
+        "sha": "af159c86c2d79bfcfadcb4bd1b84c2ddaea2d4d9",
+        "bytes": 77798
+      },
+      {
+        "path": "data/yahoo/ITB.parquet",
+        "sha": "f5d4bd64b5d8010d51bcd6ff40abe45d06c8ce2b",
+        "bytes": 140849
+      },
+      {
+        "path": "data/yahoo/IWD.parquet",
+        "sha": "9fd8d9d6460dec1dbf6081e7ec2f5fb6197d74eb",
+        "bytes": 182830
+      },
+      {
+        "path": "data/yahoo/IWF.parquet",
+        "sha": "45309f345188b3ce0d53beaa7a482856e2bd4fe8",
+        "bytes": 183731
+      },
+      {
+        "path": "data/yahoo/IWM.parquet",
+        "sha": "4930b10b16344ce39df788d2cae65c0149c5b0e3",
+        "bytes": 192826
+      },
+      {
+        "path": "data/yahoo/KBE.parquet",
+        "sha": "290f1d2f2ef92d62cee229083e77864a9cdf8bbd",
+        "bytes": 140826
+      },
+      {
+        "path": "data/yahoo/KBWB.parquet",
+        "sha": "ffba09d1fb81604ee5b9f58a53a96f5fca90dd6d",
+        "bytes": 101021
+      },
+      {
+        "path": "data/yahoo/KC_F.parquet",
+        "sha": "3b32d78d74e74c31a0911031723b24ff8236a875",
+        "bytes": 143662
+      },
+      {
+        "path": "data/yahoo/KRE.parquet",
+        "sha": "a6b38c59f6e74d7acc9f8d505bf4f52cda6555aa",
+        "bytes": 140924
+      },
+      {
+        "path": "data/yahoo/KWEB.parquet",
+        "sha": "508874419ecb40e61337fd1bdefbc1b3a8ca5564",
+        "bytes": 90924
+      },
+      {
+        "path": "data/yahoo/LE_F.parquet",
+        "sha": "f3d2ed1a98569c384ac9eff63f7426e19469c353",
+        "bytes": 143120
+      },
+      {
+        "path": "data/yahoo/LQD.parquet",
+        "sha": "fd06266ef3029e2e0706bb192373831ebef378cb",
+        "bytes": 156203
+      },
+      {
+        "path": "data/yahoo/LVMUY.parquet",
+        "sha": "4b824dcdf4d3cead9b5823913f295a878c235000",
+        "bytes": 125880
+      },
+      {
+        "path": "data/yahoo/MAGS.parquet",
+        "sha": "8fc4cddfa19910ba1b7bba6e0f0214631eba3a92",
+        "bytes": 27321
+      },
+      {
+        "path": "data/yahoo/MCHI.parquet",
+        "sha": "522c040bc2cc0b741f6103ffc794fd6e99e21dfe",
+        "bytes": 104465
+      },
+      {
+        "path": "data/yahoo/MTUM.parquet",
+        "sha": "7d7155c402c88d61dfcf0142603e41e46f5d78f8",
+        "bytes": 95690
+      },
+      {
+        "path": "data/yahoo/MU.parquet",
+        "sha": "1dcd23ed005e3a7831e50edfd40ead47930495a4",
+        "bytes": 258095
+      },
+      {
+        "path": "data/yahoo/NG_F.parquet",
+        "sha": "2a22dcfdb1883f1783c108e149d768e09f6c4e82",
+        "bytes": 162380
+      },
+      {
+        "path": "data/yahoo/OIH.parquet",
+        "sha": "a907f792aa3e1428562098983a8c82d63ac97a2f",
+        "bytes": 182332
+      },
+      {
+        "path": "data/yahoo/PA_F.parquet",
+        "sha": "c5ca796c6d5123fdb5ceebf4095f2fb2ac4ea4fd",
+        "bytes": 146696
+      },
+      {
+        "path": "data/yahoo/PCY.parquet",
+        "sha": "057d055783dd3b10f818f625d9329365d3a667b4",
+        "bytes": 113835
+      },
+      {
+        "path": "data/yahoo/PL_F.parquet",
+        "sha": "a904d381f851dfe71a442afe935cb388371e0d06",
+        "bytes": 143800
+      },
+      {
+        "path": "data/yahoo/QQQ.parquet",
+        "sha": "16f4c8f193d8910e66476814373f5bc1edaac18b",
+        "bytes": 201942
+      },
+      {
+        "path": "data/yahoo/QUAL.parquet",
+        "sha": "0959c48ac976f0ec5cb327ff2ecc52c0865818a5",
+        "bytes": 93638
+      },
+      {
+        "path": "data/yahoo/RB_F.parquet",
+        "sha": "cd3f9841148144bfdd32d211faa113ccb7abd9a6",
+        "bytes": 182456
+      },
+      {
+        "path": "data/yahoo/RGI.parquet",
+        "sha": "ccbc58752becd52b82e41dbb53288f690f57f743",
+        "bytes": 3930
+      },
+      {
+        "path": "data/yahoo/RIO.parquet",
+        "sha": "5824a396b7740ea485e9877cf8349b4d85058997",
+        "bytes": 223484
+      },
+      {
+        "path": "data/yahoo/RSP.parquet",
+        "sha": "c3a37f29645ca947c8161a129632e4971511bad1",
+        "bytes": 164079
+      },
+      {
+        "path": "data/yahoo/RSPC.parquet",
+        "sha": "419b6ce003302c14b73513ddeae4dc961da5f0ec",
+        "bytes": 44948
+      },
+      {
+        "path": "data/yahoo/RSPD.parquet",
+        "sha": "7ed7906447a02fff161194bbd643ff7f80df6d43",
+        "bytes": 120860
+      },
+      {
+        "path": "data/yahoo/RSPF.parquet",
+        "sha": "349f0d8bedba0b19c284b6056f920d3c1979fe38",
+        "bytes": 118881
+      },
+      {
+        "path": "data/yahoo/RSPG.parquet",
+        "sha": "ce152a018c65a7a57e4f9c8453b41efb8ef789e2",
+        "bytes": 119116
+      },
+      {
+        "path": "data/yahoo/RSPH.parquet",
+        "sha": "ec9ee5bc6fc4ec639035b0ccc03ec5efb4112e4f",
+        "bytes": 123244
+      },
+      {
+        "path": "data/yahoo/RSPM.parquet",
+        "sha": "3d622a9bb778d8df210926f21607884f5280fd00",
+        "bytes": 117593
+      },
+      {
+        "path": "data/yahoo/RSPR.parquet",
+        "sha": "0e84bad9a8eb5953af66456a151038ec588e3833",
+        "bytes": 66132
+      },
+      {
+        "path": "data/yahoo/RSPS.parquet",
+        "sha": "4e88eec44547bc297597775f8c76e9d3a7020cde",
+        "bytes": 117477
+      },
+      {
+        "path": "data/yahoo/RSPT.parquet",
+        "sha": "461922aa3349dbde9c2932772c49c9fcd67d59ac",
+        "bytes": 127508
+      },
+      {
+        "path": "data/yahoo/RSPU.parquet",
+        "sha": "cc2d5de436ace944906ddbfd0a6be804e0a2e016",
+        "bytes": 117562
+      },
+      {
+        "path": "data/yahoo/SB_F.parquet",
+        "sha": "520290384a55ceedf4f30de5e31b62d63bb38ed4",
+        "bytes": 140748
+      },
+      {
+        "path": "data/yahoo/SI_F.parquet",
+        "sha": "b5acb96474ebce69f4611240d4ed27e235334189",
+        "bytes": 154653
+      },
+      {
+        "path": "data/yahoo/SMH.parquet",
+        "sha": "392f0c0b4570979748a1bc3d88f3fa1345f1e9c1",
+        "bytes": 179850
+      },
+      {
+        "path": "data/yahoo/SOL-USD.parquet",
+        "sha": "5f8a42555d37aacc5c8319784bb51b382a89ec4b",
+        "bytes": 76939
+      },
+      {
+        "path": "data/yahoo/SONY.parquet",
+        "sha": "b0a0e4689ff74584012947f6dbb44b76607ff06b",
+        "bytes": 312896
+      },
+      {
+        "path": "data/yahoo/SOXX.parquet",
+        "sha": "8c84fbc58cd218e6f6c25038211f1c23390b1616",
+        "bytes": 174464
+      },
+      {
+        "path": "data/yahoo/SPHB.parquet",
+        "sha": "8d5ce720c473a52c9ffc07f517c1ab96d7b6994a",
+        "bytes": 102393
+      },
+      {
+        "path": "data/yahoo/SPLV.parquet",
+        "sha": "63d1ea75abae3cb84c6e422ba49ce8e8f241ae9b",
+        "bytes": 104888
+      },
+      {
+        "path": "data/yahoo/SPY.parquet",
+        "sha": "d73be3d49b2a43359a226f872e5f8274a830735c",
+        "bytes": 245142
+      },
+      {
+        "path": "data/yahoo/SQM.parquet",
+        "sha": "7dadcac89ca9630b83e901bf82d6e908030936ce",
+        "bytes": 207522
+      },
+      {
+        "path": "data/yahoo/TAN.parquet",
+        "sha": "2c58e796c4075c852eb2560b2a6c7a5336280a8b",
+        "bytes": 122845
+      },
+      {
+        "path": "data/yahoo/TIP.parquet",
+        "sha": "d4cb8098a557df19c1d7fd356ca533211cc9709a",
+        "bytes": 143711
+      },
+      {
+        "path": "data/yahoo/TLT.parquet",
+        "sha": "e25585dfa4b698f358c8b37c7f7f7c854decc660",
+        "bytes": 166359
+      },
+      {
+        "path": "data/yahoo/TUR.parquet",
+        "sha": "8fd8153b6cd1074d43fb79a00d844ee5f0d0479a",
+        "bytes": 120495
+      },
+      {
+        "path": "data/yahoo/USDBRL_X.parquet",
+        "sha": "52e3c6e6a301c3d269db6b1462f6988f447f95cc",
+        "bytes": 119753
+      },
+      {
+        "path": "data/yahoo/USDCAD_X.parquet",
+        "sha": "098c9fc919f24c1a0e8ba5443c9952c09103ff66",
+        "bytes": 123061
+      },
+      {
+        "path": "data/yahoo/USDCHF_X.parquet",
+        "sha": "931a9a93eb88c1e4133eb3b44f1d1f234e2cfe4c",
+        "bytes": 122071
+      },
+      {
+        "path": "data/yahoo/USDCLP_X.parquet",
+        "sha": "9b58429d25a7c2a2e113382d93d8b95dad4ff7ba",
+        "bytes": 121696
+      },
+      {
+        "path": "data/yahoo/USDHKD_X.parquet",
+        "sha": "25c64c8aa1e48ecc9b5454a74a9bc1081ee90513",
+        "bytes": 97049
+      },
+      {
+        "path": "data/yahoo/USDIDR_X.parquet",
+        "sha": "4c86b7e857467b7e22d122f07008854d287d875c",
+        "bytes": 124450
+      },
+      {
+        "path": "data/yahoo/USDJPY_X.parquet",
+        "sha": "799ad3a95f44c0fb4185279429c300794951abae",
+        "bytes": 157484
+      },
+      {
+        "path": "data/yahoo/USDMXN_X.parquet",
+        "sha": "b66615b686d1a07c1bb1a9ea52784ca3b642a301",
+        "bytes": 130890
+      },
+      {
+        "path": "data/yahoo/USDPLN_X.parquet",
+        "sha": "6a83a50f2ed333c7e3d7f0c0114a0c1f7511746d",
+        "bytes": 131689
+      },
+      {
+        "path": "data/yahoo/USDSEK_X.parquet",
+        "sha": "eff6062a7d4cb084a6c9a85fa391238277b369d1",
+        "bytes": 143438
+      },
+      {
+        "path": "data/yahoo/USDSGD_X.parquet",
+        "sha": "ee8719a995cc870b322c07b990916856629061d8",
+        "bytes": 120416
+      },
+      {
+        "path": "data/yahoo/USDTRY_X.parquet",
+        "sha": "1eff6dcd36cbb064ed1dd8b099aec2d88b16867d",
+        "bytes": 124903
+      },
+      {
+        "path": "data/yahoo/USDZAR_X.parquet",
+        "sha": "10fe64021fdb35280fac1854e4f7f7e7e90b2808",
+        "bytes": 134150
+      },
+      {
+        "path": "data/yahoo/USMV.parquet",
+        "sha": "4379f77c0cf1ca93537b8e84b14deb056ad8eefe",
+        "bytes": 102546
+      },
+      {
+        "path": "data/yahoo/VALE.parquet",
+        "sha": "d34b9380f4352f224c7aad7ec6e324c14ca53490",
+        "bytes": 164751
+      },
+      {
+        "path": "data/yahoo/VGK.parquet",
+        "sha": "0c342b1cc3512ff9baa98175c06d59d4741ab37a",
+        "bytes": 143485
+      },
+      {
+        "path": "data/yahoo/VPL.parquet",
+        "sha": "20d063a2d8248289d730a00b6d8e8a019034b9c8",
+        "bytes": 136686
+      },
+      {
+        "path": "data/yahoo/VWOB.parquet",
+        "sha": "c6c7a7a8185ed556f70f69fc8410ac420e788146",
+        "bytes": 81822
+      },
+      {
+        "path": "data/yahoo/VXUS.parquet",
+        "sha": "79744f032e069e9c361819a31321abd2d832e2e9",
+        "bytes": 103806
+      },
+      {
+        "path": "data/yahoo/XBI.parquet",
+        "sha": "af7936d6591a92721d40cfa5bf628bf45c876b77",
+        "bytes": 146855
+      },
+      {
+        "path": "data/yahoo/XHB.parquet",
+        "sha": "18a2c233690bf6473d44e5fa3ed48db96fb7ed05",
+        "bytes": 142950
+      },
+      {
+        "path": "data/yahoo/XLB.parquet",
+        "sha": "3039f8f7787bc77b9263288652a6cc2a6e63995a",
+        "bytes": 188631
+      },
+      {
+        "path": "data/yahoo/XLC.parquet",
+        "sha": "31cccc2cc40d48ace791a9d2d0a14cedc4bb6a75",
+        "bytes": 60916
+      },
+      {
+        "path": "data/yahoo/XLE.parquet",
+        "sha": "98051f60dc2038084ffbbdac215ce38fa7957ed8",
+        "bytes": 194181
+      },
+      {
+        "path": "data/yahoo/XLF.parquet",
+        "sha": "73fa89292c47a4a64cc4843cf4ba67135de4da21",
+        "bytes": 189590
+      },
+      {
+        "path": "data/yahoo/XLI.parquet",
+        "sha": "8f9692e5b211696b43d2c158f0d49e62b33a4d1f",
+        "bytes": 189760
+      },
+      {
+        "path": "data/yahoo/XLK.parquet",
+        "sha": "36963d9254918bb59c18fdde9f57d66bc0cd5a13",
+        "bytes": 190546
+      },
+      {
+        "path": "data/yahoo/XLP.parquet",
+        "sha": "dcada432770b5a5c51e5c393551e30cf2d83a151",
+        "bytes": 182065
+      },
+      {
+        "path": "data/yahoo/XLRE.parquet",
+        "sha": "bdb072edee4130d4b7fb5cc92a10239a9c8c8736",
+        "bytes": 73054
+      },
+      {
+        "path": "data/yahoo/XLU.parquet",
+        "sha": "02348245da57f7d4054dbd7be273dd6f4e1440f2",
+        "bytes": 186913
+      },
+      {
+        "path": "data/yahoo/XLV.parquet",
+        "sha": "098fc81d2a7a7f9b469bb188466d9c1b28fa4e0a",
+        "bytes": 184820
+      },
+      {
+        "path": "data/yahoo/XLY.parquet",
+        "sha": "2a11c7cde52fec52a821b16de5919e7b1f267445",
+        "bytes": 190206
+      },
+      {
+        "path": "data/yahoo/XME.parquet",
+        "sha": "5e4b8bd0e5df3de0da4cf2f575379a18fcc16c0c",
+        "bytes": 140682
+      },
+      {
+        "path": "data/yahoo/XOP.parquet",
+        "sha": "3f1d2ee6e685fa3e390738ec38997616dd5de757",
+        "bytes": 144844
+      },
+      {
+        "path": "data/yahoo/XRT.parquet",
+        "sha": "a369cd29535044c112ad15d244b3b6ddcb20430e",
+        "bytes": 143426
+      },
+      {
+        "path": "data/yahoo/ZC_F.parquet",
+        "sha": "e5afc78fa855bdb13892ad782f80ef532e81379a",
+        "bytes": 126534
+      },
+      {
+        "path": "data/yahoo/ZQ_F.parquet",
+        "sha": "9cf32efb63b498c4b61adc8a124caa673e67d820",
+        "bytes": 107566
+      },
+      {
+        "path": "data/yahoo/ZS_F.parquet",
+        "sha": "f36934adcaf5712568835aadc42143fe0bc25b11",
+        "bytes": 136410
+      },
+      {
+        "path": "data/yahoo/ZW_F.parquet",
+        "sha": "6326bce2ed9493f863b70e219c87d4044c4251e7",
+        "bytes": 127859
+      },
+      {
+        "path": "data/yahoo/_DJI.parquet",
+        "sha": "6193a30128c323b486997c7ea6b4b6db466d87ea",
+        "bytes": 196975
+      },
+      {
+        "path": "data/yahoo/_GSPC.parquet",
+        "sha": "4d3e730806ad8b7de47c1274ca99c55b3207ebe4",
+        "bytes": 599089
+      },
+      {
+        "path": "data/yahoo/_KS11.parquet",
+        "sha": "1c517a90da26f2088e450d6390b5c4eeeb1a1266",
+        "bytes": 200801
+      },
+      {
+        "path": "data/yahoo/_MOVE.parquet",
+        "sha": "f4bce6852bf5776429dfc340b2b5905e54741293",
+        "bytes": 166516
+      },
+      {
+        "path": "data/yahoo/_RUT.parquet",
+        "sha": "8ebb47e8166c3f9f572b771d31d38f4240931941",
+        "bytes": 297664
+      },
+      {
+        "path": "data/yahoo/_SOX.parquet",
+        "sha": "83cbd6d7156402faa1fbb1bb88c6f48ec11d863a",
+        "bytes": 185355
+      },
+      {
+        "path": "data/yahoo/_VIX.parquet",
+        "sha": "6c44b2e30ce64f7221ebaac88824aa9a894c7121",
+        "bytes": 191648
+      },
+      {
+        "path": "data/yahoo/_VIX3M.parquet",
+        "sha": "59a54be80386b91ff9b4fcda55d2df9d3d816b3f",
+        "bytes": 119441
+      },
+      {
+        "path": "data/yahoo/_VIX9D.parquet",
+        "sha": "3dd7be67bcb615192900d45246b00a2971b47b23",
+        "bytes": 98601
+      },
+      {
+        "path": "data/yahoo/_VVIX.parquet",
+        "sha": "e7906f865926ddd05f617895efcc5512620b0918",
+        "bytes": 147802
+      },
+      {
+        "path": "data/fred/ADPMNUSNERSA.parquet",
+        "sha": "059627f5dad46db1b75c635080497017bd473c1a",
+        "bytes": 5344
+      },
+      {
+        "path": "data/fred/AMTMUO.parquet",
+        "sha": "47063ec0e8940b1c9794685ff93e2a075769051b",
+        "bytes": 8547
+      },
+      {
+        "path": "data/fred/AMTMVS.parquet",
+        "sha": "bce50ae86b50fa6062d4952fa7e3412b683e8a4c",
+        "bytes": 8525
+      },
+      {
+        "path": "data/fred/ANFCI.parquet",
+        "sha": "9c93a97c7531941258085c1e0ca8b6b19d6b3399",
+        "bytes": 38425
+      },
+      {
+        "path": "data/fred/APU000072610.parquet",
+        "sha": "a399ae69c721dc3ab3ab97f039989ec59176c0ed",
+        "bytes": 8724
+      },
+      {
+        "path": "data/fred/AWHAETP.parquet",
+        "sha": "1227a5ea9d3ed2d426e4a0e01211f532941b6250",
+        "bytes": 4583
+      },
+      {
+        "path": "data/fred/AWHMAN.parquet",
+        "sha": "c2d1ed10ecf1c02367232f669b5426609231010b",
+        "bytes": 13175
+      },
+      {
+        "path": "data/fred/BAMLC0A0CM.parquet",
+        "sha": "0e743e7d21c001638f593ddeee5a17553a8e1e93",
+        "bytes": 11033
+      },
+      {
+        "path": "data/fred/BAMLC0A0CMEY.parquet",
+        "sha": "48b721bea56919345278789f6210730121ecdbda",
+        "bytes": 10919
+      },
+      {
+        "path": "data/fred/BAMLC0A1CAAA.parquet",
+        "sha": "ff3a69101808d117443a69bd06a0e7dff8fc8d22",
+        "bytes": 10069
+      },
+      {
+        "path": "data/fred/BAMLC0A2CAA.parquet",
+        "sha": "d17ed13b59867ee9ff7bd44dccca956257751be6",
+        "bytes": 10075
+      },
+      {
+        "path": "data/fred/BAMLC0A3CA.parquet",
+        "sha": "a3930f01e07c748825e9555c67165532ebc8fac4",
+        "bytes": 10293
+      },
+      {
+        "path": "data/fred/BAMLC0A4CBBB.parquet",
+        "sha": "799b8499eea8a85e12fa1044e8b628fbc603f004",
+        "bytes": 10452
+      },
+      {
+        "path": "data/fred/BAMLCC0A0CMTRIV.parquet",
+        "sha": "458d88debfaf49e5809f7156e6915068d214c143",
+        "bytes": 14585
+      },
+      {
+        "path": "data/fred/BAMLEMCBPIOAS.parquet",
+        "sha": "9047e4bb0b3501bb842a51e6e69e0b2abb3f8810",
+        "bytes": 11095
+      },
+      {
+        "path": "data/fred/BAMLEMEBCRPIEOAS.parquet",
+        "sha": "ffa1fc8de13b2893301ad20874ec053f8a40b2cd",
+        "bytes": 11176
+      },
+      {
+        "path": "data/fred/BAMLEMFSFCRPIOAS.parquet",
+        "sha": "55c6e88ae15e048e1b28d52f38c91178d17b7d7d",
+        "bytes": 10658
+      },
+      {
+        "path": "data/fred/BAMLEMHBHYCRPIOAS.parquet",
+        "sha": "75aa5ec850b55401f8aab5f1fce2262d9eaa64f5",
+        "bytes": 11458
+      },
+      {
+        "path": "data/fred/BAMLEMNSNFCRPIOAS.parquet",
+        "sha": "10a9050f4c768d1ca6ee93965bcbb16a8c01c86d",
+        "bytes": 11119
+      },
+      {
+        "path": "data/fred/BAMLEMRACRPIASIAOAS.parquet",
+        "sha": "bb8b16516c331f781bfde47ac613c9f6983d6c30",
+        "bytes": 10899
+      },
+      {
+        "path": "data/fred/BAMLEMRECRPIEMEAOAS.parquet",
+        "sha": "25c931090fd34b07411e5745f7c333157e530d20",
+        "bytes": 10995
+      },
+      {
+        "path": "data/fred/BAMLEMRLCRPILAOAS.parquet",
+        "sha": "56474b38ee68f48b6d26b2419b2c7e6a046143e8",
+        "bytes": 11177
+      },
+      {
+        "path": "data/fred/BAMLH0A0HYM2.parquet",
+        "sha": "3bb4e32f55c05b697bb05af5d986311842035849",
+        "bytes": 82971
+      },
+      {
+        "path": "data/fred/BAMLH0A0HYM2EY.parquet",
+        "sha": "f59d4e96c41087e6f20fee21a48d32a95a14f671",
+        "bytes": 11258
+      },
+      {
+        "path": "data/fred/BAMLH0A1HYBB.parquet",
+        "sha": "a6364cd5eb997c64ba075ac5a309abe475cca60c",
+        "bytes": 10856
+      },
+      {
+        "path": "data/fred/BAMLH0A2HYB.parquet",
+        "sha": "f7275a7fe0bc20e57bbd1d7bb750142e4ea5ce89",
+        "bytes": 11009
+      },
+      {
+        "path": "data/fred/BAMLH0A3HYC.parquet",
+        "sha": "d7d40576d2232ed76384b6abbde8be5d211b407a",
+        "bytes": 11950
+      },
+      {
+        "path": "data/fred/BAMLHE00EHYIOAS.parquet",
+        "sha": "fa17d0447d3760231dc3897d7ab8eccfd295dd63",
+        "bytes": 11173
+      },
+      {
+        "path": "data/fred/BAMLHYH0A0HYM2TRIV.parquet",
+        "sha": "2e61e79ef5846824efab9419768ae38dcb1d3b95",
+        "bytes": 14469
+      },
+      {
+        "path": "data/fred/BOPGSTB.parquet",
+        "sha": "a96b52910818c29ead649988e4549d7597c378e2",
+        "bytes": 8600
+      },
+      {
+        "path": "data/fred/BOPTEXP.parquet",
+        "sha": "da4c97acfcbd522d85ea65c011e0562635c390cb",
+        "bytes": 8605
+      },
+      {
+        "path": "data/fred/BOPTIMP.parquet",
+        "sha": "21ef6eaaf8ae86c1863cc6509d5b31a6024878b9",
+        "bytes": 8618
+      },
+      {
+        "path": "data/fred/BUSLOANS.parquet",
+        "sha": "11e05ded49008ca7edc4f8573c9990ec6bf6009c",
+        "bytes": 19196
+      },
+      {
+        "path": "data/fred/CAPG3344S.parquet",
+        "sha": "63a7d7c2924df3baf923c0e83cb7ee40433ec852",
+        "bytes": 13515
+      },
+      {
+        "path": "data/fred/CAPUTLG211S.parquet",
+        "sha": "7eec13ece88c72df98f8d18734902b2d478d51bc",
+        "bytes": 13546
+      },
+      {
+        "path": "data/fred/CAPUTLG2211A2S.parquet",
+        "sha": "b4902b5a62689285943992ee95318ed56ca11aa8",
+        "bytes": 15168
+      },
+      {
+        "path": "data/fred/CAPUTLG2211S.parquet",
+        "sha": "496c7eee49fe7b5f38152ff16d2b68a2f2b030a1",
+        "bytes": 15419
+      },
+      {
+        "path": "data/fred/CAPUTLG331S.parquet",
+        "sha": "14b9a1f8a2316b815a97fb66013dc71dc6b8a778",
+        "bytes": 15367
+      },
+      {
+        "path": "data/fred/CAPUTLG3344S.parquet",
+        "sha": "ea3c068b705f759994890751fb4ae19d15d3aad9",
+        "bytes": 14284
+      },
+      {
+        "path": "data/fred/CAPUTLG334S.parquet",
+        "sha": "3f9551b3393c9df0548796ca55954d3bbb4049d0",
+        "bytes": 14316
+      },
+      {
+        "path": "data/fred/CCSA.parquet",
+        "sha": "9bcf36bfd8038b84535a7a279662ff5d01485f3c",
+        "bytes": 42714
+      },
+      {
+        "path": "data/fred/CES0500000003.parquet",
+        "sha": "6a348d6461670653dbf6ea9f18dcf6a0ce40b48d",
+        "bytes": 5829
+      },
+      {
+        "path": "data/fred/CMRMTSPL.parquet",
+        "sha": "c71f60c7fb2d6edc836ef9a1a9f4d568f40d8196",
+        "bytes": 14311
+      },
+      {
+        "path": "data/fred/CORESTICKM157SFRBATL.parquet",
+        "sha": "079490ad5ccbb1be409e52de98d2bd35170a4cde",
+        "bytes": 15408
+      },
+      {
+        "path": "data/fred/CPIAUCSL.parquet",
+        "sha": "3ad87901bb345974dddc842fb1ed86326308e2b2",
+        "bytes": 16432
+      },
+      {
+        "path": "data/fred/CPILFESL.parquet",
+        "sha": "65881b36deadddcb9c1e5740afb188219ab477c6",
+        "bytes": 14587
+      },
+      {
+        "path": "data/fred/CSUSHPISA.parquet",
+        "sha": "f3578d62013304af87114dcc198453ead56732a1",
+        "bytes": 9754
+      },
+      {
+        "path": "data/fred/CUSR0000SACL1E.parquet",
+        "sha": "67d2a5aa8f7c5ca51771b56682451747ef69a099",
+        "bytes": 14196
+      },
+      {
+        "path": "data/fred/CUSR0000SAF11.parquet",
+        "sha": "2d52ad0a8c94532ba582f64a4b8682e12bab02de",
+        "bytes": 14963
+      },
+      {
+        "path": "data/fred/CUSR0000SAH1.parquet",
+        "sha": "b8bc1ca14b06b3c92da11c99bd2c894c10c91306",
+        "bytes": 15120
+      },
+      {
+        "path": "data/fred/CUSR0000SAS.parquet",
+        "sha": "abe5da4c61b19eb063336dbf03b3d913b727c1f3",
+        "bytes": 14862
+      },
+      {
+        "path": "data/fred/CUSR0000SASLE.parquet",
+        "sha": "afd5cf2bed7f7e16e40753ffccd006d7a627ece0",
+        "bytes": 13223
+      },
+      {
+        "path": "data/fred/CUUR0000SAG1.parquet",
+        "sha": "1773a99fade1901fc2606e3c766261af8b37243f",
+        "bytes": 15916
+      },
+      {
+        "path": "data/fred/DAAA.parquet",
+        "sha": "5b108aee23b2b415140a21ba948ca1b74c74213f",
+        "bytes": 118072
+      },
+      {
+        "path": "data/fred/DBAA.parquet",
+        "sha": "b3a1eeb843ece0d1b521885c5d53d71b8e35293f",
+        "bytes": 108115
+      },
+      {
+        "path": "data/fred/DCOILWTICO.parquet",
+        "sha": "9e1f5b4bf84ff9aac7d7c6061bc5c7e0f4455db3",
+        "bytes": 133940
+      },
+      {
+        "path": "data/fred/DEXBZUS.parquet",
+        "sha": "5888b689b2e0269d72b33f1f263b621fabe71879",
+        "bytes": 117341
+      },
+      {
+        "path": "data/fred/DEXCAUS.parquet",
+        "sha": "c0f5b94f2baa3ab61adf5f7f44155780ace847d4",
+        "bytes": 173205
+      },
+      {
+        "path": "data/fred/DEXCHUS.parquet",
+        "sha": "fbc62cb002abee9c660f45be0594470ab822a873",
+        "bytes": 146834
+      },
+      {
+        "path": "data/fred/DEXJPUS.parquet",
+        "sha": "0b36d8bf67fe4ac68c4dbf89cca273adae89627e",
+        "bytes": 177078
+      },
+      {
+        "path": "data/fred/DEXMXUS.parquet",
+        "sha": "5d3f541d490a7993770c509daeba204ad4824c30",
+        "bytes": 121876
+      },
+      {
+        "path": "data/fred/DEXSZUS.parquet",
+        "sha": "bd9fe2be55278af476c5c80ce92a55492b982860",
+        "bytes": 184244
+      },
+      {
+        "path": "data/fred/DEXUSAL.parquet",
+        "sha": "a91e7e4a6c0938442dd688554777f077ba0ba5f3",
+        "bytes": 175219
+      },
+      {
+        "path": "data/fred/DEXUSEU.parquet",
+        "sha": "827bcc4969d71a799d7c508435ec4dceb33d9603",
+        "bytes": 92543
+      },
+      {
+        "path": "data/fred/DEXUSUK.parquet",
+        "sha": "b32aece8b36ef98c0cc4d3d6fa7415cb7f9f00b7",
+        "bytes": 181447
+      },
+      {
+        "path": "data/fred/DFEDTARL.parquet",
+        "sha": "ecbd351a5153a2741139a0c9907904950bba918c",
+        "bytes": 58762
+      },
+      {
+        "path": "data/fred/DFEDTARU.parquet",
+        "sha": "734a073e1b950dacc6b326f77343f39dd9c33c34",
+        "bytes": 58766
+      },
+      {
+        "path": "data/fred/DFF.parquet",
+        "sha": "be4e7cd197defa26015335313e8b20a9795f43b5",
+        "bytes": 270168
+      },
+      {
+        "path": "data/fred/DFII10.parquet",
+        "sha": "83c040adecd3dc3253fd8cefb08e154e5d18e582",
+        "bytes": 62195
+      },
+      {
+        "path": "data/fred/DFII5.parquet",
+        "sha": "1ec144fb89c53d2bdab8176dac1aea18929d1075",
+        "bytes": 62448
+      },
+      {
+        "path": "data/fred/DGORDER.parquet",
+        "sha": "6dda9c5b0965026f4a715505b60f06661cc09df4",
+        "bytes": 8515
+      },
+      {
+        "path": "data/fred/DGS1.parquet",
+        "sha": "900d643be84d7fe3c4565012e4986d7722d5a83a",
+        "bytes": 172264
+      },
+      {
+        "path": "data/fred/DGS10.parquet",
+        "sha": "870af53b9b754cddfc481f8a1ed8e8f65ccc202c",
+        "bytes": 171796
+      },
+      {
+        "path": "data/fred/DGS2.parquet",
+        "sha": "06ee58f109bb1009f3c9a6d75be9dc53fb497a9b",
+        "bytes": 135955
+      },
+      {
+        "path": "data/fred/DGS20.parquet",
+        "sha": "3a678e2afc001c4eb26f28d5716d22d978f1ee77",
+        "bytes": 154217
+      },
+      {
+        "path": "data/fred/DGS3.parquet",
+        "sha": "e881625d4d29b4ce477ce08701cd42ec65c354ef",
+        "bytes": 172133
+      },
+      {
+        "path": "data/fred/DGS30.parquet",
+        "sha": "692fc19e574929f1b1ed6c0e2be92d431284f1b2",
+        "bytes": 133383
+      },
+      {
+        "path": "data/fred/DGS3MO.parquet",
+        "sha": "959ef58643b238149c0b2c363ed385b63ae8cafc",
+        "bytes": 121409
+      },
+      {
+        "path": "data/fred/DGS5.parquet",
+        "sha": "88dfa3a0bbc899aa99df1a16133dc0838cd07d1b",
+        "bytes": 172058
+      },
+      {
+        "path": "data/fred/DGS6MO.parquet",
+        "sha": "7d55ed6e4a8e61e64950046c602575629dfaa8b4",
+        "bytes": 121671
+      },
+      {
+        "path": "data/fred/DGS7.parquet",
+        "sha": "a8507658f7be7953a8b554d858f6a361ed1597a8",
+        "bytes": 153075
+      },
+      {
+        "path": "data/fred/DHHNGSP.parquet",
+        "sha": "ed86f2550d553e06c982db905e8efa32efd25509",
+        "bytes": 79834
+      },
+      {
+        "path": "data/fred/DRCCLACBS.parquet",
+        "sha": "bcf0612c1adf9fea22669b9c6f5650a30ec3d02f",
+        "bytes": 4125
+      },
+      {
+        "path": "data/fred/DRSFRMACBS.parquet",
+        "sha": "9e700dd81c6f0fed449ca62dafb82df7beed4317",
+        "bytes": 4205
+      },
+      {
+        "path": "data/fred/DSPIC96.parquet",
+        "sha": "27b194b05d2ab8ccfe8fcb7e9331a0679e5a12db",
+        "bytes": 14668
+      },
+      {
+        "path": "data/fred/DTB3.parquet",
+        "sha": "4bbe8ffa52e472a86acda519e91ffafc51797619",
+        "bytes": 194558
+      },
+      {
+        "path": "data/fred/DTCISA156MSFRBPHI.parquet",
+        "sha": "ca3d3ef925cfb946df5b99355c1a2f162690485c",
+        "bytes": 10218
+      },
+      {
+        "path": "data/fred/DTMUAMFRBDAL.parquet",
+        "sha": "83cc536d7063047638aecb3adf75578fca2f71bf",
+        "bytes": 5592
+      },
+      {
+        "path": "data/fred/DTWEXAFEGS.parquet",
+        "sha": "a70cc547fa18a1a9c8426bcef7cd312d156f688b",
+        "bytes": 85392
+      },
+      {
+        "path": "data/fred/DTWEXBGS.parquet",
+        "sha": "ac94763f9b44544e6d0cec3c40ab950054c57d95",
+        "bytes": 87972
+      },
+      {
+        "path": "data/fred/DTWEXEMEGS.parquet",
+        "sha": "bf84b6baa533545c2719292e2fed6915938bed60",
+        "bytes": 87976
+      },
+      {
+        "path": "data/fred/ECBASSETSW.parquet",
+        "sha": "2b2711c757bd42651e06b4ba2ccc373c9f75a2bc",
+        "bytes": 24825
+      },
+      {
+        "path": "data/fred/ECBDFR.parquet",
+        "sha": "8f7ffec7b13fab3e81a620befd761a2b82b365db",
+        "bytes": 91531
+      },
+      {
+        "path": "data/fred/ECBMRRFR.parquet",
+        "sha": "9669045e0ea7c00ccb30bb040c4b8713bf07e55d",
+        "bytes": 63985
+      },
+      {
+        "path": "data/fred/ECIALLCIV.parquet",
+        "sha": "871d6806ee2c5d1385e8e7e19d22487e90951fc6",
+        "bytes": 3580
+      },
+      {
+        "path": "data/fred/ECIWAG.parquet",
+        "sha": "117056b96dc331f071e4ed0dfff26afdeaa5dfe9",
+        "bytes": 3587
+      },
+      {
+        "path": "data/fred/EFFR.parquet",
+        "sha": "e23a2386e960131941a6042d8d32097e71b1f023",
+        "bytes": 66747
+      },
+      {
+        "path": "data/fred/EXPINF10YR.parquet",
+        "sha": "48e6c0af17fee25026760888bd2d588a9e4eb256",
+        "bytes": 12117
+      },
+      {
+        "path": "data/fred/EXPINF1YR.parquet",
+        "sha": "007745f90f05c8396561a9da770dbc14be667223",
+        "bytes": 12101
+      },
+      {
+        "path": "data/fred/EXPINF5YR.parquet",
+        "sha": "c900d39f8761e1172083f458221937cceb1b50ca",
+        "bytes": 12099
+      },
+      {
+        "path": "data/fred/FEDTARMD.parquet",
+        "sha": "58e26c256ba189b0b387078407e35aa6fc65d84a",
+        "bytes": 2167
+      },
+      {
+        "path": "data/fred/FLEXCPIM157SFRBATL.parquet",
+        "sha": "45a59cfc69e07f199668c33921a10fdfb0cdce4e",
+        "bytes": 15364
+      },
+      {
+        "path": "data/fred/GASREGW.parquet",
+        "sha": "489ed8d316ab361dc6a9cd41c75b960330696f55",
+        "bytes": 27500
+      },
+      {
+        "path": "data/fred/GDPNOW.parquet",
+        "sha": "db4faefb724ed9f26cee12239286445b52bbffba",
+        "bytes": 3144
+      },
+      {
+        "path": "data/fred/HOUST.parquet",
+        "sha": "45b2eae854a17d532f3d59377e4d6094674daac8",
+        "bytes": 13125
+      },
+      {
+        "path": "data/fred/IC4WSA.parquet",
+        "sha": "7373df463b229fbe3789544d1fee624613744007",
+        "bytes": 39339
+      },
+      {
+        "path": "data/fred/ICSA.parquet",
+        "sha": "12b657864ebb50163b0aa76d8bfe9fbca1359405",
+        "bytes": 34733
+      },
+      {
+        "path": "data/fred/IHLIDXNEWUS.parquet",
+        "sha": "332d5fee3afad399fa5ef55f8ffff2a97bd3216f",
+        "bytes": 46563
+      },
+      {
+        "path": "data/fred/IHLIDXUS.parquet",
+        "sha": "c950c635bc54dc34650d3c3a57727fb7ae457b15",
+        "bytes": 46535
+      },
+      {
+        "path": "data/fred/INDPRO.parquet",
+        "sha": "0778eefaced13a4d7f4f6139a5f14b0fbd1290ac",
+        "bytes": 24883
+      },
+      {
+        "path": "data/fred/IORB.parquet",
+        "sha": "652c5f3e08377c836d126015deb6c9fcc0f5fbe1",
+        "bytes": 18435
+      },
+      {
+        "path": "data/fred/IPG2211A2N.parquet",
+        "sha": "9079b134bc6f19c86890d4cf85a169d1d7c64515",
+        "bytes": 20763
+      },
+      {
+        "path": "data/fred/IPG2211S.parquet",
+        "sha": "d256550ec10cc6cd6800bdff69013ed6e32a7910",
+        "bytes": 14332
+      },
+      {
+        "path": "data/fred/IPG3344S.parquet",
+        "sha": "17636c94f17f85d329d6c1c3f750236add0cc78c",
+        "bytes": 13886
+      },
+      {
+        "path": "data/fred/IPUTIL.parquet",
+        "sha": "a1effc3531acbf786c60c66067639faa4589c6fd",
+        "bytes": 20554
+      },
+      {
+        "path": "data/fred/IQ.parquet",
+        "sha": "4f28a92ec6c495e0342401d34f7d947713b0daa9",
+        "bytes": 8325
+      },
+      {
+        "path": "data/fred/IR.parquet",
+        "sha": "fdce8525da79415153d4a31436c34b91f6936999",
+        "bytes": 8325
+      },
+      {
+        "path": "data/fred/IR3TIB01AUM156N.parquet",
+        "sha": "2c9f9ae63a05a4e2f7356a274a107f36b5a12f00",
+        "bytes": 11581
+      },
+      {
+        "path": "data/fred/IR3TIB01CAM156N.parquet",
+        "sha": "c1834751657adc055fb64d84e7344ecb2be13751",
+        "bytes": 14934
+      },
+      {
+        "path": "data/fred/IR3TIB01CHM156N.parquet",
+        "sha": "ca7f813608daf6bf6875daa5914c0c328e3bb0e2",
+        "bytes": 7977
+      },
+      {
+        "path": "data/fred/IR3TIB01GBM156N.parquet",
+        "sha": "2f9d3ca95b265b9cd2622d4d4451623c52602855",
+        "bytes": 15368
+      },
+      {
+        "path": "data/fred/IRLTLT01AUM156N.parquet",
+        "sha": "74e8c1d2d6949a5e9ba2dea8ec648bfbd1607724",
+        "bytes": 12570
+      },
+      {
+        "path": "data/fred/IRLTLT01CAM156N.parquet",
+        "sha": "94d00bc52a68e7603bc2561947fb345371e6e1e8",
+        "bytes": 15909
+      },
+      {
+        "path": "data/fred/IRLTLT01CHM156N.parquet",
+        "sha": "6dd1a9a7842181eaebedfb03a2dad04403dc98a0",
+        "bytes": 14566
+      },
+      {
+        "path": "data/fred/IRLTLT01EZM156N.parquet",
+        "sha": "e680d8ec9ae7d64657a688b058b8e22ce0d44fbe",
+        "bytes": 14544
+      },
+      {
+        "path": "data/fred/IRLTLT01GBM156N.parquet",
+        "sha": "04c1d778041d5ece6d2d67bdc113bde3186eb83a",
+        "bytes": 14860
+      },
+      {
+        "path": "data/fred/IRLTLT01JPM156N.parquet",
+        "sha": "b3e2edc5ecdce7c5e9ed59af1feff92435d14794",
+        "bytes": 8793
+      },
+      {
+        "path": "data/fred/IRSTCI01JPM156N.parquet",
+        "sha": "4c6382455ab5bb810cbb6b86d1ef1e2f225ff154",
+        "bytes": 9458
+      },
+      {
+        "path": "data/fred/ISRATIO.parquet",
+        "sha": "ab177c9cddf07d42cd9550570d4c2692893cbd34",
+        "bytes": 6406
+      },
+      {
+        "path": "data/fred/IUDSOIA.parquet",
+        "sha": "eee57d7ba0f2fbe765e4b29ff690d7fe54ca6ed6",
+        "bytes": 106407
+      },
+      {
+        "path": "data/fred/JPNASSETS.parquet",
+        "sha": "71e1155c047e42a928955561c88ff8c716bfae49",
+        "bytes": 7503
+      },
+      {
+        "path": "data/fred/JTSJOL.parquet",
+        "sha": "00255abdd52fae863f0f387183de3c151cd29f17",
+        "bytes": 6588
+      },
+      {
+        "path": "data/fred/JTSQUR.parquet",
+        "sha": "0977881cfff9a85b59b7617e65276f4855eb57e9",
+        "bytes": 5270
+      },
+      {
+        "path": "data/fred/M2SL.parquet",
+        "sha": "007fb19ab169df9aede424d3b398a006056720f1",
+        "bytes": 14483
+      },
+      {
+        "path": "data/fred/MCUMFN.parquet",
+        "sha": "079934ebb8ee3b3ef80190427aa1ccf9bf4fbe45",
+        "bytes": 13692
+      },
+      {
+        "path": "data/fred/MEDCPIM158SFRBCLE.parquet",
+        "sha": "895a9301430acd8a7d97a75dab302d5218565f81",
+        "bytes": 11807
+      },
+      {
+        "path": "data/fred/MICH.parquet",
+        "sha": "927f9e2b35024a3b7f982b6476d510d389494060",
+        "bytes": 8377
+      },
+      {
+        "path": "data/fred/MNFCTRIRSA.parquet",
+        "sha": "6a3273270ae2e8fcc052d5f83464b1a28fd77f6e",
+        "bytes": 6528
+      },
+      {
+        "path": "data/fred/MORTGAGE30US.parquet",
+        "sha": "c7168dcff00ccfb9ecb2723d0a2b1feaa24bacaf",
+        "bytes": 34522
+      },
+      {
+        "path": "data/fred/MPRIME.parquet",
+        "sha": "94fde67f3d6bd1b0acac6df1e095c399ed09c6df",
+        "bytes": 12544
+      },
+      {
+        "path": "data/fred/NEWORDER.parquet",
+        "sha": "38cd63a89cb574aefb8d1698f053f1fcfd731842",
+        "bytes": 8446
+      },
+      {
+        "path": "data/fred/NFCI.parquet",
+        "sha": "8abd7f3db35cb6a36cb5334b00a3b4f00bd3bb65",
+        "bytes": 38027
+      },
+      {
+        "path": "data/fred/NFCICREDIT.parquet",
+        "sha": "8ed22878ab711059055f072329380cbf566ec0b9",
+        "bytes": 38025
+      },
+      {
+        "path": "data/fred/NFCILEVERAGE.parquet",
+        "sha": "5493d925e9bbb23ca752f7b9d44f4f93e017caad",
+        "bytes": 39427
+      },
+      {
+        "path": "data/fred/NFCIRISK.parquet",
+        "sha": "77d7a1ef7f96ea66fee967be3836deb51143e8ca",
+        "bytes": 38102
+      },
+      {
+        "path": "data/fred/NONREVSL.parquet",
+        "sha": "e6ef0b313407ed3b1925c98776732a2e70f3795e",
+        "bytes": 19102
+      },
+      {
+        "path": "data/fred/OBFR.parquet",
+        "sha": "cc33ccc40d434305608ce94761ecb96fbc9e2de9",
+        "bytes": 26444
+      },
+      {
+        "path": "data/fred/OVXCLS.parquet",
+        "sha": "c5b2ff09c3cc6afc0f233f7d97cdebabc556e92e",
+        "bytes": 64814
+      },
+      {
+        "path": "data/fred/PAYEMS.parquet",
+        "sha": "376ae7baea51a9e0fb29063b1e4e60ddf0fabdb1",
+        "bytes": 18039
+      },
+      {
+        "path": "data/fred/PCEPI.parquet",
+        "sha": "24342531e78f192cf976ee3d0aac23e7cedd12c5",
+        "bytes": 15028
+      },
+      {
+        "path": "data/fred/PCEPILFE.parquet",
+        "sha": "80d84f96b2e6154b59e92baf487669b17b4d6afc",
+        "bytes": 15033
+      },
+      {
+        "path": "data/fred/PCU221122221122.parquet",
+        "sha": "75fddb373a984606ba6e5f45f1318d508ad79fdc",
+        "bytes": 6218
+      },
+      {
+        "path": "data/fred/PCU331110331110.parquet",
+        "sha": "2f0b6509c5e8f11e3194ad85431a6ee4f29a4ad2",
+        "bytes": 12149
+      },
+      {
+        "path": "data/fred/PCU334413334413.parquet",
+        "sha": "16d39f001d04e3f6a707da67e038d77e02460533",
+        "bytes": 11694
+      },
+      {
+        "path": "data/fred/PERMIT.parquet",
+        "sha": "c8481f235d170061b10b17fca633a6d70505c318",
+        "bytes": 13020
+      },
+      {
+        "path": "data/fred/PFGIUAMFRBDAL.parquet",
+        "sha": "d49c443027f6960468b339cf75ff26a1e63e9413",
+        "bytes": 5633
+      },
+      {
+        "path": "data/fred/PPIFES.parquet",
+        "sha": "0cfc1f1efb121651fd00c9a85f1199e8ac28260d",
+        "bytes": 4958
+      },
+      {
+        "path": "data/fred/PPIFIS.parquet",
+        "sha": "6ec8eb2a400413ac8ba72d4f9ef082422b0f81e4",
+        "bytes": 5085
+      },
+      {
+        "path": "data/fred/PSAVERT.parquet",
+        "sha": "025c824656f1330e0c2506471f98f54072c4befe",
+        "bytes": 11042
+      },
+      {
+        "path": "data/fred/RBAUBIS.parquet",
+        "sha": "2b58f3a08f218dcdec7ae513fea758bcb4d635b8",
+        "bytes": 7836
+      },
+      {
+        "path": "data/fred/RBBRBIS.parquet",
+        "sha": "a7ae5161de00469d1e712e1aa22971132dd17916",
+        "bytes": 7909
+      },
+      {
+        "path": "data/fred/RBCABIS.parquet",
+        "sha": "fc0aa70d12f0e39dd9d72b13b9083ff9de7906a0",
+        "bytes": 7788
+      },
+      {
+        "path": "data/fred/RBCHBIS.parquet",
+        "sha": "919bbbe3e120760ca573c411738c9b01969fdc79",
+        "bytes": 7692
+      },
+      {
+        "path": "data/fred/RBCNBIS.parquet",
+        "sha": "15445ce6b27af453ea3e905e9e4194e392d044da",
+        "bytes": 7860
+      },
+      {
+        "path": "data/fred/RBGBBIS.parquet",
+        "sha": "2723992e134168eb153c6259c5bfccd2a9e78704",
+        "bytes": 7807
+      },
+      {
+        "path": "data/fred/RBJPBIS.parquet",
+        "sha": "e8e22ef90ae80667d4b717154bf920d9e58ce967",
+        "bytes": 7931
+      },
+      {
+        "path": "data/fred/RBMXBIS.parquet",
+        "sha": "35ee08338985c0dff68ab9f930809461ee738241",
+        "bytes": 7889
+      },
+      {
+        "path": "data/fred/RBUSBIS.parquet",
+        "sha": "cb398e983cfd17b7834fcd8e8bbbe3a4af7f1cc8",
+        "bytes": 7804
+      },
+      {
+        "path": "data/fred/RBXMBIS.parquet",
+        "sha": "c3ac0ee594bb919a3ea8992affb3cdecf28190b1",
+        "bytes": 7750
+      },
+      {
+        "path": "data/fred/RECPROUSM156N.parquet",
+        "sha": "8f0623ae3ce7d89f4b4f110795442d88636d3fd2",
+        "bytes": 10390
+      },
+      {
+        "path": "data/fred/REVOLSL.parquet",
+        "sha": "bdbbbcfe99877f8bb0c27d411113b58eb8d13f9a",
+        "bytes": 14015
+      },
+      {
+        "path": "data/fred/RIFSPPNA2P2D90NB.parquet",
+        "sha": "d6141686a6367975a033abf758d8211efb9a62ba",
+        "bytes": 55400
+      },
+      {
+        "path": "data/fred/RIFSPPNAAD90NB.parquet",
+        "sha": "d032cc4fbafd5d1aa0c414bf470a35a4a80ecc0f",
+        "bytes": 56999
+      },
+      {
+        "path": "data/fred/RRPONTSYD.parquet",
+        "sha": "32b6db0d831667cf0ae809aa419a00d4d14bf7d8",
+        "bytes": 51854
+      },
+      {
+        "path": "data/fred/RSAFS.parquet",
+        "sha": "9ef9283c14ae2ce079665804fbcc9a78cbeb2420",
+        "bytes": 8527
+      },
+      {
+        "path": "data/fred/SAHMREALTIME.parquet",
+        "sha": "4347e38fcd6e9c375d8be3a72a769afc219d2217",
+        "bytes": 10745
+      },
+      {
+        "path": "data/fred/SOFR.parquet",
+        "sha": "3467f3732770d0063ec202e2b0d325ab1aea363f",
+        "bytes": 23647
+      },
+      {
+        "path": "data/fred/SOFR99.parquet",
+        "sha": "0c1fbb8db78f6c878d0ea914b8a4e2f1f8d75efc",
+        "bytes": 23585
+      },
+      {
+        "path": "data/fred/STICKCPIM157SFRBATL.parquet",
+        "sha": "9648231d0580d011c1e310ac195ca4c1178e62e7",
+        "bytes": 15376
+      },
+      {
+        "path": "data/fred/STLFSI4.parquet",
+        "sha": "b073daae963fbc4cae7995b3a859adc41e78fa10",
+        "bytes": 29666
+      },
+      {
+        "path": "data/fred/SWPT.parquet",
+        "sha": "18c2c7d8023e7b0b60bcd599116e6c05918a9e92",
+        "bytes": 16969
+      },
+      {
+        "path": "data/fred/T10Y2Y.parquet",
+        "sha": "6e21e9ed609f3b8c137c0d1529044fedc590ff01",
+        "bytes": 128835
+      },
+      {
+        "path": "data/fred/T10Y3M.parquet",
+        "sha": "3a3abc54cb17e24d145d734a0ba558654e8c0411",
+        "bytes": 116933
+      },
+      {
+        "path": "data/fred/T10YIE.parquet",
+        "sha": "f1fa847b4061c9a9137641bb2abf8df601a969f0",
+        "bytes": 60803
+      },
+      {
+        "path": "data/fred/T5YIE.parquet",
+        "sha": "910a8ea6a905b2d30788407d65ddfa965cee2439",
+        "bytes": 61969
+      },
+      {
+        "path": "data/fred/T5YIFR.parquet",
+        "sha": "34047d231c53646c421970c96e40bdf7c0cdbee7",
+        "bytes": 60594
+      },
+      {
+        "path": "data/fred/TCU.parquet",
+        "sha": "e2cdc4b4df5f28e5ac75a0ac839595688afb031e",
+        "bytes": 14544
+      },
+      {
+        "path": "data/fred/THREEFYTP10.parquet",
+        "sha": "7279086961762b162a27290ec72b4478b95f0d8e",
+        "bytes": 138487
+      },
+      {
+        "path": "data/fred/TOTALSL.parquet",
+        "sha": "8ca0577d05ce881dd3a968c8b3d3a7e8f1048c5e",
+        "bytes": 19116
+      },
+      {
+        "path": "data/fred/TRMMEANCPIM158SFRBCLE.parquet",
+        "sha": "176438a66ce81469447c264aa1e04b8764a22e00",
+        "bytes": 11803
+      },
+      {
+        "path": "data/fred/UEMPMEAN.parquet",
+        "sha": "76946ad14a9b71777dec3c9c256a378273d8f279",
+        "bytes": 12804
+      },
+      {
+        "path": "data/fred/UMCSENT.parquet",
+        "sha": "3ea310f5c24fca0239e1501ea60d43e2dd0ae9c9",
+        "bytes": 10709
+      },
+      {
+        "path": "data/fred/UNRATE.parquet",
+        "sha": "9980161f1354d9a25b13ce8f060c26227b3e6aa2",
+        "bytes": 12059
+      },
+      {
+        "path": "data/fred/USGOVT.parquet",
+        "sha": "be67cae0b96e16300492a05ca7a7b88b962fd1c0",
+        "bytes": 17391
+      },
+      {
+        "path": "data/fred/USPRIV.parquet",
+        "sha": "5be03ba6e47862a414fc55ca37f625160bc1d8da",
+        "bytes": 17999
+      },
+      {
+        "path": "data/fred/USREC.parquet",
+        "sha": "534991b7fff37f2fe987edc6b4a3993395517bb3",
+        "bytes": 20118
+      },
+      {
+        "path": "data/fred/USRECD.parquet",
+        "sha": "6ab677501e9bd428f024a55d854dcdc14b694e3b",
+        "bytes": 565906
+      },
+      {
+        "path": "data/fred/VIXCLS.parquet",
+        "sha": "4f500ca007e52ab9b137aa5082496633083c8807",
+        "bytes": 108645
+      },
+      {
+        "path": "data/fred/VXEEMCLS.parquet",
+        "sha": "cc7c9ab84609c04d8302c3398b9ef4da20f461d8",
+        "bytes": 48626
+      },
+      {
+        "path": "data/fred/W875RX1.parquet",
+        "sha": "a6ab89af4478c88fd0c001cf39907b1a218e09c0",
+        "bytes": 14644
+      },
+      {
+        "path": "data/fred/WALCL.parquet",
+        "sha": "a30c54ce1624d5939be30876ef832b12840bc36f",
+        "bytes": 21662
+      },
+      {
+        "path": "data/fred/WEI.parquet",
+        "sha": "bca23af3cffbe5148beb9c53cd462d32bd850079",
+        "bytes": 13970
+      },
+      {
+        "path": "data/fred/WLCFLL.parquet",
+        "sha": "9000323ec9d53477552afccb92dde8cb71dcfc9f",
+        "bytes": 19203
+      },
+      {
+        "path": "data/fred/WPU0543.parquet",
+        "sha": "d0b3fdde0a4e2490c082a425c501d2dbe0ae6505",
+        "bytes": 13453
+      },
+      {
+        "path": "data/fred/WRESBAL.parquet",
+        "sha": "246f201644775afdeb034451522cc6578f87d4ec",
+        "bytes": 21353
+      },
+      {
+        "path": "data/archive/BAMLC0A0CM.parquet",
+        "sha": "3f4d05fe127d37386ab5574bddff8be62e5745ec",
+        "bytes": 74493
+      },
+      {
+        "path": "data/archive/BAMLC0A0CMEY.parquet",
+        "sha": "94396f09640bf63fdea6a20e0ecf2675cc2e8395",
+        "bytes": 10105
+      },
+      {
+        "path": "data/archive/BAMLC0A1CAAA.parquet",
+        "sha": "160a8286478c6f2d052432bdb8aa201934e61f03",
+        "bytes": 9313
+      },
+      {
+        "path": "data/archive/BAMLC0A2CAA.parquet",
+        "sha": "0b21146a6f262254b51a247b888b72ace2593b2f",
+        "bytes": 9317
+      },
+      {
+        "path": "data/archive/BAMLC0A3CA.parquet",
+        "sha": "c96915f229bd6c1088fc7b0fc25900b856778849",
+        "bytes": 9528
+      },
+      {
+        "path": "data/archive/BAMLC0A4CBBB.parquet",
+        "sha": "2978f73480a0e4421e7ca9b7d431b82478f105d5",
+        "bytes": 9678
+      },
+      {
+        "path": "data/archive/BAMLCC0A0CMTRIV.parquet",
+        "sha": "7fbd11de79f7ca07a2493858f11df0b4728f26bc",
+        "bytes": 13402
+      },
+      {
+        "path": "data/archive/BAMLH0A0HYM2.parquet",
+        "sha": "5072f55feffeeded19d647bc8fc15e38e3cd2da5",
+        "bytes": 80341
+      },
+      {
+        "path": "data/archive/BAMLH0A0HYM2EY.parquet",
+        "sha": "4fd0a79383bfac576b0ed0a02b691f100b5e97c3",
+        "bytes": 10441
+      },
+      {
+        "path": "data/archive/BAMLH0A1HYBB.parquet",
+        "sha": "cd1ac20f93787afc0b9ecf924a164bee03688651",
+        "bytes": 10053
+      },
+      {
+        "path": "data/archive/BAMLH0A2HYB.parquet",
+        "sha": "07f438f7e4845b442b98ddf3c31ca2c7e939d568",
+        "bytes": 10215
+      },
+      {
+        "path": "data/nyfed/effr.parquet",
+        "sha": "93a3d88ed4c23cb74c76530475694be7d2e3150a",
+        "bytes": 33557
+      },
+      {
+        "path": "data/nyfed/h41_assets.parquet",
+        "sha": "f90ebf4fecd2e3b6efbcab0283c77640074347d4",
+        "bytes": 21246
+      },
+      {
+        "path": "data/nyfed/rrp.parquet",
+        "sha": "890a75a9b955941906467beed6d876b183f35083",
+        "bytes": 51229
+      },
+      {
+        "path": "data/ofr_fsi/fsi.parquet",
+        "sha": "0521dbc9ecf16b64eecb220dd16a055cd954055e",
+        "bytes": 96271
+      },
+      {
+        "path": "data/ofr_fsi/fsi_credit.parquet",
+        "sha": "47b440f940350f20e521e619394129f50736a451",
+        "bytes": 89064
+      },
+      {
+        "path": "data/ofr_fsi/fsi_em.parquet",
+        "sha": "9318ef161e00f47269bb124f2a82d83f888880f1",
+        "bytes": 80351
+      },
+      {
+        "path": "data/ofr_fsi/fsi_equity.parquet",
+        "sha": "2d220028f93062ae191f4cd3b63c576f50404fab",
+        "bytes": 83081
+      },
+      {
+        "path": "data/ofr_fsi/fsi_funding.parquet",
+        "sha": "2143f61591ca37a26a4aa715ac2500cc266bde09",
+        "bytes": 84597
+      },
+      {
+        "path": "data/ofr_fsi/fsi_oae.parquet",
+        "sha": "8d1a89a3abc0d5810025e567ef5b56f1359068f4",
+        "bytes": 90228
+      },
+      {
+        "path": "data/ofr_fsi/fsi_safe_assets.parquet",
+        "sha": "4e670d112e183da361b4cb7ca9848eb6062f4a7e",
+        "bytes": 79731
+      },
+      {
+        "path": "data/ofr_fsi/fsi_us.parquet",
+        "sha": "22891dcde991b2f23d1f9960145f75592f851a66",
+        "bytes": 88899
+      },
+      {
+        "path": "data/ofr_fsi/fsi_volatility.parquet",
+        "sha": "3673a552bd915ba90beeada215b19f81e07cd88c",
+        "bytes": 88761
+      },
+      {
+        "path": "data/cboe/cor1m.parquet",
+        "sha": "caef3b939f4d5870035a1bbc680a4d76a2533a33",
+        "bytes": 144934
+      },
+      {
+        "path": "data/cboe/cor3m.parquet",
+        "sha": "f42c8105ed8cf1b912ffb19d3ef54f5376a3fff8",
+        "bytes": 141814
+      },
+      {
+        "path": "data/cboe/dspx.parquet",
+        "sha": "5abf2ac13a4d682dc8a759c6f161c5cfc34cd051",
+        "bytes": 40413
+      },
+      {
+        "path": "data/cboe/gex.parquet",
+        "sha": "31105198c49655484cf467b4c19e8bd381f14922",
+        "bytes": 7397
+      },
+      {
+        "path": "data/cboe/gex_AAPL.parquet",
+        "sha": "0683161b0cd05a45d55eaff1085b3b32ac617981",
+        "bytes": 18313
+      },
+      {
+        "path": "data/cboe/gex_AMD.parquet",
+        "sha": "354b18546f2770023533f63e7ae6dab45a93a27e",
+        "bytes": 18479
+      },
+      {
+        "path": "data/cboe/gex_IWM.parquet",
+        "sha": "f94d6f931201aa0ddd68c47a6869c4e1096c014e",
+        "bytes": 18371
+      },
+      {
+        "path": "data/cboe/gex_META.parquet",
+        "sha": "5e5cb821a613d8e2a96f394ef2c9406b2f3146d5",
+        "bytes": 18130
+      },
+      {
+        "path": "data/cboe/gex_MSFT.parquet",
+        "sha": "62725f7ccaa52b11ce7b579b0bda988a7e54a4ac",
+        "bytes": 18268
+      },
+      {
+        "path": "data/cboe/gex_NVDA.parquet",
+        "sha": "8716656e28d20f16c1ba66f8ee944ee977e2f7c1",
+        "bytes": 18475
+      },
+      {
+        "path": "data/cboe/gex_QQQ.parquet",
+        "sha": "c0a41bad5ca8512310ee40b770edae1412b595ce",
+        "bytes": 18566
+      },
+      {
+        "path": "data/cboe/gex_SPX.parquet",
+        "sha": "629ce2faf55475bd4eb96afbc4459a082433c06b",
+        "bytes": 18401
+      },
+      {
+        "path": "data/cboe/gex_SPY.parquet",
+        "sha": "5fad00f008787d7ec7fabcfd18f40748284738ea",
+        "bytes": 18333
+      },
+      {
+        "path": "data/cboe/gex_TSLA.parquet",
+        "sha": "5cd9c17233fac191f12d072a30213212fb716756",
+        "bytes": 18626
+      },
+      {
+        "path": "data/cboe/putcall.parquet",
+        "sha": "dc19080a5a0d7597584cba7aa7ae8d0f4cac4154",
+        "bytes": 9963
+      },
+      {
+        "path": "data/cboe/skew.parquet",
+        "sha": "0e412d0e5a9a6d16417ec49d596c6908ea2334ae",
+        "bytes": 112168
+      },
+      {
+        "path": "data/cboe/vix1d.parquet",
+        "sha": "e9d173b6d45da643b8a613d6121c568bab4b240b",
+        "bytes": 33235
+      },
+      {
+        "path": "data/cboe/vix_curve.parquet",
+        "sha": "1466b3f90c2c7489e80db4664778be0626e70182",
+        "bytes": 18135
+      },
+      {
+        "path": "data/cboe/vix_futures.parquet",
+        "sha": "a8b5cbcefc0c15fff6455c61fbdcd7d2e566c5a5",
+        "bytes": 5284
+      },
+      {
+        "path": "data/cboe/vixeq.parquet",
+        "sha": "1c0e88dbbb0b7eb2d82c3ad693ea9b8f3e4fd47e",
+        "bytes": 41003
+      },
+      {
+        "path": "data/cboe/vvix.parquet",
+        "sha": "46acece6c9833ff5cdfca914c42e06a4cad08924",
+        "bytes": 68904
+      },
+      {
+        "path": "data/fedboard/ebp.parquet",
+        "sha": "e5321d4b75ab6107a36f6a65753239cffe747c16",
+        "bytes": 27116
+      },
+      {
+        "path": "data/treasury/net_issuance.parquet",
+        "sha": "3330143db6141253e625b68f5219e5c4018abb36",
+        "bytes": 68659
+      },
+      {
+        "path": "data/treasury/tga.parquet",
+        "sha": "af41cdfa279abedafc59b479d0909ea8d319c293",
+        "bytes": 78591
+      },
+      {
+        "path": "data/treasury/withheld_taxes.parquet",
+        "sha": "768b484225f1349e57523c4ebb9e4dd95a43043e",
+        "bytes": 15005
+      },
+      {
+        "path": "data/frbsf/news_sentiment.parquet",
+        "sha": "9d74ec95d7da7127ad12896a9c5c5310b3185ac9",
+        "bytes": 289667
+      },
+      {
+        "path": "data/cot/cot_aussie.parquet",
+        "sha": "0a9d6ccbfd5036e95c4152ad309b4bcc4b811607",
+        "bytes": 52471
+      },
+      {
+        "path": "data/cot/cot_bitcoin.parquet",
+        "sha": "7cfd0c32aa25a5af66386d543e934386a8c5a00c",
+        "bytes": 16076
+      },
+      {
+        "path": "data/cot/cot_cad.parquet",
+        "sha": "7e5137f84007317a1629bbd520e0329245e5019c",
+        "bytes": 53471
+      },
+      {
+        "path": "data/cot/cot_cocoa.parquet",
+        "sha": "7d9625c1ad186727fb91e772f6c37bd03116f886",
+        "bytes": 37896
+      },
+      {
+        "path": "data/cot/cot_coffee.parquet",
+        "sha": "4cd447e5a8e04b9651079306aa291efadb4fdce3",
+        "bytes": 37876
+      },
+      {
+        "path": "data/cot/cot_copper.parquet",
+        "sha": "9bf181ea649c5579f5a4ec1f74423a242945826d",
+        "bytes": 53259
+      },
+      {
+        "path": "data/cot/cot_corn.parquet",
+        "sha": "bdd8d2c8f5f1d4af1c38ee109f6aaeec22ca4244",
+        "bytes": 54724
+      },
+      {
+        "path": "data/cot/cot_cotton.parquet",
+        "sha": "d2ef0855f4fee84f63b4901d81f290e0afef31ef",
+        "bytes": 37997
+      },
+      {
+        "path": "data/cot/cot_dollar.parquet",
+        "sha": "fc55d00736dfbebb305dae7e3d210a4dc7179d25",
+        "bytes": 50562
+      },
+      {
+        "path": "data/cot/cot_es_spx.parquet",
+        "sha": "7076d376227c8d5847368ce64951d2c90468da5f",
+        "bytes": 50097
+      },
+      {
+        "path": "data/cot/cot_euro_fx.parquet",
+        "sha": "ad0e2de46a3e759701f5ecc5c99276c4c7393b36",
+        "bytes": 47762
+      },
+      {
+        "path": "data/cot/cot_gasoline.parquet",
+        "sha": "279543689ddfa4d574b84403644a70f79f81dd70",
+        "bytes": 36121
+      },
+      {
+        "path": "data/cot/cot_gold.parquet",
+        "sha": "e6b68cf5e7ac570ec1423641a05b17594c4b86f2",
+        "bytes": 54170
+      },
+      {
+        "path": "data/cot/cot_heating_oil.parquet",
+        "sha": "f6f7cdbabf26f8577f6df110ff8cc16cbbf9490c",
+        "bytes": 32475
+      },
+      {
+        "path": "data/cot/cot_live_cattle.parquet",
+        "sha": "c9a7008b7ac372d73922cbb30fc1ffc12794bd22",
+        "bytes": 53495
+      },
+      {
+        "path": "data/cot/cot_nasdaq.parquet",
+        "sha": "cd4f3bc19a0536bf1bcbcc76177a3587fa5bdfd6",
+        "bytes": 46002
+      },
+      {
+        "path": "data/cot/cot_natgas.parquet",
+        "sha": "971f879163ea6c13b8526ec1ecb945c37fc9d062",
+        "bytes": 46621
+      },
+      {
+        "path": "data/cot/cot_oil.parquet",
+        "sha": "9709095d7107fc67d48cca323f243e7a9f6e4975",
+        "bytes": 54416
+      },
+      {
+        "path": "data/cot/cot_palladium.parquet",
+        "sha": "7f6992e0b2821cae2c33c8ff07b8164c92e12052",
+        "bytes": 49632
+      },
+      {
+        "path": "data/cot/cot_peso.parquet",
+        "sha": "4a866f79919a3895afd25aba9e77e4e2d5acdef4",
+        "bytes": 52991
+      },
+      {
+        "path": "data/cot/cot_platinum.parquet",
+        "sha": "3d530a828703efa68e419e7cfe1ab40fd9a4380a",
+        "bytes": 52155
+      },
+      {
+        "path": "data/cot/cot_pound.parquet",
+        "sha": "b636e6e6d5936ed014e7400168cd4f5695b49733",
+        "bytes": 39565
+      },
+      {
+        "path": "data/cot/cot_real.parquet",
+        "sha": "69d99528b2821702b3ccd58172625eb4d8b19c0d",
+        "bytes": 29929
+      },
+      {
+        "path": "data/cot/cot_silver.parquet",
+        "sha": "76f18f1a32cedf7c1d319ced8ab0c86a550da9eb",
+        "bytes": 53056
+      },
+      {
+        "path": "data/cot/cot_soybeans.parquet",
+        "sha": "1a9b73881dcce00407028d16d920f918f97efdbe",
+        "bytes": 54384
+      },
+      {
+        "path": "data/cot/cot_sugar.parquet",
+        "sha": "d216652ae4d7671866e39e7fe090a1e42b167037",
+        "bytes": 38518
+      },
+      {
+        "path": "data/cot/cot_swiss.parquet",
+        "sha": "7c15165e740463f6b77c793db0bf8089e174139f",
+        "bytes": 52794
+      },
+      {
+        "path": "data/cot/cot_ust10y.parquet",
+        "sha": "57bb491b12568841704df6799e6ffa0244557caa",
+        "bytes": 54808
+      },
+      {
+        "path": "data/cot/cot_wheat.parquet",
+        "sha": "3107b8ee434ee0f97338166be1d5725702098f7a",
+        "bytes": 53832
+      },
+      {
+        "path": "data/cot/cot_yen.parquet",
+        "sha": "662cde3541075dbad3546134370a424bf7fe6c62",
+        "bytes": 53891
+      },
+      {
+        "path": "data/breadth/breadth.parquet",
+        "sha": "46b292de1f9f62b651dfdbb85a5957e204d6268e",
+        "bytes": 435333
+      },
+      {
+        "path": "data/smallcap_breadth/breadth.parquet",
+        "sha": "aa517ecf6d17b08d358ffe27835f398923efc9dc",
+        "bytes": 35259
+      }
+    ],
+    "missing_configured": [],
+    "total_bytes": 39256254
+  },
+  "builder": {
+    "snapshot": {
+      "schema": "masterminds.latest.v2",
+      "n": 3,
+      "built": "2026-11-11 17:48 UTC",
+      "asof": "2026-11-10",
+      "stale_after_min": 1440,
+      "cards": [
+        {
+          "key": "mm_conservative",
+          "name": "Mastermind \u2014 Conservative",
+          "cagr": 7.88,
+          "sharpe": 1.13,
+          "maxdd": -14.8,
+          "asof": "2026-11-10",
+          "gross_now": 0.1,
+          "alloc": [
+            {
+              "asset": "HYG",
+              "label_en": "High-yield credit",
+              "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+              "weight": 3.7
+            },
+            {
+              "asset": "BTC-USD",
+              "label_en": "Bitcoin",
+              "label_zh": "\u6bd4\u7279\u5e01",
+              "weight": 3.6
+            },
+            {
+              "asset": "SPY",
+              "label_en": "S&P 500",
+              "label_zh": "\u6807\u666e500",
+              "weight": 2.0
+            },
+            {
+              "asset": "HG=F",
+              "label_en": "Copper",
+              "label_zh": "\u94dc",
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "key": "mm_moderate",
+          "name": "Mastermind \u2014 Moderate",
+          "cagr": 11.19,
+          "sharpe": 1.06,
+          "maxdd": -21.6,
+          "asof": "2026-11-10",
+          "gross_now": 0.15,
+          "alloc": [
+            {
+              "asset": "HYG",
+              "label_en": "High-yield credit",
+              "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+              "weight": 5.4
+            },
+            {
+              "asset": "BTC-USD",
+              "label_en": "Bitcoin",
+              "label_zh": "\u6bd4\u7279\u5e01",
+              "weight": 5.2
+            },
+            {
+              "asset": "SPY",
+              "label_en": "S&P 500",
+              "label_zh": "\u6807\u666e500",
+              "weight": 2.9
+            },
+            {
+              "asset": "HG=F",
+              "label_en": "Copper",
+              "label_zh": "\u94dc",
+              "weight": 1.5
+            }
+          ]
+        },
+        {
+          "key": "mm_aggressive",
+          "name": "Mastermind \u2014 Aggressive",
+          "cagr": 16.01,
+          "sharpe": 0.98,
+          "maxdd": -31.7,
+          "asof": "2026-11-10",
+          "gross_now": 0.25,
+          "alloc": [
+            {
+              "asset": "HYG",
+              "label_en": "High-yield credit",
+              "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
+              "weight": 8.8
+            },
+            {
+              "asset": "BTC-USD",
+              "label_en": "Bitcoin",
+              "label_zh": "\u6bd4\u7279\u5e01",
+              "weight": 8.5
+            },
+            {
+              "asset": "SPY",
+              "label_en": "S&P 500",
+              "label_zh": "\u6807\u666e500",
+              "weight": 4.8
+            },
+            {
+              "asset": "HG=F",
+              "label_en": "Copper",
+              "label_zh": "\u94dc",
+              "weight": 2.5
+            }
+          ]
+        }
+      ]
+    },
+    "html_sha256": {
+      "strategy_mm_aggressive.html": "ed01c6d02afa3ed1252b10c7f881753eb9d83eb6c7e0ef234eddc0d984f6ac4b",
+      "strategy_mm_moderate.html": "dc44552017dbe4cedc66f2af8fe83ae8fc6fae4961f24b895e780fefd26f44e1",
+      "strategy_mm_conservative.html": "9f5985758f5b6550bb858320c6e0549946c10ba040bea9890f639f6ba5b378d1",
+      "masterminds.html": "675a3ac0d59cfa2e66cb7bde3c0caa458a8c197960dabd1690174013c7e66370"
+    },
+    "assertions": "native engine allocation = bot JSON = each bilingual allocation row"
+  },
+  "moderate_diagnostics": {
+    "6040": {
+      "cagr": 8.199902624695255,
+      "sharpe": 0.7539274362594041,
+      "maxdd": -31.3935168090829,
+      "n": 4935
+    },
+    "family": "mastermind_moderate_phase0",
+    "effective_n": 8,
+    "profile": "moderate",
+    "span": [
+      "2007-05-01",
+      "2026-11-10"
+    ],
+    "strategy": {
+      "cagr": 11.193725971601932,
+      "sharpe": 1.0581464073419449,
+      "maxdd": -21.62070898638867,
+      "n": 4935
+    },
+    "spy": {
+      "cagr": 10.637869540916324,
+      "sharpe": 0.6124472418673711,
+      "maxdd": -55.18942146324728,
+      "n": 4935
+    },
+    "dsr": {
+      "dsr": 0.9992,
+      "sr_daily": 0.06665,
+      "sr_annual": 1.06,
+      "sr0_daily": 0.021107,
+      "sr0_annual": 0.34,
+      "n_trials": 8,
+      "T": 4935,
+      "skew": -0.406,
+      "kurt": 5.958
+    },
+    "bootstrap": {
+      "sharpe_ci": [
+        0.59,
+        1.06,
+        1.54
+      ],
+      "maxdd_ci_pct": [
+        -32.9,
+        -19.8,
+        -13
+      ],
+      "sharpe_gt0_prob": 1,
+      "block": 21,
+      "B": 5000,
+      "n": 4935
+    },
+    "halves": {
+      "first": {
+        "cagr": 11.47759669299151,
+        "sharpe": 1.1118111226936096,
+        "maxdd": -17.573960343746286,
+        "n": 2467
+      },
+      "second": {
+        "cagr": 10.91213837781362,
+        "sharpe": 1.0078868418082727,
+        "maxdd": -21.62070898638867,
+        "n": 2468
+      },
+      "spy_first": {
+        "cagr": 6.931817471338442,
+        "sharpe": 0.42470412037138455,
+        "maxdd": -55.18942146324728,
+        "n": 2467
+      },
+      "spy_second": {
+        "cagr": 14.499760965064091,
+        "sharpe": 0.8324944278495346,
+        "maxdd": -33.71727532114973,
+        "n": 2468
+      }
+    },
+    "cagr_both_halves": false,
+    "folds": [
+      {
+        "fold": "fold1",
+        "strategy_sharpe": 1.2063766296623506,
+        "spy_sharpe": 0.058213903135923714,
+        "delta_sharpe": 1.148162726526427,
+        "n": 924
+      },
+      {
+        "fold": "fold2",
+        "strategy_sharpe": 1.177260833625911,
+        "spy_sharpe": 1.0023932847629005,
+        "delta_sharpe": 0.17486754886301048,
+        "n": 924
+      },
+      {
+        "fold": "fold3",
+        "strategy_sharpe": 1.1194042680814074,
+        "spy_sharpe": 0.7221249448741536,
+        "delta_sharpe": 0.3972793232072538,
+        "n": 924
+      },
+      {
+        "fold": "fold4",
+        "strategy_sharpe": 0.7821767623883089,
+        "spy_sharpe": 0.5595177517209874,
+        "delta_sharpe": 0.22265901066732152,
+        "n": 924
+      },
+      {
+        "fold": "fold5",
+        "strategy_sharpe": 1.2431840163527235,
+        "spy_sharpe": 1.4314521452722968,
+        "delta_sharpe": -0.18826812891957334,
+        "n": 924
+      }
+    ],
+    "crisis_omissions": [
+      {
+        "crisis": "2008 GFC",
+        "delta_sharpe": 0.23020104272111475,
+        "delta_maxdd_pp": 12.09656633476104,
+        "both_positive": true
+      },
+      {
+        "crisis": "2011 EZ/US-dgrade",
+        "delta_sharpe": 0.41996079409793274,
+        "delta_maxdd_pp": 33.56871247685868,
+        "both_positive": true
+      },
+      {
+        "crisis": "2015-16 China/oil",
+        "delta_sharpe": 0.4966149927031225,
+        "delta_maxdd_pp": 33.56871247685875,
+        "both_positive": true
+      },
+      {
+        "crisis": "2018Q4",
+        "delta_sharpe": 0.44261461697906523,
+        "delta_maxdd_pp": 33.56871247685859,
+        "both_positive": true
+      },
+      {
+        "crisis": "2020 COVID",
+        "delta_sharpe": 0.4219951421573761,
+        "delta_maxdd_pp": 33.56871247685869,
+        "both_positive": true
+      },
+      {
+        "crisis": "2022 bear",
+        "delta_sharpe": 0.4833587118054935,
+        "delta_maxdd_pp": 37.61546111950099,
+        "both_positive": true
+      }
+    ],
+    "incrementality": {
+      "control": {
+        "cagr": 11.394392109082375,
+        "sharpe": 1.0016560195863293,
+        "maxdd": -27.405709690493516,
+        "n": 4935
+      },
+      "delta_sharpe": 0.056490387755615545,
+      "delta_maxdd_pp": 5.785000704104846,
+      "folds": [
+        {
+          "fold": "fold1",
+          "delta_sharpe": 0.35269237868603753
+        },
+        {
+          "fold": "fold2",
+          "delta_sharpe": 0.3214534080627427
+        },
+        {
+          "fold": "fold3",
+          "delta_sharpe": -0.40129640592577
+        },
+        {
+          "fold": "fold4",
+          "delta_sharpe": -0.012916091073080005
+        },
+        {
+          "fold": "fold5",
+          "delta_sharpe": -0.16936550913641524
+        }
+      ],
+      "crisis_omissions": [
+        {
+          "crisis": "2008 GFC",
+          "delta_sharpe": -0.04772249363239589,
+          "delta_maxdd_pp": 5.78500070410475
+        },
+        {
+          "crisis": "2011 EZ/US-dgrade",
+          "delta_sharpe": 0.05629328053964433,
+          "delta_maxdd_pp": 5.785000704104839
+        },
+        {
+          "crisis": "2015-16 China/oil",
+          "delta_sharpe": 0.13877017388977841,
+          "delta_maxdd_pp": 5.785000704104991
+        },
+        {
+          "crisis": "2018Q4",
+          "delta_sharpe": 0.02534605837703552,
+          "delta_maxdd_pp": 5.78500070410486
+        },
+        {
+          "crisis": "2020 COVID",
+          "delta_sharpe": 0.0067077562807249524,
+          "delta_maxdd_pp": 5.78500070410497
+        },
+        {
+          "crisis": "2022 bear",
+          "delta_sharpe": -0.006444851617136926,
+          "delta_maxdd_pp": 7.012578954513639
+        }
+      ]
+    },
+    "no_regime": {
+      "cagr": 10.59,
+      "sharpe": 0.98,
+      "maxdd": -22.2
+    },
+    "qualification": "Revised macro history; descriptive diagnostics, no prospective validation or tier promotion."
+  },
+  "ledger_sha256_unchanged": "76f4ea71c81da49c30eb3854b1b1b276a8abc6299f64e45907da8d38069dbadf",
+  "source_blobs": {
+    "engine/masterminds.py": "d10d02396696794e8d3f8b5f822af0c842250271",
+    "scripts/build_masterminds.py": "d626c45ab201f154a9c6e0484520cf15c0f4a7b3",
+    "engine/active_alloc.py": "e72f916889c9e6f2d3eaabbf83f8b3ff7e363d9d",
+    "engine/inputs.py": "3e03d338c20f9383a9d0153f277a9ab9f98026df",
+    "engine/conditions.py": "d5c657d300d9d3a19d28bbb1ccf9fb5a2101f898",
+    "engine/validation.py": "c9a09740cd630f920e52fd21b88ff36ff31366b6",
+    "engine/trial_ledger.py": "b9b444015549a691b9ab917590cc920ef6c8bb89",
+    "scripts/mastermind_moderate_phase0.py": "598626698e8f31a3d6b56c410bd68acb9e539325",
+    "data/trial_ledger.jsonl": "0dda3d14723dd5d9b2a136ca623f50fb3f3636c5",
+    "templates/mastermind_detail.html.j2": "7ecf3bed945f964f09ac97a5a8b4b8c0cd43a48a",
+    "templates/masterminds.html.j2": "29f2711f79acf4fb63fdc28785a8a85306eea506",
+    "engine/signal_lab.py": "1812a664937c988791ffeae702be63b6c5fdd62b",
+    "tests/test_active_alloc.py": "7a06ee58b6aca6b55979fca58816629ff023ba7b",
+    "tests/test_masterminds_hub.py": "e6de310110fdc73b1466836dab3204d5f0918cbc",
+    "tests/test_signal_lab.py": "c12e1b4136b0100778c34566a0cb6fd0824d3bad"
+  },
+  "qualification": "Frozen historical repository inputs; revised macro observations with two-day lag; no release-vintage/prospective certification, tier promotion, or trading authority.",
+  "validation": {
+    "final_native_command": "python3 -m pytest -q tests/test_active_alloc.py tests/test_masterminds_hub.py tests/test_signal_lab.py --disable-warnings --tb=short",
+    "passed": 83,
+    "skipped": 0,
+    "seconds": 12.12,
+    "original_engine_discriminator": {
+      "failed": 10,
+      "passed": 17,
+      "seconds": 7.19
+    },
+    "ci_enrollment": "tests/test_active_alloc.py in unrun-factor-research code owner; quote guard included"
+  }
+}

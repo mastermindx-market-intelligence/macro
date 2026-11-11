@@ -4,7 +4,6 @@
   "grandfathered": [
     "scripts/research/test_run_w4_controls_fingerprints.py",
     "tests/test_accounting_quality.py",
-    "tests/test_active_alloc.py",
     "tests/test_activist.py",
     "tests/test_adaptive_trend_signals.py",
     "tests/test_adjudication_packet.py",

@@ -339,11 +339,11 @@ html[data-theme="dark"] .rg-leg-w{background:var(--grid)}
     <div class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</div>
   </div>
   <div class="card" style="margin-top:18px"><h3>{{ t('Exposure / leverage over time','敞口 / 杠杆走势') }}</h3>{{ charts.lev|safe }}
-    <div class="sub faint" style="margin-top:6px;font-size:12px">{{ t('The vol-targeted gross exposure. It runs hot in strong, calm trends and light in turmoil — that is how an active book can out-CAGR buy-&-hold without simply taking more risk all the time.','波动率目标下的总敞口。在强劲而平静的趋势中加大、在动荡中减小——这正是主动组合能在不始终承担更高风险的情况下跑赢买入持有年化的方式。') }}</div>
+    <div class="sub faint" style="margin-top:6px;font-size:12px">{{ t('Historical gross exposure after sizing and limits. Final name and gross limits can leave the volatility target unmet; unused capacity is not redistributed.','历史定仓并落实上限后的总敞口。最终单一与总敞口上限可能使波动率目标无法实现；剩余额度不再分配。') }}</div>
   </div>
 
   <!-- OOS honesty panel -->
-  <div class="section-title">{{ t('Out-of-sample honesty · does the edge hold in both halves?','样本外诚实检验 · 优势在两个半段是否成立？') }}</div>
+  <div class="section-title">{{ t('Historical split comparison · returns and Sharpe by half','历史分段比较 · 各半段收益与夏普') }}</div>
   <div class="card">
     <table class="oostbl">
       <tr><th class="l">{{ t('Window','区间') }}</th><th>{{ t('Strategy CAGR','策略年化') }}</th><th>{{ t('Buy & hold','买入持有') }}</th><th>{{ t('Strategy Sharpe','策略夏普') }}</th><th>{{ t('B&H Sharpe','买持夏普') }}</th><th>{{ t('Beats?','跑赢？') }}</th></tr>
