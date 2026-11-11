@@ -925,7 +925,9 @@ const document = {
   readyState: 'complete', documentElement: new Element('html'),
   getElementById: id => nodes[id] || null, createElement: tag => new Element(tag),
   createTextNode: value => { const node = new Element('#text'); node.textContent = value; return node; },
-  addEventListener() {},
+  listeners: {},
+  addEventListener: Element.prototype.addEventListener,
+  dispatch: Element.prototype.dispatch,
 };
 const window = {
   setTimeout(callback, delay) { timers.set(++timerId, { callback, delay }); return timerId; },
@@ -967,6 +969,11 @@ async function reply(index, payload, status = 200) {
 }
 async function changeView() {
   nodes['bci-wmn-view'].value = 'history'; nodes['bci-wmn-view'].dispatch('change'); await flush();
+}
+async function changeLanguage(locale) {
+  document.documentElement.setAttribute('data-lang', locale);
+  document.dispatch('langchange');
+  await flush();
 }
 function currentRows(symbol) {
   assert.match(nodes['bci-wmn-queue'].textContent, new RegExp(symbol));
@@ -1066,6 +1073,70 @@ async function run() {
     assert.equal(nodes['bci-wmn'].dataset.state, 'locked');
     assert.match(nodes['bci-wmn-queue'].textContent, /Full access is required/);
     assert.equal(nodes['bci-wmn-refresh'].disabled, false);
+  } else if (['language_locked', 'language_error', 'language_append_locked', 'language_append_error'].includes(scenario)) {
+    const append = scenario.includes('_append_');
+    const locked = scenario.endsWith('_locked');
+    if (append) {
+      await reply(0, envelope('FIRST', 'G', 'cursor-1'));
+      nodes['bci-wmn-load-more'].dispatch('click');
+      await flush();
+    }
+    await reply(append ? 1 : 0, {}, locked ? 403 : 503);
+    const requestCount = requests.length;
+    for (const locale of ['zh', 'en']) {
+      await changeLanguage(locale);
+      const expectedQueue = locked
+        ? (locale === 'zh'
+          ? '需要完整访问权限才能显示生物科技研究优先项。'
+          : 'Full access is required before biotechnology research priorities can be shown.')
+        : (locale === 'zh'
+          ? '“下一步看什么”暂时不可用。不会推断任何研究优先级。'
+          : 'What Matters Next is temporarily unavailable. No research priority is inferred.');
+      const expectedStatus = locked
+        ? (locale === 'zh' ? '需要完整访问权限' : 'Full access required')
+        : (locale === 'zh' ? '决策智能数据暂不可用' : 'Decision-intelligence cut unavailable');
+      assert.equal(nodes['bci-wmn'].dataset.state, locked ? 'locked' : 'error');
+      assert.equal(nodes['bci-wmn-queue'].textContent, expectedQueue);
+      assert.equal(nodes['bci-wmn-status'].textContent, expectedStatus);
+      assert.equal(nodes['bci-wmn-queue'].querySelectorAll('.bci-wmn-card').length, 0,
+        'language change must not resurrect rows after a failed request');
+      assert.equal(nodes['bci-wmn-asof'].textContent, '');
+      assert.equal(nodes['bci-wmn-coverage'].children.length, 0);
+      assert.equal(nodes['bci-wmn-load-more'].hidden, true);
+      assert.equal(nodes['bci-wmn-queue'].getAttribute('aria-busy'), 'false');
+      assert.equal(nodes['bci-wmn-refresh'].disabled, false);
+      assert.equal(requests.length, requestCount, 'localization must not refetch');
+    }
+  } else if (scenario === 'language_pending' || scenario === 'language_append_pending') {
+    const append = scenario === 'language_append_pending';
+    if (append) {
+      await reply(0, envelope('FIRST', 'G', 'cursor-1'));
+      nodes['bci-wmn-load-more'].dispatch('click');
+      await flush();
+    }
+    const pendingIndex = append ? 1 : 0;
+    const requestCount = requests.length;
+    await changeLanguage('zh');
+    assert.equal(nodes['bci-wmn-queue'].getAttribute('aria-busy'), 'true');
+    assert.equal(nodes['bci-wmn-refresh'].disabled, true);
+    assert.equal(nodes['bci-wmn-load-more'].disabled, true);
+    assert.equal(requests.length, requestCount, 'language change must not replace the request');
+    assert.equal(requests[pendingIndex].options.signal.aborted, false);
+    if (append) {
+      currentRows('FIRST');
+      assert.equal(nodes['bci-wmn-load-more'].hidden, false);
+    } else {
+      assert.match(nodes['bci-wmn-queue'].textContent, /Loading research priorities|正在加载研究优先项/);
+    }
+    await reply(pendingIndex, envelope(append ? 'SECOND' : 'NEW'));
+    if (append) {
+      currentRows('FIRST');
+      currentRows('SECOND');
+    } else currentRows('NEW');
+    assert.equal(nodes['bci-wmn-queue'].getAttribute('aria-busy'), 'false');
+    assert.equal(nodes['bci-wmn-refresh'].disabled, false);
+    assert.equal(nodes['bci-wmn-load-more'].disabled, false);
+    assert.equal(nodes['bci-wmn-load-more'].hidden, true);
   } else throw new Error('unknown scenario ' + scenario);
 }
 run().catch(error => { console.error(error); process.exitCode = 1; });
@@ -1073,7 +1144,7 @@ run().catch(error => { console.error(error); process.exitCode = 1; });
 
 
 @pytest.mark.parametrize("asset", ["templates/biocatalyst.js", "site/biocatalyst.js"])
-@pytest.mark.parametrize("scenario", ['replace_pending', 'stale_list_error', 'stale_detail_success', 'stale_detail_error', 'stale_refresh_409', 'stale_refresh_generation', 'current_refresh_409', 'current_refresh_generation', 'detail_replaced_error', 'repeated_replacement', 'append', 'current_lock'])
+@pytest.mark.parametrize("scenario", ['replace_pending', 'stale_list_error', 'stale_detail_success', 'stale_detail_error', 'stale_refresh_409', 'stale_refresh_generation', 'current_refresh_409', 'current_refresh_generation', 'detail_replaced_error', 'repeated_replacement', 'append', 'current_lock', 'language_locked', 'language_error', 'language_append_locked', 'language_append_error', 'language_pending', 'language_append_pending'])
 def test_what_matters_next_async_request_ownership(asset: str, scenario: str) -> None:
     node = shutil.which("node")
     assert node is not None, "Node is required for the shipped-client ownership regression"
