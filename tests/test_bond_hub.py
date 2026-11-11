@@ -264,3 +264,48 @@ if __name__ == "__main__":
         fn()
         print(f"PASS {fn.__name__}")
     print("all bond-hub tests passed")
+
+
+def test_sovereign_freshness_uses_raw_observation_dates(monkeypatch):
+    import pytest
+    end = pd.Timestamp('2026-11-11')
+    idx = pd.bdate_range(end=end, periods=200)
+    frame = pd.DataFrame({'us10y': 4., 'us2y': 3.}, index=idx)
+    monkeypatch.setattr(IB.store, 'read', lambda *a, **kw: None)
+    for cadence, limit in [('daily', 12), ('monthly', 75)]:
+        for age in [limit, limit + 1]:
+            cutoff = end - pd.Timedelta(days=age)
+            rawidx = idx[idx <= cutoff].union(pd.DatetimeIndex([cutoff])).sort_values()
+            for null_tail in [False, True]:
+                raw = pd.Series(2., index=rawidx)
+                if null_tail:
+                    raw = raw.reindex(raw.index.union(idx[idx > cutoff]))
+                spec = dict(IB.ROSTER[0], cadence=cadence)
+                original_series = IB._series
+                with monkeypatch.context() as mp:
+                    mp.setattr(IB, '_series', lambda sp, key, f: raw if key == 'y10' else original_series(sp, key, f))
+                    row = IB._country_row(spec, frame, 4.)
+                assert row['stale'] is (age > limit)
+                assert row['y10_asof'] == str(cutoff.date())
+                assert row['_y10_lvl'] == pytest.approx(2.)
+
+
+def test_sovereign_both_country_cells_disclose_cadence_and_date():
+    import re
+    from jinja2 import Environment, StrictUndefined
+    text = (Path(__file__).resolve().parent.parent / 'templates/bonds.html.j2').read_text()
+    cells = re.findall(r'<td class="cty">.*?</td>', text)
+    cells = [s for s in cells if 'r.stale' in s]
+    assert len(cells) == 2
+    colors = dict.fromkeys(['blue','amber','red','teal','indigo','gold','muted'], '#111')
+    for cell in cells:
+        for cadence in ['daily', 'monthly']:
+            row = dict(code='DE', en='Germany', zh='德国', cadence=cadence,
+                       stale=True, y10_asof='2026-09-30')
+            for lang in [0, 1]:
+                html = Environment(undefined=StrictUndefined).from_string(cell).render(
+                    r=row, C=colors, t=lambda en, zh: (en, zh)[lang],
+                    lens=lambda en, zh: (en, zh)[lang])
+                assert '2026-09-30' in html and 'stale-tag' in html
+                assert 'OECD monthly series' not in html
+                assert ('Daily' if cadence == 'daily' else 'Monthly') in html or ('日度' if cadence == 'daily' else '月度') in html
