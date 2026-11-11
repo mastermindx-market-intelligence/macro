@@ -1,0 +1,208 @@
+{
+  "schema": "rotation_core.protocol_header/v1",
+  "protocol_id": "rotation-core-historical-v1",
+  "frozen_on_utc": "2026-11-11",
+  "frozen_by": "Rotation Core research lead (Claude Opus 5.5), Prophet programme",
+  "status": "FROZEN before any candidate outcome was computed. Where this JSON and PROTOCOL_HEADER_v1.md differ, this JSON governs.",
+  "governing_rules": {
+    "house_law": ["DNR:LAW-TIME-CLUSTERED-CI", "DNR:LAW-ERA-SPLIT", "epistemics.trial_registration", "epistemics.no_literal_ntrials", "epistemics.nulls_are_printed", "epistemics.preregistered_gates"],
+    "decisions": ["DEC:RIC-E0-RETROSPECTIVE-FALSIFIES-PROSPECTIVE-PROMOTES", "DEC:RISK-RADAR-PROSPECTIVE-ISSUE-IDENTITY-NO-BACKFILL"],
+    "kills_respected": ["DNR:KILL-ROTATION-CYCLE-CONFLUENCE", "DNR:KILL-RS-DISPERSION-GATES", "DNR:KILL-FUSED-COMPOSITE", "DNR:KILL-REGIME-SCORECARD", "DNR:KILL-PER-SIGNAL-FAMILY-RELIABILITY", "DNR:KILL-TREND-PERSISTENCE-SECTOR-GROUP-PERSISTENCE", "DNR:KILL-COMMODITY-XSEC-MOM", "DNR:KILL-ABSOLUTE-VIX-THRESHOLDS", "DNR:KILL-OUTCOME-AUDITION"],
+    "method_reference": "SECTOR_QUANT_PROTOCOL.md sections 5.1-5.5 (sol/prophet-production-design-20261109 @ 1f645a751e; unmerged, used as method evidence, not law)",
+    "authority": "Research outputs are descriptive and paper-only. Nothing produced under this header sizes, gates, ranks, alerts or executes any trade or product surface."
+  },
+  "data_pin": {
+    "macro_commit": "4d49b23a8f0246718fd48a24b4124c35129a1cfe",
+    "vendor_cache": "/home/ubuntu2/tmp/rotation-core/data (Yahoo 'Adj Close' total-return series, FRED public CSV, Ken French daily CSV; scratch only, never committed)",
+    "repo_series": {
+      "hy_oas": "data/fred/BAMLH0A0HYM2.parquet column hy_oas (1996-12-31..2026-11-05)",
+      "baa": "data/fred/DBAA.parquet column baa_corp (1986-01-02..)",
+      "pit_membership": "data/breadth/sp1500_pit_membership.parquet",
+      "sector_labels_sensitivity_only": "data/breadth/sp1500_pit_sectors.parquet (as-of-now, era_correct=false)"
+    },
+    "last_close_used": "2026-11-06",
+    "french_last_date": "2026-09-30",
+    "calendar": "SPY sessions (Yahoo SPY index); ^GSPC sessions before 1993-01-29"
+  },
+  "global_conventions": {
+    "return_basis": "daily total return from Yahoo Adj Close (split+dividend adjusted, restated as of the cache date)",
+    "cash": "3-month T-bill: daily accrual (1 + DTB3[t-1]/100)^(1/252) - 1; ^IRX same formula when DTB3 is missing (forward-fill at most 5 sessions)",
+    "signal_clock": "a decision at the close of session t uses only data dated <= t, and macro series only from their availability date (see macro_availability)",
+    "execution": "target weights are executed at the close of session t+1; returns accrue from the t+1 close",
+    "daily_rules": "evaluated every session; a trade occurs only when the target weight changes",
+    "monthly_rules": "decision at the last session of each calendar month; executed at the next session's close; weights drift between rebalances",
+    "costs_bps_per_side": {"etf_or_index_fund": 5.0, "mutual_fund_proxy": 5.0, "single_stock": 10.0, "french_industry_portfolio": 10.0},
+    "cost_stress_multiplier": 2.0,
+    "constraints": "long only, no leverage, sum of risky weights <= 1, remainder in cash",
+    "missing_close": "if an instrument has no close at the execution session, execution is deferred to its next close (counted)",
+    "data_quality": "any ETF/fund daily |return| > 25% or stock |return| > 60% is logged; stock daily returns are clipped at +/-50% (logged); no silent correction",
+    "relative_strength": "relative wealth (1+R_a)/(1+R_b) - 1 over the stated window (WS:LEADERSHIP-ROTATION landmine)",
+    "sma": "simple moving average of the stated closes including session t",
+    "macro_availability": {
+      "hy_oas": "value dated t-1 usable at the close of t (forward-filled across non-publication days)",
+      "baa": "value dated t-1 usable at t",
+      "sahm_realtime": "FRED SAHMREALTIME for month m usable from the first session after the 10th business day of month m+1",
+      "dtb3": "value dated t-1 accrues on t"
+    }
+  },
+  "windows": {
+    "rule": "one continuous causal simulation per strategy from its first decision to 2026-11-06; metrics are computed on daily returns partitioned by return date",
+    "development_D": {"J1": ["1998-01-02", "2019-12-31"], "J2": ["1999-12-31", "2019-12-31"], "J3": ["2007-02-28", "2019-12-31"], "J4_formations": ["1998-01", "2015-12"], "J5": "descriptive only in D (D is used for selection)"},
+    "holdout_H": {"J1": ["2020-01-02", "2026-11-06"], "J2": ["2020-01-02", "2026-11-06"], "J3": ["2020-01-02", "2026-11-06"], "J4_formations": ["2016-02", "2022-05"], "J5": ["2020-01-02", "2026-11-06"]},
+    "era_split_within_D": {"E1": "returns dated <= 2009-12-31", "E2": "returns dated 2010-01-01..2019-12-31"},
+    "first_decisions": {"J1": "1998-01-02 (HY OAS has >= 252 observations)", "J2": "1999-12-31 (9 SPDRs have >= 252 sessions); XLRE eligible from its 253rd session, XLC likewise", "J3": "2007-02-28 (DBC has >= 252 sessions)", "J4": "1998-01 formation"},
+    "j4_burned_dates_excluded": "formation dates 2022-07-06..2026-06-02 are excluded entirely (WS:TREND-PERSISTENCE landmine); J4 H ends with the 2022-05 formation so no label crosses 2022-07-06",
+    "two_stage_access": "Stage D computes and commits D statistics only; the harness must not emit H statistics until the Stage D artifact is committed. Stage H then runs the identical code and header. Any code fix after Stage D reruns Stage D and is logged as a deviation.",
+    "long_history_descriptive_tiers": {
+      "J1_L": "price-only J1 rules (B3, B4, J1-D) on ^GSPC levels with French market total return and French RF, 1928-07..1997-12; credit rules with DBAA from 1987-01; descriptive, not confirmatory",
+      "J2_L": "J2-A/B/C, B5/B6/B7 on Ken French 12 industries value-weighted daily, 1927-07..1999-11; descriptive",
+      "J3_L": "proxy tier 1995-06..2007-01 (VEURX+VPACX 50/50, VEIEX, VUSTX, VFITX, GC=F from 2000-08, ^SPGSCI price proxy); descriptive",
+      "J2_industry_etf": "J2-A/B/C on 16 industry ETFs available today (SMH IBB IGV OIH IYT XBI XHB XOP XME XRT KRE KBE ITB ITA GDX TAN), 2007-06..; descriptive only (today-selected universe)"
+    }
+  },
+  "signals": {
+    "T": "^GSPC close_t < SMA200(^GSPC close)_t  (trend broken)",
+    "C": "HY_OAS(t-1) > SMA252 of HY_OAS over the 252 observations ending t-1  (credit spread in uptrend)",
+    "M": "latest available SAHMREALTIME >= 0.50  (real-time recession rule)",
+    "MTF_x": "mean over n in {50,100,200} of 1[close_x(t) > SMA_n(close_x)(t)], for index or ETF x; values {0,1/3,2/3,1}",
+    "RS63_s": "(1+R_s[t-63,t])/(1+R_SPY[t-63,t]) - 1 on total-return closes",
+    "VEL_s": "RS63_s(t) - RS63_s(t-21)",
+    "R12_1_x": "total return of x from session t-252 to session t-21",
+    "R126_x": "total return of x over the last 126 sessions",
+    "rf_cum": "cumulative T-bill return over the same span"
+  },
+  "baselines": {
+    "B1": {"name": "SPY buy-and-hold", "def": "100% SPY"},
+    "B2": {"name": "60/40", "def": "60% SPY / 40% IEF (VFITX before 2002-08-01), monthly rebalance"},
+    "B3": {"name": "SPY above 200-day else cash", "def": "w=0 if T else 1; daily"},
+    "B4": {"name": "volatility-targeted SPY", "def": "target w = min(1, 0.15/sigma21), sigma21 = sqrt(252)*stdev of the last 21 SPY daily returns; rebalance only when |target - current| >= 0.10"},
+    "B5": {"name": "equal-weight sectors", "def": "1/N across eligible sector SPDRs, monthly"},
+    "B6": {"name": "sector 12-1 momentum top-3", "def": "top 3 sector SPDRs by R12_1, equal weight, monthly"},
+    "B7": {"name": "sector 6-month momentum top-3", "def": "top 3 sector SPDRs by R126, equal weight, monthly"},
+    "B8": {"name": "equal-weight 7 cross-asset sleeves", "def": "1/7 each SPY EFA EEM TLT IEF GLD DBC, monthly"},
+    "B9": {"name": "Faber GTAA-7", "def": "each sleeve 1/7 if its month-end close > SMA of its last 10 month-end closes (including current), else that 1/7 in cash; monthly"},
+    "B10": {"name": "dual momentum (GEM)", "def": "if R12m(SPY) > rf_cum(12m): hold whichever of SPY or EFA has the higher 12-month total return; else hold IEF; monthly"},
+    "X": {"name": "exposure-matched reference", "def": "for candidate c in J1: constant mix of mean(w_c) in SPY and 1-mean(w_c) in cash, daily rebalanced, costless; mean(w_c) computed separately on the window being tested. J3: same with B8 composition. J5: same with B5 composition."}
+  },
+  "candidates": {
+    "J1": {
+      "J1-A": {"name": "credit trend", "rule": "w=0 if C else 1", "source": "census: HY-OAS is the only era-robust Risk Radar leg", "design_sample_overlap": "none (fixed textbook parameters)"},
+      "J1-B": {"name": "trend AND credit confluence", "rule": "w=0 if (T and C) else 1", "source": "census + directive (confluence)", "design_sample_overlap": "none"},
+      "J1-C": {"name": "trend OR credit early warning", "rule": "w=0 if (T or C) else 1", "source": "census + directive", "design_sample_overlap": "none"},
+      "J1-D": {"name": "graded multi-timeframe trend", "rule": "w = MTF_^GSPC", "source": "directive (multi-timeframe)", "design_sample_overlap": "none"},
+      "J1-E": {"name": "crisis-only de-risking", "rule": "w=0 if (T and M) else 1", "source": "directive (money rotates unless crisis) + real-time recession rule", "design_sample_overlap": "none"},
+      "secondary_variants": "J1-A..E with the risk-off weight in IEF (VFITX before 2002-08-01) instead of cash; reported, counted in the trial budget, not in the confirmatory family"
+    },
+    "J2": {
+      "J2-A": {"name": "sector RS level", "rule": "top 3 eligible SPDRs by RS63, equal weight, monthly", "design_sample_overlap": "none (same construction as beta-first C3, 64 sessions only)"},
+      "J2-B": {"name": "sector RS velocity", "rule": "top 3 by VEL, equal weight, monthly", "design_sample_overlap": "none; prior: stock-level velocity anti-predictive"},
+      "J2-C": {"name": "RS level and velocity both positive", "rule": "eligible = RS63>0 and VEL>0; hold up to 3 eligible with highest RS63 at 1/3 each; unfilled slots in SPY; monthly", "design_sample_overlap": "none"},
+      "J2-D": {"name": "trend-qualified RS", "rule": "eligible = MTF_s == 1; hold up to 3 eligible with highest RS63 at 1/3 each; unfilled slots in SPY; monthly", "design_sample_overlap": "none"},
+      "J2-E": {"name": "risk-state conditional sectors", "rule": "at each month-end, if w_J1*(t) >= 0.5 hold the J2* book else equal-weight XLP, XLU, XLV; confirmatory on H only", "design_sample_overlap": "selection of J1*/J2* on D"}
+    },
+    "J3": {
+      "J3-A": {"name": "relative + absolute cross-asset momentum", "rule": "rank 7 sleeves by R12_1; hold top 3 at 1/3 each only if R12_1 > rf_cum over the same span, else that 1/3 in cash; monthly", "design_sample_overlap": "none (textbook)"},
+      "J3-B": {"name": "graded MTF across sleeves", "rule": "w_i = (1/7) * MTF_i for each sleeve, remainder cash; monthly", "design_sample_overlap": "none"},
+      "J3-C": {"name": "risk-state rotation", "rule": "if J1-B is risk-off at the decision close: hold the top 2 of {IEF, TLT, GLD} by R126 at 1/2 each, each only if R126 > rf_cum(126) else cash; if risk-on: hold the top 3 of {SPY, EFA, EEM, DBC, GLD} by R126 at 1/3 each with the same absolute filter; monthly", "design_sample_overlap": "none (J1-B fixed, not selected)"}
+    },
+    "J4": {
+      "universe": "PIT S&P 500 members at formation (primary); S&P 1500 legs added one year after each leg's floor as sensitivity",
+      "prices": "Yahoo per-ticker cache plus any best-effort delisted closes fetched in Phase 2 by the residual_alpha_pit method (Yahoo); coverage reported per formation month",
+      "sector_assignment_primary": "statistical: the sector SPDR eligible at t whose daily returns give the highest R^2 in a univariate regression of the stock's last 252 daily returns (>= 200 observations) ending at t",
+      "sector_assignment_sensitivity": "current GICS label from sp1500_pit_sectors (back-applied; disclosed)",
+      "leading_lagging": "leading = top 3 sectors by RS63 at t; lagging = bottom 3",
+      "stock_signal": "RS of stock vs its assigned sector ETF over sessions t-126..t-21",
+      "selection": "top quintile within each sector (minimum 3 names)",
+      "label": "selected names' equal-weight return minus the sector ETF return (relative wealth) from the t+1 close to the next formation's execution close",
+      "J4-A": {"name": "amplification spread", "statistic": "Delta = mean over months of (S_leading - S_lagging), annualised x12"},
+      "J4-B": {"name": "leaders in leading sectors book", "statistic": "equal-weight book of selected names in leading sectors minus equal-weight-across-sectors book of selected names in all sectors, net of 10 bp per side"},
+      "bias_treatments": ["(i) exclude unpriced members (primary)", "(ii) report the unpriced share overall and separately among labelled members of leading vs lagging sectors", "(iii) members whose price history ends while still members receive a -30% terminal return on their last priced day"]
+    },
+    "J5": {
+      "selection_on_D": "J1* = argmax over {J1-A..J1-E, B3} of D P1 if > 0, else B3. J2* = argmax over {J2-A..J2-D, B6} of D Q1 if > 0, else B5. Selection uses D returns only.",
+      "J5-A": {"name": "stack: J1* gate on J2* sectors", "rule": "risky weight w_J1*(t) allocated to the J2* sector book, remainder cash"},
+      "J5-B": {"name": "stack with defensive rotation", "rule": "as J5-A but the remainder 1-w_J1* goes to whichever of {IEF, GLD} has the higher R126 if that exceeds rf_cum(126), else cash; monthly for the defensive leg"}
+    },
+    "incumbents_replication_only": {
+      "J1-I1": {"name": "spvector glide as built", "rule": "engine.equity_alloc risk_score with RISK_WEIGHTS, LEG_LAGS and glide_path(confirm_days=5, bands=(25,50,75), weights=(1,0.66,0.33,0)) at the data pin, applied to SPY", "design_sample_overlap": "full 1993-2026 span -> L0 cap"},
+      "J1-I2": {"name": "Risk Radar v2 gross as built", "rule": "engine.risk_radar state replay at the data pin mapped to its gross factor; if the replay cannot be run from repo stores, recorded as unavailable with reason, no substitute", "design_sample_overlap": "2006-2026 -> L0 cap"},
+      "J2-I1": {"name": "sector_signals as built", "rule": "equal weight over sectors whose engine.sector_signals state at the decision close is in {BUY, BUY_PARTIAL, SETUP_BUY, NEUTRAL, EXTENDED}; SPY if none; monthly", "design_sample_overlap": "1998-2026 -> L0 cap"},
+      "J3-I1": {"name": "cross-asset TSMOM long-only", "rule": "w_i = (1/7)*max(0, mean(sign R63, sign R126, sign R252, each skipping the last 5 sessions)), remainder cash; monthly", "design_sample_overlap": "2007+ already tested -> L0 cap"}
+    }
+  },
+  "contrasts": {
+    "F1_J1_holm": {"m": 10, "window": "D", "tests": "for c in J1-A..J1-E: P1 = annualised mean daily net return of c minus X_c; P2 = Sharpe(c) minus Sharpe(B3) on daily returns in excess of cash"},
+    "F2_J2_holm": {"m": 8, "window": "D", "tests": "for c in J2-A..J2-D: Q1 = annualised excess vs B5; Q2 = annualised excess vs B6"},
+    "F3_J3_holm": {"m": 6, "window": "D", "tests": "for c in J3-A..J3-C: R1 = annualised excess vs X3_c; R2 = annualised excess vs B9"},
+    "F4_J4_holm": {"m": 2, "window": "D formations", "tests": "J4-A Delta > 0; J4-B book excess > 0"},
+    "F5_stack_holm": {"m": 4, "window": "H only", "tests": "J5-A vs J1* applied to SPY; J5-A vs X5; J5-B vs J5-A; J2-E vs J2* unconditional"},
+    "FI_incumbent_holm": {"m": 8, "window": "D and H, descriptive", "tests": "J1-I1 and J1-I2: vs X and Sharpe vs B3; J2-I1: vs B5 and vs B6; J3-I1: vs X3 and vs B9. Results can never exceed L0."},
+    "confirmatory_tests_total": 30,
+    "all_tests_total": 38,
+    "strategy_configurations_total": 36,
+    "configuration_count_detail": "baselines B1-B10 (10); J1-A..E (5); J1 IEF variants (5); J1-I1, J1-I2 (2); J2-A..D (4); J2-E (1); J2-I1 (1); J3-A..C (3); J3-I1 (1); J4-A, J4-B (2); J5-A, J5-B (2)"
+  },
+  "statistics": {
+    "bootstrap": "stationary bootstrap of paired daily differences, mean block 21 sessions (sensitivity 63), B=10000, seed 20261110; J4 monthly statistics: stationary bootstrap over months, mean block 3 (sensitivity 6)",
+    "p_value": "one-sided, centred (null-imposed): p = (1 + #{stat*_b - stat_hat >= stat_hat}) / (B + 1)",
+    "intervals": "95% percentile intervals; every favourable number is printed with its interval, its baseline and the count of alternatives tried",
+    "multiplicity": "Holm at alpha 0.05 within each family F1-F5 and FI; deflated Sharpe ratio for every strategy using the trial ledger (family rotation_core_v1 declared budget 36, plus prior registered trials on the same instruments read via ledger=)",
+    "era_split": "every D statistic is also reported for E1 and E2 separately (LAW-ERA-SPLIT)",
+    "embargo": "no candidate parameter is fitted. J5/J2-E selection uses D returns only and H starts the next session. J4 H starts one month after the last D formation, so labels do not overlap."
+  },
+  "metrics": ["total and annualised return", "annualised volatility", "Sharpe in excess of cash", "Sortino", "max drawdown", "Calmar", "beta vs SPY (OLS on cash-excess daily returns)", "annualised intercept (labelled residual, not alpha)", "tracking error and information ratio vs the contrast reference", "monthly geometric up/down capture vs SPY (months with |SPY| < 0.5% excluded from the denominator and counted)", "one-way annual turnover", "costs paid", "mean risky weight and time in market", "deflated Sharpe ratio"],
+  "pivot_metrics": {
+    "applies_to": ["J1 candidates", "J1 baselines", "J1 incumbents", "J5"],
+    "named_episodes": {
+      "E1998": {"peak_search": ["1998-07-01", "1998-07-31"], "trough_by": "1998-10-31"},
+      "E2000_02": {"peak_search": ["2000-01-01", "2000-12-31"], "trough_by": "2002-12-31"},
+      "E2008_09": {"peak_search": ["2007-07-01", "2007-12-31"], "trough_by": "2009-06-30"},
+      "E2011": {"peak_search": ["2011-04-01", "2011-07-31"], "trough_by": "2011-12-31"},
+      "E2015_16": {"peak_search": ["2015-05-01", "2015-08-15"], "trough_by": "2016-03-31"},
+      "E2018Q4": {"peak_search": ["2018-09-01", "2018-10-15"], "trough_by": "2018-12-31"},
+      "E2020": {"peak_search": ["2020-02-01", "2020-02-29"], "trough_by": "2020-04-30"},
+      "E2022": {"peak_search": ["2021-12-15", "2022-01-31"], "trough_by": "2022-12-31"},
+      "E2025": {"peak_search": ["2025-01-15", "2025-03-15"], "trough_by": "2025-05-31"},
+      "E2026": {"rule": "included only if SPY has a closing drawdown >= 10% from a peak in 2026-01-01..2026-09-30 with its trough by 2026-11-06; otherwise recorded as absent"}
+    },
+    "episode_definition": "peak = highest SPY total-return close in peak_search; trough = lowest close after the peak up to trough_by; episode window = [peak - 63 sessions, trough + 21 sessions]",
+    "algorithmic_episodes": "all SPY closing drawdowns >= 15% in the job window are also listed",
+    "exit": "first session in [peak-63, trough] where the risky weight falls from > 0.5 to <= 0.5; lead = sessions from exit to peak (positive = before the peak); 'missed' if none",
+    "reentry": "first session after the exit where the weight returns to >= 0.5; lag = sessions from the trough to re-entry (negative = before the trough)",
+    "drawdown_captured": "strategy max drawdown over [peak, trough] divided by SPY's",
+    "recovery_participation": "strategy return / SPY return over [trough, trough + 126 sessions]",
+    "false_pivot": "a risk-off spell (weight <= 0.5) that does not overlap any episode window; reported per calm year, with the cost = SPY return minus strategy return during false spells, annualised per calm year",
+    "whipsaw": "risk-off spells shorter than 21 sessions, counted"
+  },
+  "release_levels": {
+    "L0_descriptive": "Any source-correct run (>= 99% of sessions priced for the job's instruments; header hash verified). Numbers are descriptive and carry no performance claim.",
+    "L1_accepted_historical": {
+      "all_required": {
+        "G1": "Holm-adjusted p < 0.05 within the family on the primary contrast (P1, Q1, R1, J4-A, or the F5 test) in D (H for F5)",
+        "G2": "point estimate of that contrast >= +1.0 pp/yr (J4-A: >= +2.0 pp/yr)",
+        "G3": "point estimate > 0 in both D eras E1 and E2 (not applicable to F5)",
+        "G4": "H point estimate > 0 and unadjusted one-sided p < 0.10 in H (for F5 the H test is G1)",
+        "G5": "G1 and G2 still hold at 2x costs",
+        "G6_J1_J5": "over D and H combined: monthly down-capture <= up-capture - 0.20; max drawdown <= 0.70 x SPY max drawdown; CAGR >= SPY CAGR - 2.0 pp/yr; false pivots <= 1.5 per calm year; exit before the trough in >= 6 of the named episodes present in the window; Sharpe point estimate >= the Sharpe of B2, B3 and B4",
+        "G6_J2": "information ratio vs B5 >= 0.20; max drawdown no worse than B5 max drawdown - 5 pp; Q2 point estimate > 0; point excess vs B1 and B7 > 0",
+        "G6_J3": "Sharpe >= the Sharpe of B2, B9 and B10; max drawdown <= B8 max drawdown",
+        "G6_J4": "Delta has the same sign under all three bias treatments AND the median monthly priced share of members is >= 85%",
+        "G7": "the candidate's parameters were not chosen on the evaluation data (incumbents fail G7 and are capped at L0)"
+      },
+      "note": "An L1 result is an accepted historical research finding only. Under DEC:RIC-E0 it can never promote anything."
+    },
+    "L2_prospective_shadow": "L1 met, then forward accrual after the freeze commit under this unchanged header hash, nightly-written with no backfill: >= 252 sessions for J1/J5 or >= 12 monthly decisions for J2/J3/J4, forward primary contrast point estimate >= 0 and no G6 breach. For J1/J5 the shadow must contain at least one SPY closing drawdown >= 10% (otherwise it continues). Passing L2 yields only promotion-review eligibility.",
+    "presentation_rule": "Nothing is presented as a call, pivot alert or rotation recommendation before L2. Results below L1 are descriptive only. A negative or null result is the finding and is printed.",
+    "known_caps_stated_before_outcomes": [
+      "J4 cannot reach L1 with current data: the priced share of PIT members is below 85% in every year before 2024 (census 9.4). J4 historical is L0 unless licensed delisted prices are added; J4's real test is the prospective shadow on S&P 1500 formations after the freeze.",
+      "J1-I1, J1-I2, J2-I1 and J3-I1 fail G7 and are capped at L0.",
+      "J5 and J2-E are confirmatory on H only (about 6.8 years, 3 named episodes); their power is low by construction."
+    ]
+  },
+  "contamination_disclosure": [
+    "Seen before freezing (prior repo results, not computed here): thematic_rotation_phase0 sector numbers 1998-2026 (EW CAGR 8.86% / MaxDD -49.1%; top-3 12-1 9.00% / -43.3%; top-3 6m 8.23% / -39.7%; top-4 dual 7.26% / -24.1%); lane 8 comparators 2008-2026 (C2 SPY>200d minus SPY -2.73%/yr, MaxDD -17.6% vs -44.6%; C3 minus SPY -1.82%/yr); spvector Sharpe 0.91 vs 0.65 / 200d 0.77, MaxDD -34.1% vs -55.2% (1993-2026); Risk Radar leg lifts and gate precision/recall; cross-asset TSMOM net Sharpe 0.54 vs 0.56 (2007+); intl 200d overlay MaxDD -18.5% vs -57.0%; beta-first 64-session results.",
+    "Computed by the lead before freezing: first/last dates and row counts of every vendor and repo series used; S&P 1500 PIT membership, label and price-cache coverage by year (census 9.4). No strategy, candidate, baseline or episode return was computed.",
+    "The lead's model knowledge ends June 2026 and includes general market history for every named episode through 2026H1 and the published results of the textbook rules used here (Faber 2007, Antonacci 2014, Moskowitz-Grinblatt 1999, Moreira-Muir 2017, Blitz-Huij-Martens 2011). Neither D nor H is unseen in that sense. Mitigations: fixed textbook parameters, no grids, multiplicity control, two-stage D/H access, and the L2 prospective requirement."
+  ],
+  "deviations_policy": "Any departure is logged in the results file's deviations[] with a reason. Thresholds, parameters, windows and families are never changed after outcome access; changes require a new header version with a new trial-ledger declaration."
+}
