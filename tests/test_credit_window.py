@@ -460,3 +460,52 @@ def test_move_path_is_tracked_in_repo():
     # stale, unmaintained snapshot) — reading it instead of "_MOVE.parquet"
     # would not crash, it would silently read the wrong series.
     assert cw.MOVE_TICKER != "MOVE"
+
+
+@pytest.mark.parametrize('key', ['spread_range', 'spread_drift', 'rates_vol'])
+@pytest.mark.parametrize('value', [float('nan'), float('inf'), -float('inf')])
+def test_nonfinite_direct_evidence_is_unknown(key, value):
+    assert cw.input_state(key, value) == 'unknown'
+
+
+@pytest.mark.parametrize('value', [float('nan'), float('inf'), -float('inf')])
+@pytest.mark.parametrize('position', [-1, -10])
+def test_nonfinite_active_tail_cannot_become_rank_or_drift(value, position):
+    s = pd.Series([3. + i / 100 for i in range(280)])
+    s.iloc[position] = value
+    assert cw._pct_rank_last(s, cw.RANGE_WINDOW) is None
+    assert cw._drift_bp(s, cw.DRIFT_WINDOW) is None
+
+
+def test_nonfinite_outside_active_windows_preserves_healthy_calculation():
+    s = pd.Series([3. + i / 100 for i in range(280)])
+    expected = cw._pct_rank_last(s, cw.RANGE_WINDOW), cw._drift_bp(s, cw.DRIFT_WINDOW)
+    s.iloc[0] = float('inf')
+    assert (cw._pct_rank_last(s, cw.RANGE_WINDOW), cw._drift_bp(s, cw.DRIFT_WINDOW)) == expected
+
+
+@pytest.mark.parametrize('direction', [1., -1.])
+def test_finite_endpoint_drift_overflow_is_unknown(direction):
+    s = pd.Series([0.] * (cw.DRIFT_WINDOW + 1))
+    s.iloc[0], s.iloc[-1] = -direction * 1e308, direction * 1e308
+    assert cw._drift_bp(s, cw.DRIFT_WINDOW) is None
+
+
+@pytest.mark.parametrize('value', [float('inf'), -float('inf')])
+def test_parquet_bad_hy_preserves_ig_and_partial_read(tmp_path, value):
+    import json
+    import numpy as np
+    hy = np.linspace(6., 3., 280)
+    _write_series(tmp_path/'fred'/f'{cw.FRED_HY}.parquet', hy)
+    _write_series(tmp_path/'fred'/f'{cw.FRED_IG}.parquet', np.linspace(2., 1., 280))
+    _write_close(tmp_path/'yahoo'/f'{cw.MOVE_TICKER}.parquet', np.linspace(140., 60., 280))
+    before = cw.window_state(root=tmp_path)
+    hy[-1] = value
+    _write_series(tmp_path/'fred'/f'{cw.FRED_HY}.parquet', hy)
+    after = cw.window_state(root=tmp_path)
+    assert after['segments'][1] == before['segments'][1]
+    lane = after['segments'][0]
+    assert lane['state'] == 'not_evaluable' and lane['n_inputs'] == 1
+    assert lane['low_confidence'] is True and lane['rail'] is None
+    assert lane['inputs'][2] == before['segments'][0]['inputs'][2]
+    json.dumps(after, allow_nan=False)

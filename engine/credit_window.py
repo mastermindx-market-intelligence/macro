@@ -18,6 +18,7 @@ reads only market-wide index series and performs no join of any kind.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -101,6 +102,8 @@ def _pct_rank_last(s: pd.Series, window: int) -> float | None:
     tail = s.tail(window)
     if len(tail) < MIN_INPUTS or len(tail) < MIN_HISTORY:
         return None
+    if not all(math.isfinite(float(value)) for value in tail):
+        return None
     last = float(tail.iloc[-1])
     return float((tail <= last).mean() * 100.0)
 
@@ -109,8 +112,11 @@ def _drift_bp(s: pd.Series, window: int) -> float | None:
     tail = s.tail(window + 1)
     if len(tail) < window + 1:
         return None
+    if not all(math.isfinite(float(value)) for value in tail):
+        return None
     # OAS series are already in percentage points; 1pp = 100bp
-    return float((tail.iloc[-1] - tail.iloc[0]) * 100.0)
+    drift = float((tail.iloc[-1] - tail.iloc[0]) * 100.0)
+    return drift if math.isfinite(drift) else None
 
 
 def _as_of(s: pd.Series | None) -> str | None:
@@ -145,6 +151,8 @@ def input_state(key: str, value: float | None) -> str:
     if value is None:
         return "unknown"
     v = float(value)
+    if not math.isfinite(v):
+        return "unknown"
     if key == "spread_range":
         if v <= RANGE_OPEN_PCT:
             return "open"
