@@ -1048,15 +1048,15 @@ function grEarnTileBody(e){
   }
   var symEn,symZh;
   if(sy.ratio!=null){
-    symEn=`Members move about ${sy.ratio}× as much on each other's report days as they do on an ordinary day. Measured over ${sy.n_events} report days from ${sy.n_reporters} members, last ${sy.window_q} quarters.`;
-    symZh=`在彼此的财报日，本组成分股的波动约为平常的 ${sy.ratio} 倍。基于 ${sy.n_reporters} 只个股的 ${sy.n_events} 个财报日，近 ${sy.window_q} 个季度。`;
+    symEn=`On members' report days, the median absolute SPY-adjusted move among non-reporting members was ${sy.ratio}× the ordinary-day baseline. ${sy.n_events} qualified reports from ${sy.n_reporters} members, last ${sy.window_q} quarters. Reports on the same day are counted separately; comparisons require member and SPY closes.`;
+    symZh=`在成分股财报日，未公布财报的成分股经SPY调整后的绝对涨跌幅中位数，为普通交易日基准的 ${sy.ratio} 倍。近 ${sy.window_q} 个季度，来自 ${sy.n_reporters} 只个股的 ${sy.n_events} 次合格财报。同日财报分别计数；比较需要个股与SPY收盘价。`;
   } else {
-    symEn=`Not enough report days in this group yet to say whether members move together on each other's numbers (${sy.n_events||0} so far).`;
-    symZh=`本组的财报日样本还不够，无法判断成分股是否会因彼此的业绩同步波动（目前 ${sy.n_events||0} 个）。`;
+    symEn=`The report-day comparison needs enough qualifying reports and a positive ordinary-day baseline. ${sy.n_events||0} qualified reports from ${sy.n_reporters||0} members; comparisons require member and SPY closes.`;
+    symZh=`财报日比较需要足够的合格财报样本和大于零的普通交易日基准。来自 ${sy.n_reporters||0} 只个股的 ${sy.n_events||0} 次合格财报；比较需要个股与SPY收盘价。`;
   }
   var symLine=sy.ratio!=null
-    ? L(`Members move about <b>${sy.ratio}×</b> as much on each other&rsquo;s report days.`,`在彼此的财报日，成分股波动约为平常的 <b>${sy.ratio}×</b>。`)
-    : L('Too few report days to read co-movement yet.','财报日样本不足，暂无法读取同步性。');
+    ? L(`Other members&rsquo; median absolute moves were <b>${sy.ratio}×</b> the ordinary-day baseline after SPY.`,`其余成分股经SPY调整后的绝对涨跌幅中位数，为普通交易日基准的 <b>${sy.ratio}×</b>。`)
+    : L('Report-day comparison unavailable.','财报日比较暂不可用。');
   return `<div class="k">${L(kEn,kZh)}${grInfo(symEn,symZh)}</div><div class="v">${head}</div>
     <div class="d">${det}${det?'<br>':''}${symLine}</div>`;
 }
@@ -1168,13 +1168,13 @@ function grEarningsSection(bid){
   var revs=rvN==null?L(`Not enough analyst coverage to read revisions — <b>${rv.n_covered||0}</b> members covered.`,`分析师覆盖不足，无法读取上下调 — 仅覆盖 <b>${rv.n_covered||0}</b> 只。`)
     :L(`Analysts are nudging estimates up on <b>${rvN}</b> of the <b>${rv.n_covered}</b> members they cover.`,`在覆盖的 <b>${rv.n_covered}</b> 只中，分析师对 <b>${rvN}</b> 只上调了预估。`);
   var drN=grCount(dr.pos_share_5d,dr.n);
-  var drift=drN==null?L(`Too few reporters to read what happens after the print — <b>${dr.n||0}</b> so far.`,`已报样本太少，无法读取公布后的走势 — 目前 <b>${dr.n||0}</b> 只。`)
-    :L(`Five sessions after reporting, <b>${drN}</b> of <b>${dr.n}</b> were still ahead of SPY.`,`公布后第五个交易日，<b>${dr.n}</b> 只中有 <b>${drN}</b> 只仍跑赢SPY。`);
+  var drift=drN==null?L(`Too few complete five-session comparisons — <b>${dr.n||0}</b> reporters have the required member and SPY closes. Comparisons with missing endpoints are withheld.`,`完整的五个交易日比较不足 — <b>${dr.n||0}</b> 只已报个股具备所需的个股与SPY收盘价。缺少起点或终点价格的比较不予计算。`)
+    :L(`Among <b>${dr.n}</b> reporters with complete member and SPY endpoints, <b>${drN}</b> outperformed SPY over the five sessions after the reaction close.`,`在个股与SPY起止收盘价完整的 <b>${dr.n}</b> 只已报个股中，<b>${drN}</b> 只在财报反应日收盘后的五个交易日内跑赢SPY。`);
   // Sympathy — the "do earnings move this group together" stat, always with its counts.
   var d2=sy.directional||{};
   var symp=sy.ratio==null
-    ? L(`Not enough report days in this group yet to say whether members move together on each other&rsquo;s numbers — <b>${sy.n_events||0}</b> so far, from <b>${sy.n_reporters||0}</b> members.`,`本组财报日样本不足，暂无法判断成分股是否因彼此的业绩同步波动 — 目前仅 <b>${sy.n_events||0}</b> 个，来自 <b>${sy.n_reporters||0}</b> 只。`)
-    : L(`On each other&rsquo;s report days, the rest of the group moves about <b>${sy.ratio}×</b> as much as on an ordinary day — measured over <b>${sy.n_events}</b> report days from <b>${sy.n_reporters}</b> members.`,`在彼此的财报日，其余成分股的波动约为平常的 <b>${sy.ratio}×</b> — 基于 <b>${sy.n_reporters}</b> 只个股的 <b>${sy.n_events}</b> 个财报日。`);
+    ? L(`The report-day comparison is unavailable: it needs enough qualifying reports and a positive ordinary-day baseline — <b>${sy.n_events||0}</b> qualified reports from <b>${sy.n_reporters||0}</b> members. Comparisons require member and SPY closes.`,`财报日比较暂不可用：需要足够的合格财报样本和大于零的普通交易日基准 — 来自 <b>${sy.n_reporters||0}</b> 只个股的 <b>${sy.n_events||0}</b> 次财报符合比较条件。比较需要个股与SPY收盘价。`)
+    : L(`On members&rsquo; report days, the median absolute SPY-adjusted move among non-reporting members was <b>${sy.ratio}×</b> the ordinary-day baseline — <b>${sy.n_events}</b> qualified reports from <b>${sy.n_reporters}</b> members, using the required member and SPY closes. Reports on the same day are counted separately.`,`在成分股财报日，未公布财报的成分股经SPY调整后的绝对涨跌幅中位数，为普通交易日基准的 <b>${sy.ratio}倍</b> — 来自 <b>${sy.n_reporters}</b> 只个股的 <b>${sy.n_events}</b> 次合格财报，使用所需的个股与SPY收盘价。同日的不同个股财报分别计数。`);
   var dirLine=(d2.beat_day_median==null&&d2.miss_day_median==null)?''
     :`<div class="muted sm" style="margin-top:5px">${L(`On a member&rsquo;s beat day the rest moved <span class="${cls(d2.beat_day_median)}">${fmtPct(d2.beat_day_median)}</span> (<b>${d2.n_beat_days}</b> days); on a miss day <span class="${cls(d2.miss_day_median)}">${fmtPct(d2.miss_day_median)}</span> (<b>${d2.n_miss_days}</b> days), against SPY.`,`某只超预期当日，其余成分股中位涨跌 <span class="${cls(d2.beat_day_median)}">${fmtPct(d2.beat_day_median)}</span>（<b>${d2.n_beat_days}</b> 天）；不及预期当日为 <span class="${cls(d2.miss_day_median)}">${fmtPct(d2.miss_day_median)}</span>（<b>${d2.n_miss_days}</b> 天），均已剔除SPY。`)}</div>`;
   return h+`<div class="panel">

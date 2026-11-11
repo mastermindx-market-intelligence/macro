@@ -291,11 +291,86 @@ def test_no_data_members_are_counted_not_divided_away():
 def test_refused_earnings_stats_print_their_n_in_plain_words():
     en, zh = _earnings(_season())
     assert "Guidance reads are thin" in en and "本季指引样本很薄" in zh
-    assert "Too few reporters" in en          # drift refusal
-    assert "Not enough report days" in en     # sympathy refusal
+    assert "Too few complete five-session comparisons" in en
+    assert "The report-day comparison is unavailable" in en
+    assert "member and SPY closes" in en
+    assert "个股与SPY收盘价" in zh
     for blob in (en, zh):
         for bad in BANNED:
             assert bad.lower() not in blob.lower(), f"banned {bad!r} in earnings copy"
+
+
+@needs_node
+@pytest.mark.parametrize("n", [0, 2])
+def test_drift_refusal_describes_complete_comparisons_without_guessing_the_missing_input(n):
+    payload = _season(drift={"pos_share_5d": None, "n": n})
+    payload["season"]["n_reported"] = 14
+    en, zh = _earnings(payload)
+    assert "Too few reporters" not in en and "已报样本太少" not in zh
+    assert f"{n} reporters have the required member and SPY closes" in en
+    assert "Comparisons with missing endpoints are withheld" in en
+    assert f"{n} 只已报个股具备所需的个股与SPY收盘价" in zh
+    # v1 has no cause field: neither side can assert SPY specifically was missing.
+    assert "SPY data are missing" not in en
+
+
+@needs_node
+@pytest.mark.parametrize("share,count", [(0.0, 0), (0.5, 2), (1.0, 4)])
+def test_drift_numeric_copy_uses_the_reaction_close_and_keeps_measured_zero(share, count):
+    en, zh = _earnings(_season(drift={"pos_share_5d": share, "n": 4}))
+    assert "Among 4 reporters with complete member and SPY endpoints" in en
+    assert f"{count} outperformed SPY over the five sessions after the reaction close" in en
+    assert f"{count} 只在财报反应日收盘后的五个交易日内跑赢SPY" in zh
+    assert "Too few complete five-session comparisons" not in en
+
+
+@needs_node
+def test_missing_sympathy_ratio_keeps_counts_and_independently_supported_directionals():
+    symp = {"ratio": None, "n_events": 24, "n_reporters": 6, "window_q": 8,
+            "directional": {"beat_day_median": 0.03, "miss_day_median": -0.03,
+                            "n_beat_days": 12, "n_miss_days": 12}}
+    en, zh = _earnings(_season(sympathy=symp))
+    assert "positive ordinary-day baseline" in en
+    assert "24 qualified reports from 6 members" in en
+    assert "大于零的普通交易日基准" in zh and "24 次财报符合比较条件" in zh
+    assert "Not enough report days" not in en and "财报日样本不足" not in zh
+    assert "+3.0%" in en and "-3.0%" in en
+    assert "+3.0%" in zh and "-3.0%" in zh
+
+
+@needs_node
+@pytest.mark.parametrize("ratio", [0.0, 3.0])
+def test_sympathy_counts_are_qualified_reports_not_independent_report_days(ratio):
+    symp = {"ratio": ratio, "n_events": 24, "n_reporters": 6, "window_q": 8,
+            "directional": {}}
+    en, zh = _earnings(_season(sympathy=symp))
+    assert "24 qualified reports from 6 members" in en
+    assert "Reports on the same day are counted separately" in en
+    assert "24 report days" not in en and "24 个财报日" not in zh
+    assert "同日的不同个股财报分别计数" in zh
+    assert f"{int(ratio)}×" in en and f"{int(ratio)}倍" in zh
+    assert "The report-day comparison is unavailable" not in en
+
+
+@needs_node
+@pytest.mark.parametrize("ratio", [None, 0.0, 3.0])
+def test_earnings_tile_tooltip_also_qualifies_evidence_and_report_counts(ratio):
+    payload = _season(sympathy={"ratio": ratio, "n_events": 24, "n_reporters": 6,
+                               "window_q": 8, "directional": {}})
+    # Inspect the real tooltip attributes as well as visible L() text: _langs alone
+    # deliberately extracts translated spans and would miss a misleading tooltip.
+    html = _run("process.stdout.write(JSON.stringify(grEarnTileBody(%s)));" %
+                json.dumps(payload))
+    assert "24 qualified reports from 6 members" in html
+    assert "24 次合格财报" in html
+    assert "24 report days" not in html and "24 个财报日" not in html
+    assert "Not enough report days" not in html and "财报日样本还不够" not in html
+    if ratio is None:
+        assert "positive ordinary-day baseline" in html
+        assert "Report-day comparison unavailable" in html
+    else:
+        assert "Reports on the same day are counted separately" in html
+        assert "Report-day comparison unavailable" not in html
 
 
 @needs_node
