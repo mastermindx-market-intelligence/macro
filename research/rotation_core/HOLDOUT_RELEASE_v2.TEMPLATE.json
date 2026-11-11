@@ -1,14 +1,20 @@
 {
-  "_instructions": "TWO-STAGE TEMPLATE (ruling R13, HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files; the Rotation Core lead never does. Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json. Stage 2 (only if the committed stage-1 result meets the opening condition): copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json. The runner checks windows_released exactly and verifies the opening condition from the committed stage-1 result file.",
+  "_instructions": "TWO-STAGE TEMPLATE (ruling R13, HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files; the Rotation Core lead never does. Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json. Stage 2 (only if the committed stage-1 result meets the opening condition): copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json. The runner checks windows_released exactly and verifies the opening condition from the committed stage-1 result file. R15: stage 1 pins the rerun's engine commit and the rerun's selection-results commit; the runner refuses if engine/scripts/tests or the selection file differ from them.",
   "stage1": {
     "schema": "rotation_core.holdout_release/v2.stage1",
     "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
     "released_by": "Prophet programme CEO",
     "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
-    "selection_commit": "1ca5228b3c",
-    "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25},
-    "windows_released": ["pre1998_1928_1997"],
-    "run_once": true
+    "selected_grid_point": {
+      "h_near_high_pct": "<from the rerun; expected 3>",
+      "b_breadth_drop_pp": "<from the rerun; expected 25>"
+    },
+    "windows_released": [
+      "pre1998_1928_1997"
+    ],
+    "run_once": true,
+    "engine_commit": "<final engine commit after the R15 rerun>",
+    "selection_results_commit": "<commit holding results_v2_selection_rerun.json (R15)>"
   },
   "stage2": {
     "schema": "rotation_core.holdout_release/v2.stage2",
@@ -16,9 +22,23 @@
     "released_by": "Prophet programme CEO",
     "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
     "stage1_result_commit": "<commit of results_v2_stage1_pre1998.json>",
-    "windows_released": ["2020-01-02..2025-12-31"],
-    "opening_condition_hypotheses": ["H1", "H3"],
-    "configurations": ["H1", "H2", "H3", "H1_cash_ablation", "H1_tradable_funds", "H1_named_mapping_descriptive", "yardsticks", "pooled_holm_m3"],
+    "windows_released": [
+      "2020-01-02..2025-12-31"
+    ],
+    "opening_condition_hypotheses": [
+      "H1",
+      "H3"
+    ],
+    "configurations": [
+      "H1",
+      "H2",
+      "H3",
+      "H1_cash_ablation",
+      "H1_tradable_funds",
+      "H1_named_mapping_descriptive",
+      "yardsticks",
+      "pooled_holm_m3"
+    ],
     "run_once": true
   }
 }

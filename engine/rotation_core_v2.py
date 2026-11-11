@@ -69,15 +69,18 @@ def _load_release(path: Path) -> dict | None:
     return json.loads(Path(path).read_text())
 
 
-SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection.json"
+SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection_rerun.json"   # R15: rerun pins the setting
+SELECTED_REF = (3.0, 25.0)            # grid point selected at 1ca5228b3c (R13-g(i)); R14(d) sensitivity uses it
 SEALED_STAGE1_DIR = Path("/home/ubuntu2/tmp/rotation-core/data/sealed_stage1")
 STAGE1_SEALED = SEALED_STAGE1_DIR / "results_v2_stage1_pre1998.json"
 STAGE1_GATE = ROOT / "research/rotation_core/results_v2_stage1_gate.json"
 
 
-def selected_setting(selection: Path = SELECTION_RESULT) -> tuple[float, float]:
-    """R13-g(i): the gate setting is read from the committed selection result, never from an argument."""
+def selected_setting(selection: Path | None = None) -> tuple[float, float]:
+    """R13-g(i)/R15.6: the gate setting is read from the committed selection result (the R15 rerun), never from
+    an argument."""
     import json, re
+    selection = SELECTION_RESULT if selection is None else selection
     if not _committed_clean(selection):
         raise SealedRefusal("refused: selection result is not committed")
     sel = json.loads(Path(selection).read_text())["selection"]["selected"]
@@ -100,6 +103,10 @@ def stage1_release(release: Path = RELEASE) -> dict:
                             f"[\"{W_PRE}\"]")
     if r.get("protocol_header_sha256") != FROZEN_V2_SHA256:
         raise SealedRefusal("refused: release names a different header sha256")
+    sc = r.get("selection_results_commit", "<missing>")
+    if subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", sc, "HEAD", "--",
+                       str(SELECTION_RESULT.relative_to(ROOT))], capture_output=True).returncode != 0:
+        raise SealedRefusal("refused: selection results differ from the release's selection_results_commit")
     h, b = selected_setting()
     g = r.get("selected_grid_point", {})
     if (float(g.get("h_near_high_pct", -1)), float(g.get("b_breadth_drop_pp", -1))) != (h, b):
@@ -119,7 +126,11 @@ def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE)
         raise SealedRefusal("refused: stage 2 needs the committed stage-1 gate file")
     res = json.loads(Path(stage1_result).read_text())
     hyps = r.get("opening_condition_hypotheses", ["H1", "H3"])
-    ok = [h for h in hyps if h in res["gate_signs"] and all(res["gate_signs"][h][e] == "+" for e in ("E1_1928_1945", "E2_1946_1997"))]
+    gs = res["gate_signs"]
+    readings = list(gs) if all(k.startswith("base_") for k in gs) else [None]
+    sig = lambda b_, h: (gs[b_] if b_ else gs).get(h)
+    ok = [h for h in hyps if all(sig(b_, h) is not None and all(sig(b_, h)[e] == "+" for e in ("E1_1928_1945", "E2_1946_1997"))
+                                 for b_ in readings)]
     if not ok:
         raise SealedRefusal(f"refused: opening condition not met in the committed stage-1 result for {hyps}")
     r["_opened_by"] = ok
@@ -209,6 +220,22 @@ def load_french_industries(path, end) -> tuple[pd.DataFrame, pd.DataFrame]:
     return out[0], out[1]
 
 
+def load_yahoo_tr(path, end) -> pd.Series:
+    """F1: daily total return from a Yahoo parquet, rows filtered on the Date column at the Arrow level before any
+    pandas frame exists; a window end after 2019-12-31 needs a valid stage-2 release (R13)."""
+    import pyarrow.parquet as pq
+    seal_guard(path); assert_window(end)
+    end = pd.Timestamp(end)
+    t = pq.read_table(path, columns=["Date", "Adj Close"], filters=[("Date", "<=", end.to_pydatetime())])
+    d = t.to_pandas()
+    if "Date" not in d.columns:
+        d = d.reset_index()
+    x = d["Adj Close"].astype(float)
+    x.index = pd.to_datetime(d["Date"]).dt.normalize().values
+    assert x.index.max() <= end, "post-seal row reached a frame"
+    return x.sort_index()
+
+
 def load_french_market(path, end) -> tuple[pd.Series, pd.Series]:
     seal_guard(path); assert_window(end)
     endk = pd.Timestamp(end).strftime("%Y%m%d")
@@ -258,8 +285,8 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
         k = len(bs) // 3
         formed[t] = (list(bs.index[-k:]), list(bs.index[:k]), list(bs.index))
     keys = pd.DatetimeIndex(sorted(formed))
-    R = pd.DataFrame(np.nan, index=s, columns=["OFF", "DEF", "BASE"])
-    V = pd.DataFrame(0, index=s, columns=["OFF", "DEF", "BASE"])
+    R = pd.DataFrame(np.nan, index=s, columns=["OFF", "DEF", "BASE", "BASE_DRIFT"])
+    V = pd.DataFrame(0, index=s, columns=["OFF", "DEF", "BASE", "BASE_DRIFT"])
     dropped = 0
     prev = None
     fee = fee_bp / 1e4
@@ -278,6 +305,22 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
                 old = set(prev[["OFF", "DEF", "BASE"].index(col)])
                 repl = len(set(mem) - old) / max(1, len(mem))
                 R.loc[days[0], col] = (1 + R.loc[days[0], col]) / (1 + 2 * repl * fee) - 1   # re-formation cost
+        # R14(b): BASE_DRIFT = same members, equal weights at the month's first session, then drifting
+        mem = legs[2]
+        if len(days):
+            blk = vw.loc[days, mem].to_numpy(dtype=float)
+            w = np.full(len(mem), 1.0 / len(mem))
+            out = np.full(len(days), np.nan)
+            for d_ in range(len(days)):
+                ok = np.isfinite(blk[d_])
+                if ok.any():
+                    out[d_] = float((w[ok] * blk[d_][ok]).sum() / w[ok].sum())
+                    w = w.copy(); w[ok] = w[ok] * (1 + blk[d_][ok]); w = w / w.sum()
+            R.loc[days, "BASE_DRIFT"] = out
+            V.loc[days, "BASE_DRIFT"] = V.loc[days, "BASE"]
+            if prev is not None:
+                repl = len(set(mem) - set(prev[2])) / max(1, len(mem))
+                R.loc[days[0], "BASE_DRIFT"] = (1 + R.loc[days[0], "BASE_DRIFT"]) / (1 + 2 * repl * fee) - 1
         prev = legs
     return Legs(formed, R, V, dropped)
 
@@ -453,10 +496,19 @@ def targets_from_states(st: pd.Series, cash_for_defend: bool = False) -> pd.Data
     return T
 
 
+def base_view(legs_r: pd.DataFrame, base: str = "eq") -> pd.DataFrame:
+    """R14: 'eq' = equal weight every session over the month's set (code reading); 'drift' = equal at month start,
+    drifting. Returns OFF/DEF/BASE columns with BASE from the chosen reading."""
+    out = legs_r[["OFF", "DEF", "BASE"]].copy()
+    if base == "drift":
+        out["BASE"] = legs_r["BASE_DRIFT"]
+    return out
+
+
 def simulate_states(st: pd.Series, legs: Legs, rf: pd.Series, start, end, cash_for_defend=False,
-                    fee_bp=FEE_INDUSTRY_BP, name="v2") -> rc.Book:
-    R = legs.returns.loc[start:end]
-    avail = legs.valid.loc[start:end] > 0
+                    fee_bp=FEE_INDUSTRY_BP, name="v2", base: str = "eq") -> rc.Book:
+    R = base_view(legs.returns, base).loc[start:end]
+    avail = legs.valid[["OFF", "DEF", "BASE"]].loc[start:end] > 0
     return rc.simulate(targets_from_states(st.loc[start:end], cash_for_defend), R, rf.reindex(R.index),
                        fee_bp, name, start=pd.Timestamp(start), end=pd.Timestamp(end), avail=avail,
                        equity_cols=("OFF", "DEF", "BASE"))
@@ -464,9 +516,12 @@ def simulate_states(st: pd.Series, legs: Legs, rf: pd.Series, start, end, cash_f
 
 # --------------------------------------------------------------------------- matched-mix contrast
 def ann_factor(idx) -> float:
-    """Observed sessions per calendar year in the window (handles pre-1952 Saturday sessions)."""
-    yrs = (pd.Timestamp(idx[-1]) - pd.Timestamp(idx[0])).days / 365.25
-    return float(len(idx) / yrs) if yrs > 0 else float(rc.TRADING_DAYS)
+    """252 sessions per year of weekday sessions; Saturday sessions (French data before 1952) raise it in
+    proportion: 252 * n_sessions / n_weekday_sessions. Exactly 252 on any window without Saturdays, so every
+    1998-2019 figure is unchanged (replaces b7ef827b1d's sessions-per-calendar-year factor before any read)."""
+    idx = pd.DatetimeIndex(idx)
+    wk = int((idx.dayofweek < 5).sum())
+    return float(rc.TRADING_DAYS) * len(idx) / wk if wk else float(rc.TRADING_DAYS)
 
 
 def window_excess(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z) -> float:

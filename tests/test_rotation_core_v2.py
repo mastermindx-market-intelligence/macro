@@ -198,9 +198,19 @@ def _rel(tmp_path, name, windows, **kw):
     p = tmp_path / name; p.write_text(_json.dumps({"windows_released": windows, **kw})); return p
 
 
+ORIG_SELECTION = v2.ROOT / "research/rotation_core/results_v2_selection.json"
+
+
+@pytest.fixture(autouse=True)
+def _selection_points_at_committed_original(monkeypatch):
+    # until the R15 rerun exists, tests read the committed 1ca5228b3c selection file
+    monkeypatch.setattr(v2, "SELECTION_RESULT", ORIG_SELECTION)
+
+
 def _good_release(tmp_path, name="r1.json", **over):
     body = {"windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
-            "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "X"}
+            "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "X",
+            "selection_results_commit": "HEAD"}
     body.update(over)
     p = tmp_path / name; p.write_text(_json.dumps(body)); return p
 
@@ -211,6 +221,8 @@ def test_stage1_release_checks_window_header_config_and_engine_commit(tmp_path, 
     monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
     monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
     assert v2.stage1_release(_good_release(tmp_path))
+    with pytest.raises(v2.SealedRefusal):         # selection file differs at the named commit
+        v2.stage1_release(_good_release(tmp_path, "badsel.json", selection_results_commit="4d49b23a8f"))
     for over in ({"windows_released": [v2.W_PRE, v2.W_H]}, {"windows_released": [v2.W_H]},
                  {"protocol_header_sha256": "0" * 64}, {"selected_grid_point": {"h_near_high_pct": 5, "b_breadth_drop_pp": 25}}):
         with pytest.raises(v2.SealedRefusal):
@@ -250,11 +262,12 @@ def test_stage2_refused_without_second_release(tmp_path):
         v2.stage2_release(tmp_path / "none.json", tmp_path / "gate.json")
 
 
-def _gate(tmp_path, h1="+-", h3="++", h2="++", open_=True):
+def _gate(tmp_path, h1="+-", h3="++", h2="++", open_=True, h3_drift=None):
     p = tmp_path / "gate.json"
     sg = lambda x: {"E1_1928_1945": x[0], "E2_1946_1997": x[1]}
-    p.write_text(_json.dumps({"gate_signs": {"H1": sg(h1), "H3": sg(h3), "H2": sg(h2)}, "gate_open": open_,
-                              "sealed_sha256": "x"}))
+    eq = {"H1": sg(h1), "H3": sg(h3), "H2": sg(h2)}
+    dr = {"H1": sg(h1), "H3": sg(h3_drift or h3), "H2": sg(h2)}
+    p.write_text(_json.dumps({"gate_signs": {"base_eq": eq, "base_drift": dr}, "gate_open": open_, "sealed_sha256": "x"}))
     return p
 
 
@@ -264,6 +277,8 @@ def test_stage2_checks_opening_condition_from_the_committed_gate_file(tmp_path, 
     assert v2.stage2_release(r2, _gate(tmp_path))["_opened_by"] == ["H3"]
     with pytest.raises(v2.SealedRefusal):
         v2.stage2_release(r2, _gate(tmp_path, h1="+-", h3="-+"))
+    with pytest.raises(v2.SealedRefusal):     # R14(c): H3 positive under eq but not drift -> closed
+        v2.stage2_release(r2, _gate(tmp_path, h3="++", h3_drift="+-"))
     r2h2 = _rel(tmp_path, "r2b.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3", "H2"])
     assert v2.stage2_release(r2h2, _gate(tmp_path, h1="+-", h3="-+"))["_opened_by"] == ["H2"]
 
@@ -278,6 +293,7 @@ def test_stage2_release_with_wrong_window_refused(tmp_path, monkeypatch):
 def blind_run(tmp_path_factory):
     import io, contextlib
     import scripts.run_rotation_core_v2 as run
+    v2.SELECTION_RESULT = ORIG_SELECTION
     d = tmp_path_factory.mktemp("blind")
     fx = make_fixture(d / "fx")
     buf = io.StringIO()
@@ -291,7 +307,8 @@ def test_stage1_stdout_has_no_magnitudes(blind_run):
     import re
     d, fx, g, out = blind_run
     assert not re.search(r"\d\.\d", out), "a decimal number was printed at stage 1"
-    assert set(g["gate_signs"]["H1"].values()) <= {"+", "-"}
+    assert set(g["gate_signs"]["base_eq"]["H1"].values()) <= {"+", "-"}
+    assert set(g["gate_signs"]) == {"base_eq", "base_drift"}
 
 
 def test_sealed_file_unreadable_without_stage2_release_or_closed_gate(blind_run, monkeypatch, tmp_path):
@@ -304,7 +321,7 @@ def test_sealed_file_unreadable_without_stage2_release_or_closed_gate(blind_run,
         v2.open_sealed_stage1(gp, tmp_path / "no_r2.json", d / "sealed.json")
     gate_closed = dict(g, gate_open=False); gc = tmp_path / "g_closed.json"; gc.write_text(_json.dumps(gate_closed))
     res = v2.open_sealed_stage1(gc, tmp_path / "no_r2.json", d / "sealed.json")   # recorded closed gate: readable
-    assert "H1" in res
+    assert "base_eq" in res and "H1" in res["base_eq"]
     os.chmod(d / "sealed.json", 0)
 
 
@@ -331,7 +348,48 @@ def test_gate_statistic_is_the_same_function_as_the_era_point_estimate(blind_run
     import os
     d, fx, g, out = blind_run
     os.chmod(d / "sealed.json", 0o400); res = _json.loads((d / "sealed.json").read_bytes()); os.chmod(d / "sealed.json", 0)
-    for h_ in ("H1", "H3"):
-        for e, x in res[h_]["eras"].items():
-            assert x["window_excess"] == pytest.approx(x["observed"], abs=1e-15)      # matched_contrast == window_excess
-            assert g["gate_signs"][h_][e] == ("+" if x["window_excess"] > 0 else "-")
+    for b_ in ("base_eq", "base_drift"):
+        for h_ in ("H1", "H3"):
+            for e, x in res[b_][h_]["eras"].items():
+                assert x["window_excess"] == pytest.approx(x["observed"], abs=1e-15)   # matched_contrast == window_excess
+                assert g["gate_signs"][b_][h_][e] == ("+" if x["window_excess"] > 0 else "-")
+
+
+def test_R14_drift_base_hand_example():
+    s_ = pd.bdate_range("2001-01-01", periods=600)
+    rng = np.random.default_rng(2)
+    vw = pd.DataFrame(rng.normal(0, 0.01, (600, 6)), index=s_, columns=list("ABCDEF"))
+    mkt = vw.mean(axis=1)
+    legs = v2.form_legs(vw, mkt, min_valid=100, min_pairs=60)
+    t = sorted(legs.formed)[3]
+    nxt = sorted(legs.formed)[4]
+    days = s_[(s_ > t) & (s_ <= nxt)]
+    mem = legs.formed[t][2]
+    x = vw.loc[days, mem].to_numpy()
+    w = np.full(len(mem), 1 / len(mem)); exp = []
+    for row in x:
+        exp.append(float(w @ row)); w = w * (1 + row); w = w / w.sum()
+    got = legs.returns.loc[days, "BASE_DRIFT"].to_numpy()
+    assert got[1:] == pytest.approx(exp[1:])                      # day 0 also carries the re-formation cost
+    assert legs.returns.loc[days[1:], "BASE"].to_numpy() == pytest.approx(x[1:].mean(axis=1))
+
+
+def test_F1_yahoo_loader_filters_before_any_frame_and_refuses_after_2019(tmp_path):
+    s_ = pd.bdate_range("2019-12-20", "2020-01-10")
+    df = pd.DataFrame({"Adj Close": np.arange(len(s_), dtype=float) + 1}, index=pd.DatetimeIndex(s_, name="Date"))
+    p = tmp_path / "X.parquet"; df.to_parquet(p)
+    x = v2.load_yahoo_tr(p, "2019-12-31")
+    assert x.index.max() <= pd.Timestamp("2019-12-31")
+    with pytest.raises(v2.SealedRefusal):
+        v2.load_yahoo_tr(p, "2020-01-03")
+
+
+def test_F3_false_pivot_uses_held_state_not_decided_state():
+    import scripts.run_rotation_core_v2 as run
+    from engine import rotation_core_evaluation as rc
+    s_ = pd.bdate_range("2005-01-03", periods=6)
+    R = pd.DataFrame(0.0, index=s_, columns=["OFF", "DEF", "BASE"])
+    tgt = pd.DataFrame({"OFF": [0, 0, 0, 0, 0, 0.], "DEF": [0, 0, 1, 1, 1, 1.], "BASE": [1, 1, 0, 0, 0, 0.]}, index=s_)
+    bk = rc.simulate(tgt, R, pd.Series(0.0, index=s_), 0.0, "f3", equity_cols=("OFF", "DEF", "BASE"))
+    w = run.held_risk_on(bk)
+    assert w.round(9).tolist() == [0.0, 1.0, 1.0, 0.0, 0.0, 0.0]   # DEFEND decided day 2 is held from day 3's close

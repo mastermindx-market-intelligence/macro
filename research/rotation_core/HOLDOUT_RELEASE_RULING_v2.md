@@ -88,12 +88,13 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
   **Why conservative:** a single mix across 1928–2025 would be one fixed reference over two eras of very different leg returns, which flatters a book whose average weights differ between windows. Separate mixes remove that. No block crosses a 22-year gap.
 - **Choices the frozen header leaves silent** (each made without looking at data):
   1. **Era-level mix:** built on the era alone, for both the gate and the final conjunction.
-  2. **Annualisation:** observed sessions per calendar year in the window or era, because pre-1952 French data includes Saturdays. Signs are unaffected.
+  2. **Annualisation:** 252 × sessions ÷ weekday sessions (252 wherever there are no Saturdays), revised before any read from sessions per calendar year; see R15.5. Signs are unaffected; the pooled p is computed under this and under fixed 252, both must hold.
   3. **Pooled construction:** as above.
   4. **First scored session:** 1928-01-02, taken from the frozen window, not from first state availability.
   5. **"Holds at 2× costs":** the stricter reading (g.2).
   6. **Drawdown condition:** "drawdown no worse than the matched mix" is assessed on the full pre-1998 window and on 2020–2025 separately, and both must hold.
   7. **H2 at stage 1:** its era signs are recorded in the gate file but do not open the window unless the parent names H2 in the stage-2 release.
+  8. **Intra-month leg weighting:** OFFENCE and DEFENCE are equal weight every session over the member set fixed at month-end (R14(a) reading; the header is silent).
 - **Stage 1 is blind to magnitudes.**
   - **What the run prints:** only the four gate signs (H1 and H3, each era), the gate result, non-return integrity diagnostics, and the sha256 of the results file. The diagnostics are session counts per era, offence-member counts, deferred executions, days holding after a last close, dropped industry-days, state counts and episode count. H2's era signs are written to the gate file, not printed.
   - **Sealing:** every return, excess, interval, p-value, drawdown and cost figure goes to `/home/ubuntu2/tmp/rotation-core/data/sealed_stage1/results_v2_stage1_pre1998.json`, written mode 000. The committed `results_v2_stage1_gate.json` carries the signs, gate result, diagnostics, engine commit and that file's sha256.
@@ -126,3 +127,36 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
 
     The frozen figures are accurate approximations.
 - **Bootstrap calibration** (`tests/test_rotation_core_si_findings.py`): under an AR(1) null (φ = 0.1, 3,000 sessions, 300 replications, B = 400, block 21), the measured one-sided size at nominal 5 % was **4.3 %** and the 95 % basic-interval coverage **94.7 %**. The tolerance, declared before running, was size in [2 %, 9 %] and coverage in [90 %, 99 %].
+
+---
+
+## R14 — BASE weighting (parent, about 13:20Z; added after selection results were seen and before any confirmation read; it cannot turn a fail into a pass)
+
+- **(a) Governing reading.** The header says "BASE = equal weight of all eligible industries, rebalanced monthly". The code fixes the eligible set at each month-end and weights it equally every session; that reading governs. This is a clarification of wording that admits two readings, dated before any confirmation read. Selection is not rerun for it and the frozen bytes are untouched.
+- **Legs, same fact.** The code also holds OFFENCE and DEFENCE as equal weight every session over the member set fixed at month-end (`form_legs`, the same `mean(axis=1)` per session). The header says only "OFFENCE = top third by beta, DEFENCE = bottom third ..., used for the following month" and is silent on intra-month weighting. Added to the silent-choices list (item 8) with the same reading.
+- **(b) Other reading implemented.** `BASE_DRIFT`: the same members, equal weights at the month's first session, drifting to month-end, with the same re-formation cost. A book that holds the base under this reading holds that series; nothing else changes. Regression test: `test_R14_drift_base_hand_example`.
+- **(c) Stricter of both.** Every gate sign and every leg of the final conjunction must hold under both base readings. Stage 1 records eight gate signs (H1, H3 × two eras × two readings) and one gate result, true only if all hold under both. This can only make passing harder.
+- **(d) Disclosed sensitivity on 1998–2019.** The selected H1 setting (h = 3, b = 25, by reference to `1ca5228b3c`) and H3 against the matched mix under the drift base are reported in the R15 rerun beside the committed figures. This is not a re-selection.
+
+## Engine findings F1–F4 (first independent reader, parent rulings about 13:20Z)
+
+- **F1 — loader sealing.** Yahoo parquet files used by v2 (SPY, RSP; later the sector funds) are now read by `load_yahoo_tr`, which filters on the `Date` column at the Arrow level before any pandas frame exists, under the same release guard (`seal_guard`, `assert_window`). Test: `test_F1_yahoo_loader_filters_before_any_frame_and_refuses_after_2019`. The audit of the other loaders is in the lead's report.
+- **F3 — false-pivot timing.** The false-pivot table now uses the state held after each close (`post_holdings`), not the state decided at t. Test: `test_F3_false_pivot_uses_held_state_not_decided_state`. The corrected selection-window figures appear in the R15 rerun as a dated erratum, old beside new. They are descriptive only.
+- **F4 — tradable fund tier.** Not yet built (`FEE_FUND_BP` is unused). It will be built, tested on pre-2020 fund data only, and independently reviewed before any stage-2 release. Queued after stage-1 readiness; not needed if the gate closes.
+
+## R15 — one selection rerun, after the complete engine change set (parent, about 13:20Z)
+
+- **When:** after the complete engine change set (F1–F4/R14 plus the two 14:00Z reviews). One rerun.
+- **Authority:** the parent authorised removing and re-arming the selection run-once guard for that single rerun. To be logged here at that time with the engine commits before and after, every engine change since `1ca5228b3c`, and why each can or cannot move a number. `1ca5228b3c`'s results stay as the superseded record.
+- **Pre-check already run (at the F1/F3/R14 head, on 1998–2019):** against the `1ca5228b3c` engine, for all 17 books (four settings × H1, price-only, 2× costs, cash ablation, plus H3), the state series are identical and the maximum absolute daily-return difference is 0.0. It will be repeated on the final engine before the rerun.
+- **Annualisation factor on 1998–2019:** exactly 252. `ann_factor` = 252 × sessions ÷ weekday sessions, and there are no Saturday sessions after 1952. Old × 1.0 = new for every annualised figure. This replaces `b7ef827b1d`'s sessions-per-calendar-year factor, a change made before any read.
+- **Release:** the release pins the rerun's engine commit and the rerun's selection-results commit (`results_v2_selection_rerun.json`). The runner reads the selected setting from that file and refuses if engine, scripts or tests, or the selection file, differ from the named commits.
+
+## Annualisation and pooling (R15.5)
+
+- **What the frozen JSON says:**
+  - **Annualisation:** only "annualised". The contrasts are "annualised mean daily return of H1 minus the exposure-matched static mix ..." and "annualised mean of the paired daily difference H1 - H1_price_only". It states no factor and no sessions-per-year convention. The only "252" in the JSON is in look-back and eligibility windows, never in annualisation.
+  - **Pooling:** "Holm p < 0.05 (m=3) on the pooled pre-1998 + 2020-2025 primary contrast". It is silent on how the pooled statistic is formed.
+- **Silent, so the pre-read choice stands:** 252 × sessions ÷ weekday sessions, which is 252 on any window without Saturdays.
+- **Can it change a SIGN against fixed 252?** No. Within a window or era it is one positive constant multiplying a mean.
+- **Can it change the pooled p?** Yes, in principle. Pre-1998 gets a factor above 252 (Saturdays before 1952) while 2020–2025 gets exactly 252. That changes the relative scale of the two windows in the years-weighted pooled mean, and so the p-value. Therefore, by the R14 principle, the pooled conjunction is computed under both conventions (this one and fixed 252), and significance must hold under both.

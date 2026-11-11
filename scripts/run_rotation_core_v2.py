@@ -69,11 +69,16 @@ OUT_J = ROOT / "research/rotation_core/results_v2_selection.json"
 OUT_M = ROOT / "research/rotation_core/RESULTS_V2_SELECTION.md"
 
 
-def _yahoo_tr(t):
-    d = pd.read_parquet(YAHOO / f"{t}.parquet")
-    x = d["Adj Close"].astype(float); x.index = pd.to_datetime(d.index).normalize()
-    x = x[(x.index >= WARMUP_FROM) & (x.index <= SEL_END)]
+def _yahoo_tr(t, end=None):
+    x = v2.load_yahoo_tr(YAHOO / f"{t}.parquet", SEL_END if end is None else end)   # F1: filtered before any frame
+    x = x[x.index >= WARMUP_FROM]
     return x.pct_change(fill_method=None)
+
+
+def held_risk_on(bk) -> pd.Series:
+    """F3: 1 - (defensive or cash weight HELD after each close); a DEFEND decided at t shows from the t+1 close."""
+    ph = bk.post_holdings
+    return 1.0 - (ph["DEF"] + (1.0 - ph[["OFF", "DEF", "BASE"]].sum(axis=1))).clip(0, 1)
 
 
 def _ann(x):
@@ -90,6 +95,10 @@ def _diff_stat(a, b, seed, B_=10_000):
     obs = float((a - b).mean() * 252)
     dist = rc.bootstrap_stat([a, b], rc.stat_mean_diff, B_, 21, seed)
     return {"ann": obs, "ci95": rc.ci95(dist), "p_one_sided_centred": rc.centred_p(dist, obs)}
+
+
+BOOKS: dict = {}
+STATES: dict = {}
 
 
 def run_selection():
@@ -116,24 +125,25 @@ def run_selection():
         if ep:
             eps[name] = ep
 
-    def book_and_stats(st, tag, fee=10.0, cash_def=False, seed=0):
-        bk = v2.simulate_states(st, legs, rf, SEL_START, SEL_END, cash_for_defend=cash_def, fee_bp=fee, name=tag)
+    def book_and_stats(st, tag, fee=10.0, cash_def=False, seed=0, base_reading="eq"):
+        LR = v2.base_view(legs.returns, base_reading)
+        bk = v2.simulate_states(st, legs, rf, SEL_START, SEL_END, cash_for_defend=cash_def, fee_bp=fee, name=tag,
+                                base=base_reading)
+        BOOKS[tag] = bk
         idx = bk.returns.index
         mm = pd.Series(True, index=idx)
-        mc = v2.matched_contrast(bk, legs.returns, rf, mm, B=10_000, seed=20261111 + seed)
+        mc = v2.matched_contrast(bk, LR, rf, mm, B=10_000, seed=20261111 + seed)
         r = bk.returns
         W = bk.holdings[["OFF", "DEF", "BASE"]]
         wbar = W.mean(); cashbar = 1 - wbar.sum()
-        mix = (legs.returns.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
+        mix = (LR.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
         yrs = len(r) / 252
-        defw = (st.reindex(idx) == v2.DEFEND).astype(float)
-        weight = (1 - defw)          # risk-off = DEFEND state held after the close
-        pv = rc.pivot_table(weight, r, mkt.reindex(idx).fillna(0), level.reindex(idx), eps)
+        pv = rc.pivot_table(held_risk_on(bk), r, mkt.reindex(idx).fillna(0), level.reindex(idx), eps)
         return bk, {
             "vs_matched_mix": mc,
             "vs_SPY": _diff_stat(r.values, spy.reindex(idx).fillna(0).values, 20261111 + 100 + seed),
             "vs_RSP_or_stated_EW_proxy_before_2003_05": _diff_stat(r.values, rsp_line.reindex(idx).fillna(0).values, 20261111 + 200 + seed),
-            "vs_BASE_equal_weight_industries": _diff_stat(r.values, base.reindex(idx).fillna(0).values, 20261111 + 300 + seed),
+            "vs_BASE_equal_weight_industries": _diff_stat(r.values, LR["BASE"].reindex(idx).fillna(0).values, 20261111 + 300 + seed),
             "CAGR": _ann(r), "CAGR_matched_mix": _ann(mix), "CAGR_SPY": _ann(spy.reindex(idx).fillna(0)),
             "CAGR_BASE": _ann(base.reindex(idx).fillna(0)),
             "max_drawdown": _mdd(r), "max_drawdown_matched_mix": _mdd(mix),
@@ -151,10 +161,11 @@ def run_selection():
            "dropped_industry_days": legs.dropped_industry_days, "settings": {}}
     for i, (h, b) in enumerate(v2.GRID):
         st1 = v2.h1_states(rel, bd, h, b); st0 = v2.h1_states(rel, bd, h, b, use_breadth=False)
-        bk1, s1 = book_and_stats(st1, "H1", seed=10 * i)
-        bk0, s0 = book_and_stats(st0, "H1_price_only", seed=10 * i + 1)
-        _, s1x = book_and_stats(st1, "H1_2x", fee=20.0, seed=10 * i + 2)
-        bkc, sc = book_and_stats(st1, "H1_cash_ablation", cash_def=True, seed=10 * i + 3)
+        STATES[f"H1_h{h}_b{b}"], STATES[f"price_only_h{h}_b{b}"] = st1, st0
+        bk1, s1 = book_and_stats(st1, f"H1_h{h}_b{b}", seed=10 * i)
+        bk0, s0 = book_and_stats(st0, f"H1_price_only_h{h}_b{b}", seed=10 * i + 1)
+        _, s1x = book_and_stats(st1, f"H1_2x_h{h}_b{b}", fee=20.0, seed=10 * i + 2)
+        bkc, sc = book_and_stats(st1, f"H1_cash_ablation_h{h}_b{b}", cash_def=True, seed=10 * i + 3)
         idx = bk1.returns.index
         h2 = _diff_stat(bk1.returns.values, bk0.returns.reindex(idx).fillna(0).values, 20261111 + 500 + i)
         res["settings"][f"h{h}_b{b}"] = {"H1": s1, "H1_at_2x_costs": {"vs_matched_mix": s1x["vs_matched_mix"],
@@ -164,6 +175,12 @@ def run_selection():
     st3 = v2.h3_states(legs)
     _, s3 = book_and_stats(st3, "H3", seed=99)
     res["H3"] = s3
+    # R14(d): disclosed sensitivity, selected setting by reference to 1ca5228b3c (h3_b25) and H3, drift base
+    hs, bs = v2.SELECTED_REF
+    _, d1 = book_and_stats(v2.h1_states(rel, bd, hs, bs), "H1_drift_base", seed=200, base_reading="drift")
+    _, d3 = book_and_stats(st3, "H3_drift_base", seed=201, base_reading="drift")
+    res["R14d_drift_base_sensitivity"] = {"note": "BASE weights equal at each month-end then drifting; not a re-selection",
+                                          "H1_h3_b25": d1, "H3": d3}
     obs = {k: v["H1"]["vs_matched_mix"]["observed"] for k, v in res["settings"].items()}
     order = {"h3_b25.0": (3, -25.0), "h3_b37.5": (3, -37.5), "h5_b25.0": (5, -25.0), "h5_b37.5": (5, -37.5)}
     best = max(obs.values())
@@ -207,51 +224,60 @@ def compute_pre1998(ind_path=IND_D, fact_path=FACT, B_=B_STAGE):
     seed0 = SEEDS["stage1"]
     books = {}
 
-    def stats(st, tag, fee=10.0, cash_def=False, k=0):
-        bk = v2.simulate_states(st, legs, rf, start, end, cash_for_defend=cash_def, fee_bp=fee, name=tag)
+    def stats(st, tag, fee=10.0, cash_def=False, k=0, base_reading="eq"):
+        LR = v2.base_view(legs.returns, base_reading)
+        bk = v2.simulate_states(st, legs, rf, start, end, cash_for_defend=cash_def, fee_bp=fee, name=tag, base=base_reading)
         books[tag] = bk
         idx = bk.returns.index; r = bk.returns
         full = pd.Series(True, index=idx)
-        out = {"vs_matched_mix": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, block=BLOCK, seed=seed0 + k),
-               "vs_matched_mix_block63": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, block=BLOCK_SENS, seed=seed0 + k + 1),
+        out = {"base_reading": base_reading, "ann_factor_full": v2.ann_factor(idx),
+               "vs_matched_mix": v2.matched_contrast(bk, LR, rf, full, B=B_, block=BLOCK, seed=seed0 + k),
+               "vs_matched_mix_block63": v2.matched_contrast(bk, LR, rf, full, B=B_, block=BLOCK_SENS, seed=seed0 + k + 1),
                "eras": {}}
         for e, (a_, z) in eras.items():
             em = pd.Series((idx >= a_) & (idx <= z), index=idx)
-            out["eras"][e] = v2.matched_contrast(bk, legs.returns, rf, em, B=B_, block=BLOCK, seed=seed0 + k + 2)
-            out["eras"][e]["window_excess"] = v2.window_excess(bk, legs.returns, rf, a_, z)
+            out["eras"][e] = v2.matched_contrast(bk, LR, rf, em, B=B_, block=BLOCK, seed=seed0 + k + 2)
+            out["eras"][e]["window_excess"] = v2.window_excess(bk, LR, rf, a_, z)
+            out["eras"][e]["ann_factor"] = v2.ann_factor(idx[(idx >= a_) & (idx <= z)])
         W = bk.holdings[["OFF", "DEF", "BASE"]]; wbar = W.mean(); cashbar = 1 - wbar.sum()
-        mix = (legs.returns.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
+        mix = (LR.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
         yrs = len(r) / v2.ann_factor(idx)
         for nm, ref in (("vs_French_market_(SPY_yardstick)", mkt), ("vs_EW_proxy_(RSP_yardstick)", ew_proxy),
-                        ("vs_BASE_equal_weight_industries", legs.returns["BASE"])):
+                        ("vs_BASE_equal_weight_industries", LR["BASE"])):
             out[nm] = _diff_stat(r.values, ref.reindex(idx).fillna(0).values, seed0 + 300 + k, B_)
-        pv = rc.pivot_table((1 - (st.reindex(idx) == v2.DEFEND).astype(float)), r, mkt.reindex(idx).fillna(0),
-                            level.reindex(idx), eps)
+        pv = rc.pivot_table(held_risk_on(bk), r, mkt.reindex(idx).fillna(0), level.reindex(idx), eps)
         out.update({"CAGR": _ann(r), "CAGR_matched_mix": _ann(mix), "max_drawdown": _mdd(r), "max_drawdown_matched_mix": _mdd(mix),
                     "matched_mix_weights": {**{kk: round(float(v), 4) for kk, v in wbar.items()}, "cash": round(float(cashbar), 4)},
                     "turnover_one_way_per_year": float(bk.traded.sum() / yrs / 2), "costs_per_year": float(bk.costs.sum() / yrs),
                     "false_DEFEND_calls_per_calm_year": pv["false_pivots_per_calm_year"]})
         return out
 
-    res = {"H1": stats(st1, "H1", k=10), "H1_at_2x_costs": stats(st1, "H1_2x", fee=20.0, k=20),
-           "price_only_control": stats(st0, "H1_price_only", k=30), "price_only_at_2x": stats(st0, "H1_price_only_2x", fee=20.0, k=40),
-           "H3": stats(st3, "H3", k=50), "H3_at_2x_costs": stats(st3, "H3_2x", fee=20.0, k=60),
-           "cash_ablation": stats(st1, "H1_cash_ablation", cash_def=True, k=70)}
-    idx = books["H1"].returns.index
-    d = books["H1"].returns - books["H1_price_only"].returns.reindex(idx).fillna(0)
-    h2 = {"full": _diff_stat(d.values, np.zeros(len(d)), seed0 + 700, B_)}
-    for e, (a_, z) in eras.items():
-        m = (idx >= a_) & (idx <= z)
-        h2[e] = {"ann": float(d[m].mean() * v2.ann_factor(idx[m]))}
-    res["H2_paired_H1_minus_price_only"] = h2
+    res, gate = {}, {}
     sign = lambda x: "+" if x > 0 else "-"
-    gate = {h_: {e: sign(res[h_]["eras"][e]["window_excess"]) for e in eras} for h_ in ("H1", "H3")}
-    gate["H2"] = {e: sign(h2[e]["ann"]) for e in eras}
+    for bi, br_ in enumerate(("eq", "drift")):              # R14(c): both base readings
+        o = 100 * bi
+        rr = {"H1": stats(st1, f"H1_{br_}", k=10 + o, base_reading=br_),
+              "H1_at_2x_costs": stats(st1, f"H1_2x_{br_}", fee=20.0, k=20 + o, base_reading=br_),
+              "price_only_control": stats(st0, f"H1_price_only_{br_}", k=30 + o, base_reading=br_),
+              "price_only_at_2x": stats(st0, f"H1_price_only_2x_{br_}", fee=20.0, k=40 + o, base_reading=br_),
+              "H3": stats(st3, f"H3_{br_}", k=50 + o, base_reading=br_),
+              "H3_at_2x_costs": stats(st3, f"H3_2x_{br_}", fee=20.0, k=60 + o, base_reading=br_),
+              "cash_ablation": stats(st1, f"H1_cash_ablation_{br_}", cash_def=True, k=70 + o, base_reading=br_)}
+        idx = books[f"H1_{br_}"].returns.index
+        d = books[f"H1_{br_}"].returns - books[f"H1_price_only_{br_}"].returns.reindex(idx).fillna(0)
+        h2 = {"full": _diff_stat(d.values, np.zeros(len(d)), seed0 + 700 + o, B_)}
+        for e, (a_, z) in eras.items():
+            m = (idx >= a_) & (idx <= z)
+            h2[e] = {"ann": float(d[m].mean() * v2.ann_factor(idx[m]))}
+        rr["H2_paired_H1_minus_price_only"] = h2
+        res[f"base_{br_}"] = rr
+        gate[f"base_{br_}"] = {h_: {e: sign(rr[h_]["eras"][e]["window_excess"]) for e in eras} for h_ in ("H1", "H3")}
+        gate[f"base_{br_}"]["H2"] = {e: sign(h2[e]["ann"]) for e in eras}
     integrity = {"window": [str(start.date()), str(end.date())],
                  "sessions_per_era": {e: int(((idx >= a_) & (idx <= z)).sum()) for e, (a_, z) in eras.items()},
                  "offence_members_min_max": [int(bd["n_members"][idx].min()), int(bd["n_members"][idx].max())],
-                 "deferred_executions": {k_: int(v.meta["deferred_executions"]) for k_, v in books.items()},
-                 "days_holding_after_last_close": {k_: int(v.meta["days_holding_an_asset_after_its_last_close"]) for k_, v in books.items()},
+                 "deferred_executions_total": int(sum(v.meta["deferred_executions"] for v in books.values())),
+                 "days_holding_after_last_close_total": int(sum(v.meta["days_holding_an_asset_after_its_last_close"] for v in books.values())),
                  "dropped_industry_days": int(legs.dropped_industry_days),
                  "state_session_counts": {k_: {nm: int((st.reindex(idx) == v).sum()) for nm, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}
                                           for k_, st in (("H1", st1), ("price_only", st0), ("H3", st3))},
@@ -267,10 +293,11 @@ def blind_stage1(ind_path, fact_path, sealed_path, gate_path, B_=B_STAGE, engine
     import json
     res, gate, integ = compute_pre1998(ind_path, fact_path, B_)
     sha = v2.write_sealed(res, sealed_path)
-    gate_open = any(all(gate[h_][e] == "+" for e in gate[h_]) for h_ in ("H1", "H3"))
+    gate_open = any(all(gate[b_][h_][e] == "+" for b_ in gate for e in gate[b_][h_]) for h_ in ("H1", "H3"))
     g = {"schema": "rotation_core.stage1_gate/v2", "header_sha256": v2.FROZEN_V2_SHA256, "engine_commit": engine_commit,
          "selected_setting": res["selected_setting"], "gate_signs": gate,
-         "gate_rule": "open if H1 or H3 has a positive excess over its era-alone matched mix at 10 bp in both eras",
+         "gate_rule": "open if H1 or H3 has a positive excess over its era-alone matched mix at 10 bp in both eras "
+                      "under BOTH base readings (R14(c))",
          "gate_open": bool(gate_open), "integrity": integ, "sealed_path": str(sealed_path), "sealed_sha256": sha}
     Path(gate_path).write_text(json.dumps(g, indent=1) + "\n")
     print(json.dumps({"gate_signs": gate, "gate_open": gate_open, "integrity": integ, "sealed_sha256": sha}, indent=1))
@@ -289,6 +316,8 @@ def main() -> int:
         if "rotation-core/data" in str(fx) or str(fx).startswith(str(ROOT)):
             raise SystemExit("refused: fixture dry run accepts only a synthetic fixture directory")
         v2.verify_header_v2(FROZEN)
+        if not v2.SELECTION_RESULT.exists():          # before the R15 rerun exists, the dry run reads 1ca5228b3c's file
+            v2.SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection.json"
         out = fx / "dry_run_out"; out.mkdir(exist_ok=True)
         for f in out.iterdir():
             f.chmod(0o600); f.unlink()
