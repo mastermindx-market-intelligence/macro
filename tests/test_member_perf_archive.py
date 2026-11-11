@@ -177,6 +177,9 @@ class TestFailureIsolation:
         monkeypatch.setattr(fft, "PRICE_STATE_UNIVERSE_LEDGER",
                             out / "membership.parquet")
         monkeypatch.setattr(fft, "PRICE_STATE_SPY_HOLDINGS_DIR", out / "spy")
+        # elapsed-seconds record (COO ruling 9): main() merges the step timing
+        # into data/run_status.json now; redirect that too — same exposure class.
+        monkeypatch.setattr(fft, "PRICE_STATE_RUN_STATUS", out / "run_status.json")
         monkeypatch.setattr(fft, "fetch_subsector_perf",
                             lambda: {"aicompute": {"1D": 1.0}, "fintech": {"1D": -2.0}})
         monkeypatch.setattr(fft, "fetch_member_perf", lambda tickers: MEMBER_PERF)

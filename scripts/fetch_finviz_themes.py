@@ -121,6 +121,9 @@ MEMBER_PRICE_STATE_DIR = OUT_DIR / "member_price_state"
 PRICE_STATE_YAHOO_DIR = ROOT / "data" / "yahoo"
 PRICE_STATE_UNIVERSE_LEDGER = ROOT / "data" / "universe" / "membership.parquet"
 PRICE_STATE_SPY_HOLDINGS_DIR = ROOT / "data" / "etf_holdings" / "SPY"
+#: the step's own elapsed seconds merge into this EXISTING nightly record —
+#: see _record_price_state_elapsed.
+PRICE_STATE_RUN_STATUS = ROOT / "data" / "run_status.json"
 TREE_REFRESH_RECEIPTS_DIR = OUT_DIR / "tree_refresh_receipts"
 # The probation queue is a data-plane sidecar shared with the theme graph
 # (plan §4). This module only ever APPENDS `kind=key_rename` rows to it and
@@ -937,6 +940,42 @@ def write_member_price_state(
     tmp.write_bytes(payload)
     os.replace(tmp, p)
     return True, p, len(rows)
+
+
+def _record_price_state_elapsed(seconds: float, status: str, rows: int) -> None:
+    """Merge this step's own elapsed seconds into ``data/run_status.json``
+    under ``sources.member_price_state`` — a record the nightly ALREADY writes
+    and commits (config.yml ``storage.run_status_file``; same literal the
+    timings module reads). The collect job's ``nightly_timings.py finish``
+    (W-L1) copies each source's ``elapsed_sec`` into the
+    ``data/ops/nightly_timings/collect.jsonl`` row it already appends, so the
+    first nightly run after merge proves the runtime figure (check E1) with NO
+    new file. Read-merge-write of the one key, exactly like collect.py's own
+    status merge, so no other source's health is ever touched. Telemetry law:
+    this can never fail the step — any failure is one ``::warning`` and the
+    night proceeds.
+    """
+    try:
+        doc: dict = {}
+        if PRICE_STATE_RUN_STATUS.exists():
+            doc = json.loads(PRICE_STATE_RUN_STATUS.read_text())
+        if not isinstance(doc, dict):
+            doc = {}
+        sources = doc.get("sources")
+        if not isinstance(sources, dict):
+            sources = {}
+        sources["member_price_state"] = {
+            "status": status,
+            "rows": rows,
+            "elapsed_sec": round(seconds, 1),
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        }
+        doc["sources"] = sources
+        PRICE_STATE_RUN_STATUS.parent.mkdir(parents=True, exist_ok=True)
+        PRICE_STATE_RUN_STATUS.write_text(json.dumps(doc, indent=2, default=str))
+    except Exception as e:  # noqa: BLE001 — telemetry must never fail the step
+        print(f"::warning::member price state: elapsed-seconds record failed "
+              f"({e!r}) — non-fatal", file=sys.stderr)
 
 @dataclass(frozen=True)
 class _RefreshPaths:
@@ -2199,16 +2238,24 @@ def main() -> None:
     # fetch): data/yahoo per-ticker daily files, the universe membership ledger
     # and the dated SPY holdings snapshots, each refreshed earlier in this same
     # nightly collect pass. Same session-dedup rule: an existing session file is
-    # skipped, never overwritten.
+    # skipped, never overwritten. The step times ITSELF and merges its elapsed
+    # seconds into the run_status record the nightly already writes, so the
+    # collect job's timings finish carries the figure into collect.jsonl (the
+    # 20 s gate becomes runner-proven from the first nightly, check E1).
+    _ps_t0 = time.perf_counter()
     try:
         ps_written, ps_path, ps_rows = write_member_price_state(
             asof, fetched_at_utc, tree)
+        _record_price_state_elapsed(
+            time.perf_counter() - _ps_t0,
+            "written" if ps_written else "skipped", ps_rows)
         if ps_written:
             print(f"member_price_state/{ps_path.name}: wrote {ps_rows} rows "
                   f"({ps_path.stat().st_size / 1024:.1f} KB)")
         else:
             print(f"member_price_state/{ps_path.name}: skipped (session file exists)")
     except Exception as e:  # noqa: BLE001 — non-fatal by design (see above)
+        _record_price_state_elapsed(time.perf_counter() - _ps_t0, "error", 0)
         print(f"::error::member price state FAILED (asof={asof}): {e!r} — non-fatal "
               "by design; the snapshot, the subsector/tree PIT archives and the "
               "member perf archive above are unaffected", file=sys.stderr)

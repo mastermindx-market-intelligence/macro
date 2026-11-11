@@ -440,6 +440,8 @@ class TestFailureIsolation:
                             tmp_path / "universe" / "membership.parquet")
         monkeypatch.setattr(fft, "PRICE_STATE_SPY_HOLDINGS_DIR",
                             tmp_path / "etf_holdings" / "SPY")
+        monkeypatch.setattr(fft, "PRICE_STATE_RUN_STATUS",
+                            tmp_path / "run_status.json")
         monkeypatch.setattr(fft, "fetch_subsector_perf",
                             lambda: {"aicompute": {"1D": 1.0}})
         monkeypatch.setattr(fft, "fetch_member_perf",
@@ -490,3 +492,84 @@ class TestFailureIsolation:
         assert aaa["n_price_rows"] is None
         meta = _read(p)[0]
         assert meta["counts"]["price_read_errors"] == 1
+
+
+# ------------------------------------------------------------------ #
+# (f) the step's own elapsed seconds land in the EXISTING nightly
+#     timing record (run_status.json -> collect.jsonl via
+#     nightly_timings finish; COO ruling 9, check E1)
+# ------------------------------------------------------------------ #
+
+class TestElapsedRecord:
+    @staticmethod
+    def _row(tmp_path):
+        doc = json.loads((tmp_path / "run_status.json").read_text())
+        return doc, doc["sources"]["member_price_state"]
+
+    def test_healthy_main_records_elapsed_and_merges_not_wipes(self, monkeypatch,
+                                                               tmp_path):
+        _build(tmp_path)
+        # a foreign lane's row is already in the store — merge must keep it
+        (tmp_path / "run_status.json").write_text(json.dumps(
+            {"last_run": "2026-11-10T22:00:00+00:00",
+             "sources": {"russell_breadth": {"status": "ok"}}}))
+        TestFailureIsolation()._run_main(monkeypatch, tmp_path)
+        doc, row = self._row(tmp_path)
+        assert row["status"] == "written" and row["rows"] == EXPECTED_ROWS
+        assert isinstance(row["elapsed_sec"], (int, float)) and row["elapsed_sec"] >= 0
+        datetime.fromisoformat(row["checked_at"])          # real ISO instant
+        assert doc["sources"]["russell_breadth"] == {"status": "ok"}
+        assert doc["last_run"] == "2026-11-10T22:00:00+00:00"
+
+    def test_second_run_records_skipped_with_elapsed(self, monkeypatch, tmp_path):
+        _build(tmp_path)
+        TestFailureIsolation()._run_main(monkeypatch, tmp_path)
+        TestFailureIsolation()._run_main(monkeypatch, tmp_path)   # session exists
+        _doc, row = self._row(tmp_path)
+        assert row["status"] == "skipped" and row["rows"] == 0
+        assert isinstance(row["elapsed_sec"], (int, float))
+
+    def test_step_exception_records_error_with_elapsed(self, monkeypatch, tmp_path):
+        _build(tmp_path)
+
+        def boom(*a, **kw):
+            raise OSError("disk full mid-price-state")
+
+        TestFailureIsolation()._run_main(monkeypatch, tmp_path, price_state_impl=boom)
+        _doc, row = self._row(tmp_path)
+        assert row["status"] == "error" and row["rows"] == 0
+        assert isinstance(row["elapsed_sec"], (int, float))
+
+    def test_recorder_failure_is_non_fatal(self, monkeypatch, tmp_path, capsys):
+        # a DIRECTORY at the record path makes the recorder's write fail; that
+        # must cost one ::warning, never the session file or the build
+        _build(tmp_path)
+        (tmp_path / "run_status.json").mkdir()
+        code = TestFailureIsolation()._run_main(monkeypatch, tmp_path)
+        assert code is None
+        assert (tmp_path / "out" / "member_price_state" / f"{ASOF}.jsonl.gz").exists()
+        err = capsys.readouterr().err
+        assert any(l.startswith("::warning::") and "elapsed-seconds record" in l
+                   for l in err.splitlines())
+
+    def test_recorded_row_is_attributable_by_nightly_timings(self, monkeypatch,
+                                                             tmp_path):
+        """The recorded seconds reach data/ops/nightly_timings/collect.jsonl's
+        source_attribution (W-L1): nightly_timings.finish copies each source's
+        elapsed_sec into the row it already appends, windowed by checked_at."""
+        import time as _time
+
+        import scripts.nightly_timings as nt
+        monkeypatch.setattr(fft, "PRICE_STATE_RUN_STATUS",
+                            tmp_path / "run_status.json")
+        fft._record_price_state_elapsed(4.5, "written", EXPECTED_ROWS)
+        _doc, row = self._row(tmp_path)
+        now = _time.time()
+        windows = [("collectors", now - 300.0, now + 300.0)]
+        attribution = nt.attribute_sources(
+            windows, json.loads((tmp_path / "run_status.json").read_text())["sources"],
+            from_path=tmp_path / "run_status.json")
+        band = next(b for b in attribution["bands"] if b["band"] == "collectors")
+        assert band["sources"]["member_price_state"] == row["elapsed_sec"]
+        assert band["attributed_sec"] == row["elapsed_sec"]
+        assert band["band_sec"] == 600
