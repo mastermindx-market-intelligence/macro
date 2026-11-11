@@ -1,0 +1,66 @@
+{
+  "schema": "tiingo.fourteen_rearm_exact_source_focused_clearance/v1",
+  "recorded_at_utc": "2026-10-14T04:38:33.539725+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6",
+  "verdict": "PASS_SOURCE_CONDITIONAL_SAME_OPERATION_REVALIDATION",
+  "source_file": "tiingo-fourteen-settled-transport-later-diagnostic-prepared04.py",
+  "source_sha256": "da26100f39e78fd35f842ab62032444b9c490f662b83a94b7f6525e622bf4c7f",
+  "plan_file": "eod-fourteen-settled-transport-later-diagnostic01-20261014-01a12ab6-planned01.json",
+  "plan_sha256": "0ff1630cf6497d3ef2114509e0b6d4f06d93f94e27a9da258b1d55acd9b99ebb",
+  "prior_hold_sha256": "1d427dfeb4bb8ed3008045c6ab3ec805ff5113bbcac15c0b0e28c59c18b61071",
+  "architecture_ruling_sha256": "5f10668865e3eff02a6dce1eecf68c2a34e09347c7d397e181edd53200083526",
+  "cleared_findings": [
+    "H1",
+    "H2"
+  ],
+  "verification": {
+    "ast_compile_only": true,
+    "focused_diff_reviewed": true,
+    "reconciliation_expected_hash_atentry_postvalidation_preready_finalchecks_and_beforekey": true,
+    "READY_reconciliation_field_uses_frozen_expected_digest": true,
+    "abort_lstat_helper_inert_cases": {
+      "missing": true,
+      "occupied_regular": false,
+      "occupied_symlink_lstat": false,
+      "permission_error": false,
+      "other_os_error": false
+    },
+    "abort_safe_process_local_phase_and_frozen_READY_binding": true,
+    "SystemExit_handler_precedes_BaseException": true,
+    "exclusive_fsynced_abort_and_reraise_retained": true,
+    "all_six_new_and_capture_control_slots_lstat_absent": true,
+    "plan_and_evidence_hashes_current_match": true,
+    "candidate_executed": false
+  },
+  "decision": [
+    "Both held evidence repairs are satisfied. The source may be invoked once for same-operation foreground revalidation after root current scoped custody reconciliation.",
+    "Old90730 nativeexit remainsunknown and unconsumed. SameRUN/providercapture slots, original fourteen windows and frozen plan remain unchanged; oldREADY/namespace/binding artifacts are preserved.",
+    "Inputwait3600 remainsabsolute and bounded; finalquotaage900 and freshsameaccount actualnewPID/root/READY binding remain required before admission.",
+    "Abort evidence uses lstatabsence and safe phase/READY fields; any occupied or unreadable effectslot prevents no-effect abort classification. Scope/logpublication or downstream effects remain same-operation reconciliation territory.",
+    "Provider-first-error stop/drain, maxoneactualattempt perwindow, noauto retry/successor and ledger-unavailable null/authorityfalse behavior are unchanged."
+  ],
+  "remaining_actual_gates": [
+    "Current positively reconciled known writers/leases and unsettled effects before invocation/admission; no universalprocessabsence inference.",
+    "Consume new actualREADY and bind fresh visible authenticated intendedaccountquota plus newnative/PID/method/plan/READY parent evidence; finalnamespace/source/storage/output checks must pass.",
+    "Consume actualsettlement/native return and qualify any newraw responses; sourcePASS is not capture or reader acceptance.",
+    "No automatic rearm if this attempt has uncertain admission/effects; preserve exclusiveoutputs and reconcile."
+  ],
+  "findings": [],
+  "preserved_refusals": [
+    "PublicR2403",
+    "SDK and fundamentals refusals",
+    "persistentpublisher and Fabric refusals",
+    "Cloudflarepasskey humanpresence"
+  ],
+  "review_effects": {
+    "candidate_executions": 0,
+    "credential_reads": 0,
+    "provider_requests": 0,
+    "archive_writes": 0,
+    "rawdata_scans": 0,
+    "source_edits": 0,
+    "process_probes": 0,
+    "delegations": 0
+  }
+}

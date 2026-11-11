@@ -1,0 +1,478 @@
+{
+  "scope": "D08B static design artifact verification; no product runtime validation",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "Matrix dimensions and row totals",
+      "status": "PASS",
+      "evidence": {
+        "rowTotalsMillions": [
+          68,
+          84,
+          165,
+          281,
+          187,
+          525,
+          -400,
+          -255,
+          -155
+        ]
+      }
+    },
+    {
+      "check": "Qualified known subtotal is 500M, not complete-book total",
+      "status": "PASS",
+      "evidence": {
+        "knownSubtotalMillions": 500,
+        "population": {
+          "reported": 112,
+          "qualified": 108,
+          "excluded": 4,
+          "marketCoverage": null
+        }
+      }
+    },
+    {
+      "check": "Selected node and net/gross observed change",
+      "status": "PASS",
+      "evidence": {
+        "netNow": 268,
+        "netPrior": 224,
+        "netChange": 44,
+        "grossNow": 532,
+        "grossPrior": 536,
+        "grossChange": -4
+      }
+    },
+    {
+      "check": "Strike distance uses declared spot denominator",
+      "status": "PASS",
+      "evidence": {
+        "distancePercent": -0.2792181890706053
+      }
+    },
+    {
+      "check": "Missing IV points stay missing and selected expiry stays Nov 20",
+      "status": "PASS",
+      "evidence": {
+        "atmIvPercent": [
+          14.8,
+          null,
+          17.2,
+          18.0,
+          18.4,
+          19.1
+        ],
+        "callIvPercent": [
+          22.8,
+          19.1,
+          17.6,
+          null,
+          18.4
+        ],
+        "selectedExpiry": "2026-11-20"
+      }
+    },
+    {
+      "check": "Nonzero cohort exclusions reconcile without contaminating matched change",
+      "status": "PASS",
+      "evidence": {
+        "previousOnly": 1,
+        "currentOnly": 1,
+        "qualificationGained": 1,
+        "qualificationLost": 1,
+        "finiteMatched": 2,
+        "previousQualified": 4,
+        "currentQualified": 4
+      }
+    },
+    {
+      "check": "Illustrative cutoff admits current knowledge and refuses Nov 2 knowledge",
+      "status": "PASS",
+      "evidence": {
+        "knowledgeCutoff": "2026-11-03T04:15:00-05:00",
+        "cutoffMode": "current_knowledge_fixture",
+        "previousAvailableAt": "2026-11-02T03:52:00-05:00",
+        "currentAvailableAt": "2026-11-03T03:52:00-05:00"
+      }
+    },
+    {
+      "check": "Published chain point count, size domain and selected row",
+      "status": "PASS",
+      "evidence": {
+        "rows": 30,
+        "nonzeroMarks": 28,
+        "measuredZero": 1,
+        "missing": 1,
+        "maximumAbsDoi": 657,
+        "selected": {
+          "root": "SPY",
+          "expiry": "2026-11-06",
+          "strike": 750,
+          "side": "C",
+          "volume": 2826,
+          "oi": 7850,
+          "doi": -320
+        }
+      }
+    },
+    {
+      "check": "Exactly 18 unique editable board payloads",
+      "status": "PASS",
+      "evidence": {
+        "boardCount": 18,
+        "compositionFragments": 161
+      }
+    },
+    {
+      "check": "Native Paper screenshots match exact board dimensions",
+      "status": "PASS",
+      "evidence": [
+        {
+          "board": "B01",
+          "expected": [
+            1440,
+            1050
+          ],
+          "actual": [
+            1440,
+            1050
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B02",
+          "expected": [
+            390,
+            1284
+          ],
+          "actual": [
+            390,
+            1284
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B03",
+          "expected": [
+            320,
+            1310
+          ],
+          "actual": [
+            320,
+            1310
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B04",
+          "expected": [
+            1440,
+            1050
+          ],
+          "actual": [
+            1440,
+            1050
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B05",
+          "expected": [
+            1024,
+            1060
+          ],
+          "actual": [
+            1024,
+            1060
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B06",
+          "expected": [
+            768,
+            1140
+          ],
+          "actual": [
+            768,
+            1140
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B07",
+          "expected": [
+            1440,
+            1050
+          ],
+          "actual": [
+            1440,
+            1050
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B08",
+          "expected": [
+            390,
+            1120
+          ],
+          "actual": [
+            390,
+            1120
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B09",
+          "expected": [
+            1440,
+            1020
+          ],
+          "actual": [
+            1440,
+            1020
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B00",
+          "expected": [
+            1440,
+            1060
+          ],
+          "actual": [
+            1440,
+            1060
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B10",
+          "expected": [
+            390,
+            1210
+          ],
+          "actual": [
+            390,
+            1210
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B11",
+          "expected": [
+            390,
+            1310
+          ],
+          "actual": [
+            390,
+            1310
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B12",
+          "expected": [
+            1440,
+            1170
+          ],
+          "actual": [
+            1440,
+            1170
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B13",
+          "expected": [
+            1440,
+            1220
+          ],
+          "actual": [
+            1440,
+            1220
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B14",
+          "expected": [
+            1440,
+            1120
+          ],
+          "actual": [
+            1440,
+            1120
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B15",
+          "expected": [
+            1440,
+            1834
+          ],
+          "actual": [
+            1440,
+            1834
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B16",
+          "expected": [
+            1440,
+            1120
+          ],
+          "actual": [
+            1440,
+            1120
+          ],
+          "format": "JPEG"
+        },
+        {
+          "board": "B17",
+          "expected": [
+            390,
+            1420
+          ],
+          "actual": [
+            390,
+            1420
+          ],
+          "format": "JPEG"
+        }
+      ]
+    },
+    {
+      "check": "Declared top-level composition boxes stay inside artboards",
+      "status": "PASS",
+      "evidence": {
+        "checked": 135,
+        "outside": [],
+        "limit": "Does not measure nested text overflow, browser layout or reflow."
+      }
+    },
+    {
+      "check": "Named text palette pairs meet 4.5 to 1",
+      "status": "PASS",
+      "evidence": {
+        "minimum": {
+          "theme": "light",
+          "foreground": "muted",
+          "background": "raised",
+          "ratio": 4.793116776305642
+        },
+        "pairCount": 36,
+        "limit": "Calculated sRGB color pairs only; no complete WCAG claim."
+      }
+    },
+    {
+      "check": "Heatmap label contrast uses actual rounded alpha",
+      "status": "PASS",
+      "evidence": {
+        "minimum": {
+          "theme": "dark",
+          "value": 128,
+          "foreground": "#000000",
+          "ratio": 4.659807441532688
+        },
+        "cellThemeCases": 108
+      }
+    },
+    {
+      "check": "Useful widths match candidate.4 geometry",
+      "status": "PASS",
+      "evidence": [
+        {
+          "viewport": 320,
+          "rail": 0,
+          "gutterEach": 16,
+          "content": 288,
+          "inspector": 0,
+          "primary": 288
+        },
+        {
+          "viewport": 390,
+          "rail": 0,
+          "gutterEach": 16,
+          "content": 358,
+          "inspector": 0,
+          "primary": 358
+        },
+        {
+          "viewport": 768,
+          "rail": 0,
+          "gutterEach": 20,
+          "content": 728,
+          "inspector": 0,
+          "primary": 728
+        },
+        {
+          "viewport": 1024,
+          "rail": 196,
+          "gutterEach": 20,
+          "content": 788,
+          "inspector": 0,
+          "primary": 788
+        },
+        {
+          "viewport": 1280,
+          "rail": 224,
+          "gutterEach": 24,
+          "content": 1008,
+          "inspector": 320,
+          "primary": 664
+        },
+        {
+          "viewport": 1440,
+          "rail": 224,
+          "gutterEach": 24,
+          "content": 1168,
+          "inspector": 320,
+          "primary": 824
+        },
+        {
+          "viewport": 1600,
+          "rail": 224,
+          "gutterEach": 24,
+          "content": 1328,
+          "inspector": 320,
+          "primary": 984
+        }
+      ]
+    },
+    {
+      "check": "Retention ledger contains 60 distinct records",
+      "status": "PASS",
+      "evidence": {
+        "declaredCounts": {
+          "IMPROVE": 25,
+          "RETAIN": 27,
+          "RELOCATE": 3,
+          "BLOCKED_DATA": 5,
+          "REMOVE": 0
+        },
+        "itemCount": 60
+      }
+    },
+    {
+      "check": "Local Markdown artifact links resolve",
+      "status": "PASS",
+      "evidence": {
+        "missing": []
+      }
+    }
+  ],
+  "unverified": [
+    "Browser functionality of the candidate",
+    "Keyboard, touch, screen reader and focus implementation",
+    "200% text and 400% browser reflow",
+    "Actual backend schema/cache/data guarantees beyond audited source",
+    "Formal admitted RIG approval",
+    "F01/F02 foundation release",
+    "Production implementation and deployment"
+  ]
+}

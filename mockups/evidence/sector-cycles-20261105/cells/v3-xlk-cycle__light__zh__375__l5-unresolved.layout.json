@@ -1,0 +1,192 @@
+{
+  "cell": "v3-xlk-cycle__light__zh__375__l5-unresolved",
+  "view": "v3",
+  "url": "/sectors/XLK.html#cycle",
+  "theme": "light",
+  "lang": "zh",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "variant": "xlk_unresolved",
+  "js": true,
+  "steps": [
+    {
+      "click": "#scd-t-companies",
+      "matched": 1
+    },
+    {
+      "scroll": "#scd-p-companies",
+      "matched": 1
+    }
+  ],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 375,
+  "scrollHeight": 16699,
+  "data_theme": "light",
+  "data_lang": "zh",
+  "html_lang": "zh-CN",
+  "computed_bg": "rgb(232, 235, 241)",
+  "boxes": {
+    "heading": {
+      "selector": "h1",
+      "x": 0,
+      "y": 200,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Technology科技 (XLK)"
+    },
+    "asof": null,
+    "generation": null,
+    "stale_guard": null,
+    "chips": null,
+    "chart": null,
+    "inspector": null,
+    "compare_tray": null,
+    "fixture_label": {
+      "selector": "[data-fixture=\"true\"]",
+      "x": 0,
+      "y": 200,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Fixture示例数据"
+    },
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": {
+      "selector": ".scd-members",
+      "x": 18,
+      "y": 200,
+      "w": 339,
+      "h": 692,
+      "visible": true,
+      "text": "成分 代码 权重 NVDA 15.0% AAPL 14.8% MSFT 11.4% AMD 4.8% AVGO 4.8% MU 4.1% INTC 2.7% PLTR 2.6% CSCO 2.5% AMAT 2.0% LRCX 1.9% PANW 1.8% TXN 1.7% CRWD 1.6% IBM 1.4% ORCL 1.4% KLAC 1.3% ADI 1.2% APH 1.2% QCOM "
+    },
+    "companies_unavailable": {
+      "selector": "#scd-p-companies .scd-nc",
+      "x": 107,
+      "y": 851,
+      "w": 49,
+      "h": 20,
+      "visible": true,
+      "text": "未覆盖"
+    },
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 1,
+    "visible": 0,
+    "texts": [
+      "Fixture示例数据"
+    ]
+  },
+  "fixture_text": [
+    {
+      "el": "div.",
+      "visible": false,
+      "text": "CAPTURE FIXTURE · third-party TradingView chart stubbed offline (not product UI)"
+    },
+    {
+      "el": "span.l-zh",
+      "visible": false,
+      "text": "示例数据"
+    },
+    {
+      "el": "a.scd-tk",
+      "visible": true,
+      "text": "FIXTURE"
+    }
+  ],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": 68,
+    "expect_visible_any": true
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [
+    {
+      "kind": "stub-tradingview",
+      "url": "https://s3.tradingview.com/tv.js"
+    }
+  ],
+  "serve": {
+    "counts": {
+      "variant:xlk_unresolved": 1,
+      "out": 24,
+      "head-fallback": 7
+    },
+    "head_fallback": [
+      "/account.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": {
+    "scope": "document",
+    "count": 68,
+    "rc": 1,
+    "line": "zh-latin=68 A AAPL ADI AMAT AMD APH AVGO Advanced Alto Amphenol Analog Apple Applied BOTTOMING Broadcom Business CRWD CSCO Cisco Cl Corp Crowdstrike Devices ETF FIXTURE HIGH Holdings IBM INTC Inc Instruments Intel Intl KLAC Kla LRCX Lam MACD MSFT MU skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+  },
+  "png": {
+    "file": "cells/v3-xlk-cycle__light__zh__375__l5-unresolved.png",
+    "sha256": "1e61bd1c3cd679bdfc1c54651eaa7c92f419e6b35f496001bd12582b83a642a9"
+  }
+}

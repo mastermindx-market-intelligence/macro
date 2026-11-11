@@ -104,6 +104,19 @@ def test_rendered_rail_note_makes_no_permanent_claim_about_a_transient_state():
 _WHB_TAG_RE = re.compile(r"[ \t]*<script[^>]*\bdata-whb\b[^>]*></script>\n?")
 
 
+def test_glossary_template_emits_the_alert_banner_script():
+    """HEAL-P0B-GUARD-R2: the public-render lane re-renders glossary.html from
+    this template and does not run inject_wh_banner. The 2026-09-21 10:35Z
+    render-public bake dropped the nightly-injected data-whb tag because the
+    template did not emit it. Pin the source so a later bake cannot omit it."""
+    src = (ROOT / "templates" / "glossary.html.j2").read_text(encoding="utf-8")
+    tags = re.findall(r'<script[^>]*\bdata-whb\b[^>]*></script>', src)
+    assert len(tags) == 1, (
+        f"expected exactly one data-whb banner tag in the template, found {len(tags)}"
+    )
+    assert "wh_banner.js" in tags[0], tags[0]
+
+
 def test_committed_glossary_page_carries_the_alert_banner_script():
     """B-F13-1 review round 2, BLOCKER 1: regenerating site/glossary.html
     dropped the page's `<script defer data-whb …>` tag, so merging would have

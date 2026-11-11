@@ -1,0 +1,133 @@
+{
+  "observed_at": "2026-10-20T01:00:57.880938+00:00",
+  "captured_source": "b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4",
+  "index_tree": "586960f5b84d6d7a1e662d95f99941242ee7edaf",
+  "paths": {
+    "lib/shared_shell.py": {
+      "captured_blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+      "current_index_blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+      "identical": true
+    },
+    "scripts/build_sector_central.py": {
+      "captured_blob": "c8685799a3391a4777d672d2a244ddaf71b14a91",
+      "current_index_blob": "c8685799a3391a4777d672d2a244ddaf71b14a91",
+      "identical": true
+    },
+    "scripts/build_site.py": {
+      "captured_blob": "68f39a88101860ff28b814f083e1b435d6152943",
+      "current_index_blob": "68f39a88101860ff28b814f083e1b435d6152943",
+      "identical": true
+    },
+    "scripts/capture_page_evidence.py": {
+      "captured_blob": "6f184c6469f6fd653d003716ad96605055e71f56",
+      "current_index_blob": "6f184c6469f6fd653d003716ad96605055e71f56",
+      "identical": true
+    },
+    "scripts/check_ui_visual_evidence.py": {
+      "captured_blob": "cfd1c3dd422ce8033b0f07edb2ae4302f2f1a01d",
+      "current_index_blob": "cfd1c3dd422ce8033b0f07edb2ae4302f2f1a01d",
+      "identical": true
+    },
+    "site/about.html": {
+      "captured_blob": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+      "current_index_blob": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+      "identical": true
+    },
+    "site/landing.css": {
+      "captured_blob": "4866885b4abd7fe2da059392c7bc46a703892970",
+      "current_index_blob": "4866885b4abd7fe2da059392c7bc46a703892970",
+      "identical": true
+    },
+    "site/onboard.css": {
+      "captured_blob": "39f81eaa22c458aeae6f2183d6a138231b789055",
+      "current_index_blob": "39f81eaa22c458aeae6f2183d6a138231b789055",
+      "identical": true
+    },
+    "site/shared_shell.css": {
+      "captured_blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "current_index_blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "identical": true
+    },
+    "site/shared_shell_bridge.js": {
+      "captured_blob": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+      "current_index_blob": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+      "identical": true
+    },
+    "site/theme.css": {
+      "captured_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "current_index_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "identical": true
+    },
+    "site/theme.js": {
+      "captured_blob": "003f1fe02eab06175d836c0e275589f6519cc01b",
+      "current_index_blob": "003f1fe02eab06175d836c0e275589f6519cc01b",
+      "identical": true
+    },
+    "templates/about.html": {
+      "captured_blob": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+      "current_index_blob": "9fa278e011c606d1a4b41b8c3f96647d8d8961a9",
+      "identical": true
+    },
+    "templates/dashboard.html.j2": {
+      "captured_blob": "82c0d00ed32b2da676c7243c543a48a6ab6f1489",
+      "current_index_blob": "82c0d00ed32b2da676c7243c543a48a6ab6f1489",
+      "identical": true
+    },
+    "templates/landing.css": {
+      "captured_blob": "4866885b4abd7fe2da059392c7bc46a703892970",
+      "current_index_blob": "4866885b4abd7fe2da059392c7bc46a703892970",
+      "identical": true
+    },
+    "templates/onboard.css": {
+      "captured_blob": "39f81eaa22c458aeae6f2183d6a138231b789055",
+      "current_index_blob": "39f81eaa22c458aeae6f2183d6a138231b789055",
+      "identical": true
+    },
+    "templates/sector_central.html.j2": {
+      "captured_blob": "9f1f75beba1a9a12f725135be9a367a79d58d065",
+      "current_index_blob": "9f1f75beba1a9a12f725135be9a367a79d58d065",
+      "identical": true
+    },
+    "templates/shared_shell.css": {
+      "captured_blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "current_index_blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "identical": true
+    },
+    "templates/shared_shell_bridge.js": {
+      "captured_blob": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+      "current_index_blob": "dd501dc2dd846b19190c430c0d093452b8d5f322",
+      "identical": true
+    },
+    "templates/si_workspace.js": {
+      "captured_blob": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+      "current_index_blob": "46bf5dfb5ea5a745f425cff5d090e7afd3fbd81c",
+      "identical": true
+    },
+    "templates/theme.css": {
+      "captured_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "current_index_blob": "620895319be7e3f7808439ecbae8c33c2197389f",
+      "identical": true
+    },
+    "templates/theme.js": {
+      "captured_blob": "52751694694a381e717d8be6d4c8609d93bdeca6",
+      "current_index_blob": "52751694694a381e717d8be6d4c8609d93bdeca6",
+      "identical": true
+    }
+  },
+  "changed": [],
+  "current_macro_html_blob": "26c4f985d7be6bc62f3e33da47a20b84506e86a6",
+  "captured_macro_html_blob": "88eaae96b294e6981998d16d2f835edb5a314cf9",
+  "historical_pixels_only": true,
+  "new_browser_capture": false,
+  "sector_template_unchanged": true,
+  "sector_builder_unchanged": true,
+  "sector_views": [
+    "overview",
+    "map",
+    "moving",
+    "money",
+    "explore",
+    "confluence"
+  ],
+  "sector_paper": "REVISE"
+}

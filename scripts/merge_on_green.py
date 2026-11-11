@@ -172,7 +172,7 @@ So the sweep is now BUDGET-AWARE, in three places. It preflights `GET
 /rate_limit` (which does not itself count against the core budget) and DEFERS —
 exit 0 with a notice, never a red run — when the remaining budget cannot fund a
 useful pass. It sizes the pull-request window from the live core limit (25 at the
-historical 1,000/hour limit, up to 100 on Enterprise), in a rotating order that no
+historical 1,000/hour limit, up to 128 on Enterprise), in a rotating order that no
 pull request can be starved out of, and it says which ones it deferred. And it
 re-reads the budget as it goes, stopping cleanly rather than dying half-way
 through on a 403. A deferred sweep merges strictly FEWER pull requests than a
@@ -243,6 +243,7 @@ import base64
 import datetime as dt
 import io
 import json
+import math
 import os
 import re
 import secrets
@@ -345,35 +346,45 @@ _LAST_INTEGRATION_BASELINE_SHA = ""
 # pull request. The Enterprise transfer raised this repository's live limit to
 # 15,000/hour, but the old fixed cap kept deferring a 29-pull backlog with 14,904
 # calls still available (run 31536402658). Scale from the proven 25/1,000 ratio,
-# but stop at the pull-list API's 100-item page. If the quota cannot be read, the
-# known-safe 25 remains the fallback.
+# but retain a bounded 128-PR evaluation ceiling: paginated discovery already
+# spans the full backlog independently of this cap. If quota cannot be read,
+# the known-safe 25 remains the fallback.
 REFERENCE_CORE_LIMIT = 1_000
 FALLBACK_PULL_CAP = 25
-MAX_PULL_CAP = 100
+MAX_PULL_CAP = 128
 # Fixed overhead and worst-case marginal cost used to shrink the window when the
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
-FULL_SWEEP_FIXED_REQUESTS = 87
-MAX_REQUESTS_PER_PULL = 19
-# A 25-pull reference pass now needs 87 fixed + 25 x up-to-19 + refresh headroom =
-# 542 in its pessimistic shape, so the floor funds useful work while preserving
+# Extra commit-file pagination reads shared by every PR and commit in one sweep.
+# Exhaustion keeps the affected inventory incomplete; it never clears a proof.
+COMMIT_FILE_PAGE_READ_CAP = 100
+# 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
+# mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
+# the sweeps that skip it so the shrink formula stays pessimistic.
+FULL_SWEEP_FIXED_REQUESTS = 92
+AUTHORITY_RUN_LOOKUP_CAP = 8
+MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
+# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 775 calls. The floor retains the reference 90-percent bound while
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
-RATE_LIMIT_FLOOR = 600
+RATE_LIMIT_FLOOR = 700
 # A mark-only failure wake-up costs ~4-8 calls and protects a correctness marker,
 # so it has a separate small floor instead of inheriting the full-sweep floor.
 MARK_ONLY_RATE_LIMIT_FLOOR = 20
 # Mid-sweep reserve. It covers the in-flight pull request's remaining reads and
 # writes plus the calls spendable between two budget polls, so the stop is clean
 # rather than a 403 half-way through.
-RATE_LIMIT_RESERVE = 120
-# Poll `GET /rate_limit` every N evaluated pull requests rather than every one. It
-# costs no core budget but it is still a round trip; at <=18 calls per pull request
-# (proof identity, live compare, and lease bookkeeping included) the reserve above
-# covers one worst-case pull while the fixed preflight and live cap bound the pass.
+# Fund the entire shared pagination allowance even if one PR spends it between
+# rate-limit polls. pull_cap_for_budget subtracts this reserve at admission too.
+# Poll every five evaluated PRs. Native authority supersession may add eight
+# reads to each; fund that entire interval without consuming the original slack.
 BUDGET_RECHECK_EVERY = 5
+RATE_LIMIT_RESERVE = (
+    120 + BUDGET_RECHECK_EVERY * AUTHORITY_RUN_LOOKUP_CAP + COMMIT_FILE_PAGE_READ_CAP
+)
 # Each `update-branch` is a write AND a fresh CI run on a saturated pool (36-91
 # minutes, 8 self-hosted runners). The base-inherited-red path makes most of a red
 # backlog eligible at once — measured 84 of 93 armed pull requests — so uncapped,
@@ -384,7 +395,9 @@ MAX_REFRESHES_PER_SWEEP = 8
 # sweep per minute.  Each refreshed pull request launches one ci.yml run with 12
 # hosted jobs (plus fences), and on 2026-08-11 the shared pool was already pinned at
 # 180/180.  Count every active pull-request ci.yml run — ordinary session work and
-# controller re-proofs alike — and add no refreshes above this repo-wide ceiling.
+# controller re-proofs alike — and add no ordinary refreshes above this repo-wide
+# ceiling (the S9 saturation floor below is the one bounded exception: a single
+# lease-serialized refresh under its own hard ceiling, never a raised allowance).
 # Eight proof runs are roughly half the hosted pool, leaving real capacity for the
 # sessions the controller exists to serve.  This is intentionally conservative:
 # an ordinary in-flight proof consumes the same runners as a controller-created one.
@@ -395,8 +408,86 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # advertised eight new refresh slots because the former "fair refresh" clamp raised
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
+# The S9 saturation floor below is NOT that clamp: it is one lease-serialized
+# refresh, granted only under a hard in-flight ceiling and only while the job-level
+# census shows no refusal (see REFRESH_FLOOR_PER_SWEEP).
 HIGH_LOAD_LEASE_THRESHOLD = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
+# Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
+# against a pool pinned at 180/180 on 2026-08-11; the repository now sits on the
+# Enterprise plan's 500-standard-hosted-job ceiling (see ci.yml's ci-pack comment),
+# where 16 proofs x 15 hosted jobs = 240 still fit, yet on an idle pool the flat cap
+# leaves most runners unused while a red backlog drains at 8 proofs per hour.
+#
+# The pressure signal is JOB-level, never run-level.  A ci.yml run is `in_progress`
+# the moment `ci-plan` gets a runner, and its twelve pack jobs are only CREATED
+# minutes later when the dynamic matrix resolves (observed 2026-11-05, run
+# 42044812799: ci-plan 14:25:09, packs created 14:28:45); jobs still blocked on
+# `needs` are not listed at all.  So a run-level `queued` count cannot see a
+# saturated pool (every pack sits queued INSIDE an in-progress run), while any
+# `queued` job in a run's job list is, by construction, a job the pool has refused
+# a runner.  Each sweep that could use headroom therefore samples the jobs of the
+# newest ADAPTIVE_CENSUS_SAMPLE_RUNS in-progress ci.yml runs that are at least
+# ADAPTIVE_CENSUS_MATURITY_SECONDS old (the maturity filter only steers the sample
+# toward runs whose packs exist; it is never itself evidence) and widens only on
+# POSITIVE evidence that the pool is serving this repository's hosted jobs.  A run
+# is SERVED evidence only when a GitHub-hosted LATER-WAVE job (a `ci-pack-*`
+# or `ci-gate` job, by name, created after the run's earliest job; the dynamic
+# matrix resolves only after `ci-plan` completes) is running, and nothing in
+# the run shows refusal.  First-wave jobs (`ci-plan`, `contract-delta`, a
+# re-run `ci-plan`, the pc-route `trusted-ci` gate jobs) never serve, whatever
+# their timestamps say.  REFUSAL evidence is any non-self-hosted job that is neither running
+# nor completed (queued, pending, waiting, requested; unlabelled jobs included)
+# and any job the pool took longer than ADAPTIVE_PICKUP_GRACE_SECONDS to start
+# (`started_at - created_at`, the pickup latency the job payload already carries;
+# the free pool observed 2-82 s).  Jobs whose requested labels include
+# `self-hosted` are ignored (ci.yml has none today; the macstudio render lanes
+# live in other workflows and never appear in these job lists); only labels
+# with a GitHub-hosted prefix count as served evidence, so a runner-group job
+# that reports only its group label (the pc-route `trusted-pack`) can refuse
+# but never serve.  A running or completed job without a usable `started_at`,
+# or a job list shorter than its own `total_count`, makes the census unreadable.  `READ_TOKEN` is repo-scoped, so other repositories' load on the shared
+# account ceiling is visible only through its effect on this repository's own
+# jobs; a pool that fills after our packs were admitted shows up in the next
+# launched run's packs, so the ADMISSION overshoot is bounded by the cap itself
+# (16 proofs, about 13 concurrent hosted jobs each, under the account-wide 500
+# ceiling) and the admission cap collapses to 8 on the first sweep that sees a
+# refused or slow job; proofs already admitted still run to completion.  An
+# unreadable census, or no sampled run with served evidence, is the flat cap,
+# exactly today's behaviour.  The per-sweep cap and the durable lease are
+# unchanged: a sweep still launches at most MAX_REFRESHES_PER_SWEEP.
+ADAPTIVE_PROOF_CAP_MAX = 16
+ADAPTIVE_CENSUS_SAMPLE_RUNS = 3
+ADAPTIVE_CENSUS_MATURITY_SECONDS = 240
+ADAPTIVE_CENSUS_JOB_PAGE = 100
+ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
+ADAPTIVE_PICKUP_GRACE_SECONDS = 120
+ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
+ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
+# S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
+# indexed proofs against the flat cap of 8, the census reported slow pickups (no
+# queued run, no refused job), the adaptive headroom was therefore 0, and the
+# allowance was 0 -- while EVERY armed pull request was stale because main had
+# changed the check definitions (~70 refresh-deferred per sweep).  Ordinary session
+# pushes kept the in-flight count above the cap, so the controller never refreshed
+# anything and nothing merged overnight.  A pool that is merely slow is still
+# serving; a pool that REFUSES (queued run or waiting hosted job) is not.  When the
+# ordinary allowance is zero, admit ONE refresh per sweep, serialized by the durable
+# lease (one slot is inside HIGH_LOAD_LEASE_THRESHOLD, so racing sweep generations
+# cannot both spend it), only while (a) the census was actually read and witnessed
+# the hosted pool picking work up (a served later-wave job, or a slow pickup -- a
+# slow job HAS started; a mature run with neither is no evidence of capacity),
+# (b) it shows no refusal evidence, and (c) fewer than REFRESH_FLOOR_PROOF_CEILING
+# proofs are in flight -- the same half-headroom cap the adaptive policy grants on
+# a single served run.  Controller refreshes count toward that ceiling like any
+# other proof, so the floor can never push the pool past it.  Because the lease is
+# held until its owner's proof settles (or the lease max age), the floor drains at
+# one controller proof per proof LIFETIME, not one per sweep -- enough to keep the
+# queue moving when sessions' own pushes alone would hold the allowance at zero.
+REFRESH_FLOOR_PER_SWEEP = 1
+REFRESH_FLOOR_PROOF_CEILING = MAX_IN_FLIGHT_PR_PROOFS + (
+    ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+) // 2
 # The rotation advances by the live pull cap every bucket, so every armed pull
 # request enters the window within ceil(N / cap) buckets — ~40 minutes for a
 # 93-PR backlog. Ten minutes matches the recovery cron; the sweeper keeps NO state
@@ -654,6 +745,10 @@ def is_spurious_check(name: str) -> bool:
 #: ``ci-authority/main`` stays binding. Do not widen this to the active
 #: context, and do not fold it into :func:`is_spurious_check`.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# Vercel is not part of the repository-owned proof contract. The connected legacy
+# project currently posts a failing status for every commit when its build-rate
+# quota is exhausted; that external quota state must not be attributed to PR code.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
@@ -673,11 +768,12 @@ def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
     Call this from a gate; do not re-spell the inactive literal at the call
     site — that is how ``decide_verdict`` and ``failing_check_names`` drifted.
     """
-    if is_spurious_check(str(name or "")):
+    check = str(name or "")
+    if is_spurious_check(check) or check == VERCEL_STATUS_CONTEXT:
         return True
     return (
         str(base_ref or "main") == "main"
-        and str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+        and check == CI_AUTHORITY_INACTIVE_CONTEXT
     )
 
 
@@ -1002,6 +1098,154 @@ def decide_verdict(runs: list[dict[str, Any]]) -> tuple[str, list[str]]:
     return "clean", []
 
 
+def _authority_workflow_binding(
+    repo: str, pull: dict[str, Any], check: dict[str, Any], run: dict[str, Any]
+) -> tuple[tuple[Any, ...], dt.datetime] | None:
+    """Authenticate the workload, not merely a same-name Actions check."""
+    head = pull.get("head") or {}
+    base = pull.get("base") or {}
+    if not isinstance(head, dict) or not isinstance(base, dict):
+        return None
+    association = run.get("pull_requests")
+    if not isinstance(association, list) or len(association) != 1:
+        return None
+    associated = association[0]
+    if not isinstance(associated, dict):
+        return None
+    nodes = [
+        head, base, head.get("repo"), base.get("repo"),
+        run.get("repository"), run.get("head_repository"),
+        associated.get("head"), associated.get("base"), check.get("check_suite"),
+    ]
+    if not all(isinstance(node, dict) for node in nodes):
+        return None
+    head_repo, base_repo = head["repo"], base["repo"]
+    event_head, event_base = associated["head"], associated["base"]
+    if not all(isinstance(node.get("repo"), dict) for node in (event_head, event_base)):
+        return None
+    ids = [
+        pull.get("number"), check.get("id"), check["check_suite"].get("id"),
+        run.get("workflow_id"), run.get("id"), head_repo.get("id"), base_repo.get("id"),
+    ]
+    if any(type(value) is not int or value <= 0 for value in ids):
+        return None
+    head_sha = head.get("sha")
+    base_sha = event_base.get("sha")
+    created_text = run.get("created_at")
+    # Unlike baseline age calculations, supersession cannot invent a missing zone.
+    if not isinstance(created_text, str) or not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})",
+        created_text,
+    ):
+        return None
+    created = _parse_dt(created_text)
+    if (
+        not isinstance(head_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", head_sha)
+        or not isinstance(base_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", base_sha)
+        or created is None
+        or run.get("status") != "completed"
+        or run.get("conclusion") != check.get("conclusion")
+        or run.get("path") != ".github/workflows/ci-authority.yml"
+        or run.get("event") != "pull_request_target"
+        or run.get("head_sha") != head_sha
+        or run.get("check_suite_id") != check["check_suite"]["id"]
+        or associated.get("number") != pull["number"]
+        or associated.get("url") != f"{GITHUB_API}/repos/{repo}/pulls/{pull['number']}"
+        or event_head.get("sha") != head_sha
+        or event_head.get("ref") != head.get("ref")
+        or event_base.get("ref") != base.get("ref")
+        or base_repo.get("full_name") != repo
+        or run["repository"].get("id") != base_repo["id"]
+        or run["repository"].get("full_name") != repo
+        or run["head_repository"].get("id") != head_repo["id"]
+        or run["head_repository"].get("full_name") != head_repo.get("full_name")
+        or event_head["repo"].get("id") != head_repo["id"]
+        or event_head["repo"].get("url") != f"{GITHUB_API}/repos/{head_repo.get('full_name')}"
+        or event_base["repo"].get("id") != base_repo["id"]
+        or event_base["repo"].get("url") != f"{GITHUB_API}/repos/{repo}"
+    ):
+        return None
+    # Matching event bases is separate from the existing current-main freshness gate.
+    return (run["workflow_id"], head_repo["id"], base_repo["id"], base["ref"], base_sha), created
+
+
+def authority_effective_checks(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]], token: str
+) -> list[dict[str, Any]]:
+    """Drop only an older cancelled native authority job replaced by a success.
+
+    The workflow cancels older pull_request_target events in its concurrency
+    group. GitHub still returns their checks beside the replacement suite even
+    with filter=latest. Keep raw evidence intact and require native run identity
+    before excluding anything from the judgment set. Failures and newer/pending
+    cancellations are never made nonbinding by a same-name success.
+    """
+    head_sha = (pull.get("head") or {}).get("sha")
+    candidates: list[tuple[dict[str, Any], int]] = []
+    for check in runs:
+        if (
+            check.get("name") != "ci-authority"
+            or check.get("status") != "completed"
+            or check.get("conclusion") not in {"cancelled", "success"}
+            or not isinstance(check.get("app"), dict)
+            or check["app"].get("id") != 15368
+            or check.get("head_sha") != head_sha
+            or type(check.get("id")) is not int
+        ):
+            continue
+        match = re.fullmatch(
+            rf"https://github\.com/{re.escape(repo)}/actions/runs/([1-9][0-9]*)/job/{check['id']}",
+            str(check.get("details_url") or ""),
+        )
+        if match:
+            candidates.append((check, int(match.group(1))))
+    if {check["conclusion"] for check, _ in candidates} != {"cancelled", "success"}:
+        return runs
+    # No unbounded historical scan. An unusually crowded head remains incomplete.
+    run_ids = {run_id for _, run_id in candidates}
+    if len(run_ids) > AUTHORITY_RUN_LOOKUP_CAP:
+        return runs
+    native_runs: dict[int, dict[str, Any]] = {}
+    try:
+        for run_id in sorted(run_ids):
+            status, native = _request(
+                "GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}", token
+            )
+            if status >= 400 or not isinstance(native, dict):
+                raise _read_failed(status, native, "authority supersession lookup failed")
+            if type(native.get("id")) is not int or native["id"] != run_id:
+                return runs
+            native_runs[run_id] = native
+    except RateLimited:
+        raise
+    except (OSError, ValueError, RuntimeError) as exc:
+        _annotate("warning", "authority supersession", f"PR #{pull.get('number')}: {exc}")
+        return runs
+    bound = [
+        (check, run_id, _authority_workflow_binding(repo, pull, check, native_runs[run_id]))
+        for check, run_id in candidates
+    ]
+    superseded = {
+        check["id"]
+        for check, run_id, identity in bound
+        if check["conclusion"] == "cancelled" and identity is not None
+        and any(
+            other["conclusion"] == "success" and other_id != run_id
+            and other_identity is not None and identity[0] == other_identity[0]
+            and identity[1] < other_identity[1]
+            for other, other_id, other_identity in bound
+        )
+    }
+    if superseded:
+        if any(sum(check.get("id") == ident for check in runs) != 1 for ident in superseded):
+            return runs
+        print(
+            f"PR #{pull.get('number')}: later successful native authority run "
+            f"supersedes cancelled check(s) {sorted(superseded)}.", flush=True,
+        )
+    return [check for check in runs if check.get("id") not in superseded]
+
+
 def head_check_runs(repo: str, head_sha: str, token: str) -> list[dict[str, Any]]:
     """Every check run on ``head_sha``, paginated to the end (fail-closed).
 
@@ -1283,26 +1527,70 @@ def _semantic_evidence_for_run(
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
     expected_tree = head_sha if role == "main" else None
+    # PR-head evidence seals the tested merge commit's FIRST PARENT as
+    # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
+    # refreshed PR-object snapshot and lags it whenever main moves between PR
+    # creation and the run (PR #8844, 2026-10-11).  The exact identity is the
+    # head; the base is resolved below by ancestry, never by byte equality.
     loaded = semantic_proof.load_semantic_evidence(
         source,
         advertised=True,
         expected_run_id=run_id,
         expected_subject_head_sha=head_sha,
         expected_tested_tree_sha=expected_tree,
-        expected_base_sha=bound_base_sha or None,
+        expected_base_sha=None if role == "pr_head" else (bound_base_sha or None),
         expected_event=expected_event,
         expected_role=role,
         expected_workflow="ci",
     )
     if role == "pr_head":
+        proof_base_sha = semantic_proof.resolve_pr_proof_base(
+            loaded,
+            advertised_base_sha=bound_base_sha,
+            subject_head_sha=head_sha,
+            is_ancestor=lambda ancestor, descendant: _github_is_ancestor(
+                repo, token, ancestor, descendant
+            ),
+        )
         return _bind_pr_tested_tree(
             repo,
             token,
             loaded,
-            bound_base_sha=bound_base_sha,
+            bound_base_sha=proof_base_sha,
             subject_head_sha=head_sha,
         )
     return loaded
+
+
+def _github_is_ancestor(repo: str, token: str, ancestor: str, descendant: str) -> bool:
+    """True when ``ancestor`` is reachable from ``descendant`` on GitHub.
+
+    One compare call (``per_page=1`` — only ``status`` is read).  ``identical``
+    and ``ahead`` mean the descendant contains the ancestor; ``behind`` and
+    ``diverged`` mean it does not.  A quota refusal surfaces as ``RateLimited``
+    and any other failure or unknown relation as ``RuntimeError`` so the caller's
+    existing handlers keep an unanswerable probe from reading as a clean base.
+    """
+    ancestor = str(ancestor or "").lower()
+    descendant = str(descendant or "").lower()
+    if ancestor == descendant:
+        return True
+    status, payload = _request(
+        "GET",
+        f"{GITHUB_API}/repos/{repo}/compare/{ancestor}...{descendant}?per_page=1",
+        token,
+    )
+    if status >= 400 or not isinstance(payload, dict):
+        raise _read_failed(status, payload, "semantic proof-base ancestry compare failed")
+    relation = str(payload.get("status") or "")
+    if relation in {"identical", "ahead"}:
+        return True
+    if relation in {"behind", "diverged"}:
+        return False
+    raise RuntimeError(
+        "semantic proof-base ancestry compare returned an unknown relation "
+        f"({relation or 'missing'})"
+    )
 
 
 def _semantic_pr_base_sha(
@@ -1797,6 +2085,48 @@ def ownership_matches(rel: str, patterns: list[str] | None) -> list[str]:
     return matching_patterns(rel, owned)
 
 
+def _is_full_sha(value: Any) -> bool:
+    """True for a full lowercase 40-character hex git sha."""
+    return (
+        isinstance(value, str)
+        and len(value) == 40
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
+    """``(sha, tree_sha, parent_shas)`` from a commit body, else ``None``.
+
+    The pagination stitch compares this tuple across every page, so each
+    identity must be present and a full lowercase 40-hex sha: a short,
+    uppercased or absent sha is not something this lane can prove page
+    equality on, and a page that moved underneath the sweep must never be
+    stitched into one commit's footprint.
+    """
+    if not isinstance(payload, dict):
+        return None
+    sha = payload.get("sha")
+    commit = payload.get("commit")
+    tree = commit.get("tree") if isinstance(commit, dict) else None
+    if not _is_full_sha(sha) or not isinstance(tree, dict):
+        return None
+    tree_sha = tree.get("sha")
+    if not _is_full_sha(tree_sha):
+        return None
+    parents = payload.get("parents")
+    if not isinstance(parents, list):
+        return None
+    parent_shas: list[str] = []
+    for parent in parents:
+        if not isinstance(parent, dict):
+            return None
+        parent_sha = parent.get("sha")
+        if not _is_full_sha(parent_sha):
+            return None
+        parent_shas.append(parent_sha)
+    return sha, tree_sha, tuple(parent_shas)
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -1810,7 +2140,10 @@ class ProofFreshness:
     unreadable proof identity is ``None`` — defer without mutation, because changing
     a branch cannot repair missing control-plane evidence. A surface that silently
     resolves to "nothing changed" would turn the gate into a no-op that reviews as
-    protection, which is the single worst outcome available here.
+    protection, which is the single worst outcome available here — so "could not
+    be read" and "read, classified, and owned by no gate" are kept DISTINCT
+    (``surface_of``): the first re-proves, the second is an affirmative answer
+    that no main move inside a gate path can invalidate.
     """
 
     def __init__(
@@ -1849,6 +2182,7 @@ class ProofFreshness:
         self._merge_bases: dict[str, str | None] = {}
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
+        self._commit_file_page_reads = 0
 
     # -- construction ---------------------------------------------------------
 
@@ -2251,6 +2585,80 @@ class ProofFreshness:
             for root in sorted(changed_roots & pipeline_roots)
         ]
 
+    def _complete_commit_files(
+        self, sha: str, probe: dict[str, Any]
+    ) -> list[str] | None:
+        """Complete a truncated inventory, or retain its conservative verdict.
+
+        The tree shortcut runs first. This fallback accepts at most ten 100-row
+        pages of the same SHA/tree/ordered parents, ending in a short page. The
+        sweep shares an additional-read budget and caches incomplete results too.
+        Every original file/rename binding must survive the completed inventory.
+        """
+        identity = _commit_identity(probe)
+        if identity is None or identity[0] != sha:
+            return None
+
+        def bindings(rows: Any) -> dict[str, tuple[Any, str | None]] | None:
+            if not isinstance(rows, list):
+                return None
+            result: dict[str, tuple[Any, str | None]] = {}
+            for row in rows:
+                if not isinstance(row, dict):
+                    return None
+                name = row.get("filename")
+                previous = row.get("previous_filename")
+                status = row.get("status")
+                if not isinstance(status, str) or status not in {
+                    "added", "removed", "modified", "renamed", "copied", "changed", "unchanged"
+                }:
+                    return None
+                if not isinstance(name, str) or not name or name in result:
+                    return None
+                if "previous_filename" in row and (
+                    not isinstance(previous, str) or not previous
+                ):
+                    return None
+                if row.get("status") == "renamed" and previous is None:
+                    return None
+                result[name] = (row.get("status"), previous)
+            return result
+
+        original = bindings(probe.get("files"))
+        if not original:
+            return None
+        collected: dict[str, tuple[Any, str | None]] = {}
+        rows: list[dict[str, Any]] = []
+        for page in range(1, 11):
+            if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+                return None
+            self._commit_file_page_reads += 1
+            self.commit_file_reads += 1
+            try:
+                status, payload = _request(
+                    "GET",
+                    f"{GITHUB_API}/repos/{self.repo}/commits/{sha}"
+                    f"?per_page=100&page={page}",
+                    self.token,
+                )
+            except (RuntimeError, OSError, ValueError):
+                return None
+            if status != 200 or _commit_identity(payload) != identity:
+                return None
+            page_rows = payload.get("files")
+            page_bindings = bindings(page_rows)
+            if page_bindings is None or len(page_rows) > 100:
+                return None
+            if collected.keys() & page_bindings.keys():
+                return None
+            collected.update(page_bindings)
+            rows.extend(page_rows)
+            if len(page_rows) < 100:
+                if any(collected.get(name) != binding for name, binding in original.items()):
+                    return None
+                return _changed_file_paths(rows)
+        return None
+
     def files_of(self, sha: str) -> tuple[list[str], bool]:
         """``(files, truncated)`` for one main commit. Cached for the whole sweep."""
         cached = self._commit_files.get(sha)
@@ -2272,6 +2680,11 @@ class ProofFreshness:
             if proven_pipeline_paths is not None:
                 names = proven_pipeline_paths
                 truncated = False
+            else:
+                complete = self._complete_commit_files(sha, payload)
+                if complete is not None:
+                    names = complete
+                    truncated = False
         answer = (names, truncated)
         self._commit_files[sha] = answer
         return answer
@@ -2443,19 +2856,41 @@ class ProofFreshness:
         rejected strict one: `site/**` is in the surface of a pull request that
         edits `site/`, and is not in the surface of one that does not.
 
-        None means undeterminable — which includes the empty result. A pull request
-        whose files satisfy no entry of any path-filtered gate has a surface that
-        "silently resolves to the empty set", and merging on that would be the
-        no-op this gate exists to prevent.
+        None means undeterminable: the file inventory could not be read (an
+        error status, a malformed row, a truncated page set) or names no file
+        at all — a zero-file footprint is the clobbered-head shape, and it can
+        be shown to be outside nothing.
+
+        The EMPTY SET is a different, affirmative answer and is returned as
+        such: every changed file was read and classified against every
+        path-filtered gate, and none of them is owned. That pull request's
+        proof is the exact-head checks that ran, and a main commit inside
+        `engine/**` cannot invalidate a proof that never covered `engine/**`.
+        Until 2026-09-24 this case was folded into ``None`` ("silently resolves
+        to the empty set") and re-proved, which under a main that moves every
+        few minutes with 60-110 min packs is a livelock: #7958 (files only under
+        `agentos/handoffs/` and `mockups/evidence/`) was refreshed 0ee772f1 ->
+        d3f8bd8a -> fad0e00d -> 25e4a451, the third refresh 25 s AFTER run
+        36052314696 at fad0e00d had concluded green (sweep 36064269045,
+        21:53:55Z), and had to be disarmed and merged by hand.
+
+        Returning the empty set does not reopen the no-op-that-reviews-as-
+        protection hole the ``None`` rule guards. ``stale_for`` consults the
+        surface only after the SAME matcher, over the SAME gates, has already
+        found main's files inside a gate path (a non-empty ``candidates`` set);
+        a broken matcher or an unloaded gate set therefore never reaches this
+        branch — it short-circuits earlier as "none inside any gate's path
+        filter", exactly as it did before. An empty surface here means the
+        matcher works and the pull request's files are simply outside it.
         """
         files = self.pull_files(number)
-        if files is None:
+        if not files:
             return None
         surface: set[str] = set()
         for gate in self.gates:
             for name in files:
                 surface.update(ownership_matches(name, gate["patterns"]))
-        return surface or None
+        return surface
 
     def stale_for(
         self, pull: dict[str, Any], runs: list[dict[str, Any]]
@@ -2576,6 +3011,19 @@ class ProofFreshness:
                 "the pull request's own changed files could not be established, so "
                 "its tested surface is unknown"
             )
+        if not surface:
+            # Files read and classified; none owned by any path-filtered gate
+            # (the #7958 records-only shape). The exact-head checks that ran
+            # are the whole proof, and main cannot have moved inside a surface
+            # this pull request does not have. Named distinctly so a sweep log
+            # says WHY the proof is current, not merely that it is.
+            file_count = len(self.pull_files(number) or [])
+            return False, (
+                f"main took {len(window)} commit(s) since the proof, none inside this "
+                f"pull request's tested surface — its {file_count} changed file(s) own "
+                "no path-filtered gate entry, so the exact-head checks that ran are "
+                "the whole proof"
+            )
         hit = sorted(candidates & surface)
         if hit:
             return True, (
@@ -2663,6 +3111,218 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
             return None
         total += count
     return total
+
+
+@dataclass(frozen=True)
+class HostedPoolCensus:
+    """Job-level evidence of hosted-pool service for this repository's ci.yml."""
+
+    #: ci.yml runs whose first job (`ci-plan`, hosted) has no runner yet.
+    queued_runs: int
+    #: Mature in-progress ci.yml runs whose job lists were read.
+    sampled_runs: int
+    #: Non-self-hosted jobs in those runs neither running nor completed.
+    refused_jobs: int
+    #: Sampled runs with a later-wave GitHub-hosted job running and no refusal.
+    served_runs: int
+    #: Non-self-hosted jobs the pool took longer than the pickup grace to start.
+    slow_jobs: int = 0
+
+
+def _clean_count(payload: Any, key: str) -> int | None:
+    count = payload.get(key) if isinstance(payload, dict) else None
+    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+        return None
+    return count
+
+
+def _job_labels(job: dict[str, Any]) -> list[str] | None:
+    labels = job.get("labels")
+    if not isinstance(labels, list) or not all(isinstance(l, str) for l in labels):
+        return None
+    return labels
+
+
+def _github_hosted_label(labels: list[str]) -> bool:
+    """A label GitHub itself serves (`ubuntu-latest`, `ubuntu-24.04`, ...)."""
+    return any(label.startswith(ADAPTIVE_HOSTED_LABEL_PREFIXES) for label in labels)
+
+
+def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
+    """``(refused, slow, served)`` for one run's job list; ``None`` if unclean.
+
+    Self-hosted jobs are ignored.  Every other job is refusal evidence when it is
+    neither running nor completed, or when the pool took longer than the pickup
+    grace to start it.  Served evidence needs a GitHub-hosted LATER-WAVE job (a
+    `ci-pack-*`/`ci-gate` job by name, created after the run's earliest job) to
+    be running: the first wave (`ci-plan`, `contract-delta` on pull requests, a
+    re-run `ci-plan`, the pc-route trusted-ci gate) is admitted before the pack
+    matrix exists, so it says nothing about whether the pool will serve the
+    packs, whatever its timestamps say.  A running or completed job without a
+    usable `started_at` is unclean (``None``), like a job without `created_at`.
+    """
+    parsed: list[tuple[dt.datetime, dt.datetime | None, str, bool, bool]] = []
+    for job in jobs:
+        if not isinstance(job, dict):
+            return None
+        labels = _job_labels(job)
+        if labels is None:
+            return None
+        if "self-hosted" in labels:
+            continue
+        created = _parse_dt(job.get("created_at"))
+        if created is None:
+            return None
+        status = job.get("status")
+        name = job.get("name")
+        if not isinstance(status, str) or not isinstance(name, str):
+            return None
+        started = _parse_dt(job.get("started_at"))
+        if started is None and status in ("in_progress", "completed"):
+            return None
+        later_wave = name.startswith(ADAPTIVE_LATER_WAVE_JOB_PREFIXES)
+        parsed.append((created, started, status, _github_hosted_label(labels), later_wave))
+    if not parsed:
+        return 0, 0, False
+    first_wave = min(created for created, _s, _st, _h, _l in parsed)
+    grace = dt.timedelta(seconds=ADAPTIVE_PICKUP_GRACE_SECONDS)
+    refused = slow = 0
+    served = False
+    for created, started, status, hosted, later_wave in parsed:
+        if status not in ("in_progress", "completed"):
+            refused += 1
+            continue
+        if started - created > grace:
+            slow += 1
+        if status == "in_progress" and hosted and later_wave and created > first_wave:
+            served = True
+    return refused, slow, served and refused == 0 and slow == 0
+
+
+def hosted_pool_census(
+    repo: str, token: str, *, now: dt.datetime | None = None
+) -> HostedPoolCensus | None:
+    """Sample this repository's mature in-progress ci.yml runs at the JOB level.
+
+    One ``per_page=1`` read of queued ci.yml runs, one list of the newest
+    in-progress ci.yml runs created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
+    ago (so their dynamic pack matrix is likely to exist), and one job list per
+    sampled run.  ``None`` on any read that is not clean, including a job list
+    longer than one page or a job without a usable timestamp, so the caller
+    falls back to the flat cap rather than reading an API blip as a free pool.
+    """
+    base = f"{GITHUB_API}/repos/{repo}/actions"
+    query = urllib.parse.urlencode({"status": "queued", "per_page": "1"})
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    queued_runs = _clean_count(payload, "total_count") if status < 400 else None
+    if queued_runs is None:
+        return None
+    cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
+        seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS
+    )
+    query = urllib.parse.urlencode(
+        {
+            "status": "in_progress",
+            "per_page": str(ADAPTIVE_CENSUS_SAMPLE_RUNS),
+            "created": "<" + cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
+    if status >= 400 or not isinstance(runs, list):
+        return None
+    sampled = refused = served = slow = 0
+    for run in runs[:ADAPTIVE_CENSUS_SAMPLE_RUNS]:
+        run_id = run.get("id") if isinstance(run, dict) else None
+        if not isinstance(run_id, int) or isinstance(run_id, bool):
+            return None
+        query = urllib.parse.urlencode(
+            {"filter": "latest", "per_page": str(ADAPTIVE_CENSUS_JOB_PAGE)}
+        )
+        status, payload = _request("GET", f"{base}/runs/{run_id}/jobs?{query}", token)
+        jobs = payload.get("jobs") if isinstance(payload, dict) else None
+        total = _clean_count(payload, "total_count")
+        if (
+            status >= 400
+            or not isinstance(jobs, list)
+            or total is None
+            or total > ADAPTIVE_CENSUS_JOB_PAGE
+            or total != len(jobs)
+        ):
+            return None
+        evidence = _run_job_evidence(jobs)
+        if evidence is None:
+            return None
+        run_refused, run_slow, run_served = evidence
+        sampled += 1
+        refused += run_refused
+        slow += run_slow
+        if run_served:
+            served += 1
+    return HostedPoolCensus(queued_runs, sampled, refused, served, slow)
+
+
+def adaptive_proof_cap(census: HostedPoolCensus | None) -> tuple[int, str]:
+    """``clamp(8 + headroom, 8, 16)`` from job-level evidence; flat cap otherwise."""
+    if census is None:
+        return MAX_IN_FLIGHT_PR_PROOFS, "census unavailable: flat cap"
+    full = ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
+    if census.queued_runs > 0 or census.refused_jobs > 0 or census.slow_jobs > 0:
+        headroom = 0
+        why = (
+            f"hosted pool refused {census.queued_runs} queued run(s), "
+            f"{census.refused_jobs} waiting hosted job(s), "
+            f"{census.slow_jobs} slow pickup(s) in "
+            f"{census.sampled_runs} mature run(s)"
+        )
+    elif census.served_runs >= ADAPTIVE_SERVED_RUNS_FULL_HEADROOM:
+        headroom = full
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    elif census.served_runs > 0:
+        headroom = full // 2
+        why = f"{census.served_runs} of {census.sampled_runs} mature run(s) served"
+    else:
+        headroom = 0
+        why = f"no mature run witnessed the hosted pool ({census.sampled_runs} sampled)"
+    cap = max(
+        MAX_IN_FLIGHT_PR_PROOFS,
+        min(ADAPTIVE_PROOF_CAP_MAX, MAX_IN_FLIGHT_PR_PROOFS + headroom),
+    )
+    return cap, f"+{headroom} adaptive: {why}"
+
+
+def refresh_floor_allowance(
+    census: HostedPoolCensus | None, effective_proofs: int
+) -> tuple[int, str]:
+    """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
+
+    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable census
+    that witnessed a pickup (served run or slow job), on any refusal evidence, or
+    at/above ``REFRESH_FLOOR_PROOF_CEILING``.
+    """
+    if census is None:
+        return 0, "floor withheld: hosted pool census not read"
+    if census.queued_runs > 0 or census.refused_jobs > 0:
+        return 0, (
+            f"floor withheld: hosted pool refused {census.queued_runs} queued "
+            f"run(s), {census.refused_jobs} waiting hosted job(s)"
+        )
+    if census.sampled_runs <= 0 or (census.served_runs <= 0 and census.slow_jobs <= 0):
+        return 0, (
+            "floor withheld: no hosted pickup witnessed "
+            f"({census.sampled_runs} mature run(s) sampled, none served or slow)"
+        )
+    if effective_proofs >= REFRESH_FLOOR_PROOF_CEILING:
+        return 0, (
+            f"floor withheld: {effective_proofs} proof(s) in flight, at or above "
+            f"the floor ceiling {REFRESH_FLOOR_PROOF_CEILING}"
+        )
+    return REFRESH_FLOOR_PER_SWEEP, (
+        f"saturation floor: {REFRESH_FLOOR_PER_SWEEP} lease-serialized refresh "
+        f"({effective_proofs} proof(s) in flight under ceiling "
+        f"{REFRESH_FLOOR_PROOF_CEILING}, {census.slow_jobs} slow pickup(s), "
+        f"no refusal in {census.sampled_runs} mature run(s))"
+    )
 
 
 def refresh_lease_reservation_count(
@@ -2969,6 +3629,7 @@ class RefreshLease:
         self.readable = readable
         self.claim_attempted = False
         self.released_numbers: set[int] = set()
+        self.claim_attempted_number: int | None = None
         self._label_ready: bool | None = None
 
     @property
@@ -3020,6 +3681,27 @@ class RefreshLease:
             return True
         return current - stamp >= REFRESH_LEASE_MAX_SECONDS
 
+    def _decline(self, number: Any, reason: str) -> bool:
+        """Refuse a claim out loud.
+
+        Every refusal before the issue-label POST used to be a bare ``return
+        False`` (most are pre-write; the read-back case follows a register write
+        whose outcome is then unknown); the only trace
+        the sweep left was `refresh_deferred`'s "0/1 effective CI workload slot(s)
+        in use", which reads as a capacity wait when the real cause was a refused
+        generation-register read, a sweep-wide claim latch, or a released
+        generation (observed live with a tier-0 `main-red-repair` pull request
+        deferred sweep after sweep while the queue showed a free slot). The
+        annotation names the cause; the fail-closed verdict is unchanged.
+        """
+        _annotate(
+            "notice",
+            "merge-on-green refresh lease",
+            f"PR #{number}: refresh lease not claimed — {reason}; no update-branch "
+            "write attempted.",
+        )
+        return False
+
     def _write_generation_record(self, number: Any, head_sha: str) -> bool:
         """Create/update and affirm the exact generation before claiming.
 
@@ -3057,7 +3739,11 @@ class RefreshLease:
                     },
                 )
             else:
-                return False
+                return self._decline(
+                    number,
+                    f"the generation register read answered HTTP {status}"
+                    + ("" if isinstance(current, dict) or status != 200 else " without a label object"),
+                )
             # Every mutating response is potentially ambiguous, and 422 is also
             # validation/throttling. Only an exact read-back authorises the issue
             # label or the CI-producing update.
@@ -3069,11 +3755,19 @@ class RefreshLease:
                 or not isinstance(verified, dict)
                 or str(verified.get("description") or "") != description
             ):
-                return False
+                return self._decline(
+                    number,
+                    "a generation register write was attempted but the read-back did "
+                    f"not affirm the intended record (write HTTP {write_status}, "
+                    f"read-back HTTP {verify_status}); the register's outcome is "
+                    "unknown",
+                )
             self._label_ready = True
             parsed = parse_refresh_lease_record(description)
             if parsed is None:
-                return False
+                return self._decline(
+                    number, "the affirmed generation record did not parse"
+                )
             (
                 _owner,
                 self.generation_head_sha,
@@ -3110,24 +3804,60 @@ class RefreshLease:
         """Claim before ``update-branch``; ambiguity fails closed."""
         number = pull.get("number")
         head_sha = str(((pull.get("head") or {}).get("sha")) or "").lower()
-        if not self.readable or not number or len(head_sha) != 40:
-            return False
+        if not self.readable:
+            return self._decline(
+                number, "the lease census or generation register is unreadable this sweep"
+            )
+        if not number:
+            return self._decline(number, "the live pull request carries no number")
+        if len(head_sha) != 40:
+            return self._decline(
+                number, "the live pull request carries no 40-character head sha"
+            )
         if str(number).isdigit() and int(number) in self.released_numbers:
-            return False
+            return self._decline(
+                number, "its generation was released earlier in this same sweep"
+            )
         if self.owns(pull):
             # A generation may authorize exactly one update of its recorded head.
             # Once update-branch moved the live head, later sweeps only reconcile
             # that workload; they must never use the same label for a second update.
-            return bool(
-                self.generation_head_sha
-                and head_sha == self.generation_head_sha
-                and self.record_is_current()
+            if not self.generation_head_sha:
+                return self._decline(
+                    number, "it holds the lease but no generation head is recorded"
+                )
+            if head_sha != self.generation_head_sha:
+                return self._decline(
+                    number,
+                    "its recorded generation already authorised one update "
+                    f"(recorded head {self.generation_head_sha[:12]}, live head "
+                    f"{head_sha[:12]})",
+                )
+            if self.record_is_current():
+                return True
+            return self._decline(
+                number,
+                "the generation register no longer affirms its generation "
+                "(read refused or record changed)",
             )
-        if self.owner_number is not None or self.claim_attempted:
-            return False
+        if self.owner_number is not None:
+            return self._decline(
+                number, f"PR #{self.owner_number} holds the one durable lease"
+            )
+        if self.claim_attempted:
+            return self._decline(
+                number,
+                "this sweep already spent its single lease claim"
+                + (
+                    f" on PR #{self.claim_attempted_number}"
+                    if self.claim_attempted_number is not None
+                    else ""
+                ),
+            )
         # Set before any network write. A timeout may mean the server accepted it,
         # so this process must never try a different pull request afterward.
         self.claim_attempted = True
+        self.claim_attempted_number = int(number) if str(number).isdigit() else None
         if not self._write_generation_record(number, head_sha):
             return False
         try:
@@ -3518,9 +4248,9 @@ def pull_cap_for_limit(limit: Any) -> int:
 
     The 25-at-1,000 baseline is measured production behavior, not a guessed
     request cost. Scaling that ratio preserves the old budget share after an
-    account-tier change; the 100 ceiling matches the single pull-list page and
-    keeps one reconciliation bounded. An unreadable or malformed limit falls
-    back to the known-safe baseline.
+    account-tier change; the 128 ceiling covers the measured 110-PR backlog
+    using existing paginated discovery while keeping one reconciliation bounded.
+    An unreadable or malformed limit falls back to the known-safe baseline.
     """
     if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
         return FALLBACK_PULL_CAP
@@ -3707,10 +4437,16 @@ def sweep_order(
     The rotation is what makes the cap fair. This script keeps NO state between
     runs — it is a level-triggered reconciler, and that property is load-bearing
     for the overlapping-sweep safety argument — so it cannot remember where the
-    last sweep stopped. The wall clock is the cursor instead: the window start
-    advances by `cap` every `bucket_seconds`, which walks the whole ring and
-    therefore reaches every pull request within ceil(N / cap) buckets no matter
-    how long it has sat. Sorting by `updated_at` was the obvious alternative and
+    last sweep stopped. The wall clock is the cursor instead. Within a cycle,
+    the evaluation window advances by `cap` every `bucket_seconds`. That covers
+    evaluation, but can leave the smaller refresh-attempt prefix permanently
+    fixed: with 100 pulls and cap=100, only the same first eight get attempts.
+    After each distinct-offset cycle, advance its phase by a value coprime to
+    gcd(cap, N). The cycles then visit every residue class, so each ordinary pull
+    gets the first ordinary position within an aligned N-bucket epoch (assuming
+    a stable backlog and priority membership). Higher-priority tiers and actual
+    admission still decide whether it receives a refresh. No state or extra
+    requests are introduced. Sorting by `updated_at` was the obvious alternative and
     it starves: a pull request nothing acts on never has its timestamp bumped, so
     it would hold its place — or lose it — forever.
 
@@ -3725,7 +4461,19 @@ def sweep_order(
     stable = sorted(pulls, key=lambda pull: int(pull.get("number") or 0))
     span = len(stable)
     when = int(dt.datetime.now(dt.timezone.utc).timestamp() if now is None else now)
-    offset = ((when // max(1, bucket_seconds)) * max(1, cap)) % span
+    step = max(1, cap)
+    divisor = math.gcd(step, span)
+    cycle_length = span // divisor
+    # Keep the existing cap-sized evaluation windows, but move their phase when
+    # they repeat. A coprime phase visits all residue classes. Start near the
+    # bounded attempt width so scarce refresh prefixes cover the backlog sooner;
+    # this changes ordering only, never either workload or API-attempt admission.
+    phase_step = min(MAX_REFRESHES_PER_SWEEP, divisor)
+    while math.gcd(phase_step, divisor) != 1:
+        phase_step -= 1
+    bucket = when // max(1, bucket_seconds)
+    phase = (bucket // cycle_length) * phase_step
+    offset = (bucket * step + phase) % span
     wanted = str(trigger_head_sha or "").strip().lower()
     lease_number = str(refresh_lease_number or "")
 
@@ -5961,11 +6709,19 @@ def live_authorized_pull(
         )
         return None, "authorization-unreadable"
     if status >= 400 or not isinstance(live, dict):
-        _annotate(
-            "warning",
-            "merge-on-green authorization",
-            f"PR #{number}: live authorization read returned HTTP {status}.",
+        # Reuse the existing body/header classifier without changing this guard's
+        # fail-closed disposition or its callers' retry policy. A bare HTTP 403
+        # hides the distinction between exhausted quota and an authorization fault.
+        failure = _read_failed(
+            status, live, f"PR #{number}: live authorization read failed"
         )
+        detail = str(failure)
+        if token:
+            detail = detail.replace(token, "[redacted]")
+        # Provider text is untrusted annotation data, never another log command.
+        detail = re.sub(r"[\x00-\x1f\x7f-\x9f]", " ", detail)
+        detail = " ".join(detail.split()).replace("%", "%25")[:600]
+        _annotate("warning", "merge-on-green authorization", detail)
         return None, "authorization-unreadable"
     if live.get("merged") is True:
         return None, "already-merged"
@@ -6004,6 +6760,21 @@ def update_branch_conflict(detail: str) -> bool:
     """Affirmative conflict language, not a generic 422 validation response."""
     normalized = " ".join(detail.lower().split())
     return "merge conflict" in normalized or "merge conflicts" in normalized
+
+
+def affirmatively_conflicted(pull: dict[str, Any]) -> bool:
+    """Affirmative conflict fields on a LIVE pull, never unknown or stale state.
+
+    GitHub answers ``mergeable: null`` while it is still computing and may omit
+    both fields on error shapes, so only the strict pair — ``mergeable`` is
+    exactly ``False`` AND ``mergeable_state`` is ``dirty`` — classifies a real
+    conflict. Anything else (unknown, missing, clean, blocked, unstable) keeps
+    the pull on the existing write-then-classify admission path, where
+    `update_branch` judges the 422 it actually receives.
+    """
+    if pull.get("mergeable") is not False:
+        return False
+    return str(pull.get("mergeable_state") or "").lower() == "dirty"
 
 
 def update_branch(repo: str, pull: dict[str, Any], token: str) -> str:
@@ -6152,6 +6923,25 @@ def attempt_update_branch(
             "sweep budget; no branch write attempted.",
         )
         return "refresh-deferred"
+    if affirmatively_conflicted(live):
+        # The same fresh authorized read that just proved head/open/main/armed/
+        # draft also carried GitHub's own computed merge verdict: this head can
+        # take no update-branch write at all. Declining here keeps a known
+        # conflicting pull request from consuming a workload slot, a bounded
+        # attempt, or — at saturation — the ONE durable lease claim a clean head
+        # behind it needs (observed live: one conflicting owner drained the only
+        # high-load slot, released the lease on the decline, and the sweep's
+        # claim latch still denied every later pull at 0/1 used). Only the
+        # affirmative pair classifies; unknown/missing mergeability falls
+        # through to the write-then-classify path below unchanged.
+        _annotate(
+            "notice",
+            "merge-on-green",
+            f"PR #{pull.get('number')}: GitHub reports the live head unmergeable "
+            "against main (mergeable=false, mergeable_state=dirty); declining the "
+            "refresh — no update-branch write attempted, no refresh budget spent.",
+        )
+        return "declined"
     if not budget.take_refresh(live):
         return refresh_deferred(pull.get("number"), why, budget)
     if budget.requires_refresh_lease:
@@ -6296,9 +7086,9 @@ def reprove(
             f"but the proof is no longer trustworthy: {reason}.\n\n"
             "A check proves the head against the base it was handed, not against the "
             "base that exists at merge time — that is how PR #4583's honest 15-hour-old "
-            "green turned main red. The sweeper tried to merge `main` into this branch "
-            "so fresh checks could re-prove it, and GitHub declined, which means a REAL "
-            "content conflict. Resolve it by hand and the next sweep will pick it up "
+            "green turned main red. GitHub reports a REAL content conflict that prevents "
+            "refreshing this branch with `main` for fresh checks. Resolve the conflict "
+            "and the next sweep will pick it up "
             "(the label stays armed)."
         ),
         merge_token,
@@ -6367,9 +7157,10 @@ def sweep_pull(
         _annotate("warning", "merge-on-green", f"PR #{number}: no head sha; skipped.")
         return "unproven"
 
-    runs = check_runs if check_runs is not None else head_check_runs(
+    raw_runs = check_runs if check_runs is not None else head_check_runs(
         repo, head_sha, read_token
     )
+    runs = authority_effective_checks(repo, pull, raw_runs, read_token)
     anchor_verdict, anchor_names = proof_anchor_verdict(runs)
     if budget is not None:
         budget.observed_anchor_states[number] = anchor_verdict
@@ -7138,9 +7929,8 @@ def sweep_pull(
             (
                 "`merge-on-green` sweeper: **not merging.** Every check was clean, but "
                 f"GitHub refused the squash merge: _{detail}_\n\n"
-                "The sweeper then tried to merge `main` into this branch itself and "
-                "GitHub declined that too, which means a REAL content conflict rather "
-                "than a stale base. Resolve it by hand and the next sweep will pick it "
+                "GitHub also reports a REAL content conflict that prevents refreshing this "
+                "branch with `main`. Resolve the conflict and the next sweep will pick it "
                 "up (the label stays armed)."
             ),
             merge_token,
@@ -7769,13 +8559,42 @@ def main() -> int:
         if active_pr_proofs is not None
         else None
     )
+    # The adaptive cap is read only where headroom could admit a refresh: a readable
+    # census and lease, refresh authority, fewer proofs in flight than the widest
+    # cap, and a flat-cap allowance smaller than what this sweep could launch (with
+    # no proof in flight the flat cap already affords a full MAX_REFRESHES_PER_SWEEP).
+    # It degrades to the flat cap on ANY census problem, including a RateLimited
+    # read: it must never route the sweep into the deferred path.
+    proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
+    pool_census: HostedPoolCensus | None = None
+    effective_proofs = int(effective_active_proofs or 0)
+    if (
+        active_pr_proofs is not None
+        and refresh_lease.readable
+        and budget.refresh_authorized
+        and effective_proofs < ADAPTIVE_PROOF_CAP_MAX
+        and MAX_IN_FLIGHT_PR_PROOFS - effective_proofs < budget.max_refreshes
+    ):
+        try:
+            pool_census = hosted_pool_census(repo, read_token)
+        except Exception as exc:
+            adaptive_detail = f"census failed ({exc}): flat cap"
+        else:
+            proof_cap, adaptive_detail = adaptive_proof_cap(pool_census)
     if active_pr_proofs is None or not refresh_lease.readable:
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
         available_refreshes = max(
-            0, MAX_IN_FLIGHT_PR_PROOFS - int(effective_active_proofs or 0)
+            0, proof_cap - int(effective_active_proofs or 0)
         )
+        floor_detail = ""
+        if available_refreshes == 0 and budget.max_refreshes > 0:
+            # S9: a saturated-but-serving pool must not freeze every stale proof
+            # indefinitely. One lease-serialized refresh, under a hard ceiling.
+            available_refreshes, floor_detail = refresh_floor_allowance(
+                pool_census, effective_proofs
+            )
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
         budget.requires_refresh_lease = (
             0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
@@ -7784,8 +8603,9 @@ def main() -> int:
             f"{active_pr_proofs} indexed pull-request ci run(s) plus "
             f"{reservation_count} unindexed durable "
             f"reservation(s), global cap "
-            f"{MAX_IN_FLIGHT_PR_PROOFS}, {budget.max_refreshes} CI workload slot(s) "
+            f"{proof_cap} ({adaptive_detail}), {budget.max_refreshes} CI workload slot(s) "
             "available this sweep"
+            + (f" [{floor_detail}]" if floor_detail else "")
             + (" (durable lease required)" if budget.requires_refresh_lease else "")
         )
     budget.refresh_context = refresh_load_detail

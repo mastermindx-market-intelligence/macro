@@ -1,0 +1,1778 @@
+{
+  "schema": "mastermind.pr7592.current_build.v1",
+  "generated_at": "2026-11-11T17:34:04.820853+00:00",
+  "build_source_base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "original_feature_head": "51db6f0ab393fee1195b9f81674b302135382945",
+  "status": "qualified_snapshot_before_incoming_main_data_refresh",
+  "production": false,
+  "inputs": "actual committed data/site bytes from the named build base; no provider refresh",
+  "fresh_tests": {
+    "affected_python": 312,
+    "catalog_packing_python": 2,
+    "actual_page_rest_cells": 8,
+    "synthetic_interaction_cases": 8
+  },
+  "visual_review": {
+    "representative_cells": [
+      "desktop/en/light",
+      "desktop/zh/dark",
+      "mobile/en/dark",
+      "mobile/zh/light"
+    ],
+    "observed": "Delayed-data and missing-price disclosures present in both languages; responsive page has no document horizontal overflow.",
+    "performance_acceptance": false
+  },
+  "retained_limitations": [
+    "Stored prices are 2026-11-09, two days delayed at this build; the rendered disclosure is retained.",
+    "W3C source-family/rights capture remains unavailable (SOURCE_FAMILY_UNRESOLVED / CAPTURE_RIGHTS_UNAVAILABLE).",
+    "Synthetic interaction inputs are fixtures, not production data.",
+    "No deployment, live/provider refresh, or financial/trading validation is claimed."
+  ],
+  "incoming_refresh": {
+    "receiving_main": "63cd9355cb289990e7549bcbd8480089f9caa5f1",
+    "reason": "4072 data/site objects changed, including the actual China board; current-delivery page will be rebuilt against this fixed snapshot.",
+    "source_unchanged": true,
+    "this_receipt_and_images": "retained as dated evidence; not relabeled as the later input snapshot"
+  },
+  "phase_receipts": {
+    "source-composition.json": {
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "source_paths": [
+        {
+          "path": "collectors/china_breadth.py",
+          "before": "11af432f69520932c0f474e007b0c1d88d6e10f7",
+          "after": "f472cfc51b0fa97c6a68c34c64f34243a2071a90"
+        },
+        {
+          "path": "scripts/build_china.py",
+          "before": "b09987f6f7d159e253e7adbb8afe5c04f91b6553",
+          "after": "025eb4de423330f5b28b38648079df4337f2bd6f"
+        },
+        {
+          "path": "templates/china.html.j2",
+          "before": "cb8b6c8741cd85a6637d76a24fe7d4e4a7b8b00f",
+          "after": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0"
+        },
+        {
+          "path": "tests/test_china_archetype_d_s1.py",
+          "before": "baa50c2643b34b76814a2876c6462a134e60365d",
+          "after": "b3f956474e61a5b5927af7c0a7553ba12f6caeda"
+        },
+        {
+          "path": "engine/china_tier1.py",
+          "before": "c3c7b544e15cad901e68ad909984d54c781071a7",
+          "after": "cf24db2016133869026bc3e8b09129905d41b892"
+        },
+        {
+          "path": "tests/test_risk_radar_dlg_country_wiring.py",
+          "before": "dc083091231beb6f079ee063220f11d6a23a2ebe",
+          "after": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3"
+        },
+        {
+          "path": "tests/test_china_breadth_coverage.py",
+          "before": null,
+          "after": "4d474b8124da79133d5d776e84067a95b07f8afc"
+        },
+        {
+          "path": ".github/ci/legacy-jobs.yml",
+          "before": "9cad97ab46e8a66bf0afa05c490ad109f6e33d80",
+          "after": "ec5b0e419e7a91a7d3f948fbaac253a01b9551a4",
+          "owners": 401,
+          "changed_owners": [
+            "china-board-breadth"
+          ]
+        }
+      ],
+      "unrelated_owners_preserved": 400
+    },
+    "build-result.json": {
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "started_at": "2026-11-11T16:31:49.464054+00:00",
+      "command": [
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+        "-m",
+        "scripts.build_china"
+      ],
+      "profile_sha256": "b97a66a930cfaf942aab5d1783ae261cab4b19f29c09322908db1ac2757503bb",
+      "board_blob": "416a9228355c508ef135ef81d0818a9f831f9a1c",
+      "environment_keys": [
+        "CHINA_FAST_RENDER",
+        "GIT_NO_LAZY_FETCH",
+        "GIT_OPTIONAL_LOCKS",
+        "HOME",
+        "LANG",
+        "MPLCONFIGDIR",
+        "PATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "RENDER_NO_DRIP",
+        "TMPDIR",
+        "TZ",
+        "XDG_CACHE_HOME"
+      ],
+      "network_probe": {
+        "loopback_connect_errno": 1,
+        "network_denied": true
+      },
+      "child_pid": 92261,
+      "completed_at": "2026-11-11T16:32:36.865909+00:00",
+      "exit_code": 0,
+      "log_sha256": "a8bcd16fcd89f05e70456cbb3c6c02fae130a4abc1e506dbf8981fb6016ea62d",
+      "page_blob": "66219cdb5bd14727a4c17ed33b569ccfc05074af"
+    },
+    "affected-tests-attempt2-result.json": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/offline-build.sb",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_china_archetype_d_s1.py",
+        "tests/test_china_breadth_coverage.py",
+        "tests/test_china_board_breadth.py",
+        "tests/test_market_heatmap.py",
+        "tests/test_breadth_constituents_repair.py",
+        "tests/test_breadth_split_seam.py",
+        "tests/test_risk_radar_dlg_country_wiring.py",
+        "tests/test_risk_radar_dlg_partial.py",
+        "tests/test_china_delayed_board_disclosure.py",
+        "tests/test_china_conditions.py",
+        "tests/test_build_china_risk_state.py",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--log-file=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/pytest-affected-attempt2.log"
+      ],
+      "attempt": 2,
+      "changed_condition": "pytest log target within owned workspace; sandbox unchanged",
+      "started_at": "2026-11-11T16:37:09.231684+00:00",
+      "profile_sha256": "b97a66a930cfaf942aab5d1783ae261cab4b19f29c09322908db1ac2757503bb",
+      "child_pid": 15494,
+      "exit_code": 0,
+      "completed_at": "2026-11-11T16:38:12.661394+00:00",
+      "existing_data_site_changed_by_tests": [],
+      "log_sha256": "22ca8859cc2248e831e84d7f5aada5e89a632c18da4a4bc723a2daca0b6d120a"
+    },
+    "normalization-proof.json": {
+      "normalization_profile_sha256": "80f93791a948ef828492c167c5691985adf289189833baf93260c63531a99aaa",
+      "network_denied": true,
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "raw_page_blob": "66219cdb5bd14727a4c17ed33b569ccfc05074af",
+      "final_page_blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+      "final_page_sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133",
+      "final_page_bytes": 264205,
+      "fixed_point": true,
+      "assets": {
+        "site/assets/css/be207544.css": {
+          "blob": "fedf0699d98424412aa603f7574698d8f48db27e",
+          "sha256": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab",
+          "bytes": 182375,
+          "new": false
+        },
+        "site/assets/css/f7e9b02b.css": {
+          "blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+          "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86",
+          "bytes": 1908,
+          "new": false
+        }
+      },
+      "incidental_outputs_preserved_and_restored": [
+        {
+          "path": "data/china_regime/latest.json",
+          "built_blob": "5278403bc4fbb5e71dcc056ebf15d7243560c401",
+          "restored_blob": "764e79302bf91a86d3bd7244b70a7b4654435471",
+          "backup_sha256": "2a80b239fa45d548734bc4c06512c788b2bcb2948c7a1113d810d044ea2a28bd"
+        },
+        {
+          "path": "data/china_regime/regime_history.parquet",
+          "built_blob": "62ab98d2149b5f13171f04e57c82213e38aec5d4",
+          "restored_blob": "874aa2607de7a916d060f151fe2c560f99509845",
+          "backup_sha256": "03553bb0b2beb58daa7742d291f10640e5753d8463e6d6b9cbbcf957eecc01e8"
+        },
+        {
+          "path": "data/risk_radar/scorecard.json",
+          "built_blob": "2bef7ddc6b0b0c987065ddf5578a6f4c4de80fa8",
+          "restored_blob": "aea3efb1338272210b8c808d8cb584fbecd9d3e5",
+          "backup_sha256": "94e77b315a6bb94f4f87a0a8b81a024f308238930188c320597f9dbc618be2cf"
+        },
+        {
+          "path": "site/china_allocation.html",
+          "built_blob": "a09590a3c45ea90e60edf20f5bb65053a4c4985d",
+          "restored_blob": "761aed32f73c58777423b231e3a71db5015dcd86",
+          "backup_sha256": "263fb5e38025ca7669590a373ddb1f22c6cb36aea232e274033bb3d1f0a39e61"
+        },
+        {
+          "path": "site/china_history.html",
+          "built_blob": "1c92ac55543e48acbfc933ac911b1c898e426019",
+          "restored_blob": "215a4aa3699b98d2f4fae9b71d184443834c9788",
+          "backup_sha256": "05d4f7613e929cb05cc7e4a1196d14c74e108da51b0e454fd10dda9e96e85b42"
+        },
+        {
+          "path": "site/china_lookup.html",
+          "built_blob": "f79b621ffafa21d7fb57e1463a81bc76a5d50f72",
+          "restored_blob": "4fdfde72445beeaae80a5de4218e55cb924e1e62",
+          "backup_sha256": "bee496c3f62163a0cf4aabeea06a6a6837cd3c8f2cee682e7e97033657e051f0"
+        },
+        {
+          "path": "site/china_news.html",
+          "built_blob": "818cfea94f8230bb6663911ffe21f50b6390985e",
+          "restored_blob": "b458dcfd2e46e40186f9c2f61c91deab320065d3",
+          "backup_sha256": "536929113f9bd0b6d114db0f2b80c9114078bb4adf4fc13d2474451c5757b3f4"
+        },
+        {
+          "path": "site/china_stocks.html",
+          "built_blob": "eff4b6f213fbc82fcbb7cc2b811d24023c19d146",
+          "restored_blob": "0a8d24b0384d60c8be6cf6132d1923572f8b5591",
+          "backup_sha256": "f75c4934f1c16b5d9f89e6797e13b20688be2f9ad9afdadf230d5ad746601cc9"
+        },
+        {
+          "path": "site/riskdata/scorecard.json",
+          "built_blob": "2bef7ddc6b0b0c987065ddf5578a6f4c4de80fa8",
+          "restored_blob": "53f522f4c14167739e9d695c8e4ffa6b5cef37ff",
+          "backup_sha256": "94e77b315a6bb94f4f87a0a8b81a024f308238930188c320597f9dbc618be2cf"
+        },
+        {
+          "path": "site/sectors/159928.SZ.html",
+          "built_blob": "1347c6a0f5fa00f6234fa9f66b7c0af28c900df7",
+          "restored_blob": "8494c5c442d6fe67b12274201944df2b00c89e34",
+          "backup_sha256": "f483ef8598bacaadc5a9b05eae8b93a4501300b6a1434e24eb1c0491c5073013"
+        },
+        {
+          "path": "site/sectors/159992.SZ.html",
+          "built_blob": "d0f5d4fd1e6eb3d660212bcdf49af639b290a48e",
+          "restored_blob": "71d5a19a2b48c7881a22dcff00b591ca9af83103",
+          "backup_sha256": "5c921a4268c1ed0b34b7c2ddcc8da05c9eb39feb4ca9bad4723b54c0323bbcfa"
+        },
+        {
+          "path": "site/sectors/512170.SS.html",
+          "built_blob": "c887c35322b6d2da07cdb53baf1f87e0eee23114",
+          "restored_blob": "97139d8a578892e33050b0c5053a7e0dc252663b",
+          "backup_sha256": "816aa00b21839d5610d0412ba3d44a9cfea14a4faffc6c3b0705a0887f735fe0"
+        },
+        {
+          "path": "site/sectors/512200.SS.html",
+          "built_blob": "0bcf90e2ccf9c836569c2b2e326739666c4f80d7",
+          "restored_blob": "704624d856b30371b945f7b1e35fd5d4fb45fa76",
+          "backup_sha256": "55b041942079f783546df8e81d56553c48242671053c0f0965729d5a5859d397"
+        },
+        {
+          "path": "site/sectors/512400.SS.html",
+          "built_blob": "b2a27f40862acb84cd5f7ceebe28c092cb148c1c",
+          "restored_blob": "a5000bb3d2f28f52df43a988400b41a857564fcf",
+          "backup_sha256": "499a0717aae023614a0aaee1fd1030b1182f21b4441425accd93a93e3a849efc"
+        },
+        {
+          "path": "site/sectors/512660.SS.html",
+          "built_blob": "f7649fcf7ca6191dd4eb7bc3efdebfd64e9de891",
+          "restored_blob": "b882b0d37e0073e0ad99963b68c168e4b6db742f",
+          "backup_sha256": "1b3bff63579cd2546fe0f09f855583abc10db126bed74652b514784b19425dda"
+        },
+        {
+          "path": "site/sectors/512690.SS.html",
+          "built_blob": "57ba2253d278a59ca47da69386ea9891adf11f03",
+          "restored_blob": "22761e155278d2039386bdb4318d22d2f2307bbb",
+          "backup_sha256": "482bf1446ee28fe81a2069bcd1548f9ed9a1a0b6a64f0f0242925d2f2f718466"
+        },
+        {
+          "path": "site/sectors/512760.SS.html",
+          "built_blob": "e5b6040a1d59e2a835bc13a06f7e999b0df8ca9d",
+          "restored_blob": "c395374574b46c6b26f25ca17df61997cf822aac",
+          "backup_sha256": "55bef29e9eff88110ba6c4c2ccc5fdebae8ed5b4d6b8fb55f7f9a23c2313ee29"
+        },
+        {
+          "path": "site/sectors/512800.SS.html",
+          "built_blob": "ce4cb39f7ace441612f5c8cf9f54c80ee37e482a",
+          "restored_blob": "754c4ef85447feac69a1fde736efd0a7be8f4c65",
+          "backup_sha256": "8867e2acc379263c968d8ce33726d69d922eebf9cc6a6831efe898697b9d7eab"
+        },
+        {
+          "path": "site/sectors/512880.SS.html",
+          "built_blob": "2fd0abd314c9214f7bd0b2001e6b7bb47554e587",
+          "restored_blob": "0a6b7165bcd3cb5927a06de8734320fe7bc0348e",
+          "backup_sha256": "18efaf6113ce7c81b085de38f497663ab7e6091264bcae6012deb08e4e85fdb3"
+        },
+        {
+          "path": "site/sectors/512980.SS.html",
+          "built_blob": "eacab0fa195194d437290522961dd935d4fcb3df",
+          "restored_blob": "69544241af19337eb9b058c6ecad61ada4a71af2",
+          "backup_sha256": "5710e76d1e8e452c9a2c408bf8d47d14a9442d5f0a345e8081c83013938b5ef6"
+        },
+        {
+          "path": "site/sectors/515000.SS.html",
+          "built_blob": "b39a7ba756060a0be606f030eeeb1e7e22142e4a",
+          "restored_blob": "3bef1029064d7a95f431626fbfe51954452f4fdb",
+          "backup_sha256": "2d5f06c08b0d309451157791e0f4797d883caf2f351b8078d61e62122075f237"
+        },
+        {
+          "path": "site/sectors/515030.SS.html",
+          "built_blob": "a1821af200daaf34611d9e3732c643377b31df15",
+          "restored_blob": "4be8830cd3dd1598eef5d97e3cd16910e4c70288",
+          "backup_sha256": "e52bd931a280b3e1ee07dd8d34d16b3b07e171c2f4ada04ed03dbb67eafaa19a"
+        },
+        {
+          "path": "site/sectors/515220.SS.html",
+          "built_blob": "f1d38d6a8aa27ab3ef0e1cc3077dcb3a288c72ea",
+          "restored_blob": "08d77f6e59892d96b9826d459199f4b2f4e49768",
+          "backup_sha256": "a8cf9a80edaa68a346c4b5710137da6ae5cc8f11ac3f50f101cad1d1196ff262"
+        },
+        {
+          "path": "site/sectors/515250.SS.html",
+          "built_blob": "682e95cda430765ce3bb8f7c4d95b2c77eac4a8e",
+          "restored_blob": "033bfe12fbe4ea47df96889d0589867f540c59fe",
+          "backup_sha256": "1ac966f9a08f678afb67a3e34167d406f5ea312b6f3576bca51f783837efcb74"
+        },
+        {
+          "path": "site/sectors/515790.SS.html",
+          "built_blob": "956490104d0f982c467bdb18b3ce6312e7ea44b4",
+          "restored_blob": "3e841c6f2a181631835e5baed8ac9e65fcbf6694",
+          "backup_sha256": "c16f926731c71b831f70c6981393ad89f6c8cfe21d939049f81ca455cbd97796"
+        }
+      ],
+      "pruned_assets": false,
+      "site_data_diff": [
+        "site/china.html"
+      ],
+      "new_site_files": []
+    },
+    "current-capture-attempt3-proof.json": {
+      "after": {
+        ".github/ci/legacy-jobs.yml": {
+          "bytes": 2680766,
+          "git_blob": "ec5b0e419e7a91a7d3f948fbaac253a01b9551a4",
+          "sha256": "8c0077b2dcc9dcad0b377ee56a0acd352c0072a08bb31c362733690dd7833674"
+        },
+        "collectors/china_breadth.py": {
+          "bytes": 6539,
+          "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+          "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+        },
+        "engine/china_tier1.py": {
+          "bytes": 20594,
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+        },
+        "scripts/build_china.py": {
+          "bytes": 123671,
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+        },
+        "scripts/capture_page_evidence.py": {
+          "bytes": 114040,
+          "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+          "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+        },
+        "site/assets/css/be207544.css": {
+          "bytes": 182375,
+          "git_blob": "fedf0699d98424412aa603f7574698d8f48db27e",
+          "sha256": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab"
+        },
+        "site/assets/css/f7e9b02b.css": {
+          "bytes": 1908,
+          "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+          "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+        },
+        "site/china.html": {
+          "bytes": 264205,
+          "git_blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133"
+        },
+        "site/factordata/china_standouts.json": {
+          "bytes": 10452436,
+          "git_blob": "416a9228355c508ef135ef81d0818a9f831f9a1c",
+          "sha256": "c5edc9719612815ab82a00d5e14ec2dead291c738536d7772e6c7c37dfb3939a"
+        },
+        "templates/china.html.j2": {
+          "bytes": 383800,
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "bytes": 20881,
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+        },
+        "tests/test_china_breadth_coverage.py": {
+          "bytes": 10420,
+          "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+          "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+        },
+        "tests/test_risk_radar_dlg_country_wiring.py": {
+          "bytes": 34010,
+          "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+          "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+        }
+      },
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "before": {
+        ".github/ci/legacy-jobs.yml": {
+          "bytes": 2680766,
+          "git_blob": "ec5b0e419e7a91a7d3f948fbaac253a01b9551a4",
+          "sha256": "8c0077b2dcc9dcad0b377ee56a0acd352c0072a08bb31c362733690dd7833674"
+        },
+        "collectors/china_breadth.py": {
+          "bytes": 6539,
+          "git_blob": "f472cfc51b0fa97c6a68c34c64f34243a2071a90",
+          "sha256": "550c72e4f382d52252017efb103d5fca261c867f5bbb514fa8938ab5293cc769"
+        },
+        "engine/china_tier1.py": {
+          "bytes": 20594,
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79"
+        },
+        "scripts/build_china.py": {
+          "bytes": 123671,
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb"
+        },
+        "scripts/capture_page_evidence.py": {
+          "bytes": 114040,
+          "git_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+          "sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+        },
+        "site/assets/css/be207544.css": {
+          "bytes": 182375,
+          "git_blob": "fedf0699d98424412aa603f7574698d8f48db27e",
+          "sha256": "be207544291af54d67a62f355507f53e3d9b104fc463373bd7bedf0eb9c3abab"
+        },
+        "site/assets/css/f7e9b02b.css": {
+          "bytes": 1908,
+          "git_blob": "256f975cba1ba013e9d0baedfa85184e0036d49b",
+          "sha256": "f7e9b02bae5119c39e3c6694b19fcaf8f54e323c41fc93f24d2651001c036d86"
+        },
+        "site/china.html": {
+          "bytes": 264205,
+          "git_blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133"
+        },
+        "site/factordata/china_standouts.json": {
+          "bytes": 10452436,
+          "git_blob": "416a9228355c508ef135ef81d0818a9f831f9a1c",
+          "sha256": "c5edc9719612815ab82a00d5e14ec2dead291c738536d7772e6c7c37dfb3939a"
+        },
+        "templates/china.html.j2": {
+          "bytes": 383800,
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28"
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "bytes": 20881,
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe"
+        },
+        "tests/test_china_breadth_coverage.py": {
+          "bytes": 10420,
+          "git_blob": "4d474b8124da79133d5d776e84067a95b07f8afc",
+          "sha256": "f619349cdfd1fe6fa6b76ecb4af26d5d9336476e6fe75f080fd57378f30f92a4"
+        },
+        "tests/test_risk_radar_dlg_country_wiring.py": {
+          "bytes": 34010,
+          "git_blob": "ab0ac9e17e004f98eccdbb297d9298dd8afed5c3",
+          "sha256": "5234538b7e97c9ee508de67fac183d48c2c0da8013972efc09197c42eb6862b6"
+        }
+      },
+      "blocked_requests": [],
+      "browser_closed": true,
+      "browser_executable": "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+      "browser_version": "151.0.7922.34",
+      "candidate_binding": "actual uncommitted candidate bytes; manifest Git HEAD describes the checkout base",
+      "candidate_bytes_unchanged": true,
+      "capture_exit_code": 0,
+      "capture_owner": "scripts/capture_page_evidence.py",
+      "console_errors": [],
+      "failed_responses": [],
+      "manifest": {
+        "bytes": 11403,
+        "git_blob": "ae63dc35b896299c1dc98985606911b93b93b198",
+        "sha256": "59710fa6520ba523c2b8326fa212a1544d60522ca8ded3475d5c5b536fdfcc0c"
+      },
+      "network_boundary": {
+        "errno": 1,
+        "loopback_pair": true,
+        "outside_test_net_denied": true
+      },
+      "observed_cells": [
+        {
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "cell": "macro:china|desktop|en|dark|anonymous",
+          "error": null,
+          "height": 900,
+          "loaded": true,
+          "locale": "en",
+          "observed": {
+            "asof_present": true,
+            "document_height_px": 2091,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 475
+          },
+          "theme": "dark",
+          "viewport": "desktop",
+          "width": 1440
+        },
+        {
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "cell": "macro:china|desktop|en|light|anonymous",
+          "error": null,
+          "height": 900,
+          "loaded": true,
+          "locale": "en",
+          "observed": {
+            "asof_present": true,
+            "document_height_px": 2091,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 475
+          },
+          "theme": "light",
+          "viewport": "desktop",
+          "width": 1440
+        },
+        {
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "cell": "macro:china|desktop|zh|dark|anonymous",
+          "error": null,
+          "height": 900,
+          "loaded": true,
+          "locale": "zh",
+          "observed": {
+            "asof_present": false,
+            "document_height_px": 2091,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 261
+          },
+          "theme": "dark",
+          "viewport": "desktop",
+          "width": 1440
+        },
+        {
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "cell": "macro:china|desktop|zh|light|anonymous",
+          "error": null,
+          "height": 900,
+          "loaded": true,
+          "locale": "zh",
+          "observed": {
+            "asof_present": false,
+            "document_height_px": 2091,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 261
+          },
+          "theme": "light",
+          "viewport": "desktop",
+          "width": 1440
+        },
+        {
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "cell": "macro:china|mobile|en|dark|anonymous",
+          "error": null,
+          "height": 844,
+          "loaded": true,
+          "locale": "en",
+          "observed": {
+            "asof_present": true,
+            "document_height_px": 4361,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 1,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 450
+          },
+          "theme": "dark",
+          "viewport": "mobile",
+          "width": 390
+        },
+        {
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "cell": "macro:china|mobile|en|light|anonymous",
+          "error": null,
+          "height": 844,
+          "loaded": true,
+          "locale": "en",
+          "observed": {
+            "asof_present": true,
+            "document_height_px": 4361,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 450
+          },
+          "theme": "light",
+          "viewport": "mobile",
+          "width": 390
+        },
+        {
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "cell": "macro:china|mobile|zh|dark|anonymous",
+          "error": null,
+          "height": 844,
+          "loaded": true,
+          "locale": "zh",
+          "observed": {
+            "asof_present": false,
+            "document_height_px": 4262,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 1,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 242
+          },
+          "theme": "dark",
+          "viewport": "mobile",
+          "width": 390
+        },
+        {
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "cell": "macro:china|mobile|zh|light|anonymous",
+          "error": null,
+          "height": 844,
+          "loaded": true,
+          "locale": "zh",
+          "observed": {
+            "asof_present": false,
+            "document_height_px": 4262,
+            "duplicate_heading_texts": [],
+            "elements_wider_than_viewport": 0,
+            "heading_counts": {
+              "h1": 0,
+              "h2": 0,
+              "h3": 0,
+              "h4": 0,
+              "h5": 0,
+              "h6": 0
+            },
+            "horizontal_overflow": false,
+            "long_paragraph_count": 0,
+            "panel_count": 14,
+            "raw_slug_hit_count": 0,
+            "raw_slug_hits": [],
+            "section_count": 0,
+            "source_present": true,
+            "todo_placeholder_hit_count": 0,
+            "todo_placeholder_hits": [],
+            "visible_word_count": 242
+          },
+          "theme": "light",
+          "viewport": "mobile",
+          "width": 390
+        }
+      ],
+      "production": false,
+      "request_failures": [],
+      "sandbox_profile": {
+        "bytes": 325,
+        "git_blob": "943621099fce335383daa4c8aa7d8d426c920de2",
+        "sha256": "a2c9c50463003e1cadf5fca143930a40b17b2c813a5929b6b2bbaeaacbebb117"
+      },
+      "schema": "mastermind.pr7592.current_capture.v1",
+      "screenshots": [
+        {
+          "bytes": 545695,
+          "file": "87e6b32908cdd03a.png",
+          "height": 2091,
+          "locale": "en",
+          "sha256": "87e6b32908cdd03ad93006ff19ec6704e0edcd6b5990d29d95625ad4fc61825b",
+          "theme": "dark",
+          "width": 1440
+        },
+        {
+          "bytes": 447665,
+          "file": "c66e1e19523b0590.png",
+          "height": 2091,
+          "locale": "en",
+          "sha256": "c66e1e19523b0590b47395d5af8d23ba92df84967658abc9e909102bab6a4ee3",
+          "theme": "light",
+          "width": 1440
+        },
+        {
+          "bytes": 548848,
+          "file": "c1c59139e7456afd.png",
+          "height": 2091,
+          "locale": "zh",
+          "sha256": "c1c59139e7456afd807de1c2a6a22dc656ca332d21cacef1c4535fabd373ed50",
+          "theme": "dark",
+          "width": 1440
+        },
+        {
+          "bytes": 458626,
+          "file": "e41a3a846fa4e3b8.png",
+          "height": 2091,
+          "locale": "zh",
+          "sha256": "e41a3a846fa4e3b821f7c3f1f74b8ec94d48bd550e50f7bdccc8405407eaf91e",
+          "theme": "light",
+          "width": 1440
+        },
+        {
+          "bytes": 426870,
+          "file": "bba85f5358f874a0.png",
+          "height": 4361,
+          "locale": "en",
+          "sha256": "bba85f5358f874a010f58140fb4bea50d1e284bc4aa7413f2620cfc21ea4c8ff",
+          "theme": "dark",
+          "width": 390
+        },
+        {
+          "bytes": 371210,
+          "file": "36afde8abd7be949.png",
+          "height": 4361,
+          "locale": "en",
+          "sha256": "36afde8abd7be949c8dd9bbf31131e982cda9e6500d3893c51f3d6dcf509e697",
+          "theme": "light",
+          "width": 390
+        },
+        {
+          "bytes": 426020,
+          "file": "2ac15102181eb5e6.png",
+          "height": 4262,
+          "locale": "zh",
+          "sha256": "2ac15102181eb5e6d7b11e2b6896f951366aedde5809c96e91b9479b5687fad9",
+          "theme": "dark",
+          "width": 390
+        },
+        {
+          "bytes": 372643,
+          "file": "883a50cab0005fb4.png",
+          "height": 4262,
+          "locale": "zh",
+          "sha256": "883a50cab0005fb42ce7defb0e384176c4ce73a3ada686b9b52a8dde90316ba5",
+          "theme": "light",
+          "width": 390
+        }
+      ],
+      "servers": [
+        {
+          "closed": true,
+          "port": 58717
+        }
+      ],
+      "smells": {
+        "bytes": 3872,
+        "git_blob": "cdd9ffe25eaa99d33a89154f4a24117500604098",
+        "sha256": "3bf1fe4dc0e25bc6aa45946bb99ef49a5442e88fe61cda29555306cdfa72d2ab"
+      },
+      "status": "eight_actual_rest_cells_verified"
+    },
+    "synthetic-current-result.json": {
+      "schema": "mastermind.pr7592.synthetic_interaction.v1",
+      "proof_class": "synthetic_full_page_browser",
+      "production": false,
+      "fixture_notice": "Rendered from the actual current test helper; the injected feed is synthetic.",
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "browser_executable": "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+      "before": {
+        "engine/china_tier1.py": {
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79",
+          "bytes": 20594
+        },
+        "scripts/build_china.py": {
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb",
+          "bytes": 123671
+        },
+        "templates/china.html.j2": {
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+          "bytes": 383800
+        },
+        "templates/china_risk_state_live.js": {
+          "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+          "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+          "bytes": 12267
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe",
+          "bytes": 20881
+        },
+        "site/china.html": {
+          "git_blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133",
+          "bytes": 264205
+        }
+      },
+      "fixture_html": {
+        "git_blob": "02e504c878f7ce4e228efba636168b2a840a811b",
+        "sha256": "a8d4111a01f82a8843aa6514c06af0fdbe19879afae4b3db0ad95af2cc26b5f6",
+        "bytes": 290318
+      },
+      "feed": {
+        "schema": "china_risk_state.v1",
+        "built": "2026-11-11T17:00:00Z",
+        "nightly_asof": "2026-11-11",
+        "live_active": false,
+        "realtime": false,
+        "display": {
+          "score": 38,
+          "verdict": "RISK_OFF",
+          "label_en": "Risk-off",
+          "label_zh": "避险"
+        },
+        "nightly": {
+          "verdict": "RISK_OFF",
+          "headline_en": "Synthetic refreshed headline",
+          "headline_zh": "合成刷新标题"
+        }
+      },
+      "cases": [
+        {
+          "width": 1440,
+          "height": 900,
+          "theme": "dark",
+          "locale": "en",
+          "applied": {
+            "theme": "dark",
+            "locale": "en"
+          },
+          "slowdown": "Unavailable",
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "theme": "dark",
+          "locale": "zh",
+          "applied": {
+            "theme": "dark",
+            "locale": "zh"
+          },
+          "slowdown": "暂不可用",
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "theme": "light",
+          "locale": "en",
+          "applied": {
+            "theme": "light",
+            "locale": "en"
+          },
+          "slowdown": "Unavailable",
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "theme": "light",
+          "locale": "zh",
+          "applied": {
+            "theme": "light",
+            "locale": "zh"
+          },
+          "slowdown": "暂不可用",
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "theme": "dark",
+          "locale": "en",
+          "applied": {
+            "theme": "dark",
+            "locale": "en"
+          },
+          "slowdown": "Unavailable",
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "theme": "dark",
+          "locale": "zh",
+          "applied": {
+            "theme": "dark",
+            "locale": "zh"
+          },
+          "slowdown": "暂不可用",
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "theme": "light",
+          "locale": "en",
+          "applied": {
+            "theme": "light",
+            "locale": "en"
+          },
+          "slowdown": "Unavailable",
+          "guidance": "Risk guidance unavailable — inspect the evidence.",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "theme": "light",
+          "locale": "zh",
+          "applied": {
+            "theme": "light",
+            "locale": "zh"
+          },
+          "slowdown": "暂不可用",
+          "guidance": "风险指引暂不可用——请查看依据。",
+          "headline_refreshed": true,
+          "playbook_preserved": true,
+          "risk_dialog_opened": true,
+          "horizontal_overflow": false
+        }
+      ],
+      "blocked_requests": [],
+      "request_failures": [],
+      "console_errors": [],
+      "failed_responses": [],
+      "browser_closed": true,
+      "local_server_closed": true,
+      "outside_test_net_denied": {
+        "denied": true,
+        "errno": 1
+      },
+      "browser_version": "151.0.7922.34",
+      "status": "passed",
+      "after": {
+        "engine/china_tier1.py": {
+          "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+          "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79",
+          "bytes": 20594
+        },
+        "scripts/build_china.py": {
+          "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+          "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb",
+          "bytes": 123671
+        },
+        "templates/china.html.j2": {
+          "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+          "bytes": 383800
+        },
+        "templates/china_risk_state_live.js": {
+          "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+          "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+          "bytes": 12267
+        },
+        "tests/test_china_archetype_d_s1.py": {
+          "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+          "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe",
+          "bytes": 20881
+        },
+        "site/china.html": {
+          "git_blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133",
+          "bytes": 264205
+        }
+      },
+      "candidate_bytes_unchanged": true
+    },
+    "guard-proof.json": {
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "before": {
+        "templates/china.html.j2": {
+          "blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+          "bytes": 383800
+        },
+        "site/china.html": {
+          "blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133",
+          "bytes": 264205
+        },
+        ".github/ci/legacy-jobs.yml": {
+          "blob": "ec5b0e419e7a91a7d3f948fbaac253a01b9551a4",
+          "sha256": "8c0077b2dcc9dcad0b377ee56a0acd352c0072a08bb31c362733690dd7833674",
+          "bytes": 2680766
+        }
+      },
+      "checks": [
+        {
+          "name": "board-coherence",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "scripts.check_ms_board_coherence",
+            "site/china.html"
+          ],
+          "returncode": 0,
+          "seconds": 0.16,
+          "log_sha256": "276f3c25bc3d6d6ab6bf1b9b67f95ac821a392fb3ada516560a938858b787fb8"
+        },
+        {
+          "name": "inline-js",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "scripts.check_inline_js",
+            "site/china.html",
+            "templates/china.html.j2"
+          ],
+          "returncode": 0,
+          "seconds": 1.171,
+          "log_sha256": "0e8571fe20cf5fa45be716cdfaf21dc75dd372202afc8431a53acc8da177eff4"
+        },
+        {
+          "name": "asset-references",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-c",
+            "\nfrom pathlib import Path\nimport json\nfrom scripts import check_site_asset_refs as refs\nmissing=refs.find_dangling(Path('site').resolve())\nowned={target:['china.html'] for target,pages in missing.items() if 'china.html' in pages}\nhard={t:p for t,p in owned.items() if not refs._TICKER_PAGE_RE.match(t)}\nsoft={t:p for t,p in owned.items() if refs._TICKER_PAGE_RE.match(t)}\nprint(json.dumps({'scope':'china.html via existing find_dangling parser/resolver','hard':hard,'soft_ticker_warnings':soft},sort_keys=True))\nraise SystemExit(1 if hard else 0)\n"
+          ],
+          "returncode": 0,
+          "seconds": 122.166,
+          "log_sha256": "7391cd868f1563167d3e5bde52b3ba64bb074f1c71ad122bf61222f97b4517bc"
+        },
+        {
+          "name": "design-added-lines",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "scripts.check_design_system",
+            "--mode",
+            "enforce-added",
+            "--root",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053",
+            "--diff-file",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/china-ui.diff"
+          ],
+          "returncode": 0,
+          "seconds": 16.947,
+          "log_sha256": "37aeb0da115470c281cd507407b8975e19c5169d9836a625402f7807c30290e0"
+        },
+        {
+          "name": "visual-evidence",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "scripts.check_ui_visual_evidence",
+            "--repo-root",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053",
+            "--diff-file",
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/china-ui.diff"
+          ],
+          "returncode": 0,
+          "seconds": 0.367,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "catalog-packing",
+          "argv": [
+            "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-venv/bin/python",
+            "-m",
+            "pytest",
+            "tests/test_ci_pack.py::test_two_packs_are_complete_disjoint_and_balanced",
+            "tests/test_ci_pack.py::test_no_empty_pack_in_the_code_gate_partition",
+            "-q",
+            "--tb=short",
+            "--log-file=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/pytest-packing.log",
+            "--basetemp=/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr7592-output-20261111-c4-2f7053/.7592-build/pytest-packing"
+          ],
+          "returncode": 0,
+          "seconds": 20.753,
+          "log_sha256": "1e889b3163209c77ff4155302f23c2dd34ce16b7563259da1e1d113d30a20b69"
+        }
+      ],
+      "ui_diff": {
+        "blob": "bb940cf5ed6e43d26eeda12d78f6a44a28299ae9",
+        "sha256": "32da9ba97f8d9a4f033cfad719b41d3b6268c0044fee9222dfb46dd87f7285f8",
+        "bytes": 188017
+      },
+      "catalog": {
+        "status": "passed",
+        "owners": 401,
+        "unchanged_siblings": 400,
+        "forced_owner": [
+          "china-board-breadth"
+        ],
+        "weights": [
+          8,
+          10
+        ],
+        "suites": [
+          "tests/test_china_board_breadth.py",
+          "tests/test_market_heatmap.py",
+          "tests/test_sp500_heatmap_intraday_clock.py",
+          "tests/test_china_breadth_coverage.py"
+        ],
+        "loaded_jobs": 401,
+        "packing_source_unchanged": true
+      },
+      "after": {
+        "templates/china.html.j2": {
+          "blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+          "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+          "bytes": 383800
+        },
+        "site/china.html": {
+          "blob": "792d4edbf134dba32f2c46cd65706bded1094dbc",
+          "sha256": "581ca04a3f93736c16402795cda2a42913ee1230461214c13ae981f9c17f2133",
+          "bytes": 264205
+        },
+        ".github/ci/legacy-jobs.yml": {
+          "blob": "ec5b0e419e7a91a7d3f948fbaac253a01b9551a4",
+          "sha256": "8c0077b2dcc9dcad0b377ee56a0acd352c0072a08bb31c362733690dd7833674",
+          "bytes": 2680766
+        }
+      },
+      "candidate_bytes_unchanged": true,
+      "passed": true
+    },
+    "historical-conservation-proof.json": {
+      "base": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+      "historical_head": "51db6f0ab393fee1195b9f81674b302135382945",
+      "objects": [
+        {
+          "path": "agentos/decisions/DEC-CHINA-INTEGRITY-EXCEPTIONAL-REVIEW-WAIVER-20260921.md",
+          "sha": "c5029a0bafb4407e4d742e7ba1ba66f0e1a62951",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 1915,
+          "sha256": "b7ec4acff7800c0cb04df9e8c1462264183af1b546e1fb3858cf8ee95c3f4664"
+        },
+        {
+          "path": "agentos/handoffs/GREY-DEER-CHINA-MACRO-INTEGRITY-2026-09-21.md",
+          "sha": "f0ade6de9a3755189c7ab2b688b5deb832b85ea4",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 12470,
+          "sha256": "dda6f8ceac5a7ad2a1ad5ce6e477383218ee72f6908e8ce8917c13caa74b1be4"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/030c8f73f5054df2.png",
+          "sha": "c5b65e9cef142fe1110c78a0dab4a4e65168726a",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 423562,
+          "sha256": "030c8f73f5054df2522b2fb6436879e3f505820165efb2e53a41ff03c2d6e9c9"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/24ddca68688f532c.png",
+          "sha": "bd843d5c10ab99038c9e3b6a9f938500a94dd222",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 305223,
+          "sha256": "24ddca68688f532c89018949c6c5e927eca04666a82d81e72508d6c3b511e86d"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/37d0b05feb44b662.png",
+          "sha": "656956093ebd18e40ee83cdbd718f58046d1364a",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 347668,
+          "sha256": "37d0b05feb44b66287d2c157ee8518ac58edc26eddbf708c4ec75d941f345267"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/41a400e21a43e2c3.png",
+          "sha": "016912822977bd4c8930699ebdbf69e3d8453851",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 345499,
+          "sha256": "41a400e21a43e2c3e9068212c34d2c98e0f167efd8bccb4d14217aecac3b916a"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/7013b552c58f6f65.png",
+          "sha": "bc7171e28ba07a92fb7c4795728113210ae08d7d",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 422853,
+          "sha256": "7013b552c58f6f65396d0392899c0017fadbec9fe63702e7c8de008d0c61ec9f"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/793ed56d3312c3c0.png",
+          "sha": "96d8a96f0f9eac38fa041fe03b07e04629ffd1ae",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 341090,
+          "sha256": "793ed56d3312c3c01f74169ef435bfb7b998d98b9ee6db5c6f36811bc6c93fe6"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/8091ca9f83871a70.png",
+          "sha": "21219841dde7d257bc3a57f8612dad2348382a26",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 349639,
+          "sha256": "8091ca9f83871a7063004d88a5582946c8da925b5fc72badfd493bf89ff8f876"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/EVIDENCE.yml",
+          "sha": "b9b61daa34c5dba8be9d06bfa4a81571b734603b",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 149,
+          "sha256": "261f0a03935925f73b93ac1de01efa84b002c1c7b531146e30c0642ad96df7c3"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/adac5f720a26328c.png",
+          "sha": "3245b8de29a554b2f61c9762b8bf3279169badbb",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 301378,
+          "sha256": "adac5f720a26328c8c6939d0201c32004aa52077d8d7b817c5d55ecbbde7e5e9"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/build-proof.json",
+          "sha": "7773b56efcd10662b94e1b311a0c561074d4e4c0",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 775,
+          "sha256": "07116438ce351e769821a72fcbdcb0e8aadfaf28c3b0584f13bec4562412d23e"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/manifest.json",
+          "sha": "afc3779dd53586e1d8ee4283b92b7b69c077d898",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 9135,
+          "sha256": "85b75496e30a642fda815d81bb3c5005c334b3c73c9389b9f325ab6f7b6c9eef"
+        },
+        {
+          "path": "mockups/evidence/china-frozen-real-build-7592/smells.json",
+          "sha": "ade15db067dbc99507f4f8c797e9216fa51be50b",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3549,
+          "sha256": "b3a2317aec6530b0ed0596688e6a8b7db5e8a76f02506d23fe5b1450a3e0b197"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/5007563ff7c4daf5.png",
+          "sha": "af8502357dcac35e075488f616aefa29aaeeca10",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 197853,
+          "sha256": "5007563ff7c4daf5d5c7e03f780f26a68520a3f6c26124954e75371e0a98555f"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/7071b49ad40eca58.png",
+          "sha": "2db87624d73679ed26ab6b101da7cf727be3a157",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 309661,
+          "sha256": "7071b49ad40eca5804e98c32e8ff65ecc963026058deaafb728d915f3d51f8cc"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/8a616cd8ae908db1.png",
+          "sha": "96c4cdee15ffc89ef1e4e20eaf01a87c4d36fe1c",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 314942,
+          "sha256": "8a616cd8ae908db16d3e2b783d36f64ba68698c48a087b0b8ad92b39c50bc28e"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/8bbf31d0aa4aac20.png",
+          "sha": "42bc3658dcb4951db5eeb6098f1c24a6176e3040",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 245150,
+          "sha256": "8bbf31d0aa4aac20d7b7a7ce265db0c9d8d7578c02812bd76627aacd5b28a37b"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/EVIDENCE.yml",
+          "sha": "146eb0079668c0881728f50690e464c00cf241b7",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 149,
+          "sha256": "a159117ed79df4620bf091118304bf9edba885712331de39c25c84f934e69c36"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/ad29d08aada90058.png",
+          "sha": "c466b2a9be06b4a203e3a08aac69b87bb977594c",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 235132,
+          "sha256": "ad29d08aada90058b185b2867dc38a06b400478a766b66881ea226ebbb4b6dac"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/b36a5c6eef647bef.png",
+          "sha": "28bf9f6e827c1ee37d16c2805642b57ecc8b6ae1",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 201971,
+          "sha256": "b36a5c6eef647bef8b592774256ecc11752b8d5a4fe86c6ff72b0c3adc73dcd5"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/cdfacb3a9f07e4d0.png",
+          "sha": "a2562b0448e9eba831b8c76329d98f766cff06cb",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 239689,
+          "sha256": "cdfacb3a9f07e4d0ce88e2cd0bd598ea8cbefd0a40e872f45859fee10803e655"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/fbb10f639cdfdea8.png",
+          "sha": "ebb2bd3d747477e73a035ba111fcb11eab8b492f",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 236140,
+          "sha256": "fbb10f639cdfdea8df9dcddd077967f20f0b5a5ae2667b119de1ba48af3d8b28"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/interaction-proof.json",
+          "sha": "e2de8b7da420f0fc549c061a23fe27ae56726153",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3852,
+          "sha256": "437beeed9bbe05395d0b0d4831788fe29122bcb699af64b1a2846236a8da8b5a"
+        },
+        {
+          "path": "mockups/evidence/china-integrity-7592/manifest.json",
+          "sha": "275fce170895289987d36771e28282f36069906a",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 9139,
+          "sha256": "6e9f63d73157f89f4dc6f49759e9ebc40c6eaa36b28ab4ad7d5084e300036b7c"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/14684159273a7d63.png",
+          "sha": "0c02c9b250b9e9855fdbcebbe95845fbc4644dae",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 341408,
+          "sha256": "14684159273a7d63825a7b4724dd9cfcd9f833814ee52d85086838112e7474b0"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/1fdfcb9ba60886f2.png",
+          "sha": "74b84d9c7cf2863a963e690b6c67ab922170fffe",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 423957,
+          "sha256": "1fdfcb9ba60886f2fea81fe184e2916c46defe1262ebd77904cf08e9f3ffff85"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/4a5105224d743639.png",
+          "sha": "988c33b86b9337820c891207ee2731ca09f52127",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 347567,
+          "sha256": "4a5105224d7436392585a0f1698bed65c7d642bb83707bdf698614045938cbe7"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/5e7e8111e5cabc84.png",
+          "sha": "79dbc28cf488a72cba938fe488ab2c89cb1a6e4d",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 349875,
+          "sha256": "5e7e8111e5cabc844c065d7d86db8356f84533ec69ec4923fe3ef897b3730a4b"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/79de2471b3eaa396.png",
+          "sha": "b0fc30b05eca5bf8c773cc971230cafd99155fb1",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 301091,
+          "sha256": "79de2471b3eaa39694c76623413c8f70440a01555e52ccad2babc3a04d12a616"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/8be91d2ca6d6f94d.png",
+          "sha": "72e697cb1e253e4b11a40cee300fc2696f5eea58",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 305437,
+          "sha256": "8be91d2ca6d6f94d8adcbb3dd9e83ebcd1837c3e711801ab1e55daf72927d517"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/EVIDENCE.yml",
+          "sha": "f987ceb176953a404b5808d8047e2178e8c6dfd0",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 183,
+          "sha256": "bed6796ffbe1c94a47e094ab6cb13a36a5e17efa4ce4943d3172782c6627a91c"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/build-proof.json",
+          "sha": "1c83d176fc8c9d61f9986eded6655a38b364d8f9",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 881,
+          "sha256": "c3c254c4f857ebb9f04846c3af14c6fbd398bbdb1a81d38ea5901527bea81cbf"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/c009bdcc48901604.png",
+          "sha": "7ebc5759b2ab707cf3b61a018356aa32b560bb1a",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 423243,
+          "sha256": "c009bdcc48901604f5a98a212e13bfa845a6a57f706b8a17d420b37aa5640ec1"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/dfdc04a19019bbc8.png",
+          "sha": "a12110c7a18f52f57a92a94f835a59616c488320",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 345731,
+          "sha256": "dfdc04a19019bbc872bd2045199f0b43c179fc14aded1a0d287ecd1cee8134e1"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/manifest.json",
+          "sha": "c5255cf2c21d32d00f303fe598c1c17b57508d29",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 9139,
+          "sha256": "584252da5d918ce4f31c1ce83fb7faa5dc84aee05bcf1899028616b47bc6a56d"
+        },
+        {
+          "path": "mockups/evidence/china-normalized-release-7592/smells.json",
+          "sha": "9aa5207aac7315b9dbd76ebd272ad2aa7f235a89",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3553,
+          "sha256": "c615ff28dbe583ca369b7faacc59d99c9241cc97e2a10b71ddc81f05237ee871"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/NORMALIZED_RELEASE.md",
+          "sha": "974af44d2ee0598f3d2418c420f0e1bb47520113",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3141,
+          "sha256": "b4ac53fcac3675ec6b46ba9296b5e17c1a0add9e21f8d2a75d15d6825c5c21f7"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/README.md",
+          "sha": "4ec20548fe59a16b01066c1c64cb9aac54861e9d",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3500,
+          "sha256": "d46d1eeb1a4cc2f0179d4a00cdfa76d5dbf3ca56c4edb3f6d1308173604635de"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/REAL_BUILD_PROOF.md",
+          "sha": "3155ad830b8c74138991685c46fe9503124825af",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 4162,
+          "sha256": "bfd2d393bf64e3293407574905803347e1685d7d5a5ad66b0841efca977edfad"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/REVIEW_REPAIR.md",
+          "sha": "b887e889f2a75d1e413cc456a3da8c2e6cd8d9eb",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 3848,
+          "sha256": "6cf0c8ea3979f5c127b2ab92e566d87c94e43ec3da66e7da46231a9cc37fa469"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/UI_TRUTH_REPAIR.md",
+          "sha": "6c8a8f9388494759e3c331afc3aaf88cdba555e3",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 5646,
+          "sha256": "16c86f485e505fb15f8df9aa742a47307b42caf8a21f27d2d71bde109054af49"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/capture_truth_cases.py",
+          "sha": "6d87f26059d0721ad9cb46d7fbf92b3e7d4d5bdf",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 6337,
+          "sha256": "f64b79d509f32d73535388f4d92d25806c3411e8c02e42c16e8b37af82a271b5"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/independent_review_r1.txt",
+          "sha": "6822605c6b2e65509df47f6b01ec2b11edd4ed7e",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 11674,
+          "sha256": "ef9c2f0092751d88b6a77859d421633f2c468270367dbf72f45a480e2d5fd85a"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/normalized-release-receipt.json",
+          "sha": "e2f380f56e9398dd0f63933978e844ce3359aba4",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 558,
+          "sha256": "2b3ec6e67ee59832afd4a155ac158ff1f00d65132f19d1ca6524e8daaed6dcd7"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/real_input_probe.py",
+          "sha": "c6ca5a412bf8281152a8f8c3007345237b465046",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 2395,
+          "sha256": "d1e5411e25caa15dea4b32b43eb5b8ebe002f2783eaaf4bc15af740cd9faacaa"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/real_input_receipt.json",
+          "sha": "4fd9d6bb4e837971abc10932a6fe12a3cc0f861c",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 742,
+          "sha256": "ba7f814e383c77f9eec790be2e03c7c10db32b02985c8e7ece0056956d9cd7c1"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/real_slowdown_receipt.json",
+          "sha": "4ed7bd297ddf0ab84e95409cf9b96326316cabab",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 377,
+          "sha256": "48e84eb225367c17071efad40330b791841cc128e60739cab331f58aa685b8de"
+        },
+        {
+          "path": "research/grey_deer/china_breadth_coverage_20260921/review_repair_receipt.json",
+          "sha": "ffc951b558d4c685bc06ba3d1e3a081d952de4a3",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 944,
+          "sha256": "8f98e8c875a36c20b7519c63bf0dc99be68bebc8dc458a9f9f37b255110a20aa"
+        },
+        {
+          "path": "site/assets/css/fea32970.css",
+          "sha": "31a9429a98e7cd0f0ae4a61bf9b34ee074fd9d14",
+          "status": "added",
+          "mode": "100644",
+          "base": null,
+          "existed_before": false,
+          "bytes": 182892,
+          "sha256": "fea3297036697bfa857f1f7856bd5ba9cf6503bfadc4cb64f15612b7d0466041"
+        }
+      ],
+      "count": 50,
+      "written": 50,
+      "all_exact": true
+    }
+  }
+}

@@ -41,6 +41,8 @@ from engine.top_picks import (ALPHA_W, TILT_LEGS, TILT_W,  # noqa: E402
                               band, compute_scores, entry_meta)
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.site_assets import copy_asset  # noqa: E402
+from scripts.optimize_assets import make_optimizer  # noqa: E402
 from scripts.check_signal_gate_coherence import (  # noqa: E402 — one shared predicate
     BUCKETS as COHERENCE_BUCKETS, incoherent_tickers, stale_side)
 
@@ -146,6 +148,19 @@ def _signal_verdicts(site: Path, closes) -> dict:
         except Exception:  # noqa: BLE001 — one bad series must not 404 the page
             continue
     return out
+
+
+def _gate_validity(site: Path) -> dict | None:
+    """site/factordata/signal_gate.json's top-level `validity` receipt, or None."""
+    try:
+        p = site / "factordata" / "signal_gate.json"
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text())
+        v = data.get("validity") if isinstance(data, dict) else None
+        return v if isinstance(v, dict) else None
+    except Exception:  # noqa: BLE001 — a missing receipt is never fatal
+        return None
 
 
 def _names_sectors() -> dict:
@@ -278,6 +293,7 @@ def main() -> int:
             "rev_pctile": a.get("rev_pctile"), "sector_rank": a.get("sector_rank"),
             "sector_n": a.get("sector_n"),
             "ins_buyers": ins.get("buyers") or 0, "ins_bps": _clean(ins.get("bps")),
+            "ins_sellers": ins.get("sellers") or 0, "ins_net_mn": _clean(ins.get("net_mn")),
             "attn_z": _clean(at.get("z")),   # offshore-attention z (display-only caution)
             # extension / exhaustion axis (display-only; never in the score)
             "grade": g, "grade_en": g_en, "grade_zh": g_zh, "grade_css": g_css,
@@ -355,7 +371,14 @@ def main() -> int:
         tilt_legs=list(TILT_LEGS), alpha_w=ALPHA_W, tilt_w=TILT_W, banner=banner,
         attn_threshold=float((config.load().get("wiki_pageviews") or {}).get("chip_threshold", 2.0)),
         as_of=alpha.get("as_of"), windows=alpha.get("windows") or {},
+        gate_validity=_gate_validity(site),
         n=len(rows), n_buyable=n_buyable, built=built)
+    for asset in ("discovery.js", "discovery-controls.css"):
+        copy_asset(asset, config.ROOT / "templates" / asset, site)
+    optimize = make_optimizer(site)
+    for tag in ('<script src="discovery.js"></script>',
+                '<link rel="stylesheet" href="discovery-controls.css">'):
+        html = html.replace(tag, optimize(tag, site))
     write_page(site / "discovery.html", html)
     log.info("wrote %s/discovery.html (%d names, %d sectors, %d buy-zone, %d KB)",
              site, len(rows), len(by_sector), len(buyzone), len(html) // 1024)

@@ -101,15 +101,20 @@ function block(start, end) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_workspace_keeps_every_route_once_but_only_13_primary_pages():
+def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
 const ids = groups.flatMap(group => group.items.map(item => item[0]));
-const expected = 'overview health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
-assert.equal(ids.length, 54);
-assert.equal(new Set(ids).size, 54);
+const expected = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
+assert.equal(ids.length, 55);
+assert.equal(new Set(ids).size, 55);
 assert.deepEqual([...ids].sort(), expected.sort());
-assert.equal(groups.filter(group => group.primary).flatMap(group => group.items).length, 13);
+// #10950 intentionally adds Workspace → Capacity Router. Bind the exact primary
+// set, not just a larger count, so no unrelated route can silently become primary.
+const primary = groups.filter(group => group.primary).flatMap(group => group.items.map(item => item[0]));
+const expectedPrimary = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish'.split(' ');
+assert.equal(primary.length, 14);
+assert.deepEqual([...primary].sort(), expectedPrimary.sort());
 """)
 
 
@@ -195,3 +200,229 @@ def test_startup_cannot_treat_a_failed_session_probe_as_authenticated():
     assert 'Unable to verify your session.' in init
     assert 'catch(() => ({ auth_enabled: false, authenticated: true }))' not in init
     assert 'SUMMARY = next; // keep the last good snapshot' in APP
+
+
+def test_content_review_intersects_filters_before_twelve_card_pagination():
+    _node_assert("""
+const review = new Function('const CS_REVIEW_PAGE_SIZE = 12;' + block('function csReviewPage(', 'function csRefreshPlan(') + '; return csReviewPage;')();
+const entries = Array.from({length: 48}, (_, i) => ({acctId: i % 2 ? 'beta' : 'alpha', post:{id:i, type:i % 3 ? 'chart' : 'signal', headline:'Draft ' + i, ticker: i === 44 ? 'AMD' : 'XYZ'}}));
+const original = JSON.stringify(entries);
+assert.equal(review(entries).rows.length, 12);
+assert.equal(review(entries, {page: 2}).rows[0].post.id, 12);
+assert.equal(review(entries, {page: 999}).page, 4);
+assert.equal(review(entries, {page: -1}).page, 1);
+assert.equal(review(entries, {}, 500).rows.length, 12);
+let selection = {type:'signal', account:'beta'};
+assert.deepEqual(review(entries, selection).rows.map(x => x.post.id), [3,9,15,21,27,33,39,45]);
+assert.deepEqual(review(entries, {account:'beta', type:'signal'}), review(entries, selection));
+assert.equal(review(entries, {query:'amd'}).rows[0].post.id, 44);
+assert.equal(review(entries, {query:'  DrAfT 44 ', account:'alpha', type:'chart'}).total, 1);
+assert.equal(review(entries, {query:'AMD', account:'beta'}).total, 0);
+const empty = review(entries, {query:'does not exist', page:9});
+assert.deepEqual([empty.from,empty.to,empty.page,empty.pages,empty.total], [0,0,1,1,0]);
+assert.equal(JSON.stringify(entries), original);
+assert.equal(review([null, {}, {post:null}]).total, 0);
+""")
+
+
+def test_content_review_uses_light_reads_and_never_inlines_chart_documents():
+    renderer = APP.split('RENDER.marketing_content = async () => {', 1)[1].split('/* Is the content plan stale?', 1)[0]
+    assert '"/api/marketing/content?charts=metadata"' in APP
+    assert 'csWireReview(allPosts, postCardHtml, d.content_revision, renderEpoch)' in renderer
+    assert 'allPosts.map(postCardHtml)' not in renderer
+    assert '${featured.svg}' not in renderer
+    assert 'data-cs-preview' in renderer
+    assert 'renderEpoch !== ADMIN_RENDER_EPOCH' in renderer
+    assert 'Nothing on this page has been sent.' not in renderer
+    preview = APP.split('async function csLoadPreview(', 1)[1].split('function csWireReview(', 1)[0]
+    assert 'document.createElement("img")' in preview
+    assert '.innerHTML' not in preview
+    assert 'response.content_revision !== revision' in preview
+    assert 'details.isConnected' in preview
+    assert 'plan_changed' in preview
+    assert 'Retry preview' in preview
+    assert 'Refresh plan' in preview
+
+
+def test_unrecorded_drop_reasons_are_not_reported_as_passed_drafts():
+    _node_assert("""
+const drop = new Function(block('function csDropPanel(', '/* Scroll helper for the funnel cells') + '; return csDropPanel;')();
+for (const data of [{}, {funnel:null}, {funnel:{drop_reasons:{}}}]) {
+  const html = drop(data);
+  assert(html.includes('No drop reasons were recorded'));
+  assert(html.includes('does not prove every draft passed'));
+  assert(!html.includes('Every planned post got words'));
+}
+""")
+
+
+def test_content_queue_distinguishes_local_delivery_refusal_and_unknown_effect():
+    _node_assert("""
+const classify = new Function(block('const CS_INTEL_REFUSAL_LABEL = ', 'async function csQueueIntel(') + '; return csIntelQueueOutcome;')();
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:true}), 'queued');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha',delivered:false}), 'local_only');
+assert.equal(classify({ok:true,item_id:'item-1',account:'alpha'}), 'local_only');
+assert.equal(classify({ok:false,reason:'story_locked'}), 'refused');
+for (const result of [null, {}, {ok:true}, {ok:false,error:'server failed'}, {ok:false,reason:'error'}, {ok:false,reason:'__proto__'}]) {
+  assert.equal(classify(result), 'unknown');
+}
+""")
+
+
+def test_content_queue_lost_ack_never_claims_no_effect_or_reissues_write():
+    _node_assert("""
+const source = block('const CS_INTEL_REFUSAL_LABEL = ', '/* Filters update one shared selection');
+async function exercise(response, throws = false) {
+  const calls = [], links = [], messages = [];
+  const out = {style:{}, textContent:'', append(...nodes) { links.push(...nodes.filter(node => node && node.type === 'button')); }};
+  const card = {querySelector: () => out, getAttribute: key => key === 'data-story-id' ? 'story-a' : 'draft-a'};
+  const button = {disabled:false, textContent:'Queue for X', closest: () => card};
+  const doc = {createElement: () => ({}), createTextNode: text => text};
+  const queue = new Function('post','toast','document','go',source + '; return csQueueIntel;')(
+    async (path, body) => { calls.push({path,body}); if (throws) throw new Error('lost acknowledgement'); return response; },
+    message => messages.push(message), doc, page => messages.push(page)
+  );
+  await queue(button);
+  const label = button.textContent, detail = out.textContent;
+  await queue(button);
+  return {calls, links, label, detail, button, messages};
+}
+const lost = await exercise(null, true);
+assert.equal(lost.calls.length, 1);
+assert.equal(lost.label, 'Status unknown');
+assert(lost.detail.includes('may have completed'));
+assert(!lost.detail.includes('nothing was queued'));
+assert.equal(lost.links.length, 1);
+assert.equal(lost.button.disabled, true);
+assert.deepEqual(lost.calls[0].body, {story_id:'story-a',draft_id:'draft-a'});
+const local = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:false});
+assert.equal(local.calls.length, 1);
+assert.equal(local.label, 'Delivery unconfirmed');
+assert(local.detail.includes('not confirmed'));
+const confirmed = await exercise({ok:true,item_id:'item-1',account:'alpha',delivered:true});
+assert.equal(confirmed.calls.length, 1);
+assert.equal(confirmed.label, 'Queued');
+const refused = await exercise({ok:false,reason:'story_locked',detail:'already owned'});
+assert.equal(refused.label, 'Queue for X');
+assert.equal(refused.button.disabled, false);
+assert(refused.detail.includes('Refused by'));
+""")
+
+
+def test_publisher_receipt_labels_preserve_delivery_uncertainty():
+    """A legacy posted record is not independently verified delivery evidence."""
+    start = APP.index('RENDER.marketing_publish = async () => {')
+    end = APP.index('/* Dark-desk park readout', start)
+    renderer = APP[start:end]
+    assert '["posted", "Publisher records", "var(--muted)"]' in renderer
+    assert 'Recent publisher records' in renderer
+    assert 'not delivery confirmation or permission to resend' in renderer
+    assert '["posted", "Posted",' not in renderer
+    assert 'What goes out next, what is stuck, and what already went.' not in renderer
+    assert 'Live posts land here with their Buffer receipt' not in renderer
+    assert 'Engagement is polled after the post lands' not in renderer
+    assert 'Submission receipts and confirmed delivery remain separate.' in renderer
+    # Preserve the existing ledger fields, receipt navigation, and measurement nulls.
+    assert 'const posted = d.recent_posted || [];' in renderer
+    assert 'posted: ["#pub-posted",' in renderer
+    assert 'r.external_url' in renderer and 'r.external_id' in renderer
+    assert 'v2 == null ?' in renderer and 'not measured yet' in renderer
+    assert 'recorded ${a.posted || 0}' in renderer
+    assert 'pubWireGoLive(d);' in renderer
+    assert 'onclick="pubRunDryRun(this)"' in renderer
+
+
+def test_site_inventory_searches_all_rows_before_bounded_pagination():
+    _node_assert("""
+const select = new Function(block('function adminInventoryPage(', 'RENDER.content = ') + '; return adminInventoryPage;')();
+const pages = Array.from({length:12622}, (_, i) => ({name: `page-${i}.html`, kb:i, age_hours:i}));
+const original = JSON.stringify(pages);
+assert.equal(select(pages).rows.length, 50);
+assert.deepEqual(select(pages).rows, pages.slice(0,50));
+assert.equal(select(pages, '', 2).rows[0].name, 'page-50.html');
+assert.equal(select(pages, '  PAGE-12621  ').rows[0].name, 'page-12621.html');
+assert.equal(select(pages, 'not-a-page').total, 0);
+assert.equal(select(pages, '', Infinity).page, 1);
+assert.equal(select(pages, '', -1).page, 1);
+assert.equal(select(pages, '', 99999).page, 253);
+assert.equal(select(pages, '', 253).rows.length, 22);
+const seen = []; for (let n=1; n<=253; n++) seen.push(...select(pages,'',n).rows.map(p=>p.name));
+assert.equal(seen.length,12622); assert.equal(new Set(seen).size,12622);
+assert.equal(JSON.stringify(pages), original);
+const empty = select([], '', 7);
+assert.deepEqual([empty.page,empty.pages,empty.from,empty.to,empty.total],[1,1,0,0,0]);
+""")
+
+
+def test_site_inventory_late_initial_read_cannot_replace_a_new_page():
+    _node_assert("""
+const vm = require('node:vm');
+let finish; const view = {innerHTML:'new page', isConnected:true};
+const sandbox = {RENDER:{}, CURRENT:'content', ADMIN_RENDER_EPOCH:1, $:()=>view,
+  api:()=>new Promise(resolve=>{finish=resolve;}), card:()=>'', esc:String, fmtAge:String};
+vm.createContext(sandbox);
+vm.runInContext(block('function adminInventoryPage(', '/* ---- NEURAL WEB (W8a)'),sandbox);
+const pending = sandbox.RENDER.content();
+sandbox.CURRENT='overview'; sandbox.ADMIN_RENDER_EPOCH=2;
+finish({pages:[],total_pages:0}); await pending;
+assert.equal(view.innerHTML,'new page');
+""")
+
+
+def test_site_inventory_has_named_controls_and_read_error_recovery():
+    content = APP.split('RENDER.content = async () => {', 1)[1].split('/* ---- NEURAL WEB (W8a)', 1)[0]
+    assert 'id="inventorySearch" type="search"' in content
+    assert 'label for="inventorySearch"' in content
+    assert 'aria-live="polite"' in content
+    assert 'adminInventoryPage(d.pages, search.value, page)' in content
+    assert 'page = 1; draw();' in content
+    assert 'Link check unavailable. Try again.' in content
+    assert 'Live-site check unavailable. Try again.' in content
+    assert '$("#view").appendChild' not in content
+    assert 'post(' not in content and 'dispatch(' not in content
+
+
+def test_press_account_claims_render_exact_zero_scope_and_safe_links():
+    _node_assert("""
+let lang='en';
+const document={documentElement:{getAttribute:()=>lang}};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+const helpers=new Function('document','esc',block('function pressAudienceCopy(', '/* ---- CHANNELS & DESKS')+';return {renderPressAudience,pressArticleHref};')(document,esc);
+const a={status:'available',observed_at:'2026-11-05T12:00:00Z',total_publications:2,rows:[
+ {publication_id:'press-1',slug:'<img>-first-story',desk:'brief',urls:['javascript:alert(1)'],published_at:'2026-11-01T00:00:00Z',active_accounts_claiming_content:3},
+ {publication_id:'press-2',slug:'second-story',desk:'research',urls:['https://www.mastermind-x.com/blog/second-story.html'],published_at:'2026-11-02T00:00:00Z',active_accounts_claiming_content:0}]};
+const html=helpers.renderPressAudience({ok:true,signup_claims:a});
+assert(html.includes('Active account claims')&&html.includes('not page views or a conversion rate'));
+assert(html.includes('>0</td>')&&html.includes('>3</td>'));
+assert(!html.includes('<img>')&&!html.includes('javascript:'));
+assert(html.includes('https://www.mastermind-x.com/blog/second-story.html'));
+assert.equal(helpers.pressArticleHref(['https://mastermind-x.com.evil.test/']),null);
+assert.equal(helpers.pressArticleHref(['https://user:pass@mastermind-x.com/']),null);
+assert(!helpers.renderPressAudience(null).includes('>0</td>'));
+assert(helpers.renderPressAudience({ok:true,signup_claims:{...a,rows:[{...a.rows[0],active_accounts_claiming_content:'0'}]}}).includes('unavailable'));
+lang='zh';assert(helpers.renderPressAudience({ok:true,signup_claims:a}).includes('原生新闻账号声明'));
+const many={...a,total_publications:20,rows:Array.from({length:20},(_,i)=>({...a.rows[0],publication_id:'press-'+i}))};
+assert(helpers.renderPressAudience({ok:true,signup_claims:many}).includes('更多已衡量文章（12）'));
+""")
+
+
+def test_press_measurement_settles_independently_and_cannot_replace_another_page():
+    _node_assert("""
+let epoch=1,current='marketing_channels',resolvePress,resolveChannels,slowChannels=false;
+const view={innerHTML:''},slot={innerHTML:''},channels={innerHTML:''};
+const reads=[];const $=id=>id==='#view'?view:id==='#marketingChannelsBody'?channels:slot;
+const api=url=>{reads.push(url);return url==='/api/press/overview'?new Promise(r=>resolvePress=r):slowChannels?new Promise(r=>resolveChannels=r):Promise.resolve({ok:true,note:'channels accruing'});};
+const src=block('RENDER.marketing_channels = async () => {','/* Effective status of a desk:');
+const factory=new Function('$','api','nwEmpty','renderPressAudience','RENDER','getEpoch','getCurrent',src.replaceAll('ADMIN_RENDER_EPOCH','getEpoch()').replaceAll('CURRENT','getCurrent()')+';return RENDER.marketing_channels;');
+const run=factory($,api,(a,b)=>a+b,(d,loading)=>loading?'Press loading':d?'Press settled':'Press unavailable',{},()=>epoch,()=>current);
+const promise=run();await Promise.resolve();await Promise.resolve();
+assert(channels.innerHTML.includes('channels accruing')&&view.innerHTML.includes('Press loading'));
+assert.equal(reads.filter(x=>x==='/api/press/overview').length,1);
+current='overview';epoch=2;slot.innerHTML='new page';resolvePress({ok:true});await promise;
+assert.equal(slot.innerHTML,'new page');
+current='marketing_channels';const again=run();await Promise.resolve();await Promise.resolve();resolvePress(null);await again;
+assert.equal(slot.innerHTML,'Press unavailable');
+slowChannels=true;channels.innerHTML='waiting';const inverse=run();resolvePress({ok:true});await Promise.resolve();await Promise.resolve();
+assert.equal(slot.innerHTML,'Press settled');assert.equal(channels.innerHTML,'waiting');
+resolveChannels({ok:true,note:'channels finally ready'});await inverse;assert(channels.innerHTML.includes('channels finally ready'));
+""")

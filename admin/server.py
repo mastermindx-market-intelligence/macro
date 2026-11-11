@@ -27,16 +27,17 @@ import threading
 import time
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_first_party, auth, brain_guest, brief, causal_lab,
                chronicle,
-               codex_panel,
+               codex_panel, capacity_router,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
-               flags, ga4, github_api, github_config, gitops, health, intelligence_os,
+               flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
                key_alerts, long_hold,
                live_runs,
                macro_thesis,
@@ -66,10 +67,10 @@ _CTYPES = {".html": "text/html; charset=utf-8",
 # The SPA bundle is public (the authenticated data is not), so give it
 # content-addressed URLs and let the browser/edge keep each immutable revision.
 # index.html itself remains no-store and always points at the current hashes.
-_STATIC_ASSET_NAMES = ("app.js", "styles.css")
+_STATIC_ASSET_NAMES = ("app.js", "styles.css", "preferences.js", "capacity-router.js", "capacity-router.css")
 _STATIC_ASSET_VERSIONS = {
     name: hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
-    for name in _STATIC_ASSET_NAMES
+    for name in _STATIC_ASSET_NAMES if (STATIC / name).is_file()
 }
 
 # The console is one ~950 KB bundle plus a ~210 KB stylesheet, and _file() used to
@@ -80,7 +81,25 @@ _STATIC_ASSET_VERSIONS = {
 # (admin/deploy/admin.service), which is what re-reads the files and re-stamps the
 # hashes. Guarded by a lock so two first-hit threads don't both read the file.
 _STATIC_BODY_CACHE: dict[str, bytes] = {}
-_STATIC_BODY_LOCK = threading.Lock()
+_STATIC_BODY_LOCK = threading.RLock()
+
+
+_THEME_TOKEN_BODY: bytes | None = None
+_THEME_TOKEN_VERSION: str | None = None
+
+
+def _theme_token_asset() -> tuple[bytes, str]:
+    """One governed projection pinned to this process; never serve source CSS."""
+    global _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
+    with _STATIC_BODY_LOCK:
+        if _THEME_TOKEN_BODY is None:
+            from admin.theme_tokens import project_theme_tokens
+
+            source = Path(__file__).resolve().parents[1] / "templates" / "theme.css"
+            body = project_theme_tokens(source.read_text(encoding="utf-8")).encode("utf-8")
+            _THEME_TOKEN_BODY = body
+            _THEME_TOKEN_VERSION = hashlib.sha256(body).hexdigest()[:12]
+        return _THEME_TOKEN_BODY, _THEME_TOKEN_VERSION
 
 
 def _static_body(name: str, path) -> bytes:
@@ -89,6 +108,9 @@ def _static_body(name: str, path) -> bytes:
         return cached
     body = path.read_bytes()
     if name == "index.html":
+        if b"/assets/theme-tokens.css" in body:
+            _token_body, token_version = _theme_token_asset()
+            body = body.replace(b"/assets/theme-tokens.css", f"/assets/theme-tokens.css?v={token_version}".encode())
         for asset_name, version in _STATIC_ASSET_VERSIONS.items():
             body = body.replace(
                 asset_name.encode(),
@@ -123,10 +145,12 @@ _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256
+_EVIDENCE_CACHE_BYTES = 32 * 1024 * 1024
 _API_RESPONSE_CACHE: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
 _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
 _API_CACHE_BYPASS_PATHS = {
+    "/api/capacity-router",
     "/api/session",
     "/api/auth-check",
     "/api/live_runs",
@@ -176,6 +200,14 @@ def _store_api_body(key: str, body: bytes, generation: int,
             _API_RESPONSE_CACHE.pop(old_key, None)
         _API_RESPONSE_CACHE[key] = (now + ttl, body)
         _API_RESPONSE_CACHE.move_to_end(key)
+        # Limit cumulative retained Evaluation bodies, including distinct engine
+        # details/query variants. Other panels retain their existing policy.
+        evidence_keys = [k for k in _API_RESPONSE_CACHE if ":/api/intelligence_os" in k]
+        retained = sum(len(_API_RESPONSE_CACHE[k][1]) for k in evidence_keys)
+        for old_key in evidence_keys:
+            if retained <= _EVIDENCE_CACHE_BYTES:
+                break
+            retained -= len(_API_RESPONSE_CACHE.pop(old_key)[1])
         while len(_API_RESPONSE_CACHE) > _API_CACHE_MAX_ENTRIES:
             _API_RESPONSE_CACHE.popitem(last=False)
 
@@ -491,7 +523,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.dumps(obj, default=str).encode()
         cache_key = getattr(self, "_response_cache_key", None)
         cache_status = None
-        if code == 200 and cache_key:
+        semantic_failure = (
+            isinstance(obj, dict)
+            and (obj.get("ok") is False or bool(obj.get("error")))
+        )
+        if code == 200 and cache_key and not semantic_failure:
             key, generation, ttl = cache_key
             _store_api_body(key, body, generation, ttl)
             cache_status = "MISS"
@@ -519,7 +555,8 @@ class Handler(BaseHTTPRequestHandler):
         for c in (cookies or []):
             self.send_header("Set-Cookie", c)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _csv(self, filename: str, body: bytes) -> None:
         """A real file download, not a JSON envelope the client re-wraps.
@@ -545,14 +582,18 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _file(self, name: str) -> None:
         p = (STATIC / name).resolve()
         if not str(p).startswith(str(STATIC.resolve())) or not p.is_file():
             self._json({"error": "not found"}, 404)
             return
-        body = _static_body(name, p)
+        try:
+            body = _static_body(name, p)
+        except Exception:  # noqa: BLE001 — governed shell dependency unavailable
+            return self._json({"error": "admin asset unavailable"}, 503)
         etag = f'"{_STATIC_ASSET_VERSIONS[name]}"' if name in _STATIC_ASSET_VERSIONS else None
         # The bundle is served under a content-addressed ?v= URL and marked
         # immutable, so a conforming browser will not revalidate at all. This
@@ -576,7 +617,35 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy", _CSP)
         self.end_headers()
-        self.wfile.write(body)
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
+
+    def _theme_tokens_file(self) -> None:
+        try:
+            body, version = _theme_token_asset()
+        except Exception:  # noqa: BLE001 — invalid projection is unavailable, no source leakage
+            return self._json({"error": "theme asset unavailable"}, 503)
+        etag = '"' + version + '"'
+        versioned = (parse_qs(urlparse(self.path).query).get("v") or [""])[0] == version
+        cache_control = "public, max-age=31536000, immutable" if versioned else "no-cache"
+        if self.headers.get("If-None-Match") == etag:
+            self.send_response(304)
+            self.send_header("ETag", etag)
+            self.send_header("Cache-Control", cache_control)
+            self.end_headers()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/css; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("ETag", etag)
+        # Only content-versioned URLs are immutable; an unversioned read can revalidate.
+        self.send_header("Cache-Control", cache_control)
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Content-Security-Policy", _CSP)
+        self.end_headers()
+        if getattr(self, "command", None) != "HEAD":
+            self.wfile.write(body)
 
     def _body(self) -> dict:
         try:
@@ -748,8 +817,17 @@ class Handler(BaseHTTPRequestHandler):
                 return ("cross-origin request rejected", 403)
         return None
 
+    def do_HEAD(self):
+        """Mirror GET status and headers without writing a response body.
+
+        External monitors and HTTP clients routinely probe web surfaces with HEAD.
+        BaseHTTPRequestHandler otherwise answers 501, which made a healthy admin
+        console look unavailable even though GET / was 200.
+        """
+        return self.do_GET()
+
     # ---- GET ----------------------------------------------------------------
-    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/favicon.ico",
+    _PUBLIC_GET = {"/", "/index.html", "/app.js", "/styles.css", "/research-diagnostic-tokens.css", "/favicon.ico",
                    "/healthz", "/api/session"}
 
     def do_GET(self):
@@ -764,8 +842,29 @@ class Handler(BaseHTTPRequestHandler):
             # public, no-auth surfaces
             if path in ("/", "/index.html"):
                 return self._file("index.html")
-            if path in ("/app.js", "/styles.css"):
+            if path == "/assets/theme-tokens.css":
+                return self._theme_tokens_file()
+            if path in ("/app.js", "/styles.css", "/preferences.js", "/capacity-router.js", "/capacity-router.css"):
                 return self._file(path.lstrip("/"))
+            if path == "/research-diagnostic-tokens.css":
+                from .research_diagnostic_tokens import stylesheet
+                try:
+                    body = stylesheet()
+                except (OSError, ValueError):
+                    return self._json({"error": "diagnostic presentation unavailable"}, 503)
+                etag = '"' + hashlib.sha256(body).hexdigest() + '"'
+                unchanged = self.headers.get("If-None-Match") == etag
+                self.send_response(304 if unchanged else 200)
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+                self.send_header("ETag", etag)
+                self.send_header("Cache-Control", "public, max-age=0, must-revalidate")
+                self.send_header("X-Content-Type-Options", "nosniff")
+                if not unchanged:
+                    self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                if not unchanged and self.command != "HEAD":
+                    self.wfile.write(body)
+                return
             if path == "/favicon.ico":
                 return self._json({}, 204)
             if path == "/healthz":
@@ -793,6 +892,8 @@ class Handler(BaseHTTPRequestHandler):
 
             if _cacheable_api_get(path, q):
                 cache_key = f"{_server_cache_namespace(self.server)}:{self.path}"
+                if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                    cache_key += ":owner_snapshot:" + repr(intelligence_os.recorded_snapshot_cache_identity())
                 cached_body = _cached_api_body(cache_key)
                 if cached_body is not None:
                     return self._json_body(cached_body, cache_status="HIT")
@@ -808,6 +909,8 @@ class Handler(BaseHTTPRequestHandler):
                 # Each component is isolated so one failure degrades one landing tile.
                 # The full Health/AI-Cost tabs still fetch their dedicated endpoints.
                 return self._json(_summary_payload())
+            if path == "/api/capacity-router":
+                return self._json(capacity_router.panel((q.get("minutes") or ["15"])[0]))
             if path == "/api/flags":
                 return self._json(flags.snapshot())
             if path == "/api/brain/guest":
@@ -873,7 +976,19 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/marketing/lobes":
                 return self._json(marketing.lobes())
             if path == "/api/marketing/content":
-                return self._json(marketing.content())
+                charts = (q.get("charts") or ["inline"])[0]
+                if charts not in {"inline", "metadata"}:
+                    return self._json({"ok": False, "error": "Unknown chart representation."}, 400)
+                return self._json(marketing.content(chart_mode="metadata")
+                                  if charts == "metadata" else marketing.content())
+            if path == "/api/marketing/content/chart":
+                result = marketing.content_chart(
+                    (q.get("id") or [None])[0], (q.get("revision") or [None])[0])
+                status = 200 if result.get("ok") else {
+                    "invalid_request": 400, "plan_changed": 409,
+                    "chart_ambiguous": 409, "chart_not_found": 404,
+                }.get(result.get("reason"), 503)
+                return self._json(result, status)
             if path == "/api/marketing/lab":
                 return self._json(marketing.lab())
             if path == "/api/marketing/sentinel":
@@ -935,7 +1050,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Security-Policy",
                                  "default-src 'none'; style-src 'unsafe-inline'; sandbox")
                 self.end_headers()
-                self.wfile.write(body)
+                if getattr(self, "command", None) != "HEAD":
+                    self.wfile.write(body)
                 return
             # Allies (ecosystem) cockpit — MKT-D11. Read-only; the page never
             # contacts anyone. Status is folded from the operator ledger.
@@ -956,7 +1072,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(personas.roster())
             # Press (D14 Media Network W1) inspector — read-only, fail-soft.
             if path == "/api/press/overview":
-                return self._json(press.overview())
+                return self._json(press.overview(audience_query=users._query))
             # W-AI: Mastermind AI response log — batch-evaluatable corpus of every
             # user-facing answer (Macro brain + Terminal copilot), ingested from R2.
             if path == "/api/mastermind_ai/response_logs":
@@ -1170,17 +1286,20 @@ class Handler(BaseHTTPRequestHandler):
                         {"error": f"achievements unavailable: {_ae}", "cycles": []}, 503
                     )
 
-            # Eval OS — the derived T1 (engine census) + T4 (output health) estate.
-            # Read-only and derived on demand: the module writes nothing, ever, and holds
-            # its own 5-minute in-process cache keyed on the registry's mtimes. That
-            # cache, not the 15s HTTP one above, is what keeps a click off a full
-            # 642-artifact walk; `?force=1` bypasses BOTH, which is the only combination
-            # that actually re-derives.
-            if path == "/api/intelligence_os":
-                return self._json(intelligence_os.panel(
-                    force=(q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}))
-            if path == "/api/intelligence_os/engine":
-                return self._json(intelligence_os.engine_detail((q.get("id") or [""])[0]))
+            # Authenticated misses derive a complete snapshot inside the finite
+            # owned process envelope; the HTTP cache retains only bounded results.
+            if path in {"/api/intelligence_os", "/api/intelligence_os/engine"}:
+                try:
+                    if path == "/api/intelligence_os":
+                        force = (q.get("force") or ["0"])[0].lower() in {"1", "true", "yes", "on"}
+                        if force:
+                            # Re-derive supersedes serialized panel/detail snapshots too.
+                            _clear_response_cache()
+                        return self._json(intelligence_execution.response("panel", force=force))
+                    return self._json(intelligence_execution.response("detail", engine_id=(q.get("id") or [""])[0]))
+                except Exception:  # noqa: BLE001 — private owner failure, fixed transport error
+                    return self._json({"ok": False, "error": "Could not read the evidence estate",
+                                       "error_code": "evidence_read_failed"}, 500)
 
             return self._json({"error": f"unknown route {path}"}, 404)
         except Exception as e:  # noqa: BLE001
@@ -1932,6 +2051,11 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
             "directly. For remote access use admin.mastermind-x.com or an SSH tunnel.")
     settings.startup_check()
     httpd = ThreadingHTTPServer((host, port), Handler)
+    # Keep the two heaviest analytics panels' pages resident so a cold open cannot outrun
+    # the panel budget (see analytics_first_party.start_warmer). Deployed only: a local
+    # run should not add load to the shared store.
+    if settings.deployed():
+        analytics_first_party.start_warmer()
     mode = "DEPLOYED (auth required)" if settings.deployed() else (
         "local + auth" if settings.auth_enabled() else "local (open)")
     print(f"  Macro Admin → http://{host}:{port}   [{mode}]")
@@ -1942,3 +2066,4 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
         print("\n  stopped.")
     finally:
         httpd.server_close()
+

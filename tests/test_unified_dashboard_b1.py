@@ -1,30 +1,26 @@
-"""Tests for the UD-B1 Unified Macro Dashboard hero skeleton (round 5).
+"""Tests for the retained UD-B1 Unified Macro Dashboard candidate.
 
-The hero (templates/_unified_dashboard_hero.html.j2) is included from
-templates/dashboard.html.j2 only when `mode == "macro"`. These tests pin the
-binding contract against the REAL engine contracts (R-A, R-H):
+As of the 2026-09-20 primary-route override, the candidate partial remains in
+source for redesign but is not mounted by templates/dashboard.html.j2. These
+tests continue to pin its component-level bindings against the REAL engine
+contracts (R-A, R-H):
   • event_calendar._event publishes label / label_zh
   • alerts.alert_view publishes message / message_zh
   • fear_greed.compute_fear_greed() publishes label_en / label_zh / dial
   • risk_envelope.compose() publishes provenance.sources[].label_en/label_zh
 
 Fixtures are built by calling the real engine view functions — NOT by
-inventing keys — so the tests fail RED-first if the engine contract ever
-shifts in a way the template doesn't track.
-
-Round 5 (R-H): two lawful fixture forms ONLY:
-  (a) Call the real engine view function on a minimal real input.
-  (b) Assert on the BUILT site/macro.html: after python3 scripts/build_site.py
-      at this tree, the page carries the published keys (label_en/label_zh,
-      confluence_en, provenance.sources, ms_history).
-At least one built-page assertion per driver is required.
+inventing keys — so the retained candidate cannot silently drift while it is
+off-route. Primary-route deployment is pinned separately in
+`tests/test_dashboard_template_render.py` and by the built-page absence check
+at the end of this module.
 
 Also pinned: one-integer law (the score prints ONCE), no banned machine-text
-vocab ("alert(s) fired" etc), live dot uses health tokens (R-D), spine
-rows that lack real regime data render as designed-null (R-B), the flip
-clause drops the "now X/100" parenthetical so the gauge stays the only
-visible integer (R-C), and the spine month-ago anchor uses ms_history
-(R-G — never a same-day cap delta).
+vocab ("alert(s) fired" etc), live dot uses health tokens (R-D), spine rows
+that lack real regime data render as designed-null (R-B), the flip clause
+drops the "now X/100" parenthetical so the gauge stays the only visible
+integer (R-C), and the spine month-ago anchor uses ms_history (R-G — never a
+same-day cap delta).
 """
 from __future__ import annotations
 
@@ -34,6 +30,7 @@ import subprocess
 from pathlib import Path
 
 import jinja2
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = ROOT / "templates"
@@ -358,10 +355,15 @@ def test_hero_driver_fear_greed_reads_engine_published_keys_only():
 def test_zh_verdict_word_renders_when_lang_zh():
     """Both EN and ZH verdict words render. The EN word carries `l-en`
     so the ZH locale can hide it via the existing `html[data-lang="zh"] .l-en`
-    rule."""
-    html = _render_macro_with_hero(_real_vm())
-    assert "Risk-on" in html
-    assert "风险偏好" in html
+    rule. The verdict follows the market, so the words asserted are the ones
+    the REAL engine returned for this vm — the hard-coded risk-on literals
+    failed whenever the live regime was not risk-on. Deterministic coverage
+    of all three branches lives in
+    `test_verdict_branches_render_deterministically`."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    assert vm["market_state"]["label_en"] in html
+    assert vm["market_state"]["label_zh"] in html
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     assert 'class="l-en ud-verdict-word' in src, (
         "EN verdict word span must carry l-en class so ZH locale can hide it"
@@ -467,18 +469,113 @@ def test_live_dot_uses_health_tokens_not_direction():
 # Verdict qualifier class modifier (was inline --c: pre-fix)
 # --------------------------------------------------------------------------- #
 
+# The hero template's qualifier table (spec §6, its "one source of truth"),
+# as an explicit literal. The tests CONSULT this table; they neither
+# re-implement the template logic nor parse the template.
+_QUALIFIER_CLASS_BY_VERDICT = {
+    "RISK_ON": "ud-verdict-qualifier--warn",   # narrowing / 在收窄
+    "RISK_OFF": "ud-verdict-qualifier--down",  # deepening / 在加深
+    "MIXED": "ud-verdict-qualifier--muted",    # steady / 趋稳
+}
+
+
 def test_hero_verdict_qualifier_uses_class_modifier_not_inline_custom_property():
     """The qualifier ('narrowing' / 'deepening' / 'steady') lives on a class
     modifier (.ud-verdict-qualifier--{warn,down,muted}) — NEVER an inline
-    style="--c: ..." custom property (which fails the design ratchet)."""
-    html = _render_macro_with_hero(_real_vm())
-    assert "ud-verdict-qualifier--warn" in html
+    style="--c: ..." custom property (which fails the design ratchet). The
+    verdict follows the market, so the asserted modifier is the one the table
+    prescribes for the verdict the REAL engine returned — the hard-coded
+    --warn literal failed whenever the live regime was not risk-on."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    expected = _QUALIFIER_CLASS_BY_VERDICT[vm["market_state"]["verdict"]]
+    assert expected in html
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     assert 'style="--c:' not in src, "hero template must not declare inline --c:"
     css = (TEMPLATES / "theme.css").read_text()
     assert "ud-verdict-qualifier--down" in css, (
         "theme.css must define .ud-verdict-qualifier--down for RISK_OFF"
     )
+
+
+# The hero template's verdict-word table (spec §6, its "one source of truth"),
+# as an explicit literal — copied, never re-implemented or parsed back out of
+# the template.
+_VERDICT_WORDS_BY_VERDICT = {
+    "RISK_ON": ("ud-verdict-qualifier--warn", "narrowing", "在收窄"),
+    "RISK_OFF": ("ud-verdict-qualifier--down", "deepening", "在加深"),
+    "MIXED": ("ud-verdict-qualifier--muted", "steady", "趋稳"),
+}
+
+
+@pytest.mark.parametrize(
+    "synthetic_latest,expected_verdict",
+    [
+        # Each case is a synthetic INPUT to the real engine call. Only the
+        # vol leg fires on a minimal `latest` (no frame → no tape leg; the
+        # other readers need keys this input omits), and `_comp_vol` maps
+        # `conditions.risk_appetite.vix_term` onto that leg's score:
+        # <0.90 → 0.85, 1.00–1.05 → 0.42, ≥1.05 → 0.20. With no other leg
+        # the blend is exactly that score (×100), so the branch is selected
+        # by construction — contango + a 0th-percentile VIX reads 91 →
+        # RISK_ON, the neutral term band reads 49 → MIXED, backwardation +
+        # a 100th-percentile VIX reads 12 → RISK_OFF.
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 0.85},
+                            "complacency": {"vix_pctile": 0.0}}},
+            "RISK_ON",
+        ),
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 1.02}}},
+            "MIXED",
+        ),
+        (
+            {"conditions": {"risk_appetite": {"vix_term": 1.10},
+                            "complacency": {"vix_pctile": 1.0}}},
+            "RISK_OFF",
+        ),
+    ],
+)
+def test_verdict_branches_render_deterministically(synthetic_latest, expected_verdict):
+    """All three verdict branches, reached through the REAL engine on
+    deterministic synthetic INPUTS and rendered by the real hero template.
+
+    Lawful fixture form (a): the inputs to `market_state_snapshot` are
+    synthetic; the engine's own RETURN is what the hero renders against —
+    never a hand-built OUTPUT shape. The tests read no data/ and do not
+    depend on the live regime, unlike the `_real_vm()` forms above."""
+    from engine.market_state import market_state_snapshot
+
+    market_state = market_state_snapshot(synthetic_latest, frame=None, alerts=[])
+    assert market_state is not None, "engine must resolve the minimal vol-leg input"
+    assert market_state["verdict"] == expected_verdict, (
+        f"engine must return {expected_verdict} for this synthetic input "
+        f"(proves the branch is really reached), got {market_state['verdict']}"
+    )
+    qual_class, word_en, word_zh = _VERDICT_WORDS_BY_VERDICT[expected_verdict]
+    vm = {
+        "market_state": market_state,
+        "stance": {"key": "shift"},
+        "alerts": [],
+        "event_strip": [],
+        "ms_history": [],
+        "risk_envelope": {},
+        "fear_greed": {},
+        "latest": {"date": market_state.get("asof"),
+                   "quad_name": market_state.get("label_en")},
+    }
+    html = _render_macro_with_hero(vm)
+    assert market_state["label_en"] in html, (
+        f"{expected_verdict}: engine label_en {market_state['label_en']!r} must render"
+    )
+    assert market_state["label_zh"] in html, (
+        f"{expected_verdict}: engine label_zh {market_state['label_zh']!r} must render"
+    )
+    assert qual_class in html, (
+        f"{expected_verdict}: qualifier class {qual_class!r} must render"
+    )
+    assert word_en in html, f"{expected_verdict}: EN word {word_en!r} must render"
+    assert word_zh in html, f"{expected_verdict}: ZH word {word_zh!r} must render"
 
 
 # --------------------------------------------------------------------------- #
@@ -514,22 +611,24 @@ def test_design_system_ratchet_passes_on_added_code():
 # No inline <style> in the hero template (lives in theme.css).
 # --------------------------------------------------------------------------- #
 
-def test_hero_template_has_no_inline_style_block():
-    """UD-B2 scoped exception: the hero may carry ONE <style> block for
-    spine-caveat / driver-fold rules that must not touch theme.css
-    (THEME-CLOSURE). Every value in that block is a var() token — no hex,
-    rgba, or color-mix. All other hero CSS still lives in theme.css."""
+def test_hero_template_inline_style_is_single_token_scoped_ud_block():
+    """The retained off-route hero may carry one token-only scoped style block.
+
+    Preserve the accepted B2-W2 caveat rule while allowing later UD driver-fold
+    rules to share that same block; never reopen arbitrary inline styling.
+    """
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", src, flags=re.I | re.S)
     assert len(blocks) == 1, (
-        f"hero may carry at most one scoped <style> block, found {len(blocks)}"
+        f"retained hero may carry exactly one scoped <style> block, found {len(blocks)}"
     )
-    block = blocks[0]
-    assert "mx-spine-caveat" in block or "ud-driver" in block
-    assert "color-mix" not in block
-    assert not re.search(r"#[0-9a-fA-F]{3,8}\b", block)
-    assert "rgba(" not in block
-    assert "rgb(" not in block
+    css = blocks[0]
+    assert ".mx-spine-caveat" in css
+    assert 'html[data-theme="light"] .mx-spine-caveat' in css
+    assert "color-mix" not in css.lower()
+    assert not re.search(r"#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(", css, re.IGNORECASE), (
+        "retained UD local CSS must remain token-only"
+    )
 
 
 
@@ -783,27 +882,30 @@ def test_640_watching_disclosure_row_declared():
 def _last_640_watching_block(css: str) -> str | None:
     """Return the body of the LAST @media (max-width:640px) block that mentions
     `.ud-watch-` (R-L split: watching rules moved out of the 390 block so they
-    cover all mobile widths ≤640, not only ≤390)."""
+    cover all mobile widths ≤640, not only ≤390). theme.css carries several 640
+    blocks — later pages append their own — so walk the blocks from last to
+    first and return the first body that mentions ud-watch; an unrelated later
+    640 block must not blank out the watching one."""
     needle = "@media (max-width:640px)"
     positions = [m.start() for m in re.finditer(re.escape(needle), css)]
-    if not positions:
-        return None
-    pos = positions[-1]
-    open_idx = css.find("{", pos)
-    if open_idx < 0:
-        return None
-    depth = 1
-    i = open_idx + 1
-    while i < len(css) and depth > 0:
-        if css[i] == "{":
-            depth += 1
-        elif css[i] == "}":
-            depth -= 1
-        i += 1
-    if depth != 0:
-        return None
-    body = css[open_idx + 1:i - 1]
-    return body if "ud-watch" in body else None
+    for pos in reversed(positions):
+        open_idx = css.find("{", pos)
+        if open_idx < 0:
+            continue
+        depth = 1
+        i = open_idx + 1
+        while i < len(css) and depth > 0:
+            if css[i] == "{":
+                depth += 1
+            elif css[i] == "}":
+                depth -= 1
+            i += 1
+        if depth != 0:
+            continue
+        body = css[open_idx + 1:i - 1]
+        if "ud-watch" in body:
+            return body
+    return None
 
 
 def _last_390_block(css: str) -> str | None:
@@ -860,133 +962,18 @@ def test_no_contradictory_640_spine_rules():
 
 
 # --------------------------------------------------------------------------- #
-# R-H lawful fixture form (b): BUILT-PAGE assertion for each driver.
-# Scoped to the #ud-hero slice ONLY (R-H FINAL FORM). Whole-page greps like
-# html.count("Mixed") are void — they would have passed the previous head
-# where driver 1 was designed-null while MS2.mtf.indices[].confluence_en
-# already printed "Mixed" elsewhere on the page.
+# Primary-route proof: the retained candidate must stay off the built macro page.
 # --------------------------------------------------------------------------- #
 
-def _hero_slice(html: str) -> str:
-    """Extract the `<section id="ud-hero">…</section>` substring from a built
-    site/macro.html. Whole-page greps are void (R-H FINAL FORM) — every
-    built-page check below scopes to this slice."""
-    open_tag = '<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero"'
-    start = html.find(open_tag)
-    assert start >= 0, "built page must carry the #ud-hero section"
-    # Find the matching closing </section> by tag-balanced scan
-    depth = 0
-    i = start
-    while i < len(html):
-        nxt_open = html.find("<section", i + 1)
-        nxt_close = html.find("</section>", i + 1)
-        if nxt_close < 0:
-            return html[start:]
-        if nxt_open < 0 or nxt_close < nxt_open:
-            return html[start:nxt_close + len("</section>")]
-        i = nxt_open
-    return html[start:]
-
-
-def test_built_page_carries_mtf_confluence_en_from_published_indices():
-    """R-H (b): after the site is built, the hero driver 1 inside #ud-hero
-    must print the mtf.indices[0].confluence_en the live page already shows
-    elsewhere."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        # Site not built yet at this tree; skip the built-page assertion.
-        return
-    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
-    confluence_aliases = ("Uptrend", "Downtrend", "Mixed", "Rally", "Cooling")
-    found = [w for w in confluence_aliases if w in hero]
-    assert found, (
-        "built #ud-hero slice must carry at least one mtf.indices[].confluence_en "
-        "word (R-H FINAL FORM: scoped to #ud-hero only)"
-    )
-
-
-def test_built_page_carries_risk_envelope_provenance_sources_label():
-    """R-H (b): after the site is built, the hero driver 2 inside #ud-hero
-    must print one of the risk_envelope.provenance.sources[].label_en
-    words (e.g. 'Market state')."""
+def test_built_macro_page_keeps_unified_candidate_off_primary_route():
+    """A regenerated site/macro.html must not reintroduce the stacked UD-B1 hero."""
     site_macro = SITE / "macro.html"
     if not site_macro.exists():
         return
-    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
-    candidate_labels = (
-        "Market state", "Leadership cohort", "Cross-asset scares",
-        "Hazard summary", "Trend",
+    html = site_macro.read_text(encoding="utf-8")
+    assert 'id="ud-hero"' not in html, (
+        "built macro page reintroduced the held UD-B1 hero above the current dashboard"
     )
-    found = [w for w in candidate_labels if w in hero]
-    assert found, (
-        "built #ud-hero slice must carry at least one "
-        "risk_envelope.provenance.sources[].label_en (R-H FINAL FORM)"
-    )
-
-
-def test_built_page_carries_fear_greed_label_en():
-    """R-H (b): after the site is built, the hero driver 3 inside #ud-hero
-    must print the fear_greed.label_en."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        return
-    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
-    candidate_labels = (
-        "Greed in the read", "Fear in the read", "Greed", "Fear", "Neutral",
-        "Extreme Fear", "Extreme Greed",
-    )
-    found = [w for w in candidate_labels if w in hero]
-    assert found, (
-        "built #ud-hero slice must carry at least one fear_greed.label_en "
-        "(R-H FINAL FORM: scoped to #ud-hero only)"
-    )
-
-
-def test_built_page_hero_slice_has_no_competing_integer():
-    """R-C FINAL FORM: inside the built #ud-hero slice, `now <digits>/100`
-    and `现 <digits>/100` must NOT appear (generic strip, regardless of value).
-    Whole-page greps are void (the rest of the page may carry such tokens in
-    other contexts); the gate is HERO-SCOPED."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        return
-    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
-    assert not re.search(r"now\s+\d+/100", hero), (
-        "R-C FINAL FORM: built #ud-hero slice must NOT carry `now <X>/100` — "
-        "the gauge column is the only visible integer"
-    )
-    assert not re.search(r"现\s*\d+/100", hero), (
-        "R-C FINAL FORM: built #ud-hero slice must NOT carry `现 <X>/100` (ZH)"
-    )
-
-
-def test_built_page_hero_slice_carries_three_watching_event_cards():
-    """R-L (BLOCKER-1): at 1440, the built #ud-hero watching section must
-    carry THREE <li class="ud-watch-item"> entries with head + body cells in
-    each locale — NOT just the disclosure <summary> row. The pre-fix CSS
-    force-open hack failed because closed <details> hides non-summary
-    children at the USER-AGENT level; the DOM state is now open server-side
-    (with inline state JS removing `open` at ≤640px)."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        return
-    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
-    # The three <li> items (each with both head + body in EN and ZH)
-    items = re.findall(r'<li class="ud-watch-item">', hero)
-    assert len(items) == 3, (
-        f"R-L: built #ud-hero slice must carry exactly three "
-        f"<li class=\"ud-watch-item\"> entries; got {len(items)}"
-    )
-    # Each card carries EN head + EN body + ZH head + ZH body cells
-    en_heads = re.findall(r'class="ud-watch-item-head l-en"', hero)
-    en_bodies = re.findall(r'class="ud-watch-item-body l-en"', hero)
-    zh_heads = re.findall(r'class="ud-watch-item-head l-zh"', hero)
-    zh_bodies = re.findall(r'class="ud-watch-item-body l-zh"', hero)
-    assert len(en_heads) == len(zh_heads) == 3, (
-        f"R-L: each watching card must carry both EN and ZH head cells; "
-        f"got en={len(en_heads)}, zh={len(zh_heads)}"
-    )
-    assert len(en_bodies) == len(zh_bodies) == 3, (
-        f"R-L: each watching card must carry both EN and ZH body cells; "
-        f"got en={len(en_bodies)}, zh={len(zh_bodies)}"
+    assert 'id="regime-radar"' in html, (
+        "built macro page must retain the established #regime-radar decision surface"
     )
