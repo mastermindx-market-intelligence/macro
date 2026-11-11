@@ -8,6 +8,11 @@ Design invariants (house laws)
 - ONE Supabase REST call per nightly run (render budget law).
 - Fail-soft on every external dependency: missing creds / table / network → log one
   line, emit nothing, exit 0.  The nightly must never crash on this step.
+- Fail-soft is NOT the same as fail-quiet, and an untrustworthy read is NOT an empty
+  watchlist.  _fetch_operator_watchlist() returns a typed WatchlistRead, and only an
+  AUTHORITATIVE read (available=True) may advance durable state.  An unavailable read
+  preserves cooldown + previous-states EXACTLY and stamps a `source` envelope so the
+  night is visible rather than silently indistinguishable from "nothing watched".
 - No LLM calls anywhere.  All state is read from deterministic engine artifacts.
 - Nightly is the sole advancer of forward stores: cooldown + prev-states are only
   written in this script (nightly path).  Same-day re-renders carry forward the
@@ -31,7 +36,15 @@ State files (committed JSON, advanced nightly)
   data/alerts/watchlist_sentinel_states.json
       Per-ticker state snapshots for the PREVIOUS nightly run.  Shape:
       {"as_of": "YYYY-MM-DD", "states": {ticker: {entry_status, gate_eligible,
-        gate_tier, in_blackout, extension_grade}}}
+        gate_tier, in_blackout, extension_grade}},
+       "source": {"status": "ok"|"unavailable", "state": <WatchlistRead.state>,
+        "reason": "<slug>", "checked": "YYYY-MM-DD", "watched_count": N}}
+
+      `as_of` is the last night the sentinel AUTHORITATIVELY evaluated; `source.checked`
+      is the last night it TRIED.  They differ exactly when the watchlist source was
+      unavailable — which is how a reader tells "nothing watched" (status ok,
+      watched_count 0, checked == as_of == today) from "watchlist source unavailable"
+      (status unavailable, checked == today, as_of stale).
 
   data/alerts/watchlist_sentinel_cooldown.json
       Cooldown map.  Shape: {"as_of": "YYYY-MM-DD", "cooldown": {ticker: {...}}}
@@ -53,7 +66,11 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
+import stat
 import sys
+import tempfile
+from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -87,16 +104,70 @@ _ALERTS_JSONL = _ALERTS_DIR / "watchlist_alerts.jsonl"
 # Supabase watchlist fetch
 # ---------------------------------------------------------------------------
 
-def _fetch_operator_watchlist() -> list[str]:
-    """Fetch the operator's watchlist tickers from Supabase.
+@dataclass(frozen=True)
+class WatchlistRead:
+    """The result of ONE attempt to read the operator's watchlist.
 
-    Returns a sorted, deduplicated list of ticker strings (upper-cased), or []
-    on any failure.
+    An empty list is not one fact but two, and the runner used to be unable to tell them apart:
+    "the operator watches nothing" and "we could not find out" both arrived as []. Only the first
+    licenses advancing durable Sentinel state; the second must leave it alone, because a single
+    night of Supabase trouble would otherwise erase live cooldowns and move the enter-detection
+    baseline past a night that was never evaluated.
+
+    Three states, and every caller must branch on `available` BEFORE looking at `tickers`:
+
+        available=True,  tickers=(...)  -> READ_OK           (authoritative, non-empty)
+        available=True,  tickers=()     -> READ_OK_ZERO      (authoritative empty; may advance)
+        available=False, tickers=()     -> READ_UNAVAILABLE  (preserve everything)
+
+    The slugs are the house vocabulary for exactly this distinction, already used by the alert
+    feeds in engine/alert_triage.py ("read succeeded, legitimately nothing to say" vs
+    "read/parse failed — we do NOT know what it holds"). They are mirrored here rather than
+    imported so the nightly runner does not pull that module in for three strings;
+    tests/test_watchlist_sentinel_source_truth.py pins them equal so they cannot drift.
+
+    `reason` is a short stable slug for the unavailable case ("no_service_key", "http_500",
+    "request_failed", "malformed_payload", ...) — it is what the operator sees in the nightly
+    annotation and what lands in the states file's `source` envelope.
+    """
+
+    available: bool
+    tickers: tuple[str, ...] = ()
+    reason: str = ""
+
+    READ_OK = "ok"
+    READ_OK_ZERO = "ok_zero_events"
+    READ_UNAVAILABLE = "unavailable"
+
+    @classmethod
+    def ok(cls, tickers) -> "WatchlistRead":
+        return cls(True, tuple(tickers), "")
+
+    @classmethod
+    def unavailable(cls, reason: str) -> "WatchlistRead":
+        return cls(False, (), reason)
+
+    @property
+    def state(self) -> str:
+        if not self.available:
+            return self.READ_UNAVAILABLE
+        return self.READ_OK if self.tickers else self.READ_OK_ZERO
+
+
+def _fetch_operator_watchlist() -> WatchlistRead:
+    """Fetch the operator's watchlist tickers from Supabase as a typed, truthful read.
+
+    Returns WatchlistRead.ok(sorted unique upper-cased tickers) only when the read actually
+    succeeded — including the honest empty case, where the operator has a Supabase row and simply
+    watches nothing. EVERY other outcome (no config, no credentials, no operator identity, a
+    non-200, a transport failure, a payload that is not the shape we asked for) is
+    WatchlistRead.unavailable(reason): we did not learn the watchlist, and the caller must not
+    pretend we did.
 
     Requires env vars:
       SUPABASE_SERVICE_KEY (or SUPABASE_SERVICE_ROLE_KEY)  — service_role key
       SUPABASE_OPERATOR_USER_ID                             — operator's auth.users UUID
-                                                              (REQUIRED; absent → skip)
+                                                              (REQUIRED; absent → unavailable)
 
     Uses ONE embedded PostgREST call that joins watchlists → watchlist_symbols:
       GET /rest/v1/watchlists?select=id,user_id,watchlist_symbols(symbol)
@@ -110,8 +181,8 @@ def _fetch_operator_watchlist() -> list[str]:
     sup_cfg = (config.load().get("watchlist", {}).get("supabase") or {})
     base_url: str | None = sup_cfg.get("url")
     if not base_url:
-        log.info("watchlist_sentinel: no Supabase URL in config — skipping")
-        return []
+        log.info("watchlist_sentinel: no Supabase URL in config — watchlist unknown")
+        return WatchlistRead.unavailable("no_config_url")
 
     # --- Service key (required for server-side table read bypassing RLS) ---
     service_key = (
@@ -120,15 +191,15 @@ def _fetch_operator_watchlist() -> list[str]:
     )
     if not service_key:
         log.info(
-            "watchlist_sentinel: SUPABASE_SERVICE_KEY not set — skipping watchlist fetch"
+            "watchlist_sentinel: SUPABASE_SERVICE_KEY not set — watchlist unknown"
         )
-        return []
+        return WatchlistRead.unavailable("no_service_key")
 
     # --- Operator UUID is REQUIRED (multiple accounts exist; do not read other users' lists) ---
     operator_uid: str | None = config.secret("SUPABASE_OPERATOR_USER_ID")
     if not operator_uid:
-        log.info("watchlist_sentinel: operator UUID not set — skipping")
-        return []
+        log.info("watchlist_sentinel: operator UUID not set — watchlist unknown")
+        return WatchlistRead.unavailable("no_operator_id")
 
     # --- ONE embedded PostgREST call: watchlists + nested watchlist_symbols ---
     rest_url = base_url.rstrip("/") + "/rest/v1/watchlists"
@@ -146,39 +217,58 @@ def _fetch_operator_watchlist() -> list[str]:
         r = requests.get(rest_url, headers=headers, params=params, timeout=20)
         if r.status_code != 200:
             log.info(
-                "watchlist_sentinel: Supabase returned %d — skipping (%s)",
+                "watchlist_sentinel: Supabase returned %d — watchlist unknown",
                 r.status_code,
-                r.text[:200],
             )
-            return []
+            return WatchlistRead.unavailable(f"http_{r.status_code}")
         rows = r.json()
     except Exception as exc:  # noqa: BLE001
-        log.info("watchlist_sentinel: Supabase request failed — skipping (%s)", exc)
-        return []
+        log.info("watchlist_sentinel: Supabase request failed — watchlist unknown (%s)",
+                 type(exc).__name__)
+        return WatchlistRead.unavailable("request_failed")
+
+    # A payload that is not the shape we asked for is a FAILED read, not an empty watchlist.
+    # PostgREST reports errors as a JSON object, and the old code walked that object's keys as if
+    # they were rows — raising AttributeError out of the nightly step.
+    if not isinstance(rows, list):
+        log.info("watchlist_sentinel: Supabase payload was %s, not a list — watchlist unknown",
+                 type(rows).__name__)
+        return WatchlistRead.unavailable("malformed_payload")
 
     if not rows:
-        log.info("watchlist_sentinel: no watchlist rows found — empty list")
-        return []
+        log.info("watchlist_sentinel: no watchlist rows found — operator watches nothing")
+        return WatchlistRead.ok(())
 
-    # Privacy: log counts only, never UIDs or symbols individually.
+    if not all(isinstance(row, dict) for row in rows):
+        log.info("watchlist_sentinel: malformed watchlist row — watchlist unknown")
+        return WatchlistRead.unavailable("malformed_payload")
+
+    # Privacy: counts only. A partial usable response is not a complete watchlist.
     log.info("watchlist_sentinel: fetched %d watchlist container(s)", len(rows))
-
-    # Flatten symbols from all the operator's list containers, dedupe, sort.
     seen: set[str] = set()
     tickers: list[str] = []
     for row in rows:
-        symbols = row.get("watchlist_symbols") or []
+        symbols = row.get("watchlist_symbols")
+        if not isinstance(symbols, list):
+            # Missing, null and falsy non-lists are not an explicit empty relation.
+            log.info("watchlist_sentinel: malformed embedded symbol list — watchlist unknown")
+            return WatchlistRead.unavailable("malformed_payload")
         for entry in symbols:
             if not isinstance(entry, dict):
-                continue
-            raw = (entry.get("symbol") or "").strip().upper()
-            if raw and raw not in seen:
+                log.info("watchlist_sentinel: malformed symbol row — watchlist unknown")
+                return WatchlistRead.unavailable("malformed_payload")
+            symbol = entry.get("symbol")
+            if not isinstance(symbol, str) or not symbol.strip():
+                log.info("watchlist_sentinel: unusable symbol row — watchlist unknown")
+                return WatchlistRead.unavailable("no_usable_symbols")
+            raw = symbol.strip().upper()
+            if raw not in seen:
                 seen.add(raw)
                 tickers.append(raw)
 
     tickers.sort()
     log.info("watchlist_sentinel: %d unique ticker(s) in operator watchlist", len(tickers))
-    return tickers
+    return WatchlistRead.ok(tickers)
 
 
 # ---------------------------------------------------------------------------
@@ -339,13 +429,116 @@ def _load_cooldown() -> dict[str, dict]:
         return {}
 
 
-def _save_states(today_str: str, states: dict[str, dict], dry_run: bool) -> None:
+def _source_envelope(read: WatchlistRead, today_str: str) -> dict:
+    """Tonight's watchlist-source health, as stamped into the states file.
+
+    This is what lets a reader tell "nothing watched" from "watchlist source unavailable" —
+    the two cases that used to be indistinguishable once both had produced an empty list.
+    `checked` is always tonight; `as_of` beside it still means the last AUTHORITATIVE night, so
+    an unavailable night shows a today `checked` next to a stale `as_of`.
+    """
+    return {
+        "status": "ok" if read.available else "unavailable",
+        "state": read.state,
+        "reason": read.reason,
+        "checked": today_str,
+        "watched_count": len(read.tickers),
+    }
+
+
+def _save_states(today_str: str, states: dict[str, dict], dry_run: bool,
+                 read: WatchlistRead | None = None) -> None:
     if dry_run:
         return
     _ALERTS_DIR.mkdir(parents=True, exist_ok=True)
-    _STATES_PATH.write_text(
-        json.dumps({"as_of": today_str, "states": states}, separators=(",", ":"))
-    )
+    payload: dict = {"as_of": today_str, "states": states}
+    if read is not None:
+        payload["source"] = _source_envelope(read, today_str)
+    _STATES_PATH.write_text(json.dumps(payload, separators=(",", ":")))
+
+
+def _record_unavailable_source(today_str: str, read: WatchlistRead, dry_run: bool) -> None:
+    """Replace only source health while retaining the last evaluated baseline.
+
+    Existing fields retain their values, including unknown metadata; JSON formatting
+    may change on success. Unreadable, non-object and non-regular files stay untouched.
+    Failed staging never truncates the live state. This is the same state owner, not
+    a second durable store, and an unavailable night remains open for a later retry.
+    """
+    if dry_run:
+        return
+
+    existing: dict = {}
+    existing_mode: int | None = None
+    stage = "stat"
+    try:
+        try:
+            prior = _STATES_PATH.lstat()
+        except FileNotFoundError:
+            prior = None
+        if prior is not None:
+            if not stat.S_ISREG(prior.st_mode):
+                log.warning("watchlist_sentinel: states file is not regular — not stamping source")
+                return
+            existing_mode = stat.S_IMODE(prior.st_mode)
+            stage = "read"
+            loaded = json.loads(_STATES_PATH.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict):
+                log.warning("watchlist_sentinel: states file is not an object — not stamping source")
+                return
+            existing = loaded
+        existing["source"] = _source_envelope(read, today_str)
+        stage = "serialize"
+        payload = json.dumps(existing, separators=(",", ":")).encode("utf-8")
+        stage = "mkdir"
+        _STATES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("watchlist_sentinel: source stamp %s failed (%s) — state untouched",
+                    stage, type(exc).__name__)
+        return
+
+    temp_path: Path | None = None
+    temp_fd: int | None = None
+    try:
+        stage = "create"
+        temp_fd, temp_name = tempfile.mkstemp(
+            prefix=f".{_STATES_PATH.name}.", suffix=".tmp", dir=_STATES_PATH.parent)
+        temp_path = Path(temp_name)  # mkstemp creates a private 0600 sibling.
+        stage = "open"
+        with os.fdopen(temp_fd, "wb") as stream:
+            temp_fd = None  # the stream now owns and closes this descriptor.
+            stage = "write"
+            if stream.write(payload) != len(payload):
+                raise OSError("short state write")
+            stage = "flush"
+            stream.flush()
+            if existing_mode is not None:
+                stage = "mode"
+                os.fchmod(stream.fileno(), existing_mode)
+            stage = "fsync"
+            os.fsync(stream.fileno())
+            stage = "close"
+        stage = "replace"
+        os.replace(temp_path, _STATES_PATH)
+        temp_path = None
+    except Exception as exc:  # noqa: BLE001
+        log.warning("watchlist_sentinel: source stamp %s failed (%s) — state retained",
+                    stage, type(exc).__name__)
+    finally:
+        if temp_fd is not None:
+            try:
+                os.close(temp_fd)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("watchlist_sentinel: source stamp descriptor cleanup failed (%s)",
+                            type(exc).__name__)
+        if temp_path is not None:
+            try:
+                temp_path.unlink()
+            except FileNotFoundError:
+                pass
+            except Exception as exc:  # noqa: BLE001
+                log.warning("watchlist_sentinel: source stamp temporary cleanup failed (%s)",
+                            type(exc).__name__)
 
 
 def _save_cooldown(today_str: str, cooldown: dict[str, dict], dry_run: bool) -> None:
@@ -479,12 +672,37 @@ def main() -> int:
         return 0
 
     # --- Step 1: fetch operator watchlist (one Supabase call) ------------------
-    watched = _fetch_operator_watchlist()
+    read = _fetch_operator_watchlist()
+
+    if not read.available:
+        # We did not learn the watchlist, so nothing downstream is knowable. Durable state is
+        # The evaluated baseline and cooldown are preserved; only source health may change.
+        # Advancing the evaluated state here is what a single
+        # bad night used to cost: the cooldown map was overwritten with {} (erasing every live
+        # suppression, so a ticker that alerted two nights ago could alert again immediately) and
+        # the previous-state snapshot jumped to today, stepping the enter-detection baseline past
+        # a transition that was never evaluated and could never fire.
+        print(
+            f"::warning title=watchlist-sentinel-source-unavailable::watchlist source "
+            f"unavailable ({read.reason}) for {today_str} — cooldown and previous-state "
+            f"preserved; no tickers evaluated tonight",
+            flush=True,
+        )
+        log.warning(
+            "watchlist_sentinel: watchlist source unavailable (%s) — durable state preserved, "
+            "no alerts evaluated", read.reason,
+        )
+        _record_unavailable_source(today_str, read, dry_run)
+        return 0
+
+    watched = list(read.tickers)
     if not watched:
-        # No watchlist or credentials absent — still update state files to keep them fresh
-        log.info("watchlist_sentinel: no watched tickers — saving empty state and exiting")
+        # Authoritative empty: the operator genuinely watches nothing. This DOES advance — an
+        # empty cooldown is the correct answer when there is nothing to cool down, and
+        # update_cooldown() would return {} for an empty watchlist anyway.
+        log.info("watchlist_sentinel: watchlist is authoritatively empty — advancing state")
         today_states = _load_per_ticker_states(today_str)
-        _save_states(today_str, today_states, dry_run)
+        _save_states(today_str, today_states, dry_run, read)
         _save_cooldown(today_str, {}, dry_run)
         return 0
 
@@ -512,7 +730,7 @@ def main() -> int:
         newly_alerted=alerts,
         today_str=today_str,
     )
-    _save_states(today_str, today_states, dry_run)
+    _save_states(today_str, today_states, dry_run, read)
     _save_cooldown(today_str, new_cooldown, dry_run)
 
     # --- Step 6: write alert JSONL (alert_triage reads this) ------------------

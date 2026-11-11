@@ -607,3 +607,14 @@ def test_watchlist_store_valid_empty_missing_truth(tmp_path, monkeypatch, conten
     if result['events']:
         assert result['events'][0]['asset'] == 'SYNTH'
         assert result['events'][0]['tier'] == 'context'
+
+
+def test_read_state_slugs_match_the_house_vocabulary():
+    """WatchlistRead mirrors engine/alert_triage.py's READ_* slugs rather than importing them
+    (the nightly runner should not pull that module in for three strings). This pins the mirror
+    so the two can never drift into two different words for the same fact."""
+    from scripts import run_watchlist_sentinel as M
+
+    assert M.WatchlistRead.READ_OK == at.READ_OK
+    assert M.WatchlistRead.READ_OK_ZERO == at.READ_OK_ZERO
+    assert M.WatchlistRead.READ_UNAVAILABLE == at.READ_UNAVAILABLE

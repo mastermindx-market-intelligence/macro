@@ -5998,7 +5998,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
@@ -6008,6 +6008,47 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7304, current-main preserving source recovery):
+    Retain the complete original 2026-11-09 measurement and repair record below.
+    Current native run_ci_pack fdd099b8 measures only the existing signal owner
+    8 -> 10 after its literal truth-suite token is restored; all 401 owners,
+    gates, scope flags and unrelated command weights are conserved.
+    Compose only that original index +2 onto receiving main fe485972:
+    5966 -> 5968. Free-content5987 and plan-book5724 remain exact.
+    Job caps137/138/131, curated199, ten packs, all assertions and runtime
+    controls stay unchanged. Product/owner tests and bounded owner accounting
+    are distinct from a full-tree planner run; natural successor CI must
+    qualify complete selection and detect any residual unwanted broadening.
+
+    2026-11-09 (PR #7304, Watchlist source-truth test ownership):
+    Own natural contract run42569254969/job129002578412 measured
+    Hddcbdd49dc235c62db8ca56616e0938987195e49 against
+    B95724d5579aa0976542d269f588d82fcee926264 at tested merge
+    fedf33a11d9db4666d31c7ea2ee414a41fb51303. Index retained137jobs
+    and no entrants, with weight5943->5945. The added literal source-truth
+    suite increases existing signal-gate-pair-coherence weight8->10.
+    The same measurement also found unintended free-content137->138jobs,
+    5964->5974weight, and plan-book131->132jobs,5701->5711weight.
+    Both new entrants were that same owner; these broadening costs are
+    NOT funded. The vocabulary test imported engine.alert_triage solely
+    for three READ_* equalities; its computed engine import widened this
+    otherwise unrelated signal owner to engine/** and scripts/**.
+    Move only that test into already-enrolled test_alert_triage.py, retaining
+    all three real-constant assertions, every other source-truth test and
+    literal suite execution. Existing coherence tests already import the
+    real Watchlist runner, so this removes the additional dynamic-import
+    edge instead of reducing registration or hiding test collection.
+    Current main15364780 preserves the selector/dependency helpers and
+    adds only the package-local XGuerrilla registry owner to the measured
+    catalog; that exclusive tools/xguerrilla/** owner selects none of these
+    three probes. Compose only this carrier's already-measured index+2:
+    5943->5945. Keep free5964,plan-book5701,jobs137/138/131 and10packs.
+    No other carrier's allowance, new job or command is imported; runtime,
+    selectors,declared weights,timeouts and admission controls are unchanged.
+    This is source-derived repair/composition,not a newly measured repaired
+    plan or test result. Natural successor CI must qualify the actual tree;
+    any residual free-content/plan-book breadth still fails these bounds.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
