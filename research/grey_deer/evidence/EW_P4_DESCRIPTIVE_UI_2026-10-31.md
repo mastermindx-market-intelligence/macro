@@ -276,3 +276,11 @@ token palette or unrelated source file was changed to obtain this result.
 
 This fixes the current-source EW evidence binding. It does not discharge
 #7036's distinct non-author review, served/PCE, release or production gates.
+
+## 2026-11-11 · #7036 renewed evidence on composed source
+
+The unchanged canonical browser probe executed on source `030fcd2c3492e01ac6ffcf7f96b5ce58668248ee` (tree `d7b42b41321ff8a9d2fc74fa7eaf3ec9b2de44a3`). It completed all 68 fixture cases and 16 keyboard checks, with no page errors or horizontal overflow. The fresh set is `research/evidence/ew_p4_descriptive_ui_pr7036_20261111/`; the validator now names that set. All 79 files in the original 20261031 archive were retained byte-for-byte. The renewed receipt binds 35 source inputs, including the current dashboard, actual probe helpers, and diagnostic implementation. One screenshot and its contact sheet differ from the archived bytes; the new set records the actual run. This is unauthenticated local fixture evidence.
+
+The evidence validator passed 163 tests; one full-data registry comparison was skipped by the existing sparse-checkout marker. Separately, 69 diagnostics tests and 159 render/UI/date tests passed. Six render cases require `site/macrodata/release_forecast_fixture_v2.json`, which is absent from the untruncated pinned M714 tree; they remain explicit skips. These results do not clear the existing distinct non-author, Gate7, exact Sol release, PCE, or served-production holds.
+
+The canonical CI packing helper measured source030fcd2c through the exact-commit tracked-path inventory (149650 tracked paths, 30870 materialized source paths, zero unreadable suites), with no gate filter. The three probes measured 137/5969, 137/5990 and 131/5727, all ten packs. Only the three weight ceilings increase by3; job and pack limits stay fixed. Full rows are retained beside the fresh evidence.
