@@ -9857,6 +9857,9 @@ jobs:
       - "templates/navigation-refresh.css"
       - "templates/theme.css"
       - "tests/test_aibrief_page.py"
+      # contract-delta (PR #10918): tests/test_aibrief_page.py imports
+      # scripts.build_aibrief — flow-surface's closure must cover the script.
+      - "scripts/build_aibrief.py"
       - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
@@ -32393,6 +32396,9 @@ jobs:
       - templates/calculators/risk_reward.html.j2
       - site/tools/calculators/risk-reward.html
       - tests/js/risk_reward_warning_copy.test.mjs
+      - templates/calculators/covered_call.html.j2
+      - site/tools/calculators/covered-call.html
+      - tests/js/covered_call_annualized_copy.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32410,6 +32416,7 @@ jobs:
         run: |
           node --test tests/js/calculator_input_integrity.test.mjs
           node --test tests/js/risk_reward_warning_copy.test.mjs
+          node --test tests/js/covered_call_annualized_copy.test.mjs
           node tests/js/savings_goal_arithmetic.test.mjs templates/calculators/savings_goal.html.j2
           node tests/js/savings_goal_arithmetic.test.mjs site/tools/calculators/savings-goal.html
 
@@ -43582,6 +43589,9 @@ jobs:
       - tests/test_market_memory_history_extend.py
       - engine/neuralweb/market_memory_history_dossier.py
       - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_payems_vintage.py
+      - engine/release_revision_model.py
+      - tests/test_payems_history_vintage.py
       - engine/neuralweb/market_memory_history_view.py
       - tests/test_market_memory_history.py
       - tests/test_market_memory_history_archive.py
@@ -43799,7 +43809,7 @@ jobs:
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
           tests/test_market_memory_synthetic_capacity.py
-          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py -q
+          tests/test_market_memory_episode_retrieval.py tests/test_market_memory_operating_cortex_service.py tests/test_market_memory_retained_consumer.py tests/test_market_memory_retained_catalog.py tests/test_market_memory_retained_saved.py tests/test_market_memory_retained_saved_api.py tests/test_market_memory_read_observation.py tests/test_market_memory_retained_legacy_guard.py tests/test_market_memory_lineage.py tests/test_market_memory_history.py tests/test_market_memory_history_archive.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_extend.py tests/test_market_memory_history_cli.py tests/test_market_memory_history_dossier.py tests/test_market_memory_history_macro.py tests/test_market_memory_history_view.py tests/test_payems_history_vintage.py -q
       # The command includes all original source/temporal owner tests plus
       # retained population, label-free projection, comparison and retrieval.
       # Original DATA registration remains; current rights use real tmp owners.
@@ -45355,6 +45365,9 @@ jobs:
       - engine/neuralweb/market_memory_history_archive.py
       - engine/neuralweb/market_memory_history_dossier.py
       - engine/neuralweb/market_memory_history_macro.py
+      - engine/neuralweb/market_memory_history_payems_vintage.py
+      - engine/release_revision_model.py
+      - tests/test_payems_history_vintage_adapter.py
       - engine/neuralweb/market_memory_history_view.py
       - tests/test_market_memory_history_archive.py
       - tests/test_market_memory_history_dossier.py
@@ -45394,7 +45407,7 @@ jobs:
       - name: web data access, source clocks, reader limits and canonical Lab isolation
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
+          tests/test_dataos_web_api.py tests/test_dataos_web_history.py tests/test_payems_history_vintage_adapter.py tests/test_market_memory_history_transcripts.py tests/test_market_memory_history_filings.py tests/test_market_memory_history_workflow.py tests/test_dataos_web_lab.py
           tests/test_dataos_web_lab_worker.py tests/test_dataos_web_readers.py
           tests/test_dataos_rights_matrix.py
           tests/test_dataos_web_workspace.py tests/test_tiingo_produced_contracts.py -q -rs
@@ -45448,6 +45461,7 @@ jobs:
       - engine/neuralweb/market_memory_history.py
       - engine/neuralweb/market_memory_history_archive.py
       - engine/neuralweb/market_memory_history_dossier.py
+      - engine/neuralweb/market_memory_history_payems_vintage.py
       - engine/neuralweb/market_memory_history_filings.py
       - engine/neuralweb/market_memory_history_macro.py
       - engine/neuralweb/market_memory_history_transcripts.py
@@ -45460,6 +45474,7 @@ jobs:
       - engine/neuralweb/market_memory_trusted.py
       - engine/predictive_signals.py
       - engine/price_ladder.py
+      - engine/release_revision_model.py
       - engine/stock_technicals.py
       - engine/strategy_signals.py
       - engine/tech_catalog.py
@@ -45667,6 +45682,10 @@ jobs:
       - engine/neuralweb/market_memory_history_archive.py
       - engine/neuralweb/market_memory_history_dossier.py
       - engine/neuralweb/market_memory_history_macro.py
+      # PAYEMS vintage projection is imported by the existing historical dossier;
+      # include its implementation and incumbent selector in the foundation closure.
+      - engine/neuralweb/market_memory_history_payems_vintage.py
+      - engine/release_revision_model.py
       - engine/neuralweb/market_memory_identity.py
       - engine/neuralweb/market_memory_lineage.py
       - engine/neuralweb/market_memory_operating_cortex_service.py
@@ -46813,6 +46832,7 @@ jobs:
       - "tests/test_ticker_news_receipt_binding.py"
       - "tests/test_ticker_news_secret_delivery.py"
       - "tests/test_ticker_news_snapshot_provenance.py"
+      - "tests/test_ticker_news_snapshot_cursor_reconnect.py"
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
@@ -47121,6 +47141,7 @@ jobs:
           tests/test_ticker_news_receipt_binding.py
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_snapshot_provenance.py
+          tests/test_ticker_news_snapshot_cursor_reconnect.py
           tests/test_ticker_news_systemd.py
           tests/test_verify_ticker_news.py
           tests/test_press_run.py tests/test_press_writer.py

@@ -6008,7 +6008,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6040,6 +6040,32 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
+    mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union
+    at5958/5979/5716, including its separate800-character bucket crossing.
+    Retain every landed command and both complete histories. The original
+    ticker-news-qbus contribution still adds only free-content2, yielding
+    5958/5981/5716; index and Prophet remain currentmain-exact. No unmerged
+    sibling or second lifecycle allowance is funded. All400 owner IDs,
+    jobs137/138/131, ten packs, selectors and runtime controls remain.
+    This is preserving source accounting for the actual new conflict;
+    natural exact-successor proof is owed, with the old replay untouched.
+
+    2026-11-09 (PR #9230, existing ticker-news cursor regression suite):
+    Own contract run42270474570/job128073407247 measured only the
+    free-content probe5927->5929,137 selected jobs unchanged, no entrants
+    and ten packs; index5912 and Prophet5668 did not change. Preserve
+    that paired historical result without replaying the old uncertain pack.
+    On receiving main75e018ac, ticker-news-qbus still lacks this one test:
+    two commands,51->52 literal test refs,2041->2093 joined characters,
+    same character bucket2, owner106->108. Its exclusive literal paths
+    select only free-content among these probes. Add only its own +2:
+    free-content5969->5971. Keep index5948, Prophet5706, jobs137/138/131
+    and ten packs unchanged. Retain every current history/control; no
+    unmerged sibling is funded. This is current source accounting, not
+    a new planner execution. The new head needs its own required proof.
+    https://github.com/mastermindx-market-intelligence/Macro/pull/9230
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
