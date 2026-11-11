@@ -374,7 +374,7 @@ The reviewer's 79 at `0eeca4f5ea` were the first four files. The lead's 118 incl
    - *(Note superseded by R24.1: the stage-1 reproduction is now Phase A2, before Phase B, and `SealedRefusal` is not exempt.)*
 2. **Retry rules, stated once.**
    - (i) **INTEGRITY_ABORT:** never retried at the same engine commit (R19).
-   - (ii) **START with no Phase A outcome** (a failure in preparation or in Phase A code, before any statistic): a rerun at the same engine commit is permitted only under a new release that lists that START in `ledger_records_cited`. A rerun at a new engine commit follows R19's conditions. Nothing was computed, so neither is repair after a result.
+   - (ii) **START with no Phase A outcome** (a failure in preparation or in Phase A code, before any statistic): a rerun at the same engine commit is permitted only under a new release that lists that START in `ledger_records_cited`. A rerun at a new engine commit follows R19's conditions. Nothing was computed, so neither is repair after a result. *(R34.1: such a run does not spend the stage; see R34.)*
    - (iii) **PHASE_A_CLEAN without a record:** R20.1 as amended by R21.1 and R23.1.
    - (iv) **A closed GATE:** final.
 3. **Non-finite statistics.**
@@ -392,7 +392,8 @@ The reviewer's 79 at `0eeca4f5ea` were the first four files. The lead's 118 incl
    - (4) S8's count covers eligible industries only, not the header's 366 scope. The printed key is `dropped_industry_days_unique_eligible_industries_only`.
    - (5) The selection-rerun file's on-remote check is in `stage1_release` (`on_remote(selection, …)`).
 6. **Rehearsal (`--rehearsal`).**
-   - The complete stage-1 command (START, Phase A, Phase B, GATE; the same functions and ledger code) runs on the open 1998–2019 window only, with pseudo-eras 1998–2008 and 2009–2019, against a temporary bare remote. It never touches the real ledger or a release file, and every line is stamped `REHEARSAL`.
+   - From START onward the rehearsal runs the same functions and ledger code as stage 1 (START, Phase A, Phase B, GATE), on the open 1998–2019 window only, with pseudo-eras 1998–2008 and 2009–2019, against a temporary bare remote. It never touches the real ledger or a release file, and every line is stamped `REHEARSAL`.
+   - *Corrected by R34.4:* before START its only checks are the input date-range checks. It does not run the release block (`stage1_release`), so it reads the selected setting after its START. That is why the first attempt at 22:33:51Z, made before the selection rerun existed, refused after writing START to its temporary remote.
    - Inputs are built in memory from the through-2019 files, keeping lines dated 1996-01-02..2019-12-31 by the date field alone. Any input whose first date is before 1996 or whose last date is after 2019-12-31 is refused.
    - Its numbers are on an already-examined window and are evidence of nothing.
    - Not run until authorised with the selection rerun.
@@ -923,3 +924,22 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
   The false-DEFEND cost per calm year moves with the counts (for example, H1 h3 b25 goes from 1.276 % to 1.424 %); all values are in the JSON. These figures are descriptive only; no selection or pass condition uses them.
 - **F3 erratum:** the false-pivot table now uses the state held after each close, not the state decided at t. Each false-DEFEND count rises by one call over the 22 years (about +0.07 per calm year) in every book. This is an erratum to a descriptive table, made before any confirmation read.
 - **Order of the authorised runs:** the first rehearsal attempt at 22:33:51Z refused with "selection result is not committed" before Phase A, having written only START to its own temporary remote. The order was changed so that the rehearsal follows the rerun. No code changed.
+
+## R34 — what can refuse after a START push (CEO; declared, no code change; the engine stays `b3f7ce4548`)
+
+Source: the CEO's reader, `FINDINGS_START_THEN_REFUSE.md` (no blocker).
+
+1. **A START with nothing after it does not spend the stage** (beside R21.2(ii)).
+   - The stage may be rerun at the same engine commit under a new release that cites that START in `ledger_records_cited` (`start_allowed`).
+   - `--ledger-report` shows such a run as "started; no Phase A outcome (no result)".
+   - Only a Phase-A-clean run with no record after it is closed by rule (R25.1(c)).
+   - **The data-parse case:** a malformed sealed row can be found only by reading sealed rows, which happens after START. It leaves a START-only run. The bytes are pinned by hash, so a rerun on the same bytes fails the same way; the cure is an engine commit under R19 with a release citing the START.
+2. **Stage 1 is covered before START.** Everything that can refuse between the START push (runner :774) and the Phase A record (:785) from a cause that exists before START is checked before START on the same bytes:
+   - `selected_setting` (keys, format, and match with the release's `selected_grid_point`) runs in `stage1_release` (engine :805–808), after the commit diff, the sha256 pin and the on-remote checks (:794–802). It reads the same blob at the same fetched head as the call after START (runner :615).
+   - The input hashes are compared by `check_manifest` (engine :811), on the same paths the loaders open (runner :1645–1646).
+3. **Stage 2, declared limit.** Unsealing (`stage2_opened`) happens before the stage-2 START. After START, the selection file is read without having been checked first.
+   - A commit between the gate and stage 2 that deletes the selection file or makes it unparseable would refuse after START.
+   - A commit that changes its setting fails the stage-1 reproduction check (Phase A2) and aborts before any 2020–2025 number.
+   - Neither spends the stage. It is not fixed in code because the engine is frozen.
+   - **Covered by procedure:** between the GATE record and the stage-2 release, the only commit made on the branch is the stage-2 release file, made by the CEO. Before writing it the CEO confirms that `git diff <stage-1 release commit> HEAD -- research/rotation_core/results_v2_selection_rerun.json` is empty and runs `--preflight`.
+4. **R21.6 wording** corrected (see there): the rehearsal matches stage 1 only from START onward. No code change.
