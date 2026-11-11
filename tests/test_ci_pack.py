@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_994),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_977),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_735),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,35 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7177, complete CODE PIT coverage in one pytest process):
+    Current native CI 43115090613 contract job 130840898323 tested merge
+    40598fed1b4a586679661e8f7860caf67eb4ebf0, ordered parents base
+    18de8ef0a97d86f97537f986eb2452fcdbb06f64 and head
+    3540a79fec0a0f0a5f46913f64c300a7d3b4e118. It measured index
+    137 jobs / 5,978 weight / 10 packs, free-content 137 / 6,001 / 11,
+    and Prophet 131 / 5,736 / 10, versus base weights 5,966 / 5,989 /
+    5,724. Four introduced findings, zero inherited, no selected entrant.
+    Contract log SHA256:
+    dd4b0972208ecd8af58c997637c856b2d9c453bd68b490216f86676a4dd0517a.
+
+    Preserve the complete PIT coverage: its original hosted source step
+    actually passed all 237 cases. Append those three full modules after
+    the existing 19 unfiltered board modules in ONE actual pytest process;
+    retain the separate Today command and its filter byte-for-byte. This
+    removes one interpreter invocation, not a suite, selected owner or
+    assertion. The unchanged owner estimator has the same 25 literal test
+    references and character bucket, but 4 -> 3 run commands: 55 -> 54.
+    Relative to the measured head, this subtracts exactly one weight unit
+    from each unchanged probe selection, deriving 5,977 / 6,000 / 5,735.
+    Record these derived expectations, not a claim of a new planner run.
+    The existing target is 600 weight units per pack, so its unchanged
+    ceil(weight / 600) rule derives ten packs for all three probes.
+    Keep job ceilings 137 / 138 / 131, the ten-pack bound, dependency set,
+    six-minute owner limit, selectors and all runtime/admission controls.
+    The whole successor still needs natural contract and semantic proof;
+    the two original exact-base UNKNOWN units remain UNKNOWN. No original
+    timed-out replay or checkout is retried, restored or reclassified.
 
     2026-11-11 (PR #7177, MACD PIT replay-suite wiring): native CI
     43093262801 contract job 130775501314 tested merge
