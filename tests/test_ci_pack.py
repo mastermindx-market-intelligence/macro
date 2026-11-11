@@ -5999,7 +5999,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6008,6 +6008,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (merge of main 82930233f83a into PR #11024, ceiling
+    re-base onto main's new composition): main's #9230 re-based the
+    free-content ceiling 5,987 -> 5,989; re-apply only this pull
+    request's own measured +2 suite token onto main's new values.
+    Merged-tree measurement (packing_probe_measurements on the merge
+    worktree, 2026-11-11): index 5,968, free-content 5,991, Prophet
+    5,726 — exactly main's current 5,966/5,989/5,724 plus this pull
+    request's own +2/+2/+2, additive with no smear; measured jobs
+    137/137/131 under the retained ceilings 137/138/131, ten packs on
+    every probe. Index and plan_book keep the pull request's registered
+    values; only free-content moves 5,989 -> 5,991 (main's #9230 +2
+    composed). Job ceilings, selectors, commands and every other
+    assertion unchanged; nothing of main's or the pull request's
+    dropped. Natural successor CI must qualify this merged head.
 
     2026-11-11 (PR #11024, member perf archive suite accounting):
     contract-delta run 43004476995 measured head 743645ca94ae against
@@ -6045,6 +6060,32 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
+    mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union
+    at5958/5979/5716, including its separate800-character bucket crossing.
+    Retain every landed command and both complete histories. The original
+    ticker-news-qbus contribution still adds only free-content2, yielding
+    5958/5981/5716; index and Prophet remain currentmain-exact. No unmerged
+    sibling or second lifecycle allowance is funded. All400 owner IDs,
+    jobs137/138/131, ten packs, selectors and runtime controls remain.
+    This is preserving source accounting for the actual new conflict;
+    natural exact-successor proof is owed, with the old replay untouched.
+
+    2026-11-09 (PR #9230, existing ticker-news cursor regression suite):
+    Own contract run42270474570/job128073407247 measured only the
+    free-content probe5927->5929,137 selected jobs unchanged, no entrants
+    and ten packs; index5912 and Prophet5668 did not change. Preserve
+    that paired historical result without replaying the old uncertain pack.
+    On receiving main75e018ac, ticker-news-qbus still lacks this one test:
+    two commands,51->52 literal test refs,2041->2093 joined characters,
+    same character bucket2, owner106->108. Its exclusive literal paths
+    select only free-content among these probes. Add only its own +2:
+    free-content5969->5971. Keep index5948, Prophet5706, jobs137/138/131
+    and ten packs unchanged. Retain every current history/control; no
+    unmerged sibling is funded. This is current source accounting, not
+    a new planner execution. The new head needs its own required proof.
+    https://github.com/mastermindx-market-intelligence/Macro/pull/9230
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.

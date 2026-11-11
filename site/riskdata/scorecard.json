@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-11-11T08:42:21+00:00",
+  "generated_at": "2026-11-11T13:34:23+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-11-09",
+      "asof_last_row": "2026-11-10",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 2,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
         "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
-        "graded_n": 64
+        "graded_n": 65
       },
       "windows": {
         "full": {
@@ -21,10 +21,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 54,
-            "tp": 2,
+            "n": 55,
+            "tp": 3,
             "tn": 52,
-            "precursor_rate": 0.037
+            "precursor_rate": 0.055
           },
           "calm": {
             "n": 10,
@@ -34,9 +34,9 @@
           },
           "by_scare": {},
           "recovery": {
-            "n": 17,
+            "n": 18,
             "ok": 15,
-            "rate": 0.882
+            "rate": 0.833
           }
         },
         "y1": {
@@ -47,10 +47,10 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 54,
-            "tp": 2,
+            "n": 55,
+            "tp": 3,
             "tn": 52,
-            "precursor_rate": 0.037
+            "precursor_rate": 0.055
           },
           "calm": {
             "n": 10,
@@ -60,9 +60,9 @@
           },
           "by_scare": {},
           "recovery": {
-            "n": 17,
+            "n": 18,
             "ok": 15,
-            "rate": 0.882
+            "rate": 0.833
           }
         }
       },
@@ -70,34 +70,34 @@
         "definition": "us_issued_probability_audit.v1",
         "as_of": "2026-11-11",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 78,
+        "input_rows": 79,
         "min_display_n": 5,
         "horizons": {
           "h5": {
-            "n": 64,
+            "n": 65,
             "excluded_n": 14,
             "excluded": {
               "ungraded": 14
             },
             "from": "2026-06-23",
-            "through": "2026-10-09",
+            "through": "2026-10-12",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.027969,
+            "mean_forecast": 0.028185,
             "observed_rate": 0.0,
-            "brier": 0.00084,
-            "paired_n": 60,
+            "brier": 0.000854,
+            "paired_n": 61,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.000807,
+            "paired_model_brier": 0.000823,
             "paired_base_brier": 0.001296,
-            "paired_brier_delta": -0.000489,
+            "paired_brier_delta": -0.000473,
             "bins": [
               {
                 "lower": 0.0,
                 "upper": 0.1,
                 "upper_inclusive": false,
-                "n": 64,
-                "mean_forecast": 0.027969,
+                "n": 65,
+                "mean_forecast": 0.028185,
                 "observed_rate": 0.0
               },
               {
@@ -135,23 +135,23 @@
             ]
           },
           "h10": {
-            "n": 64,
+            "n": 65,
             "excluded_n": 14,
             "excluded": {
               "ungraded": 14
             },
             "from": "2026-06-23",
-            "through": "2026-10-09",
+            "through": "2026-10-12",
             "events": 0,
             "both_outcomes_present": false,
-            "mean_forecast": 0.075313,
+            "mean_forecast": 0.075692,
             "observed_rate": 0.0,
-            "brier": 0.005869,
-            "paired_n": 60,
+            "brier": 0.005932,
+            "paired_n": 61,
             "missing_baseline_n": 4,
-            "paired_model_brier": 0.005713,
+            "paired_model_brier": 0.005784,
             "paired_base_brier": 0.007396,
-            "paired_brier_delta": -0.001683,
+            "paired_brier_delta": -0.001612,
             "bins": [
               {
                 "lower": 0.0,
@@ -165,7 +165,7 @@
                 "lower": 0.1,
                 "upper": 0.2,
                 "upper_inclusive": false,
-                "n": 10,
+                "n": 11,
                 "mean_forecast": 0.1,
                 "observed_rate": 0.0
               },
@@ -196,23 +196,23 @@
             ]
           },
           "h21": {
-            "n": 64,
+            "n": 65,
             "excluded_n": 14,
             "excluded": {
               "ungraded": 14
             },
             "from": "2026-06-23",
-            "through": "2026-10-09",
-            "events": 2,
+            "through": "2026-10-12",
+            "events": 3,
             "both_outcomes_present": true,
-            "mean_forecast": 0.152969,
-            "observed_rate": 0.03125,
-            "brier": 0.043217,
-            "paired_n": 64,
+            "mean_forecast": 0.153538,
+            "observed_rate": 0.046154,
+            "brier": 0.052646,
+            "paired_n": 65,
             "missing_baseline_n": 0,
-            "paired_model_brier": 0.043217,
-            "paired_base_brier": 0.051809,
-            "paired_brier_delta": -0.008592,
+            "paired_model_brier": 0.052646,
+            "paired_base_brier": 0.061407,
+            "paired_brier_delta": -0.008761,
             "bins": [
               {
                 "lower": 0.0,
@@ -226,9 +226,9 @@
                 "lower": 0.1,
                 "upper": 0.2,
                 "upper_inclusive": false,
-                "n": 64,
-                "mean_forecast": 0.152969,
-                "observed_rate": 0.03125
+                "n": 65,
+                "mean_forecast": 0.153538,
+                "observed_rate": 0.046154
               },
               {
                 "lower": 0.2,
@@ -272,13 +272,13 @@
           "latest_engine_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
           "latest_source_bundle_sha256": "a9a1deaeba851d68b573654956f4306dcbb17f23a8e228ae3d888717a825238a",
           "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
-          "same_model_issued_n": 6,
+          "same_model_issued_n": 7,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 6,
+          "awaiting_maturity": 7,
           "prior_model_issued_n": 18,
           "model_fingerprints_seen": 5,
           "from": "2026-11-02",
-          "through": "2026-11-09",
+          "through": "2026-11-10",
           "issue_excluded": {
             "issue_not_session_timely": 1,
             "missing_issue_receipt": 53
@@ -346,10 +346,10 @@
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 6,
-              "span_days": 7,
+              "issued_n": 7,
+              "span_days": 8,
               "from": "2026-11-02",
-              "through": "2026-11-09"
+              "through": "2026-11-10"
             },
             "thresholds": {
               "min_issued_sessions": 252,
