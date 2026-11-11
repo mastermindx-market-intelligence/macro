@@ -133,23 +133,26 @@ def stage_settled_failure(stage_result: dict) -> bool:
 
 
 def acquisition_settled_failure_without_applied_packages(result) -> bool:
-    """Classify a failed native acquisition as settled with nothing applied.
+    """Require positive settlement of every launched stage before fallback."""
+    if result.installation != "never_started" or result.pending or not result.observations:
+        return False
+    if any(outcome not in {"passed", "failed"} or settlement != "settled"
+           for _index, outcome, settlement in result.observations):
+        return False
 
-    The final ``install`` stage is the only package-applying stage; when it
-    never started, every launched download child was reaped settled
-    (exit code observed, no pending index) and no observation is
-    timed_out/unknown, no package can have been applied — download-only
-    completion retries included. This covers an archive outage in which every
-    download exits settled nonzero and the completion retry also fails: the
-    original result may carry an unknown aggregate settlement (for example
-    NATIVE_COMPLETION_RESPONSE_UNKNOWN) while every child effect is proven
-    inert. Unknown observations, pending children, or any started/unknown
-    installation stay fail-closed and never fall back.
-    """
-    return (result.installation == "never_started" and result.pending == ()
-            and bool(result.observations)
-            and all(outcome in {"passed", "failed"} and settlement == "settled"
-                    for _index, outcome, settlement in result.observations))
+    completion = result.completion
+    if completion is None:
+        return result.settlement == "settled" and result.initial_download_failure is None
+    if completion.settlement != "settled" or completion.outcome not in {"passed", "failed"}:
+        return False
+    # The acquisition core marks an unsuccessful completion unproven even when
+    # its process returned a settled nonzero exit. Only that positive receipt
+    # distinguishes this case from a lost response to the completion stage.
+    return result.settlement == "settled" or (
+        result.reason == "NATIVE_COMPLETION_UNPROVEN"
+        and result.initial_download_failure == "NATIVE_DOWNLOAD_FAILED"
+        and completion.outcome == "failed"
+    )
 
 
 def _browser_only_after_settled_failure(*, reason: str, evidence: str, deadline: float,
