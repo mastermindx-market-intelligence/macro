@@ -317,78 +317,37 @@ def test_the_board_ladder_primitives_are_defined_in_theme_css(theme, selector):
 
 
 @pytest.mark.parametrize("state", LIFECYCLE_STATES)
-def test_every_lifecycle_state_ships_at_both_scales(theme, state):
-    """One grammar, two scales: the cap on a ladder cell and the inline mark on a card.
+def test_every_lifecycle_state_keeps_its_inline_mark(theme, state):
+    """Lifecycle meaning survives in inline marks and the ladder's printed labels.
 
-    A state that ships at only one scale silently breaks the link the grammar exists
-    to make — the ladder would name a state the card cannot echo, or the reverse.
+    The Chairman's whole-site edge removal retires the decorative ladder cap;
+    the seven-state inline vocabulary must remain complete.
     """
     css = _strip_comments(theme)
-    for family in ("mx-cap", "mx-mark"):
-        assert f".{family}--{state}" in css, (
-            f".{family}--{state} is missing — the weight grammar must ship at BOTH scales "
-            "(.mx-cap on a ladder cell, .mx-mark inline on a card/table row)"
-        )
+    assert f".mx-mark--{state}" in css, (
+        f".mx-mark--{state} is missing from the shared lifecycle vocabulary"
+    )
 
 
 def test_the_weight_grammar_never_touches_a_direction_hue(theme):
-    """Lifecycle is WEIGHT; stance is HUE. The two channels must never collide.
-
-    The marks paint in currentColor/--text/--muted only. That is what makes the whole
-    grammar byte-identical under the Chinese direction flip: if any weight referenced
-    --up/--down/--q*, a plan's lifecycle state would silently recolour with the tape's
-    convention and mean something different in the two languages.
-    """
+    """Lifecycle marks stay neutral under the Chinese direction-color flip."""
     css = _strip_comments(theme)
-    block = re.search(r"\.mx-cell\s*>\s*\.mx-cap\s*\{.*?(?=\n@media|\nhtml\[)", css, re.S)
-    assert block, "the weight-grammar block must be locatable for this guard to bind"
-    banned = re.findall(r"var\(\s*(--(?:up|down|q[1-4]|pv-[a-z]+))\b", block.group(0))
+    bodies = [body for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css)
+              if ".mx-mark" in selector]
+    assert bodies, "the inline lifecycle grammar must remain defined"
+    banned = re.findall(r"var\(\s*(--(?:up|down|q[1-4]|pv-[a-z]+))\b", " ".join(bodies))
     assert not banned, (
-        f"the lifecycle weight grammar references {sorted(set(banned))} — a direction or "
-        "stance hue inside a weight mark breaks the zh flip and collides the two channels"
+        f"the lifecycle weight grammar references {sorted(set(banned))} — "
+        "direction hue must not change lifecycle meaning between languages"
     )
 
 
-def test_the_cap_is_structurally_confined_to_ladder_cells(theme):
-    """R4.2-corrected contract: .mx-cap is a LADDER-CELL cap and nothing else.
-
-    The card's own top cap was repealed so it would stop competing with the chart for
-    the card's head. Here that repeal is enforced by the selector rather than by prose
-    plus an external guard: both the cap's base rule and its ``content:""`` are scoped
-    to ``.mx-cell``, so a .mx-cap emitted anywhere else generates no box at all instead
-    of a stray 3px artefact. Deleting the scope is the mutation this must fail on.
-    """
+def test_decorative_ladder_caps_stay_retired(theme):
+    """The ladder keeps its labels, counts and selection; no edge-cap box returns."""
     css = _strip_comments(theme)
-    assert re.search(r"^\.mx-cell\s*>\s*\.mx-cap\s*\{", css, re.M), (
-        ".mx-cap's base rule must be scoped to .mx-cell — an unscoped cap re-opens the "
-        "repealed card-cap contract"
-    )
-    # EVERY rule that gives some .mx-cap a box, not just the first one found. The
-    # weight modifiers are inert unscoped only because they declare no content of
-    # their own; two of them (--delivering, --invalidated) DO declare it for their
-    # second mark, and those shipped unscoped in this PR's first pass — a first-match
-    # re.search found the base rule, reported green, and never looked at them.
-    # Judged per comma-part: the shared `content` rule legitimately pairs a scoped
-    # `.mx-cell > .mx-cap::before` with an unscoped `.mx-mark::before`, because
-    # .mx-mark is a different primitive that is SUPPOSED to live outside a ladder.
-    # Only the parts naming .mx-cap owe the scope.
-    # Walk EVERY rule. The pattern deliberately carries no `}`/`^` anchor: an anchored
-    # version consumes the closing brace of each match, so the very next rule has
-    # nothing left to anchor on and is skipped — which is how a first draft of this
-    # guard passed a mutation that reverted .mx-cap--delivering::after to unscoped.
-    leaks = []
-    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css, re.S):
-        selector, body = m.group(1).strip(), m.group(2)
-        if ".mx-cap" not in selector or not re.search(r"(?:^|;)\s*content\s*:", body):
-            continue
-        unscoped = [p.strip() for p in selector.split(",")
-                    if ".mx-cap" in p and ".mx-cell" not in p]
-        if unscoped:
-            leaks.extend(unscoped)
-    assert not leaks, (
-        "these .mx-cap rules declare content:\"\" without .mx-cell scope, so a cap "
-        f"emitted outside a ladder cell paints a stray box: {leaks}. Scope each as "
-        "`.mx-cell > …` — the containment law is carried by the selector, not by prose."
+    selectors = [selector for selector, _ in re.findall(r"([^{}]+)\{([^{}]*)\}", css)]
+    assert not any(".mx-cap" in selector for selector in selectors), (
+        "retired ladder edge-cap styling returned; keep lifecycle meaning inline"
     )
 
 
@@ -596,3 +555,4 @@ def test_ladder_total_prints_exactly_one_language_label(theme, lang, visible, hi
         f"in the ladder total. theme.css is out-specifying its own language toggle; keep the "
         f"restoring rule below .mx-ladder .mx-lad-total small."
     )
+

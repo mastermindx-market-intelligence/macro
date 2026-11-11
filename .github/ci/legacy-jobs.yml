@@ -21985,17 +21985,13 @@ jobs:
   container-edge-stripe-guard:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
-    # Chairman rule 2026-10-18 (docs/DESIGN_DOCTRINE.md §3): no colored container
-    # edge stripe. Static scan of templates/theme.css, dashboard.html.j2 and
-    # intraday_flow.html.j2 (pseudo bars, inset stripes, shrink-only rail ratchet).
-    # scope: exclusive — the suite reads exactly these three templates via
-    # Path.read_text and imports only re/pathlib, so paths: is its whole closure.
-    # Kept out of template-site-sync so ordinary code PRs do not select it.
+    # Chairman rule: no decorative container-edge stripe. The estate guard reads
+    # every template/app UI source, including inline styles and emitted rails.
+    # Its declared trigger closure must cover both complete source roots.
     scope: exclusive
     paths:
-      - templates/dashboard.html.j2
-      - templates/intraday_flow.html.j2
-      - templates/theme.css
+      - templates/**
+      - app/**
       - tests/test_container_edge_stripes.py
     runs-on: ubuntu-latest
     steps:
