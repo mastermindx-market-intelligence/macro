@@ -1,0 +1,118 @@
+{
+  "schema": "paper.cpi_period_flow_contract.v1",
+  "status": "PROPOSED_INTEGRATION_NOT_RUNTIME_PROOF",
+  "source_pin": "b5674d8ef898e503d6164922654f5ff89be9981c",
+  "fileId": "01M6PXFEP1E1T59M2B3N673PMG",
+  "pageId": "p-4-0",
+  "boardId": "1F2-0",
+  "source": {
+    "series": "CPIAUCSL",
+    "path": "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet",
+    "artifact_sha256": "eabad732825e9d6820774f067e8f86791cc3f64a6a81b655522af621c851f22c",
+    "rows": 293509,
+    "actual_periods": 956,
+    "distinct_vintage_dates": 377,
+    "period_min": "1947-01-01",
+    "period_max": "2026-09-01",
+    "range_calendar_months": 957
+  },
+  "controlled_sparse_index": {
+    "is_full_source_index": false,
+    "keys": [
+      "1947-01-01",
+      "1987-01-01",
+      "2026-09-01"
+    ],
+    "provenance": [
+      "manifest minimum",
+      "retained selected-period evidence design",
+      "manifest maximum"
+    ]
+  },
+  "initial": {
+    "committed_period": "1987-01-01",
+    "query": "1987-01",
+    "draft_period": "1987-01-01",
+    "knowledge_cutoff": null
+  },
+  "invariants": [
+    "Search or draft selection never changes committed source, period, cutoff, pair or history.",
+    "Apply of the current month closes without a redundant read.",
+    "A different actual key commits together with qualified history; pending never relabels old records.",
+    "Cancelled or superseded results cannot commit; reuse the incumbent request/context mechanism.",
+    "No selected operand silently carries into another active period.",
+    "Incomplete index or row scan is never absence; use returned continuation and completion.",
+    "Source mismatch, access denial, unavailable version and transport failure remain distinct.",
+    "Copy success requires the awaited clipboard result; manual fallback uses the same full selected-reference payload.",
+    "Unknown units/basis withhold the difference; later is left and earlier is right in the incumbent comparison owner."
+  ],
+  "cases": [
+    {
+      "id": "same_month",
+      "query": "1987-01",
+      "expected_keys": [
+        "1987-01-01"
+      ],
+      "apply": "close_without_read"
+    },
+    {
+      "id": "sparse_year",
+      "query": "1987",
+      "expected_keys": [
+        "1987-01-01"
+      ],
+      "must_not_synthesize_months": true
+    },
+    {
+      "id": "invalid_month",
+      "query": "1987-13",
+      "state": "invalid_input",
+      "read": false
+    },
+    {
+      "id": "outside_range",
+      "query": "1900-01",
+      "requires": "qualified_complete_index",
+      "state": "no_match"
+    },
+    {
+      "id": "partial_empty",
+      "state": "lookup_incomplete",
+      "must_not_claim": "no_records"
+    },
+    {
+      "id": "new_month_pending",
+      "draft_period": "1947-01-01",
+      "committed_period": "1987-01-01",
+      "new_values_illustrated": false
+    },
+    {
+      "id": "cancel_pending",
+      "expected": "committed_context_unchanged_and_late_result_ignored"
+    },
+    {
+      "id": "history_failed",
+      "expected": "draft_retained_current_period_unchanged_retry_or_cancel"
+    },
+    {
+      "id": "complete_zero_one_many",
+      "expected": "no_retained_records_or_single_record_or_exact_pair_selection"
+    },
+    {
+      "id": "copy_resolved",
+      "expected": "reference_copied_only"
+    },
+    {
+      "id": "copy_rejected",
+      "expected": "full_existing_payload_selectable_no_automatic_retry"
+    }
+  ],
+  "owed_proof": [
+    "real non-January history",
+    "source-qualified live integration",
+    "keyboard/IME and return",
+    "320px/zoom EN/ZH",
+    "clipboard outcomes",
+    "original source recovery"
+  ]
+}

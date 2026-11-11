@@ -1,0 +1,91 @@
+{
+  "schema": "paper.returns_source_fixtures.v1",
+  "illustrative": true,
+  "canonical_session_fixture": [
+    "2026-10-14",
+    "2026-10-15",
+    "2026-10-16"
+  ],
+  "cases": [
+    {
+      "id": "historical_endpoint",
+      "dates": [
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16"
+      ],
+      "closes": [
+        100,
+        110,
+        132
+      ],
+      "requested_session": "2026-10-15",
+      "expected_existing_helper_1d": 20,
+      "required_selected_session_return": 10
+    },
+    {
+      "id": "pre_sliced_control",
+      "dates": [
+        "2026-10-14",
+        "2026-10-15"
+      ],
+      "closes": [
+        100,
+        110
+      ],
+      "requested_session": "2026-10-15",
+      "expected_existing_helper_1d": 10,
+      "required_selected_session_return": 10
+    },
+    {
+      "id": "missing_expected_previous_session",
+      "dates": [
+        "2026-10-14",
+        "2026-10-16"
+      ],
+      "closes": [
+        100,
+        132
+      ],
+      "requested_session": "2026-10-16",
+      "expected_existing_helper_1d": 32,
+      "expected_previous_session": "2026-10-15",
+      "required_selected_session_return": null,
+      "required_reason": "Expected previous session observation missing"
+    },
+    {
+      "id": "flat_path_zero",
+      "dates": [
+        "2026-10-14",
+        "2026-10-15"
+      ],
+      "closes": [
+        100,
+        100
+      ],
+      "requested_session": "2026-10-15",
+      "expected_existing_helper_1d": 0,
+      "required_selected_session_return": 0
+    },
+    {
+      "id": "invalid_previous_price",
+      "dates": [
+        "2026-10-14",
+        "2026-10-15"
+      ],
+      "closes": [
+        0,
+        110
+      ],
+      "requested_session": "2026-10-15",
+      "expected_existing_helper_1d": null,
+      "required_selected_session_return": null
+    }
+  ],
+  "decomposition": {
+    "previous_close": 100,
+    "regular_open": 105,
+    "endpoint": 102
+  },
+  "scope": "Controlled pure-helper reuse characterization. Session keys are fixture inputs, not verified calendar/data observations. The required selected-session values are build acceptance, not a newly implemented production adapter."
+}
