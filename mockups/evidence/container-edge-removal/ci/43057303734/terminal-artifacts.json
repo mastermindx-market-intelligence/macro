@@ -1,0 +1,285 @@
+{
+  "total_count": 14,
+  "artifacts": [
+    {
+      "id": 13878225507,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3ODIyNTUwNw==",
+      "name": "ci-semantic-evidence-43057303734",
+      "size_in_bytes": 65620,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13878225507",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13878225507/zip",
+      "expired": false,
+      "digest": "sha256:abd53f597906d620ffa26e77dcbca24314a2906bade614847c43232a9fe5f608",
+      "created_at": "2026-11-11T17:36:22Z",
+      "updated_at": "2026-11-11T17:36:22Z",
+      "expires_at": "2026-11-25T17:36:21Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13876687219,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NjY4NzIxOQ==",
+      "name": "ci-semantic-pack-43057303734-5",
+      "size_in_bytes": 7621,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876687219",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876687219/zip",
+      "expired": false,
+      "digest": "sha256:4c80ace53c426d59efcca53bae10916f237717d256096112d22b51448148a84c",
+      "created_at": "2026-11-11T17:24:07Z",
+      "updated_at": "2026-11-11T17:24:07Z",
+      "expires_at": "2026-11-25T17:24:07Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13876246827,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NjI0NjgyNw==",
+      "name": "ci-semantic-pack-43057303734-10",
+      "size_in_bytes": 8624,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876246827",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876246827/zip",
+      "expired": false,
+      "digest": "sha256:67b4f9149f8aa614797b882466b5ed6d2e38531b8a25b30d8be740e661a0a0f0",
+      "created_at": "2026-11-11T17:16:19Z",
+      "updated_at": "2026-11-11T17:16:19Z",
+      "expires_at": "2026-11-25T17:16:19Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13876226970,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NjIyNjk3MA==",
+      "name": "ci-semantic-pack-43057303734-8",
+      "size_in_bytes": 10046,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876226970",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13876226970/zip",
+      "expired": false,
+      "digest": "sha256:79c0411d589313a3aeb0a756e74800a9820dd161507c5162b2bf67906396ae40",
+      "created_at": "2026-11-11T17:16:35Z",
+      "updated_at": "2026-11-11T17:16:35Z",
+      "expires_at": "2026-11-25T17:16:35Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13875858102,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NTg1ODEwMg==",
+      "name": "ci-semantic-pack-43057303734-3",
+      "size_in_bytes": 6293,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13875858102",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13875858102/zip",
+      "expired": false,
+      "digest": "sha256:93a3ac65ebfeffd49cc6241431abd6982fd9ab1dc7de1dcd40d756903e099002",
+      "created_at": "2026-11-11T17:19:11Z",
+      "updated_at": "2026-11-11T17:19:11Z",
+      "expires_at": "2026-11-25T17:19:10Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13875155212,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NTE1NTIxMg==",
+      "name": "ci-semantic-pack-43057303734-7",
+      "size_in_bytes": 7412,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13875155212",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13875155212/zip",
+      "expired": false,
+      "digest": "sha256:16ba8592ab6dd325d2738950a996b656bf7c51140fb4211104a2c9f066108ab8",
+      "created_at": "2026-11-11T16:57:48Z",
+      "updated_at": "2026-11-11T16:57:48Z",
+      "expires_at": "2026-11-25T16:57:48Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13874535325,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NDUzNTMyNQ==",
+      "name": "ci-semantic-pack-43057303734-2",
+      "size_in_bytes": 685,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874535325",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874535325/zip",
+      "expired": false,
+      "digest": "sha256:9947ea1158d8cd1c9dab2aa7cae29256920c8767a716afaa13cebb6a6e40c1b4",
+      "created_at": "2026-11-11T16:47:34Z",
+      "updated_at": "2026-11-11T16:47:34Z",
+      "expires_at": "2026-11-25T16:47:34Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13874497325,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NDQ5NzMyNQ==",
+      "name": "ci-semantic-pack-43057303734-4",
+      "size_in_bytes": 8036,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874497325",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874497325/zip",
+      "expired": false,
+      "digest": "sha256:e99611f6ecb5ad550fab8a3b104ca4f94ee6f9ebf767084225408fa259d258e0",
+      "created_at": "2026-11-11T17:00:26Z",
+      "updated_at": "2026-11-11T17:00:26Z",
+      "expires_at": "2026-11-25T17:00:25Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13874334134,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3NDMzNDEzNA==",
+      "name": "ci-semantic-pack-43057303734-6",
+      "size_in_bytes": 6629,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874334134",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13874334134/zip",
+      "expired": false,
+      "digest": "sha256:994d02be5750f7072423626ded8360ff982d1141e223f48df8318820475b147b",
+      "created_at": "2026-11-11T17:06:26Z",
+      "updated_at": "2026-11-11T17:06:26Z",
+      "expires_at": "2026-11-25T17:06:25Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13873312957,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3MzMxMjk1Nw==",
+      "name": "ci-semantic-pack-43057303734-9",
+      "size_in_bytes": 8446,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873312957",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873312957/zip",
+      "expired": false,
+      "digest": "sha256:fac4eaac0841614629361d405666b3d05a902db81a8125c858cc61ba0114775f",
+      "created_at": "2026-11-11T16:43:01Z",
+      "updated_at": "2026-11-11T16:43:01Z",
+      "expires_at": "2026-11-25T16:43:00Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13873132455,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3MzEzMjQ1NQ==",
+      "name": "ci-semantic-pack-43057303734-1",
+      "size_in_bytes": 631,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873132455",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873132455/zip",
+      "expired": false,
+      "digest": "sha256:0b7ba9141f539d878805a80fe38a51af5d60d3ff47400000236ecaa7d9258924",
+      "created_at": "2026-11-11T16:40:28Z",
+      "updated_at": "2026-11-11T16:40:28Z",
+      "expires_at": "2026-11-25T16:40:27Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13873120093,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3MzEyMDA5Mw==",
+      "name": "ci-semantic-plan-43057303734-1",
+      "size_in_bytes": 68954,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873120093",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13873120093/zip",
+      "expired": false,
+      "digest": "sha256:1d7a6d17920bf1334cb64943e5b3156f2b2692529fa6bcda9c5b910ffb171815",
+      "created_at": "2026-11-11T16:22:14Z",
+      "updated_at": "2026-11-11T16:22:14Z",
+      "expires_at": "2026-11-25T16:22:13Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13872513875,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3MjUxMzg3NQ==",
+      "name": "ci-semantic-pack-43057303734-11",
+      "size_in_bytes": 10104,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13872513875",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13872513875/zip",
+      "expired": false,
+      "digest": "sha256:c867b104e2269db6cd0631ad1deba89c82afc061c9eeb0fc94f3d11c42de7a4a",
+      "created_at": "2026-11-11T16:46:11Z",
+      "updated_at": "2026-11-11T16:46:11Z",
+      "expires_at": "2026-11-25T16:46:11Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    },
+    {
+      "id": 13872410967,
+      "node_id": "MDg6QXJ0aWZhY3QxMzg3MjQxMDk2Nw==",
+      "name": "ci-changed-files",
+      "size_in_bytes": 116970,
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13872410967",
+      "archive_download_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/artifacts/13872410967/zip",
+      "expired": false,
+      "digest": "sha256:1e1b3bd2ad2b9edf2de3d7eb34943d54269c67f7c8e35383bd0d4e99a66eac50",
+      "created_at": "2026-11-11T16:22:13Z",
+      "updated_at": "2026-11-11T16:22:13Z",
+      "expires_at": "2026-11-25T16:22:11Z",
+      "workflow_run": {
+        "id": 43057303734,
+        "repository_id": 1266869026,
+        "head_repository_id": 1266869026,
+        "head_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+        "head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50"
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "mastermind.container_edge_ci_terminal_receipt.v1",
+  "workflow_run_id": 43057303734,
+  "subject_head_sha": "bf7de965767cdfc2cd82d976bac3dd0243e56d50",
+  "tested_merge": "69b6d7dbc7a369bc0424a14f78d6812990f0a031",
+  "base_sha": "fc2dffe6a9e564ac8c4338418afe585afd5afad2",
+  "workflow_conclusion": "cancelled",
+  "gate_status": "failure",
+  "evidence_sha256": "f7f55f9a10d15cfa7ad128ba3d2892885fb52e74fdb8a3fa2576213d4aea2deb",
+  "artifact_id": 13878225507,
+  "canonical_step_classifications": {
+    "passed": 612,
+    "unknown": 100,
+    "pr_regression": 2
+  },
+  "classification_context": "The two pr_regression steps are direct browser dependency setup failures with later passing base replay; no failed source assertion is observed. This context does not replace the canonical verdict.",
+  "cancelled_pack": 0,
+  "cancelled_pack_job_id": 130651318159,
+  "cancelled_pack_progress": "FIF class-A suite began 16:28:53, reached 72% at 17:35:37, and was cancelled at 17:36:07. No completed result or semantic fragment exists. No stall or pass inference.",
+  "infrastructure": [
+    {
+      "detail": "original command settlement unknown; no reuse, restoration or replay permitted",
+      "outcome": "unknown",
+      "pack_index": 11
+    },
+    {
+      "detail": "original command settlement unknown; no reuse, restoration or replay permitted",
+      "outcome": "unknown",
+      "pack_index": 9
+    },
+    {
+      "outcome": "missing_pack_fragment",
+      "pack_indices": [
+        0
+      ]
+    }
+  ],
+  "superseding_pr_head": "9cd1c665595933532a2186164deb1dce18962708",
+  "manual_retry_or_cancel_issued": false,
+  "product_source_changed": false,
+  "original_files": {
+    "semantic-evidence.zip": {
+      "bytes": 65620,
+      "sha256": "abd53f597906d620ffa26e77dcbca24314a2906bade614847c43232a9fe5f608"
+    },
+    "ci-semantic-evidence.json": {
+      "bytes": 247328,
+      "sha256": "c402574c20cf9b874c3559f62b921ea9602983e4451ebf84ceaa47865da02e49"
+    },
+    "job-130651318159.log": {
+      "bytes": 57799,
+      "sha256": "f8955e4c4304682adfd7f88ca5b18981aa21af4eb30d211b9510c8e2e49015e6"
+    },
+    "job-130694113297.log": {
+      "bytes": 280813,
+      "sha256": "5c55f34ae6923ec72c6c48a018242ebe837d4d00113259cbcebc04578d47a7b8"
+    },
+    "terminal-run.json": {
+      "bytes": 16642,
+      "sha256": "7bbc8a5154bc48f96ba00e5d5ee153772291dcd38111fb13f468c6a77a237424"
+    },
+    "terminal-jobs.json": {
+      "bytes": 85731,
+      "sha256": "ee7fdad68051c8a870508d8e46fbefb1d15f50504f8423499fdf95333d74e76b"
+    },
+    "terminal-artifacts.json": {
+      "bytes": 13227,
+      "sha256": "ec9d708ccaa0a542fd356228437e484dd3cf1960677ca3ef0a252b19ee3cd991"
+    }
+  }
+}
