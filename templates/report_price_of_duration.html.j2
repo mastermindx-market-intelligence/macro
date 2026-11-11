@@ -46,7 +46,7 @@
     color:var(--muted);
     font-size:15px;
     line-height:1.55;
-    border-left:2px solid var(--pod-gold);
+    border:1px solid var(--line);
     padding-left:12px;
   }
   .pod .pod-snapshot {
@@ -65,13 +65,7 @@
     position:relative;
     overflow:hidden;
   }
-  .pod .pod-gauge::before {
-    content:"";
-    position:absolute;
-    inset:0 auto 0 0;
-    width:3px;
-    background:var(--pod-c,var(--pod-blue));
-  }
+  .pod .pod-gauge::before {content:none;}
   .pod .pod-gauge b {
     display:block;
     font-size:21px;
@@ -104,15 +98,7 @@
       linear-gradient(135deg,color-mix(in srgb,var(--pod-blue) 10%,var(--panel)),var(--panel));
     box-shadow:var(--card-shadow);
   }
-  .pod .pod-thesis::before {
-    content:"";
-    position:absolute;
-    left:0;
-    top:0;
-    bottom:0;
-    width:4px;
-    background:linear-gradient(180deg,var(--pod-gold),var(--pod-blue));
-  }
+  .pod .pod-thesis::before {content:none;}
   .pod .pod-thesis p {
     margin:0;
     font-size:19px;
@@ -438,7 +424,7 @@
   .pod .pod-ledger ul { margin:0; padding-left:18px; }
   .pod .pod-ledger li { margin:5px 0; font-size:12.5px; line-height:1.48; }
   .pod .pod-callout {
-    border-left:3px solid var(--pod-c,var(--pod-blue));
+    border:1px solid var(--line);
     background:color-mix(in srgb,var(--pod-c,var(--pod-blue)) 8%,var(--panel2));
     border-radius:0 12px 12px 0;
     padding:13px 15px;
@@ -492,7 +478,7 @@
   .pod .pod-copy blockquote {
     margin:20px 0;
     padding:16px 19px;
-    border-left:3px solid var(--pod-gold);
+    border:1px solid var(--line);
     background:var(--panel2);
     border-radius:0 12px 12px 0;
     font-size:17px;
@@ -548,13 +534,7 @@
       var(--panel2);
     box-shadow:var(--card-shadow);
   }
-  .pod .stat::before {
-    content:"";
-    position:absolute;
-    inset:0 auto 0 0;
-    width:3px;
-    background:var(--sc,var(--pod-blue));
-  }
+  .pod .stat::before {content:none;}
   .pod .stat .sk {
     display:block;
     color:var(--muted);
@@ -590,7 +570,7 @@
   .pod .pod-bottom-line {
     margin:15px 0 26px;
     padding:20px 22px;
-    border-left-width:4px;
+    
   }
   .pod .pod-bottom-line .co-h {
     color:#2f9e63;

@@ -145,7 +145,7 @@ html[data-theme="dark"]{
 /* ── theme card ── */
 .theme-row{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:0;overflow:hidden;cursor:pointer;
   transition:transform .16s ease,box-shadow .2s ease,border-color .2s ease;animation:sotUp .5s cubic-bezier(.2,.7,.3,1) both}
-.theme-row::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--acc)}
+.theme-row::before{content:none;}
 .theme-row:hover{transform:translateY(-2px);box-shadow:var(--sot-shadow);border-color:color-mix(in srgb,var(--acc) 35%,var(--line))}
 .theme-row.hidden{display:none}
 .tc-top{padding:16px 17px 4px}

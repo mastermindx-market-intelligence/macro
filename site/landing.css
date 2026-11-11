@@ -677,11 +677,11 @@ html[data-lang="zh"] .cov-copy h1 .zh-line-punct{transform:translateX(.26em)}
 .tt-rail{width:44px;flex:none;border-right:1px solid var(--thl);padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:3px}
 .tt-rail .ri{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:#57627a}
 .tt-rail .ri.on{color:#6ea8ff;background:rgba(63,130,246,.13);position:relative}
-.tt-rail .ri.on::before{content:"";position:absolute;left:-7px;top:6px;bottom:6px;width:2px;border-radius:2px;background:var(--tb)}
+.tt-rail .ri.on::before{content:none;}
 .tt-main{flex:1;min-width:0;display:flex;flex-direction:column}
 .tt-tabs{display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;border-bottom:1px solid var(--thl);color:#7383a0;font-size:11px;white-space:nowrap;overflow:hidden}
 .tt-tabs .tab{position:relative;display:flex;align-items:center;height:40px;padding:0 2px;margin-right:4px;color:#fff;font-weight:600;font-size:12px;flex:none}
-.tt-tabs .tab::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--tb)}
+.tt-tabs .tab::after{content:none;}
 .tt-tabs .it{display:flex;align-items:center;gap:5px;flex:none}
 .tt-tabs .on2{color:#6ea8ff;font-weight:700}
 .tt-tabs .sep{width:1px;height:15px;background:#1c2534;flex:none}
@@ -709,7 +709,7 @@ html[data-lang="zh"] .cov-copy h1 .zh-line-punct{transform:translateX(.26em)}
 .twl-r .sy{font-weight:600;color:#dbe3ee;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .twl-r .la{text-align:right;color:#c9d2df;font-size:11px}
 .twl-r .ch{text-align:right;font-size:11px}
-.twl-r.on{background:rgba(63,130,246,.10);box-shadow:inset 2px 0 0 var(--tb)}
+.twl-r.on{background:rgba(63,130,246,.10);box-shadow:none}
 .twl-r.zu{background:rgba(46,189,133,.10)} .twl-r.zd{background:rgba(246,70,93,.10)}
 .twl-sb{position:absolute;right:2px;top:6px;width:3px;height:52px;border-radius:2px;background:#26303f}
 .tq-hd{display:flex;align-items:center;gap:8px;padding:10px 11px 0}
@@ -793,7 +793,7 @@ html.still .ph-belt .phc-ch svg{clip-path:none !important}
   transition:transform var(--dur-micro) var(--ease-out),box-shadow var(--dur-micro) var(--ease-out),border-color var(--dur-micro) var(--ease-out)}
 .phc:hover{transform:translateY(-1px);box-shadow:var(--sh-stage);border-color:var(--hair-strong);color:var(--ink)}
 .phc-buy{--ph:var(--q-green)}.phc-near{--ph:#2ea360}.phc-wait{--ph:var(--q-gold)}.phc-hold{--ph:#5d6b7e}.phc-avoid{--ph:var(--q-red)}
-.phc::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:3;pointer-events:none;background:linear-gradient(90deg,var(--ph),color-mix(in srgb,var(--ph) 10%,transparent) 92%);box-shadow:0 1px 10px color-mix(in srgb,var(--ph) 38%,transparent)}
+.phc::before{content:none;}
 .phc-ch{position:relative;background:color-mix(in srgb,var(--ph) 4%,transparent)}
 .phc-ch svg{display:block;width:100%;height:84px}
 /* spark recolor law (matches the board): strokes take the verb hue; filled
@@ -1253,8 +1253,8 @@ table.mx{width:100%;border-collapse:collapse;min-width:760px}
 /* ── tier rows: quiet static wash; the animation lives on the chip, not the row ── */
 tr.t-ins td{background:rgba(15,157,143,.04)}
 tr.t-pro td{background:rgba(120,98,224,.05)}
-tr.t-ins td:first-child{background:rgba(15,157,143,.04);box-shadow:inset 3px 0 0 0 rgba(15,157,143,.45)}
-tr.t-pro td:first-child{background:rgba(120,98,224,.05);box-shadow:inset 3px 0 0 0 rgba(120,98,224,.55)}
+tr.t-ins td:first-child{background:rgba(15,157,143,.04);box-shadow:none}
+tr.t-pro td:first-child{background:rgba(120,98,224,.05);box-shadow:none}
 tr.t-ins td:first-child,tr.t-pro td:first-child{position:sticky;left:0}
 /* hover tooltips: title-only rows, details on demand (bilingual via data-zh) */
 .mx td.feat{position:relative}

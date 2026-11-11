@@ -158,7 +158,7 @@
 [data-theme="light"] .intl-inspector__returns { gap:0; border-block:1px solid var(--line); }
 [data-theme="light"] .intl-inspector__returns > div { background:transparent; border:0; border-radius:0; }
 [data-theme="light"] .intl-inspector__returns > div + div { border-inline-start:1px solid var(--line); }
-[data-theme="light"] .intl-inspector__field > section { background:var(--panel); border:0; border-inline-start:2px solid var(--line); border-radius:0; }
+[data-theme="light"] .intl-inspector__field > section { background:var(--panel); border:1px solid var(--line);  border-radius:0; }
 [data-theme="light"] .intl-inspector :is([data-im-inspector-clocks],[data-im-inspector-observations]) { background:var(--panel2); padding:var(--fs-body); }
 @media (max-width:768px) {
   .intl-inspector { padding:var(--fs-body); }

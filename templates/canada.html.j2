@@ -74,7 +74,7 @@
   .factors { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
   .fct { display:flex; flex-direction:column; gap:1px; padding:6px 10px; border-radius:9px; background:var(--panel2); border:1px solid var(--line); min-width:96px; }
   .fct .fl { font-size:11px; color:var(--muted); } .fct .fv { font-size:13px; font-weight:700; }
-  .fct.on { border-left:3px solid var(--up); } .fct.off { border-left:3px solid var(--down); } .fct.neutral { border-left:3px solid var(--muted); }
+  .fct.on { border:1px solid var(--line); } .fct.off { border:1px solid var(--line); } .fct.neutral { border:1px solid var(--line); }
   /* sector + standout cards */
   .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:11px; }
   .card { background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:11px 13px; }
@@ -288,11 +288,10 @@
   .nbe-zone.nbe-pull .nbe-px { color:var(--g-cold); }
   /* entry-window state as a TOP gradient stripe (RIPENING-shelf idiom) — not a left border */
   .card.ent-open, .card.ent-pullback, .card.ent-wait { position:relative; overflow:hidden; }
-  .card.ent-open::before, .card.ent-pullback::before, .card.ent-wait::before {
-      content:""; position:absolute; top:0; left:0; right:0; height:3px; pointer-events:none; }
-  .card.ent-open::before { background:linear-gradient(90deg,var(--up),color-mix(in srgb,var(--up) 30%,transparent)); }
-  .card.ent-pullback::before { background:linear-gradient(90deg,var(--g-cold),color-mix(in srgb,var(--g-cold) 30%,transparent)); }
-  .card.ent-wait::before { background:linear-gradient(90deg,var(--muted),transparent); opacity:.6; }
+  .card.ent-open::before, .card.ent-pullback::before, .card.ent-wait::before {content:none;}
+  .card.ent-open::before {content:none;}
+  .card.ent-pullback::before {content:none;}
+  .card.ent-wait::before {content:none;}
 {% include "_cmd_hero.css.j2" %}
 {% include "_market_state.css.j2" %}
   body.page-canada { padding-top: 24px; }
@@ -483,8 +482,8 @@
   body.page-canada .mp-rail-scale{position:relative;height:13px;margin-top:5px;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
   body.page-canada .mp-rail-scale span{position:absolute;transform:translateX(-50%)}
   body.page-canada .mp-rail-ends{display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
-  body.page-canada .mp-stance{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--mp-sc);border-radius:12px;padding:12px 15px;margin:16px 0 4px}
-  [data-theme="light"] body.page-canada .mp-stance{background:rgba(0,0,0,.025);border-color:rgba(0,0,0,.07);border-left-color:var(--mp-sc)}
+  body.page-canada .mp-stance{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:12px 15px;margin:16px 0 4px}
+  [data-theme="light"] body.page-canada .mp-stance{background:var(--panel2);border-color:var(--line);}
   body.page-canada .mp-stance .st-ico{flex:0 0 auto;width:20px;height:20px;margin-top:1px;color:var(--mp-sc)}
   body.page-canada .mp-stance .st-tx{font-size:12.5px;line-height:1.5;color:var(--text)}
   body.page-canada .mp-stance .st-tx b{color:var(--mp-sc);font-weight:700}
@@ -795,8 +794,8 @@
     background:var(--panel2,color-mix(in srgb,var(--muted) 9%,var(--panel))); }
   .st-row-entry td { background:color-mix(in srgb,var(--up) 4%,transparent); }
   .st-row-entry td.st-sticky-col { background:color-mix(in srgb,var(--up) 8%,var(--panel)); }
-  .st-row-entry td:first-child { box-shadow:inset 3px 0 0 var(--up); }
-  .st-row-ran td:first-child { box-shadow:inset 3px 0 0 var(--muted); }
+  .st-row-entry td:first-child { box-shadow:none; }
+  .st-row-ran td:first-child { box-shadow:none; }
   .st-sarrow { font-size:8px; margin-left:2px; opacity:.28; }
   .st-sarrow-idle { font-size:8px; }
   .st-table th:has(.st-sarrow:not(.st-sarrow-idle)) .st-sarrow { opacity:.9; color:var(--ink-link, var(--link)); }

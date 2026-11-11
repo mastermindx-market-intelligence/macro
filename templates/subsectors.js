@@ -277,7 +277,7 @@
       body = (er ? '<div class="g-act"><span class="lead">' + er + '</span></div>' : '')
         + (action ? '<div class="g-act" style="margin-top:5px' + (avoid ? ';color:var(--ink-orange, var(--orange))' : ';color:var(--muted)') + '">' + (avoid ? '⚠ ' : '') + action + '</div>' : '');
     }
-    return '<a class="gcard" style="border-left-color:' + col + '" href="' + href + '">'
+    return '<a class="gcard" href="' + href + '">'
       + '<div class="g-top"><div><div class="g-nm">' + esc(g.label) + '</div>'
       + '<div class="g-sct">' + esc(g.sector) + ' · ' + (g.n_priced || g.n_members) + ' ' + L('names', '只') + '</div></div>' + tierBadge(e.tier) + '</div>'
       + '<div class="g-row">' + pills + ' <span class="g-fresh">' + freshTxt(e) + '</span></div>'
@@ -353,13 +353,13 @@
     if (co) {
       var tf = co.tf || {};
       var chips = ['W', '2W', 'M'].map(function (k) { return tfChip(k, tf[k]); }).join(' ');
-      return '<div class="lcard" style="border-left-color:' + qi[2] + '">' + head
+      return '<div class="lcard">' + head
         + '<div class="lc-row">' + stageBadge(co.stage) + ' <span class="pill ' + (e.regime_side || 'neutral') + '">' + esc(e.regime_state || '—') + '</span></div>'
         + '<div class="lc-tf">' + L('higher TF', '更高周期') + ': ' + chips + (co.htf_turning ? ' <span style="color:var(--ink-up, var(--up))">' + L('confirming', '确认中') + '</span>' : '') + '</div>'
         + '<div class="lc-meta">' + L('coil', '蓄势') + ' ' + num(co.coil_score, 0) + '/100' + (e.rs_60d != null ? ' · RS60 ' + signed(e.rs_60d, 1) : '') + '</div>'
         + (co.macro_caution ? '<div class="lc-macro">⚠ ' + L('macro risk-off — confirm the tape', '宏观避险——请确认大盘') + '</div>' : '') + '</div>';
     }
-    return '<div class="lcard" style="border-left-color:' + qi[2] + '">' + head
+    return '<div class="lcard">' + head
       + '<div class="lc-row">' + quadPill(e.quadrant) + ' <span class="pill ' + (e.regime_side || 'neutral') + '">' + esc(e.regime_state || '—') + '</span></div>'
       + '<div class="lc-meta">' + L('accel', '加速') + ' ' + signed(e.emerging_score, 2) + (e.rs_60d != null ? ' · RS60 ' + signed(e.rs_60d, 1) : '') + '</div></div>';
   }

@@ -10,8 +10,8 @@
   idioms (.dtp-*, .plf-chip); both light and dark themes stay correct because
   every surface + hairline routes through the local --aib2-* token spine.
 
-  The ONE bold move is the stance pill (.aib2-stance). Everything else is quiet
-  and native to the frosted-glass scorecard family.
+  The stance uses a quiet raised surface and a clear directive. Semantic
+  labels carry meaning; cards share an even neutral perimeter.
 #}
 /* ── AI BRIEF v2 (aib2-*) — shared token spine ──────────────────────────────── */
 .aib2{
@@ -45,7 +45,7 @@
 
 /* ── 1 · header strip ───────────────────────────────────────────────────────── */
 .aib2-hdr{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;padding-bottom:15px;
-  border-bottom:1px solid color-mix(in srgb,var(--aib2-acc) 16%,var(--aib2-hair));}
+  border-bottom:1px solid var(--line);}
 .aib2-icon{width:38px;height:38px;flex-shrink:0;border-radius:11px;
   background:linear-gradient(150deg,color-mix(in srgb,var(--aib2-acc) 22%,transparent),color-mix(in srgb,var(--aib2-acc) 8%,transparent));
   border:1px solid color-mix(in srgb,var(--aib2-acc) 30%,transparent);
@@ -69,7 +69,7 @@
 .aib2-sec{display:flex;align-items:center;gap:10px;margin:20px 0 11px;}
 .aib2-sec:first-child{margin-top:4px;}
 .aib2-sec::after{content:"";flex:1;height:1px;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--aib2-acc) 26%,var(--aib2-hair)),transparent);}
+  background:var(--line);}
 .aib2-sec-label{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
   color:var(--aib2-mut);display:inline-flex;align-items:center;gap:7px;}
 .aib2-sec-label::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--aib2-acc);}
@@ -86,19 +86,16 @@
 /* first gist item = the most important thing today — a touch louder */
 .aib2-gist-list li:first-child{font-size:15px;font-weight:600;}
 
-/* STANCE PILL — the signature. Accent-tinted directive; the stance verb is bold. */
+/* Directive surface — hierarchy comes from the verb and breathing room. */
 .aib2-stance{display:flex;align-items:flex-start;gap:11px;
-  padding:13px 16px;border-radius:13px;
-  background:color-mix(in srgb,var(--aib2-acc) 12%,transparent);
-  border:1px solid color-mix(in srgb,var(--aib2-acc) 30%,transparent);
-  border-left:4px solid color-mix(in srgb,var(--aib2-acc) 72%,transparent);
-  box-shadow:0 1px 0 color-mix(in srgb,var(--aib2-acc) 8%,transparent);}
-[data-theme="light"] .aib2-stance{background:color-mix(in srgb,var(--aib2-acc) 9%,#fff);}
+  padding:15px 18px;border-radius:var(--r-card,12px);
+  background:var(--panel2);border:1px solid var(--line);}
+[data-theme="light"] .aib2-stance{background:var(--panel);box-shadow:var(--card-shadow);}
 .aib2-stance-mark{color:var(--aib2-acc);font-size:15px;line-height:1.4;flex-shrink:0;margin-top:1px;}
 .aib2-stance-body{font-size:15px;line-height:1.5;color:var(--text);font-weight:600;}
 .aib2-stance-body b{font-weight:800;
   /* the stance verb gets the accent so the eye lands on the directive first */
-  color:color-mix(in srgb,var(--aib2-acc) 55%,var(--text));}
+  color:var(--text);}
 /* tone variants — protect/stand-aside lean amber; act leans green; ignore muted */
 .aib2-stance--warn{--aib2-acc:var(--aib2-warn);}
 .aib2-stance--go{--aib2-acc:var(--aib2-good);}
@@ -107,11 +104,9 @@
 
 /* v1 lead card (summary fallback when tldr absent) */
 .aib2-lead{font-size:16.5px;font-weight:600;line-height:1.62;color:var(--text);
-  padding:16px 18px;border-radius:13px;margin-bottom:16px;
-  background:color-mix(in srgb,var(--aib2-acc) 7%,transparent);
-  border:1px solid color-mix(in srgb,var(--aib2-acc) 18%,transparent);
-  border-left:3px solid color-mix(in srgb,var(--aib2-acc) 60%,transparent);}
-[data-theme="light"] .aib2-lead{background:color-mix(in srgb,var(--aib2-acc) 6%,#fff);}
+  padding:18px 20px;border-radius:var(--r-card,12px);margin-bottom:16px;
+  background:var(--panel2);border:1px solid var(--line);}
+[data-theme="light"] .aib2-lead{background:var(--panel);}
 
 /* ── 3 · key readings (key_facts chip rail) ─────────────────────────────────── */
 .aib2-kf-rail{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
@@ -149,13 +144,10 @@
 .aib2-regime{font-size:14px;color:var(--text);line-height:1.72;margin-bottom:16px;opacity:.94;}
 
 /* ── 6/7/8/9 · cards + grid ─────────────────────────────────────────────────── */
-.aib2-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:13px;margin-bottom:12px;}
+.aib2-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:16px;}
 @media(max-width:560px){.aib2-grid{grid-template-columns:1fr;}}
-.aib2-card{padding:14px 16px 15px;border-radius:12px;background:var(--aib2-surf);border:1px solid var(--aib2-hair);}
+.aib2-card{padding:17px 18px;border-radius:var(--r-card,12px);background:var(--panel2);border:1px solid var(--line);}
 .aib2-card--full{margin-bottom:12px;}
-.aib2-card--conflicts{border-left:3px solid var(--aib2-warn);}
-.aib2-card--tx{border-left:3px solid var(--aib2-info);}
-.aib2-card--playbook{border-left:3px solid var(--aib2-acc);}
 .aib2-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:var(--aib2-mut);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
 .aib2-card--conflicts .aib2-eyebrow{color:color-mix(in srgb,var(--aib2-warn) 78%,var(--aib2-mut));}
@@ -184,10 +176,8 @@
 .aib2-cat-read{font-size:12.5px;color:var(--aib2-mut);line-height:1.55;margin-top:11px;}
 
 /* ── 10 · degraded notice ────────────────────────────────────────────────────── */
-.aib2-degraded{font-size:12px;color:var(--aib2-mut);margin:8px 0 4px;padding:9px 13px;border-radius:9px;
-  background:color-mix(in srgb,var(--aib2-warn) 9%,transparent);
-  border:1px solid color-mix(in srgb,var(--aib2-warn) 22%,transparent);
-  border-left:3px solid var(--aib2-warn);}
+.aib2-degraded{font-size:12px;color:var(--muted);margin:8px 0 4px;padding:11px 14px;
+  border-radius:var(--r-ctl,8px);background:var(--panel2);border:1px solid var(--line);}
 
 /* ── responsive — 390px bleed guard ─────────────────────────────────────────── */
 @media(max-width:560px){

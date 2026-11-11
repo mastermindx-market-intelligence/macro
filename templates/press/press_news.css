@@ -476,7 +476,7 @@ a.mast-name:hover { color: var(--wire); }
 .doc blockquote {
   margin: 1.5em 0;
   padding: 2px 0 2px 20px;
-  border-left: 2px solid var(--wire-soft);
+  border:1px solid var(--line);
   color: var(--paper-dim);
 }
 .doc code {
@@ -504,7 +504,7 @@ a.mast-name:hover { color: var(--wire); }
   margin: 40px 0 0;
   padding: 18px 20px;
   background: var(--ink-lift);
-  border-left: 2px solid var(--wire);
+  border:1px solid var(--line);
 }
 .corr-h {
   margin: 0 0 10px;

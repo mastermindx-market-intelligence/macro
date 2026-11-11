@@ -90,7 +90,7 @@
   .rail { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
   @media(max-width:820px){ .rail { grid-template-columns:1fr; } }
   .lc { position:relative; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 16px; overflow:hidden; animation:dpUp .55s cubic-bezier(.2,.7,.3,1) both; }
-  .lc::before { content:''; position:absolute; inset:0 0 auto 0; height:3px; background:var(--c); }
+  .lc::before {content:none;}
   .lc.acc { --c:var(--acc); } .lc.dis { --c:var(--dis); } .lc.unc { --c:var(--unc); }
   .lc:nth-child(2){ animation-delay:.05s; } .lc:nth-child(3){ animation-delay:.1s; }
   /* prints settling into the dark — cheap opacity-only ambient */
@@ -113,7 +113,7 @@
   @media(max-width:760px){ .board { grid-template-columns:1fr; } }
   .name { position:relative; background:var(--panel); border:1px solid var(--line); border-radius:15px; padding:15px 17px; overflow:hidden; transition:transform .16s ease,border-color .2s ease,box-shadow .2s ease; animation:dpUp .5s cubic-bezier(.2,.7,.3,1) both; }
   .name:hover { transform:translateY(-2px); border-color:color-mix(in srgb,var(--c) 45%,var(--line)); box-shadow:0 12px 30px -18px rgba(0,0,0,.5); }
-  .name::before { content:''; position:absolute; inset:0 auto 0 0; width:3px; background:var(--c); }
+  .name::before {content:none;}
   .name.acc { --c:var(--acc); } .name.dis { --c:var(--dis); } .name.unc { --c:var(--unc); }
   .n-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
   .n-tk { font-size:19px; font-weight:800; color:var(--ink); letter-spacing:-.01em; }
@@ -488,7 +488,12 @@
         <b>{{ coverage.missing_rows }}</b> {{ t('have no qualifying stored row. Older rows remain in Browse All but carry no current rank authority.', '只没有符合条件的存储记录。较早记录保留在「浏览全部」中，但不具备当前排名权威。') }}</li>
     <li>{{ t('Off-exchange share computed for', '已计算场外占比的个股') }}
         <b>{{ coverage.n_with_participation }}</b> / <b>{{ coverage.n_total }}</b>
-        {{ t('names; the rest have no matching consolidated-volume record.', '只；其余个股无匹配的综合成交量记录。') }}</li>
+        {{ t('names; the rest have no usable same-day total-volume denominator.', '只；其余个股缺少可用的同日总成交量分母。') }}</li>
+    {% if coverage.n_invalid_current_participation %}
+    <li><b>{{ coverage.n_invalid_current_participation }}</b>
+        {{ t('current rows were withheld because saved total-market volume was smaller than FINRA off-exchange volume. Impossible percentages are never ranked.',
+             '只当前记录因已保存的全市场成交量小于FINRA场外成交量而被暂不展示。数学上不可能的占比绝不会参与排名。') }}</li>
+    {% endif %}
     <li>{{ t('Price was available for', '有价格数据的个股') }}
         <b>{{ coverage.n_with_price }}</b>
         {{ t('names —', '只——') }} <b>{{ coverage.n_no_price }}</b>
@@ -618,7 +623,7 @@
       if (trend === 'falling' && (r.participation_trend_pp === null || r.participation_trend_pp === undefined || r.participation_trend_pp > -1)) return false;
       if (norm  === 'above'   && (r.participation_z === null || r.participation_z === undefined || r.participation_z < 1))  return false;
       if (norm  === 'below'   && (r.participation_z === null || r.participation_z === undefined || r.participation_z > -1)) return false;
-      if (hiddenRatioZ !== null && (r.ratio_z === null || r.ratio_z === undefined || r.ratio_z < hiddenRatioZ)) return false;
+      if (hiddenRatioZ !== null && (r.short_rate_z === null || r.short_rate_z === undefined || r.short_rate_z < hiddenRatioZ)) return false;
       return true;
     });
   }

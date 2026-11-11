@@ -87,7 +87,7 @@ html[data-theme="light"] .fi-conflict-side {
   box-shadow: none;
 }
 
-/* freshness rail/pip — dark = real pip, light = 3px left rail */
+/* Freshness remains visible in both themes, with an explicit local label. */
 .fi-section-head[data-state-freshness]:not([data-state-freshness=""])::before {
   content: ""; float: left; width: 8px; height: 8px; border-radius: 50%;
   margin: .5em 8px 0 0; background: var(--fi-fresh-colour);
@@ -100,11 +100,8 @@ html[data-theme="light"] .fi-conflict-side {
 .fi-section-head[data-state-freshness="SOURCE_STALE"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--act) 25%, transparent); }
 .fi-section-head[data-state-freshness="NO_EVIDENCE"]   { --fi-fresh-colour: var(--line); }
 .fi-section-head[data-state-freshness="NO_EVIDENCE"]::before { box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 25%, transparent); }
-html[data-theme="light"] .fi-section-head::before { display: none; }
-html[data-theme="light"] .fi-section-head[data-state-freshness="FRESH"]        { border-left: 3px solid var(--fresh-ok); padding-left: 12px; box-shadow: none; }
-html[data-theme="light"] .fi-section-head[data-state-freshness="AGING"]        { border-left: 3px solid var(--warn);    padding-left: 12px; box-shadow: none; }
-html[data-theme="light"] .fi-section-head[data-state-freshness="SOURCE_STALE"] { border-left: 3px solid var(--act);     padding-left: 12px; box-shadow: none; }
-html[data-theme="light"] .fi-section-head[data-state-freshness="NO_EVIDENCE"]   { border-left: 3px solid var(--line);    padding-left: 12px; box-shadow: none; }
+
+.fi-freshness-label { color:var(--muted); font-size:11px; line-height:1.5; }
 
 /* focus ring — dark glow halo, light solid */
 .fi-shell *:focus-visible,

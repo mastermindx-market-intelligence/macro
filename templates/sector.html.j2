@@ -19,15 +19,15 @@
   @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1200px)/2)); } }
   .early { margin:6px 0; padding:8px 12px; border-radius:8px;
            background:color-mix(in srgb, var(--g-cold) 14%, var(--panel2));
-           border-left:3px solid var(--g-cold); font-size:13px; }
+           border:1px solid var(--line); font-size:13px; }
   .macro-caution { margin:6px 0; padding:8px 12px; border-radius:8px;
            background:color-mix(in srgb, var(--down) 10%, var(--panel2));
-           border-left:3px solid var(--down); font-size:13px; }
+           border:1px solid var(--line); font-size:13px; }
   .shock-deesc-banner { margin:10px 0; padding:10px 14px; border-radius:8px;
            background:color-mix(in srgb, var(--warn) 15%, var(--panel2));
-           border-left:4px solid var(--warn); font-size:13px; font-weight:600; }
+           border:1px solid var(--line); font-size:13px; font-weight:600; }
   .agewhen { margin:6px 0; padding:7px 11px; border-radius:8px; background:var(--panel2);
-             border-left:3px solid var(--link); font-size:13px; color:var(--text); }
+             border:1px solid var(--line); font-size:13px; color:var(--text); }
   .agechip { font-size:11px; font-weight:700; padding:2px 7px; border-radius:9px;
              background:var(--panel); color:var(--muted); border:1px solid var(--line);
              white-space:nowrap; }
@@ -52,29 +52,29 @@
   /* entry call bar + urgency colors */
   .entrybar { display:flex; gap:10px; align-items:flex-start; margin:10px 0 8px;
               padding:9px 12px; border-radius:9px; background:var(--panel2);
-              border-left:4px solid var(--muted); font-size:14px; }
+              border:1px solid var(--line); font-size:14px; }
   .entrytag { font-weight:800; font-size:12px; letter-spacing:.04em; white-space:nowrap;
               padding:3px 9px; border-radius:7px; }
   .urgpill { font-weight:700; font-size:11px; padding:2px 8px; border-radius:9px; }
   .urg-now .entrytag, .urgpill.urg-now { background:var(--up); color:#fff; }
-  .urg-now { border-left-color:var(--up); }
+  .urg-now {  }
   .urg-imminent .entrytag, .urgpill.urg-imminent { background:var(--g-cold); color:#fff; }
-  .urg-imminent { border-left-color:var(--g-cold); }
+  .urg-imminent {  }
   .urg-soon .entrytag, .urgpill.urg-soon { background:color-mix(in srgb,var(--g-cold) 30%,var(--panel)); color:var(--text); }
-  .urg-soon { border-left-color:var(--g-cold); }
+  .urg-soon {  }
   .urg-hold .entrytag, .urgpill.urg-hold { background:var(--panel); color:var(--muted); border:1px solid var(--line); }
-  .urg-hold { border-left-color:var(--muted); }
+  .urg-hold {  }
   .urg-later .entrytag, .urgpill.urg-later { background:var(--panel); color:var(--muted); border:1px solid var(--line); }
-  .urg-later { border-left-color:var(--muted); }
+  .urg-later {  }
   .urg-caution .entrytag, .urgpill.urg-caution { background:var(--warn); color:#1a1a1a; }
-  .urg-caution { border-left-color:var(--warn); }
+  .urg-caution {  }
   .urg-exit .entrytag, .urgpill.urg-exit { background:var(--down); color:#fff; }
-  .urg-exit { border-left-color:var(--down); }
+  .urg-exit {  }
   .urg-avoid .entrytag, .urgpill.urg-avoid { background:color-mix(in srgb,var(--down) 30%,var(--panel)); color:var(--text); }
-  .urg-avoid { border-left-color:var(--down); }
+  .urg-avoid {  }
   /* glance-level two-timeframe synthesis sentence, sits right under the verdict */
   .synthesis { margin:8px 0 4px; padding:9px 13px; border-radius:9px; font-size:13.5px; line-height:1.5;
-               background:color-mix(in srgb, var(--link) 9%, var(--panel2)); border-left:3px solid var(--link); }
+               background:var(--surface-info-subtle,var(--panel2,var(--card))); border:1px solid var(--line); }
   /* context-indicator chip: factual extreme, NOT an alarm — neutral so it can't compete with the verdict */
   .sigchip.ctx { border-color:var(--line); }
   .sigchip.ctx .sc-v, .sigchip.ctx .sc-s { color:var(--muted); }

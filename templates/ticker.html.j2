@@ -101,8 +101,7 @@ a{text-decoration:none;color:inherit;}
   padding:20px 24px 22px;min-width:0;}
 .mod-hd{display:flex;align-items:baseline;gap:10px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--hair);}
 .mod-hd h2{display:flex;align-items:center;gap:10px;margin:0;font-size:15.5px;font-weight:650;letter-spacing:-.01em;}
-.mod-hd h2::before{content:"";width:3px;height:15px;border-radius:2px;flex-shrink:0;
-  background:linear-gradient(180deg,var(--link),color-mix(in srgb,var(--link) 30%,transparent));}
+.mod-hd h2::before{content:none;}
 .mod-hd .hint{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:8px;}
 .mod-ft{margin-top:14px;padding-top:10px;border-top:1px solid var(--hair);font-size:11.5px;color:var(--muted);line-height:1.5;}
 
@@ -113,8 +112,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 
 /* hero */
 .hero{position:relative;margin-top:14px;padding:26px 30px 0;overflow:hidden;}
-.hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:linear-gradient(180deg,var(--stance),color-mix(in srgb,var(--stance) 12%,transparent));}
+.hero::before{content:none;}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 48px;align-items:start;}
 .eyebrow{font-size:10.5px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
 .hero h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 16px;margin:6px 0 0;
@@ -199,8 +197,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
     radial-gradient(900px 360px at 7% -34%,color-mix(in srgb,var(--link) 19%,transparent),transparent 58%),
     radial-gradient(560px 320px at 95% 8%,color-mix(in srgb,var(--info) 11%,transparent),transparent 66%),
     var(--glass-bg);}
-.ci-mod::before{content:"";position:absolute;inset:0 0 auto;height:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent,var(--link),color-mix(in srgb,var(--info) 65%,transparent),transparent);}
+.ci-mod::before{content:none;}
 .ci-top{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:22px 26px 18px;border-bottom:1px solid var(--hair);}
 .ci-kicker{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:10px;font-weight:780;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-link, var(--link));}
 .ci-orbit{position:relative;width:8px;height:8px;border-radius:50%;background:var(--link);box-shadow:0 0 0 4px color-mix(in srgb,var(--link) 11%,transparent);}
@@ -231,8 +228,8 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 .ci-summary.is-empty{color:var(--muted);font-weight:560;}
 .ci-lenses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px;}
 .ci-lens{position:relative;padding:14px 15px 15px;border:1px solid var(--hair);border-radius:13px;background:color-mix(in srgb,var(--panel2) 62%,transparent);min-width:0;}
-.ci-lens::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:2px;background:var(--muted);}
-.ci-lens.strength::before{background:var(--up)}.ci-lens.pressure::before{background:var(--warn)}
+.ci-lens::before{content:none;}
+.ci-lens.strength::before{content:none;}.ci-lens.pressure::before{content:none;}
 .ci-lens-label{display:flex;align-items:center;gap:7px;margin:0 0 7px;font-size:10px;font-weight:780;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
 .ci-lens p{margin:0;color:var(--text);font-size:12.5px;line-height:1.55;}
 .ci-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
@@ -377,11 +374,11 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 .ss-cell{position:relative;display:flex;flex-direction:column;min-width:0;
   padding:14px 15px 12px 17px;border:1px solid var(--hair);border-radius:13px;
   background:color-mix(in srgb,var(--panel2) 62%,transparent);}
-.ss-cell::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;}
-.ss-r-solid::before {background:var(--ss-c);}
-.ss-r-dash::before  {background:repeating-linear-gradient(180deg,var(--ss-c) 0 11px,transparent 11px 17px);}
-.ss-r-hollow::before{left:1px;width:1px;background:color-mix(in srgb,var(--ss-c) 85%,transparent);}
-.ss-r-split::before {background:linear-gradient(180deg,var(--warn) 0 50%,var(--act) 50% 100%);}
+.ss-cell::before{content:none;}
+.ss-r-solid::before {content:none;}
+.ss-r-dash::before  {content:none;}
+.ss-r-hollow::before{content:none;}
+.ss-r-split::before {content:none;}
 
 .ss-axis{display:flex;align-items:center;gap:9px;margin:0 0 9px;min-width:0;
   font-size:10px;font-weight:780;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
@@ -424,7 +421,7 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 /* the one flag: identity that is not proven, or a read that could not be built.
    It names what failed AND what still works — never a bare degraded panel. */
 .ss-flag{display:block;margin:0 0 14px;padding:11px 14px;border-radius:11px;
-  border:1px solid color-mix(in srgb,var(--ss-c) 26%,var(--hair));border-left:3px solid var(--ss-c);
+  border:1px solid var(--line);
   background:color-mix(in srgb,var(--ss-c) 7%,transparent);font-size:12px;line-height:1.55;color:var(--text);}
 .ss-flag b{display:block;margin-bottom:3px;font-size:11.5px;font-weight:750;color:var(--ss-ink);}
 
@@ -787,7 +784,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 .dsr-dlg-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px 13px;position:sticky;top:0;z-index:2;
   background:color-mix(in srgb,var(--panel) 96%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--hair);}
 .dsr-dlg-title{font-size:15px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;}
-.dsr-dlg-title::before{content:"";width:3px;height:15px;border-radius:2px;background:linear-gradient(180deg,var(--stance),color-mix(in srgb,var(--stance) 25%,transparent));}
+.dsr-dlg-title::before{content:none;}
 .dsr-dlg-close{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;
   background:var(--gbtn-bg);border:1px solid var(--gbtn-brd);cursor:pointer;color:var(--muted);font-size:17px;line-height:1;font-family:inherit;flex-shrink:0;transition:background .15s,color .15s;}
 .dsr-dlg-close:hover{background:var(--gbtn-bg-hover);color:var(--text);}

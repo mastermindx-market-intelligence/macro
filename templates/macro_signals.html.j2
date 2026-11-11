@@ -83,11 +83,7 @@
     font-size:15px; margin:0 0 12px;
     padding-left:11px; position:relative;
   }
-  .panel h2::before {
-    content:''; position:absolute; left:0; top:2px; bottom:2px;
-    width:3px; border-radius:2px;
-    background: linear-gradient(180deg, var(--rail,var(--info)), transparent);
-  }
+  .panel h2::before {content:none;}
 
   /* Section rail colors */
   .rail-cycle    { --rail: #5b9bf0; }
@@ -105,7 +101,7 @@
   .sig-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-top:10px; }
   .sig-tile {
     background: var(--panel2); border:1px solid var(--line); border-radius:8px;
-    padding:10px 12px; border-left:3px solid var(--sc, var(--muted));
+    padding:10px 12px; 
     position:relative;
   }
   .sig-tile .sig-label { font-size:10px; font-family:var(--num); text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:2px; }
@@ -242,7 +238,7 @@
      Verdict colour arrives on --lit, the Fed-put colour on --dlp, and both are
      spent on a static left rail plus a soft corner wash — nothing animates, so
      there is no pseudo-element motion to kill under reduced-motion. */
-  .dislo-panel { border-left:3px solid var(--lit);
+  .dislo-panel { border:1px solid var(--line);
     background-image:linear-gradient(107deg,
       color-mix(in srgb, var(--lit) 9%, transparent) 0%,
       color-mix(in srgb, var(--lit) 2%, transparent) 34%, transparent 62%); }

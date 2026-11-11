@@ -106,7 +106,7 @@
 #dlg-risk.rkw-ready .rkw-odds-footer { display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; justify-content:space-between; margin-top:12px; min-height:32px; }
 #dlg-risk.rkw-ready .rkw-baseline { font-size:var(--fs-sm); color:var(--muted); font-variant-numeric:tabular-nums; }
 #dlg-risk.rkw-ready .rkw-quality { border:0; background:var(--panel2); color:var(--muted); border-radius:var(--r-ctl,8px); padding:6px 8px; font-size:var(--fs-label); cursor:pointer; min-height:32px; text-align:left; }
-#dlg-risk.rkw-ready .rkw-quality.is-thin { color:var(--ink-warn); background:var(--surface-warn-subtle); }
+#dlg-risk.rkw-ready .rkw-quality.is-thin { color:var(--ink-warn); background:var(--surface-warn-subtle,var(--panel2,var(--card))); }
 
 /* ── Compact completeness and source-session context, visible at first scan ── */
 #dlg-risk.rkw-ready .rkw-completeness {

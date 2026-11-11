@@ -89,7 +89,7 @@ html[data-theme="light"] body.mc-page {
    ≤768 .mc-rail-link (including .mc-analyst) shares pill material. */
 .mc-rail-link:not(.mc-analyst) {
   position: relative; display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px 9px 14px; border-radius: var(--r-ctl, 8px);
+  padding: 9px 12px; border-radius: var(--r-ctl, 8px);
   color: var(--mq-muted); text-decoration: none; font-size: 13.5px; line-height: 1.3;
   transition: background 160ms ease, color 160ms ease;
 }
@@ -105,10 +105,8 @@ html[data-theme="light"] .mc-rail-link.is-current {
   border: 1px solid var(--mq-line);
   box-shadow: 0 1px 2px var(--mc-ink-09);
 }
-.mc-rail-bar, .mc-arrival-bar {
-  position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 0; background: transparent;
-}
-.mc-rail-link.is-current .mc-rail-bar { background: var(--mq-accent); }
+
+
 .mc-rail-dot { width: 6px; height: 6px; border-radius: var(--r-pill, 999px); margin-left: auto; background: currentColor; }
 .mc-rail-full { display: inline; }
 .mc-rail-short { display: none; }
@@ -380,7 +378,7 @@ html[data-theme="light"] .mc-panel-title[tabindex]:focus-visible {
 .mc-panel-question { margin: 0; font-size: var(--fs-sm, 13px); color: var(--mq-muted); }
 
 .mc-stance {
-  position: relative; margin: 0 0 14px; padding: 12px 14px 12px 18px;
+  position: relative; margin: 0 0 14px; padding: 12px 14px;
   border-radius: var(--r-ctl, 8px);
   background: var(--mc-stance-fill);
   font-size: 15px; line-height: 1.5;
@@ -389,7 +387,7 @@ html[data-theme="light"] .mc-panel-title[tabindex]:focus-visible {
 .mc-stance.mq-tone-warn { --mc-stance-fill: var(--mc-stance-warn); }
 .mc-stance.mq-tone-bad { --mc-stance-fill: var(--mc-stance-bad); }
 .mc-stance.mq-tone-neutral { --mc-stance-fill: var(--mc-stance-neutral); }
-.mc-stance-bar { position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0; background: currentColor; }
+
 .mc-stance-text { color: var(--mq-ink); }
 
 .mc-primer { margin: 0 0 16px; }
@@ -492,7 +490,7 @@ html[data-lang="zh"] .mc-move-name { letter-spacing: 0; }
    theme.css; a mixed custom property on this file is a ratchet literal. */
 .mc-arrival {
   position: relative; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px;
-  margin: 0 0 14px; padding: 9px 14px 9px 16px;
+  margin: 0 0 14px; padding: 9px 14px;
   border: 1px solid transparent; border-radius: var(--r-btn, 10px);
   background: var(--mc-accent-10);
   box-shadow: var(--mc-rail-active-shadow);
@@ -503,7 +501,7 @@ html[data-theme="light"] .mc-arrival {
   border: 1px solid var(--mq-line);
   box-shadow: 0 1px 2px var(--mc-ink-09);
 }
-.mc-arrival-bar { background: var(--mq-accent); }
+
 .mc-arrival-text b { color: var(--mq-ink); font-weight: 600; }
 .mc-arrival-link { color: var(--mq-accent); text-decoration: none; white-space: nowrap; }
 .mc-arrival-link:hover { text-decoration: underline; }
@@ -533,7 +531,7 @@ html[data-lang="zh"] .mc-dests-title { letter-spacing: 0; text-transform: none; 
   position: relative; flex: 1 1 auto;
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
   align-content: start; gap: 3px 10px;
-  padding: 12px 12px 12px 15px;
+  padding: 12px;
   border-radius: var(--r-btn, 10px);
   background: var(--mc-ink-05);
   border: 1px solid transparent;
@@ -547,13 +545,8 @@ html[data-theme="light"] .mc-dest {
   border: 1px solid var(--mq-line);
   box-shadow: none;
 }
-.mc-dest-bar {
-  position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px;
-  border-radius: 0;
-  background: var(--mc-ink-14);
-  transition: background 160ms ease;
-}
-html[data-theme="light"] .mc-dest-bar { background: var(--mq-line); }
+
+
 .mc-dest-title {
   grid-column: 1; font-size: 14.5px; line-height: 1.35; font-weight: 600;
   letter-spacing: 0; color: var(--mq-ink); overflow-wrap: anywhere;
@@ -582,8 +575,7 @@ html[data-theme="light"] .mc-dest:hover {
 }
 .mc-dest:focus-visible { background: var(--mc-ink-09); }
 html[data-theme="light"] .mc-dest:focus-visible { background: var(--panel); }
-.mc-dest:hover .mc-dest-bar,
-.mc-dest:focus-visible .mc-dest-bar { background: var(--mq-accent); }
+
 .mc-dest:hover .mc-dest-go,
 .mc-dest:focus-visible .mc-dest-go { color: var(--mq-accent); transform: translateX(2px); }
 
@@ -756,7 +748,7 @@ html[data-theme="light"] .mc-shell :focus-visible { box-shadow: 0 0 0 1px var(--
   .mc-subtab { white-space: nowrap; flex: none; }
   .mc-title { font-size: 26px; line-height: 1.18; }
   .mc-dests { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-  .mc-rail-bar { display: none; }
+  
   .mc-rail-link.is-current { border: 1px solid var(--mq-accent); }
   /* R9-M2 / r9-M2: no floating pill at ≤768. The analyst reuses
      `.mc-rail-link` (999px, no extra border, same padding/type/state
@@ -815,7 +807,7 @@ html[data-lang="zh"] .mc-title { letter-spacing: 0; }
 html[data-lang="zh"] .mc-dest-title,
 html[data-lang="zh"] .mc-dest-answers { letter-spacing: 0; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) {
-  .mc-rail-link, .mc-read-topic, .mc-chip, .mc-chip-help, .mc-dest, .mc-dest-bar, .mc-dest-go { transition: none; }
+  .mc-rail-link, .mc-read-topic, .mc-chip, .mc-chip-help, .mc-dest, .mc-dest-go { transition: none; }
   .mc-dest:hover .mc-dest-go, .mc-dest:focus-visible .mc-dest-go { transform: none; }
 }
 

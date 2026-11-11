@@ -79,7 +79,7 @@
   .tlabel { font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; text-transform:uppercase; }
   .treco { font-size:12px; font-weight:700; padding:3px 11px; border-radius:8px; }
   .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; }
-  .tx { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c,var(--muted)); border-radius:11px; padding:12px 14px; }
+  .tx { background:var(--panel); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:12px 14px; }
   .tx .k { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
   .tx .v { font-size:20px; font-weight:720; font-variant-numeric:tabular-nums; margin:5px 0 3px; }
   .tx .d { font-size:11.5px; color:var(--muted); line-height:1.4; }
@@ -192,8 +192,7 @@
   html[data-theme="light"] { --gr:#5a51bd; }
   .gpr-band { position:relative; background:var(--panel); border:1px solid var(--line);
     border-radius:12px; margin-top:10px; overflow:hidden; }
-  .gpr-band::before { content:""; position:absolute; inset:0 0 auto; height:2px;
-    background:linear-gradient(90deg,var(--gr),color-mix(in srgb,var(--gr) 15%,transparent)); }
+  .gpr-band::before {content:none;}
   html[data-theme="light"] .gpr-band { box-shadow:0 1px 2px rgba(28,36,48,.05),0 10px 26px -14px rgba(28,36,48,.18); }
   .gpr-hd { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding:13px 16px 0; }
   .gpr-eyebrow { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--gr); }

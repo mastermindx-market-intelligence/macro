@@ -14,7 +14,7 @@
   .statband { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:18px 0 4px; }
   .stat { background:var(--panel2); border:1px solid var(--line); border-radius:12px;
           padding:13px 14px; position:relative; overflow:hidden; }
-  .stat::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--sc,var(--link)); }
+  .stat::before {content:none;}
   .stat .sv { display:block; font-size:22px; font-weight:750; color:var(--text);
               font-variant-numeric:tabular-nums; letter-spacing:-.01em; line-height:1.05; }
   .stat .sv.up { color:#2f9e63; } .stat .sv.dn { color:#d23f3f; }
@@ -57,7 +57,7 @@
   table.mtx tr.hl td { background:color-mix(in srgb,var(--link) 6%,transparent); }
 
   /* per-name verdict cards */
-  .vcard { border:1px solid var(--line); border-left:3px solid var(--vc,var(--link)); border-radius:12px;
+  .vcard { border:1px solid var(--line);  border-radius:var(--r-card,12px);
            background:var(--panel2); padding:13px 15px; margin:12px 0; }
   .vcard .vh { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin-bottom:6px; }
   .vcard .vt { font-weight:750; font-size:14.5px; color:var(--text); }

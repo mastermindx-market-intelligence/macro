@@ -48,8 +48,8 @@
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
   @media (max-width:560px){ .cards{ grid-template-columns:1fr; } }
   /* two-block horizon card: DIRECTION (top, colored) + RISK (bottom, neutral) */
-  .hc { background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:10px; padding:0; overflow:hidden; }
-  .hc.up { border-left-color:var(--up); } .hc.down { border-left-color:var(--down); }
+  .hc { background:var(--panel2); border:1px solid var(--line);  border-radius:var(--r-card,12px); padding:0; overflow:hidden; }
+  .hc.up {  } .hc.down {  }
   .hc .hk { font-size:11px; color:var(--muted); padding:8px 11px 0; }
   .hc .dblock { padding:5px 11px 9px; }
   .hc .dlab, .hc .rlab { font-size:9.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }

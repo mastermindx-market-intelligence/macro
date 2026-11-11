@@ -95,7 +95,7 @@ nav.site-nav{position:relative;z-index:20}
 .imd-method{color:var(--muted);font-size:10.5px;margin:9px 0 0}
 .imd-transition{display:grid;gap:8px}
 .imd-transition h2,.imd-section-head h2{font-size:16px;line-height:1.25;margin:0;letter-spacing:-.015em}
-.imd-transition h2::before,.imd-section-head h2::before{content:"";display:inline-block;width:3px;height:16px;border-radius:2px;background:linear-gradient(var(--link),color-mix(in srgb,var(--link) 28%,transparent));margin-right:9px;vertical-align:-2px}
+.imd-transition h2::before,.imd-section-head h2::before{content:none;}
 .imd-transition-list{display:grid;gap:8px;margin-top:8px}
 .imd-condition{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--imd-hair);border-radius:12px;background:color-mix(in srgb,var(--text) 3%,transparent);font-size:11.5px}
 .imd-condition b{display:grid;place-items:center;flex:0 0 22px;height:22px;border-radius:7px;color:var(--ink-link, var(--link));background:color-mix(in srgb,var(--link) 12%,transparent);font:750 10px var(--imd-num)}
@@ -182,14 +182,14 @@ body.imd-lock{overflow:hidden}
 /* Risk Radar section — the shared .rrx card wears this page's glass-card skin by remapping
    --panel, so the card's own tokens (loud wash, chips, meters) all follow one swap instead
    of a fork. Left accent + every internal rule stay exactly as the shared partial ships. */
-.imd-radar .rrx{--panel:var(--imd-panel);margin:0;padding:20px;border-radius:var(--imd-radius);border-color:var(--imd-border);box-shadow:var(--imd-shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-left:4px solid var(--rc)}
+.imd-radar .rrx{--panel:var(--imd-panel);margin:0;padding:20px;border-radius:var(--r-card,12px);border-color:var(--imd-border);box-shadow:var(--imd-shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);}
 {% include "_risk_radar_card.css.j2" %}
 /* after the include: a class-pair selector outranks the card's own phone rule, so the
    mobile padding has to be restated at this specificity to survive. */
 @media(max-width:560px){.imd-radar .rrx{padding:16px}}
 /* MO-PAID-006 dossier card. DARK = command center: lifted inner well (--panel2), link-tinted rail at .45, flat status dots. LIGHT (below) = research workspace: white material, hairlines, no rail. Headlines link-coloured at rest, brighten on hover (dark) / underline (light). */
 .imd-dossier{position:relative;margin-top:12px;padding:18px 20px 18px 24px}
-.imd-dossier::before{content:"";position:absolute;inset:14px auto 14px 0;width:3px;border-radius:var(--r-pill,999px);background:var(--link);opacity:.45}
+.imd-dossier::before{content:none;}
 .imd-dossier-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
 .imd-dossier-head h3{margin:0;font-size:var(--fs-h3);letter-spacing:-.01em}
 .imd-dossier-asof{color:var(--muted);font:600 var(--fs-micro) var(--imd-num);font-variant-numeric:tabular-nums}
@@ -217,7 +217,7 @@ body.imd-page .imd-dossier-headline:hover{color:var(--text)}
 html[data-lang="zh"] .imd-dossier-head h3{letter-spacing:0}
 /* LIGHT TREATMENT — research workspace: solid white material, hairline border, no rail, no inner well, underline on hover, solid chip border. */
 html[data-theme="light"] .imd-dossier{background:var(--panel);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid var(--line);box-shadow:var(--card-shadow);padding-left:20px}
-html[data-theme="light"] .imd-dossier::before{display:none}
+html[data-theme="light"] .imd-dossier::before{content:none;}
 html[data-theme="light"] .imd-dossier-list{padding:0;background:transparent}
 html[data-theme="light"] .imd-dossier-item{border-top-color:var(--line)}
 html[data-theme="light"] .imd-dossier-headline:hover{color:var(--ink-link,var(--link));text-decoration:underline;text-underline-offset:2px}

@@ -66,15 +66,15 @@
   /* the grid + cards (overflow-contained: min-width:0 on card AND children) */
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:12px; margin:4px 0 6px; }
   .ic-card { display:flex; flex-direction:column; gap:7px; min-width:0; overflow:hidden;
-    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--muted);
+    background:var(--panel); border:1px solid var(--line); 
     border-radius:12px; padding:12px 13px; transition:border-color .15s, transform .08s; }
   .ic-card > * { min-width:0; max-width:100%; }
   .ic-card:hover { border-color:var(--accent,var(--link)); transform:translateY(-1px); }
-  .ic-card[data-state="EARLY_IGNITION"] { border-left-color:var(--up); }
-  .ic-card[data-state="IGNITING"] { border-left-color:color-mix(in srgb,var(--up) 60%,var(--line)); }
-  .ic-card[data-state="COILING"] { border-left-color:var(--link); }
-  .ic-card[data-state="EXTENDED_RUN"] { border-left-color:var(--warn); }
-  .ic-card[data-state="FADING"] { border-left-color:var(--down); }
+  .ic-card[data-state="EARLY_IGNITION"] {  }
+  .ic-card[data-state="IGNITING"] {  }
+  .ic-card[data-state="COILING"] {  }
+  .ic-card[data-state="EXTENDED_RUN"] {  }
+  .ic-card[data-state="FADING"] {  }
   .ic-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .ic-tk { font-weight:800; font-size:15px; letter-spacing:.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .ic-score { flex:none; font-weight:800; font-size:13px; font-variant-numeric:tabular-nums; min-width:30px; text-align:center;

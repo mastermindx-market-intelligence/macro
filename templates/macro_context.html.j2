@@ -308,7 +308,7 @@ html[data-theme="light"] {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .10em;
   color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
 }
-.domain-name::before { content: ''; width: 3px; height: 14px; border-radius: 2px; background: var(--info); opacity: .45; display: inline-block; }
+.domain-name::before {content:none;}
 .domain-name-en { flex: 1; }
 .domain-asof { font-size: 10px; margin-left: auto; }
 .domain-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
@@ -510,7 +510,7 @@ html[data-theme="light"] {
    ───────────────────────────────────────────────────────────── */
 .disclaimer {
   font-size: 12.5px; color: var(--muted); line-height: 1.6;
-  padding: 14px 18px; border-left: 3px solid var(--warn);
+  padding: 14px 18px; border:1px solid var(--line);
   background: color-mix(in srgb,var(--warn) 6%,var(--panel2));
   border-radius: 0 10px 10px 0; margin-top: 10px;
 }
@@ -683,7 +683,7 @@ html[data-theme="light"] {
 
       <!-- Rebalance Pulse context chip (RLT-R2) — visible in QE window or non-quiet -->
       {% if vm.rebalance_chip and vm.rebalance_chip.show %}
-      <div style="margin-top:10px;padding:8px 12px;background:color-mix(in srgb,var(--warn) 8%,var(--panel2));border-left:3px solid color-mix(in srgb,var(--warn) 40%,transparent);border-radius:2px 8px 8px 2px;font-size:12px;line-height:1.55">
+      <div style="margin-top:10px;padding:8px 12px;background:var(--surface-warn-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;line-height:1.55">
         <span style="font-weight:700;color:var(--ink-warn, var(--warn))">
           {% if vm.rebalance_chip.class_key == 'calendar' %}<span class="l-en">&#9670; Rebalance Window</span><span class="l-zh">&#9670; 再平衡窗口</span>{% else %}<span class="l-en">&#9670; Volume Alert</span><span class="l-zh">&#9670; 量能警示</span>{% endif %}
         </span>
@@ -991,7 +991,7 @@ html[data-theme="light"] {
           <span style="font-weight:600;color:{% if dom.dollar_cls == 'c-up' %}var(--up){% elif dom.dollar_cls == 'c-down' %}var(--down){% elif dom.dollar_cls == 'c-warn' %}var(--warn){% else %}var(--muted){% endif %}">{{ t(dom.dollar_text_en, dom.dollar_text_zh) }}</span>
         </div>
         <!-- Stance line -->
-        <div style="font-size:11px;padding:7px 10px;background:var(--panel2);border-radius:7px;border-left:3px solid var(--line);line-height:1.4;margin-bottom:10px">
+        <div style="font-size:11px;padding:7px 10px;background:var(--panel2);border-radius:var(--r-ctl,8px);border:1px solid var(--line);line-height:1.4;margin-bottom:10px">
           {{ t(dom.stance_en, dom.stance_zh) }}
         </div>
         {% endif %}

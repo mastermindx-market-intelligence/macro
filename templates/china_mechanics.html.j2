@@ -1079,7 +1079,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     {% endif %}
   </div>
 
-  <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
+  <div style="padding:10px 14px;background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">Participation tells you whether real money is in the room and who's driving. Turnover compares today's volume to its recent normal; margin balance (融资余额) is borrowed money used to buy stocks; southbound flow is Hong Kong money buying A-shares; QVIX is the market's fear gauge.</span>
     <span class="l-zh">参与度告诉你是否有真实资金入场、由谁主导。成交量一栏把当天的量和近期的常态作比较；融资余额是借钱买股的杠杆资金；南向资金是港资买入A股；QVIX是市场恐慌指标。</span>
   </div>
@@ -1197,7 +1197,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     {% if limits.get('latest_date') %}<span class="stale-chip" style="margin-left:auto">{{ limits.latest_date }}</span>{% endif %}
   </div>
 
-  <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
+  <div style="padding:10px 14px;background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">China caps how far a stock can move in a day. 涨停 (limit-up) is the daily ceiling, 跌停 (limit-down) the floor. 连板 (lianban) counts consecutive limit-up days — the mark of speculative streaks. A 'failed seal' touched limit-up but couldn't hold it. When limit-ups outnumber limit-downs, net limit activity leaned to the upside that day.</span>
     <span class="l-zh">中国对个股单日涨跌幅设有上限。涨停为当日上限，跌停为下限。连板统计连续涨停的天数——投机热潮的标志。开板指触及涨停却未能封住。当涨停多于跌停时，当日净涨停偏多。</span>
   </div>
@@ -1298,7 +1298,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     <h2>{{ t('Cycle Phase Memory', '周期阶段记忆') }} {{ help('Current phase classification with confidence and a 90-session strip. Behind the scenes, pre-committed checks grade every phase call; the track record below is the receipt. CN-SYS-R5.', '含置信度的当前阶段分类和90交易日图条。后台以预先提交的条件对每次阶段判断进行评分，下方跟踪记录即为凭证。CN-SYS-R5。') }}</h2>
   </div>
 
-  <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
+  <div style="padding:10px 14px;background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">Markets move through repeating phases — quiet repair, a policy floor, ignition, mania, and eventual unwind. This names where we are now, and every call is graded against the track record below.</span>
     <span class="l-zh">市场沿着重复的阶段演进——平静修复、政策托底、点火、亢奋，直至去杠杆。本面板标明当前所处阶段，每次判断都会计入下方的跟踪记录。</span>
   </div>
@@ -1422,7 +1422,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     <h2>{{ t('Policy Tape', '政策磁带') }}</h2>
   </div>
 
-  <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
+  <div style="padding:10px 14px;background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">In China, policy often drives the market. This reads the current policy impulse — from broad easing to targeted support to tightening — and lists recent moves by the PBoC, State Council, CSRC and others, with how fresh each source is.</span>
     <span class="l-zh">在中国，政策常常主导市场。本磁带解读当前政策冲量——从全面宽松、定向支持到收紧——并列出央行、国务院、证监会等近期动作及各来源的数据时效。</span>
   </div>
@@ -1490,7 +1490,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     {% endif %}
   </div>
 
-  <div style="padding:10px 14px;background:rgba(91,155,240,0.04);border-left:3px solid rgba(91,155,240,0.3);border-radius:0 6px 6px 0;font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
+  <div style="padding:10px 14px;background:var(--surface-info-subtle,var(--panel2,var(--card)));border:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px">
     <span class="l-en">Bonds and the currency frame the backdrop for stocks. A steep government-bond curve (long yields above short) usually points to easing and reflation ahead; a rising offshore yuan (USDCNH) means capital is leaving.</span>
     <span class="l-zh">债券与汇率构成股市的背景。国债收益率曲线陡峭（长端高于短端）通常预示宽松与再通胀；离岸人民币（USDCNH）走高意味着资本外流。</span>
   </div>
@@ -1635,7 +1635,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{
     </summary>
     <div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
       {% for pc in phase_catalog %}
-      <div style="padding:10px 12px;border-radius:6px;border-left:3px solid {{ pc.color }};background:rgba(255,255,255,0.02)">
+      <div style="padding:10px 12px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:var(--panel2)">
         <div style="font-weight:700;font-size:12px;color:{{ pc.color }};margin-bottom:4px">
           <span class="l-en">{{ pc.name_en }}</span>
           <span class="l-zh">{{ pc.name_zh }}</span>

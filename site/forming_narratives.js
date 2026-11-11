@@ -38,7 +38,7 @@
     const css = `
     #forming-narratives{margin-top:6px}
     #forming-narratives .ne-sub{color:var(--muted);font-size:13px;margin:2px 0 10px;max-width:80ch;line-height:1.5}
-    #forming-narratives .ne-watch{border-left:3px solid var(--link,#5aa7ff);background:color-mix(in srgb,var(--link,#5aa7ff) 8%,transparent);
+    #forming-narratives .ne-watch{border:1px solid var(--line);background:var(--surface-info-subtle,var(--panel2,var(--card)));
       padding:8px 11px;border-radius:6px;margin:0 0 10px;font-size:13px}
     #forming-narratives .ne-attn{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;font-size:12px;color:var(--muted)}
     #forming-narratives .ne-attn .ne-tag{background:var(--card2,rgba(127,127,127,.12));border:1px solid var(--border,rgba(127,127,127,.25));

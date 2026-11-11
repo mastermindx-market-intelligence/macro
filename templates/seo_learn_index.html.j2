@@ -14,8 +14,8 @@
 
   /* flagship — the field manual, given the full-width lead card it earns */
   .lh-flag{display:grid; grid-template-columns:1fr auto; align-items:center; gap:22px;
-    border:1px solid color-mix(in srgb,var(--link) 28%,var(--hair-strong)); border-radius:var(--r-lg);
-    border-left:3px solid var(--rail); padding:24px 26px; text-decoration:none; position:relative;
+    border:1px solid var(--line); border-radius:var(--r-lg);
+     padding:24px 26px; text-decoration:none; position:relative;
     overflow:hidden; box-shadow:var(--ms); background:
       radial-gradient(140% 160% at 0% 0%, color-mix(in srgb,var(--link) 11%,transparent), transparent 56%),
       var(--panel);
@@ -38,8 +38,7 @@
   .lh-track{margin-top:38px; scroll-margin-top:84px;} /* #track-* breadcrumb anchors land clear of the sticky header */
   .lh-track-h{display:flex; align-items:center; gap:11px; margin:0 0 16px;
     padding:0 0 var(--sp-3); border-bottom:1px solid var(--hair-strong);}
-  .lh-track-h::before{content:""; flex:none; align-self:center; width:3px; height:18px; border-radius:2px;
-    background:linear-gradient(180deg, var(--rail), color-mix(in srgb,var(--rail) 35%,transparent));}
+  .lh-track-h::before{content:none;}
   .lh-track-h .n{font-family:var(--num); font-variant-numeric:tabular-nums; font-size:var(--fs-label);
     font-weight:700; letter-spacing:.06em; color:var(--ink-3);}
   .lh-track-h .lbl{font-family:var(--font-ui); font-size:calc(var(--fs-h2) + 1px); font-weight:700;

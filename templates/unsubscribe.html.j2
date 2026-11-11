@@ -95,8 +95,7 @@ html[data-lang="zh"] .hero .eyebrow{ letter-spacing:.08em; }
   background:var(--surface); box-shadow:var(--card-shadow); overflow:hidden; margin-top:28px; }
 /* the routing rail — 3px accent edge; --ok once the choice is recorded, --act when the
    link is dead or the write failed. Health tokens, never the direction pair. */
-.panel::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
-  background:var(--accent,var(--info)); transition:background .25s ease; }
+.panel::before{content:none;}
 html[data-unsub="off"]   .panel{ --accent:var(--ok); }
 html[data-unsub="on"]    .panel{ --accent:var(--ok); }
 html[data-unsub="bad"]   .panel{ --accent:var(--act); }

@@ -17,7 +17,7 @@
 
   var st = document.createElement('style');
   st.textContent =
-    '#nr-scorecard{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent,var(--ink-link,var(--link,#1c4fe0)));' +
+    '#nr-scorecard{background:var(--panel);border:1px solid var(--line);' +
       'border-radius:12px;padding:14px 16px;margin:14px 0;display:flex;flex-wrap:wrap;gap:18px;align-items:stretch}' +
     '#nr-scorecard .nrc-main{flex:1 1 380px;min-width:280px}' +
     '#nr-scorecard .nrc-lead{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}' +

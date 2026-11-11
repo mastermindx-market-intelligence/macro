@@ -307,8 +307,7 @@ html[data-theme="light"] .gmi-track{ background:var(--panel2); box-shadow:inset 
 .gmi-degraded{ position:relative; border-radius:var(--r-ctl,8px); overflow:hidden; }
 html:not([data-theme="light"]) .gmi-degraded > .gmi-degraded-body{ opacity:.45; filter:saturate(.4); }
 html[data-theme="light"] .gmi-degraded > .gmi-degraded-body{ color:var(--muted); }
-html[data-theme="light"] .gmi-degraded::after{ content:""; position:absolute; left:0; right:0; top:0; height:6px;
-  background:repeating-linear-gradient(135deg, var(--gmi-hatch) 0 1.5px, transparent 1.5px 5px); }
+html[data-theme="light"] .gmi-degraded::after{content:none;}
 .gmi-mini{ display:flex; flex-direction:column; gap:6px; padding:12px; border-radius:var(--r-ctl,8px); background:var(--panel2); font-size:var(--fs-sm); }
 html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
 .gmi-skel-line{ height:10px; } .gmi-skel-line--s{ width:40%; } .gmi-skel-line--m{ width:70%; }

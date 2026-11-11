@@ -403,7 +403,7 @@ a.rh-pub:hover { color: var(--prussian); }
 .doc blockquote {
   margin: 1.6em 0;
   padding: 0 0 0 22px;
-  border-left: 2px solid var(--prussian-soft);
+  border:1px solid var(--line);
   color: var(--ink-mid);
   font-size: 1.06rem;
 }

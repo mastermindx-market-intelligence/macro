@@ -23,8 +23,7 @@
   .ph-section{max-width:1120px; margin:42px auto 0; padding:0 24px;}
   .ph-sech{display:flex; align-items:center; gap:11px; padding-bottom:12px;
     border-bottom:1px solid var(--hair-strong); margin-bottom:17px;}
-  .ph-sech::before{content:""; width:3px; height:20px; border-radius:2px;
-    background:linear-gradient(180deg,var(--link),transparent);}
+  .ph-sech::before{content:none;}
   .ph-sech .n{font-family:var(--num); color:var(--ink-3); font-size:var(--fs-label);}
   .ph-sech h2{font-size:calc(var(--fs-h2) + 2px); margin:0;}
   .ph-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px;}
@@ -55,7 +54,7 @@
   .ph-research strong{display:block; color:var(--ink-1);}
   .ph-research span{display:block; margin-top:6px; color:var(--ink-2);
     font-size:var(--fs-sm); line-height:1.45;}
-  .ph-boundary{margin-top:16px; border-left:3px solid var(--warn); padding:14px 17px;
+  .ph-boundary{margin-top:16px; border:1px solid var(--line); padding:14px 17px;
     background:color-mix(in srgb,var(--warn) 7%,var(--panel)); color:var(--ink-2);
     font-size:var(--fs-sm); line-height:1.55;}
   @media (max-width:840px){

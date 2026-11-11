@@ -578,7 +578,7 @@ function renderSleeveChip(){
       ${L('Sizes the theme portfolio.','仅用于调整主题组合仓位。')}</p></details>`;
     return;
   }
-  host.innerHTML=`<div class="sleeve-chip" style="border-left:3px solid ${sev}" title="${esc((sc.passport&&sc.passport.note)||'')}">
+  host.innerHTML=`<div class="sleeve-chip" style="border:1px solid var(--line);" title="${esc((sc.passport&&sc.passport.note)||'')}">
     <span class="sl-main">🛰️ <b>${L(esc(sc.label_en||''),esc(sc.label_zh||sc.label_en||''))}</b></span>
     ${sc.dominant_driver_en?`<span class="muted sm">· ${L(esc(sc.dominant_driver_en),esc(sc.dominant_driver_zh||sc.dominant_driver_en))}</span>`:''}
     <span class="sl-tag muted">${L('Drawdown-control sizing; not a return forecast.','回撤控制仓位；并非收益预测。')}</span>
@@ -645,7 +645,7 @@ function renderConcentration(){
   const vmap={narrow:['var(--down)','narrow','狭窄'],broad:['var(--up)','broad','广泛'],mixed:['var(--warn)','mixed','中性']};
   const vv=vmap[mc.verdict]||vmap.mixed;
   const adc=(en,zh,v)=>`<div class="adc"><div class="k">${L(en,zh)}</div><div class="v ${v==null?'muted':(v<1?'neg':'pos')}">${v==null?'—':(+v).toFixed(2)}</div></div>`;
-  const narrow=`<div class="panel pad" style="border-left:3px solid ${vv[0]}">
+  const narrow=`<div class="panel pad" style="border:1px solid var(--line);">
     <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
       <div><span class="muted sm">${L((THEME.bench_label||'S&P')+' breadth',(THEME.bench_label_zh||'标普')+'广度')}</span><div style="font-size:18px;font-weight:740;color:${vv[0]}">${L(vv[1],vv[2])}</div></div>
       <div class="adgrid">${adc('A/D today','今日',mc.ad_ratio)}${adc('3-day','3日',mc.ad_3d)}${adc('weekly','周',mc.ad_w)}${adc('monthly','月',mc.ad_m)}</div>

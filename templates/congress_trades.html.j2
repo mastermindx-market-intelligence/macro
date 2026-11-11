@@ -120,8 +120,8 @@
   .mb-tier-proven { color:#1f9a55; font-weight:700; } html[data-theme="dark"] .mb-tier-proven { color:#3fc07e; }
   .mb-tier-watch  { color:#5b8def; font-weight:600; }
   .mb-tier-limited{ color:var(--muted); }
-  /* front-line row accent */
-  tr.fl { border-left:3px solid #f59e0b; background:rgba(245,158,11,0.04); }
+  /* Front-line rows retain a quiet surface and their entry-signal chips. */
+  tr.fl {  background:var(--surface-warn-subtle,var(--panel2,var(--card))); }
   html[data-theme="dark"] tr.fl { background:rgba(245,158,11,0.07); }
   tr.fl td:first-child { padding-left:5px; }
   /* filter bar */
@@ -413,8 +413,8 @@
   {% endfor %}
   </tbody></table>
   <p class="mut2" style="font-size:11px;margin-top:9px">{{ t(
-    'Cluster = distinct members · recency-weighted net-buy · disclosed size · freshness (decay on transaction date, bipartisan bonus). Technical &amp; Zone are read from each name\'s own conviction + sector/theme signals; a hard engine veto (cycle-blocked / parabolic) floors the technical score and removes "act now". Composite = 30% cluster · 25% technical · 15% zone · 30% entry timing. ⚡ = prime-entry signal gate (T1/T2/T3); front-line rows (amber left border) have at least one entry timing signal firing. ETF/1-member/stale/late ⚠️ chips are provenance — reduced weight, not removal. Showing the top ' ~ n_shown ~ ' of ' ~ summary.n_tickers ~ ' in-window names. Entry timing (washouts, weekly momentum turns, ⚡ gate) pulls names to the front of the line for better entries — timing aids with receipts on hover, not proof a stock works out; the same washout signals tested null as standalone buy signals. Timing signals are scanned for the ~400 most-clustered names plus every ⚡-gated name, not the full window. Member name color = track record (green proven · amber watch · gray limited — hover for win rate and party). ▲▼ = that member\'s last action.',
-    '集群 = 不同议员数 · 时间加权（交易日）净买入 · 披露规模 · 新鲜度（两党加成）。技术面与区间取自各标的信念与板块/主题信号；引擎硬否决压低技术分并取消"现在可买"。综合分 = 30%集群 · 25%技术面 · 15%区间 · 30%入场时机。⚡ = 优质入场信号（T1/T2/T3）；前线行（左侧琥珀色边框）至少有一个入场信号触发。ETF/1议员/陈旧/晚报 ⚠️ 为来源提示——权重降低，不删除。显示窗口内前 ' ~ n_shown ~ ' 个（共 ' ~ summary.n_tickers ~ ' 个）。入场时机（超跌、周线动量转向、⚡门）将标的提前排序以便更好入场——时机辅助附数据悬浮提示，非股票必涨证明；相同超跌信号作为独立买入信号经测试无效。时机信号仅扫描集群度最高的约400个标的及所有⚡门标的，非全窗口。议员姓名颜色 = 历史记录（绿色往绩较佳 · 琥珀色观察中 · 灰色样本不足——悬停查看胜率与党派）。▲▼ = 该议员最近操作。') }}</p>
+    'Cluster = distinct members · recency-weighted net-buy · disclosed size · freshness (decay on transaction date, bipartisan bonus). Technical &amp; Zone are read from each name\'s own conviction + sector/theme signals; a hard engine veto (cycle-blocked / parabolic) floors the technical score and removes "act now". Composite = 30% cluster · 25% technical · 15% zone · 30% entry timing. ⚡ = prime-entry signal gate (T1/T2/T3); front-line rows (entry-signal chips) have at least one entry timing signal firing. ETF/1-member/stale/late ⚠️ chips are provenance — reduced weight, not removal. Showing the top ' ~ n_shown ~ ' of ' ~ summary.n_tickers ~ ' in-window names. Entry timing (washouts, weekly momentum turns, ⚡ gate) pulls names to the front of the line for better entries — timing aids with receipts on hover, not proof a stock works out; the same washout signals tested null as standalone buy signals. Timing signals are scanned for the ~400 most-clustered names plus every ⚡-gated name, not the full window. Member name color = track record (green proven · amber watch · gray limited — hover for win rate and party). ▲▼ = that member\'s last action.',
+    '集群 = 不同议员数 · 时间加权（交易日）净买入 · 披露规模 · 新鲜度（两党加成）。技术面与区间取自各标的信念与板块/主题信号；引擎硬否决压低技术分并取消"现在可买"。综合分 = 30%集群 · 25%技术面 · 15%区间 · 30%入场时机。⚡ = 优质入场信号（T1/T2/T3）；前线行（入场信号标签）至少有一个入场信号触发。ETF/1议员/陈旧/晚报 ⚠️ 为来源提示——权重降低，不删除。显示窗口内前 ' ~ n_shown ~ ' 个（共 ' ~ summary.n_tickers ~ ' 个）。入场时机（超跌、周线动量转向、⚡门）将标的提前排序以便更好入场——时机辅助附数据悬浮提示，非股票必涨证明；相同超跌信号作为独立买入信号经测试无效。时机信号仅扫描集群度最高的约400个标的及所有⚡门标的，非全窗口。议员姓名颜色 = 历史记录（绿色往绩较佳 · 琥珀色观察中 · 灰色样本不足——悬停查看胜率与党派）。▲▼ = 该议员最近操作。') }}</p>
   {% else %}<p class="mut2">{{ t('No congressional disclosures in the current window.', '当前窗口无国会披露。') }}</p>{% endif %}
 </div>
 

@@ -40,7 +40,7 @@
 
   /* ── scoreboard tab ── */
   .sb-note{font-size:12px;color:var(--muted);margin:0 0 12px;padding:10px 13px;
-    border:1px solid var(--line);border-left:3px solid var(--link);border-radius:10px;background:var(--panel)}
+    border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
   .sb-note b{color:var(--text)}
   .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   table.sb-tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -103,7 +103,7 @@
   /* ── pick cards ── */
   .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;margin-top:10px}
   .pick-card{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:var(--panel);
-    border-left:3px solid var(--info,#4c8bf5)}
+    }
   .pick-card:hover{border-color:var(--muted);background:var(--panel2,var(--panel))}
   .pick-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
   .pick-rank{font-size:11px;color:var(--muted);font-weight:600;min-width:22px}
@@ -182,8 +182,7 @@
     color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 10%,transparent)}
   .acct-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;
     background:var(--panel);margin:0 0 16px;position:relative;overflow:hidden}
-  .acct-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-    background:linear-gradient(90deg,var(--link),color-mix(in srgb,var(--link) 40%,transparent))}
+  .acct-card::before{content:none;}
   .acct-card-title{font-size:13px;font-weight:700;margin:0 0 10px;color:var(--text)}
   .acct-empty-state{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px}
   .acct-empty-icon{font-size:32px;margin-bottom:8px}
@@ -201,7 +200,7 @@
   .acct-row-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 16px}
   @media(max-width:600px){.acct-row-grid{grid-template-columns:1fr}}
   .method-body ul li{margin:4px 0}
-  .method-body .law{border-left:3px solid var(--link);padding:10px 14px;
+  .method-body .law{border:1px solid var(--line);padding:10px 14px;
     background:color-mix(in srgb,var(--link) 7%,var(--panel));border-radius:0 9px 9px 0;
     margin:12px 0;font-size:13px;color:var(--muted)}
   .method-body .law b{color:var(--text)}
@@ -555,7 +554,7 @@
       {% if otr_stocks %}
       <div class="pick-grid">
         {% for p in otr_stocks %}
-        <div class="pick-card" style="border-left-color:var(--up)">
+        <div class="pick-card">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
             <span class="pick-tk">{{ p.ticker }}</span>
@@ -587,7 +586,7 @@
       {% if tp_stocks %}
       <div class="pick-grid">
         {% for p in tp_stocks %}
-        <div class="pick-card" style="border-left-color:var(--down)">
+        <div class="pick-card">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
             <span class="pick-tk">{{ p.ticker }}</span>
@@ -866,7 +865,7 @@
       {% if book.picks_today %}
       <div class="pick-grid">
         {% for p in book.picks_today %}
-        <div class="pick-card" style="border-left-color:var(--info,#4c8bf5)">
+        <div class="pick-card">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
             <span class="pick-tk">{{ p.ticker }}</span>

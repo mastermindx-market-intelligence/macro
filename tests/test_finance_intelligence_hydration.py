@@ -1548,3 +1548,19 @@ def test_w20a_stub_url_default_is_unchanged() -> None:
                                                           "body": '{"detail":"down"}',
                                                           "contentType": "application/json"}}))
     assert snap["first"]["fetchCalls"] == ["/__fi_stub__"]
+
+
+
+
+@needs_node
+def test_section_freshness_labels_follow_language_and_local_state() -> None:
+    """The replacement for the former light-theme rail survives EN/ZH repaint."""
+    doc = copy.deepcopy(VALID_DOC)
+    doc["slices"][0]["freshness"] = {"state": "AGING", "as_of": AS_OF, "horizon_days": 90}
+    out = _run({"lang": "en", "routes": _route(doc),
+                "actions": [{"do": "lang", "lang": "zh"}]})
+    first = _dom(out["first"]).find("span", "fi-freshness-label")
+    second = _dom(out["second"]).find("span", "fi-freshness-label")
+    assert [item.text() for item in first] == ["Fresh", "Aging"]
+    assert [item.text() for item in second] == ["新鲜", "趋于陈旧"]
+    assert all(not item.hidden for item in second)

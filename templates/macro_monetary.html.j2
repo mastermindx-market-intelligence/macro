@@ -72,7 +72,7 @@
         <a class="mc-rail-link{{ ' is-current' if s.first else '' }}"
            href="#{{ s.id }}" data-mc-section="{{ s.id }}"
            {%- if s.first %} aria-current="page"{% endif %}>
-          <span class="mc-rail-bar" aria-hidden="true"></span>
+          
           <span class="mc-rail-text mc-rail-full">{{ bl(s.label) }}</span>
           <span class="mc-rail-text mc-rail-short">{{ bl(s.short_label or s.label) }}</span>
           {%- if s.tone %}<span class="mc-rail-dot mq-tone-{{ s.tone }}" aria-hidden="true"></span>{% endif %}
@@ -132,7 +132,7 @@
          mechanism the pending line already uses (:192). #}
       {%- if not s.first %}
       <p class="mc-arrival" data-mc-arrival hidden>
-        <span class="mc-arrival-bar" aria-hidden="true"></span>
+        
         <span class="mc-arrival-text">{{ t('You opened Macro Command at ', '你从这里进入宏观指挥台：') }}<b>{{ bl(s.label) }}</b>{{ t('.', '。') }}</span>
         <a class="mc-arrival-link" href="#overview">{{ t("Read today's overview", '查看今日总览') }} &rarr;</a>
       </p>
@@ -144,7 +144,7 @@
 
       {%- if s.stance %}
       <p class="mc-stance mq-tone-{{ s.stance.tone }}">
-        <span class="mc-stance-bar" aria-hidden="true"></span>
+        
         <span class="mq-sr">{{ t('What this means for you', '这对你意味着什么') }}: </span>
         <span class="mc-stance-text">{{ bl(s.stance.text) }}</span>
       </p>
@@ -229,7 +229,7 @@
           {%- for link in s.detail_links %}
           <li>
             <a class="mc-dest" href="{{ link.href }}">
-              <span class="mc-dest-bar" aria-hidden="true"></span>
+              
               <span class="mc-dest-title">{{ bl(link.title) }}</span>
               {{ m.answers(link.href) }}
               <span class="mc-dest-go" aria-hidden="true">→</span>

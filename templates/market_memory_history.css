@@ -2,7 +2,7 @@
 body.mm-page{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui,sans-serif)}
 .mmh-workbench .mmh-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4,16px)}
 .mmh-workbench .mmh-preferences,.mmh-workbench .mmh-step{display:flex;gap:var(--sp-2,8px);flex-wrap:wrap}
-.mmh-workbench .mmh-notice{padding:var(--sp-3,12px) var(--sp-4,16px);border-left:3px solid var(--prov);background:var(--panel2);color:var(--muted);font-size:var(--fs-sm,13px);margin-bottom:var(--sp-5,24px)}
+.mmh-workbench .mmh-notice{padding:var(--sp-3,12px) var(--sp-4,16px);border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:var(--fs-sm,13px);margin-bottom:var(--sp-5,24px)}
 .mmh-workbench .mmh-selector{grid-template-columns:minmax(160px,1fr) minmax(200px,1.4fr) auto}
 .mmh-workbench .mmh-reading-head{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-4,16px);margin-bottom:var(--sp-4,16px)}
 body.mm-page .mm-retained #mmh-selected-date{font-size:var(--fs-num-xl,38px);font-weight:800;letter-spacing:-.03em;line-height:1.15}

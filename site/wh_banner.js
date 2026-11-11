@@ -426,8 +426,7 @@
       "-webkit-backdrop-filter:saturate(1.3) blur(2px);backdrop-filter:saturate(1.3) blur(2px);overflow:hidden}",
       // warmer backdrop while the orange Risk-Radar channel is showing
       ".whb.whb-warm{background:linear-gradient(90deg,rgba(44,32,20,.96),rgba(48,24,22,.96))}",
-      ".whb::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;",
-      "background:var(--whb-top,linear-gradient(90deg,#3d6fd6,#d9a441 50%,#d2455c))}",
+      ".whb::before{content:none;}",
       // stage holds one face per channel; when .multi they overlap and crossfade
       ".whb-stage{flex:1 1 auto;position:relative;display:flex;align-items:stretch;min-width:0;overflow:hidden}",
       ".whb-face{display:flex;align-items:stretch;flex:1 1 auto;min-width:0}",
