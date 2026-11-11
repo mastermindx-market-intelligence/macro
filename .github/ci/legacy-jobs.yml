@@ -20337,6 +20337,11 @@ jobs:
       - scripts/build_sp500_heatmap.py
       - scripts/build_state_of_themes.py
       - scripts/build_stock_library.py
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader and reads its config table; this job's closure reaches
+      # the builder, so it owns these two as well.
+      - engine/sp500_zh_names.py
+      - config/sp500_subindustry_zh.json
       - scripts/build_subsector_confluence.py
       - scripts/build_subsector_rotation.py
       - scripts/build_subsector_rotation_china.py
@@ -25369,6 +25374,11 @@ jobs:
       - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_strategies.py"
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader and reads its config table; this job's closure reaches
+      # the builder, so it owns these two as well.
+      - "engine/sp500_zh_names.py"
+      - "config/sp500_subindustry_zh.json"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/build_subsector_rotation_china.py"
@@ -28640,6 +28650,9 @@ jobs:
       - "scripts/build_stock_library.py"
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader; this job's closure reaches the builder, so it owns it too.
+      - "engine/sp500_zh_names.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/build_subsector_rotation_china.py"
@@ -36799,6 +36812,11 @@ jobs:
       - "engine/classification_axes/__init__.py"
       - "scripts/build_stock_briefs.py"
       - "scripts/build_stock_library.py"
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader and reads its config table; this job's closure reaches
+      # the builder, so it owns these two as well.
+      - "engine/sp500_zh_names.py"
+      - "config/sp500_subindustry_zh.json"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/build_subsector_rotation_china.py"
@@ -38196,6 +38214,9 @@ jobs:
       - "scripts/security_state_producer.py"
       - "scripts/snapshot_shadow_book.py"
       - "scripts/build_strategies.py"
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader; this job's closure reaches the builder, so it owns it too.
+      - "engine/sp500_zh_names.py"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/build_subsector_rotation_china.py"
@@ -40282,6 +40303,42 @@ jobs:
       - "engine/subsector_rotation_alerts.py"
       - "engine/subsector_scan.py"
       - "engine/subsector_turn.py"
+      # S&P confluence zh labels (review r1 B1/S1): the light loader the builder calls
+      # and the tests import, its sector-word source, the builder itself, and the two
+      # template/text owners the zh suites read (heatmap.js INDUSTRY_ZH parity; the
+      # detail-page subtitle pin). Not imports — read as text — so the closure tool
+      # cannot discover the two templates on its own.
+      - "engine/sp500_zh_names.py"
+      - "engine/sp500_heatmap.py"
+      - "scripts/build_subsector_confluence.py"
+      - "templates/heatmap.js"
+      - "templates/subsector_detail.html.j2"
+      # ...and the builder's own import closure: the zh suite pins the builder wiring
+      # by READING its source (ast), so the checker correctly drags these in too
+      # (second hop: bar_derive → pit/regime/risk_radar/...). The heatmap board JSON
+      # is the real-coverage test's cross-check read.
+      - "collectors/fred.py"
+      - "engine/axes.py"
+      - "engine/bar_derive.py"
+      - "engine/base_effect.py"
+      - "engine/cn_ai_semis_confirmer.py"
+      - "engine/election_cycle.py"
+      - "engine/i18n.py"
+      - "engine/inputs.py"
+      - "engine/marker_integrity.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_intl.py"
+      - "engine/yield_momentum.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/marketdata/sp500_heatmap.json"
       - "engine/technicals.py"
       - "engine/theme_emergence.py"
       - "engine/theme_fingerprint.py"
@@ -52303,6 +52360,11 @@ jobs:
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
+      # PR #10981 (review r1 B1): the confluence builder now imports the light
+      # zh-name loader and reads its config table; this job's closure reaches
+      # the builder, so it owns these two as well.
+      - "engine/sp500_zh_names.py"
+      - "config/sp500_subindustry_zh.json"
       - "scripts/build_subsector_confluence.py"
       - "scripts/build_subsector_rotation.py"
       - "scripts/build_subsector_rotation_china.py"
