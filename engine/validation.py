@@ -159,6 +159,301 @@ def capacity_curve(close: pd.Series, alloc: pd.Series, adv_usd: pd.Series,
 
 
 # --------------------------------------------------------------------------- #
+# STRICT NEXT-OPEN SIMULATION (self-financing share/cash accounting)
+# --------------------------------------------------------------------------- #
+# `backtest_core` above is a CLOSE-TO-CLOSE engine: `pos = alloc.shift(1)` earns
+# `open[t] -> open[t+1]`-shaped drift that INCLUDES the close[t] -> open[t+1]
+# overnight gap. A decision made from bar t's close is therefore credited with
+# the very move that happened while it was still un-invested. That is the
+# post-close-entrant look-ahead. It stays exactly as it is — every calibrator
+# depends on those bytes.
+#
+# `next_open_sim` below is the honest timing model for a CLOSED-BAR signal, and
+# it is a separate function so no legacy caller's arithmetic moves:
+#
+#   * decision for session t is made from session t's CLOSE (that is what
+#     `alloc[t]` means — it is the RAW, pre-shift strategy position);
+#   * that decision FILLS at session t+1's OPEN;
+#   * a holder who was already invested at open[t+1] keeps the close[t+1] ->
+#     open[t+2] overnight gap, because it held through it; a post-close entrant
+#     does not, because it was not invested when the gap happened;
+#   * session 0 opens flat, because there is no prior close to decide from.
+#
+# SELF-FINANCING ACCOUNTING (the part that has to be right)
+# ---------------------------------------------------------
+# The book is LONG/CASH fractional shares plus cash, and it must never borrow.
+# Let V be the pre-trade equity (cash + market value of shares) at open i, H the
+# shares' market value at that open, w the target weight and c the one-way cost
+# rate. The target weight is a weight on the value we END UP holding AFTER fees,
+# so the trade has to be solved rather than applied:
+#
+#     H + delta = w * (V - c * |delta|)
+#
+# which inverts to the two closed forms actually used below:
+#
+#     buy  (delta >= 0):  delta = (w*V - H) / (1 + w*c)
+#     sell (delta <  0):  delta = (w*V - H) / (1 - w*c)
+#
+# Spending the target first and deducting fees afterwards — the naive version —
+# is wrong in a way that hides leverage: it pays for 100% invested, then books
+# the fee as negative cash, so the account is long more than it owns. A constant
+# price with a constant target must produce exactly ONE trade and a flat book
+# afterwards; the solve gives that, the naive form does not.
+#
+# NOTHING here repairs bad input by substituting a zero. A non-positive price, a
+# non-finite value, an allocation outside [0,1], a degenerate fee solve or a
+# book that would go overdrawn REFUSES the run — a silent zero is how a broken
+# fill turns into a fake flat day, and a clamped cash balance is how a
+# self-financing book silently borrows. Missing or non-positive ADV, and any
+# impact/capacity request at all, raise `CapacityBlocked` rather than degrading
+# to "zero impact", which is a claim of unlimited capacity.
+class NextOpenError(ValueError):
+    """A next-open simulation cannot be performed honestly. Refuse, never repair."""
+
+
+class CapacityBlocked(NextOpenError):
+    """Impact/capacity was requested but the liquidity input cannot support it.
+
+    Missing or non-positive ADV BLOCKS the capacity conclusion. Treating it as
+    zero participation would silently assert that any size is executable.
+    """
+
+
+#: Impact/capacity certification is DISABLED in this helper until an owner
+#: qualifies an impact model. The prior implementation sized every fill against
+#: the FULL same-session volume at that session's open and let an early-session
+#: zero-filled volatility term stand in for "no impact yet", which is an
+#: unqualified claim of free size rather than an estimate of expensive size.
+#: Legacy `backtest_core` / `capacity_curve` keep their own behaviour untouched.
+IMPACT_NOT_QUALIFIED = "impact_model_not_yet_qualified"
+
+#: Explicit floating tolerance for the long/cash feasibility checks. Cash and
+#: share balances may sit this far below zero from rounding alone; a materially
+#: negative balance is an overdraft and is refused, never clamped away.
+BOOK_TOLERANCE = 1e-9
+
+TERMINAL_MARK_UNLIQUIDATED = (
+    "Terminal session is MARK ONLY: the book is marked at the final available "
+    "open and is NOT rebalanced, so no new final trade is charged and no exit "
+    "cost is charged on the terminal mark. A round trip that ends while still "
+    "invested therefore pays exactly one fewer cost than the same round trip "
+    "fully closed, and total drag is understated by at most that final exit. "
+    "This is disclosed rather than buried."
+)
+
+
+def _positive_finite(values, name: str) -> np.ndarray:
+    """Coerce to a float array and REFUSE unless every element is finite and > 0."""
+    arr = pd.to_numeric(pd.Series(values), errors="coerce").to_numpy(dtype=float)
+    if arr.size == 0:
+        raise NextOpenError(f"{name}_is_empty")
+    bad = np.flatnonzero(~np.isfinite(arr) | (arr <= 0.0))
+    if bad.size:
+        raise NextOpenError(f"{name}_not_positive_finite_at_index_{int(bad[0])}")
+    return arr
+
+
+def _solve_trade(target: float, equity_open: float, held: float, rate: float,
+                 session: int) -> float:
+    """Signed traded notional that puts the book ON target AFTER fees.
+
+    Solves ``held + delta = target * (equity_open - rate*|delta|)``. The sell
+    branch degenerates when ``1 - target*rate`` reaches zero — no sale can both
+    reach the target and pay its own fee — which is refused rather than clipped.
+    """
+    numerator = target * equity_open - held
+    if target > 0.0 and numerator > 0.0:
+        denom = 1.0 + target * rate
+    elif target < 1.0 and numerator < 0.0:
+        denom = 1.0 - target * rate
+    else:
+        denom = 1.0                      # exactly on target, or no trade at all
+    if not np.isfinite(denom) or denom <= 0.0:
+        raise NextOpenError(
+            f"fee_solve_degenerate_at_session_{session}: a target of {target!r} "
+            f"at a cost rate of {rate!r} has no self-financing solution")
+    delta = numerator / denom
+    return 0.0 if delta == 0.0 else delta
+
+
+def _check_book(session: int, cash: float, shares: float, price: float,
+                target: float | None) -> None:
+    """Assert the book is a real, self-financing LONG/CASH book.
+
+    A materially negative cash balance is an OVERDRAFT. It is raised, never
+    clamped to zero: clamping would let the engine report a long position it
+    could not have paid for.
+    """
+    if cash < -BOOK_TOLERANCE:
+        raise NextOpenError(
+            f"cash_would_go_overdrawn_at_session_{session}:{cash!r}")
+    if shares < -BOOK_TOLERANCE:
+        raise NextOpenError(
+            f"shares_would_go_negative_at_session_{session}:{shares!r}")
+    equity = cash + shares * price
+    if not np.isfinite(equity) or equity <= 0.0:
+        raise NextOpenError(f"equity_not_positive_at_session_{session}:{equity!r}")
+    if target is not None:
+        actual = (shares * price) / equity
+        if actual > 1.0 + BOOK_TOLERANCE:
+            raise NextOpenError(
+                f"weight_above_one_at_session_{session}:{actual!r}")
+
+
+def _next_open_run(op: np.ndarray, alloc: np.ndarray, base_rate: float,
+                   *, sigma: np.ndarray | None = None, adv: np.ndarray | None = None,
+                   aum: float | None = None, impact_eta: float = 0.0) -> dict:
+    """One pass of the self-financing share/cash book.
+
+    ``op`` is the open series; ``alloc`` is the RAW pre-shift decision series
+    (``alloc[t]`` is decided from close t and fills at open t+1).
+
+    The FINAL session is marked, not traded: the last iteration applies no
+    rebalance, so a "mark only" claim and a charged final trade can never
+    disagree. ``cash``/``shares`` are returned so a caller can audit the book
+    rather than trusting a derived equity curve.
+    """
+    n = op.size
+    cash, shares = 1.0, 0.0
+    equity = np.empty(n)
+    pos = np.empty(n)
+    turnover = np.empty(n)
+    cost = np.empty(n)
+    cash_series = np.empty(n)
+    shares_series = np.empty(n)
+    traded_notional = np.empty(n)
+    pretrade = np.empty(n)
+    last = n - 1
+    for i in range(n):
+        held = shares * op[i]
+        equity_open = cash + held
+        if not np.isfinite(equity_open) or equity_open <= 0.0:
+            raise NextOpenError(f"equity_not_positive_at_open_{i}")
+        # The contemporaneous pre-trade equity AT THIS OPEN: cash plus the shares
+        # marked at this open, before this session's own trade. It is the honest
+        # denominator for turnover at i, and it is NOT equity[i-1] — the price
+        # moved in between, so using the previous mark would misstate it.
+        pretrade[i] = equity_open
+        if i == last:
+            # Terminal MARK: no rebalance, no exit cost, nothing charged here.
+            pos[i] = np.nan
+            delta = 0.0
+            charge = 0.0
+            traded = 0.0
+        else:
+            target = 0.0 if i == 0 else alloc[i - 1]   # session 0 has no prior close
+            pos[i] = target
+            delta = _solve_trade(float(target), equity_open, held, base_rate, i)
+            traded = abs(delta)
+            rate = base_rate
+            if sigma is not None and adv is not None:
+                participation = (aum * (traded / equity_open)) / adv[i]
+                rate = base_rate + impact_eta * sigma[i] * math.sqrt(max(participation, 0.0))
+            charge = traded * rate
+            shares += delta / op[i]
+            cash -= delta
+            cash -= charge
+            _check_book(i, cash, shares, op[i], target)
+        traded_notional[i] = traded
+        cash_series[i] = cash
+        shares_series[i] = shares
+        turnover[i] = traded / equity_open
+        cost[i] = charge
+        equity[i] = cash + shares * op[i]
+    return {"equity": equity, "pos": pos, "turnover": turnover, "cost": cost,
+            "cash": cash_series, "shares": shares_series,
+            "traded_notional": traded_notional, "pretrade_equity": pretrade}
+
+
+def next_open_sim(open_: pd.Series, close: pd.Series, alloc: pd.Series,
+                  cost_bps: float = 0.0, *,
+                  dollar_adv: pd.Series | None = None, aum_usd: float | None = None,
+                  impact_eta: float = 0.1, vol_window: int = 21) -> dict:
+    """Fill RAW (pre-shift) allocations at the NEXT session's OPEN and account for
+    them in self-financing fractional shares and cash.
+
+    ``cost_bps`` is the ONE-WAY cost in basis points charged on traded notional, so
+    it is paid on the initial buy and on every sale. It must be finite and
+    non-negative; a negative or non-finite cost is refused rather than turned
+    into a rebate.
+
+    Impact/capacity certification is DISABLED here. Passing ``aum_usd`` or
+    ``dollar_adv`` raises ``CapacityBlocked(IMPACT_NOT_QUALIFIED)`` once the
+    request itself is well-formed: the prior sizing used the full same-session
+    volume at that session's open and let a zero-filled early-session volatility
+    stand in for "no impact yet", which asserts free size rather than estimating
+    it. Legacy ``backtest_core``/``capacity_curve`` are unchanged. A missing or
+    non-positive ADV still blocks first, so absent liquidity can never read as
+    free execution.
+
+    The returned series are indexed by the session whose OPEN opens the interval
+    (``ret[t]`` is what a position held from open[t] to open[t+1] earned). The
+    final session carries the terminal mark and no interval return. ``cash`` and
+    ``shares`` are the actual book, exposed for audit and for tests.
+    """
+    if not np.isfinite(cost_bps) or cost_bps < 0.0:
+        raise NextOpenError("cost_bps_must_be_finite_and_non_negative")
+    idx = open_.index
+    if not idx.is_monotonic_increasing or idx.has_duplicates:
+        raise NextOpenError("session_index_must_be_chronological_and_unique")
+    op = _positive_finite(open_.reindex(idx), "open")
+    _positive_finite(close.reindex(idx), "close")   # close validates; fills use open
+    al = pd.to_numeric(alloc.reindex(idx), errors="coerce").to_numpy(dtype=float)
+    if not np.isfinite(al).all():
+        raise NextOpenError("allocation_not_finite")
+    if al.min() < 0.0 or al.max() > 1.0:
+        raise NextOpenError("allocation_outside_long_cash_bounds")   # no short, no leverage
+    if op.size < 3:
+        raise NextOpenError("too_few_sessions_for_next_open_simulation")
+
+    wants_impact = dollar_adv is not None or aum_usd is not None
+    sigma = adv = None
+    capacity = {"impact_modeled": False, "status": "not_requested", "reason": None,
+                "aum_usd": None}
+    if wants_impact:
+        if dollar_adv is None or aum_usd is None:
+            raise NextOpenError("impact_config_incomplete_requires_adv_and_aum")
+        if not np.isfinite(aum_usd) or aum_usd <= 0.0:
+            raise CapacityBlocked("aum_usd_must_be_finite_and_positive")
+        if not np.isfinite(impact_eta) or impact_eta < 0.0:
+            raise CapacityBlocked("impact_eta_must_be_finite_and_non_negative")
+        adv_raw = pd.to_numeric(dollar_adv.reindex(idx), errors="coerce").to_numpy(dtype=float)
+        unusable = np.flatnonzero(~np.isfinite(adv_raw) | (adv_raw <= 0.0))
+        if unusable.size:
+            raise CapacityBlocked(f"dollar_adv_missing_or_non_positive_at_index_{int(unusable[0])}")
+        raise CapacityBlocked(IMPACT_NOT_QUALIFIED)
+
+    base = float(cost_bps) / 1e4
+    net = _next_open_run(op, al, base)
+    gross = _next_open_run(op, al, 0.0)          # identical fills, zero cost
+    span = slice(0, op.size - 1)                 # every session but the terminal mark
+    ret = pd.Series(net["equity"][1:] / net["equity"][:-1] - 1.0, index=idx[span])
+    gross_ret = pd.Series(gross["equity"][1:] / gross["equity"][:-1] - 1.0, index=idx[span])
+    years = float((idx[-1] - idx[0]).days / 365.25)
+    return {
+        "ret": ret,
+        "gross_ret": gross_ret,
+        "pos": pd.Series(net["pos"], index=idx),
+        "turnover": pd.Series(net["turnover"], index=idx),
+        "cost": pd.Series(net["cost"], index=idx),
+        "equity": pd.Series(net["equity"], index=idx),
+        "gross_equity": pd.Series(gross["equity"], index=idx),
+        "cash": pd.Series(net["cash"], index=idx),
+        "shares": pd.Series(net["shares"], index=idx),
+        "traded_notional": pd.Series(net["traded_notional"], index=idx),
+        "pretrade_equity": pd.Series(net["pretrade_equity"], index=idx),
+        "benchmark_open_to_open": pd.Series(op[1:] / op[:-1] - 1.0, index=idx[span]),
+        "years": years,
+        "sessions": int(op.size),
+        "cost_bps": float(cost_bps),
+        "total_cost_fraction": float(net["cost"].sum()),
+        "capacity": capacity,
+        "terminal_mark_unliquidated": True,
+        "terminal_convention": TERMINAL_MARK_UNLIQUIDATED,
+    }
+
+
+# --------------------------------------------------------------------------- #
 # normal CDF / inverse-CDF (Acklam) — no scipy
 # --------------------------------------------------------------------------- #
 def _norm_cdf(x: float) -> float:

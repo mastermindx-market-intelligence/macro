@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10093, current-main dependency and conflict integration):
+    Receiver 9a2446a549d999545950dc08f6e38620ae0b6dab includes the accepted
+    navigation and relative-path pruning fixes from #10897 and the newly landed
+    #10854 policy coverage. Preserve all four accepted research feature/test
+    blobs and all 401 current owner identities. The only owner change is the
+    original systematic-research suite token in unrun-factor-research; all
+    400 unrelated owner blocks remain exact.
+    The unchanged native estimator measures 58 -> 60: five commands, 26 -> 27
+    test-path tokens and 1164 -> 1198 joined command characters. Carry +2 once
+    onto 5966/5987/5724, giving 5968/5989/5726. Keep job caps 137/138/131,
+    ten packs, every execution/admission limit and both complete histories.
+    This proves source conservation and owner-estimator arithmetic, not a new
+    full-tree planner measurement. Successor natural CI is required. The
+    original replay/private UNKNOWN and parent scientific/product holds remain.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6021,6 +6036,70 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
 
+    2026-11-10 (PR #10093, accepted-main conflict reconciliation):
+    compose the already qualified original systematic-research enrollment
+    onto accepted main ee0d9d3e without merging independent scalar edits.
+    The incumbent unrun-factor-research owner gains only its original full
+    tests/test_systematic_research.py token. Its unchanged estimator adds
+    exactly +2; all 400 current owners and 399 unrelated blocks survive.
+    Apply that contribution once to current 5958/5979/5716, yielding
+    5960/5981/5718. Retain jobs 137/138/131, ten packs, all assertions,
+    commands, timeouts, runner and admission controls. Four accepted feature
+    blobs stay exact. This is source conservation and static accounting;
+    new natural combined-head CI remains required before source release.
+    Original replay-descendant UNKNOWN and scientific/product holds remain.
+
+    2026-11-09 (PR #10093, current-main conflict reconciliation):
+    retain the accepted full-suite enrollment and its independently measured
+    +2 planner-weight contribution. Main 9a13c64b already includes F09's
+    separate +2 in data-base-shim; identical scalar edits must not coalesce
+    the two owners. Apply this PR's +2 once to current 5945/5966/5703,
+    giving 5947/5968/5705. All 400 current owner definitions remain, with
+    only this PR's existing suite token appended to its incumbent owner.
+    Preserve 137/138/131 selected-job ceilings, ten packs, all assertions,
+    commands, timeouts and admission controls. This is source accounting;
+    fresh natural combined-head CI remains required before release.
+
+    2026-11-08 (PR #10093, additive current-main accounting repair):
+    its own run42441093172/gate128629062445 proved the published
+    9ae2892641ba tree: CLEAR164 jobs/470 semantic PASS. That head used
+    main11e60b94's free-content5939 plus this owner's measured +2.
+    Landed #7352 independently adds +2 to the same base literal. Their
+    identical5939->5941 edits must not coalesce into one contribution.
+    Compose only this carrier's full systematic-research suite token
+    onto current catalog563e1217, retaining all395 owner identities and
+    the other394 complete blocks, including the landed #10735 split.
+    Current mainc91d58b2 keeps limits5920/5941/5678; add this owner's
+    original measured +2 on each probe to give5922/5943/5680.
+    Preserve jobs137/138/131, ten packs, all commands/selectors,
+    dependencies, timeouts, runner behavior and admission limits.
+    This is static conservation arithmetic, not new combined-tree
+    measurement or execution; new own natural CI must qualify it.
+    No unmerged sibling is funded. Original base-replay descendant
+    UNKNOWN and private unpublished preparation remain untouched.
+    Source: PR10093 issuecomment6716474581 and parent10089
+    issuecomment6716477657; neither whole-product acceptance nor trade
+    authority follows. The earlier source provenance is retained below.
+
+    2026-11-08 (PR #10093, public current-source accounting composition):
+    retain its accepted research engine/CLI/test and add only the original
+    test_systematic_research.py token to unrun-factor-research. Current
+    catalog239d83c retains all393 owners; the unchanged estimator gives
+    that owner's five commands/26 test paths/1164 chars weight58, then
+    five commands/27 paths/1198 chars weight60. No observed override.
+    Own historical run42373052118/contract128404940140 measured +2 on
+    each probe with no newly selected jobs against basec6cad718e4a3.
+    Carry only that measured contribution onto accepted main11e60b94:
+    index5920->5922, free-content5939->5941, Prophet5678->5680.
+    This is static composition arithmetic, not new full-tree inference,
+    selected-job inventory, planner execution or elapsed-runtime proof.
+    Keep jobs137/138/131, ten packs, every existing command/selector,
+    dependency, timeout and admission limit, plus #10752 compaction.
+    New natural CI must qualify the actual combined source. No unmerged
+    sibling is funded. Original pack1/job128405814491 replay/descendant
+    settlement remains UNKNOWN and is neither replayed nor reused here.
+    Source: PR10093 issuecomment6706879075; this is a new public-source
+    composition, not recovery of its unpublished private preparation.
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
     the landed F09 token and both complete histories. Canonical metadata loads
