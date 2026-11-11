@@ -214,6 +214,33 @@ const detectedAfter25h = api.recentPublications(
 if (detectedAfter25h.length !== 1) {{
   throw new Error("unparsed publication disappeared after the 24h result window");
 }}
+const staleUnparsedPayload = {{
+  poll_window: {{ unresolved_retention_min: {{ FOMC: 10080 }} }},
+  publications: [{{
+    type: "FOMC",
+    date: "2026-07-29",
+    status: "published_unparsed",
+    data_ready: false,
+    detected_at: "2026-07-30T00:50:00Z"
+  }}]
+}};
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-08-20T00:00:00Z")).length !== 0) {{
+  throw new Error("month-old unparsed publication still renders as a live extraction");
+}}
+if (api.recentPublications(
+    {{ publications: staleUnparsedPayload.publications }},
+    new Date("2026-08-20T00:00:00Z")).length !== 0) {{
+  throw new Error("unparsed aging did not fall back to 7 days without sidecar retention");
+}}
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-08-06T00:49:00Z")).length !== 1) {{
+  throw new Error("unparsed publication aged out before its declared retention window");
+}}
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-08-06T00:51:00Z")).length !== 0) {{
+  throw new Error("unparsed publication outlived its declared retention window");
+}}
 if (api.awaitingEvents(
     unparsedPayload,
     new Date("2026-07-31T02:00:00Z"),

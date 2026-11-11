@@ -915,13 +915,32 @@
       (Number(clock[0]) * 60 + Number(clock[1] || 0));
   }
 
+  function unresolvedRetentionMs(payload, row) {
+    // The sidecar declares per-type retention for unresolved publications
+    // (poll_window.unresolved_retention_min). Past that window a
+    // detected-but-unparsed publication can no longer self-heal on the VPS,
+    // so it must stop rendering as a live "extracting" card. Fall back to the
+    // same 7-day default the watcher uses when the field is absent.
+    var perType = payload && payload.poll_window &&
+      payload.poll_window.unresolved_retention_min;
+    var minutes = perType && perType[String((row && row.type) || "").toUpperCase()];
+    if (typeof minutes !== "number" || !(minutes > 0)) minutes = 7 * 24 * 60;
+    return minutes * 60 * 1000;
+  }
+
   function recentPublications(payload, now) {
     var cutoff = now.getTime() - (24 * 60 * 60 * 1000);
     return (payload.publications || []).filter(function (row) {
       if (["published", "published_unparsed"].indexOf(row.status) < 0) return false;
       var detected = new Date(row.detected_at || row.date + "T23:59:59Z").getTime();
-      return !isNaN(detected) &&
-        (row.status === "published_unparsed" || detected >= cutoff);
+      if (isNaN(detected)) return false;
+      // Unparsed rows outlive the 24h result window while they can still be
+      // recovered, but never past their declared retention — an aged-out row
+      // is dead display state, not a live extraction.
+      if (row.status === "published_unparsed") {
+        return detected >= now.getTime() - unresolvedRetentionMs(payload, row);
+      }
+      return detected >= cutoff;
     }).sort(function (left, right) {
       return new Date(left.detected_at || 0).getTime() -
         new Date(right.detected_at || 0).getTime();
@@ -1210,6 +1229,7 @@
     safeOfficialUrl: safeOfficialUrl,
     payloadIsFresh: payloadIsFresh,
     recentPublications: recentPublications,
+    unresolvedRetentionMs: unresolvedRetentionMs,
     awaitingEvents: awaitingEvents,
     rowMatchesText: rowMatchesText,
     activeReleaseGroup: activeReleaseGroup,

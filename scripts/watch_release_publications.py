@@ -410,6 +410,28 @@ def _retain_event(
     return coverage_started_at <= recovery_deadline
 
 
+def _publication_is_display_dead(
+    publication: dict[str, Any], *, now_et: datetime
+) -> bool:
+    """True for unresolved rows past their alert-retention window.
+
+    A ``published_unparsed`` row older than its retention window can no longer
+    self-heal (periodic retry only admits retained events) and must not render
+    as a live "extracting" card forever. Canonical history belongs to the
+    nightly reconciliation, which consumes only verified rows, so this is a
+    display-boundary judgment on the sidecar — persisted watcher state is kept.
+    """
+    if publication.get("status") != "published_unparsed":
+        return False
+    try:
+        event_at = _event_at(publication)
+    except (KeyError, TypeError, ValueError):
+        # A row without a resolvable event time cannot re-enter any retry path;
+        # never let it occupy a live display slot indefinitely.
+        return True
+    return now_et - event_at > _alert_retention(publication)
+
+
 def active_events(events: list[dict[str, Any]], now: datetime) -> list[dict[str, Any]]:
     now_et = now.astimezone(NY)
     return [
@@ -862,7 +884,7 @@ def _admit_governed_defect_repairs(
         event = _repair_event(publication)
         try:
             elapsed = now.astimezone(NY) - _event_at(publication)
-        except (TypeError, ValueError):
+        except (KeyError, TypeError, ValueError):
             continue
         source_supports_repair = any(
             source.source_id == publication.get("source_id")
@@ -1571,9 +1593,17 @@ def detect(
     sorted_publications = sorted(
         publications.values(), key=lambda row: (row.get("date", ""), row.get("type", ""))
     )
-    display_publications = sorted_publications[-20:]
+    # Dead unresolved rows (past retention) leave the sidecar here. Without this
+    # bound, every weekly release whose parser once failed stays a live-looking
+    # "extracting" card on the dashboard forever, accumulating one row per week.
+    live_publications = [
+        row
+        for row in sorted_publications
+        if not _publication_is_display_dead(row, now_et=now_et)
+    ]
+    display_publications = live_publications[-20:]
     display_keys = {_event_key(row) for row in display_publications}
-    for publication in sorted_publications:
+    for publication in live_publications:
         key = _event_key(publication)
         if publication.get("status") == "published_unparsed" and key not in display_keys:
             display_publications.append(publication)
