@@ -1,7 +1,7 @@
 {
   "schema": "rotation_core.protocol_header/v2",
   "protocol_id": "rotation-core-v2",
-  "status": "DRAFT revision 7 - NOT FROZEN. R12 (parent 12:06Z) replaces the ATTACK entry; nothing else changed. No return, mean or point estimate computed.",
+  "status": "FROZEN 2026-11-11T12:30Z by the Prophet programme CEO. No v2 outcome computed before this commit. Where the Markdown differs, this JSON governs.",
   "drafted_on_utc": "2026-11-11",
   "power_statement_top": "H1's own minimum detectable effects under R12, from its actual time in tilt (57-62% of sessions), 80% power, Holm m=3, 1998-2019 variance only: 2.1-2.3 pp/yr on pooled history (pre-1998 plus 2020-2025), 7.6-8.3 pp/yr on 2020-2025 alone, 8.4-9.1 pp/yr after five forward years. Full-tilt proxy upper bound beside them: 2.6 / 9.2 / 10.1 pp/yr. With the four positive-sign requirements the chance of passing is about 63% at the detectable effect and about 50-57% at a true 2 pp/yr edge. A 1-2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect. The historical tier is a low-power falsification screen.",
   "predecessors": {
@@ -237,7 +237,16 @@
   "trial_ledger_at_freeze": {
     "rotation_core_v2": "H1 grid 4, H2 1, H3 1, cash ablation 1, tradable version 1, named mapping 1 = 9",
     "pro_run_b_consumed": "10 (results negative)",
-    "carried": "v1's 36; DSR count = sum"
+    "carried": "v1's 36; DSR count = sum",
+    "declared_rows": [
+      "rotation_core_v2",
+      "rotation_core_v2_pro_run_b_consumed"
+    ],
+    "dsr_effective_n_families": [
+      "rotation_core_v1",
+      "rotation_core_v2",
+      "rotation_core_v2_pro_run_b_consumed"
+    ]
   },
   "unchanged": "Corrected v1 harness (dollar accounting, observed-close execution), t+1 execution, stationary bootstrap block 21 (63 sensitivity), B=10,000, nothing sizes, gates or trades.",
   "signals_table_1998_2019": {

@@ -1,4 +1,6 @@
-# Rotation Core — protocol header v2 (DRAFT revision 7, NOT FROZEN)
+**Frozen header:** `protocol_header_v2.json`, sha256 `ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728`. The runner refuses any other bytes.
+
+# Rotation Core — protocol header v2 (FROZEN)
 
 > **Power, stated first.** H1's own minimum detectable effects under R12, from its actual time in tilt (57–62 % of sessions), at 80 % power, Holm m = 3, 1998–2019 variance only:
 >
