@@ -1,0 +1,130 @@
+# XG identity registry v1 — the five live personas (marketing-owned content).
+# Schema: tools/xguerrilla/registry.py (schema_version 1, fixed by PR #10875).
+# Rules and field semantics: research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md.
+#
+# Content decisions recorded here, with their evidence:
+# - child_id is the persona handle with dots removed (desk.and.dusk -> deskanddusk).
+#   It is the immutable attribution key: the bio path segment `/x/<child_id>`
+#   (validators.py BIO_PATH_RE, BL-2), never the handle and never the seed.
+#   Handle-derived so a reviewer can re-derive it; dots removed so it satisfies
+#   both the registry's [a-z0-9]{4,32} child-id class and the bio path class.
+# - Every entry is `state: proposed`: no admission receipt exists on disk for any
+#   identity, and the doc's rule is that a state without a receipt is `proposed`.
+# - The domain record is `state: proposed` for the same reason: no domain
+#   admission receipt exists anywhere in the repo (research/admissions absent).
+#   A bio link therefore cannot pass `validate_bio_against_registry` today —
+#   the gate refuses on the unadmitted domain, which is the intended fail-closed
+#   behaviour, not a gap.
+# - bio_link_policy is `single_canonical` on the domain and on every entry:
+#   the bio is the network's only URL surface and it points at one host
+#   (bio policy v1, BL-1..BL-4). Policy is design intent, not admission;
+#   admission is the receipt, which does not exist yet.
+# - recovery_owner is `seat:marketing` on the domain and on every entry: the
+#   marketing seat holds identity data and the runtime/execution plane
+#   (runtime ownership recorded on t_6e02d23a).
+# - mail_domains declares mail.mastermind-x.com: the decided identity mail host
+#   (t_d1277717). Zero mailboxes exist yet; bindings are provisioned on
+#   admission, so every binding value is null here — keys only, never credentials.
+schema_version: 1
+registry_revision: 1
+
+mail_domains:
+  - mail.mastermind-x.com
+
+domains:
+  - domain: www.mastermind-x.com
+    state: proposed
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    admission_receipt: null
+
+entries:
+  - handle: desk.and.dusk
+    child_id: deskanddusk
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null
+
+  - handle: harperbuilds
+    child_id: harperbuilds
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null
+
+  - handle: lowlit.austin
+    child_id: lowlitaustin
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null
+
+  - handle: mila.lifts
+    child_id: milalifts
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null
+
+  - handle: wren.mp4
+    child_id: wrenmp4
+    state: proposed
+    revision: 1
+    domain: www.mastermind-x.com
+    recovery_owner: seat:marketing
+    bio_link_policy: single_canonical
+    binding:
+      email_mailbox: null
+      proxy_slot: null
+      cdp_port: null
+      totp_custodian: null
+    admission_receipt: null
+    drift_observed_at: null
+    drift_evidence_ref: null
+    suspended_by: null
+    retired_from: null

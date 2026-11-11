@@ -1,0 +1,197 @@
+{
+  "schema_version": "paper_biocatalyst_build_delta.v1",
+  "status": "PROPOSED_INTEGRATION_NOT_INSTALLED",
+  "paper": {
+    "file_id": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "original_page": "p-1-0",
+    "build_page": "p-4-0",
+    "build_root": "171-0",
+    "narrow_content": "17P-0",
+    "state_column": "1AE-0",
+    "protected_other_writer_page": "p-3-0"
+  },
+  "scope": "Case → manual local review condition → confirmed save → Saved → exact-origin return or explicit current-record fallback.",
+  "source_pins": {
+    "macro": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "terminal": "5107f4d84e26aefc540c8c99e0ea3803770f1bb3",
+    "procedure": "5c3d3885234358aefb97ecdbc59be0864df14f8b"
+  },
+  "existing_owners": [
+    {
+      "owner": "Bio client",
+      "path": "templates/biocatalyst.js",
+      "functions": [
+        "currentSubject",
+        "rowIdentity",
+        "selectedRow",
+        "readUrl",
+        "writeUrl",
+        "selectTrial",
+        "generationKey"
+      ],
+      "reuse": "Existing selection, URL, abort/token, focus and MDXAuth lifecycle."
+    },
+    {
+      "owner": "Bio public source projection",
+      "path": "app/biocatalyst.py",
+      "functions": [
+        "_read_bundle",
+        "_meta",
+        "_opaque_digest",
+        "trial_detail"
+      ],
+      "reuse": "PublicGenerationPublisher generation; queue/dossier/screen projection with explicit allowlist."
+    },
+    {
+      "owner": "Trial event identity",
+      "path": "engine/biocatalyst/catalyst_events.py",
+      "reuse": "Existing NCT/event/change identity. Stable event identity is not source version."
+    },
+    {
+      "owner": "Owner storage",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/ownerStorage.ts",
+      "reuse": "Extend the incumbent module with strict result APIs; preserve existing compatibility exports."
+    },
+    {
+      "owner": "Account identity",
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "path": "terminal/lib/accountIdentity.ts",
+      "reuse": "ownerKeyFor(currentSubject()) only when subject resolved. No independent guest/account namespace."
+    }
+  ],
+  "current_source_limits": [
+    "The inspected Bio client/API does not implement the Paper manual condition save/read/edit feature.",
+    "The existing condition URL parameter is a clinical filter; do not repurpose it.",
+    "Selected exact-row loss on URL roundtrip and missing-key same-NCT fallback were reproduced in isolated source fixtures, not observed in a live installed browser.",
+    "Current dossier lookup is NCT-based against the current projection; no historical-version argument was found.",
+    "_meta and generationKey expose clocks/counts but no shared immutable publication token.",
+    "The incumbent generation_id and _opaque_digest already bind Radar cursors. A pagination cursor is not a shared queue/dossier reference.",
+    "Sponsor mapping is ticker_only and company_identity_not_joined. Aster/Morrow are fictional design fixtures; production price conditions require a reviewed issuer/security + price/currency projection.",
+    "The public evidence block is allowlisted; internal snapshot/provenance/raw objects must not be copied into local storage.",
+    "Legacy readEnvelope swallows unavailable/corrupt reads into {}; Boolean writeOwnerSlot does not establish preserved valid data or matching readback."
+  ],
+  "proposed_source_binding": {
+    "field": "publication_ref",
+    "derive": "Use existing _opaque_digest({generation_id: bundle_generation_id}) from the actual pointer-bound bundle read.",
+    "cover": [
+      "_meta-based queues and dossier",
+      "Trial Screen publication_context/build_read_model",
+      "Screen facets context where part of same selected publication"
+    ],
+    "validation": "Nonempty incumbent generation_id; same NCT + exact row key + publication_ref for source-bound reopen. Preserve all three independently.",
+    "meaning": "Equality establishes the same published cut only. It is not authorization, issuer identity, source quality or historical retention.",
+    "changed_or_missing": "Retain saved definition and reference. Mark old reference unavailable; offer the explicit current record only if that exact NCT is authorized and available. Never substitute the first same-trial row silently.",
+    "current_request_guard": "Keep the existing abort/token controller. Capture the selected origin and subject; late A/B response cannot replace a different origin or owner."
+  },
+  "proposed_local_record": {
+    "schema_version": "review_condition.v1 (proposed literal; confirm in incumbent consumer integration)",
+    "id": "Locally generated record ID retained for edits; not a trial/issuer identity.",
+    "origin": {
+      "nct_id": "Existing validated NCT",
+      "mode": "Existing mode",
+      "row_key": "Exact incumbent rowIdentity",
+      "publication_ref": "Proposed public reference",
+      "source_clocks": "Allowlisted source timestamps, separately labelled",
+      "instrument_ref": "Required verified production instrument mapping for a price condition; fictional EX-A/EX-B do not supply this"
+    },
+    "definition": {
+      "kind": "daily_close_below",
+      "level_decimal": "Positive finite decimal string after locale-aware input validation",
+      "currency": "Known bound instrument currency in production; explicit selection only in labelled fiction"
+    },
+    "created_at": "Creation clock for local note; not source clock",
+    "updated_at": "Last verified local edit clock; not evaluation time",
+    "absent_fields": [
+      "No met/not_met status without an actual qualified evaluation owner",
+      "No order/alert/monitoring/enrollment state",
+      "No raw provider snapshots, tokens or private source paths"
+    ]
+  },
+  "proposed_storage_contract": {
+    "module": "terminal/lib/ownerStorage.ts",
+    "read_results": [
+      "missing",
+      "ready",
+      "invalid",
+      "unavailable"
+    ],
+    "read_rule": "Only a successful getItem null or absent owner slot in a valid envelope is missing. Empty string, invalid JSON, nonobject envelope or unsupported/invalid owner payload is invalid.",
+    "owner_payload_validator": "Bio consumer validates version, record IDs, definition, origin and record set; generic envelope parsing and owner selection remain incumbent ownerStorage responsibilities.",
+    "comparison_token": "Exact raw envelope comparison token returned internally; not persisted identity or auth.",
+    "write_results": [
+      "not_written",
+      "written_verified",
+      "write_unverified"
+    ],
+    "write_steps": [
+      "Validate the JSON-safe proposed owner payload.",
+      "Strictly reread; refuse invalid/unavailable envelope or invalid current owner payload.",
+      "Compare expected raw envelope; if changed, return conflict before writing.",
+      "Preserve all other owner values while updating only the captured owner's slot.",
+      "Write once; immediately read and validate exact serialized envelope/payload.",
+      "Only matching readback returns written_verified. Attempted write without confirmation returns write_unverified; reconcile original storage before another attempt."
+    ],
+    "bundle": "Build a version-pinned browser adapter from existing ownerStorage.ts and accountIdentity.ts, resolving the existing import alias. Serve it with Macro; do not copy helpers into biocatalyst.js.",
+    "identity": "const subject=currentSubject(); const owner=subject ? ownerKeyFor(subject) : null;",
+    "account_change": "Reuse MDXAuth.onChange; detach previous-owner displayed state and pending operation. Recheck subject before committing reads/writes. Do not delete or migrate prior data; no implicit guest fallback.",
+    "concurrency_limit": "Read-compare-write-readback is not atomic CAS. Another tab may interleave or later overwrite. storage events prompt reconciliation, not locking.",
+    "persistence_limit": "Verified immediate browser readback only; no disk-flush guarantee, indefinite retention, cross-device sync or cross-origin sharing.",
+    "ui_success": "Saved on this browser."
+  },
+  "interaction": {
+    "create": "Open the case's own form context. Morrow starts with no inherited Aster price. Disable save until required bound fields are valid.",
+    "invalid": "Keep draft; inline error associated with field. Enter a price above 0. Focus invalid field on attempted submit.",
+    "save": "Use one record ID for the attempt; no count/receipt until written_verified.",
+    "save_not_written": "Keep draft and committed record. Offer retry only after classified not-written outcome and current context check.",
+    "save_unverified": "Save not confirmed. Check saved conditions before retrying. Reconcile without creating another record.",
+    "edit": "Modify same ID; original committed value retained until verified success. 39.60→41.00 is a fictional draft example.",
+    "cancel": "Discard only draft; return to originating case or Saved row and restore focus/scroll.",
+    "saved_list": "Valid loaded empty is 0; loading/unavailable/corrupt is unknown, displayed —. List count is the loaded owner's total.",
+    "quiet_day": "Saved definitions remain available even if the case is absent from today's list.",
+    "return": "Resolve exact saved origin through the existing page owner. Changed/absent reference keeps condition visible; explicit Open current record does not rewrite the saved reference.",
+    "no_monitoring": "No future-close monitoring, notifications, automatic resurfacing, inferred return, trade order or alert activation."
+  },
+  "responsive_and_motion": {
+    "layout": "320px through desktop; flexible widths, wrapped action rows, minimum 44px controls. Preserve chart viewBox and series.",
+    "scrolling": "Height-constrained mobile shell with flex:1, min-height:0, overflow-y:auto on content; navigation outside scroll region.",
+    "native_limitation": "Paper normalized overflow-y:auto to overflow:clip. Full-content proof demonstrates content/reflow only; scroll gesture/runtime remains unverified.",
+    "source_chart": "Original W9-0 SVG exactly preserved; W7-0/W8-0 price header restyled by parent to prevent digit wrap.",
+    "animation": "140–180ms opacity/small translation only for panel entry and confirmed feedback; no semantic state invention. Respect prefers-reduced-motion. Playback unverified.",
+    "accessibility": "Semantic labels, native buttons/select/input, disabled state and aria-describedby errors. Polite confirmed-save feedback, accessible read errors, keyboard focus restoration. Existing focus/controller owner only."
+  },
+  "build_order": [
+    "Add safe public origin/publication binding through the existing API and review production instrument/price projection viability.",
+    "Add strict storage APIs in incumbent module, preserving compatibility; build shared browser adapter.",
+    "Integrate manual form and Saved view into existing Bio client/selection/auth lifecycle.",
+    "Prove actual installed consumer, keyboard/focus, narrow scrolling and storage/source races before release."
+  ],
+  "required_acceptance": [
+    "Aster and Morrow forms keep distinct originating case and seed behavior.",
+    "Two rows with one NCT restore the exact selected event/change operation.",
+    "Same stable event ID with changed evidence date retains identity but differs by source reference.",
+    "Different generations with identical clocks/counts compare unequal using proposed publication_ref.",
+    "Same generation with changed operational clocks is not a new publication identity.",
+    "Absent saved exact row keeps definition; no first-same-NCT fallback.",
+    "Missing, empty, invalid JSON, invalid envelope, future payload version and unreadable storage remain distinct.",
+    "Quota/blocked write, failed readback and differing readback do not claim success.",
+    "Changed expected envelope is a conflict; preserve other owner slots.",
+    "Account changes during load/save cannot display or write under the previous owner.",
+    "Edit changes same ID only after verified save; cancel leaves committed record and count unchanged.",
+    "Duplicate-click/retry does not create duplicate record; unverified writes reconcile first.",
+    "Current-record fallback is explicit and does not claim historical restoration.",
+    "All four cards reachable with real mobile scroll; navigation remains visible; keyboard and enlarged text pass.",
+    "Production price conditions require verified instrument/currency binding and current source authority; fixture names/tickers cannot satisfy it."
+  ],
+  "proof": {
+    "source_characterizations": [
+      "BIOCATALYST_SELECTION_CHARACTERIZATION.json (8 cases)",
+      "BIOCATALYST_PUBLICATION_CHARACTERIZATION.json (2 cases)"
+    ],
+    "native_preservation": "BIOCATALYST_NATIVE_VERIFICATION.json",
+    "runtime": false,
+    "production_source_changed": false,
+    "alerts": false,
+    "trades": false
+  }
+}
