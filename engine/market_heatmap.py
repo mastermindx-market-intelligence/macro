@@ -450,7 +450,11 @@ def build_market_heatmap(
 
     # A timeframe lights up only once enough constituents carry it (keeps a
     # thinly-covered window greyed instead of rendering a mostly-grey map).
-    n = (len(constituents) if observation_view is not None else len(tiles)) or 1
+    # The denominator is the FULL member set: members with empty perf are
+    # omitted from tiles (display) but still count against coverage, else a
+    # mostly-dead feed reads as full coverage (the US builder keeps every
+    # member in its denominator via floored sizes).
+    n = len(constituents) or 1
     counts: dict[str, int] = {}
     for tile in tiles:
         for k, value in tile["perf"].items():
