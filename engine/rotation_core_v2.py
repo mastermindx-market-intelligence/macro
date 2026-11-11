@@ -1,6 +1,6 @@
 """Rotation Core v2 — two-key defensive-rotation evaluation on Ken French 49 industries (corrected v1 engine).
 
-Implements protocol_header_v2 (draft rev 3; the frozen JSON governs once it exists). Pure functions; research only.
+Implements protocol_header_v2 (draft rev 4; the frozen JSON governs once it exists). Pure functions; research only.
 Nothing here sizes, gates, ranks, alerts or trades.
 
 Seal: any input path under `sealed_post2019/` is refused unless research/rotation_core/HOLDOUT_RELEASE_v2.json is
@@ -172,54 +172,94 @@ def relative_line(legs: Legs) -> pd.Series:
     return (1 + r["OFF"].fillna(0)).cumprod() / (1 + r["DEF"].fillna(0)).cumprod()
 
 
-# --------------------------------------------------------------------------- state machines
+# --------------------------------------------------------------------------- state machines (draft rev 4)
 NEUTRAL, DEFEND, ATTACK = 0, 1, 2
+ARM_MEMORY = 21          # fixed setting (R4), not in the grid
+ATTACK_MIN_HOLD = 63     # fixed (R1), not in the grid
+WASH_LO, WASH_MAX = 0.25, 20
 
 
-def h1_states(rel: pd.Series, br: pd.Series, h: float, b: float, use_breadth: bool = True,
-              wash_lo: float = 0.25, wash_days: int = 20, arm_memory: int = 21) -> pd.Series:
-    """State decided at each close (header H1, precedence rules of draft rev 3)."""
+def current_leg_breadth(vw: pd.DataFrame, legs: Legs, lookback: int = 126, n: int = 50) -> dict:
+    """R2: for each day t, breadth history over the look-back is recomputed on the CURRENT leg's members.
+    Returns per-day arrays: br (today), br_max126 (max over t-125..t on current members), wash_run_prev (length of
+    the run of closes <= WASH_LO on current members ending at t-1), n_members."""
+    lvl = (1 + vw.fillna(0)).cumprod().where(vw.notna().cumsum() > 0)
+    sma = lvl.rolling(n, min_periods=n).mean()
+    above = (lvl > sma).astype(float).where(sma.notna() & vw.notna())
+    s = vw.index
+    br = pd.Series(np.nan, index=s); bmax = br.copy(); run_prev = br.copy(); nm = br.copy()
+    keys = pd.DatetimeIndex(sorted(legs.formed))
+    for j, t in enumerate(keys):
+        a_ = s.get_loc(t) + 1
+        z = s.get_loc(keys[j + 1]) + 1 if j + 1 < len(keys) else len(s)
+        if a_ >= z:
+            continue
+        mem = legs.formed[t][0]
+        lo = max(0, a_ - lookback - 400)
+        sh = above.iloc[lo:z][mem].mean(axis=1, skipna=True).to_numpy(dtype=float)
+        mx = pd.Series(sh).rolling(lookback, min_periods=lookback).max().to_numpy()
+        low = np.nan_to_num(sh, nan=1.0) <= WASH_LO
+        runs = np.zeros(len(sh), dtype=int)
+        for i in range(len(sh)):
+            runs[i] = runs[i - 1] + 1 if (low[i] and i > 0) else (1 if low[i] else 0)
+        k0 = a_ - lo
+        br.iloc[a_:z] = sh[k0:]
+        bmax.iloc[a_:z] = mx[k0:]
+        run_prev.iloc[a_:z] = runs[k0 - 1:len(sh) - 1]
+        nm.iloc[a_:z] = len(mem)
+    return {"br": br, "bmax": bmax, "wash_run_prev": run_prev, "n_members": nm}
+
+
+def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = True,
+              arm_memory: int = ARM_MEMORY, return_log: bool = False):
+    """H1 / price-only control state decided at each close, draft rev 4 rules R1-R5.
+    Entry: DEFEND when armed within the last `arm_memory` sessions and the relative line crosses below its 50-session
+    SMA; ATTACK when a washout spell (consecutive closes with breadth <= 25%, clock from the FIRST close) of <= 20
+    sessions ends with a close above 25%. Same-day DEFEND and ATTACK: DEFEND wins (counted).
+    Exits: DEFEND -> ATTACK at an ATTACK confirm, or -> NEUTRAL at the first month-end (after the entry day) on which
+    the relative line closes above its SMA50. ATTACK -> DEFEND at a DEFEND trigger, or -> NEUTRAL at the first
+    month-end at least 63 sessions after entry. A state is never exited on its entry day. Re-triggering the state
+    already in force is ignored (its clock is not reset)."""
     s = rel.index
     hi = rel.rolling(126, min_periods=126).max()
     sma = rel.rolling(50, min_periods=50).mean()
-    bmax = br.rolling(126, min_periods=126).max()
-    near = rel >= (1 - h / 100) * hi
+    br, bmax, runp = bd["br"].reindex(s), bd["bmax"].reindex(s), bd["wash_run_prev"].reindex(s)
+    near = (rel >= (1 - h / 100) * hi)
     armed = near & ((br <= bmax - b / 100 + 1e-12) if use_breadth else True)
+    armed = armed & hi.notna() & (bmax.notna() if use_breadth else True)
     armed_recent = armed.astype(float).rolling(arm_memory + 1, min_periods=1).max() > 0
-    month_end = pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s
+    month_end = (pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s).values
+    cross_dn = ((rel < sma) & (rel.shift(1) >= sma.shift(1))).values
+    above_sma = (rel > sma).values
+    br_v, runp_v = br.values, runp.values
     st = np.full(len(s), np.nan)
-    state, hold_to_month = NEUTRAL, None
-    wash_on, wash_day = False, None
+    log = {"conflicts": 0, "wash_fired": 0, "wash_expired": 0, "armed": armed.values.copy()}
+    state, entry_i = NEUTRAL, None
     ready = (hi.notna() & sma.notna() & bmax.notna()).values
-    for i, t in enumerate(s):
+    for i in range(len(s)):
         if not ready[i]:
             continue
-        defend = bool(armed_recent.iloc[i]) and rel.iloc[i] < sma.iloc[i] and rel.iloc[i - 1] >= sma.iloc[i - 1]
+        defend = bool(armed_recent.iloc[i]) and bool(cross_dn[i])
         attack = False
-        bi = br.iloc[i]
-        if np.isfinite(bi):
-            if bi <= wash_lo:
-                if not wash_on:
-                    wash_on, wash_day = True, i
-            elif wash_on:
-                attack = (i - wash_day) <= wash_days
-                wash_on = False
-        if defend:                                          # DEFEND wins a same-day tie
-            new = DEFEND
-            wash_on = False
-        elif attack:
-            new = ATTACK
-        else:
-            new = None
-        if new is not None:
-            state = new
-            ym = (t.year, t.month)
-            hold_to_month = (ym if not month_end.iloc[i] else ((t + pd.offsets.MonthBegin(1)).year,
-                                                                (t + pd.offsets.MonthBegin(1)).month))
-        elif month_end.iloc[i] and state != NEUTRAL and hold_to_month == (t.year, t.month):
-            state, hold_to_month = NEUTRAL, None
+        if np.isfinite(br_v[i]) and br_v[i] > WASH_LO and np.isfinite(runp_v[i]) and runp_v[i] > 0:
+            if runp_v[i] <= WASH_MAX:
+                attack = True; log["wash_fired"] += 1
+            else:
+                log["wash_expired"] += 1
+        if defend and attack:
+            log["conflicts"] += 1
+            attack = False
+        if defend and state != DEFEND:
+            state, entry_i = DEFEND, i
+        elif attack and state != ATTACK:
+            state, entry_i = ATTACK, i
+        elif state == DEFEND and i != entry_i and month_end[i] and above_sma[i]:
+            state, entry_i = NEUTRAL, None
+        elif state == ATTACK and i != entry_i and month_end[i] and (i - entry_i) >= ATTACK_MIN_HOLD:
+            state, entry_i = NEUTRAL, None
         st[i] = state
-    return pd.Series(st, index=s)
+    out = pd.Series(st, index=s)
+    return (out, log) if return_log else out
 
 
 def h3_states(legs: Legs) -> pd.Series:

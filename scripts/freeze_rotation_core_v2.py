@@ -46,7 +46,7 @@ def main() -> int:
                                                                  "rotation_core_v2_pro_run_b_consumed"]
     raw = (json.dumps(hdr, indent=2) + "\n").encode()
     sha = hashlib.sha256(raw).hexdigest()
-    md = DRAFT_M.read_text().replace("(DRAFT revision 3, NOT FROZEN)", "(FROZEN)")
+    md = DRAFT_M.read_text().replace("(DRAFT revision 4, NOT FROZEN)", "(FROZEN)")
     md = (f"**Frozen header:** `protocol_header_v2.json`, sha256 `{sha}`. The runner refuses any other bytes.\n\n" + md)
     print("sha256", sha)
     print("ledger rows:", [(f, n) for f, n, _ in LEDGER_ROWS], "carried:", CARRIED, "DSR n =", 9 + 10 + 36)

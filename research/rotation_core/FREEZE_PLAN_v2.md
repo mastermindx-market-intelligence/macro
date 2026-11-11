@@ -3,7 +3,7 @@
 Prepared by the Rotation Core lead; executed by the parent (or on the parent's instruction).
 
 1. Precondition: tree clean at the branch head; Sector Intelligence's read folded in through a logged diff committed first (its own commit, before the freeze), each change with source and reason.
-2. `python scripts/freeze_rotation_core_v2.py` (dry run) prints the sha256 the frozen JSON will have. At draft rev 3 (`a0d05e2745`) the dry run gives `dc6065b8fd4bbb58197ebde864e2ed59b662bf66c5061d73837b5090fce0027a`; any later draft change changes it.
+2. `python scripts/freeze_rotation_core_v2.py` (dry run) prints the sha256 the frozen JSON will have. The dry run prints the sha of the current draft; any draft change changes it (recorded in the commit that reports it).
 3. `python scripts/freeze_rotation_core_v2.py --apply` then a single commit `research(rotation-core): freeze protocol header v2 (sha256 <sha>)`. That commit contains exactly:
    - `research/rotation_core/protocol_header_v2.json` (status FROZEN with UTC time; governs);
    - `research/rotation_core/PROTOCOL_HEADER_v2.md` (first line: the sha256);

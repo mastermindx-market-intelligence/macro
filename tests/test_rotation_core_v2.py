@@ -30,38 +30,67 @@ def test_uncommitted_release_file_does_not_unlock(tmp_path):
         v2.seal_guard(SEALED, release=rel)
 
 
-def _series(vals, start="2010-01-04"):
-    return pd.Series(vals, index=pd.bdate_range(start, periods=len(vals)), dtype=float)
+def _setup(n=420, drop_at=None, wash=None, start="2010-01-04"):
+    """rel flat at 1.0 (always near its high); optional drop to 0.9 at index drop_at (crosses below SMA50).
+    Breadth: 0.5 with 126-day max 1.0 (armed when breadth key used). wash=(first, length): breadth <= 25% for
+    `length` closes from `first`, then 0.5."""
+    s = pd.bdate_range(start, periods=n)
+    rel = np.ones(n)
+    if drop_at is not None:
+        rel[drop_at:] = 0.9
+    br = np.full(n, 0.5); runp = np.zeros(n)
+    if wash:
+        f, L = wash
+        br[f:f + L] = 0.2
+        runp[f + L] = L
+    bd = {"br": pd.Series(br, index=s), "bmax": pd.Series(1.0, index=s), "wash_run_prev": pd.Series(runp, index=s)}
+    return s, pd.Series(rel, index=s), bd
 
 
-def test_defend_wins_same_day_tie_and_month_end_trigger_held_through_next_month():
-    n = 400
-    rel = np.r_[np.linspace(1.0, 1.5, 300), np.linspace(1.5, 1.3, 100)]
-    br = np.r_[np.full(280, 0.9), np.full(10, 0.5), np.full(110, 0.2)]
-    rel_s, br_s = _series(rel), _series(br)
-    # force a washout recovery on the same day as the first DEFEND trigger
-    st = v2.h1_states(rel_s, br_s, h=5, b=25)
-    first_def = st[st == v2.DEFEND].index
-    assert len(first_def) > 0
-    d0 = first_def[0]
-    br2 = br_s.copy(); br2.loc[:d0] = 0.9; br2.iloc[br2.index.get_loc(d0) - 3: br2.index.get_loc(d0)] = 0.2
-    br2.loc[d0] = 0.5
-    st2 = v2.h1_states(rel_s, br2, h=5, b=25)
-    assert st2.loc[d0] == v2.DEFEND
+def test_same_day_defend_and_attack_defend_wins_and_counted():
+    s, rel, bd = _setup(drop_at=300, wash=(290, 10))
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert st.iloc[300] == v2.DEFEND and log["conflicts"] == 1
 
 
-def test_state_set_on_last_session_of_month_survives_that_month_end():
-    s = pd.bdate_range("2010-01-04", periods=400)
-    rel = pd.Series(np.r_[np.linspace(1, 1.5, 300), np.linspace(1.5, 1.2, 100)], index=s)
-    br = pd.Series(np.r_[np.full(285, 0.9), np.full(115, 0.4)], index=s)
-    st = v2.h1_states(rel, br, h=5, b=25)
-    d0 = st[st == v2.DEFEND].index[0]
-    me = s[(s.month == d0.month) & (s.year == d0.year)].max()
-    if d0 == me:
-        nxt_me = s[s > me][(s[s > me].month == (me + pd.offsets.MonthBegin(1)).month)].max()
-        assert st.loc[nxt_me] == v2.DEFEND
-    else:
-        assert st.loc[me] == v2.NEUTRAL or st.loc[me] == v2.DEFEND
+def test_washout_clock_from_first_close_and_expiry():
+    s, rel, bd = _setup(wash=(250, 20))
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert st.iloc[270] == v2.ATTACK and log["wash_fired"] == 1
+    s, rel, bd = _setup(wash=(250, 21))
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert (st.dropna() != v2.ATTACK).all() and log["wash_expired"] == 1
+
+
+def test_attack_exits_at_first_month_end_63_sessions_after_entry():
+    s, rel, bd = _setup(wash=(150, 5))
+    st = v2.h1_states(rel, bd, 5, 25)
+    e = s[155]
+    out = st[st.index > e]
+    first_neutral = out[out == v2.NEUTRAL].index[0]
+    me = pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s
+    assert me[first_neutral] and s.get_loc(first_neutral) - 155 >= 63
+    assert s.get_loc(first_neutral) - 155 < 63 + 23
+
+
+def test_defend_set_on_month_end_is_not_exited_that_day_and_exits_on_a_later_month_end_above_sma():
+    s = pd.bdate_range("2010-01-04", periods=420)
+    me_idx = [i for i in range(300, 330) if (s[i] + pd.offsets.BDay(1)).month != s[i].month][0]
+    _, rel, bd = _setup(drop_at=me_idx)
+    rel.iloc[me_idx + 30:] = 1.2             # back above its SMA later
+    st = v2.h1_states(rel, bd, 5, 25)
+    assert st.iloc[me_idx] == v2.DEFEND
+    later = st.iloc[me_idx + 1:]
+    exit_day = later[later == v2.NEUTRAL].index[0]
+    me = pd.Series(s, index=s).groupby([s.year, s.month]).transform("max") == s
+    assert me[exit_day] and exit_day > s[me_idx]
+
+
+def test_price_only_control_ignores_breadth_key():
+    s, rel, bd = _setup(drop_at=300)
+    bd["br"][:] = 0.99                    # breadth never fallen: H1 not armed
+    assert (v2.h1_states(rel, bd, 5, 25).dropna() != v2.DEFEND).all()
+    assert v2.h1_states(rel, bd, 5, 25, use_breadth=False).iloc[300] == v2.DEFEND
 
 
 def test_matched_mix_rebuilt_per_resample():

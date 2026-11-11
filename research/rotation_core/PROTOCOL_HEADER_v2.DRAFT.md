@@ -1,15 +1,15 @@
-# Rotation Core — protocol header v2 (DRAFT revision 3, NOT FROZEN)
+# Rotation Core — protocol header v2 (DRAFT revision 4, NOT FROZEN)
 
-> **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. Minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only:
+> **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. H1's minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only, using its actual time in tilt (67–71 % of sessions):
 >
-> | Window | MDE (pp/yr) |
-> |---|---|
-> | Pre-1998 + 2020–2025 pooled | 2.6 |
-> | 2020–2025 alone | 9.2 |
-> | Five forward years | 10.1 |
-> | Ten forward years | 7.1 |
+> | Window | H1, actual tilt (pp/yr) | Full-tilt proxy: the upper bound of the MDE |
+> |---|---|---|
+> | Pre-1998 + 2020–2025 pooled | 2.0–2.2 | 2.6 |
+> | 2020–2025 alone | 7.2–7.8 | 9.2 |
+> | Five forward years | 7.9–8.6 | 10.1 |
+> | Ten forward years | 5.6–6.1 | 7.1 |
 >
-> Detecting 2 pp/yr would take about 127 clean years; 1 pp/yr about 509.
+> With the four positive-sign requirements the chance of passing at the MDE is about 63 %. DEFEND fires 2.2–3.3 times a year at every grid point, so the sample is not starved of events; the limit is variance.
 >
 > The historical tier is a **low-power falsification screen**. 1926–2019 has already been examined for this question by v1 and by Pro run B, including near neighbours of H1 on 1998–2019. **2020–2025 is the only window not yet examined, and it contains about two stress episodes.**
 
@@ -32,7 +32,8 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 - **2026:** H1 and H2 were shaped by Sector Intelligence's 2026 replay, so 2026 is reported, never scored.
 - **What the lead saw of run B:** some of its per-rule era rows (R5–R8), while reading the file to record its trials. No v2 parameter was chosen from them.
 - **Kill records cited, not rebuilt:** KILL-DEFENSIVE-FLOOR-BUNDLE, KILL-RS-DISPERSION-GATES, KILL-ROTATION-CYCLE-CONFLUENCE, KILL-HINDENBURG-OMEN, KILL-MCO-THRUST, KILL-FUSED-COMPOSITE.
-- **Sector Intelligence's leave-outs** are kept, with their records.
+- **Left out on prior record:** position-in-range as a top signal; fund-flow residual; member-dispersion gates; the index-level breadth thrust.
+- **Not proposed (2026 replay only, one hindsight episode), not killed:** relative-strength momentum as a leader read; the turn label.
 - **Rates, credit spread and SPY-minus-RSP:** descriptive splits only, never in a trigger.
 
 ## Construction (Ken French 49 industries, daily)
@@ -62,21 +63,27 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 
 **Breadth stand-ins.**
 - **(i)** Share of offence industries above their own 50-session SMA. Steps are about 6.25 pp, and every grid threshold is a multiple of that step.
-- **(ii)** Narrowness: equal- minus value-weighted industry return over 60 sessions.
+- **(ii)** Narrowness: equal- minus value-weighted industry return over 60 sessions. **Descriptive only, in both tiers.**
+- **Current-leg rule (R2):** every day, the 126-session breadth history used by the arming key and the washout test is recomputed on the *current* leg's members. Past legs are never stitched together. The relative line stays a chained return series.
+- **b is a share (R5)** of the leg's eligible industries: steps of about 6.25 points with 16 members (from 1970), about 7–8 points before 1970.
 
 ## Hypotheses (one Holm family, m = 3)
 
 | Id | Rule | Primary contrast |
 |---|---|---|
-| **H1** | **ARMED:** the offence/defence relative line is within h % of its 126-session high **and** breadth (i) is ≥ b pp below its own 126-session peak. **DEFEND** (defence leg) when, while armed, the line closes below its 50-session SMA. **ATTACK** (offence leg) when breadth (i) washes out to ≤ 25 % and recovers above 25 % within 20 sessions. Otherwise base. Grid h ∈ {3, 5} %, b ∈ {25, 37.5} pp: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
-| **H2** | H1 minus the identical rule without the breadth key (price-only control, same h) | paired daily difference |
+| **H1** | Base: equal weight (NEUTRAL). **ARMED:** relative line within h % of its 126-session high **and** breadth (i) at least b below its 126-session maximum (both on current members). **DEFEND** (defence leg): armed within the last 21 sessions and the relative line closes below its 50-session SMA. **ATTACK** (offence leg): a washout spell (consecutive closes with breadth ≤ 25 %, clock from its first close) ends above 25 % after 20 sessions or fewer; a longer spell fires nothing. Grid h ∈ {3, 5} %, b ∈ {25, 37.5}: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
+| **H2** | "Breadth in the arming key adds information": H1 minus the identical rule with breadth removed from ARMED only. The washout breadth is in both arms. | paired daily difference |
 | **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
 | *ablation* | H1 with bills in place of the defence leg on identical dates: **mandatory, reported, not tested** | — |
 
-**State-machine precedence (decided now).**
-- **DEFEND and ATTACK on the same close:** DEFEND wins; the attack confirmation is discarded and the washout flag reset.
-- **Trigger on the last session of a month:** executes at the next close and is held to the end of the *following* month. Month-end reversion to NEUTRAL applies only to states set before the month's last session. The new state holds the legs re-formed at that month-end.
-- **Re-trigger while a state is in force:** extends it to the end of the re-trigger's month.
+**Exits are by state, not by the calendar (R1).**
+- **DEFEND** ends at an ATTACK confirm (next-close execution), or at the first month-end on which the relative line closes above its own 50-session SMA; then NEUTRAL.
+- **ATTACK** ends at a DEFEND trigger, or at the first month-end at least 63 sessions after entry; then NEUTRAL.
+- A state is never exited on its entry day. A trigger on a month's last session stands; the month-end test first applies at the following month-end.
+- **Same-day DEFEND trigger and ATTACK confirm:** DEFEND wins, and the day is counted.
+- **Re-triggering the state already in force** is ignored and does not reset its clock. (Lead's decision; the rulings did not cover it.)
+
+**Fixed settings, not in the grid:** arming memory 21 sessions; ATTACK minimum hold 63 sessions; washout threshold 25 % and maximum spell 20 sessions; breadth SMA 50; look-back 126; trigger SMA 50.
 
 **Grid selection.** Highest 1998–2019 excess over the matched mix; exact ties go to the more conservative setting (smaller h, then larger b). H2's price-only control and the cash ablation inherit the selected point; there is no second selection.
 
@@ -85,10 +92,24 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 - its legs are beta-sorted and re-formed monthly from data to t−1, not fixed named groups;
 - it starts from equal weight.
 
-**Arming check (point G, 1998–2019, signals only, no returns computed).**
-- The armed fraction on breadth (i) is 7.6–19.7 % across the grid.
-- The price key alone is on 37–50 % of sessions, so breadth removes more than half of the price-key days.
-- Not degenerate, so (i) is kept. Stand-in (ii), at 6.9–9.8 %, is recorded and not used.
+**Signals-only table (1998–2019, rev 4 rules, no returns computed; `v2_power/signals_table_D.*`).**
+
+| Book | Armed share (no memory / with 21) | DEFEND entries/yr | ATTACK entries/yr | Share N / D / A | Median, longest spell N / D / A | Washouts fired / expired | Same-day conflicts |
+|---|---|---|---|---|---|---|---|
+| H1 h3 b25.0 | 11.8% / 33.5% | 2.55 | 2.91 | 32% / 15% / 53% | 22,115 / 12,52 / 63,84 | 157 / 22 | 0 |
+| price_only h3 b25.0 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 157 / 22 | 0 |
+| H1 h3 b37.5 | 7.6% / 26.9% | 2.23 | 2.87 | 33% / 14% / 53% | 28,150 / 13,52 / 64,84 | 157 / 22 | 0 |
+| price_only h3 b37.5 | 37.0% / 52.6% | 3.23 | 2.96 | 26% / 21% / 53% | 16,115 / 13,64 / 61,84 | 157 / 22 | 0 |
+| H1 h5 b25.0 | 19.7% / 47.7% | 3.32 | 3.10 | 30% / 21% / 49% | 21,115 / 12,79 / 36,84 | 157 / 22 | 0 |
+| price_only h5 b25.0 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 157 / 22 | 0 |
+| H1 h5 b37.5 | 13.7% / 40.5% | 3.05 | 3.10 | 31% / 19% / 49% | 23,115 / 12,79 / 36,84 | 157 / 22 | 0 |
+| price_only h5 b37.5 | 49.8% / 65.3% | 4.05 | 3.14 | 26% / 27% / 47% | 17,115 / 13,79 / 31,84 | 157 / 22 | 0 |
+
+- The earlier 7.6–19.7 % armed shares were **without** the 21-session memory; with it they are 27–48 % (price-only 53–65 %).
+- Every grid point fires both states; DEFEND enters 2.2–3.3 times a year. No grid point is degenerate.
+- **ATTACK is held about half of all sessions.** The washout fires often (157 fired, 22 expired) and each ATTACK holds about 63 sessions, so H1 is mostly an offence tilt with defensive episodes, not mostly equal weight. This is what the rule as ruled does; no parameter was adjusted.
+- Same-day conflicts: none. The price-only control does not depend on b.
+- **Descriptive split:** H1's excess over the matched mix will be reported separately for DEFEND, ATTACK and NEUTRAL days (no extra trial).
 
 **H3 choice.** Sector Intelligence's trend-and-Sahm with defensives is the near twin of run B's R6, which showed no benefit. R5 is the simplest direct control, and I have no better-motivated candidate.
 
@@ -125,8 +146,9 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 **Forward tier (the only tier that can support "called it before it happened").**
 - **Rules and record:**
   - Rules and inputs are frozen at freeze, and a dated nightly record starts when the implementation is ready.
-  - 2026 entries are rehearsal only. The first scored formation is the first full month after freeze and readiness.
-  - One efficacy read at 5 years. Quarterly checks cover completeness and clocks only; there is no tuning from interim looks.
+  - 2026 entries are rehearsal only. The first scored formation is the later of the first full month after freeze and readiness, and the first month-end with 126 recorded nights of as-written member breadth. The look-back is never reconstructed.
+  - Clocks: `decided_at` is the row's own last-price date, never the file name or run time; a row one session behind is recorded as such. Roster and weights come from a holdings snapshot dated on or before the night, carrying the snapshot's own date.
+  - One efficacy read at 5 years, counted from the first scored formation. Quarterly checks cover completeness and clocks only; there is no tuning from interim looks.
 - **Owner: QLedger.** One claim per decision or state change, recording:
   - family;
   - decided_at and exec_at;
@@ -144,15 +166,14 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
   The roster is the vendor subsector members plus that night's S&P 500 members.
   - **Legs:** sector funds, chosen by the trailing-beta rule.
   - **Breadth:** the share of the leg's sectors' S&P 500 members above their own 50-session SMA, on that night's roster.
-  - **Narrowness:** equal- minus cap-weight member return over 60 sessions.
+  - **Narrowness (descriptive only):** equal- minus cap-weight member return over 60 sessions.
     - **Fallback, decided before the first scored night and not after:** if the weight field proves unusable, use equal weight within sector minus the sector fund's return.
   - **Two measurements, not one series.** The historical industry stand-in and the forward member breadth are two measurements of the same idea, not one continuing series. The vendor subsector tree is descriptive only.
 - **Missing before it can start:**
   - PR #11024 merged;
   - the per-member price-state file landed;
-  - the weight source confirmed (otherwise the fallback);
   - a nightly issuer writing QLedger claims from the frozen v2 code;
-  - 50 nightly states per member before breadth is defined.
+  - 126 recorded nights of as-written member breadth before the first scored formation. (Breadth itself exists from the first file: each row carries the member's close relative to its 50- and 200-day averages.)
 
 ## What the pass rule does to power (D variance only)
 

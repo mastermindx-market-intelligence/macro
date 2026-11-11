@@ -32,13 +32,13 @@ def pipeline(end, ind_path, quiet=True, bootstrap_B=50):
     vw, ew = v2.load_french_industries(ind_path, end)
     mkt, rf = v2.load_french_market(FACT, end)
     legs = v2.form_legs(vw, mkt)
-    br = v2.breadth_i(vw, legs)
+    bd = v2.current_leg_breadth(vw, legs)
     rel = v2.relative_line(legs)
     start, stop = pd.Timestamp("1998-01-02"), pd.Timestamp(end)
     books, structure = {}, {}
     for h, b in v2.GRID:
         for ub, tag in ((True, "H1"), (False, "H2ctl")):
-            st = v2.h1_states(rel, br, h, b, use_breadth=ub)
+            st = v2.h1_states(rel, bd, h, b, use_breadth=ub)
             bk = v2.simulate_states(st, legs, rf, start, stop, name=f"{tag}_h{h}_b{b}")
             books[bk.name] = bk
             sd = st.loc[start:stop]
@@ -46,7 +46,7 @@ def pipeline(end, ind_path, quiet=True, bootstrap_B=50):
                                   "state_share": {k: round(float((sd == v).mean()), 3) for k, v in
                                                   (("neutral", 0), ("defend", 1), ("attack", 2))},
                                   "executions": int((bk.traded > 0).sum()), "deferred": bk.meta["deferred_executions"]}
-        st = v2.h1_states(rel, br, h, b)
+        st = v2.h1_states(rel, bd, h, b)
         bk = v2.simulate_states(st, legs, rf, start, stop, cash_for_defend=True, name=f"H1cash_h{h}_b{b}")
         books[bk.name] = bk
         structure[bk.name] = {"executions": int((bk.traded > 0).sum())}

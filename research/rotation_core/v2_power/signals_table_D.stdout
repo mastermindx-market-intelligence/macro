@@ -1,0 +1,238 @@
+{
+ "D_sessions": 5535,
+ "D_years": 21.96,
+ "breadth_step_pp": {
+  "from_1970": 6.25,
+  "before_1970_approx": "7-8 (13-14 offence members)",
+  "n_offence_members_D_min_max": [
+   16,
+   16
+  ]
+ },
+ "grid": {
+  "H1 h3 b25.0": {
+   "armed_share_no_memory": 0.1183,
+   "armed_share_with_21_memory": 0.3348,
+   "DEFEND_entries_per_year": 2.55,
+   "ATTACK_entries_per_year": 2.91,
+   "share": {
+    "NEUTRAL": 0.316,
+    "DEFEND": 0.154,
+    "ATTACK": 0.529
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     22,
+     115
+    ],
+    "DEFEND": [
+     12,
+     52
+    ],
+    "ATTACK": [
+     63,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "price_only h3 b25.0": {
+   "armed_share_no_memory": 0.3695,
+   "armed_share_with_21_memory": 0.5261,
+   "DEFEND_entries_per_year": 3.23,
+   "ATTACK_entries_per_year": 2.96,
+   "share": {
+    "NEUTRAL": 0.263,
+    "DEFEND": 0.212,
+    "ATTACK": 0.526
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     16,
+     115
+    ],
+    "DEFEND": [
+     13,
+     64
+    ],
+    "ATTACK": [
+     61,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "H1 h3 b37.5": {
+   "armed_share_no_memory": 0.0759,
+   "armed_share_with_21_memory": 0.2694,
+   "DEFEND_entries_per_year": 2.23,
+   "ATTACK_entries_per_year": 2.87,
+   "share": {
+    "NEUTRAL": 0.329,
+    "DEFEND": 0.141,
+    "ATTACK": 0.531
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     28,
+     150
+    ],
+    "DEFEND": [
+     13,
+     52
+    ],
+    "ATTACK": [
+     64,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "price_only h3 b37.5": {
+   "armed_share_no_memory": 0.3695,
+   "armed_share_with_21_memory": 0.5261,
+   "DEFEND_entries_per_year": 3.23,
+   "ATTACK_entries_per_year": 2.96,
+   "share": {
+    "NEUTRAL": 0.263,
+    "DEFEND": 0.212,
+    "ATTACK": 0.526
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     16,
+     115
+    ],
+    "DEFEND": [
+     13,
+     64
+    ],
+    "ATTACK": [
+     61,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "H1 h5 b25.0": {
+   "armed_share_no_memory": 0.1966,
+   "armed_share_with_21_memory": 0.4773,
+   "DEFEND_entries_per_year": 3.32,
+   "ATTACK_entries_per_year": 3.1,
+   "share": {
+    "NEUTRAL": 0.295,
+    "DEFEND": 0.213,
+    "ATTACK": 0.492
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     21,
+     115
+    ],
+    "DEFEND": [
+     12,
+     79
+    ],
+    "ATTACK": [
+     36,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "price_only h5 b25.0": {
+   "armed_share_no_memory": 0.4983,
+   "armed_share_with_21_memory": 0.6526,
+   "DEFEND_entries_per_year": 4.05,
+   "ATTACK_entries_per_year": 3.14,
+   "share": {
+    "NEUTRAL": 0.259,
+    "DEFEND": 0.27,
+    "ATTACK": 0.471
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     17,
+     115
+    ],
+    "DEFEND": [
+     13,
+     79
+    ],
+    "ATTACK": [
+     31,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "H1 h5 b37.5": {
+   "armed_share_no_memory": 0.1368,
+   "armed_share_with_21_memory": 0.4049,
+   "DEFEND_entries_per_year": 3.05,
+   "ATTACK_entries_per_year": 3.1,
+   "share": {
+    "NEUTRAL": 0.313,
+    "DEFEND": 0.193,
+    "ATTACK": 0.494
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     23,
+     115
+    ],
+    "DEFEND": [
+     12,
+     79
+    ],
+    "ATTACK": [
+     36,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  },
+  "price_only h5 b37.5": {
+   "armed_share_no_memory": 0.4983,
+   "armed_share_with_21_memory": 0.6526,
+   "DEFEND_entries_per_year": 4.05,
+   "ATTACK_entries_per_year": 3.14,
+   "share": {
+    "NEUTRAL": 0.259,
+    "DEFEND": 0.27,
+    "ATTACK": 0.471
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     17,
+     115
+    ],
+    "DEFEND": [
+     13,
+     79
+    ],
+    "ATTACK": [
+     31,
+     84
+    ]
+   },
+   "washout_fired_D": 157,
+   "washout_expired_D": 22,
+   "same_day_conflicts_D": 0
+  }
+ }
+}
