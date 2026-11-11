@@ -94,6 +94,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -6368,6 +6373,7 @@ jobs:
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
+      - "engine/signal_evidence.py"
       - "engine/stock_view.py"
       - "engine/stocks_hub.py"
       - "engine/technicals.py"
@@ -19584,6 +19590,11 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -21394,6 +21405,8 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - "engine/alert_time.py"
+      - "engine/signal_evidence.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -24494,6 +24507,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -28383,6 +28397,11 @@ jobs:
       - "engine/beneficial_ownership.py"
       - "engine/bottleneck.py"
       - "engine/bottom_radar.py"
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -32537,6 +32556,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -35466,6 +35486,7 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -36073,6 +36094,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -37843,6 +37869,7 @@ jobs:
       - "engine/btc_regime_flags.py"
       - "engine/btc_regime_ledger.py"
       - "engine/btc_signals.py"
+      - "engine/signal_evidence.py"
       - "engine/canada_axes.py"
       - "engine/canada_conditions.py"
       - "engine/canada_factor_beta.py"
@@ -40068,10 +40095,13 @@ jobs:
       - "tests/test_alert_coverage_recurrence.py"
       - "tests/test_alert_time_contract.py"
       - "tests/test_alert_triage.py"
+      - "tests/test_alert_trust_projection.py"
       - "tests/test_china_special_situations.py"
       - "tests/test_china_special_situations_truth_wave1.py"
       - "tests/test_macro_header_compact.py"
       - "tests/test_okx_retail.py"
+      - "tests/test_signal_evidence.py"
+      - "tests/test_signal_lab_alert_trust.py"
       - "tests/test_w4_us_board.py"
       - "tests/test_w5b_edge_chips.py"
     timeout-minutes: 4
@@ -40159,7 +40189,7 @@ jobs:
       # — the fake corroborator that held a `major` band at priority 60, which is also
       # the outbound push floor. Hermetic: monkeypatched readers, injected clock.
       - name: Alert Command Center — three clocks, ET board day, and exact evidence links
-        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py -q
+        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_trust_projection.py tests/test_signal_evidence.py tests/test_signal_lab_alert_trust.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH C (2026-07-27) ─────────────────────────────
   # The PIT / frozen-tape share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -42978,6 +43008,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -50923,6 +50958,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -51353,6 +51393,11 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/signal_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

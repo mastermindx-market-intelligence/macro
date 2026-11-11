@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_996),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7173, current-main Signal Lab authority composition):
+    Keep the accepted current source and enroll the three original trust suites
+    in unrun-template-chips, including their now-required path declarations.
+    The native estimator measures 31 -> 38: nine commands stay fixed, test
+    tokens rise 11 -> 14, and 707 -> 811 joined characters cross one 800-character
+    weight bucket. Native inference for this owner selects all three probes
+    on both sides, with the same 93 fallback patterns and no removed paths.
+    Apply only its +7 contribution to 5966/5989/5724 -> 5973/5996/5731.
+    Preserve 137/138/131 job ceilings, ten packs, every assertion, selector,
+    timeout and admission limit, plus all provenance below. This is bounded
+    owner accounting over materialized source, not a whole-catalog planner
+    measurement or hosted pass; the composed head requires its own CI.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

@@ -26,6 +26,45 @@ def _payload():
     return at.build_triage(today=TODAY)
 
 
+def _known_tape_payload(monkeypatch):
+    """Exercise the assembler with a fixed, complete, direction-bearing tape.
+
+    A committed market snapshot may be quiet or have unknown direction. Neither
+    state promises a numeric stance or multiple severity bands, so those
+    contracts need controlled input rather than the contents of data/ today.
+    """
+    day = TODAY.isoformat()
+
+    def row(source, type_, tier):
+        return {"source": source, "type": type_, "asset": source, "ts": day,
+                "event_date": day, "board_date": day, "event_ts": None,
+                "source_asof": day, "recorded_at": None,
+                "date_precision": "date", "date_only": True,
+                "raw_sev": "high", "tier": tier,
+                "headline": f"{source} observation", "headline_zh": "观察",
+                "detail": "", "detail_zh": "", "edge": "", "edge_zh": ""}
+
+    feeds = {"macro": [row("macro", "hy_oas_widening", "act")],
+             "forex": [row("forex", "carry_flip", "context")]}
+
+    def read(source):
+        rows = [dict(event) for event in feeds.get(source, [])]
+        return at._read(source, at.READ_OK if rows else at.READ_OK_ZERO, rows)
+
+    monkeypatch.setattr(at, "_macro_raw", lambda today, cutoff: read("macro"))
+    monkeypatch.setattr(at, "_jsonl_raw",
+                        lambda source, today, cutoff, tier_map: read(source))
+    monkeypatch.setattr(at, "_registry_index", lambda: {})
+    monkeypatch.setattr(at, "_rule_scorecard", lambda: {})
+    monkeypatch.setattr(at, "_load_impulse_gate_receipt", lambda: {})
+    monkeypatch.setattr(at, "_events", lambda today: [])
+    monkeypatch.setattr(at, "_load_context", lambda: {
+        "_state": at.READ_OK, "asof": day, "regime": {},
+        "cross_asset": {"verdict": "concentrated"}, "risk_backdrop": {},
+    })
+    return at.build_triage(today=TODAY)
+
+
 # --- pure helpers -------------------------------------------------------------
 
 def test_severity_band_is_tier_led():
@@ -121,8 +160,18 @@ def test_only_validated_families_are_backtested_true():
     assert mapped["backtested"] is True
     assert mapped["verdict"] in {"scored", "confirmer", "display", "killed"}
     assert mapped["scorecard_name"]
-    # BTC's calibration edge is labelled 'calibrated' (a real backtest), not faked
-    btc = at._validation("vector", "risk_regime", "Proven edge — both halves.", "", reg)
+    # BTC calibration authority travels as a typed artifact receipt; prose alone
+    # remains documented and cannot self-certify.
+    prose_only = at._validation("vector", "risk_regime", "Proven edge — both halves.", "", reg)
+    assert prose_only["backtested"] is False and prose_only["verdict"] == "documented"
+    btc = at._validation(
+        "vector", "risk_regime", "Proven edge — both halves.", "", reg,
+        validation_evidence={
+            "kind": "calibration", "artifact": "data/vector/calibration.json",
+            "signal_key": "risk_index", "asof": "2026-09-05",
+            "verdict": "DIRECTIONAL (one half weak)",
+        },
+    )
     assert btc["backtested"] == "engine" and btc["verdict"] == "calibrated"
     # a macro conviction NOTE is documented, NOT calibrated (honest downgrade)
     macro = at._validation("macro", "net_liquidity_roc_flip", "Medium — weakened.", "", reg)
@@ -251,9 +300,11 @@ def test_clustering_maps_related_alerts_together():
     assert at.cluster_of("nope", "nope") == "other"
 
 
-def test_board_read_is_bounded_and_descriptive():
-    p = _payload()
+def test_board_read_is_bounded_and_descriptive(monkeypatch):
+    p = _known_tape_payload(monkeypatch)
     br = p["board_read"]
+    assert p["coverage_state"] == "complete"
+    assert br["risk_off_count"] == 1
     assert 0 <= br["score"] <= 100
     assert br["stance"] in ("risk-off", "mixed", "constructive")
     assert br["one_liner"] and br["one_liner_zh"]
@@ -286,10 +337,14 @@ def test_storylines_do_not_reorder_the_feed():
     assert sum(st["count"] for st in p["storylines"]) == len(p["alerts"])
 
 
-def test_severity_is_no_longer_a_monotone_wall():
+def test_severity_is_no_longer_a_monotone_wall(monkeypatch):
     # the whole point of the v2 corroboration cap: the board must show a real triage
     # gradient, not 60 identical 'major' rows.  At least two distinct bands appear.
-    p = _payload()
+    p = _known_tape_payload(monkeypatch)
+    assert len(p["alerts"]) == 2
+    assert {a["source"]: a["severity"] for a in p["alerts"]} == {
+        "macro": "critical", "forex": "minor",
+    }
     bands = {a["severity"] for a in p["alerts"]}
     assert len(bands) >= 2
 
@@ -447,11 +502,13 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     edge, edge_zh = conv["edge"], conv["edge_zh"]
     assert _BLIND_CAVEAT in edge
     assert _BLIND_CAVEAT_ZH in edge_zh
+    assert "verified leading" not in edge.lower()
+    assert "act early" not in edge.lower()
+    assert "current Signal Lab evidence passport" in edge
+    assert "经验证的领先前兆" not in edge_zh
+    assert "当前信号实验室证据凭证" in edge_zh
     assert len(edge) > 120
-    assert edge[:120] != edge          # the old cap would have amputated it
-    assert edge == _IMPULSE_EDGE
-    assert edge_zh == _IMPULSE_EDGE_ZH_LIVE
-    assert _IMPULSE_EDGE_ZH.startswith(edge_zh)
+    assert edge[:120] != edge
 
 
 def test_page_keeps_long_bodies_and_the_blind_caveat():
