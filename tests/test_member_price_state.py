@@ -552,6 +552,34 @@ class TestElapsedRecord:
         assert any(l.startswith("::warning::") and "elapsed-seconds record" in l
                    for l in err.splitlines())
 
+    def test_failed_replace_leaves_store_byte_identical_and_no_temp(
+            self, monkeypatch, tmp_path, capsys):
+        """SF1 (recheck): the store write is tmp + os.replace — a failure AFTER
+        the temp file exists must leave the pre-existing run_status.json
+        byte-identical, leave no temp file behind, and stay non-fatal."""
+        import os as _os
+        _build(tmp_path)
+        store = tmp_path / "run_status.json"
+        store.write_text(json.dumps(
+            {"last_run": "2026-11-10T22:00:00+00:00",
+             "sources": {"russell_breadth": {"status": "ok"}}}))
+        original = store.read_bytes()
+        real_replace = _os.replace
+
+        def replace_except_store(src, dst):
+            if Path(dst).name == "run_status.json":
+                raise OSError("simulated kill mid-replace")
+            return real_replace(src, dst)
+
+        monkeypatch.setattr(_os, "replace", replace_except_store)
+        code = TestFailureIsolation()._run_main(monkeypatch, tmp_path)
+        assert code is None                          # the build still finishes
+        assert store.read_bytes() == original        # previous record intact
+        assert list(tmp_path.glob("*.tmp")) == []    # temp cleaned up, none left
+        err = capsys.readouterr().err
+        assert any(l.startswith("::warning::") and "elapsed-seconds record" in l
+                   for l in err.splitlines())
+
     def test_recorded_row_is_attributable_by_nightly_timings(self, monkeypatch,
                                                              tmp_path):
         """The recorded seconds reach data/ops/nightly_timings/collect.jsonl's

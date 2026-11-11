@@ -953,8 +953,12 @@ def _record_price_state_elapsed(seconds: float, status: str, rows: int) -> None:
     new file. Read-merge-write of the one key, exactly like collect.py's own
     status merge, so no other source's health is ever touched. Telemetry law:
     this can never fail the step — any failure is one ``::warning`` and the
-    night proceeds.
+    night proceeds. The write is atomic — temp file in the same directory,
+    then ``os.replace`` (this module's own pattern for its outputs) — so a
+    kill or full disk mid-write can never leave the shared record truncated;
+    a failed write leaves the previous record byte-intact and no temp behind.
     """
+    tmp = PRICE_STATE_RUN_STATUS.with_name(PRICE_STATE_RUN_STATUS.name + ".tmp")
     try:
         doc: dict = {}
         if PRICE_STATE_RUN_STATUS.exists():
@@ -972,8 +976,13 @@ def _record_price_state_elapsed(seconds: float, status: str, rows: int) -> None:
         }
         doc["sources"] = sources
         PRICE_STATE_RUN_STATUS.parent.mkdir(parents=True, exist_ok=True)
-        PRICE_STATE_RUN_STATUS.write_text(json.dumps(doc, indent=2, default=str))
+        tmp.write_text(json.dumps(doc, indent=2, default=str))
+        os.replace(tmp, PRICE_STATE_RUN_STATUS)
     except Exception as e:  # noqa: BLE001 — telemetry must never fail the step
+        try:
+            tmp.unlink(missing_ok=True)  # best effort — never leave a temp behind
+        except OSError:
+            pass
         print(f"::warning::member price state: elapsed-seconds record failed "
               f"({e!r}) — non-fatal", file=sys.stderr)
 
