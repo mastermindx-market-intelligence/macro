@@ -140,8 +140,11 @@ def cum_cash(cash_r: pd.Series, start_lag: int, end_lag: int = 0) -> pd.Series:
 
 
 def eligible(px: pd.DataFrame, min_sessions: int = 253) -> pd.DataFrame:
-    """True from an instrument's `min_sessions`-th priced session onward."""
-    return px.notna().cumsum() >= min_sessions
+    """True from an instrument's `min_sessions`-th OBSERVED session onward. Accepts a price panel (non-missing =
+    observed) or a boolean raw-availability mask (True = observed)."""
+    dts = list(px.dtypes) if isinstance(px, pd.DataFrame) else [px.dtype]
+    obs = px.astype(bool) if all(pd.api.types.is_bool_dtype(dt) for dt in dts) else px.notna()
+    return obs.cumsum() >= min_sessions
 
 
 def month_end_sessions(sessions: pd.DatetimeIndex) -> pd.DatetimeIndex:

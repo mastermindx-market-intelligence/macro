@@ -381,3 +381,18 @@ def test_A11_l0_not_met_when_coverage_fails():
     stub["jobs"]["J4"] = {"gates": [], "cap": "x"}; stub["jobs"]["J5"] = {}
     art = build_artifact(stub, {"protocol_id": "p", "frozen_on_utc": "d"}, {}, "pin", 1, 1)
     assert art["release"]["overall_level"] != "L0_descriptive"
+
+
+def test_eligible_counts_true_values_of_a_boolean_availability_mask():
+    s = _sessions(300)
+    m = pd.DataFrame({"OLD": True, "NEW": False}, index=s)
+    m.iloc[200:, 1] = True
+    el = rc.eligible(m)
+    assert el["OLD"].iloc[252] and not el["NEW"].iloc[299]   # NEW has only 100 observed sessions
+
+
+def test_A07_runner_eligibility_uses_observed_closes_not_filled_panel():
+    s = _sessions(300)
+    raw = pd.Series(np.nan, index=s); raw.iloc[:100] = 100.0; raw.iloc[253:] = 100.0
+    assert not rc.eligible(raw.notna().to_frame("X")).iloc[252, 0]
+    assert rc.eligible(raw.ffill().to_frame("X")).iloc[252, 0]       # what the old filled panel would have said
