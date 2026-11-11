@@ -22,6 +22,15 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout: |
+            /*
+            !/data/
+            !/site/*
+            !/mockups/
+            !/verify_shots/
+            /site/desk_watch.js
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"

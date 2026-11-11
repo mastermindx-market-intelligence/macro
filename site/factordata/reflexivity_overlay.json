@@ -2,23 +2,32 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-11-06",
-  "generated_utc": "2026-11-09T13:27:18Z",
+  "generated_utc": "2026-11-11T04:45:37Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 2,
-    "n_eff": 1.8,
+    "n": 3,
+    "n_eff": 2.18,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 2 candidates \u2248 1.8 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 2.18 independent bets."
   },
   "same_thesis_groups": [],
-  "earnings_coverage_frac": 0.5,
+  "earnings_coverage_frac": 0.667,
   "by_ticker": {
     "BEN": {
-      "verdict": "new",
-      "max_similarity": 0.3333,
+      "verdict": "duplicate",
+      "max_similarity": 0.6754,
       "basis": "membership+high-tier-factor",
       "nearest": [
+        {
+          "ticker": "CTAS",
+          "combined": 0.6754,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.6754,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
         {
           "ticker": "ECPG",
           "combined": 0.3333,
@@ -37,8 +46,8 @@
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer ECPG at 33% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 ECPG\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
+      "why_en": "Same bet as CTAS \u2014 shared factor profile (similarity 68%).",
+      "why_zh": "\u4e0e CTAS \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 68%\uff09\u3002"
     },
     "ECPG": {
       "verdict": "new",
@@ -55,6 +64,15 @@
             "sector:Financials"
           ],
           "same_earnings_week": null
+        },
+        {
+          "ticker": "CTAS",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.20<0.2",
+          "shared_groups": [],
+          "same_earnings_week": null
         }
       ],
       "earnings_leg": {
@@ -65,6 +83,39 @@
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Distinct bet \u2014 nearest peer BEN at 33% similarity.",
       "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 BEN\uff0c\u76f8\u4f3c\u5ea6 33%\u3002"
+    },
+    "CTAS": {
+      "verdict": "duplicate",
+      "max_similarity": 0.6754,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "BEN",
+          "combined": 0.6754,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.6754,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "ECPG",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.20<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-12-17",
+        "same_week_peers": [],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as BEN \u2014 shared factor profile (similarity 68%).",
+      "why_zh": "\u4e0e BEN \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 68%\uff09\u3002"
     }
   },
   "pair_basis": {
@@ -76,6 +127,20 @@
       "shared_groups": [
         "sector:Financials"
       ]
+    },
+    "BEN__CTAS": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": 0.6754,
+      "combined": 0.6754,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": []
+    },
+    "ECPG__CTAS": {
+      "membership_jaccard": 0.0,
+      "factor_cosine": null,
+      "combined": 0.0,
+      "factor_basis": "beta-read-thin:r2=0.20<0.2",
+      "shared_groups": []
     }
   },
   "verdicts": {
@@ -87,7 +152,7 @@
   },
   "n_eff_by_lane": {
     "entry_open": 1.8,
-    "setting_up": null
+    "setting_up": 1.0
   },
   "source_passport": {
     "factor_betas": {
