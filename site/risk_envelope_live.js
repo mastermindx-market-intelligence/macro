@@ -227,6 +227,12 @@
     var overlays = d.overlays || {};
     if (!wantBundle || overlays.settled_bundle_id !== wantBundle) return false;
     if (d.live_active !== true) return false;
+    // This producer-derived deadline already includes every required quote.
+    // A newly built envelope cannot extend the carrying source's validity.
+    var expiryText = d.stale_after;
+    var expiry = (typeof expiryText === "string" && /(Z|[+-]\d{2}:\d{2})$/.test(expiryText)) ?
+      Date.parse(expiryText) : NaN;
+    if (!isFinite(expiry) || Date.now() >= expiry) return false;
     var built = d.built ? Date.parse(d.built.replace(" UTC", "Z").replace(" ", "T")) : NaN;
     var horizonMin = (typeof d.stale_after_min === "undefined") ? 5 : d.stale_after_min;
     if (typeof horizonMin !== "number" || !isFinite(horizonMin) || horizonMin <= 0 || !isFinite(built) || built > Date.now() ||

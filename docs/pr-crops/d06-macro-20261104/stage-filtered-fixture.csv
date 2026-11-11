@@ -1,0 +1,2 @@
+Ticker,Name,Industry,Industry rank,Trend quality,Trend change,Stage,Stage label,Weeks,Extension (weekly ATR multiples),Weekly ATR / price (fraction),Tags,Call tone,Earnings result,Rating,Row source,Classification status,Row stage week,Row source date,Target stage week,Target week source,Population status,Price data session,Artifact date,Built at
+NVDA,NVIDIA,Information Technology,72,9,1,2,2A Breakout,6,1.4,0.04,guidance_raised|demand_acceleration|ai,72,8,88,live,current,2026-09-04,2026-09-09,2026-09-04,fixture-calendar,ok,2026-09-09,2026-09-10,2026-09-10T12:00:00Z
