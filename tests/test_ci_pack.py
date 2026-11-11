@@ -5999,7 +5999,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_967),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6008,6 +6008,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10741, current controller-conflict recovery):
+    The original refresh declined with an affirmative content conflict and
+    released its lease. Receiving main93068439 retains the landed #9230
+    ticker-news cursor allowance on free-content. Preserve that contribution,
+    all original Net Worth history, Savings Goal coverage and current controls.
+    The unchanged calculator owner/estimator still measure 5 -> 6: three ->
+    four commands, one test token, 421 -> 589 joined characters. Apply only
+    its original index-only +1: 5966/5989/5724 -> 5967/5989/5724. Keep
+    137/138/131 job ceilings, ten packs and all selectors/assertions/timeouts.
+    The five feature/runner/test blobs remain exact H. This is bounded source
+    accounting, not a new whole-tree planner, timing or product proof; the
+    successor requires its own natural CI and current-definition freshness.
 
     2026-11-11 (PR #10741, preserve Net Worth and Savings Goal coverage):
     Receiving main497d83de (same code as f5093553) contains Savings Goal paths and
@@ -6049,6 +6062,32 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
+    mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union
+    at5958/5979/5716, including its separate800-character bucket crossing.
+    Retain every landed command and both complete histories. The original
+    ticker-news-qbus contribution still adds only free-content2, yielding
+    5958/5981/5716; index and Prophet remain currentmain-exact. No unmerged
+    sibling or second lifecycle allowance is funded. All400 owner IDs,
+    jobs137/138/131, ten packs, selectors and runtime controls remain.
+    This is preserving source accounting for the actual new conflict;
+    natural exact-successor proof is owed, with the old replay untouched.
+
+    2026-11-09 (PR #9230, existing ticker-news cursor regression suite):
+    Own contract run42270474570/job128073407247 measured only the
+    free-content probe5927->5929,137 selected jobs unchanged, no entrants
+    and ten packs; index5912 and Prophet5668 did not change. Preserve
+    that paired historical result without replaying the old uncertain pack.
+    On receiving main75e018ac, ticker-news-qbus still lacks this one test:
+    two commands,51->52 literal test refs,2041->2093 joined characters,
+    same character bucket2, owner106->108. Its exclusive literal paths
+    select only free-content among these probes. Add only its own +2:
+    free-content5969->5971. Keep index5948, Prophet5706, jobs137/138/131
+    and ten packs unchanged. Retain every current history/control; no
+    unmerged sibling is funded. This is current source accounting, not
+    a new planner execution. The new head needs its own required proof.
+    https://github.com/mastermindx-market-intelligence/Macro/pull/9230
 
     2026-11-09 (PR #10741, preserve the actual ownership-ledger landing):
     Current main retains F09 plus the independent ledger +3 on each probe.

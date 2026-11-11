@@ -1,6 +1,6 @@
 {
   "date": "2026-11-10",
-  "generated_utc": "2026-11-11 08:19",
+  "generated_utc": "2026-11-11 15:19",
   "business_cycle": {
     "available": true,
     "asof": "2026-11-30",
@@ -9,7 +9,7 @@
         "asof": "2026-11-30",
         "index": 94.27046269300672,
         "mom6": -0.6122102192241812,
-        "trend": 0.36503171428768755,
+        "trend": 0.3650317142876879,
         "diffusion": 33.333333333333336,
         "n_legs": 3,
         "direction": "falling",
@@ -2269,9 +2269,9 @@
       },
       "lagging": {
         "asof": "2026-10-31",
-        "index": 93.10836438336956,
+        "index": 93.10836438336955,
         "mom6": 0.6339425944115504,
-        "trend": 0.3772217323904288,
+        "trend": 0.37722173239042844,
         "diffusion": 100.0,
         "n_legs": 3,
         "direction": "rising",
@@ -3399,7 +3399,7 @@
         ]
       }
     },
-    "cl_ratio_mom6": -0.6349654152298356,
+    "cl_ratio_mom6": -0.6349654152298427,
     "recession_signal": {
       "available": true,
       "state": "off",
@@ -3612,7 +3612,7 @@
       "reason": "version-matched + fresh",
       "calibration_version": "w2.7-loro-v1",
       "calibration_generated_at": "2026-07-02T12:32:51Z",
-      "calibration_age_days": 131
+      "calibration_age_days": 132
     },
     "lag_passport": {
       "basis": "per_leg_schedule",
@@ -4207,13 +4207,13 @@
       "vix_term_lead_lag": "coincident",
       "skew": 151.12,
       "skew_pctile": 0.7232142857142857,
-      "stock_bond_corr": -0.031126653025416583,
+      "stock_bond_corr": -0.031126653025411004,
       "stock_bond_regime": "diversifying (bonds hedge)",
-      "roro": -0.7276059569930392,
+      "roro": -0.7276059569930007,
       "roro_state": "risk-off",
-      "vol_target_scalar": 0.5582392624973173,
+      "vol_target_scalar": 0.5582392624973178,
       "news_sentiment": 0.08978667110204697,
-      "news_sentiment_z": 1.3399186705875121,
+      "news_sentiment_z": 1.3399186705875092,
       "news_sentiment_state": "optimistic"
     },
     "drawdown_risk": {
@@ -4353,7 +4353,7 @@
   "fear_euphoria": {
     "fe_score": 15,
     "band": "Fear",
-    "roro": -0.7276059569930392,
+    "roro": -0.7276059569930007,
     "roro_state": "risk-off",
     "legs": [
       {
@@ -4556,9 +4556,9 @@
         "name_zh": "52\u5468\u5f3a\u52bf\uff08\u65b0\u9ad8\u6bd4\u4f8b\uff09",
         "orientation": "higher=greed",
         "unit": "ratio 0-1",
-        "value": 0.929,
-        "z": 0.581,
-        "pct": 56,
+        "value": 0.906,
+        "z": 0.512,
+        "pct": 51,
         "pct_hist": [
           30.4,
           100.0,
@@ -4619,7 +4619,7 @@
           27.1,
           27.3,
           56.8,
-          55.8
+          51.3
         ],
         "freshness": "fresh",
         "obs_count": 15038,
@@ -4631,9 +4631,9 @@
         "name_zh": "\u9ea6\u514b\u83b1\u4f26\u632f\u8361\u5668",
         "orientation": "higher=greed",
         "unit": "oscillator",
-        "value": 25.3,
-        "z": 0.581,
-        "pct": 71,
+        "value": 22.1,
+        "z": 0.509,
+        "pct": 69,
         "pct_hist": [
           32.7,
           39.3,
@@ -4694,7 +4694,7 @@
           56.0,
           42.2,
           73.0,
-          71.5
+          68.8
         ],
         "freshness": "fresh",
         "obs_count": 16275,
@@ -5328,7 +5328,7 @@
     ],
     "n_legs_qualifying": 11,
     "as_of": "2026-11-10",
-    "generated_utc": "2026-11-11T06:18:10Z",
+    "generated_utc": "2026-11-11T13:34:56Z",
     "disclaimer_en": "Sentiment context only \u2014 display-only composite of public market indicators. Never scored, never feeds the regime engine, no forward claim. Greed/fear readings are not contrarian signals without regime context.",
     "disclaimer_zh": "\u4ec5\u4e3a\u60c5\u7eea\u53c2\u8003 \u2014 \u516c\u5f00\u5e02\u573a\u6307\u6807\u7684\u4ec5\u5c55\u793a\u5408\u6210\u3002\u4e0d\u8ba1\u5206\uff0c\u4e0d\u8fdb\u5165\u5468\u671f\u5f15\u64ce\uff0c\u65e0\u524d\u77bb\u6027\u5224\u65ad\u3002\u8d2a\u5a6a/\u6050\u60e7\u8bfb\u6570\u82e5\u65e0\u5468\u671f\u80cc\u666f\uff0c\u4e0d\u6784\u6210\u53cd\u5411\u4fe1\u53f7\u3002"
   },
@@ -5793,7 +5793,7 @@
           75,
           76
         ],
-        "vixeq_minus_vix": 24.0
+        "vixeq_minus_vix": 24.7
       },
       {
         "key": "cor1m",
@@ -5949,7 +5949,7 @@
       }
     ],
     "as_of": "2026-11-10",
-    "generated_utc": "2026-11-11T06:18:20Z",
+    "generated_utc": "2026-11-11T13:34:57Z",
     "n_young": 0,
     "disclaimer_en": "Display-only context \u2014 volatility surface indicators from public CBOE / Yahoo data. Never scored, no forward claim. These chips describe the current vol environment; they do not predict direction.",
     "disclaimer_zh": "\u4ec5\u4f9b\u5c55\u793a\u7684\u80cc\u666f \u2014 \u6765\u81ea\u516c\u5f00 CBOE / Yahoo \u6570\u636e\u7684\u6ce2\u52a8\u7387\u66f2\u9762\u6307\u6807\u3002\u4e0d\u8ba1\u5206\uff0c\u65e0\u524d\u77bb\u5224\u65ad\u3002\u8fd9\u4e9b\u82af\u7247\u63cf\u8ff0\u5f53\u524d\u6ce2\u52a8\u7387\u73af\u5883\uff0c\u4e0d\u9884\u6d4b\u65b9\u5411\u3002"
@@ -5966,15 +5966,15 @@
       "ai_infra_power_tagged": 30
     },
     "latest": {
-      "ai_pct50": 36.5,
-      "nonai_pct50": 77.8,
-      "spread_50": -41.3,
-      "ai_pct200": 33.3,
-      "nonai_pct200": 70.6,
-      "spread_200": -37.3,
-      "ai_adv_share": 40.4,
-      "nonai_adv_share": 54.5,
-      "spread_adv": -14.1
+      "ai_pct50": 28.6,
+      "nonai_pct50": 76.6,
+      "spread_50": -48.1,
+      "ai_pct200": 34.8,
+      "nonai_pct200": 69.1,
+      "spread_200": -34.4,
+      "ai_adv_share": 33.8,
+      "nonai_adv_share": 52.2,
+      "spread_adv": -18.4
     },
     "spark": {
       "spread_50": [
@@ -6097,7 +6097,7 @@
         -46.3,
         -48.2,
         -46.6,
-        -41.3
+        -48.1
       ]
     },
     "young": false,

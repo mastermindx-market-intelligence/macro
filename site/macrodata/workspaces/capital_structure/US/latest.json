@@ -167,9 +167,9 @@
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-11-11T08:19:20Z",
+    "built_at": "2026-11-11T09:12:14Z",
     "calculation_as_of": "2026-10-31T06:03:29.451521Z",
-    "code_version": "2fdf62a703f1b263c53ffa46229d51e36e85b4d9",
+    "code_version": "497d83de7c83f5139ea76bdb0a151506aebcbede",
     "content_sha256": "7ea241012bc884d1a66859ce13e9807ff1d895196e9d456b548aa1fba6b45a5b",
     "generation_id": "capital_structure-US-7ea241012bc884d1",
     "producer": "engine.market_os.macro_workspaces.capital_structure",
