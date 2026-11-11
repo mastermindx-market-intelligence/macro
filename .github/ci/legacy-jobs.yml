@@ -1398,7 +1398,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install hermetic GMI source/read-gate tests
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas playwright==1.64.1
       - name: Install Chromium for the actual browser contract
         phase: browser_setup
         acquisition: native_parallel
@@ -6241,6 +6241,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -10697,6 +10698,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -11049,6 +11051,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11420,6 +11423,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -15659,6 +15663,83 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      # Actual source/metadata reads in the SA-W4 ownership contract.
+      - "config.yml"
+      - "engine/experiments_registry.py"
+      - "data/experiments/registry_seed.json"
+      - "engine/vol_shock_scorecard.py"
+      - "engine/neuralweb/metabolism.py"
+      # PR #10571: the existing closure analyzer recursively visits Python
+      # source read only for AST assertions. Keep that conservative contract;
+      # these declarations do not mean the audit executes those modules.
+      # CI 42562109040 / contract128980585606 reported these 65 missing paths;
+      # include the existing Neural Web package initializer as context too.
+      - "collectors/base.py"
+      - "collectors/holdings.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/event_calendar.py"
+      - "engine/event_risk.py"
+      - "engine/holdings_signals.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/mtf_monitor.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/read.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/compounds.py"
+      - "engine/oracle/graph.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/research_codegen/__init__.py"
+      - "engine/research_codegen/accounting_contract.py"
+      - "engine/research_codegen/admission.py"
+      - "engine/research_codegen/bridge.py"
+      - "engine/research_codegen/contracts.py"
+      - "engine/research_codegen/evaluation.py"
+      - "engine/research_codegen/input_contract.py"
+      - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_state.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/trial_ledger.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/signal_engine/confluence.py"
+      - "scripts/notify.py"
+      - "scripts/oracle_reversion_screen.py"
+      - "scripts/oracle_screen.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/qledger/track_record.json"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a
       # change to one must select this job. Declared on all three control-plane
@@ -18364,7 +18445,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright==1.64.1 requests jsonschema==4.26.0
       - name: install ontology browser
         phase: browser_setup
         acquisition: native_parallel
@@ -19503,6 +19584,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -23637,6 +23719,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -24076,6 +24159,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -24411,6 +24495,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25634,13 +25719,29 @@ jobs:
   sa-w4-improvement-lanes:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    paths:
+      - tests/test_standout_review.py
+      - tests/conftest.py
+      - tests/__init__.py
+      - engine/**
+      - lib/**
+      - collectors/**
+      - scripts/**
+      - research/signal_engine/**
+      - research/__init__.py
+      - config.yml
+      - config/**
+      - data/**
+      - site/**
     # SA-W4: standout improvement lanes — clamped review engine + Tier-0 replay +
     # lab come-back alerts.
     # Covers: whitelist/step/disjointness enforcement, dormant-reject on null baseline,
     # UNEVALUABLE=>reject, governance event schema, shadow book spec completeness,
     # replay data-gap honesty, never-raise on corrupt proposals,
     # registry_seed picklab entries (27 US + 20 CN + 20 HK).
-    # Network-free: all synthetic fixtures via tmp_path.
+    # Network-free: tmp_path fixtures plus committed registry seed and active
+    # data/site inputs; scope includes the full pytest import context.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28085,6 +28186,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -32392,6 +32494,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -32940,6 +33043,10 @@ jobs:
           tests/test_us_board_continuity_guard.py
           tests/test_build_stock_library_price_clock.py
           tests/test_canada_canonical_board.py
+          tests/test_us_board_snapshots.py
+          tests/test_us_board_snapshot_readers_build.py
+          tests/test_us_board_snapshot_readers_grade.py
+          tests/test_us_board_snapshot_reader_census.py
           -q
 
 
@@ -34783,6 +34890,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      - "tests/test_analytics_query_budget.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -34798,7 +34906,9 @@ jobs:
           export PATH="$pg_bin:$PATH"
           for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
           test "$(id -u)" -ne 0
-          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+          python -m pytest tests/test_analytics_exclusions.py \
+            tests/test_analytics_pages_postgres.py \
+            tests/test_analytics_query_budget.py -q
 
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
@@ -35313,6 +35423,7 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35919,6 +36030,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -37427,6 +37539,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
@@ -49213,6 +49326,10 @@ jobs:
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
       - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs tests/js/radar_panel_open_checks.test.mjs
+      - name: Calendar Clock latest-selected symbol identity
+        run: |
+          cmp templates/stock_seasonality.js site/stock_seasonality.js
+          node tests/js/test_stock_seasonality_selection.cjs templates/stock_seasonality.js
 
   sni-s2-event-response:
     if: ${{ false }}
@@ -50109,13 +50226,17 @@ jobs:
   c19-wp11-reader-pins:
     if: ${{ false }}
     gate: code
-    # C19 WP11 (MAS-263) acceptance pins: MRI release_forecast.v2 reader + expectation read. Hermetic: tmp_path only, no data/ reads.
+    # C19 WP11 (MAS-263) MRI reader pins plus the full release-market-context suite.
+    # Reader and reaction-evidence cases use tmp_path fixtures. The existing
+    # full-suite Cleveland integration case conditionally copies its committed
+    # fixture and keeps its explicit skip when absent; do not call it hermetic.
     timeout-minutes: 10
     paths:
       - "engine/event_window.py"
       - "engine/validation.py"
       - "engine/release_market_context.py"
       - "tests/test_c19_wp11_reader_pins.py"
+      - "tests/test_release_market_context.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50125,7 +50246,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp11-reader-pins
-        run: python -m pytest tests/test_c19_wp11_reader_pins.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp11_reader_pins.py tests/test_release_market_context.py -q -p no:cacheprovider
 
   robotics-theme-research:
     # Re-land of #7908 after #8013, stacked on #7870. One exclusive gate:code
@@ -51110,6 +51231,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
@@ -51221,6 +51343,8 @@ jobs:
       - "admin/auth.py"
       - "admin/brain_guest.py"
       - "admin/brief.py"
+      - "admin/capacity_fabric_schema.py"
+      - "admin/capacity_router.py"
       - "admin/causal_lab.py"
       - "admin/chronicle.py"
       - "admin/codex_panel.py"
