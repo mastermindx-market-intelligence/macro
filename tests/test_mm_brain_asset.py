@@ -160,3 +160,9 @@ def test_host_ai_context_is_also_visible_to_the_existing_answer_lane(
     assert "ambient && ambient.panel" in text
     assert "var ctx = buildTurnContext();" in text
     assert "ctx: buildTurnContext()" in text
+
+
+def test_options_question_widget_state_machine():
+    """Real source module, inert auth/stream seams and no provider access."""
+    import subprocess
+    subprocess.run(["node", "--test", str(ROOT / "tests/js/options_question_widget.test.cjs")], cwd=ROOT, check=True, capture_output=True, text=True)

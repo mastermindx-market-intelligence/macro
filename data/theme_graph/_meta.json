@@ -1,8 +1,8 @@
 {
-  "belief_time": "2026-11-02",
+  "belief_time": "2026-11-09",
   "capability_counts": {
-    "measurement_candidate": 503,
-    "semantic_only": 140
+    "measurement_candidate": 505,
+    "semantic_only": 138
   },
   "company_mint_refusals": [
     {
@@ -18,12 +18,12 @@
       "symbol": "VMRK"
     }
   ],
-  "computed_at": "2026-11-02T10:14:23Z",
+  "computed_at": "2026-11-09T09:34:38Z",
   "counts": {
     "capability": 645,
-    "edges": 27043,
-    "edges_latest_belief": 14653,
-    "evidence": 29,
+    "edges": 27438,
+    "edges_latest_belief": 15000,
+    "evidence": 31,
     "identity_resolution": 2809,
     "node_lifecycle": 3,
     "nodes": 4331
@@ -59,7 +59,7 @@
       ]
     },
     "ths": {
-      "concept_map_asof": "2026-10-31",
+      "concept_map_asof": "2026-11-07",
       "concepts": 375,
       "expresses_edges": 237,
       "unresolved_concept_names": 0
@@ -138,10 +138,10 @@
   },
   "rows_appended": {
     "capability": 643,
-    "edges": 1006,
-    "evidence": 2,
+    "edges": 0,
+    "evidence": 0,
     "identity_resolution": 2806,
-    "nodes": 356
+    "nodes": 0
   },
   "skipped_suites": {},
   "ths_unmapped_concept_count": 314,

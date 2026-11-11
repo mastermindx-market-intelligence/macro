@@ -1,0 +1,25 @@
+{
+  "source_head": "ff16c912ce76a17dfeddcf6acbc15a0256e2755d",
+  "protected_base": "5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0",
+  "owned_paths": {
+    "scripts/build_spr.py": "6fbd5f076be875e58eefced1e90c244caeead42ab49d4dbb1479a42ec92ea2a4",
+    "templates/spr.html.j2": "08c892d9ec0b8355d0181034d6941dd1c2c3ed22d9a2e8251c8f1bc016bf451a",
+    "tests/test_strategic_reserves.py": "ecd694a4627a9a6bd56d8b798d8338057a83ad4857257a8fab2a85b0791c0f02"
+  },
+  "capture_bindings": {
+    "normal8": "afc74beb5ef5642ff0324ff46d4e9c76d92ee3fc; unchanged numbers/VM, exact hero/context parity through51560453; final extrema copy qualified separately",
+    "partial8": "51560453ca5ca48c4fd9dde1e8d97c66660c8925; endpoint/trade repair, pre-extrema-copy correction; not final whole-page semantics",
+    "semantic_partial1": "ff16c912ce76a17dfeddcf6acbc15a0256e2755d; light/zh/mobile actual renderer/native entry"
+  },
+  "scope": "local retained native SPR fixture, not authenticated parent shell or served publication",
+  "fabric": {
+    "run": "ss-spr-partial-evidence-20261102-001",
+    "result": "REMOTE_SUB_ADMISSION_REFUSED",
+    "reason": "host_temperature_at_or_above_limit",
+    "host": "ubuntu1",
+    "rc": 75,
+    "worker_source_return": false,
+    "retry_or_failover": false,
+    "parent_local_fallback": true
+  }
+}

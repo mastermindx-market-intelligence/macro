@@ -619,7 +619,8 @@ def build_queue(
 
 
 def diagnostic_review_packet(public: dict, *, engineering_evidence=None,
-                             engineering_receipts=None) -> dict:
+                             engineering_receipts=None, private_source_reference=None,
+                             source_repository=None) -> dict:
     """Closed compiled display attachment; never a canonical candidate row."""
     from engine.research_codegen.bridge import validate_public_projection
     public = validate_public_projection(public)
@@ -645,6 +646,11 @@ def diagnostic_review_packet(public: dict, *, engineering_evidence=None,
         packet["note"] += (" Synthetic/scripted source plumbing; receipt types and digests "
                            "do not authenticate a producer or establish temporal-bias "
                            "detection, a numerical oracle or a physical boundary.")
+    if private_source_reference is not None:
+        packet["private_source_context"] = _private_source_context(
+            public, packet.get("engineering_evidence"), private_source_reference, source_repository)
+    elif source_repository is not None:
+        raise ValueError("PRIVATE_SOURCE_REFERENCE_REQUIRED")
     return packet
 
 
@@ -652,8 +658,9 @@ def _compose_diagnostic_receipts(public, receipts):
     """Pure typed receipt join into the incumbent advisory display schema.
 
     These are structural provenance inputs, never authenticated owner evidence.
-    No original expectation descriptor binds a good/bad control to a variant in
-    the current generation contract, so output-control adjudication stays NOT_RUN.
+    Optional owner declarations are bound by the driver before effects. Historical
+    outcomes without that declaration keep output-control adjudication NOT_RUN.
+    This source join does not authenticate a producer or pre-execution chronology.
     """
     import hashlib
     import json
@@ -665,8 +672,9 @@ def _compose_diagnostic_receipts(public, receipts):
         if not ok:
             raise ValueError("INVALID_DIAGNOSTIC_ENGINEERING_RECEIPTS")
 
-    require(type(receipts) is dict and set(receipts) == {
-        "run", "commission", "source", "staged", "outcome"})
+    required = {"run", "commission", "source", "staged", "outcome"}
+    require(type(receipts) is dict and (set(receipts) == required
+            or set(receipts) == required | {"output_expectation"}))
     run, commission, source, staged, outcome = (receipts[key] for key in
         ("run", "commission", "source", "staged", "outcome"))
     require(type(run) is bridge.SyntheticRun
@@ -721,6 +729,7 @@ def _compose_diagnostic_receipts(public, receipts):
             "state", "workload_confirmed", "workload_returncode", "execution_uncertain",
             "reconciliation_required", "cleanup_confirmed")
     attempts, adopted = [], []
+    previous_returned = None
     for attempt, task in zip(outcome.attempts, prepared.decisions):
         require(type(attempt) is prefix_driver.PrefixAttempt
                 and type(task) is bridge.PreparedDecisionInput)
@@ -750,6 +759,16 @@ def _compose_diagnostic_receipts(public, receipts):
                                              if raw.workload_output else None))
         row = {key: getattr(attempt, key) for key in keys}
         row["state"] = row["state"].upper()
+        if attempt.local_observation is not None:
+            row["local_observation"] = prefix_driver.validate_local_observation(
+                attempt.local_observation, prepared.identity, task, attempt)
+            local_doc = bridge._bound(attempt.local_observation)
+            issued = bridge._timestamp(local_doc["issued_at_utc"])
+            require(previous_returned is None or issued >= previous_returned)
+            previous_returned = (bridge._timestamp(local_doc["returned_at_utc"])
+                                 if local_doc["returned_at_utc"] is not None else None)
+            if row["local_observation"]["observation_problem"] is not None:
+                require(not outcome.completed and len(attempts) + 1 == len(outcome.attempts))
         attempts.append(row)
         try:
             adopted.append((task, prefix_driver._adopt(
@@ -760,7 +779,7 @@ def _compose_diagnostic_receipts(public, receipts):
         require(bool(attempts) and len(attempts) == len(prepared.decisions)
                 and not outcome.refusal_reasons
                 and all(row["state"] == "CLEANED_SUCCESS" for row in attempts)
-                and public["status"] == "DIAGNOSTIC_ONLY")
+                and public["status"] in ("DIAGNOSTIC_ONLY", "REFUSED"))
         require(type(outcome.outputs) is tuple and len(outcome.outputs) == len(prepared.schedules))
         for group, output in zip(prepared.schedules, outcome.outputs):
             staging_accounting._bound(output, "output")
@@ -787,9 +806,28 @@ def _compose_diagnostic_receipts(public, receipts):
                  "evidence_sha256": staged.trial_readback.sha256},
                 {"id": "prefix_schedule", "status": "MATCHED_EXPECTATION" if outcome.completed else "NOT_RUN",
                  "evidence_sha256": hashlib.sha256(encoded).hexdigest() if outcome.completed else None}]
+    output_status, output_evidence = "NOT_RUN", None
+    if receipts.get("output_expectation") is not None:
+        from engine.research_codegen import output_expectations
+        frozen = receipts["output_expectation"]
+        require(type(frozen) is output_expectations.FrozenOutputExpectation
+                and frozen.expected_generation == staged.expected_generation)
+        output_status, output_evidence = output_expectations.compare_output_expectation(
+            frozen, prepared, outcome, adopted)
+    controls.append({"id": "output_contract", "status": output_status,
+                     "evidence_sha256": output_evidence})
     controls.extend({"id": key, "status": "NOT_RUN", "evidence_sha256": None}
-                    for key in ("output_contract", "physical_boundary", "resource_overload"))
+                    for key in ("physical_boundary", "resource_overload"))
+    from engine.research_codegen import prospective_contract
+    if outcome.freeze_proposal_sha256 is not None:
+        require(prepared.freeze_proposal is not None
+                and outcome.freeze_proposal_sha256 == prepared.freeze_proposal.sha256)
+    readiness = prospective_contract.assess_label_readiness(run, prepared,
+        local_observations=tuple(a.local_observation for a in outcome.attempts))
+    if outcome.freeze_proposal_sha256 is not None:
+        readiness["driver_proposal_binding"] = "BOUND_SOURCE_ONLY"
     return {"schema": "research_codegen.engineering_evidence.v1",
+            "prospective_readiness": readiness,
             "identity": {key: public[key] for key in (*bridge._IDENTITY, "artifact_sha256")},
             "accounting": {"expected_generation_sha256": staged.expected_generation.sha256,
                            "trial_readback_sha256": staged.trial_readback.sha256,
@@ -824,7 +862,10 @@ def _diagnostic_engineering_evidence(public, evidence):
         return (type(value) is str and 1 <= len(value) <= 128
                 and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value) is not None)
 
-    closed(evidence, ("schema", "identity", "accounting", "attempts", "controls"))
+    evidence_keys = ("schema", "identity", "accounting", "attempts", "controls")
+    if type(evidence) is dict and "prospective_readiness" in evidence:
+        evidence_keys = (*evidence_keys, "prospective_readiness")
+    closed(evidence, evidence_keys)
     require(type(evidence["schema"]) is str
             and evidence["schema"] == "research_codegen.engineering_evidence.v1")
     identity_keys = ("diagnostic_id", "original_root_id", "candidate_id", "source_sha256",
@@ -848,7 +889,19 @@ def _diagnostic_engineering_evidence(public, evidence):
     states = ("PLANNED", "CREATE_UNCERTAIN", "CLEANED_SUCCESS", "CLEANED_FAILURE",
               "CLEANUP_UNCERTAIN")
     for row in rows:
-        closed(row, attempt_keys)
+        local = row.get("local_observation") if type(row) is dict else None
+        closed(row, (*attempt_keys, "local_observation") if type(row) is dict and "local_observation" in row else attempt_keys)
+        if local is not None:
+            closed(local, ("sha256", "clock_state", "observation_problem",
+                           "accepted_freeze_qualification", "maturity_qualification"))
+            require(all(type(local[key]) is str for key in ("clock_state",
+                        "accepted_freeze_qualification", "maturity_qualification"))
+                    and (local["observation_problem"] is None or type(local["observation_problem"]) is str))
+            require(sha(local["sha256"]) and local["clock_state"] == "LOCAL_CLOCK_UNATTESTED"
+                    and local["accepted_freeze_qualification"] == local["maturity_qualification"] == "UNAVAILABLE"
+                    and local["observation_problem"] in (None, "LOCAL_CLOCK_REGRESSION", "RETURN_CLOCK_UNAVAILABLE"))
+        elif type(row) is dict and "local_observation" in row:
+            require(False)
         require(identifier(row["operation_id"]) and row["operation_id"] not in seen)
         seen.add(row["operation_id"])
         require(sha(row["plan_sha256"]) and sha(row["input_sha256"]))
@@ -872,7 +925,7 @@ def _diagnostic_engineering_evidence(public, evidence):
             require(not row["workload_confirmed"] and code is None
                     and row["output_bytes"] == 0 and row["output_sha256"] is None
                     and not row["cleanup_confirmed"])
-        attempts.append(dict(row))
+        attempts.append({**row, **({"local_observation": dict(local)} if local is not None else {})})
     controls = evidence["controls"]
     expected_controls = ("accounting_declaration", "prefix_schedule", "output_contract",
                          "physical_boundary", "resource_overload")
@@ -890,8 +943,98 @@ def _diagnostic_engineering_evidence(public, evidence):
         if expected in ("physical_boundary", "resource_overload"):
             require(row["status"] == "NOT_RUN")
         copied_controls.append(dict(row))
-    return {"schema": evidence["schema"], "identity": dict(identity),
+    prospective = {}
+    if "prospective_readiness" in evidence:
+        from engine.research_codegen.prospective_contract import validate_public_readiness
+        prospective["prospective_readiness"] = validate_public_readiness(evidence["prospective_readiness"])
+        coverage_count = len(prospective["prospective_readiness"]["expected_decision_sha256s"])
+        require(coverage_count >= len(attempts))
+        if copied_controls[1]["status"] == "MATCHED_EXPECTATION":
+            require(coverage_count == len(attempts))
+    return {**prospective, "schema": evidence["schema"], "identity": dict(identity),
             "accounting": dict(accounting), "attempts": attempts,
             "controls": copied_controls, "authority": "display_only",
             "scope": "SYNTHETIC_ENGINEERING_ONLY", "physical_acceptance": False,
             "scientific_acceptance": "UNQUALIFIED"}
+
+
+def _private_source_context(public, evidence, reference, repository):
+    """Verify immutable local Git bytes for an explicitly private reviewer only.
+
+    Never executes/imports candidate source, resolves a branch, fetches an object,
+    or authenticates scientific meaning. Origin and URLs use one exact allowlist.
+    The caller retains references/repository for independent render-time recheck.
+    """
+    import ast
+    import hashlib
+    import os
+    import re
+    import subprocess
+    from engine.research_codegen import bridge
+
+    def require(ok):
+        if not ok:
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+
+    require(bridge.contracts.is_exact_json(reference))
+    require(type(reference) is dict and set(reference) == {"diagnostic", "binding", "control",
+        "status", "source_bytes", "source_link", "controls", "allowed_decisions"})
+    require(reference["diagnostic"] == public["diagnostic_id"]
+            and reference["binding"] == {k: public[k] for k in (*bridge._IDENTITY, "artifact_sha256")}
+            and reference["status"] == public["status"] and reference["allowed_decisions"] == [])
+    require(type(evidence) is dict and reference["controls"] == {
+        c["id"]: c["status"] for c in evidence["controls"]})
+    require(type(reference["source_bytes"]) is int and 0 < reference["source_bytes"] <= 262144)
+    link = reference["source_link"]
+    require(type(link) is str and len(link) <= 2048)
+    match = re.fullmatch(r"https://github\.com/mastermindx-market-intelligence/macro/blob/"
+        r"([0-9a-f]{40})/([A-Za-z0-9_./-]+)(?:#L([1-9][0-9]*)-L([1-9][0-9]*))?", link)
+    require(match is not None and repository is not None)
+    commit, path, first, last = match.groups()
+    require(all(part not in ("", ".", "..") for part in path.split("/")))
+    env = os.environ.copy()
+    env.update(GIT_NO_LAZY_FETCH="1", GIT_TERMINAL_PROMPT="0", GIT_NO_REPLACE_OBJECTS="1")
+    def git(*args):
+        try:
+            result = subprocess.run(["git", "--no-replace-objects", "-C", str(repository), *args],
+                env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                timeout=15, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED") from None
+        require(result.returncode == 0)
+        return result.stdout
+    origin = git("remote", "get-url", "origin").strip()
+    require(origin in (b"https://github.com/mastermindx-market-intelligence/macro.git",
+        b"https://github.com/mastermindx-market-intelligence/macro",
+        b"git@github.com:mastermindx-market-intelligence/macro.git"))
+    require(git("cat-file", "-t", commit).strip() == b"commit")
+    obj = commit + ":" + path
+    require(git("cat-file", "-t", obj).strip() == b"blob")
+    size = git("cat-file", "-s", obj).strip()
+    require(size.isdigit() and 0 < int(size) <= 262144)
+    raw = git("cat-file", "blob", obj)
+    require(len(raw) == int(size))
+    control = reference["control"]
+    if first is None:
+        require(control is None)
+        source = raw
+    else:
+        require(type(control) is str and control in ("KNOWN_ANSWER_SOURCE", "TEMPORAL_BAD_SOURCE")
+                and path == "tests/test_research_codegen_prefix_driver.py")
+        try:
+            tree = ast.parse(raw)
+        except (ValueError, SyntaxError, RecursionError, MemoryError):
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED") from None
+        nodes = [node for node in tree.body if type(node) is ast.Assign and len(node.targets) == 1
+                 and type(node.targets[0]) is ast.Name and node.targets[0].id == control]
+        require(len(nodes) == 1 and type(nodes[0].value) is ast.Constant
+                and type(nodes[0].value.value) is bytes)
+        literal = nodes[0].value
+        require(literal.lineno == int(first) and literal.end_lineno == int(last))
+        source = literal.value
+    require(len(source) == reference["source_bytes"]
+            and hashlib.sha256(source).hexdigest() == public["source_sha256"])
+    return dict(schema="research_codegen.private_source_context.v1", scope="PRIVATE_LOCAL_REVIEW_ONLY",
+        binding={k: public[k] for k in (*bridge._IDENTITY, "artifact_sha256")},
+        source_link=link, source_bytes=len(source), control=control,
+        source_verification="LOCAL_GIT_BYTES_MATCH", mechanism="UNAVAILABLE", parent_diff="UNAVAILABLE")
