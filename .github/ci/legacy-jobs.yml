@@ -53095,6 +53095,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/event_hedging_diagnostics.py"
+      - "engine/event_hedging_evaluation.py"
+      - "engine/k3e_eval1_forward.py"
+      - "engine/seasonality/multiplicity.py"
       - "engine/__init__.py"
       - "engine/intraday_greeks.py"
       - "engine/options_scenario_surface.py"
