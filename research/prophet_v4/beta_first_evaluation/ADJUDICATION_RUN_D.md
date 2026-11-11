@@ -10,7 +10,7 @@ Two independent re-derivations of the published beta evaluation
    14 unblinding differences (large overlap with run D).
 
 A third independent run (the stock-minus-sector diagnosis,
-`/tmp/prophet-eval-diagnosis/REPORT.md`) reproduced the event-study table to 6
+`DIAGNOSIS_STOCK_MINUS_SECTOR_20261111.md`, beside this file) reproduced the event-study table to 6
 decimals and motivated deviations D7/D8 in the correction.
 
 **Method.** Every finding below was reproduced on this engine before receiving a

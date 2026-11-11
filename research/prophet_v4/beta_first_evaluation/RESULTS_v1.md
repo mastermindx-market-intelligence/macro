@@ -256,6 +256,7 @@ artifact's `correction` block, and the full finding-by-finding verdicts are in `
 6. Labels corrected in place above: MRNA is a receipted replay, not a reconstruction (finding 12); its price move
    is now second-source authenticated (finding 15); the 16/17 census is clarified (finding 12).
 
-A DRAFT forward pre-registration of three member-selection hypotheses derived from the diagnosis sits at
-`DRAFT_PREREGISTRATION_MEMBER_SELECTION_v0.md`; it is a draft until the programme CEO freezes it and changes
-nothing in what Prophet publishes.
+The forward pre-registration derived from the diagnosis is `PREREG_MEMBER_SELECTION_v1.md` (one confirmatory
+hypothesis, two descriptive ones); its freeze record is the sidecar `PREREG_MEMBER_SELECTION_v1.FREEZE.json`.
+The diagnosis itself is `DIAGNOSIS_STOCK_MINUS_SECTOR_20261111.md`. The earlier v0 draft is superseded and
+removed. None of this changes what Prophet publishes.
