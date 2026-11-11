@@ -79,6 +79,18 @@ never 0, never "neutral", never "quiet".)
 - If `first_public_evidence` or `observation_time` is later than `cutoff` (compared at the
   coarser of the two precisions), the observation is returned with `value_state="refused"`,
   `value=None`, limitation `after_cutoff` — the number never leaks past its cutoff.
+- A cutoff or evidence stamp that cannot be parsed refuses the value (`cutoff_unparsable` /
+  `evidence_time_unparsable`). The value is never admitted unproven.
+- **FQ2, as merged in #9233.** An unknown evidence time stays ADMITTED, with a visible tag in
+  `limitations`:
+  - no `first_public_evidence` and no `observation_time` → `evidence_time_unknown`;
+  - an `observation_time` but no `first_public_evidence` → `first_public_evidence_unknown`;
+  - both stamped → no tag.
+
+  A refused record gets neither tag. The tag survives `to_dict`/`from_dict`. Cutoff-strict
+  consumers refuse an `evidence_time_unknown` operand fail-closed; the D0 point-in-time cutoff
+  is the first of these. B0 does not refuse it, because display of a dated official value
+  must not depend on a stamp the source never carried.
 
 ## 4. `ComparisonRule` and `ComparisonResult`
 
@@ -110,7 +122,7 @@ Difference unit conversions are explicit (`pct`→`bp` ×100 only when `output_u
 |---|---|---|
 | `forecast_vs_first_print.v1` | house forecast vs official first print | match `target`, `basket_or_index`, `reference_start`, `reference_end`, `unit`, `seasonal_treatment`, `target_epoch`; left `house_estimate`, right `official_measurement` with target ending `_first_print`. Revised value as right operand ⇒ `constraint:target:right`. |
 | `same_basis_level_change.v1` | same series, two dates | match everything except dates/vintage; direct difference. |
-| `zq_month_vs_policy_midpoint.v1` | ZQ monthly-average EFFR vs current target midpoint | always `comparable_after_transformation` with transform `monthly_average_vs_level`, assumption `effr_minus_midpoint_bp=<explicit>`; if no explicit EFFR-midpoint basis is supplied ⇒ `not_identified`, `underidentified:effr_target_basis`. |
+| `zq_month_vs_policy_midpoint.v1` | ZQ monthly-average EFFR vs current target midpoint | `comparable_after_transformation` with transform `monthly_average_vs_level` and assumption `effr_minus_midpoint_bp=<explicit>`. The gap is APPLIED in the rule's output unit (bp): `difference = (ZQ − midpoint)×100 − effr_minus_midpoint_bp` for pct operands, `(ZQ − midpoint) − effr_minus_midpoint_bp` for bp operands; a pct output subtracts the gap/100 (midpoint-equivalent; amendment B0-FIX6 — the raw ZQ−midpoint spread is the EFFR–midpoint basis, never an implied policy change). No gap is ever defaulted. An explicit basis that is missing, None, a bool, non-numeric or non-finite, or operands in mixed units ⇒ `not_identified`, `underidentified:effr_target_basis`. Assumptions record `effr_minus_midpoint_bp=<gap>` and `effr_gap_applied_in=<unit>`. |
 | `sr3_vs_zq.v1` | SR3 quarter vs ZQ month | `not_comparable`, `basis_mismatch:rate_index` (no automatic SOFR–EFFR basis, no fallback equivalence — A15/A18). |
 | `sep_vs_market_year_end.v1` | SEP year-end median vs market-implied | comparable only when the market operand's reference interval contains the SEP year-end month (transform `year_end_interval_match`, limitation "participant appropriate-policy projection, not a committee promise or probability"); otherwise `basis_mismatch:reference_end` (A19). |
 | `par_vs_zero.v1` | par vs zero yield | `not_comparable`, `basis_mismatch:curve_convention` (A20). |
@@ -142,6 +154,20 @@ float | None)`. Each path dict = `{"segments": [[start, end, rate], …], "end_r
 - ≥2 unknown segments, or a discrete grid admitting >1 path within tolerance ⇒
   `feasible_alternatives` (all grid paths listed, capped at 50 with a limitation if capped).
 - no feasible path within tolerance ⇒ `inconsistent`.
+- **F3, as merged in #9233.** No grid step is ever defaulted. `rate_step_bp` that is None, 0,
+  negative, NaN, infinite, a bool or non-numeric counts as unsupplied. Without a supplied step:
+  - one effective date and no usable pre-change rate ⇒ `missing_inputs`, `missing=("pre_change_rate",)`;
+  - no effective date supplied at all ⇒ `missing_inputs`, `missing=("rate_step_bp",)`;
+  - two or more inside dates ⇒ `missing_inputs`, `missing=("rate_step_bp",)`.
+
+  A supplied step enumerates the grid at half the step, and its tags name the step
+  (`rate_step_bp=<g>`). Witnesses: a single date with step 50 lists 37 alternatives; two
+  dates with step 25 list 18; a single date with a known pre-rate is `identified_conditional`
+  4.2. A realised average counts as a pre-rate only when its window is a strict prefix of the
+  pre-change segment. Without a window it carries `realised_through_unknown`.
+- Path rates are in the operand's own rate-index space (EFFR for ZQ). The solver does not
+  apply `effr_minus_midpoint_bp`, which is carried for consumers. A midpoint-space reading
+  goes through `zq_month_vs_policy_midpoint.v1`, never by relabelling a path rate.
 - Canonical witness (A16/A17): 30-day month, 15 d @ 4.50 + 15 d @ 4.00 ⇒ average 4.25; the
   month-average change vs 4.50 is −25 bp while the second-half level change is −50 bp; with
   pre-rate unknown and 25 bp grid the same 4.25 average admits multiple paths ⇒ nonunique.

@@ -284,6 +284,31 @@ def bounded_owner_reads(*, maximum_bytes: int):
         _OWNER_READ_BUDGETS.reset(token)
 
 
+def _read_bounded_descriptor(descriptor: int, *, size: int, limit: int) -> bytes:
+    """Shared charged byte loop; callers own safe-open and integrity checks."""
+    budgets = _OWNER_READ_BUDGETS.get()
+    # Reserve room for the existing one-byte growth probe before reading.
+    # Every actual chunk is charged even if later validation rejects it.
+    if any(size + 1 > item._limit - item._bytes for item in budgets):
+        raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
+    for item in budgets:
+        item._objects += 1
+    chunks: list[bytes] = []
+    remaining = limit + 1
+    while remaining > 0:
+        allowance = min((item._limit - item._bytes for item in budgets), default=remaining)
+        if allowance <= 0:
+            raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
+        chunk = os.read(descriptor, min(65_536, remaining, allowance))
+        if not chunk:
+            break
+        for item in budgets:
+            item._bytes += len(chunk)
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(chunks)
+
+
 def _read_canonical_object(
     path: Path,
     *,
@@ -306,27 +331,7 @@ def _read_canonical_object(
             raise MarketMemoryStoreError(f"{label} is not a regular file")
         if metadata.st_size <= 0 or metadata.st_size > limit:
             raise MarketMemoryStoreError(f"{label} exceeds its safe size bound")
-        budgets = _OWNER_READ_BUDGETS.get()
-        # Reserve room for the existing one-byte growth probe before reading.
-        # Every actual chunk is charged even if later validation rejects it.
-        if any(metadata.st_size + 1 > item._limit - item._bytes for item in budgets):
-            raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
-        for item in budgets:
-            item._objects += 1
-        chunks: list[bytes] = []
-        remaining = limit + 1
-        while remaining > 0:
-            allowance = min((item._limit - item._bytes for item in budgets), default=remaining)
-            if allowance <= 0:
-                raise OwnerReadBudgetError("aggregate owner read byte budget exhausted")
-            chunk = os.read(descriptor, min(65_536, remaining, allowance))
-            if not chunk:
-                break
-            for item in budgets:
-                item._bytes += len(chunk)
-            chunks.append(chunk)
-            remaining -= len(chunk)
-        body = b"".join(chunks)
+        body = _read_bounded_descriptor(descriptor, size=metadata.st_size, limit=limit)
     except OSError as exc:
         raise MarketMemoryStoreError(f"{label} cannot be read") from exc
     finally:

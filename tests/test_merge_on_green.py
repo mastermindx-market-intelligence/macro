@@ -27,6 +27,7 @@ import scripts.merge_on_green as MOG
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_IN_FLIGHT_PR_PROOFS = MOG.in_flight_pr_proofs
+REAL_HOSTED_POOL_CENSUS = MOG.hosted_pool_census
 REAL_REFRESH_LEASE_RESERVATION_COUNT = MOG.refresh_lease_reservation_count
 REAL_PREPARE_REFRESH_LEASE = MOG.prepare_refresh_lease
 REAL_SERIALIZED_REFRESH_AUTHORITY = MOG.serialized_refresh_authority
@@ -74,6 +75,10 @@ def _no_unstubbed_http(monkeypatch):
     # The repo-wide Actions census is another main()-only read. Healthy/idle is the
     # neutral default; tests about global refresh backpressure override it.
     monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 0)
+    # The adaptive-cap census is another main()-only read. Its neutral default is
+    # "unreadable" (the flat cap of 8), so every test written against the flat cap
+    # keeps its numbers; tests about the adaptive cap override it.
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: None)
     monkeypatch.setattr(MOG, "refresh_lease_reservation_count", lambda *_a: 0)
     monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: True)
     monkeypatch.setattr(
@@ -5193,6 +5198,498 @@ def test_existing_owner_only_consumes_extra_capacity_until_its_run_is_indexed(
     assert observed == [(expected_allowance, requires_lease)]
 
 
+def _census(queued_runs=0, sampled_runs=3, refused_jobs=0, served_runs=3, slow_jobs=0):
+    return MOG.HostedPoolCensus(
+        queued_runs, sampled_runs, refused_jobs, served_runs, slow_jobs
+    )
+
+
+@pytest.mark.parametrize(
+    "census,expected_cap,needle",
+    [
+        (None, 8, "census unavailable"),
+        (_census(queued_runs=1), 8, "+0 adaptive: hosted pool refused 1 queued run(s)"),
+        (
+            _census(refused_jobs=2, served_runs=2),
+            8,
+            "+0 adaptive: hosted pool refused 0 queued run(s), 2 waiting hosted job(s)",
+        ),
+        (_census(slow_jobs=1, served_runs=2), 8, "1 slow pickup(s)"),
+        (_census(served_runs=3), 16, "+8 adaptive: 3 of 3 mature run(s) served"),
+        (_census(served_runs=2), 16, "+8 adaptive: 2 of 3 mature run(s) served"),
+        (
+            _census(sampled_runs=1, served_runs=1),
+            12,
+            "+4 adaptive: 1 of 1 mature run(s) served",
+        ),
+        (
+            _census(sampled_runs=0, served_runs=0),
+            8,
+            "+0 adaptive: no mature run witnessed the hosted pool (0 sampled)",
+        ),
+        (_census(sampled_runs=2, served_runs=0), 8, "+0 adaptive: no mature run"),
+    ],
+)
+def test_adaptive_proof_cap_widens_only_on_job_level_service_evidence(
+    census, expected_cap, needle
+):
+    cap, detail = MOG.adaptive_proof_cap(census)
+    assert cap == expected_cap
+    assert needle in detail
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS <= cap <= MOG.ADAPTIVE_PROOF_CAP_MAX == 16
+
+
+_T0 = dt.datetime(2026, 11, 5, 14, 25, 9, tzinfo=dt.timezone.utc)
+
+
+def _at(seconds):
+    return (_T0 + dt.timedelta(seconds=seconds)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _census_job(name, status, created=0, started=2, labels=("ubuntu-latest",)):
+    job = {"name": name, "status": status, "labels": list(labels), "created_at": _at(created)}
+    if started is not None:
+        job["started_at"] = _at(created + started)
+    return job
+
+
+def _census_jobs(*jobs):
+    return 200, {"total_count": len(jobs), "jobs": list(jobs)}
+
+
+def _first_wave(*extra):
+    return (
+        _census_job("ci-plan", "completed"),
+        _census_job("contract-delta", "in_progress"),
+        _census_job("trusted-ci", "completed", created=216, started=0, labels=()),
+        *extra,
+    )
+
+
+def _packs(status="in_progress", started=2, count=12, offset=0):
+    return [
+        _census_job(f"ci-pack-{i + offset}", status, created=216, started=started)
+        for i in range(count)
+    ]
+
+
+@pytest.mark.parametrize(
+    "jobs,expected",
+    [
+        # Live shape of run 42044812799: packs created 216 s after ci-plan, all served.
+        (_first_wave(*_packs()), (0, 0, True)),
+        # Round-2 MAJOR: only the first wave is running, the packs do not exist yet.
+        (_first_wave(), (0, 0, False)),
+        # Packs finished, ci-gate not yet created, only contract-delta running.
+        (_first_wave(*_packs(status="completed")), (0, 0, False)),
+        # Two packs the pool has not started: refused, never served.
+        (_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10)), (2, 0, False)),
+        # pending / waiting / requested hosted jobs are refusal evidence too.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "pending", created=216, started=None)), (1, 0, False)),
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "waiting", created=216, started=None)), (1, 0, False)),
+        # A queued job with no labels at all is refusal evidence, not ignored.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "queued", created=216, started=None, labels=())), (1, 0, False)),
+        # The pool took 200 s to start one pack: slow pickup, never served.
+        (_first_wave(*_packs(count=11), _census_job("ci-pack-11", "in_progress", created=216, started=200)), (0, 1, False)),
+        # Slow ci-plan pickup in the first wave is pressure evidence as well.
+        ((_census_job("ci-plan", "completed", started=150), *_packs()), (0, 1, False)),
+        # A runner-group label that GitHub does not itself serve can never serve.
+        (_first_wave(*[_census_job(f"ci-pack-{i}", "in_progress", created=216, labels=("ci-linux",)) for i in range(12)]), (0, 0, False)),
+        # Self-hosted render jobs say nothing about the hosted pool.
+        (_first_wave(_census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio"))), (0, 0, False)),
+        # MINOR-1 (round 3): the first wave is a set of JOBS, not a timestamp.
+        # `contract-delta` created one second after `ci-plan` (a second boundary)
+        # with no packs yet is still the first wave.
+        ((_census_job("ci-plan", "in_progress"), _census_job("contract-delta", "in_progress", created=1)), (0, 0, False)),
+        # A re-run of a failed `ci-plan` carries the old `contract-delta` and a
+        # new, much later `ci-plan`; still no pack exists.
+        ((_census_job("contract-delta", "completed"), _census_job("ci-plan", "in_progress", created=900)), (0, 0, False)),
+        # The pc route's trusted-ci gate jobs are hosted and later than ci-plan
+        # but the packs are still blocked behind them.
+        ((_census_job("ci-plan", "completed"), _census_job("trusted-ci / trust-gate", "in_progress", created=30), _census_job("trusted-ci / plan", "in_progress", created=30)), (0, 0, False)),
+        # `ci-gate` running after the packs is later-wave service.
+        (_first_wave(*_packs(status="completed"), _census_job("ci-gate", "in_progress", created=600)), (0, 0, True)),
+        # An empty job list is no evidence either way.
+        ((), (0, 0, False)),
+    ],
+    ids=(
+        "served-live-shape",
+        "before-packs-not-served",
+        "packs-done-first-wave-only-not-served",
+        "queued-packs-refused",
+        "pending-refused",
+        "waiting-refused",
+        "unlabelled-queued-refused",
+        "slow-pack-pickup",
+        "slow-ci-plan-pickup",
+        "runner-group-label-never-serves",
+        "self-hosted-ignored",
+        "contract-delta-a-second-later-not-served",
+        "rerun-ci-plan-later-not-served",
+        "pc-route-trust-gate-not-served",
+        "ci-gate-after-packs-served",
+        "empty",
+    ),
+)
+def test_run_job_evidence_requires_a_served_later_wave_and_no_refusal(jobs, expected):
+    assert MOG._run_job_evidence(list(jobs)) == expected
+
+
+@pytest.mark.parametrize(
+    "jobs",
+    [
+        ["not a job"],
+        [{"name": "ci-plan", "status": "completed", "labels": "ubuntu-latest", "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"]}],
+        [{"name": "ci-plan", "status": None, "labels": ["ubuntu-latest"], "created_at": _at(0)}],
+        [{"name": "ci-plan", "status": "completed", "labels": ["ubuntu-latest"], "created_at": "yesterday"}],
+        [{"status": "completed", "labels": ["ubuntu-latest"], "created_at": _at(0), "started_at": _at(2)}],
+        # NIT-2 (round 3): a running pack without `started_at` is unclean, not a
+        # fast pickup; so is a garbled one.
+        [*_first_wave(*_packs(count=11)), _census_job("ci-pack-11", "in_progress", created=216, started=None)],
+        [*_first_wave(*_packs(count=11)), {**_census_job("ci-pack-11", "in_progress", created=216), "started_at": "soon"}],
+    ],
+    ids=(
+        "non-dict",
+        "labels-not-a-list",
+        "no-created-at",
+        "status-not-a-string",
+        "bad-timestamp",
+        "no-name",
+        "running-without-started-at",
+        "running-with-bad-started-at",
+    ),
+)
+def test_run_job_evidence_is_unreadable_on_any_unclean_job(jobs):
+    assert MOG._run_job_evidence(jobs) is None
+
+
+def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch):
+    seen: list[str] = []
+    now = dt.datetime(2026, 11, 5, 14, 25, tzinfo=dt.timezone.utc)
+    served = _census_jobs(*_first_wave(*_packs()))
+    refused = _census_jobs(
+        *_first_wave(*_packs(count=10), *_packs(status="queued", started=None, count=2, offset=10))
+    )
+    render_only = _census_jobs(
+        *_first_wave(
+            _census_job("render", "queued", created=216, started=None, labels=("self-hosted", "macstudio")),
+            _census_job("render-light", "queued", created=216, started=None, labels=("self-hosted", "macstudio-light")),
+        )
+    )
+
+    def fake_request(method, url, token, payload=None):
+        seen.append(url)
+        assert method == "GET" and token == "read"
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            assert "per_page=1" in url
+            return 200, {"total_count": 0}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            # Mature = created before now - 240 s, newest first, sample of three.
+            assert "per_page=3" in url
+            assert "created=%3C2026-11-05T14%3A21%3A00Z" in url
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        if url.endswith("/runs/11/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/12/jobs?filter=latest&per_page=100"):
+            return refused
+        if url.endswith("/runs/13/jobs?filter=latest&per_page=100"):
+            return render_only
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    # Run 11 is served; run 12 has two hosted jobs the pool refused; run 13's only
+    # waiting jobs are self-hosted render jobs, which say nothing about the hosted
+    # pool, and its first wave alone is not served evidence.
+    assert census == MOG.HostedPoolCensus(
+        queued_runs=0, sampled_runs=3, refused_jobs=2, served_runs=1, slow_jobs=0
+    )
+    assert len(seen) == 5
+
+    def failing(step, answer):
+        def request(method, url, token, payload=None):
+            if step == "queued" and "status=queued" in url:
+                return answer
+            if step == "list" and "status=in_progress" in url:
+                return answer
+            if step == "jobs" and "/jobs?" in url:
+                return answer
+            return fake_request(method, url, token, payload)
+
+        return request
+
+    for step, answer in (
+        ("queued", (403, {"message": "rate limited"})),
+        ("queued", (200, {"total_count": True})),
+        ("list", (500, None)),
+        ("list", (200, {"workflow_runs": [{"id": True}]})),
+        ("list", (200, {"total_count": 3})),
+        ("jobs", (403, {"message": "rate limited"})),
+        ("jobs", (200, {"total_count": 101, "jobs": []})),
+        ("jobs", (200, {"jobs": "nope"})),
+        ("jobs", (200, {"total_count": 1, "jobs": ["not a job"]})),
+        # NIT-3 (round 3): a job list shorter than its own total is a short page.
+        ("jobs", (200, {"total_count": 16, "jobs": list(_first_wave(*_packs(count=2)))})),
+    ):
+        monkeypatch.setattr(MOG, "_request", failing(step, answer))
+        assert REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now) is None, (
+            step,
+            answer,
+        )
+
+
+def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
+    def fake_request(method, url, token, payload=None):
+        if "status=queued" in url:
+            return 200, {"total_count": 0}
+        if "status=in_progress" in url:
+            return 200, {"workflow_runs": []}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
+    assert census == MOG.HostedPoolCensus(0, 0, 0, 0, 0)
+    assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance",
+    [
+        (_census(served_runs=3), 8, 8),
+        (_census(served_runs=3), 15, 1),
+        (_census(served_runs=3), 16, 0),
+        (_census(sampled_runs=1, served_runs=1), 10, 2),
+        (_census(refused_jobs=1, served_runs=2), 8, 0),
+        # S9: a slow pickup collapses the adaptive cap to the flat 8 (unchanged) but
+        # is not refusal, so the saturation floor still admits one lease-serialized
+        # refresh while fewer than REFRESH_FLOOR_PROOF_CEILING proofs are in flight.
+        (_census(slow_jobs=1, served_runs=3), 8, 1),
+        (_census(queued_runs=1), 8, 0),
+        (_census(sampled_runs=0, served_runs=0), 8, 0),
+        (None, 8, 0),
+    ],
+    ids=(
+        "served-pool-cap-16",
+        "served-pool-last-slot",
+        "served-pool-full",
+        "one-served-run-cap-12",
+        "refused-job-flat-cap",
+        "slow-pickup-flat-cap-floor-one",
+        "queued-run-flat-cap",
+        "no-witness-flat-cap",
+        "census-unreadable-flat-cap",
+    ),
+)
+def test_adaptive_cap_widens_update_branch_capacity_only_on_a_served_pool(
+    monkeypatch, capsys, census, active, expected_allowance
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [expected_allowance]
+    out = capsys.readouterr().out
+    if active >= MOG.ADAPTIVE_PROOF_CAP_MAX:
+        # Nothing could widen past a full widest cap: the census is not even read.
+        assert "global cap 8 (census skipped: flat cap)" in out
+    else:
+        expected_cap, _ = MOG.adaptive_proof_cap(census)
+        assert f"global cap {expected_cap} (" in out
+
+
+@pytest.mark.parametrize(
+    "active,authorized,lease_readable",
+    [(0, True, True), (16, True, True), (20, True, True), (3, False, True), (3, True, False)],
+    ids=(
+        "idle-repo",
+        "widest-cap-already-full",
+        "beyond-widest-cap",
+        "refresh-authority-refused",
+        "lease-unreadable",
+    ),
+)
+def test_adaptive_census_is_not_read_where_it_cannot_widen_anything(
+    monkeypatch, capsys, active, authorized, lease_readable
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a: authorized)
+    if not lease_readable:
+        monkeypatch.setattr(
+            MOG,
+            "prepare_refresh_lease",
+            lambda repo, read, write, pulls: (
+                MOG.RefreshLease(repo, read, write, readable=False),
+                pulls,
+            ),
+        )
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    monkeypatch.setattr(MOG, "sweep_pull", lambda *_a: "pending")
+    assert MOG.main() == 0
+    out = capsys.readouterr().out
+    if authorized and lease_readable:
+        assert "global cap 8 (census skipped: flat cap)" in out
+
+
+def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
+    monkeypatch, capsys
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 7)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    allowances: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        allowances.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert allowances == [1]
+    out = capsys.readouterr().out
+    assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "Sweep deferred" not in out
+
+
+@pytest.mark.parametrize(
+    "census,active,expected,needle",
+    [
+        (None, 12, 0, "census not read"),
+        (_census(queued_runs=1, served_runs=0), 12, 0, "refused 1 queued run(s)"),
+        (_census(refused_jobs=2, served_runs=1), 12, 0, "2 waiting hosted job(s)"),
+        (_census(sampled_runs=0, served_runs=0), 12, 0, "no hosted pickup witnessed"),
+        # Sampled but neither served nor slow: no later-wave hosted job was seen
+        # starting, so there is no capacity witness either way -- floor closed.
+        (_census(sampled_runs=2, served_runs=0), 9, 0, "2 mature run(s) sampled, none served or slow"),
+        (_census(sampled_runs=1, served_runs=1), 9, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 40, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=3, served_runs=0), 9, 1, "3 slow pickup(s), no refusal in 3"),
+    ],
+)
+def test_s9_refresh_floor_is_one_slot_under_a_hard_ceiling_without_refusal(
+    census, active, expected, needle
+):
+    """The repealed 'fair refresh' clamp raised a negative allowance to eight at 49
+    proofs in flight. The floor is one, only below the half-headroom ceiling, and
+    never on refusal evidence (a queued run or a waiting hosted job)."""
+    slots, detail = MOG.refresh_floor_allowance(census, active)
+    assert (slots, needle in detail) == (expected, True), detail
+    assert MOG.REFRESH_FLOOR_PER_SWEEP == 1
+    assert MOG.REFRESH_FLOOR_PROOF_CEILING == 12
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance,needle",
+    [
+        # The overnight deadlock shape: slow pickups only, 12 proofs, flat cap 8 -> 0.
+        # 12 is AT the ceiling, so the floor stays closed; one proof fewer opens it.
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "floor withheld: 12 proof(s)"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "[saturation floor: 1"),
+        (_census(queued_runs=1, served_runs=0), 9, 0, "floor withheld: hosted pool refused"),
+        # Ordinary headroom is untouched: the floor only acts on a zero allowance.
+        (_census(served_runs=3), 9, 7, "global cap 16"),
+    ],
+    ids=("deadlock-at-ceiling", "deadlock-under-ceiling", "refusal", "headroom-untouched"),
+)
+def test_s9_floor_grants_one_lease_serialized_slot_when_the_census_zeroes_the_sweep(
+    monkeypatch, capsys, census, active, expected_allowance, needle
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    seen: list[tuple[int, bool]] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append((budget.max_refreshes, budget.requires_refresh_lease))
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [(expected_allowance, expected_allowance == 1)]
+    out = capsys.readouterr().out
+    assert needle in out, out
+    if expected_allowance == 1:
+        assert "(durable lease required)" in out
+
+
+def test_s9_floor_never_reads_a_second_census_and_stays_closed_past_the_widest_cap(
+    monkeypatch, capsys
+):
+    """At 16+ proofs the adaptive census is skipped; the floor must not open a new
+    read of its own and must stay closed (the ceiling is 12)."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    assert "[floor withheld: hosted pool census not read]" in capsys.readouterr().out
+
+
+def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
+    """A RateLimited census degrades to the flat cap (unchanged); at 9 proofs that
+    is zero, and a floor without job-level evidence would be the repealed clamp.
+    9 is UNDER the floor ceiling, so only the missing census keeps it closed."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 9)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    out = capsys.readouterr().out
+    assert "census failed (core budget exhausted): flat cap" in out
+    assert "[floor withheld: hosted pool census not read]" in out
+    assert "Sweep deferred" not in out
+
+
 def test_every_update_branch_call_is_behind_the_refresh_admission_gateway():
     tree = ast.parse(
         (ROOT / "scripts" / "merge_on_green.py").read_text(encoding="utf-8")
@@ -5453,6 +5950,125 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     ) == "refresh-deferred"
     assert not [call for call in calls if call[0] == "PUT"]
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_refused_generation_register_read_declines_the_claim_out_loud(
+    monkeypatch, capsys
+):
+    """A pre-write refusal must say why. Observed live: the tier-0 main-red-repair
+    pull request was deferred sweep after sweep at "0/1 effective CI workload
+    slot(s) in use" while the queue showed a free slot, because the register read
+    was refused and `claim()` returned a bare False."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "::notice title=merge-on-green refresh lease::PR #1: refresh lease not "
+        "claimed — the generation register read answered HTTP 403; no "
+        "update-branch write attempted." in out
+    )
+    assert "0/1 effective CI workload slot(s) in use" in out
+    assert not [call for call in calls if call[0] in {"PATCH", "POST", "PUT"}]
+    assert budget.refreshes_used == 0
+
+
+def test_spent_claim_latch_names_the_first_claimant(monkeypatch, capsys):
+    """The one-claim-per-sweep latch is correct and must stay; it must also be
+    visible, naming the pull request that consumed it."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and url.endswith("/pulls/2"):
+            return 200, _pull(2)
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": MOG.REFRESH_LEASE_DESCRIPTION,
+            }
+        if method == "PATCH" and "/labels/" in url:
+            return 500, None
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — a generation register write was "
+        "attempted but the read-back did not affirm the intended record (write "
+        "HTTP 500, read-back HTTP 200); the register's outcome is unknown" in out
+    )
+    assert (
+        "PR #2: refresh lease not claimed — this sweep already spent its single "
+        "lease claim on PR #1" in out
+    )
+    assert lease.claim_attempted_number == 1
+    assert not [call for call in calls if call[0] in {"POST", "PUT"}]
+    assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_owner_with_refused_register_read_is_declined_as_a_refused_read(
+    monkeypatch, capsys
+):
+    """Heads match, but the register read is refused: the notice must say the
+    register no longer affirms the generation, not that an update was already
+    authorised (review finding on the S2a change)."""
+    head = "a" * 40
+
+    def fake_request(method, url, token, payload=None):
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease(
+        "acme/widgets",
+        "read",
+        "write",
+        owner_number=1,
+        owner_updated_at="2026-11-05T22:00:00Z",
+        generation_head_sha=head,
+        generation_id="gen",
+    )
+    pull = _pull(1, labels=(MOG.MERGE_ON_GREEN_LABEL, MOG.REFRESH_LEASE_LABEL))
+    assert lease.claim(pull) is False
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — the generation register no longer "
+        "affirms its generation (read refused or record changed)" in out
+    )
+    assert "already authorised" not in out
 
 
 def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
@@ -6322,33 +6938,49 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    assert len(seen) == MOG.FALLBACK_PULL_CAP, (
-        f"expected at most {MOG.FALLBACK_PULL_CAP} pull requests per sweep, "
+    funded_cap = 23  # (1000 - 92 fixed - 8 attempts - 260 reserve) // 27
+    assert len(seen) == funded_cap, (
+        f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
     )
-    expected = MOG.sweep_order(armed, cap=MOG.FALLBACK_PULL_CAP)
-    assert seen == [pull["number"] for pull in expected[: MOG.FALLBACK_PULL_CAP]]
+    expected = MOG.sweep_order(armed, cap=funded_cap)
+    assert seen == [pull["number"] for pull in expected[:funded_cap]]
 
-    deferred = sorted(pull["number"] for pull in expected[MOG.FALLBACK_PULL_CAP :])
+    deferred = sorted(pull["number"] for pull in expected[funded_cap:])
     notices = [
         line
         for line in capsys.readouterr().out.splitlines()
         if line.startswith("::notice") and "Per-sweep cap" in line
     ]
     assert notices, "the cap must announce itself"
-    assert f"{MOG.FALLBACK_PULL_CAP} of {len(armed)}" in notices[0]
+    assert f"{funded_cap} of {len(armed)}" in notices[0]
     assert "observed core limit is 1000" in notices[0]
     for number in deferred[:3]:
         assert f"#{number}" in notices[0], f"deferred #{number} must be named"
 
 
-def test_the_live_enterprise_quota_expands_the_window_to_100(monkeypatch, capsys):
-    armed = [_pull(number) for number in range(1, 94)]
+def test_the_live_enterprise_quota_covers_110_armed_pulls(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 111)]
     seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
     assert MOG.main() == 0
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
-    assert len(seen) == len(armed), "the measured 29-PR deferral must be gone"
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
+    assert len(seen) == len(armed), "the measured 110-PR backlog must not be cap-deferred"
     assert "Per-sweep cap" not in capsys.readouterr().out
+
+
+def test_enterprise_evaluation_still_defers_beyond_128_without_extra_ci_slots(monkeypatch, capsys):
+    armed = [_pull(number) for number in range(1, 130)]
+    seen = _main_harness(monkeypatch, armed, readings=(14_904,), limit=15_000)
+    assert MOG.main() == 0
+    assert len(seen) == MOG.MAX_PULL_CAP == 128
+    assert MOG.MAX_REFRESHES_PER_SWEEP == MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+    notices = [line for line in capsys.readouterr().out.splitlines()
+               if "Per-sweep cap" in line]
+    assert len(notices) == 1
+    assert "128 of 129" in notices[0]
+    missing = set(range(1, 130)) - set(seen)
+    assert len(missing) == 1
+    assert f"#{missing.pop()}" in notices[0]
 
 
 def test_the_sweep_stops_cleanly_when_the_budget_runs_out_mid_pass(monkeypatch, capsys):
@@ -6503,6 +7135,55 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
     )
 
 
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25), (110, 128)])
+def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
+    """Evaluation coverage is insufficient when only one refresh slot is free.
+
+    With span=100/cap=100 the old order never moves; span=80/cap=100
+    visits only four first positions. Every ordinary PR must get a turn at
+    the front even when all prior update attempts prove conflicted.
+    """
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(span):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        assert {pull["number"] for pull in ordered} == set(range(1, span + 1))
+        assert len(ordered) == span
+        reached.add(ordered[0]["number"])
+    assert reached == set(range(1, span + 1))
+
+
+@pytest.mark.parametrize("span,cap,buckets", [(80, 100, 12), (100, 100, 15), (100, 25, 16)])
+def test_refresh_attempt_window_reaches_whole_backlog_without_larger_budget(span, cap, buckets):
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(buckets):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        reached.update(pull["number"] for pull in ordered[:MOG.MAX_REFRESHES_PER_SWEEP])
+    assert reached == set(range(1, span + 1))
+    assert MOG.MAX_REFRESHES_PER_SWEEP == 8
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+
+
+def test_rotation_phase_preserves_repair_lease_and_trigger_priority():
+    ordinary = [_pull(number) for number in range(1, 78)]
+    repair = _pull(500, labels=("merge-on-green", "main-red-repair"))
+    lease = _pull(600)
+    hot = _pull(700)
+    hot["head"]["sha"] = "f" * 40
+    for bucket in (0, 4, 8, 79, 500):
+        ordered = MOG.sweep_order(
+            ordinary + [repair, lease, hot], cap=100,
+            refresh_lease_number=600, trigger_head_sha="F" * 40,
+            now=bucket * MOG.ROTATION_BUCKET_SECONDS,
+        )
+        assert [pull["number"] for pull in ordered[:3]] == [500, 600, 700]
+
+
 def test_a_main_red_repair_pull_request_is_never_deferred_by_the_cap():
     """The circuit breaker admits exactly ONE repair per sweep when main is red, so
     a repair pushed outside the cap defers the whole repo with it."""
@@ -6557,7 +7238,7 @@ def test_the_workflow_hands_the_sweeper_the_triggering_CONCLUSION_too():
 
 
 def test_the_dynamic_cap_preserves_the_proven_budget_share():
-    """The old 25/1,000 policy scales with the quota and stays bounded at 100.
+    """The old 25/1,000 policy scales with the quota and stays bounded at 128.
 
     The fixed ceiling includes paginated discovery, main proof/baseline reads, the
     repo-wide workflow census, durable lease state, and the maximum 50 main commits
@@ -6565,7 +7246,7 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     five check pages, five PR-file pages, live authorization, ancestry, and lease
     fences. These are pessimistic admission numbers, not typical measured spend.
     Enterprise gives this repository 15,000;
-    the 100 ceiling drains the whole current backlog, while a partly spent bucket
+    the 128 ceiling drains the measured 110-PR backlog, while a partly spent bucket
     shrinks the window to the work it can actually fund.
     """
     fixed = MOG.FULL_SWEEP_FIXED_REQUESTS
@@ -6579,8 +7260,8 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     # check runs, files, merge, settled and update-branch in the refused worst case.
     assert MOG.pull_cap_for_limit(None) == MOG.FALLBACK_PULL_CAP == 25
     assert MOG.pull_cap_for_limit(1_000) == 25
-    assert MOG.pull_cap_for_limit(5_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 100
+    assert MOG.pull_cap_for_limit(5_000) == 125
+    assert MOG.pull_cap_for_limit(15_000) == MOG.MAX_PULL_CAP == 128
 
     worst_case = (
         fixed
@@ -6594,10 +7275,12 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    assert MOG.pull_cap_for_budget(600, 15_000) == 20
+    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
+    # now carries the up-to-five adaptive hosted-pool census reads.
+    assert MOG.pull_cap_for_budget(600, 15_000) == 8
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 20 * MOG.MAX_REQUESTS_PER_PULL
+        + 8 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
@@ -9282,3 +9965,848 @@ def test_the_mark_only_pass_never_removes_the_arm_label(monkeypatch):
         assert "remove-label merge-on-green" in law, (
             f"{doc} must name the exact command that caused it"
         )
+
+
+def test_commit_pagination_has_one_shared_sweep_read_budget(monkeypatch):
+    """Several bulk commits cannot multiply the per-commit page cap per PR."""
+    monkeypatch.setattr(MOG, "COMMIT_FILE_PAGE_READ_CAP", 8)
+    freshness = MOG.ProofFreshness("acme/widgets", "read", _gates(), [])
+    monkeypatch.setattr(freshness, "_truncated_pipeline_paths", lambda *_: None)
+    page_calls = []
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        parsed = MOG.urllib.parse.urlparse(url)
+        sha = parsed.path.rsplit("/", 1)[1]
+        query = MOG.urllib.parse.parse_qs(parsed.query)
+        rows = [{"filename": f"data/page-{i}.json", "status": "modified"}
+                for i in range(580)]
+        if query:
+            page_calls.append((sha, query["page"][0]))
+            start = (int(query["page"][0]) - 1) * 100
+            rows = rows[start:start + 100]
+        else:
+            rows = rows[:300]
+        return 200, {"sha": sha, "commit": {"tree": {"sha": "c" * 40}},
+                     "parents": [{"sha": "d" * 40}], "files": rows}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    assert freshness.files_of("a" * 40)[1] is False
+    assert freshness.files_of("b" * 40)[1] is True
+    assert len(page_calls) == 8
+    # Failed completion is cached too, not retried for each later PR.
+    assert freshness.files_of("b" * 40)[1] is True
+    assert len(page_calls) == 8
+
+
+# ---------------------------------------------------------------------------
+# Complete commit-file retrieval: bounded pagination behind the >299-row path.
+# Append to tests/test_merge_on_green.py.  Uses only names already imported or
+# defined above in that module (MOG, pytest, _freshness, _pull, _run, and the
+# MAIN_MOVED_AT_1026 / PROVEN_AT_0742 constants).  All fixtures are synthetic;
+# nothing here reaches api.github.com (the autouse _no_unstubbed_http guard
+# stays in force, and every test installs its own MOG._request double).
+# ---------------------------------------------------------------------------
+
+_PAGING_SHA = f"{0x580C0FFEE:040x}"
+_PAGING_TREE = f"{0x580CAFE:040x}"
+_PAGING_OTHER_TREE = f"{0x580BE11E:040x}"
+_PAGING_PARENTS = [f"{0x580DAD:040x}"]
+
+
+def _paging_row(path: str, previous: str | None = None) -> dict:
+    """One synthetic GitHub file row; rename rows carry previous_filename."""
+    row = {
+        "sha": f"{len(path) * 7919:040x}",
+        "filename": path,
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+    }
+    if previous is not None:
+        row["status"] = "renamed"
+        row["previous_filename"] = previous
+    return row
+
+
+def _paging_body(rows, sha=_PAGING_SHA, tree=_PAGING_TREE, with_files=True):
+    """A commit body with one stable identity (full lowercase 40-hex throughout)."""
+    body = {
+        "sha": sha,
+        "node_id": "C_pagingfixture",
+        "commit": {"message": "paging fixture", "tree": {"sha": tree}},
+        "parents": [{"sha": parent} for parent in _PAGING_PARENTS],
+    }
+    if with_files:
+        body["files"] = list(rows)
+    return body
+
+
+def _paging_commit(monkeypatch, pages, probe_rows=None, anomalies=None,
+                   sha=_PAGING_SHA):
+    """ProofFreshness whose _request serves one commit by explicit page.
+
+    `pages` lists the per-page file rows for pages 1..N, served for the
+    ``per_page=100&page=N`` URLs the pagination fallback issues.  The one
+    unpaginated probe read that files_of always makes first returns
+    `probe_rows` — defaulting to the first 300 rows across `pages`, which is
+    what GitHub's 300-row cap would have sent.  `anomalies` maps a 1-based
+    page number to a payload dict (served with 200), an int status (served as
+    that status) or a BaseException instance (raised out of _request).
+    Returns (freshness, urls) so tests can assert on reads and call counts.
+    """
+    if probe_rows is None:
+        probe_rows = [row for page in pages for row in page][:300]
+    freshness = _freshness(commits=[(sha, [])])
+    freshness.commits[0]["sha"] = sha
+    monkeypatch.setattr(freshness, "_truncated_pipeline_paths", lambda *_: None)
+    freshness._commit_files.clear()
+    urls: list[str] = []
+
+    def serve(method, url, *args, **kwargs):
+        urls.append(url)
+        if "page=" not in url:
+            return 200, _paging_body(probe_rows, sha=sha)
+        page = int(url.rsplit("page=", 1)[1])
+        anomaly = (anomalies or {}).get(page)
+        if isinstance(anomaly, BaseException):
+            raise anomaly
+        if isinstance(anomaly, dict):
+            return 200, anomaly
+        if anomaly is not None:
+            return anomaly, {"message": "injected failure"}
+        return 200, _paging_body(pages[page - 1], sha=sha)
+
+    monkeypatch.setattr(MOG, "_request", serve)
+    return freshness, urls
+
+
+def _paging_probe_names(pages):
+    """Filenames of the 300-row probe listing, in transport order."""
+    return [row["filename"] for row in _paging_flat(pages)[:300]]
+
+
+def _paging_flat(pages):
+    return [row for page in pages for row in page]
+
+
+def test_paging_580_row_commit_is_fully_retrieved_not_truncated(monkeypatch):
+    """A 580-file commit must page to completion, keeping the hidden report and
+    the .github workflow the 300-row cap would have dropped."""
+    paths = (
+        [f"src/data/{i:03d}.json" for i in range(356)]
+        + [f"site/page{i:03d}.html" for i in range(222)]
+        + ["site/reports/signal-sanity.md", ".github/workflows/signal-sanity.yml"]
+    )
+    assert len(paths) == 580
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    assert [len(p) for p in pages] == [100, 100, 100, 100, 100, 80]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == paths, "full listing must preserve order and keep every file"
+    assert "site/reports/signal-sanity.md" in names
+    assert ".github/workflows/signal-sanity.yml" in names
+    assert freshness.commit_file_reads - reads_before == 7  # 1 probe + 6 pages
+    assert urls[1] == (
+        f"{MOG.GITHUB_API}/repos/{freshness.repo}/commits/{_PAGING_SHA}"
+        "?per_page=100&page=1"
+    )
+    assert freshness._commit_files[_PAGING_SHA] == (names, False)
+
+
+def test_paging_rename_keeps_old_and_new_endpoints(monkeypatch):
+    """Both rename endpoints are the tested surface; paging may not drop either."""
+    paths = [f"src/m{i:03d}.py" for i in range(579)]
+    rows = [_paging_row(p) for p in paths]
+    rows.append(_paging_row("src/renamed.py", previous="src/original.py"))
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert "src/original.py" in names and "src/renamed.py" in names
+    assert len(names) == 581  # 579 straight paths + both rename endpoints
+
+
+def test_paging_exact_100_multiple_needs_a_short_terminator_page(monkeypatch):
+    """300 rows = three FULL pages, so completion requires the next (empty) page."""
+    paths = [f"gen/{i:03d}" for i in range(300)]
+    pages = [
+        [_paging_row(p) for p in paths[0:100]],
+        [_paging_row(p) for p in paths[100:200]],
+        [_paging_row(p) for p in paths[200:300]],
+        [],
+    ]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == paths
+    assert freshness.commit_file_reads - reads_before == 5  # probe + 4 pages
+
+
+def test_paging_ten_full_pages_cap_exhaustion_stays_truncated(monkeypatch):
+    """1000 rows with no short page by page 10 fails closed to the original
+    truncated answer — it is cached that way, and the probe listing is kept
+    unchanged rather than guessed at."""
+    paths = [f"gen/{i:04d}" for i in range(1000)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 1000, 100)]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True
+    assert names == probe_names
+    assert freshness.commit_file_reads - reads_before == 11  # probe + capped 10
+    assert len(urls) == 11
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_cap_exhaustion_keeps_the_commit_stale(monkeypatch):
+    """The operator-facing half of the cap: an exhausted read must still hold
+    the commit stale, exactly as today's 300-row truncation does."""
+    pages = [
+        [_paging_row(f"gen/{i:04d}") for i in range(page * 100, page * 100 + 100)]
+        for page in range(10)
+    ]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+
+    assert stale and "too many files" in reason, reason
+
+
+def test_paging_page_without_files_key_fails_closed(monkeypatch):
+    """A page whose body lacks `files` is malformed, not empty-and-fine."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {2: _paging_body(None, with_files=False)}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    reads_before = freshness.commit_file_reads
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads - reads_before == 3
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_tree_mismatch_fails_closed(monkeypatch):
+    """A page claiming a different tree is a different snapshot; never stitch."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {3: _paging_body(pages[2], tree=_PAGING_OTHER_TREE)}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 4
+
+
+def test_paging_noncanonical_page_sha_fails_closed(monkeypatch):
+    """An uppercased page sha is not a provable identity; fail closed."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    anomalies = {2: _paging_body(pages[1], sha=_PAGING_SHA.upper())}
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies=anomalies)
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_duplicate_filename_across_pages_fails_closed(monkeypatch):
+    """A filename repeating on a LATER page is a stitching artifact, not a dupe."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    probe_rows = [dict(row) for row in _paging_flat(pages)[:300]]
+    pages[1][0] = _paging_row(paths[0])  # page-1's first name again on page 2
+    freshness, _ = _paging_commit(monkeypatch, pages, probe_rows=probe_rows)
+    probe_names = MOG._changed_file_paths(probe_rows)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_pages_that_lose_probe_files_fail_closed(monkeypatch):
+    """A 'full' listing that dropped a file the truncated read could see is not
+    a full read — the first-300 names must be a subset of the result."""
+    probe_rows = [_paging_row(f"probe/{i:03d}") for i in range(300)]
+    pages = [[_paging_row(f"other/{i:03d}") for i in range(p * 100, p * 100 + 100)]
+             for p in range(6)]
+    pages[5] = pages[5][:80]  # terminator on page 6, everything else plausible
+    freshness, _ = _paging_commit(monkeypatch, pages, probe_rows=probe_rows)
+    probe_names = [row["filename"] for row in probe_rows]
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 7
+
+
+def test_paging_http_error_status_fails_closed(monkeypatch):
+    """A non-200 page is a failed read, not a short page / no-change."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies={2: 500})
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+    assert freshness._commit_files[_PAGING_SHA] == (probe_names, True)
+
+
+def test_paging_runtime_error_fails_closed(monkeypatch):
+    """A RuntimeError out of _request keeps the truncated answer (cached)."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, _ = _paging_commit(
+        monkeypatch, pages, anomalies={2: RuntimeError("transport down")}
+    )
+    probe_names = _paging_probe_names(pages)
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert freshness.commit_file_reads == 3
+
+
+def test_paging_empty_first_page_cannot_become_empty_success(monkeypatch):
+    """A truncated commit whose first page comes back empty must stay
+    truncated — a missing/failed read is never 'no files changed'."""
+    probe_rows = [_paging_row(f"gen/{i:03d}") for i in range(300)]
+    freshness, _ = _paging_commit(monkeypatch, [[]], probe_rows=probe_rows)
+    probe_names = [row["filename"] for row in probe_rows]
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is True and names == probe_names
+    assert names != []
+    assert freshness.commit_file_reads == 2
+
+
+def test_paging_result_is_cached_for_the_sweep(monkeypatch):
+    """The completed listing is cached; the second files_of call re-reads none."""
+    paths = [f"gen/{i:03d}" for i in range(580)]
+    pages = [[_paging_row(p) for p in paths[i:i + 100]] for i in range(0, 580, 100)]
+    freshness, urls = _paging_commit(monkeypatch, pages)
+    reads_before = freshness.commit_file_reads
+
+    first = freshness.files_of(_PAGING_SHA)
+    second = freshness.files_of(_PAGING_SHA)
+
+    assert first == second == (paths, False)
+    assert freshness.commit_file_reads - reads_before == 7
+    assert len(urls) == 7
+
+
+def test_paging_fast_pipeline_proof_short_circuits_without_paging(monkeypatch):
+    """The existing _truncated_pipeline_paths proof stays first and must keep
+    answering in one read, with no pagination GET at all — even a proof the
+    test furnishes without any sha evidence."""
+    probe_rows = [_paging_row(f"site/{i:03d}.html") for i in range(300)]
+    freshness, urls = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+    monkeypatch.setattr(
+        freshness, "_truncated_pipeline_paths", lambda sha, payload: ["data/_tree_proven_", "site/_tree_proven_"]
+    )
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert (names, truncated) == (["data/_tree_proven_", "site/_tree_proven_"], False)
+    assert len(urls) == 1 and "page=" not in urls[0]
+
+
+def test_paging_under_threshold_makes_exactly_one_read(monkeypatch):
+    """The <=299-file path is untouched: one read, no pagination, not truncated."""
+    probe_rows = [_paging_row(f"site/{i:02d}.html") for i in range(42)]
+    freshness, urls = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+    reads_before = freshness.commit_file_reads
+
+    names, truncated = freshness.files_of(_PAGING_SHA)
+
+    assert truncated is False
+    assert names == [row["filename"] for row in probe_rows]
+    assert freshness.commit_file_reads - reads_before == 1
+    assert len(urls) == 1 and "page=" not in urls[0]
+
+
+def test_paging_does_not_swallow_test_sentinel_assertions(monkeypatch):
+    """Fallback absorbs RuntimeError ONLY.  An AssertionError — the unexpected-
+    call sentinel a test double raises — must propagate, so a stubbed test can
+    still fail loudly instead of silently degrading to truncated."""
+    probe_rows = [_paging_row(f"gen/{i:03d}") for i in range(300)]
+    freshness, _ = _paging_commit(monkeypatch, [], probe_rows=probe_rows)
+
+    def guard(method, url, *args, **kwargs):
+        if "page=" in url:
+            raise AssertionError("unexpected pagination read")
+        return 200, _paging_body(probe_rows)
+
+    monkeypatch.setattr(MOG, "_request", guard)
+    with pytest.raises(AssertionError):
+        freshness.files_of(_PAGING_SHA)
+
+
+@pytest.mark.parametrize("defect", [
+    "duplicate_within_page", "overlong_page", "missing_filename",
+    "bad_filename", "missing_rename_source", "null_rename_source",
+    "parents_reordered", "sha_changed", "tree_missing", "status_206",
+    "transport_oserror", "json_error", "changed_original_rename",
+])
+def test_paging_malformed_or_contradictory_page_keeps_original(monkeypatch, defect):
+    rows = [_paging_row(f"engine/file{i}.py") for i in range(580)]
+    rows[0] = _paging_row("engine/new.py", "engine/old.py")
+    pages = [rows[i:i + 100] for i in range(0, 580, 100)]
+    probe = [dict(row) for row in rows[:300]]
+    body = _paging_body([dict(row) for row in pages[0]])
+    if defect == "duplicate_within_page":
+        body["files"][1] = body["files"][0]
+    elif defect == "overlong_page":
+        body["files"].append(_paging_row("engine/extra.py"))
+    elif defect == "missing_filename":
+        body["files"][1].pop("filename")
+    elif defect == "bad_filename":
+        body["files"][1]["filename"] = 123
+    elif defect == "missing_rename_source":
+        body["files"][0].pop("previous_filename")
+    elif defect == "null_rename_source":
+        body["files"][0]["previous_filename"] = None
+    elif defect == "parents_reordered":
+        body["parents"] = [{"sha": "a" * 40}, {"sha": "b" * 40}]
+    elif defect == "sha_changed":
+        body["sha"] = "d" * 40
+    elif defect == "tree_missing":
+        body["commit"].pop("tree")
+    elif defect == "status_206":
+        body = 206
+    elif defect == "transport_oserror":
+        body = OSError("connection closed")
+    elif defect == "json_error":
+        body = ValueError("invalid JSON")
+    elif defect == "changed_original_rename":
+        body["files"][0]["previous_filename"] = "engine/other.py"
+    freshness, urls = _paging_commit(monkeypatch, pages, probe_rows=probe, anomalies={1: body})
+    expected = MOG._changed_file_paths(probe)
+    assert freshness.files_of(_PAGING_SHA) == (expected, True)
+    reads = len(urls)
+    assert freshness.files_of(_PAGING_SHA) == (expected, True)
+    assert len(urls) == reads
+
+
+def test_paging_rename_chain_preserves_shared_old_and_new_names(monkeypatch):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(300)]
+    rows.extend([_paging_row("engine/b.py", "engine/a.py"),
+                 _paging_row("engine/c.py", "engine/b.py")])
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    names, truncated = freshness.files_of(_PAGING_SHA)
+    assert truncated is False
+    assert {"engine/a.py", "engine/b.py", "engine/c.py"} <= set(names)
+
+
+@pytest.mark.parametrize("hidden,expected_stale", [
+    ("reports/signal-sanity.md", False),
+    ("engine/changed.py", True),
+    (".github/workflows/ci.yml", True),
+])
+def test_paging_completed_inventory_uses_unchanged_surface_rules(monkeypatch, hidden, expected_stale):
+    rows = [_paging_row(f"reports/file{i}.md") for i in range(579)] + [_paging_row(hidden)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    freshness._pr_files[4242] = ["engine/product.py"]
+    stale, reason = freshness.stale_for(_pull(), [_run("ci-pack-1", conclusion="success")])
+    assert stale is expected_stale, reason
+    assert "too many files" not in reason
+
+
+@pytest.mark.parametrize("status", [None, "", 123, "unknown"])
+def test_paging_late_row_requires_known_change_kind(monkeypatch, status):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    pages[-1][-1]["status"] = status
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+def test_paging_allowance_is_funded_between_budget_polls():
+    assert MOG.RATE_LIMIT_RESERVE >= 120 + MOG.COMMIT_FILE_PAGE_READ_CAP
+    budget = MOG.pull_cap_for_budget(600, 15000)
+    assert (MOG.FULL_SWEEP_FIXED_REQUESTS + budget * MOG.MAX_REQUESTS_PER_PULL
+            + MOG.MAX_REFRESHES_PER_SWEEP + MOG.RATE_LIMIT_RESERVE) <= 600
+
+
+def test_paging_two_parent_order_must_match_probe(monkeypatch):
+    parents = ["a" * 40, "b" * 40]
+    monkeypatch.setitem(globals(), "_PAGING_PARENTS", parents)
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    reversed_page = _paging_body(pages[-1])
+    reversed_page["parents"] = [{"sha": sha} for sha in reversed(parents)]
+    freshness, _ = _paging_commit(monkeypatch, pages, anomalies={6: reversed_page})
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+def test_paging_late_row_missing_status_is_incomplete(monkeypatch):
+    rows = [_paging_row(f"reports/{i}.md") for i in range(580)]
+    pages = [rows[i:i + 100] for i in range(0, len(rows), 100)]
+    pages[-1][-1].pop("status")
+    freshness, _ = _paging_commit(monkeypatch, pages)
+    assert freshness.files_of(_PAGING_SHA)[1] is True
+
+
+@pytest.fixture
+def authority_supersession_pair(monkeypatch):
+    """The two native suites seen on PR 6789, with repository-local test identity."""
+    pull = _pull()
+    pull['head']['repo']['id'] = 1266869026
+    pull['base'].update({'repo': {'id': 1266869026, 'full_name': 'acme/widgets'}})
+    checks, native = [], {}
+    for check_id, run_id, suite, created, conclusion in [
+        (118014711933, 39238921499, 106325673146, '2026-10-19T10:38:42Z', 'cancelled'),
+        (118015268155, 39239089737, 106326124198, '2026-10-19T10:40:08Z', 'success'),
+    ]:
+        checks.append({
+            **_run('ci-authority', conclusion=conclusion), 'id': check_id,
+            'head_sha': 'a' * 40, 'app': {'id': 15368, 'slug': 'github-actions'},
+            'check_suite': {'id': suite},
+            'details_url': f'https://github.com/acme/widgets/actions/runs/{run_id}/job/{check_id}',
+        })
+        native[run_id] = {
+            'id': run_id, 'workflow_id': 335022837, 'check_suite_id': suite,
+            'path': '.github/workflows/ci-authority.yml', 'event': 'pull_request_target',
+            'head_sha': 'a' * 40, 'status': 'completed', 'conclusion': conclusion,
+            'created_at': created,
+            'repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'head_repository': {'id': 1266869026, 'full_name': 'acme/widgets'},
+            'pull_requests': [{
+                'number': pull['number'],
+                'url': f"https://api.github.com/repos/acme/widgets/pulls/{pull['number']}",
+                'head': {'sha': 'a' * 40, 'ref': 'claude/feature', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+                'base': {'sha': 'b303c4b32d4d16401050b25d41131b49501720e5',
+                         'ref': 'main', 'repo': {
+                    'id': 1266869026, 'url': 'https://api.github.com/repos/acme/widgets'}},
+            }],
+        }
+    calls = []
+
+    def request(method, url, _token):
+        assert method == 'GET'
+        assert url.startswith('https://api.github.com/repos/acme/widgets/actions/runs/')
+        run_id = int(url.rsplit('/', 1)[1])
+        calls.append(run_id)
+        return 200, native[run_id]
+
+    monkeypatch.setattr(MOG, '_request', request)
+    return pull, checks, native, calls
+
+
+def test_authority_supersession_retained_pair_preserves_raw_and_binding_checks(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    checks += [_run('ci-authority/main', conclusion='success'), _run('ci-pack-0', conclusion='success')]
+    raw = copy.deepcopy(checks)
+    assert MOG.decide_verdict(checks)[0] == 'incomplete'
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert checks == raw
+    assert MOG.decide_verdict(effective)[0] == 'clean'
+    assert sorted(calls) == [39238921499, 39239089737]
+
+
+@pytest.mark.parametrize('field,value', [
+    ('workflow_id', 99), ('path', '.github/workflows/ci.yml'), ('event', 'push'),
+    ('head_sha', 'f' * 40), ('check_suite_id', 9), ('id', 9),
+    ('status', 'in_progress'), ('conclusion', 'failure'),
+    ('created_at', '2026-10-19T10:38:42Z'), ('created_at', '2026-10-19T10:38:41Z'),
+    ('created_at', None), ('created_at', 'not-a-clock'),
+    ('repository', {'id': 9, 'full_name': 'acme/widgets'}),
+    ('head_repository', {'id': 1266869026, 'full_name': 'other/widgets'}),
+    ('pull_requests', []), ('pull_requests', [None]), ('pull_requests', None),
+])
+def test_authority_supersession_invalid_native_identity_retains_cancellation(
+    authority_supersession_pair, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('side,field,value', [
+    ('base', 'sha', 'c' * 40), ('base', 'sha', ''), ('base', 'ref', 'pilot'),
+    ('head', 'sha', 'c' * 40), ('head', 'ref', 'other'),
+    ('head', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/other/widgets'}),
+    ('base', 'repo', {'id': 9, 'url': 'https://api.github.com/repos/acme/widgets'}),
+])
+def test_authority_supersession_different_event_binding_retains_cancellation(
+    authority_supersession_pair, side, field, value
+):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][side][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [('number', 9), ('url', 'https://api.github.com/repos/other/widgets/pulls/4242')])
+def test_authority_supersession_different_pr_retains_cancellation(authority_supersession_pair, field, value):
+    pull, checks, native, _ = authority_supersession_pair
+    native[39239089737]['pull_requests'][0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('field,value', [
+    ('app', {'id': 99, 'slug': 'github-actions'}), ('app', None),
+    ('head_sha', 'c' * 40), ('check_suite', None), ('check_suite', {'id': 99}),
+    ('details_url', 'https://evil.invalid/acme/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/other/widgets/actions/runs/39239089737/job/118015268155'),
+    ('details_url', 'https://github.com/acme/widgets/actions/runs/39239089737/job/99'),
+])
+def test_authority_supersession_invalid_check_keeps_all(authority_supersession_pair, field, value):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0][field] = value
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('old,new,status,verdict', [
+    ('failure', 'success', 'completed', 'blocked'),
+    ('cancelled', None, 'in_progress', 'pending'),
+    ('success', 'cancelled', 'completed', 'incomplete'),
+])
+def test_authority_supersession_never_hides_failure_or_newer_cancel_or_pending(
+    authority_supersession_pair, old, new, status, verdict
+):
+    pull, checks, native, _ = authority_supersession_pair
+    for check, conclusion in zip(checks, [old, new]):
+        check['conclusion'] = conclusion
+    checks[1]['status'] = status
+    native[39238921499]['conclusion'] = old
+    native[39239089737].update({'conclusion': new, 'status': status})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_keeps_later_cancellation(authority_supersession_pair):
+    import copy
+    pull, checks, native, _ = authority_supersession_pair
+    later = copy.deepcopy(checks[0])
+    later.update({'id': 118015999999, 'check_suite': {'id': 106326999999},
+                  'details_url': 'https://github.com/acme/widgets/actions/runs/39239099999/job/118015999999'})
+    checks.append(later)
+    native[39239099999] = copy.deepcopy(native[39238921499])
+    native[39239099999].update({'id': 39239099999, 'check_suite_id': 106326999999,
+                              'created_at': '2026-10-19T10:41:00Z'})
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert effective == checks[1:]
+    assert MOG.decide_verdict(effective)[0] == 'incomplete'
+
+
+@pytest.mark.parametrize('name,conclusion,status,verdict', [
+    ('ci-authority/main', 'failure', 'completed', 'blocked'),
+    ('ci-authority/main', None, 'in_progress', 'pending'),
+    ('ci-pack-4', 'failure', 'completed', 'blocked'),
+])
+def test_authority_supersession_preserves_other_binding_verdicts(
+    authority_supersession_pair, name, conclusion, status, verdict
+):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append(_run(name, conclusion=conclusion, status=status))
+    effective = MOG.authority_effective_checks('acme/widgets', pull, checks, 'read')
+    assert MOG.decide_verdict(effective)[0] == verdict
+
+
+def test_authority_supersession_same_run_is_not_newer_proof(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks[0]['details_url'] = 'https://github.com/acme/widgets/actions/runs/39239089737/job/118014711933'
+    checks[0]['check_suite'] = checks[1]['check_suite']
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+@pytest.mark.parametrize('failure', ['missing', 'transport', 'malformed'])
+def test_authority_supersession_metadata_failure_keeps_raw(authority_supersession_pair, monkeypatch, failure):
+    pull, checks, _, _ = authority_supersession_pair
+    def request(*_args):
+        if failure == 'transport':
+            raise OSError('network unavailable')
+        return (404, {'message': 'Not found'}) if failure == 'missing' else (200, [])
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_is_bounded_and_does_not_read_without_pair(authority_supersession_pair):
+    import copy
+    pull, checks, _, calls = authority_supersession_pair
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks[1:], 'read') == checks[1:]
+    for i in range(7):
+        extra = copy.deepcopy(checks[0])
+        extra.update({'id': i + 1, 'details_url': f'https://github.com/acme/widgets/actions/runs/{i+1}/job/{i+1}'})
+        checks.append(extra)
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert calls == []
+
+
+def test_authority_supersession_is_used_by_sweep(authority_supersession_pair, monkeypatch):
+    pull, checks, native, _ = authority_supersession_pair
+    checks.append(_run('ci-pack-1', conclusion='success'))
+    calls = _fake_api(monkeypatch, check_pages={1: {'total_count': len(checks), 'check_runs': checks}})
+    fake = MOG._request
+    def request(method, url, token, payload=None):
+        if '/actions/runs/' in url:
+            return 200, native[int(url.rsplit('/', 1)[1])]
+        return fake(method, url, token, payload)
+    monkeypatch.setattr(MOG, '_request', request)
+    assert MOG.sweep_pull('acme/widgets', pull, 'read', 'write', _freshness()) == 'merged'
+    assert len([call for call in calls if call[1].endswith('/merge')]) == 1
+
+
+@pytest.mark.parametrize('run_id', [39238921499, 39239089737])
+@pytest.mark.parametrize('clock', ['2026-10-19T10:40:08', '2026-10-19'])
+def test_authority_supersession_refuses_unzoned_or_date_only_clocks(authority_supersession_pair, run_id, clock):
+    pull, checks, native, _ = authority_supersession_pair
+    native[run_id]['created_at'] = clock
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+
+
+def test_authority_supersession_duplicate_id_does_not_remove_foreign_failure(authority_supersession_pair):
+    pull, checks, _, _ = authority_supersession_pair
+    checks.append({**_run('security-authority', conclusion='failure'),
+                   'id': checks[0]['id'], 'app': {'id': 999}})
+    assert MOG.authority_effective_checks('acme/widgets', pull, checks, 'read') == checks
+    assert MOG.decide_verdict(checks)[0] != 'clean'
+
+
+def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
+    # The existing per-PR ceiling covered nineteen calls before native authority
+    # supersession added up to eight GETs. Five evaluated PRs may separate polls.
+    assert MOG.MAX_REQUESTS_PER_PULL >= 19 + 8
+    assert MOG.RATE_LIMIT_RESERVE >= (
+        (19 + 8) * MOG.BUDGET_RECHECK_EVERY + MOG.COMMIT_FILE_PAGE_READ_CAP
+    )
+    admitted = MOG.pull_cap_for_budget(MOG.RATE_LIMIT_FLOOR, 15_000)
+    assert (MOG.FULL_SWEEP_FIXED_REQUESTS
+            + admitted * MOG.MAX_REQUESTS_PER_PULL
+            + MOG.MAX_REFRESHES_PER_SWEEP
+            + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# --- live authorization diagnostics (Policy Monitor release recovery) ----------
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "headers", "expected"),
+    (
+        (
+            403,
+            {"message": "Resource not accessible by integration"},
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403", "Resource not accessible by integration"),
+        ),
+        (
+            403,
+            {"message": "Forbidden"},
+            {
+                "x-ratelimit-remaining": "0",
+                "x-ratelimit-limit": "5000",
+                "x-ratelimit-reset": "1793928600",
+            },
+            ("primary API quota", "0 of 5000 requests left", "1793928600"),
+        ),
+        (
+            403,
+            {"message": "You have exceeded a secondary rate limit."},
+            {"retry-after": "60"},
+            ("secondary (burst) rate limit", "retry-after 60s"),
+        ),
+        (
+            403,
+            None,
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403",),
+        ),
+        (429, None, {}, ("HTTP 429",)),
+        (500, {"message": "Server Error"}, {}, ("HTTP 500", "Server Error")),
+        (200, [], {}, ("HTTP 200",)),
+    ),
+    ids=(
+        "permission",
+        "primary-header-evidence",
+        "secondary-retry-after",
+        "unexplained-forbidden",
+        "unexplained-429",
+        "server-failure",
+        "malformed-success",
+    ),
+)
+def test_live_authorization_failure_reports_cause_without_changing_admission(
+    monkeypatch, capsys, status, payload, headers, expected
+):
+    calls = []
+
+    def fail_read(method, url, token, data=None):
+        calls.append((method, url, token, data))
+        return status, payload
+
+    monkeypatch.setattr(MOG, "_request", fail_read)
+    monkeypatch.setattr(MOG, "_LAST_RESPONSE_HEADERS", headers)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "test-write-credential", budget, "stale"
+    ) == "authorization-unreadable"
+    assert calls == [
+        ("GET", f"{MOG.GITHUB_API}/repos/acme/widgets/pulls/1", "test-write-credential", None)
+    ], "the same credential and endpoint must fail closed before any write"
+    assert budget.refresh_attempts_used == 0
+    assert budget.refreshes_used == 0
+    out = capsys.readouterr().out
+    for fragment in expected:
+        assert fragment in out
+    if not headers.get("retry-after") and headers.get("x-ratelimit-remaining") != "0":
+        assert "API quota" not in out
+        assert "secondary (burst)" not in out
+
+
+@pytest.mark.parametrize("quota", (False, True), ids=("permission", "quota"))
+def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
+    monkeypatch, capsys, quota
+):
+    credential = "test-private-write-credential"
+    message = (
+        f"Forbidden {credential}\r\n::error title=injected::"
+        "\x1b[31m %0A forged " + ("x" * 2000)
+    )
+    monkeypatch.setattr(MOG, "_request", lambda *_a: (403, {"message": message}))
+    monkeypatch.setattr(
+        MOG, "_LAST_RESPONSE_HEADERS",
+        {"x-ratelimit-remaining": "0", "x-ratelimit-limit": "5000"} if quota else {},
+    )
+    assert MOG.live_authorized_pull(
+        "acme/widgets", _pull(1), credential
+    ) == (None, "authorization-unreadable")
+    out = capsys.readouterr().out
+    prefix = "::warning title=merge-on-green authorization::"
+    assert out.startswith(prefix)
+    assert len(out.splitlines()) == 1
+    assert credential not in out and "[redacted]" in out
+    assert "\r" not in out and "\x1b" not in out
+    assert "%250A" in out and "%0A" not in out
+    assert len(out.removeprefix(prefix).rstrip("\n")) <= 600

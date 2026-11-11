@@ -1,0 +1,18 @@
+{
+  "schema": "eval_os.hosted_complete_acceptance.v1",
+  "accepted_at": "2026-10-14T07:11:49.483159+00:00",
+  "head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "run": "38519419675",
+  "tested_commit": "bb3e818ae38f5899a27f710d48eb42fb4daef27a",
+  "tested_base": "2fafe10e05968b1f193361926224250aa71387b0",
+  "plan_sha256": "f03d2c13dd8e30a2a90c09a18a4ded678e03b427ac075e13bc2257099e05c8d1",
+  "semantic_evidence_sha256": "cb713875868d44a193f8b85a7523d4f287dc343bf4f290e1e26e49a3a5490ad7",
+  "artifact_file_sha256": "05ad989769713b16238ed98ddf07fad750dabfc10e4615b2bcdc0c9b88b5cfa2",
+  "selected_jobs": 124,
+  "all_jobs_and_steps_passed": true,
+  "native_validator": "PASS; consumed earlier this heartbeat",
+  "controller_release_state": "STALE_PROOF_REFRESH_DEFERRED_CAPACITY",
+  "controller_run": "38525237090",
+  "controller_reason": "main ec6e763d1e24 changed check definitions; 13 indexed PR CI runs, cap 8, zero refresh slots at 06:59 UTC",
+  "scope": "Terminal exact05a CI proof on tested base2fafe. Does not override controller freshness/capacity, or prove merge, installation, production or consumer adoption."
+}

@@ -13,6 +13,8 @@ from __future__ import annotations
 import ast
 import inspect
 import json
+import os
+import subprocess
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -182,21 +184,47 @@ def test_mut4b_s1_synth_module_1():
     assert (REPO / "research/single_name_intelligence/residual/s1_synth.py").resolve() == here
 
 
-def test_mut4b_s1_synth_module_2():
-    """s1_synth.py:18, sys.path.insert(0, p) -> insert(1, p)."""
-    src = Path(s1_synth.__file__).read_text(encoding="utf-8")
-    tree = ast.parse(src)
-    zeros = []
-    for node in ast.walk(tree):
-        if (
-            isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Attribute)
-            and node.func.attr == "insert"
-            and node.args
-            and isinstance(node.args[0], ast.Constant)
-        ):
-            zeros.append(node.args[0].value)
-    assert 0 in zeros
+def test_mut4b_s1_synth_module_2(tmp_path: Path) -> None:
+    """s1_synth.py:18, sys.path.insert(0, p) -> insert(1, p).
+
+    Behavioural (X7-06, schk_09 pattern): import s1_synth in a subprocess
+    whose sys.path is poisoned ahead of everything else by a decoy module
+    named like a residual module s1_synth imports (s1_prereg). The loader's
+    insert(0, residual/) must make the residual copy win the import; no
+    .py source text is read.
+    """
+    poison = tmp_path
+    (poison / "s1_prereg.py").write_text(
+        'def __getattr__(name):\n    return "decoy:" + name\n', encoding="utf-8")
+    s1_synth_py = RESIDUAL / "s1_synth.py"
+    code = "\n".join([
+        "import importlib.util, sys",
+        "spec = importlib.util.spec_from_file_location('s1_synth', %r)" % str(s1_synth_py),
+        "mod = importlib.util.module_from_spec(spec)",
+        "sys.modules['s1_synth'] = mod",
+        "err = ''",
+        "try:",
+        "    spec.loader.exec_module(mod)",
+        "except BaseException as exc:",
+        "    err = '%s: %s' % (type(exc).__name__, exc)",
+        "m = sys.modules.get('s1_prereg')",
+        "print('MISSING' if m is None else m.__file__)",
+        "if err:",
+        "    print('IMPORT_ERROR', err)",
+    ])
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(poison)  # the decoy dir is first on the path
+    proc = subprocess.run(
+        [sys.executable, "-c", code], cwd=str(poison), env=env,
+        capture_output=True, text=True, timeout=300,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "IMPORT_ERROR" not in proc.stdout, proc.stdout + proc.stderr
+    out_lines = [ln for ln in proc.stdout.splitlines() if ln]
+    assert out_lines, proc.stdout + proc.stderr
+    won = Path(out_lines[-1]).resolve()
+    assert won == (RESIDUAL / "s1_prereg.py").resolve(), (
+        "the decoy won the import: %s" % won)
 
 
 def test_mut4b_s1_synth__spec_1():

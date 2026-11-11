@@ -113,7 +113,33 @@ class RetainedHouseUsePolicy:
         if type(user_id) is not str or not 1 <= len(user_id) <= 256:
             raise RetainedUseError("server_authenticated_user_required")
         self.root, self.user_id = Path(root), user_id
-        _enforce_current_site_user(user_id)
+        self._bind_source_scope(store_id=store_id, generation_id=generation_id,
+            generation_sha256=generation_sha256, subject_id=subject_id,
+            query_cutoff=query_cutoff, mode=mode)
+
+    def _read_retained_context_cohort(self, reader, generation, *, subject_id,
+                                     query_cutoff, method):
+        """Trusted owner composition; inherited policies retain native issuance.
+
+        The generic composer depends only on this optional owner protocol. Site
+        authorization imports and bounded reuse remain in this concrete owner;
+        no request value selects a reader or grants reuse rights.
+        """
+        if type(self) is not RetainedHouseUsePolicy:
+            return cohort.read_retained_context_cohort(
+                reader, generation, subject_id=subject_id,
+                query_cutoff=query_cutoff, policy=self)
+        from engine.neuralweb import market_memory_retained_cohort_reuse as reuse
+        return reuse.read_exact_retained_cohort(
+            reader, generation, subject_id=subject_id,
+            query_cutoff=query_cutoff, policy=self, method=method)
+
+    def _enforce_current_principal(self):
+        _enforce_current_site_user(self.user_id)
+
+    def _bind_source_scope(self, *, store_id, generation_id, generation_sha256,
+                           subject_id, query_cutoff, mode):
+        self._enforce_current_principal()
         value, digest = load_registration(self.root)
         self.registration, self.registration_sha256 = value, digest
         self.policy_id = value["policy_id"] + ":" + digest
@@ -134,7 +160,7 @@ class RetainedHouseUsePolicy:
     def check(self, action: str, resource: dict) -> None:
         # Rechecking the existing entitlement owner retains its established cache
         # and revocation semantics, rather than minting a second user authority.
-        _enforce_current_site_user(self.user_id)
+        self._enforce_current_principal()
         value, digest = load_registration(self.root)
         if digest != self.registration_sha256:
             raise RetainedUseError("source_use_registration_changed")
@@ -181,3 +207,81 @@ class RetainedHouseUsePolicy:
                 "authority_sha256": self.registration["source_authority"]["sha256"],
                 "purposes": list(self.registration["purposes"]),
                 "mode": self.mode, "method": dict(self.registration["method"])}
+
+FACTORY_CONSUMER = "research_factory.contextual_evidence.v1"
+FACTORY_BINDINGS = "config/market_memory_factory_bindings.v1.json"
+
+
+def _factory_binding(root: Path, binding_id: str) -> tuple[dict, str]:
+    """Resolve one installed current registration before any private owner I/O."""
+    try:
+        registration, _ = load_registration(root)
+        service = registration["service_consumers"][FACTORY_CONSUMER]
+        body = _bounded_file(root / FACTORY_BINDINGS)
+        if (service["enabled"] is not True or service["binding_registry"] != FACTORY_BINDINGS
+                or service["binding_registry_sha256"] != sha256(body).hexdigest()
+                or service["purpose"] != "contextual_cited_evidence"):
+            raise RetainedUseError("current_factory_service_admission_required")
+        registry = json.loads(body)
+        if (set(registry) != {"schema", "bindings"}
+                or registry["schema"] != "market_memory.factory_contextual_bindings.v1"
+                or type(registry["bindings"]) is not list or len(registry["bindings"]) > 1):
+            raise RetainedUseError("bounded_factory_binding_registry_required")
+        matches = [v for v in registry["bindings"] if type(v) is dict and v.get("binding_id") == binding_id]
+        if len(matches) != 1:
+            raise RetainedUseError("exact_current_factory_binding_required")
+        value = matches[0]
+        fields = {"schema", "binding_id", "origin", "registered_at", "trial_registration_id",
+                  "trial_registration_sha256", "trial_record", "store_id", "query_id", "context_id",
+                  "capture_id", "subject_id", "generation_id", "generation_sha256", "query_cutoff",
+                  "method_spec_id", "mode", "limit", "consumer"}
+        core = {k: v for k, v in value.items() if k != "binding_id"}
+        if (set(value) != fields or value["schema"] != "market_memory.factory_contextual_binding.v1"
+                or value["consumer"] != FACTORY_CONSUMER
+                or value["origin"] != "current_owner_registered_contextual_attachment"
+                or value["binding_id"] != "mmrfbinding_" + sha256(cohort.canonical(core)).hexdigest()
+                or value["store_id"] != registration["store_id"]
+                or value["subject_id"] not in registration["allowed_subject_ids"]
+                or value["mode"] not in registration["modes"]
+                or type(value["limit"]) is not int or not 1 <= value["limit"] <= 8):
+            raise RetainedUseError("exact_factory_contextual_binding_required")
+        for key, prefix in (("query_id", "mmquery_"), ("context_id", "mmctx_"),
+                            ("capture_id", "mmcapture_"), ("generation_id", "mmgeneration_"),
+                            ("trial_registration_id", "mmtrial_"), ("method_spec_id", "mmretainedmethod_"),
+                            ("generation_sha256", ""), ("trial_registration_sha256", "")):
+            if type(value[key]) is not str or not re.fullmatch(prefix + r"[a-f0-9]{64}", value[key]):
+                raise RetainedUseError("exact_factory_identity_required")
+        if value["trial_record"] != "research/market_memory/trials/" + value["trial_registration_sha256"] + ".json":
+            raise RetainedUseError("exact_factory_trial_record_required")
+        if cohort.utc_instant(value["registered_at"]) < cohort.utc_instant(value["query_cutoff"]):
+            raise RetainedUseError("current_contextual_registration_clock_required")
+        from engine.neuralweb import market_memory_episode_retrieval as retrieval
+        registered_method = retrieval.RetainedContextMethodSpec(
+            registration["method"]["purge_calendar_days"],
+            registration["method"]["embargo_calendar_days"], value["mode"])
+        if registered_method.disclosure()["method_spec_id"] != value["method_spec_id"]:
+            raise RetainedUseError("registered_factory_method_required")
+        return value, sha256(body).hexdigest()
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise RetainedUseError("current_factory_binding_unavailable") from exc
+
+
+class RetainedFactoryUsePolicy(RetainedHouseUsePolicy):
+    """Trusted internal Factory consumer; never substitutes a website user."""
+
+    def __init__(self, root: Path, *, binding_id: str):
+        self.root, self.binding_id = Path(root), binding_id
+        binding, self.binding_registry_sha256 = _factory_binding(self.root, binding_id)
+        self.binding = binding
+        self._bind_source_scope(**{k: binding[k] for k in
+            ("store_id", "generation_id", "generation_sha256", "subject_id", "query_cutoff", "mode")})
+
+    def _enforce_current_principal(self):
+        binding, digest = _factory_binding(self.root, self.binding_id)
+        if (digest != self.binding_registry_sha256 or binding != self.binding):
+            raise RetainedUseError("factory_binding_changed")
+
+    def disclose_binding(self) -> dict:
+        self.check("read_retained_generation_metadata", self.expected)
+        return {**self.binding, "registry_sha256": self.binding_registry_sha256,
+                "trial_original_query_provenance": "not_established"}
