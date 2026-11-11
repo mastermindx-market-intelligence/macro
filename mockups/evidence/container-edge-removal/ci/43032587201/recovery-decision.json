@@ -82,11 +82,44 @@
     "limit": "The exact APT transaction and package-cache equality are not established. This success supports an infrastructure hypothesis; it does not prove the cause of this attempt's sanitized FETCH errors."
   },
   "authorized_next_step": {
-    "action": "At most one normal targeted GitHub Actions job rerun after the original workflow is terminal and every failed job has been classified.",
-    "carrier": "Existing GitHub Actions run/job owner; same subject commit and immutable event inputs.",
+    "action": "One normal targeted retry of the two terminal, classified infrastructure-failed jobs through the original GitHub Actions run. Preserve the same subject commit, immutable event inputs, original receipts and other active jobs. Let the original service enforce run eligibility.",
+    "carrier": "Existing GitHub Actions run/job owner",
+    "target_run_id": 43032587201,
+    "target_job_ids": [
+      130564015729,
+      130564015311
+    ],
     "original_transaction_reuse": false,
     "source_or_mirror_or_timeout_or_gate_change": false,
     "new_attempt_receipt_required": true,
-    "action_dispatched": false
-  }
+    "action_dispatched": false,
+    "eligibility_note": "The earlier whole-workflow-terminal condition was a conservative local plan, not a discovered source-law requirement. Official job retry documentation and the GitHub CLI's explicit-job path do not expose that prerequisite; the same service may still refuse an active run. Any such reply must be classified from its actual reason, reconciled, and not bypassed through another carrier.",
+    "eligibility_sources": [
+      "https://docs.github.com/en/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run",
+      "https://github.com/cli/cli/blob/trunk/pkg/cmd/run/rerun/rerun.go"
+    ],
+    "cli_source_blob": "8f8b79a2edf9ec5cc35ba7d773921ae389157efc"
+  },
+  "additional_original_failures": [
+    {
+      "pack_index": 11,
+      "job_id": 130564015311,
+      "artifact_id": 13863744332,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-11T14:37:38Z",
+      "runner_name": "GitHub Actions 1000581498",
+      "runner_group_name": "GitHub Actions",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "artifact_zip_sha256": "863f03586198a08b0d75e45301c397b60f5279ad4de4d0f4326fb96c7808f5fe",
+      "acquisition_outcome": "NATIVE_COMPLETION_RESPONSE_UNKNOWN; installation=never_started; original result not reclassified",
+      "earlier_brain_proof_groups_passed": 3,
+      "withheld_following_logical_jobs": 13,
+      "artifact_upload": "success",
+      "checkout_cleanup": "success",
+      "complete_job": "success"
+    }
+  ]
 }
