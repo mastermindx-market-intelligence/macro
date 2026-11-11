@@ -154,7 +154,7 @@ def test_no_template_links_deleted_brief_pages():
 
 
 # ── 2026-10-19→11-09 AI-brief freeze: freshest-copy pick, stale chip, receipt ──
-from datetime import datetime, timezone  # noqa: E402
+from datetime import datetime, timedelta, timezone  # noqa: E402
 from types import SimpleNamespace  # noqa: E402
 
 from scripts import build_aibrief as bab  # noqa: E402
@@ -319,14 +319,25 @@ def _fake_root(tmp_path):
 
 
 def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
+    # Anchored to the real clock: the static dates this test shipped with
+    # (2026-11-09 / 2026-10-18) were fresh/stale when authored, but the "fresh"
+    # fixture aged past cadence+grace (1d + 1d6h) at 2026-11-11T07:00Z, so every
+    # later run rendered the macro lens stale and failed. A pipeline test that
+    # exercises bab.main()'s REAL datetime.now must derive its fixtures from
+    # that clock — the frozen-clock unit tests above are unaffected either way.
+    now = datetime.now(timezone.utc)
+    fresh_ts = (now - timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    fresh_asof = (now - timedelta(days=3)).strftime("%Y-%m-%d")
+    stale_ts = (now - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    stale_asof = (now - timedelta(days=33)).strftime("%Y-%m-%d")
     root = _fake_root(tmp_path)
     site = tmp_path / "out" / "site"
-    _w(site / "master_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16", refresh_days=1))
+    _w(site / "master_brief.json", _brief(stale_ts, stale_asof, refresh_days=1))
     _w(root / "data" / "regime" / "master_brief.json",
-       _brief("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1))
-    _w(site / "btc_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16"))
+       _brief(fresh_ts, fresh_asof, refresh_days=1))
+    _w(site / "btc_brief.json", _brief(stale_ts, stale_asof))
     # china present but with an UNPARSEABLE generated_at -> unknown age
-    _w(site / "china_brief.json", _brief("garbage", "2026-10-16", refresh_days=1))
+    _w(site / "china_brief.json", _brief("garbage", stale_asof, refresh_days=1))
     monkeypatch.setattr(bab, "config", SimpleNamespace(
         load=lambda: {"storage": {"site_dir": str(site)}}, ROOT=root))
     assert bab.main() == 0
@@ -334,8 +345,8 @@ def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
     assert datetime.fromisoformat(receipt["built_at"]).tzinfo is not None
     assert set(receipt["lenses"]) == {"macro", "china", "btc"}
     macro = receipt["lenses"]["macro"]
-    assert macro["generated_at"] == "2026-11-09T01:00:00+00:00"
-    assert macro["state_asof"] == "2026-11-06"
+    assert macro["generated_at"] == fresh_ts
+    assert macro["state_asof"] == fresh_asof
     assert macro["refresh_days"] == 1 and macro["source"] == "data_regime"
     # btc (site copy, 2026-10-18) is long past 3d+grace
     assert receipt["lenses"]["btc"]["source"] == "site" and receipt["lenses"]["btc"]["stale"] is True
@@ -345,7 +356,7 @@ def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
     assert receipt["lenses"]["china"]["generated_at"] is None
     assert receipt["lenses"]["china"]["stale"] is None
     html = (site / "aibrief.html").read_text()
-    assert "Stale — last generated 2026-10-18" in html  # btc lens
+    assert f"Stale — last generated {stale_ts[:10]}" in html  # btc lens
     assert html.count("Updated daily") == 1             # macro only — china suppressed
 
 
