@@ -1,0 +1,4 @@
+{
+  "finding": "The real Sectors overview table fits the tested 390px viewport and has zero horizontal overflow. Requiring positive scrollLeft was an invalid harness precondition, not product failure.",
+  "replacement": "Retain the overview focus-return case, and exercise positive horizontal scroll on the actual overflowing global table."
+}

@@ -133,7 +133,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-11-06",
+        "source_asof": "2026-11-09",
         "status": "PRESENT"
       },
       {
@@ -166,8 +166,8 @@
         "prior_value": 3.88
       },
       {
-        "current_value": 47.0,
-        "delta": 5.0,
+        "current_value": 50.0,
+        "delta": 8.0,
         "metric_id": "market_implied_path_12m_bp",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 42.0
@@ -195,11 +195,11 @@
   },
   "corrections": {
     "changed_fingerprints": [
-      "market_implied_path_12m_bp:market_implied_path_12m_bp:f3486b34b5782f1c"
+      "market_implied_path_12m_bp:market_implied_path_12m_bp:f1d0eb968adfd455"
     ],
     "correction_state": "superseded",
     "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "monetary_policy-US-bdd102f54a02c5fb"
+    "predecessor_generation_id": "monetary_policy-US-59bdd5a2935bfb85"
   },
   "drivers": {
     "balance_sheet": [
@@ -264,7 +264,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "market_implied_path_12m_bp",
-        "impact_magnitude": 47.0,
+        "impact_magnitude": 50.0,
         "impact_sign": 1,
         "label": {
           "en": "Market-implied 12m path",
@@ -273,7 +273,7 @@
         "note": "positive = market prices net hikes over 12m; negative = net cuts; a market PRICE, not a forecast",
         "owner_field": "board.rate_path_row.implied_bp_12m",
         "unit": "bp",
-        "value": 47.0
+        "value": 50.0
       },
       {
         "coverage_state": "PRESENT",
@@ -320,11 +320,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-09T06:41:31Z",
+    "built_at": "2026-11-10T11:36:38Z",
     "calculation_as_of": "2026-11-06",
-    "code_version": "df80d43dc64ec32b78dff8acbfac3f11a7ce71c0",
-    "content_sha256": "59bdd5a2935bfb859548979450b2e19be7fef9f6fbdfa33825994ab8cd451c30",
-    "generation_id": "monetary_policy-US-59bdd5a2935bfb85",
+    "code_version": "7e115b6f1f10832b4b123149215ea7a041279753",
+    "content_sha256": "4922c87dcecc1c151d6fbcb54e23d4d38f576024231c9ced23e9bfa98dbc181a",
+    "generation_id": "monetary_policy-US-4922c87dcecc1c15",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -617,7 +617,7 @@
           "value": null
         },
         "unit": "bp",
-        "value": 47.0,
+        "value": 50.0,
         "value_type": "basis_points"
       },
       {
@@ -653,7 +653,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.24,
+        "value": 4.26,
         "value_type": "percent"
       },
       {
@@ -689,7 +689,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.35,
+        "value": 4.38,
         "value_type": "percent"
       },
       {
@@ -804,7 +804,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.nominal_10y",
@@ -815,10 +815,10 @@
         "metric_id": "nominal_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-09",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#nominal_10y",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -840,7 +840,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_implied_real_yield",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.real_10y",
@@ -851,10 +851,10 @@
         "metric_id": "real_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-09",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#real_10y",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -876,7 +876,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.rates.curve_2s10s",
@@ -887,10 +887,10 @@
         "metric_id": "curve_2s10s",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-09",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#curve_2s10s",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -912,7 +912,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_breakeven_inflation_expectation",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "state.expectations.breakeven_10y",
@@ -923,10 +923,10 @@
         "metric_id": "breakeven_10y",
         "model_version": "monetary_policy.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-09",
         "owner_ref": "engine.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#breakeven_10y",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2357,7 +2357,7 @@
         },
         "owner_ref": "engine.rate_inflation_transmission",
         "provider": "FRED (DGS10/DFII10)",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
