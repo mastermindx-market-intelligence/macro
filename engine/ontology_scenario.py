@@ -287,6 +287,8 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
             if baseline is None and owner_refusal:
                 root.update({key:owner_refusal[key] for key in ['reason','missing_owner_inputs','adapter_method']
                              if key in owner_refusal})
+    if normalized['node_ref'] == 'yahoo:CL=F' and root['status'] == 'UNAVAILABLE':
+        owner_receipt = None
     hops = [dict(from_node=h.get('from'), to_node=h.get('to'), method_class='HYPOTHESIS_MECHANISM',
                  value=None, reason='DOWNSTREAM_NOT_ASSUMED') for h in chain.get('hops', [])]
     logical = dict(assumption_id=assumption_id, snapshot_id=snapshot_id, chain_hash=_hash(chain),
