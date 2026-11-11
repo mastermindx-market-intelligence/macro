@@ -292,7 +292,7 @@ def j1_books(d, w, mult=1.0, only=None):
     bk["B1"] = rc.simulate(spy_targets(one), R, cash, bp, "B1", start=J1_FIRST)
     me = rc.month_end_sessions(s)
     t6040 = pd.DataFrame(np.nan, index=s, columns=["SPY", "BOND"])
-    t6040.loc[me[me >= J1_FIRST]] = [0.6, 0.4]
+    t6040.loc[me[me >= J1_FIRST].union(pd.DatetimeIndex([J1_FIRST]))] = [0.6, 0.4]   # invested from the first decision
     bk["B2"] = rc.simulate(t6040, R, cash, bp, "B2", start=J1_FIRST, always_rebalance=True)
     sig = d["rets"]["SPY"].rolling(21, min_periods=21).std(ddof=1) * math.sqrt(252)
     wv = (0.15 / sig).clip(upper=1.0).where(s >= J1_FIRST)
