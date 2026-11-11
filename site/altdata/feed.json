@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-11T13:06:35.288980+00:00",
+  "generated_utc": "2026-11-11T15:17:05.018148+00:00",
   "as_of": "2026-11-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -18932,7 +18932,7 @@
         "detail": "Issuer Tenders"
       },
       {
-        "ticker": "YHNUF",
+        "ticker": "YHNRF",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -19373,14 +19373,6 @@
       },
       {
         "ticker": "C-PR",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
-        "ticker": "LNAI",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -20092,7 +20084,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "T-PA",
+        "ticker": "T-PC",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21140,14 +21132,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "DYNC",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "QETAR",
         "category": "Delistings",
         "confidence": "high",
@@ -21620,14 +21604,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "MAXNQ",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "SCNI",
         "category": "Delistings",
         "confidence": "high",
@@ -21852,7 +21828,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "FHN-PF",
+        "ticker": "FHN-PH",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21908,7 +21884,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "ONFOW",
+        "ticker": "ONFOP",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -22492,7 +22468,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "SCCG",
+        "ticker": "SCCD",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -24636,14 +24612,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "FCT",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "HASI",
         "category": "Acquisitions",
         "confidence": "high",
@@ -25444,7 +25412,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "RWTS",
+        "ticker": "RWTN",
         "category": "Divestitures",
         "confidence": "medium",
         "activist": false,
@@ -25612,7 +25580,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "TCBI-PB",
+        "ticker": "TXCP-PB",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -26748,7 +26716,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "DTG",
+        "ticker": "DTK",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
