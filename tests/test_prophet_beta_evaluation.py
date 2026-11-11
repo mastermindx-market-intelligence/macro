@@ -396,3 +396,236 @@ def test_published_artifact_contract_if_present():
     assert not any(a[k] for k in ev.AUTHORITY)
     for att in a["attribution"].values():
         assert abs(att["identity_error"]) < 1e-9
+
+
+# ── independent audit RUN-D corrections (2026-11-11) — regression block ──────
+# Known-answer locks for: (1) the trading cost of a target set at the FINAL close is
+# charged against the final day's net return instead of being dropped; (2) the
+# disclosure-sensitivity helpers undated_converted_ids / held_path_gaps /
+# first_gap_total_loss_rets and the split of resolved_at_or_before_follower_fill;
+# (3) the runner verifies every price parquet against the frozen git data pin.
+
+def _one_etf_book(rets_spy, targets, charge):
+    cal = _cal(len(rets_spy))
+    rets = pd.DataFrame({"SPY": rets_spy}, index=cal)
+    tradable = pd.DataFrame({"SPY": True}, index=cal)
+    cash = pd.Series(0.0, index=cal)
+    tg = {cal[i]: w for i, w in targets.items()}
+    return ev.simulate_book(list(cal), rets, cash, tg, tradable, lambda a: 3.0,
+                            charge_terminal_trade_cost=charge)
+
+
+def test_terminal_trade_cost_charged_at_final_close():
+    targets = {0: {"SPY": 1.0}, 1: {}}       # full liquidation AT the final close
+    b = _one_etf_book([np.nan, 0.0], targets, charge=True)
+    assert b.gross.tolist() == [0.0]
+    expected = (1 - 3e-4) * (1 - 3e-4) - 1       # entry 3bp + terminal liquidation 3bp
+    assert b.net.iloc[0] == pytest.approx(expected, abs=1e-15)
+    assert b.net.iloc[0] == pytest.approx(-5.9991e-4, abs=1e-15)
+    assert b.cost.iloc[0] == pytest.approx(b.net.iloc[0] - b.gross.iloc[0], abs=1e-18)
+    # superseded behaviour: the terminal cost is silently absent
+    s = _one_etf_book([np.nan, 0.0], targets, charge=False)
+    assert s.gross.tolist() == [0.0]
+    assert s.net.iloc[0] == pytest.approx(-3e-4, abs=1e-15)
+    assert s.cost.iloc[0] == pytest.approx(s.net.iloc[0] - s.gross.iloc[0], abs=1e-18)
+    assert s.cost.iloc[0] == pytest.approx(-3e-4, abs=1e-15)
+
+
+def test_c1_passive_held_through_invariant_under_flag():
+    targets = {0: {"SPY": 1.0}}               # no target at the final close: never sold
+    rs = [np.nan, 0.10, 0.10]
+    on = _one_etf_book(rs, targets, charge=True)
+    off = _one_etf_book(rs, targets, charge=False)
+    pd.testing.assert_series_equal(on.net, off.net)
+    pd.testing.assert_series_equal(on.cost, off.cost)
+    pd.testing.assert_series_equal(on.gross, off.gross)
+    comp = float(np.prod(1 + on.net.to_numpy()) - 1)
+    assert comp == pytest.approx(1.10 * (1 - 3e-4) * 1.10 - 1, abs=1e-12)
+    assert comp == pytest.approx(0.209637, abs=1e-12)   # 1.21 * 0.9997 - 1
+
+
+def test_undated_converted_ids():
+    def p(pid, zs, era=ev.INCUMBENT_ERA):
+        return {"id": pid, "selection_era": era, "entry_zone_state": zs}
+    plans = [
+        p("a", {"state": "converted", "filled_date": "2026-08-20"}),
+        p("b", {"state": "converted", "filled_date": None}),
+        p("c", {"state": "converted", "filled_date": ""}),
+        p("d", {"state": "converted", "converted_at": "2026-08-20T14:00:00Z"}),
+        p("e", {"state": "filled"}),
+        p("f", {"state": "converted", "filled_date": None}, era="legacy"),
+    ]
+    assert ev.undated_converted_ids(plans) == frozenset({"b", "c"})
+
+
+def _gap_fixture():
+    cal = _cal(5)
+    closes = pd.DataFrame({"SPY": [100.0, 101, 102, 103, 104],
+                           "XXX": [10.0, 11, 12, np.nan, np.nan],
+                           "YYY": [5.0, 5, 5, 0.0, 0.0]}, index=cal)
+    P = lambda pid, a, i, j: ev.Position(pid, a, None, cal[i], cal[j], False, "x", None, None)  # noqa: E731
+    pos = [P("s", "SPY", 0, 4), P("x", "XXX", 0, 4), P("y", "YYY", 0, 4), P("x2", "XXX", 0, 2)]
+    return cal, closes, pos
+
+
+def test_held_path_gaps():
+    cal, closes, pos = _gap_fixture()
+    gaps = ev.held_path_gaps(pos, closes)
+    assert gaps == [
+        {"plan_id": "x", "asset": "XXX", "entry": cal[0], "first_missing_close": cal[3],
+         "missing_sessions": 2},
+        {"plan_id": "y", "asset": "YYY", "entry": cal[0], "first_missing_close": cal[3],
+         "missing_sessions": 2},
+    ]
+
+
+def test_first_gap_total_loss_rets():
+    cal, closes, pos = _gap_fixture()
+    rets = closes.pct_change(fill_method=None)
+    before = rets.copy()
+    out = ev.first_gap_total_loss_rets(rets, pos, closes)
+    pd.testing.assert_frame_equal(rets, before)            # original unmutated
+    assert out.at[cal[3], "XXX"] == -1.0 and out.at[cal[3], "YYY"] == -1.0
+    mask = pd.DataFrame(False, index=cal, columns=closes.columns)
+    mask.loc[cal[3], ["XXX", "YYY"]] = True
+    pd.testing.assert_frame_equal(out.mask(mask), before.mask(mask))
+
+
+def test_resolved_at_or_before_split_counters():
+    cal = _cal(40, "2026-08-03")
+    closes = _panel(cal, {**{e: 0.0 for e in ETFS}, "SPY": 0.0, "AAA": 0.001})
+    we = cal[-1]
+    plans = [
+        # filled exactly at the window end: open, censored to we, X == E == we
+        _plan("END", "2026-08-07", "2026-08-09", filled=we.strftime("%Y-%m-%d")),
+        # ledger resolution before the publication/fill session
+        _plan("EARLY", "2026-08-07", "2026-08-09"),
+    ]
+    ledger = {"EARLY": {"outcome": "INVALIDATED", "close_date": "2026-08-08"}}
+    pos, excl, extra = ev.build_positions(plans, ledger, cal, closes, closes.copy(), {},
+                                          "2026-08-10", we)
+    assert pos == []
+    assert extra["entered_at_final_close"] == 1
+    assert extra["resolved_before_follower_fill"] == 1
+    assert excl == {"resolved_at_or_before_follower_fill": 2}
+    assert excl["resolved_at_or_before_follower_fill"] == (
+        extra["entered_at_final_close"] + extra["resolved_before_follower_fill"])
+
+
+def test_load_prices_verifies_against_pin(tmp_path):
+    import subprocess
+    import scripts.run_prophet_beta_evaluation as runner
+    repo = tmp_path / "repo"
+    yd = repo / "data" / "yahoo"
+    yd.mkdir(parents=True)
+    cal = _cal(4)
+
+    def frame(base):
+        v = [base, base + 1, base + 2, base + 3]
+        return pd.DataFrame({"close": v, "close_price": v}, index=cal)
+
+    def g(*a):
+        subprocess.run(["git", "-C", str(repo), *a], check=True, capture_output=True)
+
+    g("init", "-q")
+    g("config", "user.email", "t@example.invalid")
+    g("config", "user.name", "t")
+    g("config", "commit.gpgsign", "false")
+    frame(10.0).to_parquet(yd / "AAA.parquet")
+    frame(20.0).to_parquet(yd / "BBB.parquet")
+    g("add", "data/yahoo")
+    g("commit", "-q", "-m", "pin")
+    pin = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"], check=True,
+                         capture_output=True, text=True).stdout.strip()
+    frame(999.0).to_parquet(yd / "AAA.parquet")       # corrupted local bytes
+    (yd / "BBB.parquet").unlink()                     # absent locally, present in pin
+    frame(30.0).to_parquet(yd / "CCC.parquet")        # local only, never pinned
+
+    adj, raw, missing, digest, from_pin = runner.load_prices(
+        ["AAA", "BBB", "CCC", "DDD"], yd, cal, repo, pin)
+    assert missing == ["CCC", "DDD"]       # the pin decides: CCC has no pinned blob
+    assert from_pin == ["AAA", "BBB"]
+    assert adj["AAA"].tolist() == [10.0, 11.0, 12.0, 13.0]   # pinned, not corrupted 999
+    assert adj["BBB"].tolist() == [20.0, 21.0, 22.0, 23.0]
+    assert "CCC" not in adj.columns and len(digest) == 64
+
+
+# ── independent-audit correction (2026-11-11): yardstick member benchmark + event rows ──
+# ── independent-audit correction (2026-11-11): yardstick member benchmark + event rows ──
+# Appended by Lead D; mirrors the house style above (synthetic known-answer fixtures).
+
+
+def _mb_fixture():
+    """140-session panel: XLV members A/B/C, XLF members E/F, non-member D, ETFs + SPY."""
+    cal = _cal(140, "2026-01-05")
+    cols = ["SPY", "XLV", "XLF", "A", "B", "C", "D", "E", "F"]
+    idx = pd.DataFrame({"ticker": ["A", "B", "C", "E", "F"],
+                        "start_date": [cal[0]] * 5,
+                        "end_date": [pd.NaT] * 5})
+    sector_of = {"A": "XLV", "B": "XLV", "C": "XLV", "E": "XLF", "F": "XLF"}
+    closes = pd.DataFrame(index=cal, columns=cols, dtype=float)
+    rng = np.random.default_rng(7)
+    lvl = {c: 100.0 for c in cols}
+    for d in cal:
+        for c in cols:
+            closes.at[d, c] = lvl[c]
+            lvl[c] *= 1.0 + 0.001
+    # deterministic hand returns over the measured windows
+    P = cal[130]
+    for c, r5 in (("A", 0.10), ("B", 0.02), ("C", -0.04), ("XLV", 0.03), ("XLF", 0.05), ("SPY", 0.01)):
+        closes.at[cal[135], c] = closes.at[P, c] * (1 + r5)
+    raw = closes.copy()
+    return cal, idx, sector_of, closes, raw, P
+
+
+def test_event_rows_ruler_and_legs():
+    cal, pit, sector_of, closes, raw, P = _mb_fixture()
+    pub = {"P1": P}
+    df = ev.event_rows(pub, {"P1": "A"}, {"P1": "XLV"}, closes, cal, cal[-1], horizons=(5,))
+    assert len(df) == 1
+    row = df.iloc[0]
+    assert row["signal"] == cal[129]          # session before P, next-bar ruler
+    assert row["stock_ret"] == pytest.approx(0.10)
+    assert row["etf_ret"] == pytest.approx(0.03)
+    assert row["spy_ret"] == pytest.approx(0.01)
+    assert row["sel"] == pytest.approx(0.07)   # 0.10 - 0.03
+    assert row["x"] == pytest.approx(0.09)     # 0.10 - 0.01
+
+
+def test_member_benchmark_identity_peers_and_published_exclusion():
+    cal, pit, sector_of, closes, raw, P = _mb_fixture()
+    pub = {"P1": P, "P2": P}
+    out = ev.member_benchmark_event_study(pub, {"P1": "A", "P2": "B"}, {"P1": "XLV", "P2": "XLV"},
+                                          closes, raw, cal, cal[-1], pit, sector_of,
+                                          B=200, seed=1, horizons=(5,), n_placebo=50)
+    m = out["5"]
+    assert m["n"] == 2
+    # peers of P1 (asset A, published B same day): eligible XLV members minus {A, B} = {C}
+    assert m["median_peers_per_plan"] == 1
+    # bench for both plans = C's forward return; identity sel == drag + (stock - bench), exact
+    bench = -0.04
+    dr = bench - 0.03
+    assert m["equal_weight_member_minus_sector_etf"]["mean"] == pytest.approx(dr)
+    assert m["stock_minus_equal_weight_members"]["mean"] == pytest.approx(((0.10 - bench) + (0.02 - bench)) / 2)
+    assert m["stock_minus_sector_etf"]["mean"] == pytest.approx(((0.10 - 0.03) + (0.02 - 0.03)) / 2)
+    assert m["identity_check_max_abs"] == pytest.approx(0.0, abs=1e-12)
+    # single-peer placebo: every draw picks C -> degenerate at the drag value
+    pl = m["placebo_random_same_sector"]
+    assert pl["mean"] == pytest.approx(dr)
+    assert pl["p2_5"] == pytest.approx(dr)
+    assert pl["p97_5"] == pytest.approx(dr)
+
+
+def test_member_benchmark_two_peers_placebo_spans_their_range():
+    cal, pit, sector_of, closes, raw, P = _mb_fixture()
+    pub = {"P1": P}
+    out = ev.member_benchmark_event_study(pub, {"P1": "A"}, {"P1": "XLV"},
+                                          closes, raw, cal, cal[-1], pit, sector_of,
+                                          B=200, seed=1, horizons=(5,), n_placebo=400)
+    m = out["5"]
+    assert m["median_peers_per_plan"] == 2      # B and C
+    pl = m["placebo_random_same_sector"]
+    # draws pick B (+0.02) or C (-0.04) vs XLV (+0.03): range brackets both, mean at their midpoint
+    assert pl["p2_5"] <= 0.02 - 0.03 + 1e-9 and pl["p97_5"] >= -0.04 - 0.03 - 1e-9
+    # Monte-Carlo mean over 400 draws: per-draw spread 0.06 -> sigma(mean) ~ 0.0015; allow 3+ sigma
+    assert pl["mean"] == pytest.approx(((0.02 - 0.03) + (-0.04 - 0.03)) / 2, abs=0.005)

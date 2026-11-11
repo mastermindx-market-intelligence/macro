@@ -151,12 +151,19 @@ class BookResult:
 
 def simulate_book(dates: Sequence[pd.Timestamp], rets: pd.DataFrame, cash_r: pd.Series,
                   targets: Mapping[pd.Timestamp, Mapping[str, float]],
-                  tradable: pd.DataFrame, cost_bps: Callable[[str], float]) -> BookResult:
+                  tradable: pd.DataFrame, cost_bps: Callable[[str], float],
+                  charge_terminal_trade_cost: bool = True) -> BookResult:
     """Long-only book over ``dates`` (closes). Holdings set at close d_k earn d_{k+1}'s return.
 
     ``targets[d]`` = target weights after trading at close ``d``; dates without a target
     keep drifted holdings. A target asset not tradable at ``d`` is a no-fill: its weight
     stays in cash. Missing asset returns while held are treated as 0 (stale) and counted.
+
+    A trade whose cost is computed at the FINAL close has no following return day to carry
+    it; with ``charge_terminal_trade_cost`` (default, corrected 2026-11-11 after the
+    independent audit RUN-D fee finding) that cost is charged against the final day's
+    realised net return instead of being silently dropped. ``False`` reproduces the
+    superseded pre-correction behaviour and is used only to republish those figures.
     """
     dates = list(dates)
     h: dict[str, float] = {}
@@ -213,6 +220,13 @@ def simulate_book(dates: Sequence[pd.Timestamp], rets: pd.DataFrame, cash_r: pd.
             traded.append(sum(abs(v) for v in dw.values()))
             # a cost incurred at close d reduces the value carried into d+1
             pending_cost = 1.0 - (1.0 - pending_cost) * (1.0 - t_c)
+            if charge_terminal_trade_cost and k == len(dates) - 1 and pending_cost > 0.0 and net:
+                # final close: no d+1 exists to carry this cost, so it is charged
+                # against the final day's realised net return — never dropped
+                n_last = (1.0 + net[-1]) * (1.0 - pending_cost) - 1.0
+                net[-1] = n_last
+                cost[-1] = n_last - gross[-1]
+                pending_cost = 0.0
             h = {a: w for a, w in clean.items() if w > 0}
         else:
             traded.append(0.0)
@@ -379,6 +393,58 @@ def auditable_first_availability(plan: Mapping) -> pd.Timestamp | None:
     return t.normalize()
 
 
+def undated_converted_ids(plans: Iterable[Mapping], era: str = INCUMBENT_ERA) -> frozenset:
+    """Ids of era plans finally ``converted`` with no explicit fill/conversion date.
+
+    The plan snapshot records terminal state only: a converted plan carrying no dated
+    fill cannot be shown to have been convertible as of its publication session, so the
+    engine enters it at P under the header's literal C6 rule while callers expose an
+    excluding sensitivity (independent audit RUN-D 2026-11-11, conversion finding).
+    """
+    out: set[str] = set()
+    for p in plans:
+        if p.get("selection_era") != era:
+            continue
+        zs = p.get("entry_zone_state") or {}
+        if zs.get("state") != "converted":
+            continue
+        dated = any(v for k, v in zs.items()
+                    if ("date" in str(k) or str(k).endswith("_at")) and v)
+        if not dated:
+            out.add(p["id"])
+    return frozenset(out)
+
+
+def held_path_gaps(positions: Sequence[Position], closes: pd.DataFrame) -> list[dict]:
+    """Positions whose held window [entry, exit] contains a missing or non-positive close.
+
+    Missing held marks are zero-filled (flat) by :func:`simulate_book`; this lists the
+    affected positions so the artifact can disclose them and stress them (audit RUN-D).
+    """
+    out: list[dict] = []
+    for p in positions:
+        vals = closes.loc[p.entry:p.exit, p.asset]
+        v = vals.to_numpy()
+        bad = vals[~np.isfinite(v) | (v <= 0)]
+        if len(bad):
+            out.append({"plan_id": p.plan_id, "asset": p.asset, "entry": p.entry,
+                        "first_missing_close": bad.index[0], "missing_sessions": int(len(bad))})
+    return out
+
+
+def first_gap_total_loss_rets(rets: pd.DataFrame, positions: Sequence[Position],
+                              closes: pd.DataFrame) -> pd.DataFrame:
+    """Copy of ``rets`` writing each gapped held position to -100% at its first missing close.
+
+    The position's weight self-removes through drift afterwards. This is a stress
+    assumption, not an observed price (audit RUN-D missing-marks finding).
+    """
+    out = rets.copy()
+    for g in held_path_gaps(positions, closes):
+        out.at[g["first_missing_close"], g["asset"]] = -1.0
+    return out
+
+
 def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal: pd.DatetimeIndex,
                     closes: pd.DataFrame, raw: pd.DataFrame, sector_of_plan: Mapping[str, str | None],
                     window_start, window_end, excluded_ids: frozenset = frozenset(),
@@ -397,7 +463,8 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
     reasons: dict[str, int] = {}
     pos: list[Position] = []
     extra = {"era_plans": 0, "entry_shifted_to_publication": 0, "censored": 0,
-             "exit_ledger": 0, "exit_mechanical": 0, "pub_sessions": {}}
+             "exit_ledger": 0, "exit_mechanical": 0, "pub_sessions": {},
+             "entered_at_final_close": 0, "resolved_before_follower_fill": 0}
 
     def bump(r):
         reasons[r] = reasons.get(r, 0) + 1
@@ -467,6 +534,12 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
             X, censored = we, True
         if X <= E:
             bump("resolved_at_or_before_follower_fill")
+            # split for disclosure (audit RUN-D): a plan whose entry session IS the
+            # final close can never earn a return; it is not an early resolution
+            if E == we:
+                extra["entered_at_final_close"] += 1
+            else:
+                extra["resolved_before_follower_fill"] += 1
             continue
         if censored:
             extra["censored"] += 1
@@ -801,6 +874,148 @@ def event_study(pub: Mapping[str, pd.Timestamp], plan_asset: Mapping[str, str],
         hit = int((sub["x"] > 0).sum())
         res["share_beating_spy"] = {"k": hit, "n": int(len(sub)), "rate": hit / len(sub),
                                     "ci95_wilson_naive": wilson(hit, len(sub))}
+        out[str(h)] = res
+    return out
+
+
+def event_rows(pub: Mapping[str, pd.Timestamp], plan_asset: Mapping[str, str],
+               plan_etf: Mapping[str, str | None], closes: pd.DataFrame, cal: pd.DatetimeIndex,
+               last_close, horizons=HORIZONS) -> pd.DataFrame:
+    """Per-plan event-study rows (the frozen event_study's row loop, exposed for audits).
+
+    Same next-bar ruler (engine.grading.forward_metrics from the session before P); one
+    row per plan x horizon with the raw legs so after-the-fact sensitivities can restrict
+    or regroup the population without touching the frozen aggregates.
+    """
+    from engine.grading import forward_metrics
+    last_close = pd.Timestamp(last_close)
+    cl = closes.loc[:last_close]
+    rows = []
+    for pid, P in pub.items():
+        sig = session_on_or_before(cal, P - pd.Timedelta(days=1))
+        a, e = plan_asset[pid], plan_etf.get(pid)
+        if a not in cl.columns or sig is None:
+            continue
+        fa = forward_metrics(cl[a].dropna(), sig, horizons)
+        fm = forward_metrics(cl[BENCH].dropna(), sig, horizons)
+        fe = forward_metrics(cl[e].dropna(), sig, horizons) if e in cl.columns else {}
+        for h in horizons:
+            ra, rm = fa.get(f"fwd_ret_{h}"), fm.get(f"fwd_ret_{h}")
+            if ra is None or rm is None:
+                continue
+            re_ = fe.get(f"fwd_ret_{h}") if fe else None
+            rows.append({"plan": pid, "asset": a, "etf": e, "signal": sig, "date": P, "h": h,
+                         "stock_ret": ra, "spy_ret": rm,
+                         "etf_ret": re_ if re_ is not None else np.nan,
+                         "x": ra - rm, "sec": (re_ - rm) if re_ is not None else np.nan,
+                         "sel": (ra - re_) if re_ is not None else np.nan})
+    return pd.DataFrame(rows)
+
+
+def member_benchmark_event_study(pub: Mapping[str, pd.Timestamp], plan_asset: Mapping[str, str],
+                                 plan_etf: Mapping[str, str | None], closes: pd.DataFrame,
+                                 raw: pd.DataFrame, cal: pd.DatetimeIndex, last_close, pit: pd.DataFrame,
+                                 sector_of: Mapping[str, str], B: int, seed: int, horizons=HORIZONS,
+                                 n_placebo: int = 1000, seed_placebo: int = 20261111) -> dict:
+    """Equal-weight same-sector member benchmark beside the cap-weighted ETF yardstick.
+
+    Yardstick correction (independent diagnosis 2026-11-11): a cap-weighted sector fund
+    is not what an average member of the sector did. For each plan and horizon this adds,
+    on the same next-bar ruler and population as the frozen event study: stock minus the
+    equal-weight mean forward return of point-in-time eligible same-sector members on the
+    same signal date (names published that day excluded), the equal-weight member mean
+    minus the sector ETF (the size/cap-weight drag), and a placebo distribution of the
+    stock-minus-ETF statistic when every pick is replaced by a random eligible same-sector
+    member (what no selection looks like). The frozen event_study outputs are untouched.
+    """
+    from engine.grading import forward_metrics
+    last_close = pd.Timestamp(last_close)
+    cl = closes.loc[:last_close]
+    pub_assets: dict[pd.Timestamp, set[str]] = {}
+    for pid, P in pub.items():
+        pub_assets.setdefault(P, set()).add(plan_asset[pid])
+    elig_cache: dict[pd.Timestamp, dict[str, str]] = {}
+    fwd_cache: dict[tuple[pd.Timestamp, str], dict[int, float | None]] = {}
+
+    def fwd(sig: pd.Timestamp, tk: str) -> dict[int, float | None]:
+        key = (sig, tk)
+        if key not in fwd_cache:
+            if tk not in cl.columns:
+                fwd_cache[key] = {}
+            else:
+                fm = forward_metrics(cl[tk].dropna(), sig, horizons)
+                fwd_cache[key] = {h: fm.get(f"fwd_ret_{h}") for h in horizons}
+        return fwd_cache[key]
+
+    rows = []
+    for pid, P in sorted(pub.items(), key=lambda kv: (kv[1], kv[0])):
+        sig = session_on_or_before(cal, P - pd.Timedelta(days=1))
+        a, e = plan_asset[pid], plan_etf.get(pid)
+        if a not in cl.columns or sig is None or not e:
+            continue
+        if sig not in elig_cache:
+            elig_cache[sig] = member_universe(sig, pit, sector_of, closes, raw)[0]
+        elig = elig_cache[sig]
+        banned = pub_assets.get(P, set())
+        peers = [tk for tk, etf in elig.items() if etf == e and tk not in banned]
+        for h in horizons:
+            ra = fwd(sig, a).get(h)
+            re_ = fwd(sig, e).get(h)
+            if ra is None or re_ is None:
+                continue
+            pf = {tk: fwd(sig, tk).get(h) for tk in peers}
+            pf = {tk: v for tk, v in pf.items() if v is not None}
+            vals = np.array(sorted(pf.values())) if pf else None
+            rows.append({"plan": pid, "date": P, "h": h, "n_peers": len(pf),
+                         "ra": ra, "re": re_,
+                         "bench": (float(vals.mean()) if vals is not None else np.nan),
+                         "peer_vals": vals})
+    df = pd.DataFrame(rows)
+    rng = np.random.default_rng(seed)
+    prng = np.random.default_rng(seed_placebo)
+    out = {}
+    for h in horizons:
+        sub = df[df["h"] == h] if len(df) else df
+        no_peers = int(sub["bench"].isna().sum()) if len(sub) else 0
+        sub = sub.dropna(subset=["bench"]) if len(sub) else sub
+        if len(sub) == 0:
+            out[str(h)] = {"n": 0, "status": "unmatured"}
+            continue
+        sub = sub.assign(mb=sub["ra"] - sub["bench"], dr=sub["bench"] - sub["re"],
+                         sel=sub["ra"] - sub["re"])
+        dates = np.array(sorted(sub["date"].unique()))
+        groups = {d: sub[sub["date"] == d] for d in dates}
+        res = {"n": int(len(sub)), "n_dates": int(len(dates)), "status": "matured_subset",
+               "n_plans_without_eligible_peers": no_peers,
+               "median_peers_per_plan": float(sub["n_peers"].median()),
+               "identity_check_max_abs": float(np.abs(sub["sel"] - (sub["dr"] + sub["mb"])).max())}
+        for col, name in (("mb", "stock_minus_equal_weight_members"),
+                          ("dr", "equal_weight_member_minus_sector_etf"),
+                          ("sel", "stock_minus_sector_etf")):
+            vals = sub[col].dropna()
+            sums = np.array([groups[d][col].sum(skipna=True) for d in dates])
+            cnts = np.array([groups[d][col].notna().sum() for d in dates])
+            draws = rng.integers(0, len(dates), size=(B, len(dates)))
+            boots = sums[draws].sum(axis=1) / np.maximum(cnts[draws].sum(axis=1), 1)
+            res[name] = {"mean": float(vals.mean()) if len(vals) else None,
+                         "median": float(vals.median()) if len(vals) else None,
+                         "n": int(len(vals)), "ci95_date_cluster": _ci(boots)}
+        # placebo: every pick replaced by one random eligible same-sector member per draw;
+        # the statistic is the same stock-minus-ETF mean the headline reports. Holds dates
+        # and sectors fixed, so it shows member-choice sampling noise only.
+        pv = sub["peer_vals"].tolist()
+        re_ = sub["re"].to_numpy()
+        stat = np.empty(n_placebo)
+        for i in range(n_placebo):
+            pick = np.array([v[prng.integers(0, len(v))] for v in pv])
+            stat[i] = float((pick - re_).mean())
+        res["placebo_random_same_sector"] = {
+            "draws": n_placebo, "mean": float(stat.mean()),
+            "p2_5": float(np.percentile(stat, 2.5)), "p97_5": float(np.percentile(stat, 97.5)),
+            "observed_outside_placebo_range": bool(
+                res["stock_minus_sector_etf"]["mean"] < np.percentile(stat, 2.5)
+                or res["stock_minus_sector_etf"]["mean"] > np.percentile(stat, 97.5)),
+            "note": "random eligible same-sector member per plan per draw, dates and sectors held fixed"}
         out[str(h)] = res
     return out
 

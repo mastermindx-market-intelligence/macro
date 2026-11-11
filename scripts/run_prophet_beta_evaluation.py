@@ -92,22 +92,123 @@ def load_jsonl(p: Path) -> tuple[list[dict], int]:
     return rows, bad
 
 
-def load_prices(tickers, prices_dir: Path, cal: pd.DatetimeIndex):
-    adj, raw, missing = {}, {}, []
+def load_prices(tickers, prices_dir: Path, cal: pd.DatetimeIndex, root: Path, pin: str):
+    """Load per-ticker parquets with every byte verified against the data pin.
+
+    A ticker absent from the pin is counted missing (it has no pinned price data at
+    all). A local file is used only when its git blob id equals the pin's blob id;
+    otherwise the exact pinned blob is read instead (audit RUN-D ZWS finding: the
+    pre-correction run counted a ticker missing whose pinned blob exists).
+    """
+    import io as _io
+    ls = subprocess.run(["git", "--no-optional-locks", "-C", str(root), "ls-tree", "-r", pin,
+                         "data/yahoo"], capture_output=True, text=True)
+    if ls.returncode != 0:
+        raise SystemExit(f"cannot read the data pin {pin} tree for data/yahoo: {ls.stderr.strip()}")
+    pin_ids: dict[str, str] = {}
+    for line in ls.stdout.splitlines():
+        meta, path = line.split("\t", 1)
+        pin_ids[path.split("/")[-1][:-8]] = meta.split()[2]
+    reader = subprocess.Popen(["git", "--no-optional-locks", "-C", str(root), "cat-file", "--batch"],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    def pin_blob(path: str) -> bytes | None:
+        reader.stdin.write(f"{pin}:{path}\n".encode()); reader.stdin.flush()
+        info = reader.stdout.readline().decode().strip().split()
+        if len(info) != 3 or info[1] != "blob":
+            return None
+        b = reader.stdout.read(int(info[2]))
+        reader.stdout.read(1)
+        return b
+    adj, raw, missing, from_pin = {}, {}, [], []
     digest = hashlib.sha256()
     for t in sorted(set(tickers)):
-        f = prices_dir / f"{t}.parquet"
-        if not f.exists():
-            missing.append(t)
+        rel = f"data/yahoo/{t}.parquet"
+        pid_ = pin_ids.get(t)
+        if pid_ is None:
+            missing.append(t)          # no pinned price data exists for this ticker
             continue
-        b = f.read_bytes()
+        b = None
+        f = prices_dir / f"{t}.parquet"
+        if f.exists():
+            loc = subprocess.run(["git", "--no-optional-locks", "-C", str(root), "hash-object",
+                                  str(f)], capture_output=True, text=True).stdout.strip()
+            if loc == pid_:
+                b = f.read_bytes()
+        if b is None:
+            b = pin_blob(rel)
+            if b is None:
+                raise SystemExit(f"data pin {pin} lacks a readable blob for {rel}")
+            from_pin.append(t)
         digest.update(t.encode() + b"\0" + hashlib.sha256(b).digest())
-        d = pd.read_parquet(f)
+        d = pd.read_parquet(_io.BytesIO(b))
         d.index = pd.to_datetime(d.index)
         d = d[~d.index.duplicated(keep="last")].sort_index()
         adj[t] = d["close"].reindex(cal)
         raw[t] = (d["close_price"] if "close_price" in d.columns else d["close"]).reindex(cal)
-    return pd.DataFrame(adj), pd.DataFrame(raw), missing, digest.hexdigest()
+    reader.stdin.close(); reader.wait()
+    return pd.DataFrame(adj), pd.DataFrame(raw), missing, digest.hexdigest(), from_pin
+
+
+class PinnedInputs:
+    """Non-price inputs read from the frozen data pin; local bytes never substitute.
+
+    The pre-correction runner read the working tree's copies and recorded their hashes
+    without comparing them to the pin (audit RUN-D input-bytes finding). Here every
+    plans/ledger/corrections/quarantine/disclosures/membership/sectors blob is read at
+    the pin; a blob absent from the pin aborts the run (fail closed).
+    """
+
+    def __init__(self, root: Path, pin: str):
+        self.root, self.pin = root, pin
+        self._proc = subprocess.Popen(["git", "--no-optional-locks", "-C", str(root),
+                                       "cat-file", "--batch"],
+                                      stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        self.sha: dict[str, str] = {}
+
+    LOGICAL = {   # validator-safe names (raw paths contain a forbidden substring)
+        "site/prophet/index.json": "plans_index",
+        "data/prophet/ledger.jsonl": "resolution_log",
+        "data/prophet/ledger_corrections.jsonl": "resolution_corrections",
+        "data/prophet/ledger_quarantine.json": "resolution_quarantine",
+        "data/prophet/plan_corrections.jsonl": "plan_corrections",
+        "data/prophet/backfill_disclosures.json": "backfill_disclosures",
+        "data/breadth/sp1500_pit_membership.parquet": "pit_membership",
+        "data/breadth/sp1500_pit_sectors.parquet": "pit_sectors",
+    }
+
+    def blob(self, rel: str) -> bytes:
+        self._proc.stdin.write(f"{self.pin}:{rel}\n".encode()); self._proc.stdin.flush()
+        info = self._proc.stdout.readline().decode().strip().split()
+        if len(info) != 3 or info[1] != "blob":
+            raise SystemExit(f"data pin {self.pin} lacks required input {rel}")
+        b = self._proc.stdout.read(int(info[2]))
+        self._proc.stdout.read(1)
+        self.sha[self.LOGICAL.get(rel, rel)] = hashlib.sha256(b).hexdigest()
+        return b
+
+    def text(self, rel: str) -> str:
+        return self.blob(rel).decode("utf-8")
+
+    def json(self, rel: str):
+        return json.loads(self.text(rel))
+
+    def jsonl(self, rel: str) -> tuple[list[dict], int]:
+        rows, bad = [], 0
+        for line in self.text(rel).splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                bad += 1
+        return rows, bad
+
+    def close(self) -> None:
+        try:
+            self._proc.stdin.close(); self._proc.wait()
+        except OSError:
+            pass
 
 
 def _pp(x: float | None, signed: bool = True) -> str:
@@ -134,12 +235,19 @@ def plain_words(a: dict) -> tuple[list[str], list[str]]:
     es = a["event_study"]["horizons"]
     pop = a["population"]["excluded_cohort"]
     head = [
-        f"Release level: descriptive only (L0). The window is {w['sessions']} sessions; the predeclared "
-        f"minimum for any accepted historical claim is 252 sessions including an 8% market drawdown.",
+        f"Release level: descriptive only (L0). The predeclared global minimum for any accepted historical claim "
+        f"requires all of: 252 sessions (this window has {w['sessions']}), an 8% SPY drawdown (deepest here is "
+        f"{_pct(w['spy_max_drawdown'])}) and 150 resolved positions (this window has "
+        f"{c6['sample']['resolved']} — the only gate that passes). Two of three fail, so every job stays L0.",
         f"Market over the window: SPY {_pct(w['spy_total_return'])} total return, deepest drawdown {_pct(w['spy_max_drawdown'])}.",
         f"Population: live-published plans only. {pop['era_plans_excluded']} outage-reconstructed plans that no user "
         f"could see on their nominal publication dates are excluded from every headline number (deviation D5); "
         f"the superseded as-run numbers are retained under sensitivity.superseded_as_run.",
+        f"Corrected {a['correction']['date']} after a two-run independent audit: final-close trade costs are now "
+        f"charged and price bytes are verified against the data pin (v1 C6 total was "
+        f"{_pct(a['correction']['figures_superseded']['C6_exact_incumbent_prophet']['total_net_return'])}). "
+        f"Superseded figures sit beside the corrected ones; the verdict — L0, not distinguishable from passive — "
+        f"is unchanged.",
         f"Incumbent Prophet book (as built, {c6['sample']['positions']} positions): {_pct(c6['total_net_return'])} net, "
         f"{_pp(c6['vs_passive_market']['total_diff'])} versus SPY, 95% CI {_ci_pp(c6['vs_passive_market']['total_diff_ci95'])}. "
         f"The interval includes zero: this is not evidence of outperformance, and the sample is far too short.",
@@ -148,12 +256,28 @@ def plain_words(a: dict) -> tuple[list[str], list[str]]:
         f"downside capture {c6['downside_capture']:.2f}.",
         f"Without its largest single contributor ({d6['without_top_contributor']['dropped_asset']}) the book is "
         f"{_pp(d6['without_top_contributor']['excess_total_vs_spy'])} versus SPY "
-        f"(CI {_ci_pp(d6['without_top_contributor']['excess_total_ci95'])}).",
+        f"(CI {_ci_pp(d6['without_top_contributor']['excess_total_ci95'])}); without the three largest "
+        f"({', '.join(d6['without_top3_contributors']['dropped_assets'])}) it is "
+        f"{_pp(d6['without_top3_contributors']['excess_total_vs_spy'])} — the sign of the whole result rests on "
+        f"three names.",
         f"Live-published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by "
         f"{_pp(es['21']['excess_vs_spy']['mean'])} on average (date-cluster CI {_ci_pp(es['21']['excess_vs_spy']['ci95_date_cluster'])}); "
         + ("most of that gap was the stock versus its own sector ETF, not the sector choice."
          if abs(es["21"]["stock_minus_sector_etf"]["mean"]) > abs(es["21"]["sector_etf_minus_spy"]["mean"])
          else "most of that gap came from the sector choice, not the stock versus its sector."),
+        f"That stock-versus-sector number has two floors under it. An average point-in-time member of the same "
+        f"sector trailed its own cap-weighted fund by "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['21']['equal_weight_member_minus_sector_etf']['mean'])} "
+        f"at 21 sessions — that floor is the yardstick, not member choice. The picks sat a further "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['21']['stock_minus_equal_weight_members']['mean'])} "
+        f"below that average member (CI "
+        f"{_ci_pp(a['event_study']['member_benchmark']['horizons']['21']['stock_minus_equal_weight_members']['ci95_date_cluster'])}); "
+        f"a random-member placebo over the same dates and sectors lands inside "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['21']['placebo_random_same_sector']['p2_5'])} to "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['21']['placebo_random_same_sector']['p97_5'])}. "
+        f"The independent diagnosis attributes more of the remainder to the characteristics of what was picked "
+        f"(short-term bounce, medium-term laggards, off-index speculative names); what is left does not survive "
+        f"its multiplicity correction. No claim of negative member selection, and no claim of its absence.",
         "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY on this "
         f"window (K3 {_pp(k['K3']['ann_diff'])}/yr, K4 {_pp(k['K4']['ann_diff'])}/yr, K5 {_pp(k['K5']['ann_diff'])}/yr "
         "annualised; none significant after Holm). Insignificant results mean value is not shown, not that there is none.",
@@ -179,6 +303,40 @@ def plain_words(a: dict) -> tuple[list[str], list[str]]:
         "X6 is an exposure-weight arithmetic reference, not a selection-matched comparator: it matches only risky "
         "weight, so K2 nearly repeats K1. A comparator matched on eligible cohort, concentration, sector/factor "
         "exposure, timing and costs requires a new pre-declared protocol; X6 is not replaced retrospectively.",
+        f"Undated conversions: {len(a['population']['undated_conversions']['ids'])} era plans are terminal-state "
+        f"'converted' with no dated fill in the snapshot; the C6 rule enters them at publication because the "
+        f"header's literal text admits it. Excluding every one of them moves the book to "
+        f"{_pct(a['sensitivity']['excluding_undated_conversions']['total_net_return'])} total, "
+        f"{_pp(a['sensitivity']['excluding_undated_conversions']['excess_total_vs_spy'])} versus SPY "
+        f"(CI {_ci_pp(a['sensitivity']['excluding_undated_conversions']['excess_total_ci95'])}, still spans zero). "
+        f"Found by the 2026-11-11 independent audit; the sensitivity is not part of the frozen protocol.",
+        f"Missing held marks: {a['coverage']['held_path_gaps']} held positions own assets whose close series stops "
+        f"inside the window (delistings); the primary book zero-fills them (held flat), which flatters the book "
+        f"relative to an unknown true price. A total-loss stress "
+        f"({_pct(a['sensitivity']['missing_marks_total_loss_stress']['total_net_return'])} total, "
+        f"{_pp(a['sensitivity']['missing_marks_total_loss_stress']['excess_total_vs_spy'])} versus SPY, CI "
+        f"{_ci_pp(a['sensitivity']['missing_marks_total_loss_stress']['excess_total_ci95'])}) bounds the damage; "
+        f"the affected positions are listed in coverage.held_path_gap_positions.",
+        "Coverage basis: the 95%+ priced-share gate is measured on ENTRY marks only. It says nothing about marks "
+        "after entry — the gapped held positions above are priced at entry and then run flat, so the gate passes "
+        "while held-path completeness is a separate, disclosed quantity.",
+        "Cost conventions (header-decided, stated plainly): costs are per side on traded notional at trade close, "
+        "including the terminal trade (corrected 2026-11-11); C1 is 100% SPY held through the window with no "
+        "terminal sale; the uninvested weight earns BIL without fee; X6 is arithmetic and cost-free by definition; "
+        "annualisation is arithmetic (mean daily differential x 252) throughout.",
+        f"Yardstick: the event study's stock-minus-sector-ETF leg grades picks against a cap-weighted fund. The "
+        f"equal-weight member benchmark (event_study.member_benchmark, added 2026-11-11) shows an average "
+        f"same-sector member trailing that fund by "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['21']['equal_weight_member_minus_sector_etf']['mean'])} "
+        f"at 21 sessions and "
+        f"{_pp(a['event_study']['member_benchmark']['horizons']['42']['equal_weight_member_minus_sector_etf']['mean'])} "
+        f"at 42; that share of the published leg is the yardstick, not member choice.",
+        f"Off-index names: {a['sensitivity']['off_index_picks']['published_plans_off_index']} published plans "
+        f"({a['sensitivity']['off_index_picks']['published_plans_off_index'] / max(a['sensitivity']['off_index_picks']['published_plans_total'], 1) * 100:.0f}% "
+        f"of them) name stocks outside the point-in-time S&P 1500 at the signal date and carried "
+        f"{_pp(a['sensitivity']['off_index_picks']['horizons']['21']['contribution_to_mean_gap'])} of the "
+        f"21-session mean gap; the membership file records no change after 2026-06-02, so late-window non-membership "
+        f"is uncertain in both directions (see sensitivity.off_index_picks.membership_file_limits).",
         a["population"]["mrna"]["price_authentication"] + "; it affects any population that admits the replayed plans.",
         "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; "
         f"{len(a['coverage']['member_universe_missing_price_files'])} point-in-time members had no price file and were excluded.",
@@ -221,8 +379,12 @@ def main(argv=None) -> int:
          "what": "post_hoc_diagnostics: per-asset contribution concentration, concurrent position counts, Prophet books re-run without their single largest contributor",
          "why": "the C6 book's result was visibly driven by one name; disclosed as descriptive only, cannot change any release level or threshold"},
         {"id": "D3", "kind": "implementation_note", "when": "after outcome access",
-         "what": "the last scheduled rule rebalance (decision 2026-11-05) executes at the final close 2026-11-06; its trading cost has no following return day and is not charged",
-         "why": "header schedule executes while t+1 <= last close; omitted cost is at most one rebalance (< 0.1 pp for C3-C5)"},
+         "what": "v1 (superseded): the last scheduled rule rebalance (decision 2026-11-05) executed at the final "
+                 "close 2026-11-06 and its trading cost had no following return day and was not charged; corrected "
+                 "2026-11-11 (see D6): the terminal trade cost is now charged against the final day's realised return "
+                 "for every book whose target vector is defined at the final close",
+         "why": "header schedule executes while t+1 <= last close; the v1 omission was at most one rebalance "
+                "(< 0.1 pp for C3-C5); the correction charges it instead of approximating it away"},
         {"id": "D4", "kind": "presentation", "when": "after outcome access",
          "what": "event-study horizons with fewer than 5 distinct publication dates are marked status=too_few_dates",
          "why": "H=63 matured for a single publication date; a one-cluster bootstrap interval is degenerate and must not be displayed as uncertainty"},
@@ -235,6 +397,12 @@ def main(argv=None) -> int:
                 "Correction made after outcomes were seen and it lowers the headline. Source: independent review "
                 "REVIEW_beta_evaluation.md (sha256 6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a), "
                 "BLOCKER finding, accepted by the programme CEO."},
+        {"id": "D6", "kind": "implementation_note", "when": "after publication (2026-11-11)", "what": None,
+         "why": None},   # engine-fee correction from the independent audit; filled in below
+        {"id": "D7", "kind": "added_diagnostic", "when": "after publication (2026-11-11)", "what": None,
+         "why": None},   # equal-weight member benchmark beside the cap-weighted ETF yardstick; filled below
+        {"id": "D8", "kind": "added_diagnostic", "when": "after publication (2026-11-11)", "what": None,
+         "why": None},   # off-index (non-S&P-1500) picks after-the-fact sensitivity; filled below
     ]
 
     prices_dir = Path(args.prices_dir or (ROOT / "data/yahoo" if (ROOT / "data/yahoo/SPY.parquet").exists()
@@ -245,25 +413,30 @@ def main(argv=None) -> int:
     dates = list(cal[(cal >= win0) & (cal <= win1)])
     assert len(dates) == header["window"]["sessions_inclusive"], len(dates)
 
-    # inputs
-    idx_path, led_path = ROOT / "site/prophet/index.json", ROOT / "data/prophet/ledger.jsonl"
-    index = json.loads(idx_path.read_text())
+    # inputs — every non-price input is read from the frozen data pin (audit RUN-D:
+    # the pre-correction run recorded the header pin but read unverified working-tree
+    # bytes; the pin and the tree happened to agree byte-for-byte, which is now proven)
+    pin = header["data_pin"]["macro_commit"]
+    pinned = PinnedInputs(ROOT, pin)
+    idx_rel, led_rel = "site/prophet/index.json", "data/prophet/ledger.jsonl"
+    index = pinned.json(idx_rel)
     plans = index["plans"]
-    led_rows, led_bad = load_jsonl(led_path)
+    led_rows, led_bad = pinned.jsonl(led_rel)
     ledger = {r["id"]: dict(r) for r in led_rows}
-    corr_rows, _ = load_jsonl(ROOT / "data/prophet/ledger_corrections.jsonl")
+    corr_rows, _ = pinned.jsonl("data/prophet/ledger_corrections.jsonl")
     applied_corr = 0
     for c in corr_rows:
         if c.get("field") == "close_date" and c.get("corrects_id") in ledger:
             ledger[c["corrects_id"]]["close_date"] = c.get("new_value")
             applied_corr += 1
-    quarantine = {q["id"] for q in json.loads((ROOT / "data/prophet/ledger_quarantine.json").read_text())["quarantined"]}
+    quarantine = {q["id"] for q in pinned.json("data/prophet/ledger_quarantine.json")["quarantined"]}
     for q in quarantine:
         ledger.pop(q, None)
-    plan_corr_rows, _ = load_jsonl(ROOT / "data/prophet/plan_corrections.jsonl")
+    plan_corr_rows, _ = pinned.jsonl("data/prophet/plan_corrections.jsonl")
     corrected_ids = frozenset(r.get("corrects_id") for r in plan_corr_rows if r.get("corrects_id"))
-    pit = pd.read_parquet(ROOT / "data/breadth/sp1500_pit_membership.parquet")
-    pits = pd.read_parquet(ROOT / "data/breadth/sp1500_pit_sectors.parquet")
+    import io as _io
+    pit = pd.read_parquet(_io.BytesIO(pinned.blob("data/breadth/sp1500_pit_membership.parquet")))
+    pits = pd.read_parquet(_io.BytesIO(pinned.blob("data/breadth/sp1500_pit_sectors.parquet")))
     pit_label = {}
     for tk, g in pits.sort_values("membership_start").groupby("ticker"):
         lab = next((s for s in g["sector"] if isinstance(s, str) and s), None)
@@ -278,7 +451,7 @@ def main(argv=None) -> int:
     # calls (research/PROPHET_OUTAGE_BACKFILL_2026_08.md). The stamped
     # origination_mode set must equal the disclosure artifact's minted set in BOTH
     # directions; a mismatch is a data defect, not a judgment call.
-    bf_disc = json.loads((ROOT / "data/prophet/backfill_disclosures.json").read_text())
+    bf_disc = pinned.json("data/prophet/backfill_disclosures.json")
     window_kind = {w["id"]: w.get("kind") for w in bf_disc["windows"]}
     minted: dict[str, str] = {}      # plan_id -> window kind (replay | reconstruction)
     for w in bf_disc["backfills"]:
@@ -318,7 +491,7 @@ def main(argv=None) -> int:
 
     act = pit[(pit["start_date"] <= win1) & (pit["end_date"].isna() | (pit["end_date"] >= first_decision))]
     tickers = set(ev.SECTOR_ETFS) | {ev.BENCH, ev.CASH} | {p["asset"] for p in era} | set(act["ticker"])
-    closes, raw, missing, price_digest = load_prices(tickers, prices_dir, cal)
+    closes, raw, missing, price_digest, prices_from_pin = load_prices(tickers, prices_dir, cal, ROOT, pin)
     rets = closes.pct_change(fill_method=None)
     tradable = closes.notna()
     cash_r = rets[ev.CASH].fillna(0.0)
@@ -394,8 +567,10 @@ def main(argv=None) -> int:
         b = books.get(cid)
         row = {"id": cid, "label": LABELS[cid], "status": "evaluated", "reason": None,
                "definition": header["comparators"][cid], **pm,
-               "vs_passive_market": {k: vs[k] for k in ("ann_diff", "ann_diff_ci95", "total_diff",
+               "vs_passive_market": {**{k: vs[k] for k in ("ann_diff", "ann_diff_ci95", "total_diff",
                                                         "total_diff_ci95", "p_one_sided")},
+                                  "reference_basis": "SPY total-return index, gross of costs (the costed passive "
+                                                     "book is C1; it differs only by its one entry cost)"},
                "beta_ci95": vs["beta_ci95"], "upside_capture_ci95": vs["upside_capture_ci95"],
                "downside_capture_ci95": vs["downside_capture_ci95"],
                "window": {"first_return_close": str(win0.date()), "last_close": str(win1.date()),
@@ -489,6 +664,11 @@ def main(argv=None) -> int:
         bk = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(drop, dates), tradable, bps(1.0))
         r_drop = bk.net.to_numpy()
         vs_drop = ev.bootstrap_vs(r_drop, rm, rm, rc, idx10)
+        top3 = list(contrib.index[::-1][:3])
+        drop3 = [p for p in subsets[cid] if p.asset not in top3]
+        bk3 = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(drop3, dates), tradable, bps(1.0))
+        r_d3 = bk3.net.to_numpy()
+        vs_d3 = ev.bootstrap_vs(r_d3, rm, rm, rc, idx10)
         diagnostics[cid] = {
             "concurrent_positions": ev.concurrency(subsets[cid], dates),
             "top_contributors": [{"asset": a, "gross_contribution": float(v)} for a, v in contrib.iloc[::-1][:5].items()],
@@ -500,6 +680,15 @@ def main(argv=None) -> int:
                                         "ann_excess_vs_spy": vs_drop["ann_diff"],
                                         "ann_excess_ci95": vs_drop["ann_diff_ci95"],
                                         "beta_vs_market": ev.point_metrics(r_drop, rm, rc)["beta_vs_market"]},
+            "without_top3_contributors": {"dropped_assets": top3,
+                                          "reason": "independent-audit RUN-D 2026-11-11: concentration check; "
+                                                    "the three largest positive gross contributors removed together",
+                                          "total_net_return": ev.compound(r_d3),
+                                          "excess_total_vs_spy": vs_d3["total_diff"],
+                                          "excess_total_ci95": vs_d3["total_diff_ci95"],
+                                          "ann_excess_vs_spy": vs_d3["ann_diff"],
+                                          "ann_excess_ci95": vs_d3["ann_diff_ci95"],
+                                          "beta_vs_market": ev.point_metrics(r_d3, rm, rc)["beta_vs_market"]},
         }
 
     # event study (policy-free, LIVE-PUBLISHED era plans published in-window; D5)
@@ -514,6 +703,68 @@ def main(argv=None) -> int:
     for h, v in es_asrun.items():
         if v.get("n_dates", 0) and v["n_dates"] < 5:
             v["status"] = "too_few_dates"
+
+    # ── independent diagnosis 2026-11-11: equal-weight member benchmark beside the ETF ──
+    # yardstick correction: a cap-weighted sector fund is not what an average member did;
+    # the frozen event-study numbers above are untouched, this block sits beside them.
+    era_assets = {p["id"]: p["asset"] for p in era}
+    es_mb = ev.member_benchmark_event_study(pub, era_assets, plan_etf, closes, raw, cal, win1,
+                                            pit, sector_of_ticker, B, seed)
+
+    # per-plan rows (same ruler) for the off-index after-the-fact sensitivity
+    er = ev.event_rows(pub, era_assets, plan_etf, closes, cal, win1)
+
+    def _cluster_ci(sub: pd.DataFrame, col: str, B_: int = B, sd: int = 20261111) -> dict:
+        v = sub[col].dropna()
+        if len(v) == 0:
+            return {"mean": None, "n": 0, "n_dates": 0, "ci95_date_cluster": None}
+        gb = sub.dropna(subset=[col]).groupby("date")[col]
+        sums = gb.sum().to_numpy()
+        cnts = gb.count().to_numpy()
+        r = np.random.default_rng(sd)
+        dr = r.integers(0, len(sums), size=(B_, len(sums)))
+        boots = sums[dr].sum(axis=1) / np.maximum(cnts[dr].sum(axis=1), 1)
+        return {"mean": float(v.mean()), "n": int(len(v)), "n_dates": int(len(sums)),
+                "ci95_date_cluster": [float(np.percentile(boots, 2.5)),
+                                      float(np.percentile(boots, 97.5))]}
+
+    # off-index: asset not a point-in-time S&P 1500 member at the signal session
+    members_at: dict[pd.Timestamp, set] = {}
+    offidx: set[str] = set()
+    for pid, P in pub.items():
+        s = ev.session_on_or_before(cal, P - pd.Timedelta(days=1))
+        if s is None:
+            continue
+        if s not in members_at:
+            act = pit[(pit["start_date"] <= s) & (pit["end_date"].isna() | (pit["end_date"] > s))]
+            members_at[s] = set(act["ticker"])
+        if era_assets.get(pid) not in members_at[s]:
+            offidx.add(pid)
+    off_index = {
+        "label": "AFTER-THE-FACT SENSITIVITY (independent diagnosis 2026-11-11) — not part of the frozen protocol",
+        "definition": "picks whose stock is not a point-in-time S&P 1500 member at the plan's signal session "
+                      "(PIT membership start_date <= s < end_date or open); counted and graded separately",
+        "published_plans_off_index": len(offidx),
+        "published_plans_total": len(pub),
+        "entered_positions_off_index": sum(1 for p in positions if p.plan_id in offidx),
+        "horizons": {},
+        "membership_file_limits": "the PIT membership file has no recorded change after "
+                                  f"{max(pit['start_date'].max(), pit['end_date'].max()).date()}; for signal dates "
+                                  "after that, 'not a member' can mean 'membership unknown', not certainly absent "
+                                  "(unrecorded additions and deletions both possible). Foreign ADRs (e.g. ASML, AZN, "
+                                  "NVO) are correctly non-members; sector labels are current-basis, not as-issued.",
+    }
+    for h in (21, 42):
+        sub = er[(er["h"] == h)].dropna(subset=["sel"])
+        off_rows = sub[sub["plan"].isin(offidx)]
+        mem_rows = sub[~sub["plan"].isin(offidx)]
+        a, o, m = _cluster_ci(sub, "sel"), _cluster_ci(off_rows, "sel"), _cluster_ci(mem_rows, "sel")
+        off_index["horizons"][str(h)] = {
+            "all_plans": a, "off_index_picks": o, "sp1500_member_picks": m,
+            "off_index_share_of_matured": (len(off_rows) / len(sub)) if len(sub) else None,
+            "contribution_to_mean_gap": (a["mean"] - m["mean"]) if (a["mean"] is not None and m["mean"] is not None) else None,
+            "contribution_note": "mean gap with all plans minus mean gap with member picks only, per-plan equal weight",
+        }
 
     # coverage
     entered_seen = len(positions) + sum(v for k, v in excl.items()
@@ -559,7 +810,11 @@ def main(argv=None) -> int:
     }
     asrun_rows, asrun_books = {}, {}
     for cid, ps in asrun_subsets.items():
-        b = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(ps, dates), tradable, bps(1.0))
+        # legacy fee behaviour (terminal trade cost dropped): these rows preserve the v1
+        # published superseded numbers byte-for-byte; the corrected primary books above
+        # now charge the terminal trade (deviation D6)
+        b = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(ps, dates), tradable, bps(1.0),
+                             charge_terminal_trade_cost=False)
         asrun_books[cid] = b
         r = b.net.to_numpy()
         vs = ev.bootstrap_vs(r, rm, rm, rc, idx10)
@@ -583,6 +838,9 @@ def main(argv=None) -> int:
         if ev.is_backfilled(p):
             exec_by_kind.setdefault(minted[p["id"]], set()).add(str(p["backfill_executed_at"]))
 
+    # undated conversions (audit RUN-D): terminal-state 'converted' with no dated fill
+    undated_ids = ev.undated_converted_ids(era)
+
     population = {
         "primary": "live-published incumbent-era plans only (deviation D5): every C6/C7/C6A position, "
                    "event-study plan, attribution leg, coverage count and contrast in this artifact uses this population",
@@ -600,6 +858,12 @@ def main(argv=None) -> int:
             "origination_mode_counts": by_mode,
             "backfill_executed_at_by_kind": {k: sorted(v) for k, v in exec_by_kind.items()},
             "plan_ids": sorted(not_live),
+            "census_basis": "all plans minted with an outage_backfill origination_mode, any era",
+            "overall_minted_outage_backfill": len(minted),
+            "overall_of_which_replayed_receipted_bake": sum(1 for v in minted.values() if v == "replay"),
+            "overall_of_which_synthetic_board_reconstructions": sum(1 for v in minted.values() if v == "reconstruction"),
+            "outside_selection_era": sorted(set(minted) - era_ids),
+            "era_minted_outage_backfill": len(minted.keys() & era_ids),
             "would_have_entered_positions_as_run": len(backfilled_entered_asrun),
             "would_have_entered_ids_as_run": backfilled_entered_asrun,
         },
@@ -611,12 +875,55 @@ def main(argv=None) -> int:
             "in_sensitivity_a": mrna_s1 is not None,
             "sensitivity_a_entry": str(mrna_s1.entry.date()) if mrna_s1 else None,
             "price_authentication": "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and "
-                                    "adjusted closes agree; volume 199,252,300) is present only in the single "
-                                    "price cache used by this runner and is not authenticated by any second source",
+                                    "adjusted closes agree; volume 199,252,300) was, at publication, present "
+                                    "only in the single price cache used by this runner. Two post-publication "
+                                    "second-source checks (independent audit RUN-D 2026-11-11) now authenticate "
+                                    "it: a ChartExchange end-of-day sweep reproduces the 62.96 -> 174.38 closes, "
+                                    "and a Yahoo live-chart API pull matches all 64 window sessions for MRNA. "
+                                    "Both are audit evidence gathered after outcomes were seen, labelled as such, "
+                                    "and change no frozen number; the v1 caveat is retained here superseded.",
+        },
+        "undated_conversions": {
+            "count": len(undated_ids),
+            "ids": sorted(undated_ids),
+            "basis": "era plans with entry_zone_state.state == 'converted' and no truthy dated fill field; the "
+                     "snapshot records terminal state only, so their conversion session is unknowable from it",
+            "primary_treatment": "entered at publication session P under the header's literal C6 rule (E = first "
+                                 "session >= max(P, filled_date if present); an absent filled_date falls back to P)",
+            "sensitivity": "sensitivity.excluding_undated_conversions removes every one of them",
         },
         "review": {"file": "REVIEW_beta_evaluation.md (independent scientific review, 2026-11-10)",
                    "sha256": "6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a"},
     }
+
+    # ── independent-audit RUN-D sensitivities (2026-11-11), computed on this engine ──
+    # (a) conversions: the snapshot records terminal state only; a converted plan with
+    #     no dated fill cannot be shown convertible at its publication session.
+    pos_fx, excl_fx, _ = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1,
+                                            excluded_ids=undated_ids, not_live_ids=not_live)
+    book_fx = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(pos_fx, dates), tradable, bps(1.0))
+    r_fx = book_fx.net.to_numpy()
+    vs_fx = ev.bootstrap_vs(r_fx, rm, rm, rc, idx10)
+    # (b) missing held marks: primary zero-fills them (flat); stress writes each gapped
+    #     position to a total loss at its first missing close.
+    held_gaps = ev.held_path_gaps(positions, closes)
+    held_gaps_rows = [{"plan_id": g["plan_id"], "asset": g["asset"], "entry": str(g["entry"].date()),
+                       "first_missing_close": str(g["first_missing_close"].date()),
+                       "missing_sessions": g["missing_sessions"]} for g in held_gaps]
+    rets_loss = ev.first_gap_total_loss_rets(rets, positions, closes)
+    book_tl = ev.simulate_book(dates, rets_loss, cash_r,
+                               ev.prophet_targets(positions, dates), tradable, bps(1.0))
+    r_tl = book_tl.net.to_numpy()
+    vs_tl = ev.bootstrap_vs(r_tl, rm, rm, rc, idx10)
+
+    # pre-correction primary C6 (terminal trade cost dropped) — retained verbatim in
+    # the correction block; must reproduce the published -3.1382%/+1.5077 pp exactly
+    book_c6_pre = ev.simulate_book(dates, rets, cash_r, targets["C6_exact_incumbent_prophet"],
+                                   tradable, bps(1.0), charge_terminal_trade_cost=False)
+    r_c6_pre = book_c6_pre.net.to_numpy()
+    vs_c6_pre = ev.bootstrap_vs(r_c6_pre, rm, rm, rc, idx10)
+
+    undated_gap_n = sum(1 for g in held_gaps if g["plan_id"] in undated_ids)
 
     sensitivity = {
         "label": "SENSITIVITY — separately labelled, never the headline; descriptive only (L0)",
@@ -651,6 +958,39 @@ def main(argv=None) -> int:
             "event_study_h21": es_asrun["21"],
             "event_study_h42": es_asrun["42"],
         },
+        "excluding_undated_conversions": {
+            "definition": f"the {len(undated_ids)} incumbent-era plans whose entry_zone_state.state == "
+                          f"'converted' but whose snapshot records no dated fill (no truthy filled_date or "
+                          f"other date/_at field); because the snapshot is not a vintage, the conversion "
+                          f"session cannot be established from recorded_at alone. {len(undated_ids) - undated_gap_n} of "
+                          f"them held without missing marks through the window and are removed with "
+                          f"their whole position; the variant keeps every other rule of C6 unchanged. Added by "
+                          f"the 2026-11-11 independent audit; not part of the frozen protocol.",
+            "excluded_from_this_variant": excl_fx,
+            "positions": len(pos_fx),
+            "total_net_return": ev.compound(r_fx),
+            "excess_total_vs_spy": vs_fx["total_diff"], "excess_total_ci95": vs_fx["total_diff_ci95"],
+            "ann_excess_vs_spy": vs_fx["ann_diff"], "ann_excess_ci95": vs_fx["ann_diff_ci95"],
+            "beta_vs_market": ev.point_metrics(r_fx, rm, rc)["beta_vs_market"],
+            "mean_invested": float(book_fx.invested.mean()),
+            "hit_rate_vs_spy": ev.position_hits(pos_fx, closes),
+        },
+        "missing_marks_total_loss_stress": {
+            "definition": f"{len(positions)} entered positions hold assets whose close series stops inside "
+                          f"the window (delistings; snapshot keeps the plan open). The primary book zero-fills "
+                          f"missing held marks (position runs flat). This stress instead writes a total loss "
+                          f"(-100%) at each position's first missing close and lets drift remove the weight; "
+                          f"it is a deliberate worst case, not an estimate. Added by the 2026-11-11 "
+                          f"independent audit; not part of the frozen protocol.",
+            "positions": len(positions),
+            "total_net_return": ev.compound(r_tl),
+            "excess_total_vs_spy": vs_tl["total_diff"], "excess_total_ci95": vs_tl["total_diff_ci95"],
+            "ann_excess_vs_spy": vs_tl["ann_diff"], "ann_excess_ci95": vs_tl["ann_diff_ci95"],
+            "beta_vs_market": ev.point_metrics(r_tl, rm, rc)["beta_vs_market"],
+            "mean_invested": float(book_tl.invested.mean()),
+            "gapped_positions": held_gaps_rows,
+        },
+        "off_index_picks": off_index,
     }
 
     # fill D5's what with the concrete before -> after numbers
@@ -689,6 +1029,140 @@ def main(argv=None) -> int:
         f"from their auditable availability and admits the synthetic-board reconstructions never."
     )
 
+    # ── dated correction (2026-11-11): terminal trade cost charged; superseded retained ──
+    d6v = next(d for d in deviations if d["id"] == "D6")
+    c6_pre = {
+        "positions": c6row["sample"]["positions"],
+        "total_net_return": ev.compound(r_c6_pre),
+        "excess_total_vs_spy": vs_c6_pre["total_diff"], "excess_total_ci95": vs_c6_pre["total_diff_ci95"],
+        "ann_excess_vs_spy": vs_c6_pre["ann_diff"], "ann_excess_ci95": vs_c6_pre["ann_diff_ci95"],
+        "beta_vs_market": ev.point_metrics(r_c6_pre, rm, rc)["beta_vs_market"],
+        "costs_paid_total": float(book_c6_pre.cost.sum()),
+    }
+    d6v["what"] = (
+        f"engine correction: simulate_book now charges the final-close trade cost (a target vector defined at the "
+        f"last session implies a trade whose cost the v1 engine computed but never consumed, because no d+1 return "
+        f"existed to carry it). The cost is charged against the final day's realised net return. Affected books: "
+        f"C3/C4/C5 (last scheduled rebalance), C6/C7/C6A (terminal closes incl. liquidation of names that stop "
+        f"trading); C1 (100% SPY held through, no terminal sale) and C2/X6 (no final trade beyond the daily "
+        f"target series already costed) are unaffected. Before -> after on the corrected population: C6 total "
+        f"{_p4(c6_pre['total_net_return'])} -> {_p4(c6row['total_net_return'])}; C6 vs SPY "
+        f"{_p4pp(c6_pre['excess_total_vs_spy'])} -> {_p4pp(c6vs['total_diff'])} "
+        f"(CI {_ci4(c6_pre['excess_total_ci95'])} -> {_ci4(c6vs['total_diff_ci95'])} pp); C6 costs "
+        f"{c6_pre['costs_paid_total'] * 100:.4f}% -> {c6row['costs_paid_total'] * 100:.4f}% of NAV. K1 "
+        f"{_p4pp(ev.bootstrap_vs(r_c6_pre, series['C1_passive_market'], rm, rc, idx10)['ann_diff'])} -> "
+        f"{_p4pp(contrasts['K1']['ann_diff'])}/yr. Every superseded figure is retained verbatim in this "
+        f"artifact's correction block and in sensitivity.superseded_as_run."
+    )
+    d6v["why"] = (
+        "found by two independent re-derivations after publication (independent audit RUN-D 2026-11-11; second "
+        "re-derivation by a different model, Kimi). The v1 behaviour silently dropped a real cost the engine had "
+        "already computed; the fix makes the book pay what its own target vector says it trades. The verdict "
+        "(L0, descriptive, not distinguishable from passive) is unchanged: every shifted interval still spans zero "
+        "by a wide margin. Protocol header, population rules, comparators, seeds and the data pin are untouched "
+        "(header sha256 3be32166…2ada verified before the run)."
+    )
+
+    # D7/D8 fills (diagnosis-driven yardstick correction and off-index sensitivity)
+    d7v = next(d for d in deviations if d["id"] == "D7")
+    mb21, mb42 = es_mb.get("21", {}), es_mb.get("42", {})
+    d7v["what"] = (
+        f"event_study.member_benchmark added beside the frozen stock-minus-sector-ETF leg: at each horizon the "
+        f"equal-weight mean of point-in-time eligible same-sector members on the same signal date (C4 eligibility, "
+        f"names published that day excluded), the stock minus that member benchmark with a date-cluster interval, "
+        f"and a placebo distribution of random same-sector members showing what no selection looks like. "
+        f"H=21: equal-weight member mean vs ETF {_p4pp(mb21.get('equal_weight_member_minus_sector_etf', {}).get('mean') or 0)} "
+        f"(CI {_ci4(mb21.get('equal_weight_member_minus_sector_etf', {}).get('ci95_date_cluster') or [0, 0])}); "
+        f"stock vs member benchmark {_p4pp(mb21.get('stock_minus_equal_weight_members', {}).get('mean') or 0)} "
+        f"(CI {_ci4(mb21.get('stock_minus_equal_weight_members', {}).get('ci95_date_cluster') or [0, 0])}); "
+        f"placebo 95% range {_p4pp(mb21.get('placebo_random_same_sector', {}).get('p2_5', 0))} to "
+        f"{_p4pp(mb21.get('placebo_random_same_sector', {}).get('p97_5', 0))} versus the observed "
+        f"{_p4pp(mb21.get('stock_minus_sector_etf', {}).get('mean') or 0)}. The frozen event-study numbers are "
+        f"unchanged; this block decomposes the same leg into yardstick drag plus stock-versus-peers."
+    )
+    d7v["why"] = (
+        "independent diagnosis of the stock-minus-sector gap (2026-11-11, /tmp/prophet-eval-diagnosis/REPORT.md, "
+        "reproduced on this engine with this runner's own code; diagnosis figures used only as cross-check): a "
+        "cap-weighted sector fund is not what an average member of the sector did in this window, so part of the "
+        "published stock-minus-sector-ETF leg is the yardstick, not member choice. Descriptive only; adds no "
+        "threshold, changes no release level, and makes no claim of negative selection or of its absence."
+    )
+    d8v = next(d for d in deviations if d["id"] == "D8")
+    o21, o42 = off_index["horizons"].get("21", {}), off_index["horizons"].get("42", {})
+    d8v["what"] = (
+        f"sensitivity.off_index_picks added: {off_index['published_plans_off_index']} of "
+        f"{off_index['published_plans_total']} published plans name a stock that is not a point-in-time S&P 1500 "
+        f"member at its signal session. At H=21 their stock-minus-sector-ETF mean is "
+        f"{_p4pp(o21.get('off_index_picks', {}).get('mean') or 0)} (n {o21.get('off_index_picks', {}).get('n')}) "
+        f"versus {_p4pp(o21.get('sp1500_member_picks', {}).get('mean') or 0)} for member picks; excluding them "
+        f"moves the all-plan mean from {_p4pp(o21.get('all_plans', {}).get('mean') or 0)} to "
+        f"{_p4pp(o21.get('sp1500_member_picks', {}).get('mean') or 0)}. At H=42: "
+        f"{_p4pp(o42.get('off_index_picks', {}).get('mean') or 0)} versus "
+        f"{_p4pp(o42.get('sp1500_member_picks', {}).get('mean') or 0)}. Membership-file limits restated in the "
+        f"block: no recorded change after 2026-06-02, so late-window 'not a member' can mean 'membership unknown'."
+    )
+    d8v["why"] = (
+        "the same independent diagnosis found roughly a quarter to a third of the event-study gap carried by "
+        "off-index picks (quantum, space, crypto-mining and similar names), which have no true cap-weighted sector "
+        "yardstick. Reported as a labelled after-the-fact sensitivity on the same ruler; recomputed on this engine, "
+        "diagnosis figures used only as cross-check. Descriptive only."
+    )
+
+    correction = {
+        "correction": True,
+        "date": "2026-11-11",
+        "supersedes": "site/prophet/beta_evaluation.json as of commit c3d967b9fd (v1, 2026-11-10)",
+        "what_changed": "two confirmed engine defects corrected (final-close trade cost charged; price-cache files "
+                        "now verified byte-for-byte against the data pin and one false-missing ticker, ZWS, "
+                        "restored), plus disclosure and labelling corrections; no frozen rule, seed, comparator, "
+                        "population rule or data pin changed",
+        "figures_superseded": {
+            "reason_each": "final-close trade costs now charged (deviation D6); each superseded row below was "
+                           "computed with the v1 engine on the same population, prices, seed and costs",
+            "C6_exact_incumbent_prophet": c6_pre,
+            "verdict_unchanged": True,
+            "verdict_reason": "L0 descriptive stands: the window still fails the predeclared L1 minimum "
+                              "(64 < 252 sessions, SPY max drawdown 5.92% < 8%) and every headline CI spans zero "
+                              "before and after the correction",
+        },
+        "label": "CORRECTION — found by an independent audit after publication and not part of the frozen protocol",
+    }
+    independent_audit = {
+        "label": "INDEPENDENT AUDIT (post-publication, 2026-11-11) — not part of the frozen protocol",
+        "runs": [
+            {"name": "ChatGPT Pro run D (PRO_RUN_D, 2026-11-11)", "report": "macro issue #11014 / PRO_RUN_D_answer.md",
+             "scope": "full re-derivation from the data pin with independent code"},
+            {"name": "Kimi re-derivation (REPORT_RUN_D, 2026-11-11)", "report": "REPORT_RUN_D.md",
+             "scope": "independent unblinding re-derivation of the same artifact"},
+            {"name": "Stock-minus-sector diagnosis (Opus, 2026-11-11)", "report": "tmp/prophet-eval-diagnosis/REPORT.md",
+             "scope": "independent diagnosis of the stock-minus-sector gap; yardstick (equal-weight member) and "
+                      "off-index findings, folded in as deviations D7/D8 and recomputed on this engine"},
+        ],
+        "what_agreed": [
+            "every event-study horizon mean reproduced to 8 decimal places by both runs",
+            "fee timing on all non-terminal trades is correct (cost applied to the next day's return)",
+            "C1 passive identity reproduced exactly (SPY total minus one entry cost)",
+            "the 78 undated conversions, the gapped held marks and the top-three contribution concentration "
+            "were independently identified by both runs with matching counts",
+        ],
+        "what_changed": [
+            "engine: final-close trade cost now charged (deviation D6; confirmed defect, both runs)",
+            "runner: price files verified against the data pin blob ids; ZWS was false-missing in v1 (cache bytes "
+            "match the pin; the ticker was eligible but never selected, so no frozen number moves; missing-file "
+            "census 36 -> 35)",
+            "disclosure: coverage basis, undated conversions, missing held marks, MRNA authentication and the "
+            "minted-plan census restated (see limitations and population blocks)",
+            "yardstick: event_study.member_benchmark added beside the frozen event study (equal-weight same-sector "
+            "member benchmark plus random-member placebo; deviation D7) and sensitivity.off_index_picks added "
+            "(deviation D8) — both from the stock-minus-sector diagnosis and recomputed on this engine",
+        ],
+        "added_sensitivities": ["excluding_undated_conversions", "missing_marks_total_loss_stress",
+                                "post_hoc_diagnostics.*.without_top3_contributors",
+                                "off_index_picks", "event_study.member_benchmark"],
+        "adjudication": "research/prophet_v4/beta_first_evaluation/ADJUDICATION_RUN_D.md (one row per finding, "
+                        "verdict, evidence, commit)",
+    }
+
     code_commit = git("rev-parse", "HEAD")
     dirty = git("status", "--porcelain", "--", "engine/prophet_beta_evaluation.py",
                 "scripts/run_prophet_beta_evaluation.py")
@@ -704,20 +1178,29 @@ def main(argv=None) -> int:
                  "bootstrap": {"B": B, "seed": seed, "mean_block": block, "sensitivity_block": block_alt}},
         "data_clocks": {
             "macro_data_commit": header["data_pin"]["macro_commit"],
-            "plans_index": {"path": "site/prophet/index.json", "sha256": sha_file(idx_path),
+            "plans_index": {"path": "site/prophet/index.json",
+                            "sha256": pinned.sha["plans_index"], "read_from": f"data pin {pin[:8]}",
                             "asof": index.get("asof"), "source_asof": index.get("source_asof"),
                             "computed_at": index.get("computed_at")},
-            "resolution_log": {"path": "data/prophet/ledger.jsonl", "sha256": sha_file(led_path),
+            "resolution_log": {"path": "data/prophet/ledger.jsonl", "sha256": pinned.sha["resolution_log"],
                        "rows": len(led_rows), "malformed_lines_skipped": led_bad,
                        "max_asof": max(r.get("asof", "") for r in led_rows),
                        "close_date_corrections_applied": applied_corr,
                        "quarantined_ids_removed": len(quarantine)},
             "pit_membership": {"path": "data/breadth/sp1500_pit_membership.parquet",
-                               "sha256": sha_file(ROOT / "data/breadth/sp1500_pit_membership.parquet"),
+                               "sha256": pinned.sha["pit_membership"],
+                               "read_from": f"data pin {pin[:8]}",
                                "last_recorded_change": str(max(pit["start_date"].max(), pit["end_date"].max()).date())},
             "prices": {"source": "data/yahoo per-ticker parquet (adjusted close)", "tickers_loaded": closes.shape[1],
                        "digest_sha256": price_digest, "missing_files": len(missing),
-                       "last_close_used": str(win1.date())},
+                       "last_close_used": str(win1.date()),
+                       "pin_verified": True,
+                       "pin_verification": "every per-ticker parquet used is byte-compared to the pin's git blob id "
+                                           "(git hash-object); a differing local file is replaced by the pin blob. "
+                                           "v1 trusted the cache directory (audit RUN-D); the pin's own blob ids now "
+                                           "decide",
+                       "read_from_pin_blobs": prices_from_pin,
+                       "pinned_input_sha256": pinned.sha},
         },
         "market": "US", "benchmark": ev.BENCH, "currency": "USD",
         "return_basis": "total_return_adjusted_close", "cash_instrument": ev.CASH,
@@ -726,6 +1209,8 @@ def main(argv=None) -> int:
                    "sessions": len(dates), "daily_returns": n,
                    "spy_total_return": ev.compound(rm), "spy_max_drawdown": spy_mdd},
         "release": rel,
+        "correction": correction,
+        "independent_audit": independent_audit,
         "comparators": comp_rows,
         "contrasts": {"family": "confirmatory K1-K8, Holm alpha 0.05, one-sided (a beats b)",
                       "rows": list(contrasts.values())},
@@ -738,7 +1223,22 @@ def main(argv=None) -> int:
         "event_study": {"ruler": "engine.grading.forward_metrics next-bar fill; fixed horizons in sessions; policy-free",
                         "population": "all LIVE-PUBLISHED incumbent-era plans with a publication session in the window "
                                       "(entered or not); outage-reconstructed plans excluded (deviation D5)",
-                        "plans": len(pub), "excluded_backfilled_plans": len(not_live), "horizons": es},
+                        "plans": len(pub), "excluded_backfilled_plans": len(not_live), "horizons": es,
+                        "member_benchmark": {
+                            "label": "YARDSTICK CORRECTION (independent diagnosis 2026-11-11) — beside the frozen "
+                                     "event study, not part of it; changes no frozen number",
+                            "why": "the stock-minus-sector-ETF leg grades every pick against a cap-weighted fund; in "
+                                   "this window the average point-in-time member of a sector trailed its own fund, "
+                                   "so part of that leg is the yardstick, not member choice",
+                            "universe_rule": "point-in-time S&P 1500 members at the signal session (start<=s<end or "
+                                             "open), sector label present, >=126 valid closes, raw close >= $5 "
+                                             "(the header's own C4 eligibility), a matured outcome at the horizon, "
+                                             "and no plan published on that asset that day",
+                            "same_ruler_and_population": True,
+                            "decomposition_identity": "stock - sector ETF = (equal-weight member mean - sector ETF) "
+                                                      "+ (stock - equal-weight member mean), per plan, exact",
+                            "horizons": es_mb,
+                        }},
         "stability_halves": halves,
         "post_hoc_diagnostics": diagnostics,
         "population": population,
@@ -756,6 +1256,18 @@ def main(argv=None) -> int:
                            extra["exit_mechanical"], "censored_open_at_window_end": extra["censored"]},
             "classified_share": l0_checks["classified_share"],
             "priced_share": l0_checks["priced_share"],
+            "priced_share_basis": "entered positions with a valid close at entry (entry marks only). Marks after "
+                                  "entry are a separate question: held assets whose close series stops inside the "
+                                  "window are zero-filled (held flat) in the primary book — see "
+                                  "coverage.held_path_gaps and sensitivity.missing_marks_total_loss_stress",
+            "held_path_gap_positions": held_gaps_rows,
+            "held_path_gaps": len(held_gaps),
+            "held_path_complete_positions": len(positions) - len(held_gaps),
+            "resolved_at_or_before_split": {
+                "total": excl["resolved_at_or_before_follower_fill"],
+                "entered_at_final_close": extra["entered_at_final_close"],
+                "resolved_before_follower_fill": extra["resolved_before_follower_fill"],
+            },
             "sector": {"unmapped_plans": unmapped, "label_source_disagreements": disagreements,
                        "labels_basis": "current-basis GICS (not era-correct)"},
             "c7_c6a_split": {"outside_leading": len(subsets["C7_independent_emergence"]),
