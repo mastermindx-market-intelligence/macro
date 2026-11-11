@@ -1,0 +1,29 @@
+{
+  "schema": "market_stress_consumer_interleaving.v1",
+  "scope": "controlled actual-source Node/DOM replay; not browser/production proof",
+  "original_head": "d2826053d4b12743a681447a354d950bb1aafd9f",
+  "counterpart": "original PR9428 current-main integration",
+  "before": {
+    "expired_action": "Current risk assessment unavailable.",
+    "retained_baseline": "Stay selective. Add where setups confirm.",
+    "after_quiet": "Stay selective. Add where setups confirm.",
+    "unavailable_preserved": false
+  },
+  "after": {
+    "source_sha256": "9a52dbd1d204eb4938a99f25b973cf100c825617f6059cd885529a534edddb17",
+    "expired_action": "Current risk assessment unavailable.",
+    "retained_baseline": "Current risk assessment unavailable.",
+    "after_quiet": "Current risk assessment unavailable.",
+    "unavailable_preserved": true
+  },
+  "red_test_result": {
+    "failed": 2,
+    "passed": 0
+  },
+  "focused_green_result": {
+    "passed": 91,
+    "failed": 0,
+    "warnings": 6
+  },
+  "qualified_prospective_forecast": false
+}
