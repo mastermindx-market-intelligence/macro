@@ -279,10 +279,23 @@ def test_build_artifact_and_markdown_on_stub(tmp_path):
     res = {"jobs": {"J1": {**job, "family_F1": fam}, "J2": {**job, "family_F2": fam}, "J3": {**job, "family_F3": fam},
                     "J4": {"status": "unavailable", "reason": "stub"},
                     "J5": {"J1_star": "B3", "J2_star": "B5", "point_differences_D": {}, "metrics": {"J5-A": m}}},
-           "incumbents": {"family_FI": {}, "J1": {}, "J2-I1": "x"}, "long_history": {"tiers": {}},
+           "incumbents": {"family_FI": {"J1-I1:vsX": {"contrast": "J1-I1:vsX", "status": "unavailable", "kind": "unavailable",
+                                                      "observed": None, "p_one_sided_centred": 1.0,
+                                                      "holm": {"p_holm": 1.0, "reject_h0": False}}},
+                          "J1": {}, "J2-I1": "x"}, "long_history": {"tiers": {}},
            "data_quality": {}, "dsr_trial_count": {}, "deviations": [{"kind": "k", "text": "t"}]}
     hdr = {"protocol_id": "p", "frozen_on_utc": "d"}
     art = build_artifact(res, hdr, {}, "pin", 10, 1)
     assert art["may_trade"] is False and art["schema"] == "rotation_core.evaluation/v1"
     write_markdown(art, tmp_path / "r.md")
     assert "Deviations" in (tmp_path / "r.md").read_text()
+
+
+def test_incumbent_sidecar_must_declare_timing(tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v1 as run
+    monkeypatch.setattr(run, "INCUMBENTS", tmp_path)
+    (tmp_path / "x_provenance.json").write_text("{}")
+    assert run.incumbent_provenance("x.parquet") is None
+    (tmp_path / "x_provenance.json").write_text(json.dumps({"timing": "decided_at_close_t",
+                                                            "source_commit": run.PIN, "causal": True}))
+    assert run.incumbent_provenance("x.parquet") is not None

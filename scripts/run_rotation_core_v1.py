@@ -83,8 +83,9 @@ DEVIATIONS = [
     {"kind": "implementation", "ref": "PRE_RUN_REVIEW findings 1,2,4-8,10-19 (Opus reviewer, separate context)",
      "text": "Fixed before any outcome: X rebuilt per era; pivot start-up spell and spells starting in D's last 63 "
              "sessions excluded from false pivots (counted as undetermined_sealed); deviations recorded; block-63 and "
-             "block-6 sensitivities; incumbent Holm at m=8 with unavailable tests at p=1; J4 starts_late-only flags no "
-             "longer mask vendor prices; J4 S&P 1500 sensitivity from 2013; J4 eras by label date; J4 statistics over "
+             "block-6 sensitivities; incumbent Holm at m=8 with unavailable tests at p=1; J4 keeps whole-interval "
+             "masking of every identity-suspect interval (re-review N1: reused tickers) - conservative, lowers "
+             "coverage; J4 S&P 1500 sensitivity from 2013; J4 eras by label date; J4 statistics over "
              "formations with a finite delta; exit-before-trough strict and 3 H episodes; clip logging; one-way "
              "turnover, TE and IR per contrast; ledger pinned; dirty-harness refusal; G6 rows labelled provisional."},
     {"kind": "convention", "text": "J5-B and B2 bond leg = VFITX before 2002-08-01 then IEF (header B2 rule applied "
@@ -380,7 +381,9 @@ def incumbent_provenance(fname):
         return None
     meta = json.loads(pv.read_text())
     _hash_bytes(str(pv), pv.read_bytes())
-    return meta
+    ok = (meta.get("timing") == "decided_at_close_t" and str(meta.get("source_commit", "")).startswith(PIN[:10])
+          and meta.get("causal") is True)
+    return meta if ok else None
 
 
 def load_incumbent_weight(fname, col, sessions, end):
@@ -681,8 +684,7 @@ def j4_stage_d(d) -> dict:
     for r in manifest.get("identity_suspect_intervals", []):
         reasons = {x.split("(")[0] for x in str(r.get("why", "")).split(";")}
         if reasons <= {"starts_late", "ends_early"}:
-            unmasked_starts_late += 1   # same issuer, series simply starts later: prices before first date are absent
-            continue
+            unmasked_starts_late += 1   # counted only: re-review N1 showed reused tickers hide in this class
         if r.get("why") != "no_series":
             bad.setdefault(r["ticker"], []).append((pd.Timestamp(r["start"]),
                                                     pd.Timestamp(r["end"]) if r.get("end") else pd.Timestamp("2100-01-01")))
@@ -795,7 +797,7 @@ def j4_stage_d(d) -> dict:
                                                                       "n_attempted", "n_recovered", "n_failed",
                                                                       "n_identity_suspect_intervals")},
             "J4-A": A, "J4-B": Bk, "treatments": treat, "J4-B_cost_2x_ann": float(res2x["book_excess"].mean() * 12),
-            "suspect_starts_late_only_not_masked": unmasked_starts_late,
+            "suspect_starts_late_only_masked_conservatively": unmasked_starts_late,
             "clipped_returns": res.get("clip_log"),
             "sensitivity_sp1500_from_2013": {"J4-A_ann_sp1500": float(s1500["delta_i"].mean() * 12),
                                              "J4-A_ann_sp500_same_months": float(s500_same["delta_i"].mean() * 12),
@@ -1110,11 +1112,19 @@ def run_stage_d(smoke: bool) -> dict:
                 "J3-I1:vsX3", "J3-I1:vsB9"]
     for tid in declared:
         if tid not in FI:
-            FI[tid] = {"contrast": tid, "status": "unavailable", "p_one_sided_centred": 1.0}
+            FI[tid] = {"contrast": tid, "status": "unavailable", "kind": "unavailable", "observed": None,
+                       "p_one_sided_centred": 1.0}
             pv[tid] = 1.0
     h = rc.holm(pv)
     for tid in FI:
         FI[tid]["holm"] = h[tid]
+    for key, stt in (("J1-I1", inc.get("J1-I1", {}).get("status")), ("J1-I2", inc.get("J1-I2", {}).get("status")),
+                     ("J2-I1", "evaluated" if "J2-I1" in bk2 else "unavailable")):
+        if stt != "evaluated":
+            out["deviations"].append({"kind": "incumbent_unavailable", "ref": key,
+                                      "text": f"{key} not evaluated: no replay with a valid provenance sidecar "
+                                              f"(timing=decided_at_close_t, source_commit=pin, causal=true); its "
+                                              f"FI tests enter Holm at p=1; no substitute used."})
     out["incumbents"] = {"family_FI": FI, "nominal_m": 8, "computed_m": len(fi_spec), "holm_m": len(pv),
                          "cap": "L0 (G7 fails: parameters chosen on the evaluation history)", "J1": inc,
                          "J2-I1": "evaluated" if "J2-I1" in bk2 else "unavailable (no state series)"}

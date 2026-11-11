@@ -194,6 +194,9 @@ def write_markdown(art: dict, path: Path) -> None:
     L += _metrics_table(J5["metrics"])
     L += ["", "## Incumbents (replication only, L0)", ""]
     for tid, r in art["incumbents"]["family_FI"].items():
+        if r.get("status") == "unavailable":
+            L.append(f"- {tid}: unavailable (enters Holm at p=1)")
+            continue
         sh = r["kind"] == "sharpe"
         L.append(f"- {tid}: {num(r['observed'], 3) if sh else pct(r['observed'])}, Holm p {r['holm']['p_holm']:.4f}")
     L.append(f"- Availability: {art['incumbents']['J1']}; J2-I1 {art['incumbents']['J2-I1']}")
