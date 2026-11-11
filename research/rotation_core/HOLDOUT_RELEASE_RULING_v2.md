@@ -976,3 +976,28 @@ Source: the outside reader, 22:40Z (runner :744–753, :1085–1124, :1660–166
 4. **R34.3 gains one sentence** (see there): the stage-2 selection-file case ends in this same hard exit, so R35.2 applies to it.
 5. **The stage-2 command survives a dropped terminal.** The whole command of R35.2 (the invocation, the saved exit code, the unconditional `chmod`, the `stat`, the time) is started detached from the terminal with `setsid nohup bash -c '…' > <run log> 2>&1 < /dev/null &`, so a lost session does not kill the shell before the `chmod`. The CEO then waits on the log, `/home/ubuntu2/tmp/rotation-core/runs/confirm_<head>.log`. The example in R35.2 is in this form.
 6. **The limit, stated.** Between a hard exit and the `chmod`, the unsealed file is at mode 0400, readable by the owner only, for as long as that one command takes (the next statement of the same shell). The R35.3 mode checks catch the case where the shell itself was killed. Declared class: single-user host.
+
+## R36 — stage 1 ran; the gate is closed (CEO, 2026-11-11 23:03Z)
+
+- **Run:** release `8cd6410201` (stage 1), engine `b3f7ce4548`, witness acknowledgement 22:50:40Z.
+- **Ledger on the remote:** index 0 START `15893a170e`; index 1 PHASE_A_CLEAN `2cd43dead9`; index 2 GATE `2200b942d4`, with `gate_open: false` and `magnitudes_sha256` `0c6c207e81889fe11890420cc08d05e25c326b0087c54535473ccd4b3fafff29`.
+- **Published file:** `results_v2_stage1_pre1998_published.json`, committed byte for byte as the runner wrote it (sha256 `09937405c9c9abff3ae5e01f8ed53cf2c703da7fe7b9b39978299716e3b1ef5c`). Its magnitudes recompute to the GATE record's hash.
+- **Readable summary:** `RESULTS_V2_STAGE1_PRE1998.md`. Ledger status: `RESULTS_V2_LEDGER_STATUS.md`.
+
+1. **(a) A failure before the START push, with nothing recorded, is not a run.** It leaves no ledger entry, spends nothing, and needs no citation.
+2. **(b) What happened before the run.**
+   - The first invocation (22:51:26Z, log `runs/pre1998_8cd6410201.log`) failed before START. `git write-tree` exited 128 inside `GitLedger.append` (engine :1126) while building the START commit.
+   - **Cause** (the CEO's diagnosis; git's own message is not in the log): the worktree is a `blob:none` partial clone with a sparse checkout. Seven blobs of the head tree, under `site/`, were absent locally. The runner disables lazy fetching (R29.1(c)), and `write-tree` needs every blob the index names.
+   - Nothing was pushed. The CEO fetched the seven blobs by object id (no commit, no ref moved).
+   - Before START, that invocation had hashed the two stage-1 input files in `check_manifest` but parsed nothing; in the witness's words, "hashed, not parsed".
+   - The witness agreed to one re-invocation (22:56:44Z), which ran 22:58:26Z → 22:59:52Z with exit 0 (log `runs/pre1998_8cd6410201_try2.log`; pre-stage record `runs/prestage_pre1998_try2.txt`).
+3. **(c) Every object of the head tree on the run host.** Before each stage the run host must hold every object of the head tree, checked with lazy fetching off. This is `runs/prestage_check.sh`: `git ls-tree -r -t <head>`, then `GIT_NO_LAZY_FETCH=1 git cat-file --batch-check`, requiring 0 missing.
+4. **(d) Known limit.** Neither `--preflight` nor the rehearsal can see this fault.
+   - `--preflight` materialises only the ledger, the release and selection files and the pinned paths.
+   - The rehearsal commits to a temporary remote whose tree is small and complete.
+   - The START append is the first real-repository exercise of the commit path (`read-tree` of the whole head tree, then `write-tree`). The engine is frozen, so this is not fixed in code; (c) covers it by procedure.
+5. **(e) Outcome.** The gate closed on the first committed stage-1 run. It is closed for good for this protocol (R17.1): no engine fix or rerun can open 2020–2025.
+   - H1, H2 and H3 are recorded FAILED on the historical tier; H2 is FAILED because the gate closed (amendment f).
+   - The 2020–2025 window and the sealed French post-2019 files stay sealed (mode 000) and are recorded as unspent.
+   - Amendment d applies: pre-1998 is now development data, and a successor is a new protocol carrying all 55 trials (v1's 36, v2's 9, run B's 10) plus its own.
+   - The forward tier is unaffected.
