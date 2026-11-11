@@ -101,9 +101,7 @@
       "written": 0
     },
     "dry_run": false,
-    "failures": [
-      "expected candidate stamp 2026-11-10 absent from the durable store \u2014 session_missing; refusing Pages backfill"
-    ],
+    "failures": [],
     "family": {
       "identical": 0,
       "matured": 0,
@@ -122,6 +120,7 @@
       "written": 0
     },
     "reconstruction_refused": [
+      "2026-11-10",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -155,7 +154,7 @@
       "identical": 34,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {

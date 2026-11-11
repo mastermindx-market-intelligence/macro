@@ -1,0 +1,264 @@
+{
+  "schema": "mastermind.pr7592.synthetic_interaction.v1",
+  "proof_class": "synthetic_full_page_browser",
+  "production": false,
+  "fixture_notice": "Rendered from the actual current test helper; the injected feed is synthetic.",
+  "base": "3a14c93979e780e5f880643efc88b3e1f1625f74",
+  "browser_executable": "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+  "before": {
+    "engine/china_tier1.py": {
+      "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+      "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79",
+      "bytes": 20594
+    },
+    "scripts/build_china.py": {
+      "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+      "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb",
+      "bytes": 123671
+    },
+    "templates/china.html.j2": {
+      "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+      "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+      "bytes": 383800
+    },
+    "templates/china_risk_state_live.js": {
+      "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+      "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+      "bytes": 12267
+    },
+    "tests/test_china_archetype_d_s1.py": {
+      "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+      "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe",
+      "bytes": 20881
+    },
+    "site/china.html": {
+      "git_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+      "sha256": "fa2d5e15411ca2f94e825017f7bfb3da60a2b2e417601cc70f41435abd40e6b9",
+      "bytes": 261006
+    },
+    "templates/_aibrief_body.html.j2": {
+      "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+      "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb",
+      "bytes": 16080
+    },
+    "templates/_aibrief_css.j2": {
+      "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+      "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a",
+      "bytes": 14923
+    }
+  },
+  "fixture_html": {
+    "git_blob": "ea09d302afa8c4d92b4e3058522f7c85e6651285",
+    "sha256": "e13cd7fe9dec759bc2b5fca2248831ac1d5a32447328d11442c8aaa0ee911fc1",
+    "bytes": 290940
+  },
+  "feed": {
+    "schema": "china_risk_state.v1",
+    "built": "2026-11-11T17:00:00Z",
+    "nightly_asof": "2026-11-11",
+    "live_active": false,
+    "realtime": false,
+    "display": {
+      "score": 38,
+      "verdict": "RISK_OFF",
+      "label_en": "Risk-off",
+      "label_zh": "避险"
+    },
+    "nightly": {
+      "verdict": "RISK_OFF",
+      "headline_en": "Synthetic refreshed headline",
+      "headline_zh": "合成刷新标题"
+    }
+  },
+  "browser_executable_identity": {
+    "git_blob": "c6d3ed940fb8ae7bb8003f0e36efdcab63e0c515",
+    "sha256": "7687bff7cb2db075f250e6d5848bbc8838cac3802ac3952a899c574f8eccab45",
+    "bytes": 163329264
+  },
+  "operation": "macro-pr7592-integration-20261111-c4-2f7053",
+  "cases": [
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "locale": "en",
+      "applied": {
+        "theme": "dark",
+        "locale": "en"
+      },
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "locale": "zh",
+      "applied": {
+        "theme": "dark",
+        "locale": "zh"
+      },
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "light",
+      "locale": "en",
+      "applied": {
+        "theme": "light",
+        "locale": "en"
+      },
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "light",
+      "locale": "zh",
+      "applied": {
+        "theme": "light",
+        "locale": "zh"
+      },
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "dark",
+      "locale": "en",
+      "applied": {
+        "theme": "dark",
+        "locale": "en"
+      },
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "dark",
+      "locale": "zh",
+      "applied": {
+        "theme": "dark",
+        "locale": "zh"
+      },
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "locale": "en",
+      "applied": {
+        "theme": "light",
+        "locale": "en"
+      },
+      "slowdown": "Unavailable",
+      "guidance": "Risk guidance unavailable — inspect the evidence.",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "locale": "zh",
+      "applied": {
+        "theme": "light",
+        "locale": "zh"
+      },
+      "slowdown": "暂不可用",
+      "guidance": "风险指引暂不可用——请查看依据。",
+      "headline_refreshed": true,
+      "playbook_preserved": true,
+      "risk_dialog_opened": true,
+      "horizontal_overflow": false
+    }
+  ],
+  "blocked_requests": [],
+  "request_failures": [],
+  "console_errors": [],
+  "failed_responses": [],
+  "browser_closed": true,
+  "local_server_closed": true,
+  "outside_test_net_denied": {
+    "denied": true,
+    "errno": 1
+  },
+  "browser_version": "151.0.7922.34",
+  "status": "passed",
+  "after": {
+    "engine/china_tier1.py": {
+      "git_blob": "cf24db2016133869026bc3e8b09129905d41b892",
+      "sha256": "04fd471dfcfd1010621296da98fd54fae5b26b22a35e60dfb5185897e0bc7f79",
+      "bytes": 20594
+    },
+    "scripts/build_china.py": {
+      "git_blob": "025eb4de423330f5b28b38648079df4337f2bd6f",
+      "sha256": "6ba958cea046aa29cbf473da2e8874f897a59a0bb66bb129e6f051156def1ddb",
+      "bytes": 123671
+    },
+    "templates/china.html.j2": {
+      "git_blob": "6d2f8fb9cd50373e44d7d0d13554026eadb0bfb0",
+      "sha256": "97591fcfadb2202d8f7099313f3912ab052eccd8f1943244b23bca95c3c91b28",
+      "bytes": 383800
+    },
+    "templates/china_risk_state_live.js": {
+      "git_blob": "49297377dee627809717dccf3cadcc24606e0bfa",
+      "sha256": "73275593956850cd50b7af9f6eb8c73bc04389b8b53dba10e1e389c1886096b1",
+      "bytes": 12267
+    },
+    "tests/test_china_archetype_d_s1.py": {
+      "git_blob": "b3f956474e61a5b5927af7c0a7553ba12f6caeda",
+      "sha256": "4677718f6f3f8904fc1901e408dca6b7c2ff489e03690e84511de9d12a5e1abe",
+      "bytes": 20881
+    },
+    "site/china.html": {
+      "git_blob": "fa3fc88f9970e94aedf6a1009645eab2a142a819",
+      "sha256": "fa2d5e15411ca2f94e825017f7bfb3da60a2b2e417601cc70f41435abd40e6b9",
+      "bytes": 261006
+    },
+    "templates/_aibrief_body.html.j2": {
+      "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+      "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb",
+      "bytes": 16080
+    },
+    "templates/_aibrief_css.j2": {
+      "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+      "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a",
+      "bytes": 14923
+    }
+  },
+  "candidate_bytes_unchanged": true
+}
