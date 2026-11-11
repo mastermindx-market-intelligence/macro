@@ -221,3 +221,37 @@ readback → Mastermind #983 integrated readback (one comment, MERGED +
 PRODUCTION_PROOF together) → unwatch #10918 on handback. #11075 merges via
 controller when green; its post-merge live chip verification follows the
 same render path.
+## 2026-11-11 (~22:40Z) — #10918 PROVEN IN PRODUCTION; #11075 p0b gate healed
+
+#10918 CLOSED AS PROVEN_OUTCOME:
+- Render 43084516229 completed success 21:05:46Z; render push to committed
+  main IS the deploy (render.yml: "the VPS serves committed main; there is
+  no Pages-artifact fallback").
+- Committed receipt site/aibrief_freshness.json (written 20:20:56Z pre-render
+  per freeze design): macro/china/btc ALL truthfully stale:true, generated_at
+  2026-10-18, cadences 1d/1d/3d.
+- LIVE READBACK: https://www.mastermind-x.com/aibrief.html (HTTP 200, 103KB)
+  renders 3 x "Stale — last generated 2026-10-18". Fake "Updated daily" gone.
+- KEY TOPOLOGY FACT (learned): github.io/macro mirror is STALE/legacy — do not
+  use it for verification. Production = www.mastermind-x.com (VPS serves
+  committed main; aibrief.html is public, aibrief_freshness.json is regwall-
+  gated for anon — fine, chips are server-rendered, no client fetch needed).
+- Mastermind #983 integrated readback posted (MERGED + PRODUCTION_PROOF in one
+  comment): Mastermind issues/983#issuecomment-6808319501.
+
+#11075 CI REPAIR (p0b receipt-closure): ROOT CAUSE = templates/hk.html.j2 is
+pinned by two evidence receipts. REMINTED per the gate's own heal command:
+- Env: /tmp/p0b-npm (playwright 1.61.1 + chromium-1228 149.0.7827.55 pins).
+- render_stock_dashboard_fixture.py --market all -> /tmp/p0b-render; then
+  verify_stock_dashboard_mobile_layout.cjs on hk_stocks.html (-> mobile-
+  layout.json) and canada_stocks.html (-> mobile-layout-canada.json). Both
+  pass=True exit=0. Rendered fixture html BYTE-IDENTICAL to prior receipts
+  (chip fail-open absent without freshness data — designed behavior).
+- Commit 984788457981 (3 files, 4 lines: receipt linkage hashes + hk template
+  hash 71153c38->20ae8afd). Local gate exit 0. Pushed under full #5291
+  disarm->push->rearm with custody comment (issuecomment-6808221296).
+- Second stale zero-byte index.lock removed after lsof confirmed no holder.
+
+REMAINING: #11075 checks green -> controller merges -> post-merge live chip
+verify on dashboard/china/hk pages (same mastermind-x.com readback path).
+Then mission verticals P2-P4 (VPS admission, estate migration, Brain models).
