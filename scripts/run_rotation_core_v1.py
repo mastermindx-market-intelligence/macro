@@ -62,6 +62,38 @@ LPEAK = {  # PHASE2_ADDITIONS_v1 section 4
 }
 INPUT_HASHES: dict[str, str] = {}
 
+DEVIATIONS = [
+    {"kind": "pre_outcome_access_restriction", "ref": "research/rotation_core/HOLDOUT_ACCESS_RULING_v1.md",
+     "text": "H sealed until a parent-written HOLDOUT_RELEASE_v1.json is committed; Stage D truncates every input at "
+             "2019-12-31 (J4 formations <= 2015-12). Narrows access only; header unchanged."},
+    {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s1",
+     "text": "Pivot tables and J2 episode holdings cover D episodes only; G4 and the H half of G6 not evaluated; "
+             "all G6 rows D-only and provisional."},
+    {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s2", "text": "Power lines (SE, MDE80 at Holm alpha/m)."},
+    {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s3",
+     "text": "DSR trial count = sum of ledger effective_n over rotation_core_v1, thematic_rotation_phase0, "
+             "cross_asset_phase0, index_direction_phase0 (124), ledger blob pinned at 623f0a4623."},
+    {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s4",
+     "text": "Long-history J1 tier remainder (French market 1928-1997; Sahm rule from 1960; DBAA-DGS10 credit from 1987)."},
+    {"kind": "deferred", "ref": "header windows.long_history_descriptive_tiers",
+     "text": "J2_L (French 12 industries), J3_L (proxy tier) and J2_industry_etf (16 industry ETFs) are not computed "
+             "in this Stage D run; descriptive tiers only, deferred to after the parent's Stage D adjudication."},
+    {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s5-s8",
+     "text": "Pivot presentation; J2 episode holdings; J4 implementation details; interior missing-close forward fill."},
+    {"kind": "implementation", "ref": "PRE_RUN_REVIEW findings 1,2,4-8,10-19 (Opus reviewer, separate context)",
+     "text": "Fixed before any outcome: X rebuilt per era; pivot start-up spell and spells starting in D's last 63 "
+             "sessions excluded from false pivots (counted as undetermined_sealed); deviations recorded; block-63 and "
+             "block-6 sensitivities; incumbent Holm at m=8 with unavailable tests at p=1; J4 starts_late-only flags no "
+             "longer mask vendor prices; J4 S&P 1500 sensitivity from 2013; J4 eras by label date; J4 statistics over "
+             "formations with a finite delta; exit-before-trough strict and 3 H episodes; clip logging; one-way "
+             "turnover, TE and IR per contrast; ledger pinned; dirty-harness refusal; G6 rows labelled provisional."},
+    {"kind": "convention", "text": "J5-B and B2 bond leg = VFITX before 2002-08-01 then IEF (header B2 rule applied "
+             "consistently); GLD eligible for J5-B's defensive leg from its 253rd session (2005-11)."},
+    {"kind": "convention", "text": "Bootstrap seeds: base 20261110 with family offsets (+1000 J2, +2000 J3, +3000 FI, "
+             "+4000 J4, +500000 block sensitivity); chunks use seed+k, so adjacent tests share random streams (common "
+             "random numbers, no bias)."},
+]
+
 
 # --------------------------------------------------------------------------- #
 # guards
@@ -157,6 +189,9 @@ def load(end) -> dict:
         "hy": repo_fred("BAMLH0A0HYM2", end), "sahm": repo_fred("SAHMREALTIME", end),
         "dbaa": repo_fred("DBAA", end), "dgs10": repo_fred("DGS10", end),
         "dq": {"interior_ffill_sessions": gaps,
+               "l0_priced_share_within_life": {t: float(1 - gaps[t] / max(1, int((adj.index >= px[t].index.min()).sum())))
+                                               for t in gaps},
+               "l0_ge_99pct": all(1 - gaps[t] / max(1, int((adj.index >= px[t].index.min()).sum())) >= 0.99 for t in gaps),
                "abs_daily_return_gt_25pct": {t: int((rets[t].abs() > 0.25).sum()) for t in rets.columns}},
     }
 
@@ -208,28 +243,56 @@ def W(x, mask):
     return x[_al(mask, x.index)]
 
 
-def contrast(label, r_c, r_ref, cash, kind, mask, m, effect, unit, seed):
-    mask = _al(mask, r_c.index)
-    r_ref = r_ref.reindex(r_c.index)
-    cash = cash.reindex(r_c.index)
-    a, b, c = r_c[mask].values, r_ref[mask].values, cash[mask].values
-    assert np.isfinite(a).all() and np.isfinite(b).all(), f"{label}: non-finite returns in window"
+class XRef:
+    """Exposure-matched reference rebuilt on each window tested (header baselines.X: mean(w_c) per window)."""
+
+    def __init__(self, book, risky_r, cash):
+        self.book, self.risky_r, self.cash = book, risky_r, cash
+
+    def on(self, mask):
+        return xref(self.book, self.risky_r, self.cash, mask)
+
+
+def _stat(kind, a, b, c, seed, block):
     if kind == "mean":
-        obs = float((a - b).mean() * rc.TRADING_DAYS)
-        dist = rc.bootstrap_stat([a, b], rc.stat_mean_diff, B, 21, seed)
-    else:
-        obs = rc.sharpe(a, c) - rc.sharpe(b, c)
-        dist = rc.bootstrap_stat([a, b, c], rc.stat_sharpe_diff, B, 21, seed)
+        return rc.bootstrap_stat([a, b], rc.stat_mean_diff, B, block, seed)
+    return rc.bootstrap_stat([a, b, c], rc.stat_sharpe_diff, B, block, seed)
+
+
+def contrast(label, r_c, r_ref, cash, kind, mask, m, effect, unit, seed):
+    """r_ref: a return Series, or an XRef rebuilt on each window (full D, E1, E2)."""
+    mask = _al(mask, r_c.index)
+    cash = cash.reindex(r_c.index)
+
+    def ref_on(mk):
+        if isinstance(r_ref, XRef):
+            x, wbar = r_ref.on(mk)
+            return x.reindex(r_c.index), wbar
+        return r_ref.reindex(r_c.index), None
+
+    ref, wbar = ref_on(mask)
+    a, b, c = r_c[mask].values, ref[mask].values, cash[mask].values
+    assert np.isfinite(a).all() and np.isfinite(b).all(), f"{label}: non-finite returns in window"
+    obs = float((a - b).mean() * rc.TRADING_DAYS) if kind == "mean" else rc.sharpe(a, c) - rc.sharpe(b, c)
+    dist = _stat(kind, a, b, c, seed, 21)
+    dist63 = _stat(kind, a, b, c, seed + 500000, 63)
     se = float(np.nanstd(dist, ddof=1))
-    eras = {}
+    d = a - b
+    te = float(d.std(ddof=1) * math.sqrt(rc.TRADING_DAYS))
+    eras, era_w = {}, {}
     for era, em in (("E1", mask & (r_c.index <= rc.ERA_SPLIT)), ("E2", mask & (r_c.index > rc.ERA_SPLIT))):
         if em.sum() < 50:
             eras[era] = None
             continue
-        aa, bb, cc = r_c[em].values, r_ref[em].values, cash[em].values
+        rr, ww = ref_on(em)
+        era_w[era] = ww
+        aa, bb, cc = r_c[em].values, rr[em].values, cash[em].values
         eras[era] = float((aa - bb).mean() * rc.TRADING_DAYS) if kind == "mean" else rc.sharpe(aa, cc) - rc.sharpe(bb, cc)
     return {"contrast": label, "kind": kind, "observed": obs, "ci95": rc.ci95(dist),
             "p_one_sided_centred": rc.centred_p(dist, obs), "eras": eras,
+            "x_mean_weight": wbar, "x_mean_weight_eras": era_w or None,
+            "tracking_error": te, "information_ratio": (float(d.mean() * rc.TRADING_DAYS) / te) if te > 0 else None,
+            "block63": {"ci95": rc.ci95(dist63), "p_one_sided_centred": rc.centred_p(dist63, obs)},
             "power": rc.power_line(se, m, effect, unit)}
 
 
@@ -245,8 +308,10 @@ def family(spec, cash, mask, m, seed0):
         res[tid] = contrast(tid, r_c, r_ref, cash, kind, mask, m, effect, unit, seed0 + i)
         pv[tid] = res[tid]["p_one_sided_centred"]
     h = rc.holm(pv)
+    h63 = rc.holm({k: r["block63"]["p_one_sided_centred"] for k, r in res.items()})
     for tid in res:
         res[tid]["holm"] = h[tid]
+        res[tid]["block63"]["holm"] = h63[tid]
     return res
 
 
@@ -254,6 +319,14 @@ def ir(r, ref, mask):
     d = (r - ref.reindex(r.index))[_al(mask, r.index)]
     sd = d.std(ddof=1)
     return float(d.mean() / sd * math.sqrt(252)) if sd > 0 else None
+
+
+SEALED_TAIL = 63   # spells starting in D's last 63 sessions may belong to the sealed E2020 window
+
+
+def first_exec(b: rc.Book):
+    t = b.traded[b.traded > 0]
+    return t.index[0] if len(t) else None
 
 
 def after_close_weight(b: rc.Book) -> pd.Series:
@@ -300,9 +373,19 @@ def j1_books(d, w, mult=1.0, only=None):
     return bk
 
 
+def incumbent_provenance(fname):
+    """Require a reviewed provenance sidecar (timing semantics, pin, causality evidence) before using a replay."""
+    pv = INCUMBENTS / fname.replace(".parquet", "_provenance.json")
+    if not pv.exists():
+        return None
+    meta = json.loads(pv.read_text())
+    _hash_bytes(str(pv), pv.read_bytes())
+    return meta
+
+
 def load_incumbent_weight(fname, col, sessions, end):
     p = INCUMBENTS / fname
-    if not p.exists():
+    if not p.exists() or incumbent_provenance(fname) is None:
         return None, None
     _hash_bytes(str(p), p.read_bytes())
     s = pd.read_parquet(p)[col].astype(float)
@@ -483,7 +566,7 @@ def exits_before_trough(pv) -> tuple[int, int]:
             continue
         n += 1
         ed = row.get("exit_date")
-        if ed and pd.Timestamp(ed) <= pd.Timestamp(row["trough"]):
+        if ed and pd.Timestamp(ed) < pd.Timestamp(row["trough"]):
             k += 1
     return k, n
 
@@ -561,7 +644,8 @@ def long_tier(end_long="1997-12-31"):
             if ep:
                 eps[name] = ep
         piv = {k: rc.pivot_table(after_close_weight(b), b.returns, mkt.reindex(b.returns.index),
-                                 level.reindex(b.returns.index), eps) for k, b in bk.items()}
+                                 level.reindex(b.returns.index), eps, first_exec=first_exec(b))
+               for k, b in bk.items()}
         algo = rc.algorithmic_drawdowns(level[level.index >= start], 0.15)
         out["tiers"][tier] = {"first_decision": str(start.date()), "metrics": met, "point_differences": diffs,
                               "pivots": piv, "episodes": {k: {"peak": str(v["peak"].date()),
@@ -593,7 +677,12 @@ def j4_stage_d(d) -> dict:
     # identity-suspect handling is per membership interval: during a flagged interval (wrong issuer / span mismatch /
     # namespace collision) the ticker is treated as unpriced; 'no_series' intervals are unpriced anyway.
     bad = {}
+    unmasked_starts_late = 0
     for r in manifest.get("identity_suspect_intervals", []):
+        reasons = {x.split("(")[0] for x in str(r.get("why", "")).split(";")}
+        if reasons <= {"starts_late", "ends_early"}:
+            unmasked_starts_late += 1   # same issuer, series simply starts later: prices before first date are absent
+            continue
         if r.get("why") != "no_series":
             bad.setdefault(r["ticker"], []).append((pd.Timestamp(r["start"]),
                                                     pd.Timestamp(r["end"]) if r.get("end") else pd.Timestamp("2100-01-01")))
@@ -614,7 +703,7 @@ def j4_stage_d(d) -> dict:
     forms_plus = forms + [nxt]
     end_j4 = s[s.get_loc(nxt) + 1]
     s4 = s[s <= end_j4]
-    tick = sorted(set(pit.loc[pit["src"] == "sp500", "ticker"]))
+    tick = sorted(set(pit.loc[pit["src"].isin(["sp500", "sp400"]), "ticker"]))
     cols, src = {}, {"cache": 0, "fetched": 0, "suspect_intervals_masked": 0, "collision_excluded": 0, "missing": 0}
     for t in tick:
         p1, p2 = CACHE / f"{t}.parquet", J4DIR / "prices" / f"{t}.parquet"
@@ -649,13 +738,24 @@ def j4_stage_d(d) -> dict:
     res2x = j4.run_j4(prices, etf, d["adj"]["SPY"].reindex(s4), pit, forms_plus, s4, el, labels_gics=labels,
                       cost_bp=20.0)["records"]
     res2x = res2x[res2x.index <= J4_LAST_FORMATION]
+    # S&P 1500 sensitivity (header J4.universe): sp400 added one year after its 2012-01-13 floor
+    f1500 = [f for f in forms_plus if f >= pd.Timestamp("2013-01-01")]
+    s1500 = j4.run_j4(prices, etf, d["adj"]["SPY"].reindex(s4), pit, f1500, s4, el, labels_gics=labels,
+                      legs=("sp500", "sp400"))["records"]
+    s1500 = s1500[s1500.index <= J4_LAST_FORMATION]
+    s500_same = df[df.index >= pd.Timestamp("2013-01-01")]
+    # formations with a finite statistic only (no sector SPDR is eligible before ~1999-12)
+    df = df[df["delta_i"].notna()]
+    res2x = res2x[res2x["delta_i"].notna()]
 
     def mstat(x, seed, effect):
         x = x.dropna().to_numpy()
         obs = float(x.mean() * 12)
         dist = rc.bootstrap_stat([x], lambda a: a.mean(axis=1) * 12, B, 3, seed)
         se = float(np.std(dist, ddof=1))
+        d6 = rc.bootstrap_stat([x], lambda a: a.mean(axis=1) * 12, B, 6, seed + 500000)
         return {"observed": obs, "ci95": rc.ci95(dist), "p_one_sided_centred": rc.centred_p(dist, obs),
+                "block6": {"ci95": rc.ci95(d6), "p_one_sided_centred": rc.centred_p(d6, obs)},
                 "n_months": int(len(x)), "power": rc.power_line(se, 2, effect, "per year (fraction)")}
 
     A = mstat(df["delta_i"], SEED + 4000, 0.02)
@@ -664,8 +764,10 @@ def j4_stage_d(d) -> dict:
     A["holm"], Bk["holm"] = h["J4-A"], h["J4-B"]
     eras = {}
     for nm, col in (("J4-A", "delta_i"), ("J4-B", "book_excess")):
-        eras[nm] = {"E1": float(df.loc[df.index <= rc.ERA_SPLIT, col].mean() * 12),
-                    "E2": float(df.loc[df.index > rc.ERA_SPLIT, col].mean() * 12)}
+        le = pd.to_datetime(df["label_end"])
+        eras[nm] = {"E1": float(df.loc[le <= rc.ERA_SPLIT, col].mean() * 12),
+                    "E2": float(df.loc[le > rc.ERA_SPLIT, col].mean() * 12),
+                    "split_by": "label_end (return date)"}
     A["eras"], Bk["eras"] = eras["J4-A"], eras["J4-B"]
     cov = df["priced_share"]
     treat = {"i_exclude_unpriced": A["observed"], "iii_minus30_terminal": float(df["delta_iii"].mean() * 12)}
@@ -677,9 +779,9 @@ def j4_stage_d(d) -> dict:
         {"criterion": "G4 hold-out", "observed": None, "met": "not_evaluated_sealed"},
         {"criterion": "G5 at 2x costs (J4-A has no costs; J4-B shown)",
          "observed": float(res2x["book_excess"].mean() * 12), "met": bool(A["holm"]["reject_h0"] and A["observed"] >= 0.02)},
-        {"criterion": "G6 same sign under treatments (i) and (iii)", "observed": treat,
+        {"criterion": "G6 [D only, provisional] same sign under treatments (i) and (iii)", "observed": treat,
          "met": bool(np.sign(treat["i_exclude_unpriced"]) == np.sign(treat["iii_minus30_terminal"]))},
-        {"criterion": "G6 median monthly priced share >= 0.85", "observed": float(cov.median()),
+        {"criterion": "G6 [D only, provisional] median monthly priced share >= 0.85", "observed": float(cov.median()),
          "met": bool(cov.median() >= 0.85)},
         {"criterion": "G7 clean window", "observed": "fixed parameters", "met": True},
     ]
@@ -693,6 +795,12 @@ def j4_stage_d(d) -> dict:
                                                                       "n_attempted", "n_recovered", "n_failed",
                                                                       "n_identity_suspect_intervals")},
             "J4-A": A, "J4-B": Bk, "treatments": treat, "J4-B_cost_2x_ann": float(res2x["book_excess"].mean() * 12),
+            "suspect_starts_late_only_not_masked": unmasked_starts_late,
+            "clipped_returns": res.get("clip_log"),
+            "sensitivity_sp1500_from_2013": {"J4-A_ann_sp1500": float(s1500["delta_i"].mean() * 12),
+                                             "J4-A_ann_sp500_same_months": float(s500_same["delta_i"].mean() * 12),
+                                             "J4-B_ann_sp1500": float(s1500["book_excess"].mean() * 12),
+                                             "months": int(s1500["delta_i"].notna().sum())},
             "sensitivity_gics_assignment": {"J4-A_ann": float(sens["delta_i"].mean() * 12),
                                             "J4-B_ann": float(sens["book_excess"].mean() * 12)},
             "coverage_by_formation_month": {str(k.date()): float(v) for k, v in cov.items()},
@@ -709,10 +817,15 @@ def run_stage_d(smoke: bool) -> dict:
     s, cash, r_spy = d["sessions"], d["cash"], d["rets"]["SPY"].fillna(0.0)
     assert s.max() <= END and all(v.index.max() <= END for v in (d["hy"], d["dbaa"], d["dgs10"]))
     from engine.trial_ledger import TrialLedger
-    led = rc.SummedLedger(TrialLedger(path="/home/ubuntu2/tmp/rotation-core/ledger/trial_ledger.jsonl"),
+    import tempfile
+    lraw = subprocess.check_output(["git", "-C", str(ROOT), "show", "623f0a4623:data/trial_ledger.jsonl"])
+    _hash_bytes("623f0a4623:data/trial_ledger.jsonl", lraw)
+    ltmp = Path(tempfile.mkdtemp()) / "trial_ledger.jsonl"
+    ltmp.write_bytes(lraw)
+    led = rc.SummedLedger(TrialLedger(path=str(ltmp)),
                           ["rotation_core_v1", "thematic_rotation_phase0", "cross_asset_phase0",
                            "index_direction_phase0"])
-    out = {"jobs": {}, "data_quality": d["dq"]}
+    out = {"jobs": {}, "data_quality": d["dq"], "deviations": list(DEVIATIONS)}
 
     # ---------------- J1
     w, flags = j1_weights(d)
@@ -739,8 +852,7 @@ def run_stage_d(smoke: bool) -> dict:
     def f1(bk):
         spec = []
         for c in cands:
-            x, _ = xref(bk[c], r_spy, cash, m1)
-            spec.append((f"{c}:P1", bk[c].returns, x, "mean", 0.01, "per year (fraction)"))
+            spec.append((f"{c}:P1", bk[c].returns, XRef(bk[c], r_spy, cash), "mean", 0.01, "per year (fraction)"))
             spec.append((f"{c}:P2", bk[c].returns, bk["B3"].returns, "sharpe", 0.10, "Sharpe"))
         return family(spec, cash, m1, 10, SEED)
 
@@ -758,26 +870,27 @@ def run_stage_d(smoke: bool) -> dict:
         if ep:
             eps[name] = ep
     piv1 = {k: rc.pivot_table(after_close_weight(b), b.returns, r_spy.reindex(b.returns.index),
-                              spy_level.reindex(b.returns.index), eps) for k, b in bk1.items()}
+                              spy_level.reindex(b.returns.index), eps, first_exec=first_exec(b),
+                              sealed_tail=SEALED_TAIL) for k, b in bk1.items()}
     gates1 = {}
     spy_m = met1["B1"]
     for c in cands:
         mt, pv = met1[c], piv1[c]
         k_ex, n_ex = exits_before_trough(pv)
         extra = [
-            {"criterion": "G6 down-capture <= up-capture - 0.20 (D only, provisional)",
+            {"criterion": "G6 [D only, provisional] down-capture <= up-capture - 0.20",
              "observed": [mt["down_capture_monthly"], mt["up_capture_monthly"]],
              "met": bool(mt["down_capture_monthly"] is not None and mt["up_capture_monthly"] is not None
                          and mt["down_capture_monthly"] <= mt["up_capture_monthly"] - 0.20)},
-            {"criterion": "G6 MaxDD <= 0.70 x SPY MaxDD", "observed": [mt["max_drawdown"], spy_m["max_drawdown"]],
+            {"criterion": "G6 [D only, provisional] MaxDD <= 0.70 x SPY MaxDD", "observed": [mt["max_drawdown"], spy_m["max_drawdown"]],
              "met": bool(mt["max_drawdown"] >= 0.70 * spy_m["max_drawdown"])},
-            {"criterion": "G6 CAGR >= SPY CAGR - 2.0pp", "observed": [mt["ann_return"], spy_m["ann_return"]],
+            {"criterion": "G6 [D only, provisional] CAGR >= SPY CAGR - 2.0pp", "observed": [mt["ann_return"], spy_m["ann_return"]],
              "met": bool(mt["ann_return"] >= spy_m["ann_return"] - 0.02)},
-            {"criterion": "G6 false pivots <= 1.5 per calm year", "observed": pv["false_pivots_per_calm_year"],
+            {"criterion": "G6 [D only, provisional] false pivots <= 1.5 per calm year", "observed": pv["false_pivots_per_calm_year"],
              "met": bool(pv["false_pivots_per_calm_year"] is not None and pv["false_pivots_per_calm_year"] <= 1.5)},
-            {"criterion": "G6 exit before trough in >= 6 named episodes (D has 6 of the 9-10; H sealed)",
-             "observed": f"{k_ex}/{n_ex}", "met": True if k_ex >= 6 else ("pending_H" if k_ex + 4 >= 6 else False)},
-            {"criterion": "G6 Sharpe >= B2, B3, B4", "observed": [mt["sharpe"], met1["B2"]["sharpe"],
+            {"criterion": "G6 [D only, provisional] exit before trough in >= 6 named episodes (D has 6 of the 9-10; H sealed)",
+             "observed": f"{k_ex}/{n_ex}", "met": True if k_ex >= 6 else ("pending_H" if k_ex + 3 >= 6 else False)},
+            {"criterion": "G6 [D only, provisional] Sharpe >= B2, B3, B4", "observed": [mt["sharpe"], met1["B2"]["sharpe"],
                                                                  met1["B3"]["sharpe"], met1["B4"]["sharpe"]],
              "met": bool(mt["sharpe"] >= max(met1["B2"]["sharpe"], met1["B3"]["sharpe"], met1["B4"]["sharpe"]))},
         ]
@@ -793,8 +906,8 @@ def run_stage_d(smoke: bool) -> dict:
     fi_spec = []
     for key in ("J1-I1", "J1-I2"):
         if key in bk1:
-            x, _ = xref(bk1[key], r_spy, cash, m1)
-            fi_spec.append((f"{key}:vsX", bk1[key].returns, x, "mean", 0.01, "per year (fraction)", m1))
+            fi_spec.append((f"{key}:vsX", bk1[key].returns, XRef(bk1[key], r_spy, cash), "mean", 0.01,
+                            "per year (fraction)", m1))
             fi_spec.append((f"{key}:SharpeVsB3", bk1[key].returns, bk1["B3"].returns, "sharpe", 0.10, "Sharpe", m1))
     out["jobs"]["J1"] = {"window_D": [str(J1_FIRST.date()), str(END.date())], "family_F1": F1,
                          "family_F1_cost_2x": F1_2x, "metrics": met1, "x_mean_weight": xw, "pivots": piv1,
@@ -811,7 +924,7 @@ def run_stage_d(smoke: bool) -> dict:
     sig2 = j2_signals(d)
     rules2 = j2_rules(sig2)
     st = INCUMBENTS / "sector_signals_states.parquet"
-    if st.exists():
+    if st.exists() and incumbent_provenance("sector_signals_states.parquet") is not None:
         _hash_bytes(str(st), st.read_bytes())
         states = pd.read_parquet(st)
         states.index = pd.to_datetime(states.index).normalize()
@@ -845,11 +958,11 @@ def run_stage_d(smoke: bool) -> dict:
         mt = met2[c]
         irv = ir(bk2[c].returns, bk2["B5"].returns, m2)
         extra = [
-            {"criterion": "G6 IR vs B5 >= 0.20", "observed": irv, "met": bool(irv is not None and irv >= 0.20)},
-            {"criterion": "G6 MaxDD no worse than B5 MaxDD - 5pp", "observed": [mt["max_drawdown"], met2["B5"]["max_drawdown"]],
+            {"criterion": "G6 [D only, provisional] IR vs B5 >= 0.20", "observed": irv, "met": bool(irv is not None and irv >= 0.20)},
+            {"criterion": "G6 [D only, provisional] MaxDD no worse than B5 MaxDD - 5pp", "observed": [mt["max_drawdown"], met2["B5"]["max_drawdown"]],
              "met": bool(mt["max_drawdown"] >= met2["B5"]["max_drawdown"] - 0.05)},
-            {"criterion": "G6 Q2 point > 0", "observed": F2[f"{c}:Q2"]["observed"], "met": F2[f"{c}:Q2"]["observed"] > 0},
-            {"criterion": "G6 point excess vs B1 and B7 > 0",
+            {"criterion": "G6 [D only, provisional] Q2 point > 0", "observed": F2[f"{c}:Q2"]["observed"], "met": F2[f"{c}:Q2"]["observed"] > 0},
+            {"criterion": "G6 [D only, provisional] point excess vs B1 and B7 > 0",
              "observed": [float((bk2[c].returns - bk2[k].returns).pipe(W, m2).mean() * 252) for k in ("B1", "B7")],
              "met": all(float((bk2[c].returns - bk2[k].returns).pipe(W, m2).mean()) > 0 for k in ("B1", "B7"))},
         ]
@@ -941,7 +1054,9 @@ def run_stage_d(smoke: bool) -> dict:
                              "J5-B_minus_J5-A": float((bk5["J5-B"].returns - bk5["J5-A"].returns).pipe(W, m2).mean() * 252),
                              "J2-E_minus_J2star": float((bk5["J2-E"].returns - bk2[j2star].returns).pipe(W, m2).mean() * 252)},
                          "pivots": {k: rc.pivot_table(after_close_weight(b), b.returns, r_spy.reindex(b.returns.index),
-                                                      spy_level.reindex(b.returns.index), eps2) for k, b in bk5.items()
+                                                      spy_level.reindex(b.returns.index), eps2,
+                                                      first_exec=first_exec(b), sealed_tail=SEALED_TAIL)
+                                    for k, b in bk5.items()
                                     if k.startswith("J5")}}
     if "J2-I1" in bk2:
         fi_spec.append(("J2-I1:vsB5", bk2["J2-I1"].returns, bk2["B5"].returns, "mean", 0.01, "per year (fraction)", m2))
@@ -957,8 +1072,7 @@ def run_stage_d(smoke: bool) -> dict:
     def f3(bk):
         spec = []
         for c in c3:
-            x, _ = xref(bk[c], ew7, cash, m3)
-            spec.append((f"{c}:R1", bk[c].returns, x, "mean", 0.01, "per year (fraction)"))
+            spec.append((f"{c}:R1", bk[c].returns, XRef(bk[c], ew7, cash), "mean", 0.01, "per year (fraction)"))
             spec.append((f"{c}:R2", bk[c].returns, bk["B9"].returns, "mean", 0.01, "per year (fraction)"))
         return family(spec, cash, m3, 6, SEED + 2000)
 
@@ -972,16 +1086,16 @@ def run_stage_d(smoke: bool) -> dict:
     for c in c3:
         mt = met3[c]
         extra = [
-            {"criterion": "G6 Sharpe >= B2, B9, B10", "observed": [mt["sharpe"], met3["B2"]["sharpe"],
+            {"criterion": "G6 [D only, provisional] Sharpe >= B2, B9, B10", "observed": [mt["sharpe"], met3["B2"]["sharpe"],
                                                                  met3["B9"]["sharpe"], met3["B10"]["sharpe"]],
              "met": bool(mt["sharpe"] >= max(met3["B2"]["sharpe"], met3["B9"]["sharpe"], met3["B10"]["sharpe"]))},
-            {"criterion": "G6 MaxDD <= B8 MaxDD", "observed": [mt["max_drawdown"], met3["B8"]["max_drawdown"]],
+            {"criterion": "G6 [D only, provisional] MaxDD <= B8 MaxDD", "observed": [mt["max_drawdown"], met3["B8"]["max_drawdown"]],
              "met": bool(mt["max_drawdown"] >= met3["B8"]["max_drawdown"])},
         ]
         rows, clears = gate_rows(F3[f"{c}:R1"], F3_2x[f"{c}:R1"], 0.01, extra)
         gates3[c] = {"criteria": rows, "clears_G1_G2_G3_G5_on_D": clears}
-    x3i, _ = xref(bk3["J3-I1"], ew7, cash, m3)
-    fi_spec.append(("J3-I1:vsX3", bk3["J3-I1"].returns, x3i, "mean", 0.01, "per year (fraction)", m3))
+    fi_spec.append(("J3-I1:vsX3", bk3["J3-I1"].returns, XRef(bk3["J3-I1"], ew7, cash), "mean", 0.01,
+                    "per year (fraction)", m3))
     fi_spec.append(("J3-I1:vsB9", bk3["J3-I1"].returns, bk3["B9"].returns, "mean", 0.01, "per year (fraction)", m3))
     out["jobs"]["J3"] = {"window_D": [str(J3_FIRST.date()), str(END.date())], "family_F3": F3,
                          "family_F3_cost_2x": F3_2x, "metrics": met3, "gates": gates3,
@@ -990,12 +1104,18 @@ def run_stage_d(smoke: bool) -> dict:
     # ---------------- incumbents FI
     FI, pv = {}, {}
     for i, (tid, a, b, kind, eff, unit, mk) in enumerate(fi_spec):
-        FI[tid] = contrast(tid, a, b, cash, kind, mk, max(len(fi_spec), 1), eff, unit, SEED + 3000 + i)
+        FI[tid] = contrast(tid, a, b, cash, kind, mk, 8, eff, unit, SEED + 3000 + i)
         pv[tid] = FI[tid]["p_one_sided_centred"]
-    h = rc.holm(pv) if pv else {}
+    declared = ["J1-I1:vsX", "J1-I1:SharpeVsB3", "J1-I2:vsX", "J1-I2:SharpeVsB3", "J2-I1:vsB5", "J2-I1:vsB6",
+                "J3-I1:vsX3", "J3-I1:vsB9"]
+    for tid in declared:
+        if tid not in FI:
+            FI[tid] = {"contrast": tid, "status": "unavailable", "p_one_sided_centred": 1.0}
+            pv[tid] = 1.0
+    h = rc.holm(pv)
     for tid in FI:
         FI[tid]["holm"] = h[tid]
-    out["incumbents"] = {"family_FI": FI, "nominal_m": 8, "computed_m": len(fi_spec),
+    out["incumbents"] = {"family_FI": FI, "nominal_m": 8, "computed_m": len(fi_spec), "holm_m": len(pv),
                          "cap": "L0 (G7 fails: parameters chosen on the evaluation history)", "J1": inc,
                          "J2-I1": "evaluated" if "J2-I1" in bk2 else "unavailable (no state series)"}
 
@@ -1044,6 +1164,11 @@ def main() -> int:
     args = ap.parse_args()
     header = rc.verify_header(HEADER)
     stage_guard(args.stage)
+    if not args.smoke:
+        dirty = _git("status", "--porcelain", "--", "engine/rotation_core_evaluation.py", "engine/rotation_core_j4.py",
+                     "scripts/run_rotation_core_v1.py", "scripts/rotation_core_report.py").strip()
+        if dirty:
+            raise SystemExit(f"Stage D refused: harness files are not committed:\n{dirty}")
     res = run_stage_d(args.smoke)
     if args.smoke:
         print("smoke OK (no statistics printed, nothing written)")

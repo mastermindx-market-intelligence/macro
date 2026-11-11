@@ -188,7 +188,7 @@ def write_markdown(art: dict, path: Path) -> None:
     else:
         L += [f"Unavailable: {j4.get('reason')}", ""]
     J5 = J["J5"]
-    L += ["## J5 / J2-E (descriptive in D; confirmatory on H only)", "",
+    L += ["## J5 / J2-E (descriptive in D; J1*/J2* were selected on D, so these D numbers are in-sample)", "",
           f"J1* = {J5['J1_star']}, J2* = {J5['J2_star']}. Point differences in D: "
           + ", ".join(f"{k} {pct(v)}" for k, v in J5["point_differences_D"].items()), ""]
     L += _metrics_table(J5["metrics"])

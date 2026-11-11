@@ -194,3 +194,95 @@ def test_stage_h_refused_without_parent_release(monkeypatch):
 
 def test_stage_d_window_ends_before_holdout():
     assert rc.D_END < rc.H_START
+
+
+# ------------------------------------------------------------------ review-driven tests
+def test_always_rebalance_resets_drift_each_decision():
+    s = _sessions(6)
+    rets = pd.DataFrame({"A": [0.0, 0.5, 0.0, 0.5, 0.0, 0.0], "B": [0.0] * 6}, index=s)
+    cash = pd.Series(0.0, index=s)
+    tgt = pd.DataFrame({"A": [0.5, np.nan, 0.5, np.nan, np.nan, np.nan], "B": [0.5, np.nan, 0.5, np.nan, np.nan, np.nan]}, index=s)
+    b = rc.simulate(tgt, rets, cash, 0.0, "t", always_rebalance=True, equity_cols=("A", "B"))
+    assert b.holdings["A"].iloc[4] == pytest.approx(0.5)            # day-3 close reset drift back to target
+    assert int((b.traded > 0).sum()) == 2
+    nb = rc.simulate(tgt, rets, cash, 0.0, "t", equity_cols=("A", "B"))
+    assert int((nb.traded > 0).sum()) == 1                          # change-only rule does not reset
+    assert nb.holdings["A"].iloc[4] == pytest.approx(0.75 / 1.25)   # drifted weight kept
+
+
+def test_pivot_excludes_startup_and_sealed_tail_spells():
+    s = _sessions(400)
+    lvl = pd.Series(np.linspace(100, 140, 400), index=s)
+    r = lvl.pct_change().fillna(0.0)
+    w = pd.Series(1.0, index=s)
+    w.iloc[0] = 0.0                     # start-up: nothing held before first execution
+    w.iloc[380:] = 0.0                  # spell starting in the last 63 sessions
+    pv = rc.pivot_table(w, r * w.shift(1).fillna(0.0), r, lvl, {}, first_exec=s[1], sealed_tail=63)
+    assert pv["false_pivots"] == 0 and pv["spells_undetermined_sealed"] == 1
+    pv2 = rc.pivot_table(w, r, r, lvl, {})
+    assert pv2["false_pivots"] == 2
+
+
+def test_xref_rebuilt_per_era(monkeypatch):
+    import scripts.run_rotation_core_v1 as run
+    monkeypatch.setattr(run, "B", 50)
+    s = pd.bdate_range("2008-01-01", "2011-12-30")
+    rng = np.random.default_rng(3)
+    spy = pd.Series(rng.normal(0.0004, 0.01, len(s)), index=s)
+    cash = pd.Series(0.0001, index=s)
+    w = pd.Series(np.where(s <= rc.ERA_SPLIT, 0.2, 1.0), index=s)
+    book = rc.Book("c", w * spy + (1 - w) * cash, w, w, pd.DataFrame({"SPY": w}), w * 0, w * 0)
+    mask = pd.Series(True, index=s)
+    res = run.contrast("x", book.returns, run.XRef(book, spy, cash), cash, "mean", mask, 10, 0.01, "y", 1)
+    assert res["x_mean_weight_eras"]["E1"] == pytest.approx(0.2)
+    assert res["x_mean_weight_eras"]["E2"] == pytest.approx(1.0)
+    assert abs(res["eras"]["E1"]) < 1e-9 and abs(res["eras"]["E2"]) < 1e-9
+
+
+def test_run_j4_formation_unchanged_by_future_prices():
+    from engine import rotation_core_j4 as j4
+    rng = np.random.default_rng(7)
+    s = pd.bdate_range("2004-01-01", periods=700)
+    etf = pd.DataFrame({e: 100 * np.cumprod(1 + rng.normal(0.0003, 0.01, len(s))) for e in ["XLK", "XLF", "XLE", "XLV"]}, index=s)
+    spy = etf.mean(axis=1)
+    names = {}
+    for e in etf.columns:
+        er = etf[e].pct_change().fillna(0).values
+        for k in range(6):
+            names[f"{e}{k}"] = 50 * np.cumprod(1 + er + rng.normal(0, 0.006, len(s)))
+    prices = pd.DataFrame(names, index=s)
+    pit = pd.DataFrame({"ticker": list(names), "start_date": pd.Timestamp("2000-01-01"), "end_date": pd.NaT, "src": "sp500"})
+    me = rc.month_end_sessions(s)
+    forms = list(me[(me > s[300]) & (me < s[650])])
+    el = rc.eligible(etf)
+    a = j4.run_j4(prices, etf, spy, pit, forms, s, el)["records"]
+    t0 = forms[2]
+    p2 = prices.copy()
+    p2.loc[p2.index > t0] *= 1.0 + np.linspace(0, 2, int((p2.index > t0).sum()))[:, None]
+    b = j4.run_j4(p2, etf, spy, pit, forms, s, el)["records"]
+    for col in ("leading", "lagging", "assigned", "priced"):
+        assert a.loc[t0, col] == b.loc[t0, col]
+
+
+def test_build_artifact_and_markdown_on_stub(tmp_path):
+    from scripts.rotation_core_report import build_artifact, write_markdown
+    fam = {"J1-A:P1": {"contrast": "J1-A:P1", "kind": "mean", "observed": 0.0, "ci95": [-0.01, 0.01],
+                       "p_one_sided_centred": 0.5, "eras": {"E1": 0.0, "E2": 0.0},
+                       "power": {"se": 0.01, "mde80_holm": 0.03, "reference_effect": 0.01, "sentence": "x"},
+                       "holm": {"p_holm": 1.0, "reject_h0": False}}}
+    m = {"ann_return": 0.05, "ann_vol": 0.1, "sharpe": 0.4, "max_drawdown": -0.2, "up_capture_monthly": 1.0,
+         "down_capture_monthly": 1.0, "beta_vs_spy": 1.0, "mean_risky_weight": 1.0, "traded_notional_per_year": 0.1,
+         "costs_paid_per_year": 0.0, "dsr": {"dsr": 0.5}}
+    g = {"J1-A": {"criteria": [{"criterion": "G1 x", "met": False}], "clears_G1_G2_G3_G5_on_D": False}}
+    job = {"window_D": ["a", "b"], "metrics": {"B1": m}, "gates": g, "pivots": {}, "selection": {"J1_star": "B3", "p1_observed_D": {}, "J2_star": "B5"},
+           "episode_holdings_D": {}}
+    res = {"jobs": {"J1": {**job, "family_F1": fam}, "J2": {**job, "family_F2": fam}, "J3": {**job, "family_F3": fam},
+                    "J4": {"status": "unavailable", "reason": "stub"},
+                    "J5": {"J1_star": "B3", "J2_star": "B5", "point_differences_D": {}, "metrics": {"J5-A": m}}},
+           "incumbents": {"family_FI": {}, "J1": {}, "J2-I1": "x"}, "long_history": {"tiers": {}},
+           "data_quality": {}, "dsr_trial_count": {}, "deviations": [{"kind": "k", "text": "t"}]}
+    hdr = {"protocol_id": "p", "frozen_on_utc": "d"}
+    art = build_artifact(res, hdr, {}, "pin", 10, 1)
+    assert art["may_trade"] is False and art["schema"] == "rotation_core.evaluation/v1"
+    write_markdown(art, tmp_path / "r.md")
+    assert "Deviations" in (tmp_path / "r.md").read_text()

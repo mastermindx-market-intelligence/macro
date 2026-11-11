@@ -64,7 +64,11 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
            sessions: pd.DatetimeIndex, eligible_etf: pd.DataFrame, labels_gics: pd.Series | None = None,
            cost_bp: float = 10.0, legs=("sp500",), assignment: str = "statistical") -> dict:
     """Return per-formation records and monthly series for J4-A / J4-B under the three bias treatments."""
-    sr = prices.pct_change(fill_method=None).clip(-0.5, 0.5)
+    raw = prices.pct_change(fill_method=None)
+    big = raw.abs() > 0.60
+    clip_log = {"n_abs_gt_60pct": int(big.sum().sum()), "n_clipped_50pct": int((raw.abs() > 0.5).sum().sum()),
+                "examples": [(c, str(i.date())) for i, c in raw[big].stack().index[:50]]}
+    sr = raw.clip(-0.5, 0.5)
     er = etf_px.pct_change(fill_method=None)
     r63 = etf_px / etf_px.shift(63) - 1
     rs63 = (1 + r63).div(1 + (spy_px / spy_px.shift(63) - 1), axis=0) - 1
@@ -114,7 +118,7 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
                 if np.isfinite(a) and np.isfinite(b) and b > 0:
                     sig[m] = (a / b) / (e21[e] / e126[e]) - 1
             if len(sig) < 3:
-                skipped += 1
+                skipped += 1      # fewer than 3 assigned names with a finite signal (counts both reasons)
                 continue
             nsel = min(len(sig), max(3, math.ceil(0.2 * len(sig))))
             sel = [m for m, _ in sorted(sig.items(), key=lambda kv: (-kv[1], kv[0]))[:nsel]]
@@ -183,4 +187,4 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
     df["delta_i"] = df["S_lead_i"] - df["S_lag_i"]
     df["delta_iii"] = df["S_lead_iii"] - df["S_lag_iii"]
     df["book_excess"] = df["book_L_net"] - df["book_A_net"]
-    return {"records": df}
+    return {"records": df, "clip_log": clip_log}

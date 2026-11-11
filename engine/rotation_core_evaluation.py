@@ -318,6 +318,7 @@ def book_metrics(b: Book, spy: pd.Series, cash: pd.Series, mask: pd.Series | Non
         "beta_vs_spy": beta, "residual_intercept_ann": a * TRADING_DAYS if np.isfinite(a) else None,
         "up_capture_monthly": up, "down_capture_monthly": dn, "capture_months_excluded_small_spy": ex_u,
         "traded_notional_per_year": float(b.traded.reindex(r.index).sum() / years) if years else None,
+        "turnover_one_way_per_year": float(b.traded.reindex(r.index).sum() / years / 2) if years else None,
         "costs_paid_per_year": float(b.costs.reindex(r.index).sum() / years) if years else None,
         "mean_risky_weight": float(w.mean()), "time_in_market": float((w > 1e-9).mean()),
     }
@@ -410,7 +411,7 @@ def holm(pvals: Mapping[str, float], alpha: float = 0.05) -> dict[str, dict]:
     for i, (k, p) in enumerate(items):
         adj = min(1.0, max(running, (m - i) * p))
         running = adj
-        rej = (not stop) and p <= alpha / (m - i)
+        rej = (not stop) and p < alpha / (m - i)
         if not rej:
             stop = True
         out[k] = {"p_raw": p, "p_holm": adj, "reject_h0": rej}
@@ -490,12 +491,16 @@ def _spells(w: pd.Series, thr: float = 0.5) -> list[tuple[pd.Timestamp, pd.Times
 
 
 def pivot_table(weight: pd.Series, strat_r: pd.Series, mkt_r: pd.Series, mkt_level: pd.Series,
-                episodes: Mapping[str, dict], thr: float = 0.5) -> dict:
+                episodes: Mapping[str, dict], thr: float = 0.5, first_exec: pd.Timestamp | None = None,
+                sealed_tail: int = 0) -> dict:
     """Per-episode exit/re-entry timing and the calm-period false-pivot record.
 
     weight: risky (equity) weight in force AFTER the close of each session (i.e. after any execution at that close);
     an exit date is therefore the execution close at which the weight first fell to <= thr. Exit: from > thr to <= thr;
-    re-entry: first later session with weight >= thr."""
+    re-entry: first later session with weight >= thr.
+    first_exec: sessions before the book's first execution are a start-up artefact and excluded from spell counts.
+    sealed_tail: spells starting in the last `sealed_tail` sessions are 'undetermined_sealed' (they may belong to an
+    episode window that lies in the sealed hold-out); they and those sessions are excluded from false-pivot counts."""
     sess = weight.index
     pos = {d: i for i, d in enumerate(sess)}
     rows = {}
@@ -560,17 +565,31 @@ def pivot_table(weight: pd.Series, strat_r: pd.Series, mkt_r: pd.Series, mkt_lev
     in_ep = pd.Series(False, index=sess)
     for a, b in windows:
         in_ep[(sess >= a) & (sess <= b)] = True
-    calm_years = float((~in_ep).sum()) / TRADING_DAYS
-    false_n, whipsaw, cost = 0, 0, 0.0
+    valid = pd.Series(True, index=sess)
+    if first_exec is not None:
+        valid &= sess >= first_exec
+    tail_start = sess[max(0, len(sess) - sealed_tail)] if sealed_tail else None
+    if tail_start is not None:
+        valid &= sess < tail_start
+    calm_years = float(((~in_ep) & valid).sum()) / TRADING_DAYS
+    false_n, whip_false, whip_all, cost, sealed_n = 0, 0, 0, 0.0, 0
     for a, b in _spells(weight, thr):
-        span = (sess >= a) & ((sess < b) if b is not None else True)
+        if first_exec is not None and a < first_exec:
+            continue                                   # start-up artefact (no position before first execution)
+        if tail_start is not None and a >= tail_start:
+            sealed_n += 1                              # undetermined: may lie in a sealed episode window
+            continue
+        span = (sess >= a) & ((sess < b) if b is not None else True) & valid
+        if span.sum() < 21:
+            whip_all += 1
         if in_ep[span].any():
             continue
         false_n += 1
         if span.sum() < 21:
-            whipsaw += 1
+            whip_false += 1
         cost += compound(mkt_r[span].values) - compound(strat_r[span].values)
     return {"episodes": rows, "calm_years": calm_years, "false_pivots": false_n,
             "false_pivots_per_calm_year": false_n / calm_years if calm_years else None,
-            "false_pivot_whipsaws_lt21": whipsaw,
+            "false_pivot_whipsaws_lt21": whip_false, "whipsaws_lt21_all_spells": whip_all,
+            "spells_undetermined_sealed": sealed_n,
             "false_pivot_cost_per_calm_year": cost / calm_years if calm_years else None}
