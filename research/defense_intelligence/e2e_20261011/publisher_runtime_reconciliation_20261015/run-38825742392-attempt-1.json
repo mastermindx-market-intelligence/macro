@@ -1,0 +1,187 @@
+{
+  "operation_scope": "govrev_publisher",
+  "disposition": "no_publication_effect",
+  "record": {
+    "run_id": 38825742392,
+    "run_attempt": 1,
+    "job_id": 116732670936,
+    "workflow_path": ".github/workflows/government-revenue-live.yml",
+    "started_at": "2026-10-15T23:48:15Z",
+    "created_at": "2026-10-15T23:48:12Z",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-15T23:48:18Z",
+        "completed_at": "2026-10-15T23:48:23Z"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-15T23:48:24Z",
+        "completed_at": "2026-10-15T23:48:36Z"
+      },
+      {
+        "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-15T23:48:36Z",
+        "completed_at": "2026-10-15T23:48:37Z"
+      },
+      {
+        "name": "Run pip install -r requirements.txt",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-15T23:48:37Z",
+        "completed_at": "2026-10-15T23:48:38Z"
+      },
+      {
+        "name": "fingerprint committed SAM evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-15T23:48:38Z",
+        "completed_at": "2026-10-15T23:48:39Z"
+      },
+      {
+        "name": "collect SAM opportunity evidence (last-good gated)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-15T23:48:39Z",
+        "completed_at": "2026-10-15T23:48:39Z"
+      },
+      {
+        "name": "gate publication on complete health or material evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-15T23:48:39Z",
+        "completed_at": "2026-10-15T23:48:40Z"
+      },
+      {
+        "name": "stage reviewed source guards",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 8,
+        "started_at": "2026-10-15T23:48:40Z",
+        "completed_at": "2026-10-15T23:48:40Z"
+      },
+      {
+        "name": "build Government Revenue projection",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 9,
+        "started_at": "2026-10-15T23:48:40Z",
+        "completed_at": "2026-10-15T23:48:40Z"
+      },
+      {
+        "name": "prove the candidate projection before publishing it",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10,
+        "started_at": "2026-10-15T23:48:40Z",
+        "completed_at": "2026-10-15T23:48:40Z"
+      },
+      {
+        "name": "commit complete evidence projection",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-15T23:48:40Z",
+        "completed_at": "2026-10-15T23:48:40Z"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-10-15T23:48:40Z",
+        "completed_at": "2026-10-15T23:48:42Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-10-15T23:48:42Z",
+        "completed_at": "2026-10-15T23:48:43Z"
+      }
+    ],
+    "publisher_never_started": false,
+    "publisher_job_name": "refresh",
+    "workflow_head_sha": "86db1b0487ec98c955b2ea9265779263c63d6454",
+    "publisher_job_status": "completed"
+  },
+  "runtime_checkout": "86db1b0487ec98c955b2ea9265779263c63d6454",
+  "runtime_sources": {
+    "scripts/build_government_revenue.py": {
+      "git_blob_sha": "3439db3497a0186c5c1e642739336d81c6c02ca7",
+      "sha256": "8b55901ad8c517549d2f97eeb4872fbb1fdb223dd77971f902fd01bd9ac1cf90",
+      "bytes": 69074
+    },
+    "scripts/collect.py": {
+      "git_blob_sha": "6d7174cb65cbc4b5eaba5eb9952361a17df2b512",
+      "sha256": "f94e940e5f4c3cc887dbe3f3caf57e51769e53df68f163c315c1a69bdc57d549",
+      "bytes": 99361
+    },
+    "scripts/ci/push_retry.sh": {
+      "git_blob_sha": "b3abe82ba137466fe42a1160b1ba2a65dd19e576",
+      "sha256": "e77771b4250b58a3f520331ed03cdc0333567ee88957cc7eb548034367f4f044",
+      "bytes": 55096
+    },
+    "collectors/sam_gov.py": {
+      "git_blob_sha": "0c47a48875b93e237033a61000d664d5c0d3bdcd",
+      "sha256": "18faaa7d3754a9eb108e3407c3fbe2b1cdaa591180e9557313284b0a0c94d629",
+      "bytes": 73568
+    },
+    "collectors/base.py": {
+      "git_blob_sha": "4c2de4b8224bdfd68ff9933d1cf6f254a1e51d7e",
+      "sha256": "2e17b5a2bd0b15d8c99d2bf73113e41429628230337b64e16d03e3a052b49965",
+      "bytes": 39109
+    }
+  },
+  "changed_source": [
+    {
+      "path": "collectors/base.py",
+      "expected": {
+        "git_blob_sha": "b1d603ad303208c2c8d9e9e7947aed6016d7ae33",
+        "sha256": "488e5cf1c9feff3ad42c17b6810c600af3411cf0bdac28e8444b7147c1d5eaae",
+        "bytes": 37286
+      },
+      "actual": {
+        "git_blob_sha": "4c2de4b8224bdfd68ff9933d1cf6f254a1e51d7e",
+        "sha256": "2e17b5a2bd0b15d8c99d2bf73113e41429628230337b64e16d03e3a052b49965",
+        "bytes": 39109
+      }
+    }
+  ],
+  "authenticated_jobs_read": {
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/runs/38825742392/attempts/1/jobs?per_page=100",
+    "file": "003.bin",
+    "sha256": "7ad4b829a1dfec5ea0faf5cd8cf96cfc1cb14874d18f22534888eb4e575a9eaa",
+    "bytes": 3267
+  },
+  "authenticated_job_log_read": {
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/jobs/116732670936/logs",
+    "file": "059.bin",
+    "sha256": "4f2825a00f256116203592767501bbf37da287dcb5652584ee61655b34d4bdfe",
+    "bytes": 44744
+  },
+  "observations": {
+    "all_four_publication_path_steps": "completed/skipped",
+    "collector_change": "Yahoo-only opt-in capture_yahoo_receipts defaults False; incumbent collect.py invokes run_adapter without it",
+    "claims_not_made": [
+      "no acquisition effects",
+      "no arbitrary transitive source effects",
+      "no product publication",
+      "no issuance authority"
+    ]
+  }
+}
