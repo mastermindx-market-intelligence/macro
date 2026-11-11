@@ -5342,6 +5342,15 @@ CURATED_EXCLUSIVE = {
     # package, so the three packing probes keep their base aggregates
     # with no ceiling moved.
     "xguerrilla-admission",
+    # 2026-11-11 Prophet beta-first evaluation (#11022): the frozen-harness
+    # and authenticated-transport suites first rode prophet-lab, whose added
+    # step and ten paths breached all three PACKING_PROBES
+    # (5,729/5,992/5,971 vs 5,724/5,987/5,966); its own exclusive job keeps
+    # the two suites' measured import/read closure — which already carries
+    # every regeneration-guard input (runner, transport, build_prophet, both
+    # workflow scripts, frozen header, committed artifact) — while the API
+    # suite's app.main import keeps the app/ fallback off ordinary code PRs.
+    "prophet-beta-evaluation",
 }
 
 
