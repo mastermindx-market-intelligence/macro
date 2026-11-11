@@ -47837,6 +47837,7 @@ jobs:
       - "tests/test_release_diagnostics.py"
       - "tests/fixtures/release_diagnostics/radar_items.json"
       - "scripts/build_release_forecast.py"
+      - "research/release_playbook/results/playbook_v1.json"
       # The producer's own measured read/receipt closure (the curated-closure
       # audit names these three by path): the coherent-ridge PREREG it reads,
       # the requalification receipt it cites, and the display copy it writes.
