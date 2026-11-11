@@ -175,7 +175,7 @@ def test_build_positions_rules():
     assert by["P1"].entry == pd.Timestamp("2026-08-10")          # never before publication
     assert by["P2"].entry == pd.Timestamp("2026-08-14")
     assert by["P2"].exit == pd.Timestamp("2026-08-21") and not by["P2"].censored
-    assert excl == {"not_entered_zone_live": 1, "ledger_no_entry": 1,
+    assert excl == {"not_entered_zone_live": 1, "recorded_no_entry": 1,
                     "resolved_at_or_before_follower_fill": 1}
     assert extra["era_plans"] == 5 and extra["entry_shifted_to_publication"] == 1
 

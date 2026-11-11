@@ -353,7 +353,7 @@ def main(argv=None) -> int:
             "plans_index": {"path": "site/prophet/index.json", "sha256": sha_file(idx_path),
                             "asof": index.get("asof"), "source_asof": index.get("source_asof"),
                             "computed_at": index.get("computed_at")},
-            "ledger": {"path": "data/prophet/ledger.jsonl", "sha256": sha_file(led_path),
+            "resolution_log": {"path": "data/prophet/ledger.jsonl", "sha256": sha_file(led_path),
                        "rows": len(led_rows), "malformed_lines_skipped": led_bad,
                        "max_asof": max(r.get("asof", "") for r in led_rows),
                        "close_date_corrections_applied": applied_corr,
@@ -394,7 +394,7 @@ def main(argv=None) -> int:
             "evaluated_positions": len(positions),
             "excluded": excl,
             "entry_shifted_to_publication": extra["entry_shifted_to_publication"],
-            "exit_basis": {"ledger_close_date": extra["exit_ledger"], "mechanical_published_levels":
+            "exit_basis": {"recorded_close_date": extra["exit_ledger"], "mechanical_published_levels":
                            extra["exit_mechanical"], "censored_open_at_window_end": extra["censored"]},
             "classified_share": l0_checks["classified_share"],
             "priced_share": l0_checks["priced_share"],

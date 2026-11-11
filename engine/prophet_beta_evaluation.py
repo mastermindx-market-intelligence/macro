@@ -387,7 +387,7 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
         state = zs.get("state")
         led = ledger.get(pid)
         if led is not None and led.get("outcome") == "NO_ENTRY":
-            bump("ledger_no_entry")
+            bump("recorded_no_entry")
             continue
         if state not in ("filled", "converted"):
             bump(f"not_entered_zone_{state or 'none'}")
@@ -411,7 +411,7 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
         cd = _ledger_close(ledger, pid)
         if cd:
             X = session_on_or_before(cal, cd)
-            basis = "ledger_close_date"
+            basis = "recorded_close_date"
         else:
             X, basis = _mechanical_exit(p, E, cal, raw, we)
         censored = False
@@ -422,7 +422,7 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
             continue
         if censored:
             extra["censored"] += 1
-        elif basis == "ledger_close_date":
+        elif basis == "recorded_close_date":
             extra["exit_ledger"] += 1
         else:
             extra["exit_mechanical"] += 1
