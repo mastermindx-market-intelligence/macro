@@ -1,14 +1,16 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-20T08:15:28+00:00",
+  "as_of": "2026-11-11T00:09:26+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
   "decaying_families": [],
-  "deserves_operator": [],
+  "deserves_operator": [
+    "[context_stale] cortex deliberated over world_state from 2026-11-10T14:51:14Z; current run=2026-11-11T00:09:26+00:00"
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-19",
+    "as_of": "2026-11-10",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +22,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 148,
-      "total_rows": 156
+      "ungradeable": 178,
+      "total_rows": 186
     },
     "is_context_only": true
   },
@@ -39,7 +41,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgDA37B4vASygSR3o9uTP'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgvAmerPgVYq3Y3AALuVM'}"
       },
       {
         "provider": "oauth",
@@ -47,7 +49,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA3G9p3Q34tQy6jib8T'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgvAmohwWrYHrAuMnfpv5'}"
       },
       {
         "provider": "oauth",
@@ -55,7 +57,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA4XBySaKK3CDMvRykz'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgvAo4FqECgDySuzAmNdo'}"
       },
       {
         "provider": "oauth",
@@ -63,7 +65,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDA97DiEkYHFd79BnKY5'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgvAscYQg1MLQbdBdqYMf'}"
       },
       {
         "provider": "oauth",
@@ -71,7 +73,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgDANXDxTrnVGv1SjGiqH'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgvB72sFC8pcZgGRrq5HP'}"
       },
       {
         "provider": "oauth",
@@ -79,13 +81,13 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgDANY1LCPqCRD3eqHJ2V'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgvB73mKKzCeyFprvbr3h'}"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
-    "context_stale": false,
-    "context_as_of": "2026-10-20T08:06:54Z"
+    "context_stale": true,
+    "context_as_of": "2026-11-10T14:51:14Z"
   }
 }

@@ -81,6 +81,11 @@ def main(argv: list[str] | None = None) -> int:
     except SpecialistPackError as exc:
         print(f"specialist pack refused: {exc}", file=sys.stderr)
         return 1
+    except RecursionError as exc:
+        # R-F5 belt-and-braces: the framework's cross-pack cycle guard cuts
+        # cycles before recursion; if one still escapes, refuse loudly.
+        print(f"specialist pack refused: {type(exc).__name__}", file=sys.stderr)
+        return 1
     except (StatementGraphError, OSError, ValueError, KeyError) as exc:
         print(f"input refused: {exc}", file=sys.stderr)
         return 1

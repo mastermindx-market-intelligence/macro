@@ -25,7 +25,12 @@
  *   onClose: fn()->true when the host restored focus to the exact invoking object.
  *         Called only when focus was inside the Brain at close; returning true keeps
  *         the widget from replacing the host's focus return with launcher focus.
- * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true }
+ * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true,
+ *   submitOptionsQuestion(reference):boolean, clearOptionsQuestion(reference):boolean }
+ *   — stage (or withdraw) an Options Matrix selection question reference
+ *   (options.selection_question/v1). Staging opens the existing composer; the
+ *   turn itself only leaves on the user's explicit send, on one stateless
+ *   authenticated /api/brain/stream request that adopts no thread.
  * ========================================================================== */
 (function () {
   'use strict';
@@ -38,9 +43,30 @@
   /* Optional native presentation assets come from THIS widget's origin, including
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
-  var visualScriptVersion = '1d23a300';
-  var visualStyleVersion = '98f7caf6';
+  var visualScriptVersion = '2e3ce3a5';
+  var visualStyleVersion = 'b9f2e195';
   var visualAssetPromise = null;
+  var presentationVersion = '88e1f94b';
+  var presentationPromise = null;
+  function loadPresentationAssets() {
+    if (window.MMBrainPresentation) return Promise.resolve(window.MMBrainPresentation);
+    if (presentationPromise) return presentationPromise;
+    presentationPromise = new Promise(function (resolve, reject) {
+      var script = DOC.createElement('script'); script.async = true; script.charset = 'utf-8';
+      script.src = visualAssetBase + 'mm_brain_presentation.js?v=' + presentationVersion;
+      var timer = setTimeout(function () { script.remove(); reject(new Error('presentation timeout')); }, 10000);
+      script.onload = function () { clearTimeout(timer); if (window.MMBrainPresentation) resolve(window.MMBrainPresentation); else reject(new Error('presentation unavailable')); };
+      script.onerror = function () { clearTimeout(timer); script.remove(); reject(new Error('presentation unavailable')); };
+      DOC.head.appendChild(script);
+    }).catch(function (error) { presentationPromise = null; throw error; });
+    return presentationPromise;
+  }
+  function requestMath(host) {
+    setTimeout(function () {
+      if (!host || !host.isConnected || !host.querySelector('[data-mmb-math]')) return;
+      loadPresentationAssets().then(function (presentation) { return presentation.renderMath(host); }).catch(function () {});
+    }, 0);
+  }
   function loadVisualAssets() {
     if (visualAssetPromise) return visualAssetPromise;
     visualAssetPromise = new Promise(function (resolve, reject) {
@@ -60,8 +86,22 @@
   function clearVisuals(host) {
     if (!host) return;
     host._visualEpoch = (host._visualEpoch || 0) + 1;
-    if (window.MMBrainVisuals) window.MMBrainVisuals.clear(host);
-    host.querySelectorAll('[data-pending-visual]').forEach(function (e) { e.remove(); });
+    host.querySelectorAll('.mmb-cx').forEach(function (e) { if (e._chartDispose) e._chartDispose(); e.remove(); });
+    if (window.MMBrainPresentation) window.MMBrainPresentation.clear(host);
+    else if (window.MMBrainVisuals) window.MMBrainVisuals.clear(host);
+    host.querySelectorAll('[data-pending-visual],.mmb-visual-notice').forEach(function (e) { e.remove(); });
+  }
+  function mountVisualNotices(host, notices) {
+    if (!host || !Array.isArray(notices) || !notices.slice(0, 4).some(function (n) {
+      return n && n.type === 'membership_required' && n.template === 'transcript';
+    })) return;
+    host = host.querySelector('.mmb-visuals') || host;
+    if (host.querySelector('.mmb-visual-notice')) return;
+    var en = 'Some saved transcript evidence requires membership and is unavailable for this account.';
+    var cn = '部分已保存的电话会证据需要会员权限，当前账户暂不可查看。';
+    var note = el('p', 'mmb-meta mmb-l mmb-visual-notice');
+    note.dataset.en = en; note.dataset.zh = cn; note.textContent = L(en, cn);
+    note.setAttribute('role', 'status'); host.appendChild(note);
   }
   function mountNativeVisual(host, wire) {
     if (!wire || !/^[a-f0-9]{24}$/.test(wire.visual_id || '')) return;
@@ -71,11 +111,17 @@
     var epochHost = bubble || host, epoch = epochHost._visualEpoch || 0;
     var pending = el('p', 'mmb-meta'); pending.dataset.pendingVisual = wire.visual_id;
     pending.textContent = L('Preparing visual…', '正在准备图解…'); host.appendChild(pending);
-    loadVisualAssets().then(function (renderer) {
+    var assets = wire.visual && wire.visual.version === 2 ? loadPresentationAssets() : loadVisualAssets();
+    assets.then(function (renderer) {
       if (!pending.isConnected || epoch !== (epochHost._visualEpoch || 0)) return;
       pending.remove();
-      if (!renderer.mount(host, wire)) { var note = el('p', 'mmb-meta'); note.textContent = L('Visual unavailable: invalid or unsupported data.', '图解不可用：数据无效或暂不支持。'); host.appendChild(note); }
-      stickAfter();
+      return Promise.resolve(renderer.mount(host, wire, {
+        onExpand: function () { if (window.MMBrain) window.MMBrain.expand(); }
+      })).then(function (mounted) {
+        if (!host.isConnected || epoch !== (epochHost._visualEpoch || 0)) return;
+        if (!mounted && (!wire.visual || wire.visual.version !== 2)) { var note = el('p', 'mmb-meta'); note.textContent = L('Visual unavailable: invalid or unsupported data.', '图解不可用：数据无效或暂不支持。'); host.appendChild(note); }
+        stickAfter();
+      });
     }).catch(function () { if (pending.isConnected) pending.textContent = L('Visual could not load. Your text answer is still available.', '图解加载失败，文字回答仍可查看。'); });
   }
 
@@ -455,7 +501,7 @@
   .mmb-bub code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:color-mix(in srgb,var(--mmb-ink) 7%,transparent);border-radius:6px;padding:1.5px 6px}
   .mmb-bub a{color:var(--mmb-info);text-decoration:none}.mmb-bub a:hover{text-decoration:underline}
   .mmb-hr{border:none;border-top:1px solid color-mix(in srgb,var(--mmb-ink) 8%,transparent);margin:12px 0}
-  .mmb-bq{margin:8px 0;padding:2px 0 2px 12px;border-left:2px solid var(--mmb-violet);color:var(--mmb-muted)}
+  .mmb-bq{margin:8px 0;padding:12px 14px;border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);color:var(--mmb-muted)}
   /* fenced code block */
   .mmb-code{margin:10px 0;border-radius:10px;border:1px solid color-mix(in srgb,var(--mmb-ink) 8%,transparent);background:color-mix(in srgb,var(--mmb-ink) 5%,transparent);overflow:hidden}
   .mmb-code-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-bottom:1px solid color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
@@ -522,11 +568,15 @@
   .mmb-cx-chg.up{color:var(--mmb-up)}.mmb-cx-chg.dn{color:var(--mmb-dn)}
   .mmb-cx-read b{font-weight:700;color:color-mix(in srgb,var(--mmb-text) 88%,var(--mmb-muted))}
   .mmb-cx svg{display:block;width:100%;height:auto;touch-action:pan-y}
-  .mmb-cx-foot{display:flex;align-items:center;gap:10px;padding:0 14px 10px;font:10.5px/1.3 var(--mmb-font);color:var(--mmb-muted)}
+  .mmb-cx-ranges{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 6px}
+  .mmb-cx-ranges button{min-width:44px;min-height:44px;padding:8px;border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);background:var(--mmb-panel);color:var(--mmb-text);font:600 12px/1 var(--mmb-font);cursor:pointer}
+  .mmb-cx-ranges button[aria-pressed=true]{background:var(--mmb-panel2);border-color:var(--mmb-text)}
+  .mmb-cx-ranges button:focus-visible{outline:2px solid var(--mmb-info);outline-offset:2px}
+  .mmb-cx-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:0 14px 10px;font:12px/1.4 var(--mmb-font);color:var(--mmb-muted)}
   .mmb-cx-key{display:inline-flex;align-items:center;gap:4px}
   .mmb-cx-key i{width:11px;height:2px;border-radius:2px;display:inline-block;background:currentColor}
   .mmb-cx-foot .sp{flex:1}
-  .mmb-cx-src{opacity:.75;font:10px/1.3 var(--mmb-mono)}
+  .mmb-cx-src{flex-basis:100%;font:11px/1.5 var(--mmb-mono);overflow-wrap:anywhere}
   /* build sequence — candles rise from their own base, lines draw themselves, panes
      resolve after the price. One gesture, ~1.3s end to end, then it is a static chart. */
   .mmb-cx .cndl,.mmb-cx .vbar,.mmb-cx .hbar{transform-box:fill-box;transform-origin:center bottom;
@@ -547,6 +597,11 @@
     .mmb-cx,.mmb-cx .cndl,.mmb-cx .vbar,.mmb-cx .hbar,.mmb-cx .draw,.mmb-cx .fade,.mmb-cx .pop{animation:none}
     .mmb-cx .draw{stroke-dashoffset:0}}
   .mmb-txt:empty,.mmb-charts:empty{display:none}
+  .mmb-math{display:inline-block;vertical-align:middle;max-width:100%;overflow-x:auto}
+  .mmb-math[data-mmb-math="display"]{display:block;padding:12px 0}
+  .mmb-math-block{max-width:100%;margin:12px 0}
+  .mmb-math math{font-size:1.08em}
+  .mmb-math-fallback{font-family:var(--mmb-mono);white-space:pre-wrap}
   /* assistant action row (copy · regenerate · timestamp) — space always reserved */
   .mmb-actions{display:flex;align-items:center;gap:6px;height:22px;margin-top:5px;opacity:0;transition:opacity .14s ease}
   .mmb-msg.assistant:hover .mmb-actions,.mmb-msg.assistant:focus-within .mmb-actions{opacity:1}
@@ -1217,7 +1272,15 @@
      looks byte-identical whether it streamed live or was rehydrated from a thread. */
 
   /* inline: **bold**, *italic*, `code`, [text](url) (https/http only). Appends to `parent`. */
-  var MD_INLINE = /(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(`([^`]+)`)|(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))/;
+  var MD_INLINE = /(\*\*([^*]+)\*\*)|(\*([^*\n]+)\*)|(`([^`]+)`)|(\[([^\]]+)\]\((https?:\/\/[^\s)]+)\))|(\\\(([\s\S]*?)\\\))|(\\\[([\s\S]*?)\\\])|(\$\$([\s\S]*?)\$\$)/;
+  /* Explicit delimiters only: dollar prices remain literal, and code wins before
+     math inside its backticks. Formulas are typeset from text, never executed. */
+  function mdMath(parent, formula, display, literal) {
+    if (!formula.trim() || formula.length > 4000) { parent.appendChild(DOC.createTextNode(literal)); return; }
+    var node = el('span', 'mmb-math');
+    node.dataset.mmbMath = display ? 'display' : 'inline';
+    node.textContent = formula; parent.appendChild(node); requestMath(parent);
+  }
   function mdInline(parent, text) {
     text = String(text == null ? '' : text);
     var m;
@@ -1227,6 +1290,7 @@
       else if (m[3]) { var it = el('em'); it.textContent = m[4]; parent.appendChild(it); }
       else if (m[5]) { var c = el('code'); c.textContent = m[6]; parent.appendChild(c); }
       else if (m[7]) { var a = el('a'); a.textContent = m[8]; a.href = m[9]; a.target = '_blank'; a.rel = 'noopener noreferrer'; parent.appendChild(a); }
+      else if (m[10] || m[12] || m[14]) mdMath(parent, m[11] || m[13] || m[15] || '', !m[10], m[0]);
       text = text.slice(m.index + m[0].length);
     }
     if (text) parent.appendChild(DOC.createTextNode(text));
@@ -1257,6 +1321,12 @@
         try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code.textContent).then(function () { cp.textContent = L('Copied', '已复制'); setTimeout(function () { cp.textContent = L('Copy', '复制'); }, 1200); }).catch(function () {}); } catch (e2) {}
       });
       wrap.appendChild(bar); wrap.appendChild(pre); return wrap;
+    }
+    var displayMath = block.trim().match(/^(?:\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$)$/);
+    if (displayMath) {
+      var mathBlock = el('div', 'mmb-math-block');
+      mdMath(mathBlock, displayMath[1] || displayMath[2] || '', true, block);
+      return mathBlock;
     }
     /* horizontal rule */
     if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(block)) return el('hr', 'mmb-hr');
@@ -1314,17 +1384,29 @@
   }
   /* Split raw markdown into block strings on blank lines, respecting ``` fences and
      kind transitions. A fenced block stays whole even across blanks. Returns block texts. */
-  function mdSplit(text) {
-    var lines = String(text || '').split('\n'), blocks = [], cur = [], inFence = false, curKind = null;
+  function mdSplit(text, state) {
+    var lines = String(text || '').split('\n'), blocks = [], cur = [], inFence = false, inMath = '', curKind = null;
     function push() { if (cur.length) { blocks.push(cur.join('\n')); cur = []; curKind = null; } }
     for (var i = 0; i < lines.length; i++) {
       var ln = lines[i];
+      if (inMath) {
+        cur.push(ln);
+        if (ln.indexOf(inMath) !== -1) { push(); inMath = ''; }
+        continue;
+      }
       if (/^```/.test(ln)) {
         if (!inFence) { push(); inFence = true; cur.push(ln); }
         else { cur.push(ln); push(); inFence = false; }
         continue;
       }
       if (inFence) { cur.push(ln); continue; }
+      var trimmed = ln.trim(), mathStart = trimmed.match(/^(\\\[|\$\$)/);
+      if (mathStart) {
+        push(); cur.push(ln);
+        var closeMath = mathStart[1] === '$$' ? '$$' : '\\]';
+        if (trimmed.indexOf(closeMath, 2) !== -1) push(); else inMath = closeMath;
+        continue;
+      }
       if (!ln.trim()) { push(); continue; }
       var k = lineKind(ln);
       /* break when kind changes (text→list, list→text, heading→anything, etc.); a heading
@@ -1332,6 +1414,7 @@
       if (cur.length && (k !== curKind || curKind === 'head' || curKind === 'rule' || k === 'head' || k === 'rule')) push();
       cur.push(ln); curKind = k;
     }
+    if (state) state.open = inFence || !!inMath;
     push(); return blocks;
   }
   /* Full render of `text` into `container` (cleared first). History + final correctness. */
@@ -1378,8 +1461,8 @@
     function paint(freshChunk) {
       var tail = revealed.slice(committedLen);
       // find the last blank-line boundary that is NOT inside an open fence
-      var fences = (tail.match(/```/g) || []).length;
-      var openFence = (fences % 2) === 1;
+      var blockState = {}; mdSplit(tail, blockState);
+      var openFence = blockState.open;
       var lastBlank = -1;
       if (!openFence) {
         var mBlank = /\n[ \t]*\n/g, mm;
@@ -1513,30 +1596,84 @@
     var b = CFG.dataBase || window.DATA_BASE || DATA_FALLBACK;
     return String(b).replace(/\/+$/, '');
   }
-  var barCache = {};
+  var barCache = Object.create(null), BAR_TTL_MS = 60000;
+  function barNumber(v) {
+    if (typeof v !== 'number' && (typeof v !== 'string' || !v.trim())) return null;
+    var n = Number(v); return isFinite(n) ? n : null;
+  }
+  function barDate(v) {
+    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+    var d = new Date(v + 'T00:00:00Z');
+    return isFinite(d.getTime()) && d.toISOString().slice(0, 10) === v ? v : null;
+  }
+  function normalizedBars(raw) {
+    if (!Array.isArray(raw) || !raw.length || raw.length > 5000) return null;
+    var dates = Object.create(null);
+    raw.forEach(function (b) {
+      if (!Array.isArray(b) || b.length < 5) return;
+      var d = barDate(b[0]), o = barNumber(b[1]), h = barNumber(b[2]);
+      var lo = barNumber(b[3]), c = barNumber(b[4]), v = barNumber(b[5]);
+      if (!d || o === null || h === null || lo === null || c === null ||
+          lo > Math.min(o, c) || h < Math.max(o, c) || lo > h) return;
+      /* Last valid source row wins a duplicate date. Missing volume stays missing. */
+      dates[d] = { d: d, o: o, h: h, l: lo, c: c, v: v !== null && v >= 0 ? v : null };
+    });
+    var out = Object.keys(dates).sort().map(function (d) { return dates[d]; });
+    return out.length ? out : null;
+  }
   function fetchBars(ticker) {
-    var key = String(ticker || '').toUpperCase();
-    if (barCache[key]) return barCache[key];
-    var url = chartBase() + '/' + chartStore(key) + '/' + encodeURIComponent(key) + '.json';
-    barCache[key] = fetch(url, { credentials: 'omit' })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    var symbol = String(ticker || '').toUpperCase(), base = chartBase();
+    var key = base + '/' + symbol, cached = barCache[key];
+    if (cached && (cached.pending || cached.expires > Date.now())) return cached.promise;
+    var keys = Object.keys(barCache);
+    if (keys.length >= 32) delete barCache[keys[0]];
+    var entry = { pending: true, expires: 0, promise: null };
+    barCache[key] = entry;
+    var url = base + '/' + chartStore(symbol) + '/' + encodeURIComponent(symbol) + '.json';
+    var controller = typeof AbortController === 'function' ? new AbortController() : null, timeoutId;
+    entry.promise = Promise.race([
+      fetch(url, { credentials: 'omit', signal: controller ? controller.signal : undefined }),
+      new Promise(function (resolve) { timeoutId = setTimeout(function () { if (controller) controller.abort(); resolve(null); }, 10000); })
+    ]).then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (d) {
-        var bars = d && d.bars;
-        if (!bars || !bars.length) return null;
-        /* [date, o, h, l, c, v] — reject rows that are not a full OHLC bar rather than
-           drawing a candle out of nulls. */
-        var out = [];
-        for (var i = 0; i < bars.length; i++) {
-          var b = bars[i];
-          if (!b || b.length < 5) continue;
-          var o = +b[1], h = +b[2], lo = +b[3], c = +b[4];
-          if (!isFinite(o) || !isFinite(h) || !isFinite(lo) || !isFinite(c)) continue;
-          out.push({ d: String(b[0]), o: o, h: h, l: lo, c: c, v: isFinite(+b[5]) ? +b[5] : 0 });
-        }
-        return out.length >= 30 ? out : null;
-      })
-      .catch(function () { return null; });
-    return barCache[key];
+        clearTimeout(timeoutId);
+        var bars = normalizedBars(d && d.bars);
+        entry.pending = false; entry.expires = Date.now() + BAR_TTL_MS;
+        if (!bars && barCache[key] === entry) delete barCache[key];
+        return bars;
+      }).catch(function () {
+        clearTimeout(timeoutId);
+        if (barCache[key] === entry) delete barCache[key];
+        return null;
+      });
+    return entry.promise;
+  }
+  function chartResolution(bars, tf) {
+    if (tf === 'daily') return bars;
+    var out = [], prior = null;
+    bars.forEach(function (b) {
+      var d = new Date(b.d + 'T00:00:00Z'), key;
+      if (tf === 'monthly') key = b.d.slice(0, 7);
+      else { d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); key = d.toISOString().slice(0, 10); }
+      if (key !== prior) {
+        out.push({ d: b.d, start: b.d, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+        prior = key;
+      } else {
+        var last = out[out.length - 1];
+        last.d = b.d; last.h = Math.max(last.h, b.h); last.l = Math.min(last.l, b.l); last.c = b.c;
+        last.v = last.v === null || b.v === null ? null : last.v + b.v;
+      }
+    });
+    return out;
+  }
+  function chartCutoff(lastDate, range) {
+    if (range === 'MAX') return '';
+    var d = new Date(lastDate + 'T00:00:00Z');
+    if (range === 'YTD') return d.getUTCFullYear() + '-01-01';
+    var months = { '1M': 1, '3M': 3, '6M': 6, '1Y': 12 }[range] || 12;
+    var day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() - months);
+    var end = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+    d.setUTCDate(Math.min(day, end)); return d.toISOString().slice(0, 10);
   }
 
   /* ── indicator math (full-history, so the visible window is always warm) ── */
@@ -1607,6 +1744,7 @@
     return v.toFixed(4);
   }
   function fmtVol(v) {
+    if (v === null || v === undefined) return '—';
     if (v >= 1e9) return (v / 1e9).toFixed(1) + 'B';
     if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
     if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
@@ -1622,14 +1760,12 @@
   /* ── the renderer ────────────────────────────────────────────────────────────
      One pass builds the whole SVG; the animation is CSS on the pieces, so a resize or a
      theme flip is a plain re-render and never a half-played sequence. */
-  function drawChart(box, ticker, tf, bars) {
+  function drawChart(box, ticker, tf, bars, range) {
     var reduced = reduceMotion();
     var W = Math.max(280, Math.min(1100, Math.round(box.clientWidth || 420)));
     var H = Math.round(Math.max(330, Math.min(560, W * 0.72)));
     var PAD_R = 54, PAD_L = 8, X0 = PAD_L, X1 = W - PAD_R;
     var plotW = X1 - X0;
-    /* one bar every ~6.4px, so a wide panel shows more history instead of fatter candles */
-    var VIS = Math.max(52, Math.min(200, Math.floor(plotW / 5.6)));
     var TOP = 10, XAXIS = 20;
     var priceH = Math.round((H - TOP - XAXIS) * 0.62);
     var rsiH = Math.round((H - TOP - XAXIS) * 0.14);
@@ -1642,9 +1778,12 @@
     var ema20 = emaSeries(close, 20), sma50 = smaSeries(close, 50);
     var rsi = rsiSeries(close, 14), mac = macdSeries(close);
 
-    var i0 = Math.max(0, bars.length - VIS);
+    /* Resolution uses full history for indicator warm-up; range is date-based and
+       independent of viewport width. Boundary aggregate bars disclose their real start. */
+    var cutoff = chartCutoff(bars[bars.length - 1].d, range), i0 = 0;
+    while (i0 < bars.length - 1 && bars[i0].d < cutoff) i0++;
     var view = bars.slice(i0), n = view.length;
-    var step = plotW / n, cw = Math.max(1.5, Math.min(11, step * 0.66));
+    var step = plotW / n, cw = Math.max(0.25, Math.min(11, step * 0.66));
     function cx(k) { return X0 + step * (k + 0.5); }
 
     /* price scale spans the bars AND the overlays, so a moving average never leaves the pane */
@@ -1660,7 +1799,9 @@
 
     var svg = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + H, width: W, height: H,
                              preserveAspectRatio: 'xMidYMid meet', role: 'img' });
-    svg.setAttribute('aria-label', ticker + ' ' + (tf || 'daily') + ' price chart');
+    svg.setAttribute('aria-label', ticker + ' ' + (tf || 'daily') + ' price chart, ' + view[0].d + ' to ' + view[n - 1].d);
+    svg.dataset.start = view[0].start || view[0].d; svg.dataset.end = view[n - 1].d;
+    svg.dataset.bars = n; svg.dataset.range = range;
     var GRID = 'color-mix(in srgb, var(--mmb-cx-grid) 9%, transparent)';
     var AXIS = 'var(--mmb-muted)';
     function delay(ms) { return reduced ? null : ms + 'ms'; }
@@ -1686,6 +1827,7 @@
     var volTop = pY1 - (pY1 - pY0) * 0.20;
     var gVol = svgEl('g', { opacity: .34 });
     for (k = 0; k < n && vmax > 0; k++) {
+      if (view[k].v === null || view[k].v === 0) continue;
       var vh = Math.max(0.6, (view[k].v / vmax) * (pY1 - volTop));
       var vb = svgEl('rect', { x: cx(k) - cw / 2, y: pY1 - vh, width: cw, height: vh,
                                fill: view[k].c >= view[k].o ? 'var(--mmb-up)' : 'var(--mmb-dn)',
@@ -1696,8 +1838,13 @@
     svg.appendChild(gVol);
 
     /* ── candles ── */
-    var gC = svgEl('g');
-    for (k = 0; k < n; k++) {
+    var gC = svgEl('g', { class: 'mmb-cx-prices' });
+    /* Dense history uses every measured close in one path; no synthetic candles. */
+    if (n > 400) {
+      var closePath = view.map(function (b, idx) { return (idx ? 'L' : 'M') + cx(idx).toFixed(2) + ' ' + py(b.c).toFixed(2); }).join(' ');
+      gC.appendChild(svgEl('path', { d: closePath, fill: 'none', stroke: 'var(--mmb-text)', 'stroke-width': 1.2 }));
+    }
+    for (k = 0; k < n && n <= 400; k++) {
       var b = view[k], up = b.c >= b.o, col = up ? 'var(--mmb-up)' : 'var(--mmb-dn)';
       var g1 = svgEl('g', { class: reduced ? '' : 'cndl' });
       if (!reduced) g1.style.animationDelay = (110 + k * (640 / n)) + 'ms';
@@ -1851,12 +1998,13 @@
     /* ── date axis: one label per month change ── */
     var gX = svgEl('g', { class: reduced ? '' : 'fade' });
     if (!reduced) gX.style.animationDelay = '780ms';
-    var lastMon = '';
+    var lastMon = '', lastLabelX = -Infinity;
     for (k = 0; k < n; k++) {
       var mo = String(view[k].d).slice(0, 7);
       if (mo === lastMon) continue;
       lastMon = mo;
-      if (cx(k) < X0 + 14 || cx(k) > X1 - 18) continue;
+      if (cx(k) < X0 + 14 || cx(k) > X1 - 18 || cx(k) - lastLabelX < 56) continue;
+      lastLabelX = cx(k);
       var xt = svgEl('text', { x: cx(k), y: H - 6, fill: AXIS, 'font-size': 9.5, 'text-anchor': 'middle',
                                'font-family': 'ui-monospace,SFMono-Regular,Menlo,monospace' });
       xt.textContent = monLabel(view[k].d);
@@ -1885,7 +2033,7 @@
 
     return { svg: svg, view: view, n: n, cx: cx, py: py, X0: X0, X1: X1, W: W, H: H,
              xh: { g: gXh, v: vx, h: hy, dot: dot, pxR: pxR, pxT: pxT, dtR: dtR, dtT: dtT },
-             last: lastBar, prev: view[n - 2] || view[n - 1] };
+             last: lastBar, prev: bars[bars.length - 2] || lastBar };
   }
 
   /* ── mount: shell first (so the reply never waits on a fetch), then the live draw ── */
@@ -1893,7 +2041,10 @@
     if (j && j.visual) { mountNativeVisual(host, j); return; }
     var ticker = String(j.ticker || '').toUpperCase().slice(0, 12);
     var tf = String(j.timeframe || 'DAILY').toLowerCase();
+    if (['daily', 'weekly', 'monthly'].indexOf(tf) < 0) tf = 'daily';
+    var range = '1Y', disposed = false, cleanup = function () {};
     var box = el('div', 'mmb-cx');
+    box._chartDispose = function () { disposed = true; cleanup(); };
     var head = el('div', 'mmb-cx-h');
     var sym = el('span', 'mmb-cx-sym'); sym.textContent = ticker || '—';
     var tfc = el('span', 'mmb-cx-tf'); tfc.textContent = zh() ? (tf === 'daily' ? '日线' : tf) : tf;
@@ -1906,6 +2057,7 @@
     host.appendChild(box);
 
     function fallback() {
+      if (disposed || !box.isConnected) return;
       /* the server's picture, when we have no bars of our own for this symbol */
       if (!j.svg) {
         box.removeChild(body);
@@ -1920,15 +2072,37 @@
     }
 
     fetchBars(ticker).then(function (bars) {
+      if (disposed || !box.isConnected) return;
       if (!bars) { fallback(); return; }
-      var built = null;
+      bars = chartResolution(bars, tf);
+      var built = null, src = null, renderedWidth = 0;
+      var ranges = el('div', 'mmb-cx-ranges'); ranges.setAttribute('role', 'group');
+      ['1M', '3M', '6M', 'YTD', '1Y', 'MAX'].forEach(function (value) {
+        var button = el('button'); button.type = 'button'; button.textContent = value;
+        button.dataset.range = value;
+        button.addEventListener('click', function () { if (range !== value) { range = value; render(); } });
+        ranges.appendChild(button);
+      });
+      box.insertBefore(ranges, body);
+      function sourceLabel() {
+        if (!src || !built) return;
+        src.textContent = (built.view[0].start || built.view[0].d) + ' – ' + built.last.d + ' · ' + built.n +
+          L(' bars', ' 根K线') + ' · ' + (tf === 'daily' ? L('Daily data', '日线数据') : L('Aggregated from daily data', '由日线数据聚合')) +
+          (built.n > 400 ? L(' · Close-price overview', ' · 收盘价概览') : '');
+      }
       function render() {
+        if (disposed || !box.isConnected) return;
         body.textContent = '';
-        built = drawChart(body, ticker, tf, bars);
+        tfc.textContent = zh() ? ({ daily: '日线', weekly: '周线', monthly: '月线' }[tf]) : tf;
+        ranges.setAttribute('aria-label', L('Chart date range', '图表日期范围'));
+        ranges.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.range === range)); });
+        built = drawChart(body, ticker, tf, bars, range);
+        renderedWidth = body.clientWidth;
         box.classList.toggle('narrow', built.W < 470);
         body.appendChild(built.svg);
         paintRead(null);
         wireCrosshair();
+        sourceLabel();
         stickAfter();
       }
       /* header readout: last close + day change at rest, the hovered bar while tracking */
@@ -1993,8 +2167,8 @@
           s.appendChild(tx); foot.appendChild(s);
         });
       foot.appendChild(el('div', 'sp'));
-      var src = el('span', 'mmb-cx-src');
-      src.textContent = built.view[built.n - 1].d + ' · ' + built.n + (zh() ? ' 根K线' : ' bars');
+      src = el('span', 'mmb-cx-src');
+      sourceLabel();
       foot.appendChild(src);
       box.appendChild(foot);
 
@@ -2002,11 +2176,23 @@
       var rt = 0;
       function relayout() { if (rt) clearTimeout(rt); rt = setTimeout(function () { if (box.isConnected) render(); }, 120); }
       if (typeof ResizeObserver === 'function') {
-        var ro = new ResizeObserver(relayout);
+        var ro = new ResizeObserver(function () {
+          // Initial and height-only notifications do not change drawing geometry.
+          // Replacing the SVG here would clear a live hover without a pointer exit.
+          if (body.clientWidth !== renderedWidth) relayout();
+        });
         ro.observe(box);
       }
       DOC.addEventListener('themechange', relayout);
       DOC.addEventListener('langchange', relayout);
+      window.addEventListener('mm:lang', relayout);
+      cleanup = function () {
+        if (rt) clearTimeout(rt);
+        if (ro) ro.disconnect();
+        DOC.removeEventListener('themechange', relayout);
+        DOC.removeEventListener('langchange', relayout);
+        window.removeEventListener('mm:lang', relayout);
+      };
     });
   }
 
@@ -2017,6 +2203,27 @@
     return window.MDXAuth.client().then(function (sb) { return sb.auth.getSession(); })
       .then(function (r) { var t = r && r.data && r.data.session && r.data.session.access_token; if (t) h['Authorization'] = 'Bearer ' + t; return h; })
       .catch(function () { return h; });
+  }
+
+  // The request selector's principal must equal the actual token session.
+  function authorizeOptionsQuestion(owner) {
+    if (!owner) return Promise.reject(new Error('question session unavailable'));
+    // Terminal's same-origin BFF owns its cookie session; never export its token.
+    // The BFF independently compares this expected principal with its verified user.
+    if (!(window.MDXAuth && window.MDXAuth.client)) {
+      if (API || typeof CFG.authorizeOptionsQuestion !== 'function') return Promise.reject(new Error('question session unavailable'));
+      return Promise.resolve(CFG.authorizeOptionsQuestion(owner)).then(function (matches) {
+        if (matches !== true) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'X-MM-Options-Principal': owner };
+      });
+    }
+    return window.MDXAuth.client().then(function (sb) { return sb.auth.getSession(); })
+      .then(function (r) {
+        var session = r && r.data && r.data.session;
+        if (!session || !session.user || session.user.id !== owner ||
+            typeof session.access_token !== 'string' || !session.access_token.trim()) throw new Error('question principal mismatch');
+        return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token };
+      });
   }
 
   /* ── quota / me ── */
@@ -2175,6 +2382,7 @@
   /* openThread(id, done): `done` fires once the messages are painted — the resume path
      needs it so it can attach a still-running turn to the thread it belongs to. */
   function openThread(id, done) {
+    if (optionsQuestion && optionsQuestion.active()) { ta.value = ""; optionsQuestion.reset(); }
     stopVoice();
     var generation = ++historyOpenGeneration, epoch = historyEpoch;
     abortStream();
@@ -2193,6 +2401,7 @@
           if (ms) { var dk = new Date(ms).toDateString(); if (dk !== lastDay) { addDaySep(ms); lastDay = dk; } }
           var restored = appendMsg(m.role, m.content, ms || undefined);
           if (m.role === 'assistant' && Array.isArray(m.visuals)) m.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(restored.querySelector('.mmb-charts') || restored, v); });
+          if (m.role === 'assistant') mountVisualNotices(restored, m.visual_notices);
         });
         markLastAssistant(); pinned = true; scroll.scrollTop = scroll.scrollHeight;
         ta.value = ''; autosize(); syncSend(); updateCounter(); restoreDraft();
@@ -2364,6 +2573,15 @@
     /* Guests may send (Fast lane) without the sign-in modal; only fully-gated (non-guest,
        signed-out) sessions are bounced to sign-in. */
     if (!authed && !guestMode && window.MDXAuth && window.MDXAuth.enabled && window.MDXAuth.enabled()) { window.MDXAuth.open('signin'); return; }
+    /* A staged options selection question routes to the stateless question
+       lane instead of the ordinary thread send. Incompatible companions are
+       rejected BEFORE any send — images and research mode never ride the
+       question path, and the staged reference survives for a clean retry. */
+    if (optionsQuestion.active()) {
+      if (!text || imgs.length || researchMode || !optionsQuestion.staged() || optionsQuestion.busy()) return;
+      sendOptionsQuestionTurn(text);
+      return;
+    }
     /* lang travels with every turn: the server pins the reply AND the follow-up chips to
        it, so a Chinese thread history can never drag an English turn's buttons into
        Chinese. A message typed in the other language still wins (server-side). */
@@ -2385,7 +2603,7 @@
   }
   /* Replay the last user turn on the same thread/lane (client resend, no backend change). */
   function regenerate() {
-    if (streaming || !lastTurn) return;
+    if (streaming || (optionsQuestion && optionsQuestion.active()) || !lastTurn) return;
     refreshCtx();
     runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null,
                 ctx: buildTurnContext() }, false);
@@ -2797,6 +3015,7 @@
     endTurn(T);
   }
   function attachRun(T) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     if (T.stopped || T.epoch !== historyEpoch) return;
     var url = API + '/api/brain/runs/' + encodeURIComponent(T.runId) + '/stream?cursor=' + (T.cursor || 0);
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
@@ -2837,6 +3056,7 @@
         ensureBub(T); thinkTeardown(T.tl);
         T.bub._raw = last.content; T.stream.reset(last.content);
         if (Array.isArray(last.visuals)) last.visuals.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
+        mountVisualNotices(T.bub, last.visual_notices);
         T.stream.finalize(function () { bumpTime(T.bub); stickAfter(); });
         endTurn(T); loadThreads(); announceDone();
       })
@@ -3011,14 +3231,20 @@
   var resuming = false;   /* open() and visibilitychange can both fire before the status
                              fetch lands; without this the turn attaches twice */
   function resumeStoredRun() {
-    if (streaming || resuming || !panel.classList.contains('open')) return;
+    if (streaming || resuming || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) || !panel.classList.contains('open')) return;
     var epoch = historyEpoch, st = loadRun(); if (!st || !st.id) return;
     if (!st.ts || (Date.now() - st.ts) > RUN_MAX_AGE_MS) { clearRun(); return; }
+    var openGeneration = historyOpenGeneration;
+    var questionGeneration = optionsQuestion ? optionsQuestion.generation() : 0;
+    function resumeCurrent(expectedOpen) {
+      return epoch === historyEpoch && historyOpenGeneration === expectedOpen &&
+        (!optionsQuestion || (!optionsQuestion.active() && !optionsQuestion.busy() && optionsQuestion.generation() === questionGeneration));
+    }
     resuming = true;
-    withAuth().then(function (h) { return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    withAuth().then(function (h) { if (!resumeCurrent(openGeneration)) return null; return fetch(API + '/api/brain/runs/' + encodeURIComponent(st.id), { headers: h, credentials: 'include' }); })
+      .then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (s) {
-        if (epoch !== historyEpoch) return;
+        if (!resumeCurrent(openGeneration)) return;
         if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
         if (s.cancelled) { clearRun(); return; }
         if (s.thread_id) {
@@ -3030,7 +3256,7 @@
                assistant turn at the tail means the answer already landed and painting
                the replay too would double it. */
             openThread(s.thread_id, function (msgs) {
-              if (epoch !== historyEpoch) return;
+              if (!resumeCurrent(openGeneration + 1)) return;
               var tail = (msgs && msgs.length) ? msgs[msgs.length - 1] : null;
               if (tail && tail.role === 'assistant') { clearRun(); return; }
               attachFresh(s, 0, st.q);
@@ -3051,6 +3277,7 @@
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
   function attachFresh(status, cursor, question) {
+    if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var typing = el('div', 'mmb-msg assistant');
     typing.innerHTML = '<div class="mmb-bub"><span class="mmb-orbmark"><svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg></span></div>';
@@ -3071,7 +3298,7 @@
   /* Coming back to the tab is the moment to act: a phone that froze the page never ran
      a single line of JS while it was away, and a parked turn has been waiting for this. */
   DOC.addEventListener('visibilitychange', function () {
-    if (DOC.hidden) return;
+    if (DOC.hidden || (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy()))) return;
     if (parked) { var p = parked; parked = null; p.tries = 0; if (!p.doneSeen && !p.stopped) attachRun(p); return; }
     resumeStoredRun();
   });
@@ -3324,8 +3551,8 @@
     }
     if (authed) { loadThreads(); loadQuotas(); }
     else { loadQuotas(); }   /* guests refresh their daily meter; a 401 keeps the gate */
-    restoreDraft();
-    resumeStoredRun();       /* a turn started before a reload is still ours to finish */
+    if (!(optionsQuestion && optionsQuestion.active())) restoreDraft();
+    if (!(optionsQuestion && optionsQuestion.active())) resumeStoredRun();       /* a turn started before a reload is still ours to finish */
     setTimeout(focusPanel, 260);
   }
   /* Move focus INTO the panel once the entry has settled. It cannot just be ta.focus():
@@ -3425,7 +3652,7 @@
     });
   }
   function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
+  function newChat() { if (optionsQuestion) optionsQuestion.reset(); stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
@@ -3434,6 +3661,7 @@
       stopVoice();
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
       abortStream(); resuming = false;
+      optionsQuestion.reset();   /* a principal change withdraws any staged selection question */
       historyOwner = owner; historyEpoch++; historyListGeneration++; historyOpenGeneration++;
       allThreads = []; historyListUnavailable = false; threadId = null;
       clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
@@ -3450,7 +3678,7 @@
       guestMode = false;
       if (gate) gate.remove();
       if (!scroll.querySelector('.mmb-msg') && !$('#mmb-emptystate')) renderEmpty();
-      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); resumeStoredRun(); }
+      if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); if (!(optionsQuestion && optionsQuestion.active())) resumeStoredRun(); }
       showChat(true);
     } else {
       /* Signed out: default to the gate, then probe /api/brain/me — if guest access is on it
@@ -3508,7 +3736,7 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
+    else if (a === 'home') { var _d = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html'; var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; } }
     else if (a === 'search') toggleSearch();
     else if (a === 'history-retry') { loadThreads(); }
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
@@ -3682,7 +3910,9 @@
   }
   /* send is enabled when there's text OR at least one attached image (and not mid-stream) */
   function syncSend() {
-    sendBtn.disabled = (!ta.value.trim() && !pendingImages.length) || streaming;
+    syncOptionsExit();
+    sendBtn.disabled = (!ta.value.trim() && !pendingImages.length) || streaming ||
+      !!(optionsQuestion && optionsQuestion.active() && (!optionsQuestion.staged() || optionsQuestion.busy() || pendingImages.length || researchMode));
     /* the ⌘↵ hint shows exactly while there is something to send — which is also the
        moment a user is about to press Enter and expect it to go. */
     if (boxEl) boxEl.classList.toggle('mmb-typing', !sendBtn.disabled);
@@ -3723,6 +3953,7 @@
   function draftKey() { return historyOwner ? 'mmb_draft_v2:' + encodeURIComponent(historyOwner) + ':' + encodeURIComponent(threadId || 'new') : null; }
   var draftTimer = 0;
   function saveDraft() {
+    if (optionsQuestion && optionsQuestion.active()) return;
     if (draftTimer) clearTimeout(draftTimer);
     var key = draftKey(), value = ta.value, epoch = historyEpoch;
     if (!key) return;  /* no migration from unbound legacy/guest drafts */
@@ -3737,6 +3968,7 @@
     var key = draftKey(); try { if (key) localStorage.removeItem(key); } catch (e) {}
   }
   function restoreDraft() {
+    if (optionsQuestion && optionsQuestion.active()) return;
     var key = draftKey();
     try { var v = key && localStorage.getItem(key); if (v && !ta.value) { ta.value = v; autosize(); syncSend(); updateCounter(); } } catch (e) {}
   }
@@ -4156,12 +4388,445 @@
     else if (Object.prototype.hasOwnProperty.call(CFG, 'principal')) onAuth(CFG.principal ? { id: CFG.principal } : null);
     else window.addEventListener('load', function () { if (window.MDXAuth) window.MDXAuth.onChange(onAuth); else { authed = true; showChat(true); } });
   }
+
+  /* ══ BEGIN options question module (P15.T2.S3) — VM-extractable, host seams only ══
+     The Options Matrix selection question lane: a staged REQUEST SELECTOR
+     (options.selection_question/v1, minted by the Terminal), never an
+     authorization, grant, receipt or source attachment. This module validates
+     the bounded closed envelope, stages an immutable frozen copy, and — only
+     on the user's explicit send — produces exactly ONE stateless request body
+     and hands it to the injected transport after the injected auth seam
+     resolves. It never reads sources, keeps no clock, writes no run record,
+     adopts no thread, retries nothing, and never mutates the ordinary send
+     path. Everything between BEGIN/END runs in a bare VM context with only
+     JSON/TextEncoder/Promise injected; every host capability arrives through
+     env, so tests exercise this exact code without a DOM. */
+  var OPTIONS_QUESTION_SCHEMA = 'options.selection_question/v1';
+  var OPTIONS_QUESTION_MAX_REFERENCE_BYTES = 8192;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_BYTES = 4096;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_KEYS = 16;
+  var OPTIONS_QUESTION_MAX_EVIDENCE_KEY_CHARS = 128;
+  var OPTIONS_QUESTION_MAX_SELECTION_BYTES = 2048;   /* the mint's own selection ceiling */
+
+  /* Realm-agnostic plain-object test: the internal [[Class]] tag survives a
+     VM boundary (the widget host and a test sandbox are different realms),
+     while Date/Map/class instances still refuse. */
+  function isPlainObject(v) {
+    if (typeof v !== 'object' || v === null || Array.isArray(v)) return false;
+    if (Object.getPrototypeOf(v) === null) return true;
+    return Object.prototype.toString.call(v) === '[object Object]';
+  }
+  function utf8Length(value) { return new TextEncoder().encode(value).length; }
+  /* Stable exact request identity: recursive key-sorted JSON. Identity drives
+     staging/withdrawal matching only — it is not a server receipt, admission
+     or persistence key. */
+  function canonicalEnvelope(value) {
+    if (isPlainObject(value)) {
+      var keys = Object.keys(value).sort(), parts = [];
+      for (var i = 0; i < keys.length; i++) {
+        var v = value[keys[i]];
+        if (v === undefined) continue;
+        parts.push(JSON.stringify(keys[i]) + ':' + canonicalEnvelope(v));
+      }
+      return '{' + parts.join(',') + '}';
+    }
+    return JSON.stringify(value === undefined ? null : value);
+  }
+  /* Closed envelope check: exact key set {evidence, schema, selection}, the
+     exact schema string, a bounded plain evidence object of primitive fields,
+     and a bounded non-empty selection string. First defect refuses; nothing
+     is inferred, repaired or defaulted. */
+  function validateOptionsQuestionReference(reference) {
+    try {
+      if (!isPlainObject(reference)) return false;
+      var keys = Object.keys(reference).sort();
+      if (keys.length !== 3) return false;
+      if (keys[0] !== 'evidence' || keys[1] !== 'schema' || keys[2] !== 'selection') return false;
+      if (reference.schema !== OPTIONS_QUESTION_SCHEMA) return false;
+      var evidence = reference.evidence;
+      if (!isPlainObject(evidence)) return false;
+      var ekeys = Object.keys(evidence);
+      if (ekeys.length > OPTIONS_QUESTION_MAX_EVIDENCE_KEYS) return false;
+      for (var i = 0; i < ekeys.length; i++) {
+        var k = ekeys[i];
+        if (!k || k.length > OPTIONS_QUESTION_MAX_EVIDENCE_KEY_CHARS) return false;
+        var v = evidence[k], t = typeof v;
+        if (v === null) continue;
+        if (t !== 'string' && t !== 'number' && t !== 'boolean') return false;
+        if (t === 'number' && !isFinite(v)) return false;
+      }
+      if (utf8Length(canonicalEnvelope(evidence)) > OPTIONS_QUESTION_MAX_EVIDENCE_BYTES) return false;
+      var selection = reference.selection;
+      if (typeof selection !== 'string' || !selection.trim() ||
+          utf8Length(selection) > OPTIONS_QUESTION_MAX_SELECTION_BYTES) return false;
+      if (utf8Length(canonicalEnvelope(reference)) > OPTIONS_QUESTION_MAX_REFERENCE_BYTES) return false;
+      return true;
+    } catch (e) { return false; }   /* a cyclic or exotic input is malformed, never a throw */
+  }
+  /* Deep-copy then deep-freeze so a caller mutating the object after staging
+     cannot change what is serialized and sent. */
+  function freezeCopy(value) {
+    if (isPlainObject(value)) {
+      var out = Object.create(null), keys = Object.keys(value).sort();
+      for (var i = 0; i < keys.length; i++) out[keys[i]] = freezeCopy(value[keys[i]]);
+      return Object.freeze(out);
+    }
+    if (Array.isArray(value)) return Object.freeze(value.map(freezeCopy));
+    return value;
+  }
+  /* Classify one settled stateless response against the gateway's SSE
+     contract: meta, delta*, then done — errors ride done(error, effect_unknown,
+     retry_allowed=false). A stateless question turn adopts no thread and
+     keeps no cursor; a stream that ends without done is a dropped connection,
+     never an answer. */
+  function settleQuestionResponse(res) {
+    if (!res || typeof res !== 'object' || res.ok !== true || typeof res.bodyText !== 'string') return { kind: 'network' };
+    var lines = res.bodyText.split('\n');
+    var text = '', error = null, done = false, sawEvent = false, malformed = false;
+    for (var i = 0; i < lines.length; i++) {
+      var line = String(lines[i]).trim();
+      if (line.indexOf('data:') !== 0) continue;
+      var data = line.slice(5).trim();
+      if (!data) continue;
+      var j; try { j = JSON.parse(data); } catch (e) { malformed = true; continue; }
+      if (!j || typeof j !== 'object' || Array.isArray(j)) continue;
+      sawEvent = true;
+      if (j.type === 'delta' && typeof j.text === 'string') { text += j.text; continue; }
+      if (j.type === 'done') { done = true; if (j.error || j.ok === false || j.quota_exhausted || j.dispatch_state === 'EFFECT_UNKNOWN') error = j; continue; }
+      if (j.type === 'error') { error = j; done = true; continue; }
+      /* meta / context_receipt / status / tool events on this lane: ignored —
+         no thread adoption, no tools, no run bookkeeping. */
+    }
+    if (error) {
+      /* done(error, …) nests the failure payload; a standalone error event
+         carries it at the top level. */
+      var payload = (error.error && typeof error.error === 'object' && !Array.isArray(error.error)) ? error.error : error;
+      if (payload.effect === 'effect_unknown' || payload.dispatch_state === 'EFFECT_UNKNOWN' || payload.error === 'options_question_dispatch_effect_unknown') return { kind: 'unknown', retryAllowed: false };
+      return { kind: 'refused', reason: typeof payload.reason === 'string' ? payload.reason :
+        (typeof payload.code === 'string' ? payload.code : null) };
+    }
+    if (!done || !sawEvent || malformed) return { kind: 'network' };
+    return { kind: 'reply', text: text };
+  }
+  function createOptionsQuestion(env) {
+    var active = false, activeIdentity = null, flight = null;
+    var staged = null;       /* { reference (frozen), identity, owner } */
+    var pending = null;      /* pre-send reservation awaiting the auth seam */
+    var busy = false;        /* one explicit question turn in flight */
+    var generation = 0;      /* bumped by reset(); fences outcomes after reset */
+
+    function ownerNow() {
+      var owner = env.principal();
+      return (typeof owner === 'string' && owner) ? owner : null;
+    }
+    function dropStaged() {
+      if (!staged) return false;
+      staged = null;
+      if (typeof env.onStagedChange === 'function') env.onStagedChange(null);
+      return true;
+    }
+    return {
+      active: function () { return active; },
+      identity: canonicalEnvelope,
+      validate: validateOptionsQuestionReference,
+      staged: function () { return staged; },
+      busy: function () { return busy; },
+      generation: function () { return generation; },
+      /* stage(reference): validate, freeze an exact copy, remember the owning
+         principal. Refuses while another request streams (including a question
+         turn in flight), when signed out or the principal is unknown, and on
+         any envelope defect. A fresh valid stage replaces an earlier one — the
+         stale holder's later clear can no longer match it. */
+      stage: function (reference) {
+        if (env.streaming() || busy) return false;
+        if (!ownerNow()) return false;
+        var frozen, identity;
+        // Snapshot once: validation, identity and transport must see the same values.
+        try { frozen = freezeCopy(reference); }
+        catch (e) { return false; }
+        if (!validateOptionsQuestionReference(frozen)) return false;
+        identity = canonicalEnvelope(frozen);
+        active = true; activeIdentity = identity; generation++;
+        staged = { reference: frozen, identity: identity, owner: ownerNow() };
+        if (typeof env.onStagedChange === 'function') env.onStagedChange(staged);
+        return true;
+      },
+      /* clear(reference): only the exact STILL-STAGED reference owned by the
+         current principal clears. An older holder's cleanup cannot clear a
+         newer staged reference, and a principal change already cleared it. */
+      clear: function (reference) {
+        if (!active || !staged || !ownerNow() || staged.owner !== ownerNow()) return false;
+        var identity;
+        try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
+        if (identity !== activeIdentity) return false;
+        generation++;
+        if (pending) pending.withdrawnGeneration = generation;
+        pending = null; activeIdentity = null;
+        dropStaged();
+        return true;
+      },
+      /* withdrawInFlight(reference): a withdrawal that arrives AFTER the one
+         POST for this exact question has been dispatched. Nothing can be
+         un-sent, so it never aborts, retries or re-labels the request, busy
+         holds until the original request settles, and no "nothing was sent"
+         outcome is produced. It only fences the late answer: generation moves
+         past the flight's, so the settled outcome drops exactly like any
+         other stale one. Accepted only on an exact match of the flight's
+         reference identity, owner AND current generation — a foreign or
+         stale reference, another principal, or a duplicate withdrawal leaves
+         the flight untouched. */
+      withdrawInFlight: function (reference) {
+        if (!flight || !flight.dispatched) return false;
+        var owner = ownerNow();
+        if (!owner || owner !== flight.owner || flight.gen !== generation) return false;
+        var identity;
+        try { identity = canonicalEnvelope(reference); } catch (e) { return false; }
+        if (identity !== flight.identity) return false;
+        generation++;
+        activeIdentity = null;
+        return true;
+      },
+      /* reset(): the principal changed or the owning scope was torn down —
+         drop the staged reference and fence anything awaiting the auth seam. */
+      reset: function () {
+        generation++; active = false; activeIdentity = null;
+        pending = null; flight = null;
+        busy = false;
+        dropStaged();
+      },
+      /* send(text): the EXPLICIT user send. At most one POST, on the exact
+         staged reference, consumed before the first transport attempt. Any
+         refusal returns false with zero transport effects; nothing automatic
+         ever follows a failure. */
+      send: function (text) {
+        var message = String(text == null ? '' : text).trim();
+        if (!message || message.length > env.maxMessage) return false;
+        if (busy || env.streaming()) return false;
+        var owner = ownerNow();
+        if (!owner || !staged || staged.owner !== owner) return false;
+        /* The stateless body: bounded message, lane, chat mode, the exact
+           staged reference, and language context ONLY — no thread id, no
+           history, no images, no company source span, no tools, no research,
+           no source fallback. */
+        var request = {
+          message: message,
+          lane: env.lane() === 'pro' ? 'pro' : 'fast',
+          mode: 'chat',
+          options_question_reference: staged.reference,
+          context: { lang: env.lang() === 'zh' ? 'zh' : 'en' }
+        };
+        var body = JSON.stringify(request);
+        var gen = generation;
+        /* The flight's own identity/owner/generation snapshot: a withdrawal
+           AFTER the POST must match all three, and `dispatched` separates the
+           pre-send withdrawal (stillValid abort) from the in-flight fence. */
+        var reservation = { identity: staged.identity, owner: owner, gen: gen, dispatched: false };
+        pending = reservation; flight = reservation; busy = true;
+        var claim = {
+          identity: reservation.identity,
+          owner: owner,
+          body: body,
+          /* Re-checked AFTER the async auth seam resolves and BEFORE fetch:
+             withdrawal, re-staging, a principal change or a host reset aborts
+             here, before any bytes leave. */
+          stillValid: function () {
+            return gen === generation && pending === reservation &&
+              !!staged && staged.identity === reservation.identity && ownerNow() === owner;
+          },
+          consume: function () {
+            if (pending === reservation) pending = null;
+            dropStaged();   /* consume BEFORE the first transport attempt */
+          },
+          release: function () {
+            if (pending === reservation) pending = null;
+            if (flight === reservation) { flight = null; busy = false; }
+          }
+        };
+        function emit(outcome) {
+          outcome.generation = outcome.kind === 'withdrawn' &&
+            reservation.withdrawnGeneration === generation && ownerNow() === owner
+            ? generation : gen;
+          env.onOutcome(outcome);
+        }
+        function authorizeFailed() {
+          /* No POST. The staged reference stays staged for an explicit retry
+             by the user; nothing automatic happens. */
+          claim.release();
+          emit({ kind: 'network' });
+        }
+        var awaited;
+        try { awaited = env.authorize(owner); } catch (e) { authorizeFailed(); return true; }
+        Promise.resolve(awaited).then(function (headers) {
+          if (!claim.stillValid()) { claim.release(); emit({ kind: 'withdrawn' }); return; }
+          claim.consume();
+          var attempt;
+          try { attempt = env.transport({ headers: headers, body: claim.body }); }
+          catch (e) { claim.release(); emit({ kind: 'network' }); return; }
+          reservation.dispatched = true;   /* the one POST is out — a matched withdrawal may now fence, never abort */
+          Promise.resolve(attempt).then(function (res) {
+            claim.release();
+            emit(settleQuestionResponse(res));
+          }, function () { claim.release(); emit({ kind: 'network' }); });
+        }, function () { authorizeFailed(); });
+        return true;
+      }
+    };
+  }
+  /* ══ END options question module (P15.T2.S3) ══ */
+
+  /* ── options question wiring (P15.T2.S3) — DOM + transport seams ── */
+  /* Staged chip reuses the neutral meta style; it is re-localized in place by
+     relabel() via .mmb-l[data-en] like every other chrome line. Its copy says
+     what the reference IS and is not: membership-only, and no metric or
+     valuation proof travels with it. */
+  var optqChip = el('p', 'mmb-meta mmb-l');
+  optqChip.id = 'mmb-optq';
+  optqChip.setAttribute('role', 'status');
+  optqChip.style.display = 'none';
+  root.querySelector('.mmb-comp').insertBefore(optqChip, root.querySelector('.mmb-box'));
+  var optqExit = el('button', 'mmb-meta mmb-l');
+  optqExit.id = 'mmb-optq-exit'; optqExit.type = 'button';
+  optqExit.setAttribute('data-en', 'Back to ordinary chat');
+  optqExit.setAttribute('data-zh', '返回普通聊天');
+  optqExit.textContent = L('Back to ordinary chat', '返回普通聊天');
+  optqExit.style.display = 'none';
+  root.querySelector('.mmb-comp').insertBefore(optqExit, optqChip);
+  function syncOptionsExit() {
+    if (!optionsQuestion) return;
+    optqExit.style.display = optionsQuestion.active() ? '' : 'none';
+    optqExit.disabled = optionsQuestion.busy();
+  }
+  /* One withdrawal entry for the lane: the still-staged reference clears
+     (pre-send — the send aborts before any POST); a matching already-
+     dispatched question only fences its late answer. Foreign or stale
+     references do neither. */
+  function applyOptionsWithdrawal(reference) {
+    if (!optionsQuestion) return false;
+    if (optionsQuestion.clear(reference)) return true;
+    return optionsQuestion.withdrawInFlight(reference);
+  }
+  optqExit.addEventListener('click', function () {
+    if (optionsQuestion.busy()) return;
+    optionsQuestion.reset(); historyOpenGeneration++; threadId = null;
+    lastTurn = null; priorTurn = null; ta.value = ''; pendingImages = []; renderThumbs();
+    autosize(); syncSend(); updateCounter(); syncOptionsExit();
+    // Keep the displayed answer, but never send it as ordinary history.
+    try { ta.focus(); } catch (e) {}
+  });
+  function paintOptionsStaged(staged) {
+    syncOptionsExit();
+    if (!staged) { optqChip.style.display = 'none'; optqChip.textContent = ''; optqChip.removeAttribute('data-en'); optqChip.removeAttribute('data-zh'); return; }
+    var en = 'Options selection attached — selected contracts only; no metric or valuation proof is included. Type your question and send.';
+    var cn = '已附加期权选择 — 仅包含所选合约，不含指标或估值证明。输入问题后发送。';
+    optqChip.setAttribute('data-en', en); optqChip.setAttribute('data-zh', cn);
+    optqChip.textContent = L(en, cn);
+    optqChip.style.display = '';
+  }
+  /* Outcome notes are muted meta lines, never the generic retry card: this
+     lane has no retry, no run record and no regeneration by design. */
+  var OPTIONS_QUESTION_NOTES = {
+    refused: ['This options question was not answered — the service refused this request. Nothing was retried.',
+              '该期权问题未获得回答 — 服务拒绝了该请求。未进行重试。'],
+    unknown: ['The options question could not be answered right now. Nothing was retried.',
+              '暂时无法回答该期权问题。未进行重试。'],
+    network: ["The request outcome could not be confirmed. Nothing was retried.",
+              '无法确认请求结果。未进行重试。'],
+    withdrawn: ['The attached selection was withdrawn — nothing was sent.',
+                '已附加的选择被撤回 — 未发送任何内容。'],
+    empty: ['The answer came back empty.', '回答内容为空。']
+  };
+  function paintOptionsNote(kind) {
+    var pair = OPTIONS_QUESTION_NOTES[kind] || OPTIONS_QUESTION_NOTES.unknown;
+    var p = el('p', 'mmb-meta mmb-l');
+    p.setAttribute('data-en', pair[0]); p.setAttribute('data-zh', pair[1]);
+    p.setAttribute('role', 'status');
+    p.textContent = L(pair[0], pair[1]);
+    scroll.appendChild(p);
+  }
+  function handleOptionsOutcome(outcome) {
+    if (!outcome || typeof outcome !== 'object') return;
+    /* An outcome from before a reset/principal change/withdrawal fence never
+       paints — but its flight has now settled, so the busy controls release
+       with the original settlement even when the answer itself is fenced. */
+    var current = typeof outcome.generation !== 'number' || outcome.generation === optionsQuestion.generation();
+    if (current) {
+      if (outcome.kind === 'reply' && outcome.text) {
+        var answer = appendMsg('assistant', outcome.text);
+        var regenerateButton = answer.querySelector('.mmb-regen'); if (regenerateButton) regenerateButton.remove();
+      }   /* incumbent safe renderer */
+      else paintOptionsNote(outcome.kind === 'reply' ? 'empty' : (outcome.kind || 'unknown'));
+      stickAfter();
+    }
+    syncSend(); syncOptionsExit();
+  }
+  function sendOptionsQuestionTurn(text) {
+    if (!optionsQuestion.send(text)) { paintOptionsNote('refused'); return; }
+    syncOptionsExit();
+    /* Display only: no thread, no run record, no regenerate/retry state, no
+       ordinary-payload bookkeeping. */
+    root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
+    appendMsg('user', text);
+    ta.value = ''; autosize(); if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; } syncSend(); updateCounter(); closeSlash();
+    boxEl.classList.remove('mmb-sent'); void boxEl.offsetWidth; boxEl.classList.add('mmb-sent');
+    pinned = true; hideJump();
+  }
+  var optionsQuestion = createOptionsQuestion({
+    principal: function () {
+      if (!principalKnown || !authed) return null;
+      return historyOwner || null;
+    },
+    streaming: function () { return streaming || !!parked; },
+    maxMessage: MAXLEN,
+    lane: function () { return lane === 'pro' ? 'pro' : 'fast'; },
+    lang: function () { return zh() ? 'zh' : 'en'; },
+    authorize: authorizeOptionsQuestion,
+    /* Same-origin authenticated gateway, one distinct stateless path. The
+       terminal proxy forwards the exact body with its server-verified bearer. */
+    transport: function (init) {
+      /* No AbortController here by design: this lane has no Stop and no
+         cancellation path — the request either settles once or is a failure. */
+      return fetch(API + '/api/brain/stream', {
+        method: 'POST', headers: init.headers, credentials: 'include', body: init.body
+      }).then(function (res) {
+        if (!res.ok || !res.body) return { ok: false, status: res.status, bodyText: '' };
+        var reader = res.body.getReader(), dec = new TextDecoder(), acc = '';
+        function pump() {
+          return reader.read().then(function (r) {
+            if (r.done) { try { reader.cancel(); } catch (e) {} return acc; }
+            if (acc.length + r.value.byteLength > 1048576) { reader.cancel(); throw new Error("bounded answer exceeded"); }
+            acc += dec.decode(r.value, { stream: true });
+            return pump();
+          });
+        }
+        return pump().then(function (full) { return { ok: true, status: res.status, bodyText: full }; });
+      });
+    },
+    onStagedChange: paintOptionsStaged,
+    onOutcome: handleOptionsOutcome
+  });
+
   boot();
   initExplain();
 
   window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain,
     setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
+    /* P15.T2.S3: stage a selection question and open the existing composer
+       (never a send), or withdraw the still-owned staged reference. */
+    submitOptionsQuestion: function (reference) {
+      if (!optionsQuestion.stage(reference)) return false;
+      if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
+      historyOpenGeneration++; threadId = null; lastTurn = null; priorTurn = null;
+      ta.value = ""; pendingImages = []; renderThumbs(); clearMsgs();
+      syncOptionsExit(); autosize(); syncSend(); updateCounter();
+      if (!panel.classList.contains('open')) open();
+      try { ta.focus(); } catch (e) {}
+      return true;
+    },
+    clearOptionsQuestion: function (reference) {
+      if (!applyOptionsWithdrawal(reference)) return false;
+      ta.value = ""; autosize(); syncSend(); updateCounter(); syncOptionsExit(); return true;
+    },
     mounted: true };
   window.dispatchEvent(new Event('mm-brain-ready'));
 })();

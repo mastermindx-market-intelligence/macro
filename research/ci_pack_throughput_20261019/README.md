@@ -257,3 +257,25 @@ The completed fixed snapshot is retained in `parser-natural-comparison.json`. Sc
 Metadata confirms that both failed runs reached a failing `ci-gate`; PR9216's failing pack step is semantic-fragment publication. The historical scoped-success baseline N=14 has3265.5/4074-second p50/p95 and223.02/257.63 summed wall minutes, but none of the five treated completions matches its complete execution-proof set. These different-work figures are descriptive, with11pending observations retained at the fixed cutoff,0cancellations and0reruns. No global observation is available. Do not interpret the numerical contrast as causal improvement or cost neutrality.
 
 **Acceptance decision:** the parser source trial is merged with complete hosted correctness proof; the throughput claim is still unproven. Keep twelve packs and the two calibrated weights. The next acceptance step is a bounded natural-traffic comparison with exact source, execution-proof and exposure qualification, retaining infrastructure and candidate failures. No new optimization or outer-shard expansion follows from this sample. Existing PR9216 and PR9831 retain their repair carriers; their failures are not grounds to rerun accepted implementation proof.
+
+
+## Fixed second parser cohort — October20,07:54Z
+
+Report #9850 merged as6793c010048996193d3d98876b486910c7982e3c with75 selected jobs and every active check passing; all six authored blobs match fresh main. The first parser cohort remains fixed separately. The second snapshot has57 runs:36 qualified first-attempt completions (29success,7failure),18pending and3cancelled. Both implementation blobs and base ancestry are verified for every completion. See `parser-natural-comparison-0754.json`.
+
+Scoped successesN24 have run-to-gate p50/p951895/2553sec and summed job-wall177.675/253.95min. Global successesN5 have2723/3156sec and352.6/360.1min. Scoped failuresN7 have first failed-step-completion p50/p95578/1853sec, including replay. Pending runs remain excluded by the fixed cutoff; these completion-conditioned strata are descriptive. There are still zero original-baseline full-proof matches.
+
+A secondary comparison now has three FIF-selected successful treatments with the same103 selected jobs, execution-proof definitions and pack assignment as ONE successful pre-parser control39346152272. That control is reused, not three independent controls. Control latency is2007sec and summed job-wall232.533min; treated runs39384839986/39378857695/39374295130 take2066/2581/2553sec and220.833/228.15/228.067min. All take longer to gate despite lower summed job-wall. The control ends onpack7; all three treatments end onFIF-alonepack0. FIF wrapper execution is1347sec control versus1616/2172/2113sec treated, while checkout is199sec versus201/197/197sec. The critical-path difference is predominantly inside execution, not checkout.
+
+The control's retained full log reports2680 passed/1 skipped in1311.39sec and1329.857sec across four FIF commands. The three treated logs are now complete:
+
+| Run | FIF primary test time | Four FIF commands | Primary result |
+| --- | ---: | ---: | --- |
+| Control39346152272 | 1311.39sec | 1329.857sec | 2680pass,1skip |
+| Treated39384839986 | 1573.45sec | 1594.096sec | 2681pass,1skip |
+| Treated39378857695 | 2126.72sec | 2151.041sec | 2681pass,1skip |
+| Treated39374295130 | 2065.02sec | 2089.544sec | 2681pass,1skip |
+
+All three treated runs report runner2.337.0, provisioner20261012.601, ubuntu-24.04 image20261012.334.1 and Python3.12.13. These labels do not measure physical CPU performance or contention. The primary command accounts for almost all FIF execution time; checkout and pack-wrapper overhead do not explain the difference. The extra passing test and unqualified transitive input differences prevent treating equal execution definitions as a controlled experiment. No causal speedup, cost neutrality or30percent mission target is established.
+
+**Decision:** retain twelve packs, both calibrated weights and the accepted parser optimization. Its local equivalence and focused CPU evidence remain valid, while fleet benefit remains unproven. Reject additional outer shards as a remedy for FIF's single-job critical path. Do not infer a revert from one reused control or implement another optimization from undifferentiated suite duration. The next engineering slice requires a discriminating residual profile on qualified current source and a fresh check of active FIF repair custody; reuse the completed profiling and output-parity evidence where applicable. Source delivery of this fixed comparison is the current acceptance step, with earlier cohorts and failure carriers intact.

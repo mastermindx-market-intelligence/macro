@@ -6,6 +6,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
@@ -129,6 +130,29 @@ def test_biocatalyst_shell_has_one_accessible_three_pane_trial_intelligence_work
     assert re.search(r"<option[^>]*>\s*<span", html) is None
 
 
+def _assert_operational_clock_boundary(js: str) -> None:
+    # This observed client clock is not a source, registry date or milestone calculator.
+    clock = "  function clientCheckTimestamp() {\n    return new Date().toISOString();\n  }"
+    assert js.count(clock) == 1
+    clinical_source = js.replace(clock, "")
+    assert "new Date" not in clinical_source
+    assert clinical_source.count("clientCheckTimestamp()") == 2
+    assert "state.failedCheckAt = clientCheckTimestamp();" in clinical_source
+    assert "state.lastSuccessAt = clientCheckTimestamp();" in clinical_source
+
+
+def test_operational_clock_boundary_rejects_clinical_clock_inference():
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    _assert_operational_clock_boundary(js)
+    for inferred in ("\nvar clinicalDate = new Date();", "\nvar sourceDate = clientCheckTimestamp();"):
+        try:
+            _assert_operational_clock_boundary(js + inferred)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("a client clock cannot originate clinical/source dates")
+
+
 def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dossiers_only():
     js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
     for token in (
@@ -198,7 +222,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
         ):
             assert token in js
     assert "innerHTML" not in js
-    assert "new Date" not in js
+    _assert_operational_clock_boundary(js)
     assert "fetchTrialPages" not in js
     assert "limit=250" not in js
     assert "localStorage" not in js
@@ -340,8 +364,8 @@ def test_biocatalyst_modes_default_to_milestones_and_preserve_verified_pages():
     assert "state.rows = []; state.nextCursor = ''; state.payload = null" in js
     assert "if (options.append && state.rows.length && kind !== 'integrity_block' && kind !== 'client_fault') { preserveAppendFailure(); return; }" in js
     load_body = js[js.index("function loadMilestones(") : js.index("function applyFilters()")]
-    assert "handleHydrationFailure(error, { append: append });" in load_body
-    assert "handleUnavailable(error, { append: append });" not in load_body
+    assert "handleHydrationFailure(error, { append: append," in load_body
+    assert "handleUnavailable(error," not in load_body
     assert "paintUnavailableWorkspace()" not in load_body
     assert "throw markHydration(contractError, 'integrity_block', 200);" in load_body
     assert "throw markHydration(displayError, 'client_fault', 200);" in load_body
@@ -855,3 +879,205 @@ def test_biocatalyst_wmn_exposes_every_frozen_research_horizon():
     for horizon in ("7", "30", "90", "180", "365"):
         assert f'data-horizon="{horizon}"' in html
         assert f"'{horizon}': true" in js
+
+
+_WMN_REQUEST_RACE_DRIVER = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+
+// Execute the shipped WMN controller. Only its DOM and transport are simulated;
+// aborted requests deliberately still settle to exercise ownership, not abort.
+class Element {
+  constructor(tag = 'div') {
+    this.tagName = tag; this.children = []; this.attributes = {}; this.listeners = {};
+    this.dataset = {}; this.options = []; this.value = ''; this._text = '';
+    this.className = ''; this.disabled = false; this.hidden = false;
+    this.classList = { toggle: () => {}, add: () => {}, remove: () => {} };
+  }
+  set textContent(value) { this._text = String(value); this.children = []; }
+  get textContent() { return this._text + this.children.map(child => child.textContent).join(' '); }
+  get firstChild() { return this.children[0] || null; }
+  appendChild(child) { this.children.push(child); return child; }
+  removeChild(child) { this.children.splice(this.children.indexOf(child), 1); return child; }
+  setAttribute(key, value) { this.attributes[key] = String(value); }
+  getAttribute(key) { return this.attributes[key] ?? null; }
+  addEventListener(type, callback) { (this.listeners[type] ||= []).push(callback); }
+  dispatch(type) { for (const callback of this.listeners[type] || []) callback({ preventDefault() {}, stopPropagation() {} }); }
+  focus() {}
+  querySelectorAll(selector) {
+    if (selector === '[data-horizon]') return [];
+    const result = [];
+    for (const child of this.children) {
+      if (selector === '.bci-wmn-card' && child.className.split(' ').includes('bci-wmn-card')) result.push(child);
+      result.push(...child.querySelectorAll(selector));
+    }
+    return result;
+  }
+}
+const ids = ['bci-wmn', 'bci-wmn-queue', 'bci-wmn-detail', 'bci-wmn-status',
+  'bci-wmn-asof', 'bci-wmn-coverage', 'bci-wmn-search', 'bci-wmn-view',
+  'bci-wmn-lane', 'bci-wmn-refresh', 'bci-wmn-load-more'];
+const nodes = Object.fromEntries(ids.map(id => [id, new Element()]));
+const requests = [], timers = new Map(), trialOpens = [];
+let timerId = 0;
+const document = {
+  readyState: 'complete', documentElement: new Element('html'),
+  getElementById: id => nodes[id] || null, createElement: tag => new Element(tag),
+  createTextNode: value => { const node = new Element('#text'); node.textContent = value; return node; },
+  addEventListener() {},
+};
+const window = {
+  setTimeout(callback, delay) { timers.set(++timerId, { callback, delay }); return timerId; },
+  clearTimeout(id) { timers.delete(id); },
+  BioCatalystTrialWorkspace: { showGenerationBoundTrialDetail: trial => trialOpens.push(trial) },
+};
+const fetch = (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve, reject }));
+const source = fs.readFileSync(process.argv[1], 'utf8');
+const marker = source.indexOf('var WMN_API = ');
+assert.ok(marker > 0, 'the shipped What Matters Next controller must exist');
+const start = source.lastIndexOf('(function () {', marker);
+assert.ok(start >= 0);
+vm.runInNewContext(source.slice(start), { document, window, fetch, AbortController, URLSearchParams, console });
+const authority = { classification: 'research_priority_only', trade_origination: false,
+  changes_availability: false, position_sizing: false, prophet_admission: false };
+function row(symbol) {
+  const estimate = { state: 'NOT_ESTIMABLE', value: null, reason_code: 'owner_not_admitted', evidence_refs: [] };
+  return { event_fact_ref: 'event-' + symbol, event_family: 'issuer_readout_guidance',
+    row_key: { issuer_id: 'issuer-' + symbol }, timing: {},
+    issuer: { state: 'resolved', securities: [{ display_symbol: symbol }] },
+    links: { stock_research: [] }, research_priority: { disposition: 'SELECTED', lane: 'MONITOR',
+      method_id: 'biocatalyst.research_triage.v1', authority },
+    probability: estimate, materiality: estimate, historical_response: estimate, incorporation: estimate };
+}
+function envelope(symbol, generation = 'G', cursor = null) {
+  return { contract_id: 'biocatalyst_what_matters_next.v1', schema_version: '1.0.0',
+    method_id: 'biocatalyst.research_triage.v1', generation_id: generation, authority,
+    coverage: {}, pagination: { limit: 50, total: 2, next_cursor: cursor }, rows: [row(symbol)] };
+}
+function dossier(symbol) {
+  return { contract_id: 'biocatalyst_wmn_detail.v1', schema_version: '1.0.0', generation_id: 'G',
+    authority, event: row(symbol), related_events: [], trial: { nct_id: 'NCT00000001', title: 'Old trial' } };
+}
+const flush = () => new Promise(resolve => setImmediate(resolve));
+async function reply(index, payload, status = 200) {
+  assert.ok(requests[index], 'expected request ' + index);
+  requests[index].resolve({ status, ok: status >= 200 && status < 300, json: () => Promise.resolve(payload) });
+  await flush();
+}
+async function changeView() {
+  nodes['bci-wmn-view'].value = 'history'; nodes['bci-wmn-view'].dispatch('change'); await flush();
+}
+function currentRows(symbol) {
+  assert.match(nodes['bci-wmn-queue'].textContent, new RegExp(symbol));
+  assert.notEqual(nodes['bci-wmn'].dataset.state, 'error');
+  assert.notEqual(nodes['bci-wmn'].dataset.state, 'locked');
+}
+async function run() {
+  await flush();
+  assert.equal(requests.length, 1);
+  const scenario = process.argv[2];
+  if (scenario === 'replace_pending' || scenario === 'stale_list_error') {
+    await changeView();
+    assert.equal(requests.length, 2, 'a changed filter must replace the pending request');
+    assert.equal(requests[0].options.signal.aborted, true);
+    assert.match(requests[1].url, /view=history/);
+    assert.doesNotMatch(requests[1].url, /horizon_days=/);
+    if (scenario === 'replace_pending') {
+      await reply(0, envelope('OLD'));
+      assert.equal(nodes['bci-wmn-refresh'].disabled, true, 'old finally must not clear current loading');
+      assert.equal(nodes['bci-wmn-queue'].getAttribute('aria-busy'), 'true');
+      assert.doesNotMatch(nodes['bci-wmn-queue'].textContent, /OLD/);
+      await reply(1, envelope('NEW'));
+    } else {
+      await reply(1, envelope('NEW'));
+      requests[0].reject(new Error('late transport failure')); await flush();
+    }
+    currentRows('NEW');
+    assert.equal(nodes['bci-wmn-refresh'].disabled, false);
+  } else if (scenario === 'stale_detail_success' || scenario === 'stale_detail_error') {
+    await reply(0, envelope('OLD'));
+    nodes['bci-wmn-queue'].querySelectorAll('.bci-wmn-card')[0].dispatch('click'); await flush();
+    assert.equal(requests.length, 2);
+    await changeView();
+    assert.equal(requests.length, 3);
+    await reply(2, envelope('NEW'));
+    if (scenario === 'stale_detail_success') await reply(1, dossier('OLD'));
+    else { requests[1].reject(new Error('late detail failure')); await flush(); }
+    assert.equal(requests[1].options.signal.aborted, true, 'replacement queue must cancel selected detail');
+    assert.match(nodes['bci-wmn-detail'].textContent, /Choose an event/);
+    assert.doesNotMatch(nodes['bci-wmn-detail'].textContent, /OLD|Dossier unavailable/);
+    assert.equal(trialOpens.length, 0, 'a superseded detail cannot open the trial workspace');
+    currentRows('NEW');
+  } else if (scenario === 'stale_refresh_409' || scenario === 'stale_refresh_generation') {
+    await reply(0, envelope('OLD', 'G', 'cursor-1'));
+    nodes['bci-wmn-load-more'].dispatch('click'); await flush();
+    if (scenario === 'stale_refresh_409') await reply(1, {}, 409);
+    else await reply(1, envelope('STALE', 'OTHER'));
+    assert.equal(timers.size, 1);
+    await changeView(); await reply(2, envelope('NEW'));
+    for (const [id, timer] of [...timers]) { timers.delete(id); timer.callback(); }
+    await flush();
+    assert.equal(requests.length, 3, 'old recovery timer must not replace a newer query');
+    currentRows('NEW');
+  } else if (scenario === 'current_refresh_409' || scenario === 'current_refresh_generation') {
+    await reply(0, envelope('OLD', 'G', 'cursor-1'));
+    nodes['bci-wmn-load-more'].dispatch('click'); await flush();
+    if (scenario === 'current_refresh_409') await reply(1, {}, 409);
+    else await reply(1, envelope('STALE', 'OTHER'));
+    assert.equal(timers.size, 1);
+    for (const [id, timer] of [...timers]) { timers.delete(id); timer.callback(); }
+    await flush();
+    assert.equal(requests.length, 3, 'the current recovery must refresh after its finally');
+    assert.doesNotMatch(requests[2].url, /cursor=/);
+    await reply(2, envelope('NEW', 'OTHER'));
+    currentRows('NEW');
+  } else if (scenario === 'detail_replaced_error') {
+    const first = envelope('FIRST'); first.rows.push(row('SECOND'));
+    await reply(0, first);
+    const cards = nodes['bci-wmn-queue'].querySelectorAll('.bci-wmn-card');
+    cards[0].dispatch('click'); await flush();
+    cards[1].dispatch('click'); await flush();
+    const second = dossier('SECOND'); second.trial = null;
+    await reply(2, second);
+    await reply(1, {}, 409);
+    assert.match(nodes['bci-wmn-detail'].textContent, /SECOND/);
+    assert.doesNotMatch(nodes['bci-wmn-detail'].textContent, /Research cut changed/);
+  } else if (scenario === 'repeated_replacement') {
+    await changeView();
+    nodes['bci-wmn-view'].value = 'reconcile'; nodes['bci-wmn-view'].dispatch('change'); await flush();
+    assert.equal(requests.length, 3);
+    await reply(0, {}, 403);
+    await reply(1, envelope('OLD'));
+    assert.equal(nodes['bci-wmn-refresh'].disabled, true);
+    assert.notEqual(nodes['bci-wmn'].dataset.state, 'locked');
+    await reply(2, envelope('NEW')); currentRows('NEW');
+  } else if (scenario === 'append') {
+    await reply(0, envelope('FIRST', 'G', 'cursor-1'));
+    nodes['bci-wmn-load-more'].dispatch('click'); await flush();
+    nodes['bci-wmn-load-more'].dispatch('click'); await flush();
+    assert.equal(requests.length, 2, 'only one append may be in flight');
+    assert.match(requests[1].url, /cursor=cursor-1/);
+    await reply(1, envelope('SECOND'));
+    currentRows('FIRST'); currentRows('SECOND');
+    assert.equal(nodes['bci-wmn-load-more'].hidden, true);
+  } else if (scenario === 'current_lock') {
+    await reply(0, {}, 403);
+    assert.equal(nodes['bci-wmn'].dataset.state, 'locked');
+    assert.match(nodes['bci-wmn-queue'].textContent, /Full access is required/);
+    assert.equal(nodes['bci-wmn-refresh'].disabled, false);
+  } else throw new Error('unknown scenario ' + scenario);
+}
+run().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+
+
+@pytest.mark.parametrize("asset", ["templates/biocatalyst.js", "site/biocatalyst.js"])
+@pytest.mark.parametrize("scenario", ['replace_pending', 'stale_list_error', 'stale_detail_success', 'stale_detail_error', 'stale_refresh_409', 'stale_refresh_generation', 'current_refresh_409', 'current_refresh_generation', 'detail_replaced_error', 'repeated_replacement', 'append', 'current_lock'])
+def test_what_matters_next_async_request_ownership(asset: str, scenario: str) -> None:
+    node = shutil.which("node")
+    assert node is not None, "Node is required for the shipped-client ownership regression"
+    subprocess.run(
+        [node, "-e", _WMN_REQUEST_RACE_DRIVER, str(ROOT / asset), scenario],
+        check=True, capture_output=True, text=True, timeout=15,
+    )

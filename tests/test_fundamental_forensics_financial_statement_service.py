@@ -1560,3 +1560,74 @@ def _golden_statement_pins_on_registry_v1_0_0():
             lambda _repo_root: load_core_registry(registry_root),
         )
         yield
+
+
+def _live_registry_loader():
+    """Undo this module's autouse 1.0.0-registry pin inside a bounded context.
+
+    The cutoff law is only observable against the live registry, where the
+    1.1.0 mapping clocks hide behind a pre-1.1.0 ``recorded_at``. Exit
+    restores the module fixture's patch (the value present on entry).
+    """
+    import contextlib
+
+    import engine.fundamental_forensics.statement_service as statement_service
+
+    @contextlib.contextmanager
+    def _loader():
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(statement_service, "load_core_registry", load_core_registry)
+            yield
+
+    return _loader()
+
+
+def test_recorded_at_cutoff_serves_the_clocked_mapping_view() -> None:
+    """#9761 follow-up (minor 5): the statement service honours the rule clock.
+
+    Matrix rows A12/A53: a cutoff before the 1.1.0 mapping clocks answers with
+    the registry view visible then — the 1.0.0 golden bytes — while the same
+    request without ``recorded_at`` keeps the live 1.1.0 bytes.
+    """
+    from tests.test_fundamental_forensics_statement_grid import (
+        _AAPL_BASE_DIGESTS,
+        _AAPL_LIVE_DIGESTS,
+        _tree_digest,
+    )
+
+    with _live_registry_loader():
+        clocked = _execute(body=_statement_body(extra={"recorded_at": "2026-10-20T00:00:00Z"}))
+        by_type = {item["statement_type"]: item for item in clocked.envelope["statements"]}
+        assert _tree_digest(by_type["balance_sheet"]) == _AAPL_BASE_DIGESTS["balance_sheet"]
+
+        live = _execute()
+        live_by_type = {item["statement_type"]: item for item in live.envelope["statements"]}
+        assert _tree_digest(live_by_type["balance_sheet"]) == _AAPL_LIVE_DIGESTS["balance_sheet"]
+
+
+def test_malformed_recorded_at_is_the_admission_error() -> None:
+    for bad in ("2026-10-20", "not-a-time", "", 17):
+        with pytest.raises(FinancialQueryAdmissionError) as refusal:
+            _execute(body=_statement_body(extra={"recorded_at": bad}))
+        assert refusal.value.status_code == 400
+
+
+def test_precomputed_trees_refuse_a_clock_older_than_their_registry() -> None:
+    """Published trees answer only clocks at/after the registry's newest rule."""
+    trees = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    provider = _ForgedTreeProvider(trees)
+    with _live_registry_loader():
+        with pytest.raises(FinancialQueryAdmissionError) as refusal:
+            _execute(
+                body=_statement_body(extra={"recorded_at": "2026-10-20T00:00:00Z"}),
+                provider=provider,
+            )
+        assert refusal.value.status_code == 400
+
+        served = _execute(
+            body=_statement_body(extra={"recorded_at": "2026-10-22T00:00:00Z"}),
+            provider=provider,
+        )
+    assert served.envelope["statements"] == trees["statements"]

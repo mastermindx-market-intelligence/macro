@@ -357,6 +357,47 @@ def test_wmn_inputs_duplicate_event_detection_and_optional_estimate_ports_do_not
     assert page["state"] == "ready"
 
 
+@pytest.mark.parametrize("version", [1, 2])
+def test_wmn_duplicate_detection_bounds_identity_comparisons(monkeypatch, version) -> None:
+    """A late duplicate must not require pairwise scans of a large valid cut."""
+    from engine.biocatalyst import what_matters_next as wmn
+
+    comparisons = 0
+    validations = 0
+
+    class CountedIdentity(str):
+        __hash__ = str.__hash__
+
+        def __eq__(self, other):
+            nonlocal comparisons
+            comparisons += 1
+            return super().__eq__(other)
+
+    validate_event = wmn.validate_company_catalyst_event
+
+    def counted_event(raw, **kwargs):
+        nonlocal validations
+        event = validate_event(raw, **kwargs)
+        validations += 1
+        event["event_id"] = CountedIdentity(event["event_id"])
+        return event
+
+    events = [_event(native_event_key=f"doc#bulk-{index}") for index in range(512)]
+    payload = _wmn_inputs(events[0], _identity(events[0]))
+    payload["contract_id"] = f"biocatalyst_wmn_inputs.v{version}"
+    payload["schema_version"] = f"{version}.0.0"
+    payload["events"] = events + [deepcopy(events[0])]
+    monkeypatch.setattr(wmn, "validate_company_catalyst_event", counted_event)
+
+    with pytest.raises(ContractError, match="duplicate event identity"):
+        validate_wmn_inputs(payload)
+
+    # Count semantic comparisons, not elapsed time or a particular container.
+    # Every event still passes the unchanged complete event validator first.
+    assert validations == len(payload["events"])
+    assert comparisons <= 4 * validations
+
+
 def test_wmn_inputs_are_closed_cut_bound_and_compose_rows_without_live_owner_reads() -> None:
     event = _event()
     inputs = _wmn_inputs(event, _resolved_identity(event))

@@ -1294,7 +1294,10 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
         lost = row["lost_rows"]
         assert lost and len(lost) == len(set(lost))
         assert set(lost) <= set(by_id)
-        assert {by_id[sec]["inception_code"] for sec in lost} == set(plain)
+        # The receipt reports CURRENT symbols while immutable IDs retain their
+        # inception codes (e.g. DOMO→HUCK and YYGH→YFOR). Compare the same
+        # naming domain without removing any member from the lost-row fence.
+        assert {BUILD._current_symbol_of_row(by_id[sec]) for sec in lost} == set(plain)
         assert all(pd.isna(by_id[sec]["security_state"]) for sec in lost)
     for probe in receipt.get("prospective_reference", {}).get("probes", {}).values():
         if probe.get("code") == "canonical_identity_refused":

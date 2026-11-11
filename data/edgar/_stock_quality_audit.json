@@ -1,5 +1,5 @@
 {
-"applied": "2026-10-20T04:40:05.152434+00:00",
+"applied": "2026-11-10T11:48:35.982380+00:00",
 "rows_flagged": 24,
 "tickers_flagged": 14,
 "by_flag": {
@@ -596,6 +596,13 @@
 "statements": 251512701.0
 },
 {
+"ticker": "HOS",
+"fy": 2025,
+"col": "assets",
+"panel": 1152787000.0,
+"statements": 2615904000.0
+},
+{
 "ticker": "INFQ",
 "fy": 2025,
 "col": "assets",
@@ -874,6 +881,13 @@
 "col": "assets",
 "panel": 56537933.0,
 "statements": 322205.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "assets",
+"panel": 28197000.0,
+"statements": 3217466.0
 },
 {
 "ticker": "SBC",
@@ -1492,6 +1506,20 @@
 "statements": 28226000.0
 },
 {
+"ticker": "HOS",
+"fy": 2024,
+"col": "equity",
+"panel": 434142000.0,
+"statements": 1519765000.0
+},
+{
+"ticker": "HOS",
+"fy": 2025,
+"col": "equity",
+"panel": 568362000.0,
+"statements": 1579912000.0
+},
+{
 "ticker": "HPQ",
 "fy": 2025,
 "col": "equity",
@@ -1611,13 +1639,6 @@
 "statements": -21000000.0
 },
 {
-"ticker": "MSGS",
-"fy": 2022,
-"col": "equity",
-"panel": -387750000.0,
-"statements": -147089000.0
-},
-{
 "ticker": "MVST",
 "fy": 2021,
 "col": "equity",
@@ -1721,6 +1742,13 @@
 "col": "equity",
 "panel": 5922000000.0,
 "statements": 694043000.0
+},
+{
+"ticker": "OPAL",
+"fy": 2025,
+"col": "equity",
+"panel": -64219000.0,
+"statements": -12930000.0
 },
 {
 "ticker": "ORCL",
@@ -1861,6 +1889,20 @@
 "col": "equity",
 "panel": 39007835.0,
 "statements": 16004.0
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"col": "equity",
+"panel": 16058000.0,
+"statements": 2922288.0
+},
+{
+"ticker": "SATS",
+"fy": 2024,
+"col": "equity",
+"panel": 23342000.0,
+"statements": 2786571.0
 },
 {
 "ticker": "SBH",

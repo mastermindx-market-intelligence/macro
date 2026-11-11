@@ -691,12 +691,12 @@ def validate_wmn_inputs(
     if not isinstance(raw_events, list) or len(raw_events) > 100_000:
         raise ContractError("wmn_inputs events must be a bounded list")
     events: list[dict[str, Any]] = []
-    event_ids: list[str] = []
+    seen_event_ids: set[str] = set()
     for raw in raw_events:
         event = validate_company_catalyst_event(raw, generation_cutoff=cutoff)
-        if event["event_id"] in event_ids:
+        if event["event_id"] in seen_event_ids:
             raise ContractError("wmn_inputs contains duplicate event identity")
-        event_ids.append(event["event_id"])
+        seen_event_ids.add(event["event_id"])
         events.append(event)
     events.sort(key=lambda event: event["event_id"])
     event_ids = [event["event_id"] for event in events]

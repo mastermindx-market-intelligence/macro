@@ -1,0 +1,38 @@
+{
+  "main": "83c91c77a5796504b2aa139a6ba3e86412c5c43e",
+  "semantic_head": "fc19d16cae6397e2c5651f16a3283ae0a03bccc7",
+  "all_38_semantic_files_preserved": true,
+  "inherited_jobs": 299,
+  "new_total_jobs": 300,
+  "sole_k3d_job": "k3d-economic-propagation-contracts",
+  "existing_job_changes": "only four additive CI-control-plane dependency paths",
+  "control_scope_additions": [
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+  ],
+  "all_existing_commands_gates_weights_timeouts_unchanged": true,
+  "clean_python312_declared_dependency_tests": {
+    "tests": 541,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "dependencies": [
+    "attrs==26.1.0",
+    "iniconfig==2.3.1",
+    "jsonschema==4.26.0",
+    "jsonschema-specifications==2025.9.1",
+    "packaging==26.3",
+    "pluggy==1.6.0",
+    "Pygments==2.21.0",
+    "pytest==9.1.1",
+    "referencing==0.37.0",
+    "rpds-py==2026.9.1",
+    "typing_extensions==4.16.0"
+  ],
+  "native_evidence_sha256": "afaf8a42b044c86baac7ea5890ec15fb779eb46649b5d8a3d191f07aa016d666",
+  "hosted_ci": "PENDING_PUBLICATION",
+  "supersedes_stale_placement_only": "Earlier signal-contract placement was gate:data and never PR code enrollment. Earlier proof and failed pre-push are preserved."
+}

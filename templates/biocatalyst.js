@@ -114,6 +114,11 @@
     hasLoaded: false,
     appendFailed: false,
     accessLocked: false,
+    verifiedScope: '',
+    verifiedSubject: '',
+    lastSuccessAt: '',
+    failedCheckAt: '',
+    retainedOutage: false,
     returnFocus: null,
     mode: 'milestones',
     filters: { field: 'primary_completion', change_kind: '', prospective_change_kind: '', window: '90', q: '', phase: '', status: '', condition: '', sponsor: '', intervention: '', study_type: '', pc_from: '', pc_to: '', review_state: 'all', horizon: DEFAULT_RADAR_HORIZON },
@@ -308,6 +313,16 @@
       if (token) headers.Authorization = 'Bearer ' + token;
       return headers;
     }).catch(function () { return headers; });
+  }
+  function currentSubject() {
+    try {
+      var auth = window.MDXAuth;
+      if (!auth || typeof auth.user !== 'function' || (auth.enabled && !auth.enabled()) || (auth.hasSession && !auth.hasSession())) return '';
+      return clean(valueAt(auth.user(), 'id'));
+    } catch (_error) { return ''; }
+  }
+  function clientCheckTimestamp() {
+    return new Date().toISOString();
   }
   function markHydration(error, kind, status) {
     if (!error || typeof error !== 'object') error = new Error(String(error || kind));
@@ -1206,7 +1221,7 @@
       : (state.appendFailed
         ? tr('Retry loading more ' + noun, '重试加载更多' + noun)
         : tr('Load more ' + noun, '加载更多' + noun));
-    ui.loadMore.disabled = state.pageLoading;
+    ui.loadMore.disabled = state.pageLoading || state.loading || state.retainedOutage;
     ui.loadMore.setAttribute('aria-label', label);
     ui.loadMore.setAttribute('aria-busy', state.pageLoading ? 'true' : 'false');
     text(ui.loadMore.querySelector('.l-en'), state.pageLoading ? 'Loading more…' : (state.appendFailed ? 'Retry load more' : 'Load more'));
@@ -2401,6 +2416,9 @@
     state.loading = false; state.pageLoading = false; state.hasLoaded = true; state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = '';
     state.selectedId = ''; state.selectedKey = ''; state.selected = null; state.detail = null; state.appendFailed = false; state.accessLocked = true;
     state.contractFailed = false; state.workspaceDown = false; state.displayFailed = false;
+    state.verifiedScope = ''; state.verifiedSubject = ''; state.lastSuccessAt = ''; state.failedCheckAt = ''; state.retainedOutage = false;
+    abort('facetsController'); state.facetsToken += 1; state.facets = null; paintFacets();
+    closeInspector({ restoreFocus: false, writeUrl: false, render: false }); text(ui.asOf, '');
     paintLockedWorkspace();
   }
   function paintAppendFailure() {
@@ -2434,6 +2452,19 @@
     paintFrame();
   }
   function paintSourceOutageWorkspace() {
+    if (state.retainedOutage && state.payload && state.rows.length) {
+      updateMetadata(state.payload); setSubtitle(state.payload); renderQueue();
+      ui.workspace.dataset.state = 'source_outage';
+      setStatus('stale', tr('Last verified page', '最近已核验页面'), tr('The trial service could not be checked', '暂时无法核验试验服务'));
+      setNotice('stale', tr('Showing the last verified source as of ', '正在显示最近已核验来源，截至 ') + observationTimestampLabel(state.payload.as_of) +
+        tr('. Last successful check: ', '。最近成功核验：') + observationTimestampLabel(state.lastSuccessAt) +
+        tr('. Failed check: ', '。失败核验：') + observationTimestampLabel(state.failedCheckAt) +
+        tr('. These records are not a fresh source check.', '。这些记录不代表来源已完成最新核验。'));
+      announce(tr('The source could not be checked. Last verified records remain available.', '暂时无法核验来源。最近已核验记录仍可查看。'));
+      paintFrame();
+      if (state.detail) { var row = selectedRow(); showDetail(state.detail, row && (valueAt(row, 'evidence') || valueAt(row, 'source')), row); }
+      return;
+    }
     ui.workspace.dataset.state = 'source_outage'; clearChildren(ui.queue); ui.queue.setAttribute('aria-busy', 'false'); ui.queueFooter.hidden = true;
     setStatus('source_outage', tr('Temporarily unavailable', '暂时无法读取'), tr('The trial service is not answering', '试验服务当前无响应'));
     setNotice('error', tr('The trial service is not answering right now. Try again shortly. No records are inferred.', '试验服务当前无响应。请稍后再试。不会推断任何记录。'));
@@ -2471,6 +2502,16 @@
       return;
     }
     if (options.append && state.rows.length && kind !== 'integrity_block' && kind !== 'client_fault') { preserveAppendFailure(); return; }
+    if (kind === 'source_outage' && options.retainVerified && state.rows.length && state.payload &&
+        options.scope === queryUrl('') && options.subject && options.subject === currentSubject() && options.selection === state.selectedKey) {
+      state.loading = false; state.pageLoading = false; state.hasLoaded = true;
+      state.contractFailed = false; state.workspaceDown = true; state.displayFailed = false;
+      state.retainedOutage = true; state.failedCheckAt = clientCheckTimestamp();
+      paintSourceOutageWorkspace();
+      return;
+    }
+    state.retainedOutage = false;
+    closeInspector({ restoreFocus: false, writeUrl: false, render: false });
     state.loading = false; state.pageLoading = false; state.hasLoaded = true; state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = ''; state.selectedKey = ''; state.appendFailed = false; state.accessLocked = false;
     if (kind === 'integrity_block') {
       state.contractFailed = true;
@@ -2493,14 +2534,27 @@
   }
   function loadMilestones(options) {
     options = options || {}; var append = options.append === true, cursor = append ? state.nextCursor : '';
+    var scope = isMilestonesMode() ? queryUrl('') : '', subject = currentSubject(), selection = state.selectedKey;
+    var retainVerified = !append && !!scope && !!subject && state.rows.length > 0 && !!state.payload &&
+      scope === state.verifiedScope && subject === state.verifiedSubject && !options.restarted &&
+      !state.accessLocked && !state.contractFailed && !state.displayFailed;
     if (append && (!cursor || state.pageLoading)) return;
     abort('listController'); var controller = new AbortController(), token = state.listToken + 1; state.listToken = token; state.listController = controller;
     state.loading = !append; state.pageLoading = append;
     if (!append) {
-      state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = ''; state.appendFailed = false; state.accessLocked = false; if (!options.restarted) state.restarted = false;
+      if (!retainVerified) {
+        abort('detailController'); state.detailToken += 1; state.detail = null; state.evidenceCell = null;
+        state.rows = []; state.nextCursor = ''; state.payload = null; state.generation = '';
+      }
+      state.retainedOutage = false; state.appendFailed = false; state.accessLocked = false; if (!options.restarted) state.restarted = false;
       state.contractFailed = false; state.workspaceDown = false; state.displayFailed = false;
       ui.workspace.dataset.state = options.restarted ? 'generation-restarted' : (state.hasLoaded ? 'loading' : 'first-load'); loadingQueue(false);
       text(ui.subtitle, tr('Retrieving the verified ' + activeNoun() + ' page…', '正在获取已核验' + activeNoun() + '页面…')); setStatus('ready', tr('Retrieving ' + activeNoun(), '正在获取' + activeNoun()), tr('No records are in this page shell', '此页面外壳不含记录'));
+      if (retainVerified) {
+        renderQueue();
+        setStatus('stale', tr('Last verified page', '最近已核验页面'), tr('Checking for a source update', '正在核验来源更新'));
+        setNotice('stale', tr('Checking the source. The last verified records remain visible with their original as-of date.', '正在核验来源。最近已核验记录及其原始截至日期仍保持可见。'));
+      }
     } else {
       ui.workspace.dataset.state = 'page-loading'; loadingQueue(true); announce(tr('Loading more ' + activeNoun() + '.', '正在加载更多' + activeNoun() + '。'));
     }
@@ -2516,6 +2570,7 @@
     }
     requestPage(cursor, controller.signal).then(function (payload) {
       if (token !== state.listToken) return;
+      if (subject !== currentSubject()) { lockWorkspace(); return; }
       state.contractFailed = false; state.workspaceDown = false; state.displayFailed = false;
       var incomingGeneration, existingRows, pagination, rows;
       try {
@@ -2546,6 +2601,7 @@
       }
       if (append) state.rows = state.rows.concat(rows); else state.rows = rows;
       state.payload = payload; state.generation = incomingGeneration; state.nextCursor = clean(valueAt(pagination, 'next_cursor')); state.loading = false; state.pageLoading = false; state.hasLoaded = true; state.appendFailed = false; state.accessLocked = false; state.workspaceDown = false; state.displayFailed = false;
+      state.verifiedScope = scope; state.verifiedSubject = subject; state.lastSuccessAt = clientCheckTimestamp(); state.failedCheckAt = ''; state.retainedOutage = false;
       try {
         ui.workspace.dataset.state = state.restarted ? 'generation-restarted' : (state.rows.length ? 'ready' : 'empty'); updateMetadata(payload); setSubtitle(payload); renderQueue();
         announce(state.rows.length ? tr('Loaded ' + state.rows.length + ' ' + activeNoun() + '.', '已加载' + state.rows.length + '项' + activeNoun() + '。') : tr('No ' + activeNoun() + ' match these filters.', '没有' + activeNoun() + '匹配这些筛选条件。'));
@@ -2559,13 +2615,14 @@
       }
     }).catch(function (error) {
       if (token !== state.listToken || (error && error.name === 'AbortError')) return;
+      if (subject !== currentSubject()) { lockWorkspace(); return; }
       if (append && restartableAppendError(error)) {
         state.restarted = true;
         announce(tr('The registry page changed. Reloading the selected filters.', '登记页面已变化。正在重新加载所选筛选条件。'));
         loadMilestones({ replace: true, restarted: true });
         return;
       }
-      handleHydrationFailure(error, { append: append });
+      handleHydrationFailure(error, { append: append, retainVerified: retainVerified, scope: scope, subject: subject, selection: selection });
     }).finally(function () {
       if (state.listController === controller) state.listController = null;
       if (token === state.listToken) { ui.refresh.classList.remove('is-spinning'); state.loading = false; state.pageLoading = false; if (state.rows.length && !state.accessLocked && !state.contractFailed && !state.workspaceDown && !state.displayFailed) renderQueue(); }
@@ -2650,6 +2707,13 @@
     ui.clear.addEventListener('click', function () { state.filters = defaultFilters(); state.cohort = []; state.cohortText = ''; state.facets = null; syncControls(); applyFilters(); ui.search.focus(); });
     ui.brainLaunch.addEventListener('click', openBrain);
     ui.refresh.addEventListener('click', function () { loadMilestones({ replace: true }); });
+    if (window.MDXAuth && typeof window.MDXAuth.onChange === 'function') {
+      window.MDXAuth.onChange(function (user) {
+        if (!state.hasLoaded && !state.loading) return;
+        lockWorkspace();
+        if (user) loadMilestones({ replace: true });
+      });
+    }
     ui.loadMore.addEventListener('click', function () { loadMilestones({ append: true }); });
     ui.inspectorClose.addEventListener('click', closeInspector); ui.scrim.addEventListener('click', closeInspector);
     ui.queue.addEventListener('keydown', function (event) { if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return; var rows = Array.prototype.slice.call(ui.queue.querySelectorAll('.bci-trial')), current = rows.indexOf(document.activeElement); if (!rows.length) return; event.preventDefault(); var next = current < 0 ? 0 : (current + (event.key === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length; rows[next].focus(); });
@@ -2741,10 +2805,10 @@
   function addPair(box,label,value){var p=el('p');p.appendChild(el('strong','',label+': '));p.appendChild(document.createTextNode(value));box.appendChild(p)}
   function showWmnDetail(payload){var row=payload.event,priority=row.research_priority;clear(detail);detail.appendChild(el('p','bci-kicker',tr('Selected research event','已选研究事件')));detail.appendChild(el('h3','',issuerLabel(row)+' · '+humanize(row.event_family)));var timing=section(tr('Timing','时间'));addPair(timing,tr('Window','窗口'),timingLabel(row));addPair(timing,tr('Source class','来源类型'),timingSource(row));addPair(timing,tr('Occurrence','发生状态'),humanize(row.occurrence));detail.appendChild(timing);var research=section(tr('Research priority','研究优先级'));addPair(research,tr('Lane','通道'),laneLabel(priority.lane));addPair(research,tr('Why now','为什么现在'),laneExplanation(priority.lane));addPair(research,tr('Rule reason','规则原因'),humanize(priority.primary_reason));if(arr(priority.gap_reasons).length)addPair(research,tr('Open gaps','待补缺口'),arr(priority.gap_reasons).map(humanize).join(' · '));detail.appendChild(research);var estimates=section(tr('Uncertainty','不确定性'));['probability','materiality','historical_response','incorporation'].forEach(function(name){var slot=row[name];addPair(estimates,humanize(name),slot.state+' — '+humanize(slot.reason_code))});detail.appendChild(estimates);var exposure=section(tr('Exposure and evidence','敞口与证据'));addPair(exposure,tr('Economic exposure','经济敞口'),humanize(row.economic_exposure_state));var missing=missingReasons(row);addPair(exposure,tr('Missing intelligence','缺失智能'),missing.length?missing.map(humanize).join(' · '):tr('None declared','未声明缺口'));addPair(exposure,tr('Evidence objects','证据对象'),String(arr(row.evidence).length));detail.appendChild(exposure);var links=stockLinks(row);if(links.length){var nav=section(tr('Research continuation','继续研究'));links.forEach(function(item){var href=clean(item.href);if(!/^stock\.html\?ticker=/.test(href))return;var a=el('a','bci-wmn-trial-link',tr('Open stock research','打开股票研究'));a.href=href;nav.appendChild(a)});detail.appendChild(nav)}if(payload.related_events.length){var related=section(tr('Related issuer events','相关发行人事件'));addPair(related,tr('Same issuer in this generation','同一发行人在本代数据中'),String(payload.related_events.length));detail.appendChild(related)}detail.appendChild(el('div','bci-wmn-authority',tr('Research triage only — not a trade signal. This view cannot initiate trades, change trading eligibility, size positions or authorize forecasts.','仅用于研究分流，不提供交易信号。此视图不能发起交易、改变交易资格、决定仓位或授权预测。')))}
   function showDetailMessage(title,body){clear(detail);detail.appendChild(el('p','bci-kicker',tr('Selected research event','已选研究事件')));detail.appendChild(el('h3','',title));detail.appendChild(el('p','bci-wmn-detail-empty',body))}
-  function selectWhatMattersNextRow(row,trigger){state.selectedKey=wmnIdentity(row);Array.prototype.slice.call(queue.querySelectorAll('.bci-wmn-card')).forEach(function(card){var selected=card.getAttribute('data-wmn-key')===state.selectedKey;card.classList.toggle('is-selected',selected);card.setAttribute('aria-selected',selected?'true':'false')});showDetailMessage(tr('Loading event dossier…','正在加载事件档案…'),tr('Resolving the selected event inside the same immutable generation.','正在同一不可变数据代中解析所选事件。'));if(trigger&&typeof trigger.focus==='function')trigger.focus({preventScroll:true});abort('detailController');var controller=new AbortController(),token=state.detailToken+1;state.detailController=controller;state.detailToken=token;var params=new URLSearchParams();params.set('generation_id',state.generation);params.set('event_fact_ref',row.event_fact_ref);var issuerId=clean(valueAt(valueAt(row,'row_key'),'issuer_id'));if(issuerId)params.set('issuer_id',issuerId);fetchJson(WMN_DETAIL_API+'?'+params.toString(),controller.signal).then(function(payload){if(token!==state.detailToken)return;if(!validDetail(payload))throw new Error('INVALID_DETAIL_CONTRACT');showWmnDetail(payload);if(payload.trial!==null){var trialWorkspace=window.BioCatalystTrialWorkspace;if(!trialWorkspace||typeof trialWorkspace.showGenerationBoundTrialDetail!=='function')throw new Error('TRIAL_WORKSPACE_BRIDGE_UNAVAILABLE');trialWorkspace.showGenerationBoundTrialDetail(payload.trial,trigger)}else detail.focus({preventScroll:true})}).catch(function(error){if(error&&error.name==='AbortError')return;if(error&&error.status===409)showDetailMessage(tr('Research cut changed','研究数据已更新'),tr('Refresh What Matters Next to reopen this event in the current generation.','请刷新“下一步看什么”，以当前数据代重新打开此事件。'));else if(error&&error.status===404)showDetailMessage(tr('Event not in this generation','此数据代中没有该事件'),tr('The event is no longer present in the exact generation you selected.','该事件已不在你所选的精确数据代中。'));else showDetailMessage(tr('Dossier unavailable','档案暂不可用'),tr('No replacement facts are inferred. Refresh the research queue or use Trial Intelligence for source-level evidence.','不会推断替代事实。请刷新研究队列，或使用试验智能查看来源级证据。'))}).finally(function(){if(state.detailController===controller)state.detailController=null})}
+  function selectWhatMattersNextRow(row,trigger){state.selectedKey=wmnIdentity(row);Array.prototype.slice.call(queue.querySelectorAll('.bci-wmn-card')).forEach(function(card){var selected=card.getAttribute('data-wmn-key')===state.selectedKey;card.classList.toggle('is-selected',selected);card.setAttribute('aria-selected',selected?'true':'false')});showDetailMessage(tr('Loading event dossier…','正在加载事件档案…'),tr('Resolving the selected event inside the same immutable generation.','正在同一不可变数据代中解析所选事件。'));if(trigger&&typeof trigger.focus==='function')trigger.focus({preventScroll:true});abort('detailController');var controller=new AbortController(),token=state.detailToken+1;state.detailController=controller;state.detailToken=token;var params=new URLSearchParams();params.set('generation_id',state.generation);params.set('event_fact_ref',row.event_fact_ref);var issuerId=clean(valueAt(valueAt(row,'row_key'),'issuer_id'));if(issuerId)params.set('issuer_id',issuerId);fetchJson(WMN_DETAIL_API+'?'+params.toString(),controller.signal).then(function(payload){if(token!==state.detailToken)return;if(!validDetail(payload))throw new Error('INVALID_DETAIL_CONTRACT');showWmnDetail(payload);if(payload.trial!==null){var trialWorkspace=window.BioCatalystTrialWorkspace;if(!trialWorkspace||typeof trialWorkspace.showGenerationBoundTrialDetail!=='function')throw new Error('TRIAL_WORKSPACE_BRIDGE_UNAVAILABLE');trialWorkspace.showGenerationBoundTrialDetail(payload.trial,trigger)}else detail.focus({preventScroll:true})}).catch(function(error){if(token!==state.detailToken)return;if(error&&error.name==='AbortError')return;if(error&&error.status===409)showDetailMessage(tr('Research cut changed','研究数据已更新'),tr('Refresh What Matters Next to reopen this event in the current generation.','请刷新“下一步看什么”，以当前数据代重新打开此事件。'));else if(error&&error.status===404)showDetailMessage(tr('Event not in this generation','此数据代中没有该事件'),tr('The event is no longer present in the exact generation you selected.','该事件已不在你所选的精确数据代中。'));else showDetailMessage(tr('Dossier unavailable','档案暂不可用'),tr('No replacement facts are inferred. Refresh the research queue or use Trial Intelligence for source-level evidence.','不会推断替代事实。请刷新研究队列，或使用试验智能查看来源级证据。'))}).finally(function(){if(state.detailController===controller)state.detailController=null})}
   function queryUrl(cursor){var params=new URLSearchParams();params.set('view',state.view);params.set('limit',String(WMN_PAGE_LIMIT));if(state.view==='upcoming')params.set('horizon_days',state.horizon);if(state.q)params.set('q',state.q);if(state.view==='upcoming'&&state.lane)params.set('lane',state.lane);if(cursor)params.set('cursor',cursor);return WMN_API+'?'+params.toString()}
   function setLoading(loading){state.loading=loading;refreshNode.disabled=loading;loadMoreNode.disabled=loading;queue.setAttribute('aria-busy',loading?'true':'false')}
-  function loadQueue(append){if(state.loading)return;var cursor=append?state.nextCursor:'';if(append&&!cursor)return;abort('listController');var controller=new AbortController(),token=state.listToken+1;state.listController=controller;state.listToken=token;setLoading(true);if(!append){state.rows=[];state.nextCursor='';state.total=0;state.generation='';state.selectedKey='';showDetailMessage(tr('Choose an event','选择一个事件'),tr('Open a row to inspect timing, issuer exposure, research priority and missing intelligence.','打开一行，查看时间、发行人敞口、研究优先级和缺失智能。'));clear(queue);queue.appendChild(el('div','bci-wmn-detail-empty',tr('Loading research priorities…','正在加载研究优先项…')))}fetchJson(queryUrl(cursor),controller.signal).then(function(payload){if(token!==state.listToken)return;if(!validEnvelope(payload))throw new Error('INVALID_WMN_CONTRACT');if(append&&state.generation&&clean(payload.generation_id)!==state.generation){state.loading=false;window.setTimeout(function(){loadQueue(false)},0);return}var incoming=payload.rows,seen={};state.rows.forEach(function(row){seen[wmnIdentity(row)]=true});incoming.forEach(function(row){var key=wmnIdentity(row);if(seen[key])throw new Error('DUPLICATE_WMN_ROW');seen[key]=true});state.rows=append?state.rows.concat(incoming):incoming.slice();state.generation=clean(payload.generation_id);state.total=payload.pagination.total;state.nextCursor=clean(payload.pagination.next_cursor);renderStatus(payload);renderQueue()}).catch(function(error){if(error&&error.name==='AbortError')return;if(append&&error&&error.status===409){state.loading=false;window.setTimeout(function(){loadQueue(false)},0);return}root.dataset.state=error&&(error.status===401||error.status===402||error.status===403)?'locked':'error';clear(queue);queue.appendChild(el('div','bci-wmn-detail-empty',root.dataset.state==='locked'?tr('Full access is required before biotechnology research priorities can be shown.','需要完整访问权限才能显示生物科技研究优先项。'):tr('What Matters Next is temporarily unavailable. No research priority is inferred.','“下一步看什么”暂时不可用。不会推断任何研究优先级。')));text(statusNode,root.dataset.state==='locked'?tr('Full access required','需要完整访问权限'):tr('Decision-intelligence cut unavailable','决策智能数据暂不可用'));text(asOfNode,'');clear(coverageNode);loadMoreNode.hidden=true}).finally(function(){if(state.listController===controller)state.listController=null;setLoading(false)})}
+  function loadQueue(append){if(append&&state.loading)return;var cursor=append?state.nextCursor:'';if(append&&!cursor)return;abort('listController');var controller=new AbortController(),token=state.listToken+1;state.listController=controller;state.listToken=token;setLoading(true);if(!append){abort('detailController');state.detailToken+=1;state.rows=[];state.nextCursor='';state.total=0;state.generation='';state.selectedKey='';showDetailMessage(tr('Choose an event','选择一个事件'),tr('Open a row to inspect timing, issuer exposure, research priority and missing intelligence.','打开一行，查看时间、发行人敞口、研究优先级和缺失智能。'));clear(queue);queue.appendChild(el('div','bci-wmn-detail-empty',tr('Loading research priorities…','正在加载研究优先项…')))}fetchJson(queryUrl(cursor),controller.signal).then(function(payload){if(token!==state.listToken)return;if(!validEnvelope(payload))throw new Error('INVALID_WMN_CONTRACT');if(append&&state.generation&&clean(payload.generation_id)!==state.generation){state.loading=false;window.setTimeout(function(){if(token===state.listToken)loadQueue(false)},0);return}var incoming=payload.rows,seen={};state.rows.forEach(function(row){seen[wmnIdentity(row)]=true});incoming.forEach(function(row){var key=wmnIdentity(row);if(seen[key])throw new Error('DUPLICATE_WMN_ROW');seen[key]=true});state.rows=append?state.rows.concat(incoming):incoming.slice();state.generation=clean(payload.generation_id);state.total=payload.pagination.total;state.nextCursor=clean(payload.pagination.next_cursor);renderStatus(payload);renderQueue()}).catch(function(error){if(token!==state.listToken)return;if(error&&error.name==='AbortError')return;if(append&&error&&error.status===409){state.loading=false;window.setTimeout(function(){if(token===state.listToken)loadQueue(false)},0);return}root.dataset.state=error&&(error.status===401||error.status===402||error.status===403)?'locked':'error';clear(queue);queue.appendChild(el('div','bci-wmn-detail-empty',root.dataset.state==='locked'?tr('Full access is required before biotechnology research priorities can be shown.','需要完整访问权限才能显示生物科技研究优先项。'):tr('What Matters Next is temporarily unavailable. No research priority is inferred.','“下一步看什么”暂时不可用。不会推断任何研究优先级。')));text(statusNode,root.dataset.state==='locked'?tr('Full access required','需要完整访问权限'):tr('Decision-intelligence cut unavailable','决策智能数据暂不可用'));text(asOfNode,'');clear(coverageNode);loadMoreNode.hidden=true}).finally(function(){if(token!==state.listToken)return;if(state.listController===controller)state.listController=null;setLoading(false)})}
   function localizeControls(){Array.prototype.slice.call(viewNode.options).concat(Array.prototype.slice.call(laneNode.options)).forEach(function(option){var label=option.getAttribute(lang()==='zh'?'data-label-zh':'data-label-en');if(label)text(option,label)});searchNode.placeholder=searchNode.getAttribute(lang()==='zh'?'data-placeholder-zh':'data-placeholder-en')||searchNode.placeholder}
   function syncControls(){horizonButtons.forEach(function(button){var active=button.getAttribute('data-horizon')===state.horizon;button.classList.toggle('is-active',active);button.setAttribute('aria-pressed',active?'true':'false');button.disabled=state.view!=='upcoming'});laneNode.disabled=state.view!=='upcoming';localizeControls()}
   function bind(){var debounce=0;searchNode.addEventListener('input',function(){window.clearTimeout(debounce);debounce=window.setTimeout(function(){state.q=clean(searchNode.value).slice(0,100);loadQueue(false)},260)});viewNode.addEventListener('change',function(){state.view=WMN_VIEWS[viewNode.value]?viewNode.value:'upcoming';if(state.view!=='upcoming')state.lane='';laneNode.value=state.lane;syncControls();loadQueue(false)});laneNode.addEventListener('change',function(){state.lane=clean(laneNode.value);loadQueue(false)});horizonButtons.forEach(function(button){button.addEventListener('click',function(){var value=clean(button.getAttribute('data-horizon'));if(!WMN_HORIZONS[value]||state.view!=='upcoming'||state.horizon===value)return;state.horizon=value;syncControls();loadQueue(false)})});refreshNode.addEventListener('click',function(){loadQueue(false)});loadMoreNode.addEventListener('click',function(){loadQueue(true)});document.addEventListener('langchange',function(){syncControls();renderQueue();if(state.selectedKey){var selected=state.rows.filter(function(row){return wmnIdentity(row)===state.selectedKey})[0];if(selected)showDetailMessage(tr('Event selected','已选择事件'),tr('Open the row again to refresh the localized dossier without changing the research cut.','再次打开该行即可刷新本地化档案，研究数据切片不会改变。'))}})}

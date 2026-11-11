@@ -59,7 +59,7 @@ import os
 import sys
 import tempfile
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -68,6 +68,7 @@ _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
 from engine import ledger_lane
+from engine import us_board_snapshots
 from engine.prophet_bridge import (
     ADMITTED_STATUSES,
     LEGACY_N_CANDIDATES,
@@ -730,6 +731,17 @@ def _write_json(path: Path, data: dict) -> None:
     )
 
 
+def _computed_at_now() -> str:
+    """Genuine UTC computation time sampled at the final index-write boundary.
+
+    This clock is not the archive run date (asof/recorded_at), source vintage
+    (source_asof), publication receipt or the protected-reader observation.
+    A rerun can refresh it without advancing the source session; liveness
+    and settlement must continue to use the source clock separately.
+    """
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _read_json(path: Path) -> dict | None:
     if path.exists():
         try:
@@ -938,17 +950,16 @@ def _load_board_snapshots(path: Path) -> dict:
     """as_of → board snapshot dict from the append-only JSONL. Fail-soft {}."""
     snaps: dict = {}
     try:
-        with path.open(encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    d = json.loads(line)
-                except Exception:  # noqa: BLE001 — one bad line never kills the file
-                    continue
-                if d.get("as_of"):
-                    snaps[d["as_of"]] = d
+        for line in us_board_snapshots.iter_lines(path):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except Exception:  # noqa: BLE001 — one bad line never kills the file
+                continue
+            if d.get("as_of"):
+                snaps[d["as_of"]] = d
     except Exception as e:  # noqa: BLE001
         log.warning("build_prophet: showcase snapshots unreadable: %s", e)
     return snaps
@@ -1110,6 +1121,85 @@ def _load_closed_outcomes() -> dict[str, str]:
         except Exception:
             pass
     return outcomes
+
+
+def _reconcile_same_build_closures(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Align the published index with the just-advanced canonical ledger.
+
+    This is a display-only, in-memory projection. It never advances the ledger,
+    edits immutable plans, grades an outcome, or infers a close from phase. A
+    newly-closed row needs closed bilingual pulse/copy in THIS build.
+
+    A terminal row's profit-plan targets remain as historical geometry on the
+    immutable plan, but ACTIVE/PENDING profit-taking instructions must not
+    survive in the index -- including rows closed before this build.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if not plan_id or plan_id not in closed_outcomes:
+            continue
+        if not entry.get("closed"):
+            outcome = closed_outcomes[plan_id]
+            entry["closed"] = True
+            entry["pulse"], entry["pulse_zh"] = _plan_pulse(
+                entry.get("clock_age_days"), entry.get("phase"), None,
+                closed=True, outcome=outcome,
+            )
+            entry["what_to_do_now"], entry["what_to_do_now_zh"] = (
+                _closed_state_lines(outcome)
+            )
+        # Closed-state guidance is withheld even for a row already marked
+        # closed before today's advancement. Historical target levels stay on
+        # targets[] and the immutable original plan, never regraded here.
+        entry["recommended_action"] = None
+        state = entry.get("state")
+        if isinstance(state, dict):
+            state["recommended_action"] = None
+        if entry.get("profit_plan"):
+            entry["profit_plan"] = []
+        if entry.get("profit_plan_zh"):
+            entry["profit_plan_zh"] = []
+
+
+
+def _reconcile_closed_state_sidecars(
+    entries: list[dict[str, Any]], closed_outcomes: dict[str, str]
+) -> None:
+    """Withhold stale live actions in state sidecars after nightly ledger close.
+
+    The management engine wrote these mutable state/v1 projections before the
+    canonical ledger's final advancement. Keep historical geometry/accumulators
+    intact, but let no on-disk sidecar claim the plan is still actionable once
+    the ledger has closed it. No plan or ledger is written here.
+    """
+    for entry in entries:
+        plan_id = str(entry.get("id") or "")
+        if (not plan_id or not entry.get("closed")
+                or plan_id not in closed_outcomes
+                or "/" in plan_id or "\\" in plan_id):
+            continue
+        path = STATES_DIR / f"{plan_id}.json"
+        state = _read_json(path)
+        if (not isinstance(state, dict)
+                or state.get("schema") != "prophet.management_state/v1"
+                or str(state.get("id") or "") != plan_id):
+            continue
+        projected = dict(state)
+        projected["closed"] = True
+        projected["outcome"] = closed_outcomes[plan_id]
+        projected["recommended_action"] = None
+        projected["human_state"] = "Closed"
+        if isinstance(state.get("reliability"), dict):
+            projected["reliability"] = {
+                **state["reliability"],
+                "recommended_action": (
+                    "withheld — canonical forward ledger has closed this plan"
+                ),
+            }
+        if projected != state:
+            _write_json(path, projected)
 
 
 def _load_closed_ids() -> set[str]:
@@ -2915,6 +3005,19 @@ def main() -> None:
     # clocks; let the build fail so the guarded checkpoint withholds the whole delta.
     advance_ledger(actionable_plans, asof)
 
+    # This run may have closed plans AFTER the index rows were assembled from the
+    # pre-advance ledger. Re-read the same canonical ledger (never infer closures
+    # from management phase), then project its new closes onto those in-memory
+    # publication rows before computing lifecycle counts and writing index.json.
+    # Only a newly-closed row changes; all previously-closed/open rows retain
+    # their existing representation. The forward ledger remains the sole owner.
+    closed_outcomes_after_advance = _load_closed_outcomes()
+    _reconcile_same_build_closures(active_entries, closed_outcomes_after_advance)
+    # State sidecars were written before ledger advancement. They are mutable
+    # projections too: a newly closed plan must not publish a contradictory
+    # per-plan live recommendation after index.json is marked closed.
+    _reconcile_closed_state_sidecars(active_entries, closed_outcomes_after_advance)
+
     # ── 3c. Forward-ledger quarantine (derived, then disclosed) ──────────────────
     # Runs AFTER advance_ledger so tonight's closes are judged by the same rule as
     # every earlier row, and the file the surfaces read is never a run behind.
@@ -3152,11 +3255,13 @@ def main() -> None:
             # admission helpers (entry_status / admission_class) and returns the
             # per-name view. Additive and display tier: it reports the gate above, it
             # never moves it. This call site — unlike build_site's — knows tonight's
-            # origination run, so it can also disclose the `plan_not_built` cohort.
+            # origination run AND its failure record, so it can also disclose the
+            # `validation_failed` and `plan_not_built` cohorts.
             "receipts": refusal_receipts(
                 _standouts_doc,
                 active_keys,
                 {str(p.get("asset") or "") for p in new_plans},
+                validation_failures=intake_stats.get("validation_failures"),
             ),
             # The receipt that separates "the organ saw these names and none qualified"
             # from "the organ saw none of them" — a bare zero admission count cannot.
@@ -3319,6 +3424,9 @@ def main() -> None:
         log.warning("build_prophet: board read join failed (%s: %s)", type(e).__name__, e)
         print(f"::warning title=prophet board read::join failed ({type(e).__name__}) —"
               " index.json ships without the board-read block", flush=True)
+    # V4-A2: stamp the final accepted producer index bytes, once per run.
+    # Never substitute asof/recorded_at or imply publication/reader settlement.
+    index["computed_at"] = _computed_at_now()
     _write_json(INDEX_PATH, index)
     log.info("build_prophet: wrote index.json (%d active plans)", len(active_entries))
 

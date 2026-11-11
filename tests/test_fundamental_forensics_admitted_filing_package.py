@@ -59,9 +59,11 @@ T_FLOOR = datetime(2026, 8, 1, 0, 0, tzinfo=timezone.utc)
 # the statement-package index and the query bytes stay identical. The
 # *_REGISTRY_V1_0_0 values are the previous pins; the golden test re-derives them
 # exactly from the committed byte-copy of the 1.0.0 registry, so any drift other
-# than the registry is still caught.
+# than the registry is still caught. Re-pinned again for the formula pack 1.1.0
+# (F3 not-presented policy): only the generation ids and the manifest move; the
+# index, the query bytes and every *_REGISTRY_V1_0_0 value re-derive unchanged.
 _REGISTRY_V1_0_0_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
-_FIP1_GENERATION_ID = "ffprods_375d84e376d98dd15431779851c34af5548dcb9c491c37a1285fa8c1e32dee46"
+_FIP1_GENERATION_ID = "ffprods_66cf00a6136b5b79ee4194294903e4affc565e928db6dca29f67be3a2e862069"
 _FIP1_GENERATION_ID_REGISTRY_V1_0_0 = (
     "ffprods_099a50f4a0f65f632bdf197af27c4a3dd0f6bbc86d1cc3aee805dd12c191154e"
 )
@@ -69,12 +71,12 @@ _FIP1_INDEX_SHA = "22376a6171015e6efe1857a289edd36a657bf7762bcb37bc08efe14ab548f
 # re-pinned 2026-10-12 by seat ruling: P1 #8992 R2 added the optional
 # statement_trees_json role (packages-bearing generations only)
 # (re-pinned 2026-10-19 by R-9761-CLK (c); previous pins kept as *_REGISTRY_V1_0_0)
-_AAPL_GOLDEN_GENERATION_ID = "ffprods_4a1d45a9afbde4c85e792579e9632faf3cd9e004164e4fa59d9e90223a373125"
+_AAPL_GOLDEN_GENERATION_ID = "ffprods_0c22ee6bf81f0e0dfa254427ee1f1ad69d21594941d21956bc67c178d71afe86"
 _AAPL_GOLDEN_GENERATION_ID_REGISTRY_V1_0_0 = (
     "ffprods_e0cc353b1372f883ab481c76dda453e6903cd03e9ef10bfd6cd5d387e2317866"
 )
 _AAPL_GOLDEN_INDEX_SHA = "74c2975c1903ae026e2971490571463551ce33bf18cd9e40593e75b1e213bb3f"
-_AAPL_GOLDEN_MANIFEST_SHA = "4d6bf050ffee3115c41fb4b1a4b943ab812e3f96b633ae5095b5457e959123b4"
+_AAPL_GOLDEN_MANIFEST_SHA = "548e72417ecb54df70cce76bfbf82a2d1e5ebde2d484f239328f264930c01bbb"
 _AAPL_GOLDEN_MANIFEST_SHA_REGISTRY_V1_0_0 = (
     "65dd20e2ad55737c35c75656b15af699fa3e1b99392a24c8c1a14b8d70bc3b1e"
 )

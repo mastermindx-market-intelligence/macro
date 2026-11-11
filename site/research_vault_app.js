@@ -335,6 +335,21 @@
     return 'https://app.mastermind-x.com/terminal?sym=' + encodeURIComponent(tk);
   }
 
+  /* The baked line describes the copy written into this page. A settled catalog can be a
+     different copy, whose clock the status line already prints. So the line keeps only the
+     newest report of the copy on screen, and goes away unless that copy is saved and old. */
+  function paintSavedClock() {
+    var p = $('rv-saved-clock');
+    if (!p) return;
+    var latest = '';
+    ITEMS.forEach(function (x) { if (x.date && x.date > latest) latest = x.date; });
+    if (CATALOG_SOURCE === 'unavailable' || CATALOG_FRESH || !latest) { p.hidden = true; return; }
+    p.hidden = false;
+    var en = p.querySelector('.l-en'), zh = p.querySelector('.l-zh');
+    if (en) en.textContent = 'Newest report in this copy: ' + latest + '.';
+    if (zh) zh.textContent = '该副本中最新研报：' + latest + '。';
+  }
+
   /* ═══════════ hero counts (client-side, descriptive only) ═══════════ */
   function updateHero() {
     // An unavailable catalog knows NOTHING about the vault, so every figure stays
@@ -351,6 +366,24 @@
       $('v-en-lead').textContent =
         'The research catalog could not be loaded. This is a loading problem, not an empty vault.';
       $('v-zh-lead').textContent = '无法载入研报目录。这是加载问题，并非研报库为空。';
+      return;
+    }
+
+    // Language can change while the first catalog request is still pending.
+    // Preserve the loading shell until an actual catalog source has settled.
+    if (CATALOG_SOURCE === 'loading') return;
+
+    // Saved weekly figures cannot describe current activity. Retain the
+    // archive total; the status line already carries the saved timestamp.
+    if (!CATALOG_FRESH) {
+      $('fig-new').textContent = '—';
+      $('fig-desks').textContent = '—';
+      $('fig-theme').textContent = '—';
+      $('fig-total').textContent = TOTAL_COUNT;
+      buildWeb();
+      $('v-en-lead').textContent =
+        'Research updates are delayed. Showing the saved catalog.';
+      $('v-zh-lead').textContent = '研报更新延迟，正在显示已保存的目录。';
       return;
     }
     var wk = ITEMS.filter(isThisWeek);
@@ -676,7 +709,7 @@
       // the vault, and we have no basis for it when we could not read a verified
       // catalog at all. Saying so plainly is the whole point of this state.
       feed.innerHTML = emptyState(
-        T('Live research is temporarily unavailable', '实时研报暂时不可用'),
+        T('Research is temporarily unavailable', '研报暂时不可用'),
         T('We could not reach a verified copy of the research catalog. This is a loading problem, not an empty vault — please try again shortly.',
           '暂时无法获取经校验的研报目录。这是加载问题，并非研报库为空 —— 请稍后重试。'));
     } else if (!ITEMS.length) {
@@ -772,7 +805,7 @@
     var pts = x.points, hasPts = pts.length > 0;
     var visible = pts.slice(0, 2), extra = pts.slice(2), ptsHtml;
     if (!hasPts) {
-      ptsHtml = '<ul class="rep-points pend"><li>' + T('Summary pending — full report available to read.', '摘要生成中 —— 全文已可查看。') + '</li></ul>';
+      ptsHtml = '<ul class="rep-points pend"><li>' + T('No summary is available for this report. The full report is available to read.', '本篇暂无摘要。全文已可查看。') + '</li></ul>';
     } else {
       ptsHtml = '<ul class="rep-points">'
         + visible.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('')
@@ -1391,18 +1424,19 @@
     // the data is saved and shows the clock it was actually generated on, so a
     // reader can judge the lag themselves instead of trusting an adjective.
     if (source === 'unavailable') {
-      if (en) en.textContent = 'Live research unavailable · try again shortly';
-      if (cn) cn.textContent = '实时研报暂不可用 · 请稍后重试';
+      if (en) en.textContent = 'Research unavailable · try again shortly';
+      if (cn) cn.textContent = '研报暂不可用 · 请稍后重试';
     } else if (CATALOG_FRESH) {
       if (en) en.textContent = 'Catalog recently updated';
       if (cn) cn.textContent = '目录近期已更新';
     } else {
       var iso = CATALOG_GENERATED;
-      if (en) en.textContent = 'Saved snapshot · live update delayed'
+      if (en) en.textContent = 'Saved snapshot · refresh delayed'
         + (iso ? ' · updated ' + fmtStamp(iso, false) : '');
-      if (cn) cn.textContent = '已保存快照 · 实时更新延迟'
+      if (cn) cn.textContent = '已保存快照 · 更新延迟'
         + (iso ? ' · 更新于 ' + fmtStamp(iso, true) : '');
     }
+    paintSavedClock();
   }
   function ingest(catalog, source) {
     // A selected catalog is a new search context, even when the query is unchanged.
@@ -1820,17 +1854,46 @@
     })();
   }
 
-  /* deep link from a report landing page: research_vault.html?doc=<id> opens that
-     report's viewer (Pro → PDF, non-Pro → the upgrade gate). This is the SEO
-     funnel's landing → conversion hop. */
-  var DEEP_LINK_OPENED = false;
+  /* deep link from a report landing page: research_vault.html?doc=<id> selects
+     that exact catalog item in the existing gated viewer. IDs outside the
+     selected preview/catalog get feedback, never a metadata or PDF grant. */
+  var DEEP_LINK_OPENED_ID = '';
+  function showDeepLinkStatus(kind) {
+    var status = $('rv-selection-status'); if (!status) return;
+    var messages = {
+      preview: ['The requested report is not in this public preview. Sign in with Pro to try opening it.',
+                '所请求的报告不在本次公开预览中。登录 Pro 账户后可尝试打开。'],
+      missing: ['The requested report is not in this catalog. Browse other reports or return to the previous page.',
+                '所请求的报告不在此目录中。可浏览其他报告或返回上一页。'],
+      unavailable: ['The catalog is unavailable, so the requested report cannot be selected.',
+                    '研报目录暂不可用，无法选择所请求的报告。'],
+      invalid: ['This report link is invalid. Choose a report from this catalog or return to the previous page.',
+                '此报告链接无效。可从此目录选择报告或返回上一页。']
+    };
+    var message = messages[kind];
+    var en = $('rv-selection-en'), cn = $('rv-selection-zh');
+    if (en) en.textContent = message ? message[0] : '';
+    if (cn) cn.textContent = message ? message[1] : '';
+    status.hidden = !message;
+  }
   function openDeepLink() {
-    if (DEEP_LINK_OPENED) return;
     try {
-      var m = /[?&]doc=([^&]+)/.exec(location.search);
-      if (!m) return;
-      var id = decodeURIComponent(m[1]);
-      if (ITEMS.some(function (x) { return x.id === id; })) { DEEP_LINK_OPENED = true; openViewer(id); }
+      var m = /[?&]doc=([^&]*)/.exec(location.search);
+      if (!m) { showDeepLinkStatus(''); DEEP_LINK_OPENED_ID = ''; return; }
+      var id;
+      try { id = decodeURIComponent(m[1]); }
+      catch (e) { DEEP_LINK_OPENED_ID = ''; showDeepLinkStatus('invalid'); return; }
+      if (!id.trim()) { DEEP_LINK_OPENED_ID = ''; showDeepLinkStatus('invalid'); return; }
+      if (ITEMS.some(function (x) { return x.id === id; })) {
+        showDeepLinkStatus('');
+        if (DEEP_LINK_OPENED_ID === id) return;
+        DEEP_LINK_OPENED_ID = id;
+        openViewer(id);
+      } else {
+        if (DEEP_LINK_OPENED_ID !== id) DEEP_LINK_OPENED_ID = '';
+        showDeepLinkStatus(CATALOG_SOURCE === 'unavailable' ? 'unavailable'
+          : (CATALOG_PREVIEW ? 'preview' : 'missing'));
+      }
     } catch (e) {}
   }
 

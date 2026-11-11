@@ -7,6 +7,10 @@
 {% if cm.state|default('UNAVAILABLE') in ['AVAILABLE', 'PARTIAL'] %}
   <p class="cm-meta">{{ t('USGS edition', 'USGS 版本') }} {{ cm.edition_year }} ·
     {{ t('Published', '发布于') }} <time datetime="{{ cm.published }}">{{ cm.published }}</time></p>
+{% if cm.has_import_sources|default(false) %}
+  <p class="cm-meta">{{ t('Import sources show where US imports came from over 2021–24. World production shows output in the observation period. They are different measures and different years.',
+                          '进口来源显示 2021–24 年美国进口来自何处；全球产量显示观测期间的产出。两者是不同的度量，年份也不同。') }}</p>
+{% endif %}
   <dl class="cm-rows">
 {% for row in cm.rows %}
     <div class="cm-row">
@@ -15,6 +19,20 @@
 {% if row.available %}
         <p><span class="l-en">{{ row.read_en }}</span><span class="l-zh">{{ row.read_zh }}</span></p>
         <p class="cm-period">{{ t('Observation period', '观测期间') }}: {{ row.observation_period }}</p>
+{% if row.world_output|default(none, true) %}
+{% set out = row.world_output %}
+        <p class="cm-period">{{ t('World production', '全球产量') }} {{ row.observation_period }}:
+          {{ out.amount }}
+          <span class="l-en">{{ out.unit_en }}</span><span class="l-zh">{{ out.unit_zh }}</span>
+        </p>
+{% endif %}
+{% if row.import_sources|default(none, true) %}
+{% set srcs = row.import_sources %}
+        <p class="cm-period">{{ t('US import sources 2021–24', '美国进口来源 2021–24') }}:
+          {%- for s in srcs %} <span class="l-en">{{ s.country_en }}</span><span class="l-zh">{{
+          s.country_zh }}</span> {{ s.pct }}%{{ ' ·' if not loop.last }}{%- endfor %}
+        </p>
+{% endif %}
 {% else %}
         <p class="cm-meta">{{ t('No qualified annual read is available for this mineral.', '此矿产暂无经过核验的年度数据解读。') }}</p>
 {% endif %}

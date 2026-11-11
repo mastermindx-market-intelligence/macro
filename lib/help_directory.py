@@ -34,6 +34,11 @@ _RELATIVE_HREF_RE = re.compile(
 _APP_SIGNIN_URL = "https://app.mastermind-x.com/terminal?signin=1"
 _STATES = frozenset(("complete", "unknown"))
 
+# A public page no Jinja template writes, so no template can prove it here. The help
+# contract suite proves each one's writer names it and that public access allows it.
+GENERATED_SOURCE = "generated"
+_GENERATED_PAGES = frozenset(("calibration.html",))
+
 
 @dataclass(frozen=True, slots=True)
 class HelpCategory:
@@ -88,12 +93,12 @@ HELP_LINKS: tuple[HelpLink, ...] = (
         href="methodology.html",
     ),
     HelpLink(
-        id="cycle-intelligence-calibration-lab",
+        id="calibration-hub",
         category="research",
-        label_en="Cycle Intelligence · Calibration Lab",
-        label_zh="周期情报 · 校准实验室",
-        source_template="templates/measurement.html.j2",
-        href="measurement.html",
+        label_en="Calibration Hub",
+        label_zh="校准中心（英文）",
+        source_template=GENERATED_SOURCE,
+        href="calibration.html",
     ),
     HelpLink(
         id="glossary",
@@ -161,6 +166,10 @@ def _source_path(root: Path, entry: HelpLink) -> Path:
 
 
 def _validate_source_labels(root: Path, entry: HelpLink) -> None:
+    if entry.source_template == GENERATED_SOURCE:
+        if entry.href not in _GENERATED_PAGES:
+            raise ValueError(f"help entry {entry.id!r}: invalid source_template")
+        return
     path = _source_path(root, entry)
     try:
         source = unescape(path.read_text(encoding="utf-8"))
@@ -173,22 +182,27 @@ def _validate_source_labels(root: Path, entry: HelpLink) -> None:
             )
 
 
+def _require_local_page(root: Path, owner: str, href: str) -> None:
+    """Fail unless a relative destination has its template, or is a listed generated page."""
+    page = Path(urlsplit(href).path).as_posix()
+    if page in _GENERATED_PAGES:
+        return
+    template = root / "templates" / f"{page}.j2"
+    if not template.is_file():
+        raise ValueError(f"{owner}: target template is unavailable: {template}")
+
+
 def _validate_local_target(root: Path, entry: HelpLink) -> None:
     """Bind relative destinations to a committed public-page template.
 
     The public render may run from a sparse worktree where ``site/`` is omitted,
     so the governed source template — not a possibly absent generated copy — is
-    the stable existence check.
+    the stable existence check. A page in ``_GENERATED_PAGES`` has no template.
     """
     if entry.href == _APP_SIGNIN_URL:
         return
     assert entry.href is not None  # complete-entry validation runs first
-    target = Path(urlsplit(entry.href).path)
-    template = root / "templates" / f"{target.as_posix()}.j2"
-    if not template.is_file():
-        raise ValueError(
-            f"help entry {entry.id!r}: target template is unavailable: {template}"
-        )
+    _require_local_page(root, f"help entry {entry.id!r}", entry.href)
 
 
 def validate_help_directory(root: Path, entries: Iterable[HelpLink] = HELP_LINKS) -> None:
@@ -340,12 +354,12 @@ HELP_ANSWERS: tuple[HelpAnswer, ...] = (
         "What does calibration mean here?", "\u8fd9\u91cc\u8bf4\u7684\u201c\u6821\u51c6\u201d\u662f\u4ec0\u4e48\u610f\u601d\uff1f",
         "It is our own scorecard: we publish how our past calls turned out, wins and misses together.",
         "\u90a3\u662f\u6211\u4eec\u81ea\u5df1\u7684\u6210\u7ee9\u5355\uff1a\u6211\u4eec\u628a\u8fc7\u53bb\u5224\u65ad\u7684\u7ed3\u679c\u516c\u5e03\u51fa\u6765\uff0c\u5bf9\u7684\u548c\u9519\u7684\u90fd\u5728\u3002",
-        "measurement.html", "Calibration Lab", "\u6821\u51c6\u5b9e\u9a8c\u5ba4"),
+        "calibration.html", "Calibration Hub", "\u6821\u51c6\u4e2d\u5fc3\uff08\u82f1\u6587\uff09"),
     HelpAnswer("how-do-you-know", "research",
         "How do you know a signal works?", "\u4f60\u4eec\u600e\u4e48\u77e5\u9053\u4e00\u4e2a\u4fe1\u53f7\u6709\u6548\uff1f",
-        "We write the test down before it runs and publish the result either way, including when there is none.",
-        "\u6211\u4eec\u5728\u6d4b\u8bd5\u5f00\u59cb\u524d\u5148\u628a\u6807\u51c6\u5199\u4e0b\u6765\uff0c\u65e0\u8bba\u7ed3\u679c\u5982\u4f55\u90fd\u516c\u5e03\uff0c\u5305\u62ec\u6ca1\u6709\u6548\u679c\u7684\u60c5\u51b5\u3002",
-        "measurement.html", "Calibration Lab", "\u6821\u51c6\u5b9e\u9a8c\u5ba4"),
+        "We set each desk's bar in advance, then show every result against it, including desks below it or with nothing scored.",
+        "\u6211\u4eec\u4e8b\u5148\u5b9a\u597d\u6bcf\u4e2a\u7814\u7a76\u53f0\u7684\u6807\u51c6\uff0c\u518d\u5217\u51fa\u6240\u6709\u7ed3\u679c\uff0c\u5305\u62ec\u672a\u8fbe\u6807\u6216\u5c1a\u65e0\u8bc4\u5206\u8bb0\u5f55\u7684\u7814\u7a76\u53f0\u3002",
+        "calibration.html", "Calibration Hub", "\u6821\u51c6\u4e2d\u5fc3\uff08\u82f1\u6587\uff09"),
     HelpAnswer("look-up-a-term", "research",
         "Where do I look up a market term?", "\u6211\u5728\u54ea\u91cc\u67e5\u5e02\u573a\u672f\u8bed\uff1f",
         "Market Reference explains the terms and figures used across the site, in both languages.",
@@ -428,10 +442,7 @@ def help_answers_view_model(root: Path, answers: Iterable[HelpAnswer] = HELP_ANS
             if not _is_nonempty_text(a.link_en) or not _is_nonempty_text(a.link_zh):
                 raise ValueError(f"help answer {a.id!r}: href set without link_en/link_zh")
             if a.href != _APP_SIGNIN_URL:
-                target = Path(urlsplit(a.href).path)
-                template = root / "templates" / f"{target.as_posix()}.j2"
-                if not template.is_file():
-                    raise ValueError(f"help answer {a.id!r}: target template is unavailable: {template}")
+                _require_local_page(root, f"help answer {a.id!r}", a.href)
         _check_banned_vocabulary(f"help answer {a.id!r}", a.question_en, a.question_zh)
         _check_banned_vocabulary(f"help answer {a.id!r}", a.answer_en, a.answer_zh)
 
