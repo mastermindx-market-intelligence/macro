@@ -3691,10 +3691,9 @@ class ProofFreshness:
     ) -> str | None:
         """Why a check-definition commit still re-proves this pull request.
 
-        ``None`` only when the commit's sole check-definition file is the legacy
-        manifest, it changes no other planner input, its edit is job-local, and no
-        changed job could select or name this pull request's own files under its
-        old or its new definition.
+        ``None`` only when the commit changes the legacy manifest alone, its edit
+        is job-local, and no changed job could select or name this pull request's
+        own files under its old or its new definition.
         """
         if not self.ci_scope_active:
             return "pull-request CI scoping is not active, so every job ran"
@@ -3708,6 +3707,12 @@ class ProofFreshness:
                 MANIFEST_GLOBAL_INVALIDATORS, name
             ):
                 return f"it also changed planner input {name}"
+        # Inferred scopes also depend on ordinary suite/source content. A mixed
+        # commit can change an unchanged sibling job's selected scope without
+        # appearing in the manifest delta. Only a manifest-only commit proves
+        # those sibling inputs stayed fixed; coarse workflow roots cannot.
+        if any(name != LEGACY_MANIFEST_PATH for name in commit_files):
+            return "it also changed files outside the legacy job manifest"
         delta = self._manifest_job_delta(sha)
         if isinstance(delta, str):
             return f"its manifest delta is not bounded: {delta}"

@@ -11235,12 +11235,106 @@ def test_a_manifest_commit_that_also_changes_planner_input_re_proves(extra):
     _assert_held(fresh, f"it also changed planner input {extra}")
 
 
-def test_a_manifest_commit_with_an_ordinary_product_file_stays_bounded():
-    """Only planner input widens the hold: a product edit outside the pull
-    request's surface is judged by the ordinary surface test, as before."""
+def test_a_manifest_commit_with_an_ordinary_product_file_re_proves():
+    """The bounded exemption requires positive evidence that sibling inputs
+    stayed fixed; a companion file is not classified by workflow roots alone."""
     after = _edit_job(_manifest_base(), "widget-suite", **{"timeout-minutes": 45})
     fresh = _manifest_freshness(after, extra_files=("docs/widget.md",))
-    stale, reason = _manifest_verdict(fresh)
+    _assert_held(fresh, "it also changed files outside the legacy job manifest")
+
+
+def test_a_mixed_manifest_commit_reproves_a_newly_selected_unchanged_sibling(
+    tmp_path, monkeypatch
+):
+    """A sibling's unchanged manifest can acquire a dependency in the same commit."""
+    from scripts import run_ci_pack as PLAN
+    from scripts import audit_unrun_tests as AUDIT
+    from scripts import ci_scope_dependencies as DEPS
+
+    pr_file = "app/quokka.py"  # ci-trigger-closure: data — fully materialized fixture
+    suite = "tests/test_dynamic_scope.py"  # ci-trigger-closure: data — fixture suite
+    before = {
+        "jobs": {
+            "widget-suite": _exclusive_job(
+                "widget proof", "tests/test_widgets.py", "engine/widgets/**"
+            ),
+            "dynamic-suite": {
+                **MANIFEST_JOB_FRAME,
+                "gate": "code",
+                "steps": [{"name": "dynamic proof", "run": f"python -m pytest {suite} -q"}],
+            },
+        },
+    }
+    after = _edit_job(before, "widget-suite", **{"timeout-minutes": 45})
+    assert before["jobs"]["dynamic-suite"] == after["jobs"]["dynamic-suite"]
+    sources_before = {
+        "app/__init__.py": "",
+        pr_file: "VALUE = 1\n",
+        "engine/widgets/__init__.py": "",
+        "tests/test_widgets.py": "def test_widget():\n    assert True\n",
+        suite: "def test_dynamic():\n    assert True\n",
+    }
+    sources_after = {
+        **sources_before,
+        suite: "from app.quokka import VALUE\n\ndef test_dynamic():\n    assert VALUE == 1\n",
+    }
+    selections, scope_paths = [], []
+    for label, sources, document in (
+        ("before", sources_before, before), ("after", sources_after, after)
+    ):
+        root = tmp_path / label
+        for relative, content in sources.items():
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content, encoding="utf-8")
+        _fixture_git(root, "init", "-q")
+        _fixture_git(root, "add", "-A")
+        with monkeypatch.context() as scoped:
+            for key in list(os.environ):
+                if key.startswith("GIT_"):
+                    scoped.delenv(key, raising=False)
+            scoped.chdir(root)
+            scoped.setattr(AUDIT, "ROOT", root)
+            scoped.setattr(DEPS, "ROOT", root)
+            AUDIT._classify.cache_clear()
+            DEPS._selector_file_analysis.cache_clear()
+            try:
+                assert DEPS._ACTIVE_TRACKED_PATHS is None
+                assert suite in AUDIT.discover_suites()
+                jobs = PLAN.load_legacy_jobs_document(document, gate="code")
+                inferred, summary = PLAN.infer_job_scopes(jobs)
+                assert "scope inference unavailable" not in summary
+                dynamic = next(job for job in inferred if job.job_id == "dynamic-suite")
+                assert not dynamic.exclusive and dynamic.is_scoped
+                selected, _reason = PLAN.select_jobs(inferred, [pr_file])
+                selections.append({job.job_id for job in selected})
+                scope_paths.append(dynamic.paths)
+            finally:
+                AUDIT._classify.cache_clear()
+                DEPS._selector_file_analysis.cache_clear()
+    assert "dynamic-suite" not in selections[0]
+    assert "dynamic-suite" in selections[1]
+    assert pr_file not in scope_paths[0] and pr_file in scope_paths[1]
+    for path in (pr_file, suite):
+        assert not MOG._manifest_matches_any(MOG.MANIFEST_GLOBAL_INVALIDATORS, path)
+
+    gates = _gates(("app/**", "tests/**", MOG.LEGACY_MANIFEST_PATH))
+    fresh = _manifest_freshness(
+        after, before=before, pull_files=(pr_file,), extra_files=(suite,),
+        gates=gates, paths_before=tuple(sources_before), paths_after=tuple(sources_after),
+    )
+    # This is the real canonical subprocess validator and the real delta. Both
+    # manifests validate, but the manifest delta cannot see the sibling's drift.
+    assert set(fresh._manifest_job_delta(MANIFEST_COMMIT_SHA)) == {"widget-suite"}
+    assert len(fresh._manifest_valid) == 2 and not fresh._manifest_rejections
+    assert fresh.surface_of(4242) == {"app/**"}
+    _assert_held(fresh, "it also changed files outside the legacy job manifest")
+
+    control = _manifest_freshness(
+        after, before=before, pull_files=(pr_file,), gates=gates,
+        paths_before=tuple(sources_before), paths_after=tuple(sources_before),
+    )
+    stale, reason = _manifest_verdict(control)
     assert stale is False, reason
     assert "job-local manifest edit" in reason, reason
 
