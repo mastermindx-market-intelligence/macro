@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-08",
+  "as_of": "2026-11-11",
   "universe_coverage": {
-    "as_of": "2026-11-08",
+    "as_of": "2026-11-11",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -14,6 +14,14 @@
         "id": "aster-2",
         "source": "CoinGecko",
         "as_of": "2026-09-24",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_btw.parquet",
+        "symbol": "BTW",
+        "id": "bitway",
+        "source": "CoinGecko",
+        "as_of": "2026-11-08",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -54,22 +62,6 @@
         "id": "mantle",
         "source": "CoinGecko",
         "as_of": "2026-10-01",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
-        "file": "market_ondo.parquet",
-        "symbol": "ONDO",
-        "id": "ondo-finance",
-        "source": "CoinGecko",
-        "as_of": "2026-11-06",
-        "reason": "OLDER_SNAPSHOT"
-      },
-      {
-        "file": "market_paxg.parquet",
-        "symbol": "PAXG",
-        "id": "paxg-pax-gold",
-        "source": "CoinPaprika",
-        "as_of": "2026-09-19",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -178,15 +170,15 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-08",
+      "as_of": "2026-11-11",
       "eligible": 44,
       "required": 10,
       "excluded": 6,
-      "positive": 10,
+      "positive": 9,
       "denominator": 44,
       "basis": "reported_30d_return_positive",
       "available": true,
-      "value": 23,
+      "value": 20,
       "state": "Narrow",
       "tone": "bear",
       "state_zh": "狭窄"
@@ -521,15 +513,41 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 2,
-        "support_after": 6,
+        "support_after": 7,
         "level_ratio": 0.9940386306533618,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-10",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 7,
+        "support_after": 1,
+        "level_ratio": 1.1378439081287521,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-11",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 1,
+        "support_after": 1,
+        "level_ratio": 1.133710717938818,
         "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
     "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "stablecoins": "Falling",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
@@ -540,7 +558,7 @@
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -557,16 +575,16 @@
   },
   "assets": {
     "ETH": {
-      "trend": "Range",
+      "trend": "Fading",
       "risk": "Stressed",
-      "relative": "Tracking Bitcoin",
-      "coverage": "3,813 daily observations from Coinbase daily OHLCV."
+      "relative": "Lagging Bitcoin",
+      "coverage": "3,816 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
-      "trend": "Range",
+      "trend": "Fading",
       "risk": "Stressed",
-      "relative": "Tracking Bitcoin",
-      "coverage": "1,971 daily observations from Coinbase daily OHLCV."
+      "relative": "Lagging Bitcoin",
+      "coverage": "1,974 daily observations from Coinbase daily OHLCV."
     }
   }
 }
