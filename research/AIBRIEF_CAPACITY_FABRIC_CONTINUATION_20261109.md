@@ -255,3 +255,26 @@ pinned by two evidence receipts. REMINTED per the gate's own heal command:
 REMAINING: #11075 checks green -> controller merges -> post-merge live chip
 verify on dashboard/china/hk pages (same mastermind-x.com readback path).
 Then mission verticals P2-P4 (VPS admission, estate migration, Brain models).
+
+## 2026-11-11 (~23:1xZ) — #11075 acts 2+3: ew-p4 re-pin + p0b manifest heal
+
+Watcher reported ci-pack-2 on OLD head 1d7fa28 (run 43099993549). Full job
+census: pack-1 fail (p0b, healed by act-1 remint), pack-2 fail (first-frame
+x2 — same remint heals, verified 3 passed; ew-p4 receipt-shots — NEW), packs
+0/3/4/5 + plan + contract green. Two further self-binding artifacts healed:
+
+ACT 2 (bcb39dd1): ew-p4 receipt research/evidence/ew_p4_descriptive_ui_20261031/
+receipt.json pins templates/dashboard.html.j2 blob; v2 chip edited it. PROOF the
+68 shots cannot change: harness page = theme.css + ALL dashboard <style> blocks
++ #dlg-risk slice (probe _dashboard_styles/_dlg_element via tests.test_macro_
+risk_dialog._vm/_render); rendered under the harness VM, main vs this branch
+produce BYTE-IDENTICAL full render (chip absent — master_brief undefined ->
+news-teaser fallback). Re-pinned both blob fields; ew-p4 suite 163 passed.
+
+ACT 3 (404fafb1): p0b manifest.json repair_extension binds the THREE live
+receipt files by sha256; remint made them stale. Updated all three; full
+first-frame suite 120 passed. Repo-wide grep: no other stale pins.
+
+Head now 404fafb1, armed, all three 43099993549 atoms locally proven healed.
+LESSON: p0b's heal command remints receipts but NOT manifest.json — run the
+FULL first-frame + ew-p4 suites after any p0b remint, not just the named tests.
