@@ -6,7 +6,7 @@
   "power_statement_top": "A 1-2 pp/yr rotation edge cannot be shown by any test available to us. From 1998-2019 variance (full-tilt proxy, Holm m=3, 80% power) the minimum detectable effect is 2.6 pp/yr on pre-1998 plus 2020-2025 pooled, 9.2 pp/yr on 2020-2025 alone, 10.1 pp/yr after five forward years and 7.1 after ten. Detecting 2 pp/yr would need about 127 clean years; 1 pp/yr about 509. The historical tier is a low-power falsification screen, not a confirmation.",
   "predecessors": {
     "v1": "protocol_header_v1.json sha256 af2a0988...0f32; closed at L0 (parent ruling 2026-11-11); Stage H never run; Stage D corrected after PRO_RUN_A (RESULTS_STAGE_D_CORRECTED.md, b3253a9610), no conclusion moved",
-    "run_B": "Pro run B, Macro 2afbd280fe (protocol ba5ae1e353, clarifications da384adb88, missing data 85f299a57d): ten rules on Ken French 49 industries 1926-2019, all negative; counted as 10 consumed trials of this programme. Its numbers may be cited only after the local reproduction (worker running; B_rerun/REPRODUCTION.md) matches its tables.",
+    "run_B": "Pro run B, Macro 2afbd280fe (protocol ba5ae1e353, clarifications da384adb88, missing data 85f299a57d): ten rules on Ken French 49 industries 1926-2019, all negative; counted as 10 consumed trials. Local reproduction 2026-11-11 (pro_run_B_reproduction/REPRODUCTION.md) on sealed <=2019 inputs: 3,229 of 3,229 computable cells match at printed precision, 0 mismatches, 12/12 integrity tests pass. 2,806 cells (rules R2/R4/R6/R9/R10, macro and S&P columns) could not be computed here because their inputs (FRED BAA/GS10/TB3MS, Shiller, SPX, French monthly files) are not on this host; those cells are NOT reproduced and may not be cited. Citable: only reproduced cells (price/breadth rules incl. R5, R7, R8). The worker printed three post-2019 monthly UNRATE date labels during schema inspection, before truncation (labels only, no values used); disclosed.",
     "run_C": "Pro run C: design-only forward protocol; its power arithmetic is adopted (section power).",
     "SI_proposal": "/home/ubuntu2/tmp/rotation-core/SI_PROPOSAL_V2.md, adopted per parent rulings A, C, D, E, F (11:45Z)"
   },
@@ -18,14 +18,28 @@
     "The lead saw some of run B's per-rule era rows (R5-R8, 1926-2019) while reading its file to record the trials. No v2 parameter or grid value was chosen from them; the grid below was set from SI's proposal and the arming check only.",
     "2020-2025 is the only window not yet examined, with about two stress episodes (2020, 2022; 2025 is borderline by the v1 rule)."
   ],
-  "kill_records_cited_not_rebuilt": ["DNR:KILL-DEFENSIVE-FLOOR-BUNDLE", "DNR:KILL-RS-DISPERSION-GATES", "DNR:KILL-ROTATION-CYCLE-CONFLUENCE", "DNR:KILL-HINDENBURG-OMEN", "DNR:KILL-MCO-THRUST", "DNR:KILL-FUSED-COMPOSITE"],
+  "kill_records_cited_not_rebuilt": [
+    "DNR:KILL-DEFENSIVE-FLOOR-BUNDLE",
+    "DNR:KILL-RS-DISPERSION-GATES",
+    "DNR:KILL-ROTATION-CYCLE-CONFLUENCE",
+    "DNR:KILL-HINDENBURG-OMEN",
+    "DNR:KILL-MCO-THRUST",
+    "DNR:KILL-FUSED-COMPOSITE"
+  ],
   "leave_outs_with_record": "Per SI section F: position-in-range as a top signal; RS momentum as a leader read; the turn label; fund-flow residual; member-dispersion gates (KILL-RS-DISPERSION-GATES); index-level breadth thrust (KILL-MCO-THRUST); themes and the 49 baskets (no honest index before 2026-07). Rates, credit spread and SPY-minus-RSP are descriptive splits only, never in a trigger.",
   "construction": {
     "universe": "Ken French 49 industry portfolios, daily, value-weighted returns (equal-weighted section used only for narrowness stand-in ii)",
     "file_facts": {
       "sections": "value- and equal-weighted daily returns for all 49 industries in one file",
       "first_date": "1926-07-01",
-      "industries_with_data": {"1926": 40, "1930": 42, "1940": 43, "1950": 43, "1960": 43, "1970": 49},
+      "industries_with_data": {
+        "1926": 40,
+        "1930": 42,
+        "1940": 43,
+        "1950": 43,
+        "1960": 43,
+        "1970": 49
+      },
       "1928_1950": "43 industries with any data, 37 complete",
       "missing_after_eligible": "366 industry-days in 8 industries up to 2019-12-31 (confirms run B, MISSING_DATA.md at 85f299a57d)",
       "publication": "Built from the monthly CRSP update; on 2026-11-10 the latest file ('202609 CRSP database', members dated 2026-10-26) ran to 2026-09-30. Update roughly monthly with about a 4-week lag after month-end.",
@@ -46,11 +60,30 @@
     "relative_line": "cumulative offence-leg return over cumulative defence-leg return"
   },
   "hypotheses": {
-    "holm_family": {"m": 3, "alpha": 0.05, "members": ["H1", "H2", "H3"]},
+    "holm_family": {
+      "m": 3,
+      "alpha": 0.05,
+      "members": [
+        "H1",
+        "H2",
+        "H3"
+      ]
+    },
     "H1": {
       "name": "two-key switch vs the exposure-matched mix",
       "rule": "States: NEUTRAL = base; DEFEND = defence leg; ATTACK = offence leg. ARMED when the relative line is within h% of its 126-session high AND offence breadth (i) is at least b pp below its own 126-session maximum. TRIGGERED when, while armed (or armed within the last 21 sessions), the relative line closes below its own 50-session SMA: switch to DEFEND. ATTACK after a washout-then-confirm: offence breadth (i) falls to <= 25% and then recovers to > 25% within 20 sessions. ATTACK and DEFEND revert to NEUTRAL at the next month-end unless re-triggered. Decision at close t, execution at close t+1; costs 10 bp per side on industry portfolios.",
-      "declared_grid": {"h_near_high_pct": [3, 5], "b_breadth_drop_pp": [25, 37.5], "settings": 4, "selection": "the setting with the highest 1998-2019 excess over its matched mix, chosen after freeze on 1998-2019 only; all 4 counted"},
+      "declared_grid": {
+        "h_near_high_pct": [
+          3,
+          5
+        ],
+        "b_breadth_drop_pp": [
+          25,
+          37.5
+        ],
+        "settings": 4,
+        "selection": "the setting with the highest 1998-2019 excess over its matched mix, chosen after freeze on 1998-2019 only; all 4 counted"
+      },
       "arming_check_1998_2019": "Armed fraction on breadth (i): 11.8% (h=3, b=25), 7.6% (3, 37.5), 19.7% (5, 25), 13.7% (5, 37.5); the price key alone is on 37% (h=3) / 50% (h=5). Not degenerate: breadth removes more than half of the price-key days, so H2 is not empty by construction. Stand-in (ii) armed fraction (bottom 20% of its 6-month range) is 6.9% / 9.8%; it is recorded and not used, because (i) is not degenerate. No return was computed (v2_power/arming_check_D.py).",
       "primary_contrast": "annualised mean daily return of H1 minus the exposure-matched static mix of offence, defence and base at H1's average weights, rebuilt inside every bootstrap resample from that resample's own average weights (parent ruling A)",
       "differs_from_run_B_R7": "R7 is prior negative evidence against H1's breadth key. H1 differs in two ways: (1) a second key is required - the offence/defence relative line must break its 50-session SMA after arming; R7 switched on the breadth drop alone; (2) legs are beta-sorted thirds re-formed monthly from data to t-1, not R7's fixed named cyclical and defensive groups; H1 also starts from equal weight, not from the cyclical leg."
@@ -68,11 +101,19 @@
     },
     "mandatory_ablation": "H1 with cash in place of the defence leg (identical DEFEND dates, bills instead of defensives); reported, not tested"
   },
-  "yardsticks_every_window": ["SPY (French market before 1993)", "RSP (from 2003-05; before that the equal-weight French market proxy, stated)", "equal weight of all eligible industries (the BASE)", "exposure-matched static mix (BINDING)"],
+  "yardsticks_every_window": [
+    "SPY (French market before 1993)",
+    "RSP (from 2003-05; before that the equal-weight French market proxy, stated)",
+    "equal weight of all eligible industries (the BASE)",
+    "exposure-matched static mix (BINDING)"
+  ],
   "stress_episode_table": "For H1 and its price-only control, per named episode (v1 lists plus PHASE2_ADDITIONS long list; 2020, 2022, 2025 in 2020-2025): was the ARMED state on at the price peak; sessions before (+) or after (-) the peak at which the trigger fired; descriptive, no extra trial.",
   "historical_tier": {
     "selection": "grid selection on 1998-2019 only (corrected engine)",
-    "confirmation_windows": ["pre-1998 French industries 1928-1997", "2020-01-02..2025-12-31 (one opening)"],
+    "confirmation_windows": [
+      "pre-1998 French industries 1928-1997",
+      "2020-01-02..2025-12-31 (one opening)"
+    ],
     "reported_not_scored": "2026 (industries to 2026-09-30; funds to the data pin)",
     "pass_condition": "Holm p < 0.05 (m=3) on the pooled pre-1998 + 2020-2025 primary contrast AND point estimate > 0 in pre-1998 AND in 2020-2025 AND in both pre-1998 eras (1928-1945, 1946-1997); drawdown no worse than the matched mix; holds at 2x costs; turnover and costs reported.",
     "label": "Best attainable label: 'survives falsification on history'. Never 'confirmed'; never a product claim.",
@@ -95,14 +136,31 @@
       "narrowness": "equal- minus cap-weight member return within the leg over 60 sessions, using the snapshot index weight; FALLBACK, decided before the first scored night and not after: if the weight field proves unusable, equal weight within sector minus the sector fund's return",
       "source_fields_per_member_per_night": "S&P 500 membership flag and GICS sector as of that night (source named); trailing 60-session total return; price vintage timestamp; index weight from Sector Intelligence's daily fund-holdings snapshots (held from 2026-06-11; carries the snapshot's own date, never a later one; source being confirmed by their build worker). Roster = union of vendor subsector members and that night's S&P 500 members.",
       "relation_to_history": "The historical industry stand-in and the forward member breadth are two measurements of the same idea, not one continuing series. The vendor subsector tree is recorded and reported descriptively only.",
-      "missing_before_start": ["Macro PR #11024 (nightly as-written member archive) merged", "the stacked per-member price-state file landed", "confirmation of the index-weight source (else the declared fallback)", "a nightly issuer writing the QLedger claims, built on the frozen v2 code", "50-session SMA history per member: needs 50 nightly price states before breadth is defined"]
+      "missing_before_start": [
+        "Macro PR #11024 (nightly as-written member archive) merged",
+        "the stacked per-member price-state file landed",
+        "confirmation of the index-weight source (else the declared fallback)",
+        "a nightly issuer writing the QLedger claims, built on the frozen v2 code",
+        "50-session SMA history per member: needs 50 nightly price states before breadth is defined"
+      ]
     }
   },
   "power": {
     "method": "1998-2019 variance only; full-tilt proxy (switch between the beta-sorted legs on the price-only key minus its matched mix, matched mix rebuilt per resample); no mean or point estimate printed; v2_power/power_v2_D.py and .stdout",
-    "D_se_annual": 0.0162, "D_tracking_error": 0.0853, "D_years": 21.96,
-    "mde80_holm_m3": {"pre1998_plus_2020_2025": 0.0259, "pre1998_70y": 0.027, "2020_2025": 0.0921, "forward_5y": 0.1009, "forward_10y": 0.0713},
-    "years_needed": {"2pp": 127, "1pp": 509},
+    "D_se_annual": 0.0162,
+    "D_tracking_error": 0.0853,
+    "D_years": 21.96,
+    "mde80_holm_m3": {
+      "pre1998_plus_2020_2025": 0.0259,
+      "pre1998_70y": 0.027,
+      "2020_2025": 0.0921,
+      "forward_5y": 0.1009,
+      "forward_10y": 0.0713
+    },
+    "years_needed": {
+      "2pp": 127,
+      "1pp": 509
+    },
     "run_C_arithmetic": "about 6 pp/yr detectable at five forward years with 5% active volatility; worse at higher volatility; adopted.",
     "plain": "H1's tilt is at most the full-tilt proxy, so its active risk is lower and the true numbers are between these and somewhat smaller; the conclusion does not change: a 1-2 pp/yr edge is not demonstrable historically or in five forward years."
   },
