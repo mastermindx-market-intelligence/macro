@@ -357,3 +357,24 @@ def test_corrupt_index_fails_closed_not_partially_joined(client, tmp_path, monke
     assert body["prophet_ref"] is None
     assert body["compatibility"]["status"] == "prophet_unavailable"
     assert all(m["prophet"]["state"] == "unavailable" for m in body["members"])
+
+
+@pytest.mark.skipif(LANE1, reason="the lane-1 Sector reader is on this tree")
+def test_without_the_sector_reader_a_configured_root_still_answers_sector_unavailable(
+        monkeypatch, tmp_path):
+    """Today's main: the generations root is configured but the Sector reader
+    (lane 1) has not landed. The REAL capture call fails closed inside the route —
+    every mode answers the designed 200 ``sector_unavailable`` envelope, never a
+    500 and never an import failure at app start."""
+    monkeypatch.setenv("MACRO_SECTOR_GENERATIONS_ROOT", str(tmp_path))
+    app = FastAPI()
+    app.include_router(route.router)
+    app.dependency_overrides[route.require_site_full_user] = lambda: {"uid": "fixture"}
+    with TestClient(app) as test_client:
+        for path in (URL, f"{URL}?group=us_sector_industrials", f"{URL}?symbol=CARR"):
+            response = test_client.get(path)
+            assert response.status_code == 200, response.text
+            body = response.json()
+            assert body["sector_ref"] is None
+            assert body["compatibility"]["status"] == "sector_unavailable"
+            private(response)

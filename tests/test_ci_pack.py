@@ -5342,6 +5342,11 @@ CURATED_EXCLUSIVE = {
     # package, so the three packing probes keep their base aggregates
     # with no ceiling moved.
     "xguerrilla-admission",
+    # 2026-11-11 Prophet sector-members/v1: the pure join and route suites
+    # import the real app.main; their own exclusive job keeps the measured
+    # import/read closure while the app/ fallback stays off ordinary code PRs
+    # and the three packing probes keep their base aggregates.
+    "prophet-sector-members",
 }
 
 
