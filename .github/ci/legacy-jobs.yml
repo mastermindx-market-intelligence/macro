@@ -10580,6 +10580,13 @@ jobs:
     # simulation: fetch 1.61s, then the test passed (1 passed in 0.77s).
     timeout-minutes: 15
     paths:
+      # Current-main builder closure, proved by the native scope audit.
+      - collectors/rate_futures.py
+      - contracts/theme_graph/activity_curation_receipt.v1.schema.json
+      - engine/rate_futures_repricing.py
+      - engine/research_codegen/prospective_contract.py
+      - engine/theme_graph/activity_history_bridge.py
+      - engine/us_board_snapshots.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"

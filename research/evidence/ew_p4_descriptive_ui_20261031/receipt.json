@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+  "source_revision": "d0d7627209e4789c85d91fff017aefb6f16802d0",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
-    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
-    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+    "note": "The unchanged existing probe actually recaptured all 68 synthetic cases and five contact sheets at source_revision on the composed product source. All 31 retained render/fixture inputs were compared with that commit and the final candidate files. The only subsequent non-evidence change adds six literal CI dependency paths; it changes no render input. All 73 PNGs are byte-identical to the receiving-main donor after actual recapture. This static fixture proof does not replace original live-site or require-active acceptance.",
+    "pr_branch": "sol/risk-radar-pullback-depth-20261009",
+    "pr_parent_of_evidence_commit": "d0d7627209e4789c85d91fff017aefb6f16802d0",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_at_source_revision": "b16cc7c59f66efbebe7739105f1567478246ae2d",
+        "blob_on_pr_branch": "b16cc7c59f66efbebe7739105f1567478246ae2d",
         "equal": true
       },
       {
