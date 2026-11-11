@@ -63,7 +63,12 @@ class InstructionBudgetOrderTests(unittest.TestCase):
     def test_missing_required_operating_section_still_fails(self):
         from unittest.mock import patch
         parts = self.parts()
-        with patch.object(self, "parts", return_value=parts[:-1]):
+        required = "## Definition of done"
+        self.assertIn(required, BASELINE["original_order"])
+        reduced = [part for part in parts
+                   if part.splitlines()[0].decode() != required]
+        self.assertEqual(len(reduced), len(parts) - 1)
+        with patch.object(self, "parts", return_value=reduced):
             with self.assertRaises(AssertionError):
                 self.test_required_sections_preserved_without_freezing_all_prose()
 
