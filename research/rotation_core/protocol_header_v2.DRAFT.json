@@ -1,9 +1,9 @@
 {
   "schema": "rotation_core.protocol_header/v2",
   "protocol_id": "rotation-core-v2",
-  "status": "DRAFT revision 6 - NOT FROZEN. Text-only revision after the parent's 11:58Z rulings; rules frozen as written. No return, mean or point estimate computed.",
+  "status": "DRAFT revision 7 - NOT FROZEN. R12 (parent 12:06Z) replaces the ATTACK entry; nothing else changed. No return, mean or point estimate computed.",
   "drafted_on_utc": "2026-11-11",
-  "power_statement_top": "H1's own minimum detectable effects, from its actual time in tilt (67-71% of sessions), 80% power, Holm m=3, 1998-2019 variance only: 2.0-2.2 pp/yr on pooled history (pre-1998 plus 2020-2025), 7.2-7.8 pp/yr on 2020-2025 alone, 7.9-8.6 pp/yr after five forward years. Beside them, the full-tilt proxy as the upper bound of the MDE: 2.6 / 9.2 / 10.1 pp/yr. With the four positive-sign requirements the chance of passing is about 63% at the detectable effect and about 43% at a true 2 pp/yr edge. A 1-2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect. The historical tier is a low-power falsification screen.",
+  "power_statement_top": "H1's own minimum detectable effects under R12, from its actual time in tilt (57-62% of sessions), 80% power, Holm m=3, 1998-2019 variance only: 2.1-2.3 pp/yr on pooled history (pre-1998 plus 2020-2025), 7.6-8.3 pp/yr on 2020-2025 alone, 8.4-9.1 pp/yr after five forward years. Full-tilt proxy upper bound beside them: 2.6 / 9.2 / 10.1 pp/yr. With the four positive-sign requirements the chance of passing is about 63% at the detectable effect and about 50-57% at a true 2 pp/yr edge. A 1-2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect. The historical tier is a low-power falsification screen.",
   "predecessors": {
     "v1": "protocol_header_v1.json sha256 af2a0988...0f32; closed at L0 (parent ruling 2026-11-11); Stage H never run; Stage D corrected after PRO_RUN_A (RESULTS_STAGE_D_CORRECTED.md, b3253a9610), no conclusion moved",
     "run_B": "Pro run B, Macro 2afbd280fe (protocol ba5ae1e353, clarifications da384adb88, missing data 85f299a57d): ten rules on Ken French 49 industries 1926-2019, all negative; counted as 10 consumed trials. Local reproduction 2026-11-11 (pro_run_B_reproduction/REPRODUCTION.md) on sealed <=2019 inputs: 3,229 of 3,229 computable cells match at printed precision, 0 mismatches, 12/12 integrity tests pass. 2,806 cells (rules R2/R4/R6/R9/R10, macro and S&P columns) could not be computed here because their inputs (FRED BAA/GS10/TB3MS, Shiller, SPX, French monthly files) are not on this host; those cells are NOT reproduced and may not be cited. Citable: only reproduced cells (price/breadth rules incl. R5, R7, R8). The worker displayed the last three monthly UNRATE observations (2026-08..10, values 4.1, 4.2, 4.1) during schema inspection, before truncation; no post-2019 value entered any computation. UNRATE is not a v2 input; disclosed.",
@@ -71,7 +71,7 @@
     },
     "H1": {
       "name": "two-key switch vs the exposure-matched mix",
-      "rule": "Base = equal weight of eligible industries (NEUTRAL). Entry to DEFEND (defence leg): ARMED within the last 21 sessions (fixed arming memory) and the offence/defence relative line closes below its own 50-session SMA after closing at or above it. ARMED = relative line within h% of its 126-session high AND offence breadth (i) at least b below its 126-session maximum, both breadth values measured on the CURRENT leg's members (R2). Entry to ATTACK (offence leg): a washout spell starts at the first close with offence breadth (i) <= 25% (current members, R2) and runs while closes stay <= 25%; ATTACK confirms on the first close above 25% if that close is within 20 sessions of the spell's lowest breadth close (earliest if tied); otherwise the spell ends with no ATTACK and the state in force continues under its own exit rule (R3, trough clock). Exits by state (R1): DEFEND ends at an ATTACK confirm (immediately) or at the first month-end on which the relative line closes above its own 50-session SMA, then NEUTRAL. ATTACK ends at a DEFEND trigger (immediately) or at the first month-end at least 63 sessions after entry, then NEUTRAL. A state is never exited on its entry day; a trigger on a month's last session stands and the month-end test first applies at the following month-end. Same-day DEFEND trigger and ATTACK confirm: DEFEND wins, counted. Re-triggering the state already in force is ignored and does not reset its clock. Decisions at close t, execution at close t+1, 10 bp per side.",
+      "rule": "Base = equal weight of eligible industries (NEUTRAL). Entry to DEFEND (defence leg): ARMED within the last 21 sessions (fixed arming memory) and the offence/defence relative line closes below its own 50-session SMA after closing at or above it. ARMED = relative line within h% of its 126-session high AND offence breadth (i) at least b below its 126-session maximum, both breadth values measured on the CURRENT leg's members (R2). Entry to ATTACK (offence leg), R12: a washout spell starts at the first close with offence breadth (i) <= 25% on the current leg's members and runs while closes stay <= 25%. The spell QUALIFIES only if, on at least one close inside the spell, the relative line is within h% of its own 126-session low: rel_t <= (1 + h/100) * min(rel over the 126 sessions ending at t, including t) - the literal mirror of the arming key's rel_t >= (1 - h/100) * max(rel over the same window). Same h as the grid point. ATTACK confirms on the first close above 25% if the spell qualifies AND that close is within 20 sessions of the spell's lowest breadth close (earliest if tied). Otherwise the spell ends with no ATTACK and the state in force continues under its own exit rule. Exits by state (R1): DEFEND ends at an ATTACK confirm (immediately) or at the first month-end on which the relative line closes above its own 50-session SMA, then NEUTRAL. ATTACK ends at a DEFEND trigger (immediately) or at the first month-end at least 63 sessions after entry, then NEUTRAL. A state is never exited on its entry day; a trigger on a month's last session stands and the month-end test first applies at the following month-end. Same-day DEFEND trigger and ATTACK confirm: DEFEND wins, counted. Re-triggering the state already in force is ignored and does not reset its clock. Decisions at close t, execution at close t+1, 10 bp per side.",
       "declared_grid": {
         "h_near_high_pct": [
           3,
@@ -101,11 +101,12 @@
         "R2_current_leg": "each day the 126-session breadth history (arming key and washout spell) is recomputed on the current leg's members over the look-back; never a stitched series of past legs. The relative line remains a chained return series.",
         "R5_share": "b is compared as a share of the leg's eligible industries. Step about 6.25 points with 16 offence members (from 1970); about 7-8 points before 1970 (13-14 members)."
       },
-      "plain_description": "On 1998-2019 industry portfolios the washout condition is a routine dip: 179 spells, about eight a year, median length 3 sessions; 92% fire ATTACK, so the 20-session limit does little work. ATTACK is held about half of all sessions; DEFEND 14-21% of sessions with a median spell of 12-13 sessions. H1 is therefore mostly an offence tilt with short defensive episodes, and DEFEND often ends because an ATTACK fires (inferred from spell lengths and fire rates; exit reasons were not counted). These counts were seen before freeze; no threshold was changed because of them (parent ruling 11:58Z). Re-triggering the state in force is ignored and does not reset its clock (confirmed 11:58Z)."
+      "plain_description": "Under R12, on 1998-2019 industry portfolios: 179 breadth washout spells (about eight a year, median 3 sessions); 97 qualify at h=3 and 112 at h=5 (relative line near its 126-session low inside the spell); 83 (h=3) and 98 (h=5) fire ATTACK confirms, about 3.8-4.5 a year - more than one every two years at both h, so the ATTACK leg is exercised. ATTACK entries 1.5-1.8 a year (confirms while ATTACK is already held are ignored), held 37-39% of sessions with a median spell of 69-72 sessions; DEFEND entries 1.7-2.7 a year, held 18-25% of sessions with a median spell of 18-22 sessions; NEUTRAL 38-43%. DEFEND ends mostly at a month-end with the relative line back above its SMA (29-36 exits) rather than by an ATTACK confirm (9-23 exits); ATTACK ends mostly at the 63-session month-end (21-25) rather than by a DEFEND trigger (7-18). Same-day conflicts: 0. H1 is a three-state rule with roughly comparable time in each state, not a mostly-offence tilt. These counts were seen before freeze; no threshold, grid point or window was changed because of them.",
+      "mirror_note": "Mirror choice: 'within h% of the high' is coded rel >= (1 - h/100) * high, so 'within h% of the low' is rel <= (1 + h/100) * low. The alternative rel <= low / (1 - h/100) was not used; it was not evaluated or counted."
     },
     "H2": {
       "name": "breadth in the arming key adds information (the washout breadth is in both arms)",
-      "rule": "H1 minus the identical rule with the breadth condition removed from ARMED only (armed = relative line within h% of its 126-session high); washout ATTACK, exits and fixed settings identical; same h as selected. Paired daily difference.",
+      "rule": "H1 minus the identical rule with the breadth condition removed from ARMED only; the ATTACK rule (breadth washout plus relative-line-near-low qualification) is identical in both arms; exits and fixed settings identical; same h as selected. Paired daily difference.",
       "primary_contrast": "annualised mean of the paired daily difference H1 - H1_price_only",
       "inherits": "H2's price-only control and the cash ablation use exactly the H1 grid point selected on 1998-2019; no second selection is made for any derived book."
     },
@@ -180,69 +181,57 @@
     },
     "run_C_arithmetic": "about 6 pp/yr detectable at five forward years with 5% active volatility; worse at higher volatility; adopted.",
     "plain": "H1's tilt is at most the full-tilt proxy, so its active risk is lower and the true numbers are between these and somewhat smaller; the conclusion does not change: a 1-2 pp/yr edge is not demonstrable historically or in five forward years.",
-    "pass_probability_under_joint_rule": {
-      "method": "normal approximation; per-window SE = D per-year sd / sqrt(years); windows 1928-45 (17.2y), 1946-97 (52y), 2020-25 (6y) treated as independent; D variance only, no point estimate",
-      "true_edge_2.6pp_(the_MDE)": {
-        "holm_significant": 0.8,
-        "significant_and_all_four_sub_windows_positive": 0.63,
-        "2020_25_positive_alone": 0.8
-      },
-      "true_edge_2pp": {
-        "holm_significant": 0.56,
-        "joint": 0.43
-      },
-      "true_edge_1pp": {
-        "holm_significant": 0.16,
-        "joint": 0.12
-      },
-      "plain": "The four positive-sign requirements cut the chance of passing at the MDE from 80% to about 63% (the 2020-2025 sign alone costs most of it), before the drawdown and 2x-cost conditions, which cut it further. A fail of this test is therefore NOT evidence of no effect: at a true 2 pp/yr edge it fails more often than it passes."
-    },
     "h1_actual_tilt": {
-      "source": "v2_power/power_h1_actual_D.py, .stdout (bootstrap spread only, no point estimate)",
+      "source": "v2_power/power_h1_actual_D.py, .stdout (bootstrap spread only, R12)",
       "per_grid_point": {
         "h3 b25.0": {
-          "time_in_tilt": 0.684,
-          "D_se_annual": 0.0129,
+          "time_in_tilt": 0.582,
+          "D_se_annual": 0.0137,
           "mde80_holm_m3": {
-            "pre1998_plus_2020_25": 0.0206,
-            "2020_25": 0.0734,
-            "forward_5y": 0.0804,
-            "forward_10y": 0.0569
+            "pre1998_plus_2020_25": 0.0218,
+            "2020_25": 0.0776,
+            "forward_5y": 0.085,
+            "forward_10y": 0.0601
           }
         },
         "h3 b37.5": {
-          "time_in_tilt": 0.671,
-          "D_se_annual": 0.0126,
+          "time_in_tilt": 0.569,
+          "D_se_annual": 0.0134,
           "mde80_holm_m3": {
-            "pre1998_plus_2020_25": 0.0202,
-            "2020_25": 0.0718,
-            "forward_5y": 0.0786,
-            "forward_10y": 0.0556
+            "pre1998_plus_2020_25": 0.0214,
+            "2020_25": 0.0763,
+            "forward_5y": 0.0836,
+            "forward_10y": 0.0591
           }
         },
         "h5 b25.0": {
-          "time_in_tilt": 0.705,
-          "D_se_annual": 0.0138,
+          "time_in_tilt": 0.623,
+          "D_se_annual": 0.0147,
           "mde80_holm_m3": {
-            "pre1998_plus_2020_25": 0.022,
-            "2020_25": 0.0783,
-            "forward_5y": 0.0858,
-            "forward_10y": 0.0606
+            "pre1998_plus_2020_25": 0.0234,
+            "2020_25": 0.0833,
+            "forward_5y": 0.0913,
+            "forward_10y": 0.0645
           }
         },
         "h5 b37.5": {
-          "time_in_tilt": 0.687,
-          "D_se_annual": 0.0136,
+          "time_in_tilt": 0.596,
+          "D_se_annual": 0.0142,
           "mde80_holm_m3": {
-            "pre1998_plus_2020_25": 0.0217,
-            "2020_25": 0.0771,
-            "forward_5y": 0.0844,
-            "forward_10y": 0.0597
+            "pre1998_plus_2020_25": 0.0227,
+            "2020_25": 0.0808,
+            "forward_5y": 0.0885,
+            "forward_10y": 0.0626
           }
         }
       },
-      "summary": "With H1's actual time in tilt (67-71%) the D standard error is 1.26-1.38 pp/yr; MDE80 (Holm m=3) about 2.0-2.2 pp/yr pooled pre-1998 + 2020-25, 7.2-7.8 on 2020-25 alone, 7.9-8.6 after five forward years.",
-      "proxy_relation": "The full-tilt proxy figures (2.6 / 9.2 / 10.1) are kept beside these; they are the upper bound of the MDE (the least H1 could detect). H1's own figures are smaller because the three-leg matched mix absorbs part of its tilt."
+      "summary": "Time in tilt 57-62%; D SE 1.34-1.47 pp/yr; MDE80 (Holm m=3) 2.1-2.3 pp/yr pooled history, 7.6-8.3 on 2020-2025 alone, 8.4-9.1 after five forward years.",
+      "joint_rule_pass_probability": {
+        "at_the_MDE": "about 63% (Holm significance alone about 80%)",
+        "at_true_2pp": "about 50-57% (Holm alone 65-74%)",
+        "at_true_1pp": "about 14-16%"
+      },
+      "proxy_relation": "Full-tilt proxy (2.6 / 9.2 / 10.1) kept as the upper bound of the MDE."
     }
   },
   "trial_ledger_at_freeze": {
@@ -252,239 +241,320 @@
   },
   "unchanged": "Corrected v1 harness (dollar accounting, observed-close execution), t+1 execution, stationary bootstrap block 21 (63 sensitivity), B=10,000, nothing sizes, gates or trades.",
   "signals_table_1998_2019": {
-    "source": "v2_power/signals_table_D.py, .stdout (trough clock)",
-    "grid": {
-      "H1 h3 b25.0": {
-        "armed_share_no_memory": 0.1183,
-        "armed_share_with_21_memory": 0.3348,
-        "DEFEND_entries_per_year": 2.55,
-        "ATTACK_entries_per_year": 2.91,
-        "share": {
-          "NEUTRAL": 0.316,
-          "DEFEND": 0.153,
-          "ATTACK": 0.531
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            22,
-            115
-          ],
-          "DEFEND": [
-            12,
-            52
-          ],
-          "ATTACK": [
-            63,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "price_only h3 b25.0": {
-        "armed_share_no_memory": 0.3695,
-        "armed_share_with_21_memory": 0.5261,
-        "DEFEND_entries_per_year": 3.23,
-        "ATTACK_entries_per_year": 2.96,
-        "share": {
-          "NEUTRAL": 0.263,
-          "DEFEND": 0.21,
-          "ATTACK": 0.527
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            16,
-            115
-          ],
-          "DEFEND": [
-            13,
-            64
-          ],
-          "ATTACK": [
-            61,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "H1 h3 b37.5": {
-        "armed_share_no_memory": 0.0759,
-        "armed_share_with_21_memory": 0.2694,
-        "DEFEND_entries_per_year": 2.23,
-        "ATTACK_entries_per_year": 2.87,
-        "share": {
-          "NEUTRAL": 0.329,
-          "DEFEND": 0.139,
-          "ATTACK": 0.532
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            28,
-            150
-          ],
-          "DEFEND": [
-            13,
-            52
-          ],
-          "ATTACK": [
-            64,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "price_only h3 b37.5": {
-        "armed_share_no_memory": 0.3695,
-        "armed_share_with_21_memory": 0.5261,
-        "DEFEND_entries_per_year": 3.23,
-        "ATTACK_entries_per_year": 2.96,
-        "share": {
-          "NEUTRAL": 0.263,
-          "DEFEND": 0.21,
-          "ATTACK": 0.527
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            16,
-            115
-          ],
-          "DEFEND": [
-            13,
-            64
-          ],
-          "ATTACK": [
-            61,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "H1 h5 b25.0": {
-        "armed_share_no_memory": 0.1966,
-        "armed_share_with_21_memory": 0.4773,
-        "DEFEND_entries_per_year": 3.32,
-        "ATTACK_entries_per_year": 3.1,
-        "share": {
-          "NEUTRAL": 0.295,
-          "DEFEND": 0.212,
-          "ATTACK": 0.493
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            21,
-            115
-          ],
-          "DEFEND": [
-            12,
-            79
-          ],
-          "ATTACK": [
-            39,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "price_only h5 b25.0": {
-        "armed_share_no_memory": 0.4983,
-        "armed_share_with_21_memory": 0.6526,
-        "DEFEND_entries_per_year": 4.05,
-        "ATTACK_entries_per_year": 3.14,
-        "share": {
-          "NEUTRAL": 0.259,
-          "DEFEND": 0.268,
-          "ATTACK": 0.473
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            17,
-            115
-          ],
-          "DEFEND": [
-            13,
-            79
-          ],
-          "ATTACK": [
-            31,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "H1 h5 b37.5": {
-        "armed_share_no_memory": 0.1368,
-        "armed_share_with_21_memory": 0.4049,
-        "DEFEND_entries_per_year": 3.05,
-        "ATTACK_entries_per_year": 3.1,
-        "share": {
-          "NEUTRAL": 0.313,
-          "DEFEND": 0.192,
-          "ATTACK": 0.496
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            23,
-            115
-          ],
-          "DEFEND": [
-            12,
-            79
-          ],
-          "ATTACK": [
-            39,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      },
-      "price_only h5 b37.5": {
-        "armed_share_no_memory": 0.4983,
-        "armed_share_with_21_memory": 0.6526,
-        "DEFEND_entries_per_year": 4.05,
-        "ATTACK_entries_per_year": 3.14,
-        "share": {
-          "NEUTRAL": 0.259,
-          "DEFEND": 0.268,
-          "ATTACK": 0.473
-        },
-        "spell_median_longest": {
-          "NEUTRAL": [
-            17,
-            115
-          ],
-          "DEFEND": [
-            13,
-            79
-          ],
-          "ATTACK": [
-            31,
-            84
-          ]
-        },
-        "same_day_conflicts_D": 0
-      }
-    },
+    "source": "v2_power/signals_table_D.py, .stdout (R12, run once)",
     "washout_spells": {
       "spells": 179,
       "length_median": 3,
       "length_longest": 59,
       "length_over_20": 22,
-      "sessions_low_to_recovery_median": 2,
-      "sessions_low_to_recovery_longest": 54,
-      "fire_attack_confirm": 164,
-      "do_not_fire": 15
+      "low_to_recovery_median": 2,
+      "low_to_recovery_longest": 54,
+      "within_20_of_low": 164
+    },
+    "grid": {
+      "H1 h3 b25.0": {
+        "armed_share_no_memory": 0.1183,
+        "armed_share_with_21_memory": 0.3348,
+        "DEFEND_entries_per_year": 2.0,
+        "ATTACK_entries_per_year": 1.5,
+        "share": {
+          "NEUTRAL": 0.418,
+          "DEFEND": 0.193,
+          "ATTACK": 0.389
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            23,
+            209
+          ],
+          "DEFEND": [
+            21,
+            60
+          ],
+          "ATTACK": [
+            72,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 11,
+          "DEFEND_by_month_end_above_sma": 33,
+          "ATTACK_by_DEFEND": 7,
+          "ATTACK_by_63_month_end": 25
+        }
+      },
+      "price_only h3 b25.0": {
+        "armed_share_no_memory": 0.3695,
+        "armed_share_with_21_memory": 0.5261,
+        "DEFEND_entries_per_year": 2.6,
+        "ATTACK_entries_per_year": 1.55,
+        "share": {
+          "NEUTRAL": 0.34,
+          "DEFEND": 0.279,
+          "ATTACK": 0.381
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            138
+          ],
+          "DEFEND": [
+            22,
+            86
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 19,
+          "DEFEND_by_month_end_above_sma": 38,
+          "ATTACK_by_DEFEND": 11,
+          "ATTACK_by_63_month_end": 22
+        }
+      },
+      "H1 h3 b37.5": {
+        "armed_share_no_memory": 0.0759,
+        "armed_share_with_21_memory": 0.2694,
+        "DEFEND_entries_per_year": 1.73,
+        "ATTACK_entries_per_year": 1.5,
+        "share": {
+          "NEUTRAL": 0.431,
+          "DEFEND": 0.178,
+          "ATTACK": 0.391
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            27,
+            209
+          ],
+          "DEFEND": [
+            22,
+            52
+          ],
+          "ATTACK": [
+            72,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 9,
+          "DEFEND_by_month_end_above_sma": 29,
+          "ATTACK_by_DEFEND": 7,
+          "ATTACK_by_63_month_end": 25
+        }
+      },
+      "price_only h3 b37.5": {
+        "armed_share_no_memory": 0.3695,
+        "armed_share_with_21_memory": 0.5261,
+        "DEFEND_entries_per_year": 2.6,
+        "ATTACK_entries_per_year": 1.55,
+        "share": {
+          "NEUTRAL": 0.34,
+          "DEFEND": 0.279,
+          "ATTACK": 0.381
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            138
+          ],
+          "DEFEND": [
+            22,
+            86
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 19,
+          "DEFEND_by_month_end_above_sma": 38,
+          "ATTACK_by_DEFEND": 11,
+          "ATTACK_by_63_month_end": 22
+        }
+      },
+      "H1 h5 b25.0": {
+        "armed_share_no_memory": 0.1966,
+        "armed_share_with_21_memory": 0.4773,
+        "DEFEND_entries_per_year": 2.69,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.377,
+          "DEFEND": 0.25,
+          "ATTACK": 0.374
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            23,
+            154
+          ],
+          "DEFEND": [
+            18,
+            79
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 23,
+          "DEFEND_by_month_end_above_sma": 36,
+          "ATTACK_by_DEFEND": 18,
+          "ATTACK_by_63_month_end": 21
+        }
+      },
+      "price_only h5 b25.0": {
+        "armed_share_no_memory": 0.4983,
+        "armed_share_with_21_memory": 0.6526,
+        "DEFEND_entries_per_year": 3.37,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.335,
+          "DEFEND": 0.313,
+          "ATTACK": 0.351
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            139
+          ],
+          "DEFEND": [
+            18,
+            86
+          ],
+          "ATTACK": [
+            55,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 29,
+          "DEFEND_by_month_end_above_sma": 45,
+          "ATTACK_by_DEFEND": 23,
+          "ATTACK_by_63_month_end": 17
+        }
+      },
+      "H1 h5 b37.5": {
+        "armed_share_no_memory": 0.1368,
+        "armed_share_with_21_memory": 0.4049,
+        "DEFEND_entries_per_year": 2.46,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.404,
+          "DEFEND": 0.222,
+          "ATTACK": 0.374
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            26,
+            159
+          ],
+          "DEFEND": [
+            18,
+            79
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 22,
+          "DEFEND_by_month_end_above_sma": 32,
+          "ATTACK_by_DEFEND": 18,
+          "ATTACK_by_63_month_end": 21
+        }
+      },
+      "price_only h5 b37.5": {
+        "armed_share_no_memory": 0.4983,
+        "armed_share_with_21_memory": 0.6526,
+        "DEFEND_entries_per_year": 3.37,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.335,
+          "DEFEND": 0.313,
+          "ATTACK": 0.351
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            139
+          ],
+          "DEFEND": [
+            18,
+            86
+          ],
+          "ATTACK": [
+            55,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 29,
+          "DEFEND_by_month_end_above_sma": 45,
+          "ATTACK_by_DEFEND": 23,
+          "ATTACK_by_63_month_end": 17
+        }
+      }
     },
     "findings": [
-      "Every grid point fires both DEFEND (2.2-3.3 entries/yr, H1) and ATTACK (2.9-3.1/yr); none degenerate.",
-      "Washout spells 1998-2019: 179; length median 3, longest 59, 22 over 20 sessions; sessions from low to recovery median 2, longest 54; 164 fire (92%), 15 do not. The 20-session limit does little work: ATTACK confirms on nearly every spell. Reported, not adjusted.",
-      "Washout spells are identical for every grid point and both arms (breadth and legs do not depend on h, b or the arming key).",
-      "ATTACK is held about half of all sessions (47-53%); H1 is mostly an offence tilt with defensive episodes.",
-      "Same-day DEFEND/ATTACK conflicts: 0 at every grid point."
+      "Every grid point fires both DEFEND and ATTACK; no stop condition.",
+      "Qualifying spells that fire: 83 (h=3), 98 (h=5) over 22 years; the 'close to untested' sentence does not apply at either h.",
+      "Exit reasons are counted facts (see grid[*].exit_reasons), replacing revision 6's inferred 'often'."
     ]
   },
   "revision_notes": [
     {
       "rev": 5,
       "text": "The washout clock was changed from first-close to the spell's lowest close at draft stage, on Sector Intelligence's clarification of its own proposal. The parent ruled it before any return was computed. Disclosure: a signals-only table (counts, no returns) and a variance-only power line had already been computed and pushed under the first-close clock in draft revision 4 (commit 1faa76396b) before the ruling reached the lead; per the ruling that variant is not reported in this header and was replaced in full."
+    },
+    {
+      "rev": 7,
+      "text": "ATTACK entry changed by parent ruling R12 (12:06Z). First definition (revisions 5-6): ATTACK on recovery within 20 sessions of a breadth washout's low, with no other condition; its signals-only counts were published in revision 5 (179 spells, 92% fire, ATTACK held about 50% of sessions). Sector Intelligence objected at 12:03Z, before freeze, that this is not the washout rule of their claim. The replacement (spell qualifies only if the relative line is within h% of its 126-session low inside the spell; the mirror of the arming key) was stated on mechanism before its counts or any return existed; exactly one signals-only table was run under it. This is a change made after seeing signal counts and is disclosed as such. No return was ever computed under either definition, so the first is not counted as a trial; ledger stays 9 + 10 + 36 = 55."
     }
   ],
   "order_of_work_after_freeze": [

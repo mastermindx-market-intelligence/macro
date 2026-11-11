@@ -1,6 +1,6 @@
 """Rotation Core v2 — two-key defensive-rotation evaluation on Ken French 49 industries (corrected v1 engine).
 
-Implements protocol_header_v2 (draft rev 6; the frozen JSON governs once it exists). Pure functions; research only.
+Implements protocol_header_v2 (draft rev 7; the frozen JSON governs once it exists). Pure functions; research only.
 Nothing here sizes, gates, ranks, alerts or trades.
 
 Seal: any input path under `sealed_post2019/` is refused unless research/rotation_core/HOLDOUT_RELEASE_v2.json is
@@ -235,8 +235,10 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
               arm_memory: int = ARM_MEMORY, return_log: bool = False):
     """H1 / price-only control state decided at each close, draft rev 4 rules R1-R5.
     Entry: DEFEND when armed within the last `arm_memory` sessions and the relative line crosses below its 50-session
-    SMA; ATTACK on the first close above 25% after a washout spell (consecutive closes <= 25%) if that close is
-    within 20 sessions of the spell's lowest close (earliest if tied). Same-day DEFEND and ATTACK: DEFEND wins (counted).
+    SMA; ATTACK on the first close above 25% after a washout spell (consecutive closes <= 25%) if the spell QUALIFIES
+    (R12: on at least one close inside the spell the relative line is within h% of its 126-session low, i.e.
+    rel <= (1 + h/100) * min(rel over the 126 sessions ending at that close)) and that close is within 20 sessions of
+    the spell's lowest breadth close (earliest if tied). Same-day DEFEND and ATTACK: DEFEND wins (counted).
     Exits: DEFEND -> ATTACK at an ATTACK confirm, or -> NEUTRAL at the first month-end (after the entry day) on which
     the relative line closes above its SMA50. ATTACK -> DEFEND at a DEFEND trigger, or -> NEUTRAL at the first
     month-end at least 63 sessions after entry. A state is never exited on its entry day. Re-triggering the state
@@ -247,6 +249,8 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
     br, bmax = bd["br"].reindex(s), bd["bmax"].reindex(s)
     runp, fromlow = bd["wash_run_prev"].reindex(s), bd["wash_from_low"].reindex(s)
     near = (rel >= (1 - h / 100) * hi)
+    lo126 = rel.rolling(126, min_periods=126).min()
+    near_low = (rel <= (1 + h / 100) * lo126).fillna(False).values      # R12: literal mirror of `near`
     armed = near & ((br <= bmax - b / 100 + 1e-12) if use_breadth else True)
     armed = armed & hi.notna() & (bmax.notna() if use_breadth else True)
     armed_recent = armed.astype(float).rolling(arm_memory + 1, min_periods=1).max() > 0
@@ -255,7 +259,9 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
     above_sma = (rel > sma).values
     runp_v, fromlow_v = runp.values, fromlow.values
     st = np.full(len(s), np.nan)
-    log = {"conflicts": 0, "wash_fired": 0, "wash_expired": 0, "armed": armed.values.copy()}
+    log = {"conflicts": 0, "wash_fired": 0, "wash_expired": 0, "wash_spells": 0, "wash_qualified": 0,
+           "armed": armed.values.copy(), "exit": {"DEFEND_by_ATTACK": 0, "DEFEND_by_month_end_above_sma": 0,
+                                                  "ATTACK_by_DEFEND": 0, "ATTACK_by_63_month_end": 0}}
     state, entry_i = NEUTRAL, None
     ready = (hi.notna() & sma.notna() & bmax.notna()).values
     for i in range(len(s)):
@@ -264,7 +270,11 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
         defend = bool(armed_recent.iloc[i]) and bool(cross_dn[i])
         attack = False
         if np.isfinite(runp_v[i]) and runp_v[i] > 0:          # recovery close of a washout spell
-            if fromlow_v[i] <= WASH_MAX:                        # trough clock (final R3)
+            log["wash_spells"] += 1
+            k = int(runp_v[i])
+            qualifies = bool(near_low[max(0, i - k):i].any())   # R12: line near its 126-session low inside the spell
+            log["wash_qualified"] += qualifies
+            if qualifies and fromlow_v[i] <= WASH_MAX:          # trough clock (final R3)
                 attack = True; log["wash_fired"] += 1
             else:
                 log["wash_expired"] += 1
@@ -272,12 +282,18 @@ def h1_states(rel: pd.Series, bd: dict, h: float, b: float, use_breadth: bool = 
             log["conflicts"] += 1
             attack = False
         if defend and state != DEFEND:
+            if state == ATTACK:
+                log["exit"]["ATTACK_by_DEFEND"] += 1
             state, entry_i = DEFEND, i
         elif attack and state != ATTACK:
+            if state == DEFEND:
+                log["exit"]["DEFEND_by_ATTACK"] += 1
             state, entry_i = ATTACK, i
         elif state == DEFEND and i != entry_i and month_end[i] and above_sma[i]:
+            log["exit"]["DEFEND_by_month_end_above_sma"] += 1
             state, entry_i = NEUTRAL, None
         elif state == ATTACK and i != entry_i and month_end[i] and (i - entry_i) >= ATTACK_MIN_HOLD:
+            log["exit"]["ATTACK_by_63_month_end"] += 1
             state, entry_i = NEUTRAL, None
         st[i] = state
     out = pd.Series(st, index=s)

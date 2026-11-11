@@ -1,232 +1,303 @@
 {
  "D_sessions": 5535,
  "D_years": 21.96,
- "breadth_step_pp": {
-  "from_1970": 6.25,
-  "before_1970_approx": "7-8 (13-14 offence members)",
-  "n_offence_members_D_min_max": [
-   16,
-   16
-  ]
- },
- "grid": {
-  "H1 h3 b25.0": {
-   "armed_share_no_memory": 0.1183,
-   "armed_share_with_21_memory": 0.3348,
-   "DEFEND_entries_per_year": 2.55,
-   "ATTACK_entries_per_year": 2.91,
-   "share": {
-    "NEUTRAL": 0.316,
-    "DEFEND": 0.153,
-    "ATTACK": 0.531
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     22,
-     115
-    ],
-    "DEFEND": [
-     12,
-     52
-    ],
-    "ATTACK": [
-     63,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "price_only h3 b25.0": {
-   "armed_share_no_memory": 0.3695,
-   "armed_share_with_21_memory": 0.5261,
-   "DEFEND_entries_per_year": 3.23,
-   "ATTACK_entries_per_year": 2.96,
-   "share": {
-    "NEUTRAL": 0.263,
-    "DEFEND": 0.21,
-    "ATTACK": 0.527
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     16,
-     115
-    ],
-    "DEFEND": [
-     13,
-     64
-    ],
-    "ATTACK": [
-     61,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "H1 h3 b37.5": {
-   "armed_share_no_memory": 0.0759,
-   "armed_share_with_21_memory": 0.2694,
-   "DEFEND_entries_per_year": 2.23,
-   "ATTACK_entries_per_year": 2.87,
-   "share": {
-    "NEUTRAL": 0.329,
-    "DEFEND": 0.139,
-    "ATTACK": 0.532
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     28,
-     150
-    ],
-    "DEFEND": [
-     13,
-     52
-    ],
-    "ATTACK": [
-     64,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "price_only h3 b37.5": {
-   "armed_share_no_memory": 0.3695,
-   "armed_share_with_21_memory": 0.5261,
-   "DEFEND_entries_per_year": 3.23,
-   "ATTACK_entries_per_year": 2.96,
-   "share": {
-    "NEUTRAL": 0.263,
-    "DEFEND": 0.21,
-    "ATTACK": 0.527
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     16,
-     115
-    ],
-    "DEFEND": [
-     13,
-     64
-    ],
-    "ATTACK": [
-     61,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "H1 h5 b25.0": {
-   "armed_share_no_memory": 0.1966,
-   "armed_share_with_21_memory": 0.4773,
-   "DEFEND_entries_per_year": 3.32,
-   "ATTACK_entries_per_year": 3.1,
-   "share": {
-    "NEUTRAL": 0.295,
-    "DEFEND": 0.212,
-    "ATTACK": 0.493
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     21,
-     115
-    ],
-    "DEFEND": [
-     12,
-     79
-    ],
-    "ATTACK": [
-     39,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "price_only h5 b25.0": {
-   "armed_share_no_memory": 0.4983,
-   "armed_share_with_21_memory": 0.6526,
-   "DEFEND_entries_per_year": 4.05,
-   "ATTACK_entries_per_year": 3.14,
-   "share": {
-    "NEUTRAL": 0.259,
-    "DEFEND": 0.268,
-    "ATTACK": 0.473
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     17,
-     115
-    ],
-    "DEFEND": [
-     13,
-     79
-    ],
-    "ATTACK": [
-     31,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "H1 h5 b37.5": {
-   "armed_share_no_memory": 0.1368,
-   "armed_share_with_21_memory": 0.4049,
-   "DEFEND_entries_per_year": 3.05,
-   "ATTACK_entries_per_year": 3.1,
-   "share": {
-    "NEUTRAL": 0.313,
-    "DEFEND": 0.192,
-    "ATTACK": 0.496
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     23,
-     115
-    ],
-    "DEFEND": [
-     12,
-     79
-    ],
-    "ATTACK": [
-     39,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  },
-  "price_only h5 b37.5": {
-   "armed_share_no_memory": 0.4983,
-   "armed_share_with_21_memory": 0.6526,
-   "DEFEND_entries_per_year": 4.05,
-   "ATTACK_entries_per_year": 3.14,
-   "share": {
-    "NEUTRAL": 0.259,
-    "DEFEND": 0.268,
-    "ATTACK": 0.473
-   },
-   "spell_median_longest": {
-    "NEUTRAL": [
-     17,
-     115
-    ],
-    "DEFEND": [
-     13,
-     79
-    ],
-    "ATTACK": [
-     31,
-     84
-    ]
-   },
-   "same_day_conflicts_D": 0
-  }
- },
  "washout_spells_1998_2019": {
   "spells": 179,
   "length_median": 3,
   "length_longest": 59,
   "length_over_20": 22,
-  "sessions_low_to_recovery_median": 2,
-  "sessions_low_to_recovery_longest": 54,
-  "fire_attack_confirm": 164,
-  "do_not_fire": 15
+  "low_to_recovery_median": 2,
+  "low_to_recovery_longest": 54,
+  "within_20_of_low": 164
+ },
+ "grid": {
+  "H1 h3 b25.0": {
+   "armed_share_no_memory": 0.1183,
+   "armed_share_with_21_memory": 0.3348,
+   "DEFEND_entries_per_year": 2.0,
+   "ATTACK_entries_per_year": 1.5,
+   "share": {
+    "NEUTRAL": 0.418,
+    "DEFEND": 0.193,
+    "ATTACK": 0.389
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     23,
+     209
+    ],
+    "DEFEND": [
+     21,
+     60
+    ],
+    "ATTACK": [
+     72,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 97,
+   "attack_confirms": 83,
+   "attack_confirms_per_year": 3.78,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 11,
+    "DEFEND_by_month_end_above_sma": 33,
+    "ATTACK_by_DEFEND": 7,
+    "ATTACK_by_63_month_end": 25
+   }
+  },
+  "price_only h3 b25.0": {
+   "armed_share_no_memory": 0.3695,
+   "armed_share_with_21_memory": 0.5261,
+   "DEFEND_entries_per_year": 2.6,
+   "ATTACK_entries_per_year": 1.55,
+   "share": {
+    "NEUTRAL": 0.34,
+    "DEFEND": 0.279,
+    "ATTACK": 0.381
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     22,
+     138
+    ],
+    "DEFEND": [
+     22,
+     86
+    ],
+    "ATTACK": [
+     69,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 97,
+   "attack_confirms": 83,
+   "attack_confirms_per_year": 3.78,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 19,
+    "DEFEND_by_month_end_above_sma": 38,
+    "ATTACK_by_DEFEND": 11,
+    "ATTACK_by_63_month_end": 22
+   }
+  },
+  "H1 h3 b37.5": {
+   "armed_share_no_memory": 0.0759,
+   "armed_share_with_21_memory": 0.2694,
+   "DEFEND_entries_per_year": 1.73,
+   "ATTACK_entries_per_year": 1.5,
+   "share": {
+    "NEUTRAL": 0.431,
+    "DEFEND": 0.178,
+    "ATTACK": 0.391
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     27,
+     209
+    ],
+    "DEFEND": [
+     22,
+     52
+    ],
+    "ATTACK": [
+     72,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 97,
+   "attack_confirms": 83,
+   "attack_confirms_per_year": 3.78,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 9,
+    "DEFEND_by_month_end_above_sma": 29,
+    "ATTACK_by_DEFEND": 7,
+    "ATTACK_by_63_month_end": 25
+   }
+  },
+  "price_only h3 b37.5": {
+   "armed_share_no_memory": 0.3695,
+   "armed_share_with_21_memory": 0.5261,
+   "DEFEND_entries_per_year": 2.6,
+   "ATTACK_entries_per_year": 1.55,
+   "share": {
+    "NEUTRAL": 0.34,
+    "DEFEND": 0.279,
+    "ATTACK": 0.381
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     22,
+     138
+    ],
+    "DEFEND": [
+     22,
+     86
+    ],
+    "ATTACK": [
+     69,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 97,
+   "attack_confirms": 83,
+   "attack_confirms_per_year": 3.78,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 19,
+    "DEFEND_by_month_end_above_sma": 38,
+    "ATTACK_by_DEFEND": 11,
+    "ATTACK_by_63_month_end": 22
+   }
+  },
+  "H1 h5 b25.0": {
+   "armed_share_no_memory": 0.1966,
+   "armed_share_with_21_memory": 0.4773,
+   "DEFEND_entries_per_year": 2.69,
+   "ATTACK_entries_per_year": 1.82,
+   "share": {
+    "NEUTRAL": 0.377,
+    "DEFEND": 0.25,
+    "ATTACK": 0.374
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     23,
+     154
+    ],
+    "DEFEND": [
+     18,
+     79
+    ],
+    "ATTACK": [
+     69,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 112,
+   "attack_confirms": 98,
+   "attack_confirms_per_year": 4.46,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 23,
+    "DEFEND_by_month_end_above_sma": 36,
+    "ATTACK_by_DEFEND": 18,
+    "ATTACK_by_63_month_end": 21
+   }
+  },
+  "price_only h5 b25.0": {
+   "armed_share_no_memory": 0.4983,
+   "armed_share_with_21_memory": 0.6526,
+   "DEFEND_entries_per_year": 3.37,
+   "ATTACK_entries_per_year": 1.82,
+   "share": {
+    "NEUTRAL": 0.335,
+    "DEFEND": 0.313,
+    "ATTACK": 0.351
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     22,
+     139
+    ],
+    "DEFEND": [
+     18,
+     86
+    ],
+    "ATTACK": [
+     55,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 112,
+   "attack_confirms": 98,
+   "attack_confirms_per_year": 4.46,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 29,
+    "DEFEND_by_month_end_above_sma": 45,
+    "ATTACK_by_DEFEND": 23,
+    "ATTACK_by_63_month_end": 17
+   }
+  },
+  "H1 h5 b37.5": {
+   "armed_share_no_memory": 0.1368,
+   "armed_share_with_21_memory": 0.4049,
+   "DEFEND_entries_per_year": 2.46,
+   "ATTACK_entries_per_year": 1.82,
+   "share": {
+    "NEUTRAL": 0.404,
+    "DEFEND": 0.222,
+    "ATTACK": 0.374
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     26,
+     159
+    ],
+    "DEFEND": [
+     18,
+     79
+    ],
+    "ATTACK": [
+     69,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 112,
+   "attack_confirms": 98,
+   "attack_confirms_per_year": 4.46,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 22,
+    "DEFEND_by_month_end_above_sma": 32,
+    "ATTACK_by_DEFEND": 18,
+    "ATTACK_by_63_month_end": 21
+   }
+  },
+  "price_only h5 b37.5": {
+   "armed_share_no_memory": 0.4983,
+   "armed_share_with_21_memory": 0.6526,
+   "DEFEND_entries_per_year": 3.37,
+   "ATTACK_entries_per_year": 1.82,
+   "share": {
+    "NEUTRAL": 0.335,
+    "DEFEND": 0.313,
+    "ATTACK": 0.351
+   },
+   "spell_median_longest": {
+    "NEUTRAL": [
+     22,
+     139
+    ],
+    "DEFEND": [
+     18,
+     86
+    ],
+    "ATTACK": [
+     55,
+     84
+    ]
+   },
+   "washout_spells": 179,
+   "spells_qualifying": 112,
+   "attack_confirms": 98,
+   "attack_confirms_per_year": 4.46,
+   "same_day_conflicts": 0,
+   "exit_reasons": {
+    "DEFEND_by_ATTACK": 29,
+    "DEFEND_by_month_end_above_sma": 45,
+    "ATTACK_by_DEFEND": 23,
+    "ATTACK_by_63_month_end": 17
+   }
+  }
  }
 }

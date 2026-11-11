@@ -30,7 +30,7 @@ def test_uncommitted_release_file_does_not_unlock(tmp_path):
         v2.seal_guard(SEALED, release=rel)
 
 
-def _setup(n=420, drop_at=None, wash=None, start="2010-01-04"):
+def _setup(n=420, drop_at=None, wash=None, start="2010-01-04", rel_low=None):
     """rel flat at 1.0 (always near its high); optional drop to 0.9 at index drop_at (crosses below SMA50).
     Breadth: 0.5 with 126-day max 1.0 (armed when breadth key used). wash=(first, length): breadth <= 25% for
     `length` closes from `first`, then 0.5."""
@@ -38,6 +38,9 @@ def _setup(n=420, drop_at=None, wash=None, start="2010-01-04"):
     rel = np.ones(n)
     if drop_at is not None:
         rel[drop_at:] = 0.9
+    if rel_low is not None:                      # rel_low = (index, value): rel near its 126-session low there
+        rel[:] = 1.5
+        rel[rel_low[0]:] = rel_low[1]
     br = np.full(n, 0.5)
     if wash:
         f, L = wash[:2]
@@ -52,19 +55,20 @@ def _setup(n=420, drop_at=None, wash=None, start="2010-01-04"):
 
 def test_same_day_defend_and_attack_defend_wins_and_counted():
     s, rel, bd = _setup(drop_at=300, wash=(290, 10))
+    rel.iloc[290:300] = rel.iloc[290:300].values      # flat line = at its 126-session low and high: qualifies
     st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
     assert st.iloc[300] == v2.DEFEND and log["conflicts"] == 1
 
 
 def test_washout_trough_clock():
     # long spell (60 closes) whose low is 10 closes before recovery: fires
-    s, rel, bd = _setup(wash=(250, 60, 50))
+    s, rel, bd = _setup(wash=(250, 60, 50), rel_low=(240, 1.0))
     st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
     assert st.iloc[310] == v2.ATTACK and log["wash_fired"] == 1
     # same spell with its low 40 closes before recovery: slow crawl back, no ATTACK
-    s, rel, bd = _setup(wash=(250, 60, 20))
+    s, rel, bd = _setup(wash=(250, 60, 20), rel_low=(240, 1.0))
     st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
-    assert (st.dropna() != v2.ATTACK).all() and log["wash_expired"] == 1
+    assert (st.dropna() != v2.ATTACK).all() and log["wash_expired"] == 1 and log["wash_qualified"] == 1
 
 
 def test_washout_spells_tie_uses_earliest_low_and_only_past_closes():
@@ -75,7 +79,7 @@ def test_washout_spells_tie_uses_earliest_low_and_only_past_closes():
 
 
 def test_attack_exits_at_first_month_end_63_sessions_after_entry():
-    s, rel, bd = _setup(wash=(150, 5))
+    s, rel, bd = _setup(wash=(150, 5), rel_low=(140, 1.0))
     st = v2.h1_states(rel, bd, 5, 25)
     e = s[155]
     out = st[st.index > e]
@@ -112,3 +116,63 @@ def test_matched_mix_rebuilt_per_resample():
     st = v2.matched_mix_stat(r, W, L)
     ref0 = (W[0].mean(axis=0) * L[0]).sum(axis=1)
     assert st[0] == pytest.approx((r[0] - ref0).mean() * 252)
+
+
+# ------------------------------------------------------------------ R12: relative line near its 126-session low
+def _r12(qual_at=None, spell=(250, 10), low_offset=None, n=420):
+    """Relative line at 1.5 (far above its low) except closes listed in qual_at, which drop to its 126-low level.
+    Breadth washout spell = (first, length); optional extra-low breadth close at first+low_offset."""
+    s = pd.bdate_range("2010-01-04", periods=n)
+    rel = np.full(n, 1.5); rel[:130] = 1.0                       # sets a 126-session low of 1.0 before the spell
+    rel[130:] = np.linspace(1.5, 3.0, n - 130)                   # rising: never near its own 126-session low
+    lo_val = 1.0
+    if qual_at:
+        for q in qual_at:
+            rel[q] = lo_val
+        rel[:130] = 1.0
+    br = np.full(n, 0.5); f, L = spell; br[f:f + L] = 0.2
+    if low_offset is not None:
+        br[f + low_offset] = 0.1
+    rl, fl = v2.washout_spells(br)
+    bd = {"br": pd.Series(br, index=s), "bmax": pd.Series(1.0, index=s), "wash_run_prev": pd.Series(rl, index=s),
+          "wash_from_low": pd.Series(fl, index=s)}
+    return s, pd.Series(rel, index=s), bd
+
+
+def test_R12_qualifying_spell_fires_and_non_qualifying_does_not():
+    s, rel, bd = _r12(qual_at=[255])
+    # 126-session low over 130..255 window: rel at 255 equals 1.0 and earlier 1.0 values fall out of window -> low
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert log["wash_qualified"] == 1 and st.iloc[260] == v2.ATTACK
+    s, rel, bd = _r12(qual_at=None)
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert log["wash_qualified"] == 0 and (st.dropna() != v2.ATTACK).all()
+
+
+def test_R12_qualifies_on_first_and_on_last_close_of_spell_not_only_the_low_close():
+    for q in (250, 259):            # first and last close of the spell (spell = 250..259); breadth low at 253
+        s, rel, bd = _r12(qual_at=[q], low_offset=3)
+        st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+        assert log["wash_qualified"] == 1 and st.iloc[260] == v2.ATTACK, q
+
+
+def test_R12_close_outside_spell_does_not_qualify():
+    s, rel, bd = _r12(qual_at=[249])            # the close just before the spell starts
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert log["wash_qualified"] == 0
+
+
+def test_R12_twenty_session_limit_still_measured_from_breadth_low():
+    s, rel, bd = _r12(qual_at=[252], spell=(250, 40), low_offset=2)    # low 38 sessions before recovery
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert log["wash_qualified"] == 1 and log["wash_fired"] == 0
+    s, rel, bd = _r12(qual_at=[252], spell=(250, 40), low_offset=30)   # low 10 sessions before recovery
+    st, log = v2.h1_states(rel, bd, 5, 25, return_log=True)
+    assert log["wash_fired"] == 1 and st.iloc[290] == v2.ATTACK
+
+
+def test_R12_near_low_formula_is_the_literal_mirror():
+    import inspect
+    src = inspect.getsource(v2.h1_states)
+    assert "near = (rel >= (1 - h / 100) * hi)" in src
+    assert "near_low = (rel <= (1 + h / 100) * lo126)" in src and "rolling(126, min_periods=126).min()" in src
