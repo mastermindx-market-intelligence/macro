@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,18 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (issue #10993, event-prior benchmark integrity):
+    Run the existing fully synthetic event-prior suite in data-base-shim's
+    existing Special Situations command, keeping its complete data owner.
+    The canonical loader retains 401 owners and the other 400 definitions.
+    The unchanged estimator measures this owner 38 -> 40: seven commands,
+    15 -> 16 explicit test tokens, with the run-text bucket unchanged.
+    Fund exactly that +2 contribution on the three established probes:
+    5966/5989/5724 -> 5968/5991/5726. Job ceilings 137/138/131, ten packs,
+    every selector/assertion, runtime/admission cap and existing history
+    remain unchanged. This owner-estimator measurement is not a new
+    full-tree planner or hosted pass; the successor must qualify itself.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
