@@ -1,0 +1,313 @@
+{
+  "schema": "bot_valuation_characterization.v1",
+  "source_repo": "mastermindx-market-intelligence/Mastermind",
+  "source_commit": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "source_path": "portfolio/paper_account.py",
+  "source_sha256": "cb87e10ce5817afd91bb4e84059fa740e045f33ad340e5c98ac77a698726cd9e",
+  "asof": "2026-10-08",
+  "stale_max_days": 30,
+  "unit": "All controlled amounts use one stipulated unit; currency and FX compatibility are not evaluated.",
+  "cases": [
+    {
+      "id": "missing_mark_cost_fallback",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30
+          }
+        }
+      },
+      "prices": {
+        "A": 60
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        }
+      },
+      "expect": {
+        "legacy_nav": 250,
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNPRICED"
+        },
+        "strict_error": "NavWithheld",
+        "priced_count": 1
+      }
+    },
+    {
+      "id": "all_explicit_fresh_control",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30
+          }
+        }
+      },
+      "prices": {
+        "A": 60,
+        "B": 35
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        },
+        "B": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        }
+      },
+      "expect": {
+        "legacy_nav": 255,
+        "nav_status": "QUALIFIED",
+        "nav": 255,
+        "classes": {
+          "A": "FRESH",
+          "B": "FRESH"
+        },
+        "strict_nav": 255,
+        "priced_count": 2
+      }
+    },
+    {
+      "id": "all_priced_unattested",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30
+          }
+        }
+      },
+      "prices": {
+        "A": 60,
+        "B": 35
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        }
+      },
+      "expect": {
+        "legacy_nav": 255,
+        "nav_status": "PROVISIONAL",
+        "nav": 255,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNATTESTED"
+        },
+        "strict_nav": 255,
+        "priced_count": 2
+      }
+    },
+    {
+      "id": "explicit_not_close_qualified",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30
+          }
+        }
+      },
+      "prices": {
+        "A": 60,
+        "B": 35
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        },
+        "B": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": false
+        }
+      },
+      "expect": {
+        "legacy_nav": 255,
+        "nav_status": "PROVISIONAL",
+        "nav": 255,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNATTESTED"
+        },
+        "strict_nav": 255,
+        "priced_count": 2
+      }
+    },
+    {
+      "id": "empty_evidence_entries_legacy_qualification",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30
+          }
+        }
+      },
+      "prices": {
+        "A": 60,
+        "B": 35
+      },
+      "evidence": {
+        "A": {},
+        "B": {}
+      },
+      "expect": {
+        "legacy_nav": 255,
+        "nav_status": "QUALIFIED",
+        "nav": 255,
+        "classes": {
+          "A": "FRESH",
+          "B": "FRESH"
+        },
+        "strict_nav": 255,
+        "priced_count": 2
+      }
+    },
+    {
+      "id": "persisted_carry",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30,
+            "current_price": 35,
+            "current_price_asof": "2026-10-07",
+            "current_price_source": "controlled_previous_close"
+          }
+        }
+      },
+      "prices": {
+        "A": 60
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        }
+      },
+      "expect": {
+        "legacy_nav": 250,
+        "nav_status": "PROVISIONAL",
+        "nav": 255,
+        "classes": {
+          "A": "FRESH",
+          "B": "CARRIED"
+        },
+        "strict_nav": 255,
+        "priced_count": 1
+      }
+    },
+    {
+      "id": "future_persisted_mark_rejected",
+      "state": {
+        "cash": 100,
+        "positions": {
+          "A": {
+            "shares": 2,
+            "avg_cost": 50
+          },
+          "B": {
+            "shares": 1,
+            "avg_cost": 30,
+            "current_price": 35,
+            "current_price_asof": "2026-10-09",
+            "current_price_source": "controlled_future"
+          }
+        }
+      },
+      "prices": {
+        "A": 60
+      },
+      "evidence": {
+        "A": {
+          "source": "controlled_close_fixture",
+          "observed_asof": "2026-10-08",
+          "stale_days": 0,
+          "close_qualified": true
+        }
+      },
+      "expect": {
+        "legacy_nav": 250,
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNPRICED"
+        },
+        "strict_error": "NavWithheld",
+        "priced_count": 1
+      }
+    },
+    {
+      "id": "explicit_empty_book_control",
+      "state": {
+        "cash": 100,
+        "positions": {}
+      },
+      "prices": {},
+      "evidence": {},
+      "expect": {
+        "legacy_nav": 100,
+        "nav_status": "QUALIFIED",
+        "nav": 100,
+        "classes": {},
+        "strict_nav": 100,
+        "priced_count": 0
+      }
+    }
+  ]
+}

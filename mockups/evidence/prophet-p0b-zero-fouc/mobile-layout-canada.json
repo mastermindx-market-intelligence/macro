@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "d9f989eef2db3274e5e9f0b7833ab3c5d387223ac824090874cd7c6251661b5e"
+    "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -304,10 +304,9 @@
     "templates/_navlinks.html.j2": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
     "templates/_prophet_card.html.j2": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27",
     "templates/_risk_radar_card.css.j2": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5",
-    "templates/_risk_radar_card.html.j2": "254b14f6ac0510662b3e317b5ba991b54e7c43c2e72cdc507c2ce26d7ad759e1",
+    "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7",
     "templates/_risk_radar_dlg.css.j2": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac",
-    "templates/_risk_radar_dlg.html.j2": "39bcfc476d735343bb72f582691bfb8e9dc9d085191f0a181d98e23422a19c3e",
-    "templates/_risk_radar_pullback_depth.html.j2": "c4d2f15e41a86afaa51d509a98285e19fe49432634c8a3e8c7acc4b47d4f6d08",
+    "templates/_risk_radar_dlg.html.j2": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
     "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
     "templates/canada.html.j2": "b98d20bf1994d32b617493ec86ffbcf984cdcafc513afdf4d523535b054b67c9"
@@ -349,7 +348,7 @@
     "site/stocktable.js": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
     "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
-    "site/theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00"
+    "site/theme.js": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
   },
   "viewport": {
     "width": 390,
@@ -16085,5 +16084,33 @@
       "screenshot_width": 390,
       "pass": true
     }
-  ]
+  ],
+  "source_composition": {
+    "recorded_at": "2026-11-07",
+    "kind": "metadata_only",
+    "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
+    "source_receipt": {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "git_blob_sha": "276d8eba684549179b5ee5b8ea26cfb5b54c823f",
+      "sha256": "513c2cbbfda1e44f02fa598e39d9e6252b0e52fc8974df8313d1cf2505346727"
+    },
+    "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
+    "captured_fixture_receipt": {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+    },
+    "captured_construction_inputs": {
+      "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
+    },
+    "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
+    "current_fixture_receipt": {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+      "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+    },
+    "current_construction_inputs": {
+      "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+    },
+    "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
+    "new_browser_execution": false
+  }
 }
