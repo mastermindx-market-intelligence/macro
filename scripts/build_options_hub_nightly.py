@@ -825,13 +825,17 @@ def resolve_moves_inputs(
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     try:
-        spot_values = pd.to_numeric(frame["underlying_price"], errors="coerce")
-        spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
-        spot = _positive_finite(spot_values.median()) if not spot_values.empty else None
+        # Reject a malformed selected-session chain before either calculation.
+        # Spot and canonical IV must use the same qualified numeric prices.
+        spot_values = frame["underlying_price"].map(_positive_finite)
+        if spot_values.isna().any():
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        spot = _positive_finite(spot_values.median())
     except (TypeError, ValueError, OverflowError):
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     if spot is None:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    frame["underlying_price"] = spot_values
 
     # Reuse compute_vol as the ONE ATM-IV definition. Snapshot rows have the same
     # expiration/strike/implied_vol/underlying_price schema; adding the accepted

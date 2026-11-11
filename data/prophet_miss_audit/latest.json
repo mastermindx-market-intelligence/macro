@@ -34,9 +34,9 @@
   "conversion_n": "55/137",
   "basket_misses_n": 0,
   "basket_scored_n": 49,
-  "subtheme_emerging_n": 12,
-  "subtheme_leadership_gaps_n": 7,
-  "subtheme_featured_coverage_pct": 41.7
+  "subtheme_emerging_n": null,
+  "subtheme_leadership_gaps_n": null,
+  "subtheme_featured_coverage_pct": null
  },
  "top63_excluder_hist": {
   "not_topped_veto(stoch_ob)": 68,
@@ -183,14 +183,14 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-11-06",
+  "rotation_asof": "2026-11-09",
   "standouts_asof": "2026-11-06",
   "available": true,
   "themes": [
    {
     "rank": 1,
     "theme": "Commodities Metals",
-    "emerging_score": 2.724,
+    "emerging_score": 2.681,
     "n_members": 41,
     "present_counts": {
      "buy": 5,
@@ -199,11 +199,11 @@
     },
     "present": {
      "buy": [
-      "ALB",
+      "AEM",
+      "AU",
       "FNV",
       "GFI",
-      "NEM",
-      "RGLD"
+      "NEM"
      ],
      "ran": [],
      "leaders": []
@@ -214,7 +214,7 @@
    {
     "rank": 2,
     "theme": "Digital Entertainment",
-    "emerging_score": 2.122,
+    "emerging_score": 2.089,
     "n_members": 33,
     "present_counts": {
      "buy": 2,
@@ -235,7 +235,7 @@
    {
     "rank": 3,
     "theme": "Consumer Goods",
-    "emerging_score": 1.872,
+    "emerging_score": 1.845,
     "n_members": 40,
     "present_counts": {
      "buy": 1,
@@ -257,30 +257,8 @@
    {
     "rank": 4,
     "theme": "Electric Vehicles",
-    "emerging_score": 1.537,
+    "emerging_score": 1.509,
     "n_members": 46,
-    "present_counts": {
-     "buy": 3,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [
-      "ALB",
-      "RIVN",
-      "VZ"
-     ],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 3,
-    "days_since_top5_entry": null
-   },
-   {
-    "rank": 5,
-    "theme": "Energy Renewable",
-    "emerging_score": 1.505,
-    "n_members": 61,
     "present_counts": {
      "buy": 2,
      "ran": 0,
@@ -288,13 +266,33 @@
     },
     "present": {
      "buy": [
-      "ALB",
-      "ENPH"
+      "RIVN",
+      "VZ"
      ],
      "ran": [],
      "leaders": []
     },
     "represented_n": 2,
+    "days_since_top5_entry": null
+   },
+   {
+    "rank": 5,
+    "theme": "Energy Renewable",
+    "emerging_score": 1.477,
+    "n_members": 61,
+    "present_counts": {
+     "buy": 1,
+     "ran": 0,
+     "leaders": 0
+    },
+    "present": {
+     "buy": [
+      "ENPH"
+     ],
+     "ran": [],
+     "leaders": []
+    },
+    "represented_n": 1,
     "days_since_top5_entry": null
    }
   ]
@@ -303,743 +301,13 @@
   "schema": "prophet_subtheme_funnel/v1",
   "tier": "ops_telemetry",
   "authority": "none — funnel measurement only; no rank/gate/size consumer",
-  "available": true,
-  "as_of": "2026-11-06",
-  "rotation_basis": "subsector_rotation.highlights.emerging (producer classification/order)",
-  "membership_basis": "data/themes_heatmap/themes_tree.json",
-  "membership_temporality": "current_only — never backdated",
-  "candidate_basis": "us_standouts.candidate_pool.rows (lossless eligible pool)",
-  "n_emerging": 12,
-  "n_measured": 12,
-  "n_gaps": 7,
-  "featured_coverage_pct": 41.7,
-  "gap_class_hist": {
-   "ADMISSION_GAP": 3,
-   "COVERED_FEATURED": 5,
-   "FEATURED_GAP": 3,
-   "SCORING_GAP": 1
-  },
-  "emerging": [
-   {
-    "key": "energycleansolar",
-    "producer_rank": 1,
-    "name": "Solar",
-    "theme": "Energy Renewable",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 5.113,
-    "rs_mom": 3.118,
-    "accel": 17.257,
-    "n_members": 11,
-    "eligible_n": 1,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "ENPH"
-    ],
-    "members_scored": [
-     "ENPH"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "ENPH"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1
-    },
-    "best_pool_rank": 47,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "commmetalsgold",
-    "producer_rank": 2,
-    "name": "Gold",
-    "theme": "Commodities Metals",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 3.605,
-    "rs_mom": 1.646,
-    "accel": 14.578,
-    "n_members": 11,
-    "eligible_n": 5,
-    "scored_n": 4,
-    "featured_n": 3,
-    "visible_n": 4,
-    "present_counts": {
-     "buy": 4,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "B",
-     "FNV",
-     "GFI",
-     "NEM",
-     "RGLD"
-    ],
-    "members_scored": [
-     "FNV",
-     "GFI",
-     "NEM",
-     "RGLD"
-    ],
-    "members_featured": [
-     "FNV",
-     "NEM",
-     "RGLD"
-    ],
-    "members_visible": [
-     "FNV",
-     "GFI",
-     "NEM",
-     "RGLD"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1,
-     "event_blackout": 1
-    },
-    "best_pool_rank": 3,
-    "gap_class": "COVERED_FEATURED",
-    "gap": false
-   },
-   {
-    "key": "transportationairtravel",
-    "producer_rank": 3,
-    "name": "Air Travel",
-    "theme": "Transportation & Logistics",
-    "quadrant": "leading",
-    "turn_state": "bottoming",
-    "emerging_score": 3.454,
-    "rs_mom": 1.88,
-    "accel": 12.348,
-    "n_members": 8,
-    "eligible_n": 1,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 1
-    },
-    "members_eligible": [
-     "JOBY"
-    ],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [
-     "LUV"
-    ],
-    "blocker_hist": {
-     "sector_cap_overflow": 1
-    },
-    "best_pool_rank": 53,
-    "gap_class": "SCORING_GAP",
-    "gap": true
-   },
-   {
-    "key": "commmetalssilver",
-    "producer_rank": 4,
-    "name": "Silver",
-    "theme": "Commodities Metals",
-    "quadrant": "improving",
-    "turn_state": "bottoming",
-    "emerging_score": 3.315,
-    "rs_mom": 1.867,
-    "accel": 11.525,
-    "n_members": 6,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   },
-   {
-    "key": "commmetalsprecious",
-    "producer_rank": 5,
-    "name": "Precious",
-    "theme": "Commodities Metals",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 3.045,
-    "rs_mom": 1.347,
-    "accel": 12.235,
-    "n_members": 12,
-    "eligible_n": 4,
-    "scored_n": 3,
-    "featured_n": 3,
-    "visible_n": 3,
-    "present_counts": {
-     "buy": 3,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "B",
-     "FNV",
-     "NEM",
-     "RGLD"
-    ],
-    "members_scored": [
-     "FNV",
-     "NEM",
-     "RGLD"
-    ],
-    "members_featured": [
-     "FNV",
-     "NEM",
-     "RGLD"
-    ],
-    "members_visible": [
-     "FNV",
-     "NEM",
-     "RGLD"
-    ],
-    "blocker_hist": {
-     "event_blackout": 1
-    },
-    "best_pool_rank": 3,
-    "gap_class": "COVERED_FEATURED",
-    "gap": false
-   },
-   {
-    "key": "agricultureindoorfarming",
-    "producer_rank": 6,
-    "name": "Indoor Farming",
-    "theme": "Agriculture & FoodTech",
-    "quadrant": "improving",
-    "turn_state": "bottoming",
-    "emerging_score": 2.98,
-    "rs_mom": 1.704,
-    "accel": 10.096,
-    "n_members": 3,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   },
-   {
-    "key": "entertainmentgaming",
-    "producer_rank": 7,
-    "name": "Gaming",
-    "theme": "Digital Entertainment",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.946,
-    "rs_mom": 0.811,
-    "accel": 14.403,
-    "n_members": 8,
-    "eligible_n": 2,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "NTES",
-     "TTWO"
-    ],
-    "members_scored": [
-     "NTES"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "NTES"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1,
-     "event_blackout": 1
-    },
-    "best_pool_rank": 6,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "evsmanufacturers",
-    "producer_rank": 8,
-    "name": "Manufacturers",
-    "theme": "Electric Vehicles",
-    "quadrant": "improving",
-    "turn_state": "turn_up",
-    "emerging_score": 2.818,
-    "rs_mom": 2.056,
-    "accel": 6.823,
-    "n_members": 9,
-    "eligible_n": 1,
-    "scored_n": 1,
-    "featured_n": 1,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "RIVN"
-    ],
-    "members_scored": [
-     "RIVN"
-    ],
-    "members_featured": [
-     "RIVN"
-    ],
-    "members_visible": [
-     "RIVN"
-    ],
-    "blocker_hist": {},
-    "best_pool_rank": 49,
-    "gap_class": "COVERED_FEATURED",
-    "gap": false
-   },
-   {
-    "key": "consumerfarmdirect",
-    "producer_rank": 9,
-    "name": "Farm-Direct",
-    "theme": "Consumer Goods",
-    "quadrant": "improving",
-    "turn_state": "bottoming",
-    "emerging_score": 2.687,
-    "rs_mom": 1.577,
-    "accel": 8.713,
-    "n_members": 6,
-    "eligible_n": 1,
-    "scored_n": 1,
-    "featured_n": 1,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "AMZN"
-    ],
-    "members_scored": [
-     "AMZN"
-    ],
-    "members_featured": [
-     "AMZN"
-    ],
-    "members_visible": [
-     "AMZN"
-    ],
-    "blocker_hist": {},
-    "best_pool_rank": 36,
-    "gap_class": "COVERED_FEATURED",
-    "gap": false
-   },
-   {
-    "key": "softwaregaming",
-    "producer_rank": 10,
-    "name": "Gaming",
-    "theme": "Software",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.571,
-    "rs_mom": 0.438,
-    "accel": 13.749,
-    "n_members": 7,
-    "eligible_n": 2,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "NTES",
-     "TTWO"
-    ],
-    "members_scored": [
-     "NTES"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "NTES"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1,
-     "event_blackout": 1
-    },
-    "best_pool_rank": 6,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "socialadvertising",
-    "producer_rank": 11,
-    "name": "Advertising",
-    "theme": "Social Media",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.523,
-    "rs_mom": 1.073,
-    "accel": 10.096,
-    "n_members": 11,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   },
-   {
-    "key": "aiadssearch",
-    "producer_rank": 12,
-    "name": "Ads & Search",
-    "theme": "Artificial Intelligence",
-    "quadrant": "leading",
-    "turn_state": "range",
-    "emerging_score": 2.511,
-    "rs_mom": 0.944,
-    "accel": 10.667,
-    "n_members": 12,
-    "eligible_n": 2,
-    "scored_n": 2,
-    "featured_n": 1,
-    "visible_n": 2,
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "AMZN",
-     "BIDU"
-    ],
-    "members_scored": [
-     "AMZN",
-     "BIDU"
-    ],
-    "members_featured": [
-     "AMZN"
-    ],
-    "members_visible": [
-     "AMZN",
-     "BIDU"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1
-    },
-    "best_pool_rank": 35,
-    "gap_class": "COVERED_FEATURED",
-    "gap": false
-   }
-  ],
-  "gaps": [
-   {
-    "key": "energycleansolar",
-    "producer_rank": 1,
-    "name": "Solar",
-    "theme": "Energy Renewable",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 5.113,
-    "rs_mom": 3.118,
-    "accel": 17.257,
-    "n_members": 11,
-    "eligible_n": 1,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "ENPH"
-    ],
-    "members_scored": [
-     "ENPH"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "ENPH"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1
-    },
-    "best_pool_rank": 47,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "transportationairtravel",
-    "producer_rank": 3,
-    "name": "Air Travel",
-    "theme": "Transportation & Logistics",
-    "quadrant": "leading",
-    "turn_state": "bottoming",
-    "emerging_score": 3.454,
-    "rs_mom": 1.88,
-    "accel": 12.348,
-    "n_members": 8,
-    "eligible_n": 1,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 1
-    },
-    "members_eligible": [
-     "JOBY"
-    ],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [
-     "LUV"
-    ],
-    "blocker_hist": {
-     "sector_cap_overflow": 1
-    },
-    "best_pool_rank": 53,
-    "gap_class": "SCORING_GAP",
-    "gap": true
-   },
-   {
-    "key": "commmetalssilver",
-    "producer_rank": 4,
-    "name": "Silver",
-    "theme": "Commodities Metals",
-    "quadrant": "improving",
-    "turn_state": "bottoming",
-    "emerging_score": 3.315,
-    "rs_mom": 1.867,
-    "accel": 11.525,
-    "n_members": 6,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   },
-   {
-    "key": "agricultureindoorfarming",
-    "producer_rank": 6,
-    "name": "Indoor Farming",
-    "theme": "Agriculture & FoodTech",
-    "quadrant": "improving",
-    "turn_state": "bottoming",
-    "emerging_score": 2.98,
-    "rs_mom": 1.704,
-    "accel": 10.096,
-    "n_members": 3,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   },
-   {
-    "key": "entertainmentgaming",
-    "producer_rank": 7,
-    "name": "Gaming",
-    "theme": "Digital Entertainment",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.946,
-    "rs_mom": 0.811,
-    "accel": 14.403,
-    "n_members": 8,
-    "eligible_n": 2,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "NTES",
-     "TTWO"
-    ],
-    "members_scored": [
-     "NTES"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "NTES"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1,
-     "event_blackout": 1
-    },
-    "best_pool_rank": 6,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "softwaregaming",
-    "producer_rank": 10,
-    "name": "Gaming",
-    "theme": "Software",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.571,
-    "rs_mom": 0.438,
-    "accel": 13.749,
-    "n_members": 7,
-    "eligible_n": 2,
-    "scored_n": 1,
-    "featured_n": 0,
-    "visible_n": 1,
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [
-     "NTES",
-     "TTWO"
-    ],
-    "members_scored": [
-     "NTES"
-    ],
-    "members_featured": [],
-    "members_visible": [
-     "NTES"
-    ],
-    "blocker_hist": {
-     "alpha_below_floor": 1,
-     "already_open": 1,
-     "event_blackout": 1
-    },
-    "best_pool_rank": 6,
-    "gap_class": "FEATURED_GAP",
-    "gap": true
-   },
-   {
-    "key": "socialadvertising",
-    "producer_rank": 11,
-    "name": "Advertising",
-    "theme": "Social Media",
-    "quadrant": "leading",
-    "turn_state": "turn_up",
-    "emerging_score": 2.523,
-    "rs_mom": 1.073,
-    "accel": 10.096,
-    "n_members": 11,
-    "eligible_n": 0,
-    "scored_n": 0,
-    "featured_n": 0,
-    "visible_n": 0,
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "members_eligible": [],
-    "members_scored": [],
-    "members_featured": [],
-    "members_visible": [],
-    "blocker_hist": {},
-    "best_pool_rank": null,
-    "gap_class": "ADMISSION_GAP",
-    "gap": true
-   }
-  ]
+  "available": false,
+  "as_of": "2026-11-09",
+  "membership_temporality": "current_only",
+  "emerging": [],
+  "gaps": [],
+  "gap_class_hist": {},
+  "null_reason": "rotation and Prophet board are not on the same completed session"
  },
  "basket_misses": {
   "tier": "ops_telemetry",
@@ -1059,7 +327,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 2,
-  "n_unrepresented": 23,
+  "n_unrepresented": 21,
   "misses": [],
   "baskets": [
    {
@@ -1134,11 +402,13 @@
     "n_members": 18,
     "n_members_live": 18,
     "n_members_read": 18,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CL"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1204,14 +474,18 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 3,
+    "n_members_on_board": 7,
     "members_on_board": [
+     "AEM",
      "AGI",
+     "AU",
+     "BTG",
      "GFI",
+     "IAG",
      "NEM"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 7,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1258,9 +532,8 @@
     "n_members": 60,
     "n_members_live": 60,
     "n_members_read": 60,
-    "n_members_on_board": 8,
+    "n_members_on_board": 7,
     "members_on_board": [
-     "ABT",
      "AMGN",
      "COR",
      "LLY",
@@ -1273,7 +546,7 @@
      "buy": 2,
      "watch": 0,
      "leaders": 1,
-     "ran": 5
+     "ran": 4
     },
     "pctile": 0.7401,
     "pctile_n": 252,
@@ -1313,11 +586,13 @@
     "n_members": 35,
     "n_members_live": 33,
     "n_members_read": 35,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CL"
+    ],
     "present_counts": {
      "buy": 0,
-     "watch": 0,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -1404,16 +679,17 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 5,
+    "n_members_on_board": 6,
     "members_on_board": [
      "AMGN",
      "LLY",
      "PFE",
      "RHHBY",
+     "VKTX",
      "WST"
     ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 5
@@ -1478,7 +754,7 @@
     "n_members_read": 25,
     "n_members_on_board": 2,
     "members_on_board": [
-     "FOXA",
+     "FOX",
      "VZ"
     ],
     "present_counts": {
@@ -1523,16 +799,14 @@
     "n_members": 26,
     "n_members_live": 25,
     "n_members_read": 26,
-    "n_members_on_board": 5,
+    "n_members_on_board": 3,
     "members_on_board": [
-     "ALB",
      "CTVA",
-     "MOS",
      "NEM",
      "NUE"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 1,
      "watch": 2,
      "leaders": 0,
      "ran": 0
@@ -1647,10 +921,12 @@
     "n_members": 10,
     "n_members_live": 10,
     "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "DNN"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1669,12 +945,13 @@
     "n_members": 15,
     "n_members_live": 15,
     "n_members_read": 15,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
+     "BKSY",
      "PL"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1693,12 +970,10 @@
     "n_members": 11,
     "n_members_live": 11,
     "n_members_read": 11,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "ALB"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -2032,15 +1307,16 @@
     "n_members": 24,
     "n_members_live": 24,
     "n_members_read": 24,
-    "n_members_on_board": 3,
+    "n_members_on_board": 4,
     "members_on_board": [
+     "AMD",
+     "ANET",
      "DELL",
-     "MPWR",
-     "MU"
+     "MPWR"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 3,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
@@ -2058,13 +1334,15 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 1,
+    "n_members_on_board": 3,
     "members_on_board": [
+     "AMD",
+     "ANET",
      "MPWR"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 1,
+     "watch": 3,
      "leaders": 0,
      "ran": 0
     },
@@ -2128,14 +1406,13 @@
     "n_members": 5,
     "n_members_live": 4,
     "n_members_read": 5,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "MU",
      "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 2,
+     "watch": 1,
      "leaders": 0,
      "ran": 0
     },
@@ -2153,17 +1430,18 @@
     "n_members": 75,
     "n_members_live": 74,
     "n_members_read": 75,
-    "n_members_on_board": 5,
+    "n_members_on_board": 6,
     "members_on_board": [
      "ACN",
+     "AMD",
+     "ANET",
      "DELL",
      "MPWR",
-     "MU",
      "SNDK"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 4,
+     "watch": 5,
      "leaders": 1,
      "ran": 0
     },
@@ -2203,17 +1481,16 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "COP",
-     "CVX",
      "PR",
      "VLO",
      "XOM"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 5,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
@@ -2231,17 +1508,16 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 5,
+    "n_members_on_board": 4,
     "members_on_board": [
      "APA",
      "COP",
-     "CVX",
      "VLO",
      "XOM"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 5,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
@@ -2261,7 +1537,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 199317,
+  "n_calls": 199318,
   "n_frozen_echoes_excluded": 241,
   "n_stamp_dates": 81,
   "stamp_dates": {
@@ -2428,18 +1704,18 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 21287,
-  "scan_n": 1615,
+  "store_n": 21295,
+  "scan_n": 1620,
   "runners_n": 150,
-  "runners_eligible_today_n": 7,
-  "runners_never_eligible_n": 42,
+  "runners_eligible_today_n": 12,
+  "runners_never_eligible_n": 37,
   "excluder_family_hist": {
-   "not_topped_veto": 135,
-   "ELIGIBLE": 7,
-   "freshness_expired": 6,
+   "not_topped_veto": 132,
+   "ELIGIBLE": 12,
+   "freshness_expired": 4,
    "no_cross": 2
   }
  },
@@ -11952,6 +11228,11 @@
    "input": "data/themes_heatmap/subsector_perf_history.jsonl",
    "severity": "structural",
    "reason": "carries asof+subsectors — no theme-level emerging_score rank, so the top-5 entry date is not recoverable from this archive; days_since_top5_entry reported null rather than approximated from the subsector unit (masterplan W2 owns the theme-level PIT rank archive)"
+  },
+  {
+   "input": "site/marketdata/subsector_rotation.json",
+   "severity": "unexpected",
+   "reason": "subtheme funnel clock mismatch: rotation_asof=2026-11-09 standouts_asof=2026-11-06 — refusing a cross-session join"
   },
   {
    "input": "data/baskets/ohlcv",

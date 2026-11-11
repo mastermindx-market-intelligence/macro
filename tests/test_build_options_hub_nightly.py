@@ -655,3 +655,80 @@ def test_moves_transport_failure_preserves_current_null_and_does_not_retry():
     assert payload["expected_move"] is None
     assert payload["input_source"] is None
     assert _moves_publishable(payload, "INTC", "2026-09-17")
+
+
+
+def _moves_price_population_snapshot(prices):
+    frame = _theta_snapshot(spot=100.0)
+    frame["strike"] = [100.0, 200.0]
+    frame["implied_vol"] = [0.2, 0.8]
+    frame["underlying_price"] = pd.Series(prices, dtype=object)
+    return frame
+
+
+@pytest.mark.parametrize("case", [
+    "negative", "zero", "missing", "nan", "positive-infinity",
+    "negative-infinity", "boolean", "false", "numpy-boolean",
+    "unparseable", "overflow",
+])
+def test_moves_malformed_selected_price_population_clears_current_band(case, tmp_path):
+    invalid = {
+        "negative": -100.0, "zero": 0.0, "missing": None,
+        "nan": float("nan"), "positive-infinity": float("inf"),
+        "negative-infinity": float("-inf"), "boolean": True, "false": False,
+        "numpy-boolean": pd.Series([True]).iloc[0],
+        "unparseable": "not-a-price", "overflow": 10**400,
+    }[case]
+    frame = _moves_price_population_snapshot([100.0, invalid])
+    before = frame.copy(deep=True)
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: frame,
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["input_source"] is None
+    assert payload["expected_move"] is None
+    assert payload["no_data_reason"] == "no_current_spot_iv_pair"
+    assert _moves_publishable(payload, "INTC", "2026-09-17")
+    path = tmp_path / "moves" / "INTC.json"
+    _write_json(path, payload)
+    assert json.loads(path.read_text(encoding="utf-8")) == payload
+    pd.testing.assert_frame_equal(frame, before)
+
+
+@pytest.mark.parametrize("case", [
+    "plain", "other-root", "older-session", "numeric-strings", "varied-positive",
+])
+def test_moves_qualified_price_population_keeps_canonical_iv_and_source(case):
+    prices = ["100", "100"] if case == "numeric-strings" else [100.0, 100.0]
+    if case == "varied-positive":
+        prices = [100.0, 120.0]
+    frame = _moves_price_population_snapshot(prices)
+    if case in {"other-root", "older-session"}:
+        extra = frame.iloc[[0]].copy()
+        extra["underlying_price"] = -100.0
+        if case == "other-root":
+            extra["root"] = "AAPL"
+        else:
+            extra["snapshot_ts"] = pd.Timestamp("2026-09-16 16:00:00")
+        frame = pd.concat([frame, extra], ignore_index=True)
+    before = frame.copy(deep=True)
+    resolved = resolve_moves_inputs(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: frame,
+    )
+    assert resolved == {
+        "spot": 110.0 if case == "varied-positive" else 100.0,
+        "atm_iv_pct": 26.0 if case == "varied-positive" else 20.0,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-17",
+    }
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: frame,
+    )
+    assert payload["input_source"] == "thetadata_snapshot"
+    assert payload["expected_move"] is not None
+    assert _moves_publishable(payload, "INTC", "2026-09-17")
+    pd.testing.assert_frame_equal(frame, before)

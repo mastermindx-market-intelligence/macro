@@ -1,0 +1,23 @@
+{
+  "source_base": "d18d83019f3972c9bd915c736210176c7bd0b6b5",
+  "baseline_html_sha256": "2555f1bbccb192b90502a28381446a80ec0db89dafaebd8e2cf16122416263f6",
+  "candidate_html_sha256": "10c0b94b440fd89ed9f31348cd1f115dcbff926865e14a8be06e521b5e4c952e",
+  "method": "Same canonical capture owner, desktop EN dark rest state. Baseline serves exact parent generated HTML and unchanged shared assets. Candidate is current canonical local output.",
+  "before_timing": {
+    "cls": 0.6479732741451394,
+    "inp_proxy_ms": null,
+    "lcp_ms": 144,
+    "resource_count": 16,
+    "server_timing": [],
+    "transfer_bytes": 1033119
+  },
+  "candidate_timing": {
+    "cls": 0.6550560559015051,
+    "inp_proxy_ms": null,
+    "lcp_ms": 160,
+    "resource_count": 18,
+    "server_timing": [],
+    "transfer_bytes": 1052974
+  },
+  "limitations": "Single local capture comparison; not field Web Vitals or percentile proof."
+}
