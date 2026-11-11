@@ -671,6 +671,23 @@ def attribution_bridge(book: BookResult, rets: pd.DataFrame, cash_r: pd.Series,
     }
 
 
+def asset_contributions(book: BookResult, rets: pd.DataFrame) -> pd.Series:
+    """Sum over days of weight x asset return per asset (gross, before costs), sorted asc."""
+    W = book.weights
+    if W.empty:
+        return pd.Series(dtype=float)
+    R = rets.reindex(index=W.index, columns=W.columns).fillna(0.0)
+    return (W * R).sum().sort_values()
+
+
+def concurrency(positions: Sequence[Position], dates: Sequence[pd.Timestamp]) -> dict:
+    c = np.array([sum(p.entry <= d < p.exit for p in positions) for d in list(dates)[:-1]])
+    if len(c) == 0:
+        return {}
+    return {"min": int(c.min()), "median": float(np.median(c)), "max": int(c.max()),
+            "first_5_sessions": [int(v) for v in c[:5]]}
+
+
 # ─────────────────────────────── event study ─────────────────────────────────────
 
 def event_study(pub: Mapping[str, pd.Timestamp], plan_asset: Mapping[str, str],

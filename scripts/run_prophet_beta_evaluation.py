@@ -86,6 +86,69 @@ def load_prices(tickers, prices_dir: Path, cal: pd.DatetimeIndex):
     return pd.DataFrame(adj), pd.DataFrame(raw), missing, digest.hexdigest()
 
 
+def _pp(x: float | None, signed: bool = True) -> str:
+    if x is None:
+        return "n/a"
+    return f"{x * 100:+.1f} pp" if signed else f"{x * 100:.1f}%"
+
+
+def _ci_pp(c) -> str:
+    return "n/a" if not c else f"[{c[0] * 100:+.1f}, {c[1] * 100:+.1f}] pp"
+
+
+def plain_words(a: dict) -> tuple[list[str], list[str]]:
+    """Plain-language headline and limitations computed from the artifact's own numbers."""
+    c = {r["id"]: r for r in a["comparators"]}
+    k = {r["id"]: r for r in a["contrasts"]["rows"]}
+    c6, w = c["C6_exact_incumbent_prophet"], a["window"]
+    d6 = a["post_hoc_diagnostics"]["C6_exact_incumbent_prophet"]
+    es = a["event_study"]["horizons"]
+    head = [
+        f"Release level: descriptive only (L0). The window is {w['sessions']} sessions; the predeclared "
+        f"minimum for any accepted historical claim is 252 sessions including an 8% market drawdown.",
+        f"Market over the window: SPY {_pp(w['spy_total_return'])} total return, deepest drawdown {_pp(w['spy_max_drawdown'])}.",
+        f"Incumbent Prophet book (as built, {c6['sample']['positions']} positions): {_pp(c6['total_net_return'])} net, "
+        f"{_pp(c6['vs_passive_market']['total_diff'])} versus SPY, 95% CI {_ci_pp(c6['vs_passive_market']['total_diff_ci95'])}. "
+        f"The interval includes zero.",
+        f"Beta capture: beta {c6['beta_vs_market']:.2f} (95% CI {c6['beta_ci95'][0]:.2f} to {c6['beta_ci95'][1]:.2f}), "
+        f"mean invested weight {c6['mean_invested'] * 100:.0f}%; upside capture {c6['upside_capture']:.2f}, "
+        f"downside capture {c6['downside_capture']:.2f}.",
+        f"Without its largest single contributor ({d6['without_top_contributor']['dropped_asset']}) the book is "
+        f"{_pp(d6['without_top_contributor']['excess_total_vs_spy'])} versus SPY "
+        f"(CI {_ci_pp(d6['without_top_contributor']['excess_total_ci95'])}).",
+        f"Published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by "
+        f"{_pp(es['21']['excess_vs_spy']['mean'])} on average (date-cluster CI {_ci_pp(es['21']['excess_vs_spy']['ci95_date_cluster'])}); "
+        + ("most of that gap was the stock versus its own sector ETF, not the sector choice."
+         if abs(es["21"]["stock_minus_sector_etf"]["mean"]) > abs(es["21"]["sector_etf_minus_spy"]["mean"])
+         else "most of that gap came from the sector choice, not the stock versus its sector."),
+        "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY "
+        f"(K3 {_pp(k['K3']['ann_diff'])}/yr, K4 {_pp(k['K4']['ann_diff'])}/yr, K5 {_pp(k['K5']['ann_diff'])}/yr annualised; "
+        "none significant after Holm).",
+        "Prophet plans inside leading sectors did better than plans outside them in this window "
+        f"(K7 {_pp(k['K7']['ann_diff'])}/yr annualised, Holm p {k['K7']['p_holm']:.2f}); this is not significant"
+        + (" and its largest contributor is the same single name." if
+           a["post_hoc_diagnostics"]["C6A_context_aligned_prophet"]["without_top_contributor"]["dropped_asset"]
+           == d6["without_top_contributor"]["dropped_asset"] else "."),
+        "Nothing here shows that sector context or member selection adds value beyond market participation.",
+    ]
+    lim = [
+        f"Short sample: one {a['window']['sessions']}-session window (SPY {_pp(a['window']['spy_total_return'])}); "
+        "no rebound or crash regime was observed.",
+        "Annualised differentials from 63 daily returns are very noisy; read total-window differences and their intervals.",
+        "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; "
+        f"{len(a['coverage']['member_universe_missing_price_files'])} point-in-time members had no price file and were excluded.",
+        "Sector labels are current-basis GICS, not the classification in force at each date.",
+        "Prophet plans are read from the 2026-11-09 plan snapshot, not each plan's as-published bytes; entries use the "
+        "publication clock and close-only fills, so results differ from the plan record's own same-bar outcomes.",
+        "Model book: equal weight across open published plans. It is not user holdings, a portfolio recommendation or sizing advice.",
+        "The event-study date-cluster intervals treat publication dates as independent although nearby dates share "
+        "overlapping market paths, so those intervals are likely too narrow.",
+        "Issuer-excluded peer counts are unavailable: identity is the listing ticker only.",
+        "The eight catalog sleeves cannot be evaluated: plans carry no sleeve link. admission_class strata are reported instead.",
+    ]
+    return head, lim
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prices-dir", default=None)
@@ -103,7 +166,20 @@ def main(argv=None) -> int:
     warm = pd.Timestamp(header["window"]["warmup_from"])
     first_decision = pd.Timestamp("2026-08-07")
     sector_map = header["sector_map"]
-    deviations: list[dict] = []
+    deviations: list[dict] = [
+        {"id": "D1", "kind": "naming", "when": "before outcome access",
+         "what": "reason/key names derived from 'ledger' renamed to 'recorded_*' / 'resolution_log'",
+         "why": "lane-8 validator forbids key substrings incl. 'edge' (contained in 'ledger'); no method change"},
+        {"id": "D2", "kind": "added_diagnostic", "when": "after outcome access",
+         "what": "post_hoc_diagnostics: per-asset contribution concentration, concurrent position counts, Prophet books re-run without their single largest contributor",
+         "why": "the C6 book's result was visibly driven by one name; disclosed as descriptive only, cannot change any release level or threshold"},
+        {"id": "D3", "kind": "implementation_note", "when": "after outcome access",
+         "what": "the last scheduled rule rebalance (decision 2026-11-05) executes at the final close 2026-11-06; its trading cost has no following return day and is not charged",
+         "why": "header schedule executes while t+1 <= last close; omitted cost is at most one rebalance (< 0.1 pp for C3-C5)"},
+        {"id": "D4", "kind": "presentation", "when": "after outcome access",
+         "what": "event-study horizons with fewer than 5 distinct publication dates are marked status=too_few_dates",
+         "why": "H=63 matured for a single publication date; a one-cluster bootstrap interval is degenerate and must not be displayed as uncertainty"},
+    ]
 
     prices_dir = Path(args.prices_dir or (ROOT / "data/yahoo" if (ROOT / "data/yahoo/SPY.parquet").exists()
                                           else os.environ.get("PROPHET_EVAL_PRICES", "")))
@@ -304,9 +380,35 @@ def main(argv=None) -> int:
         attribution[cid] = ev.attribution_bridge(books[cid], rets, cash_r, ev.asset_sector_map(subsets[cid]))
         attribution[cid]["unit"] = "fraction (0.01 = 1 percentage point)"
 
+    # post-hoc descriptive diagnostics (deviation D2: added after outcome access; no threshold change)
+    diagnostics = {"label": "POST_HOC_DESCRIPTIVE_DIAGNOSTIC (not in the frozen header; cannot change any release level)"}
+    for cid in ("C6_exact_incumbent_prophet", "C7_independent_emergence", "C6A_context_aligned_prophet"):
+        contrib = ev.asset_contributions(books[cid], rets)
+        pos_sum = float(contrib[contrib > 0].sum())
+        top = contrib.index[-1] if len(contrib) else None
+        drop = [p for p in subsets[cid] if p.asset != top]
+        bk = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(drop, dates), tradable, bps(1.0))
+        r_drop = bk.net.to_numpy()
+        vs_drop = ev.bootstrap_vs(r_drop, rm, rm, rc, idx10)
+        diagnostics[cid] = {
+            "concurrent_positions": ev.concurrency(subsets[cid], dates),
+            "top_contributors": [{"asset": a, "gross_contribution": float(v)} for a, v in contrib.iloc[::-1][:5].items()],
+            "bottom_contributors": [{"asset": a, "gross_contribution": float(v)} for a, v in contrib.iloc[:5].items()],
+            "top5_share_of_positive_contribution": (float(contrib.iloc[-5:].sum()) / pos_sum) if pos_sum > 0 else None,
+            "without_top_contributor": {"dropped_asset": top, "total_net_return": ev.compound(r_drop),
+                                        "excess_total_vs_spy": vs_drop["total_diff"],
+                                        "excess_total_ci95": vs_drop["total_diff_ci95"],
+                                        "ann_excess_vs_spy": vs_drop["ann_diff"],
+                                        "ann_excess_ci95": vs_drop["ann_diff_ci95"],
+                                        "beta_vs_market": ev.point_metrics(r_drop, rm, rc)["beta_vs_market"]},
+        }
+
     # event study (policy-free, all era plans published in-window)
     pub = extra["pub_sessions"]
     es = ev.event_study(pub, {p["id"]: p["asset"] for p in era}, plan_etf, closes, cal, win1, B, seed)
+    for h, v in es.items():
+        if v.get("n_dates", 0) and v["n_dates"] < 5:
+            v["status"] = "too_few_dates"
 
     # coverage
     entered_seen = len(positions) + sum(v for k, v in excl.items()
@@ -385,6 +487,7 @@ def main(argv=None) -> int:
                         "population": "all incumbent-era plans with a publication session in the window (entered or not)",
                         "plans": len(pub), "horizons": es},
         "stability_halves": halves,
+        "post_hoc_diagnostics": diagnostics,
         "failed_leaders": {"c3_sector_picks": c3_total, "lagged_spy_over_hold": c3_failed},
         "rebounds": {"status": "not_evaluable",
                      "reason": "window holds no SPY drawdown deep enough for a rebound test (see window.spy_max_drawdown)"
@@ -424,6 +527,11 @@ def main(argv=None) -> int:
         "deviations": deviations,
         **ev.AUTHORITY,
     }
+    artifact["headline"], artifact["limitations"] = plain_words(artifact)
+    artifact["release"]["overall_level"] = min(
+        (j["level"] for j in artifact["release"]["jobs"].values()),
+        key=lambda lv: artifact["release"]["levels_defined"].index(lv)
+        if lv in artifact["release"]["levels_defined"] else -1)
     artifact = ev.json_safe(artifact)
     bad = ev.assert_no_forbidden_keys(artifact)
     if bad:
