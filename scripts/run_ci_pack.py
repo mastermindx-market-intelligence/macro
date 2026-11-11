@@ -32,9 +32,11 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import datetime as dt
 import functools
 import hashlib
 import json
+import math
 import os
 import platform
 import re
@@ -449,6 +451,205 @@ OBSERVED_COMMAND_SECONDS = {
     "neural-web": 37,
     "hub-a11y": 37,
 }
+
+# ---------------------------------------------------------------------------
+# Measured planning costs (2026-11-09, Macro #6351 lane B / Mastermind #1607)
+#
+# OBSERVED_COMMAND_SECONDS above, read by _legacy_heuristic_weight below, is
+# the FROZEN pre-migration estimator. It mixed two scales: hosted seconds for
+# the ~30 hand-entered dominators, and for every other job a text-shape
+# heuristic whose "units" were never seconds (a pack selection modeled at
+# 1,412 units executed 5,038 s hosted; natural run 42559449303 then measured
+# one pack at 4,721 s while another ran 851 s — a 5.5x spread the unit scale
+# could not see, because a 3 s guard and a 3 minute suite both modeled as a
+# handful of "units"). Balancing on that scale is how tail jobs met in one
+# pack while other packs idled.
+#
+# Production weights are now conservative observed seconds from the
+# committed sample table refreshed by scripts/update_measured_job_seconds.py
+# from natural-run timing artifacts. The legacy estimator stays byte-stable
+# ONLY so the replay-parity test can group the same selected workload
+# through the old model and prove the migration regrouped work without
+# losing, duplicating or re-identifying any of it. Do not "improve" the
+# legacy function; its value IS being the old model.
+#
+# Samples and ages live in the table; the estimator policy lives here, next
+# to its consumer:
+#   * max over FRESH samples (upper tail, not mean — balancing wants the
+#     pessimistic shape) scaled by 10% headroom, since one natural
+#     observation is only a lower bound on a job's variance;
+#   * a sample older than MEASURED_SAMPLE_MAX_AGE_DAYS is planning-
+#     equivalent to unobserved: tree, runner image and suites all move on
+#     that timescale, and a stale sample can be wrong in EITHER direction;
+#   * a job with no fresh sample plans at UNOBSERVED_JOB_COST_SECONDS —
+#     never at the legacy 1-unit floor, which is exactly how unobserved
+#     work used to hide from balancing.
+# Setup/acquisition is modeled SEPARATELY (PACK_SETUP_OVERHEAD_SECONDS):
+# every pack pays it once regardless of grouping, so it belongs to wall-time
+# prediction, not to balancing weights.
+# ---------------------------------------------------------------------------
+MEASURED_JOB_SECONDS_PATH = (
+    Path(__file__).resolve().parent.parent / ".github" / "ci" / "measured-job-seconds.json"
+)
+MEASURED_SAMPLE_MAX_AGE_DAYS = 120
+MEASURED_SAMPLE_HEADROOM = 1.10
+# One-time migration seed of the frozen OBSERVED_COMMAND_SECONDS hand-entered
+# hosted seconds (2026-11-09). Those values were permanent in code — they never
+# aged out — so their seeded samples are exempt from the freshness window:
+# without the exemption, 2026-12-13 would silently drop ~16 data-gated
+# heavyweights (engine-render-guards 875 s et al., jobs a code-gated natural
+# run cannot select) to the 150 s unobserved bound. They leave the table only
+# by explicit edit; a natural observation supersedes them via max().
+LEGACY_SEED_RUN_ID = "legacy-observed-command-seconds"
+# Derived 2026-11-09 from run 42559449303's 325 measured logical jobs
+# (max observed test seconds per job, deduplicated across re-emits):
+# p50 9.0 / p75 33.8 / p85 75.3 / p90 128.8 / p95 258.5 / max 4700.5.
+# An unobserved job plans just above the p90: heavier than nine observed
+# jobs in ten, so a newcomer or a stale-evidence job cannot hide inside a
+# pack of measured small work, while the ~59 unmeasured (mostly data-gated)
+# jobs stay honestly affordable.
+UNOBSERVED_JOB_COST_SECONDS = 150
+# Median non-execution share of the twelve hosted ci-pack jobs of run
+# 42559449303 — pack job wall (started->completed) minus the timed
+# dependency_install+test phases: min 194 / median 303 / max 390 s.
+# Paid once per pack whatever the grouping.
+PACK_SETUP_OVERHEAD_SECONDS = 303
+# Narrowed-lane WIDTH BUDGET (2026-11-09 queue census, receipts in
+# research/ci_pack_measured_costs_20261109/): a narrowed PR lane may activate
+# at most this many of the twelve fleet packs — the legacy seven. The census
+# measured the hosted fleet every lane shares: during the saturated hours
+# (13+ of the 48 observed) macro/Mastermind/mastermind-terminal held
+# 183-237 concurrent hosted jobs with a 230-338-job queued backlog, pack-job
+# runner pickup rose from 2 s/3 s (p50/p90, idle) to 160 s/965 s, and one
+# run's pack jobs no longer started together (within-run start spread
+# p50 274 s / p90 971 s / max 39,790 s, against 1 s idle). Extra packs
+# therefore buy queue delay, not wall, exactly when the org is busiest,
+# while each costs a fixed PACK_SETUP_OVERHEAD_SECONDS of runner time.
+# Capping at the legacy width keeps every narrowed lane's runner-minutes at
+# or below the legacy lane's; the measured model still BALANCES those seven
+# packs (probe critical paths 3092/2745/2921 s -> 2319/2389/2290 s at
+# identical runner totals 16,220/16,696/16,001 s).
+NARROWED_PR_MAX_ACTIVE_PACKS = 7
+
+
+@functools.lru_cache(maxsize=8)
+def _measured_job_seconds_cached(
+    path_key: str, today_iso: str
+) -> dict[str, int]:
+    path = Path(path_key)
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if (
+        not isinstance(document, dict)
+        or type(document.get("schema")) is not int
+        or document.get("schema") != 1
+    ):
+        return {}
+    raw_jobs = document.get("jobs")
+    if not isinstance(raw_jobs, dict):
+        return {}
+    horizon = dt.date.fromisoformat(today_iso) - dt.timedelta(
+        days=MEASURED_SAMPLE_MAX_AGE_DAYS
+    )
+    weights: dict[str, int] = {}
+    for job_id, entry in raw_jobs.items():
+        if not isinstance(job_id, str) or not isinstance(entry, dict):
+            continue
+        samples = entry.get("samples", [])
+        if not isinstance(samples, list):
+            continue
+        estimates: list[float] = []
+        for sample in samples:
+            if not isinstance(sample, dict):
+                continue
+            observed = sample.get("observed")
+            test_seconds = sample.get("test_seconds")
+            dependency_seconds = sample.get("dependency_install_seconds", 0.0)
+            if not isinstance(observed, str):
+                continue
+            if (
+                isinstance(test_seconds, bool)
+                or not isinstance(test_seconds, (int, float))
+                or test_seconds < 0
+            ):
+                continue
+            if (
+                isinstance(dependency_seconds, bool)
+                or not isinstance(dependency_seconds, (int, float))
+                or dependency_seconds < 0
+            ):
+                continue
+            try:
+                observed_date = dt.date.fromisoformat(observed)
+            except ValueError:
+                continue
+            if observed_date < horizon and sample.get("run_id") != LEGACY_SEED_RUN_ID:
+                continue
+            # Validate each observation before max(): NaN is order-sensitive,
+            # and one malformed sample must not discard valid sibling evidence.
+            # JSON integers can overflow conversion; finite phases can overflow
+            # either their sum or the existing headroom calculation.
+            try:
+                test_cost = float(test_seconds)
+                dependency_cost = float(dependency_seconds)
+            except OverflowError:
+                continue
+            if not (math.isfinite(test_cost) and math.isfinite(dependency_cost)):
+                continue
+            total = test_cost + dependency_cost
+            if not (
+                math.isfinite(total)
+                and math.isfinite(MEASURED_SAMPLE_HEADROOM * total)
+            ):
+                continue
+            estimates.append(total)
+        if estimates:
+            # Round before ceil so binary float representation noise (1.1 *
+            # 200.0 == 220.00000000000003) cannot bump a whole second.
+            weights[job_id] = math.ceil(
+                round(MEASURED_SAMPLE_HEADROOM * max(estimates), 6)
+            )
+    return weights
+
+
+def measured_job_weight_table(
+    path: Path | str | None = None, *, today: dt.date | None = None
+) -> dict[str, int]:
+    """Conservative balancing seconds per logical job, from committed samples.
+
+    Fails SAFE for planning: an unreadable, missing or malformed table maps
+    every job to the unobserved bound — pessimistic, never wrong, and never
+    a crash: weights only ever influence grouping, not selection, proof
+    identity or verdicts. ``path``/``today`` are injection points for tests;
+    production always reads the committed table at "today".
+    """
+    resolved = Path(path) if path is not None else MEASURED_JOB_SECONDS_PATH
+    current = today or dt.datetime.now(dt.timezone.utc).date()
+    return _measured_job_seconds_cached(str(resolved), current.isoformat())
+
+
+def predicted_pack_walls_seconds(
+    packs: Iterable[Iterable[LegacyJob]],
+) -> tuple[int, ...]:
+    """Wall-time model for any grouping: setup overhead + measured job seconds.
+
+    Deliberately evaluates every pack through the CURRENT measured table
+    regardless of which cost model produced the grouping, so an old-model
+    grouping can be scored honestly against a new-model one (the
+    replay-parity test and the migration receipt both rely on this).
+    """
+    table = measured_job_weight_table()
+    return tuple(
+        PACK_SETUP_OVERHEAD_SECONDS
+        + sum(
+            table.get(job.job_id, UNOBSERVED_JOB_COST_SECONDS)
+            for job in pack
+        )
+        for pack in packs
+        if pack
+    )
 
 
 class ManifestError(ValueError):
@@ -1674,7 +1875,28 @@ def _safe_manifest_changed_job_ids(
     )
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
-    """Estimate work well enough to avoid putting both giant suites together."""
+    """Conservative observed planning seconds for balancing — never selection.
+
+    Measured fresh sample (upper tail + headroom) when one exists, otherwise
+    the conservative unobserved bound. See the measured-cost block above the
+    ManifestError class for the policy and its 2026-11-09 derivation. The
+    definition argument is retained for signature stability with the frozen
+    legacy estimator below; measured weights are keyed by job identity.
+    """
+    return measured_job_weight_table().get(job_id, UNOBSERVED_JOB_COST_SECONDS)
+
+
+def _legacy_heuristic_weight(job_id: str, definition: dict[str, Any]) -> int:
+    """The FROZEN pre-2026-11-09 estimator, retained for replay parity only.
+
+    Byte-equivalent to the weight rule every plan used before the
+    measured-cost migration (hand-entered hosted seconds for the
+    OBSERVED_COMMAND_SECONDS dominators, text-shape "units" for the rest).
+    tests/test_ci_pack_measured_costs.py groups the same selected workload
+    through this model and the measured model and proves the migration lost
+    no planned work. Production code must not call this; changing it
+    invalidates that parity proof.
+    """
     if job_id in OBSERVED_COMMAND_SECONDS:
         return OBSERVED_COMMAND_SECONDS[job_id]
     commands = [
@@ -2031,7 +2253,18 @@ def packing_probe_measurements(
             "weight": weight,
             # Runners are what the incident actually spends: the pack count
             # follows the SELECTED weight, so the weight cut is a runner cut.
-            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            # The axis mirrors what build_plan's narrowed lane would actually
+            # GRANT — demand in PACK_TARGET_SECONDS packs under the width
+            # budget, not raw demand up to the fleet — because the budget is
+            # the runner-spend guarantee. Growth past the budget stays
+            # visible on the weight axis, which carries the sensitivity.
+            "packs": max(
+                1,
+                min(
+                    NARROWED_PR_MAX_ACTIVE_PACKS,
+                    -(-weight // PACK_TARGET_SECONDS),
+                ),
+            ),
             "max_jobs": max_jobs,
             "max_weight": max_weight,
             "max_packs": max_packs,
@@ -2410,8 +2643,19 @@ def build_plan(
         and not invalidated
         and len(eligible) < len(jobs)
     )
-    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
-             else partition_jobs(eligible, pack_count))
+    # A narrowed lane compacts under the width budget, not the raw fleet:
+    # every active pack spends PACK_SETUP_OVERHEAD_SECONDS of shared hosted
+    # capacity, and the 2026-11-09 queue census showed extra packs
+    # serializing behind the backlog instead of starting on demand. The
+    # plan DOCUMENT still describes every fleet pack (empty slots and all);
+    # only the active count and the matrix obey the budget.
+    if narrowed_pr:
+        packs = compact_scoped_packs(
+            eligible, min(pack_count, NARROWED_PR_MAX_ACTIVE_PACKS)
+        ) + [[] for _ in range(pack_count - min(pack_count,
+                                                NARROWED_PR_MAX_ACTIVE_PACKS))]
+    else:
+        packs = partition_jobs(eligible, pack_count)
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)

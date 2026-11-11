@@ -3110,11 +3110,31 @@ def test_plan_is_deterministic() -> None:
 def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Calibration changes the attested assignment, never the work it proves."""
+    """Calibration changes the attested assignment, never the work it proves.
+
+    2026-11-09 measured-cost migration (receipt:
+    research/ci_pack_measured_costs_20261109/): the calibration lever moved
+    from OBSERVED_COMMAND_SECONDS — now frozen replay-parity data that
+    ``_job_weight`` no longer reads — to the committed measured table. The
+    analogous perturbation is dropping the two heaviest measured jobs'
+    table entries so they plan at the unobserved bound; the assignment must
+    move while every execution proof stays byte-identical.
+    """
     calibrated = _full_plan()
+    committed = PACK.measured_job_weight_table()
+    assert committed, "the committed measured table must load in this checkout"
     for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
-        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+        assert job_id in committed, job_id
+    uncalibrated = {
+        job_id: weight
+        for job_id, weight in committed.items()
+        if job_id not in ("fif-kernel-guards", "earnings-economic-dossier")
+    }
+    monkeypatch.setattr(
+        PACK, "measured_job_weight_table", lambda *args, **kwargs: uncalibrated
+    )
     heuristic = _full_plan()
+    monkeypatch.undo()
 
     assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
     assert calibrated.pack_count == heuristic.pack_count == 12
@@ -5998,12 +6018,45 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    # 2026-11-09 measured-cost migration (Macro #6351 lane B / Mastermind
+    # #1607): the weight axis changed SCALE, from the frozen mixed heuristic
+    # (seconds for ~30 hand-entered dominators, text-shape "units" for the
+    # rest) to conservative observed seconds from .github/ci/
+    # measured-job-seconds.json (run 42559449303 samples + the frozen dict
+    # seeded as dated legacy samples). Selection is unchanged — jobs stay
+    # 137/137/131, no entrant or exit on any probe — and the new weight
+    # ceilings are the exact values the production
+    # packing_probe_measurements returns on this source: 14,099 / 14,575 /
+    # 13,880. The weight axis carries the growth sensitivity from here. Full
+    # history, method and receipts: research/ci_pack_measured_costs_20261109/.
+    # Re-measured after merging main 8e1f4966 (#10226 ledger +3 on the legacy
+    # unit scale, 5945/5966/5703 -> 5948/5969/5706): measured-second weights,
+    # jobs and packs are unchanged at 14,099 / 14,575 / 13,880 and 7 packs.
+    # Re-measured again after merging main bf91cd89 (#6867 lifecycle +10 on the
+    # legacy scale -> 5958/5979/5716; #10909 Research Vault selection).
+    # 2026-11-11 composition with main 37ec007a preserves these measured-second
+    # ceilings and seven packs. Its legacy +8 is not measured seconds. No new
+    # full-tree measurement is claimed here; natural successor CI must qualify
+    # the combined scope. All main-side tests and both histories are retained.
+    ("templates/index.html", 137, 14_099),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 14_575),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 13_880),
 )
-# Twelve packs per shape was the pre-curation measurement.
-PACKING_PROBE_MAX_PACKS = 10
+# 2026-11-09 width follow-up (same PR, parent adjudication comment
+# 6742621098): under true seconds each selection DEMANDS more than
+# 10x600 s of work, but the 48h queue census measured the shared hosted
+# fleet saturated (183-237 concurrent jobs, 230-338 queued; pack pickup
+# p50 160 s / p90 965 s vs 2 s/3 s idle; within-run pack start spread
+# p50 274 s / p90 971 s saturated vs 1 s idle), so wider lanes buy queue
+# delay, not wall, while each pack spends a fixed 303 s setup. The packs
+# axis now mirrors what build_plan's narrowed lane actually GRANTS under
+# NARROWED_PR_MAX_ACTIVE_PACKS — the legacy seven — and the exact measured
+# value of that grant for all three probes is 7: PACKING_PROBE_MAX_PACKS
+# moves 10 -> 7. Selection, weight ceilings and the twelve named main
+# baseline packs are unchanged; runner-minutes per narrowed lane return to
+# legacy parity (16,220/16,696/16,001 s) while measured balancing still
+# cuts the probe critical paths to 2,319/2,389/2,290 s.
+PACKING_PROBE_MAX_PACKS = 7
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
@@ -6031,6 +6084,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+    2026-11-11 (PR #10899, preserve measured seconds on main dce366ad):
+    Retain the complete accepted measured model, calibration perturbation,
+    malformed-sample fallback, seven active narrowed packs and twelve-pack
+    main baseline. All eight model/test/table/research blobs remain exact H.
+    Receiving main adds a free-content +2 on the old heuristic scale; that
+    quantity is not measured seconds and does not increase these ceilings.
+    Keep 14099/14575/13880 and jobs 137/138/131 as asserted bounds, with both
+    complete histories and all 401 owner identities. Preserve main's changed
+    commands/dependencies, plus the original three-owner measured-path
+    enrollment. No sample or duration receipt is regenerated by this merge.
+    This is source conservation, not a new timing or planner measurement;
+    the combined tree must qualify its own natural contract and semantic CI.
+
 
     2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
     mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union

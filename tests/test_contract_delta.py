@@ -1180,7 +1180,8 @@ def test_worker_probe_bootstrap_matches_the_shared_measurement(
     planner answers, or every probe would read as moved on that one run.
 
     The weights cover the pack formula's floor (no job: 1 pack), a round-up
-    (650 s: 2 packs) and its 12-pack cap (7,000 s).
+    (650 s: 2 packs) and its width-budget clip (7,000 s of demand: 12 packs
+    raw, 7 granted under NARROWED_PR_MAX_ACTIVE_PACKS).
     """
     jobs = [_Job("a", 400), _Job("b", 250), _Job("c", 7_000)]
     selections = {"x.html": {"a", "b"}, "y.py": {"c"}, "z.py": set()}
@@ -1204,16 +1205,29 @@ def test_worker_probe_bootstrap_matches_the_shared_measurement(
     probes = [("x.html", 1, 600), ("y.py", 5, 9_000), ("z.py", 1, 1)]
     spec = {"probes": [list(probe) for probe in probes], "max_packs": 10}
     shared = PACK.packing_probe_measurements(Path(CCD.MANIFEST_REL), probes, max_packs=10)
-    assert [row["packs"] for row in shared] == [2, 12, 1]
+    assert [row["packs"] for row in shared] == [2, 7, 1]
 
     predates = types.SimpleNamespace(
         load_legacy_jobs=load_legacy_jobs,
         infer_job_scopes=infer_job_scopes,
         select_jobs=select_jobs,
         PACK_TARGET_SECONDS=PACK.PACK_TARGET_SECONDS,
+        NARROWED_PR_MAX_ACTIVE_PACKS=PACK.NARROWED_PR_MAX_ACTIVE_PACKS,
     )
     assert _worker_helpers(spec, {"scripts.run_ci_pack": predates})["_probe_rows"]() == shared
     assert _worker_helpers(spec, {"scripts.run_ci_pack": PACK})["_probe_rows"]() == shared
+    # A base old enough to lack the width constant predates the budget
+    # entirely; its bootstrap keeps the historical twelve-pack fleet cap.
+    # 7,000 s of demand reads as 12 packs there, not 7 — pinned so the
+    # approximation is deliberate, not drift.
+    ancient = types.SimpleNamespace(
+        load_legacy_jobs=load_legacy_jobs,
+        infer_job_scopes=infer_job_scopes,
+        select_jobs=select_jobs,
+        PACK_TARGET_SECONDS=PACK.PACK_TARGET_SECONDS,
+    )
+    ancient_rows = _worker_helpers(spec, {"scripts.run_ci_pack": ancient})["_probe_rows"]()
+    assert [row["packs"] for row in ancient_rows] == [2, 12, 1]
 
 
 def test_worker_guard_rows_match_the_guards_own_findings() -> None:
