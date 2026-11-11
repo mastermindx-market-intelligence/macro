@@ -1,10 +1,10 @@
 {
   "schema": "rotation_core.protocol_header/v2",
   "protocol_id": "rotation-core-historical-v2",
-  "status": "DRAFT - NOT FROZEN. The parent freezes after folding in the Sector Intelligence yardstick/shortlist, their Kimi review of v1 and Pro run A. No v2 outcome may be computed before the freeze commit; the trial-ledger declaration is written at freeze, not now.",
+  "status": "DRAFT revision 1 (after separate-context review, findings adjudicated) - NOT FROZEN. No v2 outcome may be computed before the freeze commit; the trial-ledger declaration is written at freeze.",
   "drafted_on_utc": "2026-11-11",
   "drafted_by": "Rotation Core research lead (Claude Opus 5.5)",
-  "power_warning_top": "H2 cannot detect a 2 pp/yr effect: its confirmation sample is H only (about 1,722 sessions) and its minimum detectable effect at 80% power under Holm m=2 is about 9.3 pp/yr. H1's pooled L+H minimum detectable effect is about 1.4 pp/yr (below 2 pp/yr), but that projection assumes L's contrast variance per session equals D's; the 1929-1940s were far more volatile, so treat it as optimistic.",
+  "power_warning_top": "H2 cannot detect a 2 pp/yr effect: it is H-only (6.85 years) and its minimum detectable effect at 80% power is about 8.2 pp/yr. H1's pooled L+H minimum detectable effect for the primary statistic is about 1.1 pp/yr, and about 1.5 pp/yr for the full joint rule (pooled significance AND L>0 AND H>0); both are below 2 pp/yr. These are projections from D variance scaled by years; whether L's per-year variance is higher or lower than D's is unknown.",
   "predecessor": {
     "header": "research/rotation_core/protocol_header_v1.json sha256 af2a09886132bb784535e21134b63c2c86c579e186c248b20bb617fc77580f32",
     "v1_status": "closed at L0 by parent ruling 2026-11-11 09:50Z (HOLDOUT_ACCESS_RULING_v1.md); Stage H of v1 never run",
@@ -13,26 +13,37 @@
   "governing_rules": "As v1 header governing_rules (house law, DEC:RIC-E0, DNR kills). Research outputs descriptive and paper-only; nothing sizes, gates, ranks, alerts or trades.",
   "question": "When conditions turn bad, does rotating out of broad equity leadership into the defensive sectors (staples, utilities, health care) - with cash only as an option, not the default - add timing skill over holding the same legs in a static mix?",
   "samples": {
-    "D_development_seen": {"use": "evidence for design choices only; no confirmatory role", "window": "1998-01-02..2019-12-31 (J2/H1 legs from 1999-12-31)"},
+    "D_development_seen": {
+      "use": "evidence for design choices only; no confirmatory role",
+      "window": "1998-01-02..2019-12-31 (J2/H1 legs from 1999-12-31)"
+    },
     "L_long_confirmation": {
       "source": "Ken French data library, 12_Industry_Portfolios_Daily.csv, section 'Average Value Weighted Returns -- Daily'",
-      "why_12": "The 12-industry file maps the defensive trio one-to-one (NoDur ~ consumer staples, Utils, Hlth) with no missing cells 1926-07..1997-12 (19,108 daily rows checked), and its 12 groups are the closest analogue to the 9-11 SPDR sectors used on D/H. The 30-industry file splits staples across Food/Beer/Smoke/Hshld and the 49-industry file has missing (-99.99) series early in the sample, both of which would force post-hoc mapping choices.",
-      "defensive_set_L": ["NoDur", "Utils", "Hlth"],
+      "why_12": "12_Industry_Portfolios_Daily.csv (VW) was already the pre-declared long-history file in the v1 header (windows.long_history_descriptive_tiers.J2_L), and it has no missing cells 1926-07..1997-12 (19,108 rows). The mapping is NOT one-to-one with SPDR sectors: Ken French's NoDur (SIC-based 'consumer nondurables') contains food, tobacco, beverages, textiles, apparel, toys and some publishing/recreation, and excludes household products; Utils and Hlth are close analogues of XLU and XLV. The 17-industry file (also downloaded) splits nondurables into Food and Clths and has no Health group, so it cannot host the trio; the 30- and 49-industry files fragment staples and the 49 has missing early series.",
+      "defensive_set_L": [
+        "NoDur",
+        "Utils",
+        "Hlth"
+      ],
       "riskon_set_L": "equal weight of all 12 industries (NoDur Durbl Manuf Enrgy Chems BusEq Telcm Utils Shops Hlth Money Other)",
       "signal_series_L": "^GSPC daily price level (Yahoo), the same series used on D/H",
-      "window": "returns 1928-10-17..1997-12-31 (first decision when ^GSPC has 200 closes: 1928-10-16)",
+      "window": "returns 1928-10-17..1997-12-31; 18,423 sessions (count from the file), of which 1,158 are Saturdays before 1952",
       "cash_L": "French RF daily",
       "costs_L": "10 bp per side (header v1 convention for French industry portfolios); index-level, not tradable",
       "what_has_been_computed_on_L_already": [
         "Stage D long tier (v1): market-level timing vs cash for B1, B3 (^GSPC < SMA200 -> cash), B4, J1-D (1928-1997), J1-E (1960-1997), J1-A/B/C with DBAA-DGS10 (1987-1997), on the French MARKET factor (Mkt-RF + RF).",
-        "No strategy output of any kind exists on the French INDUSTRY panels: Rotation Core's J2_L tier was deferred and never run; no worker computed industry-panel strategy returns; the Macro repo stores only data/french/factors.parquet and no consumer of the industry files exists on origin/main (git ls-tree / collectors/french.py checked 2026-11-11). Only the raw downloaded CSVs exist in scratch."
-      ]
+        "No strategy output of any kind exists on the French INDUSTRY panels: Rotation Core's J2_L tier was deferred and never run; no worker computed industry-panel strategy returns; the Macro repo stores only data/french/factors.parquet and no consumer of the industry files exists on origin/main (git ls-tree / collectors/french.py checked 2026-11-11). Only the raw downloaded CSVs exist in scratch.",
+        "General knowledge: the Ken French industry history is widely published, and the lead's model knowledge includes broad facts about defensive-sector behaviour in pre-1998 bear markets. L is therefore not unseen in the knowledge sense, only in the computed sense."
+      ],
+      "defensive_set_sensitivity_descriptive": "17-industry Food + Utils, and 12-industry Hlth, equal weight (closest pure-staples mapping); descriptive only, not tested",
+      "calendar": "L sessions are the French file's dates. ^GSPC closes are aligned by as-of (last ^GSPC close dated <= the French date); a French date with no ^GSPC close on that day carries the previous state. Decisions are made only on dates where both exist; execution is the next French date. Annualisation on L uses the observed sessions per calendar year in that year (not x252); all pooled weighting is by YEARS, not sessions."
     },
     "H_recent_confirmation": {
       "window": "returns 2020-01-02..2026-11-06 (data pin of v1: 4d49b23a8f; later sessions go to the prospective shadow, not to H)",
       "burned_date_exclusions": "Same as v1: the v1 exclusion (formation dates 2022-07-06..2026-06-02, WS:TREND-PERSISTENCE) applied only to J4 member-persistence formations. H1 and H2 are not member-persistence studies, so no H dates are excluded, exactly as for v1 J1/J2/J3.",
       "instruments": "sector SPDRs (XLB XLE XLF XLI XLK XLP XLU XLV XLY XLRE XLC; XLRE/XLC eligible from their 253rd session), SPY, RSP, cash = DTB3 from repo data/fred at the pin, in memory",
-      "unseen_status": "No v1 or v2 strategy statistic dated on/after 2020-01-02 has been computed by Rotation Core. Seen before drafting: the sister lane-8 comparators (2008-2026, sector allocation and SPY>200d vs SPY), beta-first 64 sessions (2026-08..11), and the lead's general market knowledge to June 2026."
+      "unseen_status": "No v1 or v2 strategy statistic dated on/after 2020-01-02 has been computed by Rotation Core. Seen before drafting: the sister lane-8 comparators (2008-2026, sector allocation and SPY>200d vs SPY), beta-first 64 sessions (2026-08..11), and the lead's general market knowledge to June 2026.",
+      "years": 6.85
     }
   },
   "signals": {
@@ -41,41 +52,94 @@
     "T_and_C_descriptive_only": "T and C (HY OAS(t-1) > SMA252) as in v1 J1-B - H-only descriptive variant of H1, not confirmatory"
   },
   "hypotheses": {
-    "holm_family": {"m": 2, "alpha": 0.05, "members": ["H1", "H2"]},
+    "holm_family": {
+      "proposed": "fixed-sequence (hierarchical) testing at alpha 0.05: H1 first; H2 is tested only if H1 is rejected. This keeps H1 at full alpha (review finding 8) while keeping H2 confirmatory as the parent asked.",
+      "alternative_for_parent": "Holm over {H1, H2} at m=2 as in the ruling text; costs H1 about 12% in MDE (1.28 vs 1.14 pp/yr). Or H2 descriptive only (m=1).",
+      "members": [
+        "H1",
+        "H2"
+      ],
+      "alpha": 0.05
+    },
     "H1": {
       "name": "risk-state switch: equal-weight sectors <-> defensive trio",
-      "rule": "At each session close t: if T(t) = 1 (risk-off) hold the equal-weight defensive leg; else hold the equal-weight risk-on leg. Execute at the close of t+1 when the state changes; also rebalance to the current leg's equal weights at each month-end. Fully invested in equities; never cash.",
-      "riskon_leg": {"D_H": "equal weight of all eligible sector SPDRs", "L": "equal weight of the 12 French industries"},
-      "defensive_leg": {"D_H": "equal weight XLP, XLU, XLV", "L": "equal weight NoDur, Utils, Hlth"},
+      "rule": "Decision at each session close t: if T(t)=1 hold the equal-weight defensive leg, else the equal-weight risk-on leg; execute at the next session close when the state changes. Within a leg, rebalance to equal weights at the last session of each calendar month (decision) executed at the next session close; between rebalances weights drift. Always fully invested in equities; never cash. Warm-up: first decision when ^GSPC has 200 closes and (D/H) every sector in the leg has >= 253 sessions; XLRE/XLC join the risk-on leg at the first month-end after their 253rd session.",
+      "riskon_leg": {
+        "D_H": "equal weight of all eligible sector SPDRs",
+        "L": "equal weight of the 12 French industries"
+      },
+      "defensive_leg": {
+        "D_H": "equal weight XLP, XLU, XLV",
+        "L": "equal weight NoDur, Utils, Hlth"
+      },
       "reasons_from_D_only": [
-        "Risk-on leg = equal-weight sectors: on D no sector-selection rule beat equal weight (J2* = B5; Q1 point estimates -1.6 to -3.4 pp/yr; B6/B7 momentum also below B5), and equal weight is the neutral, unselected choice. SPY was rejected because it adds a cap-weight bet the defensive leg does not share; a declared high-beta set was rejected because choosing it would use D outcomes (a forking path).",
-        "Defensive leg = XLP/XLU/XLV: from peak to trough the trio beat SPY in every D episode (+31.5, +19.2, +12.9, +9.6, +10.7 pp in 2000-02, 2008-09, 2011, 2015-16, 2018Q4; results_stage_D.json episode_holdings_D).",
-        "Switch tied to T, not sector momentum: on D the sector RS rules did not reach the defensives before the peak in 2000 or 2007 (episode holdings), so momentum is the wrong trigger for this switch.",
-        "T rather than J1-E (crisis-only): J1-E exited before the trough in only 2 of 6 D episodes and stayed fully invested through 1998, 2011, 2015-16 and 2018Q4 - the four episodes where the trio still beat SPY by 9.6-12.9 pp. A recession-confirmed trigger cannot capture those.",
-        "Faster trigger is acceptable here because the fallback is defensives, not cash: on D, T's false risk-off spells cost 3.73%/calm-yr against SPY when the fallback was cash (B3, 2.85 false pivots/calm-yr). With a defensive fallback the cost of a false spell is the equal-weight-minus-trio spread, not the equity premium minus bills; the trio has beta about 0.6 (atlas, census) so a false spell keeps most of an up-move. That asymmetry is the argument for T over J1-E.",
-        "T rather than T-and-credit (J1-B): on D J1-B and B3 exited on near-identical dates in all six episodes (pivot table), credit reduced false pivots (1.74 vs 2.85/calm-yr) but the lower false-pivot cost under a defensive fallback reduces that benefit, and credit is not available across L (repo DBAA from 1986 only), which would make H1 H-only. T keeps H1 testable on ~70 years.",
-        "No H1 D outcome was computed or seen. To size the power line the H1 book was simulated on D and only the bootstrap standard error of the contrast was printed (script /home/ubuntu2/tmp/rotation-core/v2/power_h1_D.py); the point estimate was deliberately not printed."
+        "Risk-on leg = equal-weight sectors: no D sector-selection rule beat equal weight (J2* = B5). SPY adds a cap-weight bet the defensive leg lacks; a declared high-beta set would need D outcomes to choose.",
+        "Defensive leg = XLP/XLU/XLV: peak-to-trough the trio beat SPY in all five D episodes with SPDR data (2000-02 +31.5, 2008-09 +19.2, 2011 +12.9, 2015-16 +9.6, 2018Q4 +10.7 pp).",
+        "Switch on risk state, not sector momentum: at the 2000 and 2007 peaks the D sector RS rules did not hold the defensive trio as a group.",
+        "T rather than J1-E: J1-E exited before the trough in 2 of 6 D episodes and never left equities in 2011, 2015-16 and 2018Q4, the three episodes where the trio beat SPY by 9.6-12.9 pp.",
+        "Faster trigger with a defensive fallback: on D, T's false risk-off spells against cash cost 3.73%/calm-yr (B3). With a defensive fallback a false spell costs the risk-on-minus-defensive spread rather than equity premium minus bills, because the defensive leg's beta to the market is below the risk-on leg's. That asymmetry is the argument for the faster T over J1-E.",
+        "T rather than T-and-credit: on D J1-B and B3 exited on the same dates in all six episodes; credit's lower false-pivot count matters less when false pivots are cheap, and credit is not available on L (repo DBAA from 1986), which would make H1 H-only."
       ],
-      "primary_contrast": "annualised mean daily return of H1 minus its exposure-matched static mix X1 = w_on x (risk-on leg) + (1 - w_on) x (defensive leg), daily rebalanced, costless, where w_on = fraction of sessions H1 held the risk-on leg on the window tested (rebuilt per sample and per era)",
-      "confirmation_samples": ["L", "H"],
-      "L_clean": "PARTLY. Clean at industry level: no industry-panel return of any kind has been computed. Not clean for the signal: the risk-state series T and its market-level timing against cash on 1928-1997 were seen in the v1 Stage D long tier (B3). What is unseen is how the trio performed against the equal-weight industries inside T's states.",
+      "primary_contrast": {
+        "name": "beta-matched rotation value (replaces the draft's X1 as primary, review finding 1)",
+        "definition": "Daily difference D_t = r_H1,t - r_ref,t, where r_ref,t = r_H1,t on days H1 holds the risk-on leg (difference 0), and on days H1 holds the defensive leg r_ref,t = beta_t x r_on,t + (1 - beta_t) x r_cash,t, with beta_t = OLS beta of the defensive leg's daily returns on the risk-on leg's daily returns over the 252 sessions ending t-1 (>= 200 observations), clipped to [0, 1.5]. The statistic is the annualised mean of D_t. It measures whether rotating into defensives beat holding the same market exposure in the risk-on leg plus cash during T's risk-off spells, and so removes T's market-timing term, which v1 already measured on L (B3).",
+        "costs": "H1 net of its own costs; reference costless",
+        "secondary": "X1 = static mix of the two legs at H1's risk-on share, built on the same month-end rebalancing calendar as H1 (review finding 4); reported, not tested"
+      },
+      "confirmation_samples": [
+        "L",
+        "H"
+      ],
+      "L_clean": "For the primary statistic: largely clean. It removes T's market timing, so it is not a re-test of B3; no industry-level return on L has been computed. Not clean for the trigger: T's state path and its market-level timing on 1928-1997 were seen in v1. General knowledge of the history applies (see samples.L).",
       "minimum_effect": 0.01,
-      "power_from_D_variance_only": {"D_se_annual": 0.00992, "D_tracking_error": 0.0517, "D_sessions": 5031, "L_sessions": 18424, "H_sessions": 1722, "mde80_holm_m2_pooled_L_H": 0.0137, "mde80_holm_m2_L_only": 0.0143, "mde80_holm_m2_H_only": 0.0475, "assumption": "SE scaled by sqrt(n_D / n); assumes per-session contrast variance equal to D's (optimistic for L, whose 1929-1940s volatility was higher)"}
+      "power_from_D_variance_only": {
+        "script": "/home/ubuntu2/tmp/rotation-core/v2/power_h1b_D.py (stdout committed as research/rotation_core/v2_power/power_h1b_D.stdout)",
+        "D_se_annual": 0.008948,
+        "D_years": 19.88,
+        "L_years": 69.2,
+        "H_years": 6.85,
+        "formula": "SE_sample = SE_D x sqrt(D_years / sample_years); MDE80 = (z_{1-alpha} + z_0.80) x SE",
+        "mde80_primary_pooled": {
+          "fixed_sequence_alpha_0.05": 0.0114,
+          "holm_m2_alpha_0.025": 0.0128
+        },
+        "mde80_L_only": 0.0119,
+        "mde80_H_only": 0.0379,
+        "joint_rule_80pct": "about 0.015 (pooled significance at alpha 0.05 AND H estimate > 0; the H sign alone has 80% power only from about 1.3 pp/yr); ignores the other L1 conditions, so true power is lower",
+        "caveat": "direction of the L-vs-D variance difference unknown; Saturdays handled by year-based scaling"
+      },
+      "ancestor_disclosure": "H1 descends from v1 J2-E (same switch shape, trigger J1-E, monthly cadence), whose D result was seen: J2-E minus J2* (= B5) = +0.39%/yr point estimate. The draft changed the trigger to T and the cadence to daily switching AFTER that result. This is a design choice made with D outcomes in view and is disclosed as such; it is why D has no confirmatory role.",
+      "eras": {
+        "L": [
+          "1928-10..1945-12",
+          "1946-01..1997-12"
+        ],
+        "H": "single era (2020+)",
+        "rule": "report the statistic per era; L1 additionally requires the point estimate > 0 in both L eras (LAW-ERA-SPLIT)"
+      }
     },
     "H2": {
       "name": "crisis de-risk: exit to cash only when recession confirmation and the trend trigger agree",
       "rule": "Identical to v1 J1-E: SPY weight 0 if (T and M) else 1; daily rule, trades only on change; remainder in cash.",
       "why_unchanged": "J1-E was the best J1 candidate on D (P1 +2.96%, raw p 0.06; G2, G3 and all G6 risk tests except exit-before-trough met). Changing its earlier trigger after seeing D (for example to credit) would be a new rule chosen on D - a forking path. It is carried unchanged so that D-selection is the only contamination.",
       "primary_contrast": "annualised mean daily return of H2 minus X2 = w x SPY + (1 - w) x cash, w = mean H2 SPY weight on the window tested",
-      "confirmation_samples": ["H"],
+      "confirmation_samples": [
+        "H"
+      ],
       "L_clean": "NO. J1-E's market-level performance on 1960-1997 was computed in the v1 Stage D long tier, and M (real-time Sahm) does not exist before 1959-12, with no substitute that is both real-time and long. H2 is H-only.",
       "minimum_effect": 0.01,
-      "power_from_D_variance_only": {"D_se_annual": 0.01848, "mde80_holm_m2_H_only": 0.0928, "statement": "H2 cannot detect any plausible effect on H; its realistic outcome is L0 whatever happens."}
+      "power_from_D_variance_only": {
+        "D_se_annual": 0.01848,
+        "D_years": 22.0,
+        "H_years": 6.85,
+        "mde80_H_only_alpha_0.05": 0.0824,
+        "statement": "H2 cannot detect any plausible effect on H. Moreover, H's largest SPY drawdown (Feb-Mar 2020) ended before real-time Sahm could confirm, so H2's max-drawdown condition is very unlikely to be met; its realistic outcome is L0."
+      }
     },
     "third_hypothesis": {
       "status": "NOT INCLUDED",
       "considered": "J3-C (risk-state cross-asset rotation) vs its primary comparator R1 (exposure-matched equal-weight 7 sleeves)",
-      "why_left_out": "On D its primary contrast R1 was +3.33% with raw p 0.13 (Holm 0.63); the only strong number was the secondary R2 vs GTAA, and promoting the secondary would be selection on D. It has no L sample (cross-asset ETFs start 2002-2007; the J3 proxy tier would rest on J1-B's credit flag, which is not available before 1997), so it would be H-only with a minimum detectable effect of about 11 pp/yr. Adding it would raise Holm m to 3 and cost power for H1 without a realistic chance of a result."
+      "why_left_out": "On D its primary contrast R1 was +3.33% with raw p 0.13 (Holm 0.63); the only strong number was the secondary R2 vs GTAA, and promoting the secondary would be selection on D. It has no L sample (cross-asset ETFs start 2002-2007; the J3 proxy tier would rest on J1-B's credit flag, which is not available before 1997), so it would be H-only with a minimum detectable effect of about 11 pp/yr. Adding it would raise Holm m to 3 and cost power for H1 without a realistic chance of a result. The reviewer agreed."
     }
   },
   "declared_comparators_reported_for_every_book": {
@@ -90,9 +154,16 @@
     "H1 with T-and-C trigger (H only, credit unavailable on L)",
     "H1 with J1-E (T and M) trigger (H only)",
     "stress-episode capture and pivot tables (v1 definitions) on L and H",
-    "H1 on D (reported, not confirmatory; D designed it)"
+    "H1 on D (reported, not confirmatory; D designed it)",
+    "T computed on the French market TR index instead of ^GSPC (L sensitivity)",
+    "17-industry staples sensitivity on L"
   ],
-  "dropped_from_v1": ["sector RS velocity (J2-B)", "graded MTF (J1-D, J3-B)", "J4 amplification", "all other v1 candidates as confirmatory"],
+  "dropped_from_v1": [
+    "sector RS velocity (J2-B)",
+    "graded MTF (J1-D, J3-B)",
+    "J4 amplification",
+    "all other v1 candidates as confirmatory"
+  ],
   "stress_episodes": {
     "L": "PHASE2_ADDITIONS_v1 section 4 list (L1929_32, L1937, L1962, L1966, L1969_70, L1973_74, L1980_82, L1987, L1990), peaks/troughs located on the French market TR index",
     "H": "v1 header E2020, E2022, E2025, and E2026 by its v1 rule",
@@ -100,18 +171,21 @@
   },
   "evaluation": {
     "execution": "decision at close t, execution at close t+1, day-(t+1) return on pre-execution holdings (v1 harness simulate())",
-    "costs_bps_per_side": {"etf": 5.0, "french_industry_portfolio": 10.0},
-    "cost_stress": 2.0,
-    "bootstrap": "stationary bootstrap of paired daily differences, mean block 21 sessions (sensitivity 63), B=10,000, seed 20261111",
-    "pooled_test_H1": "sample-stratified: in each draw resample L and H separately (each by its own stationary bootstrap) and compute the session-weighted mean of the two annualised mean contrasts (identical to the pooled mean on the observed data). One-sided centred p as v1.",
+    "costs_bps_per_side": {
+      "etf": 5.0,
+      "french_industry_portfolio": 10.0
+    },
+    "cost_stress": "2x costs: the full L1 rule is re-run at 2x costs (same seeds); H1 must still pass the pooled significance and effect conditions",
+    "bootstrap": "stationary bootstrap of paired daily differences, mean block 21 sessions (sensitivity 63, reported only; gates use 21), B=10,000; seeds 20261111 for L, 20261112 for H, 20261113 for H2; the pooled statistic weights each sample's annualised mean by its YEARS",
+    "pooled_test_H1": "sample-stratified: in each draw resample L and H independently with their own stationary bootstrap; pooled = (Y_L x mean_L + Y_H x mean_H)/(Y_L + Y_H) with Y = years. One-sided centred p as v1.",
     "H2_test": "same bootstrap on H only",
     "multiplicity": "Holm at 0.05 over {H1 pooled, H2 H-only}",
     "dsr": "deflated Sharpe with ledger effective_n summed over rotation_core_v1 (36), rotation_core_v2 (declared at freeze) and v1's prior families"
   },
   "decision_rule": {
-    "why_pooled_plus_sign": "H alone cannot detect less than about 4.7 pp/yr for H1, so requiring separate significance on H would make the test a formality. Pooling L and H uses all unseen industry-level evidence; requiring the H point estimate to be positive guards against an effect that existed only before 1998. L is required positive too, so neither sample can carry the result alone.",
+    "why_pooled_plus_sign": "H alone cannot see less than about 3.8 pp/yr, so separate H significance would be a formality. L carries about 91% of the pooled weight, so the pooled test is mostly an L test; requiring H > 0 and both L eras > 0 is what stops one period from carrying the result. At a true 1.5 pp/yr the joint rule passes about 80% of the time; at 1.0 pp/yr it is closer to a coin flip.",
     "L1_accepted_historical": {
-      "H1": "all of: Holm p < 0.05 on the pooled contrast; pooled estimate >= +1.0 pp/yr; L estimate > 0 and H estimate > 0; pooled Holm p < 0.05 and estimate >= +1.0 pp/yr at 2x costs; pooled stress-episode capture vs SPY <= 0.80 (L and H episodes combined); CAGR >= risk-on leg CAGR - 1.0 pp/yr on L and on H.",
+      "H1": "all of: primary statistic significant at the fixed-sequence alpha (or Holm, per parent choice) on the pooled sample; pooled estimate >= +1.0 pp/yr; H estimate > 0; both L eras > 0; significance and effect conditions still hold at 2x costs; pooled stress capture vs SPY <= 0.80, where pooled stress capture = product over all named L and H episodes of (1 + H1 return peak->trough) minus 1, divided by the same product for SPY (L: French market TR); H1 CAGR >= risk-on-leg-alone CAGR - 1.0 pp/yr on L and on H separately.",
       "H2": "all of: Holm p < 0.05 on H; H estimate >= +1.0 pp/yr; holds at 2x costs; max drawdown <= 0.70 x SPY max drawdown on H; CAGR >= SPY - 2.0 pp/yr on H."
     },
     "L0_descriptive": "any outcome not meeting L1. A null is reported with its power line as 'not detectable', not 'no effect'.",
@@ -119,11 +193,26 @@
     "presentation": "Nothing is presented as a call before L2."
   },
   "stage_order": "Stage L and Stage H may run together after the freeze commit (both are confirmation samples declared now); D results of H1 are reported alongside as development context.",
-  "trial_ledger": {"family": "rotation_core_v2", "declared_budget_to_write_at_freeze": 9, "detail": "H1, H2, X1, X2, risk-on leg, defensive leg, H1 T-and-C variant, H1 J1-E-trigger variant, RSP comparator; DSR count also carries v1's 36"},
+  "trial_ledger": {
+    "family": "rotation_core_v2",
+    "declared_budget_to_write_at_freeze": 11,
+    "detail": "H1 (primary beta-matched), H1 X1 secondary, H2, X2, risk-on leg, defensive leg, H1 T-and-C variant, H1 J1-E-trigger variant, RSP comparator, 17-industry staples sensitivity, T-on-French-market sensitivity; DSR also carries v1's 36"
+  },
   "contamination_disclosure": [
     "D: fully seen (v1 Stage D).",
     "L: market-level timing of T (B3), J1-D and J1-E vs cash seen (v1 long tier); no industry-panel return computed.",
     "H: no Rotation Core statistic computed; lane-8 2008-2026 comparators and beta-first 2026 results seen; lead's knowledge of 2020-2026H1 market history.",
-    "H1 on D: simulated only to obtain the standard error for the power line; point estimate not printed or seen."
-  ]
+    "H1 on D: simulated only to obtain the standard error for the power line; point estimate not printed or seen.",
+    "H1's ancestor v1 J2-E and its D result (+0.39% vs B5) were seen before the trigger/cadence change.",
+    "H1 on D (beta-matched contrast and X1 contrast) simulated only to obtain standard errors; both scripts and their exact stdout are committed with sha256; no point estimate printed.",
+    "The first power script used seed 20261110 (not the declared 20261111); the revision-1 script uses 20261111."
+  ],
+  "freeze_procedure": {
+    "rule": "Inputs folded in at freeze (Sector Intelligence yardstick/shortlist, Kimi review of v1, Pro run A) may change this draft only through a logged diff committed before the frozen JSON, each change with its source and reason. No computation on L or H of any kind is permitted before freeze. Any added or changed rule increases the rotation_core_v2 declared trial budget; any change to a hypothesis, leg, trigger or decision threshold is listed in the frozen header's contamination_disclosure.",
+    "run_once": "Each confirmation stage (L, H) runs once at the frozen hash; a code fix after a run reruns both and is logged as a deviation; thresholds never change after outcome access."
+  },
+  "review": {
+    "file": "/home/ubuntu2/tmp/rotation-core/review/V2_DRAFT_REVIEW.md (Opus, separate context, at 89c521cc7f)",
+    "summary": "1 BLOCKER, 10 MAJOR, MINORs; dispositions in PROTOCOL_HEADER_v2.DRAFT.md"
+  }
 }
