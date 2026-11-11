@@ -144,9 +144,27 @@
     // a put's premium can't exceed its strike (break-even = K − prem would go
     // negative, an impossible price) — guard rather than render a broken figure
     if(type==="put" && prem>=K) return {ok:false, msg:"On a put, the premium can't be at or above the strike — check your inputs."};
+    // Classify the decimal payoff before converting back to Number. This uses
+    // canonical parsed Numbers, not digits already discarded by numFrom.
+    // Exact decimal subtraction avoids a tolerance band around break-even.
+    if(![K,prem,nC,S].every(function(v){return isFinite(v);})) return {ok:false, msg:"Enter finite values."};
+    if(typeof BigInt !== "function") return {ok:false, msg:"This calculator requires a browser with BigInt support."};
+    var B=BigInt, zero=B(0), ten=B(10);
+    function power(n){var v=B(1); while(n-->0) v*=ten; return v;}
+    function decimal(v){
+      var parts=String(v).toLowerCase().split("e"), digits=parts[0].split(".");
+      return {n:B(digits.join("")), e:Number(parts[1]||0)-(digits[1]||"").length};
+    }
+    var kd=decimal(K), pd=decimal(prem), sd=decimal(S),
+        exponent=Math.min(kd.e,pd.e,sd.e),
+        ki=kd.n*power(kd.e-exponent), pi=pd.n*power(pd.e-exponent), si=sd.n*power(sd.e-exponent),
+        exactIntrinsic=type==="call" ? si-ki : ki-si;
+    if(exactIntrinsic<zero) exactIntrinsic=zero;
+    var exactPayoff=exactIntrinsic-pi;
+    if(pos!=="long") exactPayoff=-exactPayoff;
     var shares = 100 * nC;
     var intrinsic = type==="call" ? Math.max(0, S - K) : Math.max(0, K - S);
-    var perShare = pos==="long" ? (intrinsic - prem) : (prem - intrinsic);
+    var perShare = exactPayoff===zero ? 0 : Number(exactPayoff.toString()+"e"+exponent);
     var pl = perShare * shares;
     var breakeven = type==="call" ? (K + prem) : (K - prem);
     var premiumDollars = prem * shares;              // long debit paid / short credit
