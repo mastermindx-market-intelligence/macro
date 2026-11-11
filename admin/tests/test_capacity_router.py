@@ -360,6 +360,34 @@ class SnapshotDelivery(unittest.TestCase):
         self.assertIsNone(d["summary"]["output_tokens"])
         self.assertEqual(panel(path=self.path,now=self.snapshot["generated_at"]+20)["state"],"stale")
 
+    def test_agent_and_session_with_same_id_remain_distinct_consumers(self):
+        session=self.store.begin({"x-fabric-session-id":"same-run-id"})
+        agent=self.store.begin({"x-fabric-agent-id":"same-run-id"})
+        self.assertNotEqual(session,agent)
+        self.assertEqual(self.store.active[session]["session_id"],
+                         self.store.active[agent]["agent_id"])
+        snapshot=self.store.snapshot(state_app())
+        self.send(snapshot)
+        result=panel(path=self.path,now=snapshot["generated_at"]+1)
+        self.assertEqual(result["summary"]["active_requests"],2)
+        self.assertEqual(result["summary"]["active_consumers"],2)
+
+    def test_stale_snapshot_preserves_its_measured_window(self):
+        rid=self.store.begin({})
+        self.store.input(rid,{"model":"model-a"})
+        self.store.event(rid,{"content":[{"type":"text","text":"fixture"}],
+                              "usage":{"input_tokens":2,"output_tokens":7}})
+        self.store.finish(rid)
+        snapshot=self.store.snapshot(state_app())
+        self.send(snapshot)
+        fresh=panel(5,path=self.path,now=snapshot["generated_at"]+1)
+        stale=panel(5,path=self.path,now=snapshot["generated_at"]+1800)
+        self.assertEqual(stale["state"],"stale")
+        self.assertEqual(stale["recent"],fresh["recent"])
+        self.assertEqual(stale["series"],fresh["series"])
+        self.assertEqual(stale["summary"],fresh["summary"])
+        self.assertEqual(stale["summary"]["output_tokens"],7)
+
     def test_symlink_is_rejected(self):
         target=Path(self.temp.name)/"target";target.write_text("untouched")
         self.path.symlink_to(target)
@@ -369,3 +397,4 @@ class SnapshotDelivery(unittest.TestCase):
 
 
 if __name__=="__main__":unittest.main()
+

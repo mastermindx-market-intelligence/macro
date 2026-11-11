@@ -5998,8 +5998,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_967),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_992),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6008,6 +6008,28 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 UTC (Capacity Router #10952, receiving-main reconciliation):
+    Preserve accepted main97dc720a's full catalog and every sibling owner.
+    Separate native base/head censuses measured5966/5989/5724 ->
+    5967/5992/5724; selected IDs stay identical, jobs137/137/131,
+    all ten packs, and zero introduced or inherited contract findings.
+    This preserves the original differentiated +1/+3/+0 contribution,
+    including main's later free-content increase, under unchanged job/pack
+    caps, selectors, gates, timeouts and admission. Seven accepted feature
+    blobs stay exact; the earlier evidence below remains historical.
+
+    2026-11-11 UTC (Capacity Router #10952): explicitly enroll the owning
+    Node behavior harness in admin-js-no-undef and the unittest suite in
+    eval-os-a1's existing pytest command, with its FastAPI/HTTPX imports
+    declared and three reachable files added to the exclusive scope.
+    Canonical owner weights change14->15 and23->25. Source-derived scope
+    deltas are +1 for index (JS owner only), +3 for free content (both),
+    and0 for Prophet (neither). Preserve the current ceilings' headroom:
+    5966/5987/5724 -> 5967/5990/5724, with137/138/131jobs andten packs.
+    This arithmetic is not a claimed fresh full-tree planner measurement;
+    native contract/probe CI must qualify the composed tree. Preserve
+    all existing provenance, commands, gates, timeouts and admission caps.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

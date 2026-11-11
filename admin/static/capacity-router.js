@@ -22,7 +22,7 @@
     };
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.flow}</svg>`;
   };
-  const consumerKey = r => r.agent_id || r.session_id || "unattributed";
+  const consumerKey = r => r.agent_id ? `agent:${r.agent_id}` : r.session_id ? `session:${r.session_id}` : "unattributed";
   const consumerName = r => r.agent_id ? `Agent ${short(r.agent_id)}` : r.session_id ? `${r.client} · ${short(r.session_id)}` : `${r.client} · unattributed`;
   const modelName = v => String(v || "Unknown model").replace(/^fabric\//, "").replace(/_/g," ");
   let active = null;
@@ -35,7 +35,7 @@
     host.innerHTML = `<section class="cf-shell" aria-label="Capacity Fabric router">
       <header class="cf-hero"><div><div class="cf-eyebrow"><span class="cf-mark">${icon("flow")}</span> INFRASTRUCTURE <span>/</span> ROUTER</div><h1>Capacity Fabric<span class="cf-title-dot">.</span></h1><p>Follow the intelligence. From capacity to every consumer.</p></div>
         <div class="cf-hero-right"><div class="cf-connection" role="status"><i></i><span>Connecting</span><small></small></div><div class="cf-hero-actions"><button data-action="pause" class="cf-button">${icon("pause")}<span>Pause</span></button><button data-action="refresh" class="cf-icon-button" aria-label="Refresh telemetry">${icon("refresh")}</button><button data-action="fullscreen" class="cf-icon-button" aria-label="Toggle full screen">${icon("expand")}</button></div></div></header>
-      <div class="cf-notice" hidden role="status"></div><div class="cf-metrics" aria-label="Router metrics"></div>
+      <div class="cf-notice" hidden role="status"></div><div class="cf-metrics" aria-label="Router metrics"></div><p class="cf-scope-note">Summary covers the whole router. Filters apply to the views and inspector.</p>
       <div class="cf-toolbar"><div class="cf-tabs" role="tablist" aria-label="Router views">${[["flow","Flow map"],["requests","Requests"],["providers","Providers"],["consumers","Consumers"]].map(([id,title])=>`<button role="tab" data-view="${id}" aria-selected="${id==="flow"}" class="${id==="flow"?"is-active":""}">${title}<span data-count="${id}"></span></button>`).join("")}</div><div class="cf-toolbar-right"><span class="cf-window-label">Window</span><select aria-label="Observation time window" data-field="window"><option value="5">5 minutes</option><option value="15" selected>15 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select><button data-action="export" class="cf-icon-button" aria-label="Export sanitized snapshot">${icon("download")}</button></div></div>
       <div class="cf-filters"><label class="cf-search">${icon("search")}<input data-field="search" placeholder="Find a model, route or session…" aria-label="Search router telemetry"><kbd>/</kbd></label><select data-field="model" aria-label="Filter by model"><option value="all">All models</option></select><select data-field="status" aria-label="Filter by request state"><option value="all">All activity</option><option value="streaming">Streaming</option><option value="waiting">Awaiting output</option><option value="completed">Completed</option><option value="failed">Errors & interruptions</option></select><button class="cf-clear" data-action="clear" hidden>Clear selection ×</button></div>
       <div class="cf-view" role="tabpanel"></div><footer class="cf-footer"><span>Capacity Fabric <i>•</i> Private telemetry</span><span class="cf-footnote">Connecting to the router observer…</span></footer>
@@ -44,12 +44,12 @@
     s.root = host.querySelector(".cf-shell");
     s.root.addEventListener("click", e => handleClick(s, e));
     s.root.addEventListener("input", e => {
-      if (e.target.dataset.field === "search") { s.query = e.target.value; s.page=0; renderView(s); }
+      if (e.target.dataset.field === "search") { s.query = e.target.value; s.page=0; renderView(s); renderInspector(s); }
     });
     s.root.addEventListener("change", e => {
       const field=e.target.dataset.field;
       if(field==="window") {s.minutes=Number(e.target.value); s.page=0; load(s);}
-      if(field==="model" || field==="status") {s[field]=e.target.value; s.page=0; renderView(s);}
+      if(field==="model" || field==="status") {s[field]=e.target.value; s.page=0; renderView(s); renderInspector(s);}
     });
     s.keydown = e => {
       if(s.disposed || !s.host.isConnected || (options.isCurrent && !options.isCurrent())) return;
@@ -120,11 +120,11 @@
     const d=s.data, v=d&&d.ok?d.summary:{};
     const cards=[
       ["Concurrent requests",v.active_requests,`${n(v.awaiting_output)} awaiting first output`,"teal"],
-      ["Reported output / sec",v.output_tokens_per_s,"Window average · completed usage","blue"],
+      ["Reported output / sec",v.output_tokens_per_s,"Approx. window average · reported usage","blue"],
       ["Output tokens",v.output_tokens,`${n(v.input_tokens)} input · selected window`,"violet"],
       ["First content · p50",v.p50_first_content_ms==null?null:seconds(v.p50_first_content_ms/1000),`p95 ${seconds(v.p95_first_content_ms==null?null:v.p95_first_content_ms/1000)} · ${n(v.first_content_samples)} samples`,""],
       ["Known consumers",v.active_consumers,`${n(v.unattributed_active)} active requests unattributed`,""],
-      ["Route capacity",v.ready_routes==null?null:`${v.ready_routes} / ${(d.routes||[]).length}`,`${n(v.cooling_routes)} cooling · ${n(v.providers)} providers`,""],
+      ["Routes outside cooldown",v.ready_routes==null?null:`${v.ready_routes} / ${(d.routes||[]).length}`,`${n(v.cooling_routes)} cooling · ${n(v.providers)} providers`,""],
     ];
     s.root.querySelector(".cf-metrics").innerHTML=cards.map(([title,value,sub,color])=>`<article class="cf-metric ${color}"><div>${title}</div><strong>${typeof value==="string"?value:n(value)}</strong><small>${sub}</small></article>`).join("");
     const counts={requests:d&&d.ok?(d.active.length+d.recent.length):null,providers:v.providers,consumers:v.active_consumers};
@@ -137,9 +137,9 @@
     const {kind,id}=selection;
     return kind==="provider"?r.provider===id:kind==="model"?(r.served_model===id||r.requested_model===id):kind==="lane"?r.lane===id:kind==="consumer"?consumerKey(r)===id:kind==="route"?r.route_id===id:true;
   }
-  function records(s) {
+  function records(s, selection=s.selected) {
     const q=s.query.toLowerCase();
-    return allRecords(s).filter(r=>matchesSelection(r,s.selected))
+    return allRecords(s).filter(r=>matchesSelection(r,selection))
       .filter(r=>s.model==="all"||r.served_model===s.model||r.requested_model===s.model)
       .filter(r=>s.status==="all" || (s.status==="waiting"? ["routing","waiting"].includes(r.state):s.status==="failed"?["failed","interrupted","cancelled"].includes(r.state):r.state===s.status))
       .filter(r=>!q||[consumerName(r),r.id,r.served_model,r.requested_model,r.provider,r.route_id,r.lane,r.client,r.project_id||""].join(" ").toLowerCase().includes(q));
@@ -205,11 +205,19 @@
   }
 
   function trend(s) {
-    const d=s.data,buckets=d.series||[];const max=Math.max(1,...buckets.map(b=>b.output_tokens));
-    const start=Math.max(d.started_at,Date.now()/1000-s.minutes*60),end=Date.now()/1000;
+    const d=s.data, buckets=d.series||[], known=buckets.filter(b=>b.usage_known>0);
+    const max=Math.max(1,...known.map(b=>b.output_tokens));
+    const end=d.generated_at, start=Math.max(d.started_at,end-s.minutes*60);
     const width=620,height=102;
-    const bars=buckets.map(b=>{const x=Math.max(0,Math.min(width-4,(b.at-start)/(end-start||1)*width));const w=Math.max(2,Math.min(28,width/(s.minutes||1)*.75));const h=b.output_tokens/max*(height-12);return `<rect x="${x.toFixed(2)}" y="${height-h}" width="${w}" height="${Math.max(h,1)}" rx="2"><title>${clock(b.at)} · ${full(b.output_tokens)} output tokens · ${b.completed+b.failed} finished requests</title></rect>`;}).join("");
-    return `<section class="cf-panel cf-trend"><div class="cf-panel-heading"><div><span class="cf-section-kicker">THROUGHPUT</span><h2>Reported output</h2></div><strong>${n(d.summary.output_tokens)} <small>tokens</small></strong></div><div class="cf-trend-chart"><span class="cf-chart-max">${n(max)} / min</span><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Reported output tokens in minute buckets"><path d="M0 25H620M0 63H620M0 102H620" class="cf-grid-line"/>${bars}</svg>${!d.summary.usage_known?'<span class="cf-chart-empty">Awaiting provider usage reports</span>':""}</div><div class="cf-axis"><span>${clock(start)}</span><span>Usage recorded at completion · minute buckets</span><span>Now</span></div></section>`;
+    const bars=buckets.map(b=>{
+      const x=Math.max(0,Math.min(width-4,(b.at-start)/(end-start||1)*width));
+      const w=Math.max(2,Math.min(28,width/(s.minutes||1)*.75));
+      const total=b.completed+b.failed, reported=b.usage_known>0;
+      const h=reported?Math.max(1,b.output_tokens/max*(height-12)):5;
+      const label=reported?`${full(b.output_tokens)} reported output tokens · ${b.usage_known} / ${total} requests reported usage`:`Output usage not reported · ${total} finished requests`;
+      return `<rect class="${reported?"cf-usage-reported":"cf-usage-unknown"}" x="${x.toFixed(2)}" y="${height-h}" width="${w}" height="${h}" rx="2"><title>${clock(b.at)} · ${label}</title></rect>`;
+    }).join("");
+    return `<section class="cf-panel cf-trend"><div class="cf-panel-heading"><div><span class="cf-section-kicker">THROUGHPUT</span><h2>Reported output</h2></div><strong>${n(d.summary.output_tokens)} <small>tokens</small></strong></div><div class="cf-trend-chart"><span class="cf-chart-max">${known.length?n(max):"—"} / min</span><svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="Reported output tokens in minute buckets; hollow markers mean usage was not reported"><path d="M0 25H620M0 63H620M0 102H620" class="cf-grid-line"/>${bars}</svg>${!d.summary.usage_known?'<span class="cf-chart-empty">Awaiting provider usage reports</span>':""}</div><div class="cf-axis"><span>${clock(start)}</span><span>Minute buckets · hollow = unreported</span><span>${clock(end)}</span></div></section>`;
   }
 
   function health(s) {
@@ -225,15 +233,15 @@
   }
 
   function providerView(s) {
-    const d=s.data,eligible=d.routes.filter(r=>s.model==="all"||r.models.includes(s.model)),providers=[...new Set(eligible.map(r=>r.provider))].filter(p=>!s.query||d.routes.some(r=>r.provider===p&&[p,r.id,...r.models].join(" ").toLowerCase().includes(s.query.toLowerCase())));
-    const cards=providers.map(p=>{const routes=eligible.filter(r=>r.provider===p),models=[...new Set(routes.flatMap(r=>r.models))];const req=allRecords(s).filter(r=>r.provider===p),live=d.active.filter(r=>r.provider===p).length;return `<article class="cf-provider-card"><button class="cf-provider-top" data-select="provider" data-id="${escape(p)}"><span class="cf-provider-symbol">${escape(p.slice(0,2).toUpperCase())}</span><span><strong>${escape(p)}</strong><small>${routes.length} routes · ${models.length} models</small></span><span class="cf-provider-live">${live}<small>active</small></span></button><div class="cf-provider-models">${models.slice(0,8).map(m=>`<button data-select="model" data-id="${escape(m)}">${escape(modelName(m))}</button>`).join("")}${models.length>8?`<span>+${models.length-8} more</span>`:""}</div><div class="cf-provider-routes">${routes.map(r=>`<button data-select="route" data-id="${escape(r.id)}"><i class="${r.cooling?"cooling":""}"></i><span>${escape(r.id)}<small>${escape(r.wire)} · base priority ${r.priority} · weight ${r.weight}</small></span><b>${r.cooling?"Cooling":"No cooldown"}</b></button>`).join("")}</div><div class="cf-provider-bottom"><span>${n(routes.reduce((a,r)=>a+r.served,0))} responses started</span><span>${n(routes.reduce((a,r)=>a+r.attempt_failed,0))} failed attempts</span></div></article>`;}).join("");
-    return `<div class="cf-view-intro"><div><span class="cf-section-kicker">CAPACITY INVENTORY</span><h2>One fabric. Every provider.</h2><p>Actual route configuration and cooldown state. Counters are since the current router process started.</p></div><span>${d.routes.length} routes / ${d.summary.models} models</span></div><div class="cf-provider-grid">${cards||empty("No matching providers","Try a model name or clear your search.")}</div>`;
+    const d=s.data,filtered=records(s),activeIds=new Set(d.active.map(r=>r.id)),eligible=d.routes.filter(r=>s.model==="all"||r.models.includes(s.model)),providers=[...new Set(eligible.map(r=>r.provider))].filter(p=>!s.query||d.routes.some(r=>r.provider===p&&[p,r.id,...r.models].join(" ").toLowerCase().includes(s.query.toLowerCase()))||filtered.some(r=>r.provider===p));
+    const cards=providers.map(p=>{const routes=eligible.filter(r=>r.provider===p),models=[...new Set(routes.flatMap(r=>r.models))];const live=filtered.filter(r=>r.provider===p&&activeIds.has(r.id)).length;return `<article class="cf-provider-card"><button class="cf-provider-top" data-select="provider" data-id="${escape(p)}"><span class="cf-provider-symbol">${escape(p.slice(0,2).toUpperCase())}</span><span><strong>${escape(p)}</strong><small>${routes.length} routes · ${models.length} models</small></span><span class="cf-provider-live">${live}<small>active</small></span></button><div class="cf-provider-models">${models.slice(0,8).map(m=>`<button data-select="model" data-id="${escape(m)}">${escape(modelName(m))}</button>`).join("")}${models.length>8?`<span>+${models.length-8} more</span>`:""}</div><div class="cf-provider-routes">${routes.map(r=>`<button data-select="route" data-id="${escape(r.id)}"><i class="${r.cooling?"cooling":""}"></i><span>${escape(r.id)}<small>${escape(r.wire)} · base priority ${r.priority} · weight ${r.weight}</small></span><b>${r.cooling?"Cooling":"No cooldown"}</b></button>`).join("")}</div><div class="cf-provider-bottom"><span>${n(routes.reduce((a,r)=>a+r.served,0))} responses started</span><span>${n(routes.reduce((a,r)=>a+r.attempt_failed,0))} failed attempts</span></div></article>`;}).join("");
+    return `<div class="cf-view-intro"><div><span class="cf-section-kicker">CAPACITY INVENTORY</span><h2>One fabric. Every provider.</h2><p>Active request counts follow the filters. Route configuration and response/attempt counters cover the current router process.</p></div><span>${d.routes.length} routes / ${d.summary.models} models</span></div><div class="cf-provider-grid">${cards||empty("No matching providers","Try a model name or clear your search.")}</div>`;
   }
 
   function consumerView(s) {
-    const rs=records(s),groups=new Map();rs.forEach(r=>{const id=consumerKey(r);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(r);});
+    const rs=records(s),retainedAgents=new Set(allRecords(s).map(r=>r.agent_id).filter(Boolean)),groups=new Map();rs.forEach(r=>{const id=consumerKey(r);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(r);});
     const known=[...groups.entries()].filter(([id])=>id!=="unattributed"),unknown=groups.get("unattributed")||[];
-    const cards=known.map(([id,list])=>{const latest=list[0],active=list.filter(r=>!r.ended_at).length,parent=latest.parent_agent_id;const parentPresent=parent&&groups.has(parent);return `<article class="cf-consumer-card"><button data-select="consumer" data-id="${id}" class="cf-consumer-card-head"><span class="cf-consumer-glyph">${latest.agent_id?"A":"S"}</span><span><strong>${escape(consumerName(latest))}</strong><small>${escape(latest.client)} · ${latest.agent_id?"Caller-reported agent":latest.identity_source==="sdk_session"?"SDK session":"Caller-reported session"}</small></span><span class="cf-active-count">${active}<small>active</small></span></button>${parent?`<div class="cf-parent-line">↳ Parent ${parentPresent?`<button data-select="consumer" data-id="${parent}">Agent ${short(parent)}</button>`:`<span>${short(parent)} · outside retained window</span>`}</div>`:""}<div class="cf-consumer-models">${[...new Set(list.map(r=>r.served_model||r.requested_model))].slice(0,6).map(m=>`<span>${escape(modelName(m))}</span>`).join("")}</div><div class="cf-consumer-stats"><div><b>${list.length}</b><small>Requests</small></div><div><b>${list.some(r=>r.usage.output_tokens!=null)?n(list.reduce((a,r)=>a+(r.usage.output_tokens||0),0)):"—"}</b><small>Reported output</small></div><div><b>${latest.project_id?short(latest.project_id):"—"}</b><small>Project</small></div></div></article>`;}).join("");
+    const cards=known.map(([id,list])=>{const latest=list[0],active=list.filter(r=>!r.ended_at).length,parent=latest.parent_agent_id,parentKey=parent?`agent:${parent}`:null;const parentPresent=parent&&retainedAgents.has(parent);return `<article class="cf-consumer-card"><button data-select="consumer" data-id="${id}" class="cf-consumer-card-head"><span class="cf-consumer-glyph">${latest.agent_id?"A":"S"}</span><span><strong>${escape(consumerName(latest))}</strong><small>${escape(latest.client)} · ${latest.agent_id?"Caller-reported agent":latest.identity_source==="sdk_session"?"SDK session":"Caller-reported session"}</small></span><span class="cf-active-count">${active}<small>active</small></span></button>${parent?`<div class="cf-parent-line">↳ Parent ${parentPresent?`<button data-select="consumer" data-id="${parentKey}" data-reveal-parent="true" title="Show retained parent and clear filters">Agent ${short(parent)}</button>${!groups.has(parentKey)?" <span>· retained, outside current selection</span>":""}`:`<span>${short(parent)} · not observed in retained history</span>`}</div>`:""}<div class="cf-consumer-models">${[...new Set(list.map(r=>r.served_model||r.requested_model))].slice(0,6).map(m=>`<span>${escape(modelName(m))}</span>`).join("")}</div><div class="cf-consumer-stats"><div><b>${list.length}</b><small>Requests</small></div><div><b>${list.some(r=>r.usage.output_tokens!=null)?n(list.reduce((a,r)=>a+(r.usage.output_tokens||0),0)):"—"}</b><small>Reported output</small></div><div><b>${latest.project_id?short(latest.project_id):"—"}</b><small>Project</small></div></div></article>`;}).join("");
     return `<div class="cf-view-intro"><div><span class="cf-section-kicker">DOWNSTREAM VISIBILITY</span><h2>Where the intelligence goes</h2><p>Sessions and agents connected by recorded identity. Parent relationships are shown only when supplied.</p></div><span>${known.length} known consumers</span></div><div class="cf-consumer-grid">${cards||empty("No consumer identity yet","Requests still appear in Traffic. The caller must supply session or agent identity to establish lineage.")}</div>${unknown.length?`<section class="cf-panel cf-unattributed"><span class="cf-consumer-glyph">?</span><div><h3>${unknown.length} unattributed requests</h3><p>${[...new Set(unknown.map(r=>r.client))].map(escape).join(", ")} · Their providers, models and usage remain visible.</p></div><button class="cf-button" data-select="consumer" data-id="unattributed">Inspect traffic</button></section>`:""}<details class="cf-instrumentation"><summary>How downstream attribution works</summary><p>Capacity Fabric observes explicit <code>x-fabric-session-id</code>, <code>x-fabric-agent-id</code>, <code>x-fabric-parent-agent-id</code>, <code>x-fabric-project-id</code> and <code>x-fabric-client</code> headers, or the equivalent fields in <code>metadata.fabric</code>. Existing SDK session metadata is recognized automatically. IDs are pseudonymized before export. These fields describe the caller; they do not grant routing or execution authority.</p></details>`;
   }
 
@@ -249,15 +257,22 @@
       body.innerHTML=`<span class="cf-section-kicker">REQUEST ${short(r.id)}</span><h2>${escape(modelName(r.served_model||r.requested_model))}</h2><span class="cf-state ${r.state}"><i></i>${escape(r.state)}</span><div class="cf-detail-path"><span>${escape(r.provider||"Not routed")}</span>${icon("arrow")}<span>${escape(r.lane)}</span>${icon("arrow")}<span>${escape(consumerName(r))}</span></div><dl class="cf-detail-list"><dt>Requested</dt><dd>${escape(r.requested_model)}</dd><dt>Served model</dt><dd>${escape(r.served_model||"Not observed")}</dd><dt>Provider model ID</dt><dd>${escape(r.wire_model||"Not observed")}</dd><dt>Selected route</dt><dd>${escape(r.route_id||"Not observed")}</dd><dt>Consumer identity</dt><dd>${escape(r.identity_source.replace(/_/g," "))}</dd><dt>Started</dt><dd>${clock(r.started_at)}</dd><dt>HTTP status</dt><dd>${r.status_code||"Awaiting headers"}</dd></dl><h3>Reported token usage</h3><div class="cf-usage-grid">${[["Input",r.usage.input_tokens],["Output",r.usage.output_tokens],["Cache read",r.usage.cache_read_tokens],["Cache write",r.usage.cache_write_tokens]].map(([k,v])=>`<div><small>${k}</small><b>${n(v)}</b></div>`).join("")}</div><p class="cf-detail-note">${r.usage_source==="unavailable"?"The provider has not reported usage.":r.usage_final?"Final provider report. Cache values stay separate from input/output totals.":"Partial provider report. Totals may increase before completion."}</p><h3>Request timeline</h3><div class="cf-waterfall">${stages.map(([name,at])=>`<div><span>${name}</span><b>${at==null?"Not observed":seconds(Math.max(0,at-r.started_at))}</b><div><i style="width:${at==null?0:Math.max(1,Math.min(100,(at-r.started_at)/duration*100))}%"></i></div></div>`).join("")}</div><h3>Routing attempts <span>${r.attempts.length}</span></h3><div class="cf-attempts">${r.attempts.map((a,i)=>`<div><i>${i+1}</i><span><b>${escape(a.route_id)}</b><small>${escape(a.model)} · ${escape(a.state)}</small>${a.reason?`<code>${escape(a.reason)}</code>`:""}</span><em>${a.ended_at?seconds(a.ended_at-a.started_at):"Active"}</em></div>`).join("")||'<p class="cf-muted">No provider attempt observed.</p>'}</div><p class="cf-detail-note">Only usage delivered by the router is measured. Failed upstream attempts may have unreported consumption.</p>`;
       return;
     }
-    const rs=allRecords(s).filter(r=>matchesSelection(r,sel)),live=rs.filter(r=>!r.ended_at),route=sel.kind==="route"?d.routes.find(r=>r.id===sel.id):null;
+    const rs=records(s),live=rs.filter(r=>!r.ended_at),route=sel.kind==="route"?d.routes.find(r=>r.id===sel.id):null;
     const related=d.routes.filter(r=>sel.kind==="provider"?r.provider===sel.id:sel.kind==="model"?r.models.includes(sel.id):sel.kind==="route"?r.id===sel.id:false);
-    const title=sel.kind==="consumer"?(sel.id==="unattributed"?"Unattributed traffic":rs[0]?consumerName(rs[0]):`Consumer ${short(sel.id)}`):sel.kind==="lane"&&sel.id==="direct"?"Direct model":sel.id;
-    body.innerHTML=`<span class="cf-section-kicker">${escape(sel.kind)}</span><h2>${escape(title)}</h2><div class="cf-selection-stats"><div><b>${live.length}</b><small>In flight</small></div><div><b>${rs.length}</b><small>Observed calls</small></div><div><b>${rs.some(r=>r.usage.output_tokens!=null)?n(rs.reduce((a,r)=>a+(r.usage.output_tokens||0),0)):"—"}</b><small>Reported output</small></div></div>${route?`<dl class="cf-detail-list"><dt>Provider</dt><dd>${escape(route.provider)}</dd><dt>Wire</dt><dd>${escape(route.wire)}</dd><dt>Route priority</dt><dd>${route.priority}</dd><dt>Weight</dt><dd>${route.weight}</dd><dt>Cooldown</dt><dd>${route.cooling?"Cooling":"No cooldown"}</dd><dt>Consecutive failures</dt><dd>${route.consecutive_failures}</dd></dl>`:""}${related.length?`<h3>Configured routes</h3><div class="cf-inspector-routes">${related.map(r=>`<button data-select="route" data-id="${escape(r.id)}"><i class="${r.cooling?"cooling":""}"></i><span>${escape(r.id)}<small>${r.models.length} models · priority ${r.priority}</small></span>${icon("arrow")}</button>`).join("")}</div>`:""}${sel.kind==="lane"&&d.aliases[sel.id]?`<h3>Ordered model cascade</h3><ol class="cf-cascade">${d.aliases[sel.id].map(m=>`<li><button data-select="model" data-id="${escape(m)}">${escape(modelName(m))}</button></li>`).join("")}</ol>`:""}<h3>Latest requests</h3><div class="cf-inspector-requests">${rs.slice(0,12).map(r=>`<button data-select="request" data-id="${r.id}"><span><b>${escape(modelName(r.served_model||r.requested_model))}</b><small>${escape(consumerName(r))}</small></span><span class="cf-state ${r.state}"><i></i>${escape(r.state)}</span></button>`).join("")||'<p class="cf-muted">No retained traffic for this selection.</p>'}</div><p class="cf-detail-note">Selection filters the request explorer. Configured paths do not imply observed traffic or verified provider availability.</p>`;
+    const title=sel.kind==="consumer"?(sel.id==="unattributed"?"Unattributed traffic":rs[0]?consumerName(rs[0]):`Consumer ${short(sel.id.replace(/^(agent|session):/,""))}`):sel.kind==="lane"&&sel.id==="direct"?"Direct model":sel.id;
+    body.innerHTML=`<span class="cf-section-kicker">${escape(sel.kind)}</span><h2>${escape(title)}</h2><div class="cf-selection-stats"><div><b>${live.length}</b><small>In flight</small></div><div><b>${rs.length}</b><small>Observed calls</small></div><div><b>${rs.some(r=>r.usage.output_tokens!=null)?n(rs.reduce((a,r)=>a+(r.usage.output_tokens||0),0)):"—"}</b><small>Reported output</small></div></div>${route?`<dl class="cf-detail-list"><dt>Provider</dt><dd>${escape(route.provider)}</dd><dt>Wire</dt><dd>${escape(route.wire)}</dd><dt>Route priority</dt><dd>${route.priority}</dd><dt>Weight</dt><dd>${route.weight}</dd><dt>Cooldown</dt><dd>${route.cooling?"Cooling":"No cooldown"}</dd><dt>Consecutive failures</dt><dd>${route.consecutive_failures}</dd></dl>`:""}${related.length?`<h3>Configured routes</h3><div class="cf-inspector-routes">${related.map(r=>`<button data-select="route" data-id="${escape(r.id)}"><i class="${r.cooling?"cooling":""}"></i><span>${escape(r.id)}<small>${r.models.length} models · priority ${r.priority}</small></span>${icon("arrow")}</button>`).join("")}</div>`:""}${sel.kind==="lane"&&d.aliases[sel.id]?`<h3>Ordered model cascade</h3><ol class="cf-cascade">${d.aliases[sel.id].map(m=>`<li><button data-select="model" data-id="${escape(m)}">${escape(modelName(m))}</button></li>`).join("")}</ol>`:""}<h3>Latest requests</h3><div class="cf-inspector-requests">${rs.slice(0,12).map(r=>`<button data-select="request" data-id="${r.id}"><span><b>${escape(modelName(r.served_model||r.requested_model))}</b><small>${escape(consumerName(r))}</small></span><span class="cf-state ${r.state}"><i></i>${escape(r.state)}</span></button>`).join("")||'<p class="cf-muted">No retained traffic for this selection.</p>'}</div><p class="cf-detail-note">Traffic totals follow the current filters and selection. Configured paths do not imply observed traffic or verified provider availability.</p>`;
+  }
+
+  function clearFilters(s) {
+    s.query="";s.model="all";s.status="all";s.page=0;
+    s.root.querySelector("input").value="";
+    s.root.querySelector('[data-field="model"]').value="all";
+    s.root.querySelector('[data-field="status"]').value="all";
   }
 
   function handleClick(s,e) {
     const selected=e.target.closest("[data-select]");
-    if(selected) {s.selected={kind:selected.dataset.select,id:selected.dataset.id};s.page=0;renderView(s);renderInspector(s);return;}
+    if(selected) {if(selected.dataset.revealParent) clearFilters(s);s.selected={kind:selected.dataset.select,id:selected.dataset.id};s.page=0;renderView(s);renderInspector(s);return;}
     const view=e.target.closest("[data-view]");
     if(view) {s.view=view.dataset.view;s.page=0;renderView(s);return;}
     const action=e.target.closest("[data-action]");if(!action)return;
@@ -265,7 +280,7 @@
       case "pause": s.paused=!s.paused;action.innerHTML=icon(s.paused?"play":"pause")+`<span>${s.paused?"Resume":"Pause"}</span>`;updateConnection(s);if(!s.paused)load(s);break;
       case "refresh": if(!s.paused)load(s);break;
       case "fullscreen": if(document.fullscreenElement)document.exitFullscreen();else if(s.root.requestFullscreen)s.root.requestFullscreen().catch(()=>{});break;
-      case "clear":s.selected=null;s.query="";s.model="all";s.status="all";s.page=0;s.root.querySelector("input").value="";s.root.querySelector('[data-field="model"]').value="all";s.root.querySelector('[data-field="status"]').value="all";renderView(s);renderInspector(s);break;
+      case "clear":s.selected=null;clearFilters(s);renderView(s);renderInspector(s);break;
       case "close":s.selected=null;renderInspector(s);renderView(s);break;
       case "zoom-in":s.scale=Math.min(2,s.scale+.2);renderView(s);break;
       case "zoom-out":s.scale=Math.max(1,s.scale-.2);renderView(s);break;
@@ -277,3 +292,4 @@
   }
   window.CapacityRouter = {mount,unmount};
 })();
+

@@ -53,7 +53,8 @@ def panel(minutes=15, *, path=None, now=None):
     age = max(0, age)
     data.update(ok=True, state="live" if age <= 15 else "stale", age_s=round(age, 1),
                 window_minutes=minutes, received_at=decoded.get("received_at"))
-    start = now - minutes * 60
+    # A stale snapshot preserves its last measured window; freshness uses wall time.
+    start = data["generated_at"] - minutes * 60
     recent = [r for r in data["recent"] if (r["ended_at"] or 0) >= start]
     data["recent"] = recent
     data["series"] = [b for b in data["series"] if b["at"] + 60 > start]
@@ -64,7 +65,10 @@ def panel(minutes=15, *, path=None, now=None):
     observed_s = max(1, min(minutes * 60, data["generated_at"] - data["started_at"]))
     latencies = [(r["first_content_at"] - r["started_at"]) * 1000 for r in recent
                  if r["first_content_at"] is not None and r["started_at"] is not None]
-    consumers = {r["agent_id"] or r["session_id"] for r in data["active"] if r["agent_id"] or r["session_id"]}
+    consumers = {
+        ("agent", r["agent_id"]) if r["agent_id"] else ("session", r["session_id"])
+        for r in data["active"] if r["agent_id"] or r["session_id"]
+    }
     active_unknown = sum(not (r["agent_id"] or r["session_id"]) for r in data["active"])
     data["summary"] = {
         "active_requests": len(data["active"]) + data["totals"]["overflow_active"],
@@ -87,3 +91,4 @@ def panel(minutes=15, *, path=None, now=None):
         "recent_count": len(recent),
     }
     return data
+

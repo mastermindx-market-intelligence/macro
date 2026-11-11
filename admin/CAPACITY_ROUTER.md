@@ -21,6 +21,14 @@ accepted windows are 5, 15, 60 and 120 minutes.
   in the incumbent router remain authoritative.
 - Known sessions and caller-reported agent/parent/project relationships. Unknown
   identity is shown as unattributed. SDK account IDs are never treated as sessions.
+  Agent and session identities remain distinct even when their pseudonyms match;
+  following a retained parent selects only that agent's traffic.
+- Global summary metrics cover the whole router; filters apply to the views and
+  inspector. Provider response/attempt counters explicitly retain process scope.
+- Unknown-only minute buckets use hollow markers; reported zero remains zero.
+  Minute buckets may overlap the window boundary, so throughput is approximate.
+- Retained parents remain discoverable from a selected child; following a parent
+  clears exploration filters. Missing parents are not claimed to be retained.
 - Search, model/state filters, pause/resume, window selection, topology zoom,
   full screen, keyboard selection, reduced motion and sanitized snapshot export.
 
@@ -54,7 +62,9 @@ not claimed as observed. History starts when its observer starts and retains at
 most 256 tracked active requests, 400 recent requests and 120 minute buckets.
 Overflow concurrency is counted separately. The 2 MiB transport budget drops
 optional old history first and explicitly reports compaction. A snapshot older
-than 15 seconds is stale, not evidence that inference stopped.
+than 15 seconds is stale, not evidence that inference stopped. Its chart and
+request window remain anchored to the last snapshot instead of ageing into an
+empty result.
 
 Only allowlisted scalar telemetry is exported. Prompt/completion text, arbitrary
 provider errors, credentials and raw account/session identifiers are excluded.
@@ -74,6 +84,7 @@ Run the focused suite from the macro root:
 python -m unittest admin.tests.test_capacity_router -v
 node --check admin/static/capacity-router.js
 node --check admin/static/app.js
+node --test admin/tests/capacity_router_ui_test.cjs
 ```
 
 The incumbent router has locally retained production patches. Do not replace
@@ -106,3 +117,4 @@ a second gateway or tracing platform:
 
 The implementation and visuals are original and use the admin's existing Python,
 JavaScript and CSS stack, with no new production dependency.
+
