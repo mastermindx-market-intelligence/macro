@@ -418,3 +418,42 @@ def test_idio_dispersion_share_discriminates_factor_structure():
         f"idio_dispersion_share should be lower for one-factor panel ({one_factor_idio}) "
         f"than for iid panel ({iid_idio}); near-equal values indicate near-degeneracy bug"
     )
+
+
+
+@pytest.mark.parametrize('suffix', [21, 42, 63, 300])
+def test_unavailable_current_dispersion_withholds_regime(suffix):
+    returns = _make_returns(300, 20)
+    returns.iloc[-suffix:, 1:] = np.nan
+    assert dispersion.assess(returns) is None
+
+
+def test_finite_zero_dispersion_remains_available():
+    returns = _make_returns(300, 20)
+    returns.iloc[:, :] = np.tile(returns.iloc[:, 0].to_numpy()[:, None], (1, 20))
+    result = dispersion.assess(returns)
+    assert result is not None
+    assert result['dispersion_pct_pts'] == 0.0
+    assert result['gross_mult'] == 1.0
+
+
+def test_nonfinite_dispersion_degrades_native_builder(tmp_path, capsys):
+    from scripts.build_dispersion_regime import main
+    returns = _make_returns(300, 20)
+    closes = 100 * (1 + returns).cumprod()
+    closes.iloc[-22:, 1:] = np.nan
+    prior = [{'as_of': '2020-01-01', 'state': 'lean_in'}]
+    out_path = tmp_path / 'dispersion' / 'regime.json'
+    out_path.parent.mkdir()
+    out_path.write_text(json.dumps({'history': prior}))
+    with mock.patch('scripts.build_dispersion_regime._load_closes', return_value=closes), mock.patch('lib.config.data_dir', return_value=tmp_path):
+        assert main() == {'ok': False}
+    artifact = json.loads(out_path.read_text())
+    assert artifact['state'] is None
+    assert artifact['dispersion_pctile'] is None
+    assert artifact['shadow_gross_mult'] is None
+    assert artifact['history'] == prior
+    assert artifact['gross_mult_live'] == 1.0
+    assert artifact['passport']['validation']['survives'] is False
+    assert '::warning title=dispersion_regime::' in capsys.readouterr().out
+    json.dumps(artifact, allow_nan=False)
