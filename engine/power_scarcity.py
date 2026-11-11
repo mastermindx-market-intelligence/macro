@@ -59,10 +59,18 @@ def _queue_pull() -> float | None:
         d = json.loads(p.read_text())
     except Exception:  # noqa: BLE001
         return None
-    yoy = d.get("total_gw_yoy")
-    if yoy is None:
+    if not isinstance(d, dict):
         return None
-    return round(min(2.0, max(-2.0, float(yoy) / 20.0)), 2)   # ~+20%/yr queue growth ≈ +1 z
+    yoy = d.get("total_gw_yoy")
+    if yoy is None or isinstance(yoy, bool):
+        return None
+    try:
+        yoy = float(yoy)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(yoy):
+        return None
+    return round(min(2.0, max(-2.0, yoy / 20.0)), 2)   # ~+20%/yr queue growth ≈ +1 z
 
 
 def _queue_vintage() -> int | None:
