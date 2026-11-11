@@ -451,6 +451,98 @@ class DryRunAndArchiveTests(Harness):
 
 
 class CliTests(Harness):
+    def test_bounded_cli_keeps_lock_receipts_and_same_session_replay_guard(self):
+        from unittest.mock import patch
+        calls: list = []
+        results: list = []
+        stub = make_segment_stub(self.clock, raw=20_000, calls=calls)
+
+        def locked_segment(**kwargs):
+            with self.assertRaises(SessionRefused):
+                acquire_session_lock(self.archive)
+            return stub(**kwargs)
+
+        def execute(config):
+            result = self.run_with(config, segment=locked_segment)
+            results.append(result)
+            return result
+
+        args = ["--publish", "--symbols-file", str(self.symbols_file),
+                "--archive-root", str(self.archive), "--total-max-messages", "20000",
+                "--total-max-seconds", "60", "--max-segments", "1",
+                "--segment-max-seconds", "60"]
+        with patch.object(rbs, "run_session", side_effect=execute):
+            self.assertEqual(rbs.main(args), 5)  # bounded partial, not a full night
+            start = self.archive / "run-receipts" / "run-start-2026-10-19.json"
+            original_start = start.read_bytes()
+            self.assertEqual(rbs.main(args), 4)  # no same-session second segment
+        self.assertEqual(calls, [{"max_seconds": 60, "max_messages": 20_000,
+                                 "publish": True, "symbols": 2}])
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["terminal_reason"], "segment_cap_reached")
+        self.assertEqual(results[0]["elapsed_seconds"], 60)
+        self.assertTrue(results[0]["lock_released"])
+        self.assertEqual(start.read_bytes(), original_start)
+        receipt = json.loads(original_start)
+        self.assertEqual(receipt["total_max_seconds"], 60)
+        self.assertEqual(receipt["total_max_messages"], 20_000)
+        final = json.loads(Path(results[0]["final_receipt"]).read_text())
+        self.assertEqual(final["total_seconds_budget"], 60)
+        self.assertEqual(final["raw_messages_total"], 20_000)
+        self.assertEqual(final["segments_run"], 1)
+        fd = acquire_session_lock(self.archive)
+        os.close(fd)
+
+    def test_cli_rejects_invalid_time_budget_before_runner_effects(self):
+        from unittest.mock import patch
+        args = ["--publish", "--symbols-file", str(self.symbols_file),
+                "--archive-root", str(self.archive), "--total-max-messages", "20000"]
+        invalid = [["--total-max-seconds", value] for value in ("-1", "0", "28801")]
+        invalid.append(["--total-max-seconds", "60", "--max-segments", "1",
+                        "--segment-max-seconds", "59"])
+        with patch.object(rbs, "run_session") as runner:
+            for options in invalid:
+                with self.subTest(options=options):
+                    self.assertEqual(rbs.main(args + options), 2)
+            runner.assert_not_called()
+        self.assertFalse((self.archive / "run-receipts").exists())
+
+    def test_cli_default_time_budget_remains_full_session(self):
+        from unittest.mock import patch
+        results: list = []
+
+        def execute(config):
+            result = self.run_with(config)
+            results.append(result)
+            return result
+
+        with patch.object(rbs, "run_session", side_effect=execute):
+            self.assertEqual(rbs.main(["--symbols-file", str(self.symbols_file)]), 0)
+        self.assertEqual(results[0]["total_seconds_budget"], 28_800)
+        self.assertEqual(results[0]["first_segment_plan"]["max_seconds"], 3_600)
+        self.assertFalse((self.archive / "run-receipts").exists())
+
+    def test_cli_bounded_dry_run_does_not_open_archive_or_stream(self):
+        from unittest.mock import patch
+        results: list = []
+
+        def execute(config):
+            result = run_session(config, clock=self.clock, local_tz=VANCOUVER,
+                archive_prep=lambda _: self.fail("dry-run opened archive"),
+                segment_runner=lambda **_: self.fail("dry-run opened stream"))
+            results.append(result)
+            return result
+
+        with patch.object(rbs, "run_session", side_effect=execute):
+            self.assertEqual(rbs.main(["--symbols-file", str(self.symbols_file),
+                "--total-max-seconds", "60", "--total-max-messages", "20000",
+                "--max-segments", "1", "--segment-max-seconds", "60"]), 0)
+        self.assertEqual(results[0]["terminal_reason"], "dry_run_plan")
+        self.assertEqual(results[0]["first_segment_plan"],
+                         {"max_seconds": 60, "max_messages": 20_000})
+        self.assertIsNone(results[0]["start_receipt"])
+        self.assertFalse((self.archive / "run-receipts").exists())
+
     def test_publish_requires_explicit_budget_and_paths(self):
         self.assertEqual(rbs.main(["--publish"]), 2)
         self.assertEqual(rbs.main(["--publish", "--total-max-messages", "1000"]), 2)

@@ -1,0 +1,427 @@
+{
+  "source_parent": "c62a79fad9272afcffafb13e8fd0d17eb45b8dcb",
+  "final_receipt": "docs/pr-crops/market-continuation-20261105/final-2/qualification.json",
+  "historical_attempts_retained": true,
+  "files": [
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser/market-1440-light-en.png",
+      "bytes": 175845,
+      "sha256": "fa5aa2ae7805edd0fb725d67032a370611151910f5f2e936d3fd00ab3ef56040"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser/market-browser.json",
+      "bytes": 553,
+      "sha256": "d9a927482ddc254dfb2798583e5740b889bcec8d12c14b05a1958f49b23a7510"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-1440-dark-en.png",
+      "bytes": 182437,
+      "sha256": "b5496dffd0a8988cc45b5076e0ed658129f7158648f5cd91198964584abf18d6"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-1440-dark-zh.png",
+      "bytes": 184173,
+      "sha256": "48766d12b7e922c075e4a7e1cb169ef04f12127a4fd3080f3c4f16cddfaf2650"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-1440-light-en.png",
+      "bytes": 175845,
+      "sha256": "fa5aa2ae7805edd0fb725d67032a370611151910f5f2e936d3fd00ab3ef56040"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-1440-light-zh.png",
+      "bytes": 178334,
+      "sha256": "45474b7cc4b35994c5059d34e2e83b40b81aea4b4cd5ce7af10d2dba31c9deed"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-320-light-en.png",
+      "bytes": 107278,
+      "sha256": "f72fe6388d3acf8bae9b663c71e3f496cfa4071175e4c86c5ed10b0a1b60378c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-390-dark-en.png",
+      "bytes": 116844,
+      "sha256": "dc5b92cf867d4ed389ae48efe2c77b5b1682de93ae3b2e7ababe6d1ba81b431a"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-390-dark-zh.png",
+      "bytes": 116840,
+      "sha256": "efb86ac7a232522c82ba4adf66c3d143dc938fee511521014379c1c17d0f1c95"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-390-light-en.png",
+      "bytes": 112923,
+      "sha256": "2edae81309bb77f2e30201e3326ac019dec791710e6f47505b1ecc8044deece4"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-390-light-zh.png",
+      "bytes": 113750,
+      "sha256": "53a5aa7c1b91722b8a496a4c56ee1f1932641956b74d61f9aee4e70346fff62c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-720-light-en.png",
+      "bytes": 137322,
+      "sha256": "8a4183ae6f2ffd105893ae26bb155c80a944410b425960c8cd9d510d3b253a98"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-2/market-browser.json",
+      "bytes": 526,
+      "sha256": "ee78be3940cd13211d2906e33b619f3361c71d04492398fbe271f86e0aabad62"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-dark-en.png",
+      "bytes": 182437,
+      "sha256": "b5496dffd0a8988cc45b5076e0ed658129f7158648f5cd91198964584abf18d6"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-dark-zh.png",
+      "bytes": 184173,
+      "sha256": "48766d12b7e922c075e4a7e1cb169ef04f12127a4fd3080f3c4f16cddfaf2650"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-light-en.png",
+      "bytes": 175845,
+      "sha256": "fa5aa2ae7805edd0fb725d67032a370611151910f5f2e936d3fd00ab3ef56040"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-light-zh.png",
+      "bytes": 178334,
+      "sha256": "45474b7cc4b35994c5059d34e2e83b40b81aea4b4cd5ce7af10d2dba31c9deed"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-320-light-en.png",
+      "bytes": 107278,
+      "sha256": "f72fe6388d3acf8bae9b663c71e3f496cfa4071175e4c86c5ed10b0a1b60378c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-dark-en.png",
+      "bytes": 116841,
+      "sha256": "044ce5ea4be12ffdb4adf536244bdc42e7b2d27efcdb6ae0b1a9068fff0e890b"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-dark-zh.png",
+      "bytes": 116840,
+      "sha256": "efb86ac7a232522c82ba4adf66c3d143dc938fee511521014379c1c17d0f1c95"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-light-en.png",
+      "bytes": 112923,
+      "sha256": "2edae81309bb77f2e30201e3326ac019dec791710e6f47505b1ecc8044deece4"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-light-zh.png",
+      "bytes": 113750,
+      "sha256": "53a5aa7c1b91722b8a496a4c56ee1f1932641956b74d61f9aee4e70346fff62c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-720-light-en.png",
+      "bytes": 137322,
+      "sha256": "8a4183ae6f2ffd105893ae26bb155c80a944410b425960c8cd9d510d3b253a98"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-browser.json",
+      "bytes": 5565,
+      "sha256": "2fbc01736caf8876dc987413c8b7e5733142d04e7d3b6e3557c9840faf76aea5"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-missing-zh.png",
+      "bytes": 40675,
+      "sha256": "58d4a777f5bc568d82430b9953e7f0704c1db02d879a4724b428e53cf00818d2"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-partial-outer-only.png",
+      "bytes": 55261,
+      "sha256": "2b74315e19c015ff383b54fe80c46e75a0c9e43eb050c201232d19c59aa4bf2d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-dark-en.png",
+      "bytes": 187861,
+      "sha256": "156bc805c71ad7fe391a14678d5f4fc93d1587184429276e0da062edd8ca60c8"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-dark-zh.png",
+      "bytes": 195038,
+      "sha256": "47a9355124f7566d78673dbd441da195cd2e0f862ff8a6d66bc24fb4846d0c2c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-light-en.png",
+      "bytes": 180801,
+      "sha256": "620edc1d1547ba4e5254db9bdd2f0ab7fe3ab8b3185cee1869a0c0575821b1ca"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-1440-light-zh.png",
+      "bytes": 189153,
+      "sha256": "a63b647eddaf51d42cfe9a7b015aedba08be4f77d334f61f1c5df36483dd8374"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-320-light-en.png",
+      "bytes": 107233,
+      "sha256": "8294c930072c4b096210afae5eea7def6fba69a581ca7951e79a23f1a29d1be9"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-dark-en.png",
+      "bytes": 116896,
+      "sha256": "bffea091038fe20921635955414883a454abff46f9c4065713f8ebfc093a4506"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-dark-zh.png",
+      "bytes": 116929,
+      "sha256": "dbb01d1e93397f8d609ab4997306de31ac5b17991c45657bc0fcfd2a75eca507"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-light-en.png",
+      "bytes": 113035,
+      "sha256": "3558897e05a7f35c8d847af32f317900cce1ce18501b47fd5d2cb3098ec7c569"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-390-light-zh.png",
+      "bytes": 113818,
+      "sha256": "ec48dcc18ced8de319c647c5a75dbc5251c398c8550defcf6c11c4368de594e0"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-720-light-en.png",
+      "bytes": 136667,
+      "sha256": "7b2bd8048b589f870db87db13d7d16cbcb100238133ca2ff4f85b42f43e2d5ef"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-browser.json",
+      "bytes": 6217,
+      "sha256": "067f4dc867734e750a8931d91080a372c13110c6a6d256382fc9b0886c2b9f25"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-missing-zh.png",
+      "bytes": 40675,
+      "sha256": "58d4a777f5bc568d82430b9953e7f0704c1db02d879a4724b428e53cf00818d2"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser/market-partial-outer-only.png",
+      "bytes": 55261,
+      "sha256": "6aaa383521213dbaab99a7397257d9244ef50bf9ea3bf1d62a279688d7342b7d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/browser.log",
+      "bytes": 73,
+      "sha256": "de2ee98cce51cfb793173d6df12bc5cc5117e33887a26e5c29382cd7bda41f7d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/design-ratchet.log",
+      "bytes": 279,
+      "sha256": "304f9b1b4f1d284ed25476c82097cc244571f40350cb8aa9d20a05376f73923f"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/market-tests.log",
+      "bytes": 181,
+      "sha256": "32afbecbe3f5d458fcdef1278bf044bb14987fb01449922df0b198903bd08587"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/qualification.json",
+      "bytes": 1628,
+      "sha256": "1a9d1202eea12c43760fe435d6bc88d37c1313f5171a8a29516e34d99ddcf169"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/render.log",
+      "bytes": 133,
+      "sha256": "6504b1b3e12bf6b27f3dec85880a1fe70d34332a809d9512ef7fce36938a0c60"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final/visual-evidence.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-1440-dark-en.png",
+      "bytes": 183292,
+      "sha256": "03ce0d3ef04cb594fe6bd5cbf070a788d186477b5ad1d6ab1176bd0bdec7dff0"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-1440-dark-zh.png",
+      "bytes": 185437,
+      "sha256": "14f79fb105451e1f3ded3072809b5aff0cffdfce74896bd11f90391022ed81fc"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-1440-light-en.png",
+      "bytes": 176323,
+      "sha256": "d1b730b174a60813baa606b802ffcef0efa8df248e1b524b02e936b084285929"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-1440-light-zh.png",
+      "bytes": 179267,
+      "sha256": "454ccdfe9fefdc2dcc9da7be085a99e4673f507b04cc3488a833381455681d5c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-320-light-en.png",
+      "bytes": 107233,
+      "sha256": "8294c930072c4b096210afae5eea7def6fba69a581ca7951e79a23f1a29d1be9"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-390-dark-en.png",
+      "bytes": 116896,
+      "sha256": "bffea091038fe20921635955414883a454abff46f9c4065713f8ebfc093a4506"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-390-dark-zh.png",
+      "bytes": 116929,
+      "sha256": "dbb01d1e93397f8d609ab4997306de31ac5b17991c45657bc0fcfd2a75eca507"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-390-light-en.png",
+      "bytes": 113035,
+      "sha256": "3558897e05a7f35c8d847af32f317900cce1ce18501b47fd5d2cb3098ec7c569"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-390-light-zh.png",
+      "bytes": 113818,
+      "sha256": "ec48dcc18ced8de319c647c5a75dbc5251c398c8550defcf6c11c4368de594e0"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-720-light-en.png",
+      "bytes": 136667,
+      "sha256": "7b2bd8048b589f870db87db13d7d16cbcb100238133ca2ff4f85b42f43e2d5ef"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-browser.json",
+      "bytes": 6241,
+      "sha256": "1a7918c30dd7265bea9b309d09dc25c2837ef980bb67f068017109c98ed417ec"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-missing-zh.png",
+      "bytes": 40675,
+      "sha256": "58d4a777f5bc568d82430b9953e7f0704c1db02d879a4724b428e53cf00818d2"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser/market-partial-outer-only.png",
+      "bytes": 55261,
+      "sha256": "6aaa383521213dbaab99a7397257d9244ef50bf9ea3bf1d62a279688d7342b7d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/browser.log",
+      "bytes": 73,
+      "sha256": "de2ee98cce51cfb793173d6df12bc5cc5117e33887a26e5c29382cd7bda41f7d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/ci-manifest-corrected.json",
+      "bytes": 285,
+      "sha256": "d5c6730cec1e391271ff8fac89289266c4248809fec095f816ac2fac47a4f5bd"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/ci-manifest-corrected.log",
+      "bytes": 4873,
+      "sha256": "54ef33752781226b57081ed9a20937628db690755e7ebc03c5270cfbd5b235d2"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/ci-manifest.log",
+      "bytes": 299,
+      "sha256": "432c8889518cd3e9ceb801cc05f0d40aba5a63941e3dee744ac5a6534246d2c5"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/design-ratchet.log",
+      "bytes": 279,
+      "sha256": "304f9b1b4f1d284ed25476c82097cc244571f40350cb8aa9d20a05376f73923f"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/guards.json",
+      "bytes": 424,
+      "sha256": "fb06ad5ddc784879599012f63d36af40e2af7dd591eded7fbd18895a62536e97"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/market-tests.log",
+      "bytes": 181,
+      "sha256": "fa46cf528e321f5f32079e6f87b5969027efa1decf18a6db3430ce67f5e42838"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/qualification.json",
+      "bytes": 1330,
+      "sha256": "ca06a5dfc351a4313dc2b6ae840e879c77d6bae214b3e1c17f1b586798d8f170"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/render.log",
+      "bytes": 133,
+      "sha256": "6504b1b3e12bf6b27f3dec85880a1fe70d34332a809d9512ef7fce36938a0c60"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/final-2/visual-evidence.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/commodities-dom-2.log",
+      "bytes": 1912,
+      "sha256": "9b809f7f061daad3a84d7e87c110d1b6d5db95273f7bf12093df45221873b054"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/commodities-dom.log",
+      "bytes": 1196,
+      "sha256": "77f31ab758bb1760ba1f9b66b6014cfee0155c085127ad7f68a8508b7faac216"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/dom-dependency.log",
+      "bytes": 147,
+      "sha256": "a34ee099803b176d55b556d72cad4919262d068a7a4c3de0646db6f05cf6b49f"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/integration-tests.json",
+      "bytes": 596,
+      "sha256": "00b03fd1f4fa44759f2d28db29be3efa98a8fea0a60f712f91b04dd5d9afd9ef"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/other-d06-tests.log",
+      "bytes": 100,
+      "sha256": "f80bb1604ad68c86bf95c136b29f40d16db31da4d30e0546f8bd3c637cbf161c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/integration/spvector-render.json",
+      "bytes": 40735,
+      "sha256": "7bf8404cd9fc3679bcb4f4a0436f2667dc7eb81d51716dd338d29bdf52670758"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/market-browser-2.log",
+      "bytes": 717,
+      "sha256": "03206e880800410178fffedd4e36e81b888c9d036ac117b2ef9540bf2599b77c"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/market-browser-3.log",
+      "bytes": 73,
+      "sha256": "de2ee98cce51cfb793173d6df12bc5cc5117e33887a26e5c29382cd7bda41f7d"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/market-browser.log",
+      "bytes": 710,
+      "sha256": "70b3aabf5fa3a0735966ce024586d44c1c8a8620e34eafa2b10cb2441ca22720"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/market-tests-2.log",
+      "bytes": 181,
+      "sha256": "3ecdc999b4318f6c5e39dc613ffc3f9e488d4da565ed7062a7aa0da0c5c208d3"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/market-tests.log",
+      "bytes": 8847,
+      "sha256": "5ad51dc26a0f3c863e2430fbce2ecede0789848cfd924edb5fc1d2c6d07435bc"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/phase-result.json",
+      "bytes": 1342,
+      "sha256": "f770a6ccc2804e9bb02133e774f902f04fb3b26963fa91e6834b065d9fcc210f"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/qualification-2.json",
+      "bytes": 1432,
+      "sha256": "84cfe7e988ea768fafa9c5f3434a5857b30ccc3cdf3abb0d57d92958d255a7e4"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/qualification.json",
+      "bytes": 1044,
+      "sha256": "131f001f5a1446917c83c7ee2b96de26ffde10a095954a8d3c6317d01d9d73a9"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/render-2.log",
+      "bytes": 133,
+      "sha256": "5fc7cf4711ad1fad5d97d25e84e7eb8eb31093987f193e7f7ec3ed44f5a8a0f6"
+    },
+    {
+      "path": "docs/pr-crops/market-continuation-20261105/render.log",
+      "bytes": 133,
+      "sha256": "5fc7cf4711ad1fad5d97d25e84e7eb8eb31093987f193e7f7ec3ed44f5a8a0f6"
+    }
+  ]
+}

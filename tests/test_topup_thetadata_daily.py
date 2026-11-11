@@ -1105,6 +1105,21 @@ def test_denominator_has_no_hardcoded_universe_size():
         assert lit not in src, f"found hard-coded universe literal {lit!r} in topup module"
 
 
+# ── Live-flow anchor retention (native resolver regression) ─────────────────
+def test_daily_universe_keeps_live_flow_anchor_etfs_exactly_once(monkeypatch):
+    """Live-flow commodity/rate anchors survive the native daily resolver,
+    including case-normalized duplicates from the independently owned basket.
+    Existing index and basket members retain their first-seen ordering.
+    """
+    monkeypatch.setattr("engine.options_universe.gex_symbols",
+                        lambda: ["gld", "AAPL", "MSFT", "SPY"])
+    roots = topup._daily_universe()
+    for root in ("GLD", "SLV", "TLT", "HYG", "SPY", "SPX", "SPXW", "AAPL", "MSFT"):
+        assert roots.count(root) == 1
+    assert roots.index("HYG") < roots.index("SPX") < roots.index("SPXW")
+    assert roots.index("SPXW") < roots.index("AAPL") < roots.index("MSFT")
+
+
 # ═════════════════════════ DEADLINE (F2) ════════════════════════════════════
 def test_deadline_exceeded_stops_new_dispatch_and_drains(store, monkeypatch):
     import time as _time
@@ -1822,3 +1837,615 @@ def test_hardening_backfill_oserror_opening_lock_is_failed_not_traceback(tmp_pat
     monkeypatch.setattr(topup, "open", _boom, raising=False)
     rc = bf.main()
     assert rc == 1
+
+
+@pytest.mark.parametrize('setting,root,expected',[
+ ('','SPY',{}),('SPY','SPY',{'version':'1'}),('SPY','QQQ',{}),
+ ('SPY, QQQ','QQQ',{'version':'1'}),('SPY,QQQ','AAPL',{})])
+def test_dated_version_opt_in_keeps_other_roots_and_default_unchanged(monkeypatch,setting,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS',setting)
+ assert topup._dated_greek_request_options(root)==expected
+
+
+def test_invalid_dated_version_root_config_stops_before_source_work(monkeypatch):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,AAPL')
+ monkeypatch.setattr(topup,'_daily_main',lambda **kw:pytest.fail('Invalid config reached acquisition'))
+ with pytest.raises(SystemExit):topup.main(['--daily'])
+
+
+@pytest.mark.parametrize('root,expected',[('SPY',{'version':'1'}),('QQQ',{'version':'1'}),('AAPL',{})])
+def test_daily_owner_forwards_version_only_for_explicit_opt_in(store,monkeypatch,root,expected):
+ monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY,QQQ')
+ fake=FakeTd();calls=[]
+ def greeks(r,exp,start,end,order=3,**kwargs):
+  calls.append(kwargs);return fake._get('greeks',r,start)
+ fake.bulk_greeks=greeks
+ result=topup._ensure_daily_root(store,root,S_MID,D_MID,fake)
+ assert result.state=='complete' and calls==[expected]
+
+
+# D-session preparation: all acquisitions below are SYNTHETIC STRUCTURAL mocks.
+# No current incumbent transport is admitted or enabled by these tests.
+def _observation_frame(day, *, oi=False):
+    out = pd.DataFrame({'root':['SPY','SPY'], 'expiration':[pd.Timestamp('2027-02-19')]*2,
+        'strike':[745.,760.], 'right':['P','P'], 'date':[pd.Timestamp(day)]*2})
+    if oi:out['open_interest']=[0,10]
+    else:
+        out['close']=[2.,3.];out['volume']=[10,20]
+        out['gamma']=[-0.01,0.02];out['underlying_price']=[770.,770.]
+    return out
+
+
+@pytest.fixture
+def observation_case(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    store = tmp_path/'store';store.mkdir();private=tmp_path/'private';private.mkdir()
+    for tier,day,frame in [('oi',D_MID,_observation_frame(D_MID,oi=True)),
+        ('oi',S_MID,_observation_frame(S_MID,oi=True)),
+        ('eod',S_MID,_observation_frame(S_MID)),('greeks',S_MID,_observation_frame(S_MID))]:
+        topup._merge_day(store,tier,'SPY',day,frame)
+    calls=[];mode={'kind':None};clock={'value':10.}
+    monkeypatch.setattr(topup._time,'monotonic',lambda:clock['value'])
+    class Transport:
+        origin='http://127.0.0.1:25503'
+        def __call__(self,kind,**kw):
+            from types import SimpleNamespace
+            url=self.origin+('/v3/option/history/eod' if kind=='eod' else '/v3/option/history/greeks/eod')
+            session=SimpleNamespace(get_adapter=lambda u:SimpleNamespace(max_retries=SimpleNamespace(total=0)))
+            kw['request_budget'].begin(session,url)
+            # Actual mock transport attempt happens only AFTER durable reservation.
+            p=private/f'spy-{D_MID.isoformat()}-1730-observation-v1/receipt.json'
+            receipt=json.loads(p.read_text())
+            assert receipt['attempts']==len(calls)+1
+            assert receipt['requests'][-1]['state']=='REQUEST_STARTED'
+            calls.append((kind,kw))
+            if mode['kind']=='abrupt':raise KeyboardInterrupt('unreturned request')
+            kw['response_handler'](472 if mode['kind']=='refusal' else 200)
+            body=b'' if mode['kind']=='raw_empty' else b'synthetic licensed-body substitute, not provider data\n'
+            kw['raw_response_handler'](body)
+            if mode['kind']=='retry':kw['request_budget'].begin(session,url)
+            frame=_observation_frame(D_MID)
+            frame.attrs['_bounded_raw_rows']=len(frame)
+            import hashlib
+            actual=json.loads(p.read_text())['requests'][-1]
+            frame.attrs['_d_session_binding']=dict(origin=self.origin,endpoint=actual['endpoint'],
+                parameters=actual['parameters'],raw_rows=len(frame),
+                payload_sha256=hashlib.sha256(body).hexdigest(),payload_bytes=len(body))
+            if mode['kind']=='missing_raw_count':frame.attrs.pop('_bounded_raw_rows')
+            if mode['kind']=='raw_row_cap':frame.attrs['_bounded_raw_rows']=100001
+            if mode['kind']=='date':frame['date']=pd.Timestamp(S_MID)
+            if mode['kind']=='partial' and kind=='greeks':frame=frame.iloc[:1].copy()
+            if mode['kind']=='model' and kind=='greeks':frame.attrs['requested_version']='2'
+            if mode['kind']=='empty':frame=frame.iloc[:0].copy()
+            if mode['kind']=='late':clock['value']=100.
+            return frame
+    config=topup._DSessionObservation(private,'01a156f1-f450-7793-8951-bddadd4784c2',
+        '01a15700-1ae2-7a73-9756-f1546da7ace8',Transport(),session_day=D_MID)
+    return SimpleNamespace(store=store,private=private,config=config,calls=calls,mode=mode,clock=clock,
+        ctx=topup.RunContext(D_MID,S_MID,False),now=_et(2026,8,19,17,30),
+        receipt=private/f'spy-{D_MID.isoformat()}-1730-observation-v1/receipt.json')
+
+
+def _run_observation(c,**changes):
+    return topup._observe_spy_d_session(c.store,changes.get('ctx',c.ctx),changes.get('now',c.now),
+        50.,changes.get('config',c.config),request_options=changes.get('options',{'version':'1'}))
+
+
+def test_d_observation_mock_two_attempts_private_only_and_no_replay(observation_case,monkeypatch):
+    import hashlib
+    c=observation_case
+    before={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    monkeypatch.setattr(topup,'_ensure_one_cell',lambda *a,**k:pytest.fail('Pilot canonical ensure'))
+    monkeypatch.setattr(topup,'_merge_day',lambda *a,**k:pytest.fail('Pilot canonical merge'))
+    out=_run_observation(c)
+    assert out['state']=='OBSERVED_COMPLETE' and out['attempts']==2
+    assert [k for k,_ in c.calls]==['eod','greeks']
+    assert c.calls[1][1]['order']==3 and c.calls[1][1]['request_options']=={'version':'1'}
+    receipt=json.loads(c.receipt.read_text())
+    assert receipt['first_availability'] is None and receipt['market_universe_complete'] is None
+    assert receipt['canonical_writes']==0 and receipt['hub_promotion'] is False
+    assert receipt['coverage']['observed_contracts']==2
+    assert all(r['sha256'] and r['bytes']>0 and r['parsed_at'] for r in receipt['requests'])
+    assert before=={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    assert _run_observation(c)['reason']=='existing_observation_claim' and len(c.calls)==2
+
+
+@pytest.mark.parametrize('kind,expected,max_attempts',[('refusal','STOPPED',1),('abrupt','EFFECT_UNKNOWN',1),
+    ('retry','STOPPED',1),('date','WITHHELD',2),('partial','WITHHELD',2),
+    ('model','STOPPED',2),('empty','STOPPED',1),('raw_empty','STOPPED',1),
+    ('missing_raw_count','STOPPED',1),('raw_row_cap','STOPPED',1),('late','STOPPED',1)])
+def test_d_observation_mock_negative_outcomes_never_promote(observation_case,kind,expected,max_attempts):
+    c=observation_case;c.mode['kind']=kind
+    if kind=='abrupt':
+        with pytest.raises(KeyboardInterrupt):_run_observation(c)
+        out=json.loads(c.receipt.read_text())
+    else:out=_run_observation(c)
+    assert out['state']==expected and out['attempts']<=max_attempts
+    assert len(c.calls)<=max_attempts
+    assert not topup._has_day(c.store,'greeks','SPY',D_MID)
+    if kind=='refusal':assert json.loads(c.receipt.read_text())['requests'][0]['state']=='REFUSED'
+    c.clock['value']=10.  # replay guard is distinct from an exhausted caller deadline
+    assert _run_observation(c)['reason']=='existing_observation_claim'
+
+
+@pytest.mark.parametrize('kind',['missing_oi','missing_baseline','stale_oi','forced','wrong_rung','first_rung',
+    'weekend','policy','deadline','unimplemented'])
+def test_d_observation_zero_request_preconditions(observation_case,kind):
+    from dataclasses import replace
+    c=observation_case;changes={}
+    if kind in ['missing_oi','missing_baseline','stale_oi']:
+        path=c.store/'oi/SPY/2026.parquet';frame=pd.read_parquet(path)
+        remove=D_MID if kind!='missing_baseline' else S_MID
+        frame=frame[frame.date!=pd.Timestamp(remove)]
+        if kind=='stale_oi':frame=pd.concat([frame,_observation_frame(date(2026,8,17),oi=True)])
+        frame.to_parquet(path,index=False)
+    elif kind=='forced':changes['ctx']=replace(c.ctx,forced=True)
+    elif kind=='wrong_rung':changes['now']=_et(2026,8,19,19,0)
+    elif kind=='first_rung':changes['now']=_et(2026,8,19,16,20)
+    elif kind=='weekend':
+        changes.update(ctx=topup.RunContext(date(2026,8,22),date(2026,8,21),False),now=_et(2026,8,22,17,30))
+    elif kind=='policy':changes['options']={}
+    elif kind=='deadline':c.clock['value']=100.
+    else:changes['config']=replace(c.config,transport=None)
+    out=_run_observation(c,**changes)
+    assert out['state']=='WITHHELD' and out['attempts']==0
+    assert not c.calls and not c.receipt.exists()
+
+
+def test_d_observation_durability_failure_before_mock_get(observation_case,monkeypatch):
+    c=observation_case
+    monkeypatch.setattr(topup,'_eod_sync_directory',lambda p:(_ for _ in ()).throw(OSError('fsync')))
+    with pytest.raises(OSError):_run_observation(c)
+    assert not c.calls and not c.receipt.exists()
+
+
+@pytest.mark.parametrize('mutation',['missing','wrong_root','bad_right','nan','duplicate','zero_price','version'])
+def test_d_observation_coverage_falsifiers(mutation):
+    a=_observation_frame(D_MID);g=a.copy();d=_observation_frame(D_MID,oi=True);s=_observation_frame(S_MID,oi=True)
+    version='1'
+    if mutation=='missing':d=None
+    elif mutation=='wrong_root':g.loc[0,'root']='QQQ'
+    elif mutation=='bad_right':g.loc[0,'right']='X'
+    elif mutation=='nan':g.loc[0,'gamma']=float('nan')
+    elif mutation=='duplicate':g=pd.concat([g,g.iloc[:1]])
+    elif mutation=='zero_price':g.loc[0,'underlying_price']=0
+    else:version='2'
+    assert not topup._d_session_coverage(a,g,d,s,D=D_MID,S=S_MID,requested_version=version)['ready']
+
+
+@pytest.mark.parametrize('hour,minute',[(16,20),(17,30)])
+def test_daily_observation_none_keeps_four_cell_health_and_calls(store,monkeypatch,hour,minute):
+    _wire_daily(monkeypatch,store,t1=['SPY'],ad=['SPY']);fake=FakeTd();_install_fake_td(monkeypatch,fake)
+    monkeypatch.setattr(topup,'_observe_spy_d_session',lambda *a,**k:pytest.fail('Default must stay off'))
+    assert topup._daily_main(workers=1,deadline_min=65,forced=False,now_fn=lambda:_et(2026,8,19,hour,minute))==0
+    assert fake.calls==[('eod','SPY',S_MID),('oi','SPY',S_MID),('oi','SPY',D_MID),('greeks','SPY',S_MID)]
+    receipt=json.loads((store/'_manifest.json').read_text())['daily_refresh']
+    assert receipt['status']=='healthy' and 'd_session_observation' not in receipt
+
+
+@pytest.mark.parametrize('case',['pre_gate','holiday','weekend','forced','lock_refused'])
+def test_daily_admitted_observation_still_respects_existing_entry_fences(observation_case,monkeypatch,case):
+    c=observation_case;_wire_daily(monkeypatch,c.store,t1=['SPY'],ad=['SPY']);_install_fake_td(monkeypatch,FakeTd())
+    monkeypatch.setattr(topup,'_dated_greek_request_options',lambda r:{'version':'1'})
+    # Existing default maintainer would pass that option only to ordinary Greek calls.
+    now=c.now;forced=False
+    if case=='pre_gate':now=_et(2026,8,19,15,30)
+    if case=='holiday':now=_et(2026,1,1,17,30)
+    if case=='weekend':now=_et(2026,8,22,17,30)
+    if case=='forced':forced=True
+    if case=='lock_refused':
+        with topup._writer_lock(c.store) as held:
+            assert held
+            assert topup._daily_main(workers=1,deadline_min=65,forced=False,now_fn=lambda:now,
+                d_session_observation=c.config)==0
+    else:
+        topup._daily_main(workers=1,deadline_min=65,forced=forced,now_fn=lambda:now,
+            d_session_observation=c.config)
+    assert not c.calls and not c.receipt.exists()
+
+
+def test_daily_mock_observation_keeps_health_and_debits_same_deadline(observation_case,monkeypatch):
+    c=observation_case;_wire_daily(monkeypatch,c.store,t1=['SPY'],ad=['SPY']);fake=FakeTd();_install_fake_td(monkeypatch,fake)
+    monkeypatch.setattr(topup,'_dated_greek_request_options',lambda r:{'version':'1'})
+    real_transport=c.config.transport
+    class Timed:
+        origin=real_transport.origin
+        def __call__(self,*args,**kw):
+            result=real_transport(*args,**kw);c.clock['value']+=2.;return result
+    from dataclasses import replace
+    config=replace(c.config,transport=Timed())
+    real_pool=topup._run_daily_pool;limits=[]
+    def pool(*args,**kw):
+        limits.append(kw['deadline_min']);return real_pool(*args,**kw)
+    monkeypatch.setattr(topup,'_run_daily_pool',pool)
+    assert topup._daily_main(workers=1,deadline_min=65,forced=False,now_fn=lambda:c.now,
+        d_session_observation=config)==0
+    receipt=json.loads((c.store/'_manifest.json').read_text())['daily_refresh']
+    assert receipt['status']=='healthy' and receipt['ad_ready_coverage_pct']==1
+    assert receipt['d_session_observation']['state']=='OBSERVED_COMPLETE'
+    assert limits==[pytest.approx(65-4/60)]
+    assert not fake.calls  # all four existing cells already present
+    assert not topup._has_day(c.store,'greeks','SPY',D_MID)
+
+
+@pytest.mark.parametrize('day,prior,hour_utc',[(date(2026,7,15),date(2026,7,14),21),
+    (date(2026,1,14),date(2026,1,13),22),(date(2026,1,2),date(2025,12,31),22),
+    (date(2026,8,24),date(2026,8,21),21)])
+def test_d_observation_calendar_rung_roles_no_offset_guess(day,prior,hour_utc):
+    entered=datetime(day.year,day.month,day.day,hour_utc,30,tzinfo=timezone.utc)
+    ctx=topup._resolve_daily_context(entered,forced=False)
+    assert ctx.D==day and ctx.S==prior
+    assert entered.astimezone(ET).hour==17
+
+
+def test_d_observation_bad_adapter_without_reservation_is_unknown(observation_case):
+    from dataclasses import replace
+    c=observation_case
+    class Unreserved:
+        origin='http://127.0.0.1:25503'
+        def __call__(self,*a,**kw):raise RuntimeError('adapter failed without a verified request outcome')
+    out=_run_observation(c,config=replace(c.config,transport=Unreserved()))
+    assert out['state']=='EFFECT_UNKNOWN' and not c.calls
+    assert json.loads(c.receipt.read_text())['requests'][0]['state']=='EFFECT_UNKNOWN'
+
+
+def test_daily_optional_observation_return_failure_preserves_four_cells(store,monkeypatch,tmp_path):
+    _wire_daily(monkeypatch,store,t1=['SPY'],ad=['SPY']);fake=FakeTd();_install_fake_td(monkeypatch,fake)
+    def failed(*args,**kwargs):raise OSError('private journal durability unavailable')
+    monkeypatch.setattr(topup,'_observe_spy_d_session',failed)
+    config=topup._DSessionObservation(tmp_path,'01a156f1-f450-7793-8951-bddadd4784c2',
+        '01a15700-1ae2-7a73-9756-f1546da7ace8')
+    assert topup._daily_main(workers=1,deadline_min=65,forced=False,now_fn=lambda:_et(2026,8,19,17,30),
+        d_session_observation=config)==0
+    receipt=json.loads((store/'_manifest.json').read_text())['daily_refresh']
+    assert receipt['status']=='healthy'
+    assert receipt['d_session_observation']['state']=='EFFECT_UNKNOWN'
+    assert receipt['d_session_observation']['attempts'] is None
+    assert fake.calls==[('eod','SPY',S_MID),('oi','SPY',S_MID),('oi','SPY',D_MID),('greeks','SPY',S_MID)]
+
+
+def test_d_observation_retry_enabled_adapter_refused_before_actual_attempt(observation_case):
+    from dataclasses import replace
+    from types import SimpleNamespace
+    c=observation_case
+    class Retrying:
+        origin='http://127.0.0.1:25503'
+        def __call__(self,*args,**kw):
+            session=SimpleNamespace(get_adapter=lambda u:SimpleNamespace(max_retries=SimpleNamespace(total=2)))
+            kw['request_budget'].begin(session,self.origin+'/v3/option/history/eod')
+            pytest.fail('No actual transport may follow rejected carrier')
+    out=_run_observation(c,config=replace(c.config,transport=Retrying()))
+    assert out['state']=='STOPPED' and out['attempts']==0 and not c.calls
+    assert json.loads(c.receipt.read_text())['requests'][0]['state']=='NOT_ATTEMPTED'
+
+
+def test_d_observation_local_reports_cross_year_without_date_substitution(observation_case):
+    c=observation_case
+    for day in [S_DEC,D_JAN]:topup._merge_day(c.store,'oi','SPY',day,_observation_frame(day,oi=True))
+    d,s,refs=topup._d_session_local_oi(c.store,D_JAN,S_DEC)
+    assert set(d.date)=={pd.Timestamp(D_JAN)} and set(s.date)=={pd.Timestamp(S_DEC)}
+    assert len(refs)==2 and all(r['sha256'] and r['bytes']>0 and r['first_availability'] is None for r in refs)
+    assert not c.calls
+
+
+def test_d_observation_probe_scope_refused_before_actual_attempt(observation_case):
+    from dataclasses import replace
+    from types import SimpleNamespace
+    c=observation_case
+    class Probe:
+        origin='http://127.0.0.1:25503'
+        def __call__(self,*args,**kw):
+            session=SimpleNamespace(get_adapter=lambda u:SimpleNamespace(max_retries=SimpleNamespace(total=0)))
+            kw['request_budget'].begin(session,self.origin+'/v3/health')
+            pytest.fail('Hidden probe must not reach physical transport')
+    out=_run_observation(c,config=replace(c.config,transport=Probe()))
+    assert out['state']=='STOPPED' and out['attempts']==0 and not c.calls
+    assert json.loads(c.receipt.read_text())['requests'][0]['state']=='NOT_ATTEMPTED'
+
+
+def test_d_observation_wrong_return_dates_never_stamped_as_target(observation_case):
+    c=observation_case;c.mode['kind']='date'
+    assert _run_observation(c)['state']=='WITHHELD'
+    record=json.loads(c.receipt.read_text())
+    for request in record['requests']:
+        assert request['parameters']['start_date']==20260819
+        assert request['returned_frame_dates']==['2026-08-18T00:00:00']
+        assert 'source_date' not in request
+    assert record['requested_greek_version']=='1' and record['model_scope'] is None
+    assert record['requests'][1]['response_model_metadata'] is None
+    assert record['requests'][1]['frame_request_version_provenance'] is None
+
+
+@pytest.mark.parametrize('kind',['missing_expiry','timezone_expiry','intraday_expiry','expired_report',
+    'intraday_report_date','live_baseline_mismatch'])
+def test_d_observation_known_invalid_local_baseline_precedes_claim(observation_case,kind):
+    c=observation_case;p=c.store/'oi/SPY/2026.parquet';frame=pd.read_parquet(p)
+    d=frame.date.eq(pd.Timestamp(D_MID));s=frame.date.eq(pd.Timestamp(S_MID))
+    if kind=='missing_expiry':frame.loc[d,'expiration']=pd.NaT
+    elif kind=='timezone_expiry':frame['expiration']=frame.expiration.dt.tz_localize('America/New_York')
+    elif kind=='intraday_expiry':frame.loc[d,'expiration']=pd.Timestamp('2027-02-19T12:00:00')
+    elif kind=='expired_report':frame.loc[d,'expiration']=pd.Timestamp(S_MID)
+    elif kind=='intraday_report_date':frame.loc[d,'date']=pd.Timestamp(D_MID)+pd.Timedelta(hours=12)
+    else:frame.loc[s & frame.strike.eq(745.),'strike']=746.
+    frame.to_parquet(p,index=False)
+    out=_run_observation(c)
+    assert out['state']=='WITHHELD' and out['attempts']==0
+    assert not c.calls and not c.receipt.exists()
+
+
+def test_d_observation_expired_baseline_retained_and_explicitly_excluded(observation_case):
+    c=observation_case;p=c.store/'oi/SPY/2026.parquet';frame=pd.read_parquet(p)
+    old=_observation_frame(S_MID,oi=True).iloc[:1].copy()
+    old['expiration']=pd.Timestamp(S_MID);old['strike']=700.
+    pd.concat([frame,old]).to_parquet(p,index=False)
+    out=_run_observation(c)
+    assert out['state']=='OBSERVED_COMPLETE'
+    coverage=out['coverage']
+    assert coverage['counts']['oi_S']==3
+    assert coverage['excluded_before_D']=={'eod_D':0,'greeks_D':0,'oi_D':0,'oi_S':1}
+    assert coverage['observed_contracts']==2 and all(v==0 for v in coverage['missing_by_input'].values())
+    retained=pd.read_csv(c.receipt.parent/'oi_S.csv')
+    assert len(retained)==3 and '2026-08-18' in set(retained.expiration)
+    record=json.loads(c.receipt.read_text())
+    assert record['local_report_copies'][1]['rows']==3
+    assert record['local_report_copies'][1]['excluded_expiry_before_D']==1
+    # A live extra/missing member is never converted into the expiry exclusion.
+    a=_observation_frame(D_MID);g=a.iloc[:1].copy()
+    d=_observation_frame(D_MID,oi=True);s=pd.concat([_observation_frame(S_MID,oi=True),old])
+    value=topup._d_session_coverage(a,g,d,s,D=D_MID,S=S_MID,requested_version='1')
+    assert not value['ready'] and value['missing_by_input']['greeks_D']==1
+    assert value['excluded_before_D']['oi_S']==1 and value['observed_contracts']==2
+
+
+@pytest.mark.parametrize('wrong_date',[False,True])
+def test_d_observation_actual_native_get_binding_keeps_canonical_unchanged(observation_case,monkeypatch,wrong_date):
+    import hashlib,io
+    from types import SimpleNamespace
+    from dataclasses import replace
+    from collectors import thetadata as td
+    c=observation_case;calls=[]
+    bodies={
+      'eod':b'symbol,expiration,strike,right,last_trade,created,close,volume\nSPY,2027-02-19,745,PUT,2026-08-19T16:00:00,2026-08-19T17:15:00,2,10\nSPY,2027-02-19,760,PUT,2026-08-19T16:00:00,2026-08-19T17:15:00,3,20\n',
+      'greeks':b'symbol,expiration,strike,right,timestamp,underlying_timestamp,underlying_price,gamma,speed\nSPY,2027-02-19,745,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,-0.01,0.001\nSPY,2027-02-19,760,PUT,2026-08-19T16:00:00,2026-08-19T16:00:00,770,0.02,0.002\n'}
+    if wrong_date:bodies['eod']=bodies['eod'].replace(b'2026-08-19T16:00:00',b'2026-08-18T16:00:00')
+    class Session:
+        def get_adapter(self,url):return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self,url,**kw):
+            record=json.loads(c.receipt.read_text())
+            assert record['attempts']==len(calls)+1 and record['requests'][-1]['state']=='REQUEST_STARTED'
+            with topup._writer_lock(c.store) as held:assert held is False
+            kind='greeks' if '/greeks/' in url else 'eod';calls.append((url,kw))
+            assert kw['allow_redirects'] is False
+            return SimpleNamespace(status_code=200,close=lambda:None,
+                iter_content=lambda **k:iter([bodies[kind]]))
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    monkeypatch.setattr(td,'_session',Session)
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('Additional probe'))
+    monkeypatch.setattr(td,'_concurrent_windows',lambda *a,**k:pytest.fail('Retries/window worker'))
+    original=pd.read_csv
+    def parse(stream,*args,**kwargs):
+        if isinstance(stream,io.BytesIO):
+            record=json.loads(c.receipt.read_text());request=record['requests'][-1]
+            assert request['state']=='RAW_CAPTURED'
+            assert request['sha256']==hashlib.sha256(stream.getvalue()).hexdigest()
+        return original(stream,*args,**kwargs)
+    monkeypatch.setattr(pd,'read_csv',parse)
+    config=replace(c.config,transport=td.bounded_spy_d_session_transport(D_MID))
+    before={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    with topup._writer_lock(c.store) as held:
+        assert held;out=_run_observation(c,config=config)
+    assert out['state']==('WITHHELD' if wrong_date else 'OBSERVED_COMPLETE')
+    assert out['attempts']==2 and len(calls)==2
+    record=json.loads(c.receipt.read_text())
+    assert record['model_scope'] is None and record['model_details'] is None
+    assert record['requests'][1]['frame_request_version_provenance']=='1'
+    assert record['requests'][1]['response_model_metadata'] is None
+    assert record['requests'][0]['returned_frame_dates']==[
+        '2026-08-18T00:00:00' if wrong_date else '2026-08-19T00:00:00']
+    assert record['requests'][1]['returned_frame_dates']==['2026-08-19T00:00:00']
+    assert before=={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in c.store.rglob('*.parquet')}
+    assert not topup._has_day(c.store,'greeks','SPY',D_MID)
+
+
+@pytest.mark.parametrize('phase',['headers','body'])
+def test_d_observation_inflight_deadline_is_sticky_unknown_without_capture_thread(observation_case,monkeypatch,phase):
+    import threading,time
+    from dataclasses import replace
+    from types import SimpleNamespace
+    from collectors import thetadata as td
+    c=observation_case;calls=[];closed=[]
+    monkeypatch.setattr(time,'monotonic',time.perf_counter)
+    class Session:
+        def get_adapter(self,url):return SimpleNamespace(max_retries=SimpleNamespace(total=0))
+        def get(self,url,**kw):
+            calls.append(url)
+            record=json.loads(c.receipt.read_text())
+            assert record['requests'][-1]['state']=='REQUEST_STARTED'
+            if phase=='headers':
+                threading.Event().wait(1)
+                pytest.fail('Absolute timer did not interrupt synchronous header read')
+            def body(**kw):
+                threading.Event().wait(1)
+                pytest.fail('Absolute timer did not interrupt synchronous body read')
+                yield b''
+            return SimpleNamespace(status_code=200,iter_content=body,close=lambda:closed.append(True))
+    monkeypatch.setattr(td,'_session',Session)
+    monkeypatch.setattr(td,'_base_url',lambda:'http://127.0.0.1:25503')
+    config=replace(c.config,transport=td.bounded_spy_d_session_transport(D_MID))
+    start=time.monotonic()
+    out=topup._observe_spy_d_session(c.store,c.ctx,c.now,start+.3,config,request_options={'version':'1'})
+    assert time.monotonic()-start<.8
+    assert out['state']=='EFFECT_UNKNOWN' and out['attempts']==1 and len(calls)==1
+    record=json.loads(c.receipt.read_text())
+    assert record['requests'][0]['state']=='EFFECT_UNKNOWN'
+    assert len(record['requests'])==1 and not (c.receipt.parent/'eod.csv').exists()
+    assert closed==([True] if phase=='body' else [])
+    again=topup._observe_spy_d_session(c.store,c.ctx,c.now,time.monotonic()+2,config,request_options={'version':'1'})
+    assert again['reason']=='existing_observation_claim' and len(calls)==1
+
+
+@pytest.mark.parametrize('binding',[None,date(2026,8,18),date(2026,8,20),'2026-08-19'])
+def test_d_observation_session_binding_refuses_before_local_read_and_claim(observation_case,monkeypatch,binding):
+    from dataclasses import replace
+    c=observation_case
+    monkeypatch.setattr(topup,'_d_session_local_oi',lambda *a:pytest.fail('Unbound operation reached local-source preflight'))
+    out=_run_observation(c,config=replace(c.config,session_day=binding))
+    assert out['reason']=='observation_session_not_bound' and out['attempts']==0
+    assert not c.calls and not c.receipt.parent.exists()
+
+
+def test_d_observation_receipt_binds_exact_session_operation(observation_case):
+    c=observation_case;out=_run_observation(c)
+    assert out['state']=='OBSERVED_COMPLETE'
+    record=json.loads(c.receipt.read_text())
+    assert record['bound_session']==D_MID.isoformat()
+    assert record['operation_ref']==f'spy-{D_MID.isoformat()}-1730-observation-v1'
+
+
+@pytest.mark.parametrize('root,setting,expected', [
+    ('SPY', '', {}), ('QQQ', '', {}), ('SPY', ' spy , qqq ', {'version': '1'}),
+    ('QQQ', 'SPY,QQQ', {'version': '1'}), ('QQQ', 'SPY', {}),
+    ('AAPL', 'SPY,QQQ', {}),
+])
+def test_backfill_owner_shares_explicit_dated_version_policy(monkeypatch, root, setting, expected):
+    import collectors.thetadata as td
+    import scripts.backfill_thetadata_eod as backfill
+
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', setting)
+    calls = []
+    monkeypatch.setattr(td, 'bulk_eod', lambda *a, **kw: pd.DataFrame())
+    monkeypatch.setattr(td, 'bulk_open_interest', lambda *a, **kw: pd.DataFrame())
+    def greeks(*args, **kwargs):
+        calls.append((args, kwargs))
+        return pd.DataFrame()
+    monkeypatch.setattr(td, 'bulk_greeks', greeks)
+    day = date(2026, 10, 22)
+    assert backfill._pull_root_year(root, 2026, day, day)
+    assert calls == [((root, 0, day, day), {'order': 3, **expected})]
+    assert topup._dated_greek_request_options(root) == expected
+
+
+def test_invalid_dated_policy_stops_backfill_before_any_source_call(monkeypatch):
+    import collectors.thetadata as td
+    import scripts.backfill_thetadata_eod as backfill
+
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', 'SPY,AAPL')
+    for name in ('reachable', 'bulk_eod', 'bulk_open_interest', 'bulk_greeks'):
+        monkeypatch.setattr(td, name, lambda *a, **kw: pytest.fail('Invalid policy reached source'))
+    with pytest.raises(ValueError, match='SPY/QQQ'):
+        backfill._pull_root_year('SPY', 2026, S_MID, S_MID)
+    monkeypatch.setattr('sys.argv', ['backfill_thetadata_eod.py'])
+    with pytest.raises(SystemExit):
+        backfill.main()
+
+
+def test_opt_in_does_not_refetch_an_already_present_unversioned_day(store, monkeypatch):
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS', 'SPY,QQQ')
+    topup._merge_day(store, 'greeks', 'SPY', S_MID, _df(S_MID))
+    assert topup._dated_greek_request_options('SPY') == {'version': '1'}
+    assert topup._ensure_one_cell(store, 'greeks', 'SPY', S_MID,
+        lambda: pytest.fail('Opt-in must not replay an existing day')) == 'already_present'
+
+
+@pytest.fixture
+def pilot_cli_case(request, monkeypatch):
+    """Exact approved date through real main/daily entry, synthetic transport only."""
+    import sys
+    monkeypatch.setattr(sys.modules[__name__], 'D_MID', date(2026,10,26))
+    monkeypatch.setattr(sys.modules[__name__], 'S_MID', date(2026,10,23))
+    c=request.getfixturevalue('observation_case');c.now=_et(2026,10,26,17,30)
+    _wire_daily(monkeypatch,c.store,t1=['SPY'],ad=['SPY'])
+    c.fake=FakeTd(default_D=D_MID);_install_fake_td(monkeypatch,c.fake)
+    import collectors.thetadata as td
+    c.capacity={'ready':True}
+    c.config.transport.preflight=lambda **kw:c.capacity['ready']
+    monkeypatch.setattr(td,'bounded_spy_d_session_transport',lambda day:c.config.transport)
+    monkeypatch.setattr(topup,'_SPY_20261026_RETENTION_PARENT',c.private,raising=False)
+    monkeypatch.setenv('THETADATA_D_SESSION_OBSERVATION','spy-2026-10-26-1730-observation-v1')
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY')
+    original=topup._daily_main
+    monkeypatch.setattr(topup,'_daily_main',lambda **kw:original(now_fn=lambda:c.now,**kw))
+    return c
+
+
+def test_pilot_cli_exact_operation_reaches_existing_two_attempt_journal(pilot_cli_case):
+    c=pilot_cli_case
+    assert topup.main(['--daily','--workers','1'])==0
+    assert [kind for kind,_ in c.calls]==['eod','greeks']
+    r=json.loads(c.receipt.read_text())
+    assert (r['operation_ref'],r['D'],r['S'],r['attempts'])==('spy-2026-10-26-1730-observation-v1','2026-10-26','2026-10-23',2)
+    assert r['max_gets']==2 and r['requested_greek_version']=='1'
+    assert not c.fake.calls and not topup._has_day(c.store,'greeks','SPY',D_MID)
+    health=_manifest(c.store)['daily_refresh']
+    assert health['status']=='healthy' and health['worker_count']==1
+    assert health['d_session_observation']['state']=='OBSERVED_COMPLETE'
+
+
+@pytest.mark.parametrize('case',['pre_gate','early_rung','wrong_rung','wrong_day','weekend','lock','no_oi','capacity','parent','existing_unknown'])
+def test_pilot_cli_refusal_makes_no_pilot_attempt_or_new_claim(pilot_cli_case,monkeypatch,case):
+    c=pilot_cli_case;before=None
+    if case=='pre_gate':c.now=_et(2026,10,26,15,30)
+    if case=='early_rung':c.now=_et(2026,10,26,17,15)
+    if case=='wrong_rung':c.now=_et(2026,10,26,19,0)
+    if case=='wrong_day':c.now=_et(2026,10,27,17,30)
+    if case=='weekend':c.now=_et(2026,10,24,17,30)
+    if case=='no_oi':(c.store/'oi/SPY/2026.parquet').unlink()
+    if case=='capacity':c.capacity['ready']=False
+    if case=='parent':monkeypatch.setattr(topup,'_SPY_20261026_RETENTION_PARENT',c.private/'absent')
+    if case=='existing_unknown':
+        c.receipt.parent.mkdir();before=b'{"state":"EFFECT_UNKNOWN","attempts":1}\n';c.receipt.write_bytes(before)
+    if case=='lock':
+        with topup._writer_lock(c.store) as held:
+            assert held;assert topup.main(['--daily','--workers','1'])==0
+    else:topup.main(['--daily','--workers','1'])
+    assert not c.calls
+    if before is None:assert not c.receipt.parent.exists()
+    else:assert c.receipt.read_bytes()==before
+
+
+@pytest.mark.parametrize('env,args',[
+    ('spy-2026-10-27-1730-observation-v1',['--daily']),
+    ('spy-2026-10-26-1730-observation-v1',['--daily','--force-run']),
+    ('spy-2026-10-26-1730-observation-v1',['--roots','SPY']),
+    ('spy-2026-10-26-1730-observation-v1',['--daily','--deadline-min','66']),
+])
+def test_pilot_cli_invalid_configuration_fails_before_source_work(pilot_cli_case,monkeypatch,env,args):
+    c=pilot_cli_case;monkeypatch.setenv('THETADATA_D_SESSION_OBSERVATION',env)
+    with pytest.raises(SystemExit) as ex:topup.main(args)
+    assert ex.value.code==2 and not c.calls and not c.fake.calls and not c.receipt.parent.exists()
+
+
+def test_pilot_cli_absent_configuration_preserves_default_none(pilot_cli_case,monkeypatch):
+    c=pilot_cli_case;monkeypatch.delenv('THETADATA_D_SESSION_OBSERVATION')
+    monkeypatch.setattr(topup,'_observe_spy_d_session',lambda *a,**k:pytest.fail('Absent config activated pilot'))
+    assert topup.main(['--daily','--workers','1'])==0
+    assert not c.calls and not c.receipt.parent.exists()
+    assert 'd_session_observation' not in _manifest(c.store)['daily_refresh']
+
+
+@pytest.mark.parametrize('outcome,state',[('abrupt','EFFECT_UNKNOWN'),('refusal','STOPPED')])
+def test_pilot_cli_unreturned_attempt_is_sticky_and_never_reoffered(pilot_cli_case,outcome,state):
+    c=pilot_cli_case;c.mode['kind']=outcome
+    if outcome=='abrupt':
+        with pytest.raises(KeyboardInterrupt):topup.main(['--daily','--workers','1'])
+    else:assert topup.main(['--daily','--workers','1'])==0
+    before=c.receipt.read_bytes();r=json.loads(before)
+    assert r['state']==state and r['attempts']==1 and len(c.calls)==1
+    assert topup.main(['--daily','--workers','1'])==0
+    assert c.receipt.read_bytes()==before and len(c.calls)==1
+
+
+def test_pilot_cli_missing_version_policy_cannot_mint_model_or_claim(pilot_cli_case,monkeypatch):
+    c=pilot_cli_case;monkeypatch.delenv('THETADATA_DATED_GREEKS_V1_ROOTS')
+    assert topup.main(['--daily','--workers','1'])==0
+    assert not c.calls and not c.receipt.parent.exists()
+    assert _manifest(c.store)['daily_refresh']['d_session_observation']['reason']=='greek_request_policy_unestablished'
+
+
+@pytest.mark.parametrize('fault',['origin','preflight'])
+def test_pilot_cli_bad_native_binding_refuses_before_daily_source(pilot_cli_case,fault):
+    c=pilot_cli_case
+    if fault=='origin':c.config.transport.origin='http://source-lookalike.invalid'
+    else:del c.config.transport.preflight
+    with pytest.raises(SystemExit) as ex:topup.main(['--daily','--workers','1'])
+    assert ex.value.code==2 and not c.calls and not c.fake.calls and not c.receipt.parent.exists()

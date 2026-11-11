@@ -1,0 +1,45 @@
+{
+  "schema": "mastermind.attended.bounded_ci_repair_review.v1",
+  "reviewer": "sector_rig_counsel",
+  "role": "Existing bounded consultation; not a replacement Fabric worker",
+  "verdict": "NONBLOCKING",
+  "artifact": {
+    "file": "macro-d528-minimal-ci-repair-v2.patch",
+    "bytes": 2556,
+    "sha256": "42dec7c9a86bdd21ae12732213341cb77c763ee0a25174edc4dd2636e9ed169b"
+  },
+  "head": "b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0",
+  "merge_head": "d52827f26b062f67d594350a65becf406710d4d1",
+  "tested_index": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+  "review_text": "Consumed the native v2 patch, wording receipt, focused-test receipt/log and full contract-delta receipt/log. Compared with independently reviewed b0daebe5c60a125bc8c2a89afddef9bdb68e143f1602ab450762cd8e3f79a224, the only source-content change is '5,649 excess' to '5,649 total'; the resulting Git blob header changes accordingly. Reconstructing precisely those two textual differences yields the v2 size and SHA. Substantive repair adds only lib/shared_shell.py to Research Vault's dependency declaration and raises only build_free_content weight ceiling5642 to5649, preserving W23+4 history and separately attributing Shared Shell+5/+2. Commands, selectors, assertions, job-count bounds, other ceilings and ten-pack limit remain. Focused2PASS184.79s exit0 binds6d1ff535 before wording; executable AST equivalence and full canonical comparison exit0/zero introduced/zero inherited bind final1996dbf7. Exact canonical implementation confirms CONTRACT_DELTA_NO_REAP only returns early from reap_stale_base_trees; comparisons/assertions are not disabled. Full receipt/log returned text with terminating newlines matches recorded sizes/hashes. These consistent local producing receipts resolve the two observed source defects at this uncommitted candidate; no hosted admission or release acceptance is inferred. Preserve original hosted/local red evidence, six Sector views, Paper REVISE and existing release holds.",
+  "evidence": [
+    {
+      "file": "macro-d528-ci-focused-after.json",
+      "bytes": 1951,
+      "sha256": "31f6814bcf7e455f9348b1db4789c4d8a252381e2b02c6e012d9b213581243a3"
+    },
+    {
+      "file": "macro-d528-ci-focused-after.log",
+      "bytes": 110,
+      "sha256": "825293057ed0425d1641351d06775e65eba5816d04c3f6ce285435d0022c01e4"
+    },
+    {
+      "file": "macro-d528-contract-delta.json",
+      "bytes": 1551,
+      "sha256": "dfe5b64c53abace6ff47130c10d1a9d18a469c4709b697b85b7034d10a7eb192"
+    },
+    {
+      "file": "macro-d528-contract-delta.log",
+      "bytes": 753,
+      "sha256": "5f5a9540ff4004b131508a2cbd6f54efde4ac550275989bbd2a57f5b186b5c4a"
+    }
+  ],
+  "hosted_failure_log": {
+    "job": 118400090203,
+    "run": 39352502392,
+    "bytes": 171269,
+    "sha256": "17076e5458236d49c5508ad419d0547efaefd0e3b7f6298005891c9471288597",
+    "encoding": "exact UTF-8 decoded log including original leading BOM",
+    "ci_execution_started": false
+  }
+}

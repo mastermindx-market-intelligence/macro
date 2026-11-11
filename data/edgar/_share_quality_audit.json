@@ -1,17 +1,17 @@
 {
-"applied": "2026-10-12T08:01:51.404202+00:00",
-"rows_flagged": 1101,
-"tickers_flagged": 677,
+"applied": "2026-11-10T11:47:55.281740+00:00",
+"rows_flagged": 1103,
+"tickers_flagged": 678,
 "by_flag": {
 "placeholder": 80,
-"pre_public": 862,
+"pre_public": 864,
 "pre_public_tiny": 56,
 "unit_extreme": 27,
 "unit_level": 12,
 "unit_scale": 64
 },
 "repaired": 128,
-"nulled": 973,
+"nulled": 975,
 "rows": [
 {
 "ticker": "AADX",
@@ -6622,6 +6622,22 @@
 "note": "period_end<2024-09-01"
 },
 {
+"ticker": "SATS",
+"fy": 2022,
+"flag": "pre_public",
+"shares_raw": 8385276.0,
+"repair": null,
+"note": "period_end<2026-09-01"
+},
+{
+"ticker": "SATS",
+"fy": 2023,
+"flag": "pre_public",
+"shares_raw": 1677056.0,
+"repair": null,
+"note": "period_end<2026-09-01"
+},
+{
 "ticker": "SBET",
 "fy": 2025,
 "flag": "unit_extreme",
@@ -7284,14 +7300,6 @@
 "shares_raw": 73206.0,
 "repair": 73206000.0,
 "note": "x1e3 vs right flank"
-},
-{
-"ticker": "SUPN",
-"fy": 2011,
-"flag": "pre_public",
-"shares_raw": 1662321.0,
-"repair": null,
-"note": "period_end<2012-04-01"
 },
 {
 "ticker": "SVCO",
@@ -7972,6 +7980,14 @@
 "shares_raw": 2620803.0,
 "repair": null,
 "note": "period_end<2017-04-01"
+},
+{
+"ticker": "VGNT",
+"fy": 2025,
+"flag": "pre_public",
+"shares_raw": 70841248.0,
+"repair": null,
+"note": "period_end<2026-01-30"
 },
 {
 "ticker": "VIA",

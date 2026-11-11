@@ -64,10 +64,12 @@
       "drl_event_date": {
         "owner_store": "data/price_pressure/",
         "recorded_clock_class": "observed",
-        "lawful_t0_modes": ["live", "retrospective_research"],
-        "max_recording_lag_days": 4,
-        "digest_required": false,
-        "notes": ["DRL ledger event rows (engine.price_pressure.ledger.read_ledger); the minting clock is the ledger's own harvested_asof, classed observed exactly as the drl_resid_shock slot clocks class it — one native field never carries two classes on this wire."]
+        "lawful_t0_modes": [],
+        "max_recording_lag_days": null,
+        "digest_required": true,
+        "notes": [
+          "Retired decision origin: harvested_asof is an as-of market session, not an observation or arrival clock. Use a real captured-read origin for present-day retrospective research; historical availability remains unknown."
+        ]
       },
       "prophet_stamp_date": {
         "owner_store": "data/us_prophet_rank/candidates/",
@@ -95,6 +97,30 @@
           "ASSURANCE CEILING (Sol REQUEST_CHANGES 2026-08-26 item A). The boundary above is now enforced instead of merely disclosed: because this source is an accountability receipt and not a validation-time verification, it MAY NOT claim t0_mode 'live'. lawful_t0_modes is ['retrospective_research'] and K3E_R021 fails a generic+live vector closed. Rationale: 'live' asserts operational point-in-time, and every input that would substantiate it here — the store, the minting clock class, the bytes behind the digest — is caller-declared, so a live claim on this source would be the caller vouching for the caller. The four pinned sources above may claim 'live' because validation checks their owner_store and clock class against these pins.",
           "max_recording_lag_days is null BY CONSTRUCTION, not by omission: the lag budget is only ever consulted in 'live' mode, which this source cannot enter. The null is also a second, independent fence — a future wave that re-opens 'live' here by widening lawful_t0_modes alone still fails closed on the missing budget (the K3E_R021 MINOR-11 path), so re-opening requires deliberately minting a budget rather than editing one list.",
           "Consequence a future wave may close: verifying a digest requires reading the owner's bytes, which this contract cannot do — it is a pure in-memory view with no owner imports and no I/O. Binding this source harder means either pinning more owner stores here or giving the validator an owner-read seam, and the latter is a producer decision outside this contract's authority. Until one of those lands, no artifact in this contract may describe the generic path as fully authenticated."
+        ]
+      },
+      "drl_captured_read": {
+        "owner_store": "price_pressure.event",
+        "recorded_clock_class": "system_recorded",
+        "lawful_t0_modes": [
+          "retrospective_research"
+        ],
+        "max_recording_lag_days": null,
+        "digest_required": true,
+        "notes": [
+          "Exact captured artifact digest and native event tuple. captured_at is a reader observation upper bound only, never original publication, historical availability or a live LER origin."
+        ]
+      },
+      "earnings_workspace_context": {
+        "owner_store": "earnings.workspace_generation",
+        "recorded_clock_class": "belief_or_build",
+        "lawful_t0_modes": [
+          "retrospective_research"
+        ],
+        "max_recording_lag_days": null,
+        "digest_required": true,
+        "notes": [
+          "Bound native generation at the qualified candidate cutoff, not an operational live eligibility assertion."
         ]
       }
     }
@@ -147,7 +173,7 @@
       "object_class": "derived_view",
       "family_binding": {"kind": "research_only", "family_id": null, "member": null, "routed_to": null},
       "asof_clock": {"native_field": "date", "clock_class": "world_valid"},
-      "known_at_clock": {"native_field": "harvested_asof", "clock_class": "observed"},
+      "known_at_clock": {"native_field": null, "clock_class": "observed"},
       "clock_distinct": true,
       "cross_owner_join": false,
       "variation_required": false,
@@ -157,8 +183,18 @@
       "notes": [
         "Residual values (resid, resid_z, peer_ret, peer_basis) are read from the DRL ledger, never re-derived; do not fork sigma.",
         "peer_basis=market is disclosed and never passed off as sector-idiosyncratic (latest panel: sector 52.79% / market 47.21%).",
-        "DRL authority is all-false display; DNR:KILL-LIQUIDITY-SHOCK-REVERSAL-CLASSIFIER binds (including its retune clause)."
-      ]
+        "DRL authority is all-false display; DNR:KILL-LIQUIDITY-SHOCK-REVERSAL-CLASSIFIER binds (including its retune clause).",
+        "Native harvested_asof is only a session; uncaptured historical availability is unknown and excluded from composition."
+      ],
+      "captured_read": {
+        "owner": "engine/price_pressure/",
+        "artifact": "data/price_pressure/latest.json",
+        "reader": "engine.price_pressure.research.capture_event",
+        "known_at_clock": {
+          "native_field": "captured_at",
+          "clock_class": "system_recorded"
+        }
+      }
     },
     "drl_filing_coverage": {
       "title": "DRL filing-coverage family for the event (earnings-filing | other-filing | no-filing | filing-coverage-unknown)",
@@ -168,7 +204,7 @@
       "object_class": "derived_view",
       "family_binding": {"kind": "research_only", "family_id": null, "member": null, "routed_to": null},
       "asof_clock": {"native_field": "date", "clock_class": "world_valid"},
-      "known_at_clock": {"native_field": "harvested_asof", "clock_class": "observed"},
+      "known_at_clock": {"native_field": null, "clock_class": "observed"},
       "clock_distinct": true,
       "cross_owner_join": false,
       "variation_required": false,
@@ -176,8 +212,18 @@
       "optional_family": false,
       "derivation": "owner_read",
       "notes": [
-        "This filing-COVERAGE family is what DRL actually owns on this axis (engine/price_pressure/context.py FAMILIES). It is not an impairment verdict; the impairment axis is unowned (see unowned_axes)."
-      ]
+        "This filing-COVERAGE family is what DRL actually owns on this axis (engine/price_pressure/context.py FAMILIES). It is not an impairment verdict; the impairment axis is unowned (see unowned_axes).",
+        "Native harvested_asof is only a session; uncaptured historical availability is unknown and excluded from composition."
+      ],
+      "captured_read": {
+        "owner": "engine/price_pressure/",
+        "artifact": "data/price_pressure/latest.json",
+        "reader": "engine.price_pressure.research.capture_event",
+        "known_at_clock": {
+          "native_field": "captured_at",
+          "clock_class": "system_recorded"
+        }
+      }
     },
     "drl_event_state": {
       "title": "DRL event resolution state (per-side lifecycle + terminal windows)",
@@ -569,6 +615,37 @@
         "PROBE/COVERAGE STATE, NEVER A TRADE-ENTRY VERDICT (Sol REQUEST_CHANGES 2026-08-25 item 3): this construct answers 'is Radar watching this name', and feeds ONLY the entry_availability.radar_probe_coverage leg, whose verdict_class pins that reading on the wire. entry_role slots never enter the observed/inferred/market_reflection legs (red-team repair 2026-08-25).",
         "ProbeRecord carries no score, rank, points, candidate boolean, or bullish field — admission is a coverage decision, not an opinion; this vector projects it verbatim under DEC:PROPHET-LAB-B5A-RECUT's read/filter/join/decorate-only verbs.",
         "Radar neither consumes nor writes this vector. Radar W5 forward tables are score-search-contaminated for any weight fitting (DNR:KILL-OUTCOME-AUDITION; PR-0 §18 A2.5 side-door law) — no vector construct may be fit, tuned, or selected on them."
+      ]
+    }
+  ,
+    "earnings_reported_revenue": {
+      "title": "Native earnings reported revenue context; not surprise or a signal",
+      "owner": "engine/company_intelligence/",
+      "artifact": "company_intelligence/event_workspaces/generations/{generation_id}/workspaces/{event_id}.json",
+      "reader": "engine.neuralweb.company_intelligence_reader.read_event_source_revisions",
+      "object_class": "derived_view",
+      "family_binding": {
+        "kind": "research_only",
+        "family_id": null,
+        "member": null,
+        "routed_to": null
+      },
+      "asof_clock": {
+        "native_field": "lifecycle.source_available_at",
+        "clock_class": "knowable"
+      },
+      "known_at_clock": {
+        "native_field": "lifecycle.observed_at",
+        "clock_class": "observed"
+      },
+      "clock_distinct": true,
+      "cross_owner_join": false,
+      "variation_required": false,
+      "basis_required": false,
+      "optional_family": false,
+      "derivation": "owner_read",
+      "notes": [
+        "One exact owner fact and its units/basis/period; no consensus, SUE, causal inference, quality score or entry authority. Native CIK context only; no quote-security join."
       ]
     }
   }

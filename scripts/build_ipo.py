@@ -30,6 +30,7 @@ from engine import credit_window as cwn  # noqa: E402
 from engine import ipo_hk  # noqa: E402
 from engine import ipo_lockup as il  # noqa: E402
 from engine import ipo_radar as ir  # noqa: E402
+from engine.ipo_prospectus_terms import native_deals  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts.build_vector import C  # noqa: E402
@@ -826,6 +827,35 @@ def _phase0_receipt_vm(phase0) -> dict | None:
             "verdict_zh": _PHASE0_VERDICT_ZH.get(verdict_en, verdict_en)}
 
 
+def _prospectus_deals_vm() -> list[dict]:
+    """File terms and a native, unadjusted price path, independent of ETF context."""
+    result = []
+    for deal in native_deals():
+        item = dict(deal)
+        for key in ("primary_shares", "secondary_shares", "base_shares", "option_max_shares"):
+            item[key + "_disp"] = f"{deal[key]:,}"
+        prices = deal["prices"]
+        item["path_points"] = ""
+        if prices:
+            values = [p["close"] for p in prices] + [float(deal["offer_price"])]
+            lo, hi = min(values), max(values)
+            span = max(hi - lo, 1)
+            scale_y = lambda value: 165 - (value - lo) / span * 145
+            first = datetime.fromisoformat(prices[0]["date"])
+            duration = max((datetime.fromisoformat(prices[-1]["date"]) - first).days, 1)
+            item["path_points"] = " ".join(
+                f"{20 + (datetime.fromisoformat(p['date']) - first).days / duration * 840:.2f},{scale_y(p['close']):.2f}"
+                for p in prices)
+            item["offer_y"] = f"{scale_y(float(deal['offer_price'])):.2f}"
+            item["first_close"] = f"{prices[0]['close']:.2f}"
+            item["first_close_date"] = prices[0]["date"]
+            item["latest_close"] = f"{prices[-1]['close']:.2f}"
+            item["latest_date"] = prices[-1]["date"]
+            item["high_close"] = f"{hi:.2f}"
+        result.append(item)
+    return result
+
+
 def build() -> str:
     # read the PRIOR snapshot BEFORE anything overwrites it (for the 'what changed' strip)
     prior_snap = _read_prior_snapshot()
@@ -965,6 +995,7 @@ def build() -> str:
         "avoid": avoid, "changed": changed,
         "hk": _hk_vm(),
         "chart_aftermarket": _chart_aftermarket(),
+        "prospectus_deals": _prospectus_deals_vm(),
         "credit_window": _credit_window_vm(cwn.window_state()),
     }
 

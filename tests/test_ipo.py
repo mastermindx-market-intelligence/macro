@@ -1357,14 +1357,14 @@ def test_w20d_median_op_size_nan_is_dash(monkeypatch, tmp_path):
 def test_w20d_cliff_meta_prints_confirmed(monkeypatch, tmp_path):
     html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=3, n=9))
     sec = _w20d_cliff_section(html)
-    assert "3 of 9 tracked un-lock dates are confirmed from the prospectus;" in sec
-    assert "the rest assume the 180-day standard." in sec
-    assert "在跟踪的9个解禁日期中，3个经招股书确认；其余按180天标准推定。" in sec
+    assert "3 of 9 modeled dates use a prospectus-derived day count;" in sec
+    assert "the rest assume 180 days." in sec
+    assert "在跟踪的9个估算日期中，3个采用招股书中的期限；其余假设180天。实际解禁可能附带条件或获豁免。" in sec
 
 
 def test_w20d_cliff_meta_confirmed_zero_is_honest(monkeypatch, tmp_path):
     html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=0, n=9))
-    assert "0 of 9 tracked un-lock dates" in _w20d_cliff_section(html)
+    assert "0 of 9 modeled dates" in _w20d_cliff_section(html)
 
 
 def test_w20d_no_false_per_name_return_claim(monkeypatch, tmp_path):
@@ -1385,3 +1385,23 @@ def test_w20d_phase0_receipt_vm_non_string_fields():
     vm = bi._phase0_receipt_vm(p0)
     assert vm["window_en"] == "around the un-lock" and vm["window_zh"] == "解禁前后"
     assert vm["verdict_en"] == "" and vm["verdict_zh"] == ""
+
+
+def test_published_view_includes_both_languages_and_actual_dates(monkeypatch):
+    from jinja2 import Environment
+    ROOT = pathlib.Path(__file__).resolve().parents[1]
+    from scripts import build_ipo
+    rows = build_ipo._prospectus_deals_vm()
+    deal = next(row for row in rows if row["ticker"] == "CRCL")
+    assert deal["first_close_date"] == "2025-06-05"
+    assert len(deal["path_points"].split()) > 200
+    # The actual page is rendered by existing builder tests; isolate the new
+    # article so copy/clock/source assertions do not need market collectors.
+    text = (ROOT / "templates/ipo.html.j2").read_text()
+    start = text.index("  {% if prospectus_deals %}")
+    end = text.index("  <div class=\"sec\">{{ t('The aftermarket trade'", start)
+    env = Environment(autoescape=True)
+    for language in (0, 1):
+        html = env.from_string(text[start:end]).render(prospectus_deals=[deal], t=lambda en, zh: (en, zh)[language])
+        assert "2025-06-04" in html and "2025-06-05" in html and "2025-09-30" in html
+        assert "5,100,000" in html and deal["source_url"] in html
