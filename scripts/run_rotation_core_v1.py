@@ -590,7 +590,18 @@ def j4_stage_d(d) -> dict:
     if not man.exists():
         return {"status": "unavailable", "reason": "Phase-2 price fetch (P2-W2) has not produced j4/manifest.json"}
     manifest = json.loads(man.read_text())
-    suspect = set(manifest.get("identity_suspect", []))
+    # identity-suspect handling is per membership interval: during a flagged interval (wrong issuer / span mismatch /
+    # namespace collision) the ticker is treated as unpriced; 'no_series' intervals are unpriced anyway.
+    bad = {}
+    for r in manifest.get("identity_suspect_intervals", []):
+        if r.get("why") != "no_series":
+            bad.setdefault(r["ticker"], []).append((pd.Timestamp(r["start"]),
+                                                    pd.Timestamp(r["end"]) if r.get("end") else pd.Timestamp("2100-01-01")))
+    collide = set(manifest.get("variant_identity_policy", {}).get("collision_flagged", []))
+    rec_rule = {}
+    for r in manifest.get("recovered", []):
+        if isinstance(r, dict):
+            rec_rule[r.get("ticker")] = r.get("rule") or r.get("variant")
     _hash_bytes(str(PIT), PIT.read_bytes()); _hash_bytes(str(LABELS), LABELS.read_bytes())
     _hash_bytes(str(man), man.read_bytes())
     pit = pd.read_parquet(PIT)
@@ -604,23 +615,27 @@ def j4_stage_d(d) -> dict:
     end_j4 = s[s.get_loc(nxt) + 1]
     s4 = s[s <= end_j4]
     tick = sorted(set(pit.loc[pit["src"] == "sp500", "ticker"]))
-    cols, src = {}, {"cache": 0, "fetched": 0, "suspect_excluded": 0, "missing": 0}
+    cols, src = {}, {"cache": 0, "fetched": 0, "suspect_intervals_masked": 0, "collision_excluded": 0, "missing": 0}
     for t in tick:
-        if t in suspect:
-            src["suspect_excluded"] += 1
-            continue
         p1, p2 = CACHE / f"{t}.parquet", J4DIR / "prices" / f"{t}.parquet"
         if p1.exists():
             x = pd.read_parquet(p1)
             ser = x["close"].astype(float); src["cache"] += 1
         elif p2.exists():
             x = pd.read_parquet(p2)
+            v = str(x["variant"].iloc[0]) if "variant" in x.columns else "R0_as_is"
+            if v in collide or v not in ("R0_as_is", "R7_repo_alias", "R1_slash_first"):   # R4/R6 collisions
+                src["collision_excluded"] += 1
+                continue
             ser = x["Adj Close"].astype(float); src["fetched"] += 1
         else:
             src["missing"] += 1
             continue
         ser.index = pd.to_datetime(ser.index).normalize()
         ser = ser[~ser.index.duplicated()].sort_index()
+        for a, b in bad.get(t, []):
+            ser[(ser.index >= a) & (ser.index <= b)] = np.nan
+            src["suspect_intervals_masked"] += 1
         cols[t] = ser[ser.index <= end_j4].reindex(s4)
     prices = pd.DataFrame(cols)
     etf = d["adj"][rc.SECTORS].reindex(s4)
@@ -673,7 +688,10 @@ def j4_stage_d(d) -> dict:
                                            unpriced_lag=("unpriced_share_labelled_lagging", "mean"))
     return {"status": "evaluated", "formations_D": [str(df.index.min().date()), str(df.index.max().date())],
             "price_sources": src, "fetch_manifest_summary": {k: (len(v) if isinstance(v, list) else v)
-                                                             for k, v in manifest.items() if k != "variant_rules"},
+                                                             for k, v in manifest.items()
+                                                             if k in ("n_ever_members", "n_from_survivor_cache",
+                                                                      "n_attempted", "n_recovered", "n_failed",
+                                                                      "n_identity_suspect_intervals")},
             "J4-A": A, "J4-B": Bk, "treatments": treat, "J4-B_cost_2x_ann": float(res2x["book_excess"].mean() * 12),
             "sensitivity_gics_assignment": {"J4-A_ann": float(sens["delta_i"].mean() * 12),
                                             "J4-B_ann": float(sens["book_excess"].mean() * 12)},
