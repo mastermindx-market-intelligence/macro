@@ -2244,7 +2244,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     is a FIRST visit and returns an empty change list — never a fabricated "everything
     is new". 401 → not signed in. 403 {error:pro_required,tier} → not Pro (same gate as
     the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx or private holdings
-    unavailable; no change digest is emitted from unknown state.
+    unavailable; no change digest is emitted from unknown state. 413 means the saved
+    reading exceeds the comparison limit; retain the existing saved marker.
     """
     response.headers["Cache-Control"] = "private, no-store"
     uid = user.get("id") or user.get("email") or ""
@@ -2265,7 +2266,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
 
     try:
         from engine.portfolio_changes import (  # noqa: PLC0415
-            CURSOR_DISCLOSURE, diff_snapshots, is_snapshot, snapshot_state)
+            CURSOR_DISCLOSURE, MAX_PREVIOUS_NAMES, SnapshotComparisonTooLarge,
+            compare_snapshots, is_snapshot, snapshot_state)
     except ImportError as exc:
         raise HTTPException(503, "portfolio changes unavailable") from exc
 
@@ -2287,7 +2289,28 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     # "3 names joined this read since your last visit". `is_snapshot` is the one answer
     # both sides read.
     first_visit = not is_snapshot(previous)
-    changes = [] if first_visit else diff_snapshots(previous, current)
+    try:
+        changes, change_count = compare_snapshots(previous, current)
+    except SnapshotComparisonTooLarge:
+        # A successful response advances the client's marker. Reject unsupported
+        # comparisons without a replacement digest so that saved history is retained.
+        raise HTTPException(
+            status_code=413,
+            detail={"error": "previous_snapshot_too_large", "max_names": MAX_PREVIOUS_NAMES},
+            headers={"Cache-Control": "private, no-store"},
+        ) from None
+    cursor = dict(CURSOR_DISCLOSURE)
+    omitted = change_count - len(changes)
+    if omitted:
+        # Existing clients render these notes, even if they ignore additive metadata.
+        cursor["note_en"] += (
+            f" Showing {len(changes)} of {change_count} detected changes; "
+            f"{omitted} additional {'change is' if omitted == 1 else 'changes are'} not listed."
+        )
+        cursor["note_zh"] += (
+            f" 已显示检测到的 {change_count} 项变化中的 {len(changes)} 项；"
+            f"另有 {omitted} 项未列出。"
+        )
 
     return {
         "schema": "portfolio_changes.v1",
@@ -2295,8 +2318,10 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
         "population": population,
         "first_visit": first_visit,
         "changes": changes,
+        "change_count": change_count,
+        "changes_truncated": bool(omitted),
         "state_digest": current,
-        "cursor": dict(CURSOR_DISCLOSURE),
+        "cursor": cursor,
     }
 
 

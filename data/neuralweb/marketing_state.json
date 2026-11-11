@@ -1697,7 +1697,7 @@
           "id": "radar-earnings-AADX-2026-11-10",
           "problem_or_desire": "$AADX: earnings 2026-11-11 pre-market",
           "expected_value": 0.5,
-          "score": 0.312567,
+          "score": 0.294636,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-ABSI-2026-11-10",
           "problem_or_desire": "$ABSI: earnings 2026-11-12 pre-market",
           "expected_value": 0.5,
-          "score": 0.312567,
+          "score": 0.294636,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-ABUS-2026-11-10",
           "problem_or_desire": "$ABUS: earnings 2026-11-12",
           "expected_value": 0.5,
-          "score": 0.312567,
+          "score": 0.294636,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1986,8 +1986,8 @@
   ],
   "content": {
     "total_posts": 40,
-    "signal_posts": 10,
-    "charts": 167,
+    "signal_posts": 9,
+    "charts": 166,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-11-10"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-10T16:15:59Z",
-  "inputs_hash": "sha256:1c708249236ce660fe8aae04d1e99b2a9f42bd41ca49aa4ee1b9fa94b3af390a",
+  "produced_at": "2026-11-10T18:18:43Z",
+  "inputs_hash": "sha256:a4ff8fbbb3d6556c5e629227f3994e8cd086df604962ce785e5a7fb793124031",
   "tier": "display"
 }

@@ -190,7 +190,7 @@
    {
     "rank": 1,
     "theme": "Commodities Metals",
-    "emerging_score": 2.724,
+    "emerging_score": 2.681,
     "n_members": 41,
     "present_counts": {
      "buy": 5,
@@ -199,11 +199,11 @@
     },
     "present": {
      "buy": [
-      "ALB",
+      "AEM",
+      "AU",
       "FNV",
       "GFI",
-      "NEM",
-      "RGLD"
+      "NEM"
      ],
      "ran": [],
      "leaders": []
@@ -214,7 +214,7 @@
    {
     "rank": 2,
     "theme": "Digital Entertainment",
-    "emerging_score": 2.122,
+    "emerging_score": 2.089,
     "n_members": 33,
     "present_counts": {
      "buy": 2,
@@ -235,7 +235,7 @@
    {
     "rank": 3,
     "theme": "Consumer Goods",
-    "emerging_score": 1.872,
+    "emerging_score": 1.845,
     "n_members": 40,
     "present_counts": {
      "buy": 1,
@@ -257,30 +257,8 @@
    {
     "rank": 4,
     "theme": "Electric Vehicles",
-    "emerging_score": 1.537,
+    "emerging_score": 1.509,
     "n_members": 46,
-    "present_counts": {
-     "buy": 3,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [
-      "ALB",
-      "RIVN",
-      "VZ"
-     ],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 3,
-    "days_since_top5_entry": null
-   },
-   {
-    "rank": 5,
-    "theme": "Energy Renewable",
-    "emerging_score": 1.505,
-    "n_members": 61,
     "present_counts": {
      "buy": 2,
      "ran": 0,
@@ -288,13 +266,33 @@
     },
     "present": {
      "buy": [
-      "ALB",
-      "ENPH"
+      "RIVN",
+      "VZ"
      ],
      "ran": [],
      "leaders": []
     },
     "represented_n": 2,
+    "days_since_top5_entry": null
+   },
+   {
+    "rank": 5,
+    "theme": "Energy Renewable",
+    "emerging_score": 1.477,
+    "n_members": 61,
+    "present_counts": {
+     "buy": 1,
+     "ran": 0,
+     "leaders": 0
+    },
+    "present": {
+     "buy": [
+      "ENPH"
+     ],
+     "ran": [],
+     "leaders": []
+    },
+    "represented_n": 1,
     "days_since_top5_entry": null
    }
   ]
@@ -476,14 +474,18 @@
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
-    "n_members_on_board": 3,
+    "n_members_on_board": 7,
     "members_on_board": [
+     "AEM",
      "AGI",
+     "AU",
+     "BTG",
      "GFI",
+     "IAG",
      "NEM"
     ],
     "present_counts": {
-     "buy": 3,
+     "buy": 7,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -677,16 +679,17 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 5,
+    "n_members_on_board": 6,
     "members_on_board": [
      "AMGN",
      "LLY",
      "PFE",
      "RHHBY",
+     "VKTX",
      "WST"
     ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 5
@@ -751,7 +754,7 @@
     "n_members_read": 25,
     "n_members_on_board": 2,
     "members_on_board": [
-     "FOXA",
+     "FOX",
      "VZ"
     ],
     "present_counts": {
@@ -796,18 +799,15 @@
     "n_members": 26,
     "n_members_live": 25,
     "n_members_read": 26,
-    "n_members_on_board": 6,
+    "n_members_on_board": 3,
     "members_on_board": [
-     "ALB",
      "CTVA",
-     "FCX",
-     "MOS",
      "NEM",
      "NUE"
     ],
     "present_counts": {
-     "buy": 3,
-     "watch": 3,
+     "buy": 1,
+     "watch": 2,
      "leaders": 0,
      "ran": 0
     },
@@ -921,10 +921,12 @@
     "n_members": 10,
     "n_members_live": 10,
     "n_members_read": 10,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "DNN"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -968,12 +970,10 @@
     "n_members": 11,
     "n_members_live": 11,
     "n_members_read": 11,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "ALB"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1484,8 +1484,8 @@
     "n_members_on_board": 4,
     "members_on_board": [
      "COP",
-     "CVX",
      "PR",
+     "VLO",
      "XOM"
     ],
     "present_counts": {
@@ -1512,7 +1512,7 @@
     "members_on_board": [
      "APA",
      "COP",
-     "CVX",
+     "VLO",
      "XOM"
     ],
     "present_counts": {
@@ -1537,7 +1537,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 199317,
+  "n_calls": 199318,
   "n_frozen_echoes_excluded": 241,
   "n_stamp_dates": 81,
   "stamp_dates": {
@@ -1704,18 +1704,18 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 21287,
-  "scan_n": 1615,
+  "store_n": 21295,
+  "scan_n": 1620,
   "runners_n": 150,
-  "runners_eligible_today_n": 7,
-  "runners_never_eligible_n": 42,
+  "runners_eligible_today_n": 12,
+  "runners_never_eligible_n": 37,
   "excluder_family_hist": {
-   "not_topped_veto": 135,
-   "ELIGIBLE": 7,
-   "freshness_expired": 6,
+   "not_topped_veto": 132,
+   "ELIGIBLE": 12,
+   "freshness_expired": 4,
    "no_cross": 2
   }
  },

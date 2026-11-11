@@ -1,8 +1,9 @@
 """Deterministic "what changed since your last visit" spine (Watchlist+Portfolio W6).
 
-The retention layer's engine half. Two pure functions and one section composer:
+The retention layer's engine half. Pure comparisons and one section composer:
 
     snapshot_state(ctx, tickers)        -> portfolio_state_digest.v1
+    compare_snapshots(previous, current) -> (bounded changes, total count)
     diff_snapshots(previous, current)   -> [change, ...]
     compose_since_section(previous, current) -> brief section | None
 
@@ -249,14 +250,18 @@ def _names_of(snap: dict) -> dict:
     return n if isinstance(n, dict) else {}
 
 
-def diff_snapshots(previous: dict, current: dict) -> list[dict]:
-    """Return the ordered list of changes between two snapshots.
+class SnapshotComparisonTooLarge(ValueError):
+    """A saved reading exceeds the supported comparison size; no diff was made."""
+
+
+def compare_snapshots(previous: dict, current: dict) -> tuple[list[dict], int]:
+    """Return bounded ordered changes and the full detected change count.
 
     Each change is {kind, en, zh} plus `ticker` or `sector` where one applies. Order is
     fixed and deterministic: regime, then per-name state (sorted by ticker) for names
     present in BOTH snapshots, then sector board moves (sorted), then membership.
 
-    `previous` yields [] iff it is not structurally a snapshot (`is_snapshot`) — a first
+    A `previous` that is not structurally a snapshot (`is_snapshot`) yields ([], 0): a first
     visit has nothing to compare against, and inventing "everything is new" would spam
     the panel on day one. Note what this does NOT treat as a first visit: a real snapshot
     whose `names` is empty. That is what a user holding only desk-uncovered names stores,
@@ -266,16 +271,17 @@ def diff_snapshots(previous: dict, current: dict) -> list[dict]:
 
     Every value read from `previous` is client-supplied and passes `_safe_text` before it
     reaches a sentence; a value that fails is dropped along with its clause.
+    An oversized saved reading raises before any records are compared. Sampling its
+    membership would invent additions and silently omit changes in the unexamined tail.
+    The returned count is measured before MAX_CHANGES limits the returned records.
     """
     if not is_snapshot(previous) or not isinstance(current, dict):
-        return []
+        return [], 0
     prev_names = _names_of(previous)
-    cur_names = _names_of(current)
     if len(prev_names) > MAX_PREVIOUS_NAMES:
-        # Bounded rather than rejected: the first N by ticker still produce a truthful
-        # (if partial) read, and the cap is what stops a hostile or corrupt snapshot from
-        # becoming an unbounded response.
-        prev_names = {k: prev_names[k] for k in sorted(prev_names)[:MAX_PREVIOUS_NAMES]}
+        raise SnapshotComparisonTooLarge(
+            f"Saved reading exceeds the {MAX_PREVIOUS_NAMES}-name comparison limit")
+    cur_names = _names_of(current)
 
     out: list[dict] = []
 
@@ -402,7 +408,16 @@ def diff_snapshots(previous: dict, current: dict) -> list[dict]:
     if removed:
         out.append(_membership("removed", removed, "left", "移出"))
 
-    return out[:MAX_CHANGES]
+    return out[:MAX_CHANGES], len(out)
+
+
+def diff_snapshots(previous: dict, current: dict) -> list[dict]:
+    """Return bounded change records; raise when a saved reading cannot be compared.
+
+    Consumers that display counts must use compare_snapshots for the complete total.
+    """
+    changes, _ = compare_snapshots(previous, current)
+    return changes
 
 
 # The "since your last visit" marker is whatever the CLIENT stored, so its scope is the
@@ -419,22 +434,30 @@ CURSOR_DISCLOSURE = {
 
 
 def compose_since_section(previous: dict, current: dict, *, cap: int = 8) -> dict | None:
-    """Render the diff as a brief section, or None when nothing changed.
+    """Render changes or an unavailable notice; None means no supported changes.
 
     A quiet stretch returns None — the panel then shows nothing rather than an "all
     quiet" line it would have to repeat every day. `cap` bounds the rendered lines; the
     count line names the overflow rather than dropping it silently.
     """
-    changes = diff_snapshots(previous, current)
-    if not changes:
-        return None
-    lines = [{"en": c["en"], "zh": c["zh"]} for c in changes[:cap]]
-    extra = len(changes) - len(lines)
-    if extra > 0:
-        lines.append({
-            "en": f"{extra} further {'change' if extra == 1 else 'changes'} not shown here.",
-            "zh": f"另有 {extra} 项变化未在此列出。",
-        })
+    try:
+        changes, total = compare_snapshots(previous, current)
+    except SnapshotComparisonTooLarge:
+        lines = [{
+            "en": (f"This saved reading exceeds the {MAX_PREVIOUS_NAMES}-name comparison "
+                   "limit. Its changes have not been evaluated."),
+            "zh": f"已保存读数超过 {MAX_PREVIOUS_NAMES} 个标的的比较上限，尚未评估其中的变化。",
+        }]
+    else:
+        if not changes:
+            return None
+        lines = [{"en": c["en"], "zh": c["zh"]} for c in changes[:cap]]
+        extra = total - len(lines)
+        if extra > 0:
+            lines.append({
+                "en": f"{extra} further {'change' if extra == 1 else 'changes'} not shown here.",
+                "zh": f"另有 {extra} 项变化未在此列出。",
+            })
     return {
         "key": "since",
         "title_en": "Since your last visit",

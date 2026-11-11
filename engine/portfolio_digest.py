@@ -99,7 +99,7 @@ from __future__ import annotations
 
 import re
 
-from engine.portfolio_changes import diff_snapshots
+from engine.portfolio_changes import SnapshotComparisonTooLarge, compare_snapshots
 
 TEMPLATE = "psi_digest"
 # Digests are recurring bulk mail, never transactional (PSI §19.5 consent rule): they
@@ -218,17 +218,20 @@ def idem_key(user_id: str, asof: str) -> str:
 
 def compose_digest(previous: dict, current: dict, *, user_id: str, asof: str,
                    population: str = "unspecified") -> dict | None:
-    """Compose the digest for one user, or None when nothing changed.
+    """Compose a change digest, or None for a quiet or unavailable comparison.
 
     `previous` / `current` are state digests from engine.portfolio_changes.snapshot_state.
     A first visit (empty `previous`) produces no changes and therefore no email — a new
     reader is not mailed a wall of "new" on day one.
+    An oversized prior reading produces no digest; None is not proof of a quiet read.
     """
-    changes = diff_snapshots(previous, current)
+    try:
+        changes, n = compare_snapshots(previous, current)
+    except SnapshotComparisonTooLarge:
+        return None
     if not changes:
         return None
 
-    n = len(changes)
     unit_en = "change" if n == 1 else "changes"
     # The population is named in the subject and the lede — the same A8 discipline the
     # brief carries. An email that says "your book" about a watchlist is the defect
