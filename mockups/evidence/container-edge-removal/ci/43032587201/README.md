@@ -1,4 +1,4 @@
-# CI attempt 1: native dependency-acquisition failure
+# CI attempt 1: terminal failure classification and source repair
 
 - Delivery PR: https://github.com/mastermindx-market-intelligence/macro/pull/10654
 - Subject head: `0d26e84a15a0578d15bc1521021676d547d2aaf2`.
@@ -54,3 +54,15 @@ Recovery must preserve this execution uncertainty. GitHub's authoritative termin
 Four terminal failed packs are now classified: 9/11 native package acquisition; 4 ordinary installer DNS failure; 0 hosted runner communication loss. Five other packs have passed, and 5/7/10 were still running at the last preflight. The PR remains head 0d26e84a15a0578d15bc1521021676d547d2aaf2, unmerged and unarmed.
 
 The concrete next action is one normal targeted retry through the original GitHub Actions owner. GitHub must enforce eligibility for its active run. A service-state refusal is retained and may be reconsidered only after the relevant state changes; a permission or safety denial ends that action. No source, test expectation, mirror, package version, deadline or release gate has changed. No retry has been dispatched at this checkpoint.
+
+## Terminal aggregate and source correction
+
+The completed run has five passing packs (1, 2, 3, 6, 8) and seven failed packs (0, 4, 5, 7, 9, 10, 11). The final gate records 593 passed and 121 unknown semantic classifications, four infrastructure findings, and evidence digest `cc5b6d8159d43bea3202a218b55d39d68de73bbfce03c6ddb36893c3f4e41c4d`. Its original ZIP and JSON are retained here as `gate-attempt-1.*`; the remaining pack artifacts and hashes are in `remaining-artifact-manifest.json`.
+
+Pack 5 failed two browser installers with explicit `azure.archive.ubuntu.com` DNS errors. The International exact-base installer reproduces that error; Catalyst's replay expires with descendant settlement unknown. Pack 7 combines a Prophet installer DNS failure with BEA native completion unknown. Neither supplies a product assertion or permits reclassifying unrun tests as passes. Their completed owners uploaded receipts and reached post-job cleanup.
+
+Pack 10 is different: alongside two installer DNS failures, `public-render-fastlane` reports an actual assertion at `tests/test_glossary_contract.py:299`: `test_site_pair_matches_a_fresh_render_of_the_template`. The test and its contract are unchanged. The candidate page had raw inline styles; after isolated CSS externalization the assertion additionally exposed a preload in the wrong position. A full render from the committed public-page builder in a temporary root, followed by the existing injection, externalization and optimization owners, restores canonical output. Only the glossary page and the new `dfb3c710.css` asset enter the product tree. Main content, scripts and the daily alert banner are preserved; CSS block bytes are identical in their fingerprinted assets.
+
+The initial reproducer and intermediate unsuccessful check remain in `../../glossary-output-repair/`. The corrected owning suite passes **333 tests**, with the existing one-test deselection unchanged, and the separate US Regime History proof passes **1 test**. No assertion or gate was weakened.
+
+This new source evidence supersedes the earlier infrastructure-only retry proposal. No retry was ever dispatched. The next action is to publish the real repair with current main integrated, require fresh candidate CI, and use the existing merge controller only when its binding conditions pass. No merge, deployment, or production acceptance is claimed.

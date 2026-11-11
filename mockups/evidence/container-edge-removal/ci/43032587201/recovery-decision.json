@@ -82,25 +82,13 @@
     "limit": "The exact APT transaction and package-cache equality are not established. This success supports an infrastructure hypothesis; it does not prove the cause of this attempt's sanitized FETCH errors."
   },
   "authorized_next_step": {
-    "action": "One normal targeted retry of the four terminal classified infrastructure failures through the original GitHub Actions run; same candidate and event inputs, original receipts preserved, active jobs protected, actual service eligibility binding.",
-    "carrier": "Existing GitHub Actions run/job owner",
-    "target_run_id": 43032587201,
-    "target_job_ids": [
-      130564015585,
-      130564015402,
-      130564015729,
-      130564015311
-    ],
-    "original_transaction_reuse": false,
-    "source_or_mirror_or_timeout_or_gate_change": false,
-    "new_attempt_receipt_required": true,
-    "action_dispatched": false,
-    "eligibility_note": "The earlier whole-workflow-terminal condition was a conservative local plan, not a discovered source-law requirement. Official job retry documentation and the GitHub CLI's explicit-job path do not expose that prerequisite; the same service may still refuse an active run. Any such reply must be classified from its actual reason, reconciled, and not bypassed through another carrier.",
-    "eligibility_sources": [
-      "https://docs.github.com/en/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run",
-      "https://github.com/cli/cli/blob/trunk/pkg/cmd/run/rerun/rerun.go"
-    ],
-    "cli_source_blob": "8f8b79a2edf9ec5cc35ba7d773921ae389157efc"
+    "action": "Publish the genuine glossary finalization repair with current main integrated, then require fresh exact-head CI through the existing GitHub owner. Do not replay the known-defective old candidate.",
+    "carrier": "Original PR and existing GitHub Actions workflows",
+    "source_repair": "site/glossary.html plus exact CSS asset dfb3c710; canonical temporary render and finalization",
+    "test_or_gate_weakening": false,
+    "old_run_retry_dispatched": false,
+    "merge_on_green_armed": false,
+    "production_acceptance": false
   },
   "additional_original_failures": [
     {
@@ -146,6 +134,136 @@
       "semantic_fragment_present": false,
       "log_blob_present": false,
       "limitation": "Individual FIF test outcomes and CPU/memory/network cause remain unproven. Normal service-owned recovery does not reuse or resume the original workspace/process."
+    },
+    {
+      "pack_index": 5,
+      "job_id": 130564015296,
+      "artifact_id": 13865662687,
+      "classification": "Two Playwright dependency installers fail with explicit azure.archive.ubuntu.com DNS errors; no source assertion. International exact-base installer also fails; Catalyst replay times out with descendant settlement unknown.",
+      "terminal_cleanup": "Artifact upload, checkout cleanup and orphan cleanup completed."
+    },
+    {
+      "pack_index": 7,
+      "job_id": 130564015409,
+      "artifact_id": 13866597657,
+      "classification": "Prophet dependency installer explicit Ubuntu DNS failure; BEA native acquisition NATIVE_COMPLETION_RESPONSE_UNKNOWN; original unknown result retained.",
+      "proof_steps": {
+        "passed": 74,
+        "failed_installer": 1,
+        "not_run": 1,
+        "infrastructure_blocked": 5
+      },
+      "terminal_cleanup": "Artifact upload, checkout cleanup and orphan cleanup completed."
+    },
+    {
+      "pack_index": 10,
+      "job_id": 130564015541,
+      "artifact_id": 13866217020,
+      "classification": "Mixed: Forex and International dependency DNS failures plus genuine public-render glossary parity assertion.",
+      "assertion": "tests/test_glossary_contract.py::test_site_pair_matches_a_fresh_render_of_the_template at line299",
+      "cause": "Committed glossary retained inline style blocks and noncanonical preload placement instead of canonical finalized output.",
+      "proof_steps": {
+        "passed": 85,
+        "failed": 3,
+        "not_run": 5
+      },
+      "base_replay": "Unavailable after git cat-file --batch-check exceeded remaining replay budget; no inherited-failure certificate.",
+      "terminal_cleanup": "Artifact upload, auth cleanup and orphan cleanup completed."
     }
-  ]
+  ],
+  "updated_at": "2026-11-11T15:21:57.587324+00:00",
+  "superseded_infrastructure_only_plan": {
+    "action": "One normal targeted retry of the four terminal classified infrastructure failures through the original GitHub Actions run; same candidate and event inputs, original receipts preserved, active jobs protected, actual service eligibility binding.",
+    "carrier": "Existing GitHub Actions run/job owner",
+    "target_run_id": 43032587201,
+    "target_job_ids": [
+      130564015585,
+      130564015402,
+      130564015729,
+      130564015311
+    ],
+    "original_transaction_reuse": false,
+    "source_or_mirror_or_timeout_or_gate_change": false,
+    "new_attempt_receipt_required": true,
+    "action_dispatched": false,
+    "eligibility_note": "The earlier whole-workflow-terminal condition was a conservative local plan, not a discovered source-law requirement. Official job retry documentation and the GitHub CLI's explicit-job path do not expose that prerequisite; the same service may still refuse an active run. Any such reply must be classified from its actual reason, reconciled, and not bypassed through another carrier.",
+    "eligibility_sources": [
+      "https://docs.github.com/en/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run",
+      "https://github.com/cli/cli/blob/trunk/pkg/cmd/run/rerun/rerun.go"
+    ],
+    "cli_source_blob": "8f8b79a2edf9ec5cc35ba7d773921ae389157efc"
+  },
+  "final_run": {
+    "status": "completed",
+    "conclusion": "failure",
+    "gate_job_id": 130602778302,
+    "gate_artifact_id": 13866337422,
+    "gate_evidence_sha256": "cc5b6d8159d43bea3202a218b55d39d68de73bbfce03c6ddb36893c3f4e41c4d",
+    "semantic_passed": 593,
+    "semantic_unknown": 121,
+    "infrastructure_findings": 4,
+    "failed_packs": [
+      0,
+      4,
+      5,
+      7,
+      9,
+      10,
+      11
+    ],
+    "successful_packs": [
+      1,
+      2,
+      3,
+      6,
+      8
+    ]
+  },
+  "glossary_repair_validation": {
+    "schema": "mastermind.container_edge_glossary_validation.v1",
+    "checks": [
+      {
+        "name": "public-render-fastlane",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_public_render_fastlane.py",
+          "tests/test_help_directory.py",
+          "tests/test_help_directory_contract.py",
+          "tests/test_workflow_publish_chains.py",
+          "tests/test_build_market_memory_page.py",
+          "tests/test_glossary.py",
+          "tests/test_glossary_contract.py",
+          "tests/test_glossary_letter_rail_js.py",
+          "tests/test_finance_intelligence_site_wiring.py",
+          "tests/test_consumer_cyclical_plnt_site_wiring.py",
+          "tests/test_sector_central_paper.py",
+          "tests/test_si_workspace_shell.py",
+          "tests/test_sector_central_data_is_sync.py",
+          "--deselect",
+          "tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model",
+          "-q",
+          "-rs"
+        ],
+        "exit_code": 0,
+        "seconds": 22.36,
+        "log": "mockups/evidence/container-edge-removal/glossary-output-repair/public-render-fastlane.log"
+      },
+      {
+        "name": "regime-history-us",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_regime_history_us_site_wiring.py",
+          "-q",
+          "-rs"
+        ],
+        "exit_code": 0,
+        "seconds": 2.47,
+        "log": "mockups/evidence/container-edge-removal/glossary-output-repair/regime-history-us.log"
+      }
+    ]
+  }
 }
