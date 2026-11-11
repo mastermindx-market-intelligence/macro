@@ -365,30 +365,39 @@ def proxy_json(n_days: int = 21,
 
     ``{asof, depth, funds: [{ticker, flow_1d, flow_5d, flow_21d}], net_flow_1d}``
     All flow values in $mn (float). None until the proxy store exists.
+    Every fund uses the same dated windows, capped at available history.
+    Missing/nonfinite cells withhold the affected fund window and current net;
+    only leading all-null diff rows are excluded.
     """
     df = load_proxy(proxy_path)
     if df is None or df.empty:
         return None
-    df = df.dropna(how="all").sort_index()
+    df = df.sort_index().apply(pd.to_numeric, errors="coerce")
+    df = df.replace([float("inf"), float("-inf")], float("nan"))
+    # Drop only the leading diff-only rows. Later gaps must retain their dates.
+    present = df.notna().any(axis=1)
+    if not present.any():
+        return None
+    df = df.loc[present[present].index[0]:]
     if len(df) < 2:
         return None
     funds = []
-    net_1d = 0.0
     for col in df.columns:
-        ticker = col.replace("_flow_mn", "")
-        s = df[col].dropna()
-        if s.empty:
-            continue
-        f1d = float(s.iloc[-1]) if len(s) >= 1 else None
-        f5d = float(s.tail(5).sum()) if len(s) >= 2 else None
-        f21d = float(s.tail(21).sum()) if len(s) >= 2 else None
-        if f1d is not None:
-            net_1d += f1d
-        funds.append({"ticker": ticker, "flow_1d": f1d, "flow_5d": f5d, "flow_21d": f21d})
+        values = {}
+        for key, n in (("flow_1d", 1), ("flow_5d", 5), ("flow_21d", 21)):
+            window = df[col].tail(n)
+            total = window.sum(min_count=len(window))
+            values[key] = (float(total) if pd.notna(total)
+                           and float("-inf") < total < float("inf") else None)
+        funds.append({"ticker": col.replace("_flow_mn", ""), **values})
+    latest = [f["flow_1d"] for f in funds]
+    net_1d = sum(latest) if all(v is not None for v in latest) else None
+    if net_1d is not None and not float("-inf") < net_1d < float("inf"):
+        net_1d = None
     return {
         "asof": str(df.index.max().date()),
         "depth": int(len(df)),
         "funds": funds,
-        "net_flow_1d": round(net_1d, 2),
+        "net_flow_1d": round(net_1d, 2) if net_1d is not None else None,
         "label": "creation/redemption proxy",
     }
