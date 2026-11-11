@@ -1,0 +1,189 @@
+{
+  "status": "passed",
+  "surface": "market",
+  "matrix": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-light-en.png",
+        "sha256": "fa5aa2ae7805edd0fb725d67032a370611151910f5f2e936d3fd00ab3ef56040"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-dark-zh.png",
+        "sha256": "48766d12b7e922c075e4a7e1cb169ef04f12127a4fd3080f3c4f16cddfaf2650"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-dark-en.png",
+        "sha256": "b5496dffd0a8988cc45b5076e0ed658129f7158648f5cd91198964584abf18d6"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 1440,
+        "scroll": 1440,
+        "wrap": 1180
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-1440-light-zh.png",
+        "sha256": "45474b7cc4b35994c5059d34e2e83b40b81aea4b4cd5ce7af10d2dba31c9deed"
+      }
+    },
+    {
+      "width": 720,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 720,
+        "scroll": 720,
+        "wrap": 720
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-720-light-en.png",
+        "sha256": "8a4183ae6f2ffd105893ae26bb155c80a944410b425960c8cd9d510d3b253a98"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-dark-en.png",
+        "sha256": "044ce5ea4be12ffdb4adf536244bdc42e7b2d27efcdb6ae0b1a9068fff0e890b"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-light-zh.png",
+        "sha256": "53a5aa7c1b91722b8a496a4c56ee1f1932641956b74d61f9aee4e70346fff62c"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-light-en.png",
+        "sha256": "2edae81309bb77f2e30201e3326ac019dec791710e6f47505b1ecc8044deece4"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "locale": "zh",
+      "metrics": {
+        "width": 390,
+        "scroll": 390,
+        "wrap": 390
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-390-dark-zh.png",
+        "sha256": "efb86ac7a232522c82ba4adf66c3d143dc938fee511521014379c1c17d0f1c95"
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en",
+      "metrics": {
+        "width": 320,
+        "scroll": 320,
+        "wrap": 320
+      },
+      "range_persistence": true,
+      "keyboard_help": true,
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-320-light-en.png",
+        "sha256": "f72fe6388d3acf8bae9b663c71e3f496cfa4071175e4c86c5ed10b0a1b60378c"
+      }
+    }
+  ],
+  "edge_cases": [
+    {
+      "case": "gaps-zero-singleton-outer-only",
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-partial-outer-only.png",
+        "sha256": "2b74315e19c015ff383b54fe80c46e75a0c9e43eb050c201232d19c59aa4bf2d"
+      }
+    },
+    {
+      "case": "all-missing-and-language-change",
+      "image": {
+        "path": "docs/pr-crops/market-continuation-20261105/browser-3/market-missing-zh.png",
+        "sha256": "58d4a777f5bc568d82430b9953e7f0704c1db02d879a4724b428e53cf00818d2"
+      }
+    }
+  ],
+  "scope": "Actual owned generated page plus explicit missing-data fixtures.",
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "1c7e7dc72f9a58e22418d4a193934e670746a0276dc34d290834b8bc6088379f",
+    "templates/market_structure.html.j2": "300c1b6865e9f519ca0fbd0fc3a95a17c96e0f1bce06c9ee59013350a7f8f056",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}

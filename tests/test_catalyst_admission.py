@@ -10,6 +10,7 @@ import pytest
 from app.catalyst_integration import scan_with_reader
 from app.catalyst_scan_authority import ScanReceiptAuthority
 from engine.marketing import catalyst_admission, catalyst_scan
+from engine.marketing.catalyst_lifecycle import FunnelGate
 from engine.marketing.catalyst_packets import (
     PublicSourceGrant, VerifiedDocumentObservation, VerifiedEarningsFigure)
 from engine.marketing.catalyst_scan import SourceCoverageReceipt
@@ -148,13 +149,19 @@ def test_qualified_owner_to_anonymous_scan_and_rights_revocation(monkeypatch):
     assert "0.42" in str(result["results"][0]["what_changed"])
     assert called and control["rights_reads"] >= 1
 
-    # Stage B signed proofs currently accept only vetted v1 scans.
-    # Never misinterpret a newly displayed v2 result as consent, email scope,
-    # or a valid signed proof without separate original Session02 admission.
+    # A v2 receipt binds the qualified public evidence, not consent or email
+    # authority. Verification must re-read the canonical owner and its rights.
     proof_owner = ScanReceiptAuthority(
         secret="pure_synthetic_hmac_key_for_tests_only" * 2,
         now=lambda: now)
-    assert proof_owner.issue(result) is None
+    receipt = proof_owner.issue(result)
+    assert isinstance(receipt, str) and receipt
+    rights_reads = control["rights_reads"]
+    evidence = proof_owner.require_public_scan(receipt)
+    assert evidence.event_id == result["event_id"]
+    assert evidence.tickers == ("PFE",)
+    assert evidence.public_safe is True
+    assert control["rights_reads"] > rights_reads
 
     # Live source rights can still withdraw after a positive v2 display.
     control["granted"] = False
@@ -163,6 +170,12 @@ def test_qualified_owner_to_anonymous_scan_and_rights_revocation(monkeypatch):
     assert all(not row["sources"] and not row["what_changed"]
                for row in blocked["results"])
     assert proof_owner.issue(blocked) is None
+    rights_reads = control["rights_reads"]
+    with pytest.raises(FunnelGate) as exc:
+        proof_owner.require_public_scan(receipt)
+    assert exc.value.code == "SCAN_PROOF_SUPERSEDED"
+    assert exc.value.status == 403
+    assert control["rights_reads"] > rights_reads
 
 
 def test_owner_errors_and_unbounded_events_refuse_without_leak(monkeypatch):

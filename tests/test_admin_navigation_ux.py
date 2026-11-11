@@ -101,15 +101,20 @@ function block(start, end) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_workspace_keeps_every_route_once_but_only_13_primary_pages():
+def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
 const ids = groups.flatMap(group => group.items.map(item => item[0]));
-const expected = 'overview health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
-assert.equal(ids.length, 54);
-assert.equal(new Set(ids).size, 54);
+const expected = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
+assert.equal(ids.length, 55);
+assert.equal(new Set(ids).size, 55);
 assert.deepEqual([...ids].sort(), expected.sort());
-assert.equal(groups.filter(group => group.primary).flatMap(group => group.items).length, 13);
+// #10950 intentionally adds Workspace → Capacity Router. Bind the exact primary
+// set, not just a larger count, so no unrelated route can silently become primary.
+const primary = groups.filter(group => group.primary).flatMap(group => group.items.map(item => item[0]));
+const expectedPrimary = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish'.split(' ');
+assert.equal(primary.length, 14);
+assert.deepEqual([...primary].sort(), expectedPrimary.sort());
 """)
 
 
@@ -375,3 +380,49 @@ def test_site_inventory_has_named_controls_and_read_error_recovery():
     assert 'Live-site check unavailable. Try again.' in content
     assert '$("#view").appendChild' not in content
     assert 'post(' not in content and 'dispatch(' not in content
+
+
+def test_press_account_claims_render_exact_zero_scope_and_safe_links():
+    _node_assert("""
+let lang='en';
+const document={documentElement:{getAttribute:()=>lang}};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+const helpers=new Function('document','esc',block('function pressAudienceCopy(', '/* ---- CHANNELS & DESKS')+';return {renderPressAudience,pressArticleHref};')(document,esc);
+const a={status:'available',observed_at:'2026-11-05T12:00:00Z',total_publications:2,rows:[
+ {publication_id:'press-1',slug:'<img>-first-story',desk:'brief',urls:['javascript:alert(1)'],published_at:'2026-11-01T00:00:00Z',active_accounts_claiming_content:3},
+ {publication_id:'press-2',slug:'second-story',desk:'research',urls:['https://www.mastermind-x.com/blog/second-story.html'],published_at:'2026-11-02T00:00:00Z',active_accounts_claiming_content:0}]};
+const html=helpers.renderPressAudience({ok:true,signup_claims:a});
+assert(html.includes('Active account claims')&&html.includes('not page views or a conversion rate'));
+assert(html.includes('>0</td>')&&html.includes('>3</td>'));
+assert(!html.includes('<img>')&&!html.includes('javascript:'));
+assert(html.includes('https://www.mastermind-x.com/blog/second-story.html'));
+assert.equal(helpers.pressArticleHref(['https://mastermind-x.com.evil.test/']),null);
+assert.equal(helpers.pressArticleHref(['https://user:pass@mastermind-x.com/']),null);
+assert(!helpers.renderPressAudience(null).includes('>0</td>'));
+assert(helpers.renderPressAudience({ok:true,signup_claims:{...a,rows:[{...a.rows[0],active_accounts_claiming_content:'0'}]}}).includes('unavailable'));
+lang='zh';assert(helpers.renderPressAudience({ok:true,signup_claims:a}).includes('原生新闻账号声明'));
+const many={...a,total_publications:20,rows:Array.from({length:20},(_,i)=>({...a.rows[0],publication_id:'press-'+i}))};
+assert(helpers.renderPressAudience({ok:true,signup_claims:many}).includes('更多已衡量文章（12）'));
+""")
+
+
+def test_press_measurement_settles_independently_and_cannot_replace_another_page():
+    _node_assert("""
+let epoch=1,current='marketing_channels',resolvePress,resolveChannels,slowChannels=false;
+const view={innerHTML:''},slot={innerHTML:''},channels={innerHTML:''};
+const reads=[];const $=id=>id==='#view'?view:id==='#marketingChannelsBody'?channels:slot;
+const api=url=>{reads.push(url);return url==='/api/press/overview'?new Promise(r=>resolvePress=r):slowChannels?new Promise(r=>resolveChannels=r):Promise.resolve({ok:true,note:'channels accruing'});};
+const src=block('RENDER.marketing_channels = async () => {','/* Effective status of a desk:');
+const factory=new Function('$','api','nwEmpty','renderPressAudience','RENDER','getEpoch','getCurrent',src.replaceAll('ADMIN_RENDER_EPOCH','getEpoch()').replaceAll('CURRENT','getCurrent()')+';return RENDER.marketing_channels;');
+const run=factory($,api,(a,b)=>a+b,(d,loading)=>loading?'Press loading':d?'Press settled':'Press unavailable',{},()=>epoch,()=>current);
+const promise=run();await Promise.resolve();await Promise.resolve();
+assert(channels.innerHTML.includes('channels accruing')&&view.innerHTML.includes('Press loading'));
+assert.equal(reads.filter(x=>x==='/api/press/overview').length,1);
+current='overview';epoch=2;slot.innerHTML='new page';resolvePress({ok:true});await promise;
+assert.equal(slot.innerHTML,'new page');
+current='marketing_channels';const again=run();await Promise.resolve();await Promise.resolve();resolvePress(null);await again;
+assert.equal(slot.innerHTML,'Press unavailable');
+slowChannels=true;channels.innerHTML='waiting';const inverse=run();resolvePress({ok:true});await Promise.resolve();await Promise.resolve();
+assert.equal(slot.innerHTML,'Press settled');assert.equal(channels.innerHTML,'waiting');
+resolveChannels({ok:true,note:'channels finally ready'});await inverse;assert(channels.innerHTML.includes('channels finally ready'));
+""")

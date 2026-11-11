@@ -874,11 +874,15 @@ jobs:
       # COMMIT/PUSH SPLIT (2026-07-17, run 29542087837 postmortem): the local commit above
       # is atomic and integrity-complete (fully-staged tree, asia paths reset out, empty-
       # guarded) — everything below is pure network publish. It lives in a SEPARATE
-      # always()-guarded step so a job-timeout cancel during the push can never again
-      # discard an already-committed night of collections (a hung git push ate 57m and
-      # the 150m cap killed the step mid-publish; the commit existed only on the runner).
-      # Every git network op is alarm-bounded (macOS runners have no GNU timeout;
-      # perl alarm survives execve — SIGALRM kills a hung op, the loop retries).
+      # always()-guarded step so ordinary earlier-step failures/cancellation do not hide
+      # an already-committed night of collections. A JOB-LEVEL timeout hard-stops the
+      # running step and then gives the remaining tail only a bounded ~5-minute grace:
+      # run 35168062576 (2026-09-17) finished this very push 1:58 PAST its cap, while
+      # run 36078806272 (2026-09-25) entered the grace with the push still to do and
+      # lost it at cap+5:00. The grace is a belt, not a budget — which is why the job
+      # cap above must cover this bounded network-publish window. Every git network op
+      # is alarm-bounded (macOS runners have no GNU timeout; perl alarm survives execve
+      # — SIGALRM kills a hung op, the loop retries).
       # QLEDGER CARVE CUSTODY (#9556 review 5566188238), part 1. The carve-out in
       # `commit market data` leaves data/qledger + site/qledger DIRTY, and the push
       # below rebases with --autostash: a conflicted re-apply (e.g. a concurrent
@@ -917,7 +921,7 @@ jobs:
             fi
           fi
       # A carved night publishes only after a verified park (#9556 review 5570764032).
-      - name: push market data (survives a job-cap cancel; alarm-bounded git ops)
+      - name: push market data (commit already local; alarm-bounded git ops)
         id: pushdata
         if: always() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
@@ -978,8 +982,13 @@ jobs:
           done
           push_lost
           echo "::warning::could not push collected market data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
-      # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded
-      # attempt inside the post-cancel grace window. The commit already exists locally;
+      # Last-ditch publish for a CANCELLED mid-push path: one bounded attempt inside the
+      # post-cancel grace window. This DOES reach a job-cap night when grace remains —
+      # job 105033526139 ran it to success at 04:50:57Z, 2:02 past its 04:48:55Z cap
+      # (2026-09-17). But the grace is bounded at ~5 minutes and can be exhausted before
+      # this step is ever scheduled: on 2026-09-25 job 107895940199 burned it on a push
+      # that started at cap+2:32, and this step's started_at is null. A real belt with a
+      # hard ceiling, never a cap rescue to budget against. The commit already exists locally;
       # losing it costs the whole night's collections (2026-07-16 incident).
       # Same verified-park gate as the push above (#9556 review 5570764032).
       - name: salvage push (job cancelled mid-publish — one bounded attempt)
@@ -1216,11 +1225,21 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.publish_r2 --dirs massive_stock_day || echo "::warning::massive_stock_day R2 publish failed (non-fatal — R2 copy goes stale; the engine job's strict audit_r2 anchor goes red within 26h)"
-      # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
-      # still records the night in the grace window (elapsed ≈ cap → the warning fires).
+      # W2: per-band timings row + >85% creep tripwire. always() reaches failed and
+      # cancelled paths, including a job-cap night for as long as the ~5-minute grace
+      # lasts (job 105033526139 recorded its row at 04:51:42Z, 2:47 past its cap). It
+      # is NOT reachable once that grace is spent: run 36078806272 never scheduled it,
+      # so that RUN has no row (2026-09-25's other run, 36133476434, did record one at
+      # 229.4m/240). So the cap above must keep the normal path
+      # inside the measurable window rather than relying on post-timeout telemetry.
+      # SECOND ARG = the creep budget, deliberately BELOW the cap. The cap is 300 so a
+      # normal night clears the whole publish path, but the 85% alarm stays on the 240m
+      # workload that forced the raise; without the split, 226m nights would read 75% and say nothing — the cap
+      # raise would have disarmed the only detector of the creep that caused it. Lower
+      # the second number only when the collectors genuinely get faster, never to quiet it.
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 300
+        run: bash scripts/ci/nightly_timings_finish.sh 300 240
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its
@@ -1537,9 +1556,24 @@ jobs:
         # writes only under data/capital_structure/. The step timeout keeps a slow
         # compiler night a RECORDED failure: without it a stall would run into the
         # job's 90-minute timeout and lose tonight's whole capital-structure checkpoint.
+        # build_source_stores() reads the same step-local R2 env as cs_terms; without
+        # it no source store is admissible and every night is a refusal.
         id: cs_candidates
         continue-on-error: true
         timeout-minutes: 20
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
+          R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}
+          R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY: ${{ secrets.R2_CAPITAL_STRUCTURE_SECRET_ACCESS_KEY }}
+          R2_CAPITAL_STRUCTURE_BUCKET: ${{ secrets.R2_CAPITAL_STRUCTURE_BUCKET }}
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.compile_capital_structure_instrument_candidate_terms
       - name: build the capital-structure capacity inputs bundle (one generation or nothing)
         id: cs_inputs
@@ -1550,6 +1584,17 @@ jobs:
         # a default, never a zero. Fatal like the state step: a failed validation
         # leaves the previous bundle in place, and a bundle that does not bind the
         # served state generation must not ride this checkpoint (SPEC_U1B §3).
+        # Financials bind from FIF's published production datasets (§13 F0: bind,
+        # never rebuild): the mode is selected for this step only, never as a
+        # default, and the store is the dedicated R2_RESEARCH family the FIF
+        # publisher writes with. A missing or failing store is a typed unavailable
+        # family, never a failed step.
+        env:
+          FIF_FINANCIAL_DATASET_MODE: production
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
         run: python -m scripts.build_capital_structure_capacity_inputs
       - name: build the capital-structure change ledger (one changeset or nothing)
         # SPEC_U2 U2-3 (b): the typed change desk between the PREVIOUS
@@ -2245,7 +2290,10 @@ jobs:
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+              # Bind the actual post-rebase source; never infer Git push defaults.
+              push_on_main_ok || exit 1
+              qledger_tail_push_candidate=$(git rev-parse --verify 'HEAD^{commit}') || exit 1
+              if push_do origin "$qledger_tail_push_candidate:refs/heads/main"; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi
             push_abort_rebase
             push_backoff
@@ -2856,175 +2904,8 @@ jobs:
         # "enforce Prophet R2 index tombstone" step below, on every nightly wake
         # regardless of whether this step ran (r2_ready gates ONLY on an index
         # content change, so an unchanged-index night must not skip the tombstone).
-        run: |
-          set -euo pipefail
-          R2_INDEX_FILE="$(mktemp "${RUNNER_TEMP}/prophet-r2-index.XXXXXX.json")"
-          cleanup_prophet_r2() { rm -f -- "$R2_INDEX_FILE"; }
-          trap cleanup_prophet_r2 EXIT
-
-          verify_prophet_checkpoint_current() {
-            git fetch origin +refs/heads/main:refs/remotes/origin/main \
-              || return 1
-            git merge-base --is-ancestor "$PROPHET_CHECKPOINT_SHA" origin/main \
-              || return 1
-            git diff --quiet "$PROPHET_CHECKPOINT_SHA" origin/main -- \
-              data/prophet \
-              data/prophet_arena \
-              site/prophet
-          }
-
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::checkpoint $PROPHET_CHECKPOINT_SHA is not the current origin/main Prophet projection; preserving the newer R2/main authority"
-            exit 0
-          fi
-          git show "${PROPHET_CHECKPOINT_SHA}:site/prophet/index.json" > "$R2_INDEX_FILE"
-          ACTUAL_SHA256="$(python3 -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$R2_INDEX_FILE")"
-          if [ "$ACTUAL_SHA256" != "$PROPHET_INDEX_SHA256" ]; then
-            echo "::error title=Prophet R2 publish hash mismatch::commit bytes do not match the checkpoint output; refusing R2 upload"
-            exit 1
-          fi
-          # Close the fetch/hash window as far as the object store permits. R2
-          # has no compare-and-swap against a Git ref, so a second main proof is
-          # the last action before the single-object upload.
-          if ! verify_prophet_checkpoint_current; then
-            echo "::warning title=Prophet R2 publish superseded::origin/main Prophet state advanced during verification; preserving the newer publication"
-            exit 0
-          fi
-          python3 - "$R2_INDEX_FILE" <<'PY'
-          import json
-          import os
-          import subprocess
-          import sys
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          from scripts.build_prophet import (
-              R2_HEALTH_KEY,
-              _r2_client,
-              build_public_health_projection,
-              guarded_put_object,
-          )
-
-          local_path = Path(sys.argv[1])
-          client = _r2_client()
-          if client is None:
-              print(
-                  "::warning title=Prophet R2 credentials unavailable::"
-                  "guarded Git checkpoint landed; R2 remained unchanged",
-                  flush=True,
-              )
-              raise SystemExit(0)
-          from botocore.exceptions import ClientError
-
-          bucket = os.environ.get("R2_BUCKET") or "mastermindx"
-          expected_sha = os.environ["PROPHET_INDEX_SHA256"]
-          checkpoint_sha = os.environ["PROPHET_CHECKPOINT_SHA"]
-          published_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          index = json.loads(local_path.read_text(encoding="utf-8"))
-          health_payload = build_public_health_projection(
-              index,
-              checkpoint_sha=checkpoint_sha,
-              index_sha256=expected_sha,
-              published_at=published_at,
-          )
-          health_bytes = json.dumps(
-              health_payload, allow_nan=False, default=str, indent=2,
-          ).encode("utf-8")
-
-          # Snapshot the destination generation first. The conditional put below
-          # makes any concurrent R2 writer win rather than be overwritten.
-          try:
-              current = client.head_object(Bucket=bucket, Key=R2_HEALTH_KEY)
-          except ClientError as exc:
-              response = exc.response or {}
-              status = (response.get("ResponseMetadata") or {}).get("HTTPStatusCode")
-              code = str((response.get("Error") or {}).get("Code") or "")
-              if status == 404 or code in {"404", "NoSuchKey", "NotFound"}:
-                  condition = {"IfNoneMatch": "*"}
-              else:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "could not read the current object generation; upload withheld",
-                      flush=True,
-                  )
-                  raise SystemExit(1) from exc
-          else:
-              etag = str(current.get("ETag") or "")
-              metadata = current.get("Metadata") or {}
-              if (
-                  metadata.get("git-checkpoint") == checkpoint_sha
-                  and metadata.get("sha256") == expected_sha
-              ):
-                  print(
-                      "::notice title=Prophet R2 already current::"
-                      "the guarded checkpoint hash is already published",
-                      flush=True,
-                  )
-                  raise SystemExit(0)
-              if not etag:
-                  print(
-                      "::error title=Prophet R2 preflight failed::"
-                      "current object supplied no ETag for a conditional update",
-                      flush=True,
-                  )
-                  raise SystemExit(1)
-              condition = {"IfMatch": etag}
-
-          # Re-prove Git after the R2 generation snapshot. If main or R2 moves
-          # after its respective proof, the conditional put rejects the race.
-          git_checks = (
-              ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
-              ["git", "merge-base", "--is-ancestor", checkpoint_sha, "origin/main"],
-              [
-                  "git", "diff", "--quiet", checkpoint_sha, "origin/main", "--",
-                  "data/prophet", "data/prophet_arena", "site/prophet",
-              ],
-          )
-          if any(subprocess.run(cmd, check=False).returncode for cmd in git_checks):
-              print(
-                  "::warning title=Prophet R2 publish superseded::"
-                  "current main changed during R2 preflight; upload withheld",
-                  flush=True,
-              )
-              raise SystemExit(0)
-
-          try:
-              guarded_put_object(
-                  client,
-                  bucket=bucket,
-                  key=R2_HEALTH_KEY,
-                  Body=health_bytes,
-                  ContentType="application/json",
-                  Metadata={
-                      "git-checkpoint": checkpoint_sha,
-                      "sha256": expected_sha,
-                  },
-                  **condition,
-              )
-          except ClientError as exc:
-              status = ((exc.response or {}).get("ResponseMetadata") or {}).get(
-                  "HTTPStatusCode"
-              )
-              if status == 412:
-                  print(
-                      "::warning title=Prophet R2 publish superseded::"
-                      "the R2 object advanced concurrently; preserving that writer",
-                      flush=True,
-                  )
-                  raise SystemExit(0) from exc
-              print(
-                  "::error title=Prophet R2 upload failed::"
-                  "guarded Git checkpoint landed but its verified health receipt did not reach R2",
-                  flush=True,
-              )
-              raise SystemExit(1) from exc
-          print(
-              "::notice title=Prophet R2 published::"
-              "uploaded the public health receipt for the guarded Git checkpoint",
-              flush=True,
-          )
-          PY
+        # Body extracted verbatim to scripts/ci/daily_engine_prophet_r2_health_publish.sh (512KB processing-cap diet 2026-11-02 — tests/test_workflow_file_size.py).
+        run: bash scripts/ci/daily_engine_prophet_r2_health_publish.sh
       - name: enforce Prophet R2 index tombstone (unconditional)
         if: ${{ !cancelled() }}
         timeout-minutes: 5

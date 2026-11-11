@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LRN-BULL-20260605",
-  "asof": "2026-11-01",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 25.5,
-  "raw_confidence": 24.7,
-  "delta_vs_base": -34.5,
+  "management_confidence": 21.9,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -38.1,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 29.2,
+    "validity": 13.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 36.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.401,
+    "dist_to_stop_r": 0.235,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 260.0,
-    "p1": -0.3991,
-    "p2": -0.1995,
+    "horizon_pct_used": 277.8,
+    "p1": -0.5101,
+    "p2": -0.255,
     "p3": null,
-    "move_r": -0.599,
+    "move_r": -0.765,
     "mfe_r": 0.36,
-    "mae_r": -0.696
+    "mae_r": -0.772
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 7.2699990844726585,
-  "_mae": -14.05000061035156,
+  "_mae": -15.569997253417966,
   "_max_p1": 0.24017175700273075,
   "_first_trigger_ts": "2026-07-14",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 117,
-  "tau": 2.6,
+  "days_elapsed": 125,
+  "tau": 2.7778,
   "closed": true,
   "outcome": "EXPIRED"
 }

@@ -398,8 +398,13 @@
     if(i === 0){
       fv = P + c * months;
     } else {
-      var g = Math.pow(1 + i, months);
-      fv = P * g + c * (g - 1) / i;
+      var logRate = Math.log1p(i);
+      var exponent = months * logRate;
+      var growthFactor = Math.expm1(exponent);
+      // Preserve the annuity's cash limit when exponent underflows to zero.
+      var expRatio = exponent === 0 ? 1 : growthFactor / exponent;
+      var annuityRatio = expRatio * (logRate / i);
+      fv = P + P * growthFactor + (c * months) * annuityRatio;
     }
     if(!isFinite(fv)) return {ok:false, msg:"Those numbers are too large to project — try a shorter horizon or lower return."};
     var contributed = P + c * months;
@@ -492,7 +497,7 @@
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
 <script src="../../account.js?v=3a75ad49" defer></script>
-<script src="../../theme.js?v=3c193891" defer></script>
+<script src="../../theme.js?v=aa83d371" defer></script>
 
 <script>
 (function(){
@@ -616,7 +621,7 @@
 })();
 </script>
 
-<script src="../../onboard.js?v=258dd123" defer></script>
+<script src="../../onboard.js?v=617b2faf" defer></script>
 <script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
