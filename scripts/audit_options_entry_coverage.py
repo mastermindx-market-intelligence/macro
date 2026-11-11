@@ -15,6 +15,7 @@ Emits:
 Coverage sections emitted
 ─────────────────────────
 1. per-feature non-null count + share (state.parquet snapshot) + per-ticker coverage
+   + per-source session-date alignment by unique ticker (not data qualification)
 2. per-family stamp coverage on ledger rows: n_cond/n_base now + new-stamped-fire
    counts per ISO week (derived from ledger as_of — NO stamp-arrival column)
 3. readiness forecast per family: projected date n_cond>=30 from trailing cadence ×
@@ -545,9 +546,12 @@ def _consistency_rows(gate: dict, root: Path, today: date) -> list[dict]:
 
 def run(root: Path | None = None, write: bool = True) -> dict:
     """Run the full options entry coverage audit.  Returns summary dict."""
+    from lib import nyse_calendar, options_coverage
+
     t0 = time.monotonic()
     root = _resolve_root(root)
-    today = datetime.now(timezone.utc).date()
+    run_instant = datetime.now(timezone.utc)
+    today = run_instant.date()
 
     # --- read inputs ---
     state_p = root / "data" / "options_entry" / "state.parquet"
@@ -578,6 +582,13 @@ def run(root: Path | None = None, write: bool = True) -> dict:
         feature_section = _feature_coverage(state_df)
     else:
         feature_section = {"absent": True, "n_rows": 0, "n_features": 0, "features": [], "ticker_coverage": {}}
+
+    # Row as_of is the newest source date, not a freshness certificate for all
+    # its inputs. Keep each source clock and each unique ticker independently.
+    source_section = options_coverage.source_session_coverage(
+        state_df, comparison_session=nyse_calendar.expected_last_session(run_instant),
+        date_columns=("src_gex_asof", "src_skew_asof", "src_ivspread_asof", "src_flow_asof"),
+    )
 
     # --- section 2+3: family stamp coverage + readiness forecast ---
     if ledger_df is not None and gate:
@@ -624,6 +635,7 @@ def run(root: Path | None = None, write: bool = True) -> dict:
         "as_of": today.isoformat(),
         "absent_stores": absent_stores,
         "feature_coverage": feature_section,
+        "source_session_coverage": source_section,
         "family_stamp_coverage": family_section,
         "structural_nulls": structural_nulls,
         "consistency": consistency,
