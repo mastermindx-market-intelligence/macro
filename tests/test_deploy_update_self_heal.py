@@ -1831,7 +1831,13 @@ def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
     )
     after_copy = SCRIPT.index("\nreconcile_ohlc_delivery\n", noop)
     assert changed < before_copy < copy < noop < after_copy
-    assert SCRIPT[noop - 4:noop] == "fi\n\n"
+    # Sector Intelligence lane 1 (7bb9a2691443) closes the live-source
+    # transaction at top level right after the changed-branch `fi` and before
+    # this unconditional reconciliation (live_source_finish restores "before
+    # the ordinary updater's ... reconciliation work"). The reconcile must still
+    # sit at top level, outside the changed branch, immediately after that pair.
+    tail = "fi\nlive_source_finish\n\n"
+    assert SCRIPT[noop - len(tail):noop] == tail
     assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]
 
 
