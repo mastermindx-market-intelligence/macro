@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-11",
-  "n_events_logged": 1926,
+  "n_events_logged": 1924,
   "n_events_graded": 1551,
   "classes": [
     {
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 890,
+      "n": 887,
       "n_graded": 832,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -125,7 +125,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 65,
+      "n": 66,
       "n_graded": 39,
       "hit_5d": 0.717948717948718,
       "hit_21d": 0.5135135135135135,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 26,
+      "n": 27,
       "n_graded": 19,
       "hit_5d": 0.47368421052631576,
       "hit_21d": 0.3888888888888889,

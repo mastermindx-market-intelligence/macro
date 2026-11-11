@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-11-11",
-  "generated_utc": "2026-11-11T08:01:40.225367+00:00",
+  "generated_utc": "2026-11-11T08:53:20.771304+00:00",
   "n_tickers": 2052,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -2349,6 +2349,8 @@
       ],
       "weighted_score": 0.4,
       "patents": 298,
+      "days_to_earnings": 2,
+      "next_earnings": "2026-11-13",
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
