@@ -88,7 +88,7 @@ _PENALTY_DENOM = 12
 
 # tanh mapping scale: maps excess-return floats to 0-100 range
 # score = 50 + 50 * tanh(k * x); k chosen so x=5pp => ~87/100, x=-5pp => ~13/100
-FOLLOW_VERSION = "5.fund-memory.2026-07-19"  # bump on any scoring-logic change (busts builder cache)
+FOLLOW_VERSION = "6.benchmark-order.2026-11-11"  # bump on any scoring-logic change (busts builder cache)
 _TANH_K = 2.0 / 5.0  # 0.4 — so tanh(2 * excess/5) at excess=5pp gives tanh(2)≈0.96
 
 # rotation IQ tanh scale: applied to the average signed sector-call excess (in pp units,
@@ -224,6 +224,9 @@ def _excess(
     spy_after = spy.index[spy.index >= d0]
     spy_before = spy.index[spy.index <= d1]
     if len(spy_after) == 0 or len(spy_before) == 0:
+        return None
+    # Disjoint benchmark coverage must not price a backward-time return.
+    if spy_after[0] > spy_before[-1]:
         return None
     b0, b1 = float(spy.loc[spy_after[0]]), float(spy.loc[spy_before[-1]])
     if b0 <= 0:
