@@ -2336,6 +2336,96 @@ def _canonical_digest(payload: dict[str, Any]) -> str:
     return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
 
 
+# The docs fast lane's trusted-base verdict schema.  scripts/ci_docs_tier.py
+# (executed from the DEFAULT BRANCH, never candidate code) publishes this
+# schema; tests pin the two constants equal so they cannot drift apart.
+DOCS_TIER_SCHEMA = "ci.docs_tier.v1"
+
+
+def load_docs_tier_verdict(path: str | Path) -> dict[str, Any] | None:
+    """Parse a trusted-base docs-tier verdict file, or ``None`` on ANY defect.
+
+    ``None`` is the fail-closed direction: the plan runs the incumbent scoped
+    selection exactly as though no verdict existed.  Transport doubts (absent,
+    unreadable, oversize, non-object, wrong schema) never raise into the
+    planner, and a ``docs_tier: false`` verdict — including the classifier's
+    own error token — parses fine and is refused by the gate below.
+    """
+    try:
+        raw = Path(path).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    if len(raw) > 65_536:
+        return None
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, dict) or parsed.get("schema") != DOCS_TIER_SCHEMA:
+        return None
+    return parsed
+
+
+def docs_tier_eligible(
+    verdict: Mapping[str, Any] | None,
+    *,
+    changed: list[str] | None,
+    changed_from: str | None,
+    tested_tree_sha: str,
+    base_sha: str,
+    scope_mode: str,
+    role: str,
+    invalidated: bool,
+    manifest_changed_job_ids: Iterable[str] | None,
+) -> bool:
+    """The docs fast lane's ONLY admission.  Every check fails closed.
+
+    A pure-markdown diff selects zero legacy jobs, so this is authority over
+    CI execution and must not be manufacturable from a candidate tree:
+
+    * the verdict is produced by the DEFAULT-BRANCH copy of
+      ``scripts/ci_docs_tier.py`` (the same trusted-base shape
+      ``ci-authority.yml`` uses), never by the pull request's own copy;
+    * ``base_sha``/``merge_sha`` bind it to THIS run's exact tested tree and
+      first-parent base — a verdict minted for any other diff is refused;
+    * ``paths_sha256`` must equal the digest of the changed list THIS planner
+      resolved from the same git objects, so the classifier judged exactly
+      the diff being scoped, never a stale or substituted one;
+    * ``paths_count`` cross-checks the same list a second, cheap way.
+
+    Any doubt — no verdict, wrong schema, negative verdict, main role,
+    shadow/off scope mode, no diff, global invalidator, manifest delta, or
+    one byte of binding mismatch — returns ``False`` and the incumbent
+    scoped selection runs unchanged.
+    """
+    if verdict is None or verdict.get("schema") != DOCS_TIER_SCHEMA:
+        return False
+    if verdict.get("docs_tier") is not True:
+        return False
+    if role != "pr_head" or scope_mode != "active":
+        return False
+    if changed is None or not changed:
+        return False
+    if changed_from is None or changed_from != base_sha:
+        return False
+    if invalidated or manifest_changed_job_ids is not None:
+        return False
+    if verdict.get("base_sha") != changed_from:
+        return False
+    if verdict.get("merge_sha") != tested_tree_sha:
+        return False
+    if verdict.get("paths_sha256") != changed_files_digest(changed):
+        return False
+    paths_count = verdict.get("paths_count")
+    if (
+        not isinstance(paths_count, int)
+        or isinstance(paths_count, bool)
+        or paths_count != len(changed)
+    ):
+        return False
+    return True
+
+
 def build_plan(
     jobs: Iterable[LegacyJob],
     changed: list[str] | None,
@@ -2351,12 +2441,18 @@ def build_plan(
     tested_tree_sha: str | None = None,
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
+    docs_tier_verdict: Mapping[str, Any] | None = None,
 ) -> CIPackPlan:
     """Decide, once, what this CI run executes.
 
     This is the ONLY place eligibility and partitioning are decided.  It runs
     exactly the steps main() used to run inline, in the same order and under the
     same conditions, so moving the decision here cannot change it.
+
+    ``docs_tier_verdict`` is the trusted-base classifier's verdict (see
+    :func:`docs_tier_eligible`).  ``None`` — or any doubt about it — keeps the
+    incumbent scoped behaviour unchanged; only a fully bound affirmative
+    verdict selects zero legacy jobs.
     """
     jobs = list(jobs)
     # A global invalidator changes what any job MEANS, so inferring scopes under
@@ -2369,37 +2465,89 @@ def build_plan(
             bounded_manifest_delta=manifest_changed_job_ids is not None,
         )
     )
-    scope_summary = "scope inference not needed"
-    if (
-        changed_from
-        and scope_mode != "off"
-        and changed is not None
-        and not invalidated
-    ):
-        jobs, scope_summary = infer_job_scopes(jobs)
-
-    eligible, reason = select_jobs(
-        jobs,
-        changed,
-        manifest_changed_job_ids=manifest_changed_job_ids,
+    # The identity SHAs and role/event are resolved BEFORE selection (pure
+    # motion of the identical expressions that used to sit below): the docs
+    # fast lane gate must bind its trusted-base verdict to the exact tested
+    # tree, and the role/event validation below still sees the same values.
+    tested_tree_sha = (
+        tested_tree_sha
+        or os.environ.get("CI_TESTED_TREE_SHA")
+        or os.environ.get("GITHUB_SHA")
+        or "unbound-tested-tree"
     )
-    predicted_job_ids = tuple(job.job_id for job in eligible)
-    if scope_mode == "off" and changed_from:
-        eligible = jobs
-        reason = "full suite: CI_SCOPE_MODE=off"
-    elif scope_mode == "shadow" and changed_from:
-        eligible = jobs
-        reason = (
-            f"shadow full suite: predicted {len(predicted_job_ids)}/{len(jobs)} jobs; "
-            f"{reason}"
-        )
-
+    subject_head_sha = (
+        subject_head_sha
+        or os.environ.get("CI_SUBJECT_HEAD_SHA")
+        or tested_tree_sha
+    )
+    base_sha = (
+        base_sha
+        or os.environ.get("CI_BASE_SHA")
+        or changed_from
+        or tested_tree_sha
+    )
     event = event or os.environ.get("GITHUB_EVENT_NAME") or (
         "pull_request" if changed_from is not None else "workflow_dispatch"
     )
     role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
         "pr_head" if event == "pull_request" else "main"
     )
+
+    # The docs fast lane (see docs_tier_eligible): a trusted-base-attested
+    # all-narrative diff selects ZERO legacy jobs.  Scope inference — the
+    # expensive half of a real plan — is skipped because no selection can
+    # change the outcome; fences.yml, ci-authority.yml, contract-delta and
+    # ci-gate remain the required proof of the head either way.
+    docs_tier = (
+        changed is not None
+        and changed
+        and docs_tier_eligible(
+            docs_tier_verdict,
+            changed=changed,
+            changed_from=changed_from,
+            tested_tree_sha=tested_tree_sha,
+            base_sha=base_sha,
+            scope_mode=scope_mode,
+            role=role,
+            invalidated=invalidated,
+            manifest_changed_job_ids=manifest_changed_job_ids,
+        )
+    )
+    if docs_tier:
+        eligible: list[LegacyJob] = []
+        reason = (
+            f"docs fast lane: {len(changed)} inert narrative path(s) attested "
+            f"by the trusted-base classifier; 0 of {len(jobs)} legacy jobs; "
+            "fences/contract-delta/ci-gate still prove the head"
+        )
+        scope_summary = "scope inference skipped: docs fast lane"
+        predicted_job_ids: tuple[str, ...] = ()
+    else:
+        scope_summary = "scope inference not needed"
+        if (
+            changed_from
+            and scope_mode != "off"
+            and changed is not None
+            and not invalidated
+        ):
+            jobs, scope_summary = infer_job_scopes(jobs)
+
+        eligible, reason = select_jobs(
+            jobs,
+            changed,
+            manifest_changed_job_ids=manifest_changed_job_ids,
+        )
+        predicted_job_ids = tuple(job.job_id for job in eligible)
+        if scope_mode == "off" and changed_from:
+            eligible = jobs
+            reason = "full suite: CI_SCOPE_MODE=off"
+        elif scope_mode == "shadow" and changed_from:
+            eligible = jobs
+            reason = (
+                f"shadow full suite: predicted {len(predicted_job_ids)}/{len(jobs)} jobs; "
+                f"{reason}"
+            )
+
     # Main and full-suite plans retain every legacy baseline check name.
     # Only a genuinely narrowed active PR selection may compact execution.
     narrowed_pr = (
@@ -2424,23 +2572,6 @@ def build_plan(
     # full-suite case and hashes to "" — an affirmative "no list", not a hash of
     # the empty list.
     changed_files_sha256 = changed_files_digest(changed)
-    tested_tree_sha = (
-        tested_tree_sha
-        or os.environ.get("CI_TESTED_TREE_SHA")
-        or os.environ.get("GITHUB_SHA")
-        or "unbound-tested-tree"
-    )
-    subject_head_sha = (
-        subject_head_sha
-        or os.environ.get("CI_SUBJECT_HEAD_SHA")
-        or tested_tree_sha
-    )
-    base_sha = (
-        base_sha
-        or os.environ.get("CI_BASE_SHA")
-        or changed_from
-        or tested_tree_sha
-    )
     # `workflow` is resolved HERE, before the role/event validation below, so
     # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of
     # a second, later, easy-to-miss check. Moving this resolution earlier does
@@ -2561,6 +2692,7 @@ def plan_from_workflow(
     subject_head_sha: str | None = None,
     base_sha: str | None = None,
     gate: str | None = None,
+    docs_tier_file: str | Path | None = None,
 ) -> CIPackPlan:
     """Load the manifest, resolve the diff, and plan — the whole decision."""
     if tracked_paths_file is not None and tested_tree_sha is None:
@@ -2600,6 +2732,11 @@ def plan_from_workflow(
             tested_tree_sha=tested_tree_sha,
             subject_head_sha=subject_head_sha,
             base_sha=base_sha,
+            docs_tier_verdict=(
+                load_docs_tier_verdict(docs_tier_file)
+                if docs_tier_file is not None
+                else None
+            ),
         )
 
 
@@ -5701,6 +5838,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     # nothing here ON PURPOSE, so the complete manifest always audits main.
     parser.add_argument("--changed-from", default=None)
     parser.add_argument(
+        "--docs-tier-file",
+        default=None,
+        metavar="PATH",
+        help=(
+            "planner-only: trusted-base docs-tier verdict JSON (produced by "
+            "executing the DEFAULT-BRANCH copy of scripts/ci_docs_tier.py). "
+            "Absent, unreadable, or non-affirmative verdicts fail closed to "
+            "the incumbent scoped selection"
+        ),
+    )
+    parser.add_argument(
         "--scope-mode",
         choices=("active", "shadow", "off"),
         default=os.environ.get("CI_SCOPE_MODE", "active"),
@@ -5954,6 +6102,7 @@ def main(argv: list[str] | None = None) -> int:
                 subject_head_sha=args.subject_head_sha,
                 base_sha=args.base_sha,
                 gate=args.gate,
+                docs_tier_file=args.docs_tier_file,
             )
         shadow = args.scope_mode == "shadow" and args.changed_from
         if shadow:

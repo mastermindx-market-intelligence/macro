@@ -4768,6 +4768,49 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/ci-plan-runner"
           "$RUNNER_TEMP/ci-plan-runner/bin/pip" install pyyaml
+      # The docs fast lane's classifier is AUTHORITY over CI execution (a
+      # pure-markdown diff may select zero legacy jobs), so a candidate merge
+      # tree must not be its own judge. Exactly the ci-authority.yml shape:
+      # check out the DEFAULT BRANCH, never the candidate head, and execute
+      # only that copy. The classifier reads real git objects from the
+      # workspace above (the exact tested merge and its first parent) and
+      # publishes a bounded verdict the plan step binds to its own resolved
+      # diff by digest. `persist-credentials: false` and the sub-TEMP path
+      # keep this checkout from ever reaching the planner's git or pushes.
+      - name: check out the trusted-base docs-tier classifier
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+          sparse-checkout: scripts
+          persist-credentials: false
+          path: '${{ runner.temp }}/ci-trusted-base'
+      # NEVER FAIL THIS JOB from the classifier: an absent, unreadable or
+      # negative verdict is the fail-closed direction — the planner simply
+      # runs the incumbent scoped selection. `set +e` keeps a classifier bug
+      # from reddening every PR while the verdict file still records why.
+      - name: classify the diff for the docs fast lane
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          DOCS_TIER_BASE: ${{ steps.identity.outputs.tested_base_sha }}
+          DOCS_TIER_MERGE: ${{ steps.identity.outputs.tested_tree_sha }}
+        run: |
+          set +e
+          "$RUNNER_TEMP/ci-plan-runner/bin/python" \
+            "$RUNNER_TEMP/ci-trusted-base/scripts/ci_docs_tier.py" \
+            --workspace "$GITHUB_WORKSPACE" \
+            --base "$DOCS_TIER_BASE" \
+            --merge "$DOCS_TIER_MERGE" \
+            --out "$RUNNER_TEMP/ci-docs-tier/verdict.json"
+          rc=$?
+          if [ "$rc" -ne 0 ] || [ ! -s "$RUNNER_TEMP/ci-docs-tier/verdict.json" ]; then
+            printf '%s\n' '{"schema":"ci.docs_tier.v1","docs_tier":false,"reason":"classifier-error: nonzero exit or no verdict","base_sha":"","merge_sha":"","paths_sha256":"","paths_count":0}' \
+              > "$RUNNER_TEMP/ci-docs-tier/verdict.json"
+            echo "::warning title=ci-docs-tier::classifier did not produce a verdict; the plan fails closed to scoped selection"
+          fi
+          exit 0
       - name: bind exact tested-tree path inventory
         run: >-
           "$RUNNER_TEMP/ci-plan-runner/bin/python" scripts/ci_scope_dependencies.py
@@ -4797,6 +4840,7 @@ jobs:
           CI_SCOPE_MODE: ${{ vars.CI_SCOPE_MODE == 'off' && 'off' || 'active' }}
           CI_DYNAMIC_MATRIX_MODE: ${{ vars.CI_DYNAMIC_MATRIX_MODE == 'off' && 'off' || 'active' }}
           CI_SCOPE_ARG: ${{ github.event_name == 'pull_request' && format('--changed-from {0}', steps.identity.outputs.tested_base_sha) || '' }}
+          CI_DOCS_TIER_ARG: ${{ github.event_name == 'pull_request' && format('--docs-tier-file {0}/ci-docs-tier/verdict.json', runner.temp) || '' }}
           TESTED_TREE_SHA: ${{ steps.identity.outputs.tested_tree_sha }}
           SUBJECT_HEAD_SHA: ${{ steps.identity.outputs.subject_head_sha }}
           TESTED_BASE_SHA: ${{ steps.identity.outputs.tested_base_sha }}
@@ -4819,6 +4863,7 @@ jobs:
           --subject-head-sha "$SUBJECT_HEAD_SHA"
           --base-sha "$TESTED_BASE_SHA"
           $CI_SCOPE_ARG
+          $CI_DOCS_TIER_ARG
       # THE CHANGED-FILE LIST'S TRANSPORT (2026-08-14, run 31775693780). An
       # artifact rather than a job output, because a job output becomes an `env:`
       # string in the consuming job and execve caps a single one at 131,072

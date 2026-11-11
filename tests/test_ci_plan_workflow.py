@@ -139,10 +139,23 @@ def test_ci_plan_checks_out_full_history_for_the_base_diff() -> None:
     Drop `fetch-depth: 0` and the diff fails, the planner widens to the full suite by
     law (fail-SAFE), and every PR runs everything while the plan still reports
     success.  The regression costs the entire feature and reds nothing.
+
+    The job's SECOND checkout is the docs-tier classifier's trusted base
+    (`ref: default_branch`, depth 1, `scripts` only) and must never be the one
+    carrying the diff history: this test pins that exactly one checkout has
+    `fetch-depth: 0` and that it is the tested-tree checkout at step 0, so the
+    classifier copy cannot silently become the diff source.
     """
-    checkouts = [s for s in _job("ci-plan")["steps"] if str(s.get("uses", "")).startswith("actions/checkout@")]
-    assert len(checkouts) == 1, f"ci-plan should check out exactly once, found {len(checkouts)}"
-    assert checkouts[0]["with"]["fetch-depth"] == 0
+    steps = _job("ci-plan")["steps"]
+    checkouts = [s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")]
+    full = [s for s in checkouts if s.get("with", {}).get("fetch-depth") == 0]
+    assert len(full) == 1, (
+        f"ci-plan needs exactly one full-history tested-tree checkout, found {len(full)} "
+        f"of {len(checkouts)} checkouts"
+    )
+    assert steps.index(full[0]) < min(
+        steps.index(s) for s in checkouts if s is not full[0]
+    ), "the full-history tested-tree checkout must precede any trusted-base checkout"
 
 
 def test_ci_plan_sparse_profile_omits_only_the_measured_heavy_trees() -> None:
@@ -259,6 +272,105 @@ def test_workflow_dispatch_passes_no_changed_from_so_main_stays_full_suite() -> 
     assert scope_arg.rstrip().endswith("|| '' }}")
     assert "CI_SCOPE_ARG" not in _pack_step().get("env", {})
     assert "--changed-from" not in _pack_step()["run"]
+
+
+# ─── ci-plan: the docs fast lane's trusted-base classifier ─────────────────────
+
+
+def _classifier_checkout() -> dict[str, Any]:
+    steps = _job("ci-plan")["steps"]
+    matches = [
+        s
+        for s in steps
+        if str(s.get("uses", "")) == "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+    ]
+    assert len(matches) == 1, (
+        f"expected exactly one immutable-pinned trusted-base checkout in ci-plan, "
+        f"found {len(matches)}; the main checkout is a moving `@v4` tag"
+    )
+    return matches[0]
+
+
+def test_docs_tier_classifier_is_copied_from_trusted_base_not_the_candidate_head() -> None:
+    """The classifier may drop every legacy job, so it must not judge its own PR.
+
+    A candidate merge tree that shipped its own classifier could edit the tier
+    rules in the same PR that benefits from them.  This pins the exact
+    ci-authority.yml shape: immutable-pinned checkout of the repository's
+    DEFAULT BRANCH, depth 1, `scripts` only, no persisted credentials, PR-only —
+    and parked under `runner.temp`, never inside `$GITHUB_WORKSPACE`, so the
+    planner's git (which diffs the workspace) can never see it and a stray
+    commit cannot reach it.
+    """
+    step = _classifier_checkout()
+    assert step["if"] == "github.event_name == 'pull_request'"
+    with_ = step["with"]
+    assert with_["ref"] == "${{ github.event.repository.default_branch }}"
+    assert with_["fetch-depth"] == 1
+    assert with_["sparse-checkout"] == "scripts"
+    assert with_["persist-credentials"] is False
+    assert with_["path"] == "${{ runner.temp }}/ci-trusted-base"
+    for mutable in MUTABLE_REFS:
+        assert mutable not in str(with_), f"the trusted base must not depend on {mutable}"
+
+
+def test_docs_tier_classifier_step_cannot_fail_the_plan_and_fails_closed() -> None:
+    """A classifier crash must degrade to the incumbent scoped plan, never red the job.
+
+    `set +e` plus the explicit `exit 0` keep a classifier bug from reddening every
+    PR; the fallback verdict written when the classifier exits nonzero or
+    produces nothing must carry `docs_tier: false` so the planner's binding
+    checks (schema, digests, SHAs) cannot pass on a partial or absent file.
+    The step must also run BEFORE the plan step: a classifier that runs after
+    planning is dead weight that reds nothing when it breaks.
+    """
+    job = _job("ci-plan")
+    step = _step_running(job, "ci_docs_tier.py")
+    assert step["if"] == "github.event_name == 'pull_request'"
+    assert "set +e" in step["run"]
+    assert step["run"].rstrip().endswith("exit 0")
+    assert '"schema":"ci.docs_tier.v1"' in step["run"]
+    assert '"docs_tier":false' in step["run"], "the fallback token must be fail-closed"
+    # The classifier judges the EXACT immutable pair the planner will bind to.
+    assert step["env"]["DOCS_TIER_BASE"] == "${{ %s }}" % IMMUTABLE_BASE
+    assert step["env"]["DOCS_TIER_MERGE"] == "${{ steps.identity.outputs.tested_tree_sha }}"
+    assert steps_index(job, step) < steps_index(job, _plan_step())
+    # It executes the trusted copy, never the workspace's own scripts/.
+    assert "$RUNNER_TEMP/ci-trusted-base/scripts/ci_docs_tier.py" in step["run"]
+    assert step["run"].count("--workspace") == 1 and '"$GITHUB_WORKSPACE"' in step["run"]
+
+
+def steps_index(job: dict[str, Any], step: dict[str, Any]) -> int:
+    return job["steps"].index(step)
+
+
+def test_docs_tier_verdict_travels_as_a_bounded_file_argument() -> None:
+    """The verdict crosses only as a file PATH built from `runner.temp` context.
+
+    Three failure shapes this pins shut: (1) a literal `$RUNNER_TEMP` inside the
+    env value would NOT be re-expanded when the unquoted `$CI_DOCS_TIER_ARG`
+    word-splits — the argument must be built from GitHub context via `format()`;
+    (2) hard-coding `--docs-tier-file` into the run scalar would hand the
+    planner the flag on workflow_dispatch, where no classifier ran (main's
+    baseline must keep selecting the full manifest, mirroring CI_SCOPE_ARG);
+    (3) echoing verdict FIELDS through outputs or env would reopen the
+    MAX_ARG_STRLEN hole `changed_files` closed — only the bounded file path
+    crosses, and the planner reads the file itself.
+    """
+    plan = _plan_step()
+    arg = plan["env"]["CI_DOCS_TIER_ARG"]
+    assert "--docs-tier-file" not in plan["run"]
+    assert "$CI_DOCS_TIER_ARG" in plan["run"]
+    assert "github.event_name == 'pull_request'" in arg
+    assert arg.rstrip().endswith("|| '' }}")
+    assert "format('--docs-tier-file {0}/ci-docs-tier/verdict.json', runner.temp)" in arg
+    assert "$RUNNER_TEMP" not in arg, "env values are not re-expanded by the shell"
+    assert "CI_DOCS_TIER_ARG" not in _pack_step().get("env", {})
+    assert "--docs-tier-file" not in _pack_step()["run"]
+    # No verdict field leaks as a job output: the bounded transport is the file.
+    assert not any(
+        "docs_tier" in key or "DOCS_TIER" in key for key in _job("ci-plan").get("outputs", {})
+    )
 
 
 def test_workflow_dispatch_can_pin_the_exact_observed_main_sha() -> None:
