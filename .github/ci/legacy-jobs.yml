@@ -12039,6 +12039,22 @@ jobs:
       - "scripts/build_stock_library.py"
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_daily_brief_api.py"
+      # Beta-first strategy evaluation (frozen protocol header): the harness,
+      # the runner, the authenticated transport and both suites are one
+      # dependency story. The API suite also pins the nightly regeneration
+      # block (scripts/ci/daily_engine_prophet_nightly.sh + its checkpoint
+      # allowlist) and build_prophet's R2 forbidden-key guard, and the
+      # committed artifact + frozen header are its binding evidence.
+      - "engine/prophet_beta_evaluation.py"
+      - "scripts/run_prophet_beta_evaluation.py"
+      - "app/prophet_beta_evaluation.py"
+      - "scripts/build_prophet.py"
+      - "scripts/ci/daily_engine_prophet_nightly.sh"
+      - "scripts/ci/daily_engine_prophet_checkpoint.sh"
+      - "research/prophet_v4/beta_first_evaluation/protocol_header_v1.json"
+      - "site/prophet/beta_evaluation.json"
+      - "tests/test_prophet_beta_evaluation.py"
+      - "tests/test_prophet_beta_evaluation_api.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12112,6 +12128,11 @@ jobs:
           python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
+      - name: Prophet beta-first evaluation — frozen harness, private API, nightly isolation
+        run: >
+          python -m pytest
+          tests/test_prophet_beta_evaluation.py
+          tests/test_prophet_beta_evaluation_api.py -q
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry

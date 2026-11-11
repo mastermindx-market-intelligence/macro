@@ -606,10 +606,12 @@ def read_plan_candidate_source(
 # R2 carries ONLY the minimal, non-decision-bearing health projection below.
 R2_HEALTH_KEY  = "prophet/health.json"
 
-#: Keys the R2 publish path must NEVER put to.  A frozenset of one today —
-#: never grown into a second full-book alias — but modeled as a set so a
-#: future forbidden key never needs a second guard.
-R2_PUBLIC_FORBIDDEN_KEYS = frozenset({"prophet/index.json"})
+#: Keys the R2 publish path must NEVER put to.  Never grown into a second
+#: full-book alias — but modeled as a set so a future forbidden key never
+#: needs a second guard.  ``prophet/beta_evaluation.json`` (the frozen beta
+#: evaluation artifact) is forbidden on exactly the index's terms: private,
+#: served only through the site-full authenticated API route.
+R2_PUBLIC_FORBIDDEN_KEYS = frozenset({"prophet/index.json", "prophet/beta_evaluation.json"})
 
 # R0.7 market-overlay inputs (compute_management_state macro_stance/futures_chg)
 MARKET_STATE_PATH = _REPO / "data" / "market_state" / "latest.json"

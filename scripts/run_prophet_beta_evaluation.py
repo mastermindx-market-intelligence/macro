@@ -47,6 +47,25 @@ def sha_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+def write_artifact_atomic(out: Path, text: str) -> None:
+    """Write the artifact via temp file + rename so readers never see a partial.
+
+    A crash or timeout mid-write leaves at most a ``.beta_evaluation.tmp.*``
+    sibling behind; the previous committed artifact stays intact until the
+    rename. The nightly step removes stale temp siblings before each run.
+    """
+    tmp = out.with_name(f".beta_evaluation.tmp.{os.getpid()}")
+    try:
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, out)
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
 def git(*args) -> str:
     try:
         return subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True,
@@ -536,7 +555,8 @@ def main(argv=None) -> int:
     bad = ev.assert_no_forbidden_keys(artifact)
     if bad:
         raise SystemExit(f"forbidden key names: {bad}")
-    Path(args.out).write_text(json.dumps(artifact, indent=1, ensure_ascii=False) + "\n")
+    write_artifact_atomic(Path(args.out),
+                          json.dumps(artifact, indent=1, ensure_ascii=False) + "\n")
     print(f"wrote {args.out}")
     return 0
 
