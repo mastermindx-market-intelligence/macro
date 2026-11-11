@@ -384,17 +384,61 @@
 
   var direction = "long";
 
+  // Whole decimal tokens, with optional correctly grouped commas/exponents.
+  // Bound the token/exponent before BigInt work; only blank optional fees are 0.
+  function decimal(value, optional){
+    var raw = String(value == null ? "" : value).trim();
+    if(!raw && optional) raw = "0";
+    if(!raw || raw.length > 128 || !/^[+-]?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(raw)) return null;
+    raw = raw.replace(/,/g, "");
+    var parts = raw.match(/^([+-]?)(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/);
+    var exponent = Number(parts[4] || 0), valueNumber = Number(raw);
+    if(!Number.isFinite(valueNumber) || !Number.isSafeInteger(exponent) || Math.abs(exponent) > 400) return null;
+    var fraction = parts[3] || "";
+    var coefficient = BigInt((parts[2] || "0") + fraction);
+    if(parts[1] === "-") coefficient = -coefficient;
+    if(coefficient !== 0n && valueNumber === 0) return null;
+    var scale = fraction.length - exponent;
+    if(scale < 0){ coefficient *= 10n ** BigInt(-scale); scale = 0; }
+    return {c:coefficient, s:scale, n:valueNumber};
+  }
+  function subtractDecimal(a, b){
+    var scale = Math.max(a.s, b.s);
+    return {c:a.c * 10n ** BigInt(scale-a.s) - b.c * 10n ** BigInt(scale-b.s), s:scale};
+  }
+  function multiplyDecimal(a, b){ return {c:a.c*b.c, s:a.s+b.s}; }
+  function decimalNumber(a){
+    var value = Number(a.c.toString() + "e" + (-a.s));
+    return a.c !== 0n && value === 0 ? NaN : value;
+  }
+  function decimalPercent(profit, cost){
+    if(profit.c === 0n) return 0;
+    // Divide with at least 18 significant decimal digits, then apply the scale
+    // in one conversion. No overflowing/underflowing intermediate float ratio.
+    var digits = (profit.c < 0n ? -profit.c : profit.c).toString().length;
+    var shift = Math.max(0, cost.c.toString().length - digits + 18);
+    var coefficient = profit.c * 10n ** BigInt(shift) / cost.c;
+    var value = Number(coefficient.toString() + "e" + (cost.s-profit.s+2-shift));
+    return value === 0 ? NaN : value;
+  }
+
   // ── pure compute (CONTRACT §7) ──────────────────────────────────────────────
   function compute(inp){
-    var dir=inp.dir, E=inp.E, X=inp.X, Q=inp.Q, F=inp.F, days=inp.days;
+    var dir=inp.dir, E=decimal(inp.E), X=decimal(inp.X), Q=decimal(inp.Q),
+        F=decimal(inp.F, true), days=inp.days;
     if(!dir) return {ok:false, msg:"Select a direction — long or short."};
-    if(!(E>0)) return {ok:false, msg:"Enter your entry price."};
-    if(!(X>0)) return {ok:false, msg:"Enter your exit price."};
-    if(!(Q>0)) return {ok:false, msg:"Enter the number of shares or units."};
-    if(!(F>=0)) return {ok:false, msg:"Enter total fees (use 0 if none)."};
-    var cost = E * Q;
-    var PL = dir === "long" ? (X - E) * Q - F : (E - X) * Q - F;
-    var ret = cost !== 0 ? 100 * PL / cost : 0;
+    if(!E || !(E.n>0)) return {ok:false, msg:"Enter your entry price."};
+    if(!X || !(X.n>0)) return {ok:false, msg:"Enter your exit price."};
+    if(!Q || !(Q.n>0)) return {ok:false, msg:"Enter the number of shares or units."};
+    if(!F || !(F.n>=0)) return {ok:false, msg:"Enter total fees (use 0 if none)."};
+    var exactCost = multiplyDecimal(E, Q);
+    var move = dir === "long" ? subtractDecimal(X, E) : subtractDecimal(E, X);
+    var exactPL = subtractDecimal(multiplyDecimal(move, Q), F);
+    var cost = decimalNumber(exactCost), PL = decimalNumber(exactPL);
+    var ret = decimalPercent(exactPL, exactCost);
+    if(!(cost>0) || !Number.isFinite(cost) || !Number.isFinite(PL) || !Number.isFinite(ret)){
+      return {ok:false, msg:"These values are outside the supported calculation range."};
+    }
     var out = {ok:true, PL:PL, ret:ret, cost:cost, dir:dir};
     if(days !== null && days >= 1){
       var retFrac = PL / cost;
@@ -440,7 +484,6 @@
       btn.classList.add("on"); direction=btn.dataset.v; render();
     });
 
-    function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return (n<0?"-$":"$") + Math.abs(n).toLocaleString("en-US",{maximumFractionDigits:2}); }
     function parseDays(){
       var o=els.dateOpen.value, c=els.dateClose.value;
@@ -449,15 +492,15 @@
       return isFinite(d) && d >= 0 ? Math.round(d) : null;
     }
     function dash(){
-      outMain.textContent="—";
-      [outRet,outAnn,outCost,outDays].forEach(function(e){ e.textContent="—"; e.className=""; });
+      [outMain,outRet,outAnn,outCost,outDays].forEach(function(e){ e.textContent="—"; e.className=""; });
+      outMainUnit.textContent="";
+      copied.classList.remove("show");
     }
 
     var last=null;
     function render(){
-      var F=numFrom(els.fees); if(isNaN(F)) F=0;
-      var inp = { dir:direction, E:numFrom(els.entry), X:numFrom(els.exit),
-                  Q:numFrom(els.qty), F:F, days:parseDays() };
+      var inp = { dir:direction, E:els.entry.value, X:els.exit.value,
+                  Q:els.qty.value, F:els.fees.value, days:parseDays() };
       var res=compute(inp); last=res;
       if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
 
