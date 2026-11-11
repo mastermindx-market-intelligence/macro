@@ -73,10 +73,12 @@ def _streak(recent_obs: list[float]) -> dict:
     if not recent_obs:
         return {"sign": 0, "len": 0}
     first = recent_obs[0]
+    if first == 0:
+        return {"sign": 0, "len": 0}
     sign = 1 if first > 0 else -1
     length = 1
     for v in recent_obs[1:]:
-        vsign = 1 if v > 0 else -1
+        vsign = 1 if v > 0 else (-1 if v < 0 else 0)
         if vsign == sign:
             length += 1
         else:
@@ -288,10 +290,10 @@ def _compose_copy(
     def _down_count(recent: list[dict]) -> int:
         return sum(1 for r in recent if r["ret"] < 0)
 
-    mkt_hit = market_block.get("hit", 50)
-    mkt_mean = market_block.get("mean", 0.0)
-    mkt_up_word_en = "up" if (mkt_mean if mkt_mean is not None else 0) >= 0 else "down"
-    mkt_up_word_zh = "上涨" if (mkt_mean if mkt_mean is not None else 0) >= 0 else "下跌"
+    # hit is explicitly the frequency of positive returns, independent of mean.
+    mkt_hit = market_block.get("hit")
+    market_en = f", while the market itself was up in {mkt_hit}% of them" if mkt_hit is not None else ""
+    market_zh = f"，而大盘在其中 {mkt_hit}% 的时间上涨" if mkt_hit is not None else ""
 
     if mom_entry and mom_entry["verdict"] == "headwind":
         recent = mom_entry["recent"]
@@ -309,13 +311,12 @@ def _compose_copy(
         headline_en = (
             f"{month_label_en} is usually a rough month for the market's recent winners — "
             f"the momentum style fell in {down} of the last {n} {month_label_en}s"
-            f"{streak_suffix_en}, while the market itself was {mkt_up_word_en} in "
-            f"{mkt_hit}% of them."
+            f"{streak_suffix_en}{market_en}."
         )
         headline_zh = (
             f"{month_label_zh}通常是市场近期赢家的困难月份——"
             f"动量风格在过去 {n} 个{month_label_zh}中下跌了 {down} 次"
-            f"{streak_suffix_zh}，而大盘在其中 {mkt_hit}% 的时间{mkt_up_word_zh}。"
+            f"{streak_suffix_zh}{market_zh}。"
         )
         stance_en = "Watch — don't chase this month's hottest stocks."
         stance_zh = "观望——本月不要追逐最热门的股票。"
@@ -329,7 +330,7 @@ def _compose_copy(
     if mom_entry and mom_entry["verdict"] == "tailwind":
         recent = mom_entry["recent"]
         n = min(mom_entry["y10"].get("n") or len(recent), len(recent))
-        up = n - _down_count(recent[:n])
+        up = sum(1 for r in recent[:n] if r["ret"] > 0)
         sk = mom_entry["streak"]
         streak_suffix_en = ""
         if sk["sign"] > 0 and sk["len"] >= 3:
@@ -340,13 +341,12 @@ def _compose_copy(
         headline_en = (
             f"{month_label_en} has tended to be kind to the market's recent winners — "
             f"the momentum style rose in {up} of the last {n} {month_label_en}s"
-            f"{streak_suffix_en}, while the market itself was {mkt_up_word_en} in "
-            f"{mkt_hit}% of them."
+            f"{streak_suffix_en}{market_en}."
         )
         headline_zh = (
             f"{month_label_zh}通常对市场近期赢家较友好——"
             f"动量风格在过去 {n} 个{month_label_zh}中上涨了 {up} 次"
-            f"{streak_suffix_zh}，而大盘在其中 {mkt_hit}% 的时间{mkt_up_word_zh}。"
+            f"{streak_suffix_zh}{market_zh}。"
         )
         stance_en = "A seasonally friendlier month for recent winners — still judge each stock on its merits."
         stance_zh = "季节性上对近期赢家较为有利——仍需就每只股票独立判断。"
@@ -383,7 +383,7 @@ def _compose_copy(
             chip_en = f"{month_short}: seasonal headwind for {f_plain_en} · context only"
             chip_zh = f"{month_label_zh}：{f_plain_zh}季节性偏弱 · 仅供参考"
         else:
-            up_count = n - _down_count(recent[:n])
+            up_count = sum(1 for r in recent[:n] if r["ret"] > 0)
             headline_en = (
                 f"{month_label_en} has historically been a friendlier month for {f_plain_en} — "
                 f"rose in {up_count} of the last {n} {month_label_en}s."

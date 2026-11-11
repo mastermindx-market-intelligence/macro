@@ -338,3 +338,66 @@ class TestStreakHelper:
     def test_single_positive(self):
         r = fs._streak([0.5])
         assert r["sign"] == 1 and r["len"] == 1
+
+
+
+def _november_now(monkeypatch, values):
+    idx = pd.DatetimeIndex([f'{y}-11-30' for y in range(2016, 2026)])
+    _fake_store(monkeypatch, pd.DataFrame(values, index=idx))
+    return fs.compute_factor_seasonality(date(2026, 11, 11))['now']
+
+
+@pytest.mark.parametrize('momentum', ([1.]*10, [-1.]*10))
+def test_market_clause_always_describes_positive_hit(monkeypatch, momentum):
+    now = _november_now(monkeypatch, {'mom':momentum, 'mkt_rf':[-10.]*7+[1.]*3})
+    assert now['market']['hit'] == 30
+    assert 'up in 30%' in now['headline_en']
+    assert '30% 的时间上涨' in now['headline_zh']
+    assert 'down in 30%' not in now['headline_en']
+
+
+@pytest.mark.parametrize('momentum', ([1.]*10, [-1.]*10))
+def test_missing_market_has_no_invented_comparison(monkeypatch, momentum):
+    now = _november_now(monkeypatch, {'mom':momentum})
+    assert now['market'] == {}
+    assert 'market itself' not in now['headline_en']
+    assert '大盘' not in now['headline_zh']
+    assert '50%' not in now['headline_en']+now['headline_zh']
+
+
+def test_zero_returns_are_not_rises_in_momentum_copy(monkeypatch):
+    now = _november_now(monkeypatch, {'mom':[1.]*7+[0.]*3, 'mkt_rf':[1.]*10})
+    assert 'rose in 7 of the last 10' in now['headline_en']
+    assert '上涨了 7 次' in now['headline_zh']
+    assert 'rose in 7/10' in now['chip_en']
+    assert '7次上涨' in now['chip_zh']
+
+
+def test_zero_interrupts_negative_streak_in_copy(monkeypatch):
+    now = _november_now(monkeypatch, {'mom':[-1.]*7+[0.]*3, 'mkt_rf':[1.]*10})
+    assert 'fell in 7 of the last 10' in now['headline_en']
+    assert 'straight' not in now['headline_en']
+    assert '连续' not in now['headline_zh']
+
+
+@pytest.mark.parametrize('values, expected', [([0.,-1.,-1.], {'sign':0,'len':0}), ([1.,1.,0.,1.], {'sign':1,'len':2}), ([-1.,-1.,0.,-1.], {'sign':-1,'len':2})])
+def test_zero_breaks_directional_streak(values, expected):
+    assert fs._streak(values) == expected
+
+
+def test_non_momentum_tailwind_counts_only_rises(monkeypatch):
+    now = _november_now(monkeypatch, {'hml':[1.]*7+[0.]*3, 'mkt_rf':[1.]*10})
+    assert 'rose in 7 of the last 10' in now['headline_en']
+    assert '上涨了 7 次' in now['headline_zh']
+
+
+@pytest.mark.parametrize('market', ([np.nan]*8+[1.,2.], [0.]*10, [-1.]*10))
+def test_sparse_or_zero_hit_market_copy(monkeypatch, market):
+    now = _november_now(monkeypatch, {'mom':[1.]*10, 'mkt_rf':market})
+    if np.isnan(market[0]):
+        assert 'market itself' not in now['headline_en']
+        assert '大盘' not in now['headline_zh']
+    else:
+        assert now['market']['hit'] == 0
+        assert 'up in 0%' in now['headline_en']
+        assert '0% 的时间上涨' in now['headline_zh']
