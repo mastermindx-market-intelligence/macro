@@ -5,6 +5,10 @@
 Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026 merged into protected master on 2026-11-04, and #2030 also merged; #2018 closed without merging and is not a pending adoption gate. Follow the current protected session-local review law, not a stale PR condition; merged source does not by itself prove a particular reviewer machine is installed. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
 
 
+## Reuse-first implementation
+
+Before bespoke work on proven infrastructure or chart/UI plumbing, check the existing owner and maintained open-source candidates; use narrow integration/extension where sound. Protect unique quant logic, existing security boundaries and consumer proof. See the [shared engineering policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) after its protected acceptance; do not add a survey or approval step for small repairs.
+
 ## Source authoring on M2: GitHub-native versus host-local
 
 When Mastermind #2118 is actually merged to protected `master`, an assigned Claude session with genuine GitHub-native write tools may publish scoped branch commits and PRs entirely through the authorized GitHub API, without acquiring an M2 worktree solely for that remote action. Follow the current protected Mastermind delivery workflow and [Macro's source-surface rules](AGENTS.md#github-native-source-authoring-versus-m2-host-local-custody). Until that merge, the candidate #2118 policy is not installed.
@@ -187,3 +191,9 @@ Memory files (account-local, `~/.claude/projects/<project>/memory/`) are one fac
 `Macro Dashboard/ObsidianBrain/` is a live symlink view over memory + research (Dataview MOCs). It is a *view* — edit sources (memory files, research docs), never the vault copies.
 
 <!-- Reconstructed 2026-07-05: PR #1215 shipped this file as 0 bytes (commit message described vault pointer + memory contract; content was lost — the #1052 zero-byte failure mode). Rebuilt from the memory index + program docs, with the model-routing standing rule added. -->
+
+## Graph engineering for substantial missions
+
+Load [.agents/skills/mastermind-graph-engineering/SKILL.md](.agents/skills/mastermind-graph-engineering/SKILL.md) for multi-domain or long-horizon work. It resolves the shared Mastermind skill and its T3, Hermes and Paperclip guidance.
+
+Keep product direction, long-horizon planning and acceptance with the principal. Give admitted suborchestrators complete domain outcomes, let them coordinate admitted children and integrate evidence locally, and send compact decisions and proof upward. Preserve original root, actual parentage, scope, budget, writer custody and result return. Discover runtime depth limits before spawning; use the shallowest useful hierarchy and continue after accepted milestones.

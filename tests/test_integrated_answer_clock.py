@@ -800,7 +800,7 @@ def test_early_exception_abandons_later_queued_reads(monkeypatch, _fresh_leg_adm
     assert _admission_slots_are_all_free()
 
 
-@pytest.mark.parametrize("failure_at", ["submit", "wait"])
+@pytest.mark.parametrize("failure_at", ["prepare", "submit", "wait"])
 def test_request_failure_abandons_admitted_work(
     monkeypatch, _fresh_leg_admission, failure_at
 ) -> None:
@@ -833,10 +833,28 @@ def test_request_failure_abandons_admitted_work(
         assert started.wait(timeout=2)
         raise RuntimeError("wait failure")
 
+    context_calls = 0
+    real_copy_context = contextvars.copy_context
+
+    def failing_preparation():
+        nonlocal context_calls
+        context_calls += 1
+        if context_calls == 3:
+            assert started.wait(timeout=2)
+            raise RuntimeError("preparation failure")
+        return real_copy_context()
+
     monkeypatch.setattr(
         integrated_answer, "_leg_pool", FailingSubmit() if failure_at == "submit" else pool
     )
-    if failure_at == "wait":
+    if failure_at == "prepare":
+        from types import SimpleNamespace
+
+        monkeypatch.setattr(
+            integrated_answer, "contextvars",
+            SimpleNamespace(copy_context=failing_preparation),
+        )
+    elif failure_at == "wait":
         monkeypatch.setattr(integrated_answer, "wait", failing_wait)
     try:
         with pytest.raises(RuntimeError, match="failure"):
@@ -849,7 +867,19 @@ def test_request_failure_abandons_admitted_work(
         release.set()
         pool.shutdown(wait=True)
     assert ran == ["running"]
-    assert _admission_slots_are_all_free()
+    if failure_at == "submit":
+        # This fixture rejects before enqueueing, but the submit caller cannot
+        # establish that from an opaque RuntimeError. Earlier accepted work is
+        # reclaimed; the current possibly accepted reservation stays accounted.
+        free = _drain_admission_slots()
+        try:
+            assert free == MAX_RETAINED - 1
+        finally:
+            for _slot in range(free):
+                integrated_answer._leg_admission.release()
+    else:
+        # Known pre-invocation failure and wait failure retain full recovery.
+        assert _admission_slots_are_all_free()
 
 
 def test_leg_releases_the_admission_instance_it_acquired(monkeypatch, _fresh_leg_admission) -> None:
@@ -883,4 +913,70 @@ def test_queued_leg_checks_absolute_deadline_before_read(monkeypatch, _fresh_leg
     assert leg["status"] == "absent"
     assert leg["degraded_reason"] == integrated_answer.COMPOSE_DEADLINE_REASON
     assert leg["ref"] is None and leg["payload"] is None
+    assert _admission_slots_are_all_free()
+
+
+def test_native_submit_start_failure_keeps_ambiguous_work_reserved(
+    monkeypatch, _fresh_leg_admission
+) -> None:
+    """Native submit can enqueue before Thread.start raises.
+
+    Repeated failed requests must not outgrow admission, run their abandoned
+    readers later, or release the same reservation twice when the queue drains.
+    """
+    prefix = "macro-c19-submit-start"
+    pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix=prefix)
+    monkeypatch.setattr(integrated_answer, "_leg_pool", pool)
+    original_start = threading.Thread.start
+    ran: list[str] = []
+    failures = 0
+    refusals: list[dict] = []
+
+    def failed_request_reader():
+        ran.append("failed request")
+        return integrated_answer._leg_fixed_absent("financial_facts", "unexpected")
+
+    def fail_owned_start(thread, *args, **kwargs):
+        if thread.name.startswith(prefix):
+            raise RuntimeError("controlled native worker-start failure")
+        return original_start(thread, *args, **kwargs)
+
+    try:
+        with monkeypatch.context() as startup:
+            startup.setattr(threading.Thread, "start", fail_owned_start)
+            for _request in range(MAX_RETAINED + 4):
+                try:
+                    result = integrated_answer._read_legs([
+                        ("financial_facts", failed_request_reader, ()),
+                    ])
+                except RuntimeError as exc:
+                    assert str(exc) == "controlled native worker-start failure"
+                    failures += 1
+                else:
+                    refusals.extend(result)
+            depth_before_drain = _pool_queue_depth(pool)
+            free_before_drain = _drain_admission_slots()
+            for _slot in range(free_before_drain):
+                integrated_answer._leg_admission.release()
+    finally:
+        # The startup patch has exited even on a red assertion. Drain this
+        # same test-owned native queue, then positively join its only worker.
+        try:
+            pool.submit(lambda: None).result(timeout=10)
+        finally:
+            pool.shutdown(wait=True)
+
+    assert failures == MAX_RETAINED
+    assert depth_before_drain == MAX_RETAINED
+    assert free_before_drain == 0
+    assert ran == []
+    assert len(refusals) == 4
+    for leg in refusals:
+        assert leg["status"] == "absent"
+        assert leg["degraded_reason"] == integrated_answer.COMPOSE_CAPACITY_REASON
+        assert leg["ref"] is None and leg["payload"] is None
+    assert all(
+        item["status"] == "NO_REF"
+        for item in integrated_answer._receipt_entries(refusals)
+    )
     assert _admission_slots_are_all_free()
