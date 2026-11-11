@@ -82,10 +82,12 @@
     "limit": "The exact APT transaction and package-cache equality are not established. This success supports an infrastructure hypothesis; it does not prove the cause of this attempt's sanitized FETCH errors."
   },
   "authorized_next_step": {
-    "action": "One normal targeted retry of the two terminal, classified infrastructure-failed jobs through the original GitHub Actions run. Preserve the same subject commit, immutable event inputs, original receipts and other active jobs. Let the original service enforce run eligibility.",
+    "action": "One normal targeted retry of the four terminal classified infrastructure failures through the original GitHub Actions run; same candidate and event inputs, original receipts preserved, active jobs protected, actual service eligibility binding.",
     "carrier": "Existing GitHub Actions run/job owner",
     "target_run_id": 43032587201,
     "target_job_ids": [
+      130564015585,
+      130564015402,
       130564015729,
       130564015311
     ],
@@ -120,6 +122,30 @@
       "artifact_upload": "success",
       "checkout_cleanup": "success",
       "complete_job": "success"
+    },
+    {
+      "pack_index": 4,
+      "job_id": 130564015402,
+      "artifact_id": 13865592060,
+      "classification": "Ubuntu mirror DNS failure during Playwright dependency installation",
+      "proof_steps": {
+        "passed": 78,
+        "failed_installer": 1,
+        "not_run": 1
+      },
+      "base_replay": "timed_out; descendant settlement unknown; inherited failure not certified",
+      "hosted_cleanup": "artifact upload, checkout cleanup and orphan cleanup recorded",
+      "artifact_zip_sha256": "6b4038266261226eb36b5d67763331333c6dd889f90858f5d1b53fa023da022c"
+    },
+    {
+      "pack_index": 0,
+      "job_id": 130564015585,
+      "classification": "Hosted runner lost communication with the server",
+      "terminal_job_record": "completed/failure at2026-11-11T14:51:09Z",
+      "complete_job_record": false,
+      "semantic_fragment_present": false,
+      "log_blob_present": false,
+      "limitation": "Individual FIF test outcomes and CPU/memory/network cause remain unproven. Normal service-owned recovery does not reuse or resume the original workspace/process."
     }
   ]
 }

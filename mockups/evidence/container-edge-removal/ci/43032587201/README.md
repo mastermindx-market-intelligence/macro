@@ -34,3 +34,23 @@ Its runner was GitHub Actions 1000581498, group GitHub Actions, label ubuntu-lat
 The recurrence is recorded separately from the earlier matching-helper success in PR #11036 / run 43030400365. That comparison completed browser setup in 21.8 seconds and then 169 browser tests; it supports a host/network-dependent hypothesis but does not prove DNS as the cause of either sanitized FETCH failure here.
 
 No retry has been dispatched at this checkpoint. Recovery must preserve both originals, classify the failed packs, and use one bounded same-owner retry of the justified infrastructure failures. The updated recovery-decision.json distinguishes terminal failed-job disposal from the original service's whole-run eligibility check; the service's actual refusal or acceptance remains binding.
+
+## Pack 4: demonstrated Ubuntu mirror DNS failure
+
+Pack 4 / job 130564015402 failed the unchanged bot-session-recovery-browser installer before its required browser contract. The log first reports DNS resolution failure for azure.archive.ubuntu.com at 14:22:23, then APT exits 100 and Playwright exits 1 at 14:30:07. Seventy-eight semantic steps passed; one installer step failed and its dependent test did not run. The exact-base replay encountered the same DNS failure but exhausted its budget with descendant settlement unknown, so inherited semantic proof was not established. The completed hosted job published its artifact and reached checkout/orphan cleanup at 14:51:55.
+
+Original artifact 13865592060 is retained as pack-4-attempt-1.zip/json. ZIP SHA256: 6b4038266261226eb36b5d67763331333c6dd889f90858f5d1b53fa023da022c. JSON SHA256: 4690115c1aeecf058501132ecd354150bb58f7c38bec4549851b23ee36714c89. The root read the decisive failure lines from the completed job log.
+
+## Pack 0: hosted runner communication loss; no test verdict
+
+GitHub marked job 130564015585 completed/failure at 14:51:09, but its pack step remains recorded in_progress and upload/post-job steps remain pending. No semantic fragment was uploaded, and the log blob is absent. The original GitHub check annotation explicitly reports that the hosted runner lost communication with the server. This is not attributed to APT and gives no attributable failing test assertion. CPU, memory and network are possible explanations in GitHub's generic annotation, not established causes here.
+
+The exact job metadata, two annotations and zero-artifact response are retained alongside this document. The annotations endpoint was unsupported by the connector (schema limitation, no authorization denial), so the same GitHub object was read through the already-authorized host CLI after verifying its logged-in identity. No credential was exposed and no GitHub mutation was performed by that read.
+
+Recovery must preserve this execution uncertainty. GitHub's authoritative terminal hosted-job record and its disposable-VM contract support requesting normal service-owned recovery; they do not invent a successful cleanup or completed FIF test result. No original workspace or process is resumed or reused.
+
+## Targeted recovery scope
+
+Four terminal failed packs are now classified: 9/11 native package acquisition; 4 ordinary installer DNS failure; 0 hosted runner communication loss. Five other packs have passed, and 5/7/10 were still running at the last preflight. The PR remains head 0d26e84a15a0578d15bc1521021676d547d2aaf2, unmerged and unarmed.
+
+The concrete next action is one normal targeted retry through the original GitHub Actions owner. GitHub must enforce eligibility for its active run. A service-state refusal is retained and may be reconsidered only after the relevant state changes; a permission or safety denial ends that action. No source, test expectation, mirror, package version, deadline or release gate has changed. No retry has been dispatched at this checkpoint.
