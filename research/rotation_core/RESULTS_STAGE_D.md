@@ -1,3 +1,5 @@
+> **SUPERSEDED** by `RESULTS_STAGE_D_CORRECTED.md` (engine corrected after audit PRO_RUN_A; no gate or conclusion changed). Retained unchanged below for the record.
+
 # Rotation Core — Stage D results (development window only; hold-out sealed)
 
 Header `af2a09886132…` (commit 623f0a4623); code `d3382be6db`; computed 2026-11-11T09:36:50Z. Schema `rotation_core.evaluation/v1`. All `may_*` flags are false. Every number is a fraction unless marked; intervals are 95% stationary-bootstrap.

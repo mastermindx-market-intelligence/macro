@@ -1,0 +1,133 @@
+{
+ "A01": {
+  "observed": 0.0,
+  "required": 0.0,
+  "confirmed": false
+ },
+ "A02": {
+  "observed": 0.1994,
+  "required": 0.1994,
+  "confirmed": false
+ },
+ "A12": {
+  "observed": "rejected: a12: negative target weight (long-only violated) at 2005-01-",
+  "required": "rejected",
+  "confirmed": false
+ },
+ "A07": {
+  "observed": {
+   "filled_panel_eligible": true,
+   "raw_eligible": false,
+   "runner_uses_raw": true
+  },
+  "required": "raw mask",
+  "confirmed": false
+ },
+ "A04": {
+  "observed": -0.5,
+  "required": -0.5,
+  "confirmed": false
+ },
+ "A05": {
+  "observed": {
+   "ended_flag": false
+  },
+  "required": false,
+  "confirmed": false
+ },
+ "A03": {
+  "observed": {
+   "code_formula_net": 0.199
+  },
+  "required": 0.1988012,
+  "confirmed": false
+ },
+ "A06": {
+  "observed": {
+   "filter_line_present": false
+  },
+  "required": "independent masks",
+  "confirmed": false
+ },
+ "A08": {
+  "observed": 0.2,
+  "required": 0.2,
+  "confirmed": false
+ },
+ "A09": {
+  "observed": {
+   "false": 0,
+   "undetermined": 1
+  },
+  "required": {
+   "false": 0,
+   "undetermined": 1
+  },
+  "confirmed": false
+ },
+ "A10": {
+  "observed": [
+   0.0,
+   1.0,
+   0.0
+  ],
+  "required": [
+   0,
+   1,
+   0
+  ],
+  "confirmed": false
+ },
+ "A11": {
+  "observed": "L0_NOT_MET_source_coverage",
+  "required": "not plain L0_descriptive when l0_ge_99pct is False",
+  "confirmed": false
+ },
+ "A13": {
+  "observed": {
+   "bond_splice_uncharged": true
+  },
+  "required": "charged or registered",
+  "confirmed": false
+ },
+ "A14": {
+  "observed": {
+   "zero_days": 0
+  },
+  "required": "flagged unavailable",
+  "confirmed": false
+ },
+ "A15": {
+  "observed": {
+   "has_book_iii": true
+  },
+  "required": "B under iii",
+  "confirmed": false
+ },
+ "A16": {
+  "observed": {
+   "hashes_stock_files": true
+  },
+  "required": "hash every consumed file",
+  "confirmed": false
+ },
+ "A17": {
+  "observed": {
+   "exclusive_mask": false
+  },
+  "required": "inclusive",
+  "confirmed": false
+ },
+ "A18": {
+  "observed": 0.25,
+  "required": 0.25,
+  "confirmed": false
+ },
+ "A19": {
+  "observed": {
+   "registered": true
+  },
+  "required": "fields or registered narrowing",
+  "confirmed": false
+ }
+}
