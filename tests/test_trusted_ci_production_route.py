@@ -43,7 +43,7 @@ def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> Non
     job = workflow("ci.yml")["jobs"]["ci-pack"]
 
     assert job["name"] == "ci-pack-${{ matrix.pack }}"
-    assert job["runs-on"] == "ubuntu-latest"
+    assert job["runs-on"] == "ubuntu-24.04"
     assert job["needs"] == ["ci-plan", "trusted-ci"]
     assert job["strategy"] == {
         "fail-fast": False,
@@ -125,7 +125,7 @@ def test_hosted_first_keeps_the_existing_semantic_gate_and_full_hosted_path() ->
     jobs = workflow("ci.yml")["jobs"]
     gate = jobs["ci-gate"]
     assert gate["needs"] == ["ci-plan", "ci-pack", "contract-delta"]
-    assert gate["runs-on"] == "ubuntu-latest"
+    assert gate["runs-on"] == "ubuntu-24.04"
     assert gate["if"] == "always()"
 
     pack = jobs["ci-pack"]

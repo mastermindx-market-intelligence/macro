@@ -132,7 +132,7 @@ def test_the_sweep_is_hosted_outside_the_m2_failure_domain():
     """
     job = _workflow()["jobs"]["sweep"]
     labels = json.dumps(job["runs-on"])
-    assert job["runs-on"] == "ubuntu-latest"
+    assert job["runs-on"] == "ubuntu-24.04"
     assert "self-hosted" not in labels
     assert "merge-control" not in labels
     assert "render-linux" not in labels

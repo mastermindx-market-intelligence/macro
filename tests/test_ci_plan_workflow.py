@@ -416,7 +416,7 @@ def test_only_ci_gate_may_outlive_a_cancelled_run() -> None:
     )
     gate = jobs["ci-gate"]
     assert gate["if"] == "always()"
-    assert gate["runs-on"] == "ubuntu-latest"
+    assert gate["runs-on"] == "ubuntu-24.04"
     assert gate["timeout-minutes"] <= 10
 
 

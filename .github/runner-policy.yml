@@ -156,10 +156,14 @@ pool_topology:
 # orgs/mastermindx-market-intelligence/actions/runners + repos/{repo}/actions/runners):
 # 12 self-hosted hosts online, `render-linux` carried by none.
 label_registry:
+  ubuntu-24.04:
+    status: github-hosted
+    carried_by: []
+    note: Fixed GitHub-hosted image for PR, fence, and trusted boundary jobs.
   ubuntu-latest:
     status: github-hosted
     carried_by: []
-    note: GitHub-hosted; the Wave B/C default for every ordinary PR job.
+    note: GitHub-hosted label; available only outside the fixed-image boundary.
   self-hosted:
     status: live
     carried_by: [mac-builder-3, mac-builder-4, mac-builder-5, mac-builder-light,

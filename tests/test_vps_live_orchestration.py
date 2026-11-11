@@ -8,6 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import yaml
 import pandas as pd
 
 from engine.release_actuals import receipts_from_payload
@@ -1620,7 +1621,9 @@ def test_cutover_guards_keep_manual_recovery():
         "live-quotes must stay ungated — it is the sole writer of `live-data`, and "
         "every time it has been gated the tape gate and the radar went dark")
     external = (root / ".github" / "workflows" / "vps-live-heartbeat.yml").read_text()
-    assert "runs-on: ubuntu-latest" in external
+    # The mixed PR/scheduled workflow's local jobs share one fixed hosted image.
+    heartbeat = yaml.safe_load(external)
+    assert {job["runs-on"] for job in heartbeat["jobs"].values()} == {"ubuntu-24.04"}
     assert "vars.VPS_LIVE_PRIMARY == 'true'" in external
     self_heal = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
     assert "vars.VPS_LIVE_PRIMARY == 'true'" in self_heal

@@ -3994,8 +3994,9 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         static = matrix["pack"]
         assert static == list(range(len(static)))
         assert len(static) == 12
-    # EVERY event runs on the hosted pool — one `runs-on`, no event-dependent routing,
-    # so main's baseline and a pull request prove the packs the SAME way.
+    # EVERY event runs on the fixed hosted image — one `runs-on`, no event-dependent
+    # routing, so main's baseline and a pull request prove the packs the SAME way.
+    # The fixed label avoids the `ubuntu-latest` self-hosted registration ambiguity.
     #
     # This replaces the 2026-08-09 self-hosted detour. Main's proof was briefly routed
     # to `["self-hosted","render-linux"]` because it sat `queued` 30+ minutes behind 133
@@ -4007,7 +4008,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # more than it saved: `render-linux` is FOUR runners shared with render.yml,
     # engine-render.yml and merge-on-green.yml, so even four packs took the entire pool
     # and starved the sweeper that merges every armed pull request.
-    assert pack["runs-on"] == "ubuntu-latest"
+    assert pack["runs-on"] == "ubuntu-24.04"
     # The self-hosted pools are the render/nightly lanes and must never absorb CI packs.
     runs_on = " ".join(str(pack["runs-on"]).split())
     assert "macstudio" not in runs_on
@@ -4211,7 +4212,7 @@ def test_same_repo_fences_share_one_runner_and_keep_required_contexts() -> None:
         "fork-grader-manifest",
     }
     pack = jobs["fence-pack"]
-    assert pack["runs-on"] == "ubuntu-latest"
+    assert pack["runs-on"] == "ubuntu-24.04"
     checkout = next(
         step
         for step in pack["steps"]
@@ -4244,7 +4245,7 @@ def test_same_repo_fences_share_one_runner_and_keep_required_contexts() -> None:
     ):
         fallback = jobs[job_id]
         assert "head.repo.full_name != github.repository" in fallback["if"]
-        assert fallback["runs-on"] == "ubuntu-latest"
+        assert fallback["runs-on"] == "ubuntu-24.04"
         assert context in fallback["name"]
         assert f"fork-{context}-unused" in fallback["name"]
 

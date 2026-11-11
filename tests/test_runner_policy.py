@@ -330,6 +330,20 @@ def test_ordinary_ci_and_fences_cannot_move_off_hosted(tmp_path: Path) -> None:
     assert "R4" in result.stdout
 
 
+def test_hosted_boundary_rejects_ambiguous_ubuntu_latest(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "ci.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["ci-plan"]["runs-on"] = "ubuntu-latest"
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+
+    result = run_guard(root, registry, workflows)
+
+    assert result.returncode == 1
+    assert "R4" in result.stdout
+    assert ".github/workflows/ci.yml:ci-plan must remain ubuntu-24.04" in result.stdout
+
+
 def test_merge_control_cannot_move_off_hosted(tmp_path: Path) -> None:
     root, registry, workflows = fixture_tree(tmp_path)
     merge_control = yaml.safe_load(
@@ -386,7 +400,7 @@ def test_unregistered_custom_label_consumer_fails(tmp_path: Path) -> None:
 def test_pull_request_target_is_never_registerable(tmp_path: Path) -> None:
     root, registry, workflows = fixture_tree(tmp_path)
     (workflows / "rogue.yml").write_text(
-        "on:\n  pull_request_target:\njobs:\n  rogue:\n    runs-on: ubuntu-latest\n    steps:\n      - run: true\n",
+        "on:\n  pull_request_target:\njobs:\n  rogue:\n    runs-on: ubuntu-24.04\n    steps:\n      - run: true\n",
         encoding="utf-8",
     )
     result = run_guard(root, registry, workflows)

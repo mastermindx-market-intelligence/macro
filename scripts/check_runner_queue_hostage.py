@@ -328,7 +328,7 @@ def _selftest() -> int:
     """Fixture timestamps are CONSTANTS with no relation to the wall clock — a guard
     whose fixtures age is a scheduled red."""
     now = datetime(2026, 9, 25, 8, 0, tzinfo=timezone.utc)
-    hosted = {"ubuntu-latest"}
+    hosted = {"ubuntu-24.04"}
     view = {
         "render-linux": {"status": "orphaned", "carried_by": []},
         "self-hosted": {"status": "live", "carried_by": ["pc-render-1"]},
@@ -368,7 +368,7 @@ def _selftest() -> int:
 
     # Hosted-only jobs are out of scope (hosted capacity backlogs are not our class).
     check("hosted-only job is out of scope",
-          evaluate([job(labels=["ubuntu-latest"])], now=now, hosted=hosted)["ok"], True)
+          evaluate([job(labels=["ubuntu-24.04"])], now=now, hosted=hosted)["ok"], True)
 
     # A running job is not queued.
     check("in_progress job is not a hostage",

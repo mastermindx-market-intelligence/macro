@@ -27,7 +27,7 @@ GUARD = ROOT / "scripts" / "check_runner_queue_hostage.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "nightly-liveness.yml"
 
 NOW = datetime(2026, 9, 25, 8, 0, tzinfo=timezone.utc)
-HOSTED = {"ubuntu-latest"}
+HOSTED = {"ubuntu-24.04"}
 VIEW = {
     "render-linux": {"status": "orphaned", "carried_by": []},
     "self-hosted": {"status": "live", "carried_by": ["pc-render-1"]},
@@ -103,7 +103,7 @@ def test_the_threshold_leaves_margin_before_githubs_24h_kill(guard) -> None:
         ({"runner_name": "pc-render-1"}, "a runner is assigned — starting, not stuck"),
         ({"status": "in_progress"}, "running is not queued"),
         ({"status": "completed"}, "finished is not queued"),
-        ({"labels": ["ubuntu-latest"]}, "hosted capacity backlogs are not this class"),
+        ({"labels": ["ubuntu-24.04"]}, "hosted capacity backlogs are not this class"),
         ({"labels": []}, "no addressed labels to judge"),
     ],
 )

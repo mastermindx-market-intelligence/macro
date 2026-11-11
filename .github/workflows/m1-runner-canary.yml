@@ -9,7 +9,7 @@ permissions:
 jobs:
   trust-gate:
     name: diagnostic-m1-trusted-main-gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: refuse a workflow definition outside main
