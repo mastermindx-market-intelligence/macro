@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-11-10",
-  "generated_utc": "2026-11-10T15:00:02Z",
+  "as_of": "2026-11-11",
+  "generated_utc": "2026-11-11T11:42:04Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 328,
     "by_state": {
-      "overdue": 211,
-      "due": 6,
+      "overdue": 212,
+      "due": 5,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -466,7 +466,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 6932,
-        "n_past_check_by": 6682
+        "n_past_check_by": 6772
       },
       "allowed_actions": [
         "inspect",
@@ -514,7 +514,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 96,
-        "n_past_check_by": 93
+        "n_past_check_by": 94
       },
       "allowed_actions": [
         "inspect",
@@ -610,7 +610,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 359,
-        "n_past_check_by": 346
+        "n_past_check_by": 347
       },
       "allowed_actions": [
         "inspect",
@@ -7012,8 +7012,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-11-03",
       "as_of": null,
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "maturation": "append daily firing -> resolve 10d-forward rows with realized outcome -> compute hit_rate + by_band; needs a batch of resolved rows for a read.",
         "cadence": "daily",
@@ -7074,7 +7074,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-10",
+      "due_at": "2026-11-11",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7106,7 +7106,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-10",
+      "due_at": "2026-11-11",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7138,7 +7138,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-10",
+      "due_at": "2026-11-11",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7170,7 +7170,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-10",
+      "due_at": "2026-11-11",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",

@@ -4536,6 +4536,8 @@ CURATED_EXCLUSIVE = {
     "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
+    # Preserve V91 coverage while bounding newly enrolled policy regressions.
+    "news-v91-vertical-proofs",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
@@ -5610,7 +5612,16 @@ def test_sa_w4_scope_covers_active_registry_read_paths() -> None:
                if job.job_id == "sa-w4-improvement-lanes")
     seed_path = _sa_w4_assert_registry_selectors(
         (ROOT / "engine/experiments_registry.py").read_text())
-    seed = json.loads((ROOT / "data/experiments/registry_seed.json").read_text())
+    # Read the seed from the committed blob, not the working tree: the audit
+    # must hold in every checkout profile. integration-baseline runs a sparse
+    # cone that omits data/ by design, so a working-tree read fails the whole
+    # main baseline there (1/1146, run 42945581053) even though the metadata
+    # is committed — this also honors the docstring's "without opening their
+    # targets": the blob IS the committed metadata, independent of any target
+    # checkout. (main-red-repair 2026-11-11, root-caused on #10571.)
+    seed = json.loads(subprocess.run(
+        ["git", "show", "HEAD:data/experiments/registry_seed.json"],
+        cwd=ROOT, check=True, capture_output=True, text=True).stdout)
     config = yaml.safe_load((ROOT / "config.yml").read_text())
     data_root = config["storage"]["data_dir"]
     paths = [seed_path, "data/neuralweb/machine_registry.jsonl",  # ci-trigger-closure: data
