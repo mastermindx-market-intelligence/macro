@@ -885,3 +885,41 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
    - **Stage-1 order (N1):** after R33.2 and R33.4, stage 1 runs `verified_ledger`, then `versions()` with the pyarrow imports, then the strict check, then `stage1_release`, whose `check_manifest` hashes the inputs before comparing `versions()`. The probe imports have already happened, so the order matches stage 2's.
    - **N6:** an installed distribution named `tests`, `scripts` or `engine` would run its `__init__` before R32.2 refuses it. Installed packages are the declared class (R27.0).
    - **N8:** the R32.7 count test checks the names in each expression, not the values; it is a tripwire and does not prove that a figure excludes warm-up sessions.
+
+## R15 log — the single selection rerun (CEO authorisation 2026-11-11 22:35Z, order amended)
+
+- **Engine before:** `1ca5228b3c` (the selection run). **Engine after:** `b3f7ce4548cadabee85e5e616b88317dc63346d2`. The rerun ran on the after-engine. Its outputs are `results_v2_selection_rerun.json` and `RESULTS_V2_SELECTION_RERUN.md`; `1ca5228b3c`'s `results_v2_selection.json` and `RESULTS_V2_SELECTION.md` stay untouched as the superseded record.
+- **Commands,** run from the checkout with `env -i HOME=… PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py <mode>`:
+  - `--preflight` at 22:34:51Z: PASS on `b3f7ce4548`, ledger entries 0, activity entries 41, ruleset 27041175;
+  - `--stage select` at 22:35:18Z: exit 0, 183 s, printed `selected: h3_b25.0`. Its stdout sha256 is `ca2f8724567086e907776d7963b47c5f20ce7a29a27d71938854def4f8033a0d`.
+- **Pre-check (R15, repeated on the final engine):** `repro_check` against `1ca5228b3c` gave 17 books, scored 1998–2019 states identical, maximum absolute daily-return difference 0.0, byte-identical to the recorded `v2_power/repro_check.stdout`.
+- **Selected grid point:** h = 3, b = 25, the same as `1ca5228b3c`. Observed H1 excess over the matched mix (10 bp, selection window) is unchanged at every setting: h3 b25 −2.287 %, h3 b37.5 −2.623 %, h5 b25 −2.870 %, h5 b37.5 −2.687 % per year.
+- **Engine changes since `1ca5228b3c`, and whether each can move a number** (commits `5a58f3e5d6` … `b3f7ce4548` under `engine/`, `scripts/`, `tests/`):
+  - **Release, seal, ledger, host and environment machinery** (R13 … R33: staged release, blind stage 1, run ledger, Phase A/A2, host record, import, bytecode and config checks, the I/O choke point): these move no 1998–2019 number. They gate access or decide refusals and compute nothing used by selection; the reproduction above is exact.
+  - **F1 (guarded parquet loader):** the same rows (filtered at the Arrow level), so no number moves.
+  - **F3 (false-DEFEND timing on held, not decided, state):** this moves the descriptive false-DEFEND figures. They are the erratum below.
+  - **R14 (two base readings, eq governing):** the eq series is unchanged; the drift reading adds the `R14d_drift_base_sensitivity` rows, which are new and not a re-selection.
+  - **F4 (fund tier):** not used by selection.
+  - **S2 (no padded start):** changes only warm-up sessions before 1998, which are never scored. **S3 (SMA over observed closes)** and **S4 (drift legs):** the reproduction shows 0 scored states and 0.0 return difference.
+  - **S8 (unique dropped industry-days):** a count label only.
+  - **R18 (strict 2× run):** this moves the 2× rows. It is shown below, old beside new, with the old row kept in `H1_at_2x_costs_before_R18_superseded`.
+  - **R21.4 (bootstrap SeedSequence streams):** confirmation runs only. Selection seeds are unchanged (S11), so every 10 bp interval and p is identical.
+  - **R29.5 / R31.6 (paths from the context; v1's episode tables copied):** the same files and the same episodes.
+- **Figures that moved** (all others are identical to the last bit):
+
+| Setting | Figure | `1ca5228b3c` | rerun |
+|---|---|---|---|
+| h3 b25 | H1 at 2× costs vs matched mix (R18 strict) | −3.508 % [−6.301, −0.780] p 0.9936 | −3.651 % [−6.447, −0.921] p 0.9954 |
+| h3 b37.5 | same | −3.753 % [−6.411, −1.031] p 0.9966 | −3.893 % [−6.556, −1.166] p 0.9976 |
+| h5 b25 | same | −4.282 % [−7.155, −1.404] p 0.9984 | −4.430 % [−7.300, −1.550] p 0.9987 |
+| h5 b37.5 | same | −4.018 % [−6.816, −1.187] p 0.9973 | −4.161 % [−6.952, −1.322] p 0.9979 |
+| all four | 2× costs per year | 2.444 / 2.262 / 2.827 / 2.664 % | 2.444 / 2.262 / 2.827 / 2.664 % (changes in the 6th digit: the strict book holds re-formation at 20 bp) |
+| h3 b25 | false DEFEND calls / calm year, H1 · price-only · cash (F3 erratum) | 2.007 · 2.768 · 2.007 | 2.076 · 2.838 · 2.076 |
+| h3 b37.5 | same | 1.661 · 2.768 · 1.661 | 1.730 · 2.838 · 1.730 |
+| h5 b25 | same | 2.976 · 3.737 · 2.976 | 3.045 · 3.807 · 3.045 |
+| h5 b37.5 | same | 2.699 · 3.737 · 2.699 | 2.768 · 3.807 · 2.768 |
+| H3 | false DEFEND calls / calm year (F3 erratum) | 0.831 | 0.900 |
+
+  The false-DEFEND cost per calm year moves with the counts (for example, H1 h3 b25 goes from 1.276 % to 1.424 %); all values are in the JSON. These figures are descriptive only; no selection or pass condition uses them.
+- **F3 erratum:** the false-pivot table now uses the state held after each close, not the state decided at t. Each false-DEFEND count rises by one call over the 22 years (about +0.07 per calm year) in every book. This is an erratum to a descriptive table, made before any confirmation read.
+- **Order of the authorised runs:** the first rehearsal attempt at 22:33:51Z refused with "selection result is not committed" before Phase A, having written only START to its own temporary remote. The order was changed so that the rehearsal follows the rerun. No code changed.
