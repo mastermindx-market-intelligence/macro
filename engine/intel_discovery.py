@@ -467,9 +467,11 @@ def _read_recent_index_changes(today: date | None = None,
             sub = pit.dropna(subset=[col]).copy()
             sub["_d"] = pd.to_datetime(sub[col], errors="coerce")
             sub = sub[sub["_d"] >= cut]
-            for r in sub.itertuples(index=False):
-                out.append({"ticker": str(r.ticker).upper(), "d": str(r._d.date()),
-                            "kind": kind, "index": str(r.src)})
+            # pandas renames leading-underscore fields in named tuples.
+            # Select the required columns explicitly and unpack plain tuples.
+            for ticker, event_date, index in sub[["ticker", "_d", "src"]].itertuples(index=False, name=None):
+                out.append({"ticker": str(ticker).upper(), "d": str(event_date.date()),
+                            "kind": kind, "index": str(index)})
         return out
     except Exception as e:  # noqa: BLE001
         log.debug("index-change read failed (%s)", e)
