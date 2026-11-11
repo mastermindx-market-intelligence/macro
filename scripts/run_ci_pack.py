@@ -4383,6 +4383,113 @@ class ExecutionProfileError(RuntimeError):
     """
 
 
+def _qualified_relocated_python_library_directory(
+    prefix: Path, declared_library_dir: Path, library_names: list[str]
+) -> Path:
+    """Qualify a moved shared-library build against this process's mappings.
+
+    A copied tool cache can retain its build-time prefix in sysconfig.  Merely
+    rewriting that prefix or trusting LD_LIBRARY_PATH would admit an unselected
+    library.  Require the derived runtime directory to contain the sole declared
+    Python object actually mapped here, including its device/inode identity.
+    """
+    try:
+        raw_build_prefix = sysconfig.get_config_var("prefix")
+        if not isinstance(raw_build_prefix, str) or not Path(raw_build_prefix).is_absolute():
+            raise ValueError("missing absolute build prefix")
+        build_prefix = Path(raw_build_prefix).resolve(strict=True)
+        relative_dir = declared_library_dir.relative_to(build_prefix)
+        if build_prefix == prefix or not relative_dir.parts:
+            raise ValueError("no qualified library-directory relocation")
+        library_dir = (prefix / relative_dir).resolve(strict=True)
+        library_dir.relative_to(prefix)
+        if not library_dir.is_dir():
+            raise ValueError("relocated library directory is absent")
+        if any(
+            Path(name).name != name or name in {".", ".."} or "\0" in name
+            for name in library_names
+        ):
+            raise ValueError("declared Python library name is not a basename")
+
+        objects: dict[tuple[int, int], set[Path]] = {}
+        for name in library_names:
+            candidate = library_dir / name
+            if not candidate.exists():
+                continue
+            resolved = candidate.resolve(strict=True)
+            resolved.relative_to(prefix)
+            if resolved.parent != library_dir or not resolved.is_file():
+                raise ValueError("declared library escapes its selected directory")
+            metadata = resolved.stat()
+            objects.setdefault((metadata.st_dev, metadata.st_ino), set()).add(resolved)
+        if len(objects) != 1:
+            raise ValueError("declared runtime library object is absent or ambiguous")
+        expected_identity, expected_paths = next(iter(objects.items()))
+
+        mapped = False
+        executable = False
+        # Binary reading preserves CR and other literal pathname characters;
+        # text-mode newline conversion or splitlines() could forge extra records.
+        mappings = Path("/proc/self/maps").read_bytes().decode("utf-8")
+        for line in mappings.split("\n"):
+            fields = line.split(maxsplit=5)
+            if len(fields) != 6:
+                if "libpython" in line or any(name in line for name in library_names):
+                    raise ValueError("malformed Python library mapping")
+                continue
+            raw_path = fields[5]
+            mapped_name = Path(raw_path.removesuffix(" (deleted)")).name
+            if mapped_name not in library_names and not (
+                mapped_name.startswith("libpython") and ".so" in mapped_name
+            ):
+                continue
+            # proc_pid_maps(5) leaves paths literal except for newline.  Its
+            # \012 spelling is ambiguous with a literal backslash sequence;
+            # decoding octal could turn an outside hardlink into an inside path.
+            # Keep spaces literal and refuse ambiguous or deleted spellings.
+            if (
+                "\\" in raw_path
+                or raw_path.endswith(" (deleted)")
+                or any(ord(char) < 32 or ord(char) == 127 for char in raw_path)
+            ):
+                raise ValueError("deleted or malformed Python library path")
+            if not (
+                re.fullmatch(r"[0-9a-fA-F]+-[0-9a-fA-F]+", fields[0])
+                and re.fullmatch(r"[r-][w-][x-][ps]", fields[1])
+                and re.fullmatch(r"[0-9a-fA-F]+", fields[2])
+                and re.fullmatch(r"[0-9a-fA-F]+:[0-9a-fA-F]+", fields[3])
+                and re.fullmatch(r"[0-9]+", fields[4])
+            ):
+                raise ValueError("malformed Python library mapping fields")
+            start, end = (int(value, 16) for value in fields[0].split("-"))
+            if start >= end:
+                raise ValueError("empty Python library mapping")
+            major, minor = (int(value, 16) for value in fields[3].split(":"))
+            identity = (os.makedev(major, minor), int(fields[4]))
+            mapped_path = Path(raw_path)
+            if not mapped_path.is_absolute():
+                raise ValueError("Python library mapping is not absolute")
+            resolved = mapped_path.resolve(strict=True)
+            resolved.relative_to(prefix)
+            current = resolved.stat()
+            if (
+                identity != expected_identity
+                or (current.st_dev, current.st_ino) != expected_identity
+                or resolved not in expected_paths
+            ):
+                raise ValueError("mapped Python library is not the selected object")
+            mapped = True
+            executable = executable or fields[1][2] == "x"
+        if not mapped or not executable:
+            raise ValueError("selected Python library has no executable mapping")
+        return library_dir
+    except (OSError, ValueError) as exc:
+        raise ExecutionProfileError(
+            "selected Python library directory is outside selected interpreter prefix; "
+            f"relocation was not qualified: {exc}"
+        ) from exc
+
+
 def _selected_python_loader_environment() -> dict[str, str]:
     """Derive the Linux loader path from the attested interpreter itself.
 
@@ -4392,6 +4499,8 @@ def _selected_python_loader_environment() -> dict[str, str]:
     runner-local alias while ``sysconfig`` reports its canonical tool-cache path,
     so preserve an ambient alias only after proving it resolves to the declared
     directory inside ``sys.base_prefix`` and contains a declared Python SONAME.
+    A distinct relocated copy additionally requires the current process's mapped
+    library identity; an existing directory or ambient loader path is insufficient.
     """
     if platform.system() != "Linux":
         return {}
@@ -4412,11 +4521,20 @@ def _selected_python_loader_environment() -> dict[str, str]:
     try:
         prefix = Path(sys.base_prefix).resolve(strict=True)
         declared_library_dir = Path(raw_library_dir).resolve(strict=True)
-        declared_library_dir.relative_to(prefix)
     except (OSError, ValueError) as exc:
         raise ExecutionProfileError(
             "selected Python library directory is outside selected interpreter prefix"
         ) from exc
+    try:
+        declared_library_dir.relative_to(prefix)
+    except ValueError:
+        return {
+            "LD_LIBRARY_PATH": str(
+                _qualified_relocated_python_library_directory(
+                    prefix, declared_library_dir, library_names
+                )
+            )
+        }
 
     candidates: list[Path] = []
     for entry in os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep):
