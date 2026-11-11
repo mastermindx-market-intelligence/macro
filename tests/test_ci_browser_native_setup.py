@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import shlex
 from pathlib import Path
 from types import SimpleNamespace
@@ -47,30 +48,6 @@ def runtime(monkeypatch):
     return events
 
 
-@pytest.mark.parametrize(
-    ("job_id", "step_name"),
-    [
-        ("ontology-explorer", "install deps"),
-        ("bea-gvc-current-descriptive-consumer", "Install hermetic GMI source/read-gate tests"),
-    ],
-)
-def test_browser_producer_enrollment_matches_the_native_distribution_pin(job_id, step_name):
-    manifest = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
-    job = yaml.safe_load(manifest.read_bytes())["jobs"][job_id]
-    install = next(step["run"] for step in job["steps"] if step.get("name") == step_name)
-    requirements = shlex.split(install)
-    pins = [spec for spec in requirements if spec.startswith("playwright==")]
-    assert "playwright" not in requirements and len(pins) == 1
-    assert SETUP.qualified_direct_packages(
-        distribution_version=pins[0].split("==", 1)[1],
-        driver_version="1.64.0-beta-1791568591000",
-        bundle_sha256=QUALIFIED_DRIVER,
-        os_id="ubuntu",
-        os_version="24.04",
-        machine="x86_64",
-    ) == DIRECT_PACKAGES
-
-
 def test_bound_source_packet_is_exact_and_root_bootstrap_is_statically_closed():
     expected=sources(); packet=json.loads(SETUP.source_packet(expected))
     assert set(packet['files']) == set(SETUP.ROOT_FILES)
@@ -93,11 +70,38 @@ def test_invalid_or_elapsed_original_deadline_never_launches_even_bootstrap(monk
     assert result['outcome']=='failed' and result['timeout_settlement'] is None
 
 
-def test_brain_browser_dependency_enrollment_matches_the_native_distribution_pin():
+def _native_parallel_jobs():
     manifest_path = Path(__file__).resolve().parents[1] / ".github" / "ci" / "legacy-jobs.yml"
-    job = yaml.safe_load(manifest_path.read_bytes())["jobs"]["unrun-brain-gateway"]
-    install = next(step["run"] for step in job["steps"] if step.get("name") == "install minimal deps")
-    requirements = shlex.split(install)
+    jobs = yaml.safe_load(manifest_path.read_bytes())["jobs"]
+    return {
+        job_id: job
+        for job_id, job in jobs.items()
+        if any(step.get("acquisition") == "native_parallel" for step in job.get("steps", []))
+    }
+
+
+def test_native_parallel_enrollment_is_exactly_the_admitted_owner_jobs():
+    assert set(_native_parallel_jobs()) == {
+        "bea-gvc-current-descriptive-consumer",
+        "ontology-explorer",
+        "unrun-brain-gateway",
+    }
+
+
+@pytest.mark.parametrize("job_id", sorted(_native_parallel_jobs()))
+def test_native_parallel_browser_dependency_matches_the_native_distribution_pin(job_id):
+    # An unpinned install resolves the newest Playwright distribution, which the
+    # native acquisition tuple refuses before any package or browser effect.
+    job = _native_parallel_jobs()[job_id]
+    installs = [
+        requirements
+        for requirements in (
+            shlex.split(step["run"]) for step in job["steps"] if "pip install" in str(step.get("run", ""))
+        )
+        if any(re.fullmatch(r"playwright(?:\[[^\]]*\])?(?:[=<>!~].*)?", spec) for spec in requirements)
+    ]
+    assert len(installs) == 1
+    requirements = installs[0]
     pins = [spec for spec in requirements if spec.startswith("playwright==")]
     assert "playwright" not in requirements and len(pins) == 1
     assert SETUP.qualified_direct_packages(

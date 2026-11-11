@@ -112,11 +112,13 @@ def test_bridge_refuses_partial_blank_wrong_or_duplicate_dates(lake, private_roo
 
 def test_private_bridge_reads_only_bounded_regular_interest(private_root, tmp_path):
     target = private_root / "requests" / "AMD.json"
-    write_private(target, json.dumps(interest()))
+    target.write_text(json.dumps(interest()))
+    target.chmod(0o600)
     assert bridge_module.exchange(private_root, {"operation": "read"})["interests"] == [interest()]
     target.unlink()
     other = tmp_path / "other.json"
-    write_private(other, json.dumps(interest()))
+    other.write_text(json.dumps(interest()))
+    other.chmod(0o600)
     target.symlink_to(other)
     result = bridge_module.exchange(private_root, {"operation": "read"})
     assert result["interests"] == [] and result["rejected"] == 1
@@ -163,8 +165,11 @@ class Clock:
 
 def setup_run(tmp_path, lake, symbols="AMD\nNVDA\nHELD\n", **kw):
     coverage, held = tmp_path / "coverage.txt", tmp_path / "held.txt"
-    write_private(coverage, symbols)
-    write_private(held, "HELD\n")
+    # Valid reader inputs must stay private regardless of the runner umask.
+    coverage.write_text(symbols)
+    coverage.chmod(0o600)
+    held.write_text("HELD\n")
+    held.chmod(0o600)
     return live.Config(lake.root, coverage, held, capture=True, max_seconds=120, **kw)
 
 
@@ -315,7 +320,9 @@ def test_key_failure_before_any_effect_does_not_claim_session(tmp_path, lake):
 def test_bridge_capacity_and_snapshot_bound(private_root):
     for i in range(257):
         sym = f"Z{i:03d}"
-        write_private(private_root / "requests" / f"{sym}.json", json.dumps(interest(sym)))
+        target = private_root / "requests" / f"{sym}.json"
+        target.write_text(json.dumps(interest(sym)))
+        target.chmod(0o600)
     result = bridge_module.exchange(private_root, {"operation": "read"})
     assert len(result["interests"]) == 256 and result["truncated"] is True
 
@@ -340,7 +347,8 @@ def test_interrupted_hold_temporary_does_not_block_later_session(tmp_path, lake,
     holds = area / "boats-live-history-held"
     holds.mkdir(mode=0o700)
     temporary = holds / orphan
-    write_private(temporary, '{"symbol":"AMD","http_status":404}\n')
+    temporary.write_bytes(b'{"symbol":"AMD","http_status":404}\n')
+    temporary.chmod(0o600)
     if orphan == ".receipt-linked":
         live.os.link(temporary, holds / "AMD.json")
     result = run_test(cfg, lake, lambda request: {"interests": []})
@@ -361,8 +369,10 @@ def test_non_temporary_invalid_hold_still_refuses_before_start(tmp_path, lake):
 
 
 def test_invalid_interest_does_not_hide_valid_demand(private_root):
-    write_private(private_root/'requests'/'BAD.json', '{')
-    write_private(private_root/'requests'/'AMD.json', json.dumps(interest()))
+    (private_root/'requests'/'BAD.json').write_text('{')
+    (private_root/'requests'/'BAD.json').chmod(0o600)
+    (private_root/'requests'/'AMD.json').write_text(json.dumps(interest()))
+    (private_root/'requests'/'AMD.json').chmod(0o600)
     result = bridge_module.exchange(private_root, {'operation':'read'})
     assert result['interests'] == [interest()] and result['rejected'] == 1
 
@@ -370,7 +380,8 @@ def test_invalid_interest_does_not_hide_valid_demand(private_root):
 def test_semantically_unchanged_snapshot_ack_binds_input(lake, private_root):
     doc = snapshot(lake)
     target = private_root/'bars'/'AMD.json'
-    write_private(target, json.dumps(doc, sort_keys=True, indent=2))
+    target.write_text(json.dumps(doc, sort_keys=True, indent=2))
+    target.chmod(0o600)
     old = target.read_bytes()
     ack = bridge_module.exchange(private_root, {'operation':'publish','snapshot':doc})
     expected = (json.dumps(doc, separators=(',',':'))+'\n').encode()
