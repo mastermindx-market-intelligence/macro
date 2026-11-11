@@ -12,6 +12,10 @@ The originally published v1 numbers treated 16 outage-reconstructed plans as if 
 They had not been. Thirteen replay the receipted 2026-08-09 bake but were instantiated at 2026-08-11T05:32Z;
 three (HCC, LNG, NXPI) were reconstructed on 2026-08-13T13:31Z from a 2026-08-11 board that was never published.
 `MRNA-BULL-20260616` entered at the 2026-08-10 close — before it existed for any user.
+*(Census clarified 2026-11-11, adjudication finding 12: "16" is the incumbent-era count. Across all eras 17
+outage-backfill plans were minted — 14 receipted replays and 3 reconstructions; RIO-BULL-20260731 sits outside
+the incumbent era and was never eligible for this book. The artifact's `population.excluded_cohort` now carries
+both counts.)*
 
 This corrects the population to what the header's own word "published" means: **live-published plans only**.
 It is a rule that predates the evaluation (`research/PROPHET_OUTAGE_BACKFILL_2026_08.md`: a reconstructed pick may
@@ -35,7 +39,10 @@ Source: independent scientific review `REVIEW_beta_evaluation.md`
    short.** Three job-A point criteria now fail: beta below 0.8, the upside-capture CI lower bound, and the CI lower
    bound for non-inferiority. The global minimum fails anyway, so job A stays L0.
 2. **The book's lead is small and not one-name-proof, but the famous name is gone.** MRNA is no longer in the book
-   (it was a reconstruction). The largest remaining contributor is AMR (+0.8 pp gross); without it the book is
+   (it was a reconstruction). *(Corrected 2026-11-11, adjudication finding 12: MRNA-BULL-20260616 is a receipted
+   replay of the 2026-08-09 bake — origination_mode outage_backfill_2026_08_09, instantiated 2026-08-11T05:32:28Z —
+   not a synthetic-board reconstruction. The exclusion is unchanged; only the label was wrong.)* The largest
+   remaining contributor is AMR (+0.8 pp gross); without it the book is
    +0.8 pp vs SPY, CI [−10.7, +12.1]. In sensitivity (a), where the 13 replays are admitted from their actual
    availability, MRNA re-enters at the 2026-08-11 close and the book returns to +0.1% (+4.7 pp vs SPY,
    CI [−10.2, +21.4]) — still not significant, and resting on the same single move.
@@ -152,6 +159,10 @@ only the population differs (the 16 reconstructions included as if published):
 - **MRNA price note:** the 2026-08-19 one-day move of +177% (62.96 → 174.38; raw and adjusted closes agree; volume
   199,252,300) exists only in the single price cache used by this harness. No second source authenticates it. It
   affects the as-run population and sensitivity (a), not the primary book.
+  *(Superseded 2026-11-11, adjudication finding 15: two post-publication second sources now authenticate the move —
+  a ChartExchange end-of-day sweep and a Yahoo live-chart API pull matching all 64 window sessions. Both were
+  gathered after outcomes were seen and are labelled as audit evidence; the artifact's
+  `population.mrna.price_authentication` carries the current text.)*
 - **Membership:** S&P 1500 point-in-time (start/end dates), but the file has no recorded change after 2026-06-02.
   36 point-in-time members had no price file (≈2.4%, excluded and listed). Theme-basket rosters were not used.
   macro#10965's PIT basket store begins 2026-08-13 and was not used.
@@ -209,3 +220,42 @@ To claim more (L1):
   pre-declared matched comparator.
 
 Re-running this header after 2026-11-11 accrues prospective sessions; L2 needs a further 126 post-freeze sessions after L1.
+
+---
+
+## Correction, 2026-11-11 (independent audit RUN-D + stock-minus-sector diagnosis)
+
+Two engine defects confirmed by two independent re-derivations (ChatGPT Pro run D; Kimi) are fixed, with
+regression tests, on the audit branch; every superseded figure is retained beside its corrected value in the
+artifact's `correction` block, and the full finding-by-finding verdicts are in `ADJUDICATION_RUN_D.md`.
+
+1. **Final-close trade cost charged** (deviation D6). v1 computed the cost of a target defined at the final close
+   and silently dropped it. Corrected: C6 −3.1382% → −3.2351% total, +1.5077 → +1.4108 pp vs SPY
+   (CI [−10.509, +13.221]); costs 1.1826% → 1.2822%. C3/C4/C5 terminal rebalances now charged (≤ 0.2 pp);
+   C1/C2/X6 unaffected. **The release level and verdict are unchanged: L0 descriptive, not distinguishable from
+   passive — every headline interval still spans zero.**
+2. **Price bytes verified against the data pin** (audit finding 6). v1 trusted the local cache directory. The
+   corrected runner byte-compares every parquet to the pin's git blob ids and reads all non-price inputs from the
+   pin. One ticker (ZWS) was falsely counted missing; it was eligible but never selected, so no frozen number
+   moves; the missing-file census is 35, not 36.
+3. **Disclosure additions** (findings 4, 5, 11, 14): missing held marks itemised (LFUS, SBH) with a total-loss
+   stress (−4.4205%, +0.2254 pp vs SPY, CI spans zero); coverage priced-share basis stated as entry-marks-only;
+   top-three concentration view (excluding AMR/CRCL/TEM: −5.0104%, −0.3645 pp — the headline's sign rests on
+   three names); undated conversions itemised (78 plans) with the excluding sensitivity (−5.7289%, −1.0831 pp,
+   CI [−12.081, +9.522]).
+4. **Yardstick correction** (deviation D7, from the independent stock-minus-sector diagnosis, recomputed on this
+   engine): beside the frozen stock-minus-sector-ETF leg, the event study now also reports the equal-weight
+   same-sector member benchmark and a random-member placebo. At H21 the average same-sector member trailed its
+   own fund by −0.63 pp and picks sat a further −2.41 pp below that average (placebo 95% range [−1.62, +0.49]);
+   at H42, −2.15 and −3.28 ([−3.72, −0.44]). Part of the published leg is the cap-weighted yardstick, not member
+   choice; no claim of negative member selection and none of its absence.
+5. **Off-index sensitivity** (deviation D8): 46 of 732 published plans name stocks outside the point-in-time
+   S&P 1500 at the signal date; excluding them moves the H21 stock-minus-sector mean from −3.04 to −2.44 pp and
+   the H42 mean from −5.43 to −3.89. Membership-file limits (no recorded change after 2026-06-02) are restated
+   with the block.
+6. Labels corrected in place above: MRNA is a receipted replay, not a reconstruction (finding 12); its price move
+   is now second-source authenticated (finding 15); the 16/17 census is clarified (finding 12).
+
+A DRAFT forward pre-registration of three member-selection hypotheses derived from the diagnosis sits at
+`DRAFT_PREREGISTRATION_MEMBER_SELECTION_v0.md`; it is a draft until the programme CEO freezes it and changes
+nothing in what Prophet publishes.

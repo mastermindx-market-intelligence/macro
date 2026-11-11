@@ -9,7 +9,7 @@
   "frozen_on": "2026-11-11"
  },
  "code": {
-  "commit": "f1314c9a4966192f651d8a2c392f562367ba01d9",
+  "commit": "19960ba0d560c1aa629c9ff4af95dec8e35c5027",
   "harness_dirty": false,
   "module": "engine/prophet_beta_evaluation.py",
   "runner": "scripts/run_prophet_beta_evaluation.py",
@@ -25,6 +25,7 @@
   "plans_index": {
    "path": "site/prophet/index.json",
    "sha256": "3956748aa58e9a1d4850e3429082f2a4d795da32b1a12667f5b1ce75f3fe2e28",
+   "read_from": "data pin b5a5c846",
    "asof": "2026-11-09",
    "source_asof": "2026-11-06",
    "computed_at": "2026-11-09T09:02:55Z"
@@ -41,14 +42,30 @@
   "pit_membership": {
    "path": "data/breadth/sp1500_pit_membership.parquet",
    "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+   "read_from": "data pin b5a5c846",
    "last_recorded_change": "2026-06-02"
   },
   "prices": {
    "source": "data/yahoo per-ticker parquet (adjusted close)",
-   "tickers_loaded": 1522,
-   "digest_sha256": "1ca89f60226d9969d377a3d9c30a8a09eb8e9efc8e739b0cbdbc4e7936a4703a",
-   "missing_files": 36,
-   "last_close_used": "2026-11-06"
+   "tickers_loaded": 1523,
+   "digest_sha256": "4e5e413b690de19e3ccde6d0967e5be894876d7afb976641a01529d6477f7a0f",
+   "missing_files": 35,
+   "last_close_used": "2026-11-06",
+   "pin_verified": true,
+   "pin_verification": "every per-ticker parquet used is byte-compared to the pin's git blob id (git hash-object); a differing local file is replaced by the pin blob. v1 trusted the cache directory (audit RUN-D); the pin's own blob ids now decide",
+   "read_from_pin_blobs": [
+    "ZWS"
+   ],
+   "pinned_input_sha256": {
+    "plans_index": "3956748aa58e9a1d4850e3429082f2a4d795da32b1a12667f5b1ce75f3fe2e28",
+    "resolution_log": "b2033a72f893225ead4a5fb604fc5b7783dba97b49843e14f427e8442b11bc90",
+    "resolution_corrections": "2b51e2306d5dc8acc0e80722dcdde3ca369e32774dc415b6d53409cd296cf410",
+    "resolution_quarantine": "953012c11e75889a34031e1c81fa5ec89e0202a7dff4e0a9f49ba2a64c7ba40c",
+    "plan_corrections": "4b260c6d233d3ef98cf52d7df9944c3e46e6383ef0708c79a78fdf612cb45023",
+    "pit_membership": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+    "pit_sectors": "cba7fc07da53a6230122fec5797b15163bbe3b31f78918839f5722e885c00de3",
+    "backfill_disclosures": "b259e410e4b1899ef4e5833f2c990ca37f54c7c4e3ce205c9d66871a3466492f"
+   }
   }
  },
  "market": "US",
@@ -118,7 +135,7 @@
      {
       "criterion": "beta_point_in",
       "required": "[0.8, 1.3]",
-      "observed": 0.79254625,
+      "observed": 0.79175118,
       "met": false
      },
      {
@@ -130,13 +147,13 @@
      {
       "criterion": "upside_capture_point",
       "required": ">= 0.90",
-      "observed": 0.93468976,
+      "observed": 0.92856878,
       "met": true
      },
      {
       "criterion": "upside_capture_ci_lower",
       "required": ">= 0.75",
-      "observed": 0.53025056,
+      "observed": 0.52409051,
       "met": false
      },
      {
@@ -148,13 +165,13 @@
      {
       "criterion": "ann_excess_ci_lower_noninferior",
       "required": "> -0.03",
-      "observed": -0.43559811,
+      "observed": -0.43680139,
       "met": false
      },
      {
       "criterion": "noninferior_at_2x_costs_point",
       "required": "> -0.03",
-      "observed": 0.01707695,
+      "observed": 0.0091101,
       "met": true
      }
     ]
@@ -171,13 +188,13 @@
      {
       "criterion": "K3_ann_diff_point",
       "required": ">= 0.02",
-      "observed": -0.03877908,
+      "observed": -0.03959415,
       "met": false
      },
      {
       "criterion": "K3_holds_at_2x_costs",
       "required": "> 0",
-      "observed": -0.04039316,
+      "observed": -0.04202331,
       "met": false
      },
      {
@@ -189,13 +206,13 @@
      {
       "criterion": "K5_ann_diff_point",
       "required": ">= 0.02",
-      "observed": -0.07599696,
+      "observed": -0.0757795,
       "met": false
      },
      {
       "criterion": "K5_holds_at_2x_costs",
       "required": "> 0",
-      "observed": -0.07705284,
+      "observed": -0.07661791,
       "met": false
      },
      {
@@ -207,19 +224,19 @@
      {
       "criterion": "K7_ann_diff_point",
       "required": ">= 0.02",
-      "observed": 0.11723586,
+      "observed": 0.11722496,
       "met": true
      },
      {
       "criterion": "K7_holds_at_2x_costs",
       "required": "> 0",
-      "observed": 0.12308924,
+      "observed": 0.12306748,
       "met": true
      },
      {
       "criterion": "K3_vs_exposure_matched_ci_lower",
       "required": "> 0",
-      "observed": -0.43263955,
+      "observed": -0.43353112,
       "met": false
      }
     ]
@@ -236,14 +253,14 @@
      {
       "criterion": "K2_ann_diff_point",
       "required": ">= 0.02",
-      "observed": 0.05117288,
+      "observed": 0.04718873,
       "met": true
      },
      {
       "criterion": "K2_holds_at_2x_costs",
       "required": "> 0",
-      "observed": 0.00386769,
-      "met": true
+      "observed": -0.00409915,
+      "met": false
      },
      {
       "criterion": "K4_holm_p",
@@ -254,13 +271,13 @@
      {
       "criterion": "K4_ann_diff_point",
       "required": ">= 0.02",
-      "observed": -0.03810018,
+      "observed": -0.0434586,
       "met": false
      },
      {
       "criterion": "K4_holds_at_2x_costs",
       "required": "> 0",
-      "observed": -0.05035499,
+      "observed": -0.06107183,
       "met": false
      },
      {
@@ -272,13 +289,13 @@
      {
       "criterion": "K6_ann_diff_point",
       "required": ">= 0.02",
-      "observed": -0.07531806,
+      "observed": -0.07964394,
       "met": false
      },
      {
       "criterion": "K6_holds_at_2x_costs",
       "required": "> 0",
-      "observed": -0.08701467,
+      "observed": -0.09566643,
       "met": false
      }
     ]
@@ -287,6 +304,74 @@
   "cap_rule": "below the global minimum every performance job is capped at L0_descriptive regardless of point estimates (header section 6)",
   "l2_l3_note": "L2 needs L1 plus >= 126 post-2026-11-11 sessions under this header hash; L3 is never assignable by this harness",
   "overall_level": "L0_descriptive"
+ },
+ "correction": {
+  "correction": true,
+  "date": "2026-11-11",
+  "supersedes": "site/prophet/beta_evaluation.json as of commit c3d967b9fd (v1, 2026-11-10)",
+  "what_changed": "two confirmed engine defects corrected (final-close trade cost charged; price-cache files now verified byte-for-byte against the data pin and one false-missing ticker, ZWS, restored), plus disclosure and labelling corrections; no frozen rule, seed, comparator, population rule or data pin changed",
+  "figures_superseded": {
+   "reason_each": "final-close trade costs now charged (deviation D6); each superseded row below was computed with the v1 engine on the same population, prices, seed and costs",
+   "C6_exact_incumbent_prophet": {
+    "positions": 498,
+    "total_net_return": -0.03138238,
+    "excess_total_vs_spy": 0.01507656,
+    "excess_total_ci95": [
+     -0.10493855,
+     0.13386062
+    ],
+    "ann_excess_vs_spy": 0.06438214,
+    "ann_excess_ci95": [
+     -0.43559811,
+     0.56100233
+    ],
+    "beta_vs_market": 0.79254625,
+    "costs_paid_total": -0.0118263
+   },
+   "verdict_unchanged": true,
+   "verdict_reason": "L0 descriptive stands: the window still fails the predeclared L1 minimum (64 < 252 sessions, SPY max drawdown 5.92% < 8%) and every headline CI spans zero before and after the correction"
+  },
+  "label": "CORRECTION — found by an independent audit after publication and not part of the frozen protocol"
+ },
+ "independent_audit": {
+  "label": "INDEPENDENT AUDIT (post-publication, 2026-11-11) — not part of the frozen protocol",
+  "runs": [
+   {
+    "name": "ChatGPT Pro run D (PRO_RUN_D, 2026-11-11)",
+    "report": "macro issue #11014 / PRO_RUN_D_answer.md",
+    "scope": "full re-derivation from the data pin with independent code"
+   },
+   {
+    "name": "Kimi re-derivation (REPORT_RUN_D, 2026-11-11)",
+    "report": "REPORT_RUN_D.md",
+    "scope": "independent unblinding re-derivation of the same artifact"
+   },
+   {
+    "name": "Stock-minus-sector diagnosis (Opus, 2026-11-11)",
+    "report": "tmp/prophet-eval-diagnosis/REPORT.md",
+    "scope": "independent diagnosis of the stock-minus-sector gap; yardstick (equal-weight member) and off-index findings, folded in as deviations D7/D8 and recomputed on this engine"
+   }
+  ],
+  "what_agreed": [
+   "every event-study horizon mean reproduced to 8 decimal places by both runs",
+   "fee timing on all non-terminal trades is correct (cost applied to the next day's return)",
+   "C1 passive identity reproduced exactly (SPY total minus one entry cost)",
+   "the 78 undated conversions, the gapped held marks and the top-three contribution concentration were independently identified by both runs with matching counts"
+  ],
+  "what_changed": [
+   "engine: final-close trade cost now charged (deviation D6; confirmed defect, both runs)",
+   "runner: price files verified against the data pin blob ids; ZWS was false-missing in v1 (cache bytes match the pin; the ticker was eligible but never selected, so no frozen number moves; missing-file census 36 -> 35)",
+   "disclosure: coverage basis, undated conversions, missing held marks, MRNA authentication and the minted-plan census restated (see limitations and population blocks)",
+   "yardstick: event_study.member_benchmark added beside the frozen event study (equal-weight same-sector member benchmark plus random-member placebo; deviation D7) and sensitivity.off_index_picks added (deviation D8) — both from the stock-minus-sector diagnosis and recomputed on this engine"
+  ],
+  "added_sensitivities": [
+   "excluding_undated_conversions",
+   "missing_marks_total_loss_stress",
+   "post_hoc_diagnostics.*.without_top3_contributors",
+   "off_index_picks",
+   "event_study.member_benchmark"
+  ],
+  "adjudication": "research/prophet_v4/beta_first_evaluation/ADJUDICATION_RUN_D.md (one row per finding, verdict, evidence, commit)"
  },
  "comparators": [
   {
@@ -317,7 +402,8 @@
      -0.00081373,
      0.0
     ],
-    "p_one_sided": 0.9505
+    "p_one_sided": 0.9505,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
     1.0,
@@ -376,7 +462,8 @@
      -0.00081373,
      0.0
     ],
-    "p_one_sided": 0.9505
+    "p_one_sided": 0.9505,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
     1.0,
@@ -413,37 +500,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "equal weight (1/3) in the top 3 of XLB XLC XLE XLF XLI XLK XLP XLRE XLU XLV XLY by RS63 = 63-session total return minus SPY 63-session total return; rebalance every 21 sessions",
-   "total_net_return": -0.05578486,
-   "ann_return": -0.20515246,
-   "excess_total_vs_spy": -0.00932592,
-   "ann_excess_vs_spy": -0.03997524,
-   "beta_vs_market": 0.62452185,
-   "intercept_ann": -0.11653574,
-   "tracking_error": 0.10882888,
-   "upside_capture": 0.53452804,
+   "total_net_return": -0.05597652,
+   "ann_return": -0.20579762,
+   "excess_total_vs_spy": -0.00951758,
+   "ann_excess_vs_spy": -0.04079032,
+   "beta_vs_market": 0.62435919,
+   "intercept_ann": -0.11738398,
+   "tracking_error": 0.10882266,
+   "upside_capture": 0.53328887,
    "downside_capture": 0.68696364,
    "max_drawdown": -0.07628451,
-   "ann_excess_over_cash": -0.24387658,
+   "ann_excess_over_cash": -0.24469166,
    "vs_passive_market": {
-    "ann_diff": -0.03997524,
+    "ann_diff": -0.04079032,
     "ann_diff_ci95": [
-     -0.43263955,
-     0.35590224
+     -0.43353112,
+     0.35579155
     ],
-    "total_diff": -0.00932592,
+    "total_diff": -0.00951758,
     "total_diff_ci95": [
-     -0.10020584,
-     0.08830269
+     -0.10038481,
+     0.08829834
     ],
-    "p_one_sided": 0.5872
+    "p_one_sided": 0.5886,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
-    0.25932749,
-    0.8027401
+    0.25929812,
+    0.80238823
    ],
    "upside_capture_ci95": [
-    0.27434988,
-    0.86676905
+    0.27302849,
+    0.86558137
    ],
    "downside_capture_ci95": [
     0.23608815,
@@ -457,13 +545,13 @@
    "mean_invested": 1.0,
    "time_in_market": 1.0,
    "annual_turnover": 6.03803727,
-   "costs_paid_total": 0.00070256,
+   "costs_paid_total": 0.00090633,
    "no_fill_signals": 0,
    "stale_asset_days": 0,
    "no_entry_periods": 0,
    "at_2x_costs": {
-    "total_net_return": -0.0564484,
-    "ann_excess_vs_spy": -0.04278549
+    "total_net_return": -0.05683144,
+    "ann_excess_vs_spy": -0.04441564
    }
   },
   {
@@ -472,37 +560,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "S&P 1500 PIT members at t (start_date<=t<end_date or open), sector label present, >=126 valid closes, raw close>=5; score = 63-session total return minus own sector SPDR 63-session total return; per sector take top k=max(3,ceil(0.10*n_s)) equal weight; sector weights fixed = non-negative least squares style weights of SPY daily returns on the 11 SPDRs over the 252 sessions ending 2026-08-07, normalised to 1; rebalance every 21 sessions",
-   "total_net_return": -0.05644281,
-   "ann_return": -0.20736562,
-   "excess_total_vs_spy": -0.00998387,
-   "ann_excess_vs_spy": -0.03929634,
-   "beta_vs_market": 0.82762649,
-   "intercept_ann": -0.07444353,
-   "tracking_error": 0.10932673,
-   "upside_capture": 0.84385021,
+   "total_net_return": -0.05771637,
+   "ann_return": -0.21163638,
+   "excess_total_vs_spy": -0.01125743,
+   "ann_excess_vs_spy": -0.04465476,
+   "beta_vs_market": 0.82655717,
+   "intercept_ann": -0.08001999,
+   "tracking_error": 0.10988011,
+   "upside_capture": 0.83559129,
    "downside_capture": 0.92926157,
-   "max_drawdown": -0.06810912,
-   "ann_excess_over_cash": -0.24319768,
+   "max_drawdown": -0.06936694,
+   "ann_excess_over_cash": -0.2485561,
    "vs_passive_market": {
-    "ann_diff": -0.03929634,
+    "ann_diff": -0.04465476,
     "ann_diff_ci95": [
-     -0.37432257,
-     0.31938786
+     -0.38047164,
+     0.316695
     ],
-    "total_diff": -0.00998387,
+    "total_diff": -0.01125743,
     "total_diff_ci95": [
-     -0.08730243,
-     0.07681182
+     -0.08868769,
+     0.07596468
     ],
-    "p_one_sided": 0.5882
+    "p_one_sided": 0.5989,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
-    0.60948989,
-    1.06323591
+    0.6091019,
+    1.06255191
    ],
    "upside_capture_ci95": [
-    0.46507834,
-    1.28843478
+    0.4572776,
+    1.27960747
    ],
    "downside_capture_ci95": [
     0.54815021,
@@ -516,13 +605,13 @@
    "mean_invested": 1.0,
    "time_in_market": 1.0,
    "annual_turnover": 9.44918781,
-   "costs_paid_total": 0.00336274,
+   "costs_paid_total": 0.00470235,
    "no_fill_signals": 0,
    "stale_asset_days": 0,
    "no_entry_periods": 0,
    "at_2x_costs": {
-    "total_net_return": -0.05962721,
-    "ann_excess_vs_spy": -0.05274732
+    "total_net_return": -0.06216574,
+    "ann_excess_vs_spy": -0.06346416
    }
   },
   {
@@ -531,37 +620,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "C3's top-3 sectors (1/3 each); within each, C4's top-k members by C4 score, equal weight; rebalance every 21 sessions",
-   "total_net_return": -0.07611155,
-   "ann_return": -0.27141849,
-   "excess_total_vs_spy": -0.02965261,
-   "ann_excess_vs_spy": -0.1152933,
-   "beta_vs_market": 0.88530039,
-   "intercept_ann": -0.1386807,
-   "tracking_error": 0.1603009,
-   "upside_capture": 0.93268601,
+   "total_net_return": -0.07730184,
+   "ann_return": -0.27516588,
+   "excess_total_vs_spy": -0.03084289,
+   "ann_excess_vs_spy": -0.12043426,
+   "beta_vs_market": 0.88427446,
+   "intercept_ann": -0.14403085,
+   "tracking_error": 0.16048675,
+   "upside_capture": 0.92479909,
    "downside_capture": 1.09705691,
-   "max_drawdown": -0.11750256,
-   "ann_excess_over_cash": -0.31919464,
+   "max_drawdown": -0.11863952,
+   "ann_excess_over_cash": -0.32433559,
    "vs_passive_market": {
-    "ann_diff": -0.1152933,
+    "ann_diff": -0.12043426,
     "ann_diff_ci95": [
-     -0.66527507,
-     0.40464643
+     -0.67725713,
+     0.40363057
     ],
-    "total_diff": -0.02965261,
+    "total_diff": -0.03084289,
     "total_diff_ci95": [
-     -0.14122594,
-     0.10274543
+     -0.14328025,
+     0.10216529
     ],
-    "p_one_sided": 0.6738
+    "p_one_sided": 0.6782,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
-    0.59071504,
+    0.59032004,
     1.29845788
    ],
    "upside_capture_ci95": [
-    0.44438589,
-    1.50764222
+    0.43437301,
+    1.5006102
    ],
    "downside_capture_ci95": [
     0.54864311,
@@ -575,13 +665,13 @@
    "mean_invested": 1.0,
    "time_in_market": 1.0,
    "annual_turnover": 9.84370717,
-   "costs_paid_total": 0.00362671,
+   "costs_paid_total": 0.00491195,
    "no_fill_signals": 0,
    "stale_asset_days": 0,
    "no_entry_periods": 0,
    "at_2x_costs": {
-    "total_net_return": -0.07946863,
-    "ann_excess_vs_spy": -0.12980016
+    "total_net_return": -0.08184055,
+    "ann_excess_vs_spy": -0.14008207
    }
   },
   {
@@ -590,37 +680,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "index.json plans with selection_era == anticipation-v1-2026-08-08; publication session P = first session s with s > price_basis_date and s >= recorded_at; entered iff entry_zone_state.state in {filled, converted} and ledger outcome != NO_ENTRY; entry session E = first session >= max(P, filled_date if present); exit X = ledger close_date (last session <= close_date) when the plan is in the ledger, else first session after E with raw close <= invalidation or raw close >= targets[0] or date >= price_basis_date + horizon_days calendar days, else censored at window end; if X <= E the position is excluded (resolved_at_or_before_follower_fill); book = equal weight across open positions, re-equalised daily, 100% BIL when none",
-   "total_net_return": -0.03138238,
-   "ann_return": -0.11974306,
-   "excess_total_vs_spy": 0.01507656,
-   "ann_excess_vs_spy": 0.06438214,
-   "beta_vs_market": 0.79254625,
-   "intercept_ann": 0.02208204,
-   "tracking_error": 0.10706706,
-   "upside_capture": 0.93468976,
+   "total_net_return": -0.032351,
+   "ann_return": -0.12325881,
+   "excess_total_vs_spy": 0.01410794,
+   "ann_excess_vs_spy": 0.06039798,
+   "beta_vs_market": 0.79175118,
+   "intercept_ann": 0.01793577,
+   "tracking_error": 0.10736274,
+   "upside_capture": 0.92856878,
    "downside_capture": 0.87565948,
    "max_drawdown": -0.06608915,
-   "ann_excess_over_cash": -0.1395192,
+   "ann_excess_over_cash": -0.14350335,
    "vs_passive_market": {
-    "ann_diff": 0.06438214,
+    "ann_diff": 0.06039798,
     "ann_diff_ci95": [
-     -0.43559811,
-     0.56100233
+     -0.43680139,
+     0.55260316
     ],
-    "total_diff": 0.01507656,
+    "total_diff": 0.01410794,
     "total_diff_ci95": [
-     -0.10493855,
-     0.13386062
+     -0.10509026,
+     0.13220932
     ],
-    "p_one_sided": 0.4095
+    "p_one_sided": 0.4155,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
     0.62694379,
-    1.08453673
+    1.08439707
    ],
    "upside_capture_ci95": [
-    0.53025056,
-    1.55473474
+    0.52409051,
+    1.54555682
    ],
    "downside_capture_ci95": [
     0.43384922,
@@ -634,13 +725,13 @@
    "mean_invested": 0.98409274,
    "time_in_market": 0.98412698,
    "annual_turnover": 25.61053945,
-   "costs_paid_total": 0.0118263,
+   "costs_paid_total": 0.01282234,
    "no_fill_signals": 0,
    "stale_asset_days": 31,
    "no_entry_periods": 1,
    "at_2x_costs": {
-    "total_net_return": -0.0427562,
-    "ann_excess_vs_spy": 0.01707695
+    "total_net_return": -0.04467069,
+    "ann_excess_vs_spy": 0.0091101
    },
    "sample": {
     "positions": 498,
@@ -664,37 +755,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "C6 restricted to plans whose sector SPDR is NOT in C3-rule top-3 computed at the close of price_basis_date",
-   "total_net_return": -0.04830545,
-   "ann_return": -0.17966674,
-   "excess_total_vs_spy": -0.00184651,
-   "ann_excess_vs_spy": -0.00520926,
-   "beta_vs_market": 0.77394068,
-   "intercept_ann": -0.05130306,
-   "tracking_error": 0.11909981,
-   "upside_capture": 0.76527596,
+   "total_net_return": -0.04925715,
+   "ann_return": -0.18294315,
+   "excess_total_vs_spy": -0.00279821,
+   "ann_excess_vs_spy": -0.00918984,
+   "beta_vs_market": 0.77314632,
+   "intercept_ann": -0.05544561,
+   "tracking_error": 0.11938641,
+   "upside_capture": 0.75916082,
    "downside_capture": 0.82809508,
    "max_drawdown": -0.08259489,
-   "ann_excess_over_cash": -0.2091106,
+   "ann_excess_over_cash": -0.21309118,
    "vs_passive_market": {
-    "ann_diff": -0.00520926,
+    "ann_diff": -0.00918984,
     "ann_diff_ci95": [
-     -0.57195276,
-     0.57077779
+     -0.57421379,
+     0.56380805
     ],
-    "total_diff": -0.00184651,
+    "total_diff": -0.00279821,
     "total_diff_ci95": [
-     -0.13531304,
-     0.13557424
+     -0.13555209,
+     0.13346523
     ],
-    "p_one_sided": 0.511
+    "p_one_sided": 0.516,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
-    0.59213137,
-    1.01158825
+    0.59203475,
+    1.01134292
    ],
    "upside_capture_ci95": [
-    0.43043807,
-    1.21200958
+    0.42436917,
+    1.20337648
    ],
    "downside_capture_ci95": [
     0.31642453,
@@ -708,13 +800,13 @@
    "mean_invested": 0.98412698,
    "time_in_market": 0.98412698,
    "annual_turnover": 27.54078375,
-   "costs_paid_total": 0.01278537,
+   "costs_paid_total": 0.01378051,
    "no_fill_signals": 0,
    "stale_asset_days": 10,
    "no_entry_periods": 1,
    "at_2x_costs": {
-    "total_net_return": -0.06038919,
-    "ann_excess_vs_spy": -0.05635074
+    "total_net_return": -0.06226841,
+    "ann_excess_vs_spy": -0.06431043
    },
    "sample": {
     "positions": 332,
@@ -738,37 +830,38 @@
    "status": "evaluated",
    "reason": null,
    "definition": "C6 restricted to plans whose sector SPDR IS in that top-3 (diagnostic counterpart to C7)",
-   "total_net_return": -0.02069033,
-   "ann_return": -0.08022803,
-   "excess_total_vs_spy": 0.02576861,
-   "ann_excess_vs_spy": 0.11202659,
-   "beta_vs_market": 0.82568073,
-   "intercept_ann": 0.07648266,
-   "tracking_error": 0.13166072,
-   "upside_capture": 1.18181415,
+   "total_net_return": -0.02166964,
+   "ann_return": -0.08390161,
+   "excess_total_vs_spy": 0.0247893,
+   "ann_excess_vs_spy": 0.10803513,
+   "beta_vs_market": 0.8248842,
+   "intercept_ann": 0.07232878,
+   "tracking_error": 0.13185133,
+   "upside_capture": 1.17568465,
    "downside_capture": 1.01426835,
-   "max_drawdown": -0.08112564,
-   "ann_excess_over_cash": -0.09187474,
+   "max_drawdown": -0.08204452,
+   "ann_excess_over_cash": -0.09586621,
    "vs_passive_market": {
-    "ann_diff": 0.11202659,
+    "ann_diff": 0.10803513,
     "ann_diff_ci95": [
-     -0.3654999,
-     0.635064
+     -0.36647594,
+     0.62913021
     ],
-    "total_diff": 0.02576861,
+    "total_diff": 0.0247893,
     "total_diff_ci95": [
-     -0.08773834,
-     0.1554619
+     -0.08831298,
+     0.15476665
     ],
-    "p_one_sided": 0.3264
+    "p_one_sided": 0.331,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
-    0.6624875,
-    1.23630947
+    0.66118372,
+    1.23614979
    ],
    "upside_capture_ci95": [
-    0.6331248,
-    2.08627841
+    0.62648242,
+    2.07911188
    ],
    "downside_capture_ci95": [
     0.63313196,
@@ -782,13 +875,13 @@
    "mean_invested": 0.98386165,
    "time_in_market": 0.98412698,
    "annual_turnover": 24.59016165,
-   "costs_paid_total": 0.01132202,
+   "costs_paid_total": 0.01231989,
    "no_fill_signals": 0,
    "stale_asset_days": 21,
    "no_entry_periods": 1,
    "at_2x_costs": {
-    "total_net_return": -0.03169546,
-    "ann_excess_vs_spy": 0.06673851
+    "total_net_return": -0.03363207,
+    "ann_excess_vs_spy": 0.05875705
    },
    "sample": {
     "positions": 166,
@@ -834,7 +927,8 @@
      -7.35e-06,
      0.00902301
     ],
-    "p_one_sided": 0.1923
+    "p_one_sided": 0.1923,
+    "reference_basis": "SPY total-return index, gross of costs (the costed passive book is C1; it differs only by its one entry cost)"
    },
    "beta_ci95": [
     0.99464892,
@@ -870,33 +964,33 @@
     "a": "C6_exact_incumbent_prophet",
     "b": "C1_passive_market",
     "header_definition": "C6 - C1",
-    "ann_diff": 0.0655783,
+    "ann_diff": 0.06159415,
     "ann_diff_ci95": [
-     -0.43518078,
-     0.56296995
+     -0.4363518,
+     0.55501592
     ],
-    "total_diff": 0.01536262,
+    "total_diff": 0.01439401,
     "total_diff_ci95": [
-     -0.10484703,
-     0.13457166
+     -0.10505044,
+     0.13265729
     ],
-    "p_raw": 0.4076,
+    "p_raw": 0.4137,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.42432234,
-      0.54152113
+      -0.42547915,
+      0.53355281
      ],
-     "p_raw": 0.3741,
+     "p_raw": 0.3786,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": 0.01946928,
+     "ann_diff": 0.01150243,
      "ann_diff_ci95": [
-      -0.46984975,
-      0.50676462
+      -0.47218494,
+      0.49139512
      ]
     }
    },
@@ -905,33 +999,33 @@
     "a": "C6_exact_incumbent_prophet",
     "b": "X6_exposure_matched_reference",
     "header_definition": "C6 - X6",
-    "ann_diff": 0.05117288,
+    "ann_diff": 0.04718873,
     "ann_diff_ci95": [
-     -0.43767999,
-     0.53726304
+     -0.43967982,
+     0.52758848
     ],
-    "total_diff": 0.01191751,
+    "total_diff": 0.01094889,
     "total_diff_ci95": [
-     -0.10573773,
-     0.1284692
+     -0.10600657,
+     0.12672488
     ],
-    "p_raw": 0.4276,
+    "p_raw": 0.4328,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.42752392,
-      0.51292759
+      -0.42898246,
+      0.50614008
      ],
-     "p_raw": 0.3934,
+     "p_raw": 0.3988,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": 0.00386769,
+     "ann_diff": -0.00409915,
      "ann_diff_ci95": [
-      -0.4751936,
-      0.47807065
+      -0.47646325,
+      0.46577822
      ]
     }
    },
@@ -940,33 +1034,33 @@
     "a": "C3_sector_allocation_only",
     "b": "C1_passive_market",
     "header_definition": "C3 - C1",
-    "ann_diff": -0.03877908,
+    "ann_diff": -0.03959415,
     "ann_diff_ci95": [
-     -0.43067537,
-     0.35699056
+     -0.4321833,
+     0.35617548
     ],
-    "total_diff": -0.00903986,
+    "total_diff": -0.00923152,
     "total_diff_ci95": [
-     -0.09979432,
-     0.08859434
+     -0.10010761,
+     0.08838169
     ],
-    "p_raw": 0.5846,
+    "p_raw": 0.5859,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.37469686,
-      0.30025603
+      -0.37560559,
+      0.29950236
      ],
-     "p_raw": 0.612,
+     "p_raw": 0.613,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": -0.04039316,
+     "ann_diff": -0.04202331,
      "ann_diff_ci95": [
-      -0.43216708,
-      0.35499744
+      -0.43396033,
+      0.35454882
      ]
     }
    },
@@ -975,33 +1069,33 @@
     "a": "C4_member_selection_only",
     "b": "C1_passive_market",
     "header_definition": "C4 - C1",
-    "ann_diff": -0.03810018,
+    "ann_diff": -0.0434586,
     "ann_diff_ci95": [
-     -0.37312729,
-     0.32005024
+     -0.37894814,
+     0.31692801
     ],
-    "total_diff": -0.00969781,
+    "total_diff": -0.01097137,
     "total_diff_ci95": [
-     -0.08704136,
-     0.07695428
+     -0.08827079,
+     0.07622713
     ],
-    "p_raw": 0.5851,
+    "p_raw": 0.5964,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.33501205,
-      0.2708894
+      -0.33986151,
+      0.26571858
      ],
-     "p_raw": 0.6214,
+     "p_raw": 0.6366,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": -0.05035499,
+     "ann_diff": -0.06107183,
      "ann_diff_ci95": [
-      -0.38232205,
-      0.30743933
+      -0.39668963,
+      0.30116648
      ]
     }
    },
@@ -1010,33 +1104,33 @@
     "a": "C5_joint_sector_and_name",
     "b": "C4_member_selection_only",
     "header_definition": "C5 - C4",
-    "ann_diff": -0.07599696,
+    "ann_diff": -0.0757795,
     "ann_diff_ci95": [
-     -0.56827601,
-     0.34876927
+     -0.56762906,
+     0.34877001
     ],
-    "total_diff": -0.01966874,
+    "total_diff": -0.01958546,
     "total_diff_ci95": [
-     -0.12161469,
-     0.08775641
+     -0.12135854,
+     0.08775016
     ],
-    "p_raw": 0.6442,
+    "p_raw": 0.644,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.50314702,
+      -0.50292956,
       0.3112787
      ],
-     "p_raw": 0.6689,
+     "p_raw": 0.6687,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": -0.07705284,
+     "ann_diff": -0.07661791,
      "ann_diff_ci95": [
-      -0.56827701,
-      0.34746666
+      -0.56697951,
+      0.3477944
      ]
     }
    },
@@ -1045,33 +1139,33 @@
     "a": "C5_joint_sector_and_name",
     "b": "C3_sector_allocation_only",
     "header_definition": "C5 - C3",
-    "ann_diff": -0.07531806,
+    "ann_diff": -0.07964394,
     "ann_diff_ci95": [
-     -0.53784889,
-     0.39232879
+     -0.54514409,
+     0.3920777
     ],
-    "total_diff": -0.02032669,
+    "total_diff": -0.02132532,
     "total_diff_ci95": [
-     -0.11567038,
-     0.09763635
+     -0.11736991,
+     0.09762745
     ],
-    "p_raw": 0.621,
+    "p_raw": 0.6265,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.50134296,
-      0.35376783
+      -0.51106392,
+      0.35272125
      ],
-     "p_raw": 0.6489,
+     "p_raw": 0.6547,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": -0.08701467,
+     "ann_diff": -0.09566643,
      "ann_diff_ci95": [
-      -0.54628067,
-      0.3806904
+      -0.56282246,
+      0.37930579
      ]
     }
    },
@@ -1080,33 +1174,33 @@
     "a": "C6A_context_aligned_prophet",
     "b": "C7_independent_emergence",
     "header_definition": "C6A - C7",
-    "ann_diff": 0.11723586,
+    "ann_diff": 0.11722496,
     "ann_diff_ci95": [
-     -0.40543424,
+     -0.40546638,
      0.6131129
     ],
-    "total_diff": 0.02761512,
+    "total_diff": 0.02758751,
     "total_diff_ci95": [
-     -0.09661181,
-     0.15016795
+     -0.09641868,
+     0.1501056
     ],
     "p_raw": 0.3297,
     "p_holm": 1.0,
     "reject_h0": false,
     "block21": {
      "ann_diff_ci95": [
-      -0.35944128,
+      -0.35945245,
       0.57082902
      ],
-     "p_raw": 0.2864,
+     "p_raw": 0.2865,
      "p_holm": 1.0,
      "reject_h0": false
     },
     "at_2x_costs": {
-     "ann_diff": 0.12308924,
+     "ann_diff": 0.12306748,
      "ann_diff_ci95": [
-      -0.40283559,
-      0.62352667
+      -0.40285736,
+      0.62348422
      ]
     }
    },
@@ -1153,29 +1247,29 @@
    "S_patience": {
     "stratum": "patience",
     "positions": 331,
-    "ann_diff_vs_spy": 0.08721748,
+    "ann_diff_vs_spy": 0.08322149,
     "ann_diff_ci95": [
-     -0.46591402,
-     0.66009135
+     -0.46707204,
+     0.65146321
     ],
-    "beta_vs_market": 0.80990256,
+    "beta_vs_market": 0.80910512,
     "mean_invested": 0.98398096,
-    "p_raw": 0.3863,
-    "p_holm": 0.9798,
+    "p_raw": 0.3914,
+    "p_holm": 0.9936,
     "reject_h0": false
    },
    "S_confirmation": {
     "stratum": "confirmation",
     "positions": 151,
-    "ann_diff_vs_spy": 0.12707949,
+    "ann_diff_vs_spy": 0.123111,
     "ann_diff_ci95": [
-     -0.39491527,
-     0.62952621
+     -0.39630909,
+     0.62534659
     ],
-    "beta_vs_market": 0.71563453,
+    "beta_vs_market": 0.71484258,
     "mean_invested": 0.98412698,
-    "p_raw": 0.3266,
-    "p_holm": 0.9798,
+    "p_raw": 0.3312,
+    "p_holm": 0.9936,
     "reject_h0": false
    },
    "S_early_turn_starter": {
@@ -1189,7 +1283,7 @@
     "beta_vs_market": 1.0232947,
     "mean_invested": 0.85714286,
     "p_raw": 0.891,
-    "p_holm": 0.9798,
+    "p_holm": 0.9936,
     "reject_h0": false
    }
   }
@@ -1202,43 +1296,43 @@
    "a": "C6_exact_incumbent_prophet",
    "b": "X6_exposure_matched_reference",
    "header_definition": "C6 - X6",
-   "ann_diff": 0.05117288,
+   "ann_diff": 0.04718873,
    "ann_diff_ci95": [
-    -0.43767999,
-    0.53726304
+    -0.43967982,
+    0.52758848
    ],
-   "total_diff": 0.01191751,
+   "total_diff": 0.01094889,
    "total_diff_ci95": [
-    -0.10573773,
-    0.1284692
+    -0.10600657,
+    0.12672488
    ],
-   "p_raw": 0.4276,
+   "p_raw": 0.4328,
    "p_holm": 1.0,
    "reject_h0": false,
    "block21": {
     "ann_diff_ci95": [
-     -0.42752392,
-     0.51292759
+     -0.42898246,
+     0.50614008
     ],
-    "p_raw": 0.3934,
+    "p_raw": 0.3988,
     "p_holm": 1.0,
     "reject_h0": false
    },
    "at_2x_costs": {
-    "ann_diff": 0.00386769,
+    "ann_diff": -0.00409915,
     "ann_diff_ci95": [
-     -0.4751936,
-     0.47807065
+     -0.47646325,
+     0.46577822
     ]
    }
   },
   "c3_minus_reference": {
-   "ann_diff": -0.03997524,
+   "ann_diff": -0.04079032,
    "ann_diff_ci95": [
-    -0.43263955,
-    0.35590224
+    -0.43353112,
+    0.35579155
    ],
-   "p_one_sided": 0.5872
+   "p_one_sided": 0.5886
   }
  },
  "attribution": {
@@ -1250,12 +1344,12 @@
     "sector_allocation": 0.03988477,
     "selection_within_sector": -0.01526525,
     "cash": 0.00010952,
-    "costs": -0.0118263
+    "costs": -0.01282234
    },
-   "sum_of_daily_net_returns": -0.02915891,
+   "sum_of_daily_net_returns": -0.03015495,
    "identity_error": -0.0,
-   "compounded_total_net_return": -0.03138238,
-   "compounding_residual": -0.00222347,
+   "compounded_total_net_return": -0.032351,
+   "compounding_residual": -0.00219605,
    "benchmark_sum_of_daily_returns": -0.04525445,
    "gap_vs_benchmark_bridge": {
     "benchmark": -0.04525445,
@@ -1263,8 +1357,8 @@
     "sector_allocation": 0.03988477,
     "selection_within_sector": -0.01526525,
     "cash": 0.00010952,
-    "costs": -0.0118263,
-    "strategy": -0.02915891
+    "costs": -0.01282234,
+    "strategy": -0.03015495
    },
    "unmapped_sector_weight_days": 0.0,
    "unit": "fraction (0.01 = 1 percentage point)"
@@ -1277,12 +1371,12 @@
     "sector_allocation": 0.05880447,
     "selection_within_sector": -0.05062585,
     "cash": 0.00010923,
-    "costs": -0.01278537
+    "costs": -0.01378051
    },
-   "sum_of_daily_net_returns": -0.04655676,
+   "sum_of_daily_net_returns": -0.04755191,
    "identity_error": 0.0,
-   "compounded_total_net_return": -0.04830545,
-   "compounding_residual": -0.00174869,
+   "compounded_total_net_return": -0.04925715,
+   "compounding_residual": -0.00170524,
    "benchmark_sum_of_daily_returns": -0.04525445,
    "gap_vs_benchmark_bridge": {
     "benchmark": -0.04525445,
@@ -1290,8 +1384,8 @@
     "sector_allocation": 0.05880447,
     "selection_within_sector": -0.05062585,
     "cash": 0.00010923,
-    "costs": -0.01278537,
-    "strategy": -0.04655676
+    "costs": -0.01378051,
+    "strategy": -0.04755191
    },
    "unmapped_sector_weight_days": 0.0,
    "unit": "fraction (0.01 = 1 percentage point)"
@@ -1304,12 +1398,12 @@
     "sector_allocation": 0.00277515,
     "selection_within_sector": 0.03324465,
     "cash": 0.00011182,
-    "costs": -0.01132202
+    "costs": -0.01231989
    },
-   "sum_of_daily_net_returns": -0.0172478,
+   "sum_of_daily_net_returns": -0.01824567,
    "identity_error": 0.0,
-   "compounded_total_net_return": -0.02069033,
-   "compounding_residual": -0.00344253,
+   "compounded_total_net_return": -0.02166964,
+   "compounding_residual": -0.00342398,
    "benchmark_sum_of_daily_returns": -0.04525445,
    "gap_vs_benchmark_bridge": {
     "benchmark": -0.04525445,
@@ -1317,8 +1411,8 @@
     "sector_allocation": 0.00277515,
     "selection_within_sector": 0.03324465,
     "cash": 0.00011182,
-    "costs": -0.01132202,
-    "strategy": -0.0172478
+    "costs": -0.01231989,
+    "strategy": -0.01824567
    },
    "unmapped_sector_weight_days": 0.0,
    "unit": "fraction (0.01 = 1 percentage point)"
@@ -1457,6 +1551,148 @@
     "n": 0,
     "status": "unmatured"
    }
+  },
+  "member_benchmark": {
+   "label": "YARDSTICK CORRECTION (independent diagnosis 2026-11-11) — beside the frozen event study, not part of it; changes no frozen number",
+   "why": "the stock-minus-sector-ETF leg grades every pick against a cap-weighted fund; in this window the average point-in-time member of a sector trailed its own fund, so part of that leg is the yardstick, not member choice",
+   "universe_rule": "point-in-time S&P 1500 members at the signal session (start<=s<end or open), sector label present, >=126 valid closes, raw close >= $5 (the header's own C4 eligibility), a matured outcome at the horizon, and no plan published on that asset that day",
+   "same_ruler_and_population": true,
+   "decomposition_identity": "stock - sector ETF = (equal-weight member mean - sector ETF) + (stock - equal-weight member mean), per plan, exact",
+   "horizons": {
+    "10": {
+     "n": 609,
+     "n_dates": 28,
+     "status": "matured_subset",
+     "n_plans_without_eligible_peers": 0,
+     "median_peers_per_plan": 161.0,
+     "identity_check_max_abs": 0.0,
+     "stock_minus_equal_weight_members": {
+      "mean": -0.00160279,
+      "median": -0.00145034,
+      "n": 609,
+      "ci95_date_cluster": [
+       -0.00943734,
+       0.00553761
+      ]
+     },
+     "equal_weight_member_minus_sector_etf": {
+      "mean": -0.00161232,
+      "median": -0.00102385,
+      "n": 609,
+      "ci95_date_cluster": [
+       -0.0041534,
+       0.00090648
+      ]
+     },
+     "stock_minus_sector_etf": {
+      "mean": -0.00321512,
+      "median": -0.0022982,
+      "n": 609,
+      "ci95_date_cluster": [
+       -0.01258673,
+       0.00515146
+      ]
+     },
+     "placebo_random_same_sector": {
+      "draws": 1000,
+      "mean": -0.00157292,
+      "p2_5": -0.00807227,
+      "p97_5": 0.00466439,
+      "observed_outside_placebo_range": false,
+      "note": "random eligible same-sector member per plan per draw, dates and sectors held fixed"
+     }
+    },
+    "21": {
+     "n": 414,
+     "n_dates": 22,
+     "status": "matured_subset",
+     "n_plans_without_eligible_peers": 0,
+     "median_peers_per_plan": 178.0,
+     "identity_check_max_abs": 0.0,
+     "stock_minus_equal_weight_members": {
+      "mean": -0.02410265,
+      "median": -0.01594995,
+      "n": 414,
+      "ci95_date_cluster": [
+       -0.03549939,
+       -0.01303236
+      ]
+     },
+     "equal_weight_member_minus_sector_etf": {
+      "mean": -0.0062606,
+      "median": -0.00832329,
+      "n": 414,
+      "ci95_date_cluster": [
+       -0.01195708,
+       -0.00043228
+      ]
+     },
+     "stock_minus_sector_etf": {
+      "mean": -0.03036325,
+      "median": -0.02560962,
+      "n": 414,
+      "ci95_date_cluster": [
+       -0.04217394,
+       -0.01869526
+      ]
+     },
+     "placebo_random_same_sector": {
+      "draws": 1000,
+      "mean": -0.00607797,
+      "p2_5": -0.01615217,
+      "p97_5": 0.00489971,
+      "observed_outside_placebo_range": true,
+      "note": "random eligible same-sector member per plan per draw, dates and sectors held fixed"
+     }
+    },
+    "42": {
+     "n": 242,
+     "n_dates": 14,
+     "status": "matured_subset",
+     "n_plans_without_eligible_peers": 0,
+     "median_peers_per_plan": 177.0,
+     "identity_check_max_abs": 0.0,
+     "stock_minus_equal_weight_members": {
+      "mean": -0.03277433,
+      "median": -0.01550152,
+      "n": 242,
+      "ci95_date_cluster": [
+       -0.05590499,
+       -0.00703332
+      ]
+     },
+     "equal_weight_member_minus_sector_etf": {
+      "mean": -0.02147711,
+      "median": -0.01984864,
+      "n": 242,
+      "ci95_date_cluster": [
+       -0.0275538,
+       -0.01442298
+      ]
+     },
+     "stock_minus_sector_etf": {
+      "mean": -0.05425144,
+      "median": -0.04100604,
+      "n": 242,
+      "ci95_date_cluster": [
+       -0.0819318,
+       -0.02437172
+      ]
+     },
+     "placebo_random_same_sector": {
+      "draws": 1000,
+      "mean": -0.02143763,
+      "p2_5": -0.03715555,
+      "p97_5": -0.00442649,
+      "observed_outside_placebo_range": true,
+      "note": "random eligible same-sector member per plan per draw, dates and sectors held fixed"
+     }
+    },
+    "63": {
+     "n": 0,
+     "status": "unmatured"
+    }
+   }
   }
  },
  "stability_halves": {
@@ -1531,17 +1767,17 @@
     "ann_excess_over_cash": -0.21423665
    },
    "second": {
-    "total_net_return": -0.03322879,
-    "ann_return": -0.24020581,
-    "excess_total_vs_spy": 0.00833905,
-    "ann_excess_vs_spy": 0.06918172,
-    "beta_vs_market": 0.65290954,
-    "intercept_ann": -0.05009742,
-    "tracking_error": 0.12713481,
-    "upside_capture": 0.44193252,
+    "total_net_return": -0.03342502,
+    "ann_return": -0.2414586,
+    "excess_total_vs_spy": 0.00814282,
+    "ann_excess_vs_spy": 0.06752528,
+    "beta_vs_market": 0.65265799,
+    "intercept_ann": -0.05184032,
+    "tracking_error": 0.12712962,
+    "upside_capture": 0.4395999,
     "downside_capture": 0.55955221,
     "max_drawdown": -0.07628451,
-    "ann_excess_over_cash": -0.27447263
+    "ann_excess_over_cash": -0.27612908
    }
   },
   "C4_member_selection_only": {
@@ -1559,17 +1795,17 @@
     "ann_excess_over_cash": -0.39060732
    },
    "second": {
-    "total_net_return": -0.01131679,
-    "ann_return": -0.08836818,
-    "excess_total_vs_spy": 0.03025105,
-    "ann_excess_vs_spy": 0.25262147,
-    "beta_vs_market": 0.79940757,
-    "intercept_ann": 0.18368701,
-    "tracking_error": 0.10817964,
-    "upside_capture": 0.82057973,
+    "total_net_return": -0.01265126,
+    "ann_return": -0.09832272,
+    "excess_total_vs_spy": 0.02891658,
+    "ann_excess_vs_spy": 0.24173178,
+    "beta_vs_market": 0.79775385,
+    "intercept_ann": 0.17222901,
+    "tracking_error": 0.10945022,
+    "upside_capture": 0.80502841,
     "downside_capture": 0.64064108,
-    "max_drawdown": -0.05425574,
-    "ann_excess_over_cash": -0.09103288
+    "max_drawdown": -0.05553225,
+    "ann_excess_over_cash": -0.10192258
    }
   },
   "C5_joint_sector_and_name": {
@@ -1587,17 +1823,17 @@
     "ann_excess_over_cash": -0.24296699
    },
    "second": {
-    "total_net_return": -0.04977489,
-    "ann_return": -0.33968536,
-    "excess_total_vs_spy": -0.00820705,
-    "ann_excess_vs_spy": -0.05422688,
-    "beta_vs_market": 0.89918689,
-    "intercept_ann": -0.08887175,
-    "tracking_error": 0.19036074,
-    "upside_capture": 0.84785943,
+    "total_net_return": -0.0509991,
+    "ann_return": -0.34656913,
+    "excess_total_vs_spy": -0.00943126,
+    "ann_excess_vs_spy": -0.06467463,
+    "beta_vs_market": 0.89760028,
+    "intercept_ann": -0.09986474,
+    "tracking_error": 0.19069722,
+    "upside_capture": 0.83301381,
     "downside_capture": 0.96456968,
-    "max_drawdown": -0.11750256,
-    "ann_excess_over_cash": -0.39788124
+    "max_drawdown": -0.11863952,
+    "ann_excess_over_cash": -0.40832899
    }
   },
   "C6_exact_incumbent_prophet": {
@@ -1615,17 +1851,17 @@
     "ann_excess_over_cash": -0.2086097
    },
    "second": {
-    "total_net_return": -0.00819031,
-    "ann_return": -0.06466774,
-    "excess_total_vs_spy": 0.03337753,
-    "ann_excess_vs_spy": 0.27545439,
-    "beta_vs_market": 0.71836786,
-    "intercept_ann": 0.17867028,
-    "tracking_error": 0.10682868,
-    "upside_capture": 0.71984189,
+    "total_net_return": -0.00918212,
+    "ann_return": -0.07224404,
+    "excess_total_vs_spy": 0.03238572,
+    "ann_excess_vs_spy": 0.26735755,
+    "beta_vs_market": 0.71713826,
+    "intercept_ann": 0.17015088,
+    "tracking_error": 0.10750478,
+    "upside_capture": 0.7083284,
     "downside_capture": 0.54872658,
-    "max_drawdown": -0.03853718,
-    "ann_excess_over_cash": -0.06819997
+    "max_drawdown": -0.03949864,
+    "ann_excess_over_cash": -0.0762968
    }
   },
   "C7_independent_emergence": {
@@ -1643,17 +1879,17 @@
     "ann_excess_over_cash": -0.48343778
    },
    "second": {
-    "total_net_return": 0.00897166,
-    "ann_return": 0.07530646,
-    "excess_total_vs_spy": 0.0505395,
-    "ann_excess_vs_spy": 0.4177202,
-    "beta_vs_market": 0.7160687,
-    "intercept_ann": 0.32014597,
-    "tracking_error": 0.13398444,
-    "upside_capture": 0.70194181,
+    "total_net_return": 0.00796269,
+    "ann_return": 0.06659636,
+    "excess_total_vs_spy": 0.04953053,
+    "ann_excess_vs_spy": 0.40963064,
+    "beta_vs_market": 0.7148402,
+    "intercept_ann": 0.31163424,
+    "tracking_error": 0.13461431,
+    "upside_capture": 0.69042944,
     "downside_capture": 0.40415913,
-    "max_drawdown": -0.03872878,
-    "ann_excess_over_cash": 0.07406584
+    "max_drawdown": -0.03969005,
+    "ann_excess_over_cash": 0.06597629
    }
   },
   "C6A_context_aligned_prophet": {
@@ -1671,17 +1907,17 @@
     "ann_excess_over_cash": 0.20381128
    },
    "second": {
-    "total_net_return": -0.04765172,
-    "ann_return": -0.32759585,
-    "excess_total_vs_spy": -0.00608388,
-    "ann_excess_vs_spy": -0.05344467,
-    "beta_vs_market": 0.72596336,
-    "intercept_ann": -0.14761855,
-    "tracking_error": 0.10735586,
-    "upside_capture": 0.75074772,
+    "total_net_return": -0.04860407,
+    "ann_return": -0.3330424,
+    "excess_total_vs_spy": -0.00703623,
+    "ann_excess_vs_spy": -0.06155636,
+    "beta_vs_market": 0.72473151,
+    "intercept_ann": -0.15615358,
+    "tracking_error": 0.10778657,
+    "upside_capture": 0.73923229,
     "downside_capture": 0.88247313,
-    "max_drawdown": -0.05422162,
-    "ann_excess_over_cash": -0.39709902
+    "max_drawdown": -0.0551674,
+    "ann_excess_over_cash": -0.40521072
    }
   },
   "X6_exposure_matched_reference": {
@@ -1775,18 +2011,38 @@
    "top5_share_of_positive_contribution": 0.19541508,
    "without_top_contributor": {
     "dropped_asset": "AMR",
-    "total_net_return": -0.03841203,
-    "excess_total_vs_spy": 0.00804691,
+    "total_net_return": -0.03937362,
+    "excess_total_vs_spy": 0.00708533,
     "excess_total_ci95": [
-     -0.10656118,
-     0.12069061
+     -0.1068184,
+     0.11909525
     ],
-    "ann_excess_vs_spy": 0.03493144,
+    "ann_excess_vs_spy": 0.03094728,
     "ann_excess_ci95": [
-     -0.44080021,
-     0.50611192
+     -0.44222398,
+     0.49984333
     ],
-    "beta_vs_market": 0.79210652
+    "beta_vs_market": 0.79131144
+   },
+   "without_top3_contributors": {
+    "dropped_assets": [
+     "AMR",
+     "CRCL",
+     "TEM"
+    ],
+    "reason": "independent-audit RUN-D 2026-11-11: concentration check; the three largest positive gross contributors removed together",
+    "total_net_return": -0.05010366,
+    "excess_total_vs_spy": -0.00364472,
+    "excess_total_ci95": [
+     -0.11424097,
+     0.1043302
+    ],
+    "ann_excess_vs_spy": -0.01454042,
+    "ann_excess_ci95": [
+     -0.47523417,
+     0.43811387
+    ],
+    "beta_vs_market": 0.77667554
    }
   },
   "C7_independent_emergence": {
@@ -1849,18 +2105,38 @@
    "top5_share_of_positive_contribution": 0.27259731,
    "without_top_contributor": {
     "dropped_asset": "AMR",
-    "total_net_return": -0.06243497,
-    "excess_total_vs_spy": -0.01597603,
+    "total_net_return": -0.06337254,
+    "excess_total_vs_spy": -0.0169136,
     "excess_total_ci95": [
-     -0.14135047,
-     0.11577491
+     -0.14138474,
+     0.11428526
     ],
-    "ann_excess_vs_spy": -0.06544523,
+    "ann_excess_vs_spy": -0.06942581,
     "ann_excess_ci95": [
-     -0.59799752,
-     0.49197718
+     -0.59885725,
+     0.48033574
     ],
-    "beta_vs_market": 0.77329114
+    "beta_vs_market": 0.77249678
+   },
+   "without_top3_contributors": {
+    "dropped_assets": [
+     "AMR",
+     "WBD",
+     "FBRT"
+    ],
+    "reason": "independent-audit RUN-D 2026-11-11: concentration check; the three largest positive gross contributors removed together",
+    "total_net_return": -0.07804928,
+    "excess_total_vs_spy": -0.03159034,
+    "excess_total_ci95": [
+     -0.15218764,
+     0.09582067
+    ],
+    "ann_excess_vs_spy": -0.13200731,
+    "ann_excess_ci95": [
+     -0.64538368,
+     0.40449468
+    ],
+    "beta_vs_market": 0.76910433
    }
   },
   "C6A_context_aligned_prophet": {
@@ -1923,18 +2199,38 @@
    "top5_share_of_positive_contribution": 0.31094594,
    "without_top_contributor": {
     "dropped_asset": "TEM",
-    "total_net_return": -0.0316536,
-    "excess_total_vs_spy": 0.01480534,
+    "total_net_return": -0.03262195,
+    "excess_total_vs_spy": 0.01383699,
     "excess_total_ci95": [
-     -0.09524923,
-     0.13428051
+     -0.09546401,
+     0.13301778
     ],
-    "ann_excess_vs_spy": 0.06528796,
+    "ann_excess_vs_spy": 0.06129649,
     "ann_excess_ci95": [
-     -0.39964523,
-     0.55252645
+     -0.40055352,
+     0.54576962
     ],
-    "beta_vs_market": 0.80839045
+    "beta_vs_market": 0.80759391
+   },
+   "without_top3_contributors": {
+    "dropped_assets": [
+     "TEM",
+     "CRCL",
+     "GLXY"
+    ],
+    "reason": "independent-audit RUN-D 2026-11-11: concentration check; the three largest positive gross contributors removed together",
+    "total_net_return": -0.0505786,
+    "excess_total_vs_spy": -0.00411966,
+    "excess_total_ci95": [
+     -0.10052613,
+     0.09686165
+    ],
+    "ann_excess_vs_spy": -0.01425139,
+    "ann_excess_ci95": [
+     -0.42188823,
+     0.40441422
+    ],
+    "beta_vs_market": 0.79121585
    }
   }
  },
@@ -1976,6 +2272,14 @@
     "SBAC-BULL-20260731",
     "WFRD-BULL-20260731"
    ],
+   "census_basis": "all plans minted with an outage_backfill origination_mode, any era",
+   "overall_minted_outage_backfill": 17,
+   "overall_of_which_replayed_receipted_bake": 14,
+   "overall_of_which_synthetic_board_reconstructions": 3,
+   "outside_selection_era": [
+    "RIO-BULL-20260731"
+   ],
+   "era_minted_outage_backfill": 16,
    "would_have_entered_positions_as_run": 12,
    "would_have_entered_ids_as_run": [
     "APG-BULL-20260731",
@@ -1997,7 +2301,93 @@
    "as_run_entry": "2026-08-10",
    "in_sensitivity_a": true,
    "sensitivity_a_entry": "2026-08-11",
-   "price_authentication": "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) is present only in the single price cache used by this runner and is not authenticated by any second source"
+   "price_authentication": "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) was, at publication, present only in the single price cache used by this runner. Two post-publication second-source checks (independent audit RUN-D 2026-11-11) now authenticate it: a ChartExchange end-of-day sweep reproduces the 62.96 -> 174.38 closes, and a Yahoo live-chart API pull matches all 64 window sessions for MRNA. Both are audit evidence gathered after outcomes were seen, labelled as such, and change no frozen number; the v1 caveat is retained here superseded."
+  },
+  "undated_conversions": {
+   "count": 78,
+   "ids": [
+    "AA-BULL-20260812",
+    "ACHC-BULL-20260630",
+    "ADM-BULL-20260831",
+    "AEIS-BULL-20260922",
+    "ALGM-BULL-20260617",
+    "AMKR-BULL-20260917",
+    "AMR-BULL-20260810",
+    "APG-BULL-20260731",
+    "ARR-BULL-20260810",
+    "BANC-BULL-20261021",
+    "BC-BULL-20261021",
+    "BXMT-BULL-20260813",
+    "CAR-BULL-20260817",
+    "CAVA-BULL-20260813",
+    "CDNS-BULL-20260922",
+    "CNM-BULL-20260917",
+    "CNP-BULL-20261005",
+    "COHU-BULL-20260917",
+    "COIN-BULL-20260818",
+    "CRCL-BULL-20260810",
+    "EQT-BULL-20261008",
+    "EZPW-BULL-20260819",
+    "FCN-BULL-20260821",
+    "FG-BULL-20261005",
+    "FND-BULL-20261021",
+    "FTI-BULL-20260810",
+    "GIII-BULL-20261016",
+    "GNL-BULL-20260805",
+    "GNRC-BULL-20260917",
+    "HLI-BULL-20260813",
+    "HP-BULL-20260731",
+    "INGR-BULL-20261005",
+    "IPGP-BULL-20260909",
+    "KEY-BULL-20261021",
+    "KLAC-BULL-20260922",
+    "KRC-BULL-20261002",
+    "LEA-BULL-20260727",
+    "LFUS-BULL-20260810",
+    "LIN-BULL-20260930",
+    "LNTH-BULL-20260813",
+    "MTDR-BULL-20260810",
+    "MUSA-BULL-20260722",
+    "NBIX-BULL-20260730",
+    "NBIX-BULL-20261021",
+    "NOC-BULL-20261016",
+    "NWS-BULL-20261006",
+    "NYT-BULL-20260709",
+    "OHI-BULL-20260630",
+    "OLN-BULL-20261005",
+    "PDFS-BULL-20260922",
+    "PEG-BULL-20261005",
+    "PII-BULL-20261021",
+    "PPL-BULL-20261005",
+    "RH-BULL-20261021",
+    "RPM-BULL-20260730",
+    "RYAN-BULL-20261005",
+    "SCHL-BULL-20261005",
+    "SEDG-BULL-20260827",
+    "SEZL-BULL-20261005",
+    "SFM-BULL-20260804",
+    "SGI-BULL-20260819",
+    "ST-BULL-20260930",
+    "STAG-BULL-20260622",
+    "STZ-BULL-20261008",
+    "TGTX-BULL-20260611",
+    "TJX-BULL-20260727",
+    "TNDM-BULL-20260925",
+    "TREX-BULL-20261013",
+    "UNH-BULL-20261013",
+    "UTHR-BULL-20260825",
+    "UTHR-BULL-20260930",
+    "VIR-BULL-20260821",
+    "VTRS-BULL-20260917",
+    "WBD-BULL-20260805",
+    "WFRD-BULL-20261021",
+    "WH-BULL-20260925",
+    "WLK-BULL-20261021",
+    "XPO-BULL-20261005"
+   ],
+   "basis": "era plans with entry_zone_state.state == 'converted' and no truthy dated fill field; the snapshot records terminal state only, so their conversion session is unknowable from it",
+   "primary_treatment": "entered at publication session P under the header's literal C6 rule (E = first session >= max(P, filled_date if present); an absent filled_date falls back to P)",
+   "sensitivity": "sensitivity.excluding_undated_conversions removes every one of them"
   },
   "review": {
    "file": "REVIEW_beta_evaluation.md (independent scientific review, 2026-11-10)",
@@ -2018,18 +2408,18 @@
     "no_fill_no_close_at_entry": 2
    },
    "positions": 509,
-   "total_net_return": 0.0009061,
-   "excess_total_vs_spy": 0.04736504,
+   "total_net_return": -9.481e-05,
+   "excess_total_vs_spy": 0.04636414,
    "excess_total_ci95": [
-    -0.10197918,
-    0.21430662
+    -0.10225455,
+    0.21227126
    ],
-   "ann_excess_vs_spy": 0.20024048,
+   "ann_excess_vs_spy": 0.19625632,
    "ann_excess_ci95": [
-    -0.42170858,
-    0.86493043
+    -0.42238557,
+    0.85734952
    ],
-   "beta_vs_market": 0.81568789,
+   "beta_vs_market": 0.81489282,
    "mean_invested": 0.98409274,
    "hit_rate_vs_spy": {
     "n": 509,
@@ -2304,6 +2694,149 @@
      ]
     }
    }
+  },
+  "excluding_undated_conversions": {
+   "definition": "the 78 incumbent-era plans whose entry_zone_state.state == 'converted' but whose snapshot records no dated fill (no truthy filled_date or other date/_at field); because the snapshot is not a vintage, the conversion session cannot be established from recorded_at alone. 78 of them held without missing marks through the window and are removed with their whole position; the variant keeps every other rule of C6 unchanged. Added by the 2026-11-11 independent audit; not part of the frozen protocol.",
+   "excluded_from_this_variant": {
+    "excluded_by_sensitivity": 78,
+    "recorded_no_entry": 70,
+    "not_live_origination": 14,
+    "not_entered_zone_expired": 19,
+    "not_entered_zone_live": 104,
+    "resolved_at_or_before_follower_fill": 31,
+    "published_after_window": 12,
+    "no_fill_no_close_at_entry": 2
+   },
+   "positions": 430,
+   "total_net_return": -0.05728944,
+   "excess_total_vs_spy": -0.0108305,
+   "excess_total_ci95": [
+    -0.12080602,
+    0.09522197
+   ],
+   "ann_excess_vs_spy": -0.04429131,
+   "ann_excess_ci95": [
+    -0.50711119,
+    0.39759364
+   ],
+   "beta_vs_market": 0.77414695,
+   "mean_invested": 0.98408078,
+   "hit_rate_vs_spy": {
+    "n": 430,
+    "beat_spy": 220,
+    "rate": 0.51162791,
+    "ci95_wilson": [
+     0.46448832,
+     0.55856157
+    ]
+   }
+  },
+  "missing_marks_total_loss_stress": {
+   "definition": "498 entered positions hold assets whose close series stops inside the window (delistings; snapshot keeps the plan open). The primary book zero-fills missing held marks (position runs flat). This stress instead writes a total loss (-100%) at each position's first missing close and lets drift remove the weight; it is a deliberate worst case, not an estimate. Added by the 2026-11-11 independent audit; not part of the frozen protocol.",
+   "positions": 498,
+   "total_net_return": -0.04420469,
+   "excess_total_vs_spy": 0.00225425,
+   "excess_total_ci95": [
+    -0.11551866,
+    0.11918849
+   ],
+   "ann_excess_vs_spy": 0.01112805,
+   "ann_excess_ci95": [
+    -0.47991781,
+    0.50283706
+   ],
+   "beta_vs_market": 0.77358725,
+   "mean_invested": 0.98153036,
+   "gapped_positions": [
+    {
+     "plan_id": "SBH-BULL-20261021",
+     "asset": "SBH",
+     "entry": "2026-10-23",
+     "first_missing_close": "2026-10-26",
+     "missing_sessions": 10
+    },
+    {
+     "plan_id": "LFUS-BULL-20260925",
+     "asset": "LFUS",
+     "entry": "2026-10-08",
+     "first_missing_close": "2026-10-09",
+     "missing_sessions": 21
+    }
+   ]
+  },
+  "off_index_picks": {
+   "label": "AFTER-THE-FACT SENSITIVITY (independent diagnosis 2026-11-11) — not part of the frozen protocol",
+   "definition": "picks whose stock is not a point-in-time S&P 1500 member at the plan's signal session (PIT membership start_date <= s < end_date or open); counted and graded separately",
+   "published_plans_off_index": 46,
+   "published_plans_total": 732,
+   "entered_positions_off_index": 31,
+   "horizons": {
+    "21": {
+     "all_plans": {
+      "mean": -0.03036325,
+      "n": 414,
+      "n_dates": 22,
+      "ci95_date_cluster": [
+       -0.04201704,
+       -0.01869619
+      ]
+     },
+     "off_index_picks": {
+      "mean": -0.10456876,
+      "n": 31,
+      "n_dates": 11,
+      "ci95_date_cluster": [
+       -0.16605021,
+       -0.04340174
+      ]
+     },
+     "sp1500_member_picks": {
+      "mean": -0.02435706,
+      "n": 383,
+      "n_dates": 22,
+      "ci95_date_cluster": [
+       -0.03636672,
+       -0.01295036
+      ]
+     },
+     "off_index_share_of_matured": 0.07487923,
+     "contribution_to_mean_gap": -0.00600619,
+     "contribution_note": "mean gap with all plans minus mean gap with member picks only, per-plan equal weight"
+    },
+    "42": {
+     "all_plans": {
+      "mean": -0.05425144,
+      "n": 242,
+      "n_dates": 14,
+      "ci95_date_cluster": [
+       -0.08222228,
+       -0.02522204
+      ]
+     },
+     "off_index_picks": {
+      "mean": -0.1939036,
+      "n": 24,
+      "n_dates": 7,
+      "ci95_date_cluster": [
+       -0.24506806,
+       -0.05684247
+      ]
+     },
+     "sp1500_member_picks": {
+      "mean": -0.03887689,
+      "n": 218,
+      "n_dates": 14,
+      "ci95_date_cluster": [
+       -0.05872853,
+       -0.02035174
+      ]
+     },
+     "off_index_share_of_matured": 0.09917355,
+     "contribution_to_mean_gap": -0.01537455,
+     "contribution_note": "mean gap with all plans minus mean gap with member picks only, per-plan equal weight"
+    }
+   },
+   "membership_file_limits": "the PIT membership file has no recorded change after 2026-06-02; for signal dates after that, 'not a member' can mean 'membership unknown', not certainly absent (unrecorded additions and deletions both possible). Foreign ADRs (e.g. ASML, AZN, NVO) are correctly non-members; sector labels are current-basis, not as-issued."
   }
  },
  "failed_leaders": {
@@ -2334,6 +2867,30 @@
   },
   "classified_share": 1.0,
   "priced_share": 0.996,
+  "priced_share_basis": "entered positions with a valid close at entry (entry marks only). Marks after entry are a separate question: held assets whose close series stops inside the window are zero-filled (held flat) in the primary book — see coverage.held_path_gaps and sensitivity.missing_marks_total_loss_stress",
+  "held_path_gap_positions": [
+   {
+    "plan_id": "SBH-BULL-20261021",
+    "asset": "SBH",
+    "entry": "2026-10-23",
+    "first_missing_close": "2026-10-26",
+    "missing_sessions": 10
+   },
+   {
+    "plan_id": "LFUS-BULL-20260925",
+    "asset": "LFUS",
+    "entry": "2026-10-08",
+    "first_missing_close": "2026-10-09",
+    "missing_sessions": 21
+   }
+  ],
+  "held_path_gaps": 2,
+  "held_path_complete_positions": 496,
+  "resolved_at_or_before_split": {
+   "total": 34,
+   "entered_at_final_close": 17,
+   "resolved_before_follower_fill": 17
+  },
   "sector": {
    "unmapped_plans": 0,
    "label_source_disagreements": 0,
@@ -2349,11 +2906,11 @@
     "decision": "2026-08-07",
     "execution": "2026-08-10",
     "pit_active": 1506,
-    "no_price_file": 36,
+    "no_price_file": 35,
     "no_sector": 1,
     "short_history": 9,
     "price_below_min": 12,
-    "eligible": 1448,
+    "eligible": 1449,
     "c4_names": 131,
     "c5_names": 61,
     "c5_sectors": [
@@ -2366,11 +2923,11 @@
     "decision": "2026-09-08",
     "execution": "2026-09-09",
     "pit_active": 1506,
-    "no_price_file": 36,
+    "no_price_file": 35,
     "no_sector": 1,
     "short_history": 14,
     "price_below_min": 13,
-    "eligible": 1442,
+    "eligible": 1443,
     "c4_names": 131,
     "c5_names": 49,
     "c5_sectors": [
@@ -2383,11 +2940,11 @@
     "decision": "2026-10-07",
     "execution": "2026-10-08",
     "pit_active": 1506,
-    "no_price_file": 36,
+    "no_price_file": 35,
     "no_sector": 1,
     "short_history": 16,
     "price_below_min": 16,
-    "eligible": 1437,
+    "eligible": 1438,
     "c4_names": 131,
     "c5_names": 43,
     "c5_sectors": [
@@ -2400,11 +2957,11 @@
     "decision": "2026-11-05",
     "execution": "2026-11-06",
     "pit_active": 1506,
-    "no_price_file": 36,
+    "no_price_file": 35,
     "no_sector": 1,
     "short_history": 26,
     "price_below_min": 17,
-    "eligible": 1426,
+    "eligible": 1427,
     "c4_names": 131,
     "c5_names": 32,
     "c5_sectors": [
@@ -2449,8 +3006,7 @@
    "STEL",
    "UE",
    "UPBD",
-   "WSR",
-   "ZWS"
+   "WSR"
   ],
   "c4_sector_weights": {
    "XLB": 0.0,
@@ -2505,8 +3061,14 @@
   "Annualised differentials from 63 daily returns are very noisy; read total-window differences and their intervals.",
   "Population (deviation D5): 16 outage-reconstructed plans (13 receipted replays, 3 synthetic-board reconstructions) are excluded because their earliest auditable availability is after their nominal publication session; the correction was made after outcomes were seen, follows a rule that predates the evaluation, and lowers the headline.",
   "X6 is an exposure-weight arithmetic reference, not a selection-matched comparator: it matches only risky weight, so K2 nearly repeats K1. A comparator matched on eligible cohort, concentration, sector/factor exposure, timing and costs requires a new pre-declared protocol; X6 is not replaced retrospectively.",
-  "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) is present only in the single price cache used by this runner and is not authenticated by any second source; it affects any population that admits the replayed plans.",
-  "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; 36 point-in-time members had no price file and were excluded.",
+  "Undated conversions: 78 era plans are terminal-state 'converted' with no dated fill in the snapshot; the C6 rule enters them at publication because the header's literal text admits it. Excluding every one of them moves the book to -5.7% total, -1.1 pp versus SPY (CI [-12.1, +9.5] pp, still spans zero). Found by the 2026-11-11 independent audit; the sensitivity is not part of the frozen protocol.",
+  "Missing held marks: 2 held positions own assets whose close series stops inside the window (delistings); the primary book zero-fills them (held flat), which flatters the book relative to an unknown true price. A total-loss stress (-4.4% total, +0.2 pp versus SPY, CI [-11.6, +11.9] pp) bounds the damage; the affected positions are listed in coverage.held_path_gap_positions.",
+  "Coverage basis: the 95%+ priced-share gate is measured on ENTRY marks only. It says nothing about marks after entry — the gapped held positions above are priced at entry and then run flat, so the gate passes while held-path completeness is a separate, disclosed quantity.",
+  "Cost conventions (header-decided, stated plainly): costs are per side on traded notional at trade close, including the terminal trade (corrected 2026-11-11); C1 is 100% SPY held through the window with no terminal sale; the uninvested weight earns BIL without fee; X6 is arithmetic and cost-free by definition; annualisation is arithmetic (mean daily differential x 252) throughout.",
+  "Yardstick: the event study's stock-minus-sector-ETF leg grades picks against a cap-weighted fund. The equal-weight member benchmark (event_study.member_benchmark, added 2026-11-11) shows an average same-sector member trailing that fund by -0.6 pp at 21 sessions and -2.1 pp at 42; that share of the published leg is the yardstick, not member choice.",
+  "Off-index names: 46 published plans (6% of them) name stocks outside the point-in-time S&P 1500 at the signal date and carried -0.6 pp of the 21-session mean gap; the membership file records no change after 2026-06-02, so late-window non-membership is uncertain in both directions (see sensitivity.off_index_picks.membership_file_limits).",
+  "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) was, at publication, present only in the single price cache used by this runner. Two post-publication second-source checks (independent audit RUN-D 2026-11-11) now authenticate it: a ChartExchange end-of-day sweep reproduces the 62.96 -> 174.38 closes, and a Yahoo live-chart API pull matches all 64 window sessions for MRNA. Both are audit evidence gathered after outcomes were seen, labelled as such, and change no frozen number; the v1 caveat is retained here superseded.; it affects any population that admits the replayed plans.",
+  "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; 35 point-in-time members had no price file and were excluded.",
   "Sector labels are current-basis GICS, not the classification in force at each date.",
   "Prophet plans are read from the 2026-11-09 plan snapshot, not each plan's as-published bytes; entries use the publication clock and close-only fills, so results differ from the plan record's own same-bar outcomes.",
   "Model book: equal weight across open positions (per position, not per distinct ticker; no same-ticker overlaps occur in this sample, so the two coincide here). It is not user holdings, a portfolio recommendation or sizing advice.",
@@ -2533,8 +3095,8 @@
    "id": "D3",
    "kind": "implementation_note",
    "when": "after outcome access",
-   "what": "the last scheduled rule rebalance (decision 2026-11-05) executes at the final close 2026-11-06; its trading cost has no following return day and is not charged",
-   "why": "header schedule executes while t+1 <= last close; omitted cost is at most one rebalance (< 0.1 pp for C3-C5)"
+   "what": "v1 (superseded): the last scheduled rule rebalance (decision 2026-11-05) executed at the final close 2026-11-06 and its trading cost had no following return day and was not charged; corrected 2026-11-11 (see D6): the terminal trade cost is now charged against the final day's realised return for every book whose target vector is defined at the final close",
+   "why": "header schedule executes while t+1 <= last close; the v1 omission was at most one rebalance (< 0.1 pp for C3-C5); the correction charges it instead of approximating it away"
   },
   {
    "id": "D4",
@@ -2547,8 +3109,29 @@
    "id": "D5",
    "kind": "population_correction",
    "when": "after outcome access (2026-11-10)",
-   "what": "primary population corrected to live-published plans only: 16 outage-reconstructed incumbent-era plans (13 receipted replays of the 2026-08-09 bake instantiated 2026-08-11T05:32:28Z; 3 synthetic-board reconstructions of the never-published 2026-08-11 board executed 2026-08-13T13:31:33Z) excluded from C6/C7/C6A, the all-published-plans event study, attribution, coverage counts and every contrast using them (reason not_live_origination, detected from origination_mode/backfill_executed_at and the disclosure receipts, never a hard-coded id list). Before -> after: C6 total +0.9836% -> -3.1382%; C6 vs SPY +5.6295 pp -> +1.5077 pp (CI [-9.870, +22.967] -> [-10.494, +13.386] pp); C6 positions 510 -> 498; K1 +23.6944 pp -> +6.5578 pp/yr; K2 +23.5757 pp -> +5.1173 pp/yr; K7 +41.7692 pp -> +11.7236 pp/yr; event study H=21 -2.7106 pp -> -3.0241 pp (n 430 -> 414, dates 24 -> 22). The superseded population is retained verbatim under sensitivity.superseded_as_run; sensitivity (a) admits the 13 replays only from their auditable availability and admits the synthetic-board reconstructions never.",
+   "what": "primary population corrected to live-published plans only: 16 outage-reconstructed incumbent-era plans (13 receipted replays of the 2026-08-09 bake instantiated 2026-08-11T05:32:28Z; 3 synthetic-board reconstructions of the never-published 2026-08-11 board executed 2026-08-13T13:31:33Z) excluded from C6/C7/C6A, the all-published-plans event study, attribution, coverage counts and every contrast using them (reason not_live_origination, detected from origination_mode/backfill_executed_at and the disclosure receipts, never a hard-coded id list). Before -> after: C6 total +0.9836% -> -3.2351%; C6 vs SPY +5.6295 pp -> +1.4108 pp (CI [-9.870, +22.967] -> [-10.509, +13.221] pp); C6 positions 510 -> 498; K1 +23.6944 pp -> +6.1594 pp/yr; K2 +23.5757 pp -> +4.7189 pp/yr; K7 +41.7692 pp -> +11.7225 pp/yr; event study H=21 -2.7106 pp -> -3.0241 pp (n 430 -> 414, dates 24 -> 22). The superseded population is retained verbatim under sensitivity.superseded_as_run; sensitivity (a) admits the 13 replays only from their auditable availability and admits the synthetic-board reconstructions never.",
    "why": "the runner had treated backfilled plans as if historically published although their earliest auditable availability is their backfill receipt, after their nominal publication session (e.g. MRNA-BULL-20260616 entered at the 2026-08-10 close although instantiated 2026-08-11T05:32Z). research/PROPHET_OUTAGE_BACKFILL_2026_08.md forbids presenting reconstructed picks as live historical calls; that rule predates this evaluation. Correction made after outcomes were seen and it lowers the headline. Source: independent review REVIEW_beta_evaluation.md (sha256 6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a), BLOCKER finding, accepted by the programme CEO."
+  },
+  {
+   "id": "D6",
+   "kind": "implementation_note",
+   "when": "after publication (2026-11-11)",
+   "what": "engine correction: simulate_book now charges the final-close trade cost (a target vector defined at the last session implies a trade whose cost the v1 engine computed but never consumed, because no d+1 return existed to carry it). The cost is charged against the final day's realised net return. Affected books: C3/C4/C5 (last scheduled rebalance), C6/C7/C6A (terminal closes incl. liquidation of names that stop trading); C1 (100% SPY held through, no terminal sale) and C2/X6 (no final trade beyond the daily target series already costed) are unaffected. Before -> after on the corrected population: C6 total -3.1382% -> -3.2351%; C6 vs SPY +1.5077 pp -> +1.4108 pp (CI [-10.494, +13.386] -> [-10.509, +13.221] pp); C6 costs -1.1826% -> 1.2822% of NAV. K1 +6.5578 pp -> +6.1594 pp/yr. Every superseded figure is retained verbatim in this artifact's correction block and in sensitivity.superseded_as_run.",
+   "why": "found by two independent re-derivations after publication (independent audit RUN-D 2026-11-11; second re-derivation by a different model, Kimi). The v1 behaviour silently dropped a real cost the engine had already computed; the fix makes the book pay what its own target vector says it trades. The verdict (L0, descriptive, not distinguishable from passive) is unchanged: every shifted interval still spans zero by a wide margin. Protocol header, population rules, comparators, seeds and the data pin are untouched (header sha256 3be32166…2ada verified before the run)."
+  },
+  {
+   "id": "D7",
+   "kind": "added_diagnostic",
+   "when": "after publication (2026-11-11)",
+   "what": "event_study.member_benchmark added beside the frozen stock-minus-sector-ETF leg: at each horizon the equal-weight mean of point-in-time eligible same-sector members on the same signal date (C4 eligibility, names published that day excluded), the stock minus that member benchmark with a date-cluster interval, and a placebo distribution of random same-sector members showing what no selection looks like. H=21: equal-weight member mean vs ETF -0.6261 pp (CI [-1.196, -0.043]); stock vs member benchmark -2.4103 pp (CI [-3.550, -1.303]); placebo 95% range -1.6152 pp to +0.4900 pp versus the observed -3.0363 pp. The frozen event-study numbers are unchanged; this block decomposes the same leg into yardstick drag plus stock-versus-peers.",
+   "why": "independent diagnosis of the stock-minus-sector gap (2026-11-11, /tmp/prophet-eval-diagnosis/REPORT.md, reproduced on this engine with this runner's own code; diagnosis figures used only as cross-check): a cap-weighted sector fund is not what an average member of the sector did in this window, so part of the published stock-minus-sector-ETF leg is the yardstick, not member choice. Descriptive only; adds no threshold, changes no release level, and makes no claim of negative selection or of its absence."
+  },
+  {
+   "id": "D8",
+   "kind": "added_diagnostic",
+   "when": "after publication (2026-11-11)",
+   "what": "sensitivity.off_index_picks added: 46 of 732 published plans name a stock that is not a point-in-time S&P 1500 member at its signal session. At H=21 their stock-minus-sector-ETF mean is -10.4569 pp (n 31) versus -2.4357 pp for member picks; excluding them moves the all-plan mean from -3.0363 pp to -2.4357 pp. At H=42: -19.3904 pp versus -3.8877 pp. Membership-file limits restated in the block: no recorded change after 2026-06-02, so late-window 'not a member' can mean 'membership unknown'.",
+   "why": "the same independent diagnosis found roughly a quarter to a third of the event-study gap carried by off-index picks (quantum, space, crypto-mining and similar names), which have no true cap-weighted sector yardstick. Reported as a labelled after-the-fact sensitivity on the same ruler; recomputed on this engine, diagnosis figures used only as cross-check. Descriptive only."
   }
  ],
  "may_rank": false,
@@ -2557,14 +3140,16 @@
  "may_trade": false,
  "may_escalate": false,
  "headline": [
-  "Release level: descriptive only (L0). The window is 64 sessions; the predeclared minimum for any accepted historical claim is 252 sessions including an 8% market drawdown.",
+  "Release level: descriptive only (L0). The predeclared global minimum for any accepted historical claim requires all of: 252 sessions (this window has 64), an 8% SPY drawdown (deepest here is -5.9%) and 150 resolved positions (this window has 308 — the only gate that passes). Two of three fail, so every job stays L0.",
   "Market over the window: SPY -4.6% total return, deepest drawdown -5.9%.",
   "Population: live-published plans only. 16 outage-reconstructed plans that no user could see on their nominal publication dates are excluded from every headline number (deviation D5); the superseded as-run numbers are retained under sensitivity.superseded_as_run.",
-  "Incumbent Prophet book (as built, 498 positions): -3.1% net, +1.5 pp versus SPY, 95% CI [-10.5, +13.4] pp. The interval includes zero: this is not evidence of outperformance, and the sample is far too short.",
+  "Corrected 2026-11-11 after a two-run independent audit: final-close trade costs are now charged and price bytes are verified against the data pin (v1 C6 total was -3.1%). Superseded figures sit beside the corrected ones; the verdict — L0, not distinguishable from passive — is unchanged.",
+  "Incumbent Prophet book (as built, 498 positions): -3.2% net, +1.4 pp versus SPY, 95% CI [-10.5, +13.2] pp. The interval includes zero: this is not evidence of outperformance, and the sample is far too short.",
   "Beta capture: beta 0.79 (95% CI 0.63 to 1.08), mean invested weight 98%; upside capture 0.93, downside capture 0.88.",
-  "Without its largest single contributor (AMR) the book is +0.8 pp versus SPY (CI [-10.7, +12.1] pp).",
+  "Without its largest single contributor (AMR) the book is +0.7 pp versus SPY (CI [-10.7, +11.9] pp); without the three largest (AMR, CRCL, TEM) it is -0.4 pp — the sign of the whole result rests on three names.",
   "Live-published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by -3.0 pp on average (date-cluster CI [-5.1, -0.9] pp); most of that gap was the stock versus its own sector ETF, not the sector choice.",
-  "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY on this window (K3 -3.9 pp/yr, K4 -3.8 pp/yr, K5 -7.6 pp/yr annualised; none significant after Holm). Insignificant results mean value is not shown, not that there is none.",
+  "That stock-versus-sector number has two floors under it. An average point-in-time member of the same sector trailed its own cap-weighted fund by -0.6 pp at 21 sessions — that floor is the yardstick, not member choice. The picks sat a further -2.4 pp below that average member (CI [-3.5, -1.3] pp); a random-member placebo over the same dates and sectors lands inside -1.6 pp to +0.5 pp. The independent diagnosis attributes more of the remainder to the characteristics of what was picked (short-term bounce, medium-term laggards, off-index speculative names); what is left does not survive its multiplicity correction. No claim of negative member selection, and no claim of its absence.",
+  "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY on this window (K3 -4.0 pp/yr, K4 -4.3 pp/yr, K5 -7.6 pp/yr annualised; none significant after Holm). Insignificant results mean value is not shown, not that there is none.",
   "The exposure-matched reference (X6) is an exposure-weight arithmetic reference only: it matches risky weight alone, and because the book is essentially fully invested, K2 nearly repeats the SPY comparison (K1) and cannot identify member-selection value.",
   "Prophet plans inside leading sectors did better than plans outside them in this window (K7 +11.7 pp/yr annualised, Holm p 1.00); this is not significant.",
   "Nothing here shows that sector context or member selection adds value beyond market participation."
