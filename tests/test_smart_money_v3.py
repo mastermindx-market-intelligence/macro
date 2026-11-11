@@ -1615,3 +1615,66 @@ def test_fund_dossier_source_reported_holding_link_and_unavailable_states():
     legacy = _env().get_template('fund_dossier.html.j2').render(**context)
     assert 'Original filing source unavailable' in legacy
     assert 'SEC 原始披露' not in legacy
+
+
+# =========================================================================== #
+# SECTION 5 — templates/smart_money.html.j2 · "Managers worth following" cards #
+# =========================================================================== #
+
+def _mem_cards_snippet() -> str | None:
+    """The hero-card block only: from its container to the legend that follows it.
+
+    Rendered as a fragment so the tier chip is exercised without building a whole
+    ``desk`` payload; ``t``/``gradeb`` arrive as environment globals instead of the
+    page's own macros.
+    """
+    tpl_dir = _find_templates_dir("smart_money.html.j2")
+    if tpl_dir is None:
+        return None
+    source = (tpl_dir / "smart_money.html.j2").read_text()
+    start = source.index("{%- set _mem_board")
+    end = source.index('<p class="mem-legend">', start)
+    return source[start:end]
+
+
+def _render_mem_cards(followability: dict) -> str:
+    env = Environment(autoescape=True)
+    env.globals.update(t=lambda en, zh="": en, gradeb=lambda g: g or "")
+    snippet = _mem_cards_snippet()
+    assert snippet is not None, "smart-money hero-card block must exist"
+    return env.from_string(snippet).render(
+        d_fol_memory={
+            "board": ["d1capital"],
+            "funds": {
+                "d1capital": {
+                    "name": "D1 Capital Partners",
+                    "grade": "B",
+                    "by_quarter": [],
+                    "quarters_beat": 4,
+                    "quarters_scored": 4,
+                    "avg_dw_excess_60d": 0.059,
+                }
+            },
+            "quarters": [],
+        },
+        d_followability={"d1capital": followability},
+    )
+
+
+@pytest.mark.skipif(jinja2 is None, reason='jinja2 unavailable')
+def test_memory_hero_card_shows_fade_qualification():
+    """A fade fund must carry its qualification on the hero card, exactly as the
+    follow table and manager desk do. The card used to have no fade branch, so
+    D1 Capital / Whale Rock rendered with no tier chip at all while their linked
+    dossiers showed FADE."""
+    html = _render_mem_cards({"follow_tier": "fade", "follow_score": 36.9})
+    assert "ftier fade" in html
+    assert "Fade" in html
+
+
+@pytest.mark.skipif(jinja2 is None, reason='jinja2 unavailable')
+def test_memory_hero_card_renders_every_follow_tier():
+    assert "ftier follow" in _render_mem_cards({"follow_tier": "follow", "follow_score": 71.0})
+    assert "ftier watch" in _render_mem_cards({"follow_tier": "watch", "follow_score": 50.0})
+    # no tier / unknown tier must not fall through to a blank card
+    assert "ftier insufficient" in _render_mem_cards({})
