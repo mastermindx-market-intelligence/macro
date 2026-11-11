@@ -319,6 +319,15 @@ def _fake_root(tmp_path):
 
 
 def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
+    # The frozen briefs are judged against the same clock as the pure cases;
+    # wall time would eventually turn the intended fresh macro fixture stale.
+    class FixedDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            assert tz == timezone.utc
+            return _NOW
+
+    monkeypatch.setattr(bab, "datetime", FixedDateTime)
     root = _fake_root(tmp_path)
     site = tmp_path / "out" / "site"
     _w(site / "master_brief.json", _brief("2026-10-18T22:00:00+00:00", "2026-10-16", refresh_days=1))
@@ -332,6 +341,7 @@ def test_main_writes_freshness_receipt_and_stale_page(tmp_path, monkeypatch):
     assert bab.main() == 0
     receipt = json.loads((site / "aibrief_freshness.json").read_text())
     assert datetime.fromisoformat(receipt["built_at"]).tzinfo is not None
+    assert receipt["built_at"] == _NOW.isoformat()
     assert set(receipt["lenses"]) == {"macro", "china", "btc"}
     macro = receipt["lenses"]["macro"]
     assert macro["generated_at"] == "2026-11-09T01:00:00+00:00"
