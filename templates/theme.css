@@ -3533,11 +3533,3 @@ html[data-theme="light"]{
   --gmi-hist-glow:  none;
 }
 /* ===== end GMI explorer extension ===== */
-
-/* Options workspace radius and spacing primitives; shared palette, page scope. */
-.oew {
-  --r-card:12px; --r-btn:10px; --r-ctl:8px;
-  --r-panel:14px; --r-pill:999px; --r-shell:var(--r-panel);
-  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:44px;
-}
-
