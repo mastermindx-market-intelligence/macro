@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_980),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_001),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 132, 5_746),
+    ("templates/index.html", 138, 6_010),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_031),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 133, 5_776),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 11
@@ -5713,6 +5713,21 @@ PACKING_PROBE_MAX_PACKS = 11
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #11030 lane 1 debt increment, Sector Intelligence; COO
+    ruling 9): the increment registers its own introduced findings — 1,160
+    curated-exclusive closure paths widened across 83 jobs and twelve new
+    suites wired into one new gate: code job, sector-lane1-generation-inputs
+    (the snapshot-to-route proof first). Measured with
+    scripts/run_ci_pack.packing_probe_measurements on the increment's tree
+    after those edits: index 138 jobs / 6,010 w-s / 11 packs (137 / 5,980
+    + the new job's 30), free 138 jobs / 6,031 w-s / 11 packs (138 / 6,001
+    + 30; already at its jobs ceiling because it selected 137 of 138),
+    Prophet 133 jobs / 5,776 w-s / 10 packs (132 / 5,746 + 30). Re-based
+    exactly those: 137->138 and 5,980->6,010, 6,001->6,031, 132->133 and
+    5,746->5,776. MAX_PACKS stays 11; every selector, assertion and
+    admission limit unchanged. Registration-only, not a timing claim; the
+    final pass re-measures after merging main.
 
     2026-11-10 (PR #10929, Sector Intelligence lane 1 carries its own CI
     registration; COO ruling on the PR): 240 curated-exclusive closure paths

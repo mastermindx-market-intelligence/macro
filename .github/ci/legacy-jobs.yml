@@ -75,6 +75,11 @@ jobs:
       - tests/__init__.py
       - tests/test_stock_identity_input_boundaries.py
       - tests/test_stock_identity_method_projection.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -317,6 +322,13 @@ jobs:
       - "lib/sector_central_carry.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "engine/basket_membership_pit.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1414,6 +1426,80 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -1694,6 +1780,11 @@ jobs:
       - "tests/test_live_flow_recovery.py"
       - "tests/test_live_flow_baselines.py"
       - "tests/test_live_flow_tiering.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -3601,6 +3692,80 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4711,6 +4876,80 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4845,6 +5084,11 @@ jobs:
       - "scripts/refresh_event_workspaces.py"
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7009,6 +7253,13 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7405,6 +7656,39 @@ jobs:
         # into ci.yml's paths filter, so this line also makes the suite reach.
         run: python -m pytest tests/test_public_dashboard_preview.py -q
 
+  sector-lane1-generation-inputs:
+    # Sector Intelligence lane 1 (PR #11030 debt increment, 2026-11-11): the
+    # prepare scripts and the captured-input chain they restore, from provider
+    # capture through the private-store publisher to the mounted, gated API.
+    # gate: code, not tier-gate's gate: data, so the snapshot-to-route proof
+    # (first step) runs on every pull request whose inferred scope it reaches
+    # rather than only in the data-health lane. Every suite is offline: the
+    # provider adapters run against synthetic frames and fixture workbooks,
+    # and the frozen base_*.py fixtures pin the pre-refactor implementations.
+    # yfinance/jsonschema: collectors/yahoo.py and app.main's routers import
+    # them at module scope; the rest matches tier-gate's app.main install line.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow jsonschema yfinance
+      - name: lane 1 proof — prepare scripts resolve and the snapshot publishes a generation the route reads
+        run: python -m pytest tests/test_sector_lane1_prepare_scripts.py -q
+      - name: sector runtime snapshot and native runtime inputs — parent join to mounted API
+        run: python -m pytest tests/test_sector_runtime_snapshot.py tests/test_sector_native_runtime_inputs.py -q
+      - name: sector captured-input assembly and document composition
+        run: python -m pytest tests/test_sector_captured_input_assembly.py tests/test_sector_document_composition.py tests/test_sector_auxiliary_capture.py -q
+      - name: member/breadth generation contracts and explicit member index inputs
+        run: python -m pytest tests/test_breadth_member_generation_contract.py tests/test_member_ohlcv_generation_contract.py tests/test_member_index_explicit_inputs.py -q
+      - name: explicit-input cores match their frozen base implementations
+        run: python -m pytest tests/test_sector_cycles_explicit_inputs.py tests/test_theme_allocation_explicit_inputs.py tests/test_basket_enrichments_explicit_inputs.py -q
+
   paywall-contracts:
     if: ${{ false }}
     gate: data
@@ -7625,6 +7909,13 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8054,6 +8345,19 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9395,6 +9699,79 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10095,6 +10472,66 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10757,6 +11194,11 @@ jobs:
       - "engine/canon.py"
       - "lib/__init__.py"
       - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -11098,6 +11540,11 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # Budget 8 -> 15 (2026-10-31, macro #10333 ci run 41221939325 attempts 1+2, jobs
     # 124598642578 / 124621444781): on a PULL REQUEST the fail-closed "canonical base"
     # step fetches origin/main in ~4 min on a hosted runner (17:27->17:31Z, 19:02->19:07Z),
@@ -11486,6 +11933,11 @@ jobs:
       - "config/theme_sources.yml"
       # W2F-X closure widening: the observation seam widened these import closures
       - "lib/intl_gs_observations.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -11922,6 +12374,11 @@ jobs:
       - "tests/intl_gs_dossier_fixture.py"
       - "tests/intl_gs_dossier_browser.test.cjs"
       - "tests/__init__.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # Measured cost, not a guess (DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
     # run 41227508685 (ci-pack-9, job 124615360658, head 2c5d125e) hit the 12-minute
     # cap at 18:27:48Z (job start 18:15:48Z) with every completed subtest passing —
@@ -13711,6 +14168,81 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14462,6 +14994,11 @@ jobs:
       - "scripts/build_china_altdata.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -14637,6 +15174,11 @@ jobs:
       - "scripts/build_china_radar.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -14696,6 +15238,12 @@ jobs:
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14859,6 +15407,13 @@ jobs:
       - "templates/china_altdata.html.j2"
       - "templates/options.html.j2"
       - "templates/stage_analysis.html.j2"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -15369,6 +15924,12 @@ jobs:
       # 595fe6b7 — widening is the safe direction.
       - "lib/numeric.py"
       - "scripts/build_sector_action_board.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15726,6 +16287,11 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16861,6 +17427,11 @@ jobs:
       - "site/crypto.html"
       - "site/vector.html"
       - "tests/test_crypto_observations_contract.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -17114,6 +17685,11 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     if: ${{ false }}
     gate: data
     # TXI W1/W3: the transmission chain library (knowledge/transmission/*.yaml), its compiler
@@ -18511,6 +19087,80 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -20727,6 +21377,13 @@ jobs:
       - "engine/sector_action_board.py"
       - "lib/numeric.py"
       - "scripts/build_sector_action_board.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20912,6 +21569,11 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -21288,6 +21950,11 @@ jobs:
       - tests/test_leader_recovery_outcomes.py
       - tests/test_leader_recovery_policy_research.py
       - tests/test_rs_leader_highs.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21703,6 +22370,11 @@ jobs:
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md
       - research/SNB_FLOOR_RATE_CASE_2015_01_15.md
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22190,6 +22862,11 @@ jobs:
       - lib/store.py
       - scripts/__init__.py
       - tests/__init__.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22978,6 +23655,12 @@ jobs:
       - "templates/rotation_glance.css"
       - "tests/ew_p4_glance_ui.test.cjs"
       - "tests/fixtures/ew_p4_observation/**"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23087,6 +23770,13 @@ jobs:
       # 595fe6b7 — widening is the safe direction.
       - "engine/sector_dated_context.py"
       - "site/riskdata/risk_envelope.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23186,6 +23876,13 @@ jobs:
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -23326,6 +24023,13 @@ jobs:
       # paths named by scripts/check_contract_delta.py at head
       # 595fe6b7 — widening is the safe direction.
       - "engine/sector_research_handoff.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23785,6 +24489,11 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -24090,6 +24799,11 @@ jobs:
       - "tests/intl_gs_transmission_fixture.py"
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
 
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -24222,6 +24936,11 @@ jobs:
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
       - "tests/test_worldmap_base.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # Packet A-F02-1: OFAC sanctions map engine + page + nav + worldmap base +
     # collector parser. Zero network; fixtures + committed snapshot only.
     timeout-minutes: 10
@@ -24513,6 +25232,11 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -25767,6 +26491,13 @@ jobs:
       - "engine/sector_action_board.py"
       - "lib/numeric.py"
       - "scripts/build_sector_action_board.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25956,6 +26687,13 @@ jobs:
       - "tests/test_sector_completion_ownership_map.py"
       - "tests/test_sector_metric_definitions.py"
       - "tests/test_cycle_forward_log_fence.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -26419,6 +27157,24 @@ jobs:
       - "tests/__init__.py"
       - "tests/test_rotation_observation_integration.py"
       - "tests/test_rotation_observation_notification.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/adjusted_price_capture.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -27070,6 +27826,11 @@ jobs:
       - "templates/_seo_head.html.j2"
       - "templates/_site_nav.html.j2"
       - "templates/macro_liquidity_central_banks.html.j2"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27320,6 +28081,11 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27522,6 +28288,11 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -28119,6 +28890,11 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -28971,6 +29747,37 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/basket_freeze.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/us_act_now.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29618,6 +30425,67 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -29720,6 +30588,11 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_publish_ohlc.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -29821,6 +30694,18 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     # The pack runner owns execution; keep both new source/API suites in CI.
     timeout-minutes: 12
     runs-on: ubuntu-latest
@@ -32575,6 +33460,81 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33033,6 +33993,13 @@ jobs:
       - "tests/test_crypto_t15_transition_scaffold.py"
       - "tests/test_vector_scorecard_gap_semantics.py"
       - "scripts/calibrate_rate_inflation.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33841,6 +34808,12 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34228,6 +35201,11 @@ jobs:
       - "tests/test_government_program_ontology.py"
       - "tests/test_government_program_ontology_scripts.py"
       - "tests/test_government_revenue_award_events.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -34754,6 +35732,67 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -35019,6 +36058,21 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -36056,6 +37110,13 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -37262,6 +38323,47 @@ jobs:
       - "lib/yahoo_runtime_profile.py"
       - "scripts/build_sector_action_board.py"
       - "scripts/check_sector_intelligence_freshness.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/smallcap_breadth.py"
+      - "engine/basket_freeze.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/theme_context.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -37580,6 +38682,11 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38924,6 +40031,11 @@ jobs:
       # suite's own import closure, which scope: exclusive must declare).
       - "tests/test_sector_holdings_explicit_inputs.py"
       - "tests/fixtures/base_sector_holdings_4eddd.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -41341,6 +42453,67 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -42715,6 +43888,61 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/holdings_signals.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43362,6 +44590,12 @@ jobs:
       - "tests/test_sector_native_view.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "engine/basket_membership_pit.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -43528,6 +44762,11 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/test_group_linked_outsiders.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -44364,6 +45603,11 @@ jobs:
       - scripts/tiingo_research_query.py
       - lib/dataos/tiingo_views.py
       - scripts/tiingo_materialize.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -44494,6 +45738,11 @@ jobs:
       - research/systematic_inputs/README.md
       - scripts/__init__.py
       - tests/__init__.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -44657,6 +45906,11 @@ jobs:
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_trusted.py
       - scripts/tiingo_materialize.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -46056,6 +47310,81 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -47273,6 +48602,80 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/sector_holdings.py"
+      - "collectors/smallcap_breadth.py"
+      - "config/sector_legs.json"
+      - "engine/alert_time.py"
+      - "engine/alert_triage.py"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/basket_freeze.py"
+      - "engine/china_pboc_stance.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/global_liquidity.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/holdings_signals.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/market_state.py"
+      - "engine/mtf_monitor.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_radar_market_catalysts.py"
+      - "engine/risk_radar_recovery.py"
+      - "engine/risk_state.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_legs.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_signals.py"
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "engine/signal_frontier_docket.py"
+      - "engine/signal_lab.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -47917,6 +49320,11 @@ jobs:
       - "site/marketsdata/markets_engine.js"
       - "site/mm_charts.js"
       - "site/regimedata/regime_prior.js"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -48629,6 +50037,11 @@ jobs:
       - "scripts/research_liquidity_shock_reversal.py"
       - "site/factordata/basket_washout_state.json"
       - "site/factordata/us_standouts.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -49491,6 +50904,11 @@ jobs:
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/A4_transfer_obs/cases/**"
       - "research/prophet_v4/news_to_business_impact_20261006/phase1_designs/AMENDMENTS_W1C.cases.json"
       - "research/prophet_v4/news_to_business_impact_20261006/benchmark/**"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -49785,6 +51203,11 @@ jobs:
       - "scripts/research/risk_radar_displayed_probability_audit.py"
       - "scripts/research/risk_radar_state_ladder_calibration.py"
       - "scripts/validate_regime_fwd.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49895,6 +51318,11 @@ jobs:
       - "research/grey_deer/PULLBACK_EPISODE_RULE_OPTIONS_V1_2_2026-10-13.md"
       - "research/grey_deer/pullback_episode_rule_options/EPISODE_RULE_OPTIONS_2026-10-13.json"
       - "research/grey_deer/pullback_floor_projection/FLOOR_PROJECTION_2026-10-13.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50101,6 +51529,11 @@ jobs:
       - lib/ticker_aliases.py
       - lib/tsx_calendar.py
       - lib/us_cash_calendar.py
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50459,6 +51892,11 @@ jobs:
       - "tests/test_sni_denominator_guard_properties.py"
       - "tests/test_sni_correction_lineage_guard_properties.py"
       - "tests/test_sni_entitlement_guard_properties.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51012,6 +52450,13 @@ jobs:
       - "tests/test_commodity_workspace_contracts.js"
       - "tests/test_commodity_workspace_ui.js"
       - "tests/test_commodity_workspace_presentation.js"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -51265,6 +52710,13 @@ jobs:
       - "lib/sector_central_carry.py"
       - "contracts/theme_graph/membership_collection.v2.schema.json"
       - "engine/basket_membership_pit.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51461,6 +52913,13 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/adjusted_price_capture.py"
+      - "lib/sector_history_contract.py"
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -53055,6 +54514,47 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "collectors/breadth.py"
+      - "collectors/midcap_breadth.py"
+      - "collectors/smallcap_breadth.py"
+      - "engine/basket_freeze.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/grading_stats.py"
+      - "engine/hazard_parity.py"
+      - "engine/hazard_score.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_basket_documents.py"
+      - "engine/sector_central.py"
+      - "engine/sector_central_grader.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_generation_guard.py"
+      - "engine/sector_research_handoff.py"
+      - "engine/us_act_now.py"
+      - "lib/adjusted_price_capture.py"
+      - "lib/breadth_member_generation_contract.py"
+      - "lib/member_ohlcv_generation_contract.py"
+      - "lib/sector_auxiliary_capture.py"
+      - "lib/sector_index_membership_capture.py"
+      - "lib/sector_input_capture.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53189,6 +54689,21 @@ jobs:
       - "scripts/check_sector_intelligence_freshness.py"
       - "scripts/vps_live_orchestrator.py"
       - "site/flowtracker/base.json"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "engine/signal_foundry/results.py"
+      - "engine/signal_foundry/spec.py"
+      - "engine/signal_foundry/transforms.py"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fetch_basket_extras.py"
+      - "scripts/fetch_basket_ohlcv.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "scripts/notify.py"
+      - "scripts/prepare_sector_native_inputs.py"
+      - "scripts/prepare_sector_snapshot.py"
+      - "scripts/validate_regime_fwd.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -53322,6 +54837,11 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -53703,6 +55223,11 @@ jobs:
       - "site/factordata/basket_washout_state.json"
       - "tests/__init__.py"
       - "tests/test_build_signal_quality_fail_closed.py"
+      # PR #11030 lane 1 debt increment contract-delta registration
+      # (2026-11-11): exact closure paths named by
+      # scripts/check_contract_delta.py at head 19b8c5bc5fde —
+      # widening is the safe direction.
+      - "lib/yahoo_runtime_profile.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
