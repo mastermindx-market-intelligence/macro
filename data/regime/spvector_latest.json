@@ -1,15 +1,15 @@
 {
-  "date": "2026-11-06",
-  "score": 40,
+  "date": "2026-11-10",
+  "score": 38,
   "band": "elevated",
   "band_label": "ELEVATED \u2014 trim",
-  "equity_w": 100,
-  "cash_w": 0,
-  "stance": "100% equity",
-  "cagr": 12.44,
-  "sharpe": 0.87,
+  "equity_w": 66,
+  "cash_w": 34,
+  "stance": "66% equity",
+  "cagr": 12.51,
+  "sharpe": 0.88,
   "maxdd": -36.2,
-  "equity_weight": 100,
-  "risk_score": 40,
-  "asof": "2026-11-06"
+  "equity_weight": 66,
+  "risk_score": 38,
+  "asof": "2026-11-10"
 }
