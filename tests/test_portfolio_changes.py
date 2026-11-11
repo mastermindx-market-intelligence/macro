@@ -42,6 +42,7 @@ from engine.portfolio_changes import (  # noqa: E402
     snapshot_state,
 )
 from engine.portfolio_digest import compose_digest, idem_key  # noqa: E402
+from engine import portfolio_changes as changes_mod  # noqa: E402
 from engine import portfolio_digest as digest_mod  # noqa: E402
 from engine.portfolio_vocab import CLASS_WORD  # noqa: E402
 from tests.test_portfolio_brief import BOOKS, TODAY, _ctx  # noqa: E402
@@ -343,11 +344,101 @@ def test_output_cardinality_is_bounded():
 
 
 def test_input_cardinality_is_bounded():
-    """B3, input half. A 5000-name client snapshot is read only up to the cap."""
+    """B3, input half. An unexamined tail cannot be treated as absent membership."""
     previous = {"names": {f"T{i:04d}": {"stage": 2} for i in range(5000)}}
-    removed = next(c for c in diff_snapshots(previous, {"names": {}})
-                   if c["kind"] == "removed")
-    assert removed["en"].startswith(f"{MAX_PREVIOUS_NAMES} names left")
+    with pytest.raises(ValueError, match="comparison limit") as exc:
+        diff_snapshots(previous, {"names": {}})
+    assert isinstance(exc.value, changes_mod.SnapshotComparisonTooLarge)
+
+
+def _many_names(count, stage=2):
+    return {"names": {f"T{i:04d}": {"stage": stage} for i in range(count)}}
+
+
+@pytest.mark.parametrize("count", [0, 1, 499, 500])
+def test_supported_comparison_boundaries_remain_quiet(count):
+    previous = _many_names(count)
+    current = copy.deepcopy(previous)
+    before = copy.deepcopy((previous, current))
+    assert diff_snapshots(previous, current) == []
+    assert changes_mod.compare_snapshots(previous, current) == ([], 0)
+    assert compose_since_section(previous, current) is None
+    assert compose_digest(previous, current, user_id="u-test", asof=TODAY) is None
+    assert (previous, current) == before
+
+
+@pytest.mark.parametrize("count", [501, 750, 1000])
+@pytest.mark.parametrize("scenario", ["same", "addition", "retained_tail", "tail_move"])
+def test_oversized_comparison_withholds_unexamined_membership(count, scenario):
+    previous = _many_names(count)
+    current = copy.deepcopy(previous)
+    if scenario == "addition":
+        current["names"][f"T{count:04d}"] = {"stage": 2}
+    elif scenario == "retained_tail":
+        current["names"] = {f"T{count - 1:04d}": {"stage": 2}}
+    elif scenario == "tail_move":
+        current["names"][f"T{count - 1:04d}"]["stage"] = 3
+    before = copy.deepcopy((previous, current))
+    with pytest.raises(ValueError, match="comparison limit") as exc:
+        diff_snapshots(previous, current)
+    assert isinstance(exc.value, changes_mod.SnapshotComparisonTooLarge)
+    section = compose_since_section(previous, current)
+    assert section["key"] == "since"
+    assert len(section["lines"]) == 1
+    assert "changes have not been evaluated" in section["lines"][0]["en"]
+    assert "尚未评估" in section["lines"][0]["zh"]
+    assert compose_digest(previous, current, user_id="u-test", asof=TODAY) is None
+    assert (previous, current) == before
+
+
+def test_oversized_comparison_rejects_before_reading_records():
+    class UnreadableNames(dict):
+        def __iter__(self):
+            raise AssertionError("oversized membership was enumerated")
+
+        def get(self, *args):
+            raise AssertionError("oversized record was read")
+
+    names = UnreadableNames(_many_names(501)["names"])
+    with pytest.raises(ValueError, match="comparison limit"):
+        diff_snapshots({"names": names}, {"names": {}})
+
+
+@pytest.mark.parametrize("count", [199, 200, 201, 400])
+def test_comparison_counts_precede_output_and_render_limits(count):
+    previous, current = _many_names(count), _many_names(count, stage=3)
+    before = copy.deepcopy((previous, current))
+    # Assert the existing consumer contracts before the new detailed comparison API.
+    section = compose_since_section(previous, current)
+    assert section["lines"][-1]["en"] == f"{count - 8} further changes not shown here."
+    assert section["lines"][-1]["zh"] == f"另有 {count - 8} 项变化未在此列出。"
+    digest = compose_digest(previous, current, user_id="u-test", asof=TODAY)
+    assert digest["change_count"] == count
+    assert digest["subject"].startswith(f"{count} changes")
+    assert digest["title_en"].startswith(f"{count} changes")
+    assert f"{count} 项变化" in digest["title_zh"]
+    assert any(b["en"] == f"{count - 10} further changes are not listed here."
+               and b["zh"] == f"另有 {count - 10} 项变化未在此列出。"
+               for b in digest["blocks"])
+    changes, total = changes_mod.compare_snapshots(previous, current)
+    assert total == count
+    assert len(changes) == min(count, MAX_CHANGES)
+    assert all(c["kind"] == "stage" for c in changes)
+    assert changes == diff_snapshots(previous, current)
+    assert (previous, current) == before
+
+
+def test_comparison_preserves_real_membership_and_first_visit():
+    current = _many_names(501)
+    assert changes_mod.compare_snapshots(None, current) == ([], 0)
+    empty_changes, empty_count = changes_mod.compare_snapshots({"names": {}}, current)
+    assert empty_count == 1
+    assert empty_changes[0]["kind"] == "added"
+    assert empty_changes[0]["en"].startswith("501 names joined")
+    changes, count = changes_mod.compare_snapshots(_many_names(500), current)
+    assert count == 1
+    assert changes[0]["en"].startswith("1 name joined")
+    assert "T0500" in changes[0]["en"]
 
 
 def test_membership_sentence_does_not_paste_hundreds_of_tickers():
@@ -701,9 +792,65 @@ def test_changes_endpoint_first_visit(monkeypatch, tmp_path):
     body = r.json()
     assert body["first_visit"] is True
     assert body["changes"] == []
+    assert body["change_count"] == 0
+    assert body["changes_truncated"] is False
     assert body["state_digest"]["schema"] == SNAPSHOT_SCHEMA
     assert r.headers.get("Cache-Control") == "private, no-store"
     m.app.dependency_overrides.clear()
+
+
+@pytest.mark.parametrize("count", [501, 750, 1000])
+def test_changes_endpoint_rejects_oversized_previous_without_replacing_marker(
+        monkeypatch, tmp_path, count):
+    previous = _many_names(count)
+    m, client = _client(monkeypatch, tmp_path, ctx=_ctx())
+    try:
+        r = client.post("/api/portfolio/changes", json={"previous": previous},
+                        headers={"Authorization": "Bearer x"})
+        assert r.status_code == 413, r.text
+        assert r.headers.get("Cache-Control") == "private, no-store"
+        assert r.json() == {"detail": {
+            "error": "previous_snapshot_too_large", "max_names": MAX_PREVIOUS_NAMES,
+        }}
+        assert "state_digest" not in r.json()
+    finally:
+        m.app.dependency_overrides.clear()
+
+
+@pytest.mark.parametrize("count", [0, 1, 199, 200, 201, 400])
+def test_changes_endpoint_discloses_true_count_and_visible_omissions(
+        monkeypatch, tmp_path, count):
+    ctx = {"asof": TODAY, "tickers": {
+        f"T{i:04d}": {"stage": {"n": 3}} for i in range(count)
+    }}
+    m, client = _client(monkeypatch, tmp_path, ctx=ctx,
+                        holdings=[{"ticker": t} for t in ctx["tickers"]])
+    try:
+        r = client.post("/api/portfolio/changes", json={"previous": _many_names(count)},
+                        headers={"Authorization": "Bearer x"})
+        assert r.status_code == 200, r.text
+        assert r.headers.get("Cache-Control") == "private, no-store"
+        body = r.json()
+        assert body["schema"] == "portfolio_changes.v1"
+        assert body["first_visit"] is False
+        assert body["change_count"] == count
+        assert len(body["changes"]) == min(count, MAX_CHANGES)
+        assert all(c["kind"] == "stage" for c in body["changes"])
+        assert body["changes_truncated"] is (count > MAX_CHANGES)
+        if count > MAX_CHANGES:
+            assert f"Showing 200 of {count} detected changes" in body["cursor"]["note_en"]
+            assert f"{count - 200} additional" in body["cursor"]["note_en"]
+            assert f"另有 {count - 200} 项未列出" in body["cursor"]["note_zh"]
+        else:
+            assert body["cursor"] == CURSOR_DISCLOSURE
+        # The prior response must not append omissions to the module-level disclosure.
+        quiet = client.post("/api/portfolio/changes", json={"previous": body["state_digest"]},
+                            headers={"Authorization": "Bearer x"}).json()
+        assert quiet["changes"] == []
+        assert quiet["change_count"] == 0
+        assert quiet["cursor"] == CURSOR_DISCLOSURE
+    finally:
+        m.app.dependency_overrides.clear()
 
 
 def test_changes_endpoint_returns_the_diff(monkeypatch, tmp_path):

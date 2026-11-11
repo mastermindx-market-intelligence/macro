@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_730),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6020,6 +6020,40 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-11 (PR #10203, preserve the landed free-content contribution):
+    Receiving main dce366ad retains the exact data-base-shim preimage from
+    this branch's incorporated base497d83de. Preserve all 401 owner identities
+    and 400 sibling blocks; add only the original three portfolio suite tokens.
+    The unchanged estimator counts 7 commands, 15->18 test references and
+    814->935 joined characters in the same 800-character bucket: 38->44.
+    Preserve main's existing 5966/5989/5724 baselines, including the already
+    landed free-content +2, then add this branch's original +6 exactly once:
+    5972/5995/5730. Both full histories and the V91 selection declaration
+    remain. Keep jobs 137/138/131, ten packs and all runtime/selection controls.
+    This is source conservation and arithmetic, not a new planner execution.
+    The combined head needs its own natural CI; the old replay stays UNKNOWN.
+
+    2026-11-09 (PR #10203, compose the actual #6867 lifecycle landing):
+    Preserve all 400 current owners and both complete measurement histories.
+    Accepted main f3a8cf04 measures 5958/5979/5716; this PR's separately
+    qualified contribution remains +6, giving 5964/5985/5722.
+    Keep the Intraday and ledger steps plus the three portfolio suite tokens;
+    static combined metadata is 7 commands, 18 tokens, 935 characters,
+    still in the same 800-character bucket as main (weight38 -> 44).
+    Job ceilings 137/138/131, ten packs and all assertions remain unchanged.
+    This is source conservation and arithmetic; new natural CI is still owed.
+
+    2026-11-09 (PR #10203, preserve finite-weight suites and ownership ledger):
+    retain both complete histories and all accepted original command bytes.
+    The current data-base-shim owner is 6 commands/11 test tokens/627 joined
+    characters, weight28. The three suites add 121 characters and 3 tokens;
+    the union is 6/14/748, weight34, below the 800-character boundary.
+    Thus the original measured+6 remains the current marginal: fund
+    5954/5975/5712 from 5948/5969/5706, preserving 137/138/131 jobs,
+    ten packs and all selectors/assertions/admission controls. This is source
+    accounting, not a new runtime or whole-tree planner measurement. Own
+    successor natural CI must qualify the combined source.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6103,6 +6137,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     current-tree failure claim. Natural own CI must qualify the result.
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #10203, current-main F09-preserving composition):
+    Preserve five accepted finite-weight/stage/earnings feature and test blobs.
+    Current main b84bd66 has400 owners and landed beneficial-ownership coverage
+    in a separate SharedShell command. Keep that command and399 sibling blocks
+    exact; add only this carrier's three complete suites to the builder command.
+    Five commands,10->13 test tokens,576->697 characters, same length bucket,
+    unchanged estimator functions: current data-base-shim weight25->31.
+    Add own+6 once to5945/5966/5703 for5951/5972/5709. Keep jobs137/138/131,
+    ten packs,197 curated jobs and all current provenance at their exact sites.
+    Preserve both original37 historical lines at the existing7352 anchor.
+    No unmerged10197/10609 or other sibling contribution is imported.
+    Static current-source conservation is not a new paired measurement.
+    Natural exact-successor CI and scoped source release remain mandatory.
+    Original900-second replay/descendants and seven unrun proofs stay UNKNOWN.
 
     2026-11-09 (PR #6867, preserving current F09 receiver): retain the
     landed beneficial-ownership argument in the existing Shared Shell step
@@ -6259,6 +6308,43 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
     Source: PR10180 issuecomment6718493720. Original historical and
     scientific limitations remain; natural CI must qualify publication.
+
+    2026-11-08 (PR #10203, current-main CI conflict composition):
+    preserve its accepted finite-weight/stage/earnings source and three
+    complete regression suites. Controller6703113684 and current native
+    source identify a real conflict; no feature preimage changed.
+    Current main9c377cfb retains the whole data-base-shim preimage from
+    incorporated base892f8ce3. Apply only the original three suite tokens
+    to catalog563e1217, keeping all395 owners and394 other whole blocks.
+    Its five commands/9->12 test-path occurrences/541->662 chars remain
+    in the same estimator length bucket; owner weight23->29 is the
+    original independently measured +6, not a new selection expansion.
+    Add only that contribution to current5920/5941/5678:
+    index5926, free-content5947, Prophet5684. Preserve landed #7352,
+    #10735 and #8240 changes, current runner and all existing tests.
+    Keep jobs137/138/131, ten packs, selectors, step boundaries,
+    dependencies, deadlines, observed overrides and admission limits.
+    No #10609 or other unmerged sibling contribution is funded.
+    This is static source conservation, not newly executed planner or
+    full-suite proof; the new combined head must earn natural binding CI.
+    Source: PR10203 issuecomments6690664569/6697232795.
+    Original900-second base replay and seven following unrun proofs stay
+    UNKNOWN and untouched. Its completed measurement history follows.
+
+    2026-11-06 portfolio finite weights/stages/earnings (#10203): completed
+    contract-delta run 42281995435 / job 128113078053 measured tested merge
+    219e5fee5244f65e31bc743ad356010aa23cce17 against exact base
+    1fd7370d5b7dce81ede343dc672ab3295c2afb2e. Each probe retains its selected
+    jobs and adds exactly six estimated-weight units: index 5912 -> 5918,
+    free-content 5927 -> 5933, Prophet 5668 -> 5674; no new selected jobs.
+    All 389 manifest job blocks were compared; only data-base-shim changes,
+    adding the three portfolio weight-boundary, earnings-window and stage-
+    identity suites to its incumbent builder command (weight 23 -> 29).
+    Retain every suite, separate semantic step and repository-integrity check.
+    Fund only this measured coverage addition; job/pack ceilings, selectors,
+    execution timeouts, observed-weight overrides and admission limits stay
+    unchanged. These are planner estimates, not measured execution times or
+    a settlement claim for the original uncertain exact-base runner replay.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its
