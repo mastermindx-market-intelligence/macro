@@ -63,7 +63,10 @@ def cash_returns(dtb3: pd.Series, sessions: pd.DatetimeIndex, fallback: pd.Serie
         y = y.combine_first(fb)
     on = y.reindex(y.index.union(sessions)).ffill(limit=5).reindex(sessions)
     lagged = on.shift(1)
-    return ((1.0 + lagged / 100.0) ** (1.0 / TRADING_DAYS) - 1.0).fillna(0.0)
+    out = (1.0 + lagged / 100.0) ** (1.0 / TRADING_DAYS) - 1.0
+    if len(out):
+        out.iloc[0] = 0.0 if not np.isfinite(out.iloc[0]) else out.iloc[0]   # first session: no prior yield needed
+    return out   # NaN = unresolved rate (counted by simulate; never silently zero)
 
 
 def lagged_flag_on_sessions(flag_raw: pd.Series, sessions: pd.DatetimeIndex) -> pd.Series:
@@ -152,28 +155,63 @@ def month_end_sessions(sessions: pd.DatetimeIndex) -> pd.DatetimeIndex:
 @dataclass
 class Book:
     name: str
-    returns: pd.Series            # daily net returns
-    risky_weight: pd.Series       # risky weight held during each day (pre-execution holdings of that day)
-    equity_weight: pd.Series      # weight in the job's equity asset(s) (J1: SPY share), same timing
-    holdings: pd.DataFrame        # holdings (weights) at the start of each day
-    traded: pd.Series             # traded notional per day (risky legs)
-    costs: pd.Series              # cost charged per day
+    returns: pd.Series            # daily net returns (NAV_t / NAV_{t-1} - 1)
+    risky_weight: pd.Series       # risky weight held during each day (start-of-day holdings)
+    equity_weight: pd.Series      # weight in the job's equity asset(s), same timing
+    holdings: pd.DataFrame        # start-of-day holdings (weights of start-of-day NAV)
+    traded: pd.Series             # traded notional per day as a fraction of pre-trade NAV
+    costs: pd.Series              # fees paid per day as a fraction of start-of-day NAV
     meta: dict = field(default_factory=dict)
+    post_holdings: pd.DataFrame | None = None   # holdings after each close (after any execution)
+
+    @property
+    def post_equity_weight(self) -> pd.Series:
+        cols = self.meta.get("equity_cols", [])
+        return self.post_holdings[[c for c in cols if c in self.post_holdings]].sum(axis=1)
+
+
+def _validate_target(t: np.ndarray, name: str, when) -> np.ndarray:
+    if not np.all(np.isfinite(t)):
+        raise ValueError(f"{name}: non-finite target component at {when}")
+    if np.any(t < -1e-12):
+        raise ValueError(f"{name}: negative target weight (long-only violated) at {when}")
+    if t.sum() > 1 + 1e-9:
+        raise ValueError(f"{name}: target weights sum {t.sum()} > 1 at {when}")
+    return np.clip(t, 0.0, None)
+
+
+def _fee_funded_nav(v: np.ndarray, cash: float, tgt: np.ndarray, fee: np.ndarray) -> tuple[float, float]:
+    """Self-financing rebalance: find post-fee NAV N with N + sum_j fee_j |tgt_j N - v_j| = NAV_pre."""
+    pre = float(v.sum() + cash)
+    N = pre
+    for _ in range(100):
+        f = float(fee @ np.abs(tgt * N - v))
+        N_new = pre - f
+        if abs(N_new - N) < 1e-15 * max(1.0, pre):
+            N = N_new
+            break
+        N = N_new
+    paid = float(fee @ np.abs(tgt * N - v))
+    assert abs(N + paid - pre) < 1e-10 * max(1.0, pre), "dollar conservation violated"
+    return N, paid
 
 
 def simulate(targets: pd.DataFrame, rets: pd.DataFrame, cash_r: pd.Series, cost_bps: float | Mapping[str, float],
              name: str, decision_mask: pd.Series | None = None, threshold: float | None = None,
              equity_cols: Sequence[str] = ("SPY",), start: pd.Timestamp | None = None,
-             end: pd.Timestamp | None = None, always_rebalance: bool = False) -> Book:
-    """Simulate a long-only book.
+             end: pd.Timestamp | None = None, always_rebalance: bool = False,
+             avail: pd.DataFrame | None = None) -> Book:
+    """Simulate a long-only book in dollars (positions + cash), self-financing, fees funded at execution.
 
-    targets: DataFrame (sessions x assets) of target risky weights decided at each session close; NaN rows = no
-      decision. With decision_mask, only sessions where the mask is True are decisions.
-    Execution: a decision at session t is executed at the close of the next session t+1. Day returns accrue on the
-      holdings carried into the day; the execution cost is charged on the execution day.
-    Daily rules: an execution happens only if the target differs from the previous executed target (|diff|>1e-12),
-      or, with `threshold`, only if max |target - drifted holding| >= threshold.
-    Monthly rules (always_rebalance=True): every decision is executed (drifted weights reset to target).
+    rets: daily returns from VALUATION marks (forward-filled within an instrument's life: a missing close earns 0 and
+      the next observed close carries the full move). avail: RAW observed-close mask; an order may execute only at a
+      close where every instrument whose position changes has an observed close; otherwise it stays pending (counted)
+      and executes at the next such close, at that close's marks.
+    Execution: a decision at session t executes at the close of the next executable session (>= t+1). Day returns
+      accrue on the holdings carried into the day; fees are paid out of NAV at the execution close so that
+      post-fee NAV + fees = pre-trade NAV (asserted) and target weights apply to post-fee NAV.
+    Daily rules trade only when the target changes; with `threshold`, only if max |target - drifted weight| >=
+      threshold; monthly rules (always_rebalance=True) execute every decision.
     """
     sess = rets.index
     if start is not None:
@@ -182,61 +220,72 @@ def simulate(targets: pd.DataFrame, rets: pd.DataFrame, cash_r: pd.Series, cost_
         sess = sess[sess <= end]
     assets = list(targets.columns)
     R = rets.reindex(index=sess, columns=assets).fillna(0.0).to_numpy()
-    C = cash_r.reindex(sess).fillna(0.0).to_numpy()
+    Craw = cash_r.reindex(sess).to_numpy()
+    C = np.nan_to_num(Craw, nan=0.0)
+    A = (avail.reindex(index=sess, columns=assets).fillna(False).to_numpy().astype(bool)
+         if avail is not None else np.ones(R.shape, dtype=bool))
     T = targets.reindex(sess).to_numpy()
     if decision_mask is not None:
         dm = decision_mask.reindex(sess).fillna(False).to_numpy()
         T = np.where(dm[:, None], T, np.nan)
     if isinstance(cost_bps, Mapping):
-        cb = np.array([cost_bps.get(a, 5.0) for a in assets]) / 1e4
+        fee = np.array([cost_bps.get(a, 5.0) for a in assets]) / 1e4
     else:
-        cb = np.full(len(assets), float(cost_bps) / 1e4)
+        fee = np.full(len(assets), float(cost_bps) / 1e4)
     n, k = R.shape
-    h = np.zeros(k)                 # holdings at start of day (after previous day's execution)
+    v = np.zeros(k); cash = 1.0
     last_target = None
     pending = None
+    deferrals = 0; cash_rate_missing = 0
     out_r = np.zeros(n); out_w = np.zeros(n); out_eq = np.zeros(n); out_tr = np.zeros(n); out_c = np.zeros(n)
-    H = np.zeros((n, k))
+    H = np.zeros((n, k)); HP = np.zeros((n, k))
     eq_idx = [assets.index(a) for a in equity_cols if a in assets]
     for i in range(n):
-        H[i] = h
-        out_w[i] = h.sum()
-        out_eq[i] = h[eq_idx].sum() if eq_idx else 0.0
-        cash_w = 1.0 - h.sum()
-        gross = float(h @ R[i] + cash_w * C[i])
-        # drift to end of day
-        vals = h * (1 + R[i])
-        tot = vals.sum() + cash_w * (1 + C[i])
-        h_end = vals / tot if tot > 0 else h
-        cost = 0.0
+        nav0 = float(v.sum() + cash)
+        w0 = v / nav0
+        H[i] = w0
+        out_w[i] = w0.sum()
+        out_eq[i] = w0[eq_idx].sum() if eq_idx else 0.0
+        if cash > 1e-12 and not np.isfinite(Craw[i]):
+            cash_rate_missing += 1
+        v = v * (1 + R[i])
+        cash = cash * (1 + C[i])
+        nav_pre = float(v.sum() + cash)
         if pending is not None:
             tgt = pending
-            diff = np.abs(tgt - h_end)
-            cost = float(diff @ cb)
-            out_tr[i] = float(diff.sum())
-            h_end = tgt.copy()
-            pending = None
-        out_r[i] = gross - cost
-        out_c[i] = cost
-        h = h_end
-        # decision at close i -> execute at close i+1
+            changed = np.abs(tgt * nav_pre - v) > 1e-12 * nav_pre
+            if np.all(A[i][changed]):
+                N, paid = _fee_funded_nav(v, cash, tgt, fee)
+                out_tr[i] = float(np.abs(tgt * N - v).sum() / nav_pre)
+                out_c[i] = paid / nav0
+                v = tgt * N
+                cash = N * (1.0 - tgt.sum())
+                pending = None
+            else:
+                deferrals += 1
+        nav1 = float(v.sum() + cash)
+        out_r[i] = nav1 / nav0 - 1.0
+        HP[i] = v / nav1
         t = T[i]
         if not np.all(np.isnan(t)):
-            t = np.nan_to_num(t, nan=0.0)
-            if t.sum() > 1 + 1e-9:
-                raise ValueError(f"{name}: target weights sum {t.sum()} > 1 at {sess[i]}")
+            t = _validate_target(np.nan_to_num(t, nan=0.0), name, sess[i])
+            new = None
             if always_rebalance:
-                pending = t
+                new = t
             elif threshold is not None:
-                if np.max(np.abs(t - h)) >= threshold:
-                    pending = t
+                if np.max(np.abs(t - HP[i])) >= threshold:
+                    new = t
             elif last_target is None or np.max(np.abs(t - last_target)) > 1e-12:
-                pending = t
-            if pending is not None:
-                last_target = t
+                new = t
+            if new is not None:
+                pending = new
+                last_target = new
     idx = sess
     return Book(name, pd.Series(out_r, idx), pd.Series(out_w, idx), pd.Series(out_eq, idx),
-                pd.DataFrame(H, idx, assets), pd.Series(out_tr, idx), pd.Series(out_c, idx))
+                pd.DataFrame(H, idx, assets), pd.Series(out_tr, idx), pd.Series(out_c, idx),
+                meta={"deferred_executions": deferrals, "cash_rate_missing_days_with_cash": cash_rate_missing,
+                      "equity_cols": list(equity_cols)},
+                post_holdings=pd.DataFrame(HP, idx, assets))
 
 
 # --------------------------------------------------------------------------- #
@@ -369,12 +418,23 @@ def stat_sharpe_diff(a, ref, c):
 
 
 def centred_p(dist: np.ndarray, obs: float) -> float:
-    d = dist[np.isfinite(dist)]
-    return float((1 + np.sum((d - obs) >= obs)) / (len(d) + 1))
+    """One-sided centred p with the literal B+1 denominator; non-finite draws never count as exceedances
+    (conservative); their number is reported by finite_draws()."""
+    d = np.asarray(dist, dtype=float)
+    if not np.isfinite(obs):
+        return float("nan")
+    exceed = np.sum(np.isfinite(d) & ((d - obs) >= obs))
+    return float((1 + exceed) / (len(d) + 1))
 
 
-def ci95(dist: np.ndarray) -> list[float]:
+def finite_draws(dist: np.ndarray) -> int:
+    return int(np.isfinite(np.asarray(dist, dtype=float)).sum())
+
+
+def ci95(dist: np.ndarray) -> list[float] | None:
     d = dist[np.isfinite(dist)]
+    if not len(d):
+        return None
     lo, hi = np.quantile(d, [0.025, 0.975])
     return [float(lo), float(hi)]
 
@@ -576,18 +636,20 @@ def pivot_table(weight: pd.Series, strat_r: pd.Series, mkt_r: pd.Series, mkt_lev
     for a, b in _spells(weight, thr):
         if first_exec is not None and a < first_exec:
             continue                                   # start-up artefact (no position before first execution)
-        if tail_start is not None and a >= tail_start:
-            sealed_n += 1                              # undetermined: may lie in a sealed episode window
+        # weight is the post-close weight, so the spell is out of the market for returns dated (a, b]
+        held = (sess > a) & ((sess <= b) if b is not None else True)
+        dur = int(held.sum())
+        if tail_start is not None and (b is None or b > tail_start):
+            sealed_n += 1                              # overlaps the sealed tail: unresolved, not a false pivot
             continue
-        span = (sess >= a) & ((sess < b) if b is not None else True) & valid
-        if span.sum() < 21:
+        if dur < 21:
             whip_all += 1
-        if in_ep[span].any():
+        if in_ep[held].any():
             continue
         false_n += 1
-        if span.sum() < 21:
+        if dur < 21:
             whip_false += 1
-        cost += compound(mkt_r[span].values) - compound(strat_r[span].values)
+        cost += compound(mkt_r[held].values) - compound(strat_r[held].values)
     return {"episodes": rows, "calm_years": calm_years, "false_pivots": false_n,
             "false_pivots_per_calm_year": false_n / calm_years if calm_years else None,
             "false_pivot_whipsaws_lt21": whip_false, "whipsaws_lt21_all_spells": whip_all,

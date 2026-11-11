@@ -49,6 +49,13 @@ def assign_sectors(stock_r: pd.DataFrame, etf_r: pd.DataFrame, min_obs: int = 20
     return pd.Series(out, dtype=object)
 
 
+def marked_returns(prices: pd.DataFrame) -> pd.DataFrame:
+    """Valuation-mark returns: interior gaps forward-filled within each series' observed life, so the move across a
+    missing close is realised at the next observed close and a temporary gap is not read as an ending."""
+    marks = prices.ffill().where(prices.bfill().notna())
+    return marks.pct_change(fill_method=None)
+
+
 def window_return(daily_r: pd.Series) -> tuple[float, bool]:
     """Compound daily returns over the label window; returns (return, ended_early)."""
     r = daily_r.to_numpy()
@@ -64,17 +71,21 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
            sessions: pd.DatetimeIndex, eligible_etf: pd.DataFrame, labels_gics: pd.Series | None = None,
            cost_bp: float = 10.0, legs=("sp500",), assignment: str = "statistical") -> dict:
     """Return per-formation records and monthly series for J4-A / J4-B under the three bias treatments."""
-    raw = prices.pct_change(fill_method=None)
-    big = raw.abs() > 0.60
+    raw = prices.pct_change(fill_method=None)                  # observed-close returns (assignment / coverage)
+    # valuation marks: forward-fill interior gaps only (inside each series' observed life), so a move across a
+    # missing close is realised on the next observed close (PRO_RUN_A A04) and a temporary gap is not an ending
+    mret = marked_returns(prices)
+    big = mret.abs() > 0.60
     clip_log = {"n_abs_gt_60pct": int(big.sum().sum()), "n_clipped_50pct": int((raw.abs() > 0.5).sum().sum()),
                 "examples": [(str(c), str(pd.Timestamp(i).date())) for i, c in zip(*np.where(big.to_numpy()))][:0] or
                             [(str(raw.columns[j]), str(raw.index[i].date())) for i, j in zip(*np.where(big.to_numpy()))][:50]}
-    sr = raw.clip(-0.5, 0.5)
+    sr_obs = raw.clip(-0.5, 0.5)
+    sr = mret.clip(-0.5, 0.5)
     er = etf_px.pct_change(fill_method=None)
     r63 = etf_px / etf_px.shift(63) - 1
     rs63 = (1 + r63).div(1 + (spy_px / spy_px.shift(63) - 1), axis=0) - 1
     pos = {d: i for i, d in enumerate(sessions)}
-    recs, prev_w = [], {"L": {}, "A": {}}
+    recs, prev_w = [], {"L": {}, "A": {}, "L3": {}, "A3": {}}
     formations = [f for f in formations if f in pos]
     for k, t in enumerate(formations):
         i = pos[t]
@@ -93,10 +104,10 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
         lo = max(0, i - 251)
         win = slice(sessions[lo], t)
         priced = [m for m in mem if m in prices.columns and np.isfinite(prices.at[t, m])
-                  and sr.loc[win, m].notna().sum() >= 200]
+                  and sr_obs.loc[win, m].notna().sum() >= 200]
         unpriced = [m for m in mem if m not in priced]
         if assignment == "statistical":
-            sect = assign_sectors(sr.loc[win, priced], er.loc[win, elig])
+            sect = assign_sectors(sr_obs.loc[win, priced], er.loc[win, elig])
         else:
             lab = labels_gics.reindex(priced).map(GICS_TO_ETF)
             sect = lab[lab.isin(elig)]
@@ -137,7 +148,8 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
             ew_i, ew_iii = float(np.mean(rets_i)), float(np.mean(rets_iii))
             per_sector[e] = {"n_assigned": len(names), "n_signal": len(sig), "n_selected": nsel,
                              "spread_i": (1 + ew_i) / (1 + etf_ret) - 1, "spread_iii": (1 + ew_iii) / (1 + etf_ret) - 1,
-                             "ew_i": ew_i, "etf": etf_ret, "selected": sel, "rets_i": dict(zip(sel, rets_i))}
+                             "ew_i": ew_i, "etf": etf_ret, "selected": sel, "rets_i": dict(zip(sel, rets_i)),
+                             "rets_iii": dict(zip(sel, rets_iii))}
         def mean_spread(group, key):
             v = [per_sector[e][key] for e in group if e in per_sector]
             return float(np.mean(v)) if v else float("nan")
@@ -151,19 +163,25 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
             for m in per_sector[e]["selected"]:
                 wa[m] = wa.get(m, 0) + 1 / len(secs) / len(per_sector[e]["selected"])
         allr = {m: v for e in per_sector for m, v in per_sector[e]["rets_i"].items()}
+        allr3 = {m: v for e in per_sector for m, v in per_sector[e]["rets_iii"].items()}
 
-        def book(w, key):
+        def book(w, key, rr):
+            """Fee funded at the execution close before the label return accrues (PRO_RUN_A A03):
+            post-fee NAV = 1 / (1 + fee x turnover); net = post-fee NAV x (1 + gross) - 1."""
             if not w:
+                prev_w[key] = {}
                 return float("nan"), 0.0
-            gross = float(sum(w[m] * allr[m] for m in w))
+            gross = float(sum(w[m] * rr[m] for m in w))
             old = prev_w[key]
             turn = sum(abs(w.get(m, 0) - old.get(m, 0)) for m in set(w) | set(old))
             tot = 1 + gross
-            prev_w[key] = {m: w[m] * (1 + allr[m]) / tot for m in w} if tot > 0 else {}
-            return gross - turn * cost_bp / 1e4, turn
+            prev_w[key] = {m: w[m] * (1 + rr[m]) / tot for m in w} if tot > 0 else {}
+            return (1 + gross) / (1 + turn * cost_bp / 1e4) - 1, turn
 
-        rl, tl = book(wl, "L")
-        ra, ta = book(wa, "A")
+        rl, tl = book(wl, "L", allr)
+        ra, ta = book(wa, "A", allr)
+        rl3, _ = book(wl, "L3", allr3)
+        ra3, _ = book(wa, "A3", allr3)
         n_lab = 0
         un_lead = un_lag = lab_lead = lab_lag = 0
         if labels_gics is not None:
@@ -181,6 +199,7 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
             "S_lead_i": mean_spread(lead, "spread_i"), "S_lag_i": mean_spread(lag, "spread_i"),
             "S_lead_iii": mean_spread(lead, "spread_iii"), "S_lag_iii": mean_spread(lag, "spread_iii"),
             "book_L_net": rl, "book_A_net": ra, "turnover_L": tl, "turnover_A": ta,
+            "book_L_net_iii": rl3, "book_A_net_iii": ra3,
             "unpriced_share_labelled_leading": un_lead / lab_lead if lab_lead else None,
             "unpriced_share_labelled_lagging": un_lag / lab_lag if lab_lag else None,
         })
@@ -188,4 +207,5 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
     df["delta_i"] = df["S_lead_i"] - df["S_lag_i"]
     df["delta_iii"] = df["S_lead_iii"] - df["S_lag_iii"]
     df["book_excess"] = df["book_L_net"] - df["book_A_net"]
+    df["book_excess_iii"] = df["book_L_net_iii"] - df["book_A_net_iii"]
     return {"records": df, "clip_log": clip_log}

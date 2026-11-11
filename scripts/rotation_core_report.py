@@ -26,19 +26,24 @@ def ci(c, scale=100, nd=2):
 
 def build_artifact(res: dict, header: dict, hashes: dict, pin: str, B: int, seed: int) -> dict:
     jobs = res["jobs"]
-    release = {"overall_level": "L0_descriptive", "levels_defined": ["L0_descriptive", "L1_accepted_historical",
+    dq = res.get("data_quality", {})
+    src_ok = dq.get("l0_ge_99pct")
+    lvl0 = "L0_descriptive" if src_ok is True else ("L0_NOT_MET_source_coverage" if src_ok is False
+                                                    else "L0_UNVERIFIED_source_coverage")
+    release = {"overall_level": lvl0, "l0_source_check": {"l0_ge_99pct": src_ok,
+                                                          "rule": "header L0: >= 99% of sessions priced for the job's instruments"}, "levels_defined": ["L0_descriptive", "L1_accepted_historical",
                                                                      "L2_prospective_shadow"],
                "stage": "D", "cap_rule": "No configuration can reach L1 in Stage D: G4 (hold-out) is sealed by the "
                                          "parent's access ruling. Incumbents and J4 are capped at L0 regardless.",
                "jobs": {}}
     for j in ("J1", "J2", "J3"):
         g = jobs[j]["gates"]
-        release["jobs"][j] = {"level": "L0_descriptive",
+        release["jobs"][j] = {"level": lvl0,
                               "candidates_clearing_G1_G2_G3_G5_on_D": [c for c, v in g.items() if v["clears_G1_G2_G3_G5_on_D"]],
                               "criteria": g}
-    release["jobs"]["J4"] = {"level": "L0_descriptive", "criteria": jobs["J4"].get("gates"),
+    release["jobs"]["J4"] = {"level": lvl0, "criteria": jobs["J4"].get("gates"),
                              "cap": jobs["J4"].get("cap", jobs["J4"].get("reason"))}
-    release["jobs"]["J5"] = {"level": "L0_descriptive", "note": "confirmatory on H only; D descriptive"}
+    release["jobs"]["J5"] = {"level": lvl0, "note": "confirmatory on H only; D descriptive"}
     limitations = [
         "Stage D only: every number covers the development window; the hold-out (2020-01-02 onward) is sealed and was not computed.",
         "Adjusted closes are today's restatement of dividends and splits, not as-published prices.",

@@ -56,9 +56,9 @@ def test_cost_charged_on_execution_day_per_side():
     cash = pd.Series(0.0, index=s)
     tgt = pd.DataFrame({"SPY": [1.0, 0.0, np.nan, np.nan, np.nan]}, index=s)
     b = rc.simulate(tgt, rets, cash, 10.0, "t")
-    assert b.costs.iloc[1] == pytest.approx(0.001)   # buy 1.0 at 10 bp
-    assert b.costs.iloc[2] == pytest.approx(0.001)   # sell 1.0 at 10 bp
-    assert b.traded.sum() == pytest.approx(2.0)
+    assert b.costs.iloc[1] == pytest.approx(0.001 / 1.001)       # fee-funded buy: N = 1/(1+fee)
+    assert b.costs.iloc[2] == pytest.approx(0.001)               # sell the whole position: 10 bp of that day's NAV
+    assert b.traded.sum() == pytest.approx(1 / 1.001 + 1.0)   # fractions of pre-trade NAV
 
 
 def test_daily_rule_trades_only_on_change():
@@ -299,3 +299,85 @@ def test_incumbent_sidecar_must_declare_timing(tmp_path, monkeypatch):
     (tmp_path / "x_provenance.json").write_text(json.dumps({"timing": "decided_at_close_t",
                                                             "source_commit": run.PIN, "causal": True}))
     assert run.incumbent_provenance("x.parquet") is not None
+
+
+# ------------------------------------------------------------------ PRO_RUN_A regressions (fixtures from the audit)
+def test_A01_missing_execution_close_defers_to_next_observed_close():
+    s = _sessions(5)
+    px = pd.Series([100, np.nan, 120, 120, 120.], index=s)
+    r = px.ffill().pct_change().fillna(0).to_frame("SPY")
+    tgt = pd.DataFrame({"SPY": [1.0, np.nan, np.nan, np.nan, np.nan]}, index=s)
+    b = rc.simulate(tgt, r, pd.Series(0.0, index=s), 0.0, "a01", avail=px.notna().to_frame("SPY"))
+    assert np.prod(1 + b.returns) - 1 == pytest.approx(0.0)
+    assert b.meta["deferred_executions"] == 1
+
+
+def test_A02_fee_on_post_return_nav_and_dollar_conservation():
+    s = _sessions(4)
+    r = pd.DataFrame({"SPY": [0.0, 0.0, 0.20, 0.0]}, index=s)
+    tgt = pd.DataFrame({"SPY": [1.0, 0.0, np.nan, np.nan]}, index=s)
+    b = rc.simulate(tgt, r, pd.Series(0.0, index=s), {"SPY": 5.0}, "a02")
+    nav1 = 1 / 1.0005
+    # day 2: +20% then sell 1.2*nav1 at 5bp
+    assert (1 + b.returns.iloc[2]) == pytest.approx(1.2 * (1 - 0.0005))
+    assert np.prod(1 + b.returns) == pytest.approx(nav1 * 1.2 * (1 - 0.0005))
+
+
+def test_A12_negative_target_rejected():
+    s = _sessions(3)
+    with pytest.raises(ValueError):
+        rc.simulate(pd.DataFrame({"SPY": [-0.5, np.nan, np.nan]}, index=s), pd.DataFrame({"SPY": [0.0] * 3}, index=s),
+                    pd.Series(0.0, index=s), 0.0, "a12")
+
+
+def test_A04_A05_j4_gap_realised_and_not_a_delisting():
+    from engine import rotation_core_j4 as j4  # noqa: F401
+    s = _sessions(6)
+    p = pd.DataFrame({"X": [100, 100, np.nan, 50, 50, 50.]}, index=s)
+    marks = p.ffill().where(p.bfill().notna())
+    r, ended = j4.window_return(marks["X"].pct_change(fill_method=None).iloc[1:])
+    assert r == pytest.approx(-0.5) and not ended
+
+
+def test_A08_false_pivot_cost_spans_exit_to_reentry():
+    s = _sessions(100)
+    w = pd.Series(1.0, index=s); w.iloc[20:30] = 0.0
+    m = pd.Series(0.0, index=s); m.iloc[30] = 0.20
+    pv = rc.pivot_table(w, m * w.shift(1).fillna(1.0), m, (1 + m).cumprod(), {})
+    assert pv["false_pivot_cost_per_calm_year"] * pv["calm_years"] == pytest.approx(0.20)
+
+
+def test_A09_spell_crossing_sealed_tail_is_censored():
+    s = _sessions(100)
+    w = pd.Series(1.0, index=s); w.iloc[70:] = 0.0
+    pv = rc.pivot_table(w, w * 0, w * 0, pd.Series(1.0, index=s), {}, sealed_tail=20)
+    assert pv["false_pivots"] == 0 and pv["spells_undetermined_sealed"] == 1
+
+
+def test_A10_post_close_holdings_include_terminal_exit():
+    s = _sessions(3)
+    b = rc.simulate(pd.DataFrame({"SPY": [1.0, 0.0, np.nan]}, index=s), pd.DataFrame({"SPY": [0.0] * 3}, index=s),
+                    pd.Series(0.0, index=s), 0.0, "a10")
+    assert b.post_equity_weight.round(9).tolist() == [0.0, 1.0, 0.0]
+
+
+def test_A14_cash_gap_not_silent_zero():
+    s = _sessions(12)
+    c = rc.cash_returns(pd.Series([5.0] + [np.nan] * 11, index=s), s)
+    assert c.iloc[8:].isna().all()
+    b = rc.simulate(pd.DataFrame({"SPY": [np.nan] * 12}, index=s), pd.DataFrame({"SPY": [0.0] * 12}, index=s), c, 0.0, "a14")
+    assert b.meta["cash_rate_missing_days_with_cash"] > 0
+
+
+def test_A18_p_uses_literal_B_plus_one():
+    assert rc.centred_p(np.array([0.0, 0.0, np.nan]), 1.0) == pytest.approx(0.25)
+    assert rc.ci95(np.array([np.nan, np.nan])) is None
+
+
+def test_A11_l0_not_met_when_coverage_fails():
+    from scripts.rotation_core_report import build_artifact
+    stub = {"jobs": {k: {"gates": {}} for k in ("J1", "J2", "J3")}, "incumbents": {}, "long_history": {},
+            "dsr_trial_count": {}, "deviations": [], "data_quality": {"l0_ge_99pct": False}}
+    stub["jobs"]["J4"] = {"gates": [], "cap": "x"}; stub["jobs"]["J5"] = {}
+    art = build_artifact(stub, {"protocol_id": "p", "frozen_on_utc": "d"}, {}, "pin", 1, 1)
+    assert art["release"]["overall_level"] != "L0_descriptive"

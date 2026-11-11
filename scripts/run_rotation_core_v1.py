@@ -101,6 +101,25 @@ DEVIATIONS = [
              "found to list (ticker, first-session) pairs instead of the clipped (ticker, date) pairs (pandas stack "
              "keeps NaN). The list was fixed and Stage D re-run once; every statistic was verified identical to the "
              "first run (only examples, timestamps, code commit and input hashes of the code differ)."},
+    {"kind": "convention", "ref": "PRO_RUN_A A13", "text": "The BOND column splices VFITX (before 2002-08-01) into IEF "
+             "without a transaction: the instrument switch is a costless synthetic-proxy convention, registered here."},
+    {"kind": "convention", "ref": "PRO_RUN_A A19", "text": "Presentation contract narrowed: intervals, era effects and "
+             "Holm p are reported for the registered contrasts; book-level metrics (CAGR, Sharpe, drawdown, capture), "
+             "J5 point differences, sensitivities and the long-history tier are point descriptions without intervals."},
+    {"kind": "convention", "ref": "PRO_RUN_A M01", "text": "SAHMREALTIME availability uses the frozen fixed lag (10th "
+             "weekday of the next month). Known exception: the September 2013 report was released 2013-10-22 (shutdown), "
+             "so M could read that month 5 sessions early; disclosed, rule not changed (frozen header)."},
+    {"kind": "convention", "ref": "PRO_RUN_A M03", "text": "Exposure-matched X uses the window's mean exposure held fixed "
+             "inside bootstrap draws (frozen 'paired daily differences'); intervals for X contrasts are conditional on the "
+             "realised exposure and understate unconditional uncertainty. Interpret P1/R1/FI-X p-values accordingly."},
+    {"kind": "correction", "ref": "PRO_RUN_A A01-A18", "text": "Engine corrected after the independent audit: dollar "
+             "positions/cash with fee-funded self-financing rebalances and a conservation assertion; execution only at "
+             "observed closes (raw availability mask) with pending orders deferred and counted; eligibility on raw "
+             "observations; long-only target validation; post-close holdings recorded; J4 fees funded before return, "
+             "marked-value continuity across gaps, temporary gaps not treated as delisting, independent A/B masks, "
+             "J4-B terminal treatment, stock files hashed; false-pivot spans (exit, re-entry]; sealed-tail overlaps "
+             "censored; cash-rate gaps counted, not zero; literal B+1 p denominator; inclusive first date; L0 coverage "
+             "enforced in the release block. Same header, configurations and seeds."},
     {"kind": "convention", "text": "Bootstrap seeds: base 20261110 with family offsets (+1000 J2, +2000 J3, +3000 FI, "
              "+4000 J4, +500000 block sensitivity); chunks use seed+k, so adjacent tests share random streams (common "
              "random numbers, no bias)."},
@@ -185,6 +204,7 @@ def load(end) -> dict:
     names = sorted(set(rc.SECTORS + rc.SLEEVES + ["VFITX"]))
     px = {t: yahoo(t, end) for t in names}
     adj = pd.DataFrame({t: s.reindex(sessions) for t, s in px.items()})
+    avail = adj.notna()                     # RAW observed-close mask (execution and eligibility; PRO_RUN_A A01/A07)
     gaps = {}
     for t in adj.columns:
         life = adj.index >= px[t].index.min()
@@ -194,10 +214,12 @@ def load(end) -> dict:
     bond = pd.concat([px["VFITX"].pct_change()[lambda s: s.index < "2002-08-01"],
                       px["IEF"].pct_change()[lambda s: s.index >= "2002-08-01"]]).sort_index()
     rets["BOND"] = bond.reindex(sessions)
+    avail["BOND"] = np.where(sessions < pd.Timestamp("2002-08-01"), avail["VFITX"], avail["IEF"])
     adj["BOND"] = (1 + rets["BOND"].fillna(0)).cumprod().where(rets["BOND"].notna().cumsum() > 0)
     cash = rc.cash_returns(repo_fred("DTB3", end), sessions, fallback=yahoo("^IRX", end, "Close"))
     return {
         "sessions": sessions, "spy": spy, "gspc_full": gspc_full, "adj": adj, "rets": rets, "cash": cash,
+        "avail": avail,
         "hy": repo_fred("BAMLH0A0HYM2", end), "sahm": repo_fred("SAHMREALTIME", end),
         "dbaa": repo_fred("DBAA", end), "dgs10": repo_fred("DGS10", end),
         "dq": {"interior_ffill_sessions": gaps,
@@ -333,6 +355,8 @@ def ir(r, ref, mask):
     return float(d.mean() / sd * math.sqrt(252)) if sd > 0 else None
 
 
+AV = None          # raw availability mask, set from load() at run time
+
 SEALED_TAIL = 63   # spells starting in D's last 63 sessions may belong to the sealed E2020 window
 
 
@@ -342,9 +366,8 @@ def first_exec(b: rc.Book):
 
 
 def after_close_weight(b: rc.Book) -> pd.Series:
-    """Equity weight in force after each close (the held weight of the next session)."""
-    w = b.equity_weight.shift(-1)
-    return w.fillna(b.equity_weight.iloc[-1])
+    """Equity weight in force after each close, recorded by the simulator (PRO_RUN_A A10)."""
+    return b.post_equity_weight
 
 
 # --------------------------------------------------------------------------- #
@@ -368,20 +391,20 @@ def j1_books(d, w, mult=1.0, only=None):
     for k, wk in w.items():
         if only and k not in only:
             continue
-        bk[k] = rc.simulate(spy_targets(wk), R, cash, bp, k, start=J1_FIRST)
+        bk[k] = rc.simulate(spy_targets(wk), R, cash, bp, k, start=J1_FIRST, avail=AV)
         if k.startswith("J1-") and not only:
-            bk[k + "-IEF"] = rc.simulate(spy_targets(wk, "BOND"), R, cash, bp, k + "-IEF", start=J1_FIRST)
+            bk[k + "-IEF"] = rc.simulate(spy_targets(wk, "BOND"), R, cash, bp, k + "-IEF", start=J1_FIRST, avail=AV)
     if only:
         return bk
     one = pd.Series(1.0, index=s).where(s >= J1_FIRST)
-    bk["B1"] = rc.simulate(spy_targets(one), R, cash, bp, "B1", start=J1_FIRST)
+    bk["B1"] = rc.simulate(spy_targets(one), R, cash, bp, "B1", start=J1_FIRST, avail=AV)
     me = rc.month_end_sessions(s)
     t6040 = pd.DataFrame(np.nan, index=s, columns=["SPY", "BOND"])
     t6040.loc[me[me >= J1_FIRST].union(pd.DatetimeIndex([J1_FIRST]))] = [0.6, 0.4]   # invested from the first decision
-    bk["B2"] = rc.simulate(t6040, R, cash, bp, "B2", start=J1_FIRST, always_rebalance=True)
+    bk["B2"] = rc.simulate(t6040, R, cash, bp, "B2", start=J1_FIRST, avail=AV, always_rebalance=True)
     sig = d["rets"]["SPY"].rolling(21, min_periods=21).std(ddof=1) * math.sqrt(252)
     wv = (0.15 / sig).clip(upper=1.0).where(s >= J1_FIRST)
-    bk["B4"] = rc.simulate(spy_targets(wv), R, cash, bp, "B4", start=J1_FIRST, threshold=0.10)
+    bk["B4"] = rc.simulate(spy_targets(wv), R, cash, bp, "B4", start=J1_FIRST, avail=AV, threshold=0.10)
     return bk
 
 
@@ -405,6 +428,8 @@ def load_incumbent_weight(fname, col, sessions, end):
     s = pd.read_parquet(p)[col].astype(float)
     s.index = pd.to_datetime(s.index).normalize()
     s = s[s.index <= end]
+    if not (np.isfinite(s).all() and (s >= -1e-12).all() and (s <= 1 + 1e-12).all()):
+        raise ValueError(f"{fname}: incumbent weights outside [0,1] or non-finite")
     return s.reindex(sessions), str(p)
 
 
@@ -414,7 +439,7 @@ def load_incumbent_weight(fname, col, sessions, end):
 def j2_signals(d):
     adj = d["adj"]
     S = rc.SECTORS
-    el = rc.eligible(adj[S])
+    el = rc.eligible(d["avail"][S])
     r63 = adj / adj.shift(63) - 1
     rs63 = (1 + r63[S]).div(1 + r63["SPY"], axis=0) - 1
     vel = rs63 - rs63.shift(21)
@@ -470,7 +495,7 @@ def j2_books(d, rules, mult=1.0, only=None, extra=None):
             continue
         T = monthly_targets(s, dec, cols, f)
         targets[k] = T
-        bk[k] = rc.simulate(T, d["rets"][cols], d["cash"], ETF_BP * mult, k, start=J2_FIRST,
+        bk[k] = rc.simulate(T, d["rets"][cols], d["cash"], ETF_BP * mult, k, start=J2_FIRST, avail=AV,
                             equity_cols=cols, always_rebalance=True)
     return bk, targets
 
@@ -481,7 +506,7 @@ def j2_books(d, rules, mult=1.0, only=None, extra=None):
 def j3_rules(d, j1flags):
     adj, cash = d["adj"], d["cash"]
     S = rc.SLEEVES
-    el = rc.eligible(adj[S])
+    el = rc.eligible(d["avail"][S])
     r12_1 = adj[S].shift(21) / adj[S].shift(252) - 1
     rf12_1 = rc.cum_cash(cash, 252, 21)
     r126 = adj / adj.shift(126) - 1
@@ -565,7 +590,7 @@ def j3_books(d, rules, mult=1.0, only=None):
         if only and k not in only:
             continue
         T = monthly_targets(s, dec, rc.SLEEVES, f)
-        bk[k] = rc.simulate(T, d["rets"][rc.SLEEVES], d["cash"], ETF_BP * mult, k, start=J3_FIRST,
+        bk[k] = rc.simulate(T, d["rets"][rc.SLEEVES], d["cash"], ETF_BP * mult, k, start=J3_FIRST, avail=AV,
                             equity_cols=["SPY", "EFA", "EEM"], always_rebalance=True)
     return bk
 
@@ -721,9 +746,11 @@ def j4_stage_d(d) -> dict:
     for t in tick:
         p1, p2 = CACHE / f"{t}.parquet", J4DIR / "prices" / f"{t}.parquet"
         if p1.exists():
+            _hash_bytes(str(p1), p1.read_bytes())
             x = pd.read_parquet(p1)
             ser = x["close"].astype(float); src["cache"] += 1
         elif p2.exists():
+            _hash_bytes(str(p2), p2.read_bytes())
             x = pd.read_parquet(p2)
             v = str(x["variant"].iloc[0]) if "variant" in x.columns else "R0_as_is"
             if v in collide or v not in ("R0_as_is", "R7_repo_alias", "R1_slash_first"):   # R4/R6 collisions
@@ -757,9 +784,10 @@ def j4_stage_d(d) -> dict:
                       legs=("sp500", "sp400"))["records"]
     s1500 = s1500[s1500.index <= J4_LAST_FORMATION]
     s500_same = df[df.index >= pd.Timestamp("2013-01-01")]
-    # formations with a finite statistic only (no sector SPDR is eligible before ~1999-12)
-    df = df[df["delta_i"].notna()]
-    res2x = res2x[res2x["delta_i"].notna()]
+    # PRO_RUN_A A06: A and B use independent validity masks (each statistic drops only its own NaN months) and
+    # coverage is computed over ALL scheduled formations; unavailable months are counted, not deleted.
+    unavailable = {"J4-A_months_nan": int(df["delta_i"].isna().sum()),
+                   "J4-B_months_nan": int(df["book_excess"].isna().sum()), "scheduled": int(len(df))}
 
     def mstat(x, seed, effect):
         x = x.dropna().to_numpy()
@@ -778,12 +806,14 @@ def j4_stage_d(d) -> dict:
     eras = {}
     for nm, col in (("J4-A", "delta_i"), ("J4-B", "book_excess")):
         le = pd.to_datetime(df["label_end"])
+        # (means below skip NaN months of that statistic only)
         eras[nm] = {"E1": float(df.loc[le <= rc.ERA_SPLIT, col].mean() * 12),
                     "E2": float(df.loc[le > rc.ERA_SPLIT, col].mean() * 12),
                     "split_by": "label_end (return date)"}
     A["eras"], Bk["eras"] = eras["J4-A"], eras["J4-B"]
     cov = df["priced_share"]
-    treat = {"i_exclude_unpriced": A["observed"], "iii_minus30_terminal": float(df["delta_iii"].mean() * 12)}
+    treat = {"i_exclude_unpriced": A["observed"], "iii_minus30_terminal": float(df["delta_iii"].mean() * 12),
+             "J4-B_i": Bk["observed"], "J4-B_iii_minus30_terminal": float(df["book_excess_iii"].mean() * 12)}
     gates = [
         {"criterion": "G1 Holm p<0.05 (J4-A)", "observed": A["holm"]["p_holm"], "met": bool(A["holm"]["reject_h0"])},
         {"criterion": "G2 J4-A >= 0.02/yr", "observed": A["observed"], "met": A["observed"] >= 0.02},
@@ -807,7 +837,7 @@ def j4_stage_d(d) -> dict:
                                                              if k in ("n_ever_members", "n_from_survivor_cache",
                                                                       "n_attempted", "n_recovered", "n_failed",
                                                                       "n_identity_suspect_intervals")},
-            "J4-A": A, "J4-B": Bk, "treatments": treat, "J4-B_cost_2x_ann": float(res2x["book_excess"].mean() * 12),
+            "J4-A": A, "J4-B": Bk, "treatments": treat, "unavailable_formations": unavailable, "J4-B_cost_2x_ann": float(res2x["book_excess"].mean() * 12),
             "suspect_starts_late_only_masked_conservatively": unmasked_starts_late,
             "clipped_returns": res.get("clip_log"),
             "sensitivity_sp1500_from_2013": {"J4-A_ann_sp1500": float(s1500["delta_i"].mean() * 12),
@@ -871,6 +901,8 @@ def posthoc_lines(books, names, bench, cash, mask, eps):
 def run_stage_d(smoke: bool) -> dict:
     END = rc.D_END
     d = load(END)
+    global AV
+    AV = d["avail"]
     s, cash, r_spy = d["sessions"], d["cash"], d["rets"]["SPY"].fillna(0.0)
     assert s.max() <= END and all(v.index.max() <= END for v in (d["hy"], d["dbaa"], d["dgs10"]))
     from engine.trial_ledger import TrialLedger
@@ -897,10 +929,10 @@ def run_stage_d(smoke: bool) -> dict:
                         "reason": json.loads(un.read_text()) if un.exists() else "no replay output produced"}
             continue
         ws = ws.where(s >= J1_FIRST)
-        bk1[key] = rc.simulate(spy_targets(ws), d["rets"][["SPY", "BOND"]], cash, ETF_BP, key, start=J1_FIRST)
+        bk1[key] = rc.simulate(spy_targets(ws), d["rets"][["SPY", "BOND"]], cash, ETF_BP, key, start=J1_FIRST, avail=AV)
         inc[key] = {"status": "evaluated", "source": src,
                     "first_weight": str(ws.first_valid_index().date()) if ws.notna().any() else None}
-    m1 = pd.Series((s > J1_FIRST) & (s <= END), index=s)
+    m1 = pd.Series((s >= J1_FIRST) & (s <= END), index=s)
     if smoke:
         print("J1 books:", {k: (len(b.returns), int(b.traded.gt(0).sum())) for k, b in bk1.items()})
         print("J1 flag coverage from J1_FIRST:", {k: int(v[s >= J1_FIRST].isna().sum()) for k, v in flags.items()})
@@ -999,7 +1031,7 @@ def run_stage_d(smoke: bool) -> dict:
             return {t: 1 / len(e) for t in e} if e else {"SPY": 1.0}
         rules2["J2-I1"] = i1
     bk2, tg2 = j2_books(d, rules2)
-    m2 = pd.Series((s > J2_FIRST) & (s <= END), index=s)
+    m2 = pd.Series((s >= J2_FIRST) & (s <= END), index=s)
     c2 = ["J2-A", "J2-B", "J2-C", "J2-D"]
 
     def f2(bk):
@@ -1052,7 +1084,7 @@ def run_stage_d(smoke: bool) -> dict:
             return {a: v for a, v in row.items() if v > 0}
         return trio
     T2e = monthly_targets(s, dec2, cols2, j2e)
-    bk5 = {"J2-E": rc.simulate(T2e, d["rets"][cols2], cash, ETF_BP, "J2-E", start=J2_FIRST, equity_cols=cols2,
+    bk5 = {"J2-E": rc.simulate(T2e, d["rets"][cols2], cash, ETF_BP, "J2-E", start=J2_FIRST, avail=AV, equity_cols=cols2,
                                always_rebalance=True)}
     TA = comp.mul(wj1, axis=0)
     TA.loc[TA.index < J2_FIRST] = np.nan
@@ -1060,11 +1092,11 @@ def run_stage_d(smoke: bool) -> dict:
     wch = wj1.ne(wj1.shift(1)) & wj1.notna()
     exec_days = pd.Series(s.isin(dec2), index=s) | wch
     TA.loc[~exec_days] = np.nan
-    bk5["J5-A"] = rc.simulate(TA, d["rets"][cols2], cash, ETF_BP, "J5-A", start=J2_FIRST, equity_cols=cols2,
+    bk5["J5-A"] = rc.simulate(TA, d["rets"][cols2], cash, ETF_BP, "J5-A", start=J2_FIRST, avail=AV, equity_cols=cols2,
                               always_rebalance=True)
     r126 = d["adj"] / d["adj"].shift(126) - 1
     rf126 = rc.cum_cash(cash, 126, 0)
-    gl_el = rc.eligible(d["adj"][["GLD"]])["GLD"]
+    gl_el = rc.eligible(d["avail"][["GLD"]])["GLD"]
     defpick = pd.Series(np.nan, index=s, dtype=object)
     for dd in dec2:
         cand = {"BOND": r126.at[dd, "BOND"]}
@@ -1080,7 +1112,7 @@ def run_stage_d(smoke: bool) -> dict:
         TB[a] = np.where(defpick.values == a, 1 - wj1.reindex(s).fillna(1.0).values, 0.0)
     valid = TA.notna().any(axis=1) & defpick.notna()
     TB.loc[~valid] = np.nan
-    bk5["J5-B"] = rc.simulate(TB, d["rets"][cols5], cash, ETF_BP, "J5-B", start=J2_FIRST, equity_cols=cols2,
+    bk5["J5-B"] = rc.simulate(TB, d["rets"][cols5], cash, ETF_BP, "J5-B", start=J2_FIRST, avail=AV, equity_cols=cols2,
                               always_rebalance=True)
     met5 = {k: rc.book_metrics(b, r_spy, cash, m2) for k, b in bk5.items()}
     for k in met5:
@@ -1127,7 +1159,7 @@ def run_stage_d(smoke: bool) -> dict:
     # ---------------- J3
     rules3 = j3_rules(d, flags)
     bk3 = j3_books(d, rules3)
-    m3 = pd.Series((s > J3_FIRST) & (s <= END), index=s)
+    m3 = pd.Series((s >= J3_FIRST) & (s <= END), index=s)
     ew7 = d["rets"][rc.SLEEVES].mean(axis=1)
     c3 = ["J3-A", "J3-B", "J3-C"]
 
