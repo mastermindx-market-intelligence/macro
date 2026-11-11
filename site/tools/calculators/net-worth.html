@@ -215,27 +215,27 @@
 <div class="calc-in">
   <label class="ci ci-wide"><span class="ci-l"><span class="l-en">Assets — what you own</span><span class="l-zh">资产——你拥有的</span> <span class="hint"><span class="l-en">all optional</span><span class="l-zh">均可选</span></span></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Cash & savings ($)</span><span class="l-zh">现金与存款（$）</span></span>
-    <input id="cash" inputmode="decimal" autocomplete="off" placeholder="25,000"></label>
+    <input id="cash" inputmode="decimal" autocomplete="off" placeholder="25,000"><span id="cash-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Investments ($)</span><span class="l-zh">投资（$）</span> <span class="hint"><span class="l-en">brokerage, stocks</span><span class="l-zh">证券、股票</span></span></span>
-    <input id="invest" inputmode="decimal" autocomplete="off" placeholder="80,000"></label>
+    <input id="invest" inputmode="decimal" autocomplete="off" placeholder="80,000"><span id="invest-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Retirement accounts ($)</span><span class="l-zh">退休账户（$）</span></span>
-    <input id="retire" inputmode="decimal" autocomplete="off" placeholder="120,000"></label>
+    <input id="retire" inputmode="decimal" autocomplete="off" placeholder="120,000"><span id="retire-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Real estate ($)</span><span class="l-zh">房地产（$）</span> <span class="hint"><span class="l-en">market value</span><span class="l-zh">市值</span></span></span>
-    <input id="realestate" inputmode="decimal" autocomplete="off" placeholder="450,000"></label>
+    <input id="realestate" inputmode="decimal" autocomplete="off" placeholder="450,000"><span id="realestate-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Vehicles ($)</span><span class="l-zh">车辆（$）</span></span>
-    <input id="vehicles" inputmode="decimal" autocomplete="off" placeholder="20,000"></label>
+    <input id="vehicles" inputmode="decimal" autocomplete="off" placeholder="20,000"><span id="vehicles-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Other assets ($)</span><span class="l-zh">其他资产（$）</span></span>
-    <input id="otherassets" inputmode="decimal" autocomplete="off" placeholder="5,000"></label>
+    <input id="otherassets" inputmode="decimal" autocomplete="off" placeholder="5,000"><span id="otherassets-error" hidden></span></label>
 
   <label class="ci ci-wide"><span class="ci-l"><span class="l-en">Liabilities — what you owe</span><span class="l-zh">负债——你欠下的</span> <span class="hint"><span class="l-en">all optional</span><span class="l-zh">均可选</span></span></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Mortgage ($)</span><span class="l-zh">房贷（$）</span> <span class="hint"><span class="l-en">balance owed</span><span class="l-zh">剩余本金</span></span></span>
-    <input id="mortgage" inputmode="decimal" autocomplete="off" placeholder="320,000"></label>
+    <input id="mortgage" inputmode="decimal" autocomplete="off" placeholder="320,000"><span id="mortgage-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Student & other loans ($)</span><span class="l-zh">学生贷款及其他（$）</span></span>
-    <input id="loans" inputmode="decimal" autocomplete="off" placeholder="30,000"></label>
+    <input id="loans" inputmode="decimal" autocomplete="off" placeholder="30,000"><span id="loans-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Credit card debt ($)</span><span class="l-zh">信用卡欠款（$）</span></span>
-    <input id="creditcard" inputmode="decimal" autocomplete="off" placeholder="6,000"></label>
+    <input id="creditcard" inputmode="decimal" autocomplete="off" placeholder="6,000"><span id="creditcard-error" hidden></span></label>
   <label class="ci"><span class="ci-l"><span class="l-en">Other debts ($)</span><span class="l-zh">其他债务（$）</span></span>
-    <input id="otherdebts" inputmode="decimal" autocomplete="off" placeholder="4,000"></label>
+    <input id="otherdebts" inputmode="decimal" autocomplete="off" placeholder="4,000"><span id="otherdebts-error" hidden></span></label>
 </div>
 
 <div class="calc-out" aria-live="polite">
@@ -390,7 +390,7 @@
   // ── pure compute (net worth = assets − liabilities) ────────────────────────
   // inputs: {assets:[...], liabs:[...]} — arrays of numbers (NaN for blank).
   // Returns an outputs object, or {ok:false, msg} when nothing is filled in.
-  // Blank/invalid lines count as zero; never returns NaN/Infinity.
+  // Blank lines count as zero. The DOM rejects invalid nonblank amounts before compute.
   function compute(inp){
     function sum(arr, any){
       var t=0;
@@ -403,9 +403,12 @@
     var any={filled:false};
     var totalAssets = sum(inp.assets, any);
     var totalLiabilities = sum(inp.liabs, any);
-    if(!any.filled) return {ok:false, msg:"Fill in any of the lines above to see your net worth."};
+    if(!any.filled) return {ok:false, msg:"Fill in any of the lines above to see your net worth.", msgZh:"填入上方任意项目即可查看净资产。"};
     var netWorth = totalAssets - totalLiabilities;
-    var dta = totalAssets > 0 ? (100 * totalLiabilities / totalAssets) : null; // null = no assets to ratio against
+    var dta = totalAssets > 0 ? (totalLiabilities / totalAssets * 100) : null; // null = no assets to ratio against
+    if(!isFinite(totalAssets) || !isFinite(totalLiabilities) || !isFinite(netWorth) || (dta !== null && !isFinite(dta))) {
+      return {ok:false, msg:"The amounts are too large to calculate a finite result.", msgZh:"金额过大，无法计算有限结果。"};
+    }
     return {
       ok:true,
       totalAssets: totalAssets,
@@ -437,6 +440,13 @@
     var $ = function(id){ return document.getElementById(id); };
     var ASSET_IDS = ["cash","invest","retire","realestate","vehicles","otherassets"];
     var LIAB_IDS  = ["mortgage","loans","creditcard","otherdebts"];
+    var FIELD_NAMES = {
+      cash:["Cash & savings","现金与存款"], invest:["Investments","投资"],
+      retire:["Retirement accounts","退休账户"], realestate:["Real estate","房地产"],
+      vehicles:["Vehicles","车辆"], otherassets:["Other assets","其他资产"],
+      mortgage:["Mortgage","房贷"], loans:["Student & other loans","学生贷款及其他"],
+      creditcard:["Credit card debt","信用卡欠款"], otherdebts:["Other debts","其他债务"]
+    };
     var els = {};
     ASSET_IDS.concat(LIAB_IDS).forEach(function(id){ els[id]=$(id); });
     var outMain=$("out-main"), outPlain=$("out-plain"),
@@ -454,13 +464,38 @@
     }
 
     var last=null;
+    function invalidAmountMessage(id, lang){
+      return lang === "zh"
+        ? "请为“" + FIELD_NAMES[id][1] + "”输入有效金额后再计算净资产。"
+        : "Enter a valid amount for " + FIELD_NAMES[id][0] + " before calculating net worth.";
+    }
     function render(){
       var inp={
         assets: ASSET_IDS.map(function(id){ return numFrom(els[id]); }),
         liabs:  LIAB_IDS.map(function(id){ return numFrom(els[id]); })
       };
-      var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      // Missing optional amounts are zero; an invalid supplied amount is unknown, never zero.
+      var invalid=[];
+      ASSET_IDS.concat(LIAB_IDS).forEach(function(id){
+        var el=els[id], error=$(id+"-error"), bad=el.value.trim() !== "" && !isFinite(numFrom(el));
+        error.textContent=bad ? invalidAmountMessage(id, document.documentElement.getAttribute("data-lang")) : "";
+        if(bad){
+          invalid.push(id); el.setAttribute("aria-invalid","true");
+          el.setAttribute("aria-describedby",id+"-error");
+        } else {
+          el.removeAttribute("aria-invalid"); el.removeAttribute("aria-describedby");
+        }
+      });
+      var res=invalid.length ? {ok:false,
+        msg:invalidAmountMessage(invalid[0], "en"),
+        msgZh:invalidAmountMessage(invalid[0], "zh")} : compute(inp);
+      last=res;
+      copied.classList.remove("show"); // a prior result receipt does not describe edited inputs
+      if(!res.ok){
+        dash();
+        outPlain.textContent=document.documentElement.getAttribute("data-lang") === "zh" && res.msgZh ? res.msgZh : res.msg;
+        outPlain.className="co-plain"; return;
+      }
       outMain.textContent = money(res.netWorth);
       outAssets.textContent = money(res.totalAssets);
       outLiab.textContent = money(res.totalLiabilities);
@@ -492,7 +527,8 @@
     }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
+      var receipt=last;
+      var done=function(){ if(last !== receipt) return; copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
       if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
       else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
         try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
@@ -501,6 +537,7 @@
     ASSET_IDS.concat(LIAB_IDS).forEach(function(id){
       els[id].addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();

@@ -5998,7 +5998,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_967),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
@@ -6009,6 +6009,37 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-11-11 (PR #10741, current controller-conflict recovery):
+    The original refresh declined with an affirmative content conflict and
+    released its lease. Receiving main93068439 retains the landed #9230
+    ticker-news cursor allowance on free-content. Preserve that contribution,
+    all original Net Worth history, Savings Goal coverage and current controls.
+    The unchanged calculator owner/estimator still measure 5 -> 6: three ->
+    four commands, one test token, 421 -> 589 joined characters. Apply only
+    its original index-only +1: 5966/5989/5724 -> 5967/5989/5724. Keep
+    137/138/131 job ceilings, ten packs and all selectors/assertions/timeouts.
+    The five feature/runner/test blobs remain exact H. This is bounded source
+    accounting, not a new whole-tree planner, timing or product proof; the
+    successor requires its own natural CI and current-definition freshness.
+
+    2026-11-11 (PR #10741, preserve Net Worth and Savings Goal coverage):
+    Receiving main497d83de (same code as f5093553) contains Savings Goal paths and
+    both source/published commands. Preserve those, the original Net Worth
+    paths/step, all other owner bytes and both full histories. Canonical
+    calculator-input-integrity weight remains5->6 (+1): commands3->4,
+    one test token,362->530characters. Apply the original index-only +1
+    to5966/5987/5724:5967/5987/5724. Keep137/138/131jobs, tenpacks,
+    selectors, assertions, timeouts and resource admission unchanged.
+    This is source composition; the successor owes its own natural proof.
+
+    2026-11-09 (PR #10741, compose the landed Intraday Flow increment):
+    Receiver f3a8cf0450a13ca8d792c1e76b70871868441aa3 contains the
+    lifecycle/ledger +10 on all probes. Preserve those command bytes and
+    both complete provenance histories, then add only this calculator
+    owner's accepted index-only +1: 5958/5979/5716 -> 5959/5979/5716.
+    Job ceilings 137/138/131, ten packs and every other limit stay fixed.
+    This is static source-accounting composition, not a new planner run;
+    natural CI must qualify the combined head and partial-clone fixture.
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
     lifecycle coverage and qualified Playwright dependency. Keep all
@@ -6057,6 +6088,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     unmerged sibling is funded. This is current source accounting, not
     a new planner execution. The new head needs its own required proof.
     https://github.com/mastermindx-market-intelligence/Macro/pull/9230
+
+    2026-11-09 (PR #10741, preserve the actual ownership-ledger landing):
+    Current main retains F09 plus the independent ledger +3 on each probe.
+    Preserve all current owners, the complete historical evidence below and
+    this PR's original index-only +1 contribution. Derived union ceilings are
+    5949/5969/5706 with job caps 137/138/131 and ten packs unchanged.
+    This is source-accounting conservation, not a fresh full-tree measurement;
+    the successor must earn its own hosted contract and semantic proof.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
@@ -6114,6 +6153,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     at their existing anchors. This is source-derived accounting, not a new
     paired planner measurement; natural successor CI must qualify this head.
 
+    2026-11-09 (PR #10741, F09/Net Worth conflict composition):
+    Receiver 9a13c64bf69f782332afa29efb09fe48ee30b857 includes F09's
+    independent +2 on all three probes. The unchanged calculator owner
+    and estimator retain this PR's previously measured index-only +1.
+    Compose both contributions: 5945 -> 5946; free/Prophet stay 5966/5703.
+    Preserve all 400 owners, job caps 137/138/131 and ten packs. This is
+    source/accounting conservation, not a new planner or runtime measure;
+    natural successor CI must qualify the composed tree.
+
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
     The data-base-shim preimage and current weight estimator still establish
@@ -6152,6 +6200,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     provenance, job ceilings137/138/131, ten packs and admission limits.
     This is static preserving composition, not a new full-tree measurement;
     natural current-head CI must qualify the integrated source.
+
+    2026-11-09 (PR #10741, preserving current CI conflict composition):
+    Receiver a331ca44a5778706edd09398cfc25b64fcea284f retains all 400 owners
+    and the current registry/admission tests and accepted provenance.
+    The complete calculator-input-integrity preimage and estimator source
+    are unchanged from the accepted contribution below. Preserve its +1
+    index-only estimate: 5943 -> 5944; free/Prophet remain 5964/5701.
+    This source/accounting composition requires its own natural CI and is
+    not a new local planner run or execution-time measurement.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
@@ -6216,6 +6273,34 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     selectors, dependencies, timeouts and admission/concurrency controls.
     This is measured planner weight, not an execution-time estimate.
     All earlier landed contributions and provenance remain below.
+
+    2026-11-09 (PR #10741, Net Worth invalid-amount enrollment):
+    Compose the accepted one-unit index-only contribution below onto current
+    main 6ff097d71419b8030e3d779cc62526cdb6c1d0e7. Preserve all 397 current
+    catalog owners and the calculator owner's Risk/Reward coverage. Its three
+    existing run scalars remain exact; the accepted Net Worth source/page
+    commands add one fourth run scalar. The unchanged ci_pack.py estimator
+    (blob 471640444ecdda2496a14ffa38f66e4d0b9c5202) has no observed override
+    for this owner: explicit tests/test_ references stay at one and the joined
+    command text stays below 800 characters, so its weight is exactly 5 -> 6.
+    Apply only that contribution: index 5943 -> 5944; free-content 5964 and
+    plan-book 5701 stay unchanged. Job ceilings 137/138/131 and ten packs stay
+    unchanged. All current assertions and prior provenance remain exact.
+    This is static composition of the accepted paired measurement, not a new
+    planner run or execution-time measurement. Natural CI on the composed
+    tree must verify selection, packing and the complete current contract.
+
+    2026-11-04 Net Worth invalid-amount coverage composes base 8b78baf69777
+    with candidate dde01b337d4c. The existing calculator-input-integrity job
+    gains one run block for the complete controller on source and generated
+    page. Canonical packing_probe_measurements paired manifests, unchanged
+    planner/tree inputs: index 137 jobs / 5,912 -> 5,913; free-content 137 /
+    5,927 unchanged; plan-book 131 / 5,668 unchanged; all ten packs. Selected
+    job IDs are identical on all probes. Evidence SHA256:
+    dfeff50d0e583fe2e73d19be372ff53b6b903e83b51908f50648a576b8e0e409.
+    Fund only the demonstrated one-unit index estimate, retaining every
+    other weight, job-count, pack/runtime limit, selector and existing suite.
+    These are planner estimates, not execution timings.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural

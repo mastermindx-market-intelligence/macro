@@ -4558,13 +4558,10 @@ def _promisor_remote(root: Path, *, deadline: float) -> str | None:
 def _missing_tree_objects(root: Path, sha: str, *, deadline: float) -> list[str]:
     """Blob OIDs at ``sha`` that are absent from the local object store.
 
-    ``git rev-list --missing=print`` cannot answer this. A blob a partial clone
-    omitted is an EXPECTED absence, so it is never printed — measured against a
-    real ``blob:none`` clone, a tree with three genuinely absent blobs reported
-    zero missing objects. ``GIT_NO_LAZY_FETCH`` makes ``cat-file`` report those
-    same objects as ``missing`` instead of silently fetching them back one
-    network round trip at a time, which is both the accurate detector and the
-    cheap one.
+    Enumerate already-present objects, including alternates, without asking Git
+    to resolve missing OIDs. Object-name-only enumeration needs no lazy-fetch
+    environment support and cannot accidentally hydrate the tree being probed.
+    Failed or malformed inventory is not evidence that every blob is present.
     """
     listing = _git_run_bounded(
         ["git", "ls-tree", "-r", "-z", sha],
@@ -4573,10 +4570,18 @@ def _missing_tree_objects(root: Path, sha: str, *, deadline: float) -> list[str]
     ).stdout
     oids: list[str] = []
     seen: set[str] = set()
-    for entry in listing.split("\0"):
-        meta, _, _path = entry.partition("\t")
+    if listing and not listing.endswith("\0"):
+        raise RuntimeError("exact-base tree object listing is incomplete")
+    for entry in listing[:-1].split("\0") if listing else ():
+        meta, separator, path = entry.partition("\t")
         fields = meta.split()
-        if len(fields) < 3 or fields[1] != "blob":
+        if (
+            not separator or not path or len(fields) != 3
+            or fields[1] not in {"blob", "tree", "commit"}
+            or not re.fullmatch(r"[0-9a-f]{40}", fields[2])
+        ):
+            raise RuntimeError("exact-base tree object listing is malformed")
+        if fields[1] != "blob":
             continue
         oid = fields[2]
         if oid not in seen:
@@ -4585,18 +4590,16 @@ def _missing_tree_objects(root: Path, sha: str, *, deadline: float) -> list[str]
     if not oids:
         return []
     probe = _git_run_bounded(
-        ["git", "cat-file", "--batch-check"],
+        ["git", "cat-file", "--batch-all-objects", "--batch-check=%(objectname)"],
         cwd=root,
         deadline=deadline,
-        check=False,
-        env={**os.environ, "GIT_NO_LAZY_FETCH": "1"},
-        stdin_text="".join(f"{oid}\n" for oid in oids),
     )
-    return [
-        line.split(" ", 1)[0]
-        for line in probe.stdout.splitlines()
-        if line.endswith(" missing")
-    ]
+    present: set[str] = set()
+    for oid in probe.stdout.splitlines():
+        if not re.fullmatch(r"[0-9a-f]{40}", oid) or oid in present:
+            raise RuntimeError("exact-base local object inventory is malformed")
+        present.add(oid)
+    return [oid for oid in oids if oid not in present]
 
 
 def _hydrate_exact_base_objects(root: Path, sha: str, *, deadline: float) -> None:
@@ -4820,21 +4823,27 @@ def _exact_base_worktree(
             cwd=root,
             deadline=deadline,
         )
-        _git_run_bounded(
-            [
-                "git",
-                "--git-dir",
-                str(repository),
-                "--work-tree",
-                str(worktree),
-                "checkout",
-                "--detach",
-                "--force",
-                exact_sha,
-            ],
-            cwd=root,
-            deadline=deadline,
-        )
+        try:
+            _git_run_bounded(
+                [
+                    "git",
+                    "--git-dir",
+                    str(repository),
+                    "--work-tree",
+                    str(worktree),
+                    "checkout",
+                    "--detach",
+                    "--force",
+                    exact_sha,
+                ],
+                cwd=root,
+                deadline=deadline,
+            )
+        except subprocess.CalledProcessError as exc:
+            detail = _one_line((exc.stderr or "")[-4000:]) or "stderr unavailable"
+            raise RuntimeError(
+                f"exact-base checkout of {exact_sha} failed (exit {exc.returncode}): {detail}"
+            ) from exc
         (worktree / ".git").write_text(
             f"gitdir: {repository}\n",
             encoding="utf-8",

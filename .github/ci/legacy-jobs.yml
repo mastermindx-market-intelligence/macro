@@ -31230,6 +31230,9 @@ jobs:
       - templates/calculators/savings_goal.html.j2
       - site/tools/calculators/savings-goal.html
       - tests/js/savings_goal_arithmetic.test.mjs
+      - templates/calculators/net_worth.html.j2
+      - site/tools/calculators/net-worth.html
+      - tests/js/net_worth_input_integrity.test.cjs
       - templates/calculators/risk_reward.html.j2
       - site/tools/calculators/risk-reward.html
       - tests/js/risk_reward_warning_copy.test.mjs
@@ -31256,6 +31259,10 @@ jobs:
           node --test tests/js/covered_call_annualized_copy.test.mjs
           node tests/js/savings_goal_arithmetic.test.mjs templates/calculators/savings_goal.html.j2
           node tests/js/savings_goal_arithmetic.test.mjs site/tools/calculators/savings-goal.html
+      - name: Net Worth invalid amounts and result ownership (source and published artifact)
+        run: |
+          node --test tests/js/net_worth_input_integrity.test.cjs
+          NET_WORTH_SOURCE=site/tools/calculators/net-worth.html node --test tests/js/net_worth_input_integrity.test.cjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
