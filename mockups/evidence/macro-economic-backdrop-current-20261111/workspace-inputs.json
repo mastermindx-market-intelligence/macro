@@ -1,0 +1,22 @@
+{
+  "site/macrodata/workspaces/manifest.json": {
+    "blob": "cb799ed8c6991460286a7dd0222a09546745622e",
+    "sha256": "9c543bcb1a1174ac1bb0f22505437ca9738922626d200df7c84cee596670ff95",
+    "bytes": 6957
+  },
+  "site/macrodata/workspaces/growth_real_economy/US/latest.json": {
+    "blob": "69b8bc634cc0204c75db95ef8b006e4fd6e08a5e",
+    "sha256": "bb86fadfa167e40f84359abcf09f9a9927ff701c8985982e34367c1bc5b974d6",
+    "bytes": 83560
+  },
+  "site/macrodata/workspaces/inflation_system/US/latest.json": {
+    "blob": "f39e48f7045808eb62f8012fe75d09dca3e9d85f",
+    "sha256": "073f4c88e59353a11a9829a5f633dff50be534bb885da752e5be199a9309bd06",
+    "bytes": 62011
+  },
+  "site/macrodata/workspaces/financial_conditions/US/latest.json": {
+    "blob": "db8299420c68220589ec6980800a2ba6a9d684c7",
+    "sha256": "fd38dc91b839916cd4531bfc4acc35dfc314082d159d5719147267dfc8f0669c",
+    "bytes": 103467
+  }
+}

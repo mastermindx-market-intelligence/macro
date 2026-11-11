@@ -1,0 +1,10 @@
+{
+  "original_probe_blob": "547e6936c6fdf6e1905080782c4fef8f3a8ef042",
+  "original_probe_sha256": "42a694c6acb604c018536cfae385d47626b2fc73158e38ada13508f98de620b3",
+  "executed_probe_sha256": "f400be25588288b8596fe11a8b49633abdbbcf0342d25138133e1544fcf6f933",
+  "changes": [
+    "bind ROOT to the owned immutable source checkout",
+    "write receipt to a fresh external path; leave historical receipt untouched"
+  ],
+  "historical_receipt_sha256": "468710c5a33f1b359adc70826a30e5b33978494c6141f5d2ca35dc2c3621b6c5"
+}

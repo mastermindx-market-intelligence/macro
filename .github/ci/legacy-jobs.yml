@@ -47865,6 +47865,7 @@ jobs:
       - "templates/si_workspace.js"
       # The receipt test binds the committed shots to their render inputs.
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr6974_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       # The site-copy test reads the published byte copy of the shared glance source.
       - "site/rotation_events.js"
@@ -48158,6 +48159,7 @@ jobs:
       - "templates/rotation_glance.css"
       - "templates/si_workspace.js"
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr6974_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       - "site/rotation_events.js"
       - "templates/_macro_sector_desk.html.j2"
