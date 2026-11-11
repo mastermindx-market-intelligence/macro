@@ -1,17 +1,17 @@
 ---
 key: SECTOR-INTELLIGENCE-COMPLETION
-title: Sector Intelligence + Sector Cycles completion — backend, editable Paper design, both Macro surfaces, production proof
+title: Sector Intelligence in Beta Shared Shell — backend, editable Paper design, unified product and operational proof
 objective: >
-  Finish macro #7646 (operation sector-central-redesign-20260921-sol-001) end to end: complete the
-  backend contracts (B01–B12), complete the actual editable Paper design including a full Sector
-  Cycles workspace, replace both /sector_central.html and /sector_cycles.html with the accepted
-  design while retaining every mapped capability and unique engine, and prove one complete user
-  investigation on production plus the next natural scheduled update. Done means backend, Paper,
-  Macro implementation, normal release, operational consumption and scientific disposition each
-  carry their own accepted evidence across journeys J01–J15 and the 134-row capability matrix.
+  Finish macro #7646 (operation sector-central-redesign-20260921-sol-001) through one Sector
+  Intelligence experience in Beta Shared Shell. Preserve Macro analytical ownership, all B01–B12,
+  P01–P23, J01–J15 and 134 capability rows; complete retained Cycles, industry evidence, durable
+  investigations and exact continuation using masterplan version 1.1 and its Prophet v5.1 integration amendment.
+  Prove backend, editable Paper, implemented consumer, normal release, actual permitted served
+  journeys, next natural scheduled update or qualified no-change and scientific disposition
+  separately. Retire competing UX only after source, destination, access and saved-context parity.
 status: active
 program: sector-rotation-intelligence
-repos: [macro, mastermind]
+repos: [macro, mastermind, terminal]
 owner: meta-ceo-fable
 class: build
 blast_radius: user_facing
@@ -26,17 +26,31 @@ decisions:
 landmines:
   - "Candidate 4fd82658 lives on local-only sol/web-sector-central-macro-paper-pivot-20261020-sol-001 (Studio workspace); never touch that branch — it is an ancestor of the PR branch via --no-ff merge 3d8d14ac."
   - "Studio managed publisher is NOT_APPLIED for this carrier and reconciles against PR #9917; never re-publish the candidate. Terminal #1055 is closed unmerged; never revive it."
-  - "Scientific fences: hazard 4/6 qualified with up/3m and up/6m PRIOR; sizing multipliers 1.0; lead-lag STOP; nightly is the sole advancer (never dispatch daily.yml); grader ~0.274 is a conditional hit rate, never a win rate."
+  - "Scientific fences: historical 4/6 qualification is not current forecast authority. Lane 8 #10924 at 4cdebe92d9dde7f612609667c61b6a87d0271d1a withholds current hazard and the malformed prior; integrate per-head withdrawal. Sizing multipliers remain 1.0; lead-lag STOP; nightly is sole advancer (never dispatch daily.yml); grader ~0.274 is conditional hit rate, never win rate."
   - "Paper file 01M2WGNCX9475G79JRKJTCM08P: one admitted writer; record only node ids the tool returned; page p-Z-0 is an archive to preserve; the Oct 18 design packet is unadmitted."
   - "Donor lane trees under ~/lanes/wt/<run> are sparse cone checkouts; a lane that needs site/ or data/ must sparse-add a directory, never commit a profile change."
 do_not_redo:
   - "P01–P03 ACCEPTED: merge 3d8d14acdc8de99fa2c17316aa22de6177364dbc (parents e5dd30c6 + 4fd82658) pushed; draft PR #9917 opened against main; packing test funded; non-site suites green locally."
   - "Reuse Leadership Rotation LR-W1–W5 and the accepted replay/measurement repairs (WS:LEADERSHIP-ROTATION-INTELLIGENCE); do not restart the 26-task plan."
+  - "Final version 1.0 preserves the merged /sectors entrance, existing P19 ledger, R3A-66 native fields, 47 reviewed R4 Frames and merged sleeve foundations; implement only remaining consumers/depth/proof."
 artifacts:
   - research/sector_completion_20261021/LAUNCH_BRIEF_2026-10-21.md
   - research/sector_completion_20261021/MASTERPLAN_2026-10-21.md
   - research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv
   - research/sector_completion_20261021/CONTINUATION_HANDOFF_2026-10-21.md
+  - research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md
+  - research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md
+  - research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json
+  - research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md
+  - research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md
+  - agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-09.md
+  - research/sector_completion_20261021/PROPHET_V51_INTEGRATION_AMENDMENT_2026-11-09.md
+  - research/sector_completion_20261021/R6_PAPER_BUILD_SPEC_2026-11-09.md
+  - research/sector_completion_20261021/R6_PAPER_MANIFEST_2026-11-09.json
+  - research/sector_completion_20261021/R6_PAPER_JSX_2026-11-09.json
+  - research/sector_completion_20261021/FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md
+  - research/sector_completion_20261021/V11_VERIFICATION_2026-11-09.json
+  - agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-10.md
 waves:
   - id: P01-P03
     title: Reconcile custody and the completion contract; carry the candidate onto main
@@ -66,21 +80,39 @@ waves:
     title: Lenses, comparisons, history, Cycles depth, watches/saved investigations, compatibility, bounded scientific disposition
     status: in_progress
     depends_on: [P10-P13]
-    next_action: "Commission the Cycles build wave (SIC-I03/I09B against the approved design_refs/sector-paper-20261021/cycles_ia.md): rail Explore -> Cycles, Dossier Cycle tab (U07), overdue/phase_v2_age/doctrine_stance/estimate_kinds/series_provenance/hazard parity rendering, C19 MODEL-badge qualification by model_cell_current_claim, typed states, light/ZH/1440/390 cells. Opus orchestrator (ROUTE: ORCHESTRATION) + Fabric/builder lanes; fresh review; never a seat self-merge."
+    next_action: "AFTER #9917 partial merge: use accepted Cycles IA and existing R4 Paper boards to implement in-shell Cycles (SIC-I03/I09B) and Dossier Cycle tab U07; preserve overdue/phase_v2_age/doctrine_stance/estimate_kinds/series_provenance, hazard parity, and qualify C19 MODEL claims by model_cell_current_claim. Include denied/partial/offline states and light/dark, EN/ZH, 1440/390, 320/430 overflow coverage. Check live writer and Terminal C3 U07 overlap before source edits. Reviewed current-head CI and no self-merge remain mandatory."
   - id: P19-P20
     title: Independent integrated acceptance and targeted repair
     status: done
     depends_on: [P14-P18]
-    next_action: "P19 returns stored byte-exact under research/sector_completion_20261021/p19/ (A 42/46 CONFIRMED, B 39/46, C 0/42 with J04 BLOCKED); 134-row CSV filled; P20 repairs: subsectors.js basket denominator (SC-066), trackBox Measured/已实测 (SIC-APR-04), four sector-paper suites wired into reference-integrity, ceilings funded +9. Fresh READ_ONLY review of the P20 source diff pending."
+    next_action: "P19/P20 candidate-stage evidence is preserved; Reviewer D READ_ONLY source verdict ACCEPT-WITH-NOTES with MAJOR line-citation shift repaired in 83e2d038. PR #9917 merged as PARTIAL at 8e322ca3; P19 does not claim Cycles delivery, browser production, next natural update, or P22/P23 acceptance. Preserve all RIG/SIC-APR conditions."
   - id: P21-P23
     title: Normal release, served user journeys, next natural update or qualified no-change, explicit closeout
     status: in_progress
     depends_on: [P19-P20]
-    next_action: "P21 = PARTIAL release only (Sector Central half + CI wiring) after the P20 review and binding CI; squash-merge with --match-head-commit; never described as completion. P22 on both served surfaces after the Cycles wave lands; P23 separate acceptances + matrix *_to_record fill."
-next_action: "P20 CI repairs are committed on #9917 (442713973f2a, 8d1fe9324402) and main 838a69c08deb is merged (b6b4743f534d; the inherited gmi-explorer red arrives fixed from main #10541/#10556). Reviewer D (fresh READ_ONLY, receipt p19/verifier_D_P20_source_review.md) returned ACCEPT-WITH-NOTES and its one MAJOR (subsectors.js +3 lines shifted four state-matrix citations) is repaired line-neutral. Next: binding CI green on the new head -> squash-merge #9917 as a PARTIAL release (Sector Central half; the Cycles replacement is NOT DELIVERED) -> commission the Cycles build wave -> P22 production + natural-update proof -> P23 separate acceptances."
+    next_action: "P21 partial source merge is DONE (#9917 => 8e322ca3, 2026-11-03) but the P21-P23 wave remains in progress. P22 requires normal nightly publication of the completed Cycles successor plus served desktop/mobile EN/ZH/light/dark interaction, auth, source-date and natural-update proof; never force daily/nightly. P23 requires separate accepted Sector Central/Cycles journeys J01-J15 and 134-row matrix *_to_record evidence; no completion claim before that."
+next_action: "Continue the existing Fable 5.2 T3 team recorded through #10922; adopt FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md at its exact containing source, reconcile affected active carriers/writers/effects, then prove entitled Sector capture -> full members -> real Prophet Setup -> original evidence -> exact Sector return. Lane 6 composes its reserved0049 with compatible Prophet v3, retained-source/rights resolution and original reopen through one owner/version sequence. Preserve all accepted B/P/J/134 rows, R4/R5 designs and original holds. Use the eleven reviewed R6 roots and all inherited SI01-SI20/SP01-SP24 obligations. Actual served, scientific, ordinary-update/correction/rollback and P22/P23 acceptance remain open; publication or transport is not adoption or runtime liveness."
 ---
 
-# Sector Intelligence + Sector Cycles completion
+# Sector Intelligence in Beta Shared Shell
+
+## Current v1.1 amendment — Sector × Prophet, 10 November 2026 UTC
+
+The Chairman's subsequent instruction upgrades the active Sector implementation to match Prophet v5.1. [The complete existing-team amendment](https://github.com/mastermindx-market-intelligence/macro/blob/983f4e8c215daf2232ff7f414905e5650412371a/research/sector_completion_20261021/FABLE_V11_AMENDMENT_HANDOFF_2026-11-09.md) records current exact carriers, nine lane deltas, first real consumer, reserved0049/v3 composition and original evidence/return requirements. The masterplan and final packet now have a governing v1.1 current-use section; their original v1.0 acceptance history is retained.
+
+The existing Fable T3 thread is 2f136a11-91f9-4bca-bf10-8a1d8b7f4e5d as named by #10922. Its START records establish the programme frontier, not a current heartbeat or adoption of this amendment. This source creates no new team or runtime admission. Current actor/custody/effects remain with their actual owners.
+
+Eleven new editable R6 roots on the existing Sector file were applied, visually reviewed, extracted and finished; one README child was added. All47 R4 and20 R5 roots remain. Current Paper: [product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-L-0), [states/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-M-0), [build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-N-0). Designs and synthetic arithmetic are not browser/strategy/production proof.
+
+The workstream owner, status and all eight historical wave objects remain unchanged. Their dated statements continue as acceptance history; the current top-level action and v1.1 amendment govern affected changes. Keep Prophet's original SX05 and older mobile Plans unknown effects untouched. The new November10 handoff records this amendment; the previous November9 planning handoff is preserved.
+
+## Current version 1.0 amendment — 9 November 2026
+
+The Chairman's four-round planning commission is complete. The final masterplan, Fable/T3 packet and ten validated authoring briefs in artifacts above are the current implementation entrypoints. Current source: Macro bf91cd8964c0fc3ea4ea2e987a21d7759b380032 and Terminal 57ab4281d87ccb9e01e3bafcd42350034de1b222; later execution refreshes only affected facts. The destination now includes the Terminal-owned Shared Shell host with one native Sector workspace; Macro retains producers and compatible legacy entrances.
+
+The owner, status and historical wave states below are unchanged. Their next_action/status text records earlier accepted/partial Macro waves; it is not evidence that the new Shared Shell consumer, installed save schema or production is accepted. In particular P19/P20 done records historical candidate-stage disposition, while P21–P23 operational acceptance remains open. Use the current top-level next_action and final packet to assign the unfinished extension without resetting accepted work.
+
+The final packet names one Fable integration lead and bounded delivery functions. Existing runtime/Capacity/Fabric ownership, grants and current user AGENTS determine actual placement; this projection does not mandate obsolete worker models or create a new independent review requirement. One integration writer serializes each shared owned diff. Separate exact source/publication/unknown-effect/release fences remain intact, including the unrelated Paper interrupted-create target. No team dispatch or lifecycle transition occurred in this amendment.
 
 ## Why this workstream exists
 
@@ -90,7 +122,9 @@ committed Macro candidate (`4fd82658`) on a local-only Studio branch; the first 
 workstream carried it forward onto `main` as a `--no-ff` merge so every later packet builds on one
 reviewable base (PR #9917).
 
-## Operating shape
+## Historical 21 October operating shape
+
+The following staffing/review shape is retained as history. The current amendment and actual admission/repository rules govern new assignments.
 
 - The Fable seat owns direction, dependencies, budgets, adjudication, carrier posts and release
   acts, and is the only writer of the PR branch.

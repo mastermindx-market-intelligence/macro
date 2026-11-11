@@ -612,4 +612,3 @@ def test_recession_signal_state_tokens_have_reviewed_zh_pairs() -> None:
         pair = value_pair(token)
         assert pair["en"] and pair["zh"], token
         assert any(ord(ch) > 127 for ch in pair["zh"]), (token, pair)
-

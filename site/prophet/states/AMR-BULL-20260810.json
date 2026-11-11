@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMR-BULL-20260810",
-  "asof": "2026-11-04",
+  "asof": "2026-11-09",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 32.8,
@@ -10,23 +10,23 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 66.6,
+    "validity": 46.0,
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.74,
+    "dist_to_stop_r": 0.563,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 186.7,
-    "p1": -0.1732,
-    "p2": -0.0866,
+    "horizon_pct_used": 197.8,
+    "p1": -0.2916,
+    "p2": -0.1458,
     "p3": null,
-    "move_r": -0.26,
+    "move_r": -0.437,
     "mfe_r": 2.881,
-    "mae_r": -0.26
+    "mae_r": -0.614
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 76.19999694824219,
-  "_mae": -6.8699951171875,
+  "_mae": -16.229995727539062,
   "_max_p1": 1.9206048380149254,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": "2026-08-21",
   "_first_t2_ts": null,
-  "days_elapsed": 84,
-  "tau": 1.8667,
+  "days_elapsed": 89,
+  "tau": 1.9778,
   "closed": true,
   "outcome": "T1_HIT"
 }

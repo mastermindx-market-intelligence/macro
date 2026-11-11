@@ -1,175 +1,164 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-04",
-  "generated_at": "2026-11-05T15:26:45.578125+00:00",
+  "as_of": "2026-11-10",
+  "generated_at": "2026-11-11T14:50:05.536493+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-11-04-EQIX-20261105152645-1",
-      "ticker": "EQIX",
-      "name": "Equinix Inc",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The constructive lean rests on the shipped selection ordering and an unblocked entry after a daily turn, not on the board rank predicting returns. Conviction stays low because the weekly trend is mixed and contracting liquidity taxes the setup.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.72; entry unblocked",
-        "Price above 50DMA and 200DMA; MACD positive",
-        "Weekly timeframe has not turned; macro-risk elevated"
-      ],
-      "dissent": "The daily bounce may fail inside a trendless weekly structure, particularly if tighter liquidity pressures rate-sensitive real estate.",
-      "falsifier": {
-        "text": "EQIX falls back below both its 50-day and 200-day averages while daily momentum turns negative.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "EQIX",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-11-04-SKY-20261105152645-2",
-      "ticker": "SKY",
-      "name": "Champion Homes, Inc.",
+      "id": "2026-11-10-AMZN-20261111145005-1",
+      "ticker": "AMZN",
+      "name": "Amazon.Com Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The deterministic verdict finds no clear edge, while the risk reshape says not to chase a strong but extended move. Momentum remains intact, so extension and the prior left-translated cycle are insufficient grounds for a relative short.",
+      "horizon_d": 20,
+      "thesis": "The daily bottoming setup and positive trend measures are offset by a mixed weekly regime, left-translated prior cycle and contracting liquidity. The validated macro-risk and crowded-sector controls support watching rather than extrapolating the board rank into expected outperformance.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Entry axis: z -0.27; extension present",
-        "RSI 70 and only 1.3% below the 52-week high",
-        "Above 50DMA and 200DMA; MACD positive",
-        "Prior cycle was left-translated"
+        "Above 50-day and 200-day averages; MACD positive",
+        "Weekly timeframe has not turned; prior cycle was left-translated",
+        "Consumer Discretionary basket crowded and stretched",
+        "Accounting flag: watch"
       ],
-      "dissent": "A clean breakout could extend the prevailing momentum and produce meaningful S&P 500 outperformance despite the stretched entry.",
+      "dissent": "Strong quality, earnings growth and a confirmed daily turn could sustain leadership despite the macro headwind.",
       "falsifier": {
-        "text": "SKY clears its prior high and sustains the breakout with positive momentum.",
+        "text": "The weekly timeframe turns bullish while price remains above both the 50-day and 200-day averages.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-25",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-04-LEA-20261105152645-3",
-      "ticker": "LEA",
-      "name": "Lear",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The constructive base-building verdict and unblocked entry support a tentative rebound lean, with the shipped selection ordering providing context rather than a return forecast. Low conviction reflects a still-weak larger trend and deteriorating profitability.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Entry axis: z 0.74; entry unblocked",
-        "Swing low formed and price recovered above the 10-day average",
-        "Price remains below 50DMA and 200DMA",
-        "Net-income growth -13.8%; quality axis z -0.65"
-      ],
-      "dissent": "The apparent bottom may be only a countertrend bounce because LEA remains below both major moving averages with thin margins and falling earnings.",
-      "falsifier": {
-        "text": "LEA breaks below the identified 116.57 cycle low instead of reclaiming its 50-day average.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "LEA",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-11-04-HTO-20261105152645-4",
-      "ticker": "HTO",
-      "name": "H2O America",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The base-building verdict, unblocked entry, and validated insider leg support a modest constructive lean without treating the overall rank as predictive. Accounting-quality concerns and the unconfirmed weekly turn keep conviction low.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Insider leg: validated, z 0.94",
-        "Entry axis: z 0.67; entry unblocked",
-        "Above 50DMA and 200DMA; MACD positive",
-        "Quality axis z -0.55; accounting flagged watch"
-      ],
-      "dissent": "Weak quality and substantial long-term debt could overwhelm the nascent turn, especially while liquidity is contracting.",
-      "falsifier": {
-        "text": "HTO loses both its 50-day and 200-day averages as MACD turns negative.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "HTO",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-11-04-WELL-20261105152645-5",
-      "ticker": "WELL",
-      "name": "Welltower Inc",
+      "id": "2026-11-10-UBER-20261111145005-2",
+      "ticker": "UBER",
+      "name": "Uber Technologies Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The profile calls this base-building, but its neutral band and risk controls argue for observation rather than a directional bet near the high. The intact uptrend prevents a bearish lean based only on late-cycle and entry concerns.",
+      "thesis": "The daily turn is improving, but UBER remains below its 200-day average and lacks a confirmed weekly trend. The validated risk reshape\u2014mixed regime, contracting liquidity and accounting watch\u2014does not support a relative directional call yet.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base; band neutral",
-        "Only 1.2% below the 52-week high",
-        "Above 50DMA and 200DMA; MACD positive",
-        "Prior cycle left-translated; investor phase late",
-        "Quality axis z -0.31; accounting flagged watch"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily swing low and rising 10-day average",
+        "Below 200-day average by 3.8%",
+        "Momentum context z-score: -1.34",
+        "Accounting flag: watch"
       ],
-      "dissent": "Strong momentum and defensive low-beta characteristics could carry WELL decisively above its high and ahead of the S&P 500.",
+      "dissent": "Positive MACD, improving short-term price action and strong cash generation could mark a durable recovery before the weekly signal confirms.",
       "falsifier": {
-        "text": "WELL breaks to a sustained new high while remaining above its rising 50-day average.",
+        "text": "Price recaptures and holds above the 200-day average as the weekly timeframe turns bullish.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-04-APPF-20261105152645-6",
-      "ticker": "APPF",
-      "name": "AppFolio",
+      "id": "2026-11-10-TTWO-20261111145005-3",
+      "ticker": "TTWO",
+      "name": "Take Two Interactive Softwre",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The rebound above both major averages argues against a bearish lean, while the mixed weekly picture, left-translated prior cycle and weak sector tape prevent a constructive one. The sector and macro risk controls outweigh any inference from its unvalidated cross-sectional rank.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Weekly timeframe has not turned",
+        "Prior cycle was left-translated",
+        "Communication Services equal-weight basket below long-term trend"
+      ],
+      "dissent": "The positive daily turn and clean accounting flag could develop into sustained relative strength if the broader timeframe confirms.",
+      "falsifier": {
+        "text": "The weekly timeframe turns bullish while the Communication Services basket recovers its long-term trend.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-10-CNMD-20261111145005-4",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 15,
-      "thesis": "The validated extension brake and blocked entry say not to chase, but the bullish weekly alignment and intact momentum make a relative short unjustified. This is therefore a neutral watch rather than a constructive or cautious call.",
+      "thesis": "Price strength and the daily bottoming signal remain intact, so extension alone is not grounds for a short. However, the mixed weekly regime, left-translated cycle, lottery-spike entry flag and sharply weaker earnings keep the relative outlook indeterminate.",
       "evidence": [
-        "Verdict: Extended \u2014 wait for a pullback",
-        "Entry axis: z -2.22 and blocked",
-        "Cycle blocked; 29.0% above 200DMA",
-        "Bigger picture bullish; above 50DMA and 200DMA",
-        "Quality axis z 1.54; accounting clean"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Weekly timeframe has not turned",
+        "Entry axis includes lottery-spike",
+        "Net-income growth: -64.4%"
       ],
-      "dissent": "The with-trend buy-zone signal and high quality could sustain momentum without offering the anticipated pullback.",
+      "dissent": "The strong recovery above both moving averages and positive revisions could persist despite weak reported earnings.",
       "falsifier": {
-        "text": "APPF consolidates without losing its 50-day average and then resumes to a sustained new high.",
+        "text": "The weekly timeframe turns bullish without price losing the 50-day average.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-25",
-      "engine_verdict": "Extended \u2014 wait for a pullback"
+      "check_by": "2026-12-01",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-10-ABNB-20261111145005-5",
+      "ticker": "ABNB",
+      "name": "Airbnb Inc Class A",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "ABNB has the strongest trend alignment here, but the validated extension and macro-risk brakes argue against chasing it near its high. Because momentum remains intact and the caution is primarily crowding and extension\u2014not a bearish trend signal\u2014the accountable stance is neutral rather than short.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh Buy; daily and weekly trends aligned bullish",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Entry axis weakened by extension and distance above 200-day average",
+        "Broad tape stressed; Consumer Discretionary basket crowded and stretched"
+      ],
+      "dissent": "High quality, strong cash generation and aligned daily-weekly momentum could drive continued outperformance despite an extended entry.",
+      "falsifier": {
+        "text": "ABNB materially outperforms the S&P 500 while preserving its bullish weekly trend over the next 20 trading days.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-10-JAZZ-20261111145005-6",
+      "ticker": "JAZZ",
+      "name": "Jazz Pharmaceuticals",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "JAZZ is a leader with positive momentum, so its stretched daily phase is not enough to justify a bearish lean. The accounting warning, negative profitability and late investor phase nevertheless activate the risk controls and block a constructive call until quality improves or the setup resets.",
+      "evidence": [
+        "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "Above 50-day and 200-day averages; MACD positive",
+        "Daily phase: stretched; investor phase: late",
+        "Quality axis accounting flag: warn",
+        "Net margin: -8.3%; net-income growth: -163.6%"
+      ],
+      "dissent": "Positive revisions, right-translated momentum and strong operating cash flow could keep leadership intact despite weak reported earnings.",
+      "falsifier": {
+        "text": "JAZZ sustains relative outperformance versus the S&P 500 while the weekly trend turns bullish and accounting quality improves.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-01",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
