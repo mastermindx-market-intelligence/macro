@@ -233,3 +233,41 @@ def test_positioning_full_short_flow_is_unchanged():
 ], ids=["short_history", "no_z", "zero_recent"])
 def test_positioning_qualified_short_flow_carries_state(sig, state):
     assert sf._positioning("AAA", _F, None, None, sig)["short_flow"]["state"] == state
+
+
+
+def test_short_flow_state_disclosure_node():
+    """Execute the shipped short-flow JS block; Node absence is explicit."""
+    import shutil
+    import subprocess
+    from pathlib import Path
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('Node required for actual short-flow block rendering')
+    subprocess.run([node, str(Path(__file__).with_name('test_short_flow_disclosure.cjs'))], check=True)
+
+
+@pytest.mark.parametrize('n,zero', [(8, False), (25, True), (25, False)])
+def test_native_short_flow_producer_to_disclosure(tmp_path, n, zero):
+    import json
+    import shutil
+    import subprocess
+    from pathlib import Path
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('Node required for producer-to-render qualification')
+    panel = _panel(n)
+    if zero:
+        panel['short_vol'] = 0.
+    panel['short_ratio'] = panel['short_vol'] / panel['total_vol']
+    panel_path = tmp_path / 'panel.parquet'
+    panel.to_parquet(panel_path)
+    panel, panel_status = sv.panel_state(panel_path)
+    assert panel_status == sv.OBSERVED
+    sig = sv._ticker_signal(panel, recent=5, baseline=20)
+    block = sf._positioning('AAA', _F, None, None, sig)
+    expected = 'partial' if n < 20 else 'observed_zero' if zero else None
+    assert block['short_flow'].get('state') == expected
+    file = tmp_path / 'positioning.json'
+    file.write_text(json.dumps(block))
+    subprocess.run([node, str(Path(__file__).with_name('test_short_flow_disclosure.cjs')), str(file)], check=True)
