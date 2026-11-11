@@ -57,7 +57,7 @@ from engine.options_hub import (
 from engine.levels_publish import levels_payload_from_gex, LEVELS_PREFIX
 from engine.vex_engine import compute_vex
 from engine.moves_engine import moves_payload, per_ticker_calibration
-from lib.nyse_calendar import sessions_between
+from lib.nyse_calendar import expected_last_session, is_session, sessions_between
 
 try:
     from engine.grading_stats import wilson_ci as _wilson_ci
@@ -729,6 +729,185 @@ def build_cross_root(
     hot = compute_hot_contracts(eod_frames, oi_prev_frames, asof)
 
     return oi_movers, hot
+
+
+# --------------------------------------------------------------------------- #
+# MOVES input provenance + current-object publish law (pure/testable)
+# --------------------------------------------------------------------------- #
+
+def _positive_finite(value) -> float | None:
+    if isinstance(value, (bool, np.bool_)):
+        return None
+    try:
+        num = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return num if np.isfinite(num) and num > 0 else None
+
+
+def resolve_moves_inputs(
+    root: str,
+    asof: str,
+    gex_payload: dict,
+    vol_payload: dict,
+    *,
+    snapshot_loader=None,
+    snapshot_asof_ceiling: str | None = None,
+) -> dict:
+    """Resolve one CURRENT same-source ThetaData spot/ATM-IV pair for ``moves/v1``.
+
+    The settled EOD store remains primary. When that store has not accrued usable
+    greeks for a root, fall back to ThetaData's EXISTING first-order full-chain
+    snapshot endpoint — never another vendor and never a second options authority.
+    Snapshot rows are accepted only when their own vendor session is not older than
+    ``asof`` and not newer than the latest settled exchange session. Spot + IV always
+    come from the SAME accepted plane.
+    """
+    theta_spot = _positive_finite((gex_payload or {}).get("spot_ref"))
+    theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
+    if theta_spot is not None and theta_iv is not None:
+        return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod", "asof": asof}
+
+    try:
+        floor_session = _date.fromisoformat(asof)
+        settled_ceiling = expected_last_session()
+        ceiling_session = (settled_ceiling if snapshot_asof_ceiling is None
+                           else _date.fromisoformat(snapshot_asof_ceiling))
+        # A replay bound may narrow, but never overrule, the settled-session limit.
+        ceiling_session = min(ceiling_session, settled_ceiling)
+    except (TypeError, ValueError):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    if ceiling_session < floor_session or not is_session(floor_session):
+        # An explicit historical ceiling is a bound, never permission to widen it.
+        # An invalid source day cannot become a valid minimum for a later snapshot.
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+    if snapshot_loader is None:
+        from collectors.thetadata import snapshot_greeks
+        snapshot_loader = lambda symbol: snapshot_greeks(symbol, order="first")
+    try:
+        snap = snapshot_loader(root)
+    except Exception as exc:  # noqa: BLE001 — snapshot fallback is fail-soft per root
+        log.warning("options_hub_builder: ThetaData snapshot fallback %s failed: %s", root, exc)
+        snap = None
+    if not isinstance(snap, pd.DataFrame) or snap.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+    frame = snap.copy()
+    if not frame.columns.is_unique or not {"root", "snapshot_ts", "underlying_price", "expiration", "strike", "implied_vol"}.issubset(frame.columns):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    frame = frame[frame["root"].astype(str).str.upper() == root.upper()].copy()
+    if frame.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    try:
+        raw_stamp = frame["snapshot_ts"]
+        # A number is not a vendor timestamp: pandas would otherwise interpret it
+        # as nanoseconds since epoch and could manufacture an apparently valid day.
+        if any(pd.api.types.is_number(value) for value in raw_stamp):
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        stamp = pd.to_datetime(raw_stamp, errors="coerce")
+        # Keep the collector's date convention; do not coerce mixed clocks to UTC
+        # or silently discard malformed same-root rows from the accepted chain.
+        if stamp.isna().any():
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        snapshot_days = stamp.dt.date
+        snapshot_session = snapshot_days.max()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    snapshot_asof = str(snapshot_session)
+    # A later settled session may be accepted within the original floor/ceiling.
+    # A weekend, exchange holiday or unsettled future day is never a source session.
+    if (not is_session(snapshot_session)
+            or snapshot_session < floor_session or snapshot_session > ceiling_session):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    frame = frame[snapshot_days == snapshot_session].copy()
+    if frame.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+    try:
+        # Reject a malformed selected-session chain before either calculation.
+        # Spot and canonical IV must use the same qualified numeric prices.
+        spot_values = frame["underlying_price"].map(_positive_finite)
+        if spot_values.isna().any():
+            return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+        spot = _positive_finite(spot_values.median())
+    except (TypeError, ValueError, OverflowError):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    if spot is None:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    frame["underlying_price"] = spot_values
+
+    # Reuse compute_vol as the ONE ATM-IV definition. Snapshot rows have the same
+    # expiration/strike/implied_vol/underlying_price schema; adding the accepted
+    # session date lets the canonical term interpolation run without any duplicate
+    # IV math. RV/history stay null because this one-session fallback is for EM only.
+    frame["date"] = snapshot_asof
+    try:
+        snapshot_vol = compute_vol(frame, pd.Series(dtype=float), snapshot_asof, root)
+    except Exception as exc:  # noqa: BLE001 — malformed snapshots clear stale moves, never preserve them
+        log.warning("options_hub_builder: ThetaData snapshot normalize %s failed: %s", root, exc)
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    atm_iv = _positive_finite(snapshot_vol.get("atm_iv"))
+    if atm_iv is None:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    return {"spot": spot, "atm_iv_pct": atm_iv, "input_source": "thetadata_snapshot", "asof": snapshot_asof}
+
+
+def _moves_publishable(payload: dict, root: str, minimum_asof: str) -> bool:
+    """Publish a current-or-newer moves object, including an explicit current null.
+
+    The snapshot fallback can be a later settled session than the EOD store. It is
+    lawful to advance `moves/v1` to that vendor-stamped session; it is never lawful to
+    publish a payload older than the settled source date. A current explicit null still
+    clears an older R2 band instead of letting stale expectations survive indefinitely.
+    Invalid or not-yet-settled source dates remain unpublishable even when the
+    resolver returns no inputs and the payload therefore carries an explicit null.
+    """
+    payload_asof = payload.get("asof") if isinstance(payload, dict) else None
+    try:
+        payload_session = _date.fromisoformat(payload_asof) if isinstance(payload_asof, str) else None
+        minimum_session = _date.fromisoformat(minimum_asof)
+    except (TypeError, ValueError):
+        return False
+    return bool(
+        isinstance(payload, dict)
+        and payload.get("schema") == "options_hub.moves/v1"
+        and str(payload.get("root") or "").upper() == root.upper()
+        and payload_session is not None
+        and payload_session >= minimum_session
+        and payload_session <= expected_last_session()
+        and is_session(minimum_session)
+        and is_session(payload_session)
+    )
+
+
+def _build_moves_payload(
+    root: str,
+    asof: str,
+    gex_payload: dict,
+    vol_payload: dict,
+    *,
+    calibration: dict | None,
+    learned_band_mult: dict | None,
+    regime: str | None,
+    snapshot_loader=None,
+    snapshot_asof_ceiling: str | None = None,
+) -> dict:
+    """Build the current moves payload from the best truthful same-session input pair."""
+    source = resolve_moves_inputs(
+        root, asof, gex_payload, vol_payload, snapshot_loader=snapshot_loader,
+        snapshot_asof_ceiling=snapshot_asof_ceiling,
+    )
+    payload_asof = source.get("asof") or asof
+    payload_regime = regime if payload_asof == asof else None
+    payload = moves_payload(
+        root, payload_asof, source["spot"], source["atm_iv_pct"],
+        calibration=calibration, learned_band_mult=learned_band_mult, regime=payload_regime,
+        input_source=source["input_source"],
+    )
+    if payload.get("expected_move") is None:
+        payload["no_data_reason"] = "no_current_spot_iv_pair"
+    return payload
 
 
 # --------------------------------------------------------------------------- #
@@ -1532,23 +1711,34 @@ def main() -> None:
             # The move the options are pricing today (spot + ATM IV) paired with how
             # often a band built the SAME way has actually contained the next session's
             # range for this ticker (reconstructed grades → per_ticker_calibration).
-            # Sibling of vol/gex/vex in the options_hub plane. Written locally always;
-            # uploaded only when an expected move could be built AND the same completeness
-            # guard is satisfied (gex_publish). Calibration is null until the Track Record
-            # has graded this root — honest "no graded history yet". INERT per root.
+            # Sibling of vol/gex/vex in the options_hub plane. The band needs only a
+            # same-session spot + ATM-IV pair, not OI/GEX completeness, so it has its OWN
+            # publication law. The settled ThetaData store is primary; the EXISTING
+            # ThetaData first-order full-chain snapshot is its same-authority fallback.
+            # A current payload is uploaded even when expected_move is null, clearing any
+            # stale R2 band instead of leaving an old expectation alive indefinitely.
+            # Calibration is null until the Track Record has graded this root.
             try:
                 _regime = None
                 if isinstance(levels_payload, dict) and isinstance(levels_payload.get("regime"), dict):
                     _regime = levels_payload["regime"].get("label")
-                _moves = moves_payload(
-                    root, asof, gex_payload.get("spot_ref"), vol_payload.get("atm_iv"),
+                _moves = _build_moves_payload(
+                    root, asof, gex_payload, vol_payload,
                     calibration=per_ticker_calibration(
                         moves_grades_by_root.get(root, []), ci_fn=_wilson_ci),
                     learned_band_mult=moves_learned_mult, regime=_regime,
+                    # An explicit --date is a historical replay boundary: never let a
+                    # current snapshot silently rewrite that requested historical session.
+                    snapshot_asof_ceiling=(asof if args.date else None),
                 )
+                if _moves.get("input_source") == "thetadata_snapshot":
+                    log.info(
+                        "options_hub_builder: moves %s using current ThetaData snapshot fallback",
+                        root,
+                    )
                 moves_path = out_dir / "moves" / f"{root}.json"
                 _write_json(moves_path, _moves)
-                if s3 and bucket and gex_publish and _moves.get("expected_move"):
+                if s3 and bucket and _moves_publishable(_moves, root, asof):
                     _upload_r2(s3, bucket, moves_path, f"{R2_PREFIX}moves/{root}.json")
             except Exception as _mv_err:  # noqa: BLE001
                 log.warning(
