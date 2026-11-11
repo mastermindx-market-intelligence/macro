@@ -51,7 +51,8 @@ if __name__ == "__main__":
     else:
         check_config_paths(_cfg)
 
-sys.path.insert(0, str(ROOT))
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))                         # R31.6(b)
 
 from engine import rotation_core_v2 as v2  # noqa: E402
 from engine import rotation_core_evaluation as rc  # noqa: E402
@@ -97,6 +98,24 @@ def plant(cfg: dict) -> None:
     kind = cfg.get("plant")
     if not kind:
         return
+    if kind == "bypass_worktree_check":                  # R31.1(d): show what START records when (c) is skipped
+        run._check_worktree_against_head = lambda *a, **k: None
+        return
+    if kind == "spy_io":                                 # R31.2: record io_check and hashing order
+        log = Path(cfg["out"])
+        real_io, real_sha = v2.io_check, v2.sha256_file
+
+        def io_spy(path, k):
+            with open(log, "a") as f:
+                f.write(f"io {k} {path}\n")
+            return real_io(path, k)
+
+        def sha_spy(path):
+            with open(log, "a") as f:
+                f.write(f"sha {path}\n")
+            return real_sha(path)
+        v2.io_check, v2.sha256_file = io_spy, sha_spy
+        return
     origin = Path(cfg["origin"])
     orig = run.pre1998_stats
 
@@ -139,6 +158,14 @@ def real_hooks(cfg: dict) -> int:
         calls["engine_check_is_real"] = k.get("engine_check") is v2.check_engine_commit
         return real_s1(*a, **k)
     v2.host_checks, v2.stage1_release = host_spy, s1_spy
+    real_io = v2.io_check
+    calls["input_reads"] = 0
+
+    def io_spy(path, kind):
+        if kind == "read":
+            calls["input_reads"] += 1                    # R31.4: no input file is opened in this mode
+        return real_io(path, kind)
+    v2.io_check = io_spy
     # a wholly-REAL supplied context: the real fields, with only the stage-1 release path replaced by an absent one
     real = run._real_ctx()
     kw = {k: getattr(real, k) for k in run.CTX_FIELDS}

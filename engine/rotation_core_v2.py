@@ -59,8 +59,10 @@ def _committed_clean(path: Path, root: Path = None) -> bool:
         _git("ls-files", "--error-unmatch", rel, root=root)
     except subprocess.CalledProcessError:
         return False
-    out = _git("status", "--porcelain", "--", rel, root=root, check=False).stdout
-    return out.strip() == b""
+    st = _git("status", "--porcelain", "--", rel, root=root, check=False)
+    if st.returncode != 0:
+        raise SealedRefusal("refused: git status failed")
+    return st.stdout.strip() == b""
 
 
 # R29.2: inside a run, every repository file the runner reads is read as a blob at the fetched head of its repository.
@@ -93,10 +95,19 @@ def read_repo_bytes(path, root=None) -> bytes | None:
     return blob_at(sha, rel, r)
 
 
-def _load_release(path: Path, root: Path = None) -> dict | None:
+def load_release_blob(path: Path, root: Path = None) -> tuple:
+    """R31.1(a): the release document AND the sha256 of the exact blob bytes parsed (None, None if absent)."""
     import json
     b = read_repo_bytes(path, root)
-    return None if b is None else json.loads(b)
+    return (None, None) if b is None else (json.loads(b), sha256_bytes(b))
+
+
+def _load_release(path: Path, root: Path = None) -> dict | None:
+    """The release document, carrying `_blob_sha256` (the hash START records, R31.1(a))."""
+    doc, sha = load_release_blob(path, root)
+    if doc is not None:
+        doc["_blob_sha256"] = sha
+    return doc
 
 
 SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection_rerun.json"   # R15: rerun pins the setting
@@ -184,37 +195,51 @@ def check_runtime_env() -> None:
         raise SealedRefusal(f"refused: {OBJ_BASE} is absent")
 
 
-# R27.2: repository-scope config ALLOWLIST (common .git/config and the worktree config), each with its reason.
+# R27.2/R29.4/R30.4: repository-scope config ALLOWLIST of (key, value) pairs, each with its reason; keys and values
+# are full-matched separately on `git config --list -z` output.
+SAFE_VALUE = r"[^\n!\-][^\n]*"            # no newline, no leading `!` or `-`
 REPO_CONFIG_ALLOWED = [
-    (r"core\.(repositoryformatversion|filemode|bare|logallrefupdates|ignorecase|precomposeunicode)", "git defaults"),
-    (r"extensions\.worktreeconfig", "per-worktree config (this repository uses worktrees)"),
-    (r"remote\.origin\.url", "the pinned remote (its value is checked by check_remote_identity)"),
-    (r"remote\.origin\.fetch=(\+refs/heads/\*:refs/remotes/origin/\*|\+refs/heads/main:refs/remotes/origin/main)$",
-     "the standard refspec, or this checkout's single-branch one (fetches use --refmap= anyway)"),
-    (r"remote\.origin\.promisor=true$", "this checkout is a partial clone of origin"),
-    (r"remote\.origin\.partialclonefilter=blob:none$", "blob-less partial clone"),
-    (r"extensions\.partialclone=origin$", "partial-clone extension, only for origin"),
-    (r"branch\.[^=]+\.(remote|merge)", "upstream tracking of local branches"),
-    (r"branch\.[^=]+\.(t3-merge-base|t3-merge-base-ref|gh-merge-base)", "T3 / gh branch metadata (names only)"),
-    (r"user\.(name|email)", "commit identity"),
-    (r"core\.(sparsecheckout|sparsecheckoutcone)", "the worktree is a sparse checkout"),
+    (r"core\.repositoryformatversion", r"0|1", "the two standard repository formats (this checkout: 1)"),
+    (r"core\.filemode", r"true", "this checkout's value"),
+    (r"core\.bare", r"false", "a working checkout"),
+    (r"core\.logallrefupdates", r"true", "this checkout's value"),
+    (r"core\.ignorecase", r"false", "the Linux default"),
+    (r"core\.precomposeunicode", r"false", "the Linux default"),
+    (r"extensions\.worktreeconfig", r"true", "per-worktree config (this repository uses worktrees)"),
+    (r"remote\.origin\.url", r"https://github\.com/mastermindx-market-intelligence/macro\.git",
+     "the pinned remote (also checked by check_remote_identity)"),
+    (r"remote\.origin\.fetch", r"\+refs/heads/\*:refs/remotes/origin/\*|\+refs/heads/main:refs/remotes/origin/main",
+     "the standard refspec, or this checkout's single-branch one (fetches use --refmap= anyway; accepted by R30.4)"),
+    (r"remote\.origin\.promisor", r"true", "this checkout is a partial clone of origin"),
+    (r"remote\.origin\.partialclonefilter", r"blob:none", "blob-less partial clone"),
+    (r"extensions\.partialclone", r"origin", "partial-clone extension, only for origin"),
+    (r"branch\.[^\n=]+\.(remote|merge)", SAFE_VALUE, "upstream tracking of local branches"),
+    (r"branch\.[^\n=]+\.(t3-merge-base|t3-merge-base-ref|gh-merge-base)", SAFE_VALUE, "T3 / gh branch metadata"),
+    (r"user\.(name|email)", SAFE_VALUE, "commit identity"),
+    (r"core\.sparsecheckout", r"true", "the worktree is a sparse checkout"),
+    (r"core\.sparsecheckoutcone", r"true", "cone-mode sparse checkout"),
 ]
 
 
-def check_repo_config(root: Path = None) -> None:
+def check_repo_config(root: Path, remote_url: str) -> None:
     import re
-    root = Path(root or ROOT)
-    pats = [re.compile(p if p.endswith("$") else p + "=") for p, _ in REPO_CONFIG_ALLOWED]
+    root = Path(root)
+    pats = [(re.compile(k), re.compile(v), why) for k, v, why in REPO_CONFIG_ALLOWED]
     for scope in ("--local", "--worktree"):
-        r = _git("config", scope, "--list", root=root, check=False)
+        r = _git("config", scope, "--list", "-z", root=root, check=False)
         if r.returncode != 0:
             wt = _git("config", "--local", "--get", "extensions.worktreeconfig", root=root, check=False)
             if scope == "--worktree" and wt.returncode == 1:
                 continue                                     # no worktree config extension in this repository
             raise SealedRefusal(f"refused: reading git config {scope} failed")
-        for ln in r.stdout.decode(errors="replace").splitlines():
-            if not any(p.match(ln) for p in pats):
-                raise SealedRefusal(f"refused: repository-scope git config key {ln.split('=', 1)[0]} is not allowed")
+        for rec in r.stdout.decode(errors="replace").split("\0"):
+            if not rec:
+                continue
+            key, _, val = rec.partition("\n")
+            if key == "remote.origin.url" and val == remote_url:
+                continue                                     # a test repository's own pinned local remote
+            if not any(kp.fullmatch(key) and vp.fullmatch(val) for kp, vp, _ in pats):
+                raise SealedRefusal(f"refused: repository-scope git config {key} is not allowed with that value")
 
 
 def check_gh_socket() -> None:
@@ -314,7 +339,10 @@ def tool_versions() -> dict:
     if not _TOOL_VERSIONS:
         for n in ("git", "gh"):
             p = tool(n)
-            v = subprocess.run([p, "--version"], capture_output=True, env=child_env()).stdout.decode().splitlines()
+            r = subprocess.run([p, "--version"], capture_output=True, env=child_env())
+            if r.returncode != 0:
+                raise SealedRefusal(f"refused: {n} --version failed")
+            v = r.stdout.decode().splitlines()
             _TOOL_VERSIONS[n] = {"path": p, "version": v[0] if v else ""}
     return dict(_TOOL_VERSIONS)
 
@@ -379,9 +407,10 @@ def check_import_environment(root: Path = ROOT, commit: str | None = None) -> No
         if rel is None:
             raise SealedRefusal(f"refused: covered module {name} imported from outside the repository")
         if commit is not None:
-            want = _git("rev-parse", f"{commit}:{rel}", check=False, root=root).stdout.decode().strip()
-            got = _git("hash-object", str(rel), check=False, root=root).stdout.decode().strip()
-            if not want or want != got:
+            w = _git("rev-parse", f"{commit}:{rel}", check=False, root=root)
+            h = _git("hash-object", "--no-filters", str(rel), check=False, root=root)
+            want, got = w.stdout.decode().strip(), h.stdout.decode().strip()
+            if w.returncode != 0 or h.returncode != 0 or not want or want != got:
                 raise SealedRefusal(f"refused: covered module {name} differs from the engine commit")
 
 
@@ -420,7 +449,7 @@ PYCACHE_PREFIX = "/dev/shm/rotation_core_v2_pycache"
 
 
 def check_bytecode_flags(require_empty: bool = True) -> None:
-    """R29.3: run as `python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache`; at start the prefix directory
+    """R29.3: run as `python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache`; at start the prefix directory
     is absent or empty (so every module is compiled from its source)."""
     import os, sys
     if not sys.dont_write_bytecode or getattr(sys, "pycache_prefix", None) != PYCACHE_PREFIX:
@@ -442,6 +471,21 @@ def check_no_bytecode_modules(root: Path = ROOT) -> None:
         if f.endswith((".pyc", ".pyo")) or isinstance(getattr(mod, "__loader__", None), m.SourcelessFileLoader) \
                 or (spec is not None and spec.cached and os.path.isfile(spec.cached)):
             raise SealedRefusal(f"refused: module {name} was loaded from bytecode")
+
+
+def refuse_shadowed_modules(root: Path = ROOT) -> None:
+    """R31.6(c): no loaded module whose top-level name is a standard-library or installed-package name has its file
+    under the repository root (the root of the running code)."""
+    import os, sys
+    import importlib.metadata as md
+    protected = set(sys.stdlib_module_names) | set(md.packages_distributions())
+    rr = os.path.realpath(root)
+    for name, mod in list(sys.modules.items()):
+        f = getattr(mod, "__file__", None)
+        if not f or name == "__main__" or name.split(".")[0] not in protected:
+            continue
+        if os.path.realpath(f).startswith(rr + os.sep):
+            raise SealedRefusal(f"refused: module {name} was loaded from the repository directory (R31.6)")
 
 
 def check_engine_commit(commit: str, root: Path = ROOT) -> None:
@@ -470,7 +514,7 @@ def _config_regexp(pattern: str, root) -> list:
     return r.stdout.decode(errors="replace").splitlines()
 
 
-def check_remote_identity(root: Path = ROOT, url: str = REMOTE_URL) -> None:
+def check_remote_identity(root: Path, url: str) -> None:
     """R23.3: origin's fetch and push URLs equal the pinned URL; no url.*.insteadOf / pushInsteadOf at any level;
     no GIT_CONFIG* variable in the environment."""
     import os
@@ -492,12 +536,12 @@ def check_remote_identity(root: Path = ROOT, url: str = REMOTE_URL) -> None:
         if (key, val) not in CREDENTIAL_ALLOWED:
             raise SealedRefusal(f"refused: git credential setting {key} is not the host's gh helper")
     for args in (("remote", "get-url", REMOTE), ("remote", "get-url", "--push", REMOTE)):
-        got = _git(*args, check=False, root=root).stdout.decode().strip()
-        if got != url:
+        r = _git(*args, check=False, root=root)
+        if r.returncode != 0 or r.stdout.decode().strip() != url:
             raise SealedRefusal("refused: the origin URL is not the pinned repository")
 
 
-def fetch_remote(root: Path = ROOT, branch: str = BRANCH, url: str = REMOTE_URL) -> str:
+def fetch_remote(root: Path, branch: str, url: str) -> str:
     """R20.5/R22.2/R23.3: fails closed; NOT forced (a non-fast-forward remote refuses); remote identity checked;
     returns the sha just fetched. Every remote check takes this sha, never a stale ref."""
     check_remote_identity(root, url)
@@ -509,19 +553,32 @@ def fetch_remote(root: Path = ROOT, branch: str = BRANCH, url: str = REMOTE_URL)
     return _git("rev-parse", f"refs/remotes/{REMOTE}/{branch}", root=root).stdout.decode().strip()
 
 
-def on_remote(path: Path, remote_sha: str, root: Path = ROOT) -> None:
+def is_ancestor(a: str, b: str, root) -> bool:
+    """R30.2: `merge-base --is-ancestor` is three-valued: 0 yes, 1 no, anything else an error that refuses."""
+    r = _git("merge-base", "--is-ancestor", a, b, check=False, root=root)
+    if r.returncode == 0:
+        return True
+    if r.returncode == 1:
+        return False
+    raise SealedRefusal("refused: an ancestry check failed (not read as 'not an ancestor')")
+
+
+def on_remote(path: Path, remote_sha: str, root: Path) -> None:
     """S5: the commit that last touched `path` (and the file content) must be contained in the fetched remote sha."""
     rel = str(Path(path).resolve().relative_to(Path(root).resolve()))
-    c = _git("log", "-1", "--format=%H", "--", rel, check=False, root=root).stdout.decode().strip()
-    if not c or _git("merge-base", "--is-ancestor", c, remote_sha, check=False, root=root).returncode != 0:
+    lg = _git("log", "-1", "--format=%H", "--", rel, check=False, root=root)
+    if lg.returncode != 0:
+        raise SealedRefusal(f"refused: cannot read the history of {rel}")
+    c = lg.stdout.decode().strip()
+    if not c or not is_ancestor(c, remote_sha, root):
         raise SealedRefusal(f"refused: {rel} is not committed on the remote branch")
     check_read_flags(root, [rel])                         # R29.2: the runner reads the blob, never the working tree
     if blob_at(remote_sha, rel, root) is None:
         raise SealedRefusal(f"refused: {rel} is not in the remote branch's tree")
 
 
-def commit_on_remote(commit: str, remote_sha: str, root: Path = ROOT) -> None:
-    if _git("merge-base", "--is-ancestor", commit, remote_sha, check=False, root=root).returncode != 0:
+def commit_on_remote(commit: str, remote_sha: str, root: Path) -> None:
+    if not is_ancestor(commit, remote_sha, root):
         raise SealedRefusal(f"refused: commit {commit} is not contained in the remote branch")
 
 
@@ -544,22 +601,57 @@ def path_in_tree(sha: str, rel: str, root) -> bool:
 
 
 def _commits_touching(rel: str, sha: str, root, first_parent=False) -> list:
-    args = ["log", "--format=%H", "--reverse"] + (["--first-parent"] if first_parent else []) + [sha, "--", rel]
+    args = ["log", "--format=%H", "--reverse", "--full-history"] + (["--first-parent"] if first_parent else []) + \
+        [sha, "--", rel]
     out = _git(*args, check=False, root=root)
     if out.returncode != 0:
         raise SealedRefusal(f"refused: cannot read the history of {rel}")
     return out.stdout.decode().split()
 
 
-def file_versions(rel: str, remote_sha: str, root: Path = ROOT) -> list:
+def file_versions(rel: str, remote_sha: str, root: Path) -> list:
     """Every committed version of `rel` on the remote branch, oldest first: [(commit, bytes)]; a commit where the
     path is absent from the tree (a deletion) is skipped; a failed read of a present path refuses (R29.1(a))."""
     vs = []
-    for c in _commits_touching(rel, remote_sha, root):
+    for c in _commits_touching(rel, remote_sha, root, first_parent=True):      # R30.3: the branch's own history
         b = blob_at(c, rel, root)
         if b is not None:
             vs.append((c, b))
     return vs
+
+
+def check_no_merges(root, head: str, created: str, rels) -> None:
+    """R30.3: the branch is linear by construction (activity log: pushes only, each a fast-forward). Refuse if any
+    commit after the branch's creation commit up to the fetched head has more than one parent and touches the
+    ledger, a release file or the selection file."""
+    r = _git("rev-list", "--min-parents=2", "--full-history", f"{created}..{head}", "--", *rels, check=False, root=root)
+    if r.returncode != 0:
+        raise SealedRefusal("refused: cannot list the branch's history")
+    if r.stdout.strip():
+        raise SealedRefusal("refused: a merge commit on the branch touches the ledger, a release or the selection")
+
+
+def check_worktree_matches_head(root, head: str, rels) -> None:
+    """R31.1(c): before START (and in --preflight) the working-tree copy of each release and selection file equals the
+    blob at the fetched head, byte for byte (no filters); a file in only one of the two refuses."""
+    for rel in rels:
+        b = blob_at(head, rel, root)
+        p = Path(root) / rel
+        w = p.read_bytes() if p.is_file() else None
+        if b != w:
+            raise SealedRefusal(f"refused: the working-tree copy of {rel} differs from the committed blob at the "
+                                "fetched head")
+
+
+def release_docs(versions_by_file: dict) -> dict:
+    """sha256 of every committed version of every release file -> its document. The one mapping both `append`
+    (R31.1(b)) and `validate_ledger` use to decide whether a START names a committed release."""
+    import json
+    docs = {}
+    for name, vs in versions_by_file.items():
+        for _, b in vs:
+            docs[sha256_bytes(b)] = json.loads(b)
+    return docs
 
 
 def check_read_flags(root, rels) -> None:
@@ -590,7 +682,10 @@ def materialise(root, sha: str, rels) -> int:
         return 0
     batch = ("\n".join(sorted(oids)) + "\n").encode()
     chk = lambda: _git("cat-file", "--batch-check", input=batch, root=root, check=False)
-    missing = [ln.split()[0] for ln in chk().stdout.decode().splitlines() if ln.endswith(" missing")]
+    first = chk()
+    if first.returncode != 0:
+        raise SealedRefusal("refused: checking the object store failed")
+    missing = [ln.split()[0] for ln in first.stdout.decode().splitlines() if ln.endswith(" missing")]
     if missing:                                              # the only lazy fetch the runner allows
         _git("cat-file", "--batch", input=("\n".join(missing) + "\n").encode(), root=root, check=False,
              env={"GIT_NO_LAZY_FETCH": None})
@@ -659,7 +754,9 @@ def stage1_release(release: Path, inputs: dict | None = None, remote_sha: str | 
                    root: Path = None, selection: Path = None, engine_check=None) -> dict:
     """Committed stage-1 release, checked against the header, the selection rerun (commit, sha256, on the remote:
     R20.9), the engine commit and the manifest."""
-    root = Path(root or ROOT)
+    if root is None:
+        raise SealedRefusal("refused: the release repository root is required (R29.5)")
+    root = Path(root)
     if selection is None:
         raise SealedRefusal("refused: the selection result path is required")
     selection = Path(selection)
@@ -856,12 +953,9 @@ def validate_ledger(entries: list, versions_entries: list, release_docs: dict, r
 def check_release_history(versions_by_file: dict, entries: list) -> dict:
     """R20.1: every version of every release file on the remote must map to ledger START entries, or be listed as
     unused in a LATER version's `supersedes_unused_releases`. Returns sha256 -> document for all versions."""
-    import json
-    docs, started = {}, {e["release_sha256"] for e in entries if e["kind"] == "START"}
+    docs, started = release_docs(versions_by_file), {e["release_sha256"] for e in entries if e["kind"] == "START"}
     for name, vs in versions_by_file.items():
         shas = [sha256_bytes(b) for _, b in vs]
-        for (c, b), s in zip(vs, shas):
-            docs[s] = json.loads(b)
         for i, s in enumerate(shas[:-1]):
             later = [docs[x].get("supersedes_unused_releases", []) for x in shas[i + 1:]]
             if s not in started and not any(s in L for L in later):
@@ -900,10 +994,14 @@ class GitLedger:
     fetched remote head (the working tree is not touched), pushes it, and refuses to go on if the push fails. Only
     after a successful push is the local branch fast-forwarded. Starts only when the local HEAD equals the fetched
     remote head."""
-    def __init__(self, root: Path, path: Path, branch: str, remote_url: str, code_root: Path = ROOT, read_paths=()):
+    def __init__(self, root: Path, path: Path, branch: str, remote_url: str, code_root: Path, read_paths=(),
+                 release_paths=()):
         self.root, self.branch, self.remote_url, self.code_root = Path(root), branch, remote_url, Path(code_root)
         self.rel = str(Path(path).resolve().relative_to(self.root.resolve()))
         self.read_paths = [str(Path(p).resolve().relative_to(self.root.resolve())) for p in read_paths]
+        # R31.1(b): the release files a START may name (the runner always passes both; temporary test and rehearsal
+        # ledgers pass none and carry no release)
+        self.release_paths = [str(Path(p).resolve().relative_to(self.root.resolve())) for p in release_paths]
         self._seen = None                  # R29.1(b): the last ledger read in this invocation
         self.remote_sha = None
         self.last_commit = None
@@ -930,8 +1028,9 @@ class GitLedger:
     def commit_adding_entry(self, index: int) -> str | None:
         """R26.5: the first remote commit whose ledger holds entry `index`."""
         import json
-        for c, b in file_versions(self.rel, self.remote_sha, self.root):
-            if len(json.loads(b)["entries"]) > index:
+        for c in _commits_touching(self.rel, self.remote_sha, self.root, first_parent=True):   # R30.3
+            b = blob_at(c, self.rel, self.root)
+            if b is not None and len(json.loads(b)["entries"]) > index:
                 return c
         return None
 
@@ -971,12 +1070,18 @@ class GitLedger:
         verify_chain(cur)
         if precheck is not None:
             precheck(cur)
+        if entry["kind"] == "START" and self.release_paths:          # R31.1(b): the same mapping validate_ledger uses
+            docs = release_docs({r: file_versions(r, self.remote_sha, self.root) for r in self.release_paths})
+            if entry.get("release_sha256") not in docs:
+                raise SealedRefusal("refused: START names a release hash that is not a committed version of a release "
+                                    "file at the fetched head")
         if self.host_record is not None:
             entry = dict(entry, host=self.host_record)
         entry = dict(entry, phase_a_ast_sha256=_PHASE_A["ast_sha256"])
         e = dict(entry, index=len(cur), prev_chain_sha256=chain_hash(cur) if cur else None)
         if e["kind"] in RECORD_KINDS:                       # R26.3/R27.4: the environment again, right before a record
             check_import_environment(ROOT, self.engine_commit)   # location AND blob equality at the engine commit
+            refuse_shadowed_modules(ROOT)                    # R31.6(c)
             check_worktree_code(self.code_root)
             if _IO["mode"] is not None:                      # inside main, where the flags are enforced (R29.3)
                 check_bytecode_flags(require_empty=False)
@@ -1086,7 +1191,7 @@ def check_rules(rules: list, ruleset: dict) -> dict:
     return rec
 
 
-def host_checks(remote_sha: str, root: Path = ROOT, api=None, branch: str = BRANCH, anchor: str = ANCHOR_COMMIT) -> dict:
+def host_checks(remote_sha: str, root: Path, api, branch: str, anchor: str) -> dict:
     """R22.1 + R23.2, after the fetch and before anything else, on every invocation (stage 1, stage 2, the selection-
     rerun check). `api` exists for tests only; the real entry point never sets it."""
     from urllib.parse import quote
@@ -1095,17 +1200,17 @@ def host_checks(remote_sha: str, root: Path = ROOT, api=None, branch: str = BRAN
     api = api or gh_api
     ref = f"refs/heads/{branch}"
     log = api(f"/repos/{GH_REPO}/activity?ref={quote(ref, safe='')}&per_page=100&direction=asc", paginate=True)
-    isanc = lambda a, b: _git("merge-base", "--is-ancestor", a, b, check=False, root=root).returncode == 0
-    rec = check_activity(log, remote_sha, anchor, isanc, ref)
+    rec = check_activity(log, remote_sha, anchor, lambda a, b: is_ancestor(a, b, root), ref)
+    rec["branch_created_commit"] = sorted(log, key=lambda e: (e["timestamp"], e["id"]))[0]["after"]
     rec.update(check_rules(api(f"/repos/{GH_REPO}/rules/branches/{quote(branch, safe='')}"),
                            api(f"/repos/{GH_REPO}/rulesets/{RULESET_ID}")))
     return rec
 
 
-def check_release_pins(r: dict, remote_sha: str, root: Path = ROOT, ledger=None) -> None:
+def check_release_pins(r: dict, remote_sha: str, root: Path, ledger=None) -> None:
     """R22.2: `branch_head_at_release` is an ancestor of the fetched head; for stage 2, `gate_commit` is an ancestor
     and contains the latest GATE entry of the pinned prefix; `activity_anchor_commit`, if given, is the anchor."""
-    isanc = lambda a, b: _git("merge-base", "--is-ancestor", a, b, check=False, root=root).returncode == 0
+    isanc = lambda a, b: is_ancestor(a, b, root)
     h = r.get("branch_head_at_release")
     if not (isinstance(h, str) and len(h) == 40 and isanc(h, remote_sha)):
         raise SealedRefusal("refused: branch_head_at_release is missing or not an ancestor of the fetched head")

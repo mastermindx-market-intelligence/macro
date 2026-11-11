@@ -10,14 +10,55 @@ selection result. Any path under sealed_post2019/ or window end after 2019-12-31
 """
 from __future__ import annotations
 
-import argparse, hashlib, sys
-from pathlib import Path
+import sys
 
-import numpy as np
-import pandas as pd
+# R31.6(a): run as a script, nothing beside it may be imported first: refuse before any other import unless -P
+# (sys.flags.safe_path) keeps the script's directory off the import path.
+if __name__ == "__main__" and not sys.flags.safe_path:
+    raise SystemExit("refused: run as `python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache "
+                     "scripts/run_rotation_core_v2.py ...` (-P: safe_path) (R31.6)")
+
+import os  # noqa: E402
+
+_ROOT_REAL = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+REPO_PACKAGES = ("engine", "scripts", "tests")
+
+
+def _protected_names() -> set:
+    """Standard-library module names and the top-level names of installed distributions."""
+    names = set(sys.stdlib_module_names)
+    try:
+        import importlib.metadata as md
+        names |= set(md.packages_distributions())
+    except Exception:                                      # unreadable metadata: the stdlib names still apply
+        pass
+    return names
+
+
+def refuse_shadowed_modules(root_real: str = _ROOT_REAL) -> None:
+    """R31.6(c): no loaded module whose top-level name is a standard-library or installed-package name has its file
+    under the repository root (that would be a shadow)."""
+    protected = _protected_names()
+    for name, mod in list(sys.modules.items()):
+        f = getattr(mod, "__file__", None)
+        if not f or name == "__main__" or name.split(".")[0] not in protected:
+            continue
+        if os.path.realpath(f).startswith(root_real + os.sep):
+            raise SystemExit(f"refused: module {name} was loaded from the repository directory (R31.6)")
+
+
+refuse_shadowed_modules()                                  # before the first import of anything from the root
+
+import argparse, hashlib  # noqa: E402,E401
+from pathlib import Path  # noqa: E402
+
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))                             # R31.6(b): stdlib and site-packages always win
+refuse_shadowed_modules()
 from engine import rotation_core_evaluation as rc  # noqa: E402
 from engine import rotation_core_v2 as v2  # noqa: E402
 
@@ -69,6 +110,29 @@ OUT_J = ROOT / "research/rotation_core/results_v2_selection.json"
 OUT_M = ROOT / "research/rotation_core/RESULTS_V2_SELECTION.md"
 
 
+# R31.6(b): the episode tables of the v1 runner, copied verbatim so the v2 run path never imports v1 (whose import
+# inserts the repository root at the front of the import path); a test pins them equal to v1's.
+DPEAK = {
+    "E1998": ("1998-07-01", "1998-07-31", "1998-10-31"),
+    "E2000_02": ("2000-01-01", "2000-12-31", "2002-12-31"),
+    "E2008_09": ("2007-07-01", "2007-12-31", "2009-06-30"),
+    "E2011": ("2011-04-01", "2011-07-31", "2011-12-31"),
+    "E2015_16": ("2015-05-01", "2015-08-15", "2016-03-31"),
+    "E2018Q4": ("2018-09-01", "2018-10-15", "2018-12-31"),
+}
+LPEAK = {
+    "L1929_32": ("1929-08-01", "1929-10-15", "1932-12-31"),
+    "L1937": ("1937-02-01", "1937-08-31", "1938-06-30"),
+    "L1962": ("1961-11-15", "1962-01-31", "1962-07-31"),
+    "L1966": ("1966-01-15", "1966-02-28", "1966-12-31"),
+    "L1969_70": ("1968-11-15", "1968-12-31", "1970-07-31"),
+    "L1973_74": ("1972-12-15", "1973-01-31", "1974-12-31"),
+    "L1980_82": ("1980-11-01", "1980-12-31", "1982-09-30"),
+    "L1987": ("1987-08-01", "1987-09-30", "1987-12-31"),
+    "L1990": ("1990-06-15", "1990-07-31", "1990-11-30"),
+}
+
+
 def _yahoo_tr(t, ydir, end=None):
     x = v2.load_yahoo_tr(Path(ydir) / f"{t}.parquet", SEL_END if end is None else end)   # F1: filtered before any frame
     x = x[x.index >= WARMUP_FROM]
@@ -113,7 +177,6 @@ STATES: dict = {}
 
 def run_selection(ctx):
     from engine import rotation_core_evaluation as rc
-    import scripts.run_rotation_core_v1 as v1
     vw, ew = v2.load_french_industries(ctx.ind_d, SEL_END)
     mkt, rf = v2.load_french_market(ctx.fact, SEL_END)
     keep = vw.index >= WARMUP_FROM
@@ -130,7 +193,7 @@ def run_selection(ctx):
     base = legs.returns["BASE"]
     level = (1 + mkt.reindex(s).fillna(0)).cumprod()
     eps = {}
-    for name, (a, b2, c) in v1.DPEAK.items():
+    for name, (a, b2, c) in DPEAK.items():
         ep = rc.find_episode(level[m], a, b2, c)
         if ep:
             eps[name] = ep
@@ -549,14 +612,13 @@ def pre1998_stats(prep: dict, B_=B_STAGE) -> dict:
     PRE_START_, ERAS_ = spec["a"], spec["eras"]
     """Stage-1 statistics; only ever called after a clean Phase A. Magnitudes (hashed, never written at stage 1
     unless the gate closes), the sixteen gate signs, H2's signs (never printed or written at stage 1)."""
-    import scripts.run_rotation_core_v1 as v1
     D, runs, end = prep["D"], prep["runs"], prep["z"]
     vw, ew, mkt, rf, legs = D["vw"], D["ew"], D["mkt"], D["rf"], D["legs"]
     s = vw.index
     ew_proxy = ew.where(vw.notna().cumsum() >= 252).mean(axis=1)
     level = (1 + mkt.reindex(s).fillna(0)).cumprod()
     eps = {}
-    for name, (a_, b2, c) in getattr(v1, spec["episodes"]).items():
+    for name, (a_, b2, c) in {"LPEAK": LPEAK, "DPEAK": DPEAK}[spec["episodes"]].items():
         ep = rc.find_episode(level[(s >= PRE_START_) & (s <= end)], a_, b2, c)
         if ep:
             eps[name] = ep
@@ -899,7 +961,6 @@ def nonfinite_by_hypothesis(pooled: dict, point: dict, dd: dict, fund_est: dict,
 
 
 def _final_phase_b(P, Pp, Hp, Fp, A, h, b, a, z, fund_dir, B_) -> dict:
-    import scripts.run_rotation_core_v1 as v1  # noqa: F401
     D, runs = Hp["D"], Hp["runs"]
     rf, mkt = D["rf"], D["mkt"]
     s = D["vw"].index
@@ -1088,7 +1149,8 @@ def temporary_remote(td: Path):
     g("config", "user.email", "rehearsal@localhost", cwd=work); g("config", "user.name", "rehearsal", cwd=work)
     (work / "README").write_text("rotation-core rehearsal ledger (temporary)\n")
     g("add", "README", cwd=work); g("commit", "-q", "-m", "rehearsal", cwd=work); g("push", "-q", "origin", "rehearsal", cwd=work)
-    led = v2.GitLedger(root=work, path=work / "rehearsal_ledger.json", branch="rehearsal", remote_url=str(origin))
+    led = v2.GitLedger(root=work, path=work / "rehearsal_ledger.json", branch="rehearsal", remote_url=str(origin),
+                       code_root=ROOT)
     led.fetch(); led.require_local_equals_remote()
     return led
 
@@ -1234,15 +1296,37 @@ def _read_paths(ctx) -> list:
     return [p for p in (ctx.release1, ctx.release2, ctx.selection) if _inside(p, ctx.root)]
 
 
-def verified_ledger(ctx) -> tuple:
+def _release_paths(ctx) -> list:
+    return [p for p in (ctx.release1, ctx.release2) if _inside(p, ctx.root)]
+
+
+def _check_worktree_against_head(ctx, led, sha) -> None:
+    """R31.1(c): the working-tree copies of the releases and the selection equal the blobs at the fetched head."""
+    v2.check_worktree_matches_head(ctx.root, sha, led.read_paths)
+
+
+def _check_supplied_real_release_absent(ctx, sha, stage) -> None:
+    """R31.3: a supplied context touching anything real has no release in the tree at the fetched head either."""
+    if v2._IO["mode"] == "supplied_real" and stage in SEALED_STAGES:
+        rel = ctx.release1 if stage == "pre1998" else ctx.release2
+        rp = str(Path(rel).resolve().relative_to(Path(ctx.root).resolve()))
+        if v2.path_in_tree(sha, rp, ctx.root):
+            raise v2.SealedRefusal("refused: a supplied context that touches the real repository names a release path "
+                                   "that exists in the tree at the fetched head")
+
+
+def verified_ledger(ctx, stage=None) -> tuple:
     """R20.1/R20.2/R20.5/R22.1/R23.2/R23.3: fetch (not forced; remote identity pinned; fails closed); the host
     record (activity chain, ruleset) checked before anything else; local == remote; every release version mapped;
     every ledger version a prefix; the whole ledger replayed under the state rules."""
     led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url,
-                       code_root=ROOT, read_paths=_read_paths(ctx))
+                       code_root=ROOT, read_paths=_read_paths(ctx), release_paths=_release_paths(ctx))
     sha = led.fetch()
+    _check_supplied_real_release_absent(ctx, sha, stage)              # R31.3
     v2.set_read_head(ctx.root, sha)                                   # R29.2: reads are blobs at this head
+    _check_worktree_against_head(ctx, led, sha)                        # R31.1(c): before START
     led.host_record = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
+    v2.check_no_merges(ctx.root, sha, led.host_record["branch_created_commit"], [led.rel] + led.read_paths)   # R30.3
     led.require_local_equals_remote()
     entries = led.entries()
     root = Path(ctx.root).resolve()
@@ -1270,10 +1354,12 @@ def _touches_real(p) -> bool:
 
 def _common_dir(root):
     import os
-    if not Path(root).is_dir():
-        return None
+    if not Path(root).is_dir() or not (Path(root) / ".git").exists():
+        return None                                                   # not a repository root
     r = v2._git("rev-parse", "--path-format=absolute", "--git-common-dir", root=root, check=False)
-    return os.path.realpath(r.stdout.decode().strip()) if r.returncode == 0 and r.stdout.strip() else None
+    if r.returncode != 0 or not r.stdout.strip():                    # R30.2: a repository whose common dir cannot
+        raise v2.SealedRefusal("refused: cannot resolve the git common directory of the context root")   # be read
+    return os.path.realpath(r.stdout.decode().strip())
 
 
 def is_real(ctx) -> bool:
@@ -1321,7 +1407,7 @@ def sealed_stage_gate(stage: str, _ctx, ctx) -> None:
     if _ctx is None:                                                 # the real run
         main_file = getattr(sys.modules.get("__main__"), "__file__", None)
         if not main_file or os.path.realpath(main_file) != os.path.realpath(RUNNER_SCRIPT):
-            raise v2.SealedRefusal("refused: a sealed stage runs only as `python -E -B -X pycache_prefix=... "
+            raise v2.SealedRefusal("refused: a sealed stage runs only as `python -E -P -B -X pycache_prefix=... "
                                    "scripts/run_rotation_core_v2.py`")
         if "pytest" in sys.modules or any(k.startswith("PYTEST_") for k in os.environ):
             raise v2.SealedRefusal("refused: a sealed stage never runs under pytest")
@@ -1337,10 +1423,10 @@ def pre_lock_checks(argv: list, _ctx) -> None:
     if _ctx is None and "pytest" in sys.modules and any(a in SEALED_STAGES or a.split("=", 1)[-1] in SEALED_STAGES
                                                          for a in argv):
         raise SystemExit("refused: a sealed stage is never run with the real context while pytest is loaded (R26.2)")
-    if not sys.flags.ignore_environment or sys.flags.inspect or sys.flags.interactive:
-        raise SystemExit("refused: run as `python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache "
-                         "scripts/run_rotation_core_v2.py ...` (ignore_environment set, not interactive, no inspect) "
-                         "(R25.1(a))")
+    if not sys.flags.ignore_environment or sys.flags.inspect or sys.flags.interactive or not sys.flags.safe_path:
+        raise SystemExit("refused: run as `python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache "
+                         "scripts/run_rotation_core_v2.py ...` (ignore_environment and safe_path set, not interactive, "
+                         "no inspect) (R25.1(a), R31.6(a))")
     v2.check_runtime_env()
 
 
@@ -1349,9 +1435,10 @@ def start_checks(argv: list, _ctx) -> None:
     repository-scope config and the gh socket; R25.3 tools; R26.3 import environment and untracked/ignored code."""
     v2.cleanup_leftover_object_dirs()
     v2.check_env_vars()
-    v2.check_repo_config(ROOT)
+    v2.check_repo_config(ROOT, v2.REMOTE_URL)
     v2.tool("git"); v2.tool("gh"); v2.tool_versions()
     v2.check_bytecode_flags()                                         # R29.3, under the lock
+    refuse_shadowed_modules()                                         # R31.6(c)
     v2.check_import_environment(ROOT)
     v2.check_no_bytecode_modules(ROOT)
     v2.check_worktree_code(ROOT)
@@ -1379,9 +1466,11 @@ def preflight(ctx) -> int:
     release file and no data; writes nothing in the working tree and pushes nothing (it takes the lock, sweeps
     leftover private object directories and fetches)."""
     led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url, code_root=ROOT,
-                       read_paths=_read_paths(ctx))
+                       read_paths=_read_paths(ctx), release_paths=_release_paths(ctx))
     sha = led.fetch()
+    _check_worktree_against_head(ctx, led, sha)                        # R31.1(c)
     rec = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
+    v2.check_no_merges(ctx.root, sha, rec["branch_created_commit"], [led.rel] + led.read_paths)              # R30.3
     led.require_local_equals_remote()
     ents = led.entries()
     v2.verify_chain(ents)
@@ -1460,6 +1549,7 @@ def _main_body(argv: list, _ctx) -> int:
         man = {}
         for k, p in ins.items():
             try:
+                v2.io_check(p, "read")                                # R31.2: before hashing
                 man[k] = v2.sha256_file(p)
             except OSError:
                 man[k] = "SEALED (hashed by the runner inside the verified stage-2 run; recorded hash in v2_power)"
@@ -1484,18 +1574,18 @@ def _main_body(argv: list, _ctx) -> int:
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
     v2.verify_header_v2(FROZEN)
     if a.stage == "pre1998":
-        led, sha, entries = verified_ledger(ctx)
+        led, sha, entries = verified_ledger(ctx, a.stage)
         rel1 = v2.stage1_release(ctx.release1, inputs=ctx.stage1_inputs, remote_sha=sha, root=ctx.root,
                                  selection=ctx.selection, engine_check=ctx.engine_check)
         if ctx.engine_check is v2.check_engine_commit:
             led.engine_commit = rel1["engine_commit"]               # R27.4: blob equality before each record push
         ins_sha = {k: v2.sha256_file(p) for k, p in ctx.stage1_inputs.items()}
-        e = stage1_command(led, rel1, v2.sha256_file(ctx.release1), rel1["engine_commit"], ctx.stage1_inputs["industries_le2019"],
+        e = stage1_command(led, rel1, rel1["_blob_sha256"], rel1["engine_commit"], ctx.stage1_inputs["industries_le2019"],
                            ctx.stage1_inputs["factors"], ins_sha, B_=ctx.B, publish_path=ctx.stage1_published,
                            selection=ctx.selection, root=ctx.root)
         return 3 if e.get("integrity_abort") else 0
     if a.stage == "confirm":
-        led, sha, entries = verified_ledger(ctx)                    # R20.7: the release is verified first
+        led, sha, entries = verified_ledger(ctx, a.stage)           # R20.7: the release is verified first
         r = v2._load_release(ctx.release2, ctx.root)
         v2.on_remote(ctx.release2, sha, ctx.root)
         r2 = v2.verify_release2(r, entries)
@@ -1506,7 +1596,7 @@ def _main_body(argv: list, _ctx) -> int:
             led.engine_commit = r2["engine_commit"]
         with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
             ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)
-            res = confirm_command(led, r2, v2.sha256_file(ctx.release2), r2["engine_commit"], ctx.ind_d, ctx.ind_full,
+            res = confirm_command(led, r2, r2["_blob_sha256"], r2["engine_commit"], ctx.ind_d, ctx.ind_full,
                                   ctx.fact, ctx.fund_dir, ins_sha, B_=ctx.B, selection=ctx.selection, root=ctx.root)
         if res.get("integrity_abort") or res.get("phase_b_exception"):
             return 3

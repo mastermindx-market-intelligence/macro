@@ -97,7 +97,7 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
   8. **Intra-month leg weighting:** OFFENCE and DEFENCE are equal weight every session over the member set fixed at month-end (R14(a) reading; the header is silent).
 - **Stage 1 is blind to magnitudes.** *(The sealing mechanics below — mode-000 file, `open_sealed_stage1` — are superseded by R16 S6; see that section. The blind principle stands.)*
   - **What the run prints:** only the four gate signs (H1 and H3, each era), the gate result, non-return integrity diagnostics, and the sha256 of the results file. The diagnostics are session counts per era, offence-member counts, deferred executions, days holding after a last close, dropped industry-days, state counts and episode count. H2's era signs are written to the gate file, not printed.
-  - **Sealing:** every return, excess, interval, p-value, drawdown and cost figure goes to `/home/ubuntu2/tmp/rotation-core/data/sealed_stage1/results_v2_stage1_pre1998.json`, written mode 000. The committed `results_v2_stage1_gate.json` carries the signs, gate result, diagnostics, engine commit and that file's sha256.
+  - **Sealing:** every return, excess, interval, p-value, drawdown and cost figure goes to `<data root>/sealed_stage1/results_v2_stage1_pre1998.json`, written mode 000. The committed `results_v2_stage1_gate.json` carries the signs, gate result, diagnostics, engine commit and that file's sha256.
   - **Gate open:** the sealed file stays unopened; the final run recomputes pre-1998, and `verify_reproduction` refuses to print anything unless the recomputation's sha equals the sealed sha.
   - **Gate closed:** the sealed file is readable through `open_sealed_stage1` and is reported in full; 2020–2025 stays unread.
   - **Tests:** stdout contains no decimal number (fixture run); the sealed file is unreadable without a stage-2 release or a recorded closed gate; the reproduction check fails on a one-byte difference; a fixture recomputation is byte-identical.
@@ -535,9 +535,9 @@ python -E scripts/run_rotation_core_v2.py --stage confirm
 **Sealed-run command lines (unchanged; `-E` now enforced):**
 
 ```
-python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
-python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
-python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
+python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
+python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
+python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
 ```
 
 ## R27 — scope of the runner's defences; the committed driver; children; one invocation (CEO, 17:30Z)
@@ -595,13 +595,13 @@ python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rot
 **Run instructions (in order, from a clean login shell exporting no `GIT_*`, `GH_*`, `PYTHON*`, `PYTEST_*`, proxy, `LD_*` or temporary-directory variable):**
 
 ```
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
 ```
 
-`<venv>` is the interpreter whose `versions()` the release pins (on this host `/home/ubuntu2/.t3/worktrees/Macro/.venv-prophet`). After a release commit, the test suite is not run on the run host until that stage's record is on the remote.
+`<venv>` is the interpreter whose `versions()` the release pins (the project's virtual environment on the run host). After a release commit, the test suite is not run on the run host until that stage's record is on the remote.
 
 ## R28 — a supplied context is wholly real or wholly temporary (CEO, after the reader's B1 on `e2e51ec779`)
 
@@ -612,7 +612,7 @@ The finding: a driver config with root, ledger, releases and remote under `/tmp`
    - The real context is built in exactly one place: the `_ctx is None` branch of `main` (`_main_body`), from the module constants. There is no `Ctx()`.
    - A supplied context reads no module constant.
 2. **Wholly real or wholly temporary, over every field.**
-   - `is_real` is True if ANY path the run can read or write resolves (real path) to or inside the repository root or the real data root (`/home/ubuntu2/tmp/rotation-core/data`). That covers every path field, every value of both input maps and every sealed path. It is also True if the remote is the pinned URL or resolves there, or if branch and remote name the real branch on the real remote.
+   - `is_real` is True if ANY path the run can read or write resolves (real path) to or inside the repository root or the real data root (`REAL_DATA_ROOT` in the engine). That covers every path field, every value of both input maps and every sealed path. It is also True if the remote is the pinned URL or resolves there, or if branch and remote name the real branch on the real remote.
    - **A test context:** `is_real` is False, every path lies under `/tmp` by real path, and the remote is a local path under `/tmp`. This is checked for every mode, not only sealed stages.
    - **A wholly-real supplied context:** unchanged from R27.1 (real hooks, no file at the release path). It may read and write no data at all.
 3. **Enforced at the point of use.** One choke point, `io_check`, sits before every data read (both French loaders, the Yahoo loader, manifest hashing), every result write (the closed-gate publication, the final JSON and Markdown, the selection rerun, the ledger status) and every `chmod` of a sealed file.
@@ -668,7 +668,7 @@ The finding: a driver config with root, ledger, releases and remote under `/tmp`
 **The command line (every documented command), Linux run host only (`/dev/shm`, `prctl`):**
 
 ```
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
 ```
 
 (and likewise `--stage pre1998`, `--stage confirm`, `--ledger-report`).
@@ -704,3 +704,103 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/
    - `witness_confirmation_utc` must carry a timezone, be later than the GATE entry's time and not later than now plus 5 minutes; a malformed value is a plain refusal.
    - A lock file that cannot be opened is a plain refusal.
    - A `python -E` process that applies the runner's start-up settings and then aborts leaves no new file in `/var/crash` and no core (verified on this host with apport active; tested).
+
+## R30 — tests that prove their claim; every return code; history walks; config values; hygiene (CEO, 19:17Z)
+
+1. **Tests prove their claim.**
+   - `test_R29_1a_missing_blob_is_a_refusal_not_absence` is rewritten. A fresh blob-less clone made with `--no-checkout` (so no blob is fetched) has its promisor made unreachable, then `assert not has`. `_entries_at` and `file_versions` must each raise under `GIT_NO_LAZY_FETCH=1`.
+   - The confirmation test file was swept for assertions under a condition the test does not assert; the findings are in the lead's report.
+2. **Every return code.**
+   - `materialise` refuses on a failed `cat-file --batch-check` before reading its output.
+   - `is_ancestor` is three-valued (0 yes, 1 no, anything else refuses), and every ancestry check uses it.
+   - The sweep list is in the lead's report.
+3. **History walks agree.**
+   - `file_versions` and `commit_adding_entry` walk first parents, as `version_entries` does.
+   - Every history walk uses `--full-history`.
+   - The branch's own history is linear by construction: the activity log shows pushes only, each a fast-forward.
+   - `check_no_merges` refuses if any commit after the branch's creation commit (the activity log's first `after`) up to the fetched head has more than one parent and touches the ledger, a release file or the selection file. This runs on every invocation and in `--preflight`; the real branch has no merge commit since its creation.
+4. **Config values, not only keys.**
+   - Repository-scope config is read with `-z` and allowlisted as (key, value) pairs, each full-matched:
+     - `core.bare=false`, `core.filemode=true`, `core.logallrefupdates=true`;
+     - `core.ignorecase=false` and `core.precomposeunicode=false` (the Linux defaults; this checkout carries neither);
+     - `core.sparsecheckout=true` and `core.sparsecheckoutcone=true`;
+     - `core.repositoryformatversion` 0 or 1 (this checkout: 1);
+     - `extensions.worktreeconfig=true`;
+     - the pinned `remote.origin.*` values.
+   - `user.*` and `branch.*` values must contain no newline and must not begin with `!` or `-`.
+   - The two-value `remote.origin.fetch` is accepted as built: with `--refmap=` and an explicit non-forced refspec neither configured value takes part.
+5. **The parse-tree test is a lint, not the boundary.** The boundary is the runtime `io_check` in the loaders, writers and sealed `chmod`. The lint also catches the cheap alias cases:
+   - `from … import X [as Y]` of a forbidden name;
+   - `getattr(module, "<forbidden literal>")`;
+   - module-level statements that use a forbidden name other than to define a constant.
+
+   No further cases are chased.
+6. **Hygiene.**
+   - `REAL_INPUT_SHA256.txt` now records paths relative to the data root. No check reads the path column (`recorded_real_hashes` takes the first field only; `sealed_record` uses the file name only); a test shows a recorded hash at a different path is still refused.
+   - The absolute-path sweep of the files this branch adds or changes is in the lead's report. The code constants that must name the data root are `REAL_DATA_ROOT` (engine) and `FR`, `YAHOO` (runner).
+   - The frozen headers, the earlier results files, the v1 runner and the research scripts that read real data carry absolute paths and are left unchanged: the headers are frozen, the results are records of earlier runs, the v1 runner is not run again, and the research scripts are not part of the runner.
+
+## R31 — one read of a release file; sentences true of the code (CEO, 19:28Z)
+
+1. **One read of a release file.**
+   - (a) `_load_release` returns the document with `_blob_sha256`, the sha256 of the exact blob bytes it parsed (`load_release_blob`). START records that hash. No `sha256_file` on a release or selection path remains on the run path; a parse-tree test enforces it.
+   - (b) `GitLedger.append` refuses, before any push, a START whose `release_sha256` is not the hash of a committed version of a release file at the fetched head. It uses `release_docs`, the same mapping `check_release_history` builds for `validate_ledger`. A START that can be pushed is therefore one the next invocation accepts. The runner's ledger always carries both release paths; the temporary test and rehearsal ledgers carry none and name no release.
+   - (c) Before START (in `verified_ledger`, every mode) and in `--preflight`, the run refuses when the working-tree copy of a release or the selection file differs byte for byte from the blob at the fetched head, or exists in only one of the two.
+   - (d) Tests:
+     - a release re-saved with a trailing newline, and with CRLF, no index flag: refused before START, nothing spent;
+     - with (c) skipped in a test: START carries the committed blob's hash (not the working tree's), and the next invocation's `verified_ledger` passes;
+     - a direct `append` naming a hash that was never committed: refused, nothing pushed.
+   - (e) Every value written into a ledger entry or compared against a pin, and where its bytes come from:
+
+| Value | Where | Bytes from |
+|---|---|---|
+| START `release_sha256` | ledger | blob of the release at the fetched head (`load_release_blob`) |
+| START `engine_commit` | ledger | the release document (blob at the fetched head) |
+| START `inputs_sha256` | ledger; compared with the release manifest | the data files the run reads (outside the repository; the same bytes the loaders read) |
+| START `versions` (tools, `sitecustomize`, `.pth`, Phase A hashes) | ledger; compared with the release manifest | computed in memory: tool `--version` output, installed files, the loaded source's syntax tree (the code that runs; R28.6 pins it to the engine commit's blobs) |
+| `host` record (activity count and hash, ruleset id and `updated_at`, creation commit) | every entry | the GitHub API, read after the fetch |
+| `phase_a_ast_sha256` | every entry | computed in memory from the loaded source (as above) |
+| PHASE_A_CLEAN / INTEGRITY_ABORT counts | ledger | computed in memory |
+| GATE signs, `magnitudes_sha256`, integrity, `gate_open` | ledger | computed in memory |
+| REPRODUCTION_OK `magnitudes_sha256` | ledger | the GATE entry (ledger blob at the fetched head) |
+| FINAL verdicts, `results_sha256` | ledger | computed in memory |
+| `selection_results_sha256` (pin) | release vs selection | blob of the selection at the fetched head (`read_repo_bytes`) |
+| `selection_results_commit` (pin) | release vs history | `git diff <commit> HEAD -- selection`: tree against tree; HEAD equals the fetched head |
+| `engine_commit` (pin) | release vs code | the running code's working-tree bytes against the engine commit's blobs (`check_pinned_blobs`, `check_import_environment`): the code that runs is the working tree, so this is intended |
+| `ledger_prefix_len` / `ledger_prefix_chain_sha256` (pin) | stage-2 release vs ledger | ledger blob at the fetched head |
+| `branch_head_at_release`, `gate_commit` (pins) | release vs history | ancestry in the fetched history; the gate record from the ledger blob at `gate_commit` |
+| `witnessed` (pin) | stage-2 release vs ledger and release history | ledger blobs (first-parent commits) and release blobs (`file_versions`) |
+| `stage1_gate` magnitudes (pin) | GATE vs reproduction | computed in memory, compared with the ledger blob |
+| sealed hashes (pin) | record vs sealed files | record: code blob at HEAD (`code_text`); files: bytes on disk, read inside the verified stage-2 run |
+| real-input hashes (pin) | record vs test-context inputs | record: code blob at HEAD; inputs: bytes on disk |
+| frozen header sha (pin) | constant vs header | the header's working-tree bytes (pinned to its blob by R28.6); the only read of the header |
+
+   No value is taken from working-tree bytes while the run reads a blob of the same file. The release hash was the one such value, and is fixed above.
+2. **`--manifest`** calls `io_check(p, "read")` on each path before hashing it.
+3. **Supplied-real guard.** After the fetch, a supplied context that touches anything real is also refused when the stage's release path exists in the tree at the fetched head. The working-tree test is kept.
+4. **Sentences made true.**
+   - **R29.2:** fixed by R31.1. **R28.3:** fixed by R31.2. **R28.2:** fixed by R31.3.
+   - **R29.5:** the remaining real defaults are removed. `fetch_remote`, `host_checks`, `check_remote_identity`, `on_remote`, `commit_on_remote`, `file_versions`, `check_release_pins`, `check_repo_config`, `stage1_release` (its root) and `GitLedger`'s `code_root` now take every repository, branch, remote and anchor argument from the caller.
+   - **R29.5, what stays:** `root=ROOT` remains the default of the code-integrity checks (`check_import_environment`, `check_pinned_blobs`, `check_no_bytecode_modules`, `check_engine_commit`, `check_worktree_code`, `_committed_clean`). That root is the repository of the code that is running, not a data, ledger or release path, and it is the only correct value.
+   - **R28.1, corrected:** `_real_ctx()` is the only constructor of a real context. It is called by `main`, and by the one driver test in `real_hooks` mode, which replaces the release path with an absent file and so refuses before any data read. That test asserts that `io_check` saw no `read`.
+   - **R28.5, corrected:** in `real_hooks` mode the path rule is R27.1's: no file at the release path, in the working tree and (R31.3) in the tree at the fetched head. It is not the `/tmp` rule. Every other driver mode keeps the `/tmp` rule on every key.
+5. **Rehearsal warm-up (adds to R21.6).** The rehearsal keeps lines dated 1996-01-02..1997-12-31 as signal warm-up only. That is the same warm-up the selection run already used and declared (`WARMUP_FROM`, `warmup_note`), so the rehearsal uses nothing the examined selection run did not. What the seal protects is any statistic scored on a session before 1998-01-02, and none is.
+   - A test checks that every statistic the rehearsal computes (`window_block`, `paired_h2`, `window_series`, `window_excess`, `standalone`) starts on 1998-01-02 or later, for both pseudo-eras.
+   - **Printed counts that include warm-up sessions** are integrity counts, not return statistics: `deferred_executions_total_incl_warmup`, `days_holding_after_last_close_total`, `dropped_industry_days_unique_eligible_industries_only`.
+   - No printed figure is a return, mean or ratio that includes a pre-1998 session.
+6. **Nothing in the repository's directory runs before the checks (R31.6).**
+   - (a) **`-P` is enforced.** The command is `python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py …` in every form in this file, the template and the witness procedure.
+     - The runner refuses at its very top, after `import sys` and before any other import, unless `sys.flags.safe_path` is set when run as a script, so `scripts/argparse.py` is never imported.
+     - `main` repeats the refusal with the `-E` check.
+   - (b) **The root is appended, not inserted.** The repository root goes at the end of `sys.path` (`append`), so the standard library and site-packages always win.
+     - Every `engine.*`, `scripts.*` and `tests.*` module still resolves from the root (tested). Nothing named `engine`, `scripts` or `tests` exists in site-packages.
+     - The runner no longer imports the v1 runner, whose import inserts the root at the front of the path. Its two episode tables (`DPEAK`, `LPEAK`) are copied into the v2 runner verbatim, and a test pins them equal to v1's. The v1 runner is untouched.
+     - The driver also appends.
+   - (c) **No shadowed name.** Before the first import from the root, again under the lock, and again before every record push (R26.3), the run refuses when any loaded module whose top-level name is a standard-library name (`sys.stdlib_module_names`) or an installed distribution's top-level name has its file under the repository root.
+   - (d) **Tests.** Planted `scripts/argparse.py` (with and without `-P`), `json.py` at the root, `engine/ctypes.py` and `engine/fcntl.py` (both lazily imported by the engine): none is ever imported, and the run refuses (without `-P` at the top, with `-P` by the untracked-code check). A run without `-P` refuses. A fake `json` module loaded from the root is refused by both checks.
+   - (e) **Every import on the run path after the root is added, and what it resolves to** under the new order. Source modules swept: the runner, the v2 engine, the evaluation engine, the report writer and the fixture generator.
+     - **Standard library:** `__future__`, `argparse`, `ast`, `ctypes`, `dataclasses`, `datetime`, `glob`, `hashlib`, `importlib.metadata`, `inspect`, `json`, `pathlib`, `platform`, `re`, `resource`, `shutil`, `subprocess`, `sysconfig`, `tempfile`, `textwrap`, `typing`, `urllib.parse`, `warnings`.
+     - **Frozen or built-in:** `fcntl`, `importlib.machinery`, `io`, `math`, `os`, `pwd`, `site`, `stat`, `sys`.
+     - **Site-packages:** `numpy`, `pandas`, `pyarrow`, `pyarrow.parquet`, `scipy`.
+     - **Repository:** `engine` (an empty `__init__.py`), `engine.rotation_core_evaluation`, `engine.rotation_core_v2`, `engine.validation` (lazy, in `dsr`; it imports `math`, `numpy` and `pandas` only), `scripts.rotation_core_v2_report`, and `tests.rotation_core_v2_fixture` (only by `--dry-run-stage1-fixture`).
+     - None of the repository modules changes `sys.path`.
