@@ -46,7 +46,7 @@ read_adapters:
     canonical_owner: biocatalyst
     implementation_state: implemented_current_record_facts_only
     module: app.biocatalyst
-    callable: router
+    callable: trial_facts_router
     route_prefix: /api/biocatalyst/v1
     routes:
       - /api/biocatalyst/v1/health

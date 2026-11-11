@@ -1,14 +1,19 @@
 ---
 key: BIOCATALYST-CORE-PRODUCT
-title: BioCatalyst core product — post-P0 clinical/regulatory expansion
+title: BioCatalyst Decision Intelligence V3 — end-to-end research product
 objective: >
-  Expand the recovered BioCatalyst product beyond P0 through source-truth
-  product projections, the Catalyst Radar container (first lane: Trial
-  Milestones), Explorer/dossier-facing workflows, and bounded product APIs.
-  Done for a wave = its slice is merged after Sol review, deployed, and
-  proven with a real entitled production journey; done for the workstream is
-  open-ended product expansion adjudicated wave by wave.
-status: parked
+  Deliver BioCatalyst Decision Intelligence V3 end to end: preserve proven
+  source-truth lanes, broaden lawful correction-safe event discovery, bind
+  events to asset, company and security identities plus economic-exposure
+  relationships supplied by canonical owners,
+  and present an explainable What Matters Next research workflow with
+  separate fact, timing, expectation, probability, issuer-materiality,
+  history, incorporation and ResearchPriority objects. R0 freezes the
+  architecture and owner contracts; R1A and R1B must then prove broad real
+  source truth and the first useful production board before R2-R7 advance.
+  Completion requires Truth, Intelligence, Product and Learning evidence;
+  records, infrastructure, CI or merge alone are not completion.
+status: active
 program: biocatalyst
 repos: [macro]
 owner: coo-fable
@@ -63,7 +68,20 @@ waves:
       research/BIOCATALYST_P1_AVAIL_1_AVAILABILITY_AUDIT_2026-08-28.md (PR
       #6594, merge 2299cbafe425) and
       research/BIOCATALYST_P1_AVAIL_1_ENTITLED_REACCEPTANCE_2026-08-28.md.
+  - id: R0-V3
+    title: Decision Intelligence V3 architecture freeze and estate reconciliation
+    status: in_progress
+    pr: 6712
+    next_action: >
+      Continue the existing PR #6712 source-repair carrier. Findings 1, 2, 3
+      and 5 plus PR hygiene are accepted. Close finding 4 with an independent
+      six-state experience review, close finding 6 by reviewing this canonical
+      workstream reconciliation, then run fresh exact-head/current-main
+      integration proof and whole-R0 Sol acceptance. R1A and R1B remain
+      unstarted and require fresh bounded assignments after R0 acceptance.
 decisions:
+  - "DEC:BIOCATALYST-DECISION-INTELLIGENCE-V3-RECHARTER"
+  - "DEC:BIOCATALYST-FABLE-COO-END-TO-END-DELEGATED-AUTHORITY"
   - "DEC:BIOCATALYST-P1-FIRST-VERTICAL-MILESTONE-RADAR"
   - "DEC:BIOCATALYST-PDUFA-TRUTH-IS-CORPORATE-DISCLOSURE-PLANE"
   - "DEC:BIOCATALYST-CASH-RUNWAY-OWNED-BY-CAPITAL-STRUCTURE"
@@ -89,9 +107,21 @@ landmines:
     Options transport; BCI market-episode/analogue intelligence (#5821 stays
     a draft candidate); Neural Web; Prophet/rank/selection/size authority.
   - >-
-    No score, probability, materiality, rank, or composite anywhere in any
-    BioCatalyst payload or UI — deterministic source facts only
-    (authority: facts_and_context_only; also DNR:KILL-PHASE3-START-WEIGHT).
+    Preserve the proven P1-1 Trial Milestones EventFact/API as deterministic
+    source truth; no model result belongs inside that fact payload. V3 may add
+    separate typed TimingAssessment, ExpectationBaseline,
+    OutcomeProbabilityAssessment, IssuerMaterialityAssessment,
+    HistoricalResponseDistribution, IncorporationEvidence and
+    ResearchPriority objects only in their gated waves and owner-compatible
+    contracts. No opaque or generic composite score is allowed. Unsupported
+    estimates must be NOT_ESTIMABLE. ResearchPriority is explainable research
+    triage, never entry/exit, sizing, Availability, Prophet promotion or trade
+    authority.
+  - >-
+    R1A and R1B may start only through fresh bounded assignments after whole-R0
+    acceptance. R2-R7 cannot outrun the real broad-data R1B product vertical.
+    PR #6389 / WS:BPC-JV-RECON remains a separate historical-data carrier and
+    is not an R1B prerequisite; consume it later only if lawfully reconciled.
   - >-
     Public wording law (Sol-ratified): "Trial milestone", "Primary
     completion", "Study completion", "days to milestone"; never label a
@@ -137,6 +167,8 @@ do_not_redo:
     parity, production-scale proof, source-soak acceptance, or authority to
     start P1-2. The broader parity ledger remains PARTIAL.
 artifacts:
+  - agentos/handoffs/BIOCATALYST-CORE-PRODUCT-2026-09-06.md
+  - research/biocatalyst_decision_intelligence_v3/BIOCATALYST_DECISION_INTELLIGENCE_V3_MASTERPLAN_2026-09-01.md
   - research/BIOCATALYST_P1_AVAIL_1_ENTITLED_REACCEPTANCE_2026-08-28.md
   - research/BIOCATALYST_P1_AVAIL_1_AVAILABILITY_AUDIT_2026-08-28.md
   - research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md
@@ -144,13 +176,15 @@ artifacts:
   - research/BIOCATALYST_P1_1_PRODUCTION_ACCEPTANCE_2026-08-22.md
   - research/BIOCATALYST_P1_1R_PRODUCTION_ACCEPTANCE_2026-08-23.md
 next_action: >
-  Wave P1-AVAIL-1 (MAS-172) is done: root cause = signed-out Chairman browser,
-  no product defect, entitled matrix re-proven PASS 2026-08-28; parked again
-  once Sol posts terminal acceptance. No other CORE-PRODUCT wave is
-  commissioned; P1-2 still requires a separate explicit Sol ruling. The 2026-08-26T02:00Z
-  source/launch-soak boundary remains owned by its source-governance path:
-  window end grants no expansion authority; exact evidence must be frozen and
-  adjudicated before any successor source/cohort transition.
+  Continue BioCatalyst Decision Intelligence V3 R0 on PR #6712 from the
+  repaired source, not the completed P0 recovery or stopped original
+  principal. Independently review the six-state experience evidence and this
+  Agent OS reconciliation, then prove the exact resulting head against current
+  main and issue whole-R0 Sol acceptance. Preserve the proven P1 facts-only
+  payload and cohort-limited production claim. After R0 acceptance, commission
+  fresh bounded R1A source-graduation and R1B What Matters Next verticals; do
+  not infer source activation, deployment, model promotion or trade authority
+  from this organizational record.
 ---
 
 ## Context
@@ -169,10 +203,20 @@ Wave P1-1's frozen spec lives in
 P1-0R); the architecture constitution is
 `research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md`.
 
-## Lifecycle reconciliation — 2026-08-24/25
+## Historical lifecycle reconciliation — 2026-08-24/25
 
-Sol reconciled the top-level lifecycle from stale `active` to `parked`: P1-1 is complete and
-production-proven at its bounded cohort, there is no live carrier or currently commissioned
-successor wave, and the record explicitly requires a separate Sol ruling before P1-2. Parked
-preserves this open-ended product home without falsely presenting idle future authority as
-current execution. This correction changes organizational state only.
+At that time, Sol reconciled the top-level lifecycle from stale `active` to
+`parked`: P1-1 was complete and production-proven at its bounded cohort, there
+was no live carrier or commissioned successor wave, and P1-2 required a
+separate Sol ruling. That historical correction remains valid for the interval
+before the V3 recharter.
+
+## V3 reactivation — 2026-09-01 onward
+
+Sol ratified Decision Intelligence V3 under the existing `biocatalyst` program
+and this canonical workstream. R0 is an active records-only architecture and
+estate-reconciliation wave on PR #6712; it does not itself prove product,
+source activation, deployment or model authority. The earlier facts-only rule
+continues to govern the P1-1 EventFact payload, while the V3 constitution
+permits separate typed and gated intelligence objects. R1A/R1B remain
+unstarted until R0 receives whole-program acceptance.

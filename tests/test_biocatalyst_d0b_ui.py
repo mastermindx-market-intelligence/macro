@@ -541,8 +541,87 @@ def test_the_authority_ceiling_is_checked_on_every_page_this_lane_added():
 def test_no_front_facing_falsifier_or_validated_language():
     for source in (JS, CSS, PAGE):
         lowered = source.lower()
-        for banned in ("falsifier", "refuted", "证伪", "validated", "probability", "forecast"):
+        for banned in ("falsifier", "refuted", "证伪", "validated"):
             assert banned not in lowered, banned
+    # The D0b Trial workspace retains its original factual-copy ceiling. The
+    # later WMN contract names unavailable estimate dimensions explicitly;
+    # those wire fields are not numeric forecasts or scientific acceptance.
+    trial_js, wmn_js = JS.split("  var WMN_API = ", 1)
+    assert wmn_js
+    wmn_missingness = (
+        "Probability, materiality, historical response and incorporation remain "
+        "NOT_ESTIMABLE until their owners and methods are separately qualified."
+    )
+    assert PAGE.count(wmn_missingness) == 1
+    # Permit this exact negative availability declaration, not an affirmative
+    # probability or forecast assertion anywhere in the legacy page.
+    trial_page = PAGE.replace(wmn_missingness, "")
+    for source in (trial_js, CSS, trial_page):
+        for banned in ("probability", "forecast"):
+            assert banned not in source.lower(), banned
+
+
+def test_wmn_client_refuses_numeric_estimates_and_trade_authority():
+    import copy
+    import json
+    import shutil
+    import subprocess
+
+    import pytest
+
+    from engine.biocatalyst.what_matters_next import build_what_matters_next
+    from tests.test_biocatalyst_wmn_publication import CUTOFF, _wmn_inputs
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node not on PATH")
+    valid = build_what_matters_next(
+        _wmn_inputs(),
+        generation_id="ctgov_run_wmn_client_r9",
+        query={"limit": 50},
+        evaluation_cutoff=CUTOFF,
+        anchor_date="2026-08-01",
+    )
+    assert valid["rows"]
+    cases = [valid]
+    for state, value in (
+        ("ESTIMATED", 0.8),
+        ("NOT_ESTIMABLE", 0.8),
+        ("NOT_ESTIMABLE", "0.8"),
+    ):
+        claimed = copy.deepcopy(valid)
+        claimed["rows"][0]["probability"].update(state=state, value=value)
+        cases.append(claimed)
+    missing = copy.deepcopy(valid)
+    del missing["rows"][0]["probability"]
+    cases.append(missing)
+    elevated = copy.deepcopy(valid)
+    elevated["authority"]["trade_origination"] = True
+    cases.append(elevated)
+
+    # Execute the shipped WMN IIFE and expose its real envelope validator at
+    # the initialization seam. No replacement validator or DOM/network path
+    # is supplied; the consumer must refuse the unsupported owner values.
+    start = JS.index("\n(function () {\n  'use strict';\n  var WMN_API = ")
+    source = JS[start:]
+    init = "if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();"
+    assert source.count(init) == 1
+    source = source.replace(init, "window.checkEnvelopeForTest = validEnvelope;")
+    harness = """
+const fs = require('fs'), vm = require('vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const window = {};
+vm.runInNewContext(input.source, {window, document: {}});
+process.stdout.write(JSON.stringify(input.cases.map(window.checkEnvelopeForTest)));
+"""
+    result = subprocess.run(
+        [node, "-e", harness],
+        input=json.dumps({"source": source, "cases": cases}),
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert json.loads(result.stdout) == [True, False, False, False, False, False]
 
 
 def test_light_is_a_composed_theme_not_an_inverted_dark_one():

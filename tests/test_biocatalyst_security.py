@@ -790,6 +790,7 @@ def test_only_explicit_transient_availability_codes_are_partial() -> None:
             "BIOCATALYST_R2_READ_FAILED",
             "BIOCATALYST_R2_READBACK_FAILED",
             "BIOCATALYST_R2_CONDITIONAL_CREATE_FAILED",
+            "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE",
             "POINTER_WRITE_FAILED",
         }
     )

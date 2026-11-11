@@ -1,0 +1,32 @@
+[
+  {
+    "scenario": "language_locked",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ '没有符合当前窗口和搜索条件的研究优先事件。'\n- '需要完整访问权限才能显示生物科技研究优先项。'\n\n    at run ([eval]:216:14) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: '没有符合当前窗口和搜索条件的研究优先事件。',\n  expected: '需要完整访问权限才能显示生物科技研究优先项。',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "scenario": "language_error",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ '没有符合当前窗口和搜索条件的研究优先事件。'\n- '“下一步看什么”暂时不可用。不会推断任何研究优先级。'\n\n    at run ([eval]:216:14) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: '没有符合当前窗口和搜索条件的研究优先事件。',\n  expected: '“下一步看什么”暂时不可用。不会推断任何研究优先级。',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "scenario": "language_append_locked",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'FIRST Issuer readout guidance 持续关注 Issuer readout guidance · 时间未确定 这是较远期计划或已核实的事件历史，并非收益预测。 概率: NOT_ESTIMABLE 重要性: NOT_ESTIMABLE 历史反应: NOT_ESTIMABLE 市场计入: NOT_ESTIMABLE 时间未确定 暂不可用'\n- '需要完整访问权限才能显示生物科技研究优先项。'\n\n    at run ([eval]:216:14) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'FIRST Issuer readout guidance 持续关注 Issuer readout guidance · 时间未确定 这是较远期计划或已核实的事件历史，并非收益预测。 概率: NOT_ESTIMABLE 重要性: NOT_ESTIMABLE 历史反应: NOT_ESTIMABLE 市场计入: NOT_ESTIMABLE 时间未确定 暂不可用',\n  expected: '需要完整访问权限才能显示生物科技研究优先项。',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "scenario": "language_append_error",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'FIRST Issuer readout guidance 持续关注 Issuer readout guidance · 时间未确定 这是较远期计划或已核实的事件历史，并非收益预测。 概率: NOT_ESTIMABLE 重要性: NOT_ESTIMABLE 历史反应: NOT_ESTIMABLE 市场计入: NOT_ESTIMABLE 时间未确定 暂不可用'\n- '“下一步看什么”暂时不可用。不会推断任何研究优先级。'\n\n    at run ([eval]:216:14) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'FIRST Issuer readout guidance 持续关注 Issuer readout guidance · 时间未确定 这是较远期计划或已核实的事件历史，并非收益预测。 概率: NOT_ESTIMABLE 重要性: NOT_ESTIMABLE 历史反应: NOT_ESTIMABLE 市场计入: NOT_ESTIMABLE 时间未确定 暂不可用',\n  expected: '“下一步看什么”暂时不可用。不会推断任何研究优先级。',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "scenario": "language_pending",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n\n    at run ([eval]:237:12) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'false',\n  expected: 'true',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  },
+  {
+    "scenario": "language_append_pending",
+    "exit": 1,
+    "stderr": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n\n    at run ([eval]:237:12) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'false',\n  expected: 'true',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n"
+  }
+]

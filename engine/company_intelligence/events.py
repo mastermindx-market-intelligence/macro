@@ -439,3 +439,101 @@ def quarantine_verdict(
                 reason=f"{field_name} is stamped after the observation time",
             )
     return None
+
+# ---------------------------------------------------------------------------
+# Source-anchored non-fiscal Company Intelligence event identity (R1B port)
+# ---------------------------------------------------------------------------
+from .contracts import (  # noqa: E402  -- kept beside the bounded extension
+    CATALYST_EVENT_FAMILIES,
+    CATALYST_SOURCE_FACT_AUTHORITY,
+    CATALYST_SOURCE_NAMESPACES,
+    canonical_json_sha256,
+    validate_company_catalyst_event,
+)
+
+SOURCE_EVENT_AUTHORITY = CATALYST_SOURCE_FACT_AUTHORITY
+
+
+def canonical_source_event_id(
+    company_id: object,
+    source_namespace: object,
+    native_event_key: object,
+    event_family: object,
+) -> str:
+    """Mint the correction-stable full-hash identity for one source event."""
+    issuer = company_id_for_cik(company_id)
+    if issuer == "cik:0000000000":
+        raise EventError("company_id cannot be the all-zero CIK")
+    namespace = str(source_namespace or "").strip()
+    family = str(event_family or "").strip()
+    native_key = str(native_event_key or "").strip()
+    if namespace not in CATALYST_SOURCE_NAMESPACES:
+        raise EventError("source_namespace is not admitted")
+    if family not in CATALYST_EVENT_FAMILIES:
+        raise EventError("event_family is not admitted")
+    if not native_key or len(native_key) > 1_024 or "\x00" in native_key:
+        raise EventError("native_event_key is required")
+    identity = {
+        "company_id": issuer,
+        "source_namespace": namespace,
+        "native_event_key": native_key,
+        "event_family": family,
+    }
+    return "evt_source_" + canonical_json_sha256(identity)
+
+
+def project_catalyst_event(
+    *,
+    company_id: object,
+    issuer_cik: object,
+    source_namespace: object,
+    native_event_key: object,
+    event_family: object,
+    revision_ref: object,
+    revision_is_current: object,
+    occurrence: object,
+    timing: object,
+    source_available_at: object,
+    observed_at: object,
+    document_refs: object,
+    public_evidence: object,
+    asset_mentions: object,
+    relationship_claims: object,
+    generation_cutoff: object | None = None,
+) -> dict[str, Any]:
+    """Project one admitted issuer-disclosure event into the bounded owner port."""
+    issuer = company_id_for_cik(company_id)
+    event_id = canonical_source_event_id(
+        issuer, source_namespace, native_event_key, event_family
+    )
+    payload = {
+        "contract_id": "company_catalyst_event.v1",
+        "schema_version": "1.0.0",
+        "event_id": event_id,
+        "company_id": issuer,
+        "issuer_cik": str(issuer_cik or "").strip(),
+        "event_family": str(event_family or "").strip(),
+        "native_identity": {
+            "source_namespace": str(source_namespace or "").strip(),
+            "native_event_key": str(native_event_key or "").strip(),
+        },
+        "revision_ref": revision_ref,
+        "revision_is_current": revision_is_current,
+        "occurrence": occurrence,
+        "timing": timing,
+        "source_available_at": source_available_at,
+        "observed_at": observed_at,
+        "document_refs": document_refs,
+        "public_evidence": public_evidence,
+        "asset_mentions": asset_mentions,
+        "relationship_claims": relationship_claims,
+        "authority": {
+            "classification": "source_fact",
+            "decision_authority": False,
+            "allowed_uses": ["display", "context", "explain"],
+            "forbidden_uses": list(SOURCE_EVENT_AUTHORITY["forbidden_uses"]),
+        },
+    }
+    return validate_company_catalyst_event(
+        payload, generation_cutoff=generation_cutoff
+    )

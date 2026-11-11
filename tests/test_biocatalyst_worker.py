@@ -506,6 +506,8 @@ def config(
     activation_root = tmp_path / "activation"
     activation_root.mkdir(mode=0o750, parents=True, exist_ok=True)
     activation_root.chmod(0o750)
+    # Match the explicit service group even when the temporary parent differs.
+    os.chown(activation_root, -1, os.getgid(), follow_symlinks=False)
     flags = {
         "source_collection": False,
         "ledger_accrual": False,
@@ -551,6 +553,7 @@ def config(
             if path.exists():
                 path.chmod(0o600)
             path.write_bytes(canonical_json_bytes(document))
+            os.chown(path, -1, os.getgid(), follow_symlinks=False)
             path.chmod(0o440)
 
     return worker.WorkerConfig(

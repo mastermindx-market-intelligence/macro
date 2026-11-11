@@ -1,15 +1,15 @@
 {
   "contract_id": "biocatalyst_f0_delta_reconciliation_receipt.v1",
   "schema_version": "1.0.0",
-  "state": "reconciled_with_eligibility_change",
+  "state": "reconciled_no_eligibility_change",
   "owner": "biocatalyst",
-  "reconciled_at": "2026-08-11T06:57:31Z",
-  "baseline_commit": "22cf8a9f8f54e341e2efb63c6d5c6984476252db",
+  "reconciled_at": "2026-11-08T17:40:50Z",
+  "baseline_commit": "9239d53f8b5b5ef20d7c88980af5682603813916",
   "ownership_registry_ref": "config/sector_intelligence_ownership.yml",
-  "ownership_registry_sha256": "ee7739df7ef4b11e4fc5c82091f0dbd9c9ed1108fa6b2178dcd854bc1cd597bb",
+  "ownership_registry_sha256": "a873329740285c8765b687c3416aeb72655c1309b582ccc046e68d5b00e45efa",
   "ownership_registry_reconciled_against_commit": "22cf8a9f8f54e341e2efb63c6d5c6984476252db",
   "adapter_fixture_ref": "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
-  "adapter_fixture_sha256": "014652beec3a56bceebb73928fca9cc5a049d22d7b3645dfac39c8d345579feb",
+  "adapter_fixture_sha256": "b6ba52dbd49395c05d948040d2b94c4e535a778e589459da84df5896a9b1e951",
   "adapter_fixture_baseline_commit": "22cf8a9f8f54e341e2efb63c6d5c6984476252db",
   "eligibility_rule": {
     "requires_executable_contract": true,
@@ -32,13 +32,16 @@
       "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "app/biocatalyst.py",
         "config/sector_intelligence_ownership.yml",
-        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json"
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "The mounted BioCatalyst router retains the declared current-record read paths and the fixture records the exact route set.",
-        "The adapter remains current-record facts only with no issuer, security, model, signal, Neural Web, or Prophet authority."
+        "Retain the eligible declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The registry and compatibility fixture both rename the declared callable from router to trial_facts_router. Every other byte matches the named historical records at accepted commit a7e09a974eac26a3cdf5f85491962b19013e122e.",
+        "Registered routes, owner, implementation state and the current-record-facts-only boundary are unchanged; no WMN route is added by these declarations.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -51,13 +54,15 @@
       "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "engine/earnings_narrative/biocatalyst_transcript_adapter.py",
-        "contracts/biocatalyst/biocatalyst_transcript_context_bundle.v1.schema.json",
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "The receipt-bound transcript context callable and its registered output contract remain private and in process.",
-        "The seam still performs no issuer, security, sponsor, trial, model, signal, Neural Web, or Prophet inference."
+        "Retain the eligible declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The registry, compatible fixture and source registry retain the previously recorded owner, private scope, routes, rights and authority declarations byte-for-byte; no eligibility change is introduced.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -70,13 +75,15 @@
       "eligibility_changed": false,
       "blocker": "reviewed_point_in_time_company_identity_contract",
       "inspected_paths": [
-        "engine/neuralweb/company_intelligence_reader.py",
-        "engine/company_intelligence/contracts.py",
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "The available ticker context reader is not a reviewed point-in-time identity or asset-ownership contract.",
-        "BioCatalyst remains forbidden from inferring issuer, sponsor, security, or asset identity from trial or ticker proximity."
+        "Retain the still_blocked declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The declared blocker reviewed_point_in_time_company_identity_contract and unavailable adapter fields remain exactly unchanged; this declaration comparison cannot qualify an absent identity or span contract.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -89,12 +96,15 @@
       "eligibility_changed": false,
       "blocker": "complete_point_in_time_security_and_corporate_actions_contract",
       "inspected_paths": [
-        "collectors/symbol_directory.py",
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "The exchange roster helper still does not provide a complete point-in-time security and corporate-actions master.",
-        "No BioCatalyst-facing identity callable or registered security identity output contract exists."
+        "Retain the still_blocked declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The declared blocker complete_point_in_time_security_and_corporate_actions_contract and unavailable adapter fields remain exactly unchanged; this declaration comparison cannot qualify an absent identity or span contract.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -107,12 +117,15 @@
       "eligibility_changed": false,
       "blocker": "versioned_document_and_exact_span_read_contract",
       "inspected_paths": [
-        "engine/fundamental_forensics/sec_document_spine.py",
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "Owner-internal filing archive helpers still expose no versioned cross-domain exact-span read contract.",
-        "BioCatalyst therefore cannot create a second document archive or treat internal substrate helpers as an eligible adapter."
+        "Retain the still_blocked declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The declared blocker versioned_document_and_exact_span_read_contract and unavailable adapter fields remain exactly unchanged; this declaration comparison cannot qualify an absent identity or span contract.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -120,22 +133,20 @@
       "adapter_id": "biocatalyst_capital_structure_pit_adapter.v1",
       "owning_registration": "capital_structure_projection",
       "verdict": "eligible",
-      "prior_biocatalyst_eligible": false,
+      "prior_biocatalyst_eligible": true,
       "reconciled_biocatalyst_eligible": true,
-      "eligibility_changed": true,
+      "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "engine/capital_structure/biocatalyst_pit_adapter.py",
-        "engine/capital_structure/verified_projection_generation.py",
-        "engine/capital_structure/projection.py",
-        "contracts/biocatalyst/biocatalyst_capital_structure_pit_read.v1.schema.json",
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "The private read accepts one caller-supplied SEC issuer id and a timezone-aware system clock, verifies the owner generation, and returns at most one issuer projection.",
-        "Owner corrections replay only after their Mastermind-observed clock; uncovered issuers remain explicit unavailable states without an absence conclusion.",
-        "The registered contract keeps cash, runway, dilution, instrument, capacity, and financing-probability capabilities unavailable and keeps every model, signal, Neural Web, and Prophet authority false.",
-        "The adapter adds no route, store, identity resolution, source fetch, cash calculation, or second Capital Structure writer."
+        "Retain the eligible declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The registry, compatible fixture and source registry retain the previously recorded owner, private scope, routes, rights and authority declarations byte-for-byte; no eligibility change is introduced.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -148,10 +159,15 @@
       "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "User state remains owned by Terminal Supabase and no BioCatalyst read-adapter slot was created."
+        "Retain the no_read_adapter_slot declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The terminal_supabase ownership declaration still has no BioCatalyst read-adapter slot. Its prior null eligibility and zero authority are retained.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -164,10 +180,15 @@
       "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "Neural Web remains interface only and cannot write domain truth, mutate sources, or originate predictions."
+        "Retain the no_read_adapter_slot declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The neural_web ownership declaration still has no BioCatalyst read-adapter slot. Its prior null eligibility and zero authority are retained.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     },
     {
@@ -180,10 +201,15 @@
       "eligibility_changed": false,
       "blocker": null,
       "inspected_paths": [
-        "config/sector_intelligence_ownership.yml"
+        "config/sector_intelligence_ownership.yml",
+        "data/biocatalyst/fixtures/shared_plane_read_adapters.v1.json",
+        "config/biocatalyst_sources.yml",
+        "data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
       ],
       "evidence": [
-        "Prophet remains the selection owner and BioCatalyst cannot originate, reorder, gate, or size candidates."
+        "Retain the no_read_adapter_slot declaration from historical receipt biocatalyst_f0_delta_8c7914cafeaab44a0d695f15; this successor compares published declarations and exact bytes, not application behavior.",
+        "The prophet ownership declaration still has no BioCatalyst read-adapter slot. Its prior null eligibility and zero authority are retained.",
+        "No application, provider, native-owner, rights, entitlement, production or runtime audit was performed. Existing eligibility and blocked states are retained without a new promotion."
       ]
     }
   ],
@@ -201,6 +227,6 @@
     "originates_signals_scores_or_ranking": false
   },
   "hash_scope": "canonical_payload_excluding_receipt_id_and_content_sha256",
-  "receipt_id": "biocatalyst_f0_delta_8c7914cafeaab44a0d695f15",
-  "content_sha256": "8c7914cafeaab44a0d695f156205e40f2310812b40ce2b487b736d20110577e2"
+  "content_sha256": "c0e012af5147a0530ca61fcb631583c812b3c061f5c468d057495150343474a1",
+  "receipt_id": "biocatalyst_f0_delta_c0e012af5147a0530ca61fcb"
 }

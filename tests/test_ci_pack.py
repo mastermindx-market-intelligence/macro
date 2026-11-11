@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,32 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #6712, exact-head hosted contract follow-up):
+    CI run 42996405769, contract-delta job 130441481285, tested synthetic
+    merge 18f5b434 (head 42226843364f, base 71405417a0ff): index 137/5974/10,
+    free 137/5995/10, plan-book 131/5732/10. The prior owner-only account
+    below omitted the same +8 contribution to the plan-book probe; set its
+    ceiling to the observed 5732. This supersedes the earlier instruction to
+    preserve 5724, while retaining that limited evidence account below. Add
+    the three BioCatalyst adapter/priority/
+    what-matters-next paths to each of catalyst-loop-integrated, eval-os-a1,
+    ontology-explorer and options-matrix-code, as the exhaustive current-head
+    contract census requires. Those twelve literal path additions change no
+    command or owner weight. Preserve all job ceilings, ten packs, estimators,
+    assertions, scopes, timeouts and admission limits. The earlier local
+    evidence remains qualified; this paragraph records the actual hosted
+    measurement and its focused source repair, not a successor CI pass.
+
+    2026-11-11 (PR #6712, current-main BioCatalyst composition):
+    Preserve all 401 current owners and the original R9 additive test/closure
+    enrollment. The unchanged canonical owner estimator measures the combined
+    biocatalyst-contracts command at 52 -> 60; the other nine touched owners
+    retain their weights. Carry the existing R9 +8 contribution onto the two
+    previously funded probes: 5966/5987 -> 5974/5995. Preserve the 5724 plan-book
+    ceiling, all 137/138/131 job ceilings, ten packs, commands and assertions.
+    This is measured owner accounting and source conservation; whole-tree
+    inference and the combined hosted proof remain the natural CI's job.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -8081,6 +8107,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
+    2026-10-20 BioCatalyst R9/R9a on exact main 16f7269bb72a:
+    existing GitHub composition f0613dfb5c22 retains all 330 jobs. The
+    biocatalyst-contracts job adds four required suites (Company catalyst
+    events, Data OS CIK reader, research priority and What Matters Next).
+    The unchanged estimator has three commands and one command-length unit
+    on both sides; explicit test mentions rise 24 -> 28, weight 52 -> 60.
+    No observed-duration override applies to that job. Serving/worker keep
+    their existing observed overrides of 272/274.
+
+    The actual combined-tree probes reproduce hosted run 39397016723:
+    index 135 jobs / 5,830 weight; build-free 134 / 5,705; plan-book 128 /
+    5,579, each ten packs. Fund only index 5,822 -> 5,830 and build-free
+    5,697 -> 5,705. Keep all job-count bounds, the plan-book bound, ten-pack
+    limit, suite commands, existing assertions and inference/closure gates.
+    The seven explicit Bio import-closure additions select no extra job on
+    these three probes. These are planning weights, not measured runtime.
+
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

@@ -31,6 +31,11 @@ RECONCILIATION_RECEIPT = (
     / "biocatalyst_f0_delta_reconciliation_receipt.v2.json"
 )
 
+HISTORICAL_RECONCILIATION_RECEIPT = (
+    RECONCILIATION_RECEIPT.parent
+    / "biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json"
+)
+
 _BLOCKED_ADAPTERS = {
     "biocatalyst_company_identity_pit_adapter.v1": (
         "reviewed_point_in_time_company_identity_contract"
@@ -125,8 +130,12 @@ def test_reconciliation_receipt_binds_the_exact_bytes_and_commit_it_audited() ->
     assert receipt["receipt_id"] == f"biocatalyst_f0_delta_{identity[:24]}"
 
 
-def test_reconciliation_records_exactly_one_adapter_eligibility_change() -> None:
-    receipt = _load_json(RECONCILIATION_RECEIPT)
+def test_historical_reconciliation_records_exactly_one_adapter_eligibility_change() -> None:
+    receipt = _load_json(HISTORICAL_RECONCILIATION_RECEIPT)
+    validate_contract(receipt, repo_root=ROOT)
+    assert _file_sha256(HISTORICAL_RECONCILIATION_RECEIPT) == (
+        "ac099a11ec101f349e16a5d510a7e787b285f60ddac3c84949df8e69c5ee4c78"
+    )
     fixture_adapters = _load_json(ADAPTER_FIXTURE)["adapters"]
     planes = _plane_by_adapter(receipt)
 
@@ -168,6 +177,53 @@ def test_reconciliation_records_exactly_one_adapter_eligibility_change() -> None
     assert "authority" in capital_evidence
 
 
+def test_current_reconciliation_retains_eligibility_after_callable_rename() -> None:
+    receipt = _load_json(RECONCILIATION_RECEIPT)
+    historical = _load_json(HISTORICAL_RECONCILIATION_RECEIPT)
+    registry = _load_yaml(OWNERSHIP_REGISTRY)
+    fixture = _load_json(ADAPTER_FIXTURE)
+
+    assert receipt["state"] == "reconciled_no_eligibility_change"
+    assert receipt["baseline_commit"] == (
+        "9239d53f8b5b5ef20d7c88980af5682603813916"
+    )
+    assert receipt["reconciled_at"] > historical["reconciled_at"]
+    assert receipt["receipt_id"] != historical["receipt_id"]
+    assert receipt["eligibility_rule"] == historical["eligibility_rule"]
+    assert receipt["authority"] == historical["authority"]
+
+    prior = {plane["plane"]: plane for plane in historical["planes"]}
+    assert {plane["plane"] for plane in receipt["planes"]} == set(prior)
+    for plane in receipt["planes"]:
+        old = prior[plane["plane"]]
+        for key in (
+            "adapter_id",
+            "owning_registration",
+            "verdict",
+            "reconciled_biocatalyst_eligible",
+            "blocker",
+        ):
+            assert plane[key] == old[key], (plane["plane"], key)
+        assert (
+            plane["prior_biocatalyst_eligible"]
+            == old["reconciled_biocatalyst_eligible"]
+        )
+        assert plane["eligibility_changed"] is False
+        # This successor inspected declarations, not the application owners.
+        assert all(
+            path.startswith(("config/", "data/biocatalyst/fixtures/"))
+            for path in plane["inspected_paths"]
+        )
+
+    adapter_id = "biocatalyst_trial_read_api.v1"
+    declared = registry["read_adapters"][adapter_id]
+    compatible = fixture["adapters"][adapter_id]
+    assert declared["callable"] == compatible["callable"] == "trial_facts_router"
+    assert declared["routes"] == compatible["routes"]
+    assert declared["canonical_owner"] == compatible["canonical_owner"]
+    assert declared["implementation_state"] == compatible["implementation_state"]
+
+
 def test_receipt_records_the_planes_that_own_no_biocatalyst_read_adapter() -> None:
     receipt = _load_json(RECONCILIATION_RECEIPT)
     slotless = {
@@ -201,7 +257,7 @@ def test_receipt_schema_rejects_an_eligible_verdict_that_keeps_its_blocker() -> 
 
 
 def test_receipt_schema_rejects_a_no_change_state_that_changed_an_eligibility() -> None:
-    changed = deepcopy(_load_json(RECONCILIATION_RECEIPT))
+    changed = deepcopy(_load_json(HISTORICAL_RECONCILIATION_RECEIPT))
     changed["state"] = "reconciled_no_eligibility_change"
 
     with pytest.raises(ContractValidationError):

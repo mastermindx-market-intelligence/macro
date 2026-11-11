@@ -1,0 +1,50 @@
+{
+  "source": "3901ec90c4fd5c31df3eeb670c9992a7ac1155d9",
+  "observation": "Actual local served shell references, verified against immutable tracked assets after capture; tracked source clean before and after proof",
+  "assets": {
+    "site/biocatalyst.css": {
+      "git_blob": "f237f5c24f484a569d12590cf032ec36d47281a5",
+      "sha256": "980cbd5941cd5ae6f38551cceb5432366292f30aafd98c897fff1c34fc63f94f"
+    },
+    "site/biocatalyst.js": {
+      "git_blob": "c9c9ed154bef647445a89f92452427dcb98914d6",
+      "sha256": "2cd4aec30dbbbbbaa045d4c081a59af99fd397a8196741e52c9b9c335cde42ea"
+    },
+    "site/live.js": {
+      "git_blob": "7e91599afb20a69c4010d5dc36c85439381d529f",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+    },
+    "site/live_config.js": {
+      "git_blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "site/logo_config.js": {
+      "git_blob": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "site/navigation-refresh.css": {
+      "git_blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+    },
+    "site/shared_shell.css": {
+      "git_blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+    },
+    "site/shared_shell_bridge.js": {
+      "git_blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+      "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+    },
+    "site/stock-logos.js": {
+      "git_blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "site/theme.css": {
+      "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+    },
+    "site/theme.js": {
+      "git_blob": "d85bf9fb55cd67faf32dd49e88423fe249fb8855",
+      "sha256": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
+    }
+  }
+}

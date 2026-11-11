@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/company_intelligence/company_catalyst_event.v1.schema.json",
+  "title": "Company Intelligence Source-Anchored Catalyst Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id", "schema_version", "event_id", "company_id", "issuer_cik",
+    "event_family", "native_identity", "revision_ref", "revision_is_current",
+    "occurrence", "timing", "source_available_at", "observed_at", "document_refs",
+    "public_evidence", "asset_mentions", "relationship_claims", "authority"
+  ],
+  "properties": {
+    "contract_id": {"const": "company_catalyst_event.v1"},
+    "schema_version": {"const": "1.0.0"},
+    "event_id": {"type": "string", "pattern": "^evt_source_[0-9a-f]{64}$"},
+    "company_id": {"type": "string", "pattern": "^cik:[0-9]{10}$"},
+    "issuer_cik": {"type": "string", "pattern": "^[0-9]{10}$"},
+    "event_family": {
+      "enum": [
+        "issuer_readout_guidance", "regulatory_target_disclosed",
+        "advisory_meeting_disclosed", "result_announced", "regulatory_action"
+      ]
+    },
+    "native_identity": {"$ref": "#/$defs/nativeIdentity"},
+    "revision_ref": {"type": "string", "minLength": 1, "maxLength": 512},
+    "revision_is_current": {"type": "boolean"},
+    "occurrence": {"enum": ["uncorroborated", "corroborated", "cancelled", "withdrawn"]},
+    "timing": {"$ref": "#/$defs/timing"},
+    "source_available_at": {"$ref": "#/$defs/knowledgeTimestamp"},
+    "observed_at": {"$ref": "#/$defs/knowledgeTimestamp"},
+    "document_refs": {
+      "type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 512}
+    },
+    "public_evidence": {"const": []},
+    "asset_mentions": {"const": []},
+    "relationship_claims": {"const": []},
+    "authority": {"$ref": "#/$defs/authority"}
+  },
+  "$defs": {
+    "knowledgeTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T.+(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "nativeIdentity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_namespace", "native_event_key"],
+      "properties": {
+        "source_namespace": {"const": "issuer_disclosure"},
+        "native_event_key": {"type": "string", "minLength": 1, "maxLength": 1024}
+      }
+    },
+    "timing": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "state", "source_class", "lower_date", "upper_date", "precision",
+        "source_timezone", "source_wording", "evidence_refs"
+      ],
+      "properties": {
+        "state": {"enum": ["consistent", "conflicted", "missing"]},
+        "source_class": {"enum": ["issuer_guided", "regulator_disclosed", "unresolved"]},
+        "lower_date": {"type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "upper_date": {"type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "precision": {"enum": ["day", "month", "quarter", "year", "window", "unknown"]},
+        "source_timezone": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+        "source_wording": {"type": ["string", "null"], "minLength": 1, "maxLength": 2000},
+        "evidence_refs": {
+          "type": "array", "maxItems": 256, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 512}
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"state": {"enum": ["conflicted", "missing"]}}},
+          "then": {"properties": {"lower_date": {"const": null}, "upper_date": {"const": null}}}
+        }
+      ]
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["classification", "decision_authority", "allowed_uses", "forbidden_uses"],
+      "properties": {
+        "classification": {"const": "source_fact"},
+        "decision_authority": {"const": false},
+        "allowed_uses": {"const": ["display", "context", "explain"]},
+        "forbidden_uses": {
+          "const": [
+            "originate_signal", "rank_security", "select_security", "size_position",
+            "gate_decision", "execute_trade", "raise_authority"
+          ]
+        }
+      }
+    }
+  }
+}

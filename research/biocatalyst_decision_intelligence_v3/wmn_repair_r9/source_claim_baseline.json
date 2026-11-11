@@ -1,0 +1,199 @@
+{
+  "allowlist_unchanged": true,
+  "biocatalyst_findings": 0,
+  "candidate_findings": 38,
+  "checker_unchanged": true,
+  "findings": [
+    {
+      "file": "engine/market_os/macro_workspaces/consumer.py",
+      "line_no": 106,
+      "text": "[detail] snapshot validated against mastermind.macro_workspace_snapshot.v1"
+    },
+    {
+      "file": "site/macro_business_activity.html",
+      "line_no": 2374,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_capital_structure.html",
+      "line_no": 2393,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_consumer_payments.html",
+      "line_no": 2604,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_financial_conditions.html",
+      "line_no": 2541,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_growth_real_economy.html",
+      "line_no": 2225,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_housing_real_estate.html",
+      "line_no": 2164,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_inflation_system.html",
+      "line_no": 1748,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_labor_markets.html",
+      "line_no": 2067,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_liquidity_central_banks.html",
+      "line_no": 2442,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_liquidity_regime.html",
+      "line_no": 1654,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_monetary_policy.html",
+      "line_no": 2276,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_national_debt_liabilities.html",
+      "line_no": 2880,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_rates_curves.html",
+      "line_no": 3654,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/macro_suite.js",
+      "line_no": 4,
+      "text": "* hash-validated snapshot, so this file never fetches, never computes a state,"
+    },
+    {
+      "file": "site/macro_trade_flows.html",
+      "line_no": 2222,
+      "text": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "file": "site/mm_brain.js",
+      "line_no": 3580,
+      "text": "whether it came from the server receipt (already validated server-side)"
+    },
+    {
+      "file": "templates/_macro_suite_shell.html.j2",
+      "line_no": 17,
+      "text": "``lib.macro_suite_view.build_view`` over ONE validated  [phrase matches entry 'one validated' but file surface ['macro_suite_shell'] is not in its `surfaces` \u2014 extend that entry only if the SAME backing covers this page, else add a properly-backed entry]"
+    },
+    {
+      "file": "templates/_macro_suite_shell.html.j2",
+      "line_no": 798,
+      "text": "<p class=\"mq-lineage-note\">{{ t('The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders"
+    },
+    {
+      "file": "templates/canada.html.j2",
+      "line_no": 2309,
+      "text": "{# The first five rows of the validated owner board are Canada's canonical Top"
+    },
+    {
+      "file": "templates/hk.html.j2",
+      "line_no": 3528,
+      "text": "The same validated identities drive first-frame source selection, result"
+    },
+    {
+      "file": "templates/hk.html.j2",
+      "line_no": 3655,
+      "text": "{# Cross this legacy serialization seam through the validated owner.  Raw"
+    },
+    {
+      "file": "templates/macro_business_activity.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_capital_structure.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_consumer_payments.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_financial_conditions.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_growth_real_economy.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_housing_real_estate.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_inflation_system.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_labor_markets.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_liquidity_central_banks.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_liquidity_regime.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_monetary_policy.html.j2",
+      "line_no": 6,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_national_debt_liabilities.html.j2",
+      "line_no": 7,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_rates_curves.html.j2",
+      "line_no": 8,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/macro_suite.js",
+      "line_no": 4,
+      "text": "* hash-validated snapshot, so this file never fetches, never computes a state,"
+    },
+    {
+      "file": "templates/macro_trade_flows.html.j2",
+      "line_no": 8,
+      "text": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "file": "templates/mm_brain.js",
+      "line_no": 3580,
+      "text": "whether it came from the server receipt (already validated server-side)"
+    }
+  ],
+  "findings_reproduced_against_exact_baseline_blobs": 38
+}
