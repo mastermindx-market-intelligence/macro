@@ -2003,6 +2003,72 @@
       "at": "2026-11-10T01:30:44.487933+00:00",
       "activated": false,
       "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=54367": {
+      "id": "wh-2026-11-10-nominations-and-withdrawals-sent-to-the-senate-b6a4",
+      "at": "2026-11-10T23:19:43.663985+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54360": {
+      "id": "wh-2026-11-10-veterans-day-2026",
+      "at": "2026-11-10T23:19:45.078626+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=54356": {
+      "id": "wh-2026-11-10-presidential-determination-concerning-wildfire-suppression-activities-in-the-uni",
+      "at": "2026-11-10T23:19:46.045083+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54354": {
+      "id": "wh-2026-11-10-congressional-bills-h-r-997-h-r-1703-h-r-1945-and-h-r-7730-signed-into-law",
+      "at": "2026-11-10T23:19:47.474981+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=54353": {
+      "id": "wh-2026-11-10-fact-sheet-president-donald-j-trump-advances-wildfire-suppression",
+      "at": "2026-11-10T23:19:58.864875+00:00",
+      "activated": true,
+      "importance": 61
+    },
+    "https://www.whitehouse.gov/?p=54335": {
+      "id": "wh-2026-11-10-secretary-hegseth-torches-baseless-impeachment-stunt-this-is-not-patriotism-this",
+      "at": "2026-11-10T23:20:06.147336+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54378": {
+      "id": "wh-2026-11-11-presidential-message-on-national-diabetes-month-a726",
+      "at": "2026-11-11T06:18:00.883166+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54375": {
+      "id": "wh-2026-11-11-presidential-message-on-the-birthday-of-the-united-states-marine-corps",
+      "at": "2026-11-11T06:18:04.000734+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54372": {
+      "id": "wh-2026-11-11-presidential-message-on-national-alzheimers-disease-awareness-month-59dc",
+      "at": "2026-11-11T06:18:06.278001+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54370": {
+      "id": "wh-2026-11-11-presidential-message-on-critical-infrastructure-security-and-resilience-month-aa",
+      "at": "2026-11-11T06:18:08.780056+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=54332": {
+      "id": "wh-2026-11-10-first-lady-melania-trumps-fostering-the-future-together-grows-its-international-",
+      "at": "2026-11-11T06:18:12.566031+00:00",
+      "activated": false,
+      "importance": 10
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

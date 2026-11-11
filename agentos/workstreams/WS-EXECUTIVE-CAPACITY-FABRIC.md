@@ -274,17 +274,30 @@ waves:
     next_action: >
       SOURCE_PROTECTED_DO_NOT_REPEAT. Mastermind https://github.com/mastermindx-market-intelligence/Mastermind/pull/510 merged as f9e46a72d6102b0e94c897590fc58bac89eb4ea6 on 2026-09-06; terminal source-release receipt https://github.com/mastermindx-market-intelligence/Macro/issues/6732#issuecomment-5561892827 completes only the inactive same-store source component. Normal schema 4, candidate DDL outside migrations, closed entrypoints, null/unarmed budgets and N=0 qualified peaks are September 6/7 source-cut facts, not a November runtime or capacity census. Current ECF ownership and the currently selected later handoff govern continuation. Retain the distinct historical routes agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-04-CLAUDE-ADAPTER-STATUS.md and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-05-FAIRNESS-CONTRACT-ACCEPTED.md: OCR/HF/PF, Runtime implementation/migration and production proof retain their separate owners; reconcile any original operation on its own carrier and do not duplicate or replay held/uncertain effects. Neither this done source wave nor its archived receipts authorizes activation, a host/provider action or a Linear write.
 decisions:
+  - DEC:READER-FENCE-EXCEPTION-IS-AN-EXACT-IMPORTER-MODULE-MAP
+  - DEC:SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN
   - "DEC:R81-AUTHORITY-VALIDATION-LAW"
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
   - DEC:LAUNCHER-RELOCATION-IS-A-CAPABILITY-GRANT
 discoveries:
+  - DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST
+  - DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE
+  - DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583
+  - DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY
   - "DSC:EXECUTIVE-RECEIPTS-HAVE-NO-ANTI-REPLAY-BINDING"
   - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
   - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
   - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
+  - agentos/decisions/DEC-READER-FENCE-EXCEPTION-IS-AN-EXACT-IMPORTER-MODULE-MAP.md
+  - agentos/decisions/DEC-SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN.md
+  - agentos/discoveries/DSC-EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST.md
+  - agentos/discoveries/DSC-FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE.md
+  - agentos/discoveries/DSC-INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583.md
+  - agentos/discoveries/DSC-ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17-POST-7181-CURRENTNESS.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-11-03-UBUNTU4.md
   - "agentos/decisions/DEC-R81-AUTHORITY-VALIDATION-LAW.md"
   - "agentos/discoveries/DSC-EXECUTIVE-RECEIPTS-HAVE-NO-ANTI-REPLAY-BINDING.md"
@@ -627,3 +640,17 @@ this workstream.
 Mastermind#677 actually merged2026-09-17T05:52:04Z from2374a31d as6fc5c057. [Original source closeout](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709061650) records the specific writer release; [acceptance](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709321380) and [post-merge readback](https://github.com/mastermindx-market-intelligence/Mastermind/pull/677#issuecomment-5709627963) limit it to protected H3 source. The older September16 source/repair/custody statements in this historical workstream are qualified by those later receipts. All other existing workstream content and12 waves are preserved.
 
 The anti-replay discovery remains a verified historical6dc2 observation with current status unassessed. H4_NOT_STARTED/NOT_INSTALLED describe the dated source closeout, not a current host or programme census. This records-only correction performs no runtime, host, provider or authority action.
+
+## Historical records restored from #7223 — 2026-11-09
+
+The six September 17 decision/discovery records and the distinct post-#7181 currentness handoff are
+retained from source `936211da17ede564517deab4ea777ab782b0b210`. The historical handoff now lives at
+`agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17-POST-7181-CURRENTNESS.md`; the existing September 17
+PF1 handoff keeps its original path and bytes. The September 16 POST-7181 fold retains its later §9/§10
+and reconciles five original corrections to its already recorded #677 verifier and ancestry timestamps.
+
+These are dated knowledge records. All current workstream status, waves and next-action qualifications,
+including the November 5 R81 and November 6 records-fold qualifications and September 29 correction,
+remain unchanged. Later #7223 comment intakes are not silently folded or accepted by this integration.
+No provider, browser, Business, installation, runtime admission, writer-release or live product proof is
+created by retaining the records. Generated Agent OS state remains owned by its existing regenerator.
