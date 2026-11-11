@@ -285,6 +285,7 @@ def test_prophet_unavailable_marks_every_member(real_join):
     assert view["counts"]["unavailable"] == view["counts"]["served"]
     # A3-1: the wire types both plan counts as integers; the Terminal decoder
     # refuses null, so an unavailable member carries 0 beside its state+reason.
+    # Contract A3-1 (ruled 2026-11-11): these zeros are placeholders, never measurements.
     for member in view["members"]:
         assert member["prophet"]["open_plan_count"] == 0
         assert member["prophet"]["resolved_plan_count"] == 0
