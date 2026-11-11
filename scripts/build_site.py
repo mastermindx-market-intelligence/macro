@@ -4643,19 +4643,53 @@ def chart_vix_term(f: pd.DataFrame, cf: pd.DataFrame) -> str:
     return _html(fig)
 
 
-def _master_brief_vm() -> dict:
+def _aibrief_lens_freshness(site_dir: Path, lens: str) -> "dict | None":
+    """Consumer of the machine-readable receipt site/aibrief_freshness.json (written by
+    scripts/build_aibrief.py). Returns {"stale": bool, "generated_date": "YYYY-MM-DD",
+    "refresh_days": int} for `lens`, or None when the receipt/lens/any field is missing
+    or malformed -- a page that cannot VERIFY an age renders no freshness chip rather than
+    asserting one. Fail-open and never fatal. Kept identical across build_site.py /
+    build_china.py / build_hk.py (parity pinned by tests/test_aibrief_consumer_freshness.py)."""
+    try:
+        from datetime import date as _date  # noqa: PLC0415
+        _rcpt = json.loads((Path(site_dir) / "aibrief_freshness.json").read_text(encoding="utf-8"))
+        _e = _rcpt["lenses"][lens]
+        _stale = _e["stale"]
+        _gen = _e["generated_at"]
+        _rd = _e["refresh_days"]
+        if not isinstance(_stale, bool):
+            return None
+        if isinstance(_rd, bool) or not isinstance(_rd, int) or not (0 < _rd <= 7):
+            return None
+        if not isinstance(_gen, str):
+            return None
+        _gd = _gen[:10]
+        _date.fromisoformat(_gd)  # ValueError -> caught below -> None
+        return {"stale": _stale, "generated_date": _gd, "refresh_days": _rd}
+    except Exception as _fe:  # noqa: BLE001 -- display-only; never fatal
+        log.debug("aibrief freshness receipt unusable for lens %s (%s); no chip", lens, _fe)
+        return None
+
+
+def _master_brief_vm(site_dir: "Path | None" = None, data_dir: "Path | None" = None) -> dict:
     """Read site/master_brief.json (fallback data/regime/master_brief.json).
-    Returns {'master_brief': <dict>} on success, {} on any failure (fail-open).
-    Never fatal — a missing/malformed file simply omits the key from the VM."""
+    Returns {'master_brief': <dict>, 'master_brief_freshness': <dict|None>} on success,
+    {} on any failure (fail-open). Never fatal — a missing/malformed file simply omits
+    the key from the VM. `master_brief_freshness` is the verified `macro` lens entry of
+    site/aibrief_freshness.json (None when unverifiable -> the template renders no chip).
+    `site_dir`/`data_dir` default to the repo's; they exist so tests can inject tmp dirs."""
     import json as _json
+    _site = Path(site_dir) if site_dir is not None else Path(__file__).parent.parent / "site"
+    _data = Path(data_dir) if data_dir is not None else Path(__file__).parent.parent / "data"
     _candidates = [
-        Path(__file__).parent.parent / "site" / "master_brief.json",
-        Path(__file__).parent.parent / "data" / "regime" / "master_brief.json",
+        _site / "master_brief.json",
+        _data / "regime" / "master_brief.json",
     ]
     for _p in _candidates:
         try:
             if _p.exists():
-                return {"master_brief": _json.loads(_p.read_text(encoding="utf-8"))}
+                return {"master_brief": _json.loads(_p.read_text(encoding="utf-8")),
+                        "master_brief_freshness": _aibrief_lens_freshness(_site, "macro")}
         except Exception:  # noqa: BLE001 — display-only; never fatal
             pass
     return {}

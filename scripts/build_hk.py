@@ -62,6 +62,34 @@ PLOT_LAYOUT = dict(
     legend={"orientation": "h", "y": 1.08})
 
 
+def _aibrief_lens_freshness(site_dir: Path, lens: str) -> "dict | None":
+    """Consumer of the machine-readable receipt site/aibrief_freshness.json (written by
+    scripts/build_aibrief.py). Returns {"stale": bool, "generated_date": "YYYY-MM-DD",
+    "refresh_days": int} for `lens`, or None when the receipt/lens/any field is missing
+    or malformed -- a page that cannot VERIFY an age renders no freshness chip rather than
+    asserting one. Fail-open and never fatal. Kept identical across build_site.py /
+    build_china.py / build_hk.py (parity pinned by tests/test_aibrief_consumer_freshness.py)."""
+    try:
+        from datetime import date as _date  # noqa: PLC0415
+        _rcpt = json.loads((Path(site_dir) / "aibrief_freshness.json").read_text(encoding="utf-8"))
+        _e = _rcpt["lenses"][lens]
+        _stale = _e["stale"]
+        _gen = _e["generated_at"]
+        _rd = _e["refresh_days"]
+        if not isinstance(_stale, bool):
+            return None
+        if isinstance(_rd, bool) or not isinstance(_rd, int) or not (0 < _rd <= 7):
+            return None
+        if not isinstance(_gen, str):
+            return None
+        _gd = _gen[:10]
+        _date.fromisoformat(_gd)  # ValueError -> caught below -> None
+        return {"stale": _stale, "generated_date": _gd, "refresh_days": _rd}
+    except Exception as _fe:  # noqa: BLE001 -- display-only; never fatal
+        log.debug("aibrief freshness receipt unusable for lens %s (%s); no chip", lens, _fe)
+        return None
+
+
 def tv_symbol(ticker: str) -> str:
     """TradingView symbol for an HK ticker. `0700.HK -> HKEX:700` (strip leading
     zeros); indices fall back to a sensible TV symbol."""
@@ -1568,6 +1596,9 @@ def main() -> int:
         except Exception as _cb_e:  # noqa: BLE001 — additive, never fatal
             log.warning("hk china_brief load failed (%s); skipping", _cb_e)
             vm["china_brief"] = None
+        # Verified freshness of the shared brief (receipt site/aibrief_freshness.json,
+        # `china` lens). None = unverifiable -> the template renders no chip.
+        vm["china_brief_freshness"] = _aibrief_lens_freshness(site, "china")
 
         # HK / US / China macro release calendar — display-only scheduling context
         # (pure date arithmetic; no news API). None-safe.
