@@ -395,6 +395,7 @@ def render_fixture_html(vm: dict | None = None) -> str:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     for name in (
         "theme.css", "theme.js", "navigation-refresh.css", "product-nav-icons.css",
@@ -405,21 +406,21 @@ def write_fixture_site(scratch: Path) -> None:
             shutil.copy(src, scratch / name)
 
     live = render_fixture_html()
-    (scratch / "live.html").write_text(live, encoding="utf-8")
+    write_unshimmed_html(scratch / "live.html", live, encoding="utf-8")
 
-    (scratch / "null_markets.html").write_text(live, encoding="utf-8")
+    write_unshimmed_html(scratch / "null_markets.html", live, encoding="utf-8")
 
     none_vm = fixture_vm(macro_catalysts=None)
-    (scratch / "events_none.html").write_text(render_fixture_html(none_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "events_none.html", render_fixture_html(none_vm), encoding="utf-8")
 
     empty_vm = fixture_vm(macro_catalysts=[])
-    (scratch / "events_empty.html").write_text(render_fixture_html(empty_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "events_empty.html", render_fixture_html(empty_vm), encoding="utf-8")
 
     zero_vm = fixture_vm(alerts=[], macro_news={"headlines": [], "synthesis": {}})
     latest0 = dict(zero_vm["latest"])
     latest0["dislocation"] = None
     zero_vm["latest"] = latest0
-    (scratch / "alerts_zero.html").write_text(render_fixture_html(zero_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "alerts_zero.html", render_fixture_html(zero_vm), encoding="utf-8")
 
     fc_vm = fixture_vm()
     latest_fc = dict(fc_vm["latest"])
@@ -428,7 +429,7 @@ def write_fixture_site(scratch: Path) -> None:
         "z": None, "threshold": 1.0, "margin": 0.4,
     }
     fc_vm["latest"] = latest_fc
-    (scratch / "regime_fc_null.html").write_text(render_fixture_html(fc_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "regime_fc_null.html", render_fixture_html(fc_vm), encoding="utf-8")
 
     count_vm = fixture_vm(alerts=[
         _alert("gex_flip_cross", "watch"),
@@ -448,7 +449,7 @@ def write_fixture_site(scratch: Path) -> None:
                message="Source 'fred' marked dead after 3 consecutive failures",
                message_zh="中断"),
     ])
-    (scratch / "count_truth.html").write_text(render_fixture_html(count_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "count_truth.html", render_fixture_html(count_vm), encoding="utf-8")
 
     dislo_vm = fixture_vm(alerts=[])
     latest_d = dict(dislo_vm["latest"])
@@ -462,7 +463,7 @@ def write_fixture_site(scratch: Path) -> None:
         "catalyst_narrative": {"agreement": "corroborates"},
     }
     dislo_vm["latest"] = latest_d
-    (scratch / "dislocation_dlg.html").write_text(render_fixture_html(dislo_vm), encoding="utf-8")
+    write_unshimmed_html(scratch / "dislocation_dlg.html", render_fixture_html(dislo_vm), encoding="utf-8")
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:

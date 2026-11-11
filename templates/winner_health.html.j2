@@ -234,6 +234,9 @@
   <div class="c-gain">
     {{ figcell(r, T) }}
     <span class="cap">{{ t(M.cap_en, M.cap_zh) }}</span>
+    {%- if r.r21 is defined and r.r21 is not none -%}
+    <span class="cap">{{ t(pc(r.r21) ~ ' in 21 sessions', '近 21 个交易日 ' ~ pc(r.r21)) }}</span>
+    {%- endif -%}
   </div>
   {%- if not compact %}<div class="c-sp">{{ spark(r.spark, r.episode_high) }}</div>{% endif %}
   <div class="c-legs">
@@ -264,6 +267,14 @@
       {%- elif _off is not none -%}<span class="l-en">{{ '%.0f' % (_off * -100) }}% under its high</span><span class="l-zh">低于自身高点 {{ '%.0f' % (_off * -100) }}%</span>
       {%- else -%}{{ t('nothing has slipped', '暂无转弱迹象') }}{%- endif -%}
     </span>
+    {%- endif %}
+    {#- Run age: ONLY the producer's own committed days_in_episode on this row
+        (engine/top_maturation.py:1584) — never derived from the spark's length,
+        never converted to months. Null or absent prints nothing at all. -#}
+    {%- if r.days_in_episode is defined and r.days_in_episode is not none
+           and r.days_in_episode is integer and r.days_in_episode >= 1 %}
+    <span class="legs clean">{{ t(r.days_in_episode ~ (' session' if r.days_in_episode == 1
+      else ' sessions') ~ ' in this run', '本轮已持续 ' ~ r.days_in_episode ~ ' 个交易日') }}</span>
     {%- endif %}
     {%- endif %}
   </div>
@@ -461,11 +472,11 @@ html[data-theme="light"] .bar{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(-
 /* Unobserved tail: not a healthy segment. Dark = muted hatch in the well;
    light = hairline hatch + inset ring (research-workspace, not a token swap). */
 html[data-theme="light"] .bar .b0{
-  background-color:color-mix(in srgb,var(--text) 4%,var(--panel));
+  background-color:var(--panel2);
   background-image:repeating-linear-gradient(-45deg,
-    color-mix(in srgb,var(--text) 14%,transparent) 0 1px,
+    var(--mc-ink-14) 0 1px,
     transparent 1px 5px);
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 10%,transparent)}
+  box-shadow:inset 0 0 0 1px var(--mc-ink-10)}
 html[data-theme="light"] .leg{border-bottom-color:color-mix(in srgb,var(--text) 34%,transparent)}
 *,*::before,*::after{box-sizing:border-box}
 html:not([data-lang="zh"]) .l-zh{display:none}
@@ -574,7 +585,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .sec-hd h2{margin:0;font-size:16px;font-weight:750;letter-spacing:-.018em;color:var(--text)}
 .sec-hd .stance{font-size:12px;font-weight:700;color:var(--m2);white-space:nowrap}
 .sec-hd .note{font-size:12.5px;color:var(--muted-strong)}
-.thm .tname[data-tip-en]{cursor:help;border-bottom:1px dotted color-mix(in srgb,var(--text) 22%,transparent)}
+.thm .tname[data-tip-en]{cursor:help;border-bottom:1px dotted var(--mc-text-22)}
 .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:9px 22px;
   margin-top:14px}
 .thm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;align-items:baseline;
@@ -593,9 +604,9 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .bar .b3{background:var(--m3)} .bar .b4{background:var(--m4)}
 /* Unobserved names: hatched ground, not the healthy teal. Width already
    scales off members; this tail is what keeps the fill honest. */
-.bar .b0{background-color:color-mix(in srgb,var(--text) 7%,transparent);
+.bar .b0{background-color:var(--mc-ink-07);
   background-image:repeating-linear-gradient(-52deg,
-    color-mix(in srgb,var(--text) 16%,transparent) 0 1px,
+    var(--mc-ink-18) 0 1px,
     transparent 1px 6px);cursor:help}
 .thm .tmat{font-size:11.5px;font-weight:650;font-variant-numeric:tabular-nums}
 .thm .tmat.on{color:var(--m3)} .thm .tmat.off{color:var(--muted)}
@@ -619,7 +630,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .sh-bar .bar{height:10px;border-radius:3px}
 @media(max-width:620px){
   .sh-row{grid-template-columns:minmax(0,1fr) auto}
-  .sh-sum{grid-column:1;justify-self:start;margin-top:2px}
+  .sh-sum{grid-column:1;justify-self:start;margin-top:2px;white-space:normal}
 }
 
 /* ── TIER SECTION — position, name and size distinguish a tier. Never a hue:
@@ -725,27 +736,29 @@ html[data-theme="light"] .tnull{background:var(--panel);
 .wh-find .wh-find-lab{font-size:11.5px;font-weight:650;color:var(--muted-strong)}
 .wh-find input{width:100%;box-sizing:border-box;margin:0;padding:8px 12px;
   font:inherit;font-size:var(--fs-body);color:var(--text);
-  background:color-mix(in srgb,var(--panel) 82%,transparent);
+  background:var(--glass-bg);
   border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
-.wh-find input:focus{outline:2px solid color-mix(in srgb,var(--m1) 55%,transparent);
+.wh-find input:focus{outline:2px solid var(--link);
   outline-offset:1px}
 html[data-theme="light"] .wh-find input{background:var(--panel);
-  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 10%,transparent)}
+  box-shadow:0 1px 2px var(--mc-ink-10)}
 .wh-find-null{margin:14px 0 4px;padding:12px 14px;max-width:46ch;
   color:var(--muted-strong);font-size:14px;line-height:1.55;
-  background:color-mix(in srgb,var(--panel) 82%,transparent);
+  background:var(--glass-bg);
   border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
 .wh-find-null[hidden]{display:none!important}
 .wh-find-null b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
 html[data-theme="light"] .wh-find-null{background:var(--panel);
-  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 10%,transparent)}
+  box-shadow:0 1px 2px var(--mc-ink-10)}
 .wh-more{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;padding:7px 12px;
   font:inherit;font-size:12.5px;font-weight:650;color:var(--text);cursor:pointer;
-  background:color-mix(in srgb,var(--panel) 70%,transparent);
+  background:var(--gbtn-bg);
   border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
-.wh-more:hover,.wh-more:focus-visible{background:color-mix(in srgb,var(--mc,var(--m2)) 10%,var(--panel))}
+.wh-more:hover,.wh-more:focus-visible,
+html[data-theme="light"] .wh-more:hover,html[data-theme="light"] .wh-more:focus-visible{background:var(--gbtn-bg-hover)}
+.wh-more:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 html[data-theme="light"] .wh-more{background:var(--panel);
-  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
+  box-shadow:0 1px 2px var(--mc-ink-08)}
 @media(max-width:620px){
   .wh-find{max-width:none}
   .wh-more{width:100%;justify-content:center}
@@ -860,6 +873,23 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   </div>
 
   {% if MODE == 'board' %}
+  {#- Membership is a WINDOW, not tonight's band: a name that cleared a bar inside
+      `_diagnostics.membership_window_sessions` stays on the board, and one that no
+      longer clears its bar today is kept only as Character changed. Both numbers
+      are display-only reads of fields the producer already ships; `WH.get(...)`
+      keeps a v1 artifact (no diagnostics) rendering the same page, with
+      "recently" in place of a window it never declared. -#}
+  {%- set W = (WH.get('_diagnostics') or {}).get('membership_window_sessions') -%}
+  {%- set W_EN = (' in the last ' ~ W ~ ' sessions') if W else ' recently' -%}
+  {%- set W_ZH = ('最近 ' ~ W ~ ' 个交易日内') if W else '近期' -%}
+  {%- set HERO_EN = ('A name is listed when it cleared one of the three bars' ~ W_EN ~
+       '; one that no longer clears its bar on this reading is listed only as Character changed.') -%}
+  {%- set HERO_ZH = ('个股只要在' ~ W_ZH ~ '达到过三道门槛之一就会列出；' ~
+       '本次判读中已不再达到门槛的，只会列在「走势已变」。') -%}
+  {%- set WHO_EN = ('Every US name that cleared one of the three bars' ~ W_EN ~
+       '. Each bar includes being within 10% of its highest close in the past year.') -%}
+  {%- set WHO_ZH = (W_ZH ~ '达到过三道门槛之一的所有美股。' ~
+       '每道门槛都包含收盘价在过去一年最高收盘价 10% 以内这一条。') -%}
   {# ══ HERO — THE SHELF. Three kinds of winner, compared honestly. The overlap
         fact is stated BEFORE any number, because it is the one thing that makes
         three counts on one page readable at all. ══ #}
@@ -867,10 +897,10 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     <div class="hero-lede">
       <span class="l-en"><b>Three kinds of winner, each read against its own history.</b>
         <span class="q">A name can be in more than one, so these counts do not add up to a total.
-        Every name here is within 10% of its highest close in the past year.</span></span>
+        {{ HERO_EN }}</span></span>
       <span class="l-zh"><b>三类赢家，各自对照自身历史来判读。</b>
         <span class="q">同一只个股可能同时属于多类，因此这些数字不能相加。
-        这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。</span></span>
+        {{ HERO_ZH }}</span></span>
       {{ lens.lens(
            kind='define',
            ill=lens.ILL_LANES,
@@ -878,8 +908,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
            title=('Three groups, one question','三个分组，同一个问题'),
            rows=[
              {'tone':'info','k':('Who is here','谁在这里'),
-              'v':('Every US name within 10% of its highest close in the past year that also clears one of the three bars.',
-                   '所有收盘价在过去一年最高收盘价 10% 以内、并且达到三道门槛之一的美股。')},
+              'v':(WHO_EN, WHO_ZH)},
              {'tone':'info','k':('Counted apart','分开计数'),
               'v':('A name can clear more than one bar, so it can appear in more than one group. The counts are never added together.',
                    '同一只个股可能同时达到多道门槛，因此可能出现在多个分组里。各组数字从不相加。')},
@@ -903,11 +932,19 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         <span class="sh-nm">{{ t(M.en, M.zh) }}</span>
         <span class="sh-n"><span class="l-en"><b>{{ nt }}</b> names</span><span class="l-zh"><b>{{ nt }}</b> 只</span></span>
         <span class="sh-def">{{ t(M.def_en, M.def_zh) }}</span>
+        {%- set nob = (((WH.get('_diagnostics') or {}).get('tiers') or {})
+                       .get(T.key) or {}).get('n_off_band_on_board') -%}
+        {%- set nob_on = T.readable and nob is integer and nob > 0 %}
         <span class="sh-sum">
           {%- if not T.readable -%}{{ t('no read', '未判读') }}
           {%- elif nt == 0 -%}{{ t('none in this group', '该分组暂无个股') }}
           {%- elif mat == 0 -%}{{ t('none aging', '没有在老化的') }}
-          {%- else -%}<span class="l-en"><b>{{ mat }}</b> of them aging</span><span class="l-zh">其中 <b>{{ mat }}</b> 只在老化</span>
+          {%- else -%}
+          <span class="l-en"><b>{{ mat }}</b> of them aging
+            {%- if nob_on %} · <b>{{ nob }}</b> no longer clear the bar on this reading{% endif %}</span>
+          <span class="l-zh">其中 <b>{{ mat }}</b> 只在老化
+            {%- if nob_on %} · 其中 <b>{{ nob }}</b>
+              只在本次判读中已不再达到门槛{% endif %}</span>
           {%- endif -%}
         </span>
         {#- HONEST WIDTH, one scope up from the theme tomography: a 122-name group
@@ -986,8 +1023,8 @@ a.tk:hover{color:var(--ink-link, var(--link))}
            placeholder="Ticker or name">
   </div>
   <p id="wh-find-null" class="wh-find-null" hidden role="status" aria-live="polite">
-    <span class="l-en">No name matching "<b data-find-q></b>" is on this board — it isn't tracked here.</span>
-    <span class="l-zh">没有匹配「<b data-find-q></b>」的标的在本板上——该标的不在跟踪范围内。</span>
+    <span class="l-en">No individually listed name matches "<b data-find-q></b>". Large “Still running” groups are shown as counts only.</span>
+    <span class="l-zh">逐只列出的标的中，没有匹配「<b data-find-q></b>」的结果。较大的「仍在延续」分组只显示数量。</span>
   </p>
   {%- for T in TIERS %}
   {%- set M = TIER_META.get(T.key) or TIER_META['primary'] %}
@@ -1219,8 +1256,8 @@ a.tk:hover{color:var(--ink-link, var(--link))}
             'v':(('{:,}'.format(WH.universe_n) ~ ' US names screened' ~ ((', read ' ~ WH.asof) if (WH and WH.asof) else '') ~ '.') if (WH and WH.universe_n) else 'The screened count and read date print here the night the read lands.',
                  (('筛查 ' ~ '{:,}'.format(WH.universe_n) ~ ' 只美股' ~ (('，判读日期 ' ~ WH.asof) if (WH and WH.asof) else '') ~ '。') if (WH and WH.universe_n) else '筛查只数和判读日期会在夜间判读落地后显示在这里。'))},
            {'tone':'info','k':('Just left a group','刚离开某组'),
-            'v':('A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.',
-                 '刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它没有达到这三道门槛中的任何一道。')}],
+            'v':('A name that has just left a group stays listed there only while we read the change. Search covers individually listed names; large “Still running” groups are shown as counts only.',
+                 '刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组。搜索覆盖逐只列出的标的；较大的「仍在延续」分组只显示数量。')}],
          receipt=('display only · no rank, gate or position size','仅供展示 · 不参与排序、准入或仓位')) }}
   </div>
 

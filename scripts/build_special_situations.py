@@ -194,7 +194,7 @@ def _usd_m(mc) -> str:
         mc = float(mc)
     except (TypeError, ValueError):
         return "—"
-    if mc != mc:  # NaN
+    if not math.isfinite(mc):  # NaN / +/-Inf
         return "—"
     return f"${mc / 1000:.1f}B" if mc >= 1000 else f"${mc:.0f}M"
 
@@ -693,7 +693,7 @@ def _mc_bucket(mc_musd) -> str:
         mc = float(mc_musd)
     except (TypeError, ValueError):
         return "unknown"
-    if mc != mc:
+    if not math.isfinite(mc):
         return "unknown"
     if mc >= 10_000:
         return "large"
