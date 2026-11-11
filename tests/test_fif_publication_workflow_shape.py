@@ -92,8 +92,14 @@ def test_secrets_referenced_by_name_only() -> None:
     assert expressions
     # Secrets are referenced BY NAME only. Non-secret workflow contexts are
     # allowed from this narrow allowlist (the house upload-artifact pattern's
-    # runner.temp / github.run_id — D5); anything else must be a secrets.NAME.
-    non_secret_contexts = {"runner.temp", "github.run_id"}
+    # runner.temp / github.run_id — D5) plus the data-lane runner switch
+    # (docs/RUNNER_DATA_LINUX_POOL.md); anything else must be a secrets.NAME.
+    non_secret_contexts = {
+        "runner.temp",
+        "github.run_id",
+        "vars.MACRO_DATA_LANE || 'macstudio'",
+        "vars.MACRO_DATA_LANE || 'macstudio-light'",
+    }
     for expression in expressions:
         assert expression in non_secret_contexts or re.fullmatch(
             r"secrets\.[A-Z0-9_]+", expression
