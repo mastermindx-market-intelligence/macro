@@ -27,6 +27,7 @@ def _sel(monkeypatch):
 
 
 PY = sys.executable
+RUN_FLAGS = ("-E", "-B", "-X", "pycache_prefix=/dev/shm/rotation_core_v2_pycache")       # R29.3
 
 
 def _clean_env(**extra):
@@ -36,7 +37,7 @@ def _clean_env(**extra):
     return env
 
 
-def _py(args, cfg=None, tmp=None, flags=("-E",), env=None, stdin=None):
+def _py(args, cfg=None, tmp=None, flags=RUN_FLAGS, env=None, stdin=None):
     """Run the runner (or the test driver) in a real interpreter, as the command line does."""
     if cfg is not None:
         cp = Path(tmp) / f"cfg_{abs(hash(json.dumps(cfg, default=str)))}.json"
@@ -57,7 +58,7 @@ def _s1(led, ind, fac, engine="E1", release_sha="r1", release=None, **k):
     lines, buf, err = [], io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
         e = run.stage1_command(led, release or {}, release_sha, engine, ind, fac, {"industries": "x"}, B_=k.pop("B_", 20),
-                               out=lambda s: (lines.append(s), print(s)), **k)
+                               out=lambda s: (lines.append(s), print(s)), **k, selection=ORIG_SELECTION)
     return e, lines, buf.getvalue() + err.getvalue()
 
 
@@ -74,7 +75,7 @@ def stage1(fx, tmp_path_factory):
 def pre(fx):
     import scripts.run_rotation_core_v2 as run
     v2.SELECTION_RESULT = ORIG_SELECTION
-    return run.pre1998_report(fx / IND, fx / FAC, B_=20)
+    return run.pre1998_report(fx / IND, fx / FAC, B_=20, selection=ORIG_SELECTION)
 
 
 # ------------------------------------------------------------------ R18 strict run, O1(i)
@@ -152,14 +153,14 @@ def test_S6_stage1_prints_only_signs_counts_and_hex(stage1):
 def test_S6_magnitudes_hash_reproduced_and_changes_with_input(fx, stage1, tmp_path):
     import scripts.run_rotation_core_v2 as run
     d, e, lines, _, led = stage1
-    again = run.pre1998_report(fx / IND, fx / FAC, B_=20)
+    again = run.pre1998_report(fx / IND, fx / FAC, B_=20, selection=ORIG_SELECTION)
     v2.verify_reproduction(again["magnitudes"], e["magnitudes_sha256"])
     fx2 = make_fixture(tmp_path / "fx2")
     t = (fx2 / IND).read_text().splitlines()
     i = next(j for j, ln in enumerate(t) if ln.startswith("19500103,"))
     p = t[i].split(","); p[5] = f"{float(p[5]) + 0.01:.2f}"; t[i] = ",".join(p)
     (fx2 / IND).write_text("\n".join(t) + "\n")
-    other = run.pre1998_report(fx2 / IND, fx2 / FAC, B_=20)
+    other = run.pre1998_report(fx2 / IND, fx2 / FAC, B_=20, selection=ORIG_SELECTION)
     with pytest.raises(v2.SealedRefusal):
         v2.verify_reproduction(other["magnitudes"], e["magnitudes_sha256"])
 
@@ -221,12 +222,12 @@ def test_S1c_stage1_release_opening_list_is_the_constant(tmp_path, monkeypatch):
             "selection_results_sha256": hashlib.sha256(ORIG_SELECTION.read_bytes()).hexdigest()}
     p = tmp_path / "r1.json"; p.write_text(json.dumps(dict(body, opening_condition_hypotheses=["H1", "H3", "H2"])))
     with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(p)
+        v2.stage1_release(p, selection=ORIG_SELECTION)
     p.write_text(json.dumps(dict(body, selection_results_sha256="0" * 64)))
     with pytest.raises(v2.SealedRefusal):                                   # S5: selection pinned by sha256
-        v2.stage1_release(p)
+        v2.stage1_release(p, selection=ORIG_SELECTION)
     p.write_text(json.dumps(body))
-    assert v2.stage1_release(p)
+    assert v2.stage1_release(p, selection=ORIG_SELECTION)
 
 
 # ------------------------------------------------------------------ S5 remote containment
@@ -556,7 +557,7 @@ def test_R19_stage2_final_run_aborts_before_any_2020_2025_number(tmp_path, monke
     lines = []
     with v2.stage2_opened([], recorded={}), pytest.raises(run.IntegrityAbort) as ei:
         run.final_evaluation(pre / IND, full / IND, full / FAC, funds, "a" * 64, _all_plus(), led, s["index"], B_=20,
-                             out=lines.append)
+                             out=lines.append, selection=ORIG_SELECTION)
     assert any(k.startswith("h2020_2025|") for k in ei.value.phase_a["nonzero"])
     assert "PHASE_A INTEGRITY_ABORT" in lines and _no_magnitude("\n".join(lines))
     assert [x["kind"] for x in led.entries()] == ["START", "INTEGRITY_ABORT"]
@@ -609,9 +610,11 @@ def test_R20_case1_rewritten_or_rechained_ledger_refused(tmp_path):
                    ({"start_index": 0} if e["kind"] != "START" else {}))
     (work / "ledger.json").write_bytes(v2.ledger_doc(rew.entries()))
     g("commit", "-q", "-am", "rechain", cwd=work); g("push", "-q", "origin", "b", cwd=work)
-    led.fetch()
-    with pytest.raises(v2.SealedRefusal, match="not a prefix"):
-        v2.validate_ledger(led.entries(), led.version_entries(), {"r1": {}, "r2": {}})
+    with pytest.raises(v2.SealedRefusal, match="does not extend the ledger read earlier"):
+        led.fetch(); led.entries()                                    # R29.1(b): the same invocation
+    fresh = _gled(work, origin); fresh.fetch()                         # a new invocation: the committed versions
+    with pytest.raises(v2.SealedRefusal, match="not a prefix|does not extend its predecessor"):
+        v2.validate_ledger(fresh.entries(), fresh.version_entries(), {"r1": {}, "r2": {}})
 
 
 def test_R20_case2_flipped_gate_open_refused():
@@ -650,7 +653,7 @@ def test_R20_case3_signs_reach_the_ledger_before_stdout(fx):
     led = Spy()
     import scripts.run_rotation_core_v2 as run
     run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20,
-                       out=lambda s: order.append(("out", s.split()[0])))
+                       out=lambda s: order.append(("out", s.split()[0])), selection=ORIG_SELECTION)
     first_sign = order.index(("out", "GATE_SIGN"))
     assert order.index(("ledger", "GATE")) < first_sign
     assert order.index(("ledger", "PHASE_A_CLEAN")) < order.index(("ledger", "GATE"))
@@ -754,9 +757,9 @@ def test_R20_2_ledger_version_prefix_and_chain(tmp_path):
     v2.validate_ledger(led.entries(), vs, {"r1": {}})
     (work / "ledger.json").write_bytes(v2.ledger_doc(led.entries()[:1]))         # drop two entries, ordinary commit
     g("commit", "-q", "-am", "drop", cwd=work); g("push", "-q", "origin", "b", cwd=work)
-    led.fetch()
-    with pytest.raises(v2.SealedRefusal, match="not a prefix"):
-        v2.validate_ledger(led.entries(), led.version_entries(), {"r1": {}})
+    fresh = _gled(work, origin); fresh.fetch()
+    with pytest.raises(v2.SealedRefusal, match="not a prefix|does not extend its predecessor"):
+        v2.validate_ledger(fresh.entries(), fresh.version_entries(), {"r1": {}})
     bad = [dict(vs[-1][0]), dict(vs[-1][1], prev_chain_sha256="0" * 64)]
     with pytest.raises(v2.SealedRefusal):
         v2.verify_chain(bad)
@@ -1119,7 +1122,7 @@ def test_R20_6_reproduction_hash_and_signs_are_required(tmp_path):
     assert p["expected_sha"].default is inspect.Parameter.empty and p["expected_signs"].default is inspect.Parameter.empty
     for sha, signs in ((None, _all_plus()), ("x", _all_plus()), ("a" * 64, _closed()), ("a" * 64, {})):
         with pytest.raises(v2.SealedRefusal):
-            run.final_evaluation("p", "f", "c", "d", sha, signs, v2.MemoryLedger(), 0)
+            run.final_evaluation("p", "f", "c", "d", sha, signs, v2.MemoryLedger(), 0, selection=ORIG_SELECTION)
 
 
 def _stage2_ledger(signs, sha):
@@ -1154,7 +1157,7 @@ def test_R20_3_R24_1a_stage1_not_reproduced_is_an_integrity_abort_with_no_final(
         lines = []
         with v2.stage2_opened([], recorded={}):
             res = run.confirm_command(led, r2, "q1", "E1", fx / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
-                                      out=lines.append)
+                                      out=lines.append, selection=ORIG_SELECTION)
         assert res == {"integrity_abort": True, "reason": "stage1_not_reproduced"}
         ents = led.entries()
         assert [x["kind"] for x in ents][-3:] == ["START", "PHASE_A_CLEAN", "INTEGRITY_ABORT"]
@@ -1251,7 +1254,7 @@ def test_R20_9_stage1_checks_selection_commit_and_file_against_the_remote(tmp_pa
     p = tmp_path / "r1.json"; p.write_text(json.dumps(body))
     old = v2._git("rev-list", "--max-parents=0", "HEAD").stdout.decode().split()[0]   # a remote that lacks HEAD
     with pytest.raises(v2.SealedRefusal, match="is not contained in the remote branch"):     # the remote check
-        v2.stage1_release(p, remote_sha=old, engine_check=lambda c: None)
+        v2.stage1_release(p, remote_sha=old, engine_check=lambda c: None, selection=ORIG_SELECTION)
 
 
 # ------------------------------------------------------------------ R20.10 planted-edge end to end, verdicts exact
@@ -1295,7 +1298,8 @@ def _e2e_setup(d, edge=None, fund_sign=1.0, B_=200):
            "stage1_inputs": s1_in, "stage2_inputs": s2_in, "anchor": sel_commit, "B": B_,
            "final_j": d / "final.json", "final_m": d / "final.md", "stage1_published": d / "published.json",
            "ledger_status_j": d / "status.json", "ledger_status_m": d / "status.md",
-           "host_stub": True, "engine_stub": True}
+           "selection_rerun_j": d / "selrerun.json", "selection_rerun_m": d / "selrerun.md",
+           "sealed_paths": [], "sealed_recorded": {}, "host_stub": True, "engine_stub": True}
     r1_commit = _commit_push(g, work, "r1.json", {
         "windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
         "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "E1",
@@ -1326,7 +1330,8 @@ def _e2e(d, edge, fund_sign=1.0, B_=200, capture=None):
         "inputs_sha256": {k: v2.sha256_file(p) for k, p in S["s2_in"].items()}, "versions": v2.versions(),
         "witnessed": {"branch": "b", "release_commit": S["r1_commit"], "start_commit": w1[2],
                       "gate_commit": gate_commit, "witness_utc": "2026-11-11T16:00Z", "acknowledged_at": "test"},
-        "witness_confirmation_utc": "2099-01-01T00:00Z"})
+        "witness_confirmation_utc": (__import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+                                     + __import__("datetime").timedelta(minutes=2)).isoformat()})
     cfg = {"argv": ["--stage", "confirm"], "ctx": ctx}
     if capture is not None:
         cfg["capture_keys"] = str(d / "keys.json")
@@ -1422,7 +1427,7 @@ def test_R21_1_phase_b_exception_records_a_closed_gate_on_the_remote(fx, tmp_pat
     monkeypatch.setattr(v2, "window_excess", after_first)
     lines = []
     with pytest.raises(SystemExit) as ei:
-        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append)
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append, selection=ORIG_SELECTION)
     assert "ValueError" in str(ei.value) and "0.0123" not in str(ei.value)
     led.fetch()
     ents = led.entries()
@@ -1445,12 +1450,12 @@ def test_R21_1_memory_error_leaves_phase_a_clean_and_the_identical_rerun_complet
     with monkeypatch.context() as m:
         m.setattr(v2, "window_excess", oom)
         with pytest.raises(SystemExit):
-            run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+            run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None, selection=ORIG_SELECTION)
     led.fetch()
     assert [x["kind"] for x in led.entries()] == ["START", "PHASE_A_CLEAN"]
     with pytest.raises(v2.SealedRefusal):                                    # anything but the identical rerun
-        run.stage1_command(led, {}, "r1", "E2", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
-    g = run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+        run.stage1_command(led, {}, "r1", "E2", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None, selection=ORIG_SELECTION)
+    g = run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None, selection=ORIG_SELECTION)
     led.fetch()
     assert g["kind"] == "GATE" and "gate_signs" in g
     assert [x["kind"] for x in led.entries()] == ["START", "PHASE_A_CLEAN", "START", "PHASE_A_CLEAN", "GATE"]
@@ -1466,7 +1471,7 @@ def open_stage1(tmp_path_factory):
     full = make_fixture(d / "full", extra_after="2025-12-31", edge=_edge_pass)
     funds = make_fund_fixture(d / "funds", edge=_edge_pass)
     led = v2.MemoryLedger()
-    g = run.stage1_command(led, {}, "r1", "E1", pre / IND, pre / FAC, {"x": "1"}, B_=20, out=lambda x: None)
+    g = run.stage1_command(led, {}, "r1", "E1", pre / IND, pre / FAC, {"x": "1"}, B_=20, out=lambda x: None, selection=ORIG_SELECTION)
     assert g["gate_open"] is True
     return pre, full, funds, led.entries()
 
@@ -1484,7 +1489,7 @@ def _confirm_with_planted(open_stage1, monkeypatch, target, exc):
     lines = []
     with v2.stage2_opened([], recorded={}), pytest.raises(SystemExit) as ei:     # R25.1(b): ends in the hard exit
         run.confirm_command(led, r2, "q1", "E1", pre / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
-                            out=lines.append)
+                            out=lines.append, selection=ORIG_SELECTION)
     return str(ei.value), led.entries(), lines
 
 
@@ -1519,7 +1524,7 @@ def test_R24_1b_stage1_refusal_in_phase_b_records_a_closed_gate_on_the_remote(fx
     monkeypatch.setattr(v2, "window_excess", after_first)
     lines = []
     with pytest.raises(SystemExit) as ei:
-        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append)
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append, selection=ORIG_SELECTION)
     assert "SealedRefusal" in str(ei.value) and "0.0123" not in str(ei.value)
     led.fetch()
     ents = led.entries()
@@ -1626,7 +1631,7 @@ def test_R21_6_rehearsal_on_synthetic_open_window(tmp_path):
     import scripts.run_rotation_core_v2 as run
     ind, fac = fixture_texts(start="1996-01-02", end="2019-12-31")
     lines = []
-    e = run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lines.append, B_=20, engine_commit="E")
+    e = run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lines.append, B_=20, engine_commit="E", selection=ORIG_SELECTION)
     assert e["kind"] == "GATE" and e["window"] == "rehearsal_1998_2019"
     assert set(k.split("|")[1] for k in e["gate_signs"]) == {"P1_1998_2008", "P2_2009_2019"} and len(e["gate_signs"]) == 16
     assert lines and all(ln.startswith("REHEARSAL ") for ln in lines)
@@ -1638,7 +1643,7 @@ def test_R21_6_rehearsal_refuses_inputs_outside_1996_2019():
     for start, end in (("1995-12-01", "2019-12-31"), ("1996-01-02", "2020-01-10")):
         ind, fac = fixture_texts(start=start, end=end, n_ind=12)
         with pytest.raises(v2.SealedRefusal):
-            run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lambda x: None, B_=20, engine_commit="E")
+            run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lambda x: None, B_=20, engine_commit="E", selection=ORIG_SELECTION)
 
 
 def test_R21_6_window_text_keeps_only_dated_lines_in_range():
@@ -1652,7 +1657,7 @@ def test_R21_6_window_text_keeps_only_dated_lines_in_range():
 
 # ------------------------------------------------------------------ R25.1(a) -E enforced
 def test_R25_1a_the_runner_refuses_without_E_or_when_interactive():
-    for flags, env in (((), None), (("-E", "-i"), None), ((), _clean_env(PYTHONINSPECT="1"))):
+    for flags, env in (((), None), (RUN_FLAGS + ("-i",), None), ((), _clean_env(PYTHONINSPECT="1"))):
         r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], flags=flags, env=env)
         assert "R25.1(a)" in (r.stdout + r.stderr) and "GATE_SIGN" not in r.stdout, (flags, r.stderr[-300:])
     r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])
@@ -1697,7 +1702,7 @@ def test_R26_1_in_process_failed_push_leaves_no_gate_blob_and_no_object_dir(fx, 
         return res
     monkeypatch.setattr(run, "pre1998_stats", planted)
     with pytest.raises(SystemExit, match="push did not complete"):
-        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None, selection=ORIG_SELECTION)
     _assert_no_leak(tmp_path / "work", "", "")
 
 
@@ -1872,13 +1877,14 @@ def test_R26_5_witness_block_is_checked_against_the_ledger_and_the_release_histo
     led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _all_plus(), "gate_open": True,
                 "magnitudes_sha256": "d" * 64, "utc": "2026-11-11T17:00Z"})
     gate_commit = led.last_commit
-    ctx = run.Ctx(root=work, branch="b", release1=work / "r1.json")
+    ctx = _tctx(tmp_path, root=work, branch="b", release1=work / "r1.json")
     good = {"branch": "b", "release_commit": r1, "start_commit": start_commit, "gate_commit": gate_commit,
             "witness_utc": "t"}
     r2 = {"gate_commit": gate_commit, "_gate_latest": led.entries()[-1], "witnessed": good,
           "witness_confirmation_utc": "2026-11-11T17:05Z"}
     run.check_witness(r2, led, ctx)
-    for conf in (None, "", "2026-11-11T16:59Z", "2026-11-11T17:00Z", "not a time"):          # R27.5
+    for conf in (None, "", "2026-11-11T16:59Z", "2026-11-11T17:00Z", "not a time", "2026-11-11T17:05",
+                 "2099-01-01T00:00Z", 12345):                                             # R27.5, R29.6
         with pytest.raises(v2.SealedRefusal, match="witness_confirmation_utc"):
             run.check_witness(dict(r2, witness_confirmation_utc=conf), led, ctx)
     for k, bad in (("branch", "other"), ("release_commit", start_commit), ("start_commit", gate_commit),
@@ -1915,33 +1921,55 @@ def test_R26_6_market_loader_drops_lines_after_the_end_before_any_parse(tmp_path
     assert mkt.index.max() <= pd.Timestamp("1997-12-31") and len(mkt) > 400
 
 
+def _tctx(tmp, **over):
+    """A wholly temporary context: every field explicit, every path under tmp."""
+    import scripts.run_rotation_core_v2 as run
+    t = Path(tmp)
+    kw = {k: t / k for k in run.CTX_PATH_FIELDS}
+    kw.update(stage1_inputs={"industries_le2019": t / "i.csv", "factors": t / "f.csv"},
+              stage2_inputs={"industries_full": t / "full.csv"}, sealed_paths=[], branch="b",
+              remote_url=str(t / "origin.git"), sealed_recorded={}, host_api=lambda *a, **k: [], anchor="a" * 40,
+              engine_check=lambda c: None, B=20)
+    kw.update(over)
+    return run.Ctx(**kw)
+
+
+def _rctx(**over):
+    """A wholly REAL supplied context: the builder's fields (paths only; nothing is opened)."""
+    import scripts.run_rotation_core_v2 as run
+    real = run._real_ctx()
+    kw = {k: getattr(real, k) for k in run.CTX_FIELDS}
+    kw.update(over)
+    return run.Ctx(**kw)
+
+
 # ------------------------------------------------------------------ R27.1 a supplied context touching anything real
 def test_R27_1_is_real_predicate_on_real_values(tmp_path):
     import scripts.run_rotation_core_v2 as run
-    assert run.is_real(run.Ctx()) is True
-    t = dict(root=tmp_path, ledger_path=tmp_path / "l.json", release1=tmp_path / "r1", release2=tmp_path / "r2",
-             remote_url=str(tmp_path / "o.git"), branch="b")
-    assert run.is_real(run.Ctx(**t)) is False
+    assert run.is_real(_rctx()) is True
+    assert run.is_real(_tctx(tmp_path)) is False
     for over in ({"root": v2.ROOT}, {"ledger_path": v2.LEDGER}, {"release1": v2.RELEASE}, {"release2": v2.RELEASE2},
                  {"remote_url": v2.REMOTE_URL}, {"release1": v2.ROOT / "research"}):
-        assert run.is_real(run.Ctx(**dict(t, **over))) is True, over
+        assert run.is_real(_tctx(tmp_path, **over)) is True, over
     link = tmp_path / "link"; link.symlink_to(v2.ROOT)                       # real path, not the link path
-    assert run.is_real(run.Ctx(**dict(t, root=link))) is True
-    assert run.is_real(run.Ctx(**dict(t, branch=v2.BRANCH))) is False        # branch alone, on a local remote
+    assert run.is_real(_tctx(tmp_path, root=link)) is True
+    assert run.is_real(_tctx(tmp_path, branch=v2.BRANCH)) is False           # branch alone, on a local remote
 
 
-def test_R27_1_reader_config_real_root_with_stubs_refused(monkeypatch):
+def test_R27_1_reader_config_real_root_with_stubs_refused(tmp_path):
     """The gate main() applies after parse_args (in-process the pytest interpreter lacks -E, so the gate itself is
     called; the subprocess tests below go through main())."""
     import scripts.run_rotation_core_v2 as run
     stub = lambda path, paginate=False: []
     for stage in ("pre1998", "confirm"):
         for kw in ({"host_api": stub}, {"engine_check": lambda c: None}, {"host_api": stub, "engine_check": lambda c: None}):
-            ctx = run.Ctx(branch=v2.BRANCH, **kw)                              # real root, real branch and remote
+            ctx = _rctx(**kw)
             with pytest.raises(v2.SealedRefusal, match="real host and engine checks"):
                 run.sealed_stage_gate(stage, ctx, ctx)
-        run.sealed_stage_gate(stage, object(), run.Ctx(**{("release1" if stage == "pre1998" else "release2"):
-                                                          v2.ROOT / "research/rotation_core/__absent__.json"}))
+        key = "release1" if stage == "pre1998" else "release2"
+        ctx = _rctx(**{key: v2.ROOT / "research/rotation_core/__absent__.json"})
+        run.sealed_stage_gate(stage, ctx, ctx)
+        assert run.check_supplied_ctx(ctx, stage) == "supplied_real"
 
 
 def test_R27_1_real_context_with_a_file_at_the_release_path_refuses_before_reading(monkeypatch):
@@ -1950,7 +1978,7 @@ def test_R27_1_real_context_with_a_file_at_the_release_path_refuses_before_readi
     monkeypatch.setattr(v2, "_load_release", lambda *a, **k: read.append(a) or {})
     existing = v2.HEADER_V2                                    # an existing file inside the real repository, not written
     for stage, key in (("pre1998", "release1"), ("confirm", "release2")):
-        ctx = run.Ctx(**{key: existing})
+        ctx = _rctx(**{key: existing})
         with pytest.raises(v2.SealedRefusal, match="refused before reading it"):
             run.sealed_stage_gate(stage, ctx, ctx)
     assert read == []
@@ -1961,27 +1989,27 @@ def test_R27_1_reader_exact_config_through_the_driver_is_refused_before_import(t
                                                    "remote_url": v2.REMOTE_URL}, "host_stub": True}
     cfg["ctx"].update({"host_stub": True, "engine_stub": True})
     r = _py([], cfg, tmp_path)
-    assert r.returncode != 0 and "R27.1(c)" in r.stderr and "WITNESS" not in r.stdout
+    assert r.returncode != 0 and "R28.5" in r.stderr and "WITNESS" not in r.stdout
 
 
-def test_R27_1_test_context_must_be_under_tmp_with_a_local_remote(tmp_path):
+def test_R27_1_R28_2_test_context_must_be_wholly_under_tmp_with_a_local_remote_there(tmp_path):
     import scripts.run_rotation_core_v2 as run
     other = Path("/home/ubuntu2/tmp/rotation-core/v2")                      # neither the repository nor /tmp
-    base = dict(ledger_path=tmp_path / "l.json", release1=tmp_path / "r1", release2=tmp_path / "r2",
-                remote_url=str(tmp_path / "o.git"), branch="b", host_api=lambda *a, **k: [])
-    with pytest.raises(v2.SealedRefusal, match="system temporary"):
-        run.sealed_stage_gate("pre1998", object(), run.Ctx(root=other, **base))
-    for url in ("https://example.com/x.git", "git@example.com:x.git", "relative/o.git"):
-        with pytest.raises(v2.SealedRefusal, match="local filesystem"):
-            run.sealed_stage_gate("pre1998", object(), run.Ctx(root=tmp_path, **dict(base, remote_url=url)))
-    run.sealed_stage_gate("pre1998", object(), run.Ctx(root=tmp_path, **base))
+    for over in ({"root": other}, {"final_j": other / "x"}, {"stage1_inputs": {"i": other / "x"}},
+                 {"sealed_paths": [other / "x"]}):
+        with pytest.raises(v2.SealedRefusal, match="system temporary"):
+            run.check_supplied_ctx(_tctx(tmp_path, **over), "pre1998")
+    for url in ("https://example.com/x.git", "git@example.com:x.git", "relative/o.git", str(other / "o.git")):
+        with pytest.raises(v2.SealedRefusal, match="local filesystem path under"):
+            run.check_supplied_ctx(_tctx(tmp_path, remote_url=url), "pre1998")
+    assert run.check_supplied_ctx(_tctx(tmp_path), "pre1998") == "test"
 
 
 @pytest.mark.parametrize("args,env_extra,flags,needle", [
     (["-c", "import sys; sys.path.insert(0, '.'); import scripts.run_rotation_core_v2 as r; "
-            "r.main(['--stage', 'pre1998'])"], {}, ("-E",), "runs only as"),
-    (["scripts/run_rotation_core_v2.py", "--stage", "pre1998"], {"PYTEST_CURRENT_TEST": "x"}, ("-E",), "pytest"),
-    (["scripts/run_rotation_core_v2.py", "--stage=pre1998"], {}, ("-E", "-O"), "-O")])
+            "r.main(['--stage', 'pre1998'])"], {}, RUN_FLAGS, "runs only as"),
+    (["scripts/run_rotation_core_v2.py", "--stage", "pre1998"], {"PYTEST_CURRENT_TEST": "x"}, RUN_FLAGS, "pytest"),
+    (["scripts/run_rotation_core_v2.py", "--stage=pre1998"], {}, RUN_FLAGS + ("-O",), "-O")])
 def test_R27_1_real_run_requires_the_script_no_pytest_no_optimize(args, env_extra, flags, needle):
     r = _py(args, flags=flags, env=_clean_env(**env_extra))
     assert r.returncode != 0 and needle in r.stderr, r.stderr[-400:]
@@ -2012,7 +2040,8 @@ def test_R27_2_git_and_gh_children_get_a_constructed_environment(monkeypatch):
     monkeypatch.setattr(v2.subprocess, "run", spy)
     v2._git("status"); v2.gh_api("/x"); v2._git("hash-object", env={"GIT_OBJECT_DIRECTORY": "/dev/shm/x"})
     for cmd, env in seen:
-        assert set(env) <= {"PATH", "HOME", "LANG", "LC_ALL", "GIT_OBJECT_DIRECTORY"} and env["PATH"] == "/usr/bin:/bin"
+        assert set(env) <= {"PATH", "HOME", "LANG", "LC_ALL", "GIT_OBJECT_DIRECTORY", "GIT_NO_LAZY_FETCH"}
+        assert env["PATH"] == "/usr/bin:/bin" and env["GIT_NO_LAZY_FETCH"] == "1"
         assert env["LANG"] == env["LC_ALL"] == "C" and "SECRET_THING" not in env
     assert seen[0][0][1:7] == v2.GIT_FIXED and seen[1][0][:4] == ["/usr/bin/gh", "api", "--hostname", "github.com"]
 
@@ -2162,3 +2191,446 @@ def test_R27_7_more_redirecting_git_config_refused(tmp_path):
     g("config", "--add", "credential.https://github.com.helper", "!/usr/bin/gh auth git-credential", cwd=work)
     v2.check_remote_identity(work, str(origin))
     v2.check_remote_identity()                                         # this host as configured today
+
+
+# ------------------------------------------------------------------ R28 a supplied context is wholly real or wholly temporary
+# The machine-readable twin of the ruling's field table: field -> (kind, purpose).
+CTX_FIELD_TABLE = {
+    "root": ("path", "repository checkout the ledger and releases live in"),
+    "ledger_path": ("path", "run ledger file"),
+    "release1": ("path", "stage-1 release file"),
+    "release2": ("path", "stage-2 release file"),
+    "selection": ("path", "committed selection result"),
+    "ind_d": ("path", "through-2019 industry file"),
+    "ind_full": ("path", "full (sealed) industry file"),
+    "fact": ("path", "factor file"),
+    "fund_dir": ("path", "fund parquet directory"),
+    "final_j": ("path", "final results JSON (write)"),
+    "final_m": ("path", "final results Markdown (write)"),
+    "stage1_published": ("path", "closed-gate publication (write)"),
+    "selection_rerun_j": ("path", "selection rerun JSON (write)"),
+    "selection_rerun_m": ("path", "selection rerun Markdown (write)"),
+    "ledger_status_j": ("path", "ledger status JSON (write)"),
+    "ledger_status_m": ("path", "ledger status Markdown (write)"),
+    "stage1_inputs": ("path_map", "stage-1 manifest inputs"),
+    "stage2_inputs": ("path_map", "stage-2 manifest inputs"),
+    "sealed_paths": ("path_list", "files unsealed by stage 2"),
+    "branch": ("other", "ledger branch"),
+    "remote_url": ("remote", "ledger remote"),
+    "sealed_recorded": ("other", "recorded sealed hashes (None = the committed record)"),
+    "host_api": ("hook", "host-record API (None = real gh)"),
+    "anchor": ("other", "activity-log anchor commit"),
+    "engine_check": ("hook", "engine-commit check"),
+    "B": ("other", "bootstrap resamples")}
+
+
+def test_R28_4_every_context_field_is_classified():
+    import inspect, scripts.run_rotation_core_v2 as run
+    params = inspect.signature(run.Ctx.__init__).parameters
+    fields = {n for n, p in params.items() if p.kind is p.KEYWORD_ONLY}
+    assert fields == set(CTX_FIELD_TABLE) == set(run.CTX_FIELDS)
+    assert all(p.default is p.empty for n, p in params.items() if n in fields)          # no defaults
+    kinds = lambda k: {f for f, (kk, _) in CTX_FIELD_TABLE.items() if kk == k}
+    assert kinds("path") == set(run.CTX_PATH_FIELDS)
+    assert kinds("path_map") == set(run.CTX_PATH_MAP_FIELDS) and kinds("path_list") == set(run.CTX_PATH_LIST_FIELDS)
+    ruling = (v2.ROOT / "research/rotation_core/HOLDOUT_RELEASE_RULING_v2.md").read_text()
+    assert all(f"| `{f}` |" in ruling for f in CTX_FIELD_TABLE)                         # the ruling's table
+
+
+@pytest.mark.parametrize("field", sorted(CTX_FIELD_TABLE))
+def test_R28_1_omitting_any_field_raises(tmp_path, field):
+    import scripts.run_rotation_core_v2 as run
+    full = _tctx(tmp_path)
+    kw = {k: getattr(full, k) for k in run.CTX_FIELDS if k != field}
+    with pytest.raises(TypeError):
+        run.Ctx(**kw)
+
+
+PATH_LIKE = sorted(f for f, (k, _) in CTX_FIELD_TABLE.items() if k in ("path", "path_map", "path_list", "remote"))
+
+
+@pytest.mark.parametrize("how", ["direct", "symlink", "dotdot"])
+@pytest.mark.parametrize("target", ["repo", "data"])
+@pytest.mark.parametrize("field", PATH_LIKE)
+def test_R28_4_pointing_any_path_field_at_real_makes_it_real(tmp_path, field, target, how):
+    """Paths and predicates only: no real file is opened."""
+    import scripts.run_rotation_core_v2 as run
+    base = v2.ROOT if target == "repo" else v2.REAL_DATA_ROOT
+    if how == "direct":
+        p = base / "x"
+    elif how == "symlink":
+        link = tmp_path / "lnk"; link.symlink_to(base); p = link / "x"
+    else:
+        p = Path("/tmp") / os.path.relpath(base, "/tmp") / "x"                  # /tmp/../home/... by '..'
+    val = {"path": p, "path_map": {"k": p}, "path_list": [p], "remote": str(p)}[CTX_FIELD_TABLE[field][0]]
+    ctx = _tctx(tmp_path, **{field: val})
+    assert run.is_real(ctx) is True
+    with pytest.raises(v2.SealedRefusal):                                       # stubs + real -> refused
+        run.check_supplied_ctx(ctx, "pre1998")
+
+
+def test_R28_4_reader_b1_config_refused_by_the_driver_and_by_the_constructor(tmp_path):
+    work = tmp_path / "work"; origin = tmp_path / "origin.git"
+    ctx = {"root": str(work), "ledger_path": str(work / "ledger.json"), "release1": str(work / "r1.json"),
+           "release2": str(work / "r2.json"), "selection": str(work / "sel.json"), "branch": "b",
+           "remote_url": str(origin), "host_stub": True, "engine_stub": True}
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": ctx}, tmp_path)
+    assert r.returncode != 0 and "must name every context key" in r.stderr and "WITNESS" not in r.stdout
+    sys.path.insert(0, str(v2.ROOT / "tests"))
+    import rotation_core_v2_driver as drv                               # the driver check bypassed in-process:
+    with pytest.raises((TypeError, KeyError)):                          # the constructor refuses the omitted keys
+        drv.build_ctx(ctx)
+    import scripts.run_rotation_core_v2 as run
+    with pytest.raises(TypeError):
+        run.Ctx(root=work, ledger_path=work / "l", release1=work / "r1", release2=work / "r2", selection=work / "s",
+                branch="b", remote_url=str(origin), host_api=None, engine_check=None)
+    cfg2 = {"argv": ["--stage", "confirm"], "ctx": dict(_tctx_cfg(tmp_path), sealed_paths=[str(v2.ROOT / "x")])}
+    r = _py([], cfg2, tmp_path)
+    assert r.returncode != 0 and "only paths under" in r.stderr                  # a sealed path checked too
+
+
+def _tctx_cfg(tmp):
+    t = Path(tmp)
+    import scripts.run_rotation_core_v2 as run
+    c = {k: str(t / k) for k in run.CTX_PATH_FIELDS}
+    c.update(stage1_inputs={"i": str(t / "i")}, stage2_inputs={"j": str(t / "j")}, sealed_paths=[], branch="b",
+             remote_url=str(t / "o.git"), sealed_recorded={}, anchor="a" * 40, B=20, host_stub=True, engine_stub=True)
+    return c
+
+
+@pytest.mark.parametrize("key", ["root", "fact", "stage1_inputs", "sealed_paths", "B", "host_stub"])
+def test_R28_5_driver_refuses_a_config_omitting_any_key_before_import(tmp_path, key):
+    c = _tctx_cfg(tmp_path); c.pop(key)
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": c}, tmp_path)
+    assert r.returncode != 0 and "must name every context key" in r.stderr
+
+
+def test_R28_3_choke_point_refuses_real_paths_real_hashes_and_chmod_in_a_test_context(tmp_path):
+    """No real file is opened: the real hashes come from the committed records."""
+    import io as _io
+    try:
+        v2.set_io_mode("test")
+        for p in (v2.ROOT / "x", v2.REAL_DATA_ROOT / "french" / "x", Path("/home/ubuntu2/tmp/x")):
+            with pytest.raises(v2.SealedRefusal, match="only under the system temporary"):
+                v2.io_check(p, "read")
+            with pytest.raises(v2.SealedRefusal):
+                v2.write_text(p, "x")
+        real = next(iter(v2.recorded_real_hashes()))
+        f = tmp_path / "copy.csv"; f.write_text("not real")
+        v2.io_check(f, "read")
+        import unittest.mock as um
+        with um.patch.object(v2, "sha256_file", lambda p: real):           # a byte-identical copy of a real input
+            with pytest.raises(v2.SealedRefusal, match="equals a recorded real input"):
+                v2.io_check(f, "read")
+        with pytest.raises(v2.SealedRefusal, match="unsealed only by the real run"):
+            v2.io_check(tmp_path / "sealed_post2019" / "x.csv", "chmod")
+        with pytest.raises(v2.SealedRefusal, match="real run"):
+            with v2.stage2_opened([tmp_path / "x.csv"], recorded={}):
+                pass
+        with pytest.raises(v2.SealedRefusal):                              # the loaders pass through it
+            v2.load_french_market(v2.ROOT / "nope.csv", "1997-12-31")
+        v2.io_check(_io.StringIO("synthetic"), "read")
+        v2.set_io_mode("supplied_real")
+        with pytest.raises(v2.SealedRefusal, match="reads and writes no data"):
+            v2.io_check(tmp_path / "x", "read")
+    finally:
+        v2.set_io_mode(None)
+    assert len(v2.recorded_real_hashes()) >= 15
+
+
+def test_R28_6_pinned_blobs_flags_and_presence(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    (work / "engine").mkdir(); (work / "engine" / "a.py").write_text("x = 1\n"); (work / "data.txt").write_text("d\n")
+    g("add", ".", cwd=work); g("commit", "-q", "-m", "c", cwd=work)
+    head = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    assert v2.check_pinned_blobs(head, work, ["engine", "data.txt"]) == 2
+    for flag in ("--assume-unchanged", "--skip-worktree"):
+        g("update-index", flag, "data.txt", cwd=work)
+        (work / "data.txt").write_text("edited\n")                     # hidden from status by the flag
+        assert g("status", "--porcelain", cwd=work).stdout.strip() == b""
+        with pytest.raises(v2.SealedRefusal, match="skip-worktree or assume-unchanged"):
+            v2.check_pinned_blobs(head, work, ["engine", "data.txt"])
+        g("update-index", flag.replace("--", "--no-"), "data.txt", cwd=work)
+        with pytest.raises(v2.SealedRefusal, match="differs from the engine commit"):
+            v2.check_pinned_blobs(head, work, ["engine", "data.txt"])
+        (work / "data.txt").write_text("d\n")
+    (work / "engine" / "a.py").unlink()
+    with pytest.raises(v2.SealedRefusal, match="not present"):
+        v2.check_pinned_blobs(head, work, ["engine", "data.txt"])
+
+
+def test_R28_6_this_checkout_pinned_paths_are_unflagged_and_present():
+    flags = v2._git("ls-files", "-v", "-z", "--", *v2.PINNED_PATHS).stdout.decode(errors="replace").split("\0")
+    assert flags and not any(f and (f[0] == "S" or f[0].islower()) for f in flags)
+
+
+# ------------------------------------------------------------------ R29.1 a failed read is never absence
+def _partial_env(tmp_path):
+    """A real blob-less partial clone of a temporary local remote (uploadpack.allowFilter)."""
+    def g(*a, cwd):
+        return subprocess.run([v2.tool("git"), *a], cwd=cwd, capture_output=True, check=True, env=v2.child_env(
+            {"GIT_NO_LAZY_FETCH": None}))
+    origin = tmp_path / "origin.git"; seed = tmp_path / "seed"; work = tmp_path / "work"
+    g("init", "-q", "--bare", str(origin), cwd=tmp_path)
+    g("config", "uploadpack.allowFilter", "true", cwd=origin)
+    g("config", "uploadpack.allowAnySHA1InWant", "true", cwd=origin)
+    g("clone", "-q", str(origin), str(seed), cwd=tmp_path)
+    g("checkout", "-q", "-b", "b", cwd=seed); (seed / "README").write_text("x\n")
+    g("add", "README", cwd=seed); g("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "i", cwd=seed)
+    g("push", "-q", "origin", "b", cwd=seed)
+    g("clone", "-q", "--no-local", "--filter=blob:none", "-b", "b", str(origin), str(work), cwd=tmp_path)
+    g("config", "user.email", "t@t", cwd=work); g("config", "user.name", "t", cwd=work)
+    assert g("config", "remote.origin.promisor", cwd=work).stdout.strip() == b"true"
+    return origin, work, g
+
+
+def test_R29_1d_partial_clone_unreachable_promisor_between_appends_refuses_and_pushes_nothing(tmp_path, monkeypatch):
+    origin, work, g = _partial_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    s_ = led.append(_start()); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    # a fresh blob-less partial clone (it holds no ledger blob)
+    fresh = tmp_path / "fresh"
+    g("clone", "-q", "--no-local", "--filter=blob:none", "-b", "b", str(origin), str(fresh), cwd=tmp_path)
+    g("config", "user.email", "t@t", cwd=fresh); g("config", "user.name", "t", cwd=fresh)
+    remote_before = v2._git("ls-remote", str(origin), "refs/heads/b", root=work).stdout
+    real_fetch = v2.fetch_remote
+    gone = origin.with_name("origin.gone")
+    def fetch_then_drop(*a, **k):                    # the promisor becomes unreachable right after the fetch
+        sha = real_fetch(*a, **k)
+        if origin.exists():
+            origin.rename(gone)
+        return sha
+    monkeypatch.setattr(v2, "fetch_remote", fetch_then_drop)
+    led2 = _gled(fresh, origin)
+    with pytest.raises(v2.SealedRefusal, match="could not be brought into the object store"):
+        led2.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _closed(), "gate_open": False,
+                     "magnitudes_sha256": "d" * 64})
+    gone.rename(origin)
+    monkeypatch.setattr(v2, "fetch_remote", real_fetch)
+    assert v2._git("ls-remote", str(origin), "refs/heads/b", root=work).stdout == remote_before   # nothing pushed
+    led3 = _gled(work, origin); led3.fetch()
+    assert [e["kind"] for e in led3.entries()] == ["START", "PHASE_A_CLEAN"]                      # no 1-entry ledger
+
+
+def test_R29_1a_missing_blob_is_a_refusal_not_absence(tmp_path):
+    origin, work, g = _partial_env(tmp_path)
+    led = _gled(work, origin); led.fetch(); led.append(_start())
+    sha = led.remote_sha
+    oid = v2._git("rev-parse", f"{sha}:ledger.json", root=work).stdout.decode().strip()
+    obj = work / ".git" / "objects" / oid[:2] / oid[2:]
+    if obj.exists():
+        obj.unlink()
+    pack = [p for p in (work / ".git" / "objects" / "pack").glob("*.pack")]
+    has = subprocess.run([v2.tool("git"), "-C", str(work), "cat-file", "-e", oid], capture_output=True,
+                         env=v2.child_env()).returncode == 0
+    if not has:
+        with pytest.raises(v2.SealedRefusal, match="not absence"):
+            led._entries_at(sha)
+        with pytest.raises(v2.SealedRefusal, match="not absence"):
+            v2.file_versions("ledger.json", sha, work)
+    assert v2.blob_at(sha, "no/such/file", work) is None and v2.path_in_tree(sha, "ledger.json", work)
+    with pytest.raises(v2.SealedRefusal):
+        v2.blob_at("0" * 40, "ledger.json", work)                    # an unreadable tree is not absence
+
+
+def test_R29_1b_the_ledger_never_shrinks(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    s_ = led.append(_start()); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    led.entries()
+    (work / "ledger.json").write_bytes(v2.ledger_doc(led.entries()[:1]))           # a shrink, ordinary commit
+    g("commit", "-q", "-am", "shrink", cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    led.remote_sha = v2.fetch_remote(work, "b", str(origin))
+    with pytest.raises(v2.SealedRefusal, match="does not extend the ledger read earlier"):
+        led.entries()                                                               # within one invocation
+    fresh = _gled(work, origin); fresh.fetch()
+    with pytest.raises(v2.SealedRefusal, match="does not extend its predecessor"):
+        fresh.version_entries()                                                     # across commits
+    (work / "ledger.json").unlink()
+    g("commit", "-q", "-am", "delete", cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    fresh2 = _gled(work, origin); fresh2.fetch()
+    with pytest.raises(v2.SealedRefusal):
+        fresh2.version_entries()
+
+
+def test_R29_1c_materialise_counts_versions_and_disables_lazy_fetch_elsewhere(tmp_path):
+    origin, work, g = _partial_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    for _ in range(3):
+        led.append(_start(rel=f"r{_}") if _ == 0 else {"kind": "PHASE_A_CLEAN", "start_index": 0} if _ == 1 else
+                   {"kind": "GATE", "start_index": 0, "gate_signs": _all_plus(), "gate_open": True,
+                    "magnitudes_sha256": "d" * 64})
+    assert v2.materialise(work, led.remote_sha, ["ledger.json"]) == 3            # every committed version
+    assert v2.child_env()["GIT_NO_LAZY_FETCH"] == "1"
+
+
+# ------------------------------------------------------------------ R29.2 reads are blobs; flags refuse
+def test_R29_2_release_read_as_the_committed_blob_and_a_flag_refuses(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    _commit_push(g, work, "r1.json", {"windows_released": ["committed"]})
+    sha = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    (work / "r1.json").write_text(json.dumps({"windows_released": ["EDITED"]}))
+    g("update-index", "--skip-worktree", "r1.json", cwd=work)
+    assert g("status", "--porcelain", cwd=work).stdout.strip() == b""             # the edit is hidden from status
+    try:
+        v2.set_read_head(work, sha)
+        with pytest.raises(v2.SealedRefusal, match="skip-worktree or assume-unchanged"):
+            v2._load_release(work / "r1.json", work)
+        g("update-index", "--no-skip-worktree", "r1.json", cwd=work)
+        assert v2._load_release(work / "r1.json", work) == {"windows_released": ["committed"]}   # the blob, not the edit
+        g("update-index", "--assume-unchanged", "r1.json", cwd=work)
+        with pytest.raises(v2.SealedRefusal):
+            v2._load_release(work / "r1.json", work)
+    finally:
+        v2.set_read_head(None, None)
+
+
+def test_R29_2_records_read_as_code_blobs():
+    assert "49_Industry_Portfolios_Daily.csv" in v2.sealed_record()
+    assert len(v2.recorded_real_hashes()) >= 15
+
+
+# ------------------------------------------------------------------ R29.3 bytecode
+def test_R29_3_crafted_pyc_is_ignored_under_the_runner_flags(tmp_path):
+    """A temporary copy of the package (the real engine/__pycache__ is never touched)."""
+    import shutil, py_compile, importlib.util
+    pkg = tmp_path / "pkg"; (pkg / "probe").mkdir(parents=True)
+    src = pkg / "probe" / "mod.py"; (pkg / "probe" / "__init__.py").write_text("")
+    src.write_text("WHO = 'source!'\n")
+    st = src.stat()
+    evil = tmp_path / "evil.py"; evil.write_text("WHO = 'crafted'\n")         # same size as the source
+    assert evil.stat().st_size == st.st_size
+    cache = importlib.util.cache_from_source(str(src))
+    py_compile.compile(str(evil), cfile=cache, dfile=str(src))
+    data = bytearray(Path(cache).read_bytes())                               # header: source mtime and size
+    import struct
+    data[8:16] = struct.pack("<II", int(st.st_mtime) & 0xFFFFFFFF, st.st_size & 0xFFFFFFFF)
+    Path(cache).write_bytes(bytes(data))
+    code = "import probe.mod as m; print(m.WHO)"
+    plain = subprocess.run([PY, "-E", "-c", code], cwd=pkg, capture_output=True, text=True, env=_clean_env())
+    assert plain.stdout.strip() == "crafted"                                 # the trap is real without the flags
+    flagged = subprocess.run([PY, *RUN_FLAGS, "-c", code], cwd=pkg, capture_output=True, text=True, env=_clean_env())
+    assert flagged.stdout.strip() == "source!"
+
+
+@pytest.mark.parametrize("flags", [("-E",), ("-E", "-B"), ("-E", "-X", "pycache_prefix=/dev/shm/rotation_core_v2_pycache"),
+                                   ("-E", "-B", "-X", "pycache_prefix=/dev/shm/other")])
+def test_R29_3_runner_refuses_without_the_bytecode_flags(flags):
+    import shutil
+    try:
+        r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], flags=flags)
+        assert r.returncode != 0 and "R29.3" in (r.stdout + r.stderr) and "FIXTURE" not in r.stdout
+    finally:                                         # without -B, Python writes bytecode into the prefix: remove it
+        shutil.rmtree(v2.PYCACHE_PREFIX, ignore_errors=True)
+
+
+def test_R29_3_runner_refuses_a_non_empty_pycache_prefix():
+    d = Path(v2.PYCACHE_PREFIX); d.mkdir(exist_ok=True); f = d / "planted"; f.write_text("x")
+    try:
+        r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])
+        assert r.returncode != 0 and "is not empty" in r.stderr
+    finally:
+        f.unlink()
+
+
+def test_R29_3_bytecode_module_check(monkeypatch, tmp_path):
+    import types, importlib.machinery as m
+    mod = types.ModuleType("engine.fake_pyc"); mod.__file__ = str(v2.ROOT / "engine" / "fake.pyc")
+    monkeypatch.setitem(sys.modules, "engine.fake_pyc", mod)
+    with pytest.raises(v2.SealedRefusal, match="bytecode"):
+        v2.check_no_bytecode_modules(v2.ROOT)
+
+
+# ------------------------------------------------------------------ R29.4 fetch and config values
+def test_R29_4_fetch_with_empty_refmap_refuses_a_rewrite_and_leaves_the_tracking_ref(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin); led.fetch(); led.append(_start())
+    led.fetch()
+    before = g("rev-parse", "refs/remotes/origin/b", cwd=work).stdout
+    other = tmp_path / "other"; g("clone", "-q", "-b", "b", str(origin), str(other), cwd=tmp_path)
+    g("reset", "-q", "--hard", "HEAD~1", cwd=other); (other / "z").write_text("z"); g("add", "z", cwd=other)
+    g("commit", "-q", "-m", "rewrite", cwd=other); g("push", "-q", "-f", "origin", "b", cwd=other)
+    g("config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*", cwd=work)
+    with pytest.raises(v2.SealedRefusal, match="not a fast-forward"):
+        v2.fetch_remote(work, "b", str(origin))
+    assert g("rev-parse", "refs/remotes/origin/b", cwd=work).stdout == before
+
+
+def test_R29_4_repository_config_values_pinned(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    v2.check_repo_config(work)
+    for key, val in (("remote.origin.fetch", "+refs/heads/b:refs/remotes/origin/other"),
+                     ("extensions.partialclone", "elsewhere"), ("remote.origin.promisor", "false"),
+                     ("remote.origin.partialclonefilter", "tree:0")):
+        old = g("config", "--get", key, cwd=work).stdout if key == "remote.origin.fetch" else None
+        g("config", key, val, cwd=work)
+        with pytest.raises(v2.SealedRefusal, match="repository-scope"):
+            v2.check_repo_config(work)
+        if old:
+            g("config", key, old.decode().strip(), cwd=work)
+        else:
+            g("config", "--unset", key, cwd=work)
+    g("config", "extensions.partialclone", "origin", cwd=work)
+    v2.check_repo_config(work)
+    v2.check_repo_config(v2.ROOT)
+
+
+def test_R29_4_preflight_help_wording():
+    r = _py(["scripts/run_rotation_core_v2.py", "--help"])
+    assert "writes nothing in the working tree" in " ".join(r.stdout.split())
+
+
+# ------------------------------------------------------------------ R29.5 real-path constants only in the builder
+FORBIDDEN_RUN = {"IND_D", "IND_FULL", "FACT", "FR", "YAHOO", "FUND_DIR", "OUT_J", "OUT_M", "FINAL_J", "FINAL_M",
+                 "STAGE1_PUBLISHED", "SELECTION_RERUN_J", "SELECTION_RERUN_M", "STAGE1_INPUTS"}
+FORBIDDEN_V2 = {"RELEASE", "RELEASE2", "LEDGER", "SELECTION_RESULT", "REAL_DATA_ROOT"}
+CONSTANT_ALLOWED = {("run", "_real_ctx"), ("run", "_touches_real"), ("v2", "io_check")}
+
+
+def test_R29_5_no_function_references_a_real_path_constant_outside_the_builder():
+    import ast
+    bad = []
+    for mod, path in (("run", "scripts/run_rotation_core_v2.py"), ("v2", "engine/rotation_core_v2.py"),
+                      ("run", "scripts/rotation_core_v2_report.py")):
+        names = FORBIDDEN_RUN | (FORBIDDEN_V2 if mod == "v2" else set())
+        tree = ast.parse((v2.ROOT / path).read_text())
+        for fn in ast.walk(tree):
+            if not isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+                continue
+            if (mod, getattr(fn, "name", "")) in CONSTANT_ALLOWED:
+                continue
+            for n in ast.walk(fn):
+                if isinstance(n, ast.Name) and n.id in names:
+                    bad.append((path, getattr(fn, "name", "lambda"), n.id))
+                if isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name) and n.value.id == "v2" \
+                        and n.attr in FORBIDDEN_V2:
+                    bad.append((path, getattr(fn, "name", "lambda"), "v2." + n.attr))
+    assert bad == []
+
+
+# ------------------------------------------------------------------ R29.6
+def test_R29_6_a_second_worktree_of_the_real_repository_is_real(tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v2 as run
+    origin, work, g = _git_env(tmp_path)
+    wt = tmp_path / "wt"; g("worktree", "add", "-q", "-b", "w2", str(wt), cwd=work)
+    monkeypatch.setattr(run, "ROOT", work)                       # the temporary repository stands in for the real one
+    ctx = _tctx(tmp_path, root=wt)
+    assert run._common_dir(wt) == run._common_dir(work) and run.is_real(ctx) is True
+    other = tmp_path / "other"; g("init", "-q", str(other), cwd=tmp_path)
+    assert run.is_real(_tctx(tmp_path, root=other)) is False
+
+
+def test_R29_6_lock_file_that_cannot_be_opened_is_a_plain_refusal():
+    with pytest.raises(v2.SealedRefusal, match="cannot be opened"):
+        with v2.RunLock("/proc/no/such/dir/lock"):
+            pass
+
+
+def test_R29_6_abort_after_the_startup_settings_leaves_no_crash_file_and_no_core(tmp_path):
+    before = set(os.listdir("/var/crash"))
+    code = ("import sys, os; sys.path.insert(0, %r); from engine import rotation_core_v2 as v2; v2.no_core(); "
+            "os.abort()" % str(v2.ROOT))
+    r = subprocess.run([PY, *RUN_FLAGS, "-c", code], cwd=tmp_path, capture_output=True, env=_clean_env())
+    assert r.returncode == -6
+    import time; time.sleep(2)
+    assert set(os.listdir("/var/crash")) == before and not any(p.name.startswith("core") for p in tmp_path.iterdir())

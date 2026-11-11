@@ -223,16 +223,16 @@ def _good_release(tmp_path, name="r1.json", **over):
 
 def test_stage1_release_checks_window_header_config_and_engine_commit(tmp_path, monkeypatch):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(tmp_path / "missing.json")
+        v2.stage1_release(tmp_path / "missing.json", selection=ORIG_SELECTION)
     monkeypatch.setattr(v2, "_committed_clean", lambda p, root=None: True)
     monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
-    assert v2.stage1_release(_good_release(tmp_path))
+    assert v2.stage1_release(_good_release(tmp_path), selection=ORIG_SELECTION)
     with pytest.raises(v2.SealedRefusal):         # selection file differs at the named commit
-        v2.stage1_release(_good_release(tmp_path, "badsel.json", selection_results_commit="4d49b23a8f"))
+        v2.stage1_release(_good_release(tmp_path, "badsel.json", selection_results_commit="4d49b23a8f"), selection=ORIG_SELECTION)
     for over in ({"windows_released": [v2.W_PRE, v2.W_H]}, {"windows_released": [v2.W_H]},
                  {"protocol_header_sha256": "0" * 64}, {"selected_grid_point": {"h_near_high_pct": 5, "b_breadth_drop_pp": 25}}):
         with pytest.raises(v2.SealedRefusal):
-            v2.stage1_release(_good_release(tmp_path, "bad.json", **over))
+            v2.stage1_release(_good_release(tmp_path, "bad.json", **over), selection=ORIG_SELECTION)
 
 
 def test_engine_commit_check_refuses_other_commit():
@@ -241,12 +241,12 @@ def test_engine_commit_check_refuses_other_commit():
 
 
 def test_selected_setting_read_from_committed_selection():
-    assert v2.selected_setting() == (3.0, 25.0)
+    assert v2.selected_setting(ORIG_SELECTION) == (3.0, 25.0)
 
 
 def test_uncommitted_release_never_counts(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(_good_release(tmp_path))          # exists but not committed in the repo
+        v2.stage1_release(_good_release(tmp_path), selection=ORIG_SELECTION)          # exists but not committed in the repo
 
 
 def test_stage1_cannot_read_1998_or_the_sealed_path(tmp_path):

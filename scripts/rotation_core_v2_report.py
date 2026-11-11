@@ -1,4 +1,12 @@
 """Markdown for the v2 selection-window results. Every number is labelled selection-window, not evidence."""
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
+from engine import rotation_core_v2 as _v2  # noqa: E402
+
+
+def _write(path, text):
+    _v2.write_text(path, text)                    # R28.3: every report write passes the I/O choke point
 
 
 def _p(x, nd=2):
@@ -43,7 +51,7 @@ def write_selection_md(res, path):
           ", ".join(f"{k} {_p(v)}" for k, v in sel["observed_by_setting"].items()), "",
           f"Named episodes used for false-call counts: {', '.join(res['episodes'])}. Dropped industry-days (no imputation; "
           f"eligible industries only, not the header's 366 scope): {res['dropped_industry_days']}.", ""]
-    open(path, "w").write("\n".join(L) + "\n")
+    _write(path, "\n".join(L) + "\n")
 
 
 def write_final_md(res, path):
@@ -74,7 +82,7 @@ def write_final_md(res, path):
         L += ["", f"Witnessed outside this repository (R22.3): start/release commit {w.get('start_commit')}, gate commit "
                   f"{w.get('gate_commit')}; acknowledged {w.get('acknowledged_at')}."]
     L += ["", res["descriptive_only"], "", res["data_provenance"], "", res["reporting_rule_i"], "", res["independence"], ""]
-    open(path, "w").write("\n".join(L) + "\n")
+    _write(path, "\n".join(L) + "\n")
 
 
 def write_ledger_status_md(st, path):
@@ -86,4 +94,4 @@ def write_ledger_status_md(st, path):
          "| Ledger START | Stage | Engine commit | Status |", "|---|---|---|---|"]
     for r in st["runs"]:
         L.append(f"| {r['start_index']} | {r['stage']} | `{str(r['engine_commit'])[:12]}` | {r['status']} |")
-    open(path, "w").write("\n".join(L) + "\n")
+    _write(path, "\n".join(L) + "\n")

@@ -535,9 +535,9 @@ python -E scripts/run_rotation_core_v2.py --stage confirm
 **Sealed-run command lines (unchanged; `-E` now enforced):**
 
 ```
-python -E scripts/run_rotation_core_v2.py --stage pre1998
-python -E scripts/run_rotation_core_v2.py --stage confirm
-python -E scripts/run_rotation_core_v2.py --ledger-report
+python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
+python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
+python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
 ```
 
 ## R27 — scope of the runner's defences; the committed driver; children; one invocation (CEO, 17:30Z)
@@ -595,10 +595,112 @@ python -E scripts/run_rotation_core_v2.py --ledger-report
 **Run instructions (in order, from a clean login shell exporting no `GIT_*`, `GH_*`, `PYTHON*`, `PYTEST_*`, proxy, `LD_*` or temporary-directory variable):**
 
 ```
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --preflight
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --stage pre1998
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --stage confirm
-env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --ledger-report
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage pre1998
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --ledger-report
 ```
 
 `<venv>` is the interpreter whose `versions()` the release pins (on this host `/home/ubuntu2/.t3/worktrees/Macro/.venv-prophet`). After a release commit, the test suite is not run on the run host until that stage's record is on the remote.
+
+## R28 — a supplied context is wholly real or wholly temporary (CEO, after the reader's B1 on `e2e51ec779`)
+
+The finding: a driver config with root, ledger, releases and remote under `/tmp`, both stubs, and no input keys passed every gate. Omitted keys fell back to the real inputs, so stage 1 would have run on the real 1928–1997 data against a throwaway ledger. This was the third finding of one kind (a test context that is partly real); R28 closes the kind.
+
+1. **Two constructions, no shared defaults.**
+   - `Ctx` takes every field keyword-only with no default; a missing field raises `TypeError`.
+   - The real context is built in exactly one place: the `_ctx is None` branch of `main` (`_main_body`), from the module constants. There is no `Ctx()`.
+   - A supplied context reads no module constant.
+2. **Wholly real or wholly temporary, over every field.**
+   - `is_real` is True if ANY path the run can read or write resolves (real path) to or inside the repository root or the real data root (`/home/ubuntu2/tmp/rotation-core/data`). That covers every path field, every value of both input maps and every sealed path. It is also True if the remote is the pinned URL or resolves there, or if branch and remote name the real branch on the real remote.
+   - **A test context:** `is_real` is False, every path lies under `/tmp` by real path, and the remote is a local path under `/tmp`. This is checked for every mode, not only sealed stages.
+   - **A wholly-real supplied context:** unchanged from R27.1 (real hooks, no file at the release path). It may read and write no data at all.
+3. **Enforced at the point of use.** One choke point, `io_check`, sits before every data read (both French loaders, the Yahoo loader, manifest hashing), every result write (the closed-gate publication, the final JSON and Markdown, the selection rerun, the ledger status) and every `chmod` of a sealed file.
+   - In a test context it refuses, before opening, any path not under `/tmp` or inside the repository or the real data root.
+   - It also refuses any input whose sha256 equals a recorded real hash: `v2_power/REAL_INPUT_SHA256.txt` (the 15 readable inputs, newly committed and pinned) and every line of `FRENCH_SEALED_FULL_FILES_SHA256.txt`.
+   - A sealed `chmod` is reachable only from the real run.
+   - In a wholly-real supplied context every data read and write refuses.
+   - A direct call beneath `main` sets no mode (declared, R27.0).
+4. **Completeness is tested.**
+   - The table below has a machine-readable twin in the tests. A test introspects `Ctx.__init__` and fails if any field is absent from the twin or from this table, or has a default.
+   - For every field, omitting it raises.
+   - For every path-like field, pointing it at the repository or the data root (directly, by symlink, by `..`) makes `is_real` True, and with stubs the context refuses.
+   - The reader's B1 config is refused by the driver before import, and by the constructor in-process.
+   - No real data file is opened by these tests.
+5. **The driver** refuses before importing anything a config that omits any required key, or that has any path value outside `/tmp`: each path key, every value of both input maps, every sealed path, the remote, and the driver's own outputs.
+6. **Pinned paths by blob.** `check_engine_commit` hashes the working-tree bytes of every file the engine commit holds under the pinned paths (`hash-object --no-filters --stdin-paths`) and compares each with the commit's blob. It refuses:
+   - any pinned path flagged skip-worktree (`S`) or assume-unchanged (lower case) in `git ls-files -v`;
+   - any pinned path absent from the working tree.
+
+   This checkout's pinned paths (10,120 files) are all present and unflagged.
+
+| Field | Purpose | Real value (constant) | Test constraint |
+|---|---|---|---|
+| `root` | repository checkout | `ROOT` | under `/tmp` |
+| `ledger_path` | run ledger file | `v2.LEDGER` | under `/tmp` |
+| `release1` | stage-1 release file | `v2.RELEASE` | under `/tmp` |
+| `release2` | stage-2 release file | `v2.RELEASE2` | under `/tmp` |
+| `selection` | committed selection result | `v2.SELECTION_RESULT` | under `/tmp` |
+| `ind_d` | through-2019 industry file | `IND_D` | under `/tmp`; not a recorded real hash |
+| `ind_full` | full (sealed) industry file | `IND_FULL` | under `/tmp`; not a recorded real hash |
+| `fact` | factor file | `FACT` | under `/tmp`; not a recorded real hash |
+| `fund_dir` | fund parquet directory | `FUND_DIR` | under `/tmp`; each file not a recorded real hash |
+| `final_j` | final results JSON (write) | `FINAL_J` | under `/tmp` |
+| `final_m` | final results Markdown (write) | `FINAL_M` | under `/tmp` |
+| `stage1_published` | closed-gate publication (write) | `STAGE1_PUBLISHED` | under `/tmp` |
+| `selection_rerun_j` | selection rerun JSON (write) | `SELECTION_RERUN_J` | under `/tmp` |
+| `selection_rerun_m` | selection rerun Markdown (write) | `SELECTION_RERUN_M` | under `/tmp` |
+| `ledger_status_j` | ledger status JSON (write) | `results_v2_ledger_status.json` | under `/tmp` |
+| `ledger_status_m` | ledger status Markdown (write) | `RESULTS_V2_LEDGER_STATUS.md` | under `/tmp` |
+| `stage1_inputs` | stage-1 manifest inputs (map) | `STAGE1_INPUTS` | every value under `/tmp`; not a recorded real hash |
+| `stage2_inputs` | stage-2 manifest inputs (map) | `stage2_inputs(FUND_DIR)` | every value under `/tmp`; not a recorded real hash |
+| `sealed_paths` | files unsealed by stage 2 (list) | `[IND_FULL]` | every value under `/tmp`; `chmod` refused in a test context |
+| `branch` | ledger branch | `v2.BRANCH` | with the pinned URL it is REAL |
+| `remote_url` | ledger remote | `v2.REMOTE_URL` | a local path under `/tmp` |
+| `sealed_recorded` | recorded sealed hashes | `None` (the committed record) | any (no path) |
+| `host_api` | host-record API | `None` (real `gh`) | a stub allowed only when nothing is REAL |
+| `anchor` | activity-log anchor commit | `v2.ANCHOR_COMMIT` | any (no path) |
+| `engine_check` | engine-commit check | `v2.check_engine_commit` | a stub allowed only when nothing is REAL |
+| `B` | bootstrap resamples | `B_STAGE` | any (no path) |
+
+## R29 — failed reads are never absence; reads are blobs; bytecode; fetch; constants (CEO, after the second reader on `e2e51ec779`)
+
+**The command line (every documented command), Linux run host only (`/dev/shm`, `prctl`):**
+
+```
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --preflight
+```
+
+(and likewise `--stage pre1998`, `--stage confirm`, `--ledger-report`).
+
+1. **A failed read is never absence.**
+   - (a) `blob_at` establishes absence only from the tree (`ls-tree`). It returns nothing only when the path is truly absent there; a failed read of a present path, or an unreadable tree, refuses. Every git read that was interpreted is swept (list in the lead's report): `_entries_at`, `file_versions` and every history walk (`_commits_touching`; a failed `log` refuses), `check_release_history`/`commit_adding_entry`/`check_witness` (through `file_versions`), `run_once_guard` (presence from the tree), `on_remote` (blob presence at the fetched head), `check_pinned_blobs` (`ls-files` and `hash-object` exit codes), every `git config` read (`_config_regexp`: exit 1 means no match, anything else refuses; `config --local/--worktree --list` must succeed unless the worktree extension is unset), and `check_read_flags`.
+   - (b) **The ledger never shrinks.** Across commits, every first-parent version extends the one before, and a deletion after the ledger existed refuses. Inside one invocation, a later read must extend the last ledger read.
+   - (c) **Materialise before use.** Every `git` child runs with `GIT_NO_LAZY_FETCH=1`. After every fetch (including the one after each push, which brings no blob in a blob-less clone), `materialise` lazily fetches, explicitly and only there, every committed version of the ledger, both release files, the selection file and (in the real repository) the pinned paths. It then confirms with lazy fetching off that none is missing, and refuses otherwise. The reader's point holds: after the private object directory is removed the ledger blob is not local until this step brings it.
+   - (d) Tested on a real blob-less partial clone of a temporary local remote (`uploadpack.allowFilter`), with the promisor made unreachable right after a fetch: the run refuses, nothing is pushed, and no one-entry ledger appears.
+2. **Reads are blobs.** Inside a run, both release files and the selection result are read as blobs at the fetched head of their repository (`set_read_head`, `read_repo_bytes`). The ledger always was. The sealed-hash and real-input records are read as blobs at HEAD of the code repository (`code_text`). A skip-worktree or assume-unchanged flag on any of these, or on any pinned path, refuses. The test edits a committed release under `--skip-worktree`: the flag refuses, and without it the committed bytes are what the runner reads.
+3. **Bytecode.**
+   - The runner refuses unless `sys.dont_write_bytecode` is true and `sys.pycache_prefix` is `/dev/shm/rotation_core_v2_pycache`, and, checked under the lock, that directory is absent or empty. Every module is therefore compiled from its source.
+   - It also refuses any module under the repository loaded from bytecode (a `.pyc` file, a sourceless loader, or a cached file that exists).
+   - Before each record push the flags and modules are checked again.
+   - Tested with a crafted `.pyc` whose header carries the source's mtime and size: without the flags it runs; under the runner's flags the source runs.
+4. **Fetch and config.**
+   - Every fetch passes `--refmap=` with the explicit non-forced refspec. After a force-push the fetch refuses and the tracking ref does not move.
+   - Allowlisted values are pinned:
+     - `remote.origin.fetch` is the standard `+refs/heads/*:refs/remotes/origin/*` or this checkout's single-branch `+refs/heads/main:refs/remotes/origin/main`. The real checkout carries the latter, and it is harmless under `--refmap=`.
+     - `remote.origin.promisor=true`.
+     - `remote.origin.partialclonefilter=blob:none`.
+     - `extensions.partialclone=origin`, which the real checkout does not carry.
+   - `--preflight` "reads no release file and no data; writes nothing in the working tree and pushes nothing" (it takes the lock, sweeps leftovers and fetches).
+   - The rehearsal's temporary remote and the driver's stub use the constructed environment.
+5. **Real-path constants only in the builder.**
+   - `_real_ctx` is the only function that reads `IND_D`, `IND_FULL`, `FACT`, `FR`, `YAHOO`, `FUND_DIR`, the result paths, `STAGE1_INPUTS`, `v2.RELEASE`, `v2.RELEASE2`, `v2.LEDGER` or `v2.SELECTION_RESULT`.
+   - The guards that must name a root to refuse it (`io_check`, `_touches_real`) are the only other readers of `REAL_DATA_ROOT`.
+   - `run_selection`, `pipeline`, `_yahoo_tr`, the fixture fallback and every function default now take their paths from the context.
+   - A parse-tree test enforces this over the runner, the engine and the report writer.
+   - **Declared (R27.0 class):** a copy of real data placed under the temporary directory with one byte changed is not caught by the hash refusal; that is a host change outside the repository.
+6. **Small items.**
+   - `is_real` is also True when the context root's git common directory is the real repository's, so a second worktree of the real repository is not a test context.
+   - `witness_confirmation_utc` must carry a timezone, be later than the GATE entry's time and not later than now plus 5 minutes; a malformed value is a plain refusal.
+   - A lock file that cannot be opened is a plain refusal.
+   - A `python -E` process that applies the runner's start-up settings and then aborts leaves no new file in `/var/crash` and no core (verified on this host with apport active; tested).

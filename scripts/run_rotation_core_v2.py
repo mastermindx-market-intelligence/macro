@@ -28,9 +28,9 @@ FACT = FR / "x/F-F_Research_Data_Factors_daily.csv"
 FROZEN = ROOT / "research/rotation_core/protocol_header_v2.json"
 
 
-def pipeline(end, ind_path, quiet=True, bootstrap_B=50):
+def pipeline(end, ind_path, fact_path, quiet=True, bootstrap_B=50):
     vw, ew = v2.load_french_industries(ind_path, end)
-    mkt, rf = v2.load_french_market(FACT, end)
+    mkt, rf = v2.load_french_market(fact_path, end)
     legs = v2.form_legs(vw, mkt)
     bd = v2.current_leg_breadth(vw, legs)
     rel = v2.relative_line(legs)
@@ -69,8 +69,8 @@ OUT_J = ROOT / "research/rotation_core/results_v2_selection.json"
 OUT_M = ROOT / "research/rotation_core/RESULTS_V2_SELECTION.md"
 
 
-def _yahoo_tr(t, end=None):
-    x = v2.load_yahoo_tr(YAHOO / f"{t}.parquet", SEL_END if end is None else end)   # F1: filtered before any frame
+def _yahoo_tr(t, ydir, end=None):
+    x = v2.load_yahoo_tr(Path(ydir) / f"{t}.parquet", SEL_END if end is None else end)   # F1: filtered before any frame
     x = x[x.index >= WARMUP_FROM]
     return x.pct_change(fill_method=None)
 
@@ -101,10 +101,8 @@ def _superseded_2x(setting: str):
     """R18.3: the 2x rows of 1ca5228b3c (switches at 20 bp, re-formation left at 10 bp, mix on net legs), shown old
     beside new as a correction."""
     import json
-    p = ROOT / "research/rotation_core/results_v2_selection.json"
-    if not p.exists():
-        return None
-    x = json.loads(p.read_text())["settings"].get(setting, {}).get("H1_at_2x_costs")
+    x = json.loads(v2.code_text(ROOT / "research/rotation_core/results_v2_selection.json"))["settings"].get(
+        setting, {}).get("H1_at_2x_costs")
     return None if x is None else dict(x, definition="superseded (1ca5228b3c): 20 bp on switches only; re-formation "
                                                       "at 10 bp inside the legs; mix on the same net legs")
 
@@ -113,11 +111,11 @@ BOOKS: dict = {}
 STATES: dict = {}
 
 
-def run_selection():
+def run_selection(ctx):
     from engine import rotation_core_evaluation as rc
     import scripts.run_rotation_core_v1 as v1
-    vw, ew = v2.load_french_industries(IND_D, SEL_END)
-    mkt, rf = v2.load_french_market(FACT, SEL_END)
+    vw, ew = v2.load_french_industries(ctx.ind_d, SEL_END)
+    mkt, rf = v2.load_french_market(ctx.fact, SEL_END)
     keep = vw.index >= WARMUP_FROM
     vw, ew, mkt, rf = vw[keep], ew[keep], mkt[mkt.index >= WARMUP_FROM], rf[rf.index >= WARMUP_FROM]
     legs = v2.form_legs(vw, mkt)
@@ -125,7 +123,7 @@ def run_selection():
     rel = v2.relative_line(legs)
     s = vw.index; m = (s >= SEL_START) & (s <= SEL_END)
     mask = pd.Series(m, index=s)
-    spy, rsp = _yahoo_tr("SPY").reindex(s), _yahoo_tr("RSP").reindex(s)
+    spy, rsp = _yahoo_tr("SPY", ctx.fund_dir).reindex(s), _yahoo_tr("RSP", ctx.fund_dir).reindex(s)
     elig_ew = ew.where(vw.notna().cumsum() >= 252)
     ew_proxy = elig_ew.mean(axis=1)
     rsp_line = rsp.where(rsp.index >= pd.Timestamp("2003-05-02"), ew_proxy)
@@ -239,13 +237,6 @@ HPEAK = {"E2020": ("2020-02-01", "2020-02-29", "2020-04-30"),      # protocol_he
          "E2025": ("2025-01-15", "2025-03-15", "2025-05-31")}
 FUND_DIR = YAHOO
 STAGE1_INPUTS = {"industries_le2019": IND_D, "factors": FACT}
-
-
-def stage2_inputs(fund_dir=FUND_DIR) -> dict:
-    d = {"industries_full": IND_FULL, "industries_le2019": IND_D, "factors": FACT}
-    for t in ["SPY", "RSP"] + v2.FUNDS:
-        d[f"yahoo_{t}"] = Path(fund_dir) / f"{t}.parquet"
-    return d
 
 
 def stream(stage: str, window: str, block: int):
@@ -520,7 +511,7 @@ def strict_inequality_violations(runs, rf, a, z) -> int:
 
 
 # ---------------------------------------------------------------------------- preparation (no statistic)
-def prepare_pre1998(ind_path=IND_D, fact_path=FACT, spec=PRE_SPEC, selection=None, root=None) -> dict:
+def prepare_pre1998(ind_path, fact_path, spec=PRE_SPEC, selection=None, root=None) -> dict:
     """Reads nothing after the spec's end (1997-12-31 for stage 1); builds states and simulates every book at both
     readings and cost runs. Computes no statistic."""
     end = spec["z"]
@@ -608,9 +599,9 @@ def pre1998_stats(prep: dict, B_=B_STAGE) -> dict:
     return {"magnitudes": mag, "signs": signs, "h2_signs": h2signs, "integrity": integrity, "window_index": ii}
 
 
-def pre1998_report(ind_path=IND_D, fact_path=FACT, B_=B_STAGE) -> dict:
-    """Prepare -> Phase A -> (IntegrityAbort | Phase B). Used by the final run and the tests."""
-    prep = prepare_pre1998(ind_path, fact_path)
+def pre1998_report(ind_path, fact_path, B_=B_STAGE, selection=None) -> dict:
+    """Prepare -> Phase A -> (IntegrityAbort | Phase B). Used by the tests (direct calls, declared under R27.0)."""
+    prep = prepare_pre1998(ind_path, fact_path, PRE_SPEC, selection)
     A = phase_a([("pre1998", prep)])
     if not A["clean"]:
         raise IntegrityAbort(A)
@@ -752,7 +743,7 @@ def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, 
     if not gate_open and publish_path is not None:
         pub = dict(R["magnitudes"], published_because="the gate closed; R16 S6: a closed gate publishes at once",
                    magnitudes_sha256=sha)
-        Path(publish_path).write_text(json.dumps(pub, indent=1, sort_keys=True, default=float) + "\n")
+        v2.write_text(publish_path, json.dumps(pub, indent=1, sort_keys=True, default=float) + "\n")
         out(f"published {Path(publish_path).name}")
     return g
 
@@ -1089,8 +1080,7 @@ def check_rehearsal_input(buf) -> None:
 def temporary_remote(td: Path):
     """A temporary bare remote and clone for the rehearsal ledger; never the real ledger."""
     def g(*a, cwd):
-        subprocess.run([v2.tool("git"), *a], cwd=cwd, capture_output=True, check=True)
-    import subprocess
+        v2._git(*a, root=cwd)                          # R29.4: the constructed environment and fixed -c options
     origin, work = Path(td) / "origin.git", Path(td) / "work"
     g("init", "-q", "--bare", str(origin), cwd=td)
     g("clone", "-q", str(origin), str(work), cwd=td)
@@ -1103,7 +1093,7 @@ def temporary_remote(td: Path):
     return led
 
 
-def rehearsal_command(ind, fac, out=print, B_=B_STAGE, engine_commit=None) -> dict:
+def rehearsal_command(ind, fac, out=print, B_=B_STAGE, engine_commit=None, selection=None) -> dict:
     """R21.6: the complete stage-1 command (START, Phase A, Phase B, GATE; same functions, same ledger code) on the
     OPEN 1998-2019 window, pseudo-eras 1998-2008 and 2009-2019, against a temporary bare remote. Every line is
     stamped REHEARSAL. Its numbers are on a window already examined and are evidence of nothing."""
@@ -1116,7 +1106,7 @@ def rehearsal_command(ind, fac, out=print, B_=B_STAGE, engine_commit=None) -> di
         led = temporary_remote(Path(td))
         e = stage1_command(led, {}, "rehearsal-release", commit, ind, fac,
                            {"industries": v2.sha256_file(ind), "factors": v2.sha256_file(fac)}, B_=B_, out=stamp,
-                           spec=REH_SPEC)
+                           spec=REH_SPEC, selection=selection)
         stamp("ledger " + " ".join(x["kind"] for x in led.entries()))
     stamp("done: evidence of nothing (open, already-examined window)")
     return e
@@ -1182,56 +1172,76 @@ def check_witness(r2: dict, led, ctx) -> None:
     added = [c for c, b in v2.file_versions(rel, led.remote_sha, ctx.root) if v2.sha256_bytes(b) == start["release_sha256"]]
     if not added or w["release_commit"] != added[0]:
         raise v2.SealedRefusal("refused: witnessed release_commit is not the commit that added the stage-1 release")
-    import datetime                                                  # R27.5: the witness answered `match` after the GATE
+    import datetime                                                  # R27.5/R29.6: `match` after the GATE, timezone-aware
     ts = lambda x: datetime.datetime.fromisoformat(str(x).replace("Z", "+00:00"))
     conf = r2.get("witness_confirmation_utc")
     try:
-        ok = bool(conf) and ts(conf) > ts(gate["utc"])
-    except (ValueError, KeyError):
+        c, g = ts(conf), ts(gate["utc"])
+        now = datetime.datetime.now(datetime.timezone.utc)
+        ok = bool(conf) and c.tzinfo is not None and g.tzinfo is not None and g < c <= now + datetime.timedelta(minutes=5)
+    except (ValueError, KeyError, TypeError):
         ok = False
     if not ok:
         raise v2.SealedRefusal("refused: witness_confirmation_utc is missing or not later than the gate record")
 
 
+# R28.1/R28.2: every context field and its kind. A supplied context gives every one explicitly; none has a default.
+CTX_PATH_FIELDS = ("root", "ledger_path", "release1", "release2", "selection", "ind_d", "ind_full", "fact", "fund_dir",
+                   "final_j", "final_m", "stage1_published", "selection_rerun_j", "selection_rerun_m",
+                   "ledger_status_j", "ledger_status_m")
+CTX_PATH_MAP_FIELDS = ("stage1_inputs", "stage2_inputs")          # name -> path
+CTX_PATH_LIST_FIELDS = ("sealed_paths",)
+CTX_OTHER_FIELDS = ("branch", "remote_url", "sealed_recorded", "host_api", "anchor", "engine_check", "B")
+CTX_FIELDS = CTX_PATH_FIELDS + CTX_PATH_MAP_FIELDS + CTX_PATH_LIST_FIELDS + CTX_OTHER_FIELDS
+
+
 class Ctx:
-    """Every path and host hook `main` uses. The real entry point builds it from constants only; `main(_ctx=...)` is
-    for tests (R23.6), never set from the command line or the environment."""
-    def __init__(self, **kw):
-        self.root = ROOT; self.ledger_path = v2.LEDGER; self.branch = v2.BRANCH; self.remote_url = v2.REMOTE_URL
-        self.release1 = v2.RELEASE; self.release2 = v2.RELEASE2; self.selection = v2.SELECTION_RESULT
-        self.ind_d, self.ind_full, self.fact, self.fund_dir = IND_D, IND_FULL, FACT, FUND_DIR
-        self.stage1_inputs = dict(STAGE1_INPUTS); self.stage2_inputs = None
-        self.sealed_paths = [IND_FULL]; self.sealed_recorded = None
-        self.host_api = None; self.anchor = v2.ANCHOR_COMMIT; self.engine_check = v2.check_engine_commit
-        self.B = B_STAGE
-        self.final_j, self.final_m, self.stage1_published = FINAL_J, FINAL_M, STAGE1_PUBLISHED
-        self.selection_rerun_j, self.selection_rerun_m = SELECTION_RERUN_J, SELECTION_RERUN_M
-        self.ledger_status_j = ROOT / "research/rotation_core/results_v2_ledger_status.json"
-        self.ledger_status_m = ROOT / "research/rotation_core/RESULTS_V2_LEDGER_STATUS.md"
-        self.__dict__.update(kw)
-        if self.stage2_inputs is None:
-            self.stage2_inputs = stage2_inputs(self.fund_dir)
+    """R28.1: a context takes EVERY field explicitly (keyword-only, no defaults; a missing field raises). The real
+    context is built in exactly one place, `_real_ctx` inside `main`'s `_ctx is None` branch; a supplied context
+    (`main(_ctx=...)`, tests only) never reads a module constant."""
+    def __init__(self, *, root, ledger_path, release1, release2, selection, ind_d, ind_full, fact, fund_dir, final_j,
+                 final_m, stage1_published, selection_rerun_j, selection_rerun_m, ledger_status_j, ledger_status_m,
+                 stage1_inputs, stage2_inputs, sealed_paths, branch, remote_url, sealed_recorded, host_api, anchor,
+                 engine_check, B):
+        loc = locals()
+        for k in CTX_FIELDS:
+            setattr(self, k, loc[k])
+        self.stage1_inputs = dict(stage1_inputs); self.stage2_inputs = dict(stage2_inputs)
+        self.sealed_paths = list(sealed_paths)
+
+    def path_values(self) -> list:
+        """Every path the run can read or write (R28.2)."""
+        out = [getattr(self, k) for k in CTX_PATH_FIELDS]
+        for k in CTX_PATH_MAP_FIELDS:
+            out += list(getattr(self, k).values())
+        for k in CTX_PATH_LIST_FIELDS:
+            out += list(getattr(self, k))
+        return out
 
 
-def run_once_guard(path: Path, what: str, ctx=None) -> None:
+def run_once_guard(path: Path, what: str, ctx) -> None:
     """O8: the guard state is the committed file on the just-fetched remote (R20.5), not a local marker; the host
     record is checked first (R22.1)."""
-    ctx = ctx or Ctx()
     sha = v2.fetch_remote(ctx.root, ctx.branch, ctx.remote_url)
     v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
     rel = str(Path(path).resolve().relative_to(Path(ctx.root).resolve()))
-    if Path(path).exists() or v2._git("cat-file", "-e", f"{sha}:{rel}", check=False, root=ctx.root).returncode == 0:
+    if Path(path).exists() or v2.path_in_tree(sha, rel, ctx.root):          # R29.1(a): presence from the tree
         raise SystemExit(f"refused: {what} already run ({Path(path).name} exists locally or on the remote); run once")
 
 
-def verified_ledger(ctx=None) -> tuple:
+def _read_paths(ctx) -> list:
+    """The repository files the runner reads at the fetched head (R29.1(c)/R29.2): both releases and the selection."""
+    return [p for p in (ctx.release1, ctx.release2, ctx.selection) if _inside(p, ctx.root)]
+
+
+def verified_ledger(ctx) -> tuple:
     """R20.1/R20.2/R20.5/R22.1/R23.2/R23.3: fetch (not forced; remote identity pinned; fails closed); the host
     record (activity chain, ruleset) checked before anything else; local == remote; every release version mapped;
     every ledger version a prefix; the whole ledger replayed under the state rules."""
-    ctx = ctx or Ctx()
     led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url,
-                       code_root=ROOT)
+                       code_root=ROOT, read_paths=_read_paths(ctx))
     sha = led.fetch()
+    v2.set_read_head(ctx.root, sha)                                   # R29.2: reads are blobs at this head
     led.host_record = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
     led.require_local_equals_remote()
     entries = led.entries()
@@ -1254,41 +1264,71 @@ def _inside(p, base) -> bool:
     return r == b or r.startswith(b + os.sep)
 
 
+def _touches_real(p) -> bool:
+    return _inside(p, ROOT) or _inside(p, v2.REAL_DATA_ROOT)
+
+
+def _common_dir(root):
+    import os
+    if not Path(root).is_dir():
+        return None
+    r = v2._git("rev-parse", "--path-format=absolute", "--git-common-dir", root=root, check=False)
+    return os.path.realpath(r.stdout.decode().strip()) if r.returncode == 0 and r.stdout.strip() else None
+
+
 def is_real(ctx) -> bool:
-    """R27.1: a context is REAL if root, ledger or a release path lies at or inside the real repository (real path), or
-    the remote URL is the pinned one, or branch + remote name the real branch on the real remote."""
-    return (any(_inside(x, ROOT) for x in (ctx.root, ctx.ledger_path, ctx.release1, ctx.release2))
-            or ctx.remote_url == v2.REMOTE_URL or (ctx.branch == v2.BRANCH and ctx.remote_url == v2.REMOTE_URL))
+    """R28.2: REAL if ANY path the run can read or write (every path field, every value of both input maps, every
+    sealed path) resolves to or inside the real repository or the real data root, or the remote is the pinned URL or
+    resolves there, or branch + remote name the real branch on the real remote."""
+    import os
+    url = str(ctx.remote_url)
+    cd = _common_dir(ctx.root)
+    if cd is not None and cd == _common_dir(ROOT):                   # R29.6: another worktree of the real repository
+        return True
+    return (any(_touches_real(p) for p in ctx.path_values())
+            or url == v2.REMOTE_URL or (os.path.isabs(url) and _touches_real(url))
+            or (ctx.branch == v2.BRANCH and url == v2.REMOTE_URL))
+
+
+def check_supplied_ctx(ctx, stage) -> str:
+    """R28.2: a supplied context is wholly real or wholly temporary. Returns the I/O mode."""
+    import os
+    if not isinstance(ctx, Ctx):
+        raise v2.SealedRefusal("refused: a supplied context must be a Ctx")
+    if is_real(ctx):
+        if ctx.host_api is not None or ctx.engine_check is not v2.check_engine_commit:
+            raise v2.SealedRefusal("refused: a supplied context that touches the real repository must use the real "
+                                   "host and engine checks")
+        if stage in SEALED_STAGES:
+            rel = ctx.release1 if stage == "pre1998" else ctx.release2
+            if Path(rel).exists():
+                raise v2.SealedRefusal("refused: a supplied context that touches the real repository found a file at "
+                                       "its release path; refused before reading it")
+        return "supplied_real"
+    if not all(_inside(p, v2.SYSTEM_TMP) for p in ctx.path_values()):
+        raise v2.SealedRefusal("refused: a test context's every path must lie under the system temporary directory")
+    url = str(ctx.remote_url)
+    if "://" in url or url.startswith("git@") or not os.path.isabs(url) or not _inside(url, v2.SYSTEM_TMP):
+        raise v2.SealedRefusal("refused: a test context's remote must be a local filesystem path under the system "
+                               "temporary directory")
+    return "test"
 
 
 def sealed_stage_gate(stage: str, _ctx, ctx) -> None:
-    """R27.1(a), after parse_args, for a sealed stage."""
+    """R27.1(a), after parse_args, for a sealed stage: the real run's own conditions; a supplied context is checked
+    by check_supplied_ctx for every mode (R28.2)."""
     import os
     if _ctx is None:                                                 # the real run
         main_file = getattr(sys.modules.get("__main__"), "__file__", None)
         if not main_file or os.path.realpath(main_file) != os.path.realpath(RUNNER_SCRIPT):
-            raise v2.SealedRefusal("refused: a sealed stage runs only as `python -E scripts/run_rotation_core_v2.py`")
+            raise v2.SealedRefusal("refused: a sealed stage runs only as `python -E -B -X pycache_prefix=... "
+                                   "scripts/run_rotation_core_v2.py`")
         if "pytest" in sys.modules or any(k.startswith("PYTEST_") for k in os.environ):
             raise v2.SealedRefusal("refused: a sealed stage never runs under pytest")
         if sys.flags.optimize != 0:
             raise v2.SealedRefusal("refused: a sealed stage never runs with -O")
         return
-    if is_real(ctx):                                                 # a supplied context touching anything real
-        if ctx.host_api is not None or ctx.engine_check is not v2.check_engine_commit:
-            raise v2.SealedRefusal("refused: a supplied context that touches the real repository must use the real "
-                                   "host and engine checks")
-        rel = ctx.release1 if stage == "pre1998" else ctx.release2
-        if Path(rel).exists():
-            raise v2.SealedRefusal("refused: a supplied context that touches the real repository found a file at its "
-                                   "release path; refused before reading it")
-        return                                                       # ends in the missing-release refusal
-    for p in (ctx.root, ctx.ledger_path, ctx.release1, ctx.release2):   # a test context
-        if not _inside(p, v2.SYSTEM_TMP):
-            raise v2.SealedRefusal("refused: a test context's root, ledger and releases must lie under the system "
-                                   "temporary directory")
-    url = str(ctx.remote_url)
-    if "://" in url or url.startswith("git@") or not os.path.isabs(url):
-        raise v2.SealedRefusal("refused: a test context's remote must be a local filesystem path")
+    check_supplied_ctx(ctx, stage)
 
 
 def pre_lock_checks(argv: list, _ctx) -> None:
@@ -1298,8 +1338,9 @@ def pre_lock_checks(argv: list, _ctx) -> None:
                                                          for a in argv):
         raise SystemExit("refused: a sealed stage is never run with the real context while pytest is loaded (R26.2)")
     if not sys.flags.ignore_environment or sys.flags.inspect or sys.flags.interactive:
-        raise SystemExit("refused: run as `python -E scripts/run_rotation_core_v2.py ...` (ignore_environment set, "
-                         "not interactive, no inspect) (R25.1(a))")
+        raise SystemExit("refused: run as `python -E -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache "
+                         "scripts/run_rotation_core_v2.py ...` (ignore_environment set, not interactive, no inspect) "
+                         "(R25.1(a))")
     v2.check_runtime_env()
 
 
@@ -1310,7 +1351,9 @@ def start_checks(argv: list, _ctx) -> None:
     v2.check_env_vars()
     v2.check_repo_config(ROOT)
     v2.tool("git"); v2.tool("gh"); v2.tool_versions()
+    v2.check_bytecode_flags()                                         # R29.3, under the lock
     v2.check_import_environment(ROOT)
+    v2.check_no_bytecode_modules(ROOT)
     v2.check_worktree_code(ROOT)
 
 
@@ -1333,8 +1376,10 @@ def main(argv=None, _ctx=None) -> int:
 def preflight(ctx) -> int:
     """R27.4: every start check (done before this point under the lock) plus the remote, the host record, the
     ledger's chain and history, and the engine commit (the code at HEAD, clean, imported as committed). Reads no
-    release file, no data; writes nothing; pushes nothing."""
-    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url, code_root=ROOT)
+    release file and no data; writes nothing in the working tree and pushes nothing (it takes the lock, sweeps
+    leftover private object directories and fetches)."""
+    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url, code_root=ROOT,
+                       read_paths=_read_paths(ctx))
     sha = led.fetch()
     rec = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
     led.require_local_equals_remote()
@@ -1353,14 +1398,42 @@ def preflight(ctx) -> int:
 
 
 def _main(argv: list, _ctx) -> int:
+    try:
+        return _main_body(argv, _ctx)
+    finally:
+        v2.set_io_mode(None)
+        v2.set_read_head(None, None)
+
+
+def _real_ctx():
+    """R28.1/R29.5: the ONLY place a real-path module constant is read."""
+    s2 = {"industries_full": IND_FULL, "industries_le2019": IND_D, "factors": FACT}
+    s2.update({f"yahoo_{t}": FUND_DIR / f"{t}.parquet" for t in ["SPY", "RSP"] + v2.FUNDS})
+    return Ctx(root=ROOT, ledger_path=v2.LEDGER, release1=v2.RELEASE, release2=v2.RELEASE2,
+               selection=v2.SELECTION_RESULT, ind_d=IND_D, ind_full=IND_FULL, fact=FACT, fund_dir=FUND_DIR,
+               final_j=FINAL_J, final_m=FINAL_M, stage1_published=STAGE1_PUBLISHED,
+               selection_rerun_j=SELECTION_RERUN_J, selection_rerun_m=SELECTION_RERUN_M,
+               ledger_status_j=ROOT / "research/rotation_core/results_v2_ledger_status.json",
+               ledger_status_m=ROOT / "research/rotation_core/RESULTS_V2_LEDGER_STATUS.md",
+               stage1_inputs=dict(STAGE1_INPUTS), stage2_inputs=s2, sealed_paths=[IND_FULL],
+               branch=v2.BRANCH, remote_url=v2.REMOTE_URL, sealed_recorded=None, host_api=None,
+               anchor=v2.ANCHOR_COMMIT, engine_check=v2.check_engine_commit, B=B_STAGE)
+
+
+def _main_body(argv: list, _ctx) -> int:
     import json
-    ctx = _ctx or Ctx()
+    if _ctx is None:                         # R28.1: the ONLY construction of the real context
+        ctx = _real_ctx()
+        v2.set_io_mode("real")
+    else:
+        ctx = _ctx
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--stage", choices=["select", "pre1998", "confirm"])
     ap.add_argument("--manifest", choices=["stage1", "stage2"], help="print input sha256 and library versions only")
     ap.add_argument("--preflight", action="store_true",
-                    help="R27.4: run every start check and print PASS or the first refusal (reads no release or data)")
+                    help="R27.4: run every start check; print PASS or the first refusal (reads no release or data; writes "
+                         "nothing in the working tree and pushes nothing)")
     ap.add_argument("--ledger-report", action="store_true",
                     help="R25.1(c): write the status the remote ledger proves (default-closed) and print its headline")
     ap.add_argument("--rehearsal", action="store_true",
@@ -1368,6 +1441,8 @@ def _main(argv: list, _ctx) -> int:
     ap.add_argument("--dry-run-stage1-fixture", action="store_true",
                     help="stage 1 end to end on in-memory synthetic inputs from the committed generator (no path)")
     a = ap.parse_args(argv)
+    if _ctx is not None:                                             # R28.2/R28.3: every mode, before anything
+        v2.set_io_mode(check_supplied_ctx(ctx, a.stage))
     if a.stage in SEALED_STAGES:
         sealed_stage_gate(a.stage, _ctx, ctx)                         # R27.1(a)
     if a.preflight:
@@ -1375,7 +1450,7 @@ def _main(argv: list, _ctx) -> int:
     if a.ledger_report:
         led, sha, entries = verified_ledger(ctx)
         st = ledger_status(entries)
-        Path(ctx.ledger_status_j).write_text(json.dumps(dict(st, ledger_head=sha), indent=1) + "\n")
+        v2.write_text(ctx.ledger_status_j, json.dumps(dict(st, ledger_head=sha), indent=1) + "\n")
         from scripts.rotation_core_v2_report import write_ledger_status_md
         write_ledger_status_md(st, ctx.ledger_status_m)
         print("ledger status:", st["headline"])
@@ -1392,16 +1467,16 @@ def _main(argv: list, _ctx) -> int:
         return 0
     if a.dry_run_stage1_fixture:
         v2.verify_header_v2(FROZEN)
-        sel = ctx.selection if Path(ctx.selection).exists() else ROOT / "research/rotation_core/results_v2_selection.json"
+        sel = ctx.selection if Path(ctx.selection).exists() else Path(ctx.selection).with_name("results_v2_selection.json")
         fixture_dry_run(out=print, selection=sel)        # R22.4(3): passed, never written into the module
         print("FIXTURE stage-1 fixture dry run OK (in-memory synthetic data; in-memory ledger; no real statistic)")
         return 0
     if a.rehearsal:
         v2.verify_header_v2(FROZEN)
-        rehearsal_command(window_text(ctx.ind_d), window_text(ctx.fact))
+        rehearsal_command(window_text(ctx.ind_d), window_text(ctx.fact), selection=ctx.selection)
         return 0
     if a.dry_run:
-        out = pipeline("2019-12-31", ctx.ind_d)
+        out = pipeline("2019-12-31", ctx.ind_d, ctx.fact)
         print(json.dumps(out, indent=1))
         print("dry run OK: structure only; no return, contrast or selection printed or written")
         return 0
@@ -1435,7 +1510,7 @@ def _main(argv: list, _ctx) -> int:
                                   ctx.fact, ctx.fund_dir, ins_sha, B_=ctx.B, selection=ctx.selection, root=ctx.root)
         if res.get("integrity_abort") or res.get("phase_b_exception"):
             return 3
-        Path(ctx.final_j).write_text(json.dumps(res, indent=1, sort_keys=True, default=float) + "\n")
+        v2.write_text(ctx.final_j, json.dumps(res, indent=1, sort_keys=True, default=float) + "\n")
         from scripts.rotation_core_v2_report import write_final_md
         write_final_md(res, ctx.final_m)
         print(json.dumps({h_: v["verdict"] for h_, v in res["verdicts"].items()}, indent=1))
@@ -1443,8 +1518,8 @@ def _main(argv: list, _ctx) -> int:
         return 0
     if a.stage == "select":
         run_once_guard(ctx.selection_rerun_j, "the R15 selection rerun", ctx)
-        res = run_selection()
-        Path(ctx.selection_rerun_j).write_text(json.dumps(res, indent=1, default=float) + "\n")
+        res = run_selection(ctx)
+        v2.write_text(ctx.selection_rerun_j, json.dumps(res, indent=1, default=float) + "\n")
         from scripts.rotation_core_v2_report import write_selection_md
         write_selection_md(res, ctx.selection_rerun_m)
         print("wrote", ctx.selection_rerun_j, ctx.selection_rerun_m, "selected:", res["selection"]["selected"])

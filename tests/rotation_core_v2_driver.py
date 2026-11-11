@@ -14,7 +14,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SYSTEM_TMP = os.path.realpath("/tmp")
 PATH_KEYS = ("root", "ledger_path", "release1", "release2", "selection", "ind_d", "ind_full", "fact", "fund_dir",
-             "final_j", "final_m", "stage1_published", "ledger_status_j", "ledger_status_m")
+             "final_j", "final_m", "stage1_published", "selection_rerun_j", "selection_rerun_m", "ledger_status_j",
+             "ledger_status_m")
+MAP_KEYS = ("stage1_inputs", "stage2_inputs")
+LIST_KEYS = ("sealed_paths",)
+OTHER_KEYS = ("branch", "remote_url", "sealed_recorded", "anchor", "B", "host_stub", "engine_stub")
+REQUIRED_CTX_KEYS = PATH_KEYS + MAP_KEYS + LIST_KEYS + OTHER_KEYS
 
 
 def _under_tmp(p) -> bool:
@@ -23,21 +28,28 @@ def _under_tmp(p) -> bool:
 
 
 def check_config_paths(cfg: dict) -> None:
-    """R27.1(c): BEFORE importing the runner, every path in the config lies under the system temporary directory and
-    the remote is a local path there. (R27.1(a) in the runner is the control; this is the belt.)"""
-    c = cfg.get("ctx", {})
-    paths = [c[k] for k in PATH_KEYS if k in c] + [p for k in ("stage1_inputs", "stage2_inputs")
-                                                   for p in c.get(k, {}).values()]
-    paths += [cfg[k] for k in ("origin", "out", "capture_keys") if cfg.get(k)]
-    if "remote_url" in c:
-        paths.append(c["remote_url"])
-    bad = [p for p in paths if not _under_tmp(p)]
-    if bad:
-        raise SystemExit(f"refused: the driver accepts only paths under {SYSTEM_TMP} (R27.1(c))")
+    """R27.1(c)/R28.5: BEFORE importing the runner: the config names every required key (no key falls back to
+    anything), and every path value (each path key, every value of both input maps, every sealed path, the remote,
+    and the driver's own outputs) lies under the system temporary directory."""
+    c = cfg.get("ctx")
+    if not isinstance(c, dict) or any(k not in c for k in REQUIRED_CTX_KEYS):
+        raise SystemExit("refused: the driver config must name every context key (R28.5)")
+    if any(not isinstance(c[k], dict) for k in MAP_KEYS) or any(not isinstance(c[k], list) for k in LIST_KEYS):
+        raise SystemExit("refused: malformed driver config (R28.5)")
+    paths = [c[k] for k in PATH_KEYS] + [p for k in MAP_KEYS for p in c[k].values()] + \
+        [p for k in LIST_KEYS for p in c[k]] + [c["remote_url"]] + \
+        [cfg[k] for k in ("origin", "out", "capture_keys") if cfg.get(k)]
+    if any(not _under_tmp(p) for p in paths):
+        raise SystemExit(f"refused: the driver accepts only paths under {SYSTEM_TMP} (R27.1(c), R28.5)")
 
 
 if __name__ == "__main__":
-    check_config_paths(json.loads(Path(sys.argv[1]).read_text()))
+    _cfg = json.loads(Path(sys.argv[1]).read_text())
+    if _cfg.get("mode") == "real_hooks":                 # a wholly-real context with an absent release: out under /tmp
+        if not _under_tmp(_cfg.get("out", "/")):
+            raise SystemExit("refused: the driver accepts only paths under /tmp (R27.1(c))")
+    else:
+        check_config_paths(_cfg)
 
 sys.path.insert(0, str(ROOT))
 
@@ -51,8 +63,8 @@ def host_stub(work, branch):
     the branch rules and the ruleset are present and active."""
     def api(path, paginate=False):
         if "/activity" in path:
-            shas = subprocess.run([v2.tool("git"), "-C", str(work), "rev-list", "--first-parent", "--reverse",
-                                   f"refs/remotes/origin/{branch}"], capture_output=True, check=True).stdout.decode().split()
+            shas = v2._git("rev-list", "--first-parent", "--reverse", f"refs/remotes/origin/{branch}",
+                           root=work).stdout.decode().split()               # R29.4: the constructed environment
             ref = f"refs/heads/{branch}"
             log = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": shas[0], "ref": ref,
                     "timestamp": "2026-11-11T00:00:00Z"}]
@@ -69,21 +81,15 @@ def host_stub(work, branch):
 
 
 def build_ctx(c: dict):
-    P = lambda x: Path(x) if x is not None else None
-    kw = {k: P(c[k]) for k in ("root", "ledger_path", "release1", "release2", "selection", "ind_d", "ind_full", "fact",
-                               "fund_dir", "final_j", "final_m", "stage1_published", "ledger_status_j",
-                               "ledger_status_m") if k in c}
-    kw.update({k: c[k] for k in ("branch", "remote_url", "anchor", "B") if k in c})
-    for k in ("stage1_inputs", "stage2_inputs"):
-        if k in c:
-            kw[k] = {n: Path(p) for n, p in c[k].items()}
-    kw["sealed_paths"] = [Path(p) for p in c.get("sealed_paths", [])]
-    kw["sealed_recorded"] = c.get("sealed_recorded", {})
-    if c.get("host_stub"):
-        kw["host_api"] = host_stub(c["root"], c["branch"])
-    if c.get("engine_stub"):
-        kw["engine_check"] = lambda commit: None
-    return run.Ctx(**kw)
+    """Every field explicit (R28.1); the only stubs are the host API and the engine-commit check."""
+    P = Path
+    return run.Ctx(**{k: P(c[k]) for k in PATH_KEYS},
+                   stage1_inputs={n: P(p) for n, p in c["stage1_inputs"].items()},
+                   stage2_inputs={n: P(p) for n, p in c["stage2_inputs"].items()},
+                   sealed_paths=[P(p) for p in c["sealed_paths"]], sealed_recorded=c["sealed_recorded"],
+                   branch=c["branch"], remote_url=c["remote_url"], anchor=c["anchor"], B=c["B"],
+                   host_api=host_stub(c["root"], c["branch"]) if c["host_stub"] else None,
+                   engine_check=(lambda commit: None) if c["engine_stub"] else v2.check_engine_commit)
 
 
 def plant(cfg: dict) -> None:
@@ -133,7 +139,11 @@ def real_hooks(cfg: dict) -> int:
         calls["engine_check_is_real"] = k.get("engine_check") is v2.check_engine_commit
         return real_s1(*a, **k)
     v2.host_checks, v2.stage1_release = host_spy, s1_spy
-    ctx = run.Ctx(release1=ROOT / "research/rotation_core/__absent_release_for_tests__.json")
+    # a wholly-REAL supplied context: the real fields, with only the stage-1 release path replaced by an absent one
+    real = run._real_ctx()
+    kw = {k: getattr(real, k) for k in run.CTX_FIELDS}
+    kw["release1"] = ROOT / "research/rotation_core/__absent_release_for_tests__.json"
+    ctx = run.Ctx(**kw)
     try:
         run.main(["--stage", "pre1998"], _ctx=ctx)
         calls["refusal"] = None
