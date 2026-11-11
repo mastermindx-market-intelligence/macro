@@ -11978,6 +11978,8 @@ jobs:
       - "research/prophet_v4/b17_frozen_input_recovery.py"
       - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
+      # Packet 4 issuer binding: complete synthetic regression suite in PR CI.
+      - "tests/test_packet4_identity_boundary.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
       # D5 A7's manifest-authenticated N/N+1 correction chain is hermetic and
@@ -12065,6 +12067,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
+          tests/test_packet4_identity_boundary.py
           tests/test_prophet_lab_api.py
           tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py

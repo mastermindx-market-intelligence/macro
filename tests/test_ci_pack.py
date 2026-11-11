@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6113,6 +6113,85 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Both original lifecycle history entries and all main provenance remain
     at their existing anchors. This is source-derived accounting, not a new
     paired planner measurement; natural successor CI must qualify this head.
+
+    2026-11-11 (PR #8004, frozen main8d6a5e compatibility repair):
+    preserve the accepted three identity-binding feature/test blobs. Current
+    main retains all401 owners and the same prophet-lab preimage/estimator.
+    Restore only this PR's original three-line suite enrollment, preserving
+    all400 current sibling blocks, landed #10918 scope and #9230 coverage.
+    Add only the previously measured67->69 owner delta to current ceilings:
+    5966/5989/5724 ->5968/5991/5726. Keep137/138/131 jobs and ten packs.
+    Preserve all selectors, assertions, dependencies and runtime limits;
+    no unmerged sibling contribution is funded. This is source-conservation
+    accounting; the new head requires its own natural contract/semantic CI.
+    Original replay UNKNOWN and closed #7426 scopes remain unchanged.
+
+    2026-11-09 (PR #8004, preserve current-main CI and accepted D5 source):
+    the incumbent reports a real shared-CI content conflict at main8251e41b.
+    Preserve all three accepted identity-guard source/test objects and add
+    only the original three-line suite enrollment to current prophet-lab.
+    Retain current B-17 immutable-input paths and its independent full suite.
+    All400 current owner identities and the other399 whole blocks stay exact.
+    Original paired contract42405585822/job128502461771 measured this +2;
+    current runner47164044 still computes67->69 from12 commands,
+    27->28 executable test-path tokens and1433->1473 characters, the same
+    800-character bucket. This is static accounting, not planner execution.
+    Compose only that +2 onto current5945/5966/5703 ->5947/5968/5705.
+    Preserve actual landed F09/#10192 and every other current-main history;
+    no unmerged sibling contribution is funded. Keep137/138/131 jobs,
+    ten packs, all assertions/selectors/suites, timeouts and admission limits.
+    Original sl8z94t2 descendant UNKNOWN and closed log/#7426 scopes remain.
+    The distinct new source generation must earn its own natural CI proof.
+    The complete prior #8004 accounting follows as historical provenance.
+
+    2026-11-08 (PR #8004, current shared-CI conflict conservation):
+    its own2e76b626 tree passed run42443433015/gate128632505829:
+    CLEAR113 jobs/338 semantic PASS. Controller6717644339 then
+    identified a real content conflict after main067c changed definitions.
+    Preserve the accepted three feature/test objects and only the original
+    three-line prophet-lab enrollment in current catalog563e1217.
+    Its whole current owner still equals incorporated basea3eb8161;
+    preserve all395 owner identities and the other394 complete blocks,
+    the landed #10735 split, #8240 owners, and current runner/tests.
+    Current mainc91d58b2 has5920/5941/5678, including #7352's independent
+    free-content+2. Add only #8004's previously measured+2 per probe:
+    index5922, free-content5943, Prophet5680. H's old5941 must not
+    replace the combined5943 or coalesce two independent contributions.
+    Keep jobs137/138/131, ten packs, every assertion/selector/suite,
+    dependency, timeout and admission limit. No unmerged sibling funding.
+    This is static source conservation, not new planner/test execution;
+    the newly composed head must earn its own natural binding proof.
+    Source: PR8004 issuecomment6715796857 and measured6713014275.
+    Original sl8z94t2 descendant UNKNOWN, closed logs and #7426 refusals
+    remain untouched. The complete historical provenance follows.
+
+    2026-11-08 (PR #8004, current-main content-conflict composition):
+    preserve the accepted Packet 4 identity-boundary enrollment below over
+    mainf762b33d770c88e0d3440d97ee294d8adb008dfe, including the actually
+    merged PR7694 Immune contribution, QTUM parser coverage and Options
+    owner registration. The current prophet-lab block exactly matches the
+    original integrated base; restore only this PR's accepted suite scope
+    and complete existing-command enrollment. Preserve all 393 owner IDs
+    and every unrelated command. Compose the independently measured +2:
+    index5920 -> 5922, free-content5939 -> 5941, Prophet5678 -> 5680.
+    Keep job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, timeouts and admission limits. This is static composition
+    arithmetic, not a new planner or pytest execution. No unmerged sibling
+    contribution is funded; this new source must earn its own natural CI.
+
+    PR8004 (2026-11-07): own hosted contract-delta run42405585822,
+    job128502461771, measured base309cbf2511bcedbddf8a221acb4f942a0b79988c
+    against headf5c166af71b0bc6d5f4b6984a8330743235aa134. Enrolling the
+    unchanged identity-binding suite in the existing prophet-lab command
+    adds exactly two planning-weight units to each already-selected probe:
+    index137/5914->5916, free-content137/5933->5935, Prophet131/5672->5674.
+    All three retain the same selected job identities and ten packs;
+    contract-delta reports newly selected: none. Fund only this measured
+    increment. Preserve all job-count ceilings, pack bounds, selectors,
+    suites, timeouts and admission limits, including the prior accepted
+    GSC and gateway histories below. These are planning weights, not
+    elapsed-runtime measurements. No unmerged sibling funding is included;
+    successor natural CI remains required.
 
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
