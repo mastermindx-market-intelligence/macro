@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/sector.html.j2
+manifest: mockups/evidence/sector-cycles-wave-dossier/manifest.json

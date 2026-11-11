@@ -1,0 +1,14 @@
+{
+  "observed_miss": "sample5 3217.1ms; retained original batch",
+  "facts": [
+    "Fonts served in530.9/522.5ms versus2ms typical; finance137.4ms versus10-32ms typical.",
+    "Browser finance request itself started2550ms versus2089ms on adjacent sample.",
+    "No request failures or data-meaning mismatch."
+  ],
+  "hypotheses": [
+    "shared local runtime/storage/scheduling stall",
+    "browser long task or execution stall"
+  ],
+  "changed_measurement": "Same source/data/limits; add server loop wall-vs-CPU observations and browser long-task observations. No source/HTML/payload rewrites, no threshold change.",
+  "production_claim": false
+}

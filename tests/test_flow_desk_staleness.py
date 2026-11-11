@@ -18,6 +18,7 @@ These tests are built to fail on that class of defect:
   · a TOTAL freeze must still be caught — the case the relative gate is blind to
   · a deliberately discontinued leg must never cry wolf
   · a collector run that collected nothing must not report itself healthy
+  · a pre-response transport outage must never be diagnosed as a token/积分 problem
 """
 from __future__ import annotations
 
@@ -201,6 +202,195 @@ def test_leg_map_flattens_the_payloads_two_shapes():
 
 
 # ── upstream: a collector that collected nothing must not report healthy ──────
+
+def _tushare_response(body: dict, *, status_code: int = 200):
+    """Small requests.Response stand-in for transport-latch tests."""
+    class Response:
+        is_redirect = 300 <= status_code < 400
+        is_permanent_redirect = status_code in {301, 308}
+
+        def __init__(self):
+            self.status_code = status_code
+
+        def raise_for_status(self):
+            if status_code >= 400:
+                from collectors import tushare_client as tc
+                raise tc.requests.exceptions.HTTPError(f"HTTP {status_code}")
+
+        def json(self):
+            return body
+
+    return Response()
+
+
+def test_tushare_client_latches_transport_cause_without_credential_leak(monkeypatch):
+    """A pre-response ConnectionError is network evidence, never entitlement evidence."""
+    from collectors import tushare_client as tc
+
+    secret = "credential-that-must-never-escape"
+    monkeypatch.setenv("TUSHARE_TOKEN", secret)
+    monkeypatch.setattr(tc, "_last_call", {})
+    monkeypatch.setattr(tc, "_auth_error", None)
+    monkeypatch.setattr(tc, "_transport_error", None)
+
+    def fail_before_response(*args, **kwargs):
+        raise tc.requests.exceptions.ConnectionError(f"DNS failed; token={secret}")
+
+    monkeypatch.setattr(tc.requests, "post", fail_before_response)
+    assert tc.query("moneyflow_dc", trade_date="20260918") is None
+
+    err = tc.last_transport_error()
+    assert err["api_name"] == "moneyflow_dc"
+    assert err["kind"] == "connection"
+    assert err["exception"] == "ConnectionError"
+    assert secret not in str(err)
+    assert err is not tc._transport_error, "callers must receive a copy, not the latch"
+    assert tc.last_auth_error() is None
+
+
+def test_tushare_transport_latch_survives_later_http_success_until_window_reset(monkeypatch):
+    """A later success must not erase an intermittent failure from the same adapter pass."""
+    from collectors import tushare_client as tc
+
+    monkeypatch.setenv("TUSHARE_TOKEN", "fixture-token")
+    monkeypatch.setattr(tc, "_last_call", {})
+    monkeypatch.setattr(tc, "_auth_error", None)
+    monkeypatch.setattr(tc, "_transport_error", None)
+    monkeypatch.setattr(tc, "_throttle", lambda api_name: None)
+
+    calls = iter([
+        tc.requests.exceptions.ConnectionError("resolver unavailable"),
+        _tushare_response({
+            "code": 0,
+            "data": {"fields": ["trade_date"], "items": [["20260918"]]},
+        }),
+    ])
+
+    def post(*args, **kwargs):
+        outcome = next(calls)
+        if isinstance(outcome, BaseException):
+            raise outcome
+        return outcome
+
+    monkeypatch.setattr(tc.requests, "post", post)
+    assert tc.query("trade_cal") is None
+    first = tc.last_transport_error()
+    assert first and first["kind"] == "connection"
+
+    recovered = tc.query("trade_cal")
+    assert recovered is not None and recovered["trade_date"].iloc[0] == "20260918"
+    assert tc.last_transport_error() == first, (
+        "later HTTP/vendor success must not erase an earlier failure in this window"
+    )
+
+    tc.clear_transport_error()
+    assert tc.last_transport_error() is None
+
+
+def test_unclassified_request_exception_does_not_erase_prior_transport_receipt(monkeypatch):
+    """Only an explicit window reset may clear already-observed transport evidence."""
+    from collectors import tushare_client as tc
+
+    monkeypatch.setenv("TUSHARE_TOKEN", "fixture-token")
+    monkeypatch.setattr(tc, "_last_call", {})
+    prior = {
+        "api_name": "trade_cal", "kind": "connection",
+        "exception": "ConnectionError", "ts": "2026-09-20T00:00:00+00:00",
+    }
+    monkeypatch.setattr(tc, "_transport_error", dict(prior))
+    monkeypatch.setattr(
+        tc.requests, "post",
+        lambda *a, **k: (_ for _ in ()).throw(ValueError("odd")),
+    )
+
+    assert tc.query("daily_basic") is None
+    assert tc.last_transport_error() == prior
+
+
+def test_adapter_clears_transport_error_from_prior_consumer(monkeypatch):
+    """The adapter diagnoses only its own module window, not an earlier caller's miss."""
+    import types
+    from collectors import china_tushare as ct
+    from collectors import tushare_client as tc
+
+    monkeypatch.setattr(tc, "enabled", lambda: True)
+    monkeypatch.setattr(tc, "_transport_error", {
+        "api_name": "china_board_breadth", "kind": "connection",
+        "exception": "ConnectionError", "ts": "2026-09-20T00:00:00+00:00",
+    })
+    monkeypatch.setattr(tc, "last_auth_error", lambda: None)
+
+    def import_zero(dotted: str):
+        mod = types.ModuleType(dotted)
+        mod.refresh = lambda: 0
+        return mod
+
+    monkeypatch.setattr(ct.importlib, "import_module", import_zero)
+    result = ct.ChinaTushareAdapter().fetch()
+    assert tc.last_transport_error() is None
+    assert result["run_log"].iloc[0].eq(0.0).all()
+
+
+def test_transport_outage_raises_exact_remedy_and_annotation(monkeypatch, capsys):
+    """All-zero + transport receipt fails the adapter without blaming token or points."""
+    import types
+    from collectors import china_tushare as ct
+    from collectors import tushare_client as tc
+
+    monkeypatch.setattr(tc, "enabled", lambda: True)
+    monkeypatch.setattr(tc, "last_auth_error", lambda: None)
+    monkeypatch.setattr(tc, "clear_transport_error", lambda: None)
+    monkeypatch.setattr(tc, "last_transport_error", lambda: {
+        "api_name": "moneyflow_dc", "kind": "connection",
+        "exception": "ConnectionError", "ts": "2026-09-20T00:00:00+00:00",
+    })
+
+    def import_zero(dotted: str):
+        mod = types.ModuleType(dotted)
+        mod.refresh = lambda: 0
+        return mod
+
+    monkeypatch.setattr(ct.importlib, "import_module", import_zero)
+    adapter = ct.ChinaTushareAdapter()
+    with pytest.raises(RuntimeError) as excinfo:
+        adapter.fetch()
+
+    detail = str(excinfo.value)
+    assert "runner DNS/network/TLS or vendor reachability" in detail
+    assert "does not establish a bad TUSHARE_TOKEN" in detail
+    assert "do not rotate the credential based on this receipt" in detail
+    from collectors.base import safe_exc_text
+    assert "do not rotate the credential based on this receipt" in safe_exc_text(detail)
+    lines = [line for line in capsys.readouterr().out.splitlines()
+             if line.startswith("::error")]
+    assert len(lines) == 1
+    assert "title=tushare-transport-outage" in lines[0]
+
+
+def test_partial_transport_failure_keeps_successful_modules(monkeypatch):
+    """A late transport miss must not erase data already landed by another module."""
+    import types
+    from collectors import china_tushare as ct
+    from collectors import tushare_client as tc
+
+    monkeypatch.setattr(tc, "enabled", lambda: True)
+    monkeypatch.setattr(tc, "last_auth_error", lambda: None)
+    monkeypatch.setattr(tc, "clear_transport_error", lambda: None)
+    monkeypatch.setattr(tc, "last_transport_error", lambda: {
+        "api_name": "tushare_history", "kind": "read_timeout",
+        "exception": "ReadTimeout", "ts": "2026-09-20T00:00:00+00:00",
+    })
+
+    def import_partial(dotted: str):
+        name = dotted.rsplit(".", 1)[-1]
+        mod = types.ModuleType(dotted)
+        mod.refresh = lambda: 100 if name == "tushare_valuation" else 0
+        return mod
+
+    monkeypatch.setattr(ct.importlib, "import_module", import_partial)
+    frame = ct.ChinaTushareAdapter().fetch()["run_log"]
+    assert frame["tushare_valuation"].iloc[0] == 100.0
+
 
 def test_zero_collection_run_reports_stale_and_annotates(capsys):
     """The heartbeat is stamped utcnow(), so only its VALUES can reveal an outage.

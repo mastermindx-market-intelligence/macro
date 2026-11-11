@@ -2,19 +2,28 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-11T06:23:07+00:00",
+  "as_of": "2026-11-11",
+  "generated_at": "2026-11-11T12:19:32+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 76772.14,
-    "change_24h_pct": 0.31,
-    "stance_en": "RISK-ON",
-    "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from behaviour versus stocks and the market cycle. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自与美股的联动与所处周期。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 28,
-    "exposure_pct": 91,
+    "price": 73664.19,
+    "change_24h_pct": -0.05,
+    "stance_en": "RISK-OFF",
+    "stance_zh": "偏空",
+    "summary_en": "The big picture reads risk-off. Support comes from miners and fundamentals; the drag comes from the trend and momentum. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏空。支撑来自矿工与基本面；拖累来自趋势与动量。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -31,
+    "exposure_pct": 5,
     "gate_active": false
+  },
+  "decision": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-11-11",
+    "integrity_ok": true,
+    "final_exposure_pct": 5,
+    "errors": [],
+    "authority_source": "btc.decision/v1.final.exposure_pct"
   },
   "axes": [
     {
@@ -26,9 +35,9 @@
         "label_en": "Momentum",
         "label_zh": "动量",
         "source": "master.board.momentum",
-        "state_en": "Bullish",
-        "state_zh": "看多",
-        "tone": "bull",
+        "state_en": "Bearish",
+        "state_zh": "看空",
+        "tone": "bear",
         "grade": "DIRECTIONAL"
       },
       "spark_source": "signals.momentum",
@@ -38,9 +47,9 @@
           "label_en": "Structure",
           "label_zh": "结构",
           "source": "master.board.structure",
-          "state_en": "Constructive",
-          "state_zh": "偏多",
-          "tone": "bull",
+          "state_en": "Broken",
+          "state_zh": "走坏",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         },
         {
@@ -48,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -69,7 +78,7 @@
         "tone": "neutral",
         "grade": "EXTREMES"
       },
-      "spark_source": "signals.mvrv_z",
+      "spark_source": "signals.cycle_position",
       "receipt_members": [
         {
           "key": "cycle",
@@ -117,16 +126,16 @@
         "tone": "neutral",
         "grade": null
       },
-      "spark_source": "signals.etf_flow_z",
+      "spark_source": "signals.stbl_growth",
       "receipt_members": [
         {
           "key": "stbl",
           "label_en": "Stablecoin tide",
           "label_zh": "稳定币潮汐",
           "source": "master.board.stbl",
-          "state_en": "Expanding",
-          "state_zh": "扩张",
-          "tone": "bull",
+          "state_en": "Contracting",
+          "state_zh": "收缩",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         },
         {
@@ -153,19 +162,19 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-09-11"
+        "as_of": "2026-11-11"
       },
-      "spark_source": "signals.oi_mcap_ratio",
+      "spark_source": "signals.leverage_stress",
       "receipt_members": [
         {
           "key": "funding",
-          "label_en": "Perp funding",
-          "label_zh": "永续资金费率",
+          "label_en": "Funding",
+          "label_zh": "funding",
           "source": "master.board.funding",
-          "state_en": "Crowded long",
-          "state_zh": "多头拥挤",
-          "tone": "bear",
-          "grade": "EXTREMES"
+          "state_en": "Unavailable",
+          "state_zh": "暂无",
+          "tone": "neutral",
+          "grade": null
         },
         {
           "key": "cot",
@@ -200,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Capitulation (bottoming)",
+          "state_zh": "投降（筑底）",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
@@ -236,12 +245,12 @@
         "label_en": "Macro liquidity",
         "label_zh": "宏观流动性",
         "source": "master.board.macro",
-        "state_en": "Tailwind",
-        "state_zh": "顺风",
-        "tone": "bull",
+        "state_en": "Headwind",
+        "state_zh": "逆风",
+        "tone": "bear",
         "grade": "CONFIRMED"
       },
-      "spark_source": "signals.macro_score",
+      "spark_source": "signals.global_m2_yoy",
       "receipt_members": [
         {
           "key": "beta",
@@ -257,12 +266,13 @@
     }
   ],
   "authority": {
-    "sizing_source": "signals.alloc_optimal",
+    "sizing_source": "btc.decision/v1.final.exposure_pct",
     "stance_source": "btc_master.synthesize",
     "axis_contract": "COCKPIT_AXIS_PRESENTATION",
     "no_new_arithmetic": true
   },
   "future_consumers": [
+    "crypto.html:H5",
     "crypto.html:H6",
     "index.html:crypto-product-card",
     "neural-web:crypto-lens"

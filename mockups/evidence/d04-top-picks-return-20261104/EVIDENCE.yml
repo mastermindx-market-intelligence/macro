@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/discovery-controls.css
+  - templates/discovery.html.j2
+  - site/discovery-controls.css
+  - site/discovery.html
+manifest: mockups/evidence/d04-top-picks-return-20261104/manifest.json
