@@ -96,3 +96,78 @@ Current source and material work are complete for PR #7466; do not expand this
 repair into marketing redesigns, archival previews, or other sessions' page
 layout programs. The latest exact-head CI must conclude before release; the
 existing render/pull publisher must publish current hashes before live proof.
+
+
+## 2026-11-11 — current-main source integration
+
+Current-assignment source claim:
+https://github.com/mastermindx-market-intelligence/macro/pull/7466#issuecomment-6809056112
+
+The original branch head for this phase is
+`d31d31f56b27448f08fe6ff385e86143224417c3`; receiving main is
+`18de8ef0a97d86f97537f986eb2452fcdbb06f64`, with actual common base
+`01896d6da34d67df45056dd82795be6c8cbf187e`. All 49 historical evidence
+objects, including 34 PNGs, and the original discovery remain unchanged.
+The earlier visual observations in this document remain historical.
+
+The original four CSS changes and one JavaScript change are composed into
+current templates. Current quiet borders, stance/surface tokens, later
+design additions, account behavior, Brain configuration/hash and Terminal
+overlay are retained. The original stateless material helper still has one
+CSS author. Material injection is conditional on its token and occurs
+before the current overlay concatenation and single final rjsmin1.2.5
+transformation. The publish guard keeps current main's missing-emitter
+refusal, including fix mode. Its third-token consistency check is added;
+the old positive fallback is not restored.
+
+The original material-value test now decodes the actual JSON assignment
+from the minified bundle. Its four malformed-export cases and exact dark
+defaults remain. The stale-projection case uses the real emitter: matching
+CSS twins cannot conceal old generated material CSS. Every current emitter
+lexical/config/Brain/Terminal test and both fail-closed/minified-pair checks
+are retained. The Prophet contrast test postimage remains exactly the
+original H object.
+
+Actual source qualification on immutable preparation commit
+`fb25f286ca84ec55d14eb000de85500d298fcc4e` returned **198 passed, no
+failures, errors or skips** across the emitter, token, Prophet-ink and
+Screener equality suites. Source and emitted JavaScript syntax passed.
+The ordinary template/site guard passed all **161 pairs** after the
+supported worktree command materialized the complete tracked site input.
+The runtime-style guard scanned all **277 JavaScript files**, with44
+injecting files and87 hits; only the obsolete template/theme.js
+style-markup allowance was removed, preserving current provenance.
+
+The existing canonical emitter generated site/theme.js. The Screener was
+baked only from unchanged payload blob
+`d8823c7546cf4918abef351427d5bbb5fc167d65`: its original page and nightly
+banner are exact except the two theme cache stamps, CSS `3dbb4579` and
+JS `be18421e`. No payload generation, whole-estate rewrite, browser,
+provider or deployment action was performed.
+
+The unchanged native closure census on that preparation tree found
+**69 concrete owner/path pairs**, all for `lib/theme_materials.py`,
+and no unrun suites. This composition adds exactly those69 literal
+dependencies to existing owners. All401 owner identities/order,332
+unaffected sibling blocks, commands, gates, selectors, timeouts and
+packing limits are preserved. The current packing-test file is unchanged.
+The final paired native contract and exact publication identity must be
+read from the original PR's source receipt; the earlier218-owner census
+and its old count-limit failures are not restamped onto current main.
+
+Proof SHA256:
+- Focused source log: `a16e3d755f10b1878cc136c36c8e7f1414bd4cd164ca9601a5bf298fb1ab5d0a`
+- Canonical bake report: `0a143f5e506b5380e934ee039d32c232c066b5c2afc29fdcb46805023da719f1`
+- Template/site guard: `47e6aa00150a5c8d3220d26c8dca4a3e5cf7c65ce4208d3027db885eaa6f7e78`
+- Runtime-style guard: `f216305c9f64bb636c1c77f7c4021f3871f7ed0f2f5e8b36d835c7f03c1445fe`
+- Native69-pair census: `6d95f9c965d58d1aecfb960d593f3eaa4636a5371ec0d147ade08926c8dc6c94`
+
+**Original acceptance remains incomplete.** The actual current P0B guard,
+with complete exact receipt inputs, reports both changed global assets
+against each HK/Canada receipt: four missing receipt-closure findings.
+Those receipts require a genuine admitted capture; historical hashes or
+screenshots must not be restamped. Fresh integrated hosted CI, the existing
+render/cache publisher and actual public allocation_canada,
+narrative_radar and flow_velocity light/dark consumption remain owed.
+The original refused worker request is closed; Studio SSH/custom-Chrome
+denials and resource/runtime boundaries are unchanged.

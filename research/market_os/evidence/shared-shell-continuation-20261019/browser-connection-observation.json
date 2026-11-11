@@ -1,0 +1,42 @@
+{
+  "record_type": "Attended Browser connection failure",
+  "observation_window_utc": "2026-10-19 08:18–08:24",
+  "url": "http://127.0.0.1:3100/about.html",
+  "selected_browser_tab_id": "1065716876",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "actual_browser_result": "ERR_SOCKET_NOT_CONNECTED",
+  "one_reload_after_native_http_200": "same connection error",
+  "native_http": {
+    "observed_at": "2026-10-19T08:22:25.200464+00:00",
+    "status": 200,
+    "bytes": 70552,
+    "sha256": "53d8700019568fd61cb3dadfd17ebb0f2fa79c14c4ce814ae0b20429e5345eb7",
+    "presentation_controls": true
+  },
+  "application_source": {
+    "terminal_preview_only": "4bfca4043e1779b1bf74dd388e40783e3c4000e4",
+    "macro_committed_candidate": "cd00da8f433f512baf471dfef4517a838cbef145",
+    "actual_macro_fixture_manifest": "not produced; bounded generation timed out after 90 seconds; server never started"
+  },
+  "screenshot": {
+    "file": "browser-connection-block.jpg",
+    "actual_media_type": "image/jpeg",
+    "sha256": "74d85226ebc971e251514530ce5f319cb406f5b5d247204801dd90498ec85a6e",
+    "meaning": "Actual browser error page. No application pixels or visual acceptance."
+  },
+  "cleanup": {
+    "file": "preview-cleanup-receipt.json",
+    "terminal_owned_group_gone": true,
+    "ports_3100_3110": "no listeners at cleanup read",
+    "macro_fixture_helper": "stopped; no remaining helper process observed"
+  },
+  "limits": [
+    "Terminal #1063 was used only as an existing preview candidate; no adoption into A, source edits, CI or public acceptance is claimed.",
+    "The launcher's guest-cookie statement describes its existing harness; this attended attempt set no guest-selector cookies.",
+    "No canonical EVIDENCE.yml was created. Required active-frame eight-cell evidence remains absent.",
+    "Recorded-driver telemetry/provenance changes remain SPEC_ONLY / UNAPPLIED / UNRUN."
+  ]
+}

@@ -63,19 +63,32 @@ def test_segments_are_the_invariant_text() -> None:
     assert _token_segments("no tokens here", ("<T1>",)) == ["no tokens here"]
 
 
-def test_fallback_accepts_a_healthy_three_token_pair() -> None:
-    """The real committed pair must pass the stdlib path, not only the exact one."""
-    tpl = (TEMPLATES / "theme.js").read_text()
-    site = (SITE / "theme.js").read_text()
-    segs = _token_segments(tpl, _THEME_TOKENS)
-    overlay = TEMPLATES / "terminal_overlay.js"
-    if overlay.is_file():
-        segs[-1] = f"{segs[-1].rstrip()}\n\n{overlay.read_text().lstrip()}"
-    assert len(segs) == 4, "theme.js should carry exactly three bake tokens"
-    assert _matches_around_tokens(site, segs), (
-        "the stdlib fallback rejects the committed, in-sync pair — pages.yml would "
-        "refuse to publish a healthy tree"
-    )
+def test_missing_emitter_fails_theme_verification_closed(tmp_path, monkeypatch, capsys) -> None:
+    from scripts import check_template_site_sync as guard
+    (tmp_path / "templates").mkdir(); (tmp_path / "site").mkdir()
+    source = "window.SUPABASE_CFG = " + _THEME_TOKEN + ";"
+    (tmp_path / "templates" / "theme.js").write_text(source)
+    (tmp_path / "site" / "theme.js").write_text(source)
+    monkeypatch.setattr(guard, "_bake_theme", lambda _path: None)
+    assert guard.check(tmp_path) == ["theme.js"]
+    assert guard.check(tmp_path, fix=True) == ["theme.js"]
+    assert guard.check.unfixed == ["theme.js"]
+    assert "rjsmin==1.2.5" in capsys.readouterr().out
+    assert (tmp_path / "site" / "theme.js").read_text() == source
+
+
+def test_exact_emitter_accepts_minified_pair_and_rejects_changes(tmp_path) -> None:
+    from lib import site_assets
+    from scripts import check_template_site_sync as guard
+    (tmp_path / "templates").mkdir(); (tmp_path / "site").mkdir()
+    theme = tmp_path / "templates" / "theme.js"
+    theme.write_text("window.SUPABASE_CFG = " + _THEME_TOKEN + ";")
+    output = tmp_path / "site" / "theme.js"
+    emitted = site_assets.emit_theme_js(theme); output.write_text(emitted)
+    assert guard.check(tmp_path) == []
+    for broken in (emitted[:len(emitted)//2], emitted + "window.changed=true;", emitted.replace("SUPABASE_CFG","WRONG_CFG")):
+        output.write_text(broken)
+        assert guard.check(tmp_path) == ["theme.js"]
 
 
 def test_fallback_still_rejects_a_real_one_sided_edit() -> None:
@@ -100,24 +113,19 @@ def test_fallback_is_exact_when_there_are_no_tokens() -> None:
     assert not _matches_around_tokens("ab", ["abc"])
 
 
-
-def test_stdlib_publish_guard_rejects_stale_material_projection(tmp_path, monkeypatch) -> None:
-    """The stripped-down publisher must compare CSS, not treat it like an opaque key."""
-    import json
+def test_publish_guard_rejects_stale_material_projection(tmp_path) -> None:
+    """Matching CSS twins must not hide a stale emitted material projection."""
     from scripts import check_template_site_sync as sync
-    from lib.theme_materials import shared_contrast_css
+    from lib import site_assets
 
     tpl, site = tmp_path / "templates", tmp_path / "site"
     tpl.mkdir(); site.mkdir()
     css = (TEMPLATES / "theme.css").read_text()
     (tpl / "theme.css").write_text(css); (site / "theme.css").write_text(css)
     source = "const settings=" + _THEME_TOKEN + ";const css=" + _SOFT_CONTRAST_TOKEN + ";"
-    (tpl / "theme.js").write_text(source)
-    emitted = source.replace(_THEME_TOKEN, "{}").replace(
-        _SOFT_CONTRAST_TOKEN, json.dumps(shared_contrast_css(tpl / "theme.js"))
-    )
-    (site / "theme.js").write_text(emitted)
-    monkeypatch.setattr(sync, "_bake_theme", lambda _: None)
+    theme = tpl / "theme.js"
+    theme.write_text(source)
+    (site / "theme.js").write_text(site_assets.emit_theme_js(theme))
     assert sync.check(tmp_path) == []
     # Both CSS copies are healthy. Only the standalone projection is stale.
     changed = css.replace("--panel: #fafbfd", "--panel: #f9fafc", 1)

@@ -1,0 +1,28 @@
+........................................................................ [ 15%]
+........................................................................ [ 31%]
+........................................................................ [ 46%]
+.................F...................................................... [ 62%]
+........................................................................ [ 78%]
+........................................................................ [ 93%]
+.............................                                            [100%]
+=================================== FAILURES ===================================
+________ test_the_committed_artifacts_render_a_packet_inside_the_budget ________
+
+    def test_the_committed_artifacts_render_a_packet_inside_the_budget():
+        """The fixtures prove the shapes; this proves the FIELD NAMES still match the
+        artifacts on disk. Freshness is deliberately not asserted — the committed
+        vintage ages, and a stale-but-parsed source is exactly what the stamps exist
+        to disclose."""
+        packet = mp.build_packet(_REPO_ROOT)
+        text = mp.render_digest(packet)
+>       assert 0 < len(text) <= mp.DEFAULT_CHAR_BUDGET, len(text)
+E       AssertionError: 0
+E       assert 0 < 0
+E        +  where 0 = len('')
+
+tests/test_market_packet.py:1208: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_market_packet.py::test_the_committed_artifacts_render_a_packet_inside_the_budget
+1 failed, 460 passed in 8.49s

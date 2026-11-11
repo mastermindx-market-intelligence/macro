@@ -698,8 +698,8 @@ class TestPremiumPreviewLockedTotal:
 #     same class per S5 -- one checker, two directions)
 # ---------------------------------------------------------------------------
 
-_THIN_WORDING_EN_FRAGMENTS = ("have enough live data to time", "thin (listed in the table, not timed)")
-_THIN_WORDING_ZH_FRAGMENTS = ("有足够实时数据可计时", "个数据稀疏（列于表内，不计时）")
+_THIN_WORDING_EN_FRAGMENTS = ("have enough data to time", "thin (listed in the table, not timed)")
+_THIN_WORDING_ZH_FRAGMENTS = ("有足够数据可计时", "个数据稀疏（列于表内，不计时）")
 
 
 def _missing_thin_wording_fragments(text: str) -> list[str]:
@@ -713,9 +713,9 @@ class TestThinButListedWording:
 
     def test_removing_the_en_wording_is_caught_by_the_same_checker(self):
         text = SUBSECTORS_JS.read_text(encoding="utf-8")
-        mutated = text.replace("have enough live data to time", "")
+        mutated = text.replace("have enough data to time", "")
         missing = _missing_thin_wording_fragments(mutated)
-        assert "have enough live data to time" in missing
+        assert "have enough data to time" in missing
 
 
 # ---------------------------------------------------------------------------

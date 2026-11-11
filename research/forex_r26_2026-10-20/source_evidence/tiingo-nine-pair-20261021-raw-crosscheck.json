@@ -1,0 +1,3322 @@
+{
+  "admission": {
+    "eligible_observations": 0,
+    "historical_publication_asserted": false,
+    "licensing_product_use": "COMPLETE_CHAIRMAN_ATTESTED",
+    "live_feed_admitted": false,
+    "vendor_finality_asserted": false
+  },
+  "network_requests_in_reconciliation": 0,
+  "numeric_comparison": "byte-hash-verified JSON decoded with Decimal",
+  "observed_at_utc": "2026-10-22T02:45:45.355184+00:00",
+  "request_day_utc": "2026-10-21",
+  "requested_pairs": 9,
+  "responses": 18,
+  "results": [
+    {
+      "capture_separation_seconds": 1.786134,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 5,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 5,
+              "observed_minutes": 235,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 6,
+              "observed_minutes": 234,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1435,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:31.495457+00:00",
+        "4hour": "2026-10-22T02:43:33.281591+00:00"
+      },
+      "pair": "AUDUSD",
+      "raw_sha256": {
+        "1min": "cd5c3de091f3442758d213dcf0a0e21658162c0c5a16421be837ece49c993a87",
+        "4hour": "848a6904584cd3143c285c6fc6d011e8abd84ebac7aec5e9aabcf87b2596aa6c"
+      },
+      "receipt_ids": {
+        "1min": "0e122003cb19e6479f16e860ca803b21cb357f6cea64f908aa2b88bc7697cfce",
+        "4hour": "0bfe2e184838629475ef13a27608c2caf3cd793b998459811d04af82b76062eb"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.904188,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 6,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1440,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:38:03.836022+00:00",
+        "4hour": "2026-10-22T02:38:05.740210+00:00"
+      },
+      "pair": "EURUSD",
+      "raw_sha256": {
+        "1min": "8ca10857ca31af9b72bd2218604ce8bf2cd1b876d8bcc9e0634db525499fd893",
+        "4hour": "cc7c82b1cae6b154c7f45359d786ce91f08af7dd88260b52c15ad7a7afc78e8a"
+      },
+      "receipt_ids": {
+        "1min": "4bb5ae04fe41cbfc1b7c9527c59d2569f501ec7ad4ae867bb93536ba51cc8750",
+        "4hour": "536e23b417aace9c8d6380983fb21c85b7af5939ef83d9c58ade06db80729f6a"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.749861,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 5,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 6,
+              "observed_minutes": 234,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 3,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 7,
+              "observed_minutes": 233,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1434,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:20.409135+00:00",
+        "4hour": "2026-10-22T02:43:22.158996+00:00"
+      },
+      "pair": "GBPUSD",
+      "raw_sha256": {
+        "1min": "aa8dfb56d85429fe4ea3a43f2c41c81362f341f33405747e56e4936e988f7f0e",
+        "4hour": "8adc1bdd1feed434d8866e33d211a5b609eb3335234abb6d2fafce953af77e5a"
+      },
+      "receipt_ids": {
+        "1min": "48e3c2eccee373af34603f520aaef04cba428ae2fc4e5cc7f7f191e0487550f3",
+        "4hour": "d91d6d4ee1ce718b1746af66a95eec1d7ad27db8ea182c04cca7173e7518d457"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.552373,
+      "hypotheses": [
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_half_open",
+          "rows": []
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": []
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": []
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": []
+        }
+      ],
+      "minute_rows": 0,
+      "native_rows": 0,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:45.200506+00:00",
+        "4hour": "2026-10-22T02:43:46.752879+00:00"
+      },
+      "pair": "USDBRL",
+      "raw_sha256": {
+        "1min": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "4hour": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "receipt_ids": {
+        "1min": "dfbb348d1949b5027c449b48bcfea86d0813154bb8ff3aa6cf94a977ae3df59b",
+        "4hour": "c767b746649b4f4d942a24f52c0b34aff9a6d8cad83a7684ec546b9e7e5608d3"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.798635,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 5,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 5,
+              "observed_minutes": 235,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 6,
+              "observed_minutes": 234,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1435,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:35.765357+00:00",
+        "4hour": "2026-10-22T02:43:37.563992+00:00"
+      },
+      "pair": "USDCAD",
+      "raw_sha256": {
+        "1min": "11a22820129bf83dc0dc1560c61c0e078f797f2a57583cc26b3ad6e3ee202f7b",
+        "4hour": "c05529d6a94c3251802dd05676fa202a25bd0ff5314f12a1193ffe3d2b73618d"
+      },
+      "receipt_ids": {
+        "1min": "ba56dd076611a4b2a02f920b268eb3d1d250e3cc286cb40b0dd522b6f395fff1",
+        "4hour": "8787878a6b8548c08fc3a9ec2f47bae4a084bfdc2bac87ea37a2d6e309b363d6"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.735335,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 5,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 5,
+              "observed_minutes": 235,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 6,
+              "observed_minutes": 234,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1435,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:27.858087+00:00",
+        "4hour": "2026-10-22T02:43:29.593422+00:00"
+      },
+      "pair": "USDCHF",
+      "raw_sha256": {
+        "1min": "bbf55f46cc9dc06ebb09413e62fb9e8a31656268f15939a3ff3383e661007521",
+        "4hour": "0a6058d1674d5ecc8d08d35fd0f7c66bb24e1636ac582626af1326d9218793e4"
+      },
+      "receipt_ids": {
+        "1min": "8864d65acbfdf37f0188d7771763a736348fe49279d471d52e00ab7ef2f5ad0c",
+        "4hour": "823a0341a4493c61b94a9d741d2cb993280d752fab013ab9518fee329a61af26"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.572825,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 4,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1438,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:50.117082+00:00",
+        "4hour": "2026-10-22T02:43:51.689907+00:00"
+      },
+      "pair": "USDCNH",
+      "raw_sha256": {
+        "1min": "ea0b984b5efbef273b755c28e2cdfc308e601068ca89f997aa3397e9201446c1",
+        "4hour": "2334f9bbf3617f6e5d3f4e87ba95a726f50147405ae1ed83860cc0f3c86e2e07"
+      },
+      "receipt_ids": {
+        "1min": "e9bc8cc44101c777599c17169873386e486646f7baed5f9a7ff34bd7a89c4b81",
+        "4hour": "8d06ffb50fb06a428e56842c93b86c0bc978306b1191cb79fb0c7d90879a2f07"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.763854,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 5,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 3,
+              "observed_minutes": 237,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1438,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:24.002900+00:00",
+        "4hour": "2026-10-22T02:43:25.766754+00:00"
+      },
+      "pair": "USDJPY",
+      "raw_sha256": {
+        "1min": "8528bfb0036b99664edabe24ded397844fb0220c1ca1c8fd0d1cc59093192322",
+        "4hour": "9d032a7d1c120071a1e96a969eef39c7921da45653f063249c3c825c83f0ea3a"
+      },
+      "receipt_ids": {
+        "1min": "7710a239ddc663d78eb919452a9903397c87e161216a6af0a5886add7bd46712",
+        "4hour": "c44a1f21d65d072917e0e8f3acad1669b1df2320f0b8eeb03d07ca68531efbbe"
+      }
+    },
+    {
+      "capture_separation_seconds": 1.550597,
+      "hypotheses": [
+        {
+          "close_matches": 6,
+          "dense_exact_matches": 3,
+          "exact_ohlc_matches": 6,
+          "hypothesis": "start_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": true,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:00:00+00:00",
+              "last_observed": "2026-10-21T23:58:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": true,
+                "open": true
+              },
+              "missing_grid_minutes": 25,
+              "observed_minutes": 215,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_half_open",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": null,
+              "last_observed": null,
+              "matches": null,
+              "missing_grid_minutes": 240,
+              "observed_minutes": 0,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T03:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:00:00+00:00",
+              "last_observed": "2026-10-21T07:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:00:00+00:00",
+              "last_observed": "2026-10-21T11:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:00:00+00:00",
+              "last_observed": "2026-10-21T15:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:00:00+00:00",
+              "last_observed": "2026-10-21T19:59:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 0,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "end_label_inclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:00:00+00:00",
+              "last_observed": "2026-10-21T00:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": true
+              },
+              "missing_grid_minutes": 239,
+              "observed_minutes": 1,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        },
+        {
+          "close_matches": 1,
+          "dense_exact_matches": 0,
+          "exact_ohlc_matches": 0,
+          "hypothesis": "start_label_exclusive_minute_labels",
+          "rows": [
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T00:01:00+00:00",
+              "last_observed": "2026-10-21T04:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": false,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T00:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T04:01:00+00:00",
+              "last_observed": "2026-10-21T08:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 2,
+              "observed_minutes": 238,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T04:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T08:01:00+00:00",
+              "last_observed": "2026-10-21T12:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 1,
+              "observed_minutes": 239,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T08:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T12:01:00+00:00",
+              "last_observed": "2026-10-21T16:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T12:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T16:01:00+00:00",
+              "last_observed": "2026-10-21T20:00:00+00:00",
+              "matches": {
+                "close": false,
+                "high": true,
+                "low": true,
+                "open": false
+              },
+              "missing_grid_minutes": 0,
+              "observed_minutes": 240,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T16:00:00+00:00"
+            },
+            {
+              "dense_exact_match": false,
+              "first_observed": "2026-10-21T20:01:00+00:00",
+              "last_observed": "2026-10-21T23:58:00+00:00",
+              "matches": {
+                "close": true,
+                "high": true,
+                "low": false,
+                "open": false
+              },
+              "missing_grid_minutes": 26,
+              "observed_minutes": 214,
+              "off_grid_minutes": 0,
+              "vendor_label": "2026-10-21T20:00:00+00:00"
+            }
+          ]
+        }
+      ],
+      "minute_rows": 1412,
+      "native_rows": 6,
+      "original_response_observation_clocks": {
+        "1min": "2026-10-22T02:43:42.050723+00:00",
+        "4hour": "2026-10-22T02:43:43.601320+00:00"
+      },
+      "pair": "USDMXN",
+      "raw_sha256": {
+        "1min": "05bbf922cb3e84dfd5c730c47afa3ba5475a6209822b20ba56fe9cc73fba436d",
+        "4hour": "7e355fd950b3ab6a5d3a6a3d6fb235ddec7a6552d1aa69017a1a953272e9aed2"
+      },
+      "receipt_ids": {
+        "1min": "c445387ac84fbf3d98999864f4fb04ea2e30016d262200e024e629c2e37d1f6d",
+        "4hour": "7c5be0ec19a3f33bef10a1869f299e6cf6895ca7b9e574a9398364419afceaf1"
+      }
+    }
+  ],
+  "schema": "forex_r26.closed_day_raw_reconciliation.v1"
+}

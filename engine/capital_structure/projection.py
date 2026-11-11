@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 from engine.capital_structure.event_spine import current_events_as_of
@@ -687,7 +688,7 @@ def validate_projection_bundle(
     bundle: Mapping[str, Any], schema_path: Path | str | None = None
 ) -> None:
     """Validate the serialized public contract, including format checks."""
-    from jsonschema import Draft202012Validator, FormatChecker
+    from jsonschema import Draft202012Validator, FormatChecker, validators
 
     path = Path(schema_path) if schema_path else (
         Path(__file__).resolve().parents[2]
@@ -695,7 +696,69 @@ def validate_projection_bundle(
         / "capital_structure_projection.schema.json"
     )
     schema = json.loads(path.read_text(encoding="utf-8"))
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    original_unique_items = Draft202012Validator.VALIDATORS["uniqueItems"]
+    original_property_names = Draft202012Validator.VALIDATORS["propertyNames"]
+
+    def local_refs_only(value, *, root=False):
+        # A nested resource/dialect or dynamic/external reference can change
+        # what #/$defs/safe_property_name means. Keep the original evaluator
+        # for that schema instead of inferring its reference context.
+        if isinstance(value, dict):
+            if any(key in value for key in ("$dynamicRef", "$recursiveRef", "$dynamicAnchor", "$recursiveAnchor")):
+                return False
+            if not root and any(key in value for key in ("$id", "$schema", "$anchor")):
+                return False
+            if "$ref" in value and not (
+                isinstance(value["$ref"], str) and value["$ref"].startswith("#/")
+            ):
+                return False
+            return all(local_refs_only(child) for child in value.values())
+        if isinstance(value, list):
+            return all(local_refs_only(child) for child in value)
+        return True
+
+    definitions = schema.get("$defs", {}) if isinstance(schema, dict) else {}
+    name_rule = definitions.get("safe_property_name") if isinstance(definitions, dict) else None
+    name_pattern = None
+    if (isinstance(name_rule, dict) and set(name_rule) == {"not"}
+            and isinstance(name_rule["not"], dict) and set(name_rule["not"]) == {"pattern"}
+            and isinstance(name_rule["not"]["pattern"], str) and local_refs_only(schema, root=True)):
+        name_pattern = re.compile(name_rule["not"]["pattern"])
+
+    def public_property_names(validator, names, instance, current_schema):
+        # This exact local rule is only `not: pattern`. Checking its regex
+        # proves the valid case without resolving it for every repeated key.
+        # Invalid names still use the original evaluator and error reporting.
+        if (name_pattern is not None and names == {"$ref": "#/$defs/safe_property_name"}
+                and validator.is_type(instance, "object")
+                and all(type(name) is str and not name_pattern.search(name) for name in instance)):
+            return
+        yield from original_property_names(validator, names, instance, current_schema)
+
+    def unique_issuer_records(validator, enabled, instance, schema):
+        # Distinct string issuer IDs prove these JSON objects are unequal.
+        # The normal records array would otherwise use pairwise deep equality.
+        # This is only a sufficient proof: missing, repeated or non-string IDs
+        # retain the original JSON Schema equality rules, including 1 == 1.0
+        # but True != 1. All other keywords still validate every record.
+        if enabled and validator.is_type(instance, "array"):
+            issuer_ids = set()
+            for record in instance:
+                if type(record) is not dict:
+                    break
+                issuer_id = record.get("issuer_id")
+                if type(issuer_id) is not str or issuer_id in issuer_ids:
+                    break
+                issuer_ids.add(issuer_id)
+            else:
+                return
+        yield from original_unique_items(validator, enabled, instance, schema)
+
+    projection_validator = validators.extend(
+        Draft202012Validator,
+        {"uniqueItems": unique_issuer_records, "propertyNames": public_property_names},
+    )
+    validator = projection_validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(dict(bundle)), key=lambda error: list(error.path))
     if errors:
         messages = [

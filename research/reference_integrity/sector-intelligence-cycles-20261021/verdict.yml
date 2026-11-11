@@ -1,0 +1,396 @@
+# Design-authority verdict packet (RIG V1 §7) — forced comparison at frozen_sha 4161d404 (round 9, bounded confirmatory under SIC-ADJ-05/06;
+# supersedes the round-8 packet at 213a91b9, whose receipts are archived under reviews/round8_213a91b9/, the round-7 packet at 78c14f7d
+# under reviews/round7_78c14f7d/, the round-6 packet at 204500aa under reviews/round6_204500aa/, the round-5 packet at 66829d17 under
+# reviews/round5_66829d17/, the round-4 packet at 1ad748c8 under reviews/round4_1ad748c8/, the round-3 packet at 5432d5a0 under
+# reviews/round3_5432d5a0/, the round-2 packet at ab1e71ac under reviews/round2_ab1e71ac/ and the round-1 packet at 508539c0 under
+# reviews/round1_508539c0/).
+# Written 2026-11-02 after the round-9 dual pass: Reviewer B visual_taste PASS/PASS (no findings; SIC-V8-VT1 (a)-(e) met with (d) under
+# SIC-ADJ-06(b); the visual half of SIC-V8-C04 met; VTC-048 cured; all 43 proposal/ blobs identical to 213a91b9; SIC-V8-VT2 confirmed as
+# Reviewer B's own text word for word; two advisory notes on proposal.yml:2271 and :2231) and Reviewer A product_regression
+# PASS_WITH_CONDITIONS/PASS_WITH_CONDITIONS (SIC-V8-C01 and C03 met in pass 1, SIC-V8-C04 met after the rationale; PRC-053 and PRC-055
+# cured; PRC-054 implementation-bound; 64 passed / 2 skipped; one minor DEFECT of the record, PRC-056 — the wave-8 and re-freeze-8 commit
+# messages and the :2283 proof state a proposal.yml line count of 2260 where the file has 2259 (2295 at 2c55ac13) — reworded in pass 2 to
+# the corrected source list, with the cure_path position OPTION (i): a ledger-only cure in the approval commit bound as SIC-V9-C01 with
+# the readback commands and expected outputs named, no round 10). Both critics pass the faces and the engine at 4161d404; nothing drawn
+# changed since 213a91b9 (42 PNGs + boards_manifest.yml byte-identical by git blob id). The authority approves with conditions (SIC-ADJ-07):
+# the PRC-056 cure and Reviewer B's :2271 wording land in this commit; the two implementation-bound notes bind as SIC-V8-VT2 / SIC-V8-C02;
+# the five predecessor obligations of continuity.yml re-carry as SIC-APR-01..05 (SUPERSEDED by approval.yml, not extinguished); every
+# condition is verified at the production proof P19-P23 on the built surface before acceptance. approval.yml is the receipt.
+# Reviewer A's user-task read at 4161d404 vs 213a91b9: Brief, Cycles, Dossier, Rotation and the rest EQUIVALENT (no shipped byte changed).
+# Verdict: APPROVE_WITH_CONDITIONS → approval.yml (2026-11-02) → Macro build P10-P18 against this reference → P19-P23 proof under the eight conditions.
+schema: mastermind.rig_verdict.v1
+reference_id: sector-intelligence-cycles-20261021
+authority:
+  identity: Fable Meta-CEO seat 1a26b044 (macro#7646) — design authority; not a critic; not the Chairman
+  role: design_authority
+packet:
+  materially_improved: 'At 4161d404 every round-8 condition holds on the record and in the test: the four record copies name the global header search-field row with the measured box (16, 82, 374, 116) at 390 px and git grep ''hero-title band'' over design_refs/sector-paper-20261021 + proposal.yml prints nothing (SIC-V8-VT1 / VTC-048); the three normalizer docstrings are true of norm and one literal assertion pins the split (SIC-V8-C01 / PRC-053; test :406-409); the :2190 qualifier is SHA-paired and resolves to :2067 (SIC-V8-C03 / PRC-055); the wave-8 diff outside the ledger names only cycles_repair/README.md, cycles_repair/capture.log and the test file, with all 43 proposal/ blobs identical (SIC-V8-C04). Nothing drawn changed: the 42 PNGs and boards_manifest.yml are byte-identical to 213a91b9 by git blob id, so the faces approved are the faces both critics passed in round 8 and re-passed in round 9.'
+  materially_worsened: 'Nothing drawn. The record gained one defect of its own in the wave-8 and re-freeze-8 commit messages and the :2283 proof (PRC-056: a proposal.yml line count one too many), cured ledger-only in this commit under SIC-V9-C01 with a mechanical readback at P19-P23; the two immutable messages stay wrong and are named here and in the round-9 row.'
+  disappeared: 'Unchanged from 78c14f7d: the round-1 disappearances remain deferred and declared; the chart instrument has its labeled home on the composite desks (boards 40/41).'
+  behavior_harder: 'Nothing new on the faces. The two implementation-bound notes now bind as approval conditions: the ZH drawer pointer must not break across lines on the production Clocks blocks at 1440 and 390 (SIC-V8-VT2) and the deck EN whole-word check must name its stopword form with a falsifier (SIC-V8-C02); both are verified on the built surface, not on the specimen. The five SIC-APR conditions are the live-surface obligations the predecessor carried; none is harder than before, each is now named.'
+  stronger_claims: 'The record claimed 2260 lines for proposal.yml at 4161d404 (and in the 2c55ac13 message); the file has 2259 (2295 at 2c55ac13). The :2271 proof phrase implied a placeholder-glyph attribution that does not exist. Both are corrected in this commit; neither touches a face, a deck string, a PNG or the engine. No stronger claim survives in verdict.yml or approval.yml: the eight conditions are the obligations the approval does not pretend to have met, and the readback in SIC-V9-C01 is how the next reader checks this commit against the tree.'
+  intent_vs_convenience: 'Product intent: approve the bytes both critics judged and bind every unmet obligation as a named, verifiable condition rather than a sentence in a note. Convenience would run a round 10 to re-read a one-digit correction, or would mark the five predecessor obligations resolved because the design is done. The authority declines both: Reviewer A''s option (i) with the stated readback checks the correction against facts at P19-P23, and the five obligations re-carry as SIC-APR-01..05 so the continuity ledger stays honest (SUPERSEDED by this receipt, not extinguished, carried notes verbatim).'
+  production_preferable_for: 'The chart instrument''s live interaction remains production-only; the composite desks are labeled captures. Production''s ZH stance strings on the rotation, ignition, tape and dossier surfaces remain a declared production fork (COMPONENTS.md:148-151), not a reference defect. The two implementation-bound notes (VTC-049 line-breaking, PRC-054 stopword rule) are verified on the production proof captures (P19-P23), not on the specimen. Every SIC-APR condition is a production-only proof by construction: composited heatmap contrast, auth settlement, live Time Machine depth, served wording and the no-invention re-judgment cannot be read off a frozen PNG.'
+  strongest_argument_against: 'The approval commit itself is unreviewed, and it carries the PRC-056 correction, the :2271 rewording, the continuity re-disposition and approval.yml. The answer is the shape Reviewer A set in pass 2: the corrections are mechanical and the readback commands with expected outputs are in SIC-V9-C01 and the round-9 row, so P19-P23 checks the commit against facts; the continuity rows keep their carried notes verbatim and gain only the linkage to the condition that now binds them; approval.yml binds the same eight conditions as verdict.yml and the gate runs ALL_GROUPS at this commit (--evaluate clean). The residual risk is a seat error in this commit, which the readback is designed to expose, not to hide.'
+blocking_findings:
+- finding: PRC-050
+  resolution: resolved_by_change
+  note: 'Cured in wave 7 at 213a91b9 (Reviewer A round-8 pass 1: cured; SIC-V7-C01 met — copy_deck.json:241 stance_label cites templates/sector_cycles.js:162 with stanceHTML opening at :158, the falsifier docstring restated). Carried from the round-7 packet as a resolved row.'
+- finding: PRC-051
+  resolution: resolved_by_change
+  note: 'Cured in wave 7 at 213a91b9 (Reviewer A round-8 pass 1: cured; SIC-V7-C02 met — copy_deck.json:272 grader_caption cites engine/sector_central_grader.py:498-506 with ZH NEW; :332 no longer cited by any deck row). Carried from the round-7 packet as a resolved row.'
+- finding: PRC-052
+  resolution: resolved_by_change
+  note: 'Cured in wave 7 at 213a91b9 (Reviewer A round-8 pass 2, raised from upheld after the quarantine lifted: proposal.yml:2067 reads HOLD override (engine/cycle_ontology.py:1059-1063); grep -n ''1060-1063'' hits only the SHA-qualified :2190; SIC-V7-C05 met). The pointer defect inside that qualifier at the frozen bytes is a new finding, PRC-055, below.'
+- finding: VTC-047
+  resolution: resolved_by_change
+  note: 'Cured in wave 7 at 213a91b9 (Reviewer B round-8 pass 1 and 2: cured; SIC-V7-C04 met — copy_deck.json:162/:163/:176 in the 显示 construction, 时钟为/阶梯为/读数为 absent from cycles.html, the four l-zh spans the only face-reachable DOM change). Carried from the round-7 packet as a resolved row.'
+- finding: VTC-048
+  resolution: resolved_by_change
+  note: 'Cured in wave 8 at 4161d404 (Reviewer B round-9 pass 1: cured; pass 2: upheld as cured — the four label lines cycles_repair/README.md:136, cycles_repair/capture.log:57, proposal.yml:1329 and :2231 name the global header search-field row with the measured box (16, 82, 374, 116) at 390 px; git grep ''hero-title band'' over design_refs/sector-paper-20261021 and proposal.yml prints nothing, rc=1; SIC-V8-VT1 (a)-(e) met, (d) under SIC-ADJ-06(b)). The immutable 213a91b9 message keeps the wrong label and is named in the wave-8 message. Carried from the round-8 packet as a resolved row.'
+- finding: PRC-053
+  resolution: resolved_by_change
+  note: 'Cured in wave 8 at 4161d404 (Reviewer A round-9 pass 1: cured; SIC-V8-C01 met — four test-file hunks: the header :9-11, _present :155-158 and test_cited_sources_carry_a_fragment :297-299 docstrings rewritten, plus the appended test_present_pins_the_normalizer_split :406-409 with its single assertion; no other assertion changed; 64 passed / 2 skipped). Carried from the round-8 packet as a resolved row.'
+- finding: PRC-055
+  resolution: resolved_by_change
+  note: 'Cured in wave 8 at 4161d404 (Reviewer A round-9 pass 1: cured; SIC-V8-C03 met — grep -n ''1060-1063'' on 4161d404:proposal.yml prints 2190, 2252, 2253 only; the :2190 row is untouched since 4356fa60 and SHA-paired, and its pointer for the wave-8 sha resolves to :2067, which reads HOLD override (engine/cycle_ontology.py:1059-1063)). Carried from the round-8 packet as a resolved row.'
+- finding: PRC-056
+  resolution: resolved_by_change
+  note: 'Minor DEFECT of the record (Reviewer A round 9, filed in pass 1 and reworded in pass 2; outside the frozen artifact — no PNG, design_refs, test, engine or template byte is involved): the wave-8 (4161d404) and re-freeze-8 (2c55ac13) commit messages and the seat-authored proposal.yml:2283 proof state a proposal.yml line count of 2260; the file has 2259 lines at 4356fa60 and at 4161d404 and 2295 at 2c55ac13. Resolved by a ledger-only change in this approval commit under SIC-V9-C01 (Reviewer A''s cure_path option (i)): :2283 corrected in place, the revision_mandate_round9 PRC-056 row appended, the two immutable messages named, not editable; verified at P19-P23 by the readback SIC-V9-C01 states (wc -l per sha; one grep on proposal.yml with the expected lines listed in the row). frozen_sha stays 4161d404. See SIC-ADJ-07(b).'
+adjudications:
+- id: SIC-ADJ-05
+  text: 'Termination of the confirmatory loop (authority, 2026-11-02). SIC-ADJ-04 still binds: approval attaches to the bytes the receipts judged, so the round-7 cures land in wave 7 and round 8 re-reads them. Round 8 is the last confirmatory round of this reference unless it finds a DEFECT — a false claim, a wrong citation, a regression on a re-rendered board, a breach of doctrine or of a scientific fence, or a condition not landed as described — in which case REVISE repeats as before. A round-8 note that both critics hold non-binding (polish, wording, advisory hygiene) does not reopen a wave: the authority records it as an implementation-bound condition in approval.yml (the entry-radar-w8 precedent), the approval verdict is APPROVE_WITH_CONDITIONS, and the condition is verified at the production proof (P19-P23) against the built surfaces before acceptance. The rule weakens neither critic''s verdict: an item a critic holds binding is filed as a condition or a BLOCK and the authority cannot reclassify it; the scientific fences (hazard qualified, PRIOR cells, inert sizing, lead-lag STOP) are outside any round''s reach; and no approval receipt is written without the real dual review of the bytes it names.'
+- id: SIC-ADJ-06
+  text: 'Round-8 application of SIC-ADJ-05 and lane reconciliation (authority, 2026-11-02). (a) Round 8 found three DEFECTs of the record — VTC-048 (a wrong region label in four tracked copies and the immutable wave-7 commit message), PRC-053 (three false docstrings about the deck test''s normalizer) and PRC-055 (a '':2066'' pointer in the :2190 qualifier at the frozen bytes, corrected only at the re-freeze 4356fa60, and a ''the only other'' overstatement at :2253) — so the verdict is REVISE and wave 8 is record/docstring-only: no PNG, boards_manifest.yml, copy_deck.json, build_cycles.py, cycles.css, cycles.html, engine or template byte changes; the one code diff is the SIC-V8-C01 test-only assertion with literals. The frozen PNG set is byte-identical to 213a91b9 and round 9 does not re-review the faces. (b) SIC-V8-VT1 clause (d) (''names no PNG, copy_deck.json, build_cycles.py, cycles.css, cycles.html or test file'') and SIC-V8-C01 (''the only code change is one added test assertion'') are reconciled, not overridden: Reviewer B wrote clause (d) when the seat''s rationale described the other lane''s correction as text-only, before Reviewer A bound the pin in its pass 2. The wave-8 diff names tests/test_sector_paper_copy_deck.py for the product_regression lane only, and that file''s diff is docstrings plus the one literal assertion; clause (d) binds the visual lane''s set — PNG, copy_deck.json, build_cycles.py, cycles.css, cycles.html — which stays unchanged. Round 9 states this reconciliation to both critics in the commission. (c) VTC-049 and PRC-054 are NON-BINDING NOTES both critics hold implementation-bound after the rationale: they are not wave conditions and do not reopen the specimen; they are filed under implementation_bound_notes below in the critics'' pass-2 checkable text (Reviewer B''s recommended VTC-049 text; Reviewer A''s SIC-V8-C02) and become conditions of the approval receipt (approval.yml) verified on the production proof captures (P19-P23) before acceptance. (d) Round 9 is confirmatory and bounded: each critic verifies its own lane''s wave-8 condition (SIC-V8-VT1; SIC-V8-C01 and C03) and the seat-bound SIC-V8-C04 from the diff and the PNG sha256 set, not from the seat''s statement; the quarantine, identities (-r9) and two-pass shape are unchanged. SIC-ADJ-05''s rule repeats unchanged: a round-9 DEFECT revises again; a round-9 note both critics hold non-binding becomes an approval condition rather than another wave.'
+- id: SIC-ADJ-07
+  text: 'Round-9 application of SIC-ADJ-05/06 and the approval disposition (authority, 2026-11-02). (a) Round 9 was the bounded confirmatory round: Reviewer B PASS/PASS with no findings (SIC-V8-VT1 (a)-(e) met, clause (d) under SIC-ADJ-06(b); the visual half of SIC-V8-C04 met; VTC-048 cured; all 43 proposal/ blobs identical to 213a91b9 by subtree id 9de21275) and Reviewer A PASS_WITH_CONDITIONS/PASS_WITH_CONDITIONS (SIC-V8-C01 and C03 met in pass 1, SIC-V8-C04 met after the rationale, changed from partial; PRC-053 and PRC-055 cured; PRC-054 implementation-bound; pytest 64 passed / 2 skipped at the 4161d404 test, engine and template bytes). Every round-8 condition holds at 4161d404 and neither critic found a defect of the artifact, so under SIC-ADJ-05 the confirmatory loop ends here. (b) Round 9 found one minor DEFECT of the record, PRC-056: the wave-8 commit message 4161d404 and the re-freeze-8 message 2c55ac13 state a proposal.yml line count of 2260 where the file has 2259 lines at 4356fa60 and at 4161d404 (2295 at 2c55ac13, +36 at EOF), and the seat-authored proposal.yml:2283 proof repeated the figure; verdict.yml carried none (the ''2260 lines at 4161d404'' wording Reviewer A read in pass 1 came from the seat''s commission message, disclosed in the rationale and corrected by A''s reworded pass-2 finding). The origin is the seat''s wave8.py, which counted the elements of a split on newline of a newline-terminated file — one more than wc -l. The material claim — nothing inserted above :2067 or :2190 — is true (git diff --numstat 4356fa60 4161d404 -- proposal.yml: 8 added, 8 deleted; every hunk equal-count). A record defect that touches no shipped byte does not reopen the artifact under SIC-ADJ-04 (approval binds the bytes the receipts judged). Reviewer A, asked in pass 2 whether the cure reopens the review, chose option (i): a ledger-only cure in the approval commit, adequate only if SIC-V9-C01 names the readback commands and their expected outputs so the unreviewed approval commit is checked against facts rather than the seat''s statement. The authority adopts option (i) exactly: SIC-V9-C01 is Reviewer A''s final pass-2 text verbatim; the cure — proposal.yml:2283 corrected in place and the revision_mandate_round9 PRC-056 row appended at EOF — lands in this commit; the two immutable commit messages are named, not edited; frozen_sha stays 4161d404; the readback at P19-P23 is mechanical (wc -l per sha; one grep on proposal.yml, whose expected output the round-9 row states line by line — verdict.yml and approval.yml carry the figure only inside SIC-V9-C01''s own text and this adjudication, which name it as the condition, not as a claim about the file). No round 10. (c) Reviewer B''s pass-2 advisory on proposal.yml:2271 is adopted in the same commit with B''s exact wording: the phrase that implied a placeholder-glyph attribution now reads ''any placeholder-glyph statement is attributed to that box (none in the four lines)''. B''s second advisory (:2231 states the box as bbox (16, 82, 374, 116), same coordinates, no false claim) needs no change and is recorded. (d) The five predecessor obligations carried in continuity.yml as CARRIED_BLOCK (R3C-HEATMAP-LEGIBILITY, R3C-AUTH-PREMIUM, R3C-TIME-MACHINE, R3C-VALIDATED-21D, R3C-NO-UNSUPPORTED-INVENTION) cannot coexist with status approved (RIG §13.1) and cannot be discharged by a frozen design artifact, and no changed file claims to discharge them. They are re-dispositioned SUPERSEDED by this packet''s approval.yml and re-carried, unchanged in substance and with their carried notes kept verbatim, as approval conditions SIC-APR-01..05 bound to the P19-P23 production proof on the built surface (precedent: research/reference_integrity/prophet-board-lab-r5-1/continuity.yml). None is extinguished; each is a release gate. (e) The two notes both critics hold implementation-bound become approval conditions with the critics'' own texts: SIC-V8-VT2 (Reviewer B''s recommended text, confirmed in pass 2 as its own word for word, binding at P19-P23; one theme per width suffices because theme does not affect wrapping) and SIC-V8-C02 (Reviewer A''s text, carried unchanged). (f) Verdict: APPROVE_WITH_CONDITIONS at 4161d404 — eight conditions (SIC-V9-C01, SIC-V8-C02, SIC-V8-VT2, SIC-APR-01..05), zero overrides, zero surviving blockers; approval.yml is the receipt and binds the same eight conditions. The reference is canonical for the Macro build (P10-P18) and the conditions bind acceptance (P19-P23). A RIG approval is reference law only: it is not a merge, a deployment, production proof or the Chairman''s acceptance, and it manufactures none of them.'
+overrides: []
+verdict: APPROVE_WITH_CONDITIONS
+conditions:
+- id: SIC-V9-C01
+  text: 'In the verdict-9/approval commit, ledger-only: correct proposal.yml:2283 in place from ''2260'' to ''2259'', and append at EOF a revision_mandate_round9 PRC-056 row recording proposal.yml at 2259 lines at 4356fa60 and 4161d404 and 2295 at 2c55ac13 (+36 at EOF). The row names commits 4161d404 and 2c55ac13 as carrying the false figure 2260 in immutable messages, and states that nothing was inserted above :2067 or :2190 (every hunk of git diff 4356fa60 4161d404 -- proposal.yml is equal-count). No PNG, design_refs, test, engine or template byte changes; frozen_sha stays 4161d404. Verified at P19-P23 by readback: git show <sha>:proposal.yml | wc -l prints 2259 at 4356fa60 and 4161d404 and 2295 at 2c55ac13; git grep -n ''2260'' on the ledger at the approval commit outside reviews/** prints only the 1440x2260 pixel-height lines (:306, :311, :1329, :2232) and the round-9 row''s own quotation.'
+- id: SIC-V8-C02
+  text: 'At the production proof (implementation-bound in approval.yml), the deck EN check names its form: either (a) a stopword list stated in the test is excluded from EN fragments, or (b) each cited row needs at least one whole-word hit outside that stated list. A falsifier asserts that a row whose only whole-word EN hit is a listed stopword fails: grader_caption cited at engine/sector_central_grader.py:331, window :328-334, where only ''not'' (:328) matches. Every cited deck row still passes. (Reviewer A condition 2, pass 2 verbatim; class NON-BINDING NOTE. Finding: fragments (:164-171) via en_words (:143-144) keeps 3+ letter function words (not, all, the, over, and), so the EN any-fragment check can pass on a stopword. Fixture 1 is one line from that: citing :331 (window :328-334) would add ''if col not in'' (:328), and ''not'' would clear the stale grader row. Carried to approval.yml as an implementation-bound condition under SIC-ADJ-05 / SIC-ADJ-06(c); wave 8 does not touch fragments / en_words.)'
+- id: SIC-V8-VT2
+  text: 'On every ZH Cycles surface that renders cycles.ladder_state_pattern (each sector card''s Clocks block), the drawer pointer — 来源抽屉, or 抽屉 if the production copy source adopts the shorter tail 引擎说明见抽屉 — never breaks across lines at viewport widths 1440 and 390; verified on the production proof captures (P19-P23) before acceptance. (Reviewer B''s recommended text, pass 2 verbatim; outcome text, not mechanism — the implementer chooses a no-break span, keep-all on the pointer, or the shorter tail. Finding: Boards 34/35 (XLF Clocks, …引擎说明见来源 / 抽屉) and board 41 (desk XLF, …引擎说明见来 / 源抽屉). The seat confirms both breaks. Carried to approval.yml as an implementation-bound condition under SIC-ADJ-05 / SIC-ADJ-06(c); the specimen is not re-rendered.)'
+- id: SIC-APR-01
+  text: 'Re-carried predecessor obligation R3C-HEATMAP-LEGIBILITY (continuity.yml row re-dispositioned SUPERSEDED by this receipt — not extinguished; RIG §13.1; SIC-ADJ-07(d)). Binding at P19-P23 on the built surface before acceptance: the composited-background contrast determination of the heatmap colour-field glyphs on the LIVE built surface (P19/P20 browser proof, both themes, 1440 and 390, measured on the painted substrate — never a flat-surface substitute); UNMEASURED stays UNMEASURED until that determination exists, and failure blocks release. Carried obligation, verbatim from continuity.yml: CARRIED_BLOCK: the heatmap legibility condition needs a composited-background contrast determination on the LIVE candidate (P19/P20 browser proof); the R3 boards 14-15 redraw the map with a list alternative but a design export cannot discharge a rendered-contrast condition. No D/I/P lane resolved it.'
+- id: SIC-APR-02
+  text: 'Re-carried predecessor obligation R3C-AUTH-PREMIUM (continuity.yml row re-dispositioned SUPERSEDED by this receipt — not extinguished; RIG §13.1; SIC-ADJ-07(d)). Binding at P19-P23 on the built surface before acceptance: real auth settlement on the served surface at P19-P21 — free / essential / pro hydrate, /premiumdata/sector_central.json authorization, successful hydrate, preview preservation for the ungated state, and the 401 / 403 / offline / malformed paths, each observed in the browser; the 2026-10-21 anonymous-shell captures (401 on every data asset) do not discharge it. Carried obligation, verbatim from continuity.yml: CARRIED_BLOCK: auth/premium settlement (free / essential / pro hydrate, /premiumdata 401/403/offline) is a P19-P21 live-surface proof; the 2026-10-21 captures are anonymous shells that returned 401 on every data asset, which demonstrates the gate exists but not its settled behaviour. Boards 11 and 20 draw the no-access cells only.'
+- id: SIC-APR-03
+  text: 'Re-carried predecessor obligation R3C-TIME-MACHINE (continuity.yml row re-dispositioned SUPERSEDED by this receipt — not extinguished; RIG §13.1; SIC-ADJ-07(d)). Binding at P19-P23 on the built surface before acceptance: live Time Machine end to end on the served Dossier Record / Time Machine / Methods home (rows R3A-35/58/89): manifest, episode feed, per-period and per-year chunks, and the empty, missing and failure paths, as the P15 history-depth proof; recorded-not-executed evidence is not production proof. Carried obligation, verbatim from continuity.yml: CARRIED_BLOCK: the live Time Machine condition belongs to the Dossier Record / Time Machine / Methods home (rows R3A-35/58/89) which has no dedicated R3 board (sic-p-rev major) and no production capture beyond the shell; discharge requires the P15 history depth proof on the served surface.'
+- id: SIC-APR-04
+  text: 'Re-carried predecessor obligation R3C-VALIDATED-21D (continuity.yml row re-dispositioned SUPERSEDED by this receipt — not extinguished; RIG §13.1; SIC-ADJ-07(d)). Binding at P19-P23 on the built surface before acceptance: the released build (P21) renders the 21d window without the customer word ''validated'' in the forward-track-record wording on the served EN and ZH surfaces, while preserving the narrower disclosure ''Context only · evidence proven at 5d · never sizes decisions'', its native ZH twin and the visual separation from explicitly labelled 21d figures. Carried obligation, verbatim from continuity.yml: CARRIED_BLOCK: the banned word is absent from all 22 R3 boards (ORCH-PAPER copy sweep: 0 occurrences) and B13 reframes the grader denominator, but the condition binds the SERVED surface wording; it is discharged only when the released build (P21) renders the 21d window without that word. Not resolved by a design file.'
+- id: SIC-APR-05
+  text: 'Re-carried predecessor obligation R3C-NO-UNSUPPORTED-INVENTION (continuity.yml row re-dispositioned SUPERSEDED by this receipt — not extinguished; RIG §13.1; SIC-ADJ-07(d)). Binding at P19-P23 on the built surface before acceptance: re-judgment at P19 against the build: no invented signal, sizing, correction marker, local rank / state / score, or Baskets thin/gateable disclosure (SC-066 / SC-092 stay BLOCKED_DATA; the Prophet placeholder labels of boards 16-17 remain declared placeholders in the build or are bound to real producer contracts; PARITY_FAILS stays disclosed, not repaired). Carried obligation, verbatim from continuity.yml: CARRIED_BLOCK: no board invents a signal, sizing, correction marker or Baskets disclosure (SC-066 / SC-092 stay BLOCKED_DATA; Prophet labels on boards 16-17 are declared placeholders; PARITY_FAILS is disclosed, not repaired). The condition is re-judged by the two independent reviewers against the frozen artifact and again at P19 against the build.'
+implementation_bound_notes:
+- finding: VTC-049
+  class: NON-BINDING NOTE
+  severity: minor
+  reviewer: visual_taste
+  approval_condition_id: SIC-V8-VT2
+  text: 'On every ZH Cycles surface that renders cycles.ladder_state_pattern (each sector card''s Clocks block), the drawer pointer — 来源抽屉, or 抽屉 if the production copy source adopts the shorter tail 引擎说明见抽屉 — never breaks across lines at viewport widths 1440 and 390; verified on the production proof captures (P19-P23) before acceptance. (Reviewer B''s recommended text, pass 2 verbatim; outcome text, not mechanism — the implementer chooses a no-break span, keep-all on the pointer, or the shorter tail. Finding: Boards 34/35 (XLF Clocks, …引擎说明见来源 / 抽屉) and board 41 (desk XLF, …引擎说明见来 / 源抽屉). The seat confirms both breaks. Carried to approval.yml as an implementation-bound condition under SIC-ADJ-05 / SIC-ADJ-06(c); the specimen is not re-rendered.)'
+- finding: PRC-054
+  class: NON-BINDING NOTE
+  severity: minor
+  reviewer: product_regression
+  approval_condition_id: SIC-V8-C02
+  text: 'At the production proof (implementation-bound in approval.yml), the deck EN check names its form: either (a) a stopword list stated in the test is excluded from EN fragments, or (b) each cited row needs at least one whole-word hit outside that stated list. A falsifier asserts that a row whose only whole-word EN hit is a listed stopword fails: grader_caption cited at engine/sector_central_grader.py:331, window :328-334, where only ''not'' (:328) matches. Every cited deck row still passes. (Reviewer A condition 2, pass 2 verbatim; class NON-BINDING NOTE. Finding: fragments (:164-171) via en_words (:143-144) keeps 3+ letter function words (not, all, the, over, and), so the EN any-fragment check can pass on a stopword. Fixture 1 is one line from that: citing :331 (window :328-334) would add ''if col not in'' (:328), and ''not'' would clear the stale grader row. Carried to approval.yml as an implementation-bound condition under SIC-ADJ-05 / SIC-ADJ-06(c); wave 8 does not touch fragments / en_words.)'
+preserved_strengths:
+- 'The relabel is consistent word-for-word across the three long records and the measured box is carried exactly (Reviewer B)'
+- 'The record does not quote the false label anywhere in the tree, while the immutable 213a91b9 message is honestly called out (Reviewer B)'
+- 'Wave 8 was record-only for the visual lane: a subtree-level blob identity proves no visual regression is possible (Reviewer B)'
+- 'User-task read at 4161d404 vs 213a91b9: Brief, Cycles, Dossier, Rotation and the rest EQUIVALENT — no shipped byte changed (PNGs, deck, engine, templates, build, css, html all identical). (Reviewer A)'
+- 'PRC-056 is the only new finding of round 9 and it is a count in two commit messages and one proof line; the record''s material claim — nothing inserted above :2067 or :2190 — is true, and the cure is mechanical and readback-checkable. (Reviewer A)'
+conditions_round8_213a91b9:
+  note: 'Round-8 authority conditions (REVISE at 213a91b9). Their status at 4161d404 is the per-finding round-9 disposition in reviews/<role>.yml first_pass.round8_dispositions and the critics'' conditions_check: SIC-V8-C01 and C03 met (Reviewer A, pass 1), SIC-V8-VT1 met (Reviewer B, pass 1; clause (d) under SIC-ADJ-06(b)), SIC-V8-C04 met (visual half Reviewer B pass 1; product half Reviewer A pass 2, changed from partial once the condition text at verdict.yml:77 was read — it carries no line count). The two implementation-bound notes of that packet (SIC-V8-VT2, SIC-V8-C02) are conditions of the verdict-9 packet above.'
+  conditions:
+  - id: SIC-V8-C01
+    text: 'tests/test_sector_paper_copy_deck.py header :9-11, the _present docstring :155-158 and the test_cited_sources_carry_a_fragment docstring :297-299 state all of the following: norm splits on every non-alphanumeric character, including ''_'' and ''.''; a Latin fragment must equal a whole alphanumeric run; a substring of a run (win in window, stance in stanceHTML / stances) is not a hit; a component of a snake_case or dotted identifier (hit in dir_hit_rate, stance in nw.stance / stance_zh) is. No docstring says ''keeps an identifier as one word'' or ''an identifier substring never satisfies it''. The only code change is one added test assertion pinning both halves with literals: _present(norm(''dir_hit_rate''), ''hit'') is True and _present(norm(''window''), ''win'') is False. No other assertion changes. Production code, deck and PNGs are byte-identical to 213a91b9. (Reviewer A condition 1, pass 2 verbatim; the pin is a test-only assertion, so tests/test_sector_paper_copy_deck.py is the one test file the wave-8 diff names — SIC-ADJ-06(b).)'
+  - id: SIC-V8-C03
+    text: 'At the wave-8 frozen sha, the proposal.yml revision_mandate_round6 PRC-047 cure note (the :2190 row at 213a91b9) carries the SHA-qualified line history of the PRC-037 round-5 residual as at 4356fa60. Every line number it names is paired with the SHA at which that line holds, and the pointer for the wave-8 frozen sha resolves to the line reading ''HOLD override (engine/cycle_ontology.py:1059-1063)''. grep -n ''1060-1063'' proposal.yml returns only that note and revision_mandate rows quoting a finding as filed. (Reviewer A condition 3, pass 2 verbatim. Authority addition: the PRC-052 proof row of revision_mandate_round7 (proposal.yml:2253 at 213a91b9) no longer calls :2190 ''the only other 1060-1063 string''; it states that :2190 is the only 1060-1063 hit outside the revision_mandate rows that quote the finding as filed. The wave-8 edits insert nothing above :2067 or :2190, so both line positions hold at the wave-8 commit; the :2190 note itself is not edited in wave 8.)'
+  - id: SIC-V8-VT1
+    text: 'SIC-V8-VT1 (VTC-048, DEFECT, record-only; reworded in pass 2). (a) design_refs/sector-paper-20261021/cycles_repair/README.md (wave-7 paragraph, :136 at 213a91b9), cycles_repair/capture.log (wave-7 header comment, :57) and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml (coverage_matrix.wave7_summary, :1329, and the round-7 mandate comment, :2231) each name the 31/39 diff region as the global header search-field row (site-nav search input), with x 16-374 / y 82-116 at 390 px retained. (b) git grep -n "hero-title band" over design_refs/sector-paper-20261021/ and research/reference_integrity/sector-intelligence-cycles-20261021/proposal.yml returns nothing; reviews/** quotations are excluded. (c) The wave-8 commit message states that the 213a91b9 commit message carries the wrong label. (d) git diff --stat 213a91b9..<wave 8> names no PNG, copy_deck.json, build_cycles.py, cycles.css, cycles.html or test file. (e) Any statement that placeholder glyphs are the differing pixels is attributed to the seat''s measured bounding box (16, 82, 374, 116). (Reviewer B condition, pass 2 verbatim; clause (d) is read under SIC-ADJ-06(b): the test file named by the wave-8 diff is the product_regression lane''s SIC-V8-C01 docstring-plus-one-assertion diff, and the visual lane''s set — PNG, copy_deck.json, build_cycles.py, cycles.css, cycles.html — is unchanged.)'
+  - id: SIC-V8-C04
+    text: 'Seat-bound wave-8 discipline (authority, 2026-11-02): wave 8 is one seat-direct tree commit. Outside research/reference_integrity/sector-intelligence-cycles-20261021/ (the RIG ledger, which the receipt, verdict and re-freeze commits also touch), git diff --stat 213a91b9..<wave 8> names only design_refs/sector-paper-20261021/cycles_repair/README.md, design_refs/sector-paper-20261021/cycles_repair/capture.log and tests/test_sector_paper_copy_deck.py; inside the ledger, proposal.yml''s wave-8 diff is confined to the header comment lines, coverage_matrix.wave7_summary (:1329), the round-7 mandate comment (:2231), the PRC-052 proof (:2253) and the appended revision_mandate_round8. All 42 PNGs under mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/ and boards_manifest.yml are byte-identical to 213a91b9 (the sha256 set is recorded in the wave-8 commit message); python3 -m pytest -q tests/test_sector_paper_copy_deck.py tests/test_cycle_ontology.py passes with the one added assertion; git grep -n ''hero-title band'' over design_refs/sector-paper-20261021/ and proposal.yml returns nothing (reviews/** quotations excluded); the wave-8 commit message states that the 213a91b9 commit message carries the wrong region label and that its C05 paragraph''s '':2066'' is one line short. Round 9 verifies these from the diff, the shas and the test run, not from the seat''s statement.'
+conditions_round7_78c14f7d:
+  note: 'Round-7 authority conditions (REVISE at 78c14f7d). Their status at 213a91b9 is the per-finding round-8 disposition in reviews/<role>.yml first_pass.round7_dispositions and the critics'' conditions_check: every one met — SIC-V7-C01/C02/C03/C04/C06 in pass 1 (C03 outcome (i) with the authority-elected :155-row deviation, which Reviewer A finds holds) and C05 after the rationale lifted the proposal.yml quarantine (PRC-052 raised to cured). Kept verbatim for the ledger; the wave-7 proofs are in proposal.yml revision_mandate_round7.'
+  conditions:
+  - id: SIC-V7-C01
+    text: 'templates/copy_deck.json:241 (stance_label) source and the falsifier docstring in tests/test_sector_paper_copy_deck.py (test_zh_rule_catches_a_misattributed_zh, :292-305) both say stanceHTML opens at sector_cycles.js:158, not :155. The docstring states that the :155-misattributed row passes the EN any-fragment check only via the identifier substring ''stance'' at :157-158, and that its ZH is outside the :155 window (:152-158), so the ZH rule fails it. grep -n '':155'' on both places returns no stanceHTML-opening claim. (Reviewer A condition 1, verbatim; the deck path is design_refs/sector-paper-20261021/copy_deck.json.)'
+  - id: SIC-V7-C02
+    text: 'templates/copy_deck.json:272 (components.grader_caption) source cites engine/sector_central_grader.py:498-506 (or :498) instead of :332, and keeps ZH NEW. No face string changes, so no board is re-rendered for this row. (Reviewer A condition 2, verbatim; the deck path is design_refs/sector-paper-20261021/copy_deck.json.)'
+  - id: SIC-V7-C03
+    text: 'Exactly one of the following holds in tests/test_sector_paper_copy_deck.py at the wave-7 tree, and the wave-7 proof says which. (i) EN fragments match whole words (word-boundary regex or token equality) in row_gaps/test_cited_sources_carry_a_fragment; every deck row passes after the C02 cure; and the falsifier asserts the :155-misattributed stance_label row fails the EN half as well as the ZH half. (ii) Substring matching is kept; the docstring of test_cited_sources_carry_a_fragment states that EN matching is substring-based and that an identifier substring (example: ''stance'' in stanceHTML) can satisfy it; and the falsifier docstring states it discriminates on the ZH half only. (Reviewer A condition 3, verbatim; the deck path is design_refs/sector-paper-20261021/copy_deck.json. Authority election, 2026-11-02: outcome (i), whole-word EN matching — the seat''s read-only survey at 78c14f7d finds every cited deck row still carries a whole-word EN hit after the C02 cure and that the rule also catches the PRC-051 shape (at the :332 citation only the substring win inside window matched). The same survey finds that the :155-misattributed stance_label row still passes the EN half under whole-word matching, because templates/sector_cycles.js:157 carries stance as a whole token (nw.stance); if the wave-7 implementation confirms this, clause (i)''s EN-half assertion cannot be made true on that row, so wave 7 keeps the :155 row as the ZH-half falsifier with a docstring that says exactly why its EN half passes, and adds a second falsifier on a row that fails the EN half under whole-word matching (grader_caption cited at engine/sector_central_grader.py:332, the PRC-051 shape); the wave-7 proof states this deviation from clause (i)''s row choice and round 8 judges it. If the implementation finds otherwise, the :155 row carries the EN-half assertion as clause (i) says.)'
+  - id: SIC-V7-C04
+    text: 'design_refs/sector-paper-20261021/copy_deck.json cycles.clocks_disagree_pattern (:162) ZH reads {a_name}显示{a} · {b_name}显示{b}, cycles.ladder_state_pattern (:176) ZH reads {phase_name}显示{phase} · {ladder_name}显示{ladder}——引擎说明见来源抽屉, and the undrawn cycles.clocks_ladder_pattern (:163) ZH moves to the same construction ({phase_name}显示{phase} · {ladder_name}分歧——阶梯状态与引擎说明见来源抽屉); EN patterns unchanged; nothing user-facing typed in build_cycles.py. On the ZH Cycles boards the two drawn lines read 阶段时钟显示回落中 · 时序阶梯显示上涨趋势——引擎说明见来源抽屉 and 周期读数显示筑底中 · 阶段时钟显示回落中, and no drawn ZH Clocks line keeps a 时钟为 or 阶梯为 predicate; the hero-dek, desk-note and heading uses of 时钟 as labels and nouns stay (the count is not driven to zero, SIC-V6-C08); the hazard line keeps its colon form (SIC-V6-C05). (Authority-adopted from Reviewer B advisory VTC-047, which the critic holds non-binding; bound here so round 8 verifies it.)'
+  - id: SIC-V7-C05
+    text: 'proposal.yml:2061 (the bracketed round-5 residual inside the round-4 PRC-037 proof) cites engine/cycle_ontology.py:1059-1063 — the range that holds the override''s condition line and its effects, as :2143 and the three sentence copies already do — or qualifies the 1060-1063 range with the SHA at which it was read; after wave 7 every 1060-1063 hit in proposal.yml carries a SHA qualifier or is gone. (Authority-adopted from Reviewer A''s PRC-052, filed advisory; bound here so round 8 verifies it.)'
+  - id: SIC-V7-C06
+    text: 'Seat-bound re-render discipline (authority, 2026-11-02): wave 7 re-renders the ten Cycles specimen boards 28-31, 34-36 and 39-41 only; the 32 other PNGs (Brief boards and Paper exports) are byte-identical to 78c14f7d (PNG sha256 recorded in the wave-7 commit); each EN board among the ten is compared byte-wise against 78c14f7d and is either byte-identical or named in the wave-7 record with the cause; boards_manifest.yml, proposal.yml and capture.log png_px match every re-rendered PNG header; every ZH board''s capture.log line reads zh-latin=0 under the SIC-ADJ-03 scope string; the cyc-warn probe reads 1 on the page and 0 inside cards, as at 78c14f7d; tests/test_sector_paper_copy_deck.py (including the wave-7 falsifiers) and tests/test_cycle_ontology.py pass on the wave-7 tree; and the wave-7 record states which SIC-V7-C03 outcome holds. Round 8 confirms each of SIC-V7-C01..C06 landed as described and that the re-rendered boards regress nothing.'
+conditions_round6_204500aa:
+  note: 'Round-6 authority conditions (REVISE at 204500aa). Their status at 78c14f7d is the per-finding round-7 disposition in reviews/<role>.yml first_pass.round6_dispositions and the critics'' conditions_check: every one met (SIC-V6-C01/C02 on the artifact in pass 1 and fully after the rationale; SIC-V6-C04''s falsifier premise and the stance_label / grader_caption sources carry PRC-050/051 → SIC-V7-C01..C03). Kept verbatim for the record; wave-6 proofs live in proposal.yml revision_mandate_round6.'
+  conditions:
+  - id: SIC-V6-C01
+    text: 'in components/COMPONENTS.md''s Production drift record, templates/_mag7_tape_strip.html.j2:227 carries a marker. The marker says the line is a ZH-only rendering outside the stated census under the record''s own scope rule, confirmed by direct read, and declared in round 4 (PRC-036). The ''subset read from that output'' claim names only the seven same-line entries. The proposal.yml revision_mandate_round5 PRC-042 proof states the same split. The census command, the count (298) and the commits are unchanged. (Reviewer A condition 1, verbatim.)'
+  - id: SIC-V6-C02
+    text: 'the HOLD sentence cites engine/cycle_ontology.py:1059-1063 identically in the engine comment, cycles_ia.md:157 and components/COMPONENTS.md:163. test_hold_sentence_is_identical_and_true asserts the fragment ''trend_up and phase == "Peak"'' within the cited range. It also asserts that the whitespace-folded sentence contains ''every RALLY ON row'', ''Recovery × TOP WATCH'' and ''BOTTOM WATCH / TURN SIGNALED / FRESH BUY''. The hand-written expected HOLD set stays as the independent second check. The proposal.yml PRC-037 proofs (revision_mandate_round5 and the round-4 bracketed annotation) cite :1059-1063 and describe only what that test asserts. (Reviewer A condition 2, verbatim.)'
+  - id: SIC-V6-C03
+    text: 'copy_deck.json cycles.clock_read''s source begins with a file:line citation (templates/sector_cycles.js:164-165) that carries ''cycle read'', so is_note() does not skip the row. The same source then declares the ZH 周期读数 NEW, with its SIC-V3 provenance. No face string changes. (Reviewer A condition 3, verbatim.)'
+  - id: SIC-V6-C04
+    text: 'test_cited_sources_carry_a_fragment fails any cited (non-note) row whose ZH has no fragment in the cited window, unless the row''s source explicitly declares the ZH NEW or gives the ZH a separate file:line that carries it. The test passes on the full deck after that rule is applied. (Reviewer A condition 4, verbatim.)'
+  - id: SIC-V6-C05
+    text: 'copy_deck.json cycles.hazard_mismatch_pattern (:177) and cycles.rhythm_mismatch_pattern (:178) ZH take a verb or colon construction in place of {a_name}为{leg} / {a_name}为下一拐点{turn} (e.g. 风险时钟：向上段，趋向顶部 · 阶段时钟显示回落中，下一拐点为底部; 节律时钟显示下一拐点为顶部 · …); EN patterns unchanged; the ZH boards show the new lines. (Authority-adopted from Reviewer B advisory VTC-043, which the critic holds non-binding; bound here so round 7 verifies it.)'
+  - id: SIC-V6-C06
+    text: '.cyc-cards carries align-items:start so each card ends where its drawn sections end (no empty band under a card with fewer drawn sections); the Clocks block stays the first block of every card. (Authority-adopted from Reviewer B advisory VTC-044, which the critic holds non-binding; bound here so round 7 verifies it.)'
+  - id: SIC-V6-C07
+    text: '.cyc-method .spc-chip carries align-self:flex-start so the methods-card parity chip hugs its content inside the flex column. (Authority-adopted from Reviewer B advisory VTC-045, which the critic holds non-binding; bound here so round 7 verifies it.)'
+  - id: SIC-V6-C08
+    text: 'the page-level data-session family moves to data vocabulary bound in copy_deck.json: the events/fragmentation chips name their data (Events data · aligned / 事件数据 · 一致 and the fragmentation equivalent), cycles.aligned_qualifier (:249) becomes Data sessions aligned on the history day {d}; not current under this banner / 数据交易日在历史日 {d} 一致；在此横幅下并非当前, and the boards_manifest tag rotation clocks aligned (fresh) becomes rotation data aligned (fresh); no clock / 时钟 / 对齐 term survives in that family; the per-card Clocks block keeps its name; nothing user-facing is typed in build_cycles.py. (Authority-adopted from Reviewer B advisory VTC-046, which the critic holds non-binding; bound here so round 7 verifies it.)'
+  - id: SIC-V6-C09
+    text: 'Seat-bound re-render discipline (authority, 2026-11-02): wave 6 re-renders Cycles boards 28-41 only; Brief boards 0-27 are byte-identical to 204500aa (PNG sha256 recorded in the wave-6 commit); boards_manifest.yml and proposal.yml png_px match every re-rendered PNG header; every ZH board''s capture.log line reads zh-latin=0 under the SIC-ADJ-03 scope string; each card keeps exactly one warn-ink chip (the doctrine chip) and neutral-outline disagree chips; the deck tests (tests/test_sector_paper_copy_deck.py) and tests/test_cycle_ontology.py pass on the wave-6 tree. Round 7 confirms each of SIC-V6-C01..C09 landed as described and that the re-rendered boards regress nothing.'
+conditions_round5_66829d17:
+  note: 'Round-5 authority conditions (REVISE at 66829d17). Their status at 204500aa is the per-finding round-6 disposition in reviews/<role>.yml first_pass.round5_dispositions and the critics'' conditions_check: every one met (SIC-V5-C01 except PRC-046 in COMPONENTS.md:139 / proposal.yml:2127 → SIC-V6-C01; SIC-V5-C02''s test strength, citation and proposal-proof clauses → SIC-V6-C02). Kept verbatim for the record; wave-5 proofs live in proposal.yml revision_mandate_round5.'
+  conditions:
+  - id: SIC-V5-C01
+    text: 'the stance-chip drift paragraph in components/COMPONENTS.md (currently :128-136) contains no count word (''three'') and no completeness claim. It states the exact census command, its matched line count and the commit SHA it was run at, and the count reproduces at that SHA. It calls the census a candidate census that only matches same-line EN/ZH pairs. It lists, by file:line with the ZH string, at least: rotation_events.js:200, _ignition_radar_card.html.j2:170, _mag7_tape_strip.html.j2:227, market_structure.html.j2:563, _prophet_receipts.html.j2:137, china_altdata.html.j2:227 and dashboard.html.j2:7852. It states that 观望 renders the Watch stance on live production surfaces, so 观望 meaning Watch and Stand aside is a production fork owned by those surfaces and outside this reference. No production template is changed. (Reviewer A condition 1, verbatim.)'
+  - id: SIC-V5-C02
+    text: 'the HOLD sentence names the Peak extended-uptrend override (trend_up × Peak × ladder in BOTTOM WATCH / TURN SIGNALED / FRESH BUY, note_key extended_uptrend, engine/cycle_ontology.py:1060-1063) alongside every RALLY ON row and Recovery × TOP WATCH. The sentence is identical in the engine comment (currently :159-164), cycles_ia.md:157 and components/COMPONENTS.md:141. The proposal.yml PRC-037 proof cites those lines and no longer claims more than they say. (Reviewer A condition 2, verbatim.)'
+  - id: SIC-V5-C03
+    text: 'board 41 shows the chip 英文界面截图 beside 生产截图 and 深色主题截图 on the face. boards_manifest.yml row 41 states_shown and the proposal.yml screenshots entry 41 both declare the production crop''s locale as EN, with the theme as dark. (Reviewer A condition 3, verbatim.)'
+  - id: SIC-V5-C04
+    text: 'every zh-latin=0 claim (the zh_latin_grep.py docstring, each capture.log probe line, the boards_manifest rows and the C05 wording) states the skipped tags, including <code>, and lists the exempted tokens. The board 41 face caption names both clocks in plain ZH, with now.phase and phase_v2 only in <code> inside the drawer. boards_manifest.yml rows 32 and 33 describe the allowlist entry as GLP-1, not GLP-. The ALLOW regex at zh_latin_grep.py:16 is unchanged. (Reviewer A condition 4, verbatim.)'
+  - id: SIC-V5-C05
+    text: 'VTC-035a: components/zh_latin_grep.py skips <details> (drawer) content but no longer skips <code> outside <details>. capture.log reports zh-latin=0 under that rule on boards 25/30/32/33/34/35/36/38/41. (Reviewer B condition VTC-035a, verbatim.)'
+  - id: SIC-V5-C06
+    text: 'VTC-035b: no ZH face outside a <details> drawer carries sector_cycles.semantic_families.v2, price_c4414dcb, site/sector_cycles.html, d86344b93a0b, chrome-headless-1x, now.phase or phase_v2. Board 41''s desk caption names both clocks in plain ZH, with the identifiers in the drawer. Every capture.log line that claims zh-latin=0 states the exemption scope. (Reviewer B condition VTC-035b, verbatim.)'
+  - id: SIC-V5-C07
+    text: 'VTC-036: in cycles.html and boards 28/29/34/35/41, the doctrine chip is the only warn-ink or warn-fill chip on each card. The Ladder / Hazard / Rhythm / Read disagrees chips and the Live parity unproven chip take a neutral, even all-round outline with no edge accent. The XLF Ladder-disagrees chip is not a child of cyc-stance-row. (Reviewer B condition VTC-036, verbatim.)'
+  - id: SIC-V5-C08
+    text: 'VTC-037: each card draws at most one Clocks block, with one line per disagreeing clock naming both clocks. The sentence "The projected window and its overdue flag are kept in the provenance drawer" appears at most once per card, inside the drawer. The Descriptive rhythm chip is drawn only when a rhythm value is drawn on the face. (Reviewer B condition VTC-037, verbatim.)'
+  - id: SIC-V5-C09
+    text: 'VTC-038: the ZH PRIOR fixture title and body use 先验, matching its cell badges (cycles.html fixture card; boards 34/35/41). The string "doctrine_stance" does not appear on the EN or ZH face outside a drawer. (Reviewer B condition VTC-038, verbatim.)'
+  - id: SIC-V5-C10
+    text: 'VTC-039: board 41 shows a face chip declaring that the production crop has an EN interface (for example 英文界面截图) beside 生产截图 / 深色主题截图. boards_manifest row 41 and proposal.yml screenshots entry 41 declare the crop''s locale and limit the "ZH deck copy end-to-end" claim to the specimen deck. (Reviewer B condition VTC-039, verbatim.)'
+  - id: SIC-V5-C11
+    text: 'VTC-040: every boards_manifest Cycles row lists only the doctrine stances its PNG draws (Watch / Protect). EN rows 28/29/31/39/40 name no ZH strings. Rows 32/33/38 spell the allow entry GLP-1, as zh_face_latin_allow.txt does. No wave bullet is shared verbatim across rows. (Reviewer B condition VTC-040, verbatim.)'
+  - id: SIC-V5-C12
+    text: 'VTC-042: proposal.yml screenshots png_px equals the latest capture.log size for every board 23-41, and the board 39 note names the SIC-V4-C03 disagree states. (Reviewer B condition VTC-042, verbatim.)'
+  - id: SIC-V5-C13
+    text: 'Seat-disclosed (authority, 2026-11-02): proposal.yml proposed_artifact.frozen_sha equals manifest.yml frozen_sha at the wave-5 re-freeze and at every later re-freeze (at 66829d17 it still read 1ad748c8e785eda0a3e1f13167a9290c194d07ae; the checker''s stale-review-receipt rule exposed it against the round-5 receipts and the round-5 ledger commit corrects it to 66829d17); the seat''s re-freeze script asserts the two fields are equal before it finishes, and the proposal header names the correction.'
+conditions_round4_1ad748c8:
+  note: 'Round-4 authority conditions (REVISE at 1ad748c8). Their status at 66829d17 is the per-finding round-5 disposition in reviews/<role>.yml first_pass.round4_dispositions: Reviewer B — VTC-029/028/030/031/032/034 cured, VTC-033 withdrawn, carried VTC-021/024/016 cured; Reviewer A — PRC-038/039/040/031/025/022 cured, PRC-036/037/041 partially cured (their residuals are PRC-042 / SIC-V5-C01, SIC-V5-C02 and PRC-043 / SIC-V5-C03), PRC-027 cured after pass 2. Every surviving item is carried into SIC-V5-C01..C13 above.'
+  conditions:
+  - id: SIC-V4-C01
+    text: 'Doctrine vocabulary (SIC-ADJ-02; VTC-029 + PRC-036 + PRC-031): engine DOCTRINE_STANCES carries the adjudicated EN/ZH strings; design_refs/sector-paper-20261021/copy_deck.json stance_* rows equal DOCTRINE_STANCES (en, zh) and each non-NEW source line contains the exact string; a test pins deck == engine, the citation contents, and that no doctrine ZH string equals any STANCES[*].zh; the specimen stamp (stamp_doctrine.py) and the regenerated example_dataset.json / crosswalk JS carry the new strings; boards 30/34/35/36 (Cycles ZH), 38 and every Brief board that draws the lanes are re-rendered; capture.log records the engine file:line.'
+  - id: SIC-V4-C02
+    text: 'Clocks on the face (VTC-028 + PRC-039): the hazard leg (direction · turn_kind) and the rhythm projection (next_turn, date, Overdue) reach a card face only when they agree with the phase_v2 chip''s family (rising family: up leg toward a peak, next turn peak; falling family: down leg toward a trough, next turn trough); otherwise that row shows the labeled hazard/rhythm-mismatch state naming its own clock and the phase clock in plain words, or moves to the provenance drawer. The rule is a cited function in build_cycles.py (family_match extended), recorded per sector in the drawer, and XLF, XLK and XLC demonstrate it on captured boards.'
+  - id: SIC-V4-C03
+    text: 'Distinct disagree labels (VTC-030 + PRC-040): three distinct labeled states, each naming both clocks in plain words — ladder divergence (phase clock vs timing ladder; the ladder state glossed, never the raw enum), read mismatch (cycle read vs phase clock; SIC-V3-C03), hazard/rhythm mismatch (SIC-V4-C02). The read-mismatch state appears only when family_match is false; XLF on a family match shows no read-mismatch state. EN and ZH labels are in the copy deck with sources or declared NEW.'
+  - id: SIC-V4-C04
+    text: 'One ZH phase word per face (VTC-021 + PRC-038): the ZH face uses the chip''s production phase label (回落中, templates/sector_cycles.js:602) in the read, the notes and every disagree state; the engine short_zh (下行) is drawer-only; a face-only count of ZH phase words is one per card on boards 30/34/35/36.'
+  - id: SIC-V4-C05
+    text: 'No study ids on faces (VTC-024 + VTC-016): the lead-lag STOP is stated in plain words on both faces (methods card and copy_deck leadlag_stop), with the study id W5.1 in the methods drawer only; components/zh_latin_grep.py tokenizes letter-plus-digit and letter-plus-punctuation tokens (W5.1, P(...)) and capture.log re-proves zh-latin=0 on every ZH board with the new tokenizer; the allowlist is unchanged (tickers, FIX, SPY, MODEL, PRIOR).'
+  - id: SIC-V4-C06
+    text: 'HOLD rationale (PRC-037; SIC-ADJ-01a): the comment at engine/cycle_ontology.py:150-151 names the HOLD cells truthfully (:245-247 clean rally, :252 Recovery × TOP WATCH, :1035-1041 Peak extended uptrend, the divergent Trough/Downturn × RALLY ON cells) and states that the warn ink on clean-rally HOLD is intended (SIC-ADJ-01a); cycles_ia.md and COMPONENTS.md carry the same sentence.'
+  - id: SIC-V4-C07
+    text: 'Composite desk coverage (PRC-041): board 41 captures ?desk=composite in light theme and ZH with the production crop declared as captured in dark theme; boards_manifest, cycles_repair/README.md and proposal.yml declare the composite desk a review instrument outside the shipped surface (boards 40/41 supporting evidence, not coverage cells).'
+  - id: SIC-V4-C08
+    text: 'Desk clock statement (VTC-031): the desk caption on boards 40/41 states that the production chart''s ''Where they stand'' counts use the legacy now.phase clock (templates/sector_cycles.js:611) while the specimen cards use the phase_v2 clock, so phase membership differs at the same as-of by design.'
+  - id: SIC-V4-C09
+    text: 'Manifest truth (VTC-032; SIC-V2-C07): boards_manifest rows 32/33 states_shown list only states the wave-3 PNGs draw; the ''lane titles + production qualifiers'' and ''coverage unavailable (measured-sector read withheld)'' bullets are removed.'
+  - id: SIC-V4-C10
+    text: 'Null stance and ZH polish (both critics'' gaps; VTC-034): a second labeled FIXTURE card on the fixture strip demonstrates the ''Stance unavailable'' rendering (no chip, muted, SIC-V3-C02) on boards 28/34/40/41; the ZH read says 位于200日均线上方 where the EN says above its 200-day; the drawer tone line carries a ZH gloss (语气 看涨 / 谨慎 / 看跌 / 中性 / 预期).'
+conditions_round3_5432d5a0:
+  note: 'Round-3 authority conditions (REVISE at 5432d5a0). Their status at 1ad748c8 is the per-finding round-4 disposition in reviews/<role>.yml first_pass.round3_dispositions (every row cured except VTC-021 ZH and VTC-024/016, carried into SIC-V4-C04 and SIC-V4-C05); SIC-ADJ-01 stands with the addendum SIC-ADJ-01a above.'
+  conditions:
+  - id: SIC-V3-C01
+    text: 'Stance (SIC-ADJ-01; VTC-023 + PRC-033): every Cycles card face (boards 28-31, 34-36 and every new board)
+      draws exactly one doctrine chip whose value is the producer-stamped field doctrine_stance emitted by engine/cycle_ontology.py
+      (DOCTRINE_STANCE beside STANCES; resolve_state() and the flat crosswalk emit it; unit test cited file:line);
+      the chip is labeled as the engine''s mapping by its source eyebrow, its ink is the doctrine ink of the stamped
+      stance and never contradicts now.tone (asserted in the engine), and no engine stance word (HOLD, SELL, TRIM,
+      BUY, WAIT, AVOID, GET READY, COUNTERTREND ONLY, HIGH-RISK BOUNCE) appears outside the provenance drawer, whose
+      first line is the engine stance plus tone (en/zh) verbatim. No frontend computes a stance.'
+  - id: SIC-V3-C02
+    text: 'Unavailable stance (VTC-023): a missing engine stance renders a muted ''Stance unavailable'' with no chip;
+      the map has no None entry; the map with per-row rationale exists in engine/cycle_ontology.py, design_refs/sector-paper-20261021/cycles_ia.md
+      and components/COMPONENTS.md.'
+  - id: SIC-V3-C03
+    text: 'One phase per face (VTC-021 + PRC-025 + VTC-019): every Cycles card face names one phase only (the phase_v2
+      chip); legacy read/read_zh is drawer-only; the face read appears only when its phase word belongs to the phase_v2
+      family of the card''s chip (family-match test cited file:line, not clocks.agree); otherwise the face shows the
+      labeled ''Clocks disagree'' state naming both clocks; XLC and XLF demonstrate it on captured boards (28/29/30/31/34/35/36).'
+  - id: SIC-V3-C04
+    text: 'Brief lanes (VTC-022 + VTC-020): no Brief cell (23-26, 32, 33, 37, new) renders .brf-lane-qual or any legacy
+      fold label (Buy now, Almost ready, In favour, Take profits, Stand aside as qualifier, Hold what you own) on
+      the face; lane subtitles are non-imperative membership criteria containing no imperative verb.'
+  - id: SIC-V3-C05
+    text: 'Brief hero (VTC-022): the hero face contains no chip or line with instruction idiom; it shows regime state
+      plus dataset participation facts; ''Leadership steady — stay with the leaders.'' appears, if at all, only as
+      a labeled ''Production regime read'' body-ink line inside the closed hero provenance drawer.'
+  - id: SIC-V3-C06
+    text: 'ZH faces (VTC-024 + PRC-031): ZH faces (25, 30, 32-36, new) contain no Latin-script words outside drawers
+      and nav except tickers, SPY, MODEL/PRIOR badges and numerals; as-of, page and source labels and sector names
+      are bilingual pairs; no English sector names or page/source labels outside code/drawer elements; every ZH string
+      is tagged with a production file:line or deck copy; checked by a text grep of the rendered ZH documents.'
+  - id: SIC-V3-C07
+    text: 'enum provenance (PRC-034): every enum_zh.json value names a real origin (an existing production file:line
+      containing the exact string, or deck copy), verified by grep and recorded.'
+  - id: SIC-V3-C08
+    text: 'Cycles hero, context card and grader (VTC-026 + PRC-035 + VTC-017): the hero does not repeat the page title
+      and does not describe an undrawn chart; the context card carries real content (as-of, generation state, hazard
+      epoch) or is removed; no grader label implies a measured value where no number is drawn; the grader eyebrow
+      promises no rate; the Neutral-included caption is labeled as a definition.'
+  - id: SIC-V3-C09
+    text: 'Composite desk (VTC-026 + VTC-017): if a composite desk uses a production chart capture, the capture is
+      labeled as production with its render source and as-of, and the as-of difference from the specimen dataset (2026-10-19
+      vs 2026-10-20) is stated on the board face; no desk silently mixes two as-of dates.'
+  - id: SIC-V3-C10
+    text: '390px lanes and probes (VTC-027 + VTC-025): at 390px Brief lane rows are two-line cards with no metric
+      label wrapping past two lines; capture.log records data-w="390" data-ovf="" for every mobile cell (25, 26, 30,
+      31, 36, 37, new).'
+  - id: SIC-V3-C11
+    text: 'README parity (VTC-025): the cycles_repair/README.md Boards table equals boards_manifest.yml png_px for
+      every Cycles board.'
+  - id: SIC-V3-C12
+    text: 'Coverage card (VTC-020): the coverage card title does not say ''unavailable'' while it prints captured
+      counts.'
+  - id: SIC-V3-C13
+    text: 'Coverage (PRC-027): the two gap cells are frozen as boards with manifest rows and png_px; board 27 cites
+      16/16 drawn cells.'
+  - id: SIC-V3-C14
+    text: 'Board 21 (VTC-008 withdrawal condition): board 21 contents are cited as evidence by no review, coverage
+      matrix or README.'
+  - id: SIC-V3-C15
+    text: 'Shell proof: light and dark full-canvas pixel samples (247,248,250)/(15,17,21) and the six-link switcher
+      with the correct current item hold on every new or re-rendered board, recorded in capture.log.'
+  - id: SIC-V3-C16
+    text: 'Supersession (PRC-022): the board 1/6 notes name the PRIOR 33% cell and the Abstained card as illustrative
+      and superseded; the board 16 note names the placeholder phase ages and the ''Slow cycle MODEL'' label as superseded
+      by boards 28/34.'
+  - id: SIC-V3-C17
+    text: 'PRIOR home (Reviewer A A08): exactly one labeled FIXTURE state card shows a KM PRIOR cell in the producer
+      field shape (source PRIOR, cell_verdict, epoch in the drawer), with the fixture label printed on the face, outside
+      any live sector card; the capability_boards C19 row cites it; never in a live card.'
+conditions_round2_ab1e71ac:
+  note: Round-2 authority conditions (REVISE at ab1e71ac). Their status at 5432d5a0 is the per-finding round-3 disposition
+    in reviews/<role>.yml first_pass.round2_dispositions; every surviving item is carried into SIC-V3-C01..C17 above.
+  conditions:
+  - id: SIC-V2-C01
+    text: 'VTC-013: the Cycles card face draws only the six doctrine stances via a documented resolved_stance→stance
+      mapping (cycles_ia.md + copy deck); engine strings HOLD/HIGH-RISK BOUNCE/SELL appear only in the provenance
+      drawer; no red instruction ink (Reviewer B cond 1).'
+  - id: SIC-V2-C02
+    text: 'VTC-014/VTC-006: specimens link the shell stylesheet (templates/_sector_central_paper.css.j2 rendered,
+      or an equivalent normative sheet) so .si-page-title/.si-workflow render styled; each theme paints the full
+      canvas, proven by pixel samples in dark and light on desktop and mobile, recorded in the capture log (Reviewer
+      B cond 2).'
+  - id: SIC-V2-C03
+    text: 'VTC-015: the workflow switcher lists all six workflows with the correct aria-current per board — Cycles
+      current on Cycles boards (Reviewer B cond 3).'
+  - id: SIC-V2-C04
+    text: 'VTC-016/PRC-024/PRC-031: identifiers, hashes, repo paths and the Built meta table move to a provenance
+      drawer; the face carries plain EN/ZH labels; ZH boards contain no stray English, including the nav search
+      placeholder (Reviewer B cond 4; Reviewer A cond 3, cond 6 second clause).'
+  - id: SIC-V2-C05
+    text: 'VTC-017/PRC-029/PRC-030/PRC-022: boards_manifest.yml carries a supersession or correction note on every
+      R3 board a specimen board replaces (01-08 families, 12/13/22 Brief, 16 ages) naming the replacing board; board
+      01''s capabilities_covered is reconciled; for each C01-C28 the manifest names exactly one normative board,
+      or one composite corrected Cycles board (chart + corrected states) is drawn (Reviewer B cond 5; Reviewer A
+      cond 1, 2).'
+  - id: SIC-V2-C06
+    text: 'VTC-018: the board-31 fixture banner fits its container; chips are muted or reconciled under the incompatible_generation
+      fixture (Reviewer B cond 6).'
+  - id: SIC-V2-C07
+    text: 'VTC-019/PRC-025: the legacy number is stripped from ''The read'' so one card shows one position and one
+      phase, and the boards_manifest states_shown claim matches what is drawn (Reviewer B cond 7; Reviewer A cond
+      4).'
+  - id: SIC-V2-C08
+    text: 'VTC-008/VTC-001: boards 12/13/22 are marked superseded and removed from board 27 DRAWN evidence; boards
+      20/21 are refreshed or visibly marked stale (Reviewer B cond 8).'
+  - id: SIC-V2-C09
+    text: 'VTC-002/VTC-005: the mobile chrome capture shows the canonical mobile header (wordmark, menu entry, settings)
+      from templates/_site_nav.html.j2 (Reviewer B cond 9).'
+  - id: SIC-V2-C10
+    text: 'VTC-009: .spc-model-prior-badge font size >= 11px in components.css, matching COMPONENTS.md (Reviewer
+      B cond 10).'
+  - id: SIC-V2-C11
+    text: 'PRC-032: proj is labelled as production''s projection, distinct from the descriptive rhythm window, or
+      dropped (Reviewer A cond 5).'
+  - id: SIC-V2-C12
+    text: 'PRC-027/VTC-003: Brief ZH desktop (both themes), Cycles ZH desktop and a light ZH Cycles board are rendered
+      from the same specimens and added to boards_manifest + board 27, or each remaining gap carries a recorded
+      evidence cell (Reviewer A cond 6).'
+  - id: SIC-V2-C13
+    text: 'PRC-026/PRC-028/PRC-018: the stance_act deck/dataset contract is documented or the key exists in copy_deck.json;
+      Bottoming Watch per-row gate chips are drawn or explicitly declared out of scope (Reviewer A cond 7).'
+  - id: SIC-V2-C14
+    text: 'VTC-020: minor polish — ''1 days'' plural, typed em dashes in lane subtitles, unlabeled row glyphs, orphan
+      half-width coverage card, lane grid alignment (Reviewer B cond 11).'
+  - id: SIC-V2-C15
+    text: Re-freeze at the wave-2 commit under a new frozen_sha; Reviewer A and Reviewer B re-run (round 3) with
+      first-pass rationale quarantine; no approval.yml before both second-pass verdicts are PASS or PASS_WITH_CONDITIONS.
+  - id: SIC-V2-C16
+    text: 'Deferrals stay declared, never silently dropped: PRC-010..016 (Time Machine, Narratives, desk watches,
+      Moving/Money, Confluence, Reco tags/conviction) and VTC-010 (per-card language switch on Paper boards 01/02)
+      remain PAPER_CAPACITY_LIMITED in boards_manifest/proposal coverage_matrix with the P14-P18 rendered-proof
+      cell each must show; Paper writes stay frozen at the file-size limit.'
+conditions_round1_508539c0:
+  note: Round-1 authority conditions (REVISE at 508539c0). Their status at ab1e71ac is the per-finding round-2 disposition
+    in reviews/<role>.yml first_pass.round1_dispositions (cured / partially_cured / not_cured / withdrawn); none
+    is silently dropped — every surviving item is carried into SIC-V2-C01..C16 above.
+  conditions:
+  - id: SIC-V1-C01
+    text: VTC-001 cure drawn (lane board, Bottoming Watch, themes, stance chips; both themes; mobile ZH) and re-frozen
+      under a new frozen_sha; both critics re-run against it.
+  - id: SIC-V1-C02
+    text: 'VTC-002 cure: canonical _site_nav chrome on the exports, or a non-normative-chrome declaration in proposal.yml
+      with _site_nav bound as normative; visual_taste critic confirms no third family on the re-frozen boards.'
+  - id: SIC-V1-C03
+    text: 'VTC-003 cure: a per-board-family coverage matrix in proposal.yml; every undrawn cell either drawn or
+      recorded PAPER_CAPACITY_LIMITED with the P10-P18 rendered proof it must show; boards 20/21 corrected.'
+  - id: SIC-V1-C04
+    text: 'VTC-004 + VTC-005 (major): glance-tier copy restored to the copy deck''s Tier-1 wording; regime headline
+      keyword and weekly handoff pair restored on the Brief; dispositions recorded in proposal.yml revision_mandate.'
+  - id: SIC-V1-C05
+    text: VTC-006..VTC-012 (minor) each fixed or dispositioned by id in proposal.yml revision_mandate before re-freeze.
+  - id: SIC-V1-C06
+    text: The product_regression critic receipt (Reviewer A) exists at 508539c0 (pass 1 10:13Z BLOCK, pass 2 10:21Z
+      BLOCK, reviews/product_regression.yml); it is re-run against the re-frozen sha of the repair wave before any
+      approved status, with the same rationale quarantine on its first pass.
+  - id: SIC-V1-C07
+    text: Inline chart controls for C05/C06 (Cycles timing/hazard lenses) drawn or dispositioned RELOCATE with the
+      Explore home named.
+  - id: SIC-V1-C08
+    text: SC-066 and SC-092 (BLOCKED_DATA) stay disclosed-absence states in the UI; no placeholder values.
+  - id: SIC-V1-C09
+    text: 'Copy deck: no em-dashes or arrow glyphs in user-facing strings (copy_deck re-lint).'
+  - id: SIC-V1-C10
+    text: 'P10-P18 journeys proven on the rendered product before #9917 leaves draft; no undraft on a screenshot
+      or test alone.'
+  - id: SIC-V1-C11
+    text: PRC-001 + PRC-002 cure drawn on the Brief (Act-Now lanes, Bottoming Watch, track-record entry with the
+      honest denominator; desktop light/dark, mobile ZH + mobile light/EN locked state) and re-frozen; both critics
+      re-run.
+  - id: SIC-V1-C12
+    text: 'PRC-003 + PRC-007 (Cycles hazard/rhythm honesty): invented ''Cycle crosses zero'' target removed, PARITY_FAILS
+      disclosure + display-only footnote drawn on board 01, rhythm periodicity marked descriptive (no MODEL badge)
+      on board 16.'
+  - id: SIC-V1-C13
+    text: 'PRC-006: phase-age qualifier (measured / lower_bound / insufficient_history) on every age shown, or unknown
+      shown as unknown; cycles_ia.md rows 155 and 228-230 corrected.'
+  - id: SIC-V1-C14
+    text: 'PRC-004 / PRC-005 / PRC-009 (major): grader rows on board 01 labelled as the conviction-call grader with
+      ''calls logged'' reconciled to the producer denominator; ''Tighten risk rather than add.'' removed or bound
+      to a producer string; inert sizing (1.0) and the lead-lag STOP disclosed as a methods row on board 06/07.'
+  - id: SIC-V1-C15
+    text: 'PRC-010..PRC-016: Time Machine, Forming Narratives, desk-watch, Moving/Money surfaces, Confluence/Explore
+      table, hero handoff pair + WHAT CHANGED chips, Reco tags + conviction board — each drawn with a board or dispositioned
+      by id (RELOCATE/DEFER with the production home named) in proposal.yml revision_mandate; ''carried unchanged''
+      boilerplate is not a home.'
+  - id: SIC-V1-C16
+    text: 'PRC-017..PRC-022: legacy-anchor → new-tab mapping table (PRC-017); copy deck ⇄ boards parity incl. v2
+      phase strings and the h1 budget (PRC-018); ''Engine read'' relabelled as narrative (PRC-019); boards_manifest
+      capabilities_covered corrected for boards 12/16 (PRC-020); state_matrix R3A mapping (PRC-021); one PRIOR cell
+      value across boards (PRC-022).'

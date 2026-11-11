@@ -1,0 +1,42 @@
+[
+  {
+    "accession": "0000018230-23-000011",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "ratio",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK11",
+    "polarity": "negative",
+    "reason": "cat-20221231.htm | untagged | Industrial 10-K with no regulatory-capital disclosure: grepped the whole primary (case-insensitive) for 'common equity tier', 'CET1', 'tier 1 capital', 'regulatory capital': 0 matches each; no CET1 ratio table or sentence exists.",
+    "section_family": "cet1_or_stated_ratio",
+    "split": "held_out",
+    "target_id": "cet1_ratio_disclosed",
+    "target_kind": "extract",
+    "trial_id": "PK11|0000018230-23-000011|extract|cet1_ratio_disclosed"
+  },
+  {
+    "accession": "0000018230-23-000011",
+    "expected_period_end": "2022-12-31",
+    "expected_span_ref": null,
+    "expected_unit": "USD",
+    "expected_value_text": null,
+    "fiscal_year": 2022,
+    "form_type": "10-K",
+    "format_class": "ixbrl_inline",
+    "issuer": "CAT",
+    "label_class": "extract_absent",
+    "pack_id": "PK11",
+    "polarity": "negative",
+    "reason": "cat-20221231.htm | untagged | No customer-deposit liabilities in the CAT 10-K: grepped 'Total deposits', 'deposit liabilities', 'customer deposits': 0 matches; the only 'deposits' occurrences are CAT's own investments ('We had $ 964 million of investments in time deposits classified as held-to-maturity debt securities').",
+    "section_family": "lcr_or_stated_liq",
+    "split": "held_out",
+    "target_id": "deposits",
+    "target_kind": "extract",
+    "trial_id": "PK11|0000018230-23-000011|extract|deposits"
+  }
+]
