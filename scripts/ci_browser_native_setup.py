@@ -303,8 +303,10 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         capture = Path(__file__).with_name("ci_browser_dependency_capture.py")
         code, raw = observe_command((python, str(capture), "playwright"), deadline=deadline, command_env=command_env)
         prefix = b"CI_BROWSER_DEPENDENCY_INPUTS="
-        if code != 0 or not raw.startswith(prefix):
-            raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED")
+        if code != 0:
+            raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED; source_stage=capture_nonzero")
+        if not raw.startswith(prefix):
+            raise AcquisitionRefused("DEPENDENCY_SOURCE_UNQUALIFIED; source_stage=capture_unframed")
         source = json.loads(raw[len(prefix):])
         host = platform.freedesktop_os_release()
         qualified_direct_packages(distribution_version=source["observed_version"], driver_version=source["driver_version"],

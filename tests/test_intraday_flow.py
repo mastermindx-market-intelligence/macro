@@ -1,7 +1,7 @@
 """tests/test_intraday_flow.py — Unit tests for engine/intraday_flow.py (IFT A1+A3).
 
 Covers every public function with synthetic fixtures and edge cases.
-All tests are self-contained; no network, no disk I/O.
+All tests are self-contained; no network. Filesystem cases use temporary fixtures.
 """
 from __future__ import annotations
 
@@ -650,6 +650,65 @@ class TestAppendLedger:
         assert n == 1
         assert _bif._ledger_path(subdir).exists()
 
+
+    def test_malformed_existing_parquet_is_preserved(self, tmp_path, monkeypatch):
+        """A real parquet-reader failure cannot stamp or replace old bytes."""
+        path = _bif._ledger_path(tmp_path)
+        path.parent.mkdir(parents=True)
+        original = b"PAR1 deliberately truncated existing ledger"
+        path.write_bytes(original)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("unreadable history must stop before stamping or writing")
+
+        monkeypatch.setattr(_bif, "_stamp_forward_returns", forbidden)
+        monkeypatch.setattr(_bif, "_write_ledger", forbidden)
+        # Exercise the installed parquet reader rather than simulating its error.
+        with pytest.raises(ValueError):
+            _bif._load_ledger(tmp_path)
+        assert _bif._append_ledger_rows([self._row("2024-01-03", "NEW")], tmp_path) == 0
+        assert path.read_bytes() == original
+
+    @pytest.mark.parametrize("error", [OSError("temporary read failure"),
+                                      ImportError("parquet reader unavailable")])
+    def test_existing_ledger_read_error_preserves_history(self, tmp_path, monkeypatch, error):
+        path = _bif._ledger_path(tmp_path)
+        _bif._write_ledger(pd.DataFrame([self._row("2024-01-02", "OLD")]), tmp_path)
+        original = path.read_bytes()
+
+        def fail_read(*args, **kwargs):
+            raise error
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("read failure must stop before stamping or writing")
+
+        monkeypatch.setattr(_bif.pd, "read_parquet", fail_read)
+        monkeypatch.setattr(_bif, "_stamp_forward_returns", forbidden)
+        monkeypatch.setattr(_bif, "_write_ledger", forbidden)
+        with pytest.raises(type(error)) as raised:
+            _bif._load_ledger(tmp_path)
+        assert raised.value is error
+        assert _bif._append_ledger_rows([self._row("2024-01-03", "NEW")], tmp_path) == 0
+        assert path.read_bytes() == original
+
+    def test_readable_old_null_stance_and_return_survive_append(self, tmp_path):
+        old = dict(self._row("2024-01-02", "OLD"), stance=None, fwd_ret_1d=0.03)
+        _bif._write_ledger(pd.DataFrame([old]), tmp_path)
+        new = dict(self._row("2024-01-03", "NEW"), stance="stand_aside")
+        assert _bif._append_ledger_rows([new], tmp_path) == 1
+        result = _bif._load_ledger(tmp_path)
+        assert result["ticker"].tolist() == ["OLD", "NEW"]
+        assert pd.isna(result.iloc[0]["stance"])
+        assert result.iloc[0]["fwd_ret_1d"] == 0.03
+        assert result.iloc[1]["stance"] == "stand_aside"
+
+    def test_empty_append_does_not_read_or_write(self, tmp_path, monkeypatch):
+        def forbidden(*args, **kwargs):
+            pytest.fail("empty input must leave the ledger untouched")
+
+        monkeypatch.setattr(_bif, "_load_ledger", forbidden)
+        monkeypatch.setattr(_bif, "_write_ledger", forbidden)
+        assert _bif._append_ledger_rows([], tmp_path) == 0
 
 class TestStampForwardReturns:
     """Tests for _stamp_forward_returns — fills fwd_ret columns on existing rows."""

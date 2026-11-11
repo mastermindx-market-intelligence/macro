@@ -2366,10 +2366,15 @@ root = Path(sys.argv[1]).resolve()
 sys.path.insert(0, str(root))
 session, payload_out = sys.argv[2], sys.argv[3]
 from scripts.grade_us_board import snapshot_today, SNAPSHOTS_JSONL
+try:
+    from engine.us_board_snapshots import exists as _ubs_exists, read_lines as _ubs_read_lines
+except ImportError:  # a vintage tree from before the parts layout: base file only
+    _ubs_exists = lambda p: p.exists()
+    _ubs_read_lines = lambda p: p.read_text(encoding="utf-8").splitlines()
 snapped = snapshot_today()
 row = None
-if SNAPSHOTS_JSONL.exists():
-    for _line in SNAPSHOTS_JSONL.read_text(encoding="utf-8").splitlines():
+if _ubs_exists(SNAPSHOTS_JSONL):
+    for _line in _ubs_read_lines(SNAPSHOTS_JSONL):
         _line = _line.strip()
         if not _line:
             continue
