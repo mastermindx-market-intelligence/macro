@@ -4432,6 +4432,98 @@ def alloc_card_state() -> dict:
         return {"present": False}
 
 
+def _ms_settlement_status(snap: dict, root=None) -> dict:
+    """STEP-3 SETTLE-BLOCK (2026-11-09 divergence, change 2/3): settlement status
+    of a canonical market-state snapshot against the forward ledger.
+
+    A score may be marked 'settled' ONLY when the ledger's graded evidence
+    (data/market_state/forward_log.jsonl — engine.market_state_audit writes
+    `graded: {graded_at, outcome, ...}` once a row's 21-session horizon matures)
+    is at least as new as the snapshot itself and every graded row carries a
+    real graded_at stamp. Otherwise the settlement evidence lags the snapshot
+    and the page must publish an explicit 'unreconciled' flag instead: on
+    2026-11-09 the nightly forward-ledger finalization was incomplete, so the
+    canonical 41 shipped looking settled when it was canonical-but-unreconciled.
+
+    Never raises — an unreadable/absent ledger is itself laggard evidence and
+    yields 'unreconciled', never a silent 'settled'."""
+    rows: list[dict] = []
+    try:
+        p = (root or config.data_dir()) / "market_state" / "forward_log.jsonl"
+        for line in p.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rows.append(json.loads(line))
+            except Exception:  # noqa: BLE001 — one bad line is not laggard evidence
+                continue
+    except Exception:  # noqa: BLE001 — absent ledger => no settlement evidence at all
+        rows = []
+    # premise_repair rows are disclosure rows, not scored snapshots (audit lane law).
+    graded = [r for r in rows
+              if r.get("type") != "premise_repair" and isinstance(r.get("graded"), dict)]
+    snap_asof = str(snap.get("asof") or "")
+    newest_settled = max((str(r.get("asof") or "") for r in graded), default="")
+    # A graded row without graded_at is a settlement timestamp gap — treat as absent.
+    all_stamped = all(bool(r["graded"].get("graded_at")) for r in graded)
+    settled = bool(snap_asof) and bool(newest_settled) and all_stamped \
+        and snap_asof <= newest_settled
+    return {
+        "status": "settled" if settled else "unreconciled",
+        "snapshot_asof": snap_asof or None,
+        "newest_settled_asof": newest_settled or None,
+        "n_graded": len(graded),
+    }
+
+
+def _canonical_market_state(root=None) -> dict:
+    """STEP-3 CANONICAL RENDER (2026-11-09 divergence, change 1/3): the score,
+    its components and the score-chart endpoint rendered into macro.html MUST
+    come from the single canonical artifact data/market_state/latest.json
+    (score_source=blend), never from the build's in-memory recompute.
+
+    Why: engine.market_state.persist is the writer of record and its no-regress
+    guard REFUSES a stale incoming snapshot — but the page used to render the
+    in-memory value anyway, so a stale-input build baked 39 into macro.html
+    while the canonical latest.json (weighted 40.82 -> 41) said 41. Rendering
+    from the file makes the two impossible to disagree.
+
+    Fails LOUDLY (RuntimeError) when latest.json is missing or unparseable, or
+    lacks the score/asof the page is about to display — never a silent fallback
+    to cached or derived values. Also stamps the settle-block status (change
+    2/3, _ms_settlement_status) so the published view carries the explicit
+    'settled'/'unreconciled' flag."""
+    p = (root or config.data_dir()) / "market_state" / "latest.json"
+    try:
+        raw = p.read_text(encoding="utf-8")
+    except FileNotFoundError as e:
+        raise RuntimeError(
+            f"canonical market state artifact missing: {p} — refusing to render "
+            "macro.html from cached or derived values (STEP-3 canonical render; "
+            "2026-11-09 41-vs-39 divergence)"
+        ) from e
+    except OSError as e:
+        raise RuntimeError(
+            f"canonical market state artifact unreadable: {p} ({e}) — refusing "
+            "to render macro.html from cached or derived values"
+        ) from e
+    try:
+        snap = json.loads(raw)
+    except Exception as e:
+        raise RuntimeError(
+            f"canonical market state artifact unparseable: {p} ({e}) — refusing "
+            "to render macro.html from cached or derived values"
+        ) from e
+    if not isinstance(snap, dict) or snap.get("score") is None or not snap.get("asof"):
+        raise RuntimeError(
+            f"canonical market state artifact incomplete (score/asof missing): "
+            f"{p} — refusing to render a page it cannot vouch for"
+        )
+    snap["settlement"] = _ms_settlement_status(snap, root=root)
+    return snap
+
+
 def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     """Last up-to-60 sessions from market_state/forward_log.jsonl.
     Returns list of {asof, score} dicts using the measured `raw_score` when present
@@ -7334,6 +7426,14 @@ def main() -> int:
     # CGL W1: US radar card contagion wiring (card-only; hero/mx5 chip is W2).
     # Pre-compute market_state so we can attach pressure["us"] before building vm.
     _us_ms_view = market_state_view(latest, f)
+    # STEP-3 CANONICAL RENDER (change 1/3): market_state_view still computes,
+    # audits and PERSISTS the canonical artifact (its no-regress guard may refuse
+    # a stale recompute — exactly the 2026-11-09 case), but the page now renders
+    # the persisted data/market_state/latest.json, never the in-memory value, so
+    # macro.html and the canonical artifact cannot disagree (41 vs 39). Missing/
+    # unparseable artifact fails the build loudly; the settle-block stamps the
+    # explicit settled/unreconciled flag on the published view (change 2/3).
+    _us_ms_view = _canonical_market_state()
     try:
         _cgl_us_path = config.data_dir() / "contagion_links" / "latest.json"
         if _cgl_us_path.exists() and _us_ms_view and isinstance(_us_ms_view.get("radar"), dict):
