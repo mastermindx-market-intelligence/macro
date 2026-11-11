@@ -5998,16 +5998,38 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_983),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_004),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_741),
 )
 # Twelve packs per shape was the pre-curation measurement.
-PACKING_PROBE_MAX_PACKS = 10
+PACKING_PROBE_MAX_PACKS = 11
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #8302, frontier coverage on accepted main e9ae4341):
+    Own contract job 129657047369 measured three introduced excesses of 17,
+    with no newly selected owner. The original frontier step changes
+    unrun-marketing-desk from 3 commands, 5 test tokens and 330 characters
+    to 4 commands, 13 tokens and 776 characters. The unchanged estimator
+    therefore moves from 13 to 30. Paired full native planning on 9ca00adf
+    measures index137/5966/10, free137/5987/10, Prophet131/5724/10 before,
+    and 137/5983/10, 137/6004/11, 131/5741/10 after. Main e9ae4341 only
+    updates the chronicle manifest; retain that accepted data update too.
+    Rebase the three weight ceilings by exactly 17 to 5983/6004/5741 and
+    the existing shared pack ceiling from 10 to 11. With the unchanged
+    600 target, the weight ceilings still limit index and Prophet to ten
+    packs; the combined axes admit only the measured 10/11/10 shape.
+    Free-content6005, index/Prophet6001 and any twelve-pack shape still fail.
+    No owner is newly selected; both complete curated-closure results are
+    empty. Preserve all 401 owners, 400 other complete blocks, all command
+    bytes, prior history, job limits137/138/131, estimator, assertions,
+    timeouts, the native twelve-slot execution shape and admission limits.
+    These are planning weights, not elapsed-runtime or billing claims.
+    Current composed-tree proof is recorded on the PR; the old replay
+    UNKNOWN remains historical and required successor CI is a separate gate.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
