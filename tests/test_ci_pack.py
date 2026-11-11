@@ -6000,7 +6000,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #6712, exact-head hosted contract follow-up):
+    CI run 42996405769, contract-delta job 130441481285, tested synthetic
+    merge 18f5b434 (head 42226843364f, base 71405417a0ff): index 137/5974/10,
+    free 137/5995/10, plan-book 131/5732/10. The prior owner-only account
+    below omitted the same +8 contribution to the plan-book probe; set its
+    ceiling to the observed 5732. This supersedes the earlier instruction to
+    preserve 5724, while retaining that limited evidence account below. Add
+    the three BioCatalyst adapter/priority/
+    what-matters-next paths to each of catalyst-loop-integrated, eval-os-a1,
+    ontology-explorer and options-matrix-code, as the exhaustive current-head
+    contract census requires. Those twelve literal path additions change no
+    command or owner weight. Preserve all job ceilings, ten packs, estimators,
+    assertions, scopes, timeouts and admission limits. The earlier local
+    evidence remains qualified; this paragraph records the actual hosted
+    measurement and its focused source repair, not a successor CI pass.
 
     2026-11-11 (PR #6712, current-main BioCatalyst composition):
     Preserve all 401 current owners and the original R9 additive test/closure

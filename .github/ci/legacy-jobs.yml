@@ -8190,6 +8190,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -17118,6 +17121,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -45970,6 +45976,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51368,6 +51377,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
