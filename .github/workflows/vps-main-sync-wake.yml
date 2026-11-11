@@ -1,0 +1,78 @@
+name: vps-main-sync-wake
+# Wake, not replace, the incumbent locked /usr/local/bin/macro-update publisher.
+# The existing 3-minute cron remains the recovery path for missed push events,
+# GITHUB_TOKEN-originated pushes (which do not emit new workflow events), and
+# an updater that exits without work because another invocation owns its lock.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "templates/**"
+      - "app/**"
+      - "admin/**"
+      - "app/deploy/ohlc_origin_known_hosts"
+      - ".github/workflows/vps-main-sync-wake.yml"
+  workflow_dispatch: {}
+
+# This event is accepted on main only, never pull_request_target or PR code.
+# The credential is already used by the accepted deploy-api-secrets workflow.
+permissions:
+  contents: read
+
+# One running + one coalesced pending wake. Never cancel an active SSH command:
+# a cancelled client does not prove the remote updater stopped.
+concurrency:
+  group: macro-vps-main-sync-wake
+  cancel-in-progress: false
+
+jobs:
+  wake:
+    if: github.repository == 'mastermindx-market-intelligence/macro' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Read the existing pinned VPS host identity from accepted main
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: app/deploy/ohlc_origin_known_hosts
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Invoke the existing locked VPS updater
+        shell: bash
+        env:
+          VPS_DEPLOY_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          HOST_PIN="$GITHUB_WORKSPACE/app/deploy/ohlc_origin_known_hosts"
+          [ -s "$HOST_PIN" ] || { echo "::error::Trusted VPS host pin unavailable"; exit 1; }
+          grep -qx '146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk' "$HOST_PIN" ||
+            { echo "::error::Trusted VPS host pin changed"; exit 1; }
+          [ -n "$VPS_DEPLOY_KEY" ] || { echo "::error::VPS_DEPLOY_KEY not enrolled"; exit 1; }
+
+          # Keep private key bytes out of repository, shell trace and workflow logs.
+          umask 077
+          KEYFILE="$(mktemp "$RUNNER_TEMP/vps-main-sync-key.XXXXXX")"
+          trap 'rm -f "$KEYFILE"' EXIT
+          printf '%s\n' "$VPS_DEPLOY_KEY" > "$KEYFILE"
+
+          # Fixed remote command; never interpolate an event payload, branch or
+          # SHA into SSH. The same macro-update script owns fetch, lock, rsync,
+          # Caddy/API reconciliation and failure behavior as the periodic cron.
+          ssh -F /dev/null -i "$KEYFILE" \
+            -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOST_PIN" \
+            -o GlobalKnownHostsFile=/dev/null \
+            -o ConnectTimeout=15 \
+            -o ServerAliveInterval=20 -o ServerAliveCountMax=9 \
+            root@146.190.142.17 \
+            'set -eu; test -x /usr/local/bin/macro-update;
+             /usr/local/bin/macro-update >> /var/log/macro-update.log 2>&1;
+             printf "VPS checkout HEAD after updater return: ";
+             git -C /opt/macro rev-parse --verify HEAD'
+
+          # The updater deliberately exits 0 if its lock is held. Therefore this
+          # success means only WAKE_COMPLETED, not byte-verified publication.
+          echo "::notice::VPS updater wake completed; source/served-asset proof is separate"

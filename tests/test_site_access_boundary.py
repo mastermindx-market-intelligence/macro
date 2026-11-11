@@ -730,7 +730,7 @@ def _matches(path: str, patterns: list[str]) -> bool:
 
 
 def _served_stamps() -> dict[str, set[str]]:
-    """Root-relative asset path -> every ?v= stamp site/ actually serves."""
+    """Collect every ?v= stamp referenced by site/ for each root-relative asset."""
     ref = re.compile(r'(?:src|href)="([^"]+\.(?:js|css))\?v=([0-9a-zA-Z]+)"')
     out: dict[str, set[str]] = {}
     for page in SITE.rglob("*.html"):
@@ -814,6 +814,36 @@ def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
         "these are content-hash stamped, so the 300s carve-out is wrong for them "
         f"— move them to @public_versioned: {wrong}"
     )
+
+
+@pytest.mark.parametrize("stamp_order", [
+    ("legacy", "hash"),
+    ("hash", "legacy"),
+    ("hash", "hash"),
+])
+def test_hand_stamp_carve_out_reads_all_references(tmp_path, monkeypatch, stamp_order):
+    body = b"// watchstore fixture\n"
+    current = hashlib.sha256(body).hexdigest()[:8]
+    (tmp_path / "watchstore.js").write_bytes(body)
+    pages = [tmp_path / "one.html", tmp_path / "two.html"]
+    for page, stamp in zip(pages, stamp_order):
+        version = current if stamp == "hash" else "12"
+        page.write_text(f'<script src="watchstore.js?v={version}"></script>', encoding="utf-8")
+
+    original_rglob = Path.rglob
+
+    def ordered_rglob(path, pattern, *args, **kwargs):
+        if path == tmp_path and pattern == "*.html":
+            return iter(pages)
+        return original_rglob(path, pattern, *args, **kwargs)
+
+    monkeypatch.setitem(globals(), "SITE", tmp_path)
+    monkeypatch.setattr(Path, "rglob", ordered_rglob)
+    if "legacy" in stamp_order:
+        test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+    else:
+        with pytest.raises(AssertionError, match=rf"/watchstore\.js\?v={current}"):
+            test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
 
 
 @pytest.mark.parametrize(
