@@ -992,3 +992,298 @@ def test_preview_programmatic_launcher_reopen_invalidates_pending_completion(fla
     """, flavor)
     assert out["open"] and out["pasteVisible"] and not out["reviewVisible"]
     assert out["focus"] == "pfi_paste" and out["rows"] == []
+
+
+# Review and direct admission must preserve the same semantic exclusions as paste.
+UNSUPPORTED_REVIEW_TICKERS = [
+    ("CASH", "unsupported_cash"),
+    ("CASH:USD", "unsupported_cash"),
+    ("TARGET:10", "unsupported_target_allocation"),
+    ("WEIGHT=50", "unsupported_target_allocation"),
+    ("ALLOCATION:20", "unsupported_target_allocation"),
+    (" cash:usd ", "unsupported_cash"),
+]
+
+
+def _import_asset_copy(monkeypatch, flavor):
+    for name, asset in (
+        ("CONTRACT", "portfolio_import.js"),
+        ("UI", "portfolio_import_ui.js"),
+        ("WATCHSTORE", "watchstore.js"),
+    ):
+        monkeypatch.setitem(globals(), name, ROOT / flavor / asset)
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize(("ticker", "code"), UNSUPPORTED_REVIEW_TICKERS)
+def test_review_exclusion_rejects_atomic_edit_and_preserves_valid_draft(
+    monkeypatch, flavor, ticker, code
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        """
+        var ids=%s, seq=0, ticker=%s;
+        var original=PortfolioImport.parse('SYNTHA 3 10 2026-01-01\\nSYNTHA', {
+          idFactory:function(){return ids[seq++];}, isCovered:function(){return false;}
+        }).rows;
+        original[0].entry_currency='USD';
+        original[0].entry_currency_basis={ticker:'SYNTHA',price:10};
+        var before=JSON.stringify(original);
+        var pasted=PortfolioImport.parse(ticker+' 3 10 2026-01-01', {
+          idFactory:function(){return ids[2];}
+        });
+        var edited=PortfolioImport.edit(original,ids[0],{
+          ticker:ticker,shares:'7',entry_price:'25',entry_date:'2026-02-01'
+        });
+        OUT({
+          pasteCode:pasted.errors[0].code,pasteRows:pasted.rows.length,
+          ok:edited.ok,errors:edited.errors,
+          originalUnchanged:JSON.stringify(original)===before,
+          draftUnchanged:JSON.stringify(edited.rows)===before,
+          stillValid:PortfolioImport.validate(edited.rows).ok,
+          sameFingerprint:PortfolioImport.fingerprint(edited.rows)===PortfolioImport.fingerprint(original)
+        });
+        """ % (json.dumps(IDS), json.dumps(ticker))
+    )
+    assert out == {
+        "pasteCode": code,
+        "pasteRows": 0,
+        "ok": False,
+        "errors": [{"code": code, "id": IDS[0]}],
+        "originalUnchanged": True,
+        "draftUnchanged": True,
+        "stillValid": True,
+        "sameFingerprint": True,
+    }
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize(("ticker", "code"), UNSUPPORTED_REVIEW_TICKERS[:5])
+def test_review_exclusion_rejects_forged_draft_before_real_local_write(
+    monkeypatch, flavor, ticker, code
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        """
+        var oldRows=%s;
+        WS.pfWrite(oldRows); __sets=[];
+        var key='mdash.pf.v1', before=localStorage.getItem(key);
+        var forged=[Object.assign({},oldRows[0],{id:%s,ticker:%s})];
+        var valid=PortfolioImport.validate(forged);
+        var fingerprint=PortfolioImport.fingerprint(forged);
+        WS.portfolio.importBatch(forged).then(function(result){
+          OUT({valid:valid,fingerprint:fingerprint,result:result,
+               writes:__sets,bookUnchanged:localStorage.getItem(key)===before});
+        });
+        """ % (json.dumps(LOCAL_BATCH), json.dumps(IDS[2]), json.dumps(ticker)),
+        store=True,
+    )
+    assert out == {
+        "valid": {"ok": False, "code": code, "index": 0},
+        "fingerprint": None,
+        "result": {"ok": False, "state": "invalid_draft", "code": code},
+        "writes": [],
+        "bookUnchanged": True,
+    }
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize("ticker", ["MSFT", "CASH.TO", "CASHUSD", "TARGET", "UNLISTED1", "EURUSD=X"])
+def test_review_exclusion_keeps_legal_uncovered_duplicates_and_nulls(
+    monkeypatch, flavor, ticker
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        """
+        var ids=%s, seq=0, ticker=%s;
+        var rows=PortfolioImport.parse('SYNTHA\\nSYNTHA',{
+          idFactory:function(){return ids[seq++];},isCovered:function(){return false;}
+        }).rows;
+        rows[0].entry_currency='USD';
+        rows[0].entry_currency_basis={ticker:'SYNTHA',price:null};
+        var a=PortfolioImport.edit(rows,ids[0],{ticker:ticker.toLowerCase()},{isCovered:function(){return false;}});
+        var b=PortfolioImport.edit(a.rows,ids[1],{ticker:ticker},{isCovered:function(){return false;}});
+        WS.portfolio.importBatch(b.rows).then(function(result){
+          return WS.portfolio.list().then(function(saved){
+            OUT({
+              editsOk:a.ok&&b.ok,valid:PortfolioImport.validate(b.rows).ok,
+              ids:saved.map(function(r){return r.id;}),
+              tickers:saved.map(function(r){return r.ticker;}),
+              nulls:saved.every(function(r){return r.shares===null&&r.entry_price===null&&r.entry_date===null;}),
+              uncovered:b.rows.every(function(r){return r.coverage==='uncovered';}),
+              duplicateWarnings:b.rows.every(function(r){return r.warnings.indexOf('duplicate_ticker')>=0&&r.warnings.indexOf('exact_duplicate')>=0;}),
+              staleUnitCleared:b.rows[0].entry_currency===null&&b.rows[0].entry_currency_basis===null,
+              saved:result.ok&&result.state==='saved',writes:__sets
+            });
+          });
+        });
+        """ % (json.dumps(IDS), json.dumps(ticker)),
+        store=True,
+    )
+    assert out == {
+        "editsOk": True, "valid": True, "ids": IDS[:2], "tickers": [ticker, ticker],
+        "nulls": True, "uncovered": True, "duplicateWarnings": True,
+        "staleUnitCleared": True, "saved": True, "writes": ["mdash.pf.v1"],
+    }
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize("ticker", ["cash:usd", " CASH:USD ", "weight=50", "CASH:USD%", "$CASH", "CASH USD"])
+def test_review_exclusion_preserves_canonical_and_lexical_validation(
+    monkeypatch, flavor, ticker
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        """
+        var rows=[Object.assign({},%s,{ticker:%s})];
+        OUT({valid:PortfolioImport.validate(rows),fingerprint:PortfolioImport.fingerprint(rows)});
+        """ % (json.dumps(LOCAL_BATCH[0]), json.dumps(ticker))
+    )
+    assert out == {
+        "valid": {"ok": False, "code": "invalid_ticker", "index": 0},
+        "fingerprint": None,
+    }
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize(
+    ("ticker", "corrected", "en_error", "zh_error"),
+    [
+        ("CASH:USD", "MSFT", "Cash lines are not supported.", "不支持现金行。"),
+        ("WEIGHT=50", "CASH.TO", "Target allocations are not supported.", "不支持目标权重。"),
+    ],
+)
+def test_review_exclusion_ui_blocks_real_save_then_allows_correction(
+    monkeypatch, flavor, lang, ticker, corrected, en_error, zh_error
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _ui_node(
+        """
+        var WS=require(%s); window.WatchStore=WS;
+        var calls=0, actualImport=WS.portfolio.importBatch;
+        WS.portfolio.importBatch=function(rows){calls++;return actualImport.call(this,rows);};
+        var id=%s, rows=PortfolioImport.parse('SYNTHA 3 10 2026-01-01',{
+          idFactory:function(){return id;}
+        }).rows;
+        __PFI_TEST__.setDraft(rows);
+        var before=JSON.stringify(__PFI_TEST__.state().draft.rows);
+        var host={getAttribute:function(){return id;}};
+        function edit(value){
+          __PFI_TEST__.editRow({value:value,closest:function(){return host;},
+            getAttribute:function(k){return k==='data-pfi-field'?'ticker':null;}});
+        }
+        async function settle(){for(var turn=0;turn<12;turn++)await Promise.resolve();}
+        (async function(){
+          edit(%s);
+          var blocked=__PFI_TEST__.state(), errorHtml=__elements.pfi_errors.innerHTML;
+          __PFI_TEST__.save(); await settle();
+          var afterBlocked=__PFI_TEST__.state();
+          var rejected={saveDisabled:blocked.saveDisabled,completed:afterBlocked.completed,
+            hardBlocked:afterBlocked.hardBlocked,sameDraft:JSON.stringify(afterBlocked.draft.rows)===before,
+            calls:calls,writes:__sets.slice(),errors:errorHtml};
+          edit(%s);
+          var ready=__PFI_TEST__.state(), clearErrors=__elements.pfi_errors.innerHTML;
+          __PFI_TEST__.save(); await settle();
+          var done=__PFI_TEST__.state(), saved=await WS.portfolio.list();
+          OUT({rejected:rejected,ready:!ready.saveDisabled&&!ready.hardBlocked,
+               clearErrors:clearErrors,completed:done.completed,status:done.status,
+               calls:calls,writes:__sets,ids:saved.map(function(r){return r.id;}),
+               tickers:saved.map(function(r){return r.ticker;})});
+        })();
+        """ % (json.dumps(str(WATCHSTORE)), json.dumps(IDS[0]), json.dumps(ticker), json.dumps(corrected)),
+        lang=lang,
+    )
+    rejected = out.pop("rejected")
+    error = rejected.pop("errors")
+    assert (en_error if lang == "en" else zh_error) in error
+    assert rejected == {
+        "saveDisabled": True, "completed": False, "hardBlocked": False,
+        "sameDraft": True, "calls": 0, "writes": [],
+    }
+    assert out == {
+        "ready": True, "clearErrors": "", "completed": True,
+        "status": "Saved. Refreshing your Portfolio…" if lang == "en" else "已保存。正在刷新你的持仓…",
+        "calls": 1, "writes": ["mdash.pf.v1"], "ids": IDS[:1], "tickers": [corrected],
+    }
+
+
+# Legacy folding chains the query's .then result directly. Give this fixture the
+# real promise return contract as well as the existing thenable behavior.
+FOLD_CLOUD_HELPER = CLOUD_HELPER.replace(
+    "        Promise.resolve().then(function(){",
+    "        return Promise.resolve().then(function(){", 1,
+)
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+@pytest.mark.parametrize("ticker", ["CASH", "WEIGHT=50"])
+def test_review_exclusion_preserves_existing_uuid_fold_after_ordinary_edit(
+    monkeypatch, flavor, ticker
+):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        FOLD_CLOUD_HELPER + """
+        var batch=%s, ticker=%s, client=makeClient('exact',[]), saved, edited;
+        batch[0].entry_currency='USD';
+        batch[0].entry_currency_basis={ticker:batch[0].ticker,price:null};
+        WS.portfolio.importBatch(batch).then(function(result){
+          saved=result;
+          // This is the ordinary Portfolio editor's existing upsert path. It
+          // retains an imported UUID without rerunning new-import admission.
+          return WS.portfolio.upsert(Object.assign({},batch[0],{
+            ticker:ticker,entry_currency:undefined,entry_currency_basis:undefined
+          }));
+        }).then(function(row){
+          edited=row;
+          return WS.portfolio.upsert({ticker:'LEGACY',shares:2,entry_price:null,
+            entry_date:null,notes:null,status:'open'});
+        }).then(function(){
+          WS._setTestSession({id:'owner-a',email:'a@test'},client,false);
+          return WS.portfolio.list();
+        }).then(function(){return WS.foldLocalPortfolio();})
+          .then(function(){return WS.foldLocalPortfolio();})
+          .then(function(){OUT({saved:saved.ok,edited:edited,calls:client.inserts,
+            state:client.state(),local:__store['mdash.pf.v1']||null,
+            marker:__store['mdash.watchstore.pf_folded.v1']||null});});
+        """ % (json.dumps(LOCAL_BATCH), json.dumps(ticker)),
+        store=True,
+    )
+    assert out["saved"] is True
+    assert out["edited"]["id"] == IDS[0] and out["edited"]["ticker"] == ticker
+    assert out["edited"]["entry_currency"] is None
+    assert out["edited"]["entry_currency_basis"] is None
+    assert [len(batch) for batch in out["calls"]] == [2, 1]
+    assert [row["id"] for row in out["state"][:2]] == IDS[:2]
+    assert [row["ticker"] for row in out["state"]] == [ticker, "AAPL", "LEGACY"]
+    assert {row["user_id"] for row in out["state"]} == {"owner-a"}
+    assert out["local"] is None and out["marker"] == "1"
+
+
+@needs_node
+@pytest.mark.parametrize("flavor", ["templates", "site"])
+def test_review_exclusion_keeps_stored_fold_unit_receipt_guard(monkeypatch, flavor):
+    _import_asset_copy(monkeypatch, flavor)
+    out = _node(
+        FOLD_CLOUD_HELPER + """
+        var rows=%s, client=makeClient('exact',[]);
+        rows[0].ticker='CASH';
+        rows[0].entry_currency='USD';
+        rows[0].entry_currency_basis={ticker:'AAPL',price:null};
+        __store['mdash.pf.v1']=JSON.stringify({v:1,rows:rows});
+        var before=__store['mdash.pf.v1'];
+        WS._setTestSession({id:'owner-a',email:'a@test'},client,false);
+        WS.portfolio.list().then(function(){return WS.foldLocalPortfolio();})
+          .then(function(){OUT({calls:client.inserts,state:client.state(),
+            unchanged:__store['mdash.pf.v1']===before,
+            marker:__store['mdash.watchstore.pf_folded.v1']||null});});
+        """ % json.dumps(LOCAL_BATCH),
+        store=True,
+    )
+    assert out == {"calls": [], "state": [], "unchanged": True, "marker": None}

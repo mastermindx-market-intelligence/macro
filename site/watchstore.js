@@ -1890,10 +1890,11 @@
     if (api && api.sameSemantic) return api.sameSemantic(a, b);
     return JSON.stringify(pfImportSemantic(a)) === JSON.stringify(pfImportSemantic(b));
   }
-  function pfImportValidate(rows) {
+  function pfImportValidate(rows, storedRows) {
     var api = pfImportApi();
-    if (!api || !api.validate) return { ok: false, code: 'import-contract-unavailable' };
-    return api.validate(rows);
+    var validator = api && (storedRows ? api.validateStored : api.validate);
+    if (!validator) return { ok: false, code: 'import-contract-unavailable' };
+    return validator(rows);
   }
   function pfImportClassify(wanted, found, uid) {
     var byId = {}, exact = 0, conflicts = 0, wrongOwner = 0;
@@ -2050,7 +2051,7 @@
        not ticker/lot, so duplicate lots remain legal and a repeated fold cannot make
        a second row. Legacy loc-* rows retain the pre-A1B safest existing semantic
        fold; A1B does not rewrite their historical identity law. */
-    var stableCheck = stable.length ? pfImportValidate(stable) : { ok: true };
+    var stableCheck = stable.length ? pfImportValidate(stable, true) : { ok: true };
     var stablePromise = !stableCheck.ok
       ? Promise.resolve({ ok: false })
       : (stable.length ? pfCloudImport(stable.map(pfImportSemantic)) : Promise.resolve({ ok: true }));

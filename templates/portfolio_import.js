@@ -195,7 +195,10 @@
       out.line = row.line; out.coverage = row.coverage; out.warnings = row.warnings || [];
       if (own(patch, 'ticker')) {
         var ticker = normalizeTicker(patch.ticker);
-        if (!ticker) errors.push({ code: 'invalid_ticker', id: id }); else out.ticker = ticker;
+        var unsupported = ticker ? unsupportedCode(ticker, [ticker]) : null;
+        if (!ticker) errors.push({ code: 'invalid_ticker', id: id });
+        else if (unsupported) errors.push({ code: unsupported, id: id });
+        else out.ticker = ticker;
       }
       if (own(patch, 'shares')) {
         var shares = numericOrError(patch.shares, true);
@@ -223,7 +226,7 @@
     return { ok: next.length !== (rows || []).length, rows: annotate(next) };
   }
 
-  function validate(rows) {
+  function validateRows(rows, storedRows) {
     if (!Array.isArray(rows) || !rows.length) return { ok: false, code: 'empty_batch' };
     var ids = {};
     for (var i = 0; i < rows.length; i++) {
@@ -232,6 +235,8 @@
       if (ids[row.id]) return { ok: false, code: 'duplicate_uuid', index: i };
       ids[row.id] = true;
       if (!ticker || ticker !== row.ticker) return { ok: false, code: 'invalid_ticker', index: i };
+      var unsupported = storedRows ? null : unsupportedCode(ticker, [ticker]);
+      if (unsupported) return { ok: false, code: unsupported, index: i };
       if (row.shares != null && (typeof row.shares !== 'number' || !isFinite(row.shares))) {
         return { ok: false, code: 'invalid_shares', index: i };
       }
@@ -253,6 +258,11 @@
     return { ok: true, code: null };
   }
 
+  function validate(rows) { return validateRows(rows, false); }
+  // Existing UUID rows can be changed by ordinary Portfolio CRUD. Folding those
+  // already-stored rows retains structural checks without new-import exclusions.
+  function validateStored(rows) { return validateRows(rows, true); }
+
   function fingerprint(rows) {
     var check = validate(rows);
     if (!check.ok) return null;
@@ -264,6 +274,7 @@
     edit: edit,
     remove: remove,
     validate: validate,
+    validateStored: validateStored,
     fingerprint: fingerprint,
     semantic: semantic,
     currencyCode: currencyCode,
