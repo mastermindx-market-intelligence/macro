@@ -301,7 +301,7 @@ def test_stale_never_uses_the_neutral_surface():
     warn_block = re.search(
         r'(#dlg-risk \.gde-ew\[data-ew-state="stale"[^}]*\{[^}]*\})', css)
     assert warn_block, "stale warn selector missing"
-    assert "var(--surface-warn-subtle)" in warn_block.group(1)
+    assert "var(--surface-warn-subtle,var(--panel2,var(--card)))" in warn_block.group(1)
     neutral = re.search(r'#dlg-risk \.gde-ew \{[^}]*\}', css).group(0)
     assert "var(--esurf-neutral-soft)" in neutral
     assert 'data-ew-state="stale"' not in neutral
@@ -447,7 +447,7 @@ def test_css_no_edge_stripe_no_color_literal_focus_visible():
     for tok in ("--ink-1", "--ink-2", "--ink-3", "--r-card", "--r-ctl"):
         assert f"var({tok})" not in rc_ew, tok
     # the pre-existing rc-ec edge stripe is repaired (even border, warn surface)
-    assert ".rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle);" in js
+    assert ".rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle,var(--panel2,var(--card)));" in js
     assert ".rc-ec-stale,.rc-ec-conflict{border-left:" not in js
 
 

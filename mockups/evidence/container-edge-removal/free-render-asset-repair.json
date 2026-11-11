@@ -1,0 +1,21 @@
+{
+  "reason": "Press render replay copied zero blog pages but correctly rejected two new CSS objects emitted by canonical free-content rendering. Materialize those exact immutable objects without changing content or press behavior.",
+  "files": [
+    {
+      "path": "site/assets/css/79450472.css",
+      "sha256": "79450472a4ff8b9d31723d6f7eeee3cc37f6bf42b2752b4e02855545e74ac0b2",
+      "bytes": 29610,
+      "canonical_render_consumers": [
+        "products/index.html"
+      ]
+    },
+    {
+      "path": "site/assets/css/f8b8eec3.css",
+      "sha256": "f8b8eec348cd374c5e5779a3d7fb1e3eb55d8475c1c6d4076ce8cdbd78f38f03",
+      "bytes": 29570,
+      "canonical_render_consumers": [
+        "products/crypto-intelligence.html"
+      ]
+    }
+  ]
+}

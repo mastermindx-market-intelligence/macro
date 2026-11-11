@@ -1,13 +1,13 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "d5b9b1d4349e13f4724671d180328d0367b7331b",
+  "source_revision": "80460a463f728946c18f0d1de3bc4b535f0002dd",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
-  "script_sha256": "b1ddf67b07865465e72d2822fa6f5cc9efe0636e2cae58c9fa8f8b2bed372296",
+  "script_sha256": "8ba5a2440375bf0df476bb415af9689e8f070ff7a3c197223c040644e46ae074",
   "band_template_sha256": "a711fa7b8f63e8f6dbbb16d64a0decba77eb7122bc70f6c23cf408ef1cab718e",
-  "glance_css_sha256": "ed17c4ba8a85a1a356a0129ad3fc50b160abd44f3305af5dcaad2317813e81ec",
+  "glance_css_sha256": "9121c30dbb41fb9f6985d43e59a9dd0a6376deef42eec9ff5ed30238fdba498b",
   "matrix": {
     "widths": [
       1440,
@@ -1412,7 +1412,7 @@
       "theme": "dark",
       "width": 390,
       "screenshot": "shots/sc-stale-en-dark-390.png",
-      "sha256": "99a4168ffa1e2f03f2b946451d8d1064a49ac05aa1afbd262f482d0921f546a6",
+      "sha256": "6f89a1209fd765f13ce75beae2fb59a42f378fa552c77a3994365b1bb7960432",
       "no_horizontal_overflow": true,
       "page_errors": [],
       "keyboard_details": null,
@@ -1992,197 +1992,181 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Shots were re-rendered by the edge-stripe sweep (PR #10654; local Playwright Chromium, the same probe) at source_revision, the merge of main c3c955d0 into that branch. Both sides had changed bound render inputs: the branch removed the container edge stripes from templates/theme.css, site/theme.css and templates/dashboard.html.j2, and main's #10739 (Paper Risk Radar) changed templates/dashboard.html.j2 and templates/_risk_radar_workspace.html.j2, so neither earlier capture depicted the merged tree. Band, glance, fixtures and probe are byte-identical to the previous capture, and so are all 68 shots and the five contact sheets (equal git blob ids), so only this stamp changes; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "note": "Actual 68-case EW-P4 probe rerun from the exact committed managed source snapshot at source_revision. Every listed input was verified against that commit before and after capture. blob_on_pr_branch denotes the final PR #10654 candidate bytes, independently checked by CI after publication; this receipt does not assert merge, deployment or real-account acceptance.",
     "pr_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
-    "pr_parent_of_evidence_commit": "d5b9b1d4349e13f4724671d180328d0367b7331b",
+    "pr_parent_of_evidence_commit": "c7f08871a7650e1fc7052d792a1592b55cf34c81",
     "render_files": [
       {
         "path": "site/rotation_events.js",
-        "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "blob_at_source_revision": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+        "blob_on_pr_branch": "c51da7aeb4003591cd6722634e343b84b4c4db44"
       },
       {
         "path": "templates/_risk_envelope_band.css.j2",
-        "blob_at_source_revision": "09c15c1a022beba816a4adc92dd1a83751dab638",
-        "blob_on_pr_branch": "09c15c1a022beba816a4adc92dd1a83751dab638",
-        "equal": true
+        "blob_at_source_revision": "f82d4290cf03bdf30b2c1ba49fe7f358b1daae1e",
+        "blob_on_pr_branch": "f82d4290cf03bdf30b2c1ba49fe7f358b1daae1e"
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
         "blob_at_source_revision": "57af6f51d5f68d30eae9e7e913efd258c306681f",
-        "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f",
-        "equal": true
+        "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f"
       },
       {
         "path": "templates/rotation_events.js",
-        "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "blob_at_source_revision": "c51da7aeb4003591cd6722634e343b84b4c4db44",
+        "blob_on_pr_branch": "c51da7aeb4003591cd6722634e343b84b4c4db44"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/conflict_20s.json",
         "blob_at_source_revision": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
-        "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
-        "equal": true
+        "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/corrected.json",
         "blob_at_source_revision": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
-        "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
-        "equal": true
+        "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
         "blob_at_source_revision": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
-        "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
-        "equal": true
+        "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_b_both_fell.json",
         "blob_at_source_revision": "6f65172c44453228dfc26f39b59c93163e02d3e9",
-        "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9",
-        "equal": true
+        "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_c_envelope_1d253e1d.json",
         "blob_at_source_revision": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
-        "blob_on_pr_branch": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
-        "equal": true
+        "blob_on_pr_branch": "819773e4d725f2f729d8b72c8a80f32b587aecdf"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
         "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
-        "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
-        "equal": true
+        "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
         "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
-        "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
-        "equal": true
+        "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_ratio.json",
         "blob_at_source_revision": "608562757447a71e569c63ad72d3c1e3e60f6f54",
-        "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54",
-        "equal": true
+        "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/observed_rise.json",
         "blob_at_source_revision": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
-        "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
-        "equal": true
+        "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_missing_20s.json",
         "blob_at_source_revision": "33c0d74f9dbce45e46e001a7569169c83422fdce",
-        "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce",
-        "equal": true
+        "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_window_mismatch.json",
         "blob_at_source_revision": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
-        "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
-        "equal": true
+        "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/reversal.json",
         "blob_at_source_revision": "a5db3baed08990c12abfc655e774c347b0b6ee85",
-        "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85",
-        "equal": true
+        "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/stale_obs.json",
         "blob_at_source_revision": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
-        "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
-        "equal": true
+        "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/withdrawn.json",
         "blob_at_source_revision": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
-        "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
-        "equal": true
+        "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca"
       },
       {
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
         "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "equal": true
+        "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
         "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "equal": true
+        "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
         "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "equal": true
+        "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0"
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
         "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "equal": true
+        "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b"
       },
       {
         "path": "templates/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "blob_at_source_revision": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+        "blob_on_pr_branch": "4dc0ecdec66c711d1320a67b599746f7b09be654"
       },
       {
         "path": "site/rotation_glance.css",
-        "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "blob_at_source_revision": "4dc0ecdec66c711d1320a67b599746f7b09be654",
+        "blob_on_pr_branch": "4dc0ecdec66c711d1320a67b599746f7b09be654"
       },
       {
         "path": "templates/theme.css",
-        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
-        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
-        "equal": true
+        "blob_at_source_revision": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+        "blob_on_pr_branch": "cb83d3122cad24f9781292c638b0d45e3cac831d"
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "53c772eaf96f5ec4bed31bdbc182128f5f47e3f2",
-        "blob_on_pr_branch": "53c772eaf96f5ec4bed31bdbc182128f5f47e3f2",
-        "equal": true
+        "blob_at_source_revision": "890fe316377688eb624a59ea14e118a7071838c3",
+        "blob_on_pr_branch": "890fe316377688eb624a59ea14e118a7071838c3"
       },
       {
         "path": "templates/_risk_radar_workspace.html.j2",
         "blob_at_source_revision": "7fc267f500e3f4f85a4685420f07a42228caecb9",
-        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9",
-        "equal": true
+        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9"
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "equal": true
+        "blob_at_source_revision": "c6bc18eb01b200a68f4368ffd99eca874581fbb5",
+        "blob_on_pr_branch": "c6bc18eb01b200a68f4368ffd99eca874581fbb5"
       },
       {
         "path": "templates/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc"
       },
       {
         "path": "site/theme.css",
-        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
-        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
-        "equal": true
+        "blob_at_source_revision": "cb83d3122cad24f9781292c638b0d45e3cac831d",
+        "blob_on_pr_branch": "cb83d3122cad24f9781292c638b0d45e3cac831d"
       },
       {
         "path": "site/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc"
       }
     ],
     "all_equal": true
+  },
+  "recapture": {
+    "captured_at": "2026-11-11T12:48:21.594577+00:00",
+    "source_snapshot": "80460a463f728946c18f0d1de3bc4b535f0002dd",
+    "source_snapshot_tree": "b06ef9e6ce46c15ccbe476fbfb828ff0ba048d4d",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "tests/probe_ew_p4_descriptive_ui_browser.py",
+      "--output",
+      "/Volumes/Mastermind/agent-workspaces/macro/web/macro-10654-whole-site-rails-proof-a739405d-20261111/research/evidence/ew_p4_descriptive_ui_20261031"
+    ],
+    "exit_code": 0,
+    "python_playwright_version": "1.62.0",
+    "previous_receipt": "mockups/evidence/container-edge-removal/ew-p4-previous-receipt.json",
+    "previous_receipt_sha256": "01103b8607ab4d2331be8172f6126b9ef864e035528b53e6451498871fa86412"
   }
 }

@@ -1,0 +1,14 @@
+{
+  "schema": "mastermind.container_edge_consumer_audit.v1",
+  "pages": 15179,
+  "reachable_assets": 394,
+  "unique_blocks": 457,
+  "functional": {
+    "functional_pseudo": 56,
+    "functional_left": 19,
+    "functional_shadow": 2
+  },
+  "missing_assets": [],
+  "superseded_references": [],
+  "residuals": []
+}

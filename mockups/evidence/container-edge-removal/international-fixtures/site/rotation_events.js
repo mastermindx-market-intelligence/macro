@@ -1,0 +1,1000 @@
+/* rotation_events.js — the Rotation Events rail (Rotation Command W1 — RC-R1/R3/R6).
+ *
+ * Extracted verbatim from the retired subsector_rotation.html.j2 section #rc-events
+ * (Sector Intelligence consolidation). Mounts into #rc-events-mount inside the merged
+ * sector_central.html #si-movement section, so the section heading is an h3 (it now
+ * lives INSIDE a section rather than being one).
+ *
+ * Reads marketdata/rotation_events.json + marketdata/sector_fragmentation.json.
+ * Absent/failed fetch = graceful quiet note. DISPLAY-ONLY — ranks nothing, gates
+ * nothing, sizes nothing.
+ *
+ * Three renderers, unchanged mechanics:
+ *   • renderFlowLanes — the donor ➜ receiver flow-lane hero (#rc-flowmap-content)
+ *   • renderClosures  — the "closed recently" strip so nothing vanishes silently
+ *   • render          — the event cards + fragmented-sector chips (#rc-events-content)
+ */
+(function () {
+  'use strict';
+
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
+  function t(en,zh){return isZh()&&zh?zh:en;}
+  function L(en,zh){return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>';}
+  function pc(v,dp){return v==null?'—':((v>0?'+':'')+(v*100).toFixed(dp==null?1:dp)+'%');}
+
+/* EARLY_CONTEXT_FN_START */
+function earlyContextHtml(ev, lang, nowMs) {
+  var ZH = lang === 'zh', DAY = 86400000, MAXROWS = 64, MAXCODES = 10, STALE_DAYS = 4;
+  var STATE_KEYS = ['DEFENSIVE_RELATIVE_STRENGTH', 'MIXED_ROTATION', 'BROADENING', 'NO_EARLY_SHIFT'];
+  var escFn = (typeof esc === 'function') ? esc : function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+  var W = {
+    title: ['Early defensive rotation evidence', '早期防御性轮动证据'],
+    unavail: ['Early-context evidence unavailable:', '早期观察暂不可用：'],
+    noPacket: ['Early defensive observations are unavailable; this does not mean there is no rotation.', '早期防御性观察暂不可用；这不代表没有轮动。'],
+    empty: ['No registered defensive comparisons', '没有已登记的防御性比较'],
+    stale: ['Historical/stale snapshot — not a current signal', '历史／陈旧快照——不是当前信号'],
+    d1: ['Forecast and sizing: not qualified', '预测与仓位：尚未通过验证'],
+    d2: ['Price comparison, not measured fund flows', '价格比较，不代表已测得的资金流'],
+    stateCopy: ['Producer-reported overall rotation state:', '数据源报告的整体轮动状态：'],
+    noState: ['no state recorded', '未记录状态'],
+    states: [['defensive relative strength', '防御板块相对强势'], ['mixed rotation', '混合轮动'], ['broadening', '上涨范围扩大'], ['no early shift', '无早期变化']],
+    asOf: ['Observation date', '观察日期'], age: ['UTC calendar age', 'UTC日历天数'], days: ['day(s)', '天'],
+    scope: ['Defensive-sector comparisons only. Retailers and broadening proxies remain separate context.', '仅显示防御板块比较；零售商与市场扩散代理仍是独立背景。'],
+    avT: ['Availability', '可用时间'], na1: ['unknown', '未知'], avAt: ['first available', '首次可用'],
+    lnT: ['Lineage', '来源链'], roots: ['sources', '来源'], more: ['more not shown', '项未显示'],
+    reasons: ['Evidence notes', '证据说明'], noCodes: ['none recorded', '无记录'], details: ['Source and window details', '来源与窗口详情'],
+    twoS: ['Two-session', '两个交易日'], fiveS: ['Five-session', '五个交易日'], twentyS: ['Twenty-session', '二十个交易日'],
+    winNA: ['unavailable', '不可用'], numAbs: ['defensive leg absolute return', '防御端绝对收益'],
+    denAbs: ['risk leg absolute return', '风险端绝对收益'], rel: ['relative wealth', '相对财富变化'],
+    flatBoth: ['Both legs flat; no measured shift', '两端均持平；无可测变化'],
+    defFlat: ['Defensive leg flat', '防御端持平'], riskFlat: ['Risk leg flat', '风险端持平'],
+    riskOff: ['Defensive leg rising; risk leg falling', '防御端上涨；风险端下跌'],
+    fellLess: ['Both legs falling; defensive leg fell less', '两端均下跌；防御端跌幅较小'],
+    bothUp: ['Both legs rising; compare their relative returns', '两端均上涨；请比较相对收益'],
+    defDown: ['Defensive leg falling; risk leg rising', '防御端下跌；风险端上涨'],
+    bothDown: ['Both legs falling; no positive relative shift', '两端均下跌；无正向相对变化'],
+    conflict: ['Two-session and twenty-session relative directions disagree', '两日与二十日的相对方向相反'],
+    conflictGap: ['Twenty-session comparison unavailable; longer-horizon agreement is unknown.', '二十日比较不可用；较长周期是否一致尚未知。'],
+    rowNA: ['Not displayed as evidence', '不作为证据显示'],
+    dupConflict: ['Abstained: duplicate alias with conflicting evidence', '未采用：重复别名的证据冲突'],
+    dupSame: ['Duplicate alias collapsed; shown once', '重复别名已合并，仅显示一次']
+  };
+  function T(k) { return W[k][ZH ? 1 : 0]; }
+  function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
+  function codes(list) {
+    if (!Array.isArray(list)) return E(T('noCodes'));
+    var out = [];
+    for (var i = 0; i < list.length && i < 64 && out.length < MAXCODES; i++) {
+      if (typeof list[i] === 'string' && list[i]) out.push(list[i].slice(0, 160));
+    }
+    return out.length ? E(out.join(', ')) : E(T('noCodes'));
+  }
+  function ts(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return NaN;
+    var v = Date.parse(s + 'T00:00:00Z');
+    return isFinite(v) && new Date(v).toISOString().slice(0, 10) === s ? v : NaN;
+  }
+  function N(v) { return typeof v === 'number' && isFinite(v) ? v : null; }
+  function pct(v) { return (v > 0 ? '+' : '') + v.toFixed(2) + '%'; }
+  function block(inner) {
+    return '<section class="rc-early-context" aria-label="' + E(T('title')) + '"><h4 class="rc-ec-title">' + E(T('title')) + '</h4>' + inner
+      + '<p class="rc-ec-disclosure">' + E(T('d1')) + ' · ' + E(T('d2')) + '</p></section>';
+  }
+  function unavail(code) { return block('<p class="rc-ec-unavail" role="note">' + E(T('unavail') + ' ' + code) + '</p>'); }
+  // The caller supplies the display clock. No second, hidden clock or market calendar.
+  if (N(nowMs) === null || nowMs < 0 || !isFinite(new Date(nowMs).getTime())) return unavail('CLOCK_UNUSABLE');
+  var today = Math.floor(nowMs / DAY) * DAY;
+  var ctx = ev && typeof ev === 'object' && !Array.isArray(ev) ? ev.early_context : undefined;
+  if (ctx === undefined || ctx === null) return block('<p class="rc-ec-nopacket" role="note">' + E(T('noPacket')) + '</p>');
+  if (typeof ctx !== 'object' || Array.isArray(ctx)) return unavail('PACKET_UNREADABLE');
+  if (ctx.schema !== 'rotation_early_context/v1' || ctx.definition_id !== 'rotation_early_context/1' || ctx.display_only !== true) return unavail('SCHEMA_UNRECOGNIZED');
+  var asOf = ctx.as_of, asOfTs = ts(asOf);
+  if (!isFinite(asOfTs)) return unavail('AS_OF_UNREADABLE');
+  if (asOfTs > today) return unavail('AS_OF_IN_FUTURE');
+  var si = ctx.state === null ? -1 : STATE_KEYS.indexOf(ctx.state);
+  if (si < 0 && ctx.state !== null) return unavail('STATE_UNRECOGNIZED');
+  var pairs = ctx.pairs;
+  if (!Array.isArray(pairs)) return unavail('PACKET_UNREADABLE');
+  if (pairs.length > MAXROWS) return unavail('ROW_LIMIT_EXCEEDED');
+  if (pairs.some(function(p){ return !p || typeof p !== 'object' || Array.isArray(p); })) return unavail('PAIR_UNREADABLE');
+  var age = Math.floor((today - asOfTs) / DAY), out = [];
+  if (age >= STALE_DAYS) out.push('<p class="rc-ec-stale" role="note"><strong>' + E(T('stale')) + '</strong></p>');
+  out.push('<p class="rc-ec-asof">' + E(T('asOf')) + ': <time datetime="' + E(asOf) + '">' + E(asOf) + '</time> · ' + E(T('age')) + ': ' + age + ' ' + E(T('days')) + '</p>');
+  var av = ctx.availability && typeof ctx.availability === 'object' ? ctx.availability : {};
+  var ln = ctx.lineage && typeof ctx.lineage === 'object' ? ctx.lineage : {};
+  out.push('<p class="rc-ec-quality">' + E(T('avT') + ': ' + (typeof av.status === 'string' ? av.status : T('na1')) + ' · ' + T('lnT') + ': ' + (typeof ln.status === 'string' ? ln.status : T('na1'))) + '</p>');
+  var def = pairs.filter(function(p){ return p.context_group === 'defensive_sector'; });
+  function rowSig(r) {
+    return JSON.stringify({schema:r.schema, requested_as_of:r.requested_as_of, value_as_of:r.value_as_of,
+      eligible_2s:r.eligible_2s, horizons:r.horizons, reason_codes:r.reason_codes, lineage:r.lineage});
+  }
+  var byAlias = Object.create(null), mode = Object.create(null), hidden = Object.create(null), j, k;
+  for (j = 0; j < def.length; j++) {
+    if (typeof def[j].num !== 'string' || typeof def[j].den !== 'string') continue;
+    k = JSON.stringify([def[j].num.trim().toUpperCase(), def[j].den.trim().toUpperCase()]);
+    (byAlias[k] = byAlias[k] || []).push(j);
+  }
+  for (k in byAlias) {
+    var idx = byAlias[k];
+    if (idx.length < 2) continue;
+    var same = true, sig0;
+    try {
+      sig0 = rowSig(def[idx[0]]);
+      for (var m1 = 1; m1 < idx.length; m1++) if (rowSig(def[idx[m1]]) !== sig0) same = false;
+    } catch (err) { same = false; }
+    for (var m2 = 0; m2 < idx.length; m2++) mode[idx[m2]] = same ? 'same' : 'conflict';
+    if (same) for (var m3 = 1; m3 < idx.length; m3++) hidden[idx[m3]] = true;
+  }
+  function checkWin(w, sessions) {
+    if (!w || typeof w !== 'object' || Array.isArray(w)) return {ok:false, why:'WINDOW_ABSENT'};
+    if (w.eligible !== true) return {ok:false, why:'WINDOW_NOT_INDEPENDENTLY_ELIGIBLE'};
+    if (w.sessions !== sessions) return {ok:false, why:'WINDOW_SESSION_COUNT_MISMATCH'};
+    if (w.end !== asOf) return {ok:false, why:'WINDOW_END_DATE_MISMATCH'};
+    var st = ts(w.start);
+    if (!isFinite(st) || st >= asOfTs) return {ok:false, why:'WINDOW_START_UNREADABLE'};
+    var n = N(w.numerator_return_pct), d = N(w.denominator_return_pct), r = N(w.ratio_return_pct);
+    if (n === null || d === null || r === null) return {ok:false, why:'WINDOW_VALUE_NOT_A_FINITE_NUMBER'};
+    if (!(n > -100) || !(d > -100)) return {ok:false, why:'WINDOW_ABSOLUTE_RETURN_AT_OR_BELOW_MINUS_100'};
+    if (!(Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) <= 1e-6)) return {ok:false, why:'WINDOW_RATIO_INCONSISTENT'};
+    return {ok:true, n:n, d:d, r:r, w:w};
+  }
+  function dirKey(n, d, r) {
+    if (n === 0 && d === 0) return 'flatBoth';
+    if (n === 0) return 'defFlat';
+    if (d === 0) return 'riskFlat';
+    if (n > 0 && d > 0) return 'bothUp';
+    if (n > 0) return 'riskOff';
+    if (d > 0) return 'defDown';
+    return r > 0 ? 'fellLess' : 'bothDown';
+  }
+  function winHtml(title, c) {
+    if (!c.ok) return '<p class="rc-ec-win-na" role="note">' + E(title + ' — ' + T('winNA') + ': ' + c.why) + '</p>';
+    return '<div class="rc-ec-window"><h5>' + E(title) + '</h5><dl class="rc-ec-values">'
+      + '<div><dt>' + E(T('numAbs')) + '</dt><dd>' + E(pct(c.n)) + '</dd></div>'
+      + '<div><dt>' + E(T('denAbs')) + '</dt><dd>' + E(pct(c.d)) + '</dd></div>'
+      + '<div><dt>' + E(T('rel')) + '</dt><dd>' + E(pct(c.r)) + '</dd></div></dl></div>';
+  }
+  function rowHtml(row, note) {
+    var o = ['<article class="rc-ec-pair">'];
+    if (note) o.push('<p class="rc-ec-row-note">' + E(note) + '</p>');
+    function na(code) { return o.join('') + '<p class="rc-ec-row-na" role="note">' + E(T('rowNA') + ': ' + code) + '</p></article>'; }
+    if (row.schema !== 'ratio_lens.short_horizon.v1') return na('ROW_SCHEMA_UNRECOGNIZED');
+    if (typeof row.num !== 'string' || !row.num.trim() || typeof row.den !== 'string' || !row.den.trim()) return na('ROW_PAIR_IDENTITY_MISSING');
+    o.push('<h5 class="rc-ec-pair-title">' + E(row.num + ' / ' + row.den) + '</h5>');
+    if (row.requested_as_of !== asOf || row.value_as_of !== asOf) return na('ROW_DATE_MISMATCH');
+    var hz = row.horizons && typeof row.horizons === 'object' && !Array.isArray(row.horizons) ? row.horizons : {};
+    var e2 = row.eligible_2s === true ? checkWin(hz['2s'], 2) : {ok:false, why:'ROW_2S_NOT_ELIGIBLE'};
+    var e5 = checkWin(hz['5s'], 5), e20 = checkWin(hz['20s'], 20);
+    if (e2.ok) o.push('<p class="rc-ec-label">' + E(T(dirKey(e2.n, e2.d, e2.r))) + '</p>');
+    o.push(winHtml(T('twoS'), e2));
+    if (e2.ok && e20.ok && e2.r * e20.r < 0) o.push('<p class="rc-ec-conflict" role="note"><strong>' + E(T('conflict')) + '</strong> · ' + E(pct(e2.r) + ' / ' + pct(e20.r)) + '</p>');
+    else if (e2.ok && !e20.ok) o.push('<p class="rc-ec-conflict" role="note">' + E(T('conflictGap')) + '</p>');
+    o.push('<details class="rc-ec-details"><summary>' + E(T('details')) + '</summary>');
+    var nm = ZH ? row.name_zh || row.name_en : row.name_en || row.name_zh;
+    if (typeof nm === 'string') o.push('<p>' + E(nm) + '</p>');
+    o.push(winHtml(T('fiveS'), e5), winHtml(T('twentyS'), e20));
+    o.push('<p class="rc-ec-meta">' + E(typeof row.pair_id === 'string' ? row.pair_id : '') + ' · ' + E(asOf) + '</p>');
+    [e2, e5, e20].forEach(function(c){ if(c.ok) o.push('<p class="rc-ec-meta">' + E(c.w.start + ' → ' + c.w.end) + ' · ' + codes(c.w.reason_codes) + '</p>'); });
+    o.push('<p class="rc-ec-reasons">' + E(T('reasons') + ': ') + codes(row.reason_codes) + '</p></details>');
+    return o.join('') + '</article>';
+  }
+  if (!def.length) out.push('<p class="rc-ec-empty" role="note">' + E(T('empty')) + '</p>');
+  else {
+    out.push('<div class="rc-ec-grid">');
+    for (var n2 = 0; n2 < def.length; n2++) {
+      if (hidden[n2]) continue;
+      if (mode[n2] === 'conflict') out.push('<article class="rc-ec-pair"><h5>' + E(def[n2].num + ' / ' + def[n2].den) + '</h5><p class="rc-ec-row-na" role="note">' + E(T('dupConflict')) + '</p></article>');
+      else out.push(rowHtml(def[n2], mode[n2] === 'same' ? T('dupSame') : ''));
+    }
+    out.push('</div>');
+  }
+  out.push('<details class="rc-ec-packet"><summary>' + E(T('details')) + '</summary><p>' + E(T('stateCopy')) + ' ' + E(si < 0 ? T('noState') : W.states[si][ZH ? 1 : 0]) + '</p><p>' + E(T('scope')) + '</p>');
+  out.push('<p>' + E(T('avAt') + ': ' + (typeof av.available_at === 'string' ? av.available_at : T('na1'))) + '</p>');
+  out.push('<p>' + E(T('roots') + ': ') + codes(ln.roots) + '</p><p>' + E(T('reasons') + ': ') + codes(ctx.reason_codes) + '</p></details>');
+  return block(out.join(''));
+}
+/* EARLY_CONTEXT_FN_END */
+
+/* EW_GLANCE_FN_START */
+/* EW-P4.T1 (GD-EW-P4-B1): descriptive early-warning observation glance for Sector
+   Central — a pure consumer of rotation_events.json early_context.latest_observation.
+   The validation mirrors lib/rotation_observation_notification.py (V1-V7) plus the
+   stricter engine id rule (rotobs_ + 40 lowercase hex) and the frozen §B state
+   precedence; it renders the same glance/brief/study copy as the Risk Radar band.
+   O06: a view counts only with its source-owned ledger receipt (recorded: source
+   macro.rotation_events.ledger, ledger rotation_events/events.jsonl, 64-hex
+   receipt_sha256); a view that fails any check claims no observation id.
+   Descriptive only: no forecast, odds, sizing or delivery language, ever. */
+function ewGlanceHtml(view, ec, asOf, lang, nowMs) {
+  var ZH = lang === 'zh', DAY = 86400000, STALE_DAYS = 4;
+  var escFn = (typeof esc === 'function') ? esc : function (s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+  function E(s) { return escFn(String(s == null ? '' : s).slice(0, 2048)); }
+  function L2(en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>'; }
+  var ID_RE = /^rotobs_[0-9a-f]{40}$/, SYM_RE = /^[A-Z0-9][A-Z0-9.^=-]{0,19}$/, DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  // lib _req_str: blank means Python str.strip() leaves nothing, so match str.isspace() exactly;
+  // JS trim() differs (it strips U+FEFF, keeps U+001C-U+001F and U+0085)
+  var PY_BLANK_RE = /^[\t\n\x0b\x0c\r\x1c-\x1f \x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*$/;
+  // lib len() counts code points, not UTF-16 units
+  function cpLen(s) { return s.replace(/[\ud800-\udbff][\udc00-\udfff]/g, '_').length; }
+  // a real calendar day, as lib date.fromisoformat requires: 2026-02-30 and 2026-13-01 fail
+  function calOk(s) {
+    var y = +s.slice(0, 4), mo = +s.slice(5, 7), d = +s.slice(8, 10);
+    var leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    var md = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return y >= 1 && mo >= 1 && mo <= 12 && d >= 1 && d <= md[mo - 1];
+  }
+  var ME = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MZ = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  // lib _aware_utc: accept only the producer's canonical UTC subset, isoformat() with an optional
+  // six-digit fraction then +00:00 or Z, on a real calendar day and clock time, so a stamp the lib rejects never renders
+  var UTC_RE = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{6})?(?:Z|\+00:00)$/;
+  function utcIso(s) {
+    var m = typeof s === 'string' ? UTC_RE.exec(s) : null;
+    return !!m && calOk(m[1]) && +m[2] <= 23 && +m[3] <= 59 && +m[4] <= 59;
+  }
+  function numOk(v) { return typeof v === 'number' && isFinite(v) && Math.abs(v) < 1e12; }
+  function ts(s) {
+    if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return NaN;
+    var v = Date.parse(s + 'T00:00:00Z');
+    return isFinite(v) && new Date(v).toISOString().slice(0, 10) === s ? v : NaN;
+  }
+  function pct2(x) { return (x > 0 ? '+' : '') + x.toFixed(2) + '%'; }
+  // Display names for the registered defensive-sector legs; they mirror the
+  // name_en / name_zh halves in data/oracle/ratio_pairs.json (parity-tested).
+  // An unregistered symbol falls back to the ticker symbol alone.
+  var SECTOR_NAMES = {
+    XLP: ['consumer staples', '必需消费'], XLU: ['utilities', '公用事业'],
+    XLV: ['health care', '医疗保健'], XLK: ['technology', '科技'], SMH: ['semiconductors', '半导体']
+  };
+  function hasName(sym) { return Object.prototype.hasOwnProperty.call(SECTOR_NAMES, sym); }
+  function nmEn(sym) { return hasName(sym) ? SECTOR_NAMES[sym][0] + ' (' + sym + ')' : sym; }
+  function nmEnCap(sym) { var s = nmEn(sym); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function nmZh(sym) { return hasName(sym) ? SECTOR_NAMES[sym][1] + '（' + sym + '）' : sym; }
+  function dEn(d) { return ME[parseInt(d.slice(5, 7), 10) - 1] + ' ' + parseInt(d.slice(8, 10), 10); }
+  function dZh(d) { return parseInt(d.slice(5, 7), 10) + '月' + parseInt(d.slice(8, 10), 10) + '日'; }
+  function valsOk(v) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
+    if (v.sessions !== 2) return null;
+    var n = v.numerator_return_pct, d = v.denominator_return_pct, r = v.ratio_return_pct;
+    if (!numOk(n) || !numOk(d) || !numOk(r)) return null;
+    if (!(n > -100) || !(d > -100)) return null;
+    if (Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) > 1e-6) return null;
+    return { n: n, d: d, r: r };
+  }
+  function winOk(w) {
+    if (!w || typeof w !== 'object' || Array.isArray(w)) return null;
+    if (typeof w.start !== 'string' || !DATE_RE.test(w.start)) return null;
+    if (typeof w.end !== 'string' || !DATE_RE.test(w.end)) return null;
+    return w;
+  }
+  function hzOk(h) {
+    if (!h || typeof h !== 'object' || Array.isArray(h)) return null;
+    if (h.sessions !== 20) return null;
+    if (typeof h.start !== 'string' || !DATE_RE.test(h.start)) return null;
+    if (typeof h.end !== 'string' || !DATE_RE.test(h.end)) return null;
+    var n = h.numerator_return_pct, d = h.denominator_return_pct, r = h.ratio_return_pct;
+    if (!numOk(n) || !numOk(d) || !numOk(r)) return null;
+    if (!(d > -100)) return null;
+    if (Math.abs(((1 + n / 100) / (1 + d / 100) - 1) * 100 - r) > 1e-6) return null;
+    return { r: r };
+  }
+  function recOk(r) {
+    return !!r && typeof r === 'object' && !Array.isArray(r)
+      && r.source === 'macro.rotation_events.ledger'
+      && r.ledger === 'rotation_events/events.jsonl'
+      && typeof r.receipt_sha256 === 'string' && /^[0-9a-f]{64}$/.test(r.receipt_sha256);
+  }
+  var WORDS = {
+    observed: ['Observed', '已观察到'], reversal: ['Reversal', '方向反转'],
+    corrected: ['Corrected', '已更正'], withdrawn: ['Withdrawn', '已撤回'],
+    stale: ['Stale', '已过时'], unavailable: ['Unavailable', '暂不可用'],
+    partial: ['Partial', '证据不完整'], conflicting: ['Conflicting horizons', '周期分歧'],
+    unreadable: ['Unreadable', '无法读取'], loading: ['Checking', '核对中']
+  };
+  var has = view != null && typeof view === 'object' && !Array.isArray(view);
+  var n = has ? view.notification : null;
+  var valid = false, v = null, oid = '';
+  if (n && typeof n === 'object' && !Array.isArray(n)
+      && n.source === 'macro.rotation_observation.v1'
+      && n.category === 'sector_rotation_relative'
+      && n.authority === 'notification_only'
+      && (n.kind === 'observed_change' || n.kind === 'reversal' || n.kind === 'correction' || n.kind === 'data_withdrawal')
+      && typeof n.observation_id === 'string' && ID_RE.test(n.observation_id)) {
+    oid = n.observation_id;
+    var prev = n.previous_observation_id;
+    var prevOk = prev == null ? n.kind === 'observed_change'
+      : (typeof prev === 'string' && ID_RE.test(prev) && prev !== n.observation_id);
+    if (prevOk
+        && typeof n.num === 'string' && SYM_RE.test(n.num)
+        && typeof n.den === 'string' && SYM_RE.test(n.den)
+        && n.num !== n.den
+        && typeof n.pair_id === 'string' && !PY_BLANK_RE.test(n.pair_id) && cpLen(n.pair_id) <= 128
+        && typeof n.event_as_of === 'string' && DATE_RE.test(n.event_as_of) && calOk(n.event_as_of)
+        && utcIso(n.observed_at) && utcIso(n.not_after)
+        && String(n.not_after).slice(0, 19) > String(n.observed_at).slice(0, 19)) {
+      // lib: source_as_of and values must be explicit keys, including nullable withdrawals
+      var explicit = Object.prototype.hasOwnProperty.call(n, 'source_as_of')
+        && Object.prototype.hasOwnProperty.call(n, 'values');
+      if (!explicit) {
+        valid = false;
+      } else if (n.kind === 'data_withdrawal') {
+        valid = n.values == null && (n.source_as_of == null
+          || (typeof n.source_as_of === 'string' && DATE_RE.test(n.source_as_of) && calOk(n.source_as_of)
+              && n.source_as_of <= n.event_as_of));
+      } else {
+        v = valsOk(n.values);
+        valid = n.source_as_of === n.event_as_of && v !== null;
+      }
+    }
+  }
+  // O06: no ledger receipt, no observation; an invalid view never claims an id
+  if (valid && !recOk(view.recorded)) valid = false;
+  if (!valid) oid = '';
+  var session = typeof asOf === 'string' ? asOf : '';
+  var win = null, hz = null, winEndOk = false, state;
+  if (has && valid) {
+    win = winOk(view.window_2s);
+    hz = hzOk(view.horizon_20s);
+    winEndOk = !!(win && win.end === n.event_as_of);
+    if (n.event_as_of > session) state = 'unreadable';
+    else if (n.kind === 'data_withdrawal') state = 'withdrawn';
+    else if (n.event_as_of < session) state = 'stale';
+    else if (n.kind === 'correction') state = 'corrected';
+    else if (!win || !winEndOk || !hz) state = 'partial';
+    else if ((v.r > 0) !== (hz.r > 0) || (v.r === 0) !== (hz.r === 0)) state = 'conflicting';
+    else if (n.kind === 'reversal') state = 'reversal';
+    else state = 'observed';
+  } else if (has || view != null) {
+    // a present non-object wrapper fails V1: unreadable, not absent (frozen §B.2)
+    state = 'unreadable';
+  } else {
+    state = 'unavailable';
+    var ecOk = ec != null && typeof ec === 'object' && !Array.isArray(ec);
+    if (ecOk) {
+      var t = ts(ec.as_of), nowOk = typeof nowMs === 'number' && isFinite(nowMs) && nowMs >= 0;
+      if (isFinite(t) && nowOk && Math.floor((Math.floor(nowMs / DAY) * DAY - t) / DAY) >= STALE_DAYS) state = 'stale';
+    }
+  }
+  // an unreadable view (including a lib-valid one for a future session) claims no id
+  if (state === 'unreadable') oid = '';
+  var word = WORDS[state] || WORDS.unavailable;
+  var legs = valid && state !== 'withdrawn' && state !== 'stale' && state !== 'unreadable'
+    && state !== 'unavailable' && win && winEndOk;
+  var whatEn = '', whatZh = '';
+  if (legs) {
+    if (v.r > 0 && v.n < 0 && v.d < 0) { whatEn = 'Both sectors fell; ' + nmEn(n.num) + ' fell less than ' + nmEn(n.den) + '.'; whatZh = '两个板块都下跌；' + nmZh(n.num) + '跌幅小于' + nmZh(n.den) + '。'; }
+    else if (v.r < 0 && v.n > 0 && v.d > 0) { whatEn = 'Both sectors rose; ' + nmEn(n.num) + ' rose less than ' + nmEn(n.den) + '.'; whatZh = '两个板块都上涨；' + nmZh(n.num) + '涨幅小于' + nmZh(n.den) + '。'; }
+    else if (v.r > 0) { whatEn = nmEnCap(n.num) + ' outperformed ' + nmEn(n.den) + ' by ' + pct2(v.r) + ' over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '相对' + nmZh(n.den) + '跑赢' + pct2(v.r) + '。'; }
+    else if (v.r < 0) { whatEn = nmEnCap(n.num) + ' trailed ' + nmEn(n.den) + ' by ' + Math.abs(v.r).toFixed(2) + '% over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '相对' + nmZh(n.den) + '落后' + Math.abs(v.r).toFixed(2) + '%。'; }
+    else { whatEn = nmEnCap(n.num) + ' and ' + nmEn(n.den) + ' moved together over two sessions.'; whatZh = '两个交易日内，' + nmZh(n.num) + '与' + nmZh(n.den) + '同步变动。'; }
+    if (state === 'reversal') { whatEn = 'Reversal: ' + whatEn; whatZh = '方向反转：' + whatZh; }
+  } else if (state === 'withdrawn') {
+    whatEn = 'Evidence for ' + nmEn(n.num) + ' vs ' + nmEn(n.den) + ' was withdrawn on ' + dEn(n.event_as_of) + '.';
+    whatZh = nmZh(n.num) + '对' + nmZh(n.den) + '的依据已于' + dZh(n.event_as_of) + '撤回。';
+  } else if (state === 'stale' && has && valid) {
+    whatEn = 'Latest observation is from ' + dEn(n.event_as_of) + ', before ' + (DATE_RE.test(session) ? dEn(session) : E(session)) + '.';
+    whatZh = '最新观察来自' + dZh(n.event_as_of) + '，早于' + (DATE_RE.test(session) ? dZh(session) : E(session)) + '。';
+  } else if (state === 'stale') {
+    var ecAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
+    whatEn = 'Rotation data unavailable for ' + (DATE_RE.test(session) ? dEn(session) : E(session)) + '; latest is ' + (DATE_RE.test(ecAs) ? dEn(ecAs) : E(ecAs)) + '.';
+    whatZh = (DATE_RE.test(session) ? dZh(session) : E(session)) + '轮动依据暂不可用；最新为' + (DATE_RE.test(ecAs) ? dZh(ecAs) : E(ecAs)) + '。';
+  } else if (state === 'unreadable') {
+    whatEn = 'Rotation record failed checks and is not shown.'; whatZh = '轮动记录未通过校验，未予显示。';
+  } else if (state === 'partial') {
+    whatEn = 'Partial evidence for ' + nmEn(n.num) + ' vs ' + nmEn(n.den) + '; ratio withheld.'; whatZh = nmZh(n.num) + '对' + nmZh(n.den) + '证据不完整；比值暂不显示。';
+  } else {
+    whatEn = 'Rotation data unavailable — not proof of stability.'; whatZh = '轮动依据暂不可用，不代表市场稳定。';
+  }
+  var whenEn = '', whenZh = '', avEn = 'First public availability not verified', avZh = '首次公开可用时间尚未核实';
+  var built = '';
+  if (has && valid) {
+    whenEn = 'Source session ' + dEn(n.event_as_of); whenZh = '数据交易日' + dZh(n.event_as_of);
+    if (view.availability && typeof view.availability === 'object' && view.availability.status === 'VERIFIED') {
+      avEn = 'availability verified'; avZh = '可用时间已核实';
+    }
+    built = '<span class="rc-ew-built">' + L2(E('Observed ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC'), E('观察于 ' + String(n.observed_at).slice(0, 16).replace('T', ' ') + ' UTC')) + '</span>';
+  } else {
+    var rotAs = (ec && typeof ec === 'object' && typeof ec.as_of === 'string') ? ec.as_of : '';
+    whenEn = 'Source session ' + (DATE_RE.test(rotAs) ? dEn(rotAs) : E(rotAs) || '—');
+    whenZh = '数据交易日' + (DATE_RE.test(rotAs) ? dZh(rotAs) : E(rotAs) || '—');
+  }
+  var qEn = state === 'observed' ? 'Complete' : word[0], qZh = state === 'observed' ? '完整' : word[1];
+  var out = '<section class="rc-ew" id="rc-ew" role="group" aria-labelledby="rc-ew-title" data-ew-state="' + state + '" data-ew-scope="tech_leadership" data-observation-id="' + E(oid) + '">'
+    + '<p class="rc-ew-head"><span class="rc-ew-scope" id="rc-ew-title">' + L2('US Technology leadership', '美国科技领涨') + '</span> <span class="rc-ew-state">' + L2(word[0], word[1]) + '</span></p>'
+    + '<p class="rc-ew-what">' + L2(whatEn, whatZh) + '</p>'
+    + (state === 'corrected' ? '<p class="rc-ew-note">' + L2('Corrected; the original notice remains in history.', '已更正；原通知仍保留在历史记录中。') + '</p>' : '')
+    + '<p class="rc-ew-when">' + L2(whenEn + ' · ' + avEn + ' · Quality: ' + qEn, whenZh + ' · ' + avZh + ' · 质量：' + qZh) + (built ? ' · ' + built : '') + '</p>'
+    + '<p class="rc-ew-means">' + L2('Watch only: this describes what happened, not what comes next.', '仅供观察：描述已发生的变化，不代表后续走势。') + '</p>'
+    + '<a class="rc-ew-next" href="#rc-events-mount">' + L2('Review what changed', '查看变化依据') + '</a>';
+  if (legs) {
+    out += '<div class="rc-ew-tablewrap"><table class="rc-ew-legs">'
+      + '<caption>' + L2('2 sessions, ' + dEn(win.start) + ' → ' + dEn(win.end) + ' · US cash sessions', '2个交易日，' + dZh(win.start) + ' → ' + dZh(win.end) + ' · 美股交易日') + '</caption><tbody>'
+      + '<tr><th scope="row">' + L2('Receiver (numerator)', '接收方（分子）') + '</th><td>' + L2(E(nmEnCap(n.num)), E(nmZh(n.num))) + '</td><td>' + E(pct2(v.n)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Donor (denominator)', '出让方（分母）') + '</th><td>' + L2(E(nmEnCap(n.den)), E(nmZh(n.den))) + '</td><td>' + E(pct2(v.d)) + '</td></tr>'
+      + '<tr><th scope="row">' + L2('Relative', '相对') + '</th><td>' + L2(E(nmEnCap(n.num) + ' vs ' + nmEn(n.den)), E(nmZh(n.num) + ' 对 ' + nmZh(n.den))) + '</td><td>' + E(pct2(v.r)) + '</td></tr>'
+      + '</tbody></table>';
+    out += '</div>'
+      + '<div class="rc-ew-horizons">'
+      + '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('2-session', '2个交易日') + '</span> <span class="rc-ew-hz-v">' + E(pct2(v.r)) + '</span> <span class="rc-ew-hz-q">' + L2('Measured', '已测量') + '</span></div>'
+      + (hz ? '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('20-session', '20个交易日') + '</span> <span class="rc-ew-hz-v">' + E(pct2(hz.r)) + '</span> <span class="rc-ew-hz-q">' + L2('Measured', '已测量') + '</span></div>'
+           : '<div class="rc-ew-hz"><span class="rc-ew-hz-k">' + L2('20-session', '20个交易日') + '</span> <span class="rc-ew-hz-v">—</span> <span class="rc-ew-hz-q">' + L2('Not supplied', '未提供') + '</span></div>')
+      + '</div>';
+    if (state === 'conflicting') out += '<p class="rc-ew-contextline">' + L2('The two-session move conflicts with the 20-session trend.', '两个交易日的变化与20个交易日趋势不一致。') + '</p>';
+    out += '<p class="rc-ew-h">' + L2('What argues against this', '反方证据') + '</p><ul class="rc-ew-against">';
+    if (v.n < 0 && v.d < 0) out += '<li>' + L2('A smaller loss is still a loss: ' + nmEn(n.num) + ' also fell.', '较小的跌幅仍是亏损：' + nmZh(n.num) + '同样下跌。') + '</li>';
+    if (state === 'conflicting') out += '<li>' + L2('The 20-session trend points the other way.', '20个交易日趋势方向相反。') + '</li>';
+    if (!hz) out += '<li>' + L2('No 20-session comparison was supplied.', '未提供20个交易日对比。') + '</li>';
+    out += '<li>' + L2('Two sessions are a short window; one session can undo it.', '两个交易日窗口很短，一个交易日即可逆转。') + '</li></ul>'
+      + '<p class="rc-ew-h">' + L2('What would undo this', '何种情况会推翻') + '</p>'
+      + '<p class="rc-ew-contextline">' + L2('A later session that reverses the relative move, or a correction or withdrawal of this record. Corrections keep the original in history.', '后续交易日出现反向相对变动，或本记录被更正或撤回。更正时保留原记录。') + '</p>';
+  }
+  out += '<details class="rc-ew-study"><summary>' + L2('Study this record', '查看记录细节') + '</summary>';
+  if (has && valid) {
+    var pv = (view.previous && typeof view.previous === 'object' && !Array.isArray(view.previous)) ? view.previous : null;
+    var pvVals = pv && pv.values && typeof pv.values === 'object' && numOk(pv.values.numerator_return_pct) && numOk(pv.values.denominator_return_pct) && numOk(pv.values.ratio_return_pct) ? pv.values : null;
+    var srcAs = n.source_as_of || '—', obsAt = String(n.observed_at).slice(0, 16).replace('T', ' '), notAfter = String(n.not_after).slice(0, 16).replace('T', ' ');
+    out += '<dl class="rc-ew-dl">'
+      + '<div><dt>' + L2('Observation ID', '观察编号') + '</dt><dd class="rc-ew-id">' + E(oid) + '</dd></div>'
+      + (typeof n.previous_observation_id === 'string' ? '<div><dt>' + L2('Previous ID', '前一编号') + '</dt><dd class="rc-ew-id">' + E(n.previous_observation_id) + '</dd></div>' : '')
+      + '<div><dt>' + L2('Definition', '定义') + '</dt><dd>' + L2('macro.rotation_observation.v1 · notification only · basis ' + E(view.basis || 'dividend_adjusted_close'), 'macro.rotation_observation.v1 · 仅通知 · 基准 ' + E(view.basis || 'dividend_adjusted_close')) + '</dd></div>'
+      + '<div><dt>' + L2('Calendar', '日历') + '</dt><dd>' + L2('US cash-equity sessions', '美股现货交易日') + '</dd></div>'
+      + '<div><dt>' + L2('Pair', '配对') + '</dt><dd>' + L2(E(nmEnCap(n.num) + ' / ' + nmEn(n.den) + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · relative = (1+n)/(1+d) − 1'), E(nmZh(n.num) + ' / ' + nmZh(n.den) + ' · ' + (typeof n.pair_id === 'string' ? n.pair_id : '') + ' · 相对 = (1+分子)/(1+分母) − 1')) + '</dd></div>'
+      + '<div><dt>' + L2('Close basis', '收盘基准') + '</dt><dd>' + L2('Dividend-adjusted daily close; adjusted prices can be revised when distributions are restated.', '股息调整后日收盘价；分红数据更正时调整价格可能被修订。') + '</dd></div>'
+      + '<div><dt>' + L2('Source timestamps', '来源时间戳') + '</dt><dd>' + L2(E('source_as_of ' + srcAs + ' · event_as_of ' + n.event_as_of + ' · observed ' + obsAt + ' UTC · not_after ' + notAfter + ' UTC (notification window closes)'), E('数据源日期 ' + srcAs + ' · 事件日期 ' + n.event_as_of + ' · 观察于 ' + obsAt + ' UTC · 通知窗口截止 ' + notAfter + ' UTC')) + '</dd></div>';
+    var cov = (view.coverage && typeof view.coverage === 'object') ? view.coverage : null;
+    var missing = (cov && Array.isArray(cov.missing_pair_ids)) ? cov.missing_pair_ids.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
+    out += '<div><dt>' + L2('Coverage', '覆盖范围') + '</dt><dd>' + L2(E((cov ? cov.evaluable_2s : '—') + ' of ' + (cov ? cov.registered_pairs : '—') + ' pairs evaluable; missing: ' + (missing || 'none')), E((cov ? cov.evaluable_2s : '—') + ' / ' + (cov ? cov.registered_pairs : '—') + ' 个配对可评估；缺失：' + (missing || '无'))) + '</dd></div>';
+    if (pv) {
+      out += '<div><dt>' + L2('Original vs corrected', '原始与更正后') + '</dt><dd>'
+        + L2('Original (' + E(pv.observation_id) + '): ' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : 'no values recorded'),
+             '原始（' + E(pv.observation_id) + '）：' + (pvVals ? 'n ' + pct2(pvVals.numerator_return_pct) + ' · d ' + pct2(pvVals.denominator_return_pct) + ' · r ' + pct2(pvVals.ratio_return_pct) : '无记录数值')) + '<br>';
+      if (state === 'withdrawn') out += L2('Current: Withdrawn — the record no longer asserts a measurement.', '当前：已撤回——本记录不再主张任何测量值。');
+      else out += L2('Corrected: n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r), '更正后：n ' + pct2(v.n) + ' · d ' + pct2(v.d) + ' · r ' + pct2(v.r));
+      out += '</dd></div>';
+    }
+    var lin = (Array.isArray(view.lineage_roots)) ? view.lineage_roots.filter(function (x) { return typeof x === 'string'; }).join(', ') : '';
+    out += '<div><dt>' + L2('Immutable reference', '不可变引用') + '</dt><dd>' + L2(E('rotobs_ ids are content-addressed: the first 40 hex of SHA-256 over the record fingerprint and its predecessor. Lineage roots: ' + (lin || 'none')), E('rotobs_ 编号为内容寻址：记录指纹及其前驱的 SHA-256 前40位十六进制。来源链根：' + (lin || '无'))) + '</dd></div>'
+      + '<div><dt>' + L2('Rights', '权利') + '</dt><dd>' + L2('Derived comparison from daily closes on the approved price route; raw prices are not republished.', '基于已核准价格数据源日收盘价的推导比较；不转载原始价格。') + '</dd></div>'
+      + '<div><dt>' + L2('Stable link', '稳定链接') + '</dt><dd>' + E(oid) + ' · <a class="rc-ew-next" href="#rc-events-mount">' + L2('Sector Central', '行业中心') + '</a></dd></div>'
+      + '</dl>';
+  } else {
+    var ecLine = 'No qualified observation for this session.';
+    out += '<dl class="rc-ew-dl">'
+      + '<div><dt>' + L2('Rotation context', '轮动上下文') + '</dt><dd>' + ((ec && typeof ec === 'object') ? L2(E('as_of ' + (ec.as_of || '—')), E('数据日期 ' + (ec.as_of || '—'))) : L2('unavailable', '暂不可用')) + '</dd></div>'
+      + '<div><dt>' + L2('Observation', '观察记录') + '</dt><dd>' + L2(ecLine, '本交易日无合格观察记录。') + '</dd></div>'
+      + '</dl>';
+  }
+  out += '</details></section>';
+  return out;
+}
+/* EW_GLANCE_FN_END */
+
+  /* ── styles (injected once, guarded by element id — subsector_rotation.js model).
+     Carried over from the retired page's own <style> block; `#rc-events h2` becomes
+     `#rc-events h3` because the heading demoted when the section moved inside
+     #si-movement. ── */
+  function injectStyle(){
+    if(document.getElementById('rc-events-style')) return;
+    var c=''
+      +'.rc-early-context{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);overflow-wrap:anywhere;}'
+      +'.rc-ec-title{font-size:15px;font-weight:800;margin:0 0 6px;}.rc-ec-asof,.rc-ec-quality{font-size:11px;color:var(--muted);margin:4px 0;}'
+      +'.rc-ec-grid{display:grid;align-items:start;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;margin:12px 0;}'
+      +'.rc-ec-pair{min-width:0;padding:12px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);}'
+      +'.rc-ec-pair h5{font-size:12px;margin:0 0 5px;}.rc-ec-pair .rc-ec-pair-title{font-size:14px;}.rc-ec-label{font-size:12px;line-height:1.5;margin:6px 0 10px;}'
+      +'.rc-ec-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px;}.rc-ec-values dt{font-size:10px;color:var(--muted);line-height:1.35;}.rc-ec-values dd{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;margin:5px 0 0;}'
+      +'.rc-ec-stale,.rc-ec-conflict{border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--surface-warn-subtle,var(--panel2,var(--card)));padding:6px 9px;color:var(--ink-warn,var(--warn));font-size:11px;line-height:1.5;}'
+      +'.rc-ec-details,.rc-ec-packet{font-size:11px;line-height:1.5;}.rc-ec-details summary,.rc-ec-packet summary{cursor:pointer;padding:5px 0;}.rc-ec-details summary:focus-visible,.rc-ec-packet summary:focus-visible{outline:2px solid var(--link);outline-offset:2px;}'
+      +'.rc-ec-meta,.rc-ec-reasons,.rc-ec-row-note,.rc-ec-disclosure{font-size:10.5px;line-height:1.5;color:var(--muted);}.rc-ec-win-na,.rc-ec-row-na,.rc-ec-empty,.rc-ec-nopacket,.rc-ec-unavail{font-size:12px;line-height:1.5;}'
+      +'#rc-events { margin:0 2px 22px; }'
+      +'#rc-events h3 { font-size:17px; font-weight:800; letter-spacing:-.015em; margin:0 0 4px; }'
+      +'.rc-sub { color:var(--muted); font-size:12px; margin:0 0 10px; max-width:84ch; line-height:1.5; }'
+      +'.rc-grid { display:flex; flex-wrap:wrap; gap:10px; }'
+      +'.rc-card { flex:1 1 300px; min-width:260px; border-radius:12px; border:1px solid var(--line);'
+      +'  background:var(--panel); padding:12px 14px; }'
+      +'.rc-card.rc-major { border:1px solid var(--line); }'
+      +'.rc-hd { display:flex; align-items:baseline; gap:7px; margin-bottom:5px; flex-wrap:wrap; }'
+      +'.rc-title { font-weight:800; font-size:13.5px; }'
+      +'.rc-sev { font-size:9.5px; font-weight:700; text-transform:uppercase; padding:2px 7px; border-radius:6px;'
+      +'  background:color-mix(in srgb,var(--muted) 15%,transparent); color:var(--muted); letter-spacing:.04em; }'
+      +'.rc-sev.major { background:color-mix(in srgb,var(--warn) 20%,transparent); color:var(--ink-warn, var(--warn)); }'
+      +'.rc-sev.notable { background:color-mix(in srgb,var(--link) 16%,transparent); color:var(--ink-link, var(--link)); }'
+      +'.rc-day { font-size:11px; color:var(--muted); margin-left:auto; font-variant-numeric:tabular-nums; }'
+      +'.rc-copy { font-size:12.5px; line-height:1.55; }'
+      +'.rc-receipts { margin-top:6px; font-size:10.5px; color:var(--muted); font-variant-numeric:tabular-nums; }'
+      +'.rc-stale { font-style:italic; }'
+      +'.rc-quiet { color:var(--muted); font-size:12.5px; padding:8px 0; }'
+      +'.rc-frag { margin-top:12px; }'
+      +'.rc-frag-hd { font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.07em;'
+      +'  color:var(--muted); margin:0 0 7px; }'
+      +'.rc-frag-chips { display:flex; flex-wrap:wrap; gap:6px; }'
+      +'.rc-frag-chip { font-size:11px; padding:4px 10px; border-radius:8px; border:1px solid var(--line);'
+      +'  background:color-mix(in srgb,var(--warn) 9%,var(--panel2)); line-height:1.45; }'
+      +'.rc-frag-chip b { font-weight:800; }'
+      +'.rc-caveat { margin-top:10px; font-size:10.5px; color:var(--muted); line-height:1.55; }'
+      /* ── Flow-lanes hero (.rcf-*) ── */
+      +'#rc-flowmap-content { margin-bottom:14px; }'
+      +'.rcf-empty { color:var(--muted); font-size:12.5px; padding:8px 0; }'
+      +'.rcf-lane { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;'
+      +'  padding:10px 13px; border-radius:11px; border:1px solid var(--line);'
+      +'  background:var(--panel2); margin-bottom:8px; position:relative; }'
+      +'.rcf-lane.rcf-handoff    { border:1px solid var(--line); }'
+      +'.rcf-lane.rcf-into_strength { border:1px solid var(--line); }'
+      +'.rcf-lane.rcf-contagion_break { border:1px solid var(--line); }'
+      +'.rcf-lane.rcf-faltering  { border:1px solid var(--line); }'
+      +'.rcf-pill { font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:8px;'
+      +'  background:color-mix(in srgb,var(--text) 8%,var(--panel)); border:1px solid var(--line);'
+      +'  white-space:nowrap; }'
+      +'.rcf-arrow { font-size:13px; color:var(--muted); flex:none; }'
+      +'.rcf-state { font-size:12.5px; font-weight:600; flex:1 1 160px; min-width:120px; }'
+      +'.rcf-stance { font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px;'
+      +'  white-space:nowrap; }'
+      +'.rcf-stance.rcf-watch { background:color-mix(in srgb,var(--link) 14%,transparent); color:var(--ink-link, var(--link)); }'
+      +'.rcf-stance.rcf-favour { background:color-mix(in srgb,var(--up) 14%,transparent); color:var(--ink-up, var(--up)); }'
+      +'.rcf-stance.rcf-aside  { background:color-mix(in srgb,var(--warn) 14%,transparent); color:var(--ink-warn, var(--warn)); }'
+      +'.rcf-stance.rcf-weak   { background:color-mix(in srgb,var(--muted) 14%,transparent); color:var(--muted); }'
+      +'.rcf-decay { width:100%; height:5px; border-radius:3px;'
+      +'  background:var(--panel2); border:1px solid var(--line); overflow:hidden; margin-top:4px; }'
+      +'.rcf-decay-bar { height:100%; border-radius:3px; background:var(--warn); transition:width .3s; }'
+      +'.rcf-decay-cap { font-size:10px; color:var(--ink-warn, var(--warn)); margin-top:3px; }'
+      +'.rcf-help { display:inline-block; font-size:9.5px; font-weight:700; color:var(--muted);'
+      +'  border:1px solid var(--line); border-radius:50%; width:16px; height:16px; line-height:14px;'
+      +'  text-align:center; cursor:help; flex:none; }'
+      +'.rcf-footer { font-size:10.5px; color:var(--muted); margin-top:4px; line-height:1.5; }'
+      +'.rcf-coldstart-note { font-size:10px; color:var(--muted); margin-left:6px; }'
+      /* ── Closures strip (.rcx-*) ── */
+      +'#rc-closures { margin-bottom:10px; }'
+      +'.rcx-strip { font-size:11.5px; color:var(--muted); border:1px solid var(--line);'
+      +'  border-radius:9px; padding:7px 12px; background:var(--panel2); }'
+      +'.rcx-toggle { cursor:pointer; font-weight:700; user-select:none; }'
+      +'.rcx-toggle:hover { color:var(--text); }'
+      +'.rcx-list { margin-top:7px; display:flex; flex-direction:column; gap:4px; }'
+      +'.rcx-row { font-size:11px; color:var(--muted); }'
+      +'.rcx-foot { margin-top:5px; font-size:10px; color:var(--muted); font-style:italic; }'
+      +'@media (max-width:520px) {'
+      +'  .rcf-lane { gap:6px 8px; }'
+      +'  .rcf-state { flex-basis:100%; }'
+      +'  .rcf-decay { margin-top:3px; }'
+      +'}';
+    /* The observation glance (.rc-ew*) is styled by the governed rotation_glance.css. */
+    var s=document.createElement('style');
+    s.id='rc-events-style';
+    s.textContent=c;
+    document.head.appendChild(s);
+  }
+
+  /* ── mount: build the section shell into #rc-events-mount (once). Static copy uses
+     dual l-en/l-zh spans so a language switch needs no rebuild. ── */
+  function mount(){
+    var host=document.getElementById('rc-events-mount');
+    if(!host) return false;
+    if(document.getElementById('rc-events')) return true;
+    host.innerHTML=''
+      +'<section id="rc-events" aria-label="Rotation events">'
+      +'<h3>⟲ '+L('Rotation Events','轮动事件')+'</h3>'
+      +'<p class="rc-sub">'+L(
+          'Price-based evidence of changing sector leadership. Compare early observations with recorded events; neither is a buy list.',
+          '基于价格的板块领导力变化证据。比较早期观察与已记录事件；两者均非买入清单。')+'</p>'
+      +'<div id="rc-early-context"></div>'
+      +'<div id="rc-flowmap-content"></div>'
+      +'<div id="rc-closures"></div>'
+      +'<div id="rc-events-content"><p class="rc-quiet">'
+      +'<span class="l-en">Loading…</span><span class="l-zh">加载中…</span></p></div>'
+      +'</section>';
+    return true;
+  }
+
+  /* ── Part 5A: renderFlowLanes — builds the #rc-flowmap-content hero ── */
+  function renderFlowLanes(ev){
+    var el=document.getElementById('rc-flowmap-content');
+    if(!el) return;
+    // graceful degrade: no velocity_board → entire section hidden already (we just render lanes)
+    var active=(ev&&ev.active)||[];
+    if(!active.length){
+      el.innerHTML='<p class="rcf-empty">'
+        +t('No confirmed rotation events in this snapshot. Early observations above are separate; an empty event list is not an all-clear.',
+           '此快照无已确认的轮动事件。上方早期观察独立显示；事件列表为空不代表风险已排除。')
+        +'</p>';
+      return;
+    }
+    var html='';
+    var sevRank={major:0,notable:1,standard:2};
+    var sorted=active.slice().sort(function(a,b){
+      var d=(sevRank[a.severity]!=null?sevRank[a.severity]:9)-(sevRank[b.severity]!=null?sevRank[b.severity]:9);
+      return d!==0?d:String(b.started||'').localeCompare(String(a.started||''));
+    });
+    sorted.forEach(function(e){
+      // Determine event_type — default to handoff for v1 payload without event_type (graceful degrade)
+      var etype=e.event_type||'handoff';
+      /* Donor/receiver labels. Both languages are resolved, not just the active one:
+         the hover card writes an EN and a ZH attribute at the same time, and a card
+         built from only the active language leaves the other half in English until
+         the next re-render. */
+      var donorEn,donorZh,recvEn,recvZh;
+      if(etype==='correlation_break'||etype==='contagion_break'){
+        // contagion — use a+b from contagion field or from the event itself
+        donorEn=esc(e.from_leg&&(e.from_leg.name_en||e.from_leg.key)||'—');
+        donorZh=esc(e.from_leg&&(e.from_leg.name_zh||e.from_leg.name_en||e.from_leg.key)||'—');
+        recvEn=esc(e.to_leg&&(e.to_leg.name_en||e.to_leg.key)||'—');
+        recvZh=esc(e.to_leg&&(e.to_leg.name_zh||e.to_leg.name_en||e.to_leg.key)||'—');
+      } else {
+        donorEn=esc(e.from_leg&&(e.from_leg.name_en||e.from_leg.key)||e.donor||'—');
+        donorZh=esc(e.from_leg&&(e.from_leg.name_zh||e.from_leg.name_en)||e.donor||'—');
+        recvEn=esc(e.to_leg&&(e.to_leg.name_en||e.to_leg.key)||e.receiver||'—');
+        recvZh=esc(e.to_leg&&(e.to_leg.name_zh||e.to_leg.name_en)||e.receiver||'—');
+      }
+      // Mag-7 basket pill: never show "MAGS"
+      if((e.to_leg&&(e.to_leg.key==='mag7'||e.to_leg.key==='mag7_basket'))||e.receiver==='mag7_basket'){
+        recvEn='Mag-7 basket'; recvZh='七巨头等权篮子';
+      }
+      var donorName=isZh()?donorZh:donorEn, receiverName=isZh()?recvZh:recvEn;
+      // Health / faltering
+      var h=e.health||null;
+      var isFaltering=!!(h&&(h.weakening||h.lapse_count>=2||h.neg_run>=2));
+      var effectiveType=isFaltering?'faltering':etype;
+
+      // State line and stance per type. The state line doubles as the hover card's
+      // headline, so it is kept in both languages.
+      var stateLineEn,stateLineZh,stanceText,stanceCls;
+      if(effectiveType==='into_strength'){
+        stateLineEn='Strength rotating toward '+recvEn;
+        stateLineZh='强势正在轮向'+recvZh;
+        stanceText=t('In favour — watch for entry','处于优势——留意入场');
+        stanceCls='rcf-favour';
+      } else if(effectiveType==='contagion_break'||effectiveType==='correlation_break'){
+        stateLineEn=donorEn+' and '+recvEn+' no longer offsetting — falling together';
+        stateLineZh=donorZh+'与'+recvZh+'不再互相对冲——同步下跌';
+        stanceText=t('Stand aside — diversification fading','暂避——分散效果减弱');
+        stanceCls='rcf-aside';
+      } else if(effectiveType==='faltering'){
+        stateLineEn=donorEn+'→'+recvEn+' rotation weakening';
+        stateLineZh=donorZh+'→'+recvZh+'轮动转弱';
+        stanceText=t('Rotation weakening — may close','轮动转弱——或将关闭');
+        stanceCls='rcf-weak';
+      } else {
+        // handoff (default for unknown types — cautious fallback per spec)
+        stateLineEn='Recorded leadership shift: '+donorEn+' → '+recvEn;
+        stateLineZh='已记录的领导力转移：'+donorZh+' → '+recvZh;
+        stanceText=t('Watch — don\'t chase','观望，不要追高');
+        stanceCls='rcf-watch';
+      }
+      var stateLine=isZh()?stateLineZh:stateLineEn;
+
+      /* Hover card (Tier-2). Rewritten 2026-08-04 with the popup overhaul: the old
+         tip was one run-on chain of eight machine fragments — "Out: X −30% from
+         peak · In: Y +12.6% off low · Ratio: +6.3%/10s · Historical: about half
+         reach +7.8% in ~9 sessions (n=8) · Heads-up…" — with the English suffixes
+         hardcoded, so the Chinese card read half in English. It is now a headline,
+         two plain sentences, and a receipt line for the base rate. Both languages
+         are built separately rather than sharing one pre-resolved string. */
+      var r=e.receipts||{};
+      var bodyEn=[],bodyZh=[];
+      if(r.blowoff&&r.blowoff.drawdown_pct!=null){
+        var dd=(r.blowoff.drawdown_pct*100).toFixed(0);
+        bodyEn.push(donorEn+' sits '+dd+'% below its peak.');
+        bodyZh.push(donorZh+'较峰值低 '+dd+'%。');
+      }
+      if(r.turn&&r.turn.off_low_pct!=null){
+        var ol=(r.turn.off_low_pct*100).toFixed(1);
+        bodyEn.push(recvEn+' is '+ol+'% up off its low.');
+        bodyZh.push(recvZh+'自低点回升 '+ol+'%。');
+      }
+      if(r.ratio&&r.ratio.ratio_chg_10s!=null){
+        var rc=Math.abs(r.ratio.ratio_chg_10s*100).toFixed(1);
+        bodyEn.push('The two have moved '+rc+'% apart over the last ten sessions'
+          +(r.ratio.ratio_20s_high?', the widest gap in a month.':'.'));
+        bodyZh.push('近十个交易日两者差距扩大 '+rc+'%'+(r.ratio.ratio_20s_high?'，为一个月来最大。':'。'));
+      }
+      bodyEn.push('A heads-up on shifting leadership, not a buy signal.');
+      bodyZh.push('这是领导权变化的提示，并非买入信号。');
+      /* The receipt strip — base rates, sample sizes and money flow. Sanctioned
+         Tier-2 home for the machine facts the body must not carry. */
+      var rcEn=[],rcZh=[];
+      var ru=(ev&&ev.ruler&&ev.ruler.modern&&ev.ruler.modern.run_pct)?ev.ruler.modern:null;
+      if(ru&&ru.n>=5){
+        rcEn.push('past handoffs: half ran +'+ru.run_pct.median+'% within ~'+ru.sessions_to_peak.median+' sessions (n='+ru.n+')');
+        rcZh.push('历史同类轮动：半数在约'+ru.sessions_to_peak.median+'个交易日内录得 +'+ru.run_pct.median+'%（n='+ru.n+'）');
+      }
+      var fr=e.flow_receipts||null;
+      if(fr&&fr.receiver&&fr.receiver.flow_5d_mn!=null){
+        var fm='$'+(fr.receiver.flow_5d_mn/1e6).toFixed(0)+'M';
+        rcEn.push('ETF flow 5d '+fm+(fr.receiver.flow_asof?' · as of '+esc(fr.receiver.flow_asof):''));
+        rcZh.push('ETF 5日资金 '+fm+(fr.receiver.flow_asof?' · 截至 '+esc(fr.receiver.flow_asof):''));
+      }
+
+      var laneClass='rcf-lane rcf-'+esc(etype.replace('correlation_break','contagion_break'));
+      html+='<div class="'+laneClass+'"'
+        +' data-tip-t-en="'+esc(stateLineEn)+'" data-tip-t-zh="'+esc(stateLineZh)+'"'
+        +' data-tip-en="'+esc(bodyEn.join(' '))+'" data-tip-zh="'+esc(bodyZh.join(''))+'"'
+        +(rcEn.length?' data-tip-rc-en="'+esc(rcEn.join(' · '))+'" data-tip-rc-zh="'+esc(rcZh.join(' · '))+'"':'')
+        +'>'
+        +'<span class="rcf-pill">'+donorName+'</span>'
+        +'<span class="rcf-arrow">&#x279C;</span>'
+        +'<span class="rcf-pill">'+receiverName+'</span>'
+        +'<span class="rcf-state">'+stateLine+'</span>'
+        +'<span class="rcf-stance '+stanceCls+'">'+stanceText+'</span>';
+      // Decay meter for faltering events
+      if(effectiveType==='faltering'&&h){
+        var stc=h.sessions_to_close!=null?h.sessions_to_close:(h.sessions_to_close_bound||null);
+        var lapse=h.lapse_count||0;
+        var bound=(stc!=null?stc:5);
+        var barPct=Math.max(0,Math.min(100,100*(1-lapse/Math.max(bound,1))));
+        html+='<div style="width:100%">'
+          +'<div class="rcf-decay"><div class="rcf-decay-bar" style="width:'+barPct.toFixed(0)+'%"></div></div>'
+          +(stc!=null?'<div class="rcf-decay-cap">'+t('may close in '+stc+' sessions','或于'+stc+'个交易日内关闭')+'</div>':'')
+          +'</div>';
+      }
+      html+='</div>';
+    });
+    // Footer
+    var asof=(ev&&ev.as_of)||'—';
+    var coldstarNote=(ev&&ev.coldstart)?
+      '<span class="rcf-coldstart-note"><span class="rcf-help"'
+      +' data-tip-t-en="Counts look reset" data-tip-t-zh="计数看似重置"'
+      +' data-tip-en="History was rebuilt last night, so the day counts start over. The events themselves are unchanged."'
+      +' data-tip-zh="昨夜重建了历史，因此天数从头计起。事件本身没有变化。">?</span></span>'
+      :'';
+    html+='<div class="rcf-footer">'
+      +'<span class="l-en">A heads-up on shifting leadership — not a buy list. as of '+esc(asof)+'</span>'
+      +'<span class="l-zh">领导权变化的提示——非买入清单。截至 '+esc(asof)+'</span>'
+      +' <span class="rcf-help" tabindex="0" role="button" aria-label="details"'
+      +' data-tip-t-en="How these are tracked" data-tip-t-zh="这些事件如何被跟踪"'
+      +' data-tip-en="Every event is logged and its outcome followed. Most are still being measured, so nothing here ranks, gates or sizes anything."'
+      +' data-tip-zh="每个事件都会记录并跟踪结果。多数仍在观察中，因此此处不排名、不门控、不调仓。"'
+      +' data-tip-rc-en="each series measured on its own history · Mag-7 = equal-weight basket, not the MAGS ETF · logging began 2026-06-25"'
+      +' data-tip-rc-zh="各序列以自身历史衡量 · 七巨头为等权篮子，非 MAGS ETF · 自 2026-06-25 起记录">?</span>'
+      +coldstarNote
+      +'</div>';
+    el.innerHTML=html;
+  }
+
+  /* ── leg display names for the closures strip ──────────────────────────────
+     Closure rows carry their OWN names (from_name_en/zh + to_name_en/zh, written by
+     engine/rotation_events.py) because a closed pair has left active[] — there is
+     nothing left in the payload to look a name up from. Rows written before that
+     landed, or a stale cached payload, fall through a ladder so the strip never
+     prints a machine slug (DESIGN_DOCTRINE Law 2):
+       1. names stored on the row
+       2. harvest from an active event in the SAME payload (matched on leg key)
+       3. prettified slug — last resort, never blocks the render
+     Step 3 has no translation to offer, so zh shows the prettified English. ── */
+  var LEGNAMES={};
+  function harvestLegNames(ev){
+    LEGNAMES={};
+    ((ev&&ev.active)||[]).forEach(function(e){
+      [e.from_leg,e.to_leg,e.donor,e.receiver].forEach(function(leg){
+        if(leg&&typeof leg==='object'&&leg.key&&(leg.name_en||leg.name_zh)){
+          LEGNAMES[leg.key]={en:leg.name_en||leg.name_zh,zh:leg.name_zh||leg.name_en};
+        }
+      });
+    });
+  }
+  var LEG_ACRONYMS={ai:'AI',etf:'ETF',reit:'REIT',ipo:'IPO',us:'US',hk:'HK',esg:'ESG'};
+  function prettifySlug(k){
+    var parts=String(k==null?'':k).split(/[_\-]+/).filter(Boolean);
+    if(!parts.length) return '';
+    return parts.map(function(w,i){
+      var a=LEG_ACRONYMS[w.toLowerCase()];
+      if(a) return a;
+      return i===0?w.charAt(0).toUpperCase()+w.slice(1):w;
+    }).join(' ');
+  }
+  function legName(row,side){
+    var stored=isZh()?(row[side+'_name_zh']||row[side+'_name_en'])
+                     :(row[side+'_name_en']||row[side+'_name_zh']);
+    if(stored) return stored;
+    var key=side==='from'?(row.from_leg||row.from_sector||row.donor)
+                         :(row.to_leg||row.to_sector||row.receiver);
+    if(key&&typeof key==='object') key=key.key;   // defensive: a nested leg object
+    if(!key) return '—';
+    var h=LEGNAMES[key];
+    if(h) return isZh()?h.zh:h.en;
+    return prettifySlug(key);
+  }
+
+  /* ── Part 5A: renderClosures — builds the #rc-closures strip ── */
+  function renderClosures(ev){
+    var el=document.getElementById('rc-closures');
+    if(!el) return;
+    // graceful degrade: no closures data → hide entirely
+    var closures=(ev&&(ev.closures||ev.closed_recent||ev.closed_tonight))||[];
+    if(!closures.length){ el.innerHTML=''; return; }
+    var REASON={
+      ratio_slope_flipped:{en:'the move reversed',zh:'走势反转'},
+      conditions_lapsed  :{en:'signals faded',    zh:'信号消退'},
+      ttl                :{en:'ran its course',    zh:'自然结束'}
+    };
+    harvestLegNames(ev);
+    var N=closures.length;
+    var listHtml='';
+    closures.forEach(function(c){
+      var donor=esc(legName(c,'from'));
+      var recv=esc(legName(c,'to'));
+      var rkey=c.reason||c.close_reason||'';
+      var rmap=REASON[rkey]||{en:esc(rkey),zh:esc(rkey)};
+      var reasonPlain=isZh()?rmap.zh:rmap.en;
+      var dayN=c.day_n!=null?c.day_n:'—';
+      listHtml+='<div class="rcx-row">'
+        +donor+' → '+recv+' · '
+        +t('ended: ','结束：')+reasonPlain+' · '
+        +t('lasted ','持续 ')+dayN+t(' sessions','个交易日')
+        +'</div>';
+    });
+    var expanded=false;
+    var id='rcx-list-'+Math.random().toString(36).slice(2,7);
+    el.innerHTML='<div class="rcx-strip">'
+      +'<span class="rcx-toggle" id="rcx-tog-'+id+'">'
+      +'<span class="l-en">Closed recently: '+N+' ▾</span>'
+      +'<span class="l-zh">近期关闭：'+N+' ▾</span>'
+      +'</span>'
+      +'<div class="rcx-list" id="'+id+'" style="display:none">'+listHtml
+      +'<div class="rcx-foot">'
+      +t('Shown so nothing disappears silently.','列出以避免事件悄然消失。')
+      +'</div></div></div>';
+    var tog=el.querySelector('#rcx-tog-'+id);
+    var lst=el.querySelector('#'+id);
+    if(tog&&lst){
+      tog.addEventListener('click',function(){
+        expanded=!expanded;
+        lst.style.display=expanded?'':'none';
+      });
+    }
+  }
+
+  function render(ev, frag){
+    var el=document.getElementById('rc-events-content');
+    if(!el) return;
+    var html='';
+    var active=(ev&&ev.active)||[];
+    if(!active.length){
+      html+='<p class="rc-quiet">'+t('No active rotation events — quiet state is a valid state.',
+        '当前无活跃轮动事件——安静状态是有效状态。')+'</p>';
+    }else{
+      var sevRank={major:0,notable:1,standard:2};
+      active=active.slice().sort(function(a,b){
+        var d=(sevRank[a.severity]!=null?sevRank[a.severity]:9)-(sevRank[b.severity]!=null?sevRank[b.severity]:9);
+        return d!==0?d:String(b.started||'').localeCompare(String(a.started||''));
+      });
+      html+='<div class="lst-wrap"><div class="rc-grid lst-collapse lst-cap4 is-collapsed">';
+      active.forEach(function(e){
+        var sev=e.severity||'standard';
+        var title=isZh()
+          ? esc(e.from_leg.name_zh)+' → '+esc(e.to_leg.name_zh)+'（'+esc(e.sector_name_zh)+'）'
+          : esc(e.from_leg.name_en)+' → '+esc(e.to_leg.name_en)+' ('+esc(e.sector_name_en)+')';
+        var r=e.receipts||{};
+        var rec='';
+        if(r.blowoff&&r.turn&&r.ratio){
+          rec=t('blowoff ','冲顶回落 ')+'−'+(r.blowoff.drawdown_pct*100).toFixed(0)+'%'
+            +' · '+t('off low ','低点回升 ')+pc(r.turn.off_low_pct)
+            +' · '+t('ratio ','比值 ')+pc(r.ratio.ratio_chg_10s)+'/10s';
+          // D-9: health state replaces the old (as of last confirmation) italic
+          var h=e.health||null;
+          if(h&&(h.weakening||h.lapse_count>=2||h.neg_run>=2)){
+            var stc=h.sessions_to_close!=null?h.sessions_to_close:(h.sessions_to_close_bound||null);
+            rec+=' <span style="color:var(--ink-warn, var(--warn));font-weight:600;">'
+              +t('Weakening — may close'+(stc!=null?' in '+stc+' sessions':''),
+                 '转弱——'+(stc!=null?'或于'+stc+'个交易日内关闭':'或将关闭'))+'</span>';
+          } else if(h&&h.lapse_count>0&&!e.confirmed_tonight){
+            rec+=' <span style="color:var(--muted);font-style:italic;">'
+              +t('Cooling — last confirmed '+esc(e.asof||''),'降温——最近确认 '+esc(e.asof||''))+'</span>';
+          }
+          // RC-R10 honest late-ruler: the measured census distribution instead of a
+          // binary "late" instinct. Descriptive only, never a gate.
+          var ru=(ev&&ev.ruler&&ev.ruler.modern&&ev.ruler.modern.run_pct)?ev.ruler.modern:null;
+          if(ru&&ru.n>=5){
+            rec+='<br>'+t('vs modern-era handoffs: median run ','对照现代样本：中位行情 ')
+              +'+'+ru.run_pct.median+'% ('+t('p75 ','75分位 ')+'+'+ru.run_pct.p75+'%), '
+              +t('peaking ~','约 ')+ru.sessions_to_peak.median
+              +t(' sessions in (n='+ru.n+', descriptive only)',' 个交易日见顶（n='+ru.n+'，仅描述性）');
+          }
+        }
+        html+='<div class="rc-card rc-'+esc(sev)+'">'
+          +'<div class="rc-hd"><span class="rc-sev '+esc(sev)+'">'+esc(sev)+'</span>'
+          +'<span class="rc-title">'+title+'</span>'
+          +'<span class="rc-day">'+t('day ','第')+esc(e.day_n)+t('',' 天')+' · '+esc(e.started)+'</span></div>'
+          +'<div class="rc-copy">'+esc(isZh()?e.copy_zh:e.copy_en)+'</div>'
+          +(rec?'<div class="rc-receipts">'+rec+'</div>':'')
+          +'</div>';
+      });
+      html+='</div>';
+      if(active.length>4){
+        html+='<button class="lst-more" type="button" aria-expanded="false"><span class="lm-show">'
+          +t('Show more','显示更多')+' ▾</span><span class="lm-hide">'+t('Show less','收起')+' ▴</span></button>';
+      }
+      html+='</div>';
+    }
+    var rows=(frag&&frag.sectors)||[];
+    var flagged=rows.filter(function(r){return r.fragmented;});
+    if(flagged.length){
+      html+='<div class="rc-frag"><div class="rc-frag-hd">'
+        +t('Fragmented sectors — aggregate reads not representative',
+           '内部分化板块——聚合读数或失真')+'</div><div class="rc-frag-chips">';
+      flagged.forEach(function(r){
+        html+='<span class="rc-frag-chip"><b>'+esc(isZh()?r.name_zh:r.name_en)+' ('+esc(r.etf)+')</b> — '
+          +esc(isZh()?r.copy_zh:r.copy_en)+'</span>';
+      });
+      // D-8: stance for fragmentation section
+      html+='</div><div style="font-size:10.5px;color:var(--muted);margin-top:6px;">'
+        +t('Judge the pieces, not the sector average.','看内部分支，别看板块平均。')
+        +'</div></div>';
+    }
+    // Dead-end #9: cross-sector callout when an into_strength event is active
+    if(ev){
+      var xsActive=(ev.active||[]).filter(function(e){
+        return (e.event_type==='into_strength'||e.event_type==='cross_handoff')&&(e.to_sector||e.to_leg);
+      });
+      if(xsActive.length){
+        xsActive.forEach(function(e){
+          var toSec=isZh()
+            ?(e.to_sector_zh||e.sector_name_zh||(e.to_leg&&(e.to_leg.name_zh||e.to_leg.name_en))||'')
+            :(e.to_sector_en||e.sector_name_en||(e.to_leg&&(e.to_leg.name_en||e.to_leg.key))||'');
+          if(toSec){
+            html+='<div style="font-size:11px;color:var(--ink-link, var(--link));margin-top:8px;">'
+              +t('Relative leadership is shifting toward '+esc(toSec)+' — see the recorded comparison above.',
+                 '相对领导力正向'+esc(toSec)+'转移——见上方已记录的比较。')
+              +'</div>';
+          }
+        });
+      }
+    }
+    html+='<div class="rc-caveat">'
+      +t('A heads-up, not a buy signal — these events don\'t rank, gate, or size anything, and most are still being measured. as of ',
+         '仅为提示，非买入信号——这些事件不排名、不设门控、不调仓位，且多数仍在观察中。截至 ')
+      +esc((ev&&ev.as_of)||'—')+'</div>';
+    el.innerHTML=html;
+  }
+
+  /* ── EW-P4 loading shell for the observation glance: "Checking" — never a calm,
+     "normal" or "no change" word while evidence has not resolved. ── */
+  function ewLoadingHtml(){
+    return '<section class="rc-ew" id="rc-ew" role="group" aria-labelledby="rc-ew-title" data-ew-state="loading" data-ew-scope="tech_leadership" data-observation-id="">'
+      +'<p class="rc-ew-head"><span class="rc-ew-scope" id="rc-ew-title">'+L('US Technology leadership','美国科技领涨')+'</span> <span class="rc-ew-state">'+L('Checking','核对中')+'</span></p>'
+      +'<p class="rc-ew-what">'+L('Checking rotation evidence…','正在核对轮动依据…')+'</p>'
+      +'</section>';
+  }
+
+  function load(){
+    if(!mount()) return;
+    var earlyEl=document.getElementById('rc-early-context');
+    var ewLang=isZh()?'zh':'en';
+    if(earlyEl) earlyEl.innerHTML=ewLoadingHtml();
+    Promise.all([
+      fetch('marketdata/rotation_events.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+      fetch('marketdata/sector_fragmentation.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+    ]).then(function(res){
+      var earlyEl=document.getElementById('rc-early-context');
+      var ev=res[0];
+      var ec=(ev&&typeof ev==='object'&&!Array.isArray(ev)&&ev.early_context&&typeof ev.early_context==='object'&&!Array.isArray(ev.early_context))?ev.early_context:null;
+      var view=ec?ec.latest_observation:undefined;
+      var ewHtml=ewGlanceHtml(view,ec,(ev&&typeof ev.as_of==='string')?ev.as_of:null,ewLang,Date.now());
+      if(earlyEl) earlyEl.innerHTML=ewHtml+earlyContextHtml(res[0],isZh()?'zh':'en',Date.now());
+      if(!res[0]&&!res[1]){
+        var el=document.getElementById('rc-events-content');
+        if(el) el.innerHTML='<p class="rc-quiet"><span class="l-en">Rotation-event data unavailable.</span><span class="l-zh">轮动事件数据暂不可用。</span></p>';
+        return;
+      }
+      renderFlowLanes(res[0]);
+      renderClosures(res[0]);
+      render(res[0],res[1]);
+    }).catch(function(){
+      /* fail-soft for the event rail; the observation glance still names its own
+         scoped unavailability instead of a silent blank. */
+      var el=document.getElementById('rc-early-context');
+      if(el) el.innerHTML=ewGlanceHtml(null,null,null,isZh()?'zh':'en',Date.now());
+    });
+  }
+
+  function boot(){
+    injectStyle();
+    load();
+    var _rcObs=new MutationObserver(load);
+    _rcObs.observe(document.documentElement,{attributes:true,attributeFilter:['data-lang','data-theme']});
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+})();

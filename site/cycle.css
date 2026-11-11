@@ -189,8 +189,7 @@ html[data-theme="light"] .cyc-chip.on { color: #fff; }
 .rg-k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .rg-v { font-size: 16px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; margin: 1px 0; }
 .rg-n { font-size: 10px; color: var(--muted); line-height: 1.25; }
-.rg-tilt { font-size: 12.5px; line-height: 1.55; color: var(--muted); border-left: 2px solid color-mix(in srgb, var(--warn) 60%, transparent);
-  padding-left: 11px; margin: 4px 0 0; }
+.rg-tilt { font-size: 12.5px; line-height: 1.55; color: var(--muted); padding-left:0; margin: 4px 0 0; }
 
 .xc-map { display: flex; flex-direction: column; gap: 11px; }
 .xc-row .xc-rh { font-size: 12px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
@@ -221,7 +220,7 @@ html[data-theme="light"] .cyc-chip.on { color: #fff; }
   border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; margin-bottom: 14px;
   transition: all .18s ease; }
 .cyc-back:hover { color: var(--text); border-color: var(--line2, var(--muted)); transform: translateX(-2px); }
-.cyc-fhead { --c: var(--link); border-left: 3px solid var(--c); padding-left: 12px; margin-bottom: 13px; }
+.cyc-fhead { --c: var(--link); padding-left:0; margin-bottom: 13px; }
 .cyc-ftitle { font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--text); line-height: 1.1; }
 .cyc-fsub { font-size: 12px; color: var(--muted); margin: 2px 0 9px; }
 .cyc-fchips { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -261,7 +260,7 @@ html[data-theme="light"] .cyc-chip.on { color: #fff; }
 .cyc-card { --c: var(--link); background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
   padding: 14px 15px 12px; cursor: pointer; position: relative; overflow: hidden;
   transition: transform .26s var(--ease), box-shadow .26s var(--ease), border-color .26s var(--ease), opacity .26s var(--ease); }
-.cyc-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c); opacity: .85; }
+.cyc-card::before {content:none;}
 .cyc-card::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--c) 12%, transparent), transparent 55%); opacity: 0; transition: opacity .3s ease; }
 .cyc-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 45%, var(--line));

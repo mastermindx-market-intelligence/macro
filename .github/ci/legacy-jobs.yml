@@ -21986,12 +21986,14 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
     # Chairman rule: no decorative container-edge stripe. The estate guard reads
-    # every template/app UI source, including inline styles and emitted rails.
-    # Its declared trigger closure must cover both complete source roots.
+    # every template/app UI source plus retained direct-site/builder CSS.
+    # The trigger closure covers those source roots and extracted site assets.
     scope: exclusive
     paths:
       - templates/**
       - app/**
+      - site/**
+      - scripts/build_vector.py
       - tests/test_container_edge_stripes.py
     runs-on: ubuntu-latest
     steps:

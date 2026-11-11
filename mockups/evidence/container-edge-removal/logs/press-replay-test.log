@@ -1,0 +1,52 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_render_replay_is_idempotent_against_the_committed_estate _________
+
+    def test_render_replay_is_idempotent_against_the_committed_estate():
+        """A press emit with no new article must write NOTHING under site/blog/.
+    
+        This is the property that stops the lane rewriting pages it does not own.
+        Two render-lane sweeps cannot be replayed here — daily.yml's wh_banner tag
+        and the `?v=` stamps whose hashes track shared assets — so a raw byte
+        comparison reports every already-committed article as "changed" and strips
+        the banner off six of them on the way past.  `build_free_content --check`
+        normalises exactly those two things away, so the damage is invisible to it:
+        caught once by hand, pinned here so it stays caught.
+    
+        Self-healing: if the property ever breaks, the snapshot is restored before
+        the assertion fires, so a red test never leaves a dirty tree behind.
+        """
+        pytest.importorskip("jinja2")
+        site_blog = _REPO / "site" / "blog"
+        if not site_blog.exists():
+            pytest.skip("no committed site/blog to compare against")
+    
+        before = {p: p.read_bytes() for p in site_blog.rglob("*") if p.is_file()}
+        try:
+            copied, unowned = R._render_blog_subtree(_REPO)
+        finally:
+            # Restore modified files AND remove any the render created — a restore
+            # that only rewrites known paths leaves new ones behind, which is how a
+            # "self-healing" test quietly pollutes the tree it was protecting.
+            for path in list(site_blog.rglob("*")):
+                if not path.is_file():
+                    continue
+                if path in before:
+                    if path.read_bytes() != before[path]:
+                        path.write_bytes(before[path])
+                else:
+                    path.unlink()
+        assert copied == [], f"press emit rewrote pages it does not own: {copied}"
+>       assert unowned == [], f"press emit minted assets outside its git-add scope: {unowned}"
+E       AssertionError: press emit minted assets outside its git-add scope: ['site/assets/css/79450472.css', 'site/assets/css/f8b8eec3.css']
+E       assert ['site/assets...f8b8eec3.css'] == []
+E         
+E         Left contains 2 more items, first extra item: 'site/assets/css/79450472.css'
+E         Use -v to get more diff
+
+tests/test_press_run.py:1174: AssertionError
+
+NOTE: sparse worktree — verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_run.py::test_render_replay_is_idempotent_against_the_committed_estate
+1 failed in 36.95s

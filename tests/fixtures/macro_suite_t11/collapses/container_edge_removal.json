@@ -1,0 +1,21 @@
+{
+  "why": "PR #10654 removes four decorative Macro Command edge-bar spans while preserving navigation, state labels, links and accessibility text. Reconstruct only those exact deleted elements for comparison with the immutable paired T11 goldens.",
+  "pairs": [
+    [
+      ">\n\n          <span class=\"mc-rail-text mc-rail-full\">",
+      ">\n          <span class=\"mc-rail-bar\" aria-hidden=\"true\"></span>\n          <span class=\"mc-rail-text mc-rail-full\">"
+    ],
+    [
+      "<p class=\"mc-arrival\" data-mc-arrival hidden>\n\n        <span class=\"mc-arrival-text\">",
+      "<p class=\"mc-arrival\" data-mc-arrival hidden>\n        <span class=\"mc-arrival-bar\" aria-hidden=\"true\"></span>\n        <span class=\"mc-arrival-text\">"
+    ],
+    [
+      ">\n\n        <span class=\"mq-sr\">",
+      ">\n        <span class=\"mc-stance-bar\" aria-hidden=\"true\"></span>\n        <span class=\"mq-sr\">"
+    ],
+    [
+      ">\n\n              <span class=\"mc-dest-title\">",
+      ">\n              <span class=\"mc-dest-bar\" aria-hidden=\"true\"></span>\n              <span class=\"mc-dest-title\">"
+    ]
+  ]
+}

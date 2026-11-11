@@ -1,0 +1,4 @@
+outcome: captured
+pages: 8  states: 64/64 captured
+manifest: mockups/evidence/container-edge-removal/published-final/manifest.json
+smells: mockups/evidence/container-edge-removal/published-final/smells.json

@@ -263,35 +263,10 @@ def test_the_loading_and_error_states_are_additive_only(theme):
     )
 
 
-def test_no_consumer_wires_the_new_primitives_yet(theme):
-    """Blast-radius guard for THIS PR: additive only, zero consumers estate-wide.
-
-    The shell builder (P-MP1-SHELL / PR #6049 lane) owns wiring .skel/.mx-error into
-    actual markup next. A consumer appearing in the same PR that ports the primitive
-    would be undisclosed scope creep against this PR's own stated blast radius.
-    """
-    offenders = []
-    for path in sorted((ROOT / "templates").rglob("*")):
-        if not path.is_file() or path.suffix not in {".j2", ".html"}:
-            continue
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        # Token-exact: a naive `\bskel\b` false-boundaries on the hyphen in
-        # page-local compounds like "trd-skel"/"oew-skel-bar"/"rx-skel" (all of
-        # which are pre-existing, unrelated page classes, not this primitive) —
-        # a hyphen is a non-word char, so `\b` fires on both of its sides and a
-        # substring match would misreport every one of them as a consumer.
-        # Split each class attribute on whitespace and check for the exact
-        # token "skel" instead.
-        has_skel = any(
-            "skel" in cls.split()
-            for cls in re.findall(r'class=["\']([^"\']*)["\']', text)
-        )
-        if has_skel or "mx-error" in text:
-            offenders.append(path.relative_to(ROOT).as_posix())
-    assert not offenders, (
-        f"unexpected consumers of .skel/.mx-error found: {offenders} — this PR is "
-        "additive-only; wiring belongs to the shell builder (P-MP1-SHELL)"
-    )
+# The introduction PR's temporary "zero consumers" check has expired: the
+# accepted dashboard, GMI and sector pages now consume these primitives.
+# Their definitions, language cascade and inherited behavior remain guarded
+# above; the estate must be allowed to use its shared loading/error components.
 
 
 # ── (c) the archetype-B board ladder + the lifecycle weight grammar (C8-C) ──────────
