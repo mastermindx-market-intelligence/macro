@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any, Mapping, MutableMapping, Sequence
 
 COVENANT_TERM_SCHEMA = "capital_structure.covenant_term_observation.v1"
@@ -532,6 +532,17 @@ def extract_candidates(manifest: Mapping[str, Any], text: str) -> list[dict[str,
     return candidates
 
 
+def _chronology_instant(value: str, field: str) -> datetime:
+    """Compare source/correction clocks as aware UTC instants, not spelling."""
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise ValueError("timezone is required")
+        return parsed.astimezone(timezone.utc)
+    except (AttributeError, TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{field} must be a valid timezone-aware timestamp") from exc
+
+
 def _materialize_observation(candidate: Mapping[str, Any], prior: Mapping[str, Any] | None,
                               generated_at: str) -> dict[str, Any]:
     record: MutableMapping[str, Any] = dict(candidate)
@@ -542,7 +553,8 @@ def _materialize_observation(candidate: Mapping[str, Any], prior: Mapping[str, A
     if prior is not None:
         if _semantic_body(record) == _semantic_body(prior):
             return dict(prior)  # relabel-only: no phantom version (test 7)
-        if generated_at <= prior["point_in_time"]["available_at"]:
+        if (_chronology_instant(generated_at, "generated_at") <=
+                _chronology_instant(prior["point_in_time"]["available_at"], "prior available_at")):
             raise ValueError("generated_at must be later than a corrected covenant-term observation")
         version["correction_version"] = prior["version"]["correction_version"] + 1
         version["correction_of"] = prior["observation_id"]
@@ -557,7 +569,8 @@ def _materialize_observation(candidate: Mapping[str, Any], prior: Mapping[str, A
 
     if pit.get("available_at") is None:
         pit["available_at"] = generated_at
-    if pit["available_at"] < pit.get("source_available_at", pit["available_at"]):
+    if (_chronology_instant(pit["available_at"], "available_at") <
+            _chronology_instant(pit.get("source_available_at", pit["available_at"]), "source_available_at")):
         raise ValueError("available_at may not precede source_available_at")
 
     relationships.setdefault("amends", [])

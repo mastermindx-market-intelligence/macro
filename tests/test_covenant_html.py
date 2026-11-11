@@ -116,3 +116,69 @@ def test_other_coverage_ratios_cannot_be_relabelled_fixed_charge():
     raw = raw.replace(b'Consolidated Fixed Charge Coverage Ratio', b'Unencumbered Interest Coverage Ratio')
     with pytest.raises(ct.CovenantSpanUnbound):
         compile_raw(raw)
+
+@pytest.mark.parametrize("source_at,generated_at,accepted", [
+    ("2026-10-19T20:00:00Z", "2026-10-19T21:00:00Z", True),
+    ("2026-10-19T20:00:00Z", "2026-10-19T19:00:00Z", False),
+    ("2026-10-19T20:00:00Z", "2026-10-19T21:00:00+02:00", False),
+    ("2026-10-19T20:00:00Z", "2026-10-19T20:00:00+00:00", True),
+    ("2026-10-19T20:00:00Z", "2026-10-19T20:00:00.100000Z", True),
+])
+def test_source_admission_compares_instants(source_at, generated_at, accepted):
+    manifest, raw = fixture()
+    manifest["retrieval"]["first_seen_at"] = source_at
+    if not accepted:
+        with pytest.raises(ValueError, match="precede"):
+            ct.compile_observations(manifest, raw.decode(), generated_at=generated_at)
+        return
+    rows = ct.compile_observations(manifest, raw.decode(), generated_at=generated_at)
+    assert rows
+    assert rows[0]["point_in_time"]["available_at"] == generated_at
+    assert rows[0]["point_in_time"]["source_available_at"] == source_at
+
+
+@pytest.mark.parametrize("prior_at,generated_at,accepted", [
+    ("2026-10-19T20:00:00Z", "2026-10-19T21:00:00Z", True),
+    ("2026-10-19T20:00:00Z", "2026-10-19T19:00:00Z", False),
+    ("2026-10-19T20:00:00Z", "2026-10-19T21:00:00+02:00", False),
+    ("2026-10-19T20:00:00+00:00", "2026-10-19T20:00:00Z", False),
+    ("2026-10-19T20:00:00Z", "2026-10-19T20:00:00.100000Z", True),
+])
+def test_corrections_require_strictly_later_instant(prior_at, generated_at, accepted):
+    import copy
+    manifest, raw = fixture()
+    manifest["retrieval"]["first_seen_at"] = "2026-10-18T00:00:00Z"
+    prior = ct.compile_observations(manifest, raw.decode(), generated_at=prior_at)
+    for row in prior:
+        row["reported"]["raw"] = row["normalized"]["raw"] = "1.25 to 1.00"
+    original = copy.deepcopy(prior)
+    if not accepted:
+        with pytest.raises(ValueError, match="later"):
+            ct.compile_observations(manifest, raw.decode(), generated_at=generated_at,
+                                    prior_observations=prior)
+    else:
+        rows = ct.compile_observations(manifest, raw.decode(), generated_at=generated_at,
+                                       prior_observations=prior)
+        assert rows[0]["version"]["correction_version"] == 2
+        assert rows[0]["version"]["correction_of"] == prior[0]["observation_id"]
+        assert rows[0]["relationships"]["supersedes"] == [prior[0]["observation_id"]]
+        assert rows[0]["point_in_time"]["available_at"] == generated_at
+    assert prior == original
+
+
+@pytest.mark.parametrize("clock", ["bad", "2026-10-19", "2026-10-19T21:00:00",
+                                    "0001-01-01T00:00:00+14:00",
+                                    "9999-12-31T23:59:59-14:00", None])
+def test_invalid_generated_clock_refuses(clock):
+    manifest, raw = fixture()
+    with pytest.raises(ValueError, match="timezone-aware"):
+        ct.compile_observations(manifest, raw.decode(), generated_at=clock)
+
+
+def test_semantic_replay_preserves_prior_bytes_and_version():
+    manifest, raw = fixture()
+    prior = ct.compile_observations(manifest, raw.decode(), generated_at="2026-10-19T20:00:00Z")
+    replay = ct.compile_observations(manifest, raw.decode(),
+                                    generated_at="2026-10-19T21:00:00+02:00",
+                                    prior_observations=prior)
+    assert replay == prior
