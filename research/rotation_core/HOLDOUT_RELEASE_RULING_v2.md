@@ -160,3 +160,20 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
 - **Silent, so the pre-read choice stands:** 252 × sessions ÷ weekday sessions, which is 252 on any window without Saturdays.
 - **Can it change a SIGN against fixed 252?** No. Within a window or era it is one positive constant multiplying a mean.
 - **Can it change the pooled p?** Yes, in principle. Pre-1998 gets a factor above 252 (Saturdays before 1952) while 2020–2025 gets exactly 252. That changes the relative scale of the two windows in the years-weighted pooled mean, and so the p-value. Therefore, by the R14 principle, the pooled conjunction is computed under both conventions (this one and fixed 252), and significance must hold under both.
+
+## F4 — tradable fund tier (parent, about 13:25Z: built in the same engine change set, before the R15 rerun and stage 1)
+
+- **Frozen words built, nothing more** (`historical_tier.tradable_second_confirmation`):
+  - **signal:** "both keys computed on the industry portfolios exactly as in the primary test; only execution differs". The header is NOT silent here: the fund tier uses the industry-portfolio H1 state, mapped to fund sessions; nothing is recomputed on funds.
+  - **execution:** "SPDR sector funds; offence = three highest trailing-252-session-beta funds, defence = three lowest, beta on data to t-1, re-formed monthly, among funds with >= 252 sessions of history ...; base = equal weight of eligible funds; 5 bp per side". Implemented by `form_fund_legs` (the shared `form_legs` with leg size 3 and `FEE_FUND_BP`), simulated by the shared `rc.simulate` through `simulate_states`.
+  - **veto (exact words):** "A pass on industry portfolios with a negative point estimate on the tradable funds in 2020-2025 is reported as 'signal not shown to be tradable', not as a pass." One function, `tradable_veto`; it produces no positive evidence.
+- **Data:** only through `load_yahoo_tr`, sealed at 2019-12-31 until a stage-2 release.
+- **Silent choices, made now, before any fund number** (items 9–15):
+  9. **Beta reference for funds:** SPY total return (the header says "beta" without naming the market for funds; SPY is the fund tier's market and its declared yardstick).
+  10. **State mapping:** the fund book holds the industry state decided at the last French industry date on or before each fund session. The two calendars differ only on rare holidays.
+  11. **Base readings:** the fund base is built under both R14 readings (equal every session; equal at month start then drifting), and the veto's "negative point estimate" is checked under both.
+  12. **Fees in the veto:** the point estimate is checked at 5 bp and at 2× (10 bp), consistent with R13-g(ii)'s stricter reading; any negative estimate fires the veto.
+  13. **Contrast:** "point estimate" means the fund book's annualised excess over its own exposure-matched mix of fund offence/defence/base (the same primary-contrast definition as the industry test), mix built on 2020–2025 alone.
+  14. **Ties in beta ranking:** stable sort by beta then the fund order XLB … XLC (as the industry legs).
+  15. **Named mapping (descriptive, hindsight):** offence XLK, defence XLP/XLU/XLV, the same H1 state, base = all eligible funds; reported beside the tier with no pass/fail.
+- **Pre-2020 fund span:** may be printed by the R15 rerun as a labelled descriptive table (not selection, not evidence). Stage 1 does not touch funds.

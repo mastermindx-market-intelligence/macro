@@ -260,7 +260,9 @@ class Legs:
 
 
 def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252, min_pairs: int = 200,
-              fee_bp: float = FEE_INDUSTRY_BP) -> Legs:
+              fee_bp: float = FEE_INDUSTRY_BP, leg_size: int | None = None, fixed: tuple | None = None) -> Legs:
+    """Industries: legs = top / bottom third by trailing beta. Funds (F4): leg_size=3. fixed=(offence, defence)
+    holds named members (named mapping, descriptive), base = all eligible."""
     s = vw.index
     valid = vw.notna()
     nvalid = valid.cumsum()
@@ -282,7 +284,12 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
         if len(b) < 6:
             continue
         bs = pd.Series(b).sort_values(kind="mergesort")
-        k = len(bs) // 3
+        if fixed is not None:
+            off = [c for c in fixed[0] if c in b]; dfn = [c for c in fixed[1] if c in b]
+            if off and dfn:
+                formed[t] = (off, dfn, list(bs.index))
+            continue
+        k = leg_size if leg_size is not None else len(bs) // 3
         formed[t] = (list(bs.index[-k:]), list(bs.index[:k]), list(bs.index))
     keys = pd.DatetimeIndex(sorted(formed))
     R = pd.DataFrame(np.nan, index=s, columns=["OFF", "DEF", "BASE", "BASE_DRIFT"])
@@ -503,6 +510,46 @@ def base_view(legs_r: pd.DataFrame, base: str = "eq") -> pd.DataFrame:
     if base == "drift":
         out["BASE"] = legs_r["BASE_DRIFT"]
     return out
+
+
+# --------------------------------------------------------------------------- F4: tradable fund tier
+FUNDS = ["XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY", "XLRE", "XLC"]
+NAMED_OFFENCE, NAMED_DEFENCE = ["XLK"], ["XLP", "XLU", "XLV"]
+
+
+def load_fund_panel(yahoo_dir, end, tickers=FUNDS) -> tuple[pd.DataFrame, pd.Series]:
+    """Fund daily total returns and SPY (the fund tier's beta reference), all via the sealed loader."""
+    yd = Path(yahoo_dir)
+    rets = {t: load_yahoo_tr(yd / f"{t}.parquet", end).pct_change(fill_method=None) for t in tickers}
+    spy = load_yahoo_tr(yd / "SPY.parquet", end).pct_change(fill_method=None)
+    sess = spy.index
+    R = pd.DataFrame({t: r.reindex(sess) for t, r in rets.items()})
+    return R, spy
+
+
+def form_fund_legs(fund_r: pd.DataFrame, spy_r: pd.Series, fixed=None) -> Legs:
+    """Header tradable tier: offence = 3 highest trailing-252-session beta (to SPY, data to t-1), defence = 3 lowest,
+    among funds with >= 252 observed sessions; base = equal weight of eligible funds; 5 bp per side."""
+    return form_legs(fund_r, spy_r, min_valid=252, min_pairs=200, fee_bp=FEE_FUND_BP, leg_size=3, fixed=fixed)
+
+
+def map_states_to_sessions(st: pd.Series, sessions: pd.DatetimeIndex) -> pd.Series:
+    """Industry state decided at the last industry date <= each fund session (signals from the industry
+    portfolios, execution on funds)."""
+    s = st.dropna()
+    pos = np.searchsorted(s.index.values, pd.DatetimeIndex(sessions).values, side="right") - 1
+    vals = np.full(len(sessions), np.nan)
+    ok = pos >= 0
+    vals[ok] = s.values[pos[ok]]
+    return pd.Series(vals, index=sessions)
+
+
+def tradable_veto(fund_estimates: dict) -> bool:
+    """Header rule: 'A pass on industry portfolios with a negative point estimate on the tradable funds in
+    2020-2025 is reported as signal not shown to be tradable, not as a pass.' True = veto fires. fund_estimates
+    maps each evaluated reading (both R14 base readings; 5 bp and 2x = 10 bp fees) to the point estimate of the fund
+    book's excess over its exposure-matched mix on 2020-2025. Any negative estimate fires the veto."""
+    return any(v < 0 for v in fund_estimates.values())
 
 
 def simulate_states(st: pd.Series, legs: Legs, rf: pd.Series, start, end, cash_for_defend=False,
