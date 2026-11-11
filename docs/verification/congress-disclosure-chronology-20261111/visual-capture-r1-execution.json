@@ -1,0 +1,31 @@
+{
+  "started_at": "2026-11-11T23:03:02.036922+00:00",
+  "finished_at": "2026-11-11T23:03:24.854231+00:00",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/capture_page_evidence.py",
+    "--site-dir",
+    "/tmp/terminal-estate-congress-chronology-20261111-c3/visual-fixture-r1/site",
+    "--routes",
+    "/congress_trades.html",
+    "--viewports",
+    "desktop,mobile",
+    "--locales",
+    "en,zh",
+    "--themes",
+    "dark,light",
+    "--max-pages",
+    "1",
+    "--output-dir",
+    "mockups/evidence/congress-disclosure-chronology-20261111/png",
+    "--manifest",
+    "mockups/evidence/congress-disclosure-chronology-20261111/manifest.json",
+    "--smells",
+    "mockups/evidence/congress-disclosure-chronology-20261111/smells.json",
+    "--emit-md",
+    "mockups/evidence/congress-disclosure-chronology-20261111/smells.md"
+  ],
+  "exit_code": 0,
+  "manifest_exists": true,
+  "fixture_provenance_sha256": "8e31e55cd23d72c3fee0d298312691333982a072cb63ce8ffc553df86a5e8763"
+}

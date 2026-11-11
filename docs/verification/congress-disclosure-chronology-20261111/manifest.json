@@ -75,6 +75,14 @@
       "gzip_sha256": "dc4fa1a88368d41b274b5535876ce1124700de111936fccdab7bb9baaa6cf030"
     }
   },
-  "outcome": "LOCAL_SOURCE_AND_NATIVE_FIXTURE_QUALIFIED",
-  "remaining": "Hosted CI, incumbent merge and real installed/render consumer proof remain separate."
+  "outcome": "LOCAL_SOURCE_NATIVE_FIXTURE_AND_VISUAL_QUALIFIED",
+  "remaining": "Hosted required CI, incumbent merge, natural data-health execution and real installed/render consumer proof remain separate.",
+  "followup": {
+    "visual_packet": "mockups/evidence/congress-disclosure-chronology-20261111",
+    "visual_qualification_sha256": "b7a313290f49f96f481eff2582b621ce26e63cff105d5920476e2229461c0da1",
+    "fixture_provenance_sha256": "8e31e55cd23d72c3fee0d298312691333982a072cb63ce8ffc553df86a5e8763",
+    "ci_owner_wiring_sha256": "f1152b86b81b4e53f129ef6e05d5c714696ce1d1744c3e99e1d3d38b84eef8de",
+    "production_sources_unchanged_from": "fcc911bdef8c59c914f412188bb600be6f796225",
+    "new_test_hosted_owner": "existing data-health gate:data; PR code gate is not suite execution proof"
+  }
 }

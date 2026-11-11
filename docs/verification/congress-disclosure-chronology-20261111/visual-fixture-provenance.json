@@ -1,0 +1,213 @@
+{
+  "classification": "SYNTHETIC_NATIVE_FIXTURE_NOT_LIVE_DATA",
+  "source_head": "fcc911bdef8c59c914f412188bb600be6f796225",
+  "fixture_cutoff": "2026-11-11",
+  "rows": [
+    {
+      "Ticker": "BASE",
+      "Representative": "Fixture Current",
+      "BioGuideID": "FixtureCurrent",
+      "Party": "D",
+      "House": "House",
+      "Transaction": "Purchase",
+      "Range": "$1,001 - $15,000",
+      "Amount": 8000,
+      "TransactionDate": "2026-10-01",
+      "ReportDate": "2026-11-10",
+      "ExcessReturn": 0
+    },
+    {
+      "Ticker": "BASE",
+      "Representative": "Missing",
+      "BioGuideID": "Missing",
+      "Party": "D",
+      "House": "House",
+      "Transaction": "Purchase",
+      "Range": "$1,001 - $15,000",
+      "Amount": 8000,
+      "TransactionDate": "2026-10-01",
+      "ReportDate": null,
+      "ExcessReturn": 0
+    },
+    {
+      "Ticker": "BASE",
+      "Representative": "Malformed",
+      "BioGuideID": "Malformed",
+      "Party": "D",
+      "House": "House",
+      "Transaction": "Purchase",
+      "Range": "$1,001 - $15,000",
+      "Amount": 8000,
+      "TransactionDate": "2026-10-01",
+      "ReportDate": "not-a-date",
+      "ExcessReturn": 0
+    },
+    {
+      "Ticker": "BASE",
+      "Representative": "Inverted",
+      "BioGuideID": "Inverted",
+      "Party": "D",
+      "House": "House",
+      "Transaction": "Purchase",
+      "Range": "$1,001 - $15,000",
+      "Amount": 8000,
+      "TransactionDate": "2026-11-11",
+      "ReportDate": "2026-11-10",
+      "ExcessReturn": 0
+    },
+    {
+      "Ticker": "BASE",
+      "Representative": "Future",
+      "BioGuideID": "Future",
+      "Party": "D",
+      "House": "House",
+      "Transaction": "Purchase",
+      "Range": "$1,001 - $15,000",
+      "Amount": 8000,
+      "TransactionDate": "2026-10-01",
+      "ReportDate": "2026-11-12",
+      "ExcessReturn": 0
+    }
+  ],
+  "summary": {
+    "n_disclosures_window": 1,
+    "n_total": 5,
+    "n_tickers": 1,
+    "n_important": 0,
+    "n_act_now": 0,
+    "n_bipartisan": 0,
+    "n_front_line": 0,
+    "as_of": "2026-11-10",
+    "cutoff_date": "2026-11-11"
+  },
+  "snapshots": [
+    {
+      "desk": "congress",
+      "rows": [
+        {
+          "ticker": "BASE",
+          "rank": 1,
+          "score": 8.7,
+          "lean": 1,
+          "gate_tier": null,
+          "covered": false,
+          "unconfirmed": true,
+          "front_line": false
+        }
+      ],
+      "asof": "2026-11-11"
+    }
+  ],
+  "writer": "lib.pages.write_page, after native builder/Jinja output",
+  "assets": "lib.site_assets.copy_asset with exact source config.yml; no .env or browser credentials copied",
+  "live_config_git_blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+  "source_sha256": {
+    "engine/congress_members.py": "c6c4260206baf20738b0702ac36cb38e8212ce2277098cb8e64686ddedfb6c92",
+    "scripts/build_congress.py": "53a053c7484cc1e2836ff6fe312d7da76e34419120cf2af96a00de421088d1db",
+    "templates/congress_trades.html.j2": "d1959a6506d042ef8a46ea29dbd06ff023b64e9c435296b920c2fd3e0b37e224",
+    "tests/test_congress_chronology.py": "85f7a8ce6a9c0db17d2d572a8d81a48c81d7de7b0cc2a850fcfabc25736f428c",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
+  "emitted_files": {
+    "theme.css": {
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "bytes": 227583
+    },
+    "logo_config.js": {
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "bytes": 202
+    },
+    "shared_shell_bridge.js": {
+      "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+      "bytes": 51296
+    },
+    "congress_trades.html": {
+      "sha256": "1f229ee403948cea7a14bcc8b79c2070c3921d70321f466d879522c964f965cb",
+      "bytes": 101999
+    },
+    "live_config.js": {
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "bytes": 367
+    },
+    "shared_shell.css": {
+      "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "bytes": 467
+    },
+    "theme.js": {
+      "sha256": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71",
+      "bytes": 280236
+    },
+    "account.js": {
+      "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+      "bytes": 75906
+    },
+    "stock-logos.js": {
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "bytes": 16539
+    },
+    "data_base.js": {
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+      "bytes": 2367
+    },
+    "navigation-refresh.css": {
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "bytes": 104548
+    },
+    "nav_market.js": {
+      "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+      "bytes": 96881
+    },
+    "live.js": {
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "bytes": 50731
+    },
+    "product-nav-icons.css": {
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "bytes": 41645
+    },
+    "fonts/Inter-700.woff2": {
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "bytes": 24356
+    },
+    "fonts/Inter-600.woff2": {
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "bytes": 24452
+    },
+    "fonts/InterDisplay-500.woff2": {
+      "sha256": "a5b16b4bd4d1ad12a11c12bc3325bd09250364237e943974a7560ec2b7f22c9a",
+      "bytes": 24256
+    },
+    "fonts/Inter-400.woff2": {
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "bytes": 23664
+    },
+    "fonts/InterDisplay-700.woff2": {
+      "sha256": "634290d856dfb3503c76eb655754e324b7b3513fb66254346db6046d186a253e",
+      "bytes": 24280
+    },
+    "fonts/InterDisplay-600.woff2": {
+      "sha256": "d8bb10ec73c52ddeeed35b9e7913cf0cf0226ca3469c696883413f49ef03aa61",
+      "bytes": 24340
+    },
+    "fonts/Inter-500.woff2": {
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "bytes": 24272
+    },
+    "fonts/Inter-900.woff2": {
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "bytes": 23900
+    },
+    "fonts/Inter-800.woff2": {
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "bytes": 24400
+    },
+    "fonts/OFL-Inter.txt": {
+      "sha256": "dcaeefce535d14260af95101f0d35d30cd2e893a5d76865faa8f1c93037c3029",
+      "bytes": 4393
+    }
+  }
+}

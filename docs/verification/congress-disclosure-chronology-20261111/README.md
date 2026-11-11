@@ -66,3 +66,42 @@ The raw logs and reviewed diffs are losslessly gzip-wrapped for publication.
 `manifest.json` binds compressed and decompressed bytes and final source blobs.
 No failed result is rewritten into a pass. Author self-check is the review
 performed here; no formal approval or merge is claimed by these local results.
+
+## Native visual consumer and CI ownership follow-up
+
+The unchanged capture owner generated **8/8 anonymous rest states** at actual
+capture time 2026-11-11 23:03 UTC: desktop 1440×900 and mobile 390×844,
+English/Chinese, dark/light. The mixed five-row synthetic Parquet fixture
+contains an eligible delayed disclosure, missing report, malformed report,
+inverted dates and a future report. The real builder/Jinja output was passed
+through the real `lib.pages.write_page`; static assets came from the existing
+`lib.site_assets.copy_asset` owner with exact tracked configuration and fonts.
+No .env or saved browser credentials entered the fixture.
+
+The packet is
+`mockups/evidence/congress-disclosure-chronology-20261111/EVIDENCE.yml`.
+Its canonical manifest records applied locale/theme, actual viewport,
+PNG dimensions, byte count and SHA-256 for every state. Fixture provenance
+binds the actual inputs and emitted bytes separately; its site lives outside
+a Git repository, so the capture owner's null nearest-Git SHA is honest.
+
+Author visually inspected all eight PNGs. The two dates remain distinct,
+header chips wrap cleanly, all four chronology states and malformed source
+text remain legible, Chinese glyphs render correctly, and dark/light surfaces
+retain hierarchy. The mobile tables remain inside their existing horizontal
+scroll containers; the document itself has no horizontal overflow. The
+manifest records 19 mobile elements wider than the viewport, zero console
+errors and zero failed responses. The source-presence heuristic is false,
+but the Quiver Quantitative source link is visibly present. These observed
+heuristics are retained, not edited. No performance or authenticated-product
+acceptance is inferred from these rest-state images.
+
+The 21 new regressions now join `tests/test_congress_score.py` in the existing
+`unrun-macro-panels` pytest command and declared paths. The installed pack
+validator accepts the updated manifest. Its `if: false` packing marker,
+`gate: data`, dependency list and timeout stay intact. The existing
+`data-health.yml` transport owns that data gate on protected main;
+PR `ci.yml` selects the code gate. Thus a green PR check does not by itself
+mean these 103 tests executed hosted. The retained exact-source local
+103-pass receipt is current; the natural post-merge data-health return is
+a separate obligation.
