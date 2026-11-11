@@ -1,0 +1,163 @@
+{
+  "schema": "paper.bonds_source_fixtures.v1",
+  "status": "PROPOSED_ACCEPTANCE_NOT_IMPLEMENTED",
+  "source_pin": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+  "paper": {
+    "fileId": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+    "pageId": "p-2-0",
+    "coverage": "3C6-0",
+    "read_inputs": "3I2-0",
+    "build": "3FC-0"
+  },
+  "fixtures": [
+    {
+      "id": "F01",
+      "name": "signed net",
+      "synthetic": true,
+      "records": [
+        {
+          "highs": 10,
+          "lows": 30,
+          "totalTrades": 100,
+          "expected_net": -0.2
+        },
+        {
+          "highs": 30,
+          "lows": 10,
+          "totalTrades": 100,
+          "expected_net": 0.2
+        }
+      ],
+      "expected": {
+        "legacy_finra_lows_share": null,
+        "legacy_reason": "not_derivable_from_net_share",
+        "denominator_universe_status": "unverified",
+        "page_and_machine_signs_match": true
+      }
+    },
+    {
+      "id": "F02",
+      "name": "zero and unavailable",
+      "synthetic": true,
+      "records": [
+        {
+          "highs": 5,
+          "lows": 5,
+          "totalTrades": 100,
+          "expected": {
+            "value": 0,
+            "state": "present"
+          }
+        },
+        {
+          "highs": null,
+          "lows": 5,
+          "totalTrades": 100,
+          "expected": {
+            "value": null,
+            "state": "unavailable",
+            "reason": "missing_input"
+          }
+        },
+        {
+          "highs": 0,
+          "lows": 0,
+          "totalTrades": 0,
+          "expected": {
+            "value": null,
+            "state": "unavailable",
+            "reason": "zero_denominator"
+          }
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "name": "partial weight coverage",
+      "synthetic": true,
+      "legs": [
+        {
+          "id": "recession",
+          "weight": 0.3,
+          "stress": 20
+        },
+        {
+          "id": "drawdown",
+          "weight": 0.3,
+          "stress": 40
+        },
+        {
+          "id": "credit",
+          "weight": 0.2,
+          "stress": null
+        },
+        {
+          "id": "rates_vol",
+          "weight": 0.1,
+          "stress": 0
+        },
+        {
+          "id": "plumbing",
+          "weight": 0.1,
+          "stress": null
+        }
+      ],
+      "expected": {
+        "score": 74,
+        "active_legs": 3,
+        "expected_legs": 5,
+        "weight_fraction": 0.7,
+        "state": "partial",
+        "leg_observation_dates": null
+      }
+    },
+    {
+      "id": "F04",
+      "name": "dated curve samples",
+      "synthetic": true,
+      "build_date": "2026-10-16",
+      "roles": [
+        {
+          "role": "latest",
+          "offset": -1,
+          "sampled_frame_date": "2026-10-14",
+          "valid_tenors": 9,
+          "state": "present"
+        },
+        {
+          "role": "approx_3_months",
+          "offset": -64,
+          "sampled_frame_date": "2026-07-10",
+          "valid_tenors": 7,
+          "state": "present"
+        },
+        {
+          "role": "approx_1_year",
+          "offset": -252,
+          "sampled_frame_date": "2025-09-30",
+          "valid_tenors": 3,
+          "state": "insufficient_tenors"
+        }
+      ],
+      "original_source_dates": null
+    }
+  ],
+  "invariants": [
+    "Do not apply abs to signed net.",
+    "Do not derive a true lows statistic from a net ratio.",
+    "Do not infer all-bond counts or denominator meaning.",
+    "Preserve valid zero and unavailable separately.",
+    "Preserve the incumbent score formula and configured/calibrated weights.",
+    "Missing coverage on legacy payload is unknown.",
+    "A frame sample date is not an original observation date.",
+    "Four valid tenors remain the existing rendering minimum.",
+    "Test both page and machine consumers before rollout.",
+    "No retained historical payload rewrite."
+  ],
+  "compatibility": {
+    "keep_nullable_key": "finra_lows_share",
+    "add_observation": "finra_high_low_net",
+    "caller_null_handling_proof_required": true,
+    "production_code_changed": false
+  }
+}

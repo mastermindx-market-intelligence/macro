@@ -17,13 +17,13 @@
     "h21": {
       "calm": 0.27,
       "watch": 0.32,
-      "caution": 0.65,
-      "elevated": 0.65,
-      "risk-off": 0.65
+      "caution": 0.659,
+      "elevated": 0.659,
+      "risk-off": 0.659
     }
   },
-  "n_graded": 38,
-  "brier_before": 0.2153,
-  "brier_after": 0.2151,
-  "updated": "2026-11-06T15:08:42+00:00"
+  "n_graded": 39,
+  "brier_before": 0.2127,
+  "brier_after": 0.2127,
+  "updated": "2026-11-09T16:15:54+00:00"
 }
