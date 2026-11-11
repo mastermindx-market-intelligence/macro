@@ -28,11 +28,11 @@ from scripts.build_vector import C  # noqa: E402
 BACK = ("masterminds.html", "Masterminds", "操盘大师")
 _CAV = ("Multi-asset GTAA, experimental / display-only. Universe = SPY/QQQ, IEF/TLT, LQD/HYG, "
         "gold + copper, BTC (book starts 2007, BTC weight 0 before 2014). Net of 3 bps cost + 1% "
-        "financing on the levered part; weekly rebalance. Leverage amplifies losses as well as gains. "
-        "Benchmarks: the S&P 500 and a 60/40 (SPY/IEF). Full Phase-0 is a fast-follow.",
+        "financing spread above the bill yield on the levered part; weekly rebalance. Leverage amplifies losses as well as gains. "
+        "Final name and gross limits can leave the volatility target unmet. Macro inputs use revised history with a two-day lag, not release vintages. Benchmarks: the S&P 500 and a 60/40 (SPY/IEF).",
         "多资产全球配置，实验性 / 仅展示。资产池 = SPY/QQQ、IEF/TLT、LQD/HYG、黄金 + 铜、BTC（组合自 2007 年起，"
-        "2014 年前 BTC 权重为 0）。扣除 3 个基点成本 + 杠杆部分 1% 融资；每周再平衡。杠杆会同时放大盈亏。"
-        "基准：标普500 与 60/40（SPY/IEF）。完整 Phase-0 为后续跟进。")
+        "2014 年前 BTC 权重为 0）。扣除 3 个基点成本 + 杠杆部分短债收益率以上 1% 的融资利差；每周再平衡。杠杆会同时放大盈亏。"
+        "最终单一与总敞口上限可能使波动率目标无法实现。宏观输入使用滞后两天的修订历史数据，并非发布时版本。基准：标普500 与 60/40（SPY/IEF）。")
 
 
 def _bench_scorecard(prof_key: str, bt: dict, b6040: dict | None) -> tuple[dict, str, str, dict]:
@@ -88,36 +88,36 @@ def _detail_vm(prof_key: str, res: dict, built: str) -> dict:
         "engine_a_en": "Every Mastermind profile runs the SAME engine. It scores all nine assets on a",
         "engine_a_zh": "每个操盘大师风险档都运行同一台引擎。它用一个",
         "engine_b_en": "four-factor conviction", "engine_b_zh": "四因子信念",
-        "engine_c_en": ", sizes them by risk, scales the whole book to a target volatility, and rebalances weekly. The three profiles differ ONLY in how much risk they target and how much leverage they will use — same signals, three risk dials.",
-        "engine_c_zh": "为全部九个资产打分，按风险定仓，将整个组合缩放至目标波动率，并每周再平衡。三个档位之间唯一的差别，是它们瞄准多大的风险、使用多大的杠杆——相同信号，三档风险旋钮。",
+        "engine_c_en": ", sizes them by risk, scales toward a target volatility subject to final name and gross limits, and rebalances weekly. The three profiles differ ONLY in how much risk they target and how much leverage they will use — same signals, three risk dials.",
+        "engine_c_zh": "为全部九个资产打分，按风险定仓，在最终单一与总敞口上限内向目标波动率缩放，并每周再平衡。三个档位之间唯一的差别，是它们瞄准多大的风险、使用多大的杠杆——相同信号，三档风险旋钮。",
         "universe_sub_en": "nine assets across five classes — full cross-asset freedom",
         "universe_sub_zh": "五大类、九个资产——完全跨资产自由",
     }
 
 
 def _verdict(prof_key: str, oos: dict, sc: dict) -> tuple[str, str]:
-    sharpe_mult = round(sc["sharpe"] / sc["hodl_sharpe"], 1) if sc.get("hodl_sharpe") else None
-    if oos.get("robust"):
-        return (f"Robust: beats the benchmark on CAGR in BOTH backtest halves, at ~{sharpe_mult}× its Sharpe "
-                f"and a far shallower drawdown — the edge is not a single-era artifact.",
-                f"稳健：在回测的两个半段均在年化上跑赢基准，夏普约为其 {sharpe_mult} 倍且回撤浅得多——优势并非单一时代的偶然。")
-    if sc["cagr"] > sc["hodl_cagr"]:
-        return (f"The robust, out-of-sample-stable edge is the SHARPE (~{sharpe_mult}× the "
-                f"benchmark) and the drawdown; the full-sample CAGR also beats here, but "
-                f"that part is era-dependent (it does not win in both halves). This is "
-                f"genuine risk-adjusted alpha, levered — not just more risk.",
-                f"稳健且样本外稳定的优势在于夏普（约为基准 {sharpe_mult}"
-                f" 倍）与回撤；全样本年化在此也跑赢，但该部分取决于时代"
-                f"（并非两个半段都赢）。这是真实的风险调整阿尔法加杠杆"
-                f"——而非单纯承担更高风险。")
-    return (f"The robust, out-of-sample-stable edge is the SHARPE (~{sharpe_mult}× the "
-            f"benchmark) and the drawdown; the full-sample CAGR does not beat the benchmark "
-            f"here ({sc['cagr']}% vs {sc['hodl_cagr']}%), and it does not win in both halves "
-            f"either. This is genuine risk-adjusted alpha, levered — not just more risk.",
-            f"稳健且样本外稳定的优势在于夏普（约为基准 {sharpe_mult}"
-            f" 倍）与回撤；全样本年化在此未跑赢基准"
-            f"（{sc['cagr']}% 对 {sc['hodl_cagr']}%），两个半段也并非都赢。"
-            f"这是真实的风险调整阿尔法加杠杆——而非单纯承担更高风险。")
+    """Describe the actual scorecard and historical half comparison, without promotion."""
+    lead_en = (f"Historical full-sample Sharpe {sc['sharpe']} vs {sc['hodl_sharpe']}; "
+               f"maximum drawdown {sc['maxdd']}% vs {sc['hodl_maxdd']}%. ")
+    lead_zh = (f"历史全样本夏普 {sc['sharpe']} 对 {sc['hodl_sharpe']}；"
+               f"最大回撤 {sc['maxdd']}% 对 {sc['hodl_maxdd']}%。")
+    if sc['cagr'] > sc['hodl_cagr']:
+        cagr_en = f"The full-sample CAGR also beats here ({sc['cagr']}% vs {sc['hodl_cagr']}%). "
+        cagr_zh = f"全样本年化在此跑赢基准（{sc['cagr']}% 对 {sc['hodl_cagr']}%）。"
+    else:
+        cagr_en = f"The full-sample CAGR does not beat the benchmark here ({sc['cagr']}% vs {sc['hodl_cagr']}%). "
+        cagr_zh = f"全样本年化在此未跑赢基准（{sc['cagr']}% 对 {sc['hodl_cagr']}%）。"
+    if oos.get('robust'):
+        half_en = "The stored split comparison records a CAGR beat in both halves. "
+        half_zh = "历史分段比较记录了两个半段的年化均跑赢。"
+    elif oos.get('first') and oos.get('second'):
+        half_en = "CAGR does not beat in both historical halves. "
+        half_zh = "年化并非在两个历史半段都跑赢。"
+    else:
+        half_en = "The half-by-half comparison is unavailable. "
+        half_zh = "历史半段比较暂不可用。"
+    return (lead_en + cagr_en + half_en + "These historical comparisons do not establish prospective robustness.",
+            lead_zh + cagr_zh + half_zh + "这些历史比较不能视为未来表现保证。")
 
 
 def _honest_note(cards: list[dict]) -> tuple[str, str]:
@@ -127,15 +127,12 @@ def _honest_note(cards: list[dict]) -> tuple[str, str]:
     if mults:
         lo, hi = f"{mults[0]}", f"{mults[-1]}"
         rng = lo if lo == hi else f"{lo}-{hi}"
-        lead_en = ("Honest framing: the robust, out-of-sample-stable edge is the SHARPE and the "
-                   f"DRAWDOWN (~{rng}x the benchmark Sharpe, far shallower drawdowns). ")
-        lead_zh = (f"诚实说明：稳健且样本外稳定的优势在于夏普与回撤"
-                   f"（约为基准夏普的 {rng} 倍，回撤浅得多）。")
+        lead_en = (f"Historical full-sample Sharpe ratios are ~{rng}x their benchmarks. "
+                   "Drawdowns are shown in each scorecard. ")
+        lead_zh = (f"历史全样本夏普约为各自基准的 {rng} 倍；回撤见各档记分卡。")
     else:
-        lead_en = ("Honest framing: the robust, out-of-sample-stable edge is the SHARPE and the "
-                   "DRAWDOWN (far shallower drawdowns). ")
-        lead_zh = ("诚实说明：稳健且样本外稳定的优势在于夏普与回撤"
-                   "（回撤浅得多）。")
+        lead_en = "Historical full-sample Sharpe and drawdown are shown in each scorecard. "
+        lead_zh = "历史全样本夏普与回撤见各档记分卡。"
     none_en = ("no profile beats its benchmark in each half of the backtest (see each "
                "profile's half-by-half table)")
     none_zh = ("没有任何一档在回测两个半段都跑赢基准"
@@ -154,8 +151,8 @@ def _honest_note(cards: list[dict]) -> tuple[str, str]:
         else:
             cl_en.append(f"{pe} does not beat the {be}: {c['cagr']}% vs {c['hodl_cagr']}%")
             cl_zh.append(f"{pz}档未跑赢{bz}：{c['cagr']}% 对 {c['hodl_cagr']}%")
-    tail_en = "Net of cost + financing. Benchmarks: the S&P 500 and a 60/40."
-    tail_zh = "扣除成本+融资。基准：标普500 与 60/40。"
+    tail_en = "Net of cost + financing. Benchmarks: the S&P 500 and a 60/40. Historical splits do not establish prospective robustness."
+    tail_zh = "扣除成本+融资。基准：标普500 与 60/40。历史分段不能视为未来表现保证。"
     return (lead_en + "Raw CAGR, profile by profile: " + "; ".join(cl_en) + ". " + tail_en,
             lead_zh + "原始年化逐档来看：" + "；".join(cl_zh) +
             "。" + tail_zh)

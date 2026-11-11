@@ -111,7 +111,6 @@ LEGACY_UNREGISTERED = frozenset({
     "scripts/intl_macro_sleeve_phase0.py",
     "scripts/intl_tr_trend_phase0.py",
     "scripts/intl_trend_overlay_phase0.py",
-    "scripts/mastermind_moderate_phase0.py",
     "scripts/naaim_overlay_phase0.py",
     "scripts/okx_retail_phase0.py",
     "scripts/quad_nfci_phase0.py",

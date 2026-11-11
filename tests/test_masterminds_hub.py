@@ -28,13 +28,6 @@ _ROOT = Path(__file__).resolve().parent.parent
 _PKS = ("conservative", "moderate", "aggressive")
 _ASOF = "2026-10-16"
 
-# Seed's exact non-robust EN wording (byte-reference for the F2b regression guard).
-_SEED_NONROBUST_EN = (
-    "The robust, out-of-sample-stable edge is the SHARPE (~{m}\u00d7 the benchmark) and the "
-    "drawdown; the full-sample CAGR also beats here, but that part is era-dependent (it does "
-    "not win in both halves). This is genuine risk-adjusted alpha, levered \u2014 not just "
-    "more risk."
-)
 
 
 def _committed_res():
@@ -205,7 +198,10 @@ def test_verdict_keeps_the_full_sample_beat_when_true():
     sc = bmm._bench_scorecard("moderate", res["moderate"]["scorecard"],
                               res["moderate"].get("bench6040"))[0]
     en = bmm._verdict("moderate", res["moderate"]["oos"], sc)[0]
-    assert en == _SEED_NONROBUST_EN.format(m="1.7")
+    assert "The full-sample CAGR also beats here (11.32% vs 10.78%)" in en
+    assert "Historical full-sample Sharpe 1.05 vs 0.62" in en
+    assert "CAGR does not beat in both historical halves" in en
+    assert "genuine risk-adjusted alpha" not in en
 
 # ── W23-L14: detail page names the flat assets, prints the instrument, shows Time invested ──
 
@@ -397,3 +393,14 @@ def test_china_shaped_vm_renders_no_flat_line():
     assert '<span class="faint">510300.SS</span>' in rows[0]
     assert '<span class="faint">511010.SS</span>' in rows[1]
     assert "Time invested 97.3%" in _en(_score_grid(page))
+
+
+def test_historical_verdict_does_not_promote_a_losing_sharpe_or_drawdown():
+    sc = {"cagr": 2.0, "hodl_cagr": 4.0, "sharpe": 0.2, "hodl_sharpe": 0.8,
+          "maxdd": -40.0, "hodl_maxdd": -20.0}
+    for oos in ({}, {"robust": True}, {"robust": False, "first": {"cagr": 1}, "second": {"cagr": 2}}):
+        en, zh = bmm._verdict("moderate", oos, sc)
+        assert "Sharpe 0.2 vs 0.8" in en and "drawdown -40.0% vs -20.0%" in en
+        assert "out-of-sample-stable" not in en and "genuine risk-adjusted alpha" not in en
+        assert "far shallower" not in en and "优势" not in zh
+        assert "do not establish prospective robustness" in en

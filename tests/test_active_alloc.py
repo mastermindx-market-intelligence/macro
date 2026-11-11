@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine import active_alloc as aa
 
@@ -80,3 +81,163 @@ def test_split_half_oos_flags_non_robust():
     oos = aa.split_half_oos(net, hodl)
     assert oos["first"]["beats_cagr"] is True and oos["second"]["beats_cagr"] is False
     assert oos["robust"] is False
+
+
+@pytest.fixture
+def gtaa_io(monkeypatch):
+    """Only replace external data; conviction, sizing and return accounting stay native."""
+    from engine import masterminds as mm, inputs
+
+    def absent_macro():
+        raise RuntimeError("synthetic fixture has no macro observations")
+
+    monkeypatch.setattr(mm.store, "read", lambda *a, **kw: None)
+    monkeypatch.setattr(inputs, "build_features", absent_macro)
+    monkeypatch.setattr(mm.ea, "bill_yield", lambda: pd.Series(
+        0.0, index=pd.bdate_range("2015-01-01", periods=800)))
+    return mm
+
+
+def _gtaa_prices(mm, winners=1):
+    idx = pd.bdate_range("2015-01-01", periods=800)
+    wiggle = 0.00005 * np.sin(np.arange(len(idx)) / 7)
+    return pd.DataFrame({a: 100 * np.cumprod(
+        1 + (0.001 if i < winners else -0.001) + wiggle)
+        for i, a in enumerate(mm.ASSETS)}, index=idx)
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+@pytest.mark.parametrize("winners", [1, 2, 9])
+def test_gtaa_final_name_caps_and_diversified_control(gtaa_io, profile, winners):
+    mm = gtaa_io
+    p = _gtaa_prices(mm, winners)
+    prof = mm.PROFILES[profile]
+    result = mm.backtest(profile, p)
+    w = result["weights"]
+    assert np.isfinite(w.to_numpy()).all()
+    assert w.min().min() >= 0
+    assert w.max().max() <= prof["w_cap"] + 1e-12
+    assert w.sum(axis=1).max() <= prof["max_lev"] + 1e-12
+    # One/two trends hit the FINAL name limit; the nine-trend control still
+    # reaches its unchanged gross limit without being concentrated into a name.
+    expected = min(prof["w_cap"], prof["max_lev"] / winners)
+    np.testing.assert_allclose(w.iloc[-1, :winners], expected, atol=1e-12)
+    assert w.iloc[-1, winners:].eq(0).all()
+    assert w.loc[w.index < w.index[0] + pd.Timedelta(days=300)].eq(0).all().all()
+    changed = w.diff().fillna(0).abs().sum(axis=1).to_numpy() > 1e-12
+    assert not changed[np.arange(len(w)) % mm._REBAL != 0].any()
+    assert result["gross_now"] == round(winners * expected, 2)
+    assert all(a["weight"] <= 100 * prof["w_cap"] for a in result["alloc"])
+    assert {"first", "second", "robust"} <= result["oos"].keys()
+    for key in ("cagr", "sharpe", "maxdd", "avg_leverage"):
+        assert np.isfinite(result["scorecard"][key])
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+def test_gtaa_zero_conviction_and_missing_assets(gtaa_io, monkeypatch, profile):
+    mm = gtaa_io
+    p = _gtaa_prices(mm, 9).drop(columns=["QQQ"])
+    p["BTC-USD"] = np.nan
+    p.loc[p.index[:650], "HG=F"] = np.nan
+    w = mm._weights(p, mm.PROFILES[profile])
+    assert np.isfinite(w.to_numpy()).all()
+    assert "QQQ" not in w
+    assert w[["BTC-USD", "HG=F"]].eq(0).all().all()
+    assert w.max().max() <= mm.PROFILES[profile]["w_cap"] + 1e-12
+    monkeypatch.setattr(mm, "_conviction", lambda frame: frame * 0)
+    assert mm._weights(p, mm.PROFILES[profile]).eq(0).all().all()
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+def test_gtaa_changing_signal_keeps_weekly_and_next_bar_contract(gtaa_io, monkeypatch, profile):
+    mm = gtaa_io
+    p = _gtaa_prices(mm, 1)
+    conv = pd.DataFrame(0.0, index=p.index, columns=p.columns)
+    conv.iloc[502:548, 0] = 1.0
+    monkeypatch.setattr(mm, "_conviction", lambda frame: conv)
+    result = mm.backtest(profile, p)
+    cap = mm.PROFILES[profile]["w_cap"]
+    w, sc = result["weights"], result["scorecard"]
+    assert w.iloc[502:505].eq(0).all().all()
+    assert w.iloc[505:550]["SPY"].eq(cap).all()
+    assert w.iloc[550:].eq(0).all().all()
+    # Signals first enter the held target at 505, earn returns at 506, and pay
+    # the native 3-bp entry cost once; exit target550 applies at551.
+    assert sc["net"].iloc[505] == 0
+    first_return = p["SPY"].iloc[506] / p["SPY"].iloc[505] - 1
+    assert sc["net"].iloc[506] == pytest.approx(cap * (first_return - 0.0003))
+    assert sc["gross_lev"].iloc[550] == cap
+    assert sc["net"].iloc[551] == pytest.approx(-cap * 0.0003)
+    assert sc["gross_lev"].iloc[551] == 0
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+@pytest.mark.parametrize("volatility", [0.0, 0.09])
+def test_gtaa_flat_and_volatile_prices_keep_both_limits(gtaa_io, monkeypatch, profile, volatility):
+    mm = gtaa_io
+    p = _gtaa_prices(mm, 9)
+    rng = np.random.default_rng(11003)
+    p[:] = 100 * np.cumprod(1 + rng.uniform(-volatility, volatility, p.shape), axis=0)
+    monkeypatch.setattr(mm, "_conviction", lambda frame: frame * 0 + 1)
+    w = mm._weights(p, mm.PROFILES[profile])
+    assert np.isfinite(w.to_numpy()).all()
+    assert w.min().min() >= 0
+    assert w.max().max() <= mm.PROFILES[profile]["w_cap"] + 1e-12
+    assert w.sum(axis=1).max() <= mm.PROFILES[profile]["max_lev"] + 1e-12
+
+
+def test_gtaa_native_builder_snapshot_and_bilingual_pages_agree(gtaa_io, monkeypatch, tmp_path):
+    import json
+    from pathlib import Path
+    from bs4 import BeautifulSoup
+    from lib import config
+    from scripts import build_masterminds as builder
+
+    mm = gtaa_io
+    p = _gtaa_prices(mm, 1)
+    monkeypatch.setattr(mm, "_prices", lambda: p)
+    source_root = Path(__file__).resolve().parent.parent
+    (tmp_path / "templates").symlink_to(source_root / "templates", target_is_directory=True)
+    (tmp_path / "site").mkdir()
+    # Resolve the real config before redirecting only the builder's output root.
+    config.load()
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    builder.build()
+    snap = json.loads((tmp_path / "data/regime/masterminds_latest.json").read_text())
+    assert snap["schema"] == "masterminds.latest.v2" and snap["n"] == 3
+    assert snap["asof"] == str(p.index[-1].date())
+    for card in snap["cards"]:
+        profile = card["key"].removeprefix("mm_")
+        cap = mm.PROFILES[profile]["w_cap"]
+        assert card["alloc"] == mm.backtest(profile, p)["alloc"]
+        assert card["alloc"][0]["weight"] == pytest.approx(100 * cap)
+        assert card["gross_now"] == cap
+        page = (tmp_path / f"site/strategy_mm_{profile}.html").read_text()
+        soup = BeautifulSoup(page, "html.parser")
+        rows = soup.select(".allocrow")
+        assert len(rows) == 1
+        assert "SPY" in rows[0].get_text() and f"{100 * cap:.1f}%" in rows[0].get_text()
+        assert "Per-name cap" in page and "单一上限" in page
+        assert "Historical split comparison" in page and "历史分段比较" in page
+        assert "out-of-sample-stable" not in page and "genuine risk-adjusted alpha" not in page
+        assert "样本外稳定" not in page and "真实的风险调整阿尔法" not in page
+
+
+def test_gtaa_quote_matches_corrected_native_report_without_promoting_overlay():
+    import json
+    from engine import signal_lab
+    from pathlib import Path
+    d = json.loads((Path(__file__).resolve().parents[1] / "reports/gtaa-final-cap-revalidation.json").read_text())
+    m = d["moderate_diagnostics"]
+    row = next(r for r in signal_lab.REGISTRY if r["name"].startswith("Mastermind GTAA (Moderate)"))
+    trend = next(r for r in signal_lab.REGISTRY if r["name"].startswith("Cross-asset TSMOM — masterminds"))
+    assert row["tier"] == "confirmer" and trend["tier"] == "scored"
+    assert row["dsr"] == m["dsr"]["dsr"] and row["sharpe"] == round(m["strategy"]["sharpe"], 2)
+    assert row["dsr_n_trials"] == m["effective_n"] and row["dsr_basis"] == "frozen-quote"
+    assert m["cagr_both_halves"] is False
+    losses = sum(f["delta_sharpe"] < 0 for f in m["incrementality"]["folds"])
+    assert f"{losses}/5" in row["why"] and f"{losses}/5" in row["why_zh"]
+    assert "revised-macro" in row["why"] and "修订宏观" in row["why_zh"]
+    assert trend["dsr"] == 0.9952 and trend["sharpe"] is None
+    assert "separate historical 60/40 + 30%" in trend["why"]
+    assert "1.07" not in trend["why"] and "0.98 / 1.15" not in trend["why"]
