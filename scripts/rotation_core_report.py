@@ -159,6 +159,17 @@ def write_markdown(art: dict, path: Path) -> None:
         L += ["", "| Candidate | Gates (✓ met, ✗ not, · not evaluated) | Clears G1+G2+G3+G5 on D |", "|---|---|---|"]
         L += [_gate_line(c, g) for c, g in jj["gates"].items()]
         L += [""] + [f"- {r['contrast']}: {r['power']['sentence']}." for r in fam.values()] + [""]
+        if j in ("J1", "J3") and jj.get("posthoc_vs_spy_rsp"):
+            L += ["### Post-hoc descriptive: vs SPY and RSP, full period vs stress episodes (not a header comparator; no test)", "",
+                  "| Book | Bench | Window | CAGR (bench) | Sharpe (bench) | MaxDD (bench) | Up/Down cap. full | Stress capture pooled | Up cap. outside stress |",
+                  "|---|---|---|---|---|---|---|---|---|"]
+            for bn, rows in jj["posthoc_vs_spy_rsp"].items():
+                for c, r in rows.items():
+                    L.append(f"| {c} | {bn} | {r['window'][0]}→{r['window'][1]} | {pct(r['ann_return'])} ({pct(r['bench_ann_return'])}) | "
+                             f"{num(r['sharpe'])} ({num(r['bench_sharpe'])}) | {pct(r['max_drawdown'], 1)} ({pct(r['bench_max_drawdown'], 1)}) | "
+                             f"{num(r['up_capture_full'])}/{num(r['down_capture_full'])} | {num(r['stress_capture_pooled'])} | "
+                             f"{num(r['up_capture_outside_stress'])} |")
+            L.append("")
         if j == "J1":
             L += ["### Pivot table (D episodes; 2020, 2022, 2025, 2026 sealed in H)", ""]
             L += _pivot_lines(jj["pivots"], ["B1", "B3", "B4", "J1-A", "J1-B", "J1-C", "J1-D", "J1-E", "J1-I1", "J1-I2"])

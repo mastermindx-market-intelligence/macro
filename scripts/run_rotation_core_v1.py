@@ -76,8 +76,15 @@ DEVIATIONS = [
     {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s4",
      "text": "Long-history J1 tier remainder (French market 1928-1997; Sahm rule from 1960; DBAA-DGS10 credit from 1987)."},
     {"kind": "deferred", "ref": "header windows.long_history_descriptive_tiers",
-     "text": "J2_L (French 12 industries), J3_L (proxy tier) and J2_industry_etf (16 industry ETFs) are not computed "
-             "in this Stage D run; descriptive tiers only, deferred to after the parent's Stage D adjudication."},
+     "text": "J2_industry_etf (16 industry ETFs): deferred, not run, no result (parent acknowledged 2026-11-11; J2 in "
+             "this run covers the SPDR sector ETFs only, not industries). J2_L (French 12 industries) and J3_L (proxy "
+             "tier): deferred, not run, no result."},
+    {"kind": "post_hoc_descriptive", "ref": "parent instruction 2026-11-11",
+     "text": "RSP (equal-weight S&P 500) is not a header comparator. J1/J3 lines vs SPY and RSP and stress-episode "
+             "capture are labelled post-hoc descriptive, are in no test family and affect no gate. RSP starts "
+             "2003-05-01, so its lines cover 2003-05..2019-12 only."},
+    {"kind": "self_reviewed", "text": "Re-review findings N1, N2, F6 were fixed and self-reviewed (no third review), "
+             "per the lead's call acknowledged by the parent."},
     {"kind": "pre_outcome_addition", "ref": "PHASE2_ADDITIONS_v1.md s5-s8",
      "text": "Pivot presentation; J2 episode holdings; J4 implementation details; interior missing-close forward fill."},
     {"kind": "implementation", "ref": "PRE_RUN_REVIEW findings 1,2,4-8,10-19 (Opus reviewer, separate context)",
@@ -811,6 +818,50 @@ def j4_stage_d(d) -> dict:
             "gates": gates, "cap": "L0 (priced coverage below 85%; header known cap)"}
 
 # --------------------------------------------------------------------------- #
+# post-hoc descriptive: vs SPY and RSP, full period and stress-episode capture
+# --------------------------------------------------------------------------- #
+def posthoc_lines(books, names, bench, cash, mask, eps):
+    out = {}
+    for bname, br in bench.items():
+        br = br.dropna()
+        for c in names:
+            if c not in books:
+                continue
+            r = books[c].returns
+            idx = r.index.intersection(br.index)
+            idx = idx[_al(mask, idx).values]
+            if len(idx) < 252:
+                continue
+            rr, bb, cc = r[idx], br[idx], cash.reindex(idx).fillna(0)
+            up, _ = rc.capture_monthly(rr, bb, True)
+            dn, _ = rc.capture_monthly(rr, bb, False)
+            ep_rows, s_num, s_den = {}, 1.0, 1.0
+            for nm, ep in eps.items():
+                w = (idx > ep["peak"]) & (idx <= ep["trough"])
+                if w.sum() < 5:
+                    continue
+                sr, mr = rc.compound(rr[w].values), rc.compound(bb[w].values)
+                ep_rows[nm] = {"strategy": sr, "benchmark": mr, "capture": sr / mr if abs(mr) > 1e-9 else None,
+                               "mean_equity_weight": float(books[c].equity_weight.reindex(idx[w]).mean())}
+                s_num *= 1 + sr; s_den *= 1 + mr
+            calm = pd.Series(True, index=idx)
+            for ep in eps.values():
+                calm &= ~((idx > ep["peak"]) & (idx <= ep["trough"]))
+            cu, _ = rc.capture_monthly(rr[calm.values], bb[calm.values], True)
+            out.setdefault(bname, {})[c] = {
+                "window": [str(idx[0].date()), str(idx[-1].date())],
+                "ann_return": rc.ann_return(rr.values), "bench_ann_return": rc.ann_return(bb.values),
+                "ann_diff": float((rr - bb).mean() * 252), "sharpe": rc.sharpe(rr.values, cc.values),
+                "bench_sharpe": rc.sharpe(bb.values, cc.values), "max_drawdown": rc.max_drawdown(rr.values),
+                "bench_max_drawdown": rc.max_drawdown(bb.values),
+                "up_capture_full": up, "down_capture_full": dn,
+                "stress_capture_pooled": ((s_num - 1) / (s_den - 1)) if abs(s_den - 1) > 1e-9 else None,
+                "stress_episodes": ep_rows, "up_capture_outside_stress": cu,
+                "label": "post-hoc descriptive; not a header comparator; no test"}
+    return out
+
+
+# --------------------------------------------------------------------------- #
 # Stage D
 # --------------------------------------------------------------------------- #
 def run_stage_d(smoke: bool) -> dict:
@@ -874,6 +925,11 @@ def run_stage_d(smoke: bool) -> dict:
     piv1 = {k: rc.pivot_table(after_close_weight(b), b.returns, r_spy.reindex(b.returns.index),
                               spy_level.reindex(b.returns.index), eps, first_exec=first_exec(b),
                               sealed_tail=SEALED_TAIL) for k, b in bk1.items()}
+    rsp = yahoo("RSP", END).reindex(s).pct_change(fill_method=None)
+    bench_ph = {"SPY": r_spy, "RSP": rsp}
+    ph1 = posthoc_lines(bk1, ["B1", "B2", "B3", "B4", "J1-A", "J1-B", "J1-C", "J1-D", "J1-E",
+                              "J1-A-IEF", "J1-B-IEF", "J1-C-IEF", "J1-D-IEF", "J1-E-IEF", "J1-I1", "J1-I2"],
+                        bench_ph, cash, m1, eps)
     gates1 = {}
     spy_m = met1["B1"]
     for c in cands:
@@ -919,7 +975,7 @@ def run_stage_d(smoke: bool) -> dict:
                          "algorithmic_drawdowns_ge15": [{"peak": str(x["peak"].date()), "trough": str(x["trough"].date()),
                                                          "drawdown": x["drawdown"]} for x in
                                                         rc.algorithmic_drawdowns(spy_level[s >= J1_FIRST], 0.15)],
-                         "gates": gates1, "incumbents": inc,
+                         "gates": gates1, "incumbents": inc, "posthoc_vs_spy_rsp": ph1,
                          "selection": {"p1_observed_D": p1obs, "J1_star": j1star}}
 
     # ---------------- J2
@@ -1099,7 +1155,9 @@ def run_stage_d(smoke: bool) -> dict:
     fi_spec.append(("J3-I1:vsX3", bk3["J3-I1"].returns, XRef(bk3["J3-I1"], ew7, cash), "mean", 0.01,
                     "per year (fraction)", m3))
     fi_spec.append(("J3-I1:vsB9", bk3["J3-I1"].returns, bk3["B9"].returns, "mean", 0.01, "per year (fraction)", m3))
-    out["jobs"]["J3"] = {"window_D": [str(J3_FIRST.date()), str(END.date())], "family_F3": F3,
+    ph3 = posthoc_lines(bk3, ["B1", "B2", "B8", "B9", "B10", "J3-A", "J3-B", "J3-C", "J3-I1"], bench_ph, cash, m3,
+                        {k: v for k, v in eps.items() if v["peak"] > J3_FIRST})
+    out["jobs"]["J3"] = {"posthoc_vs_spy_rsp": ph3, "window_D": [str(J3_FIRST.date()), str(END.date())], "family_F3": F3,
                          "family_F3_cost_2x": F3_2x, "metrics": met3, "gates": gates3,
                          "note": "E1 for J3 is 2007-03..2009-12 only (about 2.8 years)."}
 
