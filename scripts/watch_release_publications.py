@@ -1053,6 +1053,40 @@ def _prepare_official_document(
         return document, True, type(exc).__name__
 
 
+def _claims_publication_is_bound(publication: dict[str, Any]) -> bool:
+    """Validate retained claims identity before keep-first can preserve its facts."""
+    try:
+        event_day = date.fromisoformat(str(publication.get("date")))
+        actual = publication.get("actual") or {}
+        week = datetime.strptime(str(actual.get("reference_period")), "%B %d, %Y").date()
+    except (TypeError, ValueError, AttributeError):
+        return False
+    expected = event_day - timedelta(days=(event_day.weekday() - 5) % 7 or 7)
+    url = _safe_official_document_url(publication.get("source_url"))
+    parsed = urlparse(url or "")
+    path = parsed.path.removeprefix("/index.php")
+    dated_path = path == f"/newsroom/releases/eta/eta{event_day:%Y%m%d}"
+    dated_node = bool(re.fullmatch(r"/node/\d+", path) and
+                      publication.get("source_document_date") == event_day.isoformat())
+    return bool(parsed.hostname in {"dol.gov", "www.dol.gov"} and
+                (dated_path or dated_node) and week == expected and
+                actual.get("source_url") == url)
+
+
+def _withdraw_unbound_claims(publications: dict[str, Any]) -> None:
+    """Use the incumbent unresolved/retry state; never keep an unbound actual live."""
+    for key, original in list(publications.items()):
+        if (not isinstance(original, dict) or original.get("source_id") != "dol_claims"
+                or original.get("data_ready") is not True or _claims_publication_is_bound(original)):
+            continue
+        row = dict(original)
+        for field in ("actual", "verified_at", "source_released_at", "source_time_basis", "reference_period"):
+            row.pop(field, None)
+        row.update(status="published_unparsed", data_ready=False,
+                   note="Release identity unverified; the previously displayed claims value has been withdrawn.")
+        publications[key] = row
+
+
 def detect(
     *,
     now: datetime,
@@ -1070,6 +1104,7 @@ def detect(
         dict(state.get("publications") or {}),
         candidates,
     )
+    _withdraw_unbound_claims(publications)
     raw_repair_state = state.get(DEFECT_REPAIR_STATE_KEY)
     repair_state = dict(raw_repair_state) if isinstance(raw_repair_state, dict) else {}
     coverage_started_at_by_type = _coverage_started_at_by_type(state, now)
@@ -1243,6 +1278,13 @@ def detect(
                     )
                     if detail_error:
                         detail_errors.append(detail_error)
+                    # An undated listing (including a 304 or a different week's
+                    # entry) is not this event's release. Never parse its first
+                    # claims-shaped paragraph as a fallback or rebind old facts.
+                    if resolved.feed_kind == "dol_claims" and (
+                        document.get("binding_kind") != "feed_entry" or not publication_evidence
+                    ):
+                        continue
                     document_url = str(document.get("source_url") or resolved.url)
                     document_urls.append(document_url)
                     publication = _publication_for(publications, event)
@@ -1275,6 +1317,11 @@ def detect(
                         resolved,
                         document.get("body") or b"",
                     )
+                    if resolved.feed_kind == "dol_claims":
+                        parsed_actual = official_release_parsers.parse_claims_actual(
+                            document.get("body") or b"",
+                            event_day=date.fromisoformat(str(event["date"])),
+                        )
                     actual = (
                         None
                         if resolved.follow_entry_link
@@ -1422,6 +1469,8 @@ def detect(
                             "source_url": official_url,
                         }
                         publication["verified_at"] = now.isoformat()
+                        if resolved.feed_kind == "dol_claims":
+                            publication["source_document_date"] = event["date"]
                     publications[event_key] = publication
                     if forced_repair and isinstance(repair_record, dict):
                         if successful_detail_repair:
