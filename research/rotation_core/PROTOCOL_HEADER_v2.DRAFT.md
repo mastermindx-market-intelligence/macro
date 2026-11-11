@@ -27,7 +27,7 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
   - Its R6 (confluence into defensives) is the near twin of the H3 Sector Intelligence suggested.
   - Counted as 10 consumed trials.
   - **Reproduced locally** on sealed ≤2019 inputs: 3,229 of 3,229 computable cells match, 0 mismatches (`pro_run_B_reproduction/`). The 2,806 cells for the macro rules (R2, R4, R6, R9, R10) need FRED and Shiller inputs that are not on this host, so they are not reproduced and are not cited; only reproduced cells (including R5, R7, R8) may be cited.
-  - The worker printed three post-2019 monthly UNRATE date labels while inspecting a schema, before truncation (labels only, no values); disclosed.
+  - While inspecting a schema the worker displayed the last three monthly UNRATE values (2026-08 to 10: 4.1, 4.2, 4.1) before truncation. None entered any computation, and UNRATE is not a v2 input; disclosed.
 - **`research/DEFENSIVE_ROTATION.md` on Macro main:** a defensive-rotation test on the same funds, headline window 2015-01-01 → 2026-06-18, FALSIFIED / DISPLAY-ONLY. 2020–2025 is untouched by this rule, not by the organisation.
 - **2026:** H1 and H2 were shaped by Sector Intelligence's 2026 replay, so 2026 is reported, never scored.
 - **What the lead saw of run B:** some of its per-rule era rows (R5–R8), while reading the file to record its trials. No v2 parameter was chosen from them.
