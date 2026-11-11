@@ -1,0 +1,6 @@
+{
+  "recipe": "mockups/evidence/container-edge-removal/refresh_render_finalize.py",
+  "source_sha256": "a8637038df346f143156583b0cefe044b1a1d296071f8e5e1eeb23b6e0bb1d2a",
+  "adapted_sha256": "16911b09214a8a0255b3272e5099f066c1b3a949ced3f961c915814f6253765e",
+  "changes": "Only explicit source refs and fresh receipt paths; exact existing algorithms unchanged."
+}

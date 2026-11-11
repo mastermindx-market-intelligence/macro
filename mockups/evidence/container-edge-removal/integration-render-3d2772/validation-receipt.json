@@ -1,0 +1,38 @@
+{
+  "schema": "mastermind.container_edge_render_refresh_validation.v1",
+  "main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "accepted_reference": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "checks": [
+    {
+      "name": "preservation",
+      "exit_code": 0,
+      "seconds": 20.85,
+      "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/preservation.log"
+    },
+    {
+      "name": "template-sync",
+      "exit_code": 0,
+      "seconds": 0.58,
+      "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/template-sync.log"
+    },
+    {
+      "name": "glossary-parity",
+      "exit_code": 0,
+      "seconds": 3.22,
+      "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/glossary-parity.log"
+    },
+    {
+      "name": "consumer-audit",
+      "exit_code": 0,
+      "seconds": 73.84,
+      "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/consumer-audit.log"
+    },
+    {
+      "name": "ui-evidence",
+      "exit_code": 0,
+      "seconds": 17.3,
+      "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/ui-evidence.log"
+    }
+  ],
+  "overall": "passed"
+}

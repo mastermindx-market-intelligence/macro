@@ -1,0 +1,7 @@
+audited_pages 0 unique_residuals 0
+audited_pages 3000 unique_residuals 0
+audited_pages 6000 unique_residuals 0
+audited_pages 9000 unique_residuals 0
+audited_pages 12000 unique_residuals 0
+audited_pages 15000 unique_residuals 0
+{"schema": "mastermind.container_edge_consumer_audit.v1", "pages": 15179, "reachable_assets": 395, "unique_blocks": 457, "functional": {"functional_pseudo": 56, "functional_left": 19, "functional_shadow": 2}, "missing_assets": [], "superseded_references": [], "unique_residuals": 0}

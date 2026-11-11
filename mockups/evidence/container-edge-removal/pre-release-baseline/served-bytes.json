@@ -1,0 +1,408 @@
+{
+  "schema": "mastermind.container_edge_served_bytes.v1",
+  "observed_at": "2026-11-11T16:23:57.826044+00:00",
+  "accepted_commit": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "comparison_base": "0386ca72ffa9accf9ca2cb7b2ee42a5221d82b9b",
+  "origin": "https://www.mastermind-x.com",
+  "scope": "Three normal public HTML URLs, all their same-origin committed CSS/imports, and changed same-origin JavaScript they emit. Existing emitted version parameters are preserved; no cache-busting query is invented. Raw health/runtime payloads are not captured.",
+  "observations": [
+    {
+      "url": "https://www.mastermind-x.com/macro.html",
+      "path": "site/macro.html",
+      "expected_sha256": "7347c850c3c40e69a2d3913c25763cc6d7fa83643d1e4c891ff3892e11045ecb",
+      "expected_bytes": 631272,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/macro.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, must-revalidate, max-age=60",
+        "ETag": "\"dmshanktxlh9dj3c\"",
+        "Last-Modified": "Wed, 11 Nov 2026 15:15:08 GMT"
+      },
+      "observed_sha256": "7347c850c3c40e69a2d3913c25763cc6d7fa83643d1e4c891ff3892e11045ecb",
+      "observed_bytes": 631272,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/aibrief.html",
+      "path": "site/aibrief.html",
+      "expected_sha256": "ae5b8f52194a69510404ab90e2867ec9cad2042e3f4d6a9ce4d9556e5f343956",
+      "expected_bytes": 103669,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/aibrief.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, must-revalidate, max-age=60",
+        "ETag": "\"dmshan3bf5ch27zp\"",
+        "Last-Modified": "Wed, 11 Nov 2026 15:15:07 GMT"
+      },
+      "observed_sha256": "ae5b8f52194a69510404ab90e2867ec9cad2042e3f4d6a9ce4d9556e5f343956",
+      "observed_bytes": 103669,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/products/market-terminal.html",
+      "path": "site/products/market-terminal.html",
+      "expected_sha256": "066119a5398082b5c8e27afb8a3a4538d253e482874f81733bf4d98ebee5fe76",
+      "expected_bytes": 132966,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/products/market-terminal.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, must-revalidate, max-age=60",
+        "ETag": "\"dmqkjia67gj92uli\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:25 GMT"
+      },
+      "observed_sha256": "066119a5398082b5c8e27afb8a3a4538d253e482874f81733bf4d98ebee5fe76",
+      "observed_bytes": 132966,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/04f9b05b.css?v=04f9b05b",
+      "path": "site/assets/css/04f9b05b.css",
+      "expected_sha256": "04f9b05bc29b5d565e0e5ff9fb7f960c909fea69a215371909e1d30ee7edae74",
+      "expected_bytes": 12133,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/04f9b05b.css?v=04f9b05b",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkjgng0vtd9d1\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:21 GMT"
+      },
+      "observed_sha256": "04f9b05bc29b5d565e0e5ff9fb7f960c909fea69a215371909e1d30ee7edae74",
+      "observed_bytes": 12133,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/0d0d9dc5.css?v=0d0d9dc5",
+      "path": "site/assets/css/0d0d9dc5.css",
+      "expected_sha256": "0d0d9dc57980d424e3a3a2f3bb2de45415816d871eb74049b1f3ab83f4b28d9c",
+      "expected_bytes": 20187,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/0d0d9dc5.css?v=0d0d9dc5",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dknmx54pnp6afkr\"",
+        "Last-Modified": "Thu, 13 Aug 2026 07:24:19 GMT",
+        "Age": "2173567"
+      },
+      "observed_sha256": "0d0d9dc57980d424e3a3a2f3bb2de45415816d871eb74049b1f3ab83f4b28d9c",
+      "observed_bytes": 20187,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/4e822d03.css?v=4e822d03",
+      "path": "site/assets/css/4e822d03.css",
+      "expected_sha256": "4e822d03cdc78bc96b00aa23cc9c0500f3c0b11d68f82f76f27b4f3adff6314a",
+      "expected_bytes": 21173,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/4e822d03.css?v=4e822d03",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dknmx54ttqekgc5\"",
+        "Last-Modified": "Thu, 13 Aug 2026 07:24:19 GMT",
+        "Age": "2173567"
+      },
+      "observed_sha256": "4e822d03cdc78bc96b00aa23cc9c0500f3c0b11d68f82f76f27b4f3adff6314a",
+      "observed_bytes": 21173,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/5d06f044.css?v=5d06f044",
+      "path": "site/assets/css/5d06f044.css",
+      "expected_sha256": "5d06f0449db9c8b7a5ea8eaf3da15d9c1ea4f6ad46f6fc85b71aae5f8f57a668",
+      "expected_bytes": 187390,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/5d06f044.css?v=5d06f044",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dm7p92eyk1mu40la\"",
+        "Last-Modified": "Sun, 18 Oct 2026 05:03:13 GMT",
+        "Age": "2109617"
+      },
+      "observed_sha256": "5d06f0449db9c8b7a5ea8eaf3da15d9c1ea4f6ad46f6fc85b71aae5f8f57a668",
+      "observed_bytes": 187390,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/7689f0db.css?v=7689f0db",
+      "path": "site/assets/css/7689f0db.css",
+      "expected_sha256": "7689f0dbdf0be248b083bb8bafd2817d7d8b3189c89f88838f069d7bfc099838",
+      "expected_bytes": 7577,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/7689f0db.css?v=7689f0db",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dkcshtu25ixs5uh\"",
+        "Last-Modified": "Fri, 31 Jul 2026 13:27:06 GMT",
+        "Age": "2114464"
+      },
+      "observed_sha256": "7689f0dbdf0be248b083bb8bafd2817d7d8b3189c89f88838f069d7bfc099838",
+      "observed_bytes": 7577,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/87a1c772.css?v=87a1c772",
+      "path": "site/assets/css/87a1c772.css",
+      "expected_sha256": "87a1c7721b89977594f7711d2ccd0f1e8367046004191b3a7f83e125c8bbc98e",
+      "expected_bytes": 22150,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/87a1c772.css?v=87a1c772",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkjgobkv1th3a\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:21 GMT"
+      },
+      "observed_sha256": "87a1c7721b89977594f7711d2ccd0f1e8367046004191b3a7f83e125c8bbc98e",
+      "observed_bytes": 22150,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/abe9c747.css?v=abe9c747",
+      "path": "site/assets/css/abe9c747.css",
+      "expected_sha256": "abe9c747d2b87ee23031d16fe358d92aa2bed320378840dc1dba102b1982cb78",
+      "expected_bytes": 183971,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/abe9c747.css?v=abe9c747",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dlpnlgfhi9i63xyb\"",
+        "Last-Modified": "Sat, 26 Sep 2026 23:57:23 GMT",
+        "Age": "2173565"
+      },
+      "observed_sha256": "abe9c747d2b87ee23031d16fe358d92aa2bed320378840dc1dba102b1982cb78",
+      "observed_bytes": 183971,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/ac31abdd.css?v=ac31abdd",
+      "path": "site/assets/css/ac31abdd.css",
+      "expected_sha256": "ac31abdd2ee0813ec337e3070df02ce96d0518dad176f3a35191f1198045bc84",
+      "expected_bytes": 59355,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/ac31abdd.css?v=ac31abdd",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dlpnlgfhi9i619sr\"",
+        "Last-Modified": "Sat, 26 Sep 2026 23:57:23 GMT",
+        "Age": "2173330"
+      },
+      "observed_sha256": "ac31abdd2ee0813ec337e3070df02ce96d0518dad176f3a35191f1198045bc84",
+      "observed_bytes": 59355,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/b2bc0843.css?v=b2bc0843",
+      "path": "site/assets/css/b2bc0843.css",
+      "expected_sha256": "b2bc08430f71be9ca2ec3b060e931d1761688194b9d06885bb50e01f1bff59df",
+      "expected_bytes": 1103,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/b2bc0843.css?v=b2bc0843",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dkfnjjsrp8twun\"",
+        "Last-Modified": "Mon, 03 Aug 2026 22:12:15 GMT",
+        "Age": "2109614"
+      },
+      "observed_sha256": "b2bc08430f71be9ca2ec3b060e931d1761688194b9d06885bb50e01f1bff59df",
+      "observed_bytes": 1103,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/ca820c05.css?v=ca820c05",
+      "path": "site/assets/css/ca820c05.css",
+      "expected_sha256": "ca820c05bc8e8d2e7e0ba56592244015080ceeacd245a133b210df38a57cc0ff",
+      "expected_bytes": 18079,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/ca820c05.css?v=ca820c05",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkjgos902vdy7\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:21 GMT"
+      },
+      "observed_sha256": "ca820c05bc8e8d2e7e0ba56592244015080ceeacd245a133b210df38a57cc0ff",
+      "observed_bytes": 18079,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/assets/css/ddaf9092.css?v=ddaf9092",
+      "path": "site/assets/css/ddaf9092.css",
+      "expected_sha256": "ddaf909254559e029d361672d617f903306709a0fa984804b4a3bc829d8ee76c",
+      "expected_bytes": 28240,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/assets/css/ddaf9092.css?v=ddaf9092",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dm4md3dm7ya1lsg\"",
+        "Last-Modified": "Wed, 14 Oct 2026 14:09:25 GMT",
+        "Age": "2173565"
+      },
+      "observed_sha256": "ddaf909254559e029d361672d617f903306709a0fa984804b4a3bc829d8ee76c",
+      "observed_bytes": 28240,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/landing.css?v=c1ea6263",
+      "path": "site/landing.css",
+      "expected_sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+      "expected_bytes": 120266,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/landing.css?v=c1ea6263",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkjhnv1l2m2ksq\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:24 GMT",
+        "Age": "146787"
+      },
+      "observed_sha256": "c1ea62635e000a19784177a04f147d62e73be03569506793382dde7ab9219efd",
+      "observed_bytes": 120266,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/navigation-refresh.css?v=edfd821b",
+      "path": "site/navigation-refresh.css",
+      "expected_sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "expected_bytes": 104548,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/navigation-refresh.css?v=edfd821b",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmap5yh8537728o4\"",
+        "Last-Modified": "Wed, 21 Oct 2026 17:37:09 GMT",
+        "Age": "1775451"
+      },
+      "observed_sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+      "observed_bytes": 104548,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/onboard.css?v=74613ad9",
+      "path": "site/onboard.css",
+      "expected_sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "expected_bytes": 64745,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/onboard.css?v=74613ad9",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkji2t9ivw1dyh\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:24 GMT",
+        "Age": "146786"
+      },
+      "observed_sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "observed_bytes": 64745,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/product-nav-icons.css?v=432f6a45",
+      "path": "site/product-nav-icons.css",
+      "expected_sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "expected_bytes": 41645,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/product-nav-icons.css?v=432f6a45",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmkfqz8rx9xpw4t\"",
+        "Last-Modified": "Mon, 02 Nov 2026 04:21:05 GMT"
+      },
+      "observed_sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+      "observed_bytes": 41645,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/risk_radar_workspace.css?v=d8f8563a",
+      "path": "site/risk_radar_workspace.css",
+      "expected_sha256": "d8f8563a026057adce496efd9f87ce5ae3ff5224364df67f6046f2a59e00c1b1",
+      "expected_bytes": 36981,
+      "equal": false,
+      "error": "HTTPError: HTTP Error 401: Authorization Required"
+    },
+    {
+      "url": "https://www.mastermind-x.com/scene-motion.css?v=f426716d",
+      "path": "site/scene-motion.css",
+      "expected_sha256": "f426716d3023fd35c994970dac141089fe7a5414e523f00fcf9d91cd4d222dd6",
+      "expected_bytes": 23399,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/scene-motion.css?v=f426716d",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmqkjiw5gntzi1z\"",
+        "Last-Modified": "Mon, 09 Nov 2026 09:22:26 GMT",
+        "Age": "146785"
+      },
+      "observed_sha256": "f426716d3023fd35c994970dac141089fe7a5414e523f00fcf9d91cd4d222dd6",
+      "observed_bytes": 23399,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/shared_shell.css?v=b1918cca",
+      "path": "site/shared_shell.css",
+      "expected_sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "expected_bytes": 467,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/shared_shell.css?v=b1918cca",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmap5yhcb4glcz\"",
+        "Last-Modified": "Wed, 21 Oct 2026 17:37:09 GMT",
+        "Age": "1748316"
+      },
+      "observed_sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+      "observed_bytes": 467,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/theme.css?v=9bd171a6",
+      "path": "site/theme.css",
+      "expected_sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "expected_bytes": 227583,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/theme.css?v=9bd171a6",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dmkhx4ovloqk4vlr\"",
+        "Last-Modified": "Mon, 02 Nov 2026 06:03:09 GMT",
+        "Age": "778195"
+      },
+      "observed_sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "observed_bytes": 227583,
+      "equal": true
+    },
+    {
+      "url": "https://www.mastermind-x.com/tier_preview.css?v=d390f599",
+      "path": "site/tier_preview.css",
+      "expected_sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592",
+      "expected_bytes": 4074,
+      "status": 200,
+      "final_url": "https://www.mastermind-x.com/tier_preview.css?v=d390f599",
+      "headers": {
+        "Content-Type": "text/css; charset=utf-8",
+        "Cache-Control": "public, immutable, max-age=31536000",
+        "ETag": "\"dknjemcb4nfu356\"",
+        "Last-Modified": "Thu, 13 Aug 2026 04:39:04 GMT",
+        "Age": "2443577"
+      },
+      "observed_sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592",
+      "observed_bytes": 4074,
+      "equal": true
+    }
+  ],
+  "passed": false
+}

@@ -72,3 +72,7 @@ The final adoption changes only five published data JSON files relative to the q
 The Canada `.cau-row + .cau-row` horizontal separator remains functional. Its accepted CSS asset was removed from an overly broad asset-retirement mapping only after exact content and live-consumer qualification. The pre-correction failure and final zero-residual audit are both retained. Decorative rail detection remains unchanged.
 
 These receipts establish local source, render and interaction qualification. Fresh exact-head CI, controller-owned merge and production served-byte/browser acceptance are still separate obligations. No CI retry, release label or production acceptance is implied by this checkpoint.
+
+## Later scheduled-render continuation
+
+The next scheduled refresh is integrated through main `3d277257801f2d22f54924cfab73f7cf48ec4ca8`. Its 4,053 incoming paths are exclusively data/generated site output. `integration-render-3d2772/` records conflict conservation, exact existing projection recipes and all five passing validation stages. The refreshed full scan again reports 15,179 pages / 395 reachable assets with zero decorative residuals, missing assets or retired references. All 161 pairs match, all 31 EW inputs and checked product presentation inputs remain exact, and data/generated JavaScript match the new main. Prior browser/source qualification is reused without recounting it. The original PR CI run remains separately pending/failed as recorded; this local integration does not claim release.

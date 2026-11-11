@@ -1,0 +1,80 @@
+478: 2026-11-11T16:27:50.2675390Z Validated 329 legacy jobs; 329 in scope (full suite: global invalidator changed (scripts/run_ci_pack.py)); pack weights=[1630, 1070, 815, 767, 766, 766, 765, 766, 766, 765, 766, 765]; selected pack 10 (37 jobs).
+479: 2026-11-11T16:27:50.2681841Z Selected jobs: gh-annotation-line-start, am-edition-producer, options-alpha-candidate-feed, sector-cycles-page, theme-research-shared-shell, international-global-replay, quant-q06-sparse-cal, market-memory-e0-contract, research-codegen-runtime-qualification, ruling-graph, options-payoff-lab-consumer, consumer-cyclical-economic-change, qledger-cluster-honest-ci, forex-r26-consumer, quant-q09-venue-concentration, self-mod-fence, hkrv-w3-banner, ird-substrate-engines, ccw-w2-gspread-engine, pick-lab-liquidity, ths-factorwatch-build-notes, collect-identity, marketing-scoring-optional, quant-q15-noise-robust-rv, public-render-fastlane, unrun-brain-desks, washout-turn-organ, earnings-economic-private-publication, ric-y0-yield-momentum, ric-y1-curve-accounting, research-price-panel, product-experience-registry, dislocation-p0-a1-blind-harvest, market-ontology-f09-usgs-mcs, c19-wp29-hk-southbound-two-period, gdelt-news-leaves, signal-builder-fail-closed
+480: 2026-11-11T16:27:50.2686608Z ##[group]dependency environment attempt 1 — pip install pandas numpy pyyaml jsonschema
+1666: 2026-11-11T16:37:26.0957865Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease
+1667: 2026-11-11T16:37:26.0958919Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1668: 2026-11-11T16:37:46.1086704Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+1669: 2026-11-11T16:37:46.1150158Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease
+1670: 2026-11-11T16:37:46.1150773Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1671: 2026-11-11T16:37:46.1160962Z Ign:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease
+1672: 2026-11-11T16:38:06.1388329Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease
+1673: 2026-11-11T16:38:06.1389556Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1674: 2026-11-11T16:38:06.1390455Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease
+1675: 2026-11-11T16:38:26.1632788Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease
+1676: 2026-11-11T16:38:26.1633757Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1677: 2026-11-11T16:38:28.7366669Z Fetched 1473 kB in 3min 20s (7355 B/s)
+1678: 2026-11-11T16:38:29.9183037Z Reading package lists...
+1679: 2026-11-11T16:38:29.9343779Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1680: 2026-11-11T16:38:29.9345627Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1681: 2026-11-11T16:38:29.9347562Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1682: 2026-11-11T16:38:29.9349600Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+1683: 2026-11-11T16:38:29.9350712Z W: Some index files failed to download. They have been ignored, or old ones used instead.
+1763: 2026-11-11T16:42:30.7855017Z Err:2 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1
+1764: 2026-11-11T16:42:30.7856184Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1765: 2026-11-11T16:42:50.7943519Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1
+1767: 2026-11-11T16:42:50.8128360Z Err:3 https://security.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2
+1768: 2026-11-11T16:42:50.8129287Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1769: 2026-11-11T16:43:10.8166037Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8
+1771: 2026-11-11T16:43:10.8382709Z Err:4 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1
+1772: 2026-11-11T16:43:10.8383434Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1773: 2026-11-11T16:43:30.8341764Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2
+1775: 2026-11-11T16:43:30.8606046Z Err:5 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1
+1776: 2026-11-11T16:43:30.8606876Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1777: 2026-11-11T16:43:50.8589545Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3
+1779: 2026-11-11T16:43:50.8871788Z Err:6 https://security.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8
+1780: 2026-11-11T16:43:50.8872648Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1781: 2026-11-11T16:44:10.8891441Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1
+1783: 2026-11-11T16:44:10.9027812Z Err:7 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2
+1784: 2026-11-11T16:44:10.9029022Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1785: 2026-11-11T16:44:30.9137820Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1786: 2026-11-11T16:44:30.9258565Z Err:8 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3
+1787: 2026-11-11T16:44:30.9259942Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1788: 2026-11-11T16:44:30.9262831Z Ign:9 https://archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1
+1789: 2026-11-11T16:44:50.9473577Z Err:9 https://security.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1
+1790: 2026-11-11T16:44:50.9474311Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1791: 2026-11-11T16:44:50.9487434Z Ign:10 https://archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1792: 2026-11-11T16:45:10.9738138Z Err:10 https://security.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3
+1793: 2026-11-11T16:45:10.9739187Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+1794: 2026-11-11T16:45:10.9791721Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-ipafont/fonts-ipafont-gothic_00303-21ubuntu1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1795: 2026-11-11T16:45:10.9794108Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/f/fonts-freefont/fonts-freefont-ttf_20211204%2bsvn4273-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1796: 2026-11-11T16:45:10.9795751Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-tlwg/fonts-tlwg-loma-otf_0.7.3-1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1797: 2026-11-11T16:45:10.9797258Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/u/unifont/fonts-unifont_15.1.01-1build1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1798: 2026-11-11T16:45:10.9799511Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/f/fonts-wqy-zenhei/fonts-wqy-zenhei_0.9.45-8_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1799: 2026-11-11T16:45:10.9801736Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-encodings/xfonts-encodings_1.0.5-0ubuntu2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1800: 2026-11-11T16:45:10.9803410Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-utils/xfonts-utils_7.7%2b6build3_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1801: 2026-11-11T16:45:10.9806140Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/x/xfonts-cyrillic/xfonts-cyrillic_1.0.5%2bnmu1_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1802: 2026-11-11T16:45:10.9808317Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/x/xfonts-scalable/xfonts-scalable_1.0.3-1.3_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+1803: 2026-11-11T16:45:10.9809674Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+2789: 2026-11-11T16:58:25.1484785Z ...........................................................              [100%]
+2790: 2026-11-11T16:58:25.1485309Z 131 passed in 20.50s
+2791: 2026-11-11T16:58:25.4282910Z ##[endgroup]
+3243: 2026-11-11T17:08:35.4496479Z Removing tests/__pycache__/
+3244: 2026-11-11T17:08:35.4533135Z ##[group]public-render-fastlane — public fastlane split + rendered pricing copy pins
+3245: 2026-11-11T17:08:35.4573524Z v20.20.2
+3250: 2026-11-11T17:08:59.2409339Z .............................................                            [100%]
+3251: 2026-11-11T17:08:59.2409789Z 333 passed, 1 deselected in 23.43s
+3252: 2026-11-11T17:08:59.3318518Z ##[endgroup]
+3253: 2026-11-11T17:08:59.3407967Z ##[group]public-render-fastlane — US Regime History table wiring
+3254: 2026-11-11T17:09:00.7260201Z .                                                                        [100%]
+3746: 2026-11-11T17:16:08.8214690Z ...                                                                      [100%]
+3747: 2026-11-11T17:16:08.8215720Z 291 passed in 48.61s
+3748: 2026-11-11T17:16:09.0363484Z ##[endgroup]
+3756: 2026-11-11T17:16:09.8005936Z Removing tests/__pycache__/
+3757: 2026-11-11T17:16:09.8041163Z CI_PACK_FAILED_JOBS=[]
+3758: 2026-11-11T17:16:18.9326557Z 
+3760: 2026-11-11T17:16:18.9327453Z   - forex-r26-consumer: step 'install isolated Forex browser' exited 1
+3761: 2026-11-11T17:16:18.9327930Z CI_PACK_FAILED_JOBS=["forex-r26-consumer"]
+3762: 2026-11-11T17:16:18.9581900Z ##[error]Process completed with exit code 1.
+3808: 2026-11-11T17:16:20.2169478Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+3809: 2026-11-11T17:16:20.2720923Z Cleaning up orphan processes
+3810: 2026-11-11T17:16:20.3187526Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/download-artifact@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
