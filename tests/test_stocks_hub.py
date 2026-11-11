@@ -399,7 +399,9 @@ def _pp_strings(node, out=None):
         out.append(node)
     elif isinstance(node, dict):
         for k, v in node.items():
-            if k not in {"cls", "end_cls", "key", "side", "mode", "t"}:
+            # The research URL carries native tuple keys, not display copy.
+            # Its path, query and fragment are pinned by the URL contract above.
+            if k not in {"cls", "end_cls", "key", "side", "mode", "t", "research_href"}:
                 _pp_strings(v, out)
     elif isinstance(node, (list, tuple)):
         for v in node:
@@ -715,3 +717,27 @@ def test_the_band_survives_a_half_built_artifact():
     junk = hub.pressure_band({"asof": "2026-07-02",
                               "open_events": [{"side": "down"}, None]})
     assert junk["mode"] == "warmup"
+
+
+@pytest.mark.parametrize("field", [
+    ("title_en",), ("title_zh",),
+    ("help", "receipt_en"), ("help", "receipt_zh"),
+])
+def test_pressure_copy_guard_still_rejects_visible_machine_slugs(monkeypatch, field):
+    """Excluding navigation must not exempt visible labels or hover receipts."""
+    pressure_band = hub.pressure_band
+
+    def with_machine_slug(*args, **kwargs):
+        band = pressure_band(*args, **kwargs)
+        node = band
+        for key in field[:-1]:
+            node = node[key]
+            if node is None:
+                # The hover card is absent in the warm-up state.
+                return band
+        node[field[-1]] = "machine_slug"
+        return band
+
+    monkeypatch.setattr(hub, "pressure_band", with_machine_slug)
+    with pytest.raises(AssertionError, match="machine slug in 'machine_slug'"):
+        test_no_banned_vocabulary_in_anything_the_band_emits()
