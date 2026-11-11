@@ -1,0 +1,293 @@
+{
+  "input_pin": "fc2dffe6a9e564ac8c4338418afe585afd5afad2",
+  "parameters": {
+    "win": 252,
+    "horizon": 63,
+    "min_obs": 126,
+    "max_abs": 5,
+    "n_baskets": 200
+  },
+  "rng_seed": 7,
+  "inputs": [
+    {
+      "path": "data/yahoo/BTC-USD.parquet",
+      "sha": "4d1b6fbc3228ec54c4dc1a9f5712963fab6d8e99",
+      "bytes": 140346
+    },
+    {
+      "path": "data/breadth/_closes_cache.parquet",
+      "sha": "e0729db2deeef391a2d09c541f9ed602b845a12a",
+      "bytes": 1701154
+    },
+    {
+      "path": "data/smallcap_breadth/_closes_cache.parquet",
+      "sha": "7c5c7713c5c28bd256d1b433a696417d27272f8f",
+      "bytes": 3350709
+    },
+    {
+      "path": "data/midcap_breadth/_closes_cache.parquet",
+      "sha": "dc5277ab06217baf6c84b2143d6a16f72749eeca",
+      "bytes": 2320467
+    },
+    {
+      "path": "data/commodity/signals_oil.parquet",
+      "sha": "1ae47157839dac157367940068d71df3951d6a0a",
+      "bytes": 876065
+    },
+    {
+      "path": "data/yahoo/SPY.parquet",
+      "sha": "d73be3d49b2a43359a226f872e5f8274a830735c",
+      "bytes": 245142
+    },
+    {
+      "path": "data/yahoo/QQQ.parquet",
+      "sha": "16f4c8f193d8910e66476814373f5bc1edaac18b",
+      "bytes": 201942
+    },
+    {
+      "path": "data/yahoo/IWM.parquet",
+      "sha": "4930b10b16344ce39df788d2cae65c0149c5b0e3",
+      "bytes": 192826
+    },
+    {
+      "path": "data/yahoo/TLT.parquet",
+      "sha": "e25585dfa4b698f358c8b37c7f7f7c854decc660",
+      "bytes": 166359
+    },
+    {
+      "path": "data/yahoo/FXI.parquet",
+      "sha": "1bb6a11d45840c1591522fe5ec6dbee0b5b24fec",
+      "bytes": 149904
+    },
+    {
+      "path": "data/yahoo/DX-Y.NYB.parquet",
+      "sha": "f080fa8a3694e3a36d8d25d3910a72341dcd1588",
+      "bytes": 214689
+    },
+    {
+      "path": "data/yahoo/GC_F.parquet",
+      "sha": "a49ae302cc42914c624a011fe047c6e965350fdd",
+      "bytes": 157104
+    }
+  ],
+  "sources_at_measurement": {
+    "engine/factor_exposure.py": "a48bf85c0daab0e67b7c6817a5bd9b6b9b0862e3",
+    "scripts/factor_exposure_phase0.py": "f8eb1bd328f300e04a6e03dd9e712c62de287a85",
+    "engine/equity_factors.py": "74a5dbb280b7060d86c9e8ed6cd58e0df950e4a2",
+    "engine/validation.py": "c9a09740cd630f920e52fd21b88ff36ff31366b6",
+    "lib/config.py": "b6fc888269876242597da354aaa726c20ed95802",
+    "lib/store.py": "3a0985944f534be7d771c926d73eb49f53aba140",
+    "lib/closes_panel.py": "f36b47e9d10590c3d750cbce7f5646f504794b64",
+    "config.yml": "5be75249c98033d7ee0fbe55928713b1f50af627"
+  },
+  "factor_rows": 3020,
+  "factor_span": [
+    "2014-09-18",
+    "2026-09-25"
+  ],
+  "stocks_shape": [
+    776,
+    1552
+  ],
+  "collinearity": {
+    "raw_vif": {
+      "mkt": 11.55,
+      "growth": 7.63,
+      "size": 3.32,
+      "rates": 1.25,
+      "usd": 1.3,
+      "oil": 1.29,
+      "china": 1.49,
+      "btc": 1.34,
+      "gold": 1.27
+    },
+    "orth_vif": {
+      "mkt": 1,
+      "growth": 1,
+      "size": 1,
+      "rates": 1,
+      "usd": 1,
+      "oil": 1,
+      "china": 1,
+      "btc": 1,
+      "gold": 1
+    },
+    "pairs": [
+      {
+        "a": "mkt",
+        "b": "growth",
+        "corr": 0.93
+      },
+      {
+        "a": "mkt",
+        "b": "size",
+        "corr": 0.82
+      },
+      {
+        "a": "growth",
+        "b": "size",
+        "corr": 0.74
+      },
+      {
+        "a": "mkt",
+        "b": "china",
+        "corr": 0.52
+      },
+      {
+        "a": "mkt",
+        "b": "btc",
+        "corr": 0.47
+      },
+      {
+        "a": "growth",
+        "b": "china",
+        "corr": 0.45
+      },
+      {
+        "a": "size",
+        "b": "china",
+        "corr": 0.45
+      },
+      {
+        "a": "size",
+        "b": "btc",
+        "corr": 0.45
+      }
+    ],
+    "infl_median": 1.6825659365959076,
+    "infl_p90": 2.793459203485206,
+    "n_stocks": 1503
+  },
+  "stability": {
+    "rebalances": 20,
+    "span": "2024-10-31..2026-05-29",
+    "horizon": 63,
+    "win": 252,
+    "per_stock": {
+      "mkt": {
+        "persist": 0.618,
+        "n": 20
+      },
+      "growth": {
+        "persist": 0.458,
+        "n": 20
+      },
+      "size": {
+        "persist": 0.51,
+        "n": 20
+      },
+      "rates": {
+        "persist": 0.307,
+        "n": 20
+      },
+      "usd": {
+        "persist": 0.091,
+        "n": 20
+      },
+      "oil": {
+        "persist": 0.228,
+        "n": 20
+      },
+      "china": {
+        "persist": 0.122,
+        "n": 20
+      },
+      "btc": {
+        "persist": 0.04,
+        "n": 20
+      },
+      "gold": {
+        "persist": 0.103,
+        "n": 20
+      }
+    },
+    "by_basket": {
+      "1": {
+        "mkt": 0.623,
+        "growth": 0.463,
+        "size": 0.522,
+        "rates": 0.305,
+        "usd": 0.092,
+        "oil": 0.237,
+        "china": 0.116,
+        "btc": 0.047,
+        "gold": 0.08
+      },
+      "5": {
+        "mkt": 0.619,
+        "growth": 0.536,
+        "size": 0.464,
+        "rates": 0.325,
+        "usd": 0.102,
+        "oil": 0.374,
+        "china": 0.116,
+        "btc": 0.085,
+        "gold": 0.113
+      },
+      "10": {
+        "mkt": 0.575,
+        "growth": 0.511,
+        "size": 0.464,
+        "rates": 0.265,
+        "usd": 0.095,
+        "oil": 0.413,
+        "china": 0.112,
+        "btc": 0.096,
+        "gold": 0.124
+      },
+      "20": {
+        "mkt": 0.607,
+        "growth": 0.527,
+        "size": 0.461,
+        "rates": 0.289,
+        "usd": 0.108,
+        "oil": 0.421,
+        "china": 0.085,
+        "btc": 0.102,
+        "gold": 0.168
+      },
+      "40": {
+        "mkt": 0.592,
+        "growth": 0.512,
+        "size": 0.451,
+        "rates": 0.252,
+        "usd": 0.094,
+        "oil": 0.444,
+        "china": 0.116,
+        "btc": 0.118,
+        "gold": 0.125
+      }
+    },
+    "basket_sizes": [
+      1,
+      5,
+      10,
+      20,
+      40
+    ]
+  },
+  "explanatory": {
+    "r2_mkt_median": 0.068,
+    "r2_style_median": 0.178,
+    "r2_full_median": 0.221,
+    "style_add_median": 0.089,
+    "macro_add_median": 0.033,
+    "macro_add_p90": 0.082,
+    "n": 1503
+  },
+  "authority": "measurement_only; confidence_categories_not_requalified",
+  "qualification": {
+    "issue": 11016,
+    "executed_utc_date": "2026-11-11",
+    "elapsed_seconds": 315.18,
+    "focused_suite": "41 passed in 18.67s; no skipped tests",
+    "original_source_discriminator": "22 failed, 1 passed, 18 deselected; original engine52cc784d and Phase0 3a8c28fb",
+    "final_metadata_native_consumers": "4 passed in 2.86s",
+    "consumer_programs": {
+      "factor_exposure": "5c7d600e72f4732184169af78b86b055b1883b89",
+      "risk_core": "2ab3f1836688df62f97f25af34b80b3c56614d7c"
+    },
+    "scope": "Frozen historical measurement and actual native JSON/JavaScript arithmetic; no live holdings, browser pixels, deployment, provider acquisition or trade authority.",
+    "supersedes_pre_repair_report_blob": "e5939a9988d426506ebf07db4183d64a72545749"
+  }
+}
