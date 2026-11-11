@@ -483,7 +483,6 @@
     "tests/test_mag7_tape_strip.py",
     "tests/test_manager_history.py",
     "tests/test_manager_lag.py",
-    "tests/test_manager_quality.py",
     "tests/test_manager_trades.py",
     "tests/test_marker_integrity.py",
     "tests/test_market_books_js.py",

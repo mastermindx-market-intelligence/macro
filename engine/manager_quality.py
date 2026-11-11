@@ -20,7 +20,10 @@ horizon only, min-event gate, no single-cycle promotion.
 from __future__ import annotations
 
 import logging
+import math
+import operator
 
+import numpy as np
 import pandas as pd
 
 from engine.smart_money import (_read_all, diff_snapshots, full_cusip_map,
@@ -49,49 +52,76 @@ def load_closes() -> pd.DataFrame | None:
     return panel
 
 
+def _calendar_window(closes: pd.DataFrame, entry: str,
+                     horizon: int) -> tuple[int, int] | None:
+    """One realized pair on the uncompressed panel calendar, shared by all names.
+
+    Missing ticker quotes never change these positions. An ambiguous calendar,
+    invalid anchor or incomplete forward window supplies no observation.
+    """
+    idx = closes.index
+    if not isinstance(idx, pd.DatetimeIndex) or not idx.is_unique or not idx.is_monotonic_increasing:
+        return None
+    try:
+        h = operator.index(horizon)
+        e = pd.Timestamp(entry)
+        if h < 0 or pd.isna(e):
+            return None
+        start = int(idx.searchsorted(e, side="left"))
+    except (TypeError, ValueError, OverflowError):
+        return None
+    end = start + h
+    return (start, end) if start < len(idx) and end < len(idx) else None
+
+
 def forward_return(closes: pd.DataFrame, ticker: str, entry: str,
-                   horizon: int = DEFAULT_HORIZON) -> float | None:
-    """Return from the first trading day on/after `entry` to `horizon` sessions
-    later. None if the ticker is absent or the full horizon hasn't elapsed yet
-    (so we never score an unfinished window). PURE."""
+                   horizon: int = DEFAULT_HORIZON, *,
+                   _window: tuple[int, int] | None = None) -> float | None:
+    """Issuer return over the common entry/target pair, or None if unavailable.
+
+    Both endpoint quotes must be finite, entry positive and exit nonnegative.
+    Observed zero exits retain their -100% return. Interior gaps are irrelevant;
+    missing endpoints are neither filled nor replaced with a later observation.
+    `_window` lets the fund replay reuse its already resolved benchmark pair.
+    """
     if ticker not in closes.columns:
         return None
-    s = closes[ticker].dropna()
-    if s.empty:
+    window = _window if _window is not None else _calendar_window(closes, entry, horizon)
+    if window is None:
         return None
-    e = pd.Timestamp(entry)
-    after = s.index[s.index >= e]
-    if len(after) == 0:
+    try:
+        p0, p1 = (float(closes[ticker].iloc[pos]) for pos in window)
+    except (TypeError, ValueError, OverflowError):
         return None
-    pos = s.index.get_loc(after[0])
-    if pos + horizon >= len(s):          # horizon not fully elapsed -> skip
+    if not math.isfinite(p0) or not math.isfinite(p1) or p0 <= 0 or p1 < 0:
         return None
-    p0, p1 = float(s.iloc[pos]), float(s.iloc[pos + horizon])
-    if p0 <= 0:
-        return None
-    return p1 / p0 - 1.0
+    ret = p1 / p0 - 1.0
+    return ret if math.isfinite(ret) else None
 
 
 def market_forward_return(closes: pd.DataFrame, entry: str, horizon: int,
-                          _cache: dict | None = None) -> float | None:
+                          _cache: dict | None = None, *,
+                          _window: tuple[int, int] | None = None) -> float | None:
     """Equal-weight mean forward return across the whole close universe over the
     same window — the broad-market beta we subtract so skill measures SELECTION,
     not a rising tide (the case-study 'control for the dominant beta' lesson).
-    Memoized per (entry, horizon)."""
+    Memoized per (entry, horizon). Uses the issuer's identical calendar pair and
+    endpoint admission; unavailable names are omitted, never shifted or filled.
+    """
     key = (entry, horizon)
     if _cache is not None and key in _cache:
         return _cache[key]
-    e = pd.Timestamp(entry)
-    after = closes.index[closes.index >= e]
     val = None
-    if len(after):
-        pos = closes.index.get_loc(after[0])
-        if pos + horizon < len(closes):
-            p0 = closes.iloc[pos]
-            p1 = closes.iloc[pos + horizon]
-            rets = (p1 / p0 - 1.0).replace([float("inf"), float("-inf")], pd.NA).dropna()
+    window = _window if _window is not None else _calendar_window(closes, entry, horizon)
+    if window is not None:
+        p0, p1 = (pd.to_numeric(closes.iloc[pos], errors="coerce") for pos in window)
+        valid = np.isfinite(p0) & np.isfinite(p1) & (p0 > 0) & (p1 >= 0)
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            rets = p1[valid] / p0[valid] - 1.0
+            rets = rets[np.isfinite(rets)]
             if len(rets):
-                val = float(rets.mean())
+                mean = float(rets.mean())
+                val = mean if math.isfinite(mean) else None
     if _cache is not None:
         _cache[key] = val
     return val
@@ -108,7 +138,10 @@ def _fund_skill(slug: str, closes: pd.DataFrame, name_map, cusip_map,
         _pe_cur, fd_cur, cur = snaps[i + 1]
         if not fd_cur:                   # no public date -> can't place a look-ahead-free entry
             continue
-        bench = market_forward_return(closes, fd_cur, horizon, mkt_cache)
+        window = _calendar_window(closes, fd_cur, horizon)
+        if window is None:
+            continue
+        bench = market_forward_return(closes, fd_cur, horizon, mkt_cache, _window=window)
         if bench is None:                # window not complete -> skip the whole quarter
             continue
         diff = diff_snapshots(prev, cur)
@@ -117,7 +150,7 @@ def _fund_skill(slug: str, closes: pd.DataFrame, name_map, cusip_map,
         diff = resolve_tickers(diff, name_map, cusip_map)
         diff = diff[diff["ticker"].notna()]
         for r in diff.itertuples(index=False):
-            ret = forward_return(closes, r.ticker, fd_cur, horizon)
+            ret = forward_return(closes, r.ticker, fd_cur, horizon, _window=window)
             if ret is None:
                 continue
             excess = ret - bench         # selection, not beta
