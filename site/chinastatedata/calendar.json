@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-11-09",
-  "generated_at_utc": "2026-11-09T16:54:26.306091+00:00",
+  "asof": "2026-11-10",
+  "generated_at_utc": "2026-11-11T18:54:33.312588+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -14,30 +14,6 @@
       "impact": "medium",
       "source_class": "static",
       "source": "china_calendar.political_windows",
-      "approx": true
-    },
-    {
-      "date": "2026-11-09",
-      "window_end": null,
-      "etype": "FXRES",
-      "label_en": "FX reserves (SAFE)",
-      "label_zh": "外汇储备（外管局）",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-11-09",
-      "window_end": null,
-      "etype": "TRADE",
-      "label_en": "Customs trade (exports/imports)",
-      "label_zh": "海关进出口数据",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
       "approx": true
     },
     {
