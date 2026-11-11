@@ -1,0 +1,630 @@
+{
+  "schema": "macro.winner_health.interaction_observation.v1",
+  "source": "c7a2f293f810d433f5f600904894edfd37645998",
+  "utc": "2026-11-11T11:20:31.114796+00:00",
+  "kind": "SYNTHETIC_FIXTURE_REPLAY",
+  "fixture_sha256": "3a7aeeffb52d25843736cdcd9fff8088d82f8adead95d980c66c164703622e3c",
+  "html_sha256": "f5f4f7d010bed3f7086474bb694ac1ba057fc3451b8bb0035b6c0aa327e1ca18",
+  "source_template_blob": "3f45be05359354482f153394256943b37a67b579",
+  "checks": [
+    {
+      "case": "1440-dark",
+      "check": "real_theme_and_language_functions",
+      "pass": true,
+      "actual": {
+        "theme": "function",
+        "lang": "function"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "healthy_rollup_count_only",
+      "pass": true,
+      "actual": "BIG SIX-MONTH GAINS\nStill running\n80 names\n\nNothing to do\nBig gains, still close to their highs. Nothing here has slipped yet.\n\nNot listed one by one — nothing has slipped on any of them."
+    },
+    {
+      "case": "1440-dark",
+      "check": "initial_eight_visible",
+      "pass": true,
+      "actual": 8
+    },
+    {
+      "case": "1440-dark",
+      "check": "initial_collapsed_aria",
+      "pass": true,
+      "actual": "false"
+    },
+    {
+      "case": "1440-dark",
+      "check": "expand_nine",
+      "pass": true,
+      "actual": {
+        "visible": 9,
+        "aria": "true"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "collapse_eight",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-dark",
+      "check": "hover_paint_changes",
+      "pass": true,
+      "actual": {
+        "rest": "color(srgb 0.105882 0.121569 0.156863 / 0.52)",
+        "hover": "color(srgb 0.105882 0.121569 0.156863 / 0.76)"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "real_tab_button_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid",
+        "color": "rgb(122, 167, 224)"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "real_tab_search_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "rollup_only_search_honest_null",
+      "pass": true,
+      "actual": "No individually listed name matches \"T079\". Large “Still running” groups are shown as counts only."
+    },
+    {
+      "case": "1440-dark",
+      "check": "ninth_name_found",
+      "pass": true,
+      "actual": [
+        "N08"
+      ]
+    },
+    {
+      "case": "1440-dark",
+      "check": "search_hides_more_visually",
+      "pass": true,
+      "actual": {
+        "hidden": true,
+        "display": "none",
+        "rects": 0
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "trimmed_casefold_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-dark",
+      "check": "locale_search_chrome",
+      "pass": true,
+      "actual": {
+        "placeholder": "代码或名称",
+        "aria": "查找代码"
+      }
+    },
+    {
+      "case": "1440-dark",
+      "check": "chinese_name_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-dark",
+      "check": "chinese_rollup_qualified_null",
+      "pass": true,
+      "actual": "逐只列出的标的中，没有匹配「T079」的结果。较大的「仍在延续」分组只显示数量。"
+    },
+    {
+      "case": "1440-dark",
+      "check": "clear_restores_cap_rollup",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-dark",
+      "check": "no_document_overflow",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-dark",
+      "check": "no_page_errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "1440-dark",
+      "check": "no_failed_responses",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "1440-light",
+      "check": "real_theme_and_language_functions",
+      "pass": true,
+      "actual": {
+        "theme": "function",
+        "lang": "function"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "healthy_rollup_count_only",
+      "pass": true,
+      "actual": "BIG SIX-MONTH GAINS\nStill running\n80 names\n\nNothing to do\nBig gains, still close to their highs. Nothing here has slipped yet.\n\nNot listed one by one — nothing has slipped on any of them."
+    },
+    {
+      "case": "1440-light",
+      "check": "initial_eight_visible",
+      "pass": true,
+      "actual": 8
+    },
+    {
+      "case": "1440-light",
+      "check": "initial_collapsed_aria",
+      "pass": true,
+      "actual": "false"
+    },
+    {
+      "case": "1440-light",
+      "check": "expand_nine",
+      "pass": true,
+      "actual": {
+        "visible": 9,
+        "aria": "true"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "collapse_eight",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-light",
+      "check": "hover_paint_changes",
+      "pass": true,
+      "actual": {
+        "rest": "rgb(255, 255, 255)",
+        "hover": "color(srgb 0.936 0.947294 0.966118)"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "real_tab_button_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid",
+        "color": "rgb(40, 95, 255)"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "real_tab_search_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "rollup_only_search_honest_null",
+      "pass": true,
+      "actual": "No individually listed name matches \"T079\". Large “Still running” groups are shown as counts only."
+    },
+    {
+      "case": "1440-light",
+      "check": "ninth_name_found",
+      "pass": true,
+      "actual": [
+        "N08"
+      ]
+    },
+    {
+      "case": "1440-light",
+      "check": "search_hides_more_visually",
+      "pass": true,
+      "actual": {
+        "hidden": true,
+        "display": "none",
+        "rects": 0
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "trimmed_casefold_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-light",
+      "check": "locale_search_chrome",
+      "pass": true,
+      "actual": {
+        "placeholder": "代码或名称",
+        "aria": "查找代码"
+      }
+    },
+    {
+      "case": "1440-light",
+      "check": "chinese_name_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-light",
+      "check": "chinese_rollup_qualified_null",
+      "pass": true,
+      "actual": "逐只列出的标的中，没有匹配「T079」的结果。较大的「仍在延续」分组只显示数量。"
+    },
+    {
+      "case": "1440-light",
+      "check": "clear_restores_cap_rollup",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-light",
+      "check": "no_document_overflow",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "1440-light",
+      "check": "no_page_errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "1440-light",
+      "check": "no_failed_responses",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "390-dark",
+      "check": "real_theme_and_language_functions",
+      "pass": true,
+      "actual": {
+        "theme": "function",
+        "lang": "function"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "healthy_rollup_count_only",
+      "pass": true,
+      "actual": "BIG SIX-MONTH GAINS\nStill running\n80 names\n\nNothing to do\nBig gains, still close to their highs. Nothing here has slipped yet.\n\nNot listed one by one — nothing has slipped on any of them."
+    },
+    {
+      "case": "390-dark",
+      "check": "initial_eight_visible",
+      "pass": true,
+      "actual": 8
+    },
+    {
+      "case": "390-dark",
+      "check": "initial_collapsed_aria",
+      "pass": true,
+      "actual": "false"
+    },
+    {
+      "case": "390-dark",
+      "check": "expand_nine",
+      "pass": true,
+      "actual": {
+        "visible": 9,
+        "aria": "true"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "collapse_eight",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-dark",
+      "check": "hover_paint_changes",
+      "pass": true,
+      "actual": {
+        "rest": "color(srgb 0.105882 0.121569 0.156863 / 0.52)",
+        "hover": "color(srgb 0.105882 0.121569 0.156863 / 0.76)"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "real_tab_button_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid",
+        "color": "rgb(122, 167, 224)"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "real_tab_search_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "rollup_only_search_honest_null",
+      "pass": true,
+      "actual": "No individually listed name matches \"T079\". Large “Still running” groups are shown as counts only."
+    },
+    {
+      "case": "390-dark",
+      "check": "ninth_name_found",
+      "pass": true,
+      "actual": [
+        "N08"
+      ]
+    },
+    {
+      "case": "390-dark",
+      "check": "search_hides_more_visually",
+      "pass": true,
+      "actual": {
+        "hidden": true,
+        "display": "none",
+        "rects": 0
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "trimmed_casefold_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-dark",
+      "check": "locale_search_chrome",
+      "pass": true,
+      "actual": {
+        "placeholder": "代码或名称",
+        "aria": "查找代码"
+      }
+    },
+    {
+      "case": "390-dark",
+      "check": "chinese_name_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-dark",
+      "check": "chinese_rollup_qualified_null",
+      "pass": true,
+      "actual": "逐只列出的标的中，没有匹配「T079」的结果。较大的「仍在延续」分组只显示数量。"
+    },
+    {
+      "case": "390-dark",
+      "check": "clear_restores_cap_rollup",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-dark",
+      "check": "no_document_overflow",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-dark",
+      "check": "no_page_errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "390-dark",
+      "check": "no_failed_responses",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "390-light",
+      "check": "real_theme_and_language_functions",
+      "pass": true,
+      "actual": {
+        "theme": "function",
+        "lang": "function"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "healthy_rollup_count_only",
+      "pass": true,
+      "actual": "BIG SIX-MONTH GAINS\nStill running\n80 names\n\nNothing to do\nBig gains, still close to their highs. Nothing here has slipped yet.\n\nNot listed one by one — nothing has slipped on any of them."
+    },
+    {
+      "case": "390-light",
+      "check": "initial_eight_visible",
+      "pass": true,
+      "actual": 8
+    },
+    {
+      "case": "390-light",
+      "check": "initial_collapsed_aria",
+      "pass": true,
+      "actual": "false"
+    },
+    {
+      "case": "390-light",
+      "check": "expand_nine",
+      "pass": true,
+      "actual": {
+        "visible": 9,
+        "aria": "true"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "collapse_eight",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-light",
+      "check": "hover_paint_changes",
+      "pass": true,
+      "actual": {
+        "rest": "rgb(255, 255, 255)",
+        "hover": "color(srgb 0.936 0.947294 0.966118)"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "real_tab_button_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid",
+        "color": "rgb(40, 95, 255)"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "real_tab_search_focus",
+      "pass": true,
+      "actual": {
+        "active": true,
+        "visible": true,
+        "width": 2,
+        "style": "solid"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "rollup_only_search_honest_null",
+      "pass": true,
+      "actual": "No individually listed name matches \"T079\". Large “Still running” groups are shown as counts only."
+    },
+    {
+      "case": "390-light",
+      "check": "ninth_name_found",
+      "pass": true,
+      "actual": [
+        "N08"
+      ]
+    },
+    {
+      "case": "390-light",
+      "check": "search_hides_more_visually",
+      "pass": true,
+      "actual": {
+        "hidden": true,
+        "display": "none",
+        "rects": 0
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "trimmed_casefold_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-light",
+      "check": "locale_search_chrome",
+      "pass": true,
+      "actual": {
+        "placeholder": "代码或名称",
+        "aria": "查找代码"
+      }
+    },
+    {
+      "case": "390-light",
+      "check": "chinese_name_search",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-light",
+      "check": "chinese_rollup_qualified_null",
+      "pass": true,
+      "actual": "逐只列出的标的中，没有匹配「T079」的结果。较大的「仍在延续」分组只显示数量。"
+    },
+    {
+      "case": "390-light",
+      "check": "clear_restores_cap_rollup",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-light",
+      "check": "no_document_overflow",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "case": "390-light",
+      "check": "no_page_errors",
+      "pass": true,
+      "actual": []
+    },
+    {
+      "case": "390-light",
+      "check": "no_failed_responses",
+      "pass": true,
+      "actual": []
+    }
+  ],
+  "cases": [
+    {
+      "case": "1440-dark",
+      "page_errors": [],
+      "failed_responses": []
+    },
+    {
+      "case": "1440-light",
+      "page_errors": [],
+      "failed_responses": []
+    },
+    {
+      "case": "390-dark",
+      "page_errors": [],
+      "failed_responses": []
+    },
+    {
+      "case": "390-light",
+      "page_errors": [],
+      "failed_responses": []
+    }
+  ],
+  "result": "PASS"
+}

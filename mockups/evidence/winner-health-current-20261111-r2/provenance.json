@@ -1,0 +1,39 @@
+{
+  "schema": "macro.winner_health.recovery_provenance.v1",
+  "operation": "macro-oldest-first-healing-20261111-c2b-66845762",
+  "source_commit": "c7a2f293f810d433f5f600904894edfd37645998",
+  "source_tree": "e854773c1b9f5f636651a4a612756aa4406e77c4",
+  "merge_base": "71405417a0ff9dfc615654deea6ea44a5305f735",
+  "utc": "2026-11-11T11:27:28.233031+00:00",
+  "render_observation": "render-observation.json",
+  "production": false,
+  "data_limitations": [
+    "The frozen M714 artifact has asof2026-11-09. The existing builder fixture argument bypasses staleness; this is explicitly frozen-input replay.",
+    "Synthetic members are injected by the preserved capture helper function; they exercise bar-present rendering and do not represent real membership counts.",
+    "The interaction fixture has80 healthy count-only rows and9 individually listed watch rows; all are synthetic."
+  ],
+  "verified": {
+    "frozen_rest_cells": 8,
+    "members_rest_and_interaction_cells": 32,
+    "capture_file_and_state_integrity": true,
+    "capture_console_errors": 0,
+    "capture_failed_responses": 0,
+    "horizontal_overflow": false,
+    "interaction_checks": 80,
+    "interaction_failures": 0,
+    "portable_verifier_checks": 80
+  },
+  "regression": {
+    "before_source": "62362167ba3fc5e119fa9435c539d0835537be87",
+    "failed_checks": 4,
+    "failure": "Author display:inline-flex overrode the expansion button hidden attribute during search.",
+    "after_source": "c7a2f293f810d433f5f600904894edfd37645998",
+    "repair": ".wh-more[hidden]{display:none!important}",
+    "before_receipt": "interaction-before.json",
+    "after_receipt": "interaction-after.json"
+  },
+  "gates": "gates.json",
+  "verifier": "verify_interactions.py",
+  "historical_evidence": "All previously tracked mockups remain unchanged; original142 historical artifacts retained.",
+  "source_equivalence": "Final evidence child must preserve all11 source blobs in render-observation.json and the frozen data blob."
+}

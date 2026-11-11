@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/winner_health.html.j2
+manifest: mockups/evidence/winner-health-current-20261111-r2/members-fixture/manifest.json
