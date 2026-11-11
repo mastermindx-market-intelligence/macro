@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "path": "app/biocatalyst.py",
+    "blob_sha": "18dc16edf61749879a02043b00a1bbae66123d85",
+    "ranges": {
+      "_AUTHORITY": "174–187",
+      "_meta": "2325–2346",
+      "_opaque_digest": "864–867"
+    }
+  },
+  "generation_base": {
+    "last_success_at": "2026-10-18T16:00:00Z",
+    "source_dataset_timestamp_raw": "2026-10-18",
+    "configured_nct_count": 2,
+    "observed_nct_count": 2
+  },
+  "generation_ids": [
+    "fixture-generation-A",
+    "fixture-generation-B"
+  ],
+  "health": {
+    "state": "fresh",
+    "last_attempt_at": "2026-10-18T16:00:00Z",
+    "last_success_at": "2026-10-18T16:00:00Z",
+    "last_error_code": null
+  },
+  "later_health": {
+    "state": "fresh",
+    "last_attempt_at": "2026-10-18T16:01:00Z",
+    "last_success_at": "2026-10-18T16:01:00Z",
+    "last_error_code": null
+  }
+}
