@@ -446,7 +446,7 @@
       outBreak.textContent   = money(res.breakeven);
       outProtect.textContent = pct(res.downsideProtectionPct);
       outStatic.className = "pos";
-      outAnnual.textContent  = res.hasDays ? pct(res.annualizedIfCalled) : "—";
+      outAnnual.textContent  = res.hasDays && res.annualizedIfCalled !== null ? pct(res.annualizedIfCalled) : "—";
 
       // Law 3: plain-word interpretation under the number
       var plain = "You keep " + pct(res.staticReturnPct) + " as income if the stock stays flat, "
