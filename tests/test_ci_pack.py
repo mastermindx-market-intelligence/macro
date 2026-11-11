@@ -5987,12 +5987,15 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 8_068),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 8_486),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 7_909),
 )
-# Twelve packs per shape was the pre-curation measurement.
-PACKING_PROBE_MAX_PACKS = 10
+# Twelve packs per shape was the pre-curation measurement. 2026-11-10: the
+# weight axis carries measured command seconds now, so the weight-derived pack
+# projection (ceil(weight/600), capped at twelve) sits at its cap; funded
+# together with the probe weights in the 2026-11-10 recalibration history.
+PACKING_PROBE_MAX_PACKS = 12
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
@@ -8070,6 +8073,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
+
+    2026-11-10 (pack-weight recalibration): the gate: code entries of
+    OBSERVED_COMMAND_SECONDS were replaced with median per-job command times
+    measured over eight green hosted full-suite baselines on main
+    (2026-11-08 through 2026-11-10; provenance in the table's comment in
+    scripts/run_ci_pack.py). Selections are untouched - the same 137 / 137 /
+    131 jobs are selected by the same probes - but the weight axis now
+    carries measured seconds for sixty-plus jobs that ride these probes, so
+    each probe moves from the estimator sums funded on 2026-11-10 by PR
+    #10571 (5,966 / 5,987 / 5,724) to 8,068 / 8,486 / 7,909, and the
+    weight-derived pack projection (ceil(weight / 600), capped at twelve)
+    moves ten -> twelve on all three. #10571's +8 estimator contribution
+    (unrun-grading-board 40 -> 48) is superseded: that job now carries its
+    measured median, and packing_probe_measurements on the tree composed with
+    main 8ec8027d4ca0 returns exactly 8,068 / 8,486 / 7,909 on twelve packs.
+    Fund exactly those measured values: 5,966 -> 8,068, 5,987 -> 8,486,
+    5,724 -> 7,909, and the pack ceiling 10 -> 12. Job-count
+    ceilings (137 / 138 / 131), selectors, scopes, the gate: data entries and
+    the estimator fallback are unchanged, and every ceiling still reds any
+    selection that grows beyond it.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

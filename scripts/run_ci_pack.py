@@ -342,26 +342,27 @@ def _is_standalone_pip_install(command: str) -> bool:
         token and all(char in SHELL_CONTROL_CHARS for char in token)
         for token in tokens
     )
-# Command-only timings from successful ci run 30173070380.  These few outliers
-# dominate wall time; checkout/setup/install were deliberately excluded because
-# packs share or group that work.  The fallback heuristic handles every other
-# job and any job added later.
-# Hosted ubuntu-latest step times from green PR #5550 / run 31729769728
-# (legacy-job groups only; checkout excluded). Pack 1's 56-minute wall-clock
-# was 31 minutes of fetch-depth:0 stampede plus these underweighted heavies
-# sitting together because the 2026-08-11 local Mac weights were stale.
+# Command-only timings used only to balance packs; checkout/setup/install are
+# deliberately excluded because packs share or group that work.  The fallback
+# heuristic in _job_weight handles every job not named here.
 #
-# 2026-08-14: `engine-render-guards` (1036) was split into three lanes. Its 1036
-# was a hosted measurement of the whole job, and no hosted per-STEP breakdown
-# exists, so the three weights below are that hosted total re-apportioned by the
-# per-step shares measured locally in
-# research/CI_RENDER_GUARD_TIMING_RECEIPT_2026-08-12.md (427.6s wall, twelve
-# steps): rot sweep + statement-tape 83.4%, the express guards 10.8%, the
-# B4/attested-history cluster 5.8%. Two express steps (market-score authority,
-# China Policy Watch) were wired AFTER that receipt and are unmeasured, so
-# express carries an explicit allowance above its 112s share. These are
-# estimates from a measured shape, not a second hosted run — replace them from
-# a green post-split run's step timings when one exists.
+# 2026-11-10 recalibration (gate: code entries): every code-gate value below is
+# the MEDIAN per-job command time - the sum of that job's semantic step groups,
+# the same command-only definition this table always used - measured over eight
+# green hosted full-suite baselines on main (workflow_dispatch runs 42535928630,
+# 42558876818, 42586481171, 42625697142, 42772363949, 42847213533, 42892518166,
+# 42906860898; 2026-11-08 through 2026-11-10), read from each pack log's
+# per-step group-marker timestamp pairs.  The 2026-08/2026-10-19 vintages had
+# drifted far enough to defeat both consumers of _job_weight: the full-suite
+# partition balanced around a modeled-1630s job that really medians 4536s
+# (ci-pack-0 straggling 82 minutes beside 25-35 minute packs), and scoped
+# compaction merged packs on fictional peaks (a 97-job PR compacted to 5 packs
+# with a modeled 815s peak whose real slowest pack ran 1706s).
+#
+# The gate: data entries were NOT remeasured on 2026-11-10 - ci.yml plans only
+# gate: code - and keep their earlier provenance note at the bottom of the
+# table.  Replace them from a green data-health run's step timings when one
+# exists.
 # Which (role, event) pairs may mint or consume a semantic plan.
 #
 # ``role`` carries the SUBSTANCE and is enforced separately below: ``pr_head``
@@ -408,41 +409,93 @@ SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
 
 PACK_TARGET_SECONDS = 600
 OBSERVED_COMMAND_SECONDS = {
+    # ---- gate: code: 2026-11-10 medians over the eight baselines above ----
+    "fif-kernel-guards": 4536,
+    "earnings-economic-dossier": 1008,
+    "ci-control-plane-contracts": 1000,
+    "international-workspace-browser": 870,
+    "nw-lobe-unfreeze": 693,
+    "ci-control-plane-census": 550,
+    "unrun-government-revenue-candidate-projection": 483,
+    "ontology-explorer": 447,
+    "defense-rail-laws": 439,
+    "international-dislocation-explorer": 436,
+    "dashboard-render-contract": 421,
+    "washout-turn-organ": 357,
+    "agentos-knowledge-contracts": 350,
+    "unrun-brain-gateway": 335,
+    "research-vault": 327,
+    "sni-acceptance-evidence": 314,
+    "biocatalyst-contracts": 305,
+    "biocatalyst-serving": 291,
+    "design-governance": 283,
+    "unrun-grading-board": 260,
+    "synapse-read-gate": 254,
+    "biocatalyst-worker": 241,
+    "research-price-panel": 228,
+    "earnings-economic-private-publication": 217,
+    "self-mod-fence": 212,
+    "unrun-factor-research": 201,
+    "company-intelligence-relationships": 197,
+    "conviction-profile": 190,
+    "biocatalyst-history": 188,
+    "ci-control-plane-structure": 186,
+    "finance-intelligence": 176,
+    "china-native-collectors": 167,
+    "ric-e0-retrospective-runners": 147,
+    "prophet-lab": 145,
+    "international-transmission-board": 141,
+    "market-os-macro-suite-pages": 140,
+    "ticker-news-qbus": 133,
+    "intelligence-registry": 128,
+    "marketing-social-publisher": 125,
+    "push-retry-policy": 124,
+    "unrun-brain-desks": 122,
+    "cycle-forward-log": 121,
+    "stock-dashboard-first-frame": 116,
+    "biocatalyst-evidence": 114,
+    "unrun-import-hygiene": 114,
+    "news-impact-contracts": 111,
+    "earnings-economic-source-selection": 109,
+    "nyse-calendar-freshness": 103,
+    "research-factory-authority": 100,
+    "unrun-scoring-engine": 94,
+    "sni-s1-residual": 80,
+    "site-access-boundary": 75,
+    "semiconductor-b-boundary": 75,
+    "leadership-rotation-science": 74,
+    "path-prune-lint": 71,
+    "validated-claims-contract": 71,
+    "crypto-vector-r2-organs": 69,
+    "wri-risk-core": 68,
+    "dataos-prospective-reference": 67,
+    "global-liquidity-transmission-contracts": 66,
+    "international-workspace-foundation": 65,
+    "bea-gvc-current-descriptive-consumer": 62,
+    "forex-r26-consumer": 62,
+    "unrun-dark-guards": 62,
+    # Previously estimated from the 2026-09-25 split and the 2026-10-19 hosted
+    # groups; the 2026-11-10 medians above replaced their siblings.
+    "workflow-yaml": 56,
+    "attested-history-guards": 38,
+    "font-ui-defined": 4,
+    # ---- gate: data: NOT remeasured on 2026-11-10; earlier provenance.  The
+    # 2026-08-14 split of engine-render-guards (1036) re-apportioned its hosted
+    # total by the local per-step shares in
+    # research/CI_RENDER_GUARD_TIMING_RECEIPT_2026-08-12.md, with an explicit
+    # allowance for then-unmeasured express steps; the rest are 2026-10-19
+    # hosted command groups (evidence: research/ci_pack_throughput_20261019/).
     "engine-render-guards": 875,
     "express-render-guards": 150,
-    "attested-history-guards": 60,
-    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
-    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
-    # and the structure step 25 s (0.84x and 0.51x their local times). The later
-    # steps never ran there because the packing step failed first, so they are
-    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
-    # render-lane contracts and the options/sparse suites: about 90 s including
-    # its data-stack install.
-    # 2026-11-04 (#917): ci-control-plane-contracts split three ways; hosted group
-    # timings from runs 41806511589 / 41803222742 (median of the two).
-    "ci-control-plane-contracts": 815,
-    "ci-control-plane-census": 530,
-    "ci-control-plane-structure": 150,
-    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
-    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
-    # These calibrate balancing only; install/checkout/queue are excluded.
-    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
-    "fif-kernel-guards": 1630,
-    "earnings-economic-dossier": 1070,
-    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
-    "biocatalyst-worker": 274,
-    "biocatalyst-serving": 272,
     "flow-surface": 267,
     "capital-structure-intelligence": 247,
     "marketing-engine": 250,
     "unrun-picks-boards": 245,
-    "biocatalyst-history": 172,
     "unrun-subsector-themes": 134,
     "inline-js": 124,
     "unrun-market-plumbing": 114,
-    "font-ui-defined": 96,
     "neural-web-core": 89,
     "capability-broker": 74,
     "validated-claims": 39,
