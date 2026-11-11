@@ -13,6 +13,27 @@ current result. See `population` below.
 Annualised fields (`ann_*`) are mean daily × 252 from 63 returns and are very noisy. **Lead with total-window fields** (`total_*`, `vs_passive_market.total_diff`).
 Render nothing as a recommendation. All `may_*` flags are false.
 
+## Renewal (deliberate rerun only — no scheduled job touches this artifact)
+
+This artifact is frozen evidence. It is recomputed only by a deliberate rerun of
+`scripts/run_prophet_beta_evaluation.py`, committed with its review like any other source change — never by the
+nightly engine step: a fixed-window evaluation recomputed each night against that night's index, ledger,
+membership file and vendor-adjusted prices is no longer the frozen evaluation (adjusted closes are restated when
+dividends are paid, plan records are amended), so the published numbers would drift with no review while the
+page still says "frozen". A test in `tests/test_prophet_beta_evaluation_api.py` fails if the nightly or
+checkpoint workflow script mentions the runner or this artifact again.
+
+**How to rerun** (from a clean tree at the harness commit, so `code.harness_dirty` is false; prices come from the
+pinned cache outside the repo, not a live `data/yahoo`):
+
+```bash
+PROPHET_EVAL_PRICES=/home/ubuntu2/tmp/prophet-eval-cache/yahoo \
+  /home/ubuntu2/.t3/worktrees/Macro/.venv-prophet/bin/python scripts/run_prophet_beta_evaluation.py
+```
+
+Honest limit: `code.commit` names the commit of the harness that produced the artifact, which is necessarily the
+parent of the commit that stores the artifact.
+
 ## Identity and clocks
 | Field | Meaning |
 |---|---|

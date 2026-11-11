@@ -3,6 +3,7 @@
 **Protocol:** `PROTOCOL_HEADER_v1.md` / `protocol_header_v1.json`, sha256 `3be32166…2ada`, committed `07f1c9cd8c` before any outcome access. The header is unchanged.
 **Code:** `engine/prophet_beta_evaluation.py` + `scripts/run_prophet_beta_evaluation.py` at this commit. Seed 20261110, B = 10,000.
 **Artifact:** `site/prophet/beta_evaluation.json` (`prophet.beta_evaluation/v1`). Data pin: Macro `b5a5c846f8`, plan snapshot 2026-11-09 (source 2026-11-06).
+**Renewal:** the artifact is frozen evidence — no scheduled job regenerates it. It changes only by a deliberate rerun of `scripts/run_prophet_beta_evaluation.py`, committed with its review (exact command: "How to rerun" in `ARTIFACT_CONTRACT_v1.md`).
 **Release level achieved: L0 descriptive, for every job.** This is the predeclared cap: the window is 64 sessions (minimum 252) and SPY's deepest drawdown was −5.9% (minimum 8%). The 308 resolved positions met the third condition (minimum 150).
 
 ## Population correction (deviation D5) — read this first

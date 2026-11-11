@@ -12041,10 +12041,11 @@ jobs:
       - "tests/test_prophet_daily_brief_api.py"
       # Beta-first strategy evaluation (frozen protocol header): the harness,
       # the runner, the authenticated transport and both suites are one
-      # dependency story. The API suite also pins the nightly regeneration
-      # block (scripts/ci/daily_engine_prophet_nightly.sh + its checkpoint
-      # allowlist) and build_prophet's R2 forbidden-key guard, and the
-      # committed artifact + frozen header are its binding evidence.
+      # dependency story. The API suite also asserts that the workflow
+      # scripts (scripts/ci/daily_engine_prophet_nightly.sh + its checkpoint
+      # allowlist) never regenerate the frozen artifact, and pins
+      # build_prophet's R2 forbidden-key guard; the committed artifact +
+      # frozen header are its binding evidence.
       - "engine/prophet_beta_evaluation.py"
       - "scripts/run_prophet_beta_evaluation.py"
       - "app/prophet_beta_evaluation.py"
@@ -12128,7 +12129,7 @@ jobs:
           python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
-      - name: Prophet beta-first evaluation — frozen harness, private API, nightly isolation
+      - name: Prophet beta-first evaluation — frozen harness, private API, regeneration guard
         run: >
           python -m pytest
           tests/test_prophet_beta_evaluation.py

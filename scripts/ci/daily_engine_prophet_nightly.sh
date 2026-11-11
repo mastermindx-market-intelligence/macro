@@ -104,12 +104,6 @@ exact = {
     # like showcase.json; without this entry the artifact is
     # runner-local and the references resolve to nothing on main.
     "site/prophet/board_read_sparks.json",
-    # Beta-first strategy evaluation: regenerated under the frozen protocol
-    # header by scripts/run_prophet_beta_evaluation.py later in this step,
-    # AFTER build_prophet has produced the day's index and ledger. Baseline
-    # freezes its committed bytes so the checkpoint can prove the post-
-    # evaluation change on exactly the index publication terms.
-    "site/prophet/beta_evaluation.json",
     "data/prophet/ledger.jsonl",
     "data/prophet/ledger_quarantine.json",
     "data/prophet_arena/scoreboard.json",
@@ -330,40 +324,6 @@ PY
     echo "::warning title=build_prophet receipt::build returned 0 but exact origination provenance could not be frozen (rc=$receipt_rc); early publication withheld"
     exit 0
   fi
-  # Beta-first strategy evaluation (self-renewing site/prophet/
-  # beta_evaluation.json). Runs AFTER build_prophet so the day's index and
-  # ledger exist, BEFORE the delta manifest so the checkpoint publishes the
-  # regenerated artifact on the same narrow terms as index.json. Belt-and-
-  # braces like the build itself: a hard timeout bounds a wedge, every
-  # failure is a non-fatal ::warning, the runner writes atomically (temp +
-  # rename), and any failure leaves the previously committed artifact
-  # untouched (this step then simply reports no change for that path).
-  echo "::group::prophet beta-first evaluation (frozen header, atomic write)"
-  # A killed prior attempt may have left an atomic-write temp sibling behind.
-  rm -f -- site/prophet/.beta_evaluation.tmp.*
-  EVAL_MISSING=0
-  for eval_input in \
-    site/prophet/index.json \
-    data/prophet/ledger.jsonl \
-    data/breadth/sp1500_pit_membership.parquet \
-    data/breadth/sp1500_pit_sectors.parquet \
-    data/yahoo/SPY.parquet \
-    research/prophet_v4/beta_first_evaluation/protocol_header_v1.json; do
-    if [ ! -f "$eval_input" ]; then
-      EVAL_MISSING=1
-      echo "::warning title=prophet beta evaluation::input $eval_input missing on this runner — skipping regeneration, previously committed artifact kept"
-    fi
-  done
-  if [ "$EVAL_MISSING" -eq 0 ]; then
-    if timeout 420 python scripts/run_prophet_beta_evaluation.py 2>&1; then
-      echo "prophet beta evaluation: regenerated site/prophet/beta_evaluation.json"
-    else
-      eval_rc=$?
-      echo "::warning title=prophet beta evaluation::regeneration failed or timed out (rc=$eval_rc) — non-fatal, previously committed artifact kept"
-      rm -f -- site/prophet/.beta_evaluation.tmp.*
-    fi
-  fi
-  echo "::endgroup::"
   # Emit an explicit delta manifest: path, pre-build fingerprint
   # (mode + SHA-256, or MISSING), post-build fingerprint. Deletion is
   # not a supported Prophet
@@ -385,12 +345,6 @@ exact = {
     # like showcase.json; without this entry the artifact is
     # runner-local and the references resolve to nothing on main.
     "site/prophet/board_read_sparks.json",
-    # Beta-first strategy evaluation: regenerated under the frozen protocol
-    # header by scripts/run_prophet_beta_evaluation.py later in this step,
-    # AFTER build_prophet has produced the day's index and ledger. Baseline
-    # freezes its committed bytes so the checkpoint can prove the post-
-    # evaluation change on exactly the index publication terms.
-    "site/prophet/beta_evaluation.json",
     "data/prophet/ledger.jsonl",
     "data/prophet/ledger_quarantine.json",
     "data/prophet_arena/scoreboard.json",

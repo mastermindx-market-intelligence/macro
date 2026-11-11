@@ -83,7 +83,6 @@ while IFS=$'\t' read -r rel before_sha after_sha; do
   case "$rel" in
     site/prophet/index.json|site/prophet/showcase.json|\
     site/prophet/board_read_sparks.json|\
-    site/prophet/beta_evaluation.json|\
     data/prophet/ledger.jsonl|data/prophet/ledger_quarantine.json|\
     data/prophet_arena/scoreboard.json|\
     data/prophet/origination_receipts/*.json|\

@@ -4,17 +4,14 @@ These prove only this router's auth ordering, zero-parameter grammar, status
 framing, frozen-header binding and byte-exact pass-through, mounted alone on
 a throwaway repository root. They are NOT live evaluation proof — the frozen
 harness's own contract tests live in tests/test_prophet_beta_evaluation.py,
-and the nightly isolation contract is pinned at the bottom of this file
-against the real extracted workflow script.
+and the no-nightly-regeneration contract is pinned at the bottom of this
+file against the real workflow scripts.
 """
 from __future__ import annotations
 
 import hashlib
 import importlib
 import importlib.util
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -271,130 +268,22 @@ def test_committed_artifact_is_bound_to_the_committed_header():
     ).hexdigest()
 
 
-# ── nightly step isolation contract ─────────────────────────────────────────
+# ── no nightly regeneration of the frozen artifact ───────────────────────────
 
 NIGHTLY = ROOT / "scripts" / "ci" / "daily_engine_prophet_nightly.sh"
 CHECKPOINT = ROOT / "scripts" / "ci" / "daily_engine_prophet_checkpoint.sh"
 
 
-def _eval_block() -> str:
-    """The beta-evaluation segment of the real nightly script, verbatim."""
-    lines = NIGHTLY.read_text(encoding="utf-8").splitlines()
-    start = next(i for i, line in enumerate(lines)
-                 if "::group::prophet beta-first evaluation" in line)
-    end = next(i for i in range(start + 1, len(lines))
-               if "::endgroup::" in lines[i])
-    return "\n".join(lines[start + 1:end]) + "\n"
-
-
-def _sandbox(tmp_path: Path) -> Path:
-    """A repository-shaped sandbox whose parquet inputs are unreadable dummies.
-
-    Every input the eval block checks for exists, so the step proceeds to run
-    the real runner — which then fails on the dummy price bytes. That is the
-    failure-containment path under test.
-    """
-    repo = tmp_path / "sandbox"
-    (repo / "site/prophet").mkdir(parents=True)
-    (repo / "data/breadth").mkdir(parents=True)
-    (repo / "data/yahoo").mkdir(parents=True)
-    (repo / "research/prophet_v4/beta_first_evaluation").mkdir(parents=True)
-    (repo / "scripts").mkdir(parents=True)
-    (repo / "site/prophet/index.json").write_text("{}\n")
-    (repo / "data/prophet").mkdir()
-    (repo / "data/prophet/ledger.jsonl").write_text('{"id":"x"}\n')
-    for rel in ("data/breadth/sp1500_pit_membership.parquet",
-                "data/breadth/sp1500_pit_sectors.parquet",
-                "data/yahoo/SPY.parquet"):
-        (repo / rel).write_bytes(b"not a parquet\n")
-    # Real frozen header bytes so the runner's refusal cannot fire before the
-    # price read: the failure must come from the unreadable dummy inputs.
-    (repo / HEADER_REL).write_bytes((ROOT / HEADER_REL).read_bytes())
-    # A previously committed artifact that must survive the failed step.
-    (repo / ARTIFACT_REL).write_bytes(b'{"schema":"previous-night"}\n')
-    # The real runner, copied so its own ROOT resolves to the sandbox.
-    (repo / "scripts/run_prophet_beta_evaluation.py").write_text(
-        (ROOT / "scripts/run_prophet_beta_evaluation.py").read_text(encoding="utf-8"),
-        encoding="utf-8",
-    )
-    return repo
-
-
-def _run_eval_block(repo: Path) -> subprocess.CompletedProcess[str]:
-    env = os.environ.copy()
-    env["PYTHONPATH"] = str(ROOT)  # engine.prophet_beta_evaluation from the repo
-    env["PROPHET_EVAL_PRICES"] = str(repo / "data/yahoo")
-    # An exec wrapper (not a symlink): venv resolution follows the wrapper's
-    # target, keeping the test interpreter's site-packages visible.
-    shim = repo / "bin"
-    shim.mkdir(exist_ok=True)
-    shim.joinpath("python").write_text(
-        f'#!/bin/sh\nexec "{sys.executable}" "$@"\n', encoding="utf-8"
-    )
-    shim.joinpath("python").chmod(0o755)
-    env["PATH"] = f"{shim}:{env['PATH']}"
-    return subprocess.run(
-        ["bash", "-c", _eval_block()], cwd=repo, env=env, check=False,
-        capture_output=True, text=True, timeout=180,
-    )
-
-
-def test_nightly_eval_failure_is_contained_and_previous_artifact_kept(tmp_path):
-    repo = _sandbox(tmp_path)
-    previous = (repo / ARTIFACT_REL).read_bytes()
-
-    result = _run_eval_block(repo)
-
-    assert result.returncode == 0, result.stdout + result.stderr
-    assert "prophet beta evaluation" in result.stdout  # the non-fatal warning
-    # The previously committed artifact is preserved byte-for-byte...
-    assert (repo / ARTIFACT_REL).read_bytes() == previous
-    # ...and no atomic-write temp sibling is left behind.
-    assert list((repo / "site/prophet").glob(".beta_evaluation.tmp.*")) == []
-
-
-def test_nightly_eval_block_skips_cleanly_when_an_input_is_missing(tmp_path):
-    repo = _sandbox(tmp_path)
-    (repo / "data/yahoo/SPY.parquet").unlink()
-    previous = (repo / ARTIFACT_REL).read_bytes()
-
-    result = _run_eval_block(repo)
-
-    assert result.returncode == 0, result.stdout + result.stderr
-    assert "missing on this runner" in result.stdout
-    assert "skipping regeneration" in result.stdout
-    assert (repo / ARTIFACT_REL).read_bytes() == previous
-
-
-def test_nightly_eval_block_cleans_stale_temp_siblings(tmp_path):
-    repo = _sandbox(tmp_path)
-    stale = repo / "site/prophet/.beta_evaluation.tmp.999999"
-    stale.write_text("half-written")
-    (repo / "data/yahoo/SPY.parquet").unlink()  # skip path still cleans temps
-
-    result = _run_eval_block(repo)
-
-    assert result.returncode == 0, result.stdout + result.stderr
-    assert not stale.exists()
-
-
-def test_nightly_eval_runs_after_the_build_and_inside_the_manifest_scope():
-    """The eval must sit after build_prophet's receipt and before the delta
-    manifest, so its output is hashed and checkpoint-published like the index."""
-    text = NIGHTLY.read_text(encoding="utf-8")
-    build_i = text.index("python -m scripts.build_prophet 2>&1")
-    receipt_i = text.index('"schema": "prophet.origination_receipt/v1"')
-    eval_i = text.index("::group::prophet beta-first evaluation")
-    manifest_i = text.index("before.get(path, 'MISSING')")
-    assert build_i < receipt_i < eval_i < manifest_i
-
-
-def test_evaluation_artifact_is_checkpoint_allowlisted_and_hashed_twice():
-    nightly = NIGHTLY.read_text(encoding="utf-8")
-    assert nightly.count('"site/prophet/beta_evaluation.json"') == 2  # baseline + delta
-    allowlist = CHECKPOINT.read_text(encoding="utf-8")
-    allowlist = allowlist.split('case "$rel" in', 1)[1].split("*)", 1)[0]
-    assert "site/prophet/beta_evaluation.json" in allowlist
+def test_workflow_scripts_never_regenerate_the_frozen_evaluation():
+    # The evaluation is frozen: a nightly rerun against that night's restated
+    # prices and amended plans would drift the published numbers with no
+    # review, so the artifact changes only by a deliberate rerun of
+    # scripts/run_prophet_beta_evaluation.py committed like any other source
+    # change.
+    for script in (NIGHTLY, CHECKPOINT):
+        text = script.read_text(encoding="utf-8")
+        assert "run_prophet_beta_evaluation" not in text, str(script)
+        assert "beta_evaluation.json" not in text, str(script)
 
 
 def test_evaluation_artifact_is_forbidden_on_public_r2_like_the_index():
