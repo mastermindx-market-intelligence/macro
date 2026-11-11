@@ -1,0 +1,599 @@
+{
+  "status": "CURRENT_VALUATION_AND_LEGACY_PREVIEW_BEHAVIOR_REPRODUCED_NOT_INTEGRATION_ACCEPTANCE",
+  "source": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+    "path": "portfolio/paper_account.py",
+    "sha256": "cb87e10ce5817afd91bb4e84059fa740e045f33ad340e5c98ac77a698726cd9e"
+  },
+  "extracted_definitions": [
+    {
+      "name": "NavWithheld",
+      "first_line": 2093,
+      "last_line": 2103
+    },
+    {
+      "name": "_valuation_day",
+      "first_line": 2106,
+      "last_line": 2111
+    },
+    {
+      "name": "valuation",
+      "first_line": 2114,
+      "last_line": 2325
+    },
+    {
+      "name": "nav",
+      "first_line": 2328,
+      "last_line": 2358
+    },
+    {
+      "name": "positions_pnl",
+      "first_line": 2361,
+      "last_line": 2386
+    }
+  ],
+  "execution": {
+    "python": "3.12.14",
+    "real_account_reads": 0,
+    "controlled_account_stub_calls": 24,
+    "fixed_stale_max_days": 30,
+    "quote_calls": 0,
+    "fx_calls": 0,
+    "doctrine_reads": 0,
+    "endpoint_calls": 0,
+    "module_initialization_executed": false,
+    "browser_playback": false
+  },
+  "cases": [
+    {
+      "id": "missing_mark_cost_fallback",
+      "observed": {
+        "legacy_nav": 250,
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "nav_qualified": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNPRICED"
+        },
+        "priced_count": 1,
+        "held_count": 2,
+        "strict_nav": null,
+        "strict_error": "NavWithheld",
+        "numeric_price_coverage_complete": false
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": null,
+          "market_value": null,
+          "unrealized_pnl": null,
+          "unrealized_pct": null
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "nav_qualified": null,
+        "cash": 100.0,
+        "invested": null,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "UNPRICED",
+            "price": null,
+            "price_asof": null,
+            "age_days": null,
+            "source": null,
+            "value": null,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [],
+        "unpriced": [
+          {
+            "ticker": "B",
+            "shares": 1.0,
+            "last_observed_price": null,
+            "last_observed_asof": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "all_explicit_fresh_control",
+      "observed": {
+        "legacy_nav": 255,
+        "nav_status": "QUALIFIED",
+        "nav": 255.0,
+        "nav_qualified": 255.0,
+        "classes": {
+          "A": "FRESH",
+          "B": "FRESH"
+        },
+        "priced_count": 2,
+        "held_count": 2,
+        "strict_nav": 255.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": true
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": 35,
+          "market_value": 35.0,
+          "unrealized_pnl": 5.0,
+          "unrealized_pct": 16.67
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "QUALIFIED",
+        "nav": 255.0,
+        "nav_qualified": 255.0,
+        "cash": 100.0,
+        "invested": 155.0,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "FRESH",
+            "price": 35.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 35.0,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [],
+        "unpriced": []
+      }
+    },
+    {
+      "id": "all_priced_unattested",
+      "observed": {
+        "legacy_nav": 255,
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNATTESTED"
+        },
+        "priced_count": 2,
+        "held_count": 2,
+        "strict_nav": 255.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": true
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": 35,
+          "market_value": 35.0,
+          "unrealized_pnl": 5.0,
+          "unrealized_pct": 16.67
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "cash": 100.0,
+        "invested": 155.0,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "UNATTESTED",
+            "price": 35.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": null,
+            "value": 35.0,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [
+          "B"
+        ],
+        "unpriced": []
+      }
+    },
+    {
+      "id": "explicit_not_close_qualified",
+      "observed": {
+        "legacy_nav": 255,
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNATTESTED"
+        },
+        "priced_count": 2,
+        "held_count": 2,
+        "strict_nav": 255.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": true
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": 35,
+          "market_value": 35.0,
+          "unrealized_pnl": 5.0,
+          "unrealized_pct": 16.67
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "cash": 100.0,
+        "invested": 155.0,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "UNATTESTED",
+            "price": 35.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 35.0,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [
+          "B"
+        ],
+        "unpriced": []
+      }
+    },
+    {
+      "id": "empty_evidence_entries_legacy_qualification",
+      "observed": {
+        "legacy_nav": 255,
+        "nav_status": "QUALIFIED",
+        "nav": 255.0,
+        "nav_qualified": 255.0,
+        "classes": {
+          "A": "FRESH",
+          "B": "FRESH"
+        },
+        "priced_count": 2,
+        "held_count": 2,
+        "strict_nav": 255.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": true
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": 35,
+          "market_value": 35.0,
+          "unrealized_pnl": 5.0,
+          "unrealized_pct": 16.67
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "QUALIFIED",
+        "nav": 255.0,
+        "nav_qualified": 255.0,
+        "cash": 100.0,
+        "invested": 155.0,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": null,
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "FRESH",
+            "price": 35.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": null,
+            "value": 35.0,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [],
+        "unpriced": []
+      }
+    },
+    {
+      "id": "persisted_carry",
+      "observed": {
+        "legacy_nav": 250,
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "CARRIED"
+        },
+        "priced_count": 1,
+        "held_count": 2,
+        "strict_nav": 255.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": false
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": null,
+          "market_value": null,
+          "unrealized_pnl": null,
+          "unrealized_pct": null
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "PROVISIONAL",
+        "nav": 255.0,
+        "nav_qualified": null,
+        "cash": 100.0,
+        "invested": 155.0,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "CARRIED",
+            "price": 35.0,
+            "price_asof": "2026-10-07",
+            "age_days": 1,
+            "source": "controlled_previous_close",
+            "value": 35.0,
+            "shares": 1.0
+          }
+        },
+        "carried": [
+          {
+            "ticker": "B",
+            "price": 35.0,
+            "price_asof": "2026-10-07",
+            "age_days": 1,
+            "source": "controlled_previous_close",
+            "value": 35.0,
+            "weight_of_invested": 0.225806
+          }
+        ],
+        "carried_value": 35.0,
+        "carried_fraction": 0.22580645161290322,
+        "unattested": [],
+        "unpriced": []
+      }
+    },
+    {
+      "id": "future_persisted_mark_rejected",
+      "observed": {
+        "legacy_nav": 250,
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "nav_qualified": null,
+        "classes": {
+          "A": "FRESH",
+          "B": "UNPRICED"
+        },
+        "priced_count": 1,
+        "held_count": 2,
+        "strict_nav": null,
+        "strict_error": "NavWithheld",
+        "numeric_price_coverage_complete": false
+      },
+      "positions_pnl": {
+        "A": {
+          "shares": 2.0,
+          "avg_cost": 50.0,
+          "current_price": 60,
+          "market_value": 120.0,
+          "unrealized_pnl": 20.0,
+          "unrealized_pct": 20.0
+        },
+        "B": {
+          "shares": 1.0,
+          "avg_cost": 30.0,
+          "current_price": null,
+          "market_value": null,
+          "unrealized_pnl": null,
+          "unrealized_pct": null
+        }
+      },
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "WITHHELD",
+        "nav": null,
+        "nav_qualified": null,
+        "cash": 100.0,
+        "invested": null,
+        "lines": {
+          "A": {
+            "class": "FRESH",
+            "price": 60.0,
+            "price_asof": null,
+            "age_days": null,
+            "source": "controlled_close_fixture",
+            "value": 120.0,
+            "shares": 2.0
+          },
+          "B": {
+            "class": "UNPRICED",
+            "price": null,
+            "price_asof": null,
+            "age_days": null,
+            "source": null,
+            "value": null,
+            "shares": 1.0
+          }
+        },
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [],
+        "unpriced": [
+          {
+            "ticker": "B",
+            "shares": 1.0,
+            "last_observed_price": 35.0,
+            "last_observed_asof": "2026-10-09"
+          }
+        ]
+      }
+    },
+    {
+      "id": "explicit_empty_book_control",
+      "observed": {
+        "legacy_nav": 100,
+        "nav_status": "QUALIFIED",
+        "nav": 100.0,
+        "nav_qualified": 100.0,
+        "classes": {},
+        "priced_count": 0,
+        "held_count": 0,
+        "strict_nav": 100.0,
+        "strict_error": null,
+        "numeric_price_coverage_complete": true
+      },
+      "positions_pnl": {},
+      "valuation": {
+        "asof": "2026-10-08",
+        "nav_status": "QUALIFIED",
+        "nav": 100.0,
+        "nav_qualified": 100.0,
+        "cash": 100.0,
+        "invested": 0.0,
+        "lines": {},
+        "carried": [],
+        "carried_value": 0.0,
+        "carried_fraction": 0.0,
+        "unattested": [],
+        "unpriced": []
+      }
+    }
+  ],
+  "limits": [
+    "Explicit synthetic account and mark fixtures in one stipulated monetary unit.",
+    "No live defect occurrence, real balances, endpoint acceptance or deployed repair is established.",
+    "Strict nav rejects withheld totals but can still return a provisional numeric total; consumers need the full valuation status.",
+    "Current valuation treats empty evidence dictionaries as FRESH under optional legacy fields; QUALIFIED alone is not explicit close attestation.",
+    "Numeric price coverage is a helper-derived analogue of the inspected API completeness formula, not endpoint execution.",
+    "Currency, FX provenance, S0 snapshot integration and source attestation remain separate build requirements."
+  ]
+}

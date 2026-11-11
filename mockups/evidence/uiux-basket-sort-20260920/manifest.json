@@ -1,0 +1,1218 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "holdings-sort",
+        "spec": "holdings-sort:focus(#hold .hold-sort)",
+        "value": "#hold .hold-sort"
+      },
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "holdings-hover",
+        "spec": "holdings-hover:hover(#hold .hold-sort)",
+        "value": "#hold .hold-sort"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T11:04:41Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-800.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 6134,
+            "elements_wider_than_viewport": 1,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 9207,
+            "elements_wider_than_viewport": 24,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 6134,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 1,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 13,
+          "h3": 0,
+          "h4": 0,
+          "h5": 2,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 16,
+        "payload_bytes_total": 595657,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 27,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 2066
+      },
+      "page_id": "basket_ai_semiconductors.html",
+      "registry_route": "/basket/ai_semiconductors.html",
+      "route": "/basket/ai_semiconductors.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1161982,
+          "captured": true,
+          "file": "d4d961717c369f8f.png",
+          "force_state": null,
+          "height": 6134,
+          "locale": "en",
+          "sha256": "d4d961717c369f8fb9d8d98ddb6b321c1fdc47aaa0aedb680f5fbda9c3a04dd9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1113807,
+          "captured": true,
+          "file": "f58c8be82bf25c96--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6134,
+          "locale": "en",
+          "sha256": "f58c8be82bf25c96e569bc4cebae9e72dcbc2ad60e85c7d61069955600f146ee",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1104191,
+          "captured": true,
+          "file": "0593f3f1f6a5955a--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6134,
+          "locale": "en",
+          "sha256": "0593f3f1f6a5955a71aa7c8b9b92754541e07957897d4ea1bdb20f3399c8939e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1158426,
+          "captured": true,
+          "file": "cf4fe62e77ff0190.png",
+          "force_state": null,
+          "height": 6134,
+          "locale": "en",
+          "sha256": "cf4fe62e77ff0190ad841dafa513978087bbb37a757bb4e4f3071d3a0be10e61",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1120208,
+          "captured": true,
+          "file": "20176245baf8cd4d--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6134,
+          "locale": "en",
+          "sha256": "20176245baf8cd4d00ce6ab4555d8ec2c468c44b60095e69e80fe3120620a6f3",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1119798,
+          "captured": true,
+          "file": "c92eaf5c2ef8697b--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6134,
+          "locale": "en",
+          "sha256": "c92eaf5c2ef8697bee0bb5faa8998ceb6d827f9f9ddf6a0587b32c7f56321ff0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1203641,
+          "captured": true,
+          "file": "14835333dcc967ae.png",
+          "force_state": null,
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "14835333dcc967ae661352ea5e0130e5b62df9b98dd65284af1a418d42e207a7",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1182877,
+          "captured": true,
+          "file": "6fb21220693f2e53--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "6fb21220693f2e5336c6c1b46d993d2ac11a46681d6dc223113169fec6c36ff9",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1167045,
+          "captured": true,
+          "file": "24b701b1770fd4eb--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "24b701b1770fd4eb149eb0664bb4f51b081b14127aa2ea0e02403fea1afc4f74",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1208561,
+          "captured": true,
+          "file": "1dccb6aa84668f8b.png",
+          "force_state": null,
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "1dccb6aa84668f8bd863e51aedfe9103aaa190802d4f8673adc4ef13b82add29",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1194697,
+          "captured": true,
+          "file": "e7b10edf471aae10--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "e7b10edf471aae10640d25adad3e8487d887a7b9c6d8db9f5a255a6b39b2d3c1",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1182093,
+          "captured": true,
+          "file": "4302b4a26d329275--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6020,
+          "locale": "zh",
+          "sha256": "4302b4a26d329275300df90ef9aada5a192ebc3745849c1ae4b73ab8b50fb19b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 917069,
+          "captured": true,
+          "file": "ffabec4aecb1b73b.png",
+          "force_state": null,
+          "height": 9207,
+          "locale": "en",
+          "sha256": "ffabec4aecb1b73b27b77ced6318b1f73154152bec484df9ace9e0b6d35c461e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 885345,
+          "captured": true,
+          "file": "4983ee57e6107fe5--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 9207,
+          "locale": "en",
+          "sha256": "4983ee57e6107fe55fdcd5eb3edc3138740fc5bf6cca5912c0f6bea78f7e11ae",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 941932,
+          "captured": true,
+          "file": "8c8cffe2cdf2a590--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 9207,
+          "locale": "en",
+          "sha256": "8c8cffe2cdf2a590adbe8c7d9a536dea433767dae9450f485ec6af31fbe92ee3",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 915000,
+          "captured": true,
+          "file": "0dda121a6e4b6c82.png",
+          "force_state": null,
+          "height": 9207,
+          "locale": "en",
+          "sha256": "0dda121a6e4b6c824b39e550841a0d412892f7a1168ac4a3013f4bb4c342b873",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 887880,
+          "captured": true,
+          "file": "6efeb2a906708a4a--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 9207,
+          "locale": "en",
+          "sha256": "6efeb2a906708a4aee68a4efaa17727876ef1829d55f28385e21cd4d6cead29d",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 949615,
+          "captured": true,
+          "file": "307bd0b1e466bb78--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 9207,
+          "locale": "en",
+          "sha256": "307bd0b1e466bb786dd6a246c0674d0d62ba6fdd1da7247d7427a7c549b26b67",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 952853,
+          "captured": true,
+          "file": "6f82f790ae43fd28.png",
+          "force_state": null,
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "6f82f790ae43fd2819bc700da521521ff4236b0badf22242b9854566236c3c81",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 923338,
+          "captured": true,
+          "file": "7eab36b42e135500--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "7eab36b42e135500bdde41cd921680c8605f554d1a4d28f5f10c699be895889e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 969642,
+          "captured": true,
+          "file": "562847632e55d99e--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "562847632e55d99ed42d25f5f5bae6f87bfa0e71d36c5d83d72378bef2d53412",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 951072,
+          "captured": true,
+          "file": "d838e9b9149603c0.png",
+          "force_state": null,
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "d838e9b9149603c0d770a41b27b25237e3d3b0f9e359df926f65b026b2205021",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 925412,
+          "captured": true,
+          "file": "f00ccc389b90f5fc--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "f00ccc389b90f5fcbfb2dcda45fe7c1363107439daeb43fd4c71aad069090894",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 977576,
+          "captured": true,
+          "file": "7ed3e2d946a1b6be--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 8345,
+          "locale": "zh",
+          "sha256": "7ed3e2d946a1b6be7f998a0e3308dbf3c050ae48e086d01d8c27725d95ebd7aa",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:62717/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-500.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:62717/fonts/Inter-800.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 4075,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 6222,
+            "elements_wider_than_viewport": 1,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 4075,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 12,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 15,
+        "payload_bytes_total": 633457,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 24,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1225
+      },
+      "page_id": "basket_china_cn_solar.html",
+      "registry_route": "/basket_china/cn_solar.html",
+      "route": "/basket_china/cn_solar.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 794493,
+          "captured": true,
+          "file": "16d29b5d3fbddf92.png",
+          "force_state": null,
+          "height": 4075,
+          "locale": "en",
+          "sha256": "16d29b5d3fbddf9215a4d70376556163eb53dded9331bbfb611aa8b8e82586fd",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 757487,
+          "captured": true,
+          "file": "5bf51acb31d649cc--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 4075,
+          "locale": "en",
+          "sha256": "5bf51acb31d649cc02b069fa9e92f29795c06a2e5a09b4d29f76cff1c7d4bb31",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 757246,
+          "captured": true,
+          "file": "90bfaa6f2619263b--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 4075,
+          "locale": "en",
+          "sha256": "90bfaa6f2619263bf2ee75ff0da3a7a021c038094f45b80aed2b9cb2720607c8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 790867,
+          "captured": true,
+          "file": "472a722bc291f88b.png",
+          "force_state": null,
+          "height": 4075,
+          "locale": "en",
+          "sha256": "472a722bc291f88be99c21bf5de8d342e41fba9d7fa0c42dcbf5099e857e680a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 758439,
+          "captured": true,
+          "file": "b24c1d1342d32731--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 4075,
+          "locale": "en",
+          "sha256": "b24c1d1342d32731ffc3dc71b5175ebada755766dc52df51a18340c1cbaacb16",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 758109,
+          "captured": true,
+          "file": "ebbdd9992b19dff1--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 4075,
+          "locale": "en",
+          "sha256": "ebbdd9992b19dff169479246cbd3a281f0ce78dd2f7d3996034691e8b513575a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 812638,
+          "captured": true,
+          "file": "7b8f6d4363c4b6e0.png",
+          "force_state": null,
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "7b8f6d4363c4b6e06471457a651d8244f1564ee8227e5aa5ae483c02af65d2f8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 780963,
+          "captured": true,
+          "file": "9d551d500390f1a4--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "9d551d500390f1a4dafa4e1fc9cf10092f9bb15e0ca826ae942082b771c8f5f2",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 790531,
+          "captured": true,
+          "file": "130f9ce4cc3ccb7b--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "130f9ce4cc3ccb7ba41cb781acc73bd6c7dfd40c8562b508f0b5063cf8ac2104",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 814348,
+          "captured": true,
+          "file": "b1b6d6a4a4c36dfc.png",
+          "force_state": null,
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "b1b6d6a4a4c36dfc5c731a261d9cca036740afe71f51f061db2a45b5f8dc15b6",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 788393,
+          "captured": true,
+          "file": "5eb7d2f15d0caeb9--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "5eb7d2f15d0caeb95b59557c680828c4a5582fad9cb1841f1b432997d9a01a7b",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 794496,
+          "captured": true,
+          "file": "0398d3d6965968cf--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 3974,
+          "locale": "zh",
+          "sha256": "0398d3d6965968cfd921fab60eba90d93e07a5508e3697ac00d6e4fdbba66d61",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 608343,
+          "captured": true,
+          "file": "c01abbb7e03cc723.png",
+          "force_state": null,
+          "height": 6222,
+          "locale": "en",
+          "sha256": "c01abbb7e03cc72304ff07e90cfb02a60252cd191192264fa59e25c00ccdae0f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 598188,
+          "captured": true,
+          "file": "d29e93c5a190a993--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6222,
+          "locale": "en",
+          "sha256": "d29e93c5a190a993f612f9c56a57f4f0da4e921d0ec6e87b464381193265bf9a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 632481,
+          "captured": true,
+          "file": "86c208bc0f95d98c--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6222,
+          "locale": "en",
+          "sha256": "86c208bc0f95d98cd6a9441ba71100fabf55229753817e5016bce9ef8906caa3",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 606359,
+          "captured": true,
+          "file": "34c0c64e624c9628.png",
+          "force_state": null,
+          "height": 6222,
+          "locale": "en",
+          "sha256": "34c0c64e624c962899cfdb6732ea9ef71c86a277916d0d70dfa17b6751c098c2",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 598212,
+          "captured": true,
+          "file": "8affc6aeea9c60f2--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 6222,
+          "locale": "en",
+          "sha256": "8affc6aeea9c60f2738b26ab81b013e6d0e01a592a70f5d79413bfd8fb758fc5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 639722,
+          "captured": true,
+          "file": "86b21721f7f1dd52--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 6222,
+          "locale": "en",
+          "sha256": "86b21721f7f1dd52244817b6abb5d5895be7f171c92d43e2ce0e0b3e855ac1dc",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 626097,
+          "captured": true,
+          "file": "283033ee7c95a31f.png",
+          "force_state": null,
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "283033ee7c95a31f94c19c8fe77acc17158c6d00eb847d50df2c8f7ef8b82539",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 608258,
+          "captured": true,
+          "file": "0773ceba4b631195--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "0773ceba4b6311950567b0df2ee8c6504b05dd0a6c187a5028e9e62eec4caffe",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 636884,
+          "captured": true,
+          "file": "b9efe2406de33b07--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "b9efe2406de33b07946a898d916da6f2409af27ddbfcbac501d3ff5af23bec8a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 626018,
+          "captured": true,
+          "file": "573d006ecb7dfcf7.png",
+          "force_state": null,
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "573d006ecb7dfcf7ad13e747e4cb681411fcb4c7bf631a5d7e0529086369cda3",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-sort",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 609475,
+          "captured": true,
+          "file": "096a27b97ff7cd9c--holdings-sort.png",
+          "force_state": "holdings-sort",
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "096a27b97ff7cd9c82e786b8cf53ef48ff54f4cb7b051dd7165a37593652c6a9",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "holdings-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 642389,
+          "captured": true,
+          "file": "8d090e993758a0ff--holdings-hover.png",
+          "force_state": "holdings-hover",
+          "height": 5678,
+          "locale": "zh",
+          "sha256": "8d090e993758a0ffa72477ad86460d52d900c8da2dc3838251136701a663495d",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/basket/ai_semiconductors.html",
+      "/basket_china/cn_solar.html"
+    ],
+    "max_pages": 2,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-basket-score-resilience-20260920",
+    "resolved_sha_or_none": "49c879f7ce5e47219759f4a0aa767cd0c96a8dc4",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/uiux-basket-score-resilience-20260920 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/uiux-basket-score-resilience-20260920/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 48,
+    "states_captured": 48
+  }
+}

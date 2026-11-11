@@ -1,0 +1,45 @@
+{
+  "schema": "grey_deer.authenticated_capture.v1",
+  "date": "2026-10-17",
+  "surface": "https://www.mastermind-x.com/macro.html",
+  "scope": "Authenticated incumbent Radar and one completed default-Fast Copilot request. Does not attest new workspace delivery, source-to-paint identity, or whole programme acceptance.",
+  "capture_time_precision": "Date and original browser capture filename retained; no unrecorded exact timestamp manufactured.",
+  "files": [
+    {
+      "file": "radar_incumbent.jpg",
+      "bytes": 75084,
+      "sha256": "1e7ba451ebfce7d4b0b3bae993be04114811f706b3de3e29303b01da3085be13",
+      "original_capture": "risk-radar-live-1792240114414-top.jpg"
+    },
+    {
+      "file": "radar_evidence.jpg",
+      "bytes": 106421,
+      "sha256": "386f8b613005a300fb8c9915ad8015be9d0713a2a3c7ef606c8e56b5b8e13747",
+      "original_capture": "risk-radar-live-1792240114414-evidence.jpg"
+    },
+    {
+      "file": "radar_initial.txt",
+      "bytes": 2339,
+      "sha256": "99671a6d8931cde2c6c4d1b77cb0eacbcfc99fe38d04fb3a519daa2bcd230b3c",
+      "original_capture": "risk-radar-live-1792240114414-initial.txt"
+    },
+    {
+      "file": "radar_expanded.txt",
+      "bytes": 3709,
+      "sha256": "0f1534cfc3943e5cbe902a99e0b03cea608b328a4a30a6cc235f0a5b9218db9c",
+      "original_capture": "risk-radar-live-1792240114414-expanded.txt"
+    },
+    {
+      "file": "copilot_failure.jpg",
+      "bytes": 102941,
+      "sha256": "303b0ac5f31a65e0b2b98a505442386aa03d24f2e3ca8bcbe793d89a8ef797cc",
+      "original_capture": "risk-radar-live-1792240114414-copilot.jpg"
+    },
+    {
+      "file": "copilot_failure.txt",
+      "bytes": 388,
+      "sha256": "222436dc71f819866a2e7fa90152723156d6d066bf58dbdbe29a028f4b25d733",
+      "original_capture": "risk-radar-live-1792240114414-copilot.txt"
+    }
+  ]
+}

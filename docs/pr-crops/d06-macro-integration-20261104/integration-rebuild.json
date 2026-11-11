@@ -1,0 +1,2186 @@
+{
+  "schema": "d06.macro_current_main_rebuild.v1",
+  "head_before": "ede62cbbc69441aca64973ee638c55be544cfc4d",
+  "protected_base": "eb312bea9cbbc7550b157c071fbb41dea990321b",
+  "started_at": "2026-11-04T12:42:18.377052+00:00",
+  "duration_seconds": 5.91,
+  "rendered_pages": [
+    "site/market_structure.html",
+    "site/spvector.html"
+  ],
+  "incoming_inputs": {
+    "data/archive/BAMLC0A0CM.parquet": {
+      "git_blob": "3f4d05fe127d37386ab5574bddff8be62e5745ec",
+      "bytes": 74493,
+      "sha256": "006859ca3221357ae15f18b3019786b36cc272148b6407ceedffd9b3b520ab4d"
+    },
+    "data/archive/BAMLH0A0HYM2.parquet": {
+      "git_blob": "5072f55feffeeded19d647bc8fc15e38e3cd2da5",
+      "bytes": 80341,
+      "sha256": "a0347067c52cfad71c1cb4e180b6d7378914e166d876190af1a7700da3f2d82e"
+    },
+    "data/breadth/breadth.parquet": {
+      "git_blob": "759fe9b6dbef792c0250f38e058e29708fab9665",
+      "bytes": 435182,
+      "sha256": "eb6b2951a913ae985d7d35416e2eb3151fc73458de0f573c6e1695b97f862a83"
+    },
+    "data/cboe/gex.parquet": {
+      "git_blob": "b64ccdb2bf495caa18ea6433838b10cd053f4536",
+      "bytes": 7220,
+      "sha256": "37d3e2d567539267eb735b2000a35195571a1eba3ecc8c50f25b29d4d1690529"
+    },
+    "data/cboe/skew.parquet": {
+      "git_blob": "77303a082c8b865939d4311f9f7acd701d6a634b",
+      "bytes": 112095,
+      "sha256": "020509839df74070d969bab793bcd467d13546981d017ba4c43489b4d6cc3479"
+    },
+    "data/cot/cot_es_spx.parquet": {
+      "git_blob": "220424c4c50b7d59579be095b6646382c79f1acd",
+      "bytes": 50071,
+      "sha256": "b26180e6e074e1b1f1df159df94f37dfd560cff3c34af1661f9a4eb8ec5dd833"
+    },
+    "data/fedboard/ebp.parquet": {
+      "git_blob": "80640f7c0a5302618d77c7a498d2b55f3a53f5ac",
+      "bytes": 27084,
+      "sha256": "25ee404ab0482fe015e86dd33348c1c47fcfa3d6cd0f903428cc47ea64a9e2ab"
+    },
+    "data/frbsf/news_sentiment.parquet": {
+      "git_blob": "0d11bd0a4e137221405a432515f80c527dc7ad8c",
+      "bytes": 289557,
+      "sha256": "eec1d90ee33952e30db145318a48cf943f7e0d6d2e4b592e7006ef712ba5e2bd"
+    },
+    "data/fred/ADPMNUSNERSA.parquet": {
+      "git_blob": "24d770df6574d6dfcbf92cc42f69105c6b5fa66e",
+      "bytes": 5330,
+      "sha256": "a51c9e8e30e372eb8e15c3eedaaf2a10d7b0040fa2afc4a82ce7ab41df776645"
+    },
+    "data/fred/AMTMUO.parquet": {
+      "git_blob": "22542a7e4caccf3c9f804246f473f1c81ba7f51a",
+      "bytes": 8547,
+      "sha256": "89f49574e627c9c9ae96945a5ee0832e0d980541a763718b5d9954ae4e024e9d"
+    },
+    "data/fred/AMTMVS.parquet": {
+      "git_blob": "591308616a91977b036eec8ee2338aa8f5b51b1f",
+      "bytes": 8525,
+      "sha256": "6b475f6189da7f55ae915f960aae627b4d6e314c63ba8247ea8b60b68b2bd7d7"
+    },
+    "data/fred/ANFCI.parquet": {
+      "git_blob": "be08dcde81f064a34a6f3d3c8eeefee79641bd78",
+      "bytes": 38299,
+      "sha256": "e47bd194344f9a4ebc2478363938488f43edcc22ca9cc511b18b94b72a8a901e"
+    },
+    "data/fred/APU000072610.parquet": {
+      "git_blob": "880792cff65f7833c2cc30ffc77529020444c24f",
+      "bytes": 8716,
+      "sha256": "354ccfca1c82a375cbb57a3efe7284a460612b27b7523c6b5b0ab2de327e082b"
+    },
+    "data/fred/AWHAETP.parquet": {
+      "git_blob": "11adbfea893c73296af9c8d77f760649ca958dd6",
+      "bytes": 4575,
+      "sha256": "cd51eb38ef7aa4d9f0ca0698b3f851b6c635106ca54c8f6cf54273be0766da6e"
+    },
+    "data/fred/AWHMAN.parquet": {
+      "git_blob": "549c66c8436936a96a052c5d6e63475988d11af0",
+      "bytes": 13167,
+      "sha256": "cddc7750e135de457bad9e8e78475e87567a92dcbfdfcc52571ab8c95655c5d2"
+    },
+    "data/fred/BAMLC0A0CM.parquet": {
+      "git_blob": "67503b606b7cc5e9f97b23a3a0a89e4ee215fe9e",
+      "bytes": 10981,
+      "sha256": "4cd944bfb12342416bf4a95954caa0962e8a77444023aff84ed24311c797359d"
+    },
+    "data/fred/BAMLC0A0CMEY.parquet": {
+      "git_blob": "39a6e098600607ff5b035e10f7aab17454fce935",
+      "bytes": 10866,
+      "sha256": "130137107065089a70bebed59f63086925a2f9b82c482ab06c514a4ff6602230"
+    },
+    "data/fred/BAMLC0A1CAAA.parquet": {
+      "git_blob": "6a4f1dddce40858e21004e5234db8e463dc793da",
+      "bytes": 10034,
+      "sha256": "4cb95df036e0af9ac27e99ae83a521700ab4506840bbd78b158e410466e62b5b"
+    },
+    "data/fred/BAMLC0A2CAA.parquet": {
+      "git_blob": "69cb9355a6b4ead4df2241d7011f25bec300a761",
+      "bytes": 10034,
+      "sha256": "c7513757e7931d425592880b46052fd4ee67359d812b3b44308f5d63643a963f"
+    },
+    "data/fred/BAMLC0A3CA.parquet": {
+      "git_blob": "7c84f6a14cd6d6d70d8a93fce3c61c087898efa9",
+      "bytes": 10258,
+      "sha256": "4cacddcc7a81e14af1d6ae309d5cffef5991974c1698bfc9568c10b9c919a6da"
+    },
+    "data/fred/BAMLC0A4CBBB.parquet": {
+      "git_blob": "50004555b98c442fc458d73fdbf796e7d164653b",
+      "bytes": 10417,
+      "sha256": "7d2dea0cda3e9b9da4e894ab61b980119d774ecf74f3414660807a3b7080c035"
+    },
+    "data/fred/BAMLCC0A0CMTRIV.parquet": {
+      "git_blob": "50b7bbe4d36ab2ac7ae1701d151aae07cab321d7",
+      "bytes": 14525,
+      "sha256": "f5289dbcaea55dbdf8b70425fedcc6a673cae2196b65296a274fc26b3b37c8ff"
+    },
+    "data/fred/BAMLEMCBPIOAS.parquet": {
+      "git_blob": "9e1ba04611e690e8bdbbce47f2969be356ec8521",
+      "bytes": 11060,
+      "sha256": "d48ee1dacd9d149a5c7b8e1c63549c9ec043a2280256daba8944349fb581268a"
+    },
+    "data/fred/BAMLEMEBCRPIEOAS.parquet": {
+      "git_blob": "f103bba4cd7c1db549d81f0868ecd6d908861ea8",
+      "bytes": 11123,
+      "sha256": "c89dbb3f56932c186eb5ab3522c20a7911c45bb0853e616f2aeb07519d78227a"
+    },
+    "data/fred/BAMLEMFSFCRPIOAS.parquet": {
+      "git_blob": "b1d81c2b801f08185fb82af44638b71d55b19cbe",
+      "bytes": 10606,
+      "sha256": "2c550dbbb2ae489ca17e4c45448de51b194ecd6f30262a8d9cadf0b28455bab9"
+    },
+    "data/fred/BAMLEMHBHYCRPIOAS.parquet": {
+      "git_blob": "fc95a175b5ac4520912a7d60c1df7b3ddc30f2a8",
+      "bytes": 11404,
+      "sha256": "fe20c1ec70b98aa3313a2ec3b7fe33667eb9d0404c287307fc0ad4507852de20"
+    },
+    "data/fred/BAMLEMNSNFCRPIOAS.parquet": {
+      "git_blob": "8ffe85493cfab3ac679249f6948714ccdae74ae2",
+      "bytes": 11066,
+      "sha256": "a3817cf284d12898e121a11a4d4704a0e1b161088e3538d7b819dda2ff14fe9e"
+    },
+    "data/fred/BAMLEMRACRPIASIAOAS.parquet": {
+      "git_blob": "151c48fcfdb554710cc86adbeb029856d6125362",
+      "bytes": 10846,
+      "sha256": "69f8abb8ec6125d4f79b8cbe938f205e78c8c0db21295e491b7b4def7a50ac6f"
+    },
+    "data/fred/BAMLEMRECRPIEMEAOAS.parquet": {
+      "git_blob": "9d94615d8cdb97779a4bcc176e6a3abc086ba115",
+      "bytes": 10942,
+      "sha256": "29a810522e3950bcc0d5e728d36793ecc45b9ea186e707b7d7f562cf33913d38"
+    },
+    "data/fred/BAMLEMRLCRPILAOAS.parquet": {
+      "git_blob": "57fb2162099a0bd63974a5e9fdb1369079c7ff7d",
+      "bytes": 11124,
+      "sha256": "e72dd0466f9d5f92c3bb1c8c5b30ef31367cb0ec981eed5275dffe1d2a300d77"
+    },
+    "data/fred/BAMLH0A0HYM2.parquet": {
+      "git_blob": "f7becb3b9ea8e3aea2269cd5c7ca75cbf606ffb7",
+      "bytes": 82913,
+      "sha256": "5ef6c798059d35ec10631c1d2f38290632b563afaf1f3b8a4ecd9c7e606ac29f"
+    },
+    "data/fred/BAMLH0A0HYM2EY.parquet": {
+      "git_blob": "70d21946872f4bcdaa4948b410c9cc01ce65c821",
+      "bytes": 11223,
+      "sha256": "2eccccc9cb066c72fab06647361d7c6a84825e19f727b2301d21053853588fb0"
+    },
+    "data/fred/BAMLH0A1HYBB.parquet": {
+      "git_blob": "fbf9f1532cb499b6c6443c426aefbf40c21a19da",
+      "bytes": 10816,
+      "sha256": "1c908b253f38e118d2b28993af6c0fd1b9a40cd949615ea08d5e37b9c7d5d867"
+    },
+    "data/fred/BAMLH0A2HYB.parquet": {
+      "git_blob": "6b9c3c786e89b17c55266e5abe06475fb8683222",
+      "bytes": 10972,
+      "sha256": "2429c0d1762cf579fc68d4fe3c08af2d9517e5cfd9f344992a6e357962212375"
+    },
+    "data/fred/BAMLH0A3HYC.parquet": {
+      "git_blob": "d6473f683909dc74ba45145dd2aa63170f900018",
+      "bytes": 11897,
+      "sha256": "7e33e6bef65621797635d869fe15c07b112a10a7dc4d5db3dba817c2777b8196"
+    },
+    "data/fred/BAMLHE00EHYIOAS.parquet": {
+      "git_blob": "cb9823d83933360f537c6585a1759c4352287c85",
+      "bytes": 11120,
+      "sha256": "920e8ac658c9f2934e83e7baecd1b39d58000d2359ef5e5fae455fff20442b42"
+    },
+    "data/fred/BAMLHYH0A0HYM2TRIV.parquet": {
+      "git_blob": "9cdf70fd6f3cfc856a91a7ce17e4378e2f72a4c0",
+      "bytes": 14394,
+      "sha256": "6b3bc36e81f87a39c65db1a2b7fae5eb096bfdb9cde7ffd110f4dcc4169eba9c"
+    },
+    "data/fred/BOPGSTB.parquet": {
+      "git_blob": "36241d026bc5a28bec26cd7e8940a763c26f25df",
+      "bytes": 8568,
+      "sha256": "8be939ed478a10d0d037bd79d8094c895fcd3c25aaf8616d1b238d3e4da0bae1"
+    },
+    "data/fred/BOPTEXP.parquet": {
+      "git_blob": "0b79dce47dfd4aa626e11313702981d2e61d3510",
+      "bytes": 8574,
+      "sha256": "cbcd3f63988df1258c4aa28f5b6506ae2ecd21b9490b2680f520929aca3316b4"
+    },
+    "data/fred/BOPTIMP.parquet": {
+      "git_blob": "956adaf8c4972066f7c9b189fe3f5f8a6666a6d8",
+      "bytes": 8587,
+      "sha256": "5e4492ad001613f0df3ac17eab66778ac27b85ee6eaa498cb5f628d5f2b2a7f9"
+    },
+    "data/fred/BUSLOANS.parquet": {
+      "git_blob": "bcfb3685e226dde5d6e0794f828dfcf765c72b27",
+      "bytes": 19196,
+      "sha256": "c90d4b54e890d9a44880f0e8939e5c5922907ebaf78f19bea255c43f70e64bd3"
+    },
+    "data/fred/CAPG3344S.parquet": {
+      "git_blob": "78c2c3eb14fc21081656d9c51d41d6084cb70e85",
+      "bytes": 13515,
+      "sha256": "e5750d9f8c0b54a8baf5b3d6be64142a4ed2b2b0b9981be2113c367c12c24dc1"
+    },
+    "data/fred/CAPUTLG211S.parquet": {
+      "git_blob": "946fd0b4b0fb5120b4cbd73ef27479e38b085bce",
+      "bytes": 13546,
+      "sha256": "affe1c9b65d1ae0b6dd62c29bbf671b7b7e59f40241c745cd22f6bd81baf17be"
+    },
+    "data/fred/CAPUTLG2211A2S.parquet": {
+      "git_blob": "5bbe7390668a97976bcb71a102050f1aac2dccc3",
+      "bytes": 15168,
+      "sha256": "b8cf7c6bffcaa0263ee031f06ffa76d43534de5945330e261cc2683c56efae57"
+    },
+    "data/fred/CAPUTLG2211S.parquet": {
+      "git_blob": "45f04b9b133548a572a32b4411ed8cc07b450a16",
+      "bytes": 15419,
+      "sha256": "046de4ec63af8a801d22413228ac6edf0e6e630c9e5730c7c76e32fec94aa843"
+    },
+    "data/fred/CAPUTLG331S.parquet": {
+      "git_blob": "2f302e3a1a6d7c948e4573e5508010908aa719db",
+      "bytes": 15367,
+      "sha256": "30e45ce701a95733cccaaababc2d6f626f39bb08d387322faac6d7869eb76462"
+    },
+    "data/fred/CAPUTLG3344S.parquet": {
+      "git_blob": "09970780d78e8dfe913a5e0940bb7767ba745e0d",
+      "bytes": 14284,
+      "sha256": "b3d6669a8aec1fe3c6c9e65fcb686b020dc8a28d44fee2e3ceb68c191ed688e1"
+    },
+    "data/fred/CAPUTLG334S.parquet": {
+      "git_blob": "42e74a8118549aed074344811fac91da13636ef7",
+      "bytes": 14316,
+      "sha256": "2f3693aa038917529659e7d9aebee71789ce25f838825b76192baf009cb708cc"
+    },
+    "data/fred/CCSA.parquet": {
+      "git_blob": "43a097c4153bb65c883b45700a7daf0c557d64ea",
+      "bytes": 42684,
+      "sha256": "373ef754991c3adbf4c9dd022db5f06f76b0fbdc4e73ad7e1039f4fff203be18"
+    },
+    "data/fred/CES0500000003.parquet": {
+      "git_blob": "e20ae0a9b8361c318da5f2eaccd05e676180ceea",
+      "bytes": 5817,
+      "sha256": "c04ff68cb91eb86490af4f0618316a42e051ce3de772df7bbe5a9bcdc71103e0"
+    },
+    "data/fred/CMRMTSPL.parquet": {
+      "git_blob": "4236f0a14b6ff98b48e7ea38214141195d5d3132",
+      "bytes": 14311,
+      "sha256": "fe4ea9fc41194c95c4a541bbdfe12c2d307360590785ffe11cf18b846450b24f"
+    },
+    "data/fred/CORESTICKM157SFRBATL.parquet": {
+      "git_blob": "ea4f1f88e2e7bc54c674572514ccc07d7230f62d",
+      "bytes": 15392,
+      "sha256": "2416172777c535c91f8203da9733ab92a584f252e133bdd09ce56603fb426432"
+    },
+    "data/fred/CPIAUCSL.parquet": {
+      "git_blob": "1848aebd10f8e045404e99771c82e9ec52085582",
+      "bytes": 16419,
+      "sha256": "9cae80608593289033500fd1189a5d25aa7a457e213569a4068304e03b259880"
+    },
+    "data/fred/CPILFESL.parquet": {
+      "git_blob": "db14a1c596618c1d38ab7db2d9a1ec48b61833f5",
+      "bytes": 14574,
+      "sha256": "bf7ab5230174fabc3bd7bef969df735b2106d8cf30bbaed12ac8c968b86b782e"
+    },
+    "data/fred/CSUSHPISA.parquet": {
+      "git_blob": "4642f3d025947cac19d252e7cacad579ddd54cab",
+      "bytes": 9754,
+      "sha256": "0fe2d56af8ffbe9b57fb9357241a71d44e2d1fe6850446e55b069d9a3d239527"
+    },
+    "data/fred/CUSR0000SACL1E.parquet": {
+      "git_blob": "f6648d1e0af706e075f5b89b7a25a76b27aaec40",
+      "bytes": 14184,
+      "sha256": "952bedcf310e8b405ae8917aa5ad1212f7497f69dae15349ebd97b4ada33e0f8"
+    },
+    "data/fred/CUSR0000SAF11.parquet": {
+      "git_blob": "cbc3a809cc9edbe199b31039d74ed193c0312364",
+      "bytes": 14927,
+      "sha256": "eb3fcfd6a689520a844dfc431703ad3072ea1b2cfb9d4663a73fb7a012041b7e"
+    },
+    "data/fred/CUSR0000SAH1.parquet": {
+      "git_blob": "1b66072d8006773ffa3ff613bf4d9565bc0be5ce",
+      "bytes": 15106,
+      "sha256": "b2dbe7adaa231d374b382d16e1a14dab6cfd3cf165c40065bec28dce9d1dc57a"
+    },
+    "data/fred/CUSR0000SAS.parquet": {
+      "git_blob": "69f9d046f27ce5e82e6faec6f6d2a5fcd542755b",
+      "bytes": 14829,
+      "sha256": "aaf23b0246b345b8e8819b873a93f61826354fca9c87a1eb2241f9bb3ce0add6"
+    },
+    "data/fred/CUSR0000SASLE.parquet": {
+      "git_blob": "5002ff9ef20b971f90d9e057fb90629edd8cfc58",
+      "bytes": 13210,
+      "sha256": "345ab26ad3667b04816caa5f56bb4f120a7a3a334867ca89d97befcba3a1d7a1"
+    },
+    "data/fred/CUUR0000SAG1.parquet": {
+      "git_blob": "83e9664ae0ac2174bfe549068ad79e8030f2c2d7",
+      "bytes": 15903,
+      "sha256": "2691cad8bc9afd15936b8d32f54d96ce014e67cce77a152446c13200d35d9cb9"
+    },
+    "data/fred/DAAA.parquet": {
+      "git_blob": "378b23a1fc339c3d1120b7a697138d6deae3d9a8",
+      "bytes": 118012,
+      "sha256": "d53f5e7a1adb065f4d7288cea759747cfa0d2c63a8d36c3c3548efc58617b960"
+    },
+    "data/fred/DBAA.parquet": {
+      "git_blob": "8a7452572df928a450ba867f3eccaf7a694960a0",
+      "bytes": 108056,
+      "sha256": "8f32d3f9ec1479896e67670488108c7354b7c25bb09a3aa756a206edda0dbaa1"
+    },
+    "data/fred/DCOILWTICO.parquet": {
+      "git_blob": "8679f43bdb52ca1a90f47e4e43f2c2220730c702",
+      "bytes": 133897,
+      "sha256": "63614885c8bec39b2489d8820487fb3440c2185cc9a56149d0b61adb60b81881"
+    },
+    "data/fred/DEXBZUS.parquet": {
+      "git_blob": "7e7d0f68ec1de26e70c9d6f8d618f5205853d03d",
+      "bytes": 117262,
+      "sha256": "a3b8033771aa485b55fad67511a20807039555d120b39577afe80ce21c312a20"
+    },
+    "data/fred/DEXCAUS.parquet": {
+      "git_blob": "a3c47f566f6b005059b6a008d44883dc463b6130",
+      "bytes": 173143,
+      "sha256": "896204c9e9d5db561697fffa65139ed3b176a11f457fa6aa46b3acc7145f5fd3"
+    },
+    "data/fred/DEXCHUS.parquet": {
+      "git_blob": "24f63d3bc6aa0907b15cbf377f2066a4156c7344",
+      "bytes": 146769,
+      "sha256": "f2ef269ea198f709baf937473930dcea5b9de900a185ef6bb99d91830e5c76cd"
+    },
+    "data/fred/DEXJPUS.parquet": {
+      "git_blob": "d2ff368f9668613b937b52f925f80fa294e1bcb6",
+      "bytes": 177024,
+      "sha256": "d462605e7775fc24db2a94d839267d9f6df46099f4b963d7e9154d543fb8a5f5"
+    },
+    "data/fred/DEXMXUS.parquet": {
+      "git_blob": "6ac86d1b2121ac472467f1abe098d645d93e4c61",
+      "bytes": 121784,
+      "sha256": "64d325fbd9cdc648477affb5b1358184c3de86350b8cde0321bce10825f3c2fd"
+    },
+    "data/fred/DEXSZUS.parquet": {
+      "git_blob": "6ceef2e56967ee221f0c9a759b4ab22eb33e25b3",
+      "bytes": 184162,
+      "sha256": "2c527e8b8d1d134bd0864d0e0a80cb5262ca442f4d46725c2f7935349fa81b37"
+    },
+    "data/fred/DEXUSAL.parquet": {
+      "git_blob": "79ca7f98248f059b71f2271f671036ef9a7aded7",
+      "bytes": 175171,
+      "sha256": "3d687253d82fda10dabd83aa87569fa3b9f8d3c0c5a747306f61d8faedb6c35a"
+    },
+    "data/fred/DEXUSEU.parquet": {
+      "git_blob": "2367018e6afb51a0022d4974aca89f9a84c9f6bc",
+      "bytes": 92508,
+      "sha256": "aad3d450603e07871d0981ec375e1bc21b0b87da8e02417d966ef8f590e851cd"
+    },
+    "data/fred/DEXUSUK.parquet": {
+      "git_blob": "e4cb2c7dd42a426ed528afc63af8fb35007e767e",
+      "bytes": 181381,
+      "sha256": "a967984a898ae133ed046bbbb7218041a3606501fad4786de452e1fe47a64222"
+    },
+    "data/fred/DFEDTARL.parquet": {
+      "git_blob": "cb7d8647139c7bea63f79bca7313cfd9d0304d71",
+      "bytes": 58700,
+      "sha256": "d8636223c38668037e0d7fc7b4adeab031715a4a02f9a49e8b4f05e8e064b044"
+    },
+    "data/fred/DFEDTARU.parquet": {
+      "git_blob": "57b2c2d37e5e47089c758d956b6e2238ada02204",
+      "bytes": 58704,
+      "sha256": "f5764d189670c152ef3f51e475ebe585e2b48e8ad535a5f5e7bb935bea1fd8e5"
+    },
+    "data/fred/DFF.parquet": {
+      "git_blob": "c9c59b232a010d71ceb2c44d0d4d892deee22b47",
+      "bytes": 270104,
+      "sha256": "98cd93176097dca92d639dd477207a8de78d58f882af2e2abc1de77c9edee7ff"
+    },
+    "data/fred/DFII10.parquet": {
+      "git_blob": "24da782a385cf0a225905579e94716a1457fea24",
+      "bytes": 62160,
+      "sha256": "62cb4aa52d685b85486768aba91bbe38ba13ce925dd4c820a68dd7a0fe041a4f"
+    },
+    "data/fred/DFII5.parquet": {
+      "git_blob": "488fb8730a0ba6f3383e662c54b8b1b61f0a2532",
+      "bytes": 62413,
+      "sha256": "4c6f6cc6ac0be28468cc50b2848cf666195436ea06cb4a0939b466185f6365de"
+    },
+    "data/fred/DGORDER.parquet": {
+      "git_blob": "8cba7f020523d89c5543e9eac89961404519a3bd",
+      "bytes": 8515,
+      "sha256": "dc1e0d215ad2188a6bb2b94f02ee7d70d09ab2e1dcd70c584db52111e9069f52"
+    },
+    "data/fred/DGS1.parquet": {
+      "git_blob": "e9a42238ae4f36f27e54744403bbe228bb5002dc",
+      "bytes": 172229,
+      "sha256": "c07392bcbedd1993811447c50fbc33bef887ff5d6dc8fbf71a06bd9653a63087"
+    },
+    "data/fred/DGS10.parquet": {
+      "git_blob": "d6256e9e0488e83018b7b63517d14d8084520733",
+      "bytes": 171750,
+      "sha256": "6a3954b4c276819ba37d4f8b8518a282123853c802fe826a9975c4226fe80807"
+    },
+    "data/fred/DGS2.parquet": {
+      "git_blob": "44767c4539ca351befa64a0fe26e3d096f667838",
+      "bytes": 135920,
+      "sha256": "559a426d7d6a07bb9d4eb9bbe37f6b9d8a697c5055c6b52d797987eb60254425"
+    },
+    "data/fred/DGS20.parquet": {
+      "git_blob": "66c9c186e66565827a720251276d67c55458f23a",
+      "bytes": 154171,
+      "sha256": "b497194743f7d026e4bf5538060c9eff1d949d0e21cd34d859fa6deb37c2f553"
+    },
+    "data/fred/DGS3.parquet": {
+      "git_blob": "b555225415884a23c09e710079f1a1935e216e98",
+      "bytes": 172087,
+      "sha256": "7283972f5d910cbdf7fa09ba5b88a42f6527dc482414933bd313e5aed40f171c"
+    },
+    "data/fred/DGS30.parquet": {
+      "git_blob": "13fcf3deb885190466d57c45ddba0264bfef82d7",
+      "bytes": 133323,
+      "sha256": "8ab8baa511af2940e86f93065e8a4d3d07ba21364b619d23afecd0fe43c60a77"
+    },
+    "data/fred/DGS3MO.parquet": {
+      "git_blob": "51ba68ba4ead1b618d43a633f30e54102eb00f7c",
+      "bytes": 121360,
+      "sha256": "bc69bc9719fdd964a7a873dd5658432e741adb69049b84386d753e2d910f0cff"
+    },
+    "data/fred/DGS5.parquet": {
+      "git_blob": "54f6f2ea693506e7df600ce56c2b36f54d2f56b6",
+      "bytes": 172023,
+      "sha256": "62c89a9559fb26b3b2a5ff8a760ba974cc6f8a5346e696b4e76d1ea38ea01b0f"
+    },
+    "data/fred/DGS6MO.parquet": {
+      "git_blob": "18ab5503a600b75cf4081efa2c4edf902d5146db",
+      "bytes": 121622,
+      "sha256": "1b339a9ce6fba5bd8f389a2c709f94404b62ab18b32ddca7593c8fc7eddeb41a"
+    },
+    "data/fred/DGS7.parquet": {
+      "git_blob": "9706516feeed3b61cd22ef61c1571c5f93f56ead",
+      "bytes": 153015,
+      "sha256": "790a7df03dc658e4594bb60ef464976ac152c11e455657f3851431bc956212ba"
+    },
+    "data/fred/DHHNGSP.parquet": {
+      "git_blob": "685b8c805e1126253c5035ad7da1ce67fb9edced",
+      "bytes": 79776,
+      "sha256": "d64e11a2f7b2d71fbbee9a2b4408ebda45ac97a9195cde179c10b1ecd40d9b30"
+    },
+    "data/fred/DRCCLACBS.parquet": {
+      "git_blob": "69cfa14bab79202fc443aba439fb9e5e7dc7485e",
+      "bytes": 4125,
+      "sha256": "7aa76f2a362eb423bb153e455b38f0935ff5ef56f9942a79d3e9a8a7da711e9d"
+    },
+    "data/fred/DRSFRMACBS.parquet": {
+      "git_blob": "c5ab7d7c2753a46661f2e5a4ac79988aa9e47611",
+      "bytes": 4205,
+      "sha256": "1889f3fb4076c06902733267aa7b118b54378353f8f26a31010cb7196bdce9dc"
+    },
+    "data/fred/DSPIC96.parquet": {
+      "git_blob": "b1af90e100c960393d3cdb9cc5f7d681f67b8e08",
+      "bytes": 14668,
+      "sha256": "9fca0103c153926b096c4ffae9816a91a0467f33a1e3e73eb34bc49d763c74e7"
+    },
+    "data/fred/DTB3.parquet": {
+      "git_blob": "cd7ef4f8f40584a39fc2b284606c35c5db8e85dc",
+      "bytes": 194508,
+      "sha256": "d3af4328a5675b4f5cd20c94cfc65d44e4656380d44c4313bd26bb6f048e70ec"
+    },
+    "data/fred/DTCISA156MSFRBPHI.parquet": {
+      "git_blob": "7bb7ed31660b779b9784ec4224854cbc4f7ecace",
+      "bytes": 10218,
+      "sha256": "766e6723f08f397d6840fc041d26e43f3e43586f36926fd59b5b86c104422224"
+    },
+    "data/fred/DTMUAMFRBDAL.parquet": {
+      "git_blob": "30c4ead5dd15ecfa7b3386fe6b0e1bf503f1f4b1",
+      "bytes": 5592,
+      "sha256": "28ffb0695dc45f3a49aea70473f2ee3d51125ae350b0c1883c4b33b6caed2411"
+    },
+    "data/fred/DTWEXAFEGS.parquet": {
+      "git_blob": "6af69c12ce0754ce1ca79882dcb5183492e174f4",
+      "bytes": 85305,
+      "sha256": "fa0e120b0066761fd4d30f58543f5aa1d0b1274a301df499465eeec2f9540c1e"
+    },
+    "data/fred/DTWEXBGS.parquet": {
+      "git_blob": "bacf498fcc7a9c44460536d40448cb4e9e63c8a4",
+      "bytes": 87885,
+      "sha256": "fdd5a14f520ae68ab2bcf5a56fdcc85bbbfc4e619b318781402f631e24a12c78"
+    },
+    "data/fred/DTWEXEMEGS.parquet": {
+      "git_blob": "dd073dc6b1c09c83117081b8b2f9ca06a9cbf24e",
+      "bytes": 87891,
+      "sha256": "c144282a74776f032fcd406e7d721882494fc9a01542a18a310b1fc547d471a9"
+    },
+    "data/fred/ECBASSETSW.parquet": {
+      "git_blob": "bab1d759279b894be6afdb7069b133ab70da47a0",
+      "bytes": 24811,
+      "sha256": "f051cd1a7ab14c3d3e93400b4b4f03ed3dd9cf89dd26b15d5edfdc49a87827d8"
+    },
+    "data/fred/ECBDFR.parquet": {
+      "git_blob": "3e557ff8ff3b1210d0afd2c56067a65defc184dc",
+      "bytes": 91482,
+      "sha256": "ed326cc7cd597386741467ae91c1ff1991dead5d45dc86acaa38e0a0f329e3c2"
+    },
+    "data/fred/ECBMRRFR.parquet": {
+      "git_blob": "8508ce1d8b4579baafd607c5812a8812fbaf324e",
+      "bytes": 63923,
+      "sha256": "cae415ce4a68fe577b8df9537ee92260248ac87822eed2b7add0ff431fc2e3bc"
+    },
+    "data/fred/ECIALLCIV.parquet": {
+      "git_blob": "b81421b793c0e88825e68ddd9932fe22fb054cb5",
+      "bytes": 3580,
+      "sha256": "cd944ee2813aa202ac6e6eb263334b0d3ee27bb746337fa757e07e0343f83bef"
+    },
+    "data/fred/ECIWAG.parquet": {
+      "git_blob": "b7aafcc63aca94ae126505bd58c46512a2e4fe69",
+      "bytes": 3587,
+      "sha256": "85d3929c137bbcc35f801aa1249a780aec5263f649c097c746b7e6df7b23a473"
+    },
+    "data/fred/EFFR.parquet": {
+      "git_blob": "2b6017e4a9b3856ab95466387f3a520615959da8",
+      "bytes": 66699,
+      "sha256": "9f05c35a721a26a14bce726415661ef5613f5e59f3b119e5a28c8d7e05588204"
+    },
+    "data/fred/EXPINF10YR.parquet": {
+      "git_blob": "11b23e255df0ce7efd072a2c611799290da235f8",
+      "bytes": 12101,
+      "sha256": "09f6adf06cabf8e8ec7dd174cdc9b67949d168a4ad9e6bb9ca72bc886d0c5ed7"
+    },
+    "data/fred/EXPINF1YR.parquet": {
+      "git_blob": "1b1da94ca1c34d6c2e17075f39c6f8ee4d6a56c7",
+      "bytes": 12085,
+      "sha256": "83a53ea8b6228b0f1ade00f6698830a657fe93bf4df38fd5dbb5a6961f70f0b2"
+    },
+    "data/fred/EXPINF5YR.parquet": {
+      "git_blob": "72133c453d3f856aa7f068211e02264bd7b57ed2",
+      "bytes": 12083,
+      "sha256": "5e6f3c0286013e026893f9fc166603c87759a1c7ff62588369d33a2b0dcc7c10"
+    },
+    "data/fred/FEDTARMD.parquet": {
+      "git_blob": "6deb3b4799a986d787bce75a84362fcd269a4bd5",
+      "bytes": 2167,
+      "sha256": "45ebb9c6d0c3a0fbaa57fb79dcbcab5672ebb1b341b644340e5ade769eee305a"
+    },
+    "data/fred/FLEXCPIM157SFRBATL.parquet": {
+      "git_blob": "e329d55e3756e08ac528f72e6293baf785e16e55",
+      "bytes": 15348,
+      "sha256": "708cae025bb14336e872e459165c06f9af858c5941a486dc5db6b4dc097c847e"
+    },
+    "data/fred/GASREGW.parquet": {
+      "git_blob": "9e38cf1a4dbd69062debd392dd3d05deb08eabb3",
+      "bytes": 27488,
+      "sha256": "cf8fd3d11150d6037e7abbd35d6b89eb730e31e5b89c95abed6cbee3cb4446ed"
+    },
+    "data/fred/GDPNOW.parquet": {
+      "git_blob": "50da4ba4bedd337e446e5d7dbec8600d27148f69",
+      "bytes": 3144,
+      "sha256": "5af283d0279f084d6b56e46ddde08de8fffcb457625ae1e1ec37ded9acc8b2de"
+    },
+    "data/fred/HOUST.parquet": {
+      "git_blob": "0100667f3b5ca9a30032e7fd44107b3f6edb3494",
+      "bytes": 13125,
+      "sha256": "7a1fc815fc3425e09421f8d0b4f88188db3126fd3242352ee981b0707a2595a3"
+    },
+    "data/fred/IC4WSA.parquet": {
+      "git_blob": "a46881ceedad5fc887301e4d364011c81f8c9584",
+      "bytes": 39332,
+      "sha256": "eeb3e543f0bc160b9a130bcc60aafd4c6f6a02dd70e1c6b4ea9d497f2db62bcf"
+    },
+    "data/fred/ICSA.parquet": {
+      "git_blob": "b5194bdd075791e2432b1d644fea6e78229ad721",
+      "bytes": 34726,
+      "sha256": "3ceb9809e9106ed9b775a3c99330ce76771633e87cd84a45ff49377f148fc75d"
+    },
+    "data/fred/IHLIDXNEWUS.parquet": {
+      "git_blob": "5f1b4595b53c629a4c0e9e77b39caa6e08afe587",
+      "bytes": 46458,
+      "sha256": "3d7c805d5d96ccee7cb9ad9027129c92715ea35f195b87b1c59bf8d2839e5c9a"
+    },
+    "data/fred/IHLIDXUS.parquet": {
+      "git_blob": "9506052c21c16b3f0f38ffd95259fb03bade48ec",
+      "bytes": 46430,
+      "sha256": "a2d4dda75d988a15f7d0bbdb0ce5cb4dbbcd2e6fa8544d89ec0a014e8edfba9c"
+    },
+    "data/fred/INDPRO.parquet": {
+      "git_blob": "34ae7560da257645d954404ec222378ec454733d",
+      "bytes": 24883,
+      "sha256": "5606347e513748dbbf4468414f314670ea5b28ff7e42010033af2a338256c0b3"
+    },
+    "data/fred/IORB.parquet": {
+      "git_blob": "b926316c3cb040695e122953334dd8a6d6ac7aef",
+      "bytes": 18368,
+      "sha256": "f3ebba996cddeed861608059dd0a34bd4f5451491b43ae24c68f2269aa42b8ad"
+    },
+    "data/fred/IPG2211A2N.parquet": {
+      "git_blob": "db40b760b242b282c0b3bc1463775b06d9134919",
+      "bytes": 20763,
+      "sha256": "7be2d4f02fc5f74ee4246a33a21a1679709573ffecb0f707c227a6eb68a88504"
+    },
+    "data/fred/IPG2211S.parquet": {
+      "git_blob": "6dc6ef35ab8df90a3efb2c844e4dd86dab6235ab",
+      "bytes": 14332,
+      "sha256": "2f5394b4f98baa2eff598a3fdcdb4e43a0f4918a1c1c094fc7244820d2726ac8"
+    },
+    "data/fred/IPG3344S.parquet": {
+      "git_blob": "140459d2d475c8d92f1c7d1a43818cc04912882d",
+      "bytes": 13886,
+      "sha256": "d19ba4305bae8b5ee5ba36f27609b0a3e9664c6ab2e8fe9e1099f913208cde97"
+    },
+    "data/fred/IPUTIL.parquet": {
+      "git_blob": "1250a6516087ec02cca570d02b67ff91067d5e54",
+      "bytes": 20554,
+      "sha256": "2dbb8abe298afb76264299e76f62592de84fd733018f9e59004b8941f495995a"
+    },
+    "data/fred/IQ.parquet": {
+      "git_blob": "9a00bad8d33aedbe6faf5de44f74e64640722201",
+      "bytes": 8325,
+      "sha256": "24a4eca28e603a016df648c4296735027f904b8d5db5ab923aaec1f46bd54276"
+    },
+    "data/fred/IR.parquet": {
+      "git_blob": "2b0564583d4310cac9887db6bd20ac885d59a5bf",
+      "bytes": 8325,
+      "sha256": "6a863ecadaf47bc3aee32496670eaa9b6c63ec7ebff6f73f9e9b04ac6b5f266e"
+    },
+    "data/fred/IR3TIB01AUM156N.parquet": {
+      "git_blob": "4505776c7eab8c621ef03246bff9f279619bde70",
+      "bytes": 11581,
+      "sha256": "6d0a7c6795af5a0cff921114480d9e7bc42f8cbb413f3f17b6ecc1aaa9059565"
+    },
+    "data/fred/IR3TIB01CAM156N.parquet": {
+      "git_blob": "d1490801574f9ddd294167790920de58b8ba5509",
+      "bytes": 14934,
+      "sha256": "d9fca71b7e4d1b88386bd7c9d9e9781005d366e674611165bed541b099fcf5e8"
+    },
+    "data/fred/IR3TIB01CHM156N.parquet": {
+      "git_blob": "585a741d7e390b3d1bcfdfd6d76d11bce562b1b6",
+      "bytes": 7977,
+      "sha256": "13b4ae525dd992f3d8f27b112e7f1c547f6bcacccfad8e9b7f2e664d431f9ab7"
+    },
+    "data/fred/IR3TIB01GBM156N.parquet": {
+      "git_blob": "9e3dc581c8742a68b744d93c64dffde5f4a83e5e",
+      "bytes": 15368,
+      "sha256": "ed9b54a7c47292e61076bf6ced1734e9d0e9404cee0bd9fbded72cca699aa528"
+    },
+    "data/fred/IRLTLT01AUM156N.parquet": {
+      "git_blob": "fcfaacf3c795b902ae48883b25bee15e81c8da5a",
+      "bytes": 12570,
+      "sha256": "b1b31608eb229ee42d334da66eff256fcbee6f0a8afcf7b929c8f4b89fe10850"
+    },
+    "data/fred/IRLTLT01CAM156N.parquet": {
+      "git_blob": "e207c6e4f29a9a04e623c2dbfcb0179b9c9199fe",
+      "bytes": 15909,
+      "sha256": "f8fbc0c90c0adf9bf112057ddc0b2a051dae07028594d9538de2b44a3a352edb"
+    },
+    "data/fred/IRLTLT01CHM156N.parquet": {
+      "git_blob": "ba7731aa21d6e228bbd7549ad0a337eb9eb9bae4",
+      "bytes": 14566,
+      "sha256": "8c79a835049d8ecb32ed1d7610cacc83ab0bbff612d77634e8bf74f6f46ba91b"
+    },
+    "data/fred/IRLTLT01EZM156N.parquet": {
+      "git_blob": "796886581da9d38fb277731d948fd45bef6ca493",
+      "bytes": 14544,
+      "sha256": "82ed0b1ec78240d5ca8727020e3366cb59b3edae1fd626cdc294a7246fac970a"
+    },
+    "data/fred/IRLTLT01GBM156N.parquet": {
+      "git_blob": "22f668158748b3e1c86eadce3fce04daa06ca202",
+      "bytes": 14860,
+      "sha256": "b9e7b90c13d7eb1a511ec69324f6b981e08677e918210b0d8d2a6e453587fc15"
+    },
+    "data/fred/IRLTLT01JPM156N.parquet": {
+      "git_blob": "e2f2b0cc860f71991b210c137d68147d9e09e4bb",
+      "bytes": 8793,
+      "sha256": "686abcb8bba0dac7c7c377e23a9737320f683f1f2e21107fd2b913c183eeb1f4"
+    },
+    "data/fred/IRSTCI01JPM156N.parquet": {
+      "git_blob": "8ea4e6c0a705cf546e5941bc1e2b8d718f191436",
+      "bytes": 9458,
+      "sha256": "58f4577d822f56e08aa6f3b44c48758af807df7a4b555ea7f909eb942c39a1fe"
+    },
+    "data/fred/ISRATIO.parquet": {
+      "git_blob": "fd276ca5b2f3c5c83c580cecc10d08ce2df23a8e",
+      "bytes": 6406,
+      "sha256": "e299b974e45262a9591c6ad8b665c9a701084390c65082f0ecdd4e94b0fbfe84"
+    },
+    "data/fred/IUDSOIA.parquet": {
+      "git_blob": "56d89f79aa6b5ca7a78fc83ee3b9be89093a0825",
+      "bytes": 106358,
+      "sha256": "7ae9090c575cb9d4b3d111d0c8fe2b0b5d649cf738e61c1f0b05996379947729"
+    },
+    "data/fred/JPNASSETS.parquet": {
+      "git_blob": "6f5c938555064270057a0eafc16983c320377db4",
+      "bytes": 7489,
+      "sha256": "fead57a1c19be995146b5616824618ef5b05562c6156b6a1d8899b64006ee279"
+    },
+    "data/fred/JTSJOL.parquet": {
+      "git_blob": "b4bfcd2f818e42e3d55b8cc73960a71efa3f1772",
+      "bytes": 6588,
+      "sha256": "b15d229783ceb8df9b09b80abcdbce378459d5f990214dde77899d569320fed7"
+    },
+    "data/fred/JTSQUR.parquet": {
+      "git_blob": "3c30a4213ca8a59779b8ad715f66ee1e8c94f5c6",
+      "bytes": 5270,
+      "sha256": "62ddfa271b0a805f84a2ebd09eaf3ea3c2413ca57f7f39a7c2c79e35b7360ab8"
+    },
+    "data/fred/M2SL.parquet": {
+      "git_blob": "6ef73bd0e555758f743c4b997c9f5c4c4f0e9ba3",
+      "bytes": 14483,
+      "sha256": "65899167fc180cd58bda38390aef8af0b38c5190f3de18737c9a27d0812ad87e"
+    },
+    "data/fred/MCUMFN.parquet": {
+      "git_blob": "e0041f6b6b21b6e49d6eee9dbbb90750ea9ded2a",
+      "bytes": 13692,
+      "sha256": "6984cc43756fc47252cc074425a325cabe136565eb92fae95ccca5f6d736f0ca"
+    },
+    "data/fred/MEDCPIM158SFRBCLE.parquet": {
+      "git_blob": "6648292821457f836cdffb32a645fe521eb8a1f0",
+      "bytes": 11791,
+      "sha256": "8617b3f337cd420955c3309806c4cfafd0460a07f223a79fae22fe31f59e9421"
+    },
+    "data/fred/MICH.parquet": {
+      "git_blob": "1d2cd523622a55f1bb3c20ffc2893591ab59754e",
+      "bytes": 8377,
+      "sha256": "af6185c7f03ca411240b70b7db06a97c60f38a076d03319b79e11c24250c55f4"
+    },
+    "data/fred/MNFCTRIRSA.parquet": {
+      "git_blob": "7622aea92dc9ffe4866b1290588f312c72b07813",
+      "bytes": 6528,
+      "sha256": "aa5abedd4d920b2bf036c4a3434724d0d236fd779458ef4af7c4a3842d9b4607"
+    },
+    "data/fred/MORTGAGE30US.parquet": {
+      "git_blob": "475ab7dcf8ef38befa1bd9922188cb7e70b994a0",
+      "bytes": 34515,
+      "sha256": "9e7eee63cf55568ad847f5f85a22655b15d2e482960abce21761cb2ab1b84281"
+    },
+    "data/fred/MPRIME.parquet": {
+      "git_blob": "7e87562194a091b2970e59592596db6bc66304f5",
+      "bytes": 12544,
+      "sha256": "451fd97733b4c13441d10f13de74684ff4f3e75f51ffc5471054e8e4dae7e1fc"
+    },
+    "data/fred/NEWORDER.parquet": {
+      "git_blob": "c7054c7ffce4a8d2caefbffce979d0c2e691b2e1",
+      "bytes": 8446,
+      "sha256": "8d90a24e502f4a409a6e0ffb7b45b5c707309636a7f3313f52de86a8331d2362"
+    },
+    "data/fred/NFCI.parquet": {
+      "git_blob": "cc211eb78d23f0b3750e84aa8bcf1bc2d0d84e56",
+      "bytes": 37903,
+      "sha256": "69b8bd4066e3caa3beb0858769d2da43a759a7e1a9e22077632a6dc34c62d29e"
+    },
+    "data/fred/NFCICREDIT.parquet": {
+      "git_blob": "53eab79501a4cd5e3c38379be04aba62dddaf0d5",
+      "bytes": 38087,
+      "sha256": "3534d9741845c5052d617e34c36826487cd394a89248da2f524b553b321e7eae"
+    },
+    "data/fred/NFCILEVERAGE.parquet": {
+      "git_blob": "300738cb1be8f2ebcd1f9f77dead289447205ac9",
+      "bytes": 39493,
+      "sha256": "04366b3917aebf6d4b07e7b04de66d09bd07cd0c7e90360555e35e20e9557de6"
+    },
+    "data/fred/NFCIRISK.parquet": {
+      "git_blob": "6bfa51b26d0aeb3a36b125e2cc1b48573915e501",
+      "bytes": 38020,
+      "sha256": "251027054a7502c74c597bb77b60d5ab534fdfe3f8f2faf6bb3a39427e89e468"
+    },
+    "data/fred/NONREVSL.parquet": {
+      "git_blob": "425e6fc092e1f48dd076845bb62c76c3146e1fd4",
+      "bytes": 19087,
+      "sha256": "ef617e3f734ded332f99f79e11bc1dfcc6133a65be5750e1b0e1135c7434e5d3"
+    },
+    "data/fred/OBFR.parquet": {
+      "git_blob": "1af999cbac8fa14eed987aca7719bcceb23cc838",
+      "bytes": 26409,
+      "sha256": "32dbc46b7c5e6baf700e558d361e4c4a6e26113950065c236473ae82f612214f"
+    },
+    "data/fred/OVXCLS.parquet": {
+      "git_blob": "3cd0f31b82fba0f0af52a02fe6084866f1fdaef2",
+      "bytes": 64736,
+      "sha256": "c97dcfdb189dd354c3ea2734725da2efb390caf4b109ccdfe305b41f08b0e461"
+    },
+    "data/fred/PAYEMS.parquet": {
+      "git_blob": "b5360656d4d6a2f7c7b9943ba5c883fdfabc6d27",
+      "bytes": 18026,
+      "sha256": "60e1d628454cda214c2e74da92e4078db9f2d1d8aace83c14e31656d321e14e3"
+    },
+    "data/fred/PCEPI.parquet": {
+      "git_blob": "405c33257a7d94b6b39c277b655998d48748fbbd",
+      "bytes": 15028,
+      "sha256": "ce3aa60ef815e0b9b77b3d7052ae3e23129cba6ad0ed4423e8a369f5fb37012d"
+    },
+    "data/fred/PCEPILFE.parquet": {
+      "git_blob": "50f47a3163ed55fbfe362ec947e213d3e85092cd",
+      "bytes": 15033,
+      "sha256": "03bf758147fc5eb0b0d3832f8884df048944d8a9cb2cf5124fe750afb8498569"
+    },
+    "data/fred/PCU221122221122.parquet": {
+      "git_blob": "a59b3c362393caef05a3c155ca75ae63f85ab3de",
+      "bytes": 6218,
+      "sha256": "1cb6ddf44ea33a1e1a0f997aec002718de7b32ac090dd064e8b41d191d7fa932"
+    },
+    "data/fred/PCU331110331110.parquet": {
+      "git_blob": "4a9ed38239153029a425184cee934e02c57ea7ce",
+      "bytes": 12149,
+      "sha256": "b1eac946153972d7b0f5a635ad784d1bfca6ad81f6f4cb0d885a3b2f0c00a2fc"
+    },
+    "data/fred/PCU334413334413.parquet": {
+      "git_blob": "8d5a6687014cd2161d8caf74e3d16a9a023871b6",
+      "bytes": 11694,
+      "sha256": "77e73a1f76198b3981fb5819a6e9cd70fb4eb10532e5802f67c538e9e139e740"
+    },
+    "data/fred/PERMIT.parquet": {
+      "git_blob": "3ffb0284783d63b003790aef5f95e91c601e26f8",
+      "bytes": 13020,
+      "sha256": "a065d2c0ad553478fd97d4870e36744ae40a2d54278b41915fc61cfd7227b170"
+    },
+    "data/fred/PFGIUAMFRBDAL.parquet": {
+      "git_blob": "88f2ad2718067767e6a56dde39bb1b2c6a3e1e84",
+      "bytes": 5633,
+      "sha256": "f40232a79ca88af19131279d1e5f4e793c4ae9b804b563ea7ab65b710ffda737"
+    },
+    "data/fred/PPIFES.parquet": {
+      "git_blob": "12d6e40392430792b2157be33e64bdf8e8753ce4",
+      "bytes": 4958,
+      "sha256": "e11200005730f4b00bddaef2d97f8a37e26e98446068a8dc46c8998584184c6c"
+    },
+    "data/fred/PPIFIS.parquet": {
+      "git_blob": "0e77f8d555be523fb3374e372e157de963f7c080",
+      "bytes": 5085,
+      "sha256": "1e9f3ef2ea61217f5f23d98b112c08a11196732e662896d89466333305835bba"
+    },
+    "data/fred/PSAVERT.parquet": {
+      "git_blob": "7718920e1ff552b8a608159d2a1a2ba5265aad39",
+      "bytes": 11042,
+      "sha256": "fbcf0c0b33c15b38d11b11f8ace49f48e016c317c60bb047c847703177061fb4"
+    },
+    "data/fred/RBAUBIS.parquet": {
+      "git_blob": "eb481f120f9e88ccc9cd5eafe25c9a35ee04b7a6",
+      "bytes": 7836,
+      "sha256": "8e1de9c8889713688467f59da95c075b8c4004dc17b689f91769eea3f46f8d2b"
+    },
+    "data/fred/RBBRBIS.parquet": {
+      "git_blob": "ab1da22c30fba853c5ccb50834bcd518a4b5f526",
+      "bytes": 7909,
+      "sha256": "f85322741fd2050f5358bfe4e91337c739cb842ea5c1cf8dbbf1e63c035f6e4d"
+    },
+    "data/fred/RBCABIS.parquet": {
+      "git_blob": "b72aafef3918b5968fbf8be654d61f8dbdfacaba",
+      "bytes": 7788,
+      "sha256": "94e333337a32a8e4ded17af1e6627991d1401daf80a26c080f7500355fb2d0b1"
+    },
+    "data/fred/RBCHBIS.parquet": {
+      "git_blob": "95438f3d820d6f4c14a41322398d18db0ad53ecf",
+      "bytes": 7692,
+      "sha256": "6898c37d9c6a81ce008096d9398c9090d6ccd29ebb8adb07e670a9e610209d9c"
+    },
+    "data/fred/RBCNBIS.parquet": {
+      "git_blob": "17ca7f90b8a6b17db9bbe9ee5549dc6cb6e5cb7d",
+      "bytes": 7860,
+      "sha256": "6baac6181594fc0c3c3bac44e8b2bf9c2e746fae01406be11cf4a7fc980acda1"
+    },
+    "data/fred/RBGBBIS.parquet": {
+      "git_blob": "00bb2be9f436edd5cd33e4a1934b7c9d3cdf8f30",
+      "bytes": 7807,
+      "sha256": "e3db4cc8870589f04463eec855556eb3a787e83d8b3d16aa29239e31785d28f6"
+    },
+    "data/fred/RBJPBIS.parquet": {
+      "git_blob": "ebe87a57591ddee0edb78e2d3a386257a1a6b80c",
+      "bytes": 7931,
+      "sha256": "8f3f0bff3a43c9be60b626728d10b618971d87cdda414e5d689232e0bea53ab7"
+    },
+    "data/fred/RBMXBIS.parquet": {
+      "git_blob": "29ff0631345cb40db91588f3269cc5a28e2b4e4f",
+      "bytes": 7889,
+      "sha256": "2831480a2ec83e1e1a4c1883f8191c84e2a455a6b48778cdf3e19386b9d7c23a"
+    },
+    "data/fred/RBUSBIS.parquet": {
+      "git_blob": "358f851efbbf08bfeef2df125034757fb8d1fc37",
+      "bytes": 7804,
+      "sha256": "23cefb80615e9f2587dab70e4af5528f1a28da3e640311b18a412b5b40f4eab1"
+    },
+    "data/fred/RBXMBIS.parquet": {
+      "git_blob": "dbdb7bef63b13624a9666ab15d95432a85991118",
+      "bytes": 7750,
+      "sha256": "a46e466721b8a1653099687eee92277fd49ed58a23f49f8b7b62d471d3215ba5"
+    },
+    "data/fred/RECPROUSM156N.parquet": {
+      "git_blob": "61888fe92fe24e31c0ffc43ab985e0bd0b5025b7",
+      "bytes": 10390,
+      "sha256": "b8f1c8cafaaee0c847fe28af40a75be78604e75e61d932d3f61c31b124cdf1a7"
+    },
+    "data/fred/REVOLSL.parquet": {
+      "git_blob": "16725b9b1f9dbe2ad81521c35794af2c44d36703",
+      "bytes": 13983,
+      "sha256": "c140114d2bddf82d940ecf0573eb51476bc72df7c98a501bcb585080bec07a1a"
+    },
+    "data/fred/RIFSPPNA2P2D90NB.parquet": {
+      "git_blob": "fc0a941768e376e83e5687004a9555c2bcf9c876",
+      "bytes": 55400,
+      "sha256": "f6d92868c83b75599d28d2fa90adcd0449e125abcf3a86dd04cb15266654650e"
+    },
+    "data/fred/RIFSPPNAAD90NB.parquet": {
+      "git_blob": "a8aaab1dbd101d2aa716028923d8691bcb45f9ce",
+      "bytes": 56992,
+      "sha256": "e203b5611c5a5f77f68ff3b766d3b7f26f8b666bd49161c47413ea95ad71b111"
+    },
+    "data/fred/RRPONTSYD.parquet": {
+      "git_blob": "87707da3af92cfd87156224471289ea943e6e686",
+      "bytes": 51798,
+      "sha256": "cd3c8a64ae063c375e074b88fd5ab9a3a475f32b53b8c896d5f5f41837a656eb"
+    },
+    "data/fred/RSAFS.parquet": {
+      "git_blob": "a7e0cd3d9457996d37dfb4d6c4db5a26cb7d6722",
+      "bytes": 8527,
+      "sha256": "3b31411a79f3df6e8b6c5a58435f06dd16f72b7039075c6bcec14c9649e52a04"
+    },
+    "data/fred/SAHMREALTIME.parquet": {
+      "git_blob": "1f66ce873b3bdd9dead13911fbb23e42b98eea1f",
+      "bytes": 10737,
+      "sha256": "ed5685880b8ff397d234e7dbe1ebeebfe77035e46fcc18c164619e8376c6c7f9"
+    },
+    "data/fred/SOFR.parquet": {
+      "git_blob": "59a1e1c75633e6c56e2bf52c970a861ce9ffe1da",
+      "bytes": 23587,
+      "sha256": "051513a4e58461032e5242d4fbf36c1070c91f1b54308a80026073a2ccd81b0d"
+    },
+    "data/fred/SOFR99.parquet": {
+      "git_blob": "552da8af2750f3780b1e790dfe591109a304ccab",
+      "bytes": 23529,
+      "sha256": "65dec3ecba515b331b19aca2d2bdaf653622be127140002d46c9accec38f9f27"
+    },
+    "data/fred/STICKCPIM157SFRBATL.parquet": {
+      "git_blob": "4748fc8bee44461ae2a6be187416c8201698a8ca",
+      "bytes": 15360,
+      "sha256": "6c20e9b1359b687aa2c87c6b837b5a4c09274e1d59ec518a69c37800f52ea666"
+    },
+    "data/fred/STLFSI4.parquet": {
+      "git_blob": "7c9f6ecd40291d0832b2823575493d9e6bea2bcb",
+      "bytes": 32797,
+      "sha256": "13bf105f60f154bbe1f924119a12443f153125f3cc1344399a7720af23e76200"
+    },
+    "data/fred/SWPT.parquet": {
+      "git_blob": "f8eaa0184c838163695c6b57918004542c8e2135",
+      "bytes": 16957,
+      "sha256": "b0b1cc0341c869c6552bc0ce725bf9ef18a9883da99c44d44502e491e6703fd6"
+    },
+    "data/fred/T10Y2Y.parquet": {
+      "git_blob": "702eab7657d90dd24b87a8fb6ca29b902838ccd9",
+      "bytes": 128800,
+      "sha256": "24cf184ea7b744bead6b490259e817e0610a7da3ba2207f7f6ea41489b63f3bf"
+    },
+    "data/fred/T10Y3M.parquet": {
+      "git_blob": "7223950ab674fb5c2b835a3a92055f3124d1e45f",
+      "bytes": 116874,
+      "sha256": "8140e2253bf3cb00eb1e1ff44496931e02bb5f652789006d4381597dd2779f4f"
+    },
+    "data/fred/T10YIE.parquet": {
+      "git_blob": "04e874ed70aacd2e7b55ef566adb5e8cec0296d8",
+      "bytes": 60747,
+      "sha256": "a4224221f362a88cea5ff6afc992a076d2f829495344566944d2a43f636df492"
+    },
+    "data/fred/T5YIE.parquet": {
+      "git_blob": "2574d7b9481b043760390a798623dad4a1265021",
+      "bytes": 61912,
+      "sha256": "87c6ca58f741420a094572d7e28b6c817add7eefc36d5f12b1660c6643c2332d"
+    },
+    "data/fred/T5YIFR.parquet": {
+      "git_blob": "86d9b41c6250dde1e2b93ccd0e4b18bdf4f1e966",
+      "bytes": 60538,
+      "sha256": "cbdcce74ae8d2b7640ec109e66e153adb70b54870dbc7c104591017a6fc0ccc9"
+    },
+    "data/fred/TCU.parquet": {
+      "git_blob": "1a4b802ef9466317c65bb99cbee6f34592455358",
+      "bytes": 14544,
+      "sha256": "72a27586ec10cf26d49ed4076cbd17c6f3c84ffc8a5eafcc752328faa9bf50f6"
+    },
+    "data/fred/THREEFYTP10.parquet": {
+      "git_blob": "03459bee54c2eefee595cb877b70f4d6d9e48599",
+      "bytes": 138446,
+      "sha256": "93098ee97b4eb4ae5ddf04eccf720851a494df4c14d48bcdb585f0ec64b096fc"
+    },
+    "data/fred/TOTALSL.parquet": {
+      "git_blob": "71ca67e9745345827ebce943d86ec931e8cf4728",
+      "bytes": 19104,
+      "sha256": "265f412ac4fa10191eac69574cf2f22b3cfef677372e158b0f2adeb2472f8128"
+    },
+    "data/fred/TRMMEANCPIM158SFRBCLE.parquet": {
+      "git_blob": "555e5d71528e7a5dd18f376bcf8b9c641269f1ae",
+      "bytes": 11787,
+      "sha256": "cd3113ba47f448a52033e1b44bf12fe8534badaa579952adbff1d2072e9ea69a"
+    },
+    "data/fred/UEMPMEAN.parquet": {
+      "git_blob": "2f87a4a30cf1eb5d754915a9b2fe7829351e2f73",
+      "bytes": 12774,
+      "sha256": "27025dd6bacfd8685ab903daca2f98cf74d4a74b65da36c3347ea6750357380a"
+    },
+    "data/fred/UMCSENT.parquet": {
+      "git_blob": "aa71e2e0b68b03891df9eaf1db75aea11ac9c843",
+      "bytes": 10709,
+      "sha256": "77d554555eb9f326398bee8e84fc7db4e95455ed516b90a4aa17ba68bce62d3e"
+    },
+    "data/fred/UNRATE.parquet": {
+      "git_blob": "0a10099057099c0cd17115886b4ffc61bc8dcc26",
+      "bytes": 12041,
+      "sha256": "e3dc29fa0bcf93d6b0674fdcdd14fe0e03be0375ec05f5b7b1205989c39fdbfd"
+    },
+    "data/fred/USGOVT.parquet": {
+      "git_blob": "46cb14ee1fe733b3175161c796070cdc26c631a7",
+      "bytes": 17379,
+      "sha256": "2c2f2764d1b0e352a3ccca05514dfba095a7b41abffb55bb2c734b8386217048"
+    },
+    "data/fred/USPRIV.parquet": {
+      "git_blob": "38cb8c96e7a5a9a9a54c9438eaa60bd2268ef5ff",
+      "bytes": 17986,
+      "sha256": "f51d23c8bcd53ec2f1f66288f44927b34c3d1beb03effe408801d8652fcabd75"
+    },
+    "data/fred/USREC.parquet": {
+      "git_blob": "fd664225a3f94d736735757f44c4581b7c8fa714",
+      "bytes": 20118,
+      "sha256": "9bc9cb282a58f40f92e864a3dbb355733b3460aebb322f8155898392cd85bb1b"
+    },
+    "data/fred/USRECD.parquet": {
+      "git_blob": "72344cde6c06d1e8b6ac7681effc37cc168c14b9",
+      "bytes": 565841,
+      "sha256": "ce406e58d9606a1d4cd590e1cb6452e672086d5ae4eeffc62ac4ebefa517a368"
+    },
+    "data/fred/VIXCLS.parquet": {
+      "git_blob": "f62c830b79b2163c6b1d899090da77bc24a7f463",
+      "bytes": 108584,
+      "sha256": "fca1e698438839771c6c4d49ceecb81660c4aa7eb2f5516ab7afb26682d7d63d"
+    },
+    "data/fred/VXEEMCLS.parquet": {
+      "git_blob": "f5566e79a44fac4ac1ee34f9ae17dacf221c841f",
+      "bytes": 48555,
+      "sha256": "7f18c1698a6d18baffc100c745f5a9bf185bc0a412ba6992d72e67d1f754cdf7"
+    },
+    "data/fred/W875RX1.parquet": {
+      "git_blob": "a7e64204c35af52408f8b54f91ec0457b0b82286",
+      "bytes": 14644,
+      "sha256": "f3ecbad2bdf7edd1b7134a8167f2f040a5ed705e1558d0a209c9ae64a3d4c696"
+    },
+    "data/fred/WALCL.parquet": {
+      "git_blob": "0db9099dbe02a5072fc338a1b187a9d5162172e1",
+      "bytes": 21648,
+      "sha256": "533c8ffde808b3f53fb557a05f73bbee7a85d1feab545a34b73a40a2d54e5def"
+    },
+    "data/fred/WEI.parquet": {
+      "git_blob": "13f96dc226e8f74dd4e0c2626016fd62d28c22fe",
+      "bytes": 13962,
+      "sha256": "ec83eef81c9922db052bb061f07b82e929bb92a8b70ee8d5b3b3e0b366a320c8"
+    },
+    "data/fred/WLCFLL.parquet": {
+      "git_blob": "dd18de318207b4a9f9e65a610ef17683f36b36f6",
+      "bytes": 19190,
+      "sha256": "2cdd2aecc48cd5b5fe464fcb19aa8bfe97646e1c6d124cf4c8d4c20095fbae57"
+    },
+    "data/fred/WPU0543.parquet": {
+      "git_blob": "f49f554c3866efea6e8f438c62cfdd0f1fa71a6f",
+      "bytes": 13453,
+      "sha256": "4b09ec0d70d75abd6b636269379ac534a192bc7e93fbd9dbaa9a5fe9a84b7624"
+    },
+    "data/fred/WRESBAL.parquet": {
+      "git_blob": "184a007d275c2133e699c8b90da58517b850db64",
+      "bytes": 21339,
+      "sha256": "582a07c5f34fbdc46809f877870618abed0922d9089a6d3d3da3ebc7f55957e3"
+    },
+    "data/market_structure/latest.json": {
+      "git_blob": "92d3579106ee0f9e467345cbfb4ad2be0811f6eb",
+      "bytes": 153950,
+      "sha256": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+    },
+    "data/nyfed/effr.parquet": {
+      "git_blob": "402185e3d7ecf2c3d9fbce53f83d81cb294f36d0",
+      "bytes": 33522,
+      "sha256": "ac2f254cbe839f6e61cabb857787e104e851e8a8f62c4b1b9ffe4efcd1111224"
+    },
+    "data/nyfed/h41_assets.parquet": {
+      "git_blob": "ea3b8462c71e365a0336b482b347d94dfc2d91c7",
+      "bytes": 21233,
+      "sha256": "f9fee0519ae0a6b73581b873edf2ae84bf501e3e2cb801eb5db776ea42280c26"
+    },
+    "data/nyfed/rrp.parquet": {
+      "git_blob": "ae986aa400874e2809280414e3c90553a032dd3f",
+      "bytes": 51161,
+      "sha256": "06d0607142f7330adb55a9344823d2d35d01bf5aa20345eddcf763e58ad3478a"
+    },
+    "data/ofr_fsi/fsi.parquet": {
+      "git_blob": "e6f11acb4ee7a98eb6b2d7e235ba8661f60770cb",
+      "bytes": 96197,
+      "sha256": "ad2ebec7da3cedaa066757311a8535fb10a31bae18e3e9f55868bf378188b2f6"
+    },
+    "data/ofr_fsi/fsi_credit.parquet": {
+      "git_blob": "54ec8870cb083b103244003e2e7eaa8334ba3a74",
+      "bytes": 88992,
+      "sha256": "e9e7a1bc164b673b4ea61f162f928db4983d6eb87bd5c49b7208970783f560a7"
+    },
+    "data/ofr_fsi/fsi_em.parquet": {
+      "git_blob": "e5ec3dbf03e3a788979612ebf087cadb52e9d0a4",
+      "bytes": 80282,
+      "sha256": "68978a7f3122560778bdb09c82bd98108896dc0a6cffe1d23689378fabd15ae4"
+    },
+    "data/ofr_fsi/fsi_equity.parquet": {
+      "git_blob": "70a4101fba25437b9f6722a1016d66acc73c941c",
+      "bytes": 83021,
+      "sha256": "d374a8c611681a5676e7c26ea4f3d16d5990a77f5822d77fc9c561fdffecfbb8"
+    },
+    "data/ofr_fsi/fsi_funding.parquet": {
+      "git_blob": "350c42211562846b8677e0895c51cc3f903ef536",
+      "bytes": 84537,
+      "sha256": "d2ca45d86b64e4f9410265cbc79fdd2982c3c7bd1744fd11ef2ab5f3b6827e73"
+    },
+    "data/ofr_fsi/fsi_oae.parquet": {
+      "git_blob": "767a3877704cc1696a920206f5724ed215e04d64",
+      "bytes": 90163,
+      "sha256": "7291faee1405dc62080f621754eb754e13cf7e76c7b0652b11edc25b454ecc17"
+    },
+    "data/ofr_fsi/fsi_safe_assets.parquet": {
+      "git_blob": "2682b1d840950fbce3a558a28e9fe8ec5bc1b1e4",
+      "bytes": 79672,
+      "sha256": "284eb769274bb60dc964e8ef29da23141bdbd6a2b0dccf2197c1c096fe8268f4"
+    },
+    "data/ofr_fsi/fsi_us.parquet": {
+      "git_blob": "10583f5c8a239039d2cace5186ec67fdbfa40d9d",
+      "bytes": 88839,
+      "sha256": "5b938ff86ded340efe56fd8775369d0886da8c7faffc210adc919bc32fa6606b"
+    },
+    "data/ofr_fsi/fsi_volatility.parquet": {
+      "git_blob": "80ddcec4096ff2f8697947e82a6445d4fb4a21b5",
+      "bytes": 88701,
+      "sha256": "751f070ee5420742c218236576ae5c22a81ed0f3167c390e34e0b56bc40c0664"
+    },
+    "data/regime/regime_history.parquet": {
+      "git_blob": "530cdff3767d15526e32f31851907f8971ae7f3d",
+      "bytes": 349498,
+      "sha256": "ba19b21d5e7fe380bb851e15bb7b05b30aa2a7ad20570ff9f63dac4ba9986574"
+    },
+    "data/regime/spvector_latest.json": {
+      "git_blob": "d99b8a14d5020de14fe2c1a3bba84a6c4b424848",
+      "bytes": 285,
+      "sha256": "a6c94a7db2ba13a89486cabdad933cfbb3759a397d70e6126559916f7d22c907"
+    },
+    "data/smallcap_breadth/breadth.parquet": {
+      "git_blob": "db36a84945e308c399d37f3357052ef3a2fa2edb",
+      "bytes": 35066,
+      "sha256": "241395eed4e2db3e2c563649cd1603957f69274657941720985c7789b240ed1c"
+    },
+    "data/spvector/overlay_log.jsonl": {
+      "git_blob": "af7329b444dbb2b483c21fb310fc0633e10342dc",
+      "bytes": 115514,
+      "sha256": "739d2c2aa2bf83bc5f037a09798eea5299a20e890167ba9a7b7cbeeb8854ba09"
+    },
+    "data/stage_analysis/altdata_trending.json": {
+      "git_blob": "79f507ee8397eaf8368e674a44db2b565b99476d",
+      "bytes": 1194,
+      "sha256": "4c9d6abc09b72726199fdb8c9e4897337f42621a8f2d5ca5e7a8893df75c3354"
+    },
+    "data/stage_analysis/context/latest.json": {
+      "git_blob": "1aa5a828b4c45d0707c304632dbdf7511820066e",
+      "bytes": 702850,
+      "sha256": "dd559f5ee91824e48d3d5641428108a6544f2ee7335ecb1b00a3dce14f1c31c7"
+    },
+    "data/stage_analysis/earnings_compare.json": {
+      "git_blob": "fe4c27af6188bd0927bcc97e3a6f8d1d4be111a8",
+      "bytes": 1268550,
+      "sha256": "f3add86b238a25367b56b7ef288a984c3cfa64bc078b4e670b84c6c98a093b36"
+    },
+    "data/stage_analysis/earnings_season.json": {
+      "git_blob": "33504b33f7e3989ac04790abaadab88a8aa136f6",
+      "bytes": 23870,
+      "sha256": "e04ed4d9f2ec48f7be756a03b6a2343cf29d0da80f83e4f176d435a33db9a2a3"
+    },
+    "data/stage_analysis/earnings_table.json": {
+      "git_blob": "538b0dc1a5cc8e1a619d7dd1024565c979863894",
+      "bytes": 599853,
+      "sha256": "606962ba809656a6c80aecaa3ab7cc2d330305cd43e9d45e84c636bc1ae58130"
+    },
+    "data/stage_analysis/ec_industry.json": {
+      "git_blob": "4b3ad49c066ced5425ceef1f793fb6af043f09f7",
+      "bytes": 442511,
+      "sha256": "881971e39b8eeb0efec7d7c0543d271a5b61bd11d0672c910c4e4878442b3f99"
+    },
+    "data/stage_analysis/ec_industry_heatmap.json": {
+      "git_blob": "d3a85e241b70423c8bd1a57559f3573ba16fcf4c",
+      "bytes": 180242,
+      "sha256": "ee5cb22e19bf4ac9b081ebf42be350f1fa0a62af5d3623aa7550a0d1396475fb"
+    },
+    "data/stage_analysis/industry_flows.json": {
+      "git_blob": "ca464a2a61767fc8fdfcf8af4b0dec52d4126ab4",
+      "bytes": 104067,
+      "sha256": "0686e7bb058d19459cfad343f11da40e6bf65f33e135fe7f949ad4bd9bf634d1"
+    },
+    "data/stage_analysis/industry_heatmap.json": {
+      "git_blob": "805fd80cfdf48a6f68deb22d916668e59a075690",
+      "bytes": 9273,
+      "sha256": "815f5d1247283601dd1dcb4b42e92db6962e0d9f8ba7e2c543f0335f6cd93883"
+    },
+    "data/stage_analysis/industry_name_pctile.json": {
+      "git_blob": "24804d0b82ea517a367be1c7af12f081d090adf5",
+      "bytes": 21296,
+      "sha256": "46abeb9de2459b8c0af953039157df416a11a2b7c81f8246e9458d60ed53c023"
+    },
+    "data/stage_analysis/industry_ranks.json": {
+      "git_blob": "c987c7409c216480033c6e243f684e3caba479eb",
+      "bytes": 17141,
+      "sha256": "2d6115d5cd4f7c0e9c3d049956260d3f7911c3e63fadfd99e194ae83814e69e8"
+    },
+    "data/stage_analysis/research_index.json": {
+      "git_blob": "5ffec0b23c34ce55c67baaf476937466f599df7a",
+      "bytes": 857,
+      "sha256": "1651583352f01137456a1dfe69f942437d2ce1d7b3863e4e76658d3fe6a266ba"
+    },
+    "data/stage_analysis/screener.json": {
+      "git_blob": "c23cc1ad9f13d23432e4ab3ef99972b3dbe6cb61",
+      "bytes": 1698798,
+      "sha256": "8722fe340e77b82faee4ba67858a345bd61721fad9d026a14c31cb28a47a6989"
+    },
+    "data/stage_analysis/stage_board_daily.json": {
+      "git_blob": "7ac07770619532408b655fbe14bb987495e3fdff",
+      "bytes": 1699048,
+      "sha256": "34abc5cdbd6b28be41179fc0a76512942589e2e371fb42f88e2450f3813664f7"
+    },
+    "data/stage_analysis/stage_board_weekly.json": {
+      "git_blob": "b7b5bba477f6f52c63b90dac9605c71a634ecc55",
+      "bytes": 1698807,
+      "sha256": "1dbd8951637b8cb8e9cb1d15b4f90d2243d2de5f03c19f2e3104055f74c5d357"
+    },
+    "data/treasury/net_issuance.parquet": {
+      "git_blob": "0a0acc26be7eff9a7fc378fa2db1fe6e0c56e214",
+      "bytes": 68586,
+      "sha256": "1ae57552806d41e83f450b79c5b01e071456ea0d2b943f2c73ee0ea84304f49e"
+    },
+    "data/treasury/tga.parquet": {
+      "git_blob": "cff2b50cf112deb8919ec3182f7d77b88f000372",
+      "bytes": 78506,
+      "sha256": "4c4c4f0316936585b0fb97c2bb78cbf2efd36547cb4cb10b0667c95c60fab59e"
+    },
+    "data/treasury/withheld_taxes.parquet": {
+      "git_blob": "31d983a4d7d04529909b0b3240f466e15a195b0e",
+      "bytes": 14932,
+      "sha256": "05a4a85939d91fc1b20e2fb1b6be86b9920b329a8999f3d310fc1ab605c687b8"
+    },
+    "data/yahoo/AAXJ.parquet": {
+      "git_blob": "43910d98680a1dd05ad0b1cb9e2093b5d823f64b",
+      "bytes": 121554,
+      "sha256": "c2cbfc41c488dc6c1e9afbaa3c261d25cfa74740540dd7e29e387e373c34f3a7"
+    },
+    "data/yahoo/ALB.parquet": {
+      "git_blob": "821c66bb532471b44bc12cdd53de51350b8f266d",
+      "bytes": 210815,
+      "sha256": "fd8ccd3d22d303d6da8c0a515392ca854ba811a204af8ec9b45f5951ba1a294c"
+    },
+    "data/yahoo/ASHR.parquet": {
+      "git_blob": "afacd0aaa3e46c7ddc1c495e8a8370586ef7f5ca",
+      "bytes": 83641,
+      "sha256": "2c180cdbde8f402d3766bed6e12918c7f372c802e56d8a6edec5f68e25b97a85"
+    },
+    "data/yahoo/ASML.parquet": {
+      "git_blob": "63fc4030afbf7c60638656df5c2c51c69a9548b7",
+      "bytes": 218778,
+      "sha256": "1f605c6f5f671119e4b113fc5c18358c763093b19c6a2afa78812a6088b61732"
+    },
+    "data/yahoo/AUDUSD_X.parquet": {
+      "git_blob": "6472ebd06c0b3ae2f89282f78d54782ab1bc81f1",
+      "bytes": 111108,
+      "sha256": "3171c0045e4c53f6b3216eb3464757c0b5e8e15f4e74d15da6a0d9eb8a48a485"
+    },
+    "data/yahoo/BHP.parquet": {
+      "git_blob": "3aad3924b479c0b78ebdbc345b99e79a08d99545",
+      "bytes": 274559,
+      "sha256": "3210103ae985391c86f9637eec8d6cd144a10b14d133e3d6f844fc1791770ab5"
+    },
+    "data/yahoo/BTC-USD.parquet": {
+      "git_blob": "5e788357ce0543583c45b9e8859a4b64b26d99c3",
+      "bytes": 140121,
+      "sha256": "4d3e433c1ef874ac38e9611e225836dd48a20205d76d8f0363e99e7cda7d3506"
+    },
+    "data/yahoo/BTC_F.parquet": {
+      "git_blob": "a913ee2ba17272c353ef0d29e9d2ccb0e4542e2d",
+      "bytes": 96832,
+      "sha256": "f49b0a655d6fe6ad6ce4ebfa46768c236927e4fa49e20ec9e1a2121348ac6279"
+    },
+    "data/yahoo/BZ_F.parquet": {
+      "git_blob": "5221381a41b65e18c6eeb0fda03c860b674b31e0",
+      "bytes": 123824,
+      "sha256": "6c0f9e489549cd6a09df9251c3a845e996a865091ddbcbbd5673db249f79d5ae"
+    },
+    "data/yahoo/CC_F.parquet": {
+      "git_blob": "6c5bf2b014385ef4ac88ad10ff5d802209f47af9",
+      "bytes": 128449,
+      "sha256": "4af299da245454fc789c2344fd2c7bec562723b60944129f5a84dedbd072ec06"
+    },
+    "data/yahoo/CL_F.parquet": {
+      "git_blob": "24da0fd0a2e98f4378f9e220be1b2134c829fe32",
+      "bytes": 172370,
+      "sha256": "88714f158052b28a909933430a3a62fe02891e1abd7051f2b85e00b93da0694e"
+    },
+    "data/yahoo/CNH_F.parquet": {
+      "git_blob": "a739f59558378ff7bc41a6557144ec7f0ba829bc",
+      "bytes": 78657,
+      "sha256": "99487c14db11df47a38f3a25ee46d53f052b18897a9197b97072a805f92eb0d3"
+    },
+    "data/yahoo/CNH_X.parquet": {
+      "git_blob": "f4f7f053e686b07c5d4567075922600685c4a48a",
+      "bytes": 3495,
+      "sha256": "adbca902f9ca862cf2c4e05054a283d992d144a851da4dea4a37523f6579efdc"
+    },
+    "data/yahoo/CQQQ.parquet": {
+      "git_blob": "b81e88dbdc014bbcbbf6d3389598e21dc48207e6",
+      "bytes": 104751,
+      "sha256": "570b6d60d1fd79f44e5dcec3bdbe585d62a3a9c5c8fefc347df60ac25df88594"
+    },
+    "data/yahoo/CT_F.parquet": {
+      "git_blob": "f033d8e657b32e71d944b94b0f5f769182c782d0",
+      "bytes": 154705,
+      "sha256": "b2434186b8f9a6eef3a03df10791f3277c30d05179a48473b5f0354cd052cf71"
+    },
+    "data/yahoo/DBA.parquet": {
+      "git_blob": "bf9fa407d473ec0c746002fed685cd6aaa5c655b",
+      "bytes": 113388,
+      "sha256": "b075a713e3080c792bc88724fba2cf9b0c47f505b0eb449506489156f955cbe5"
+    },
+    "data/yahoo/DBC.parquet": {
+      "git_blob": "6477a14d48fbe2a04b388d72d27cc13128d21846",
+      "bytes": 121712,
+      "sha256": "731b9497cbe2d4a60c06339e5c262e267a490363111a1817b55b1c645ff18015"
+    },
+    "data/yahoo/DIA.parquet": {
+      "git_blob": "5e80db67eacadcce543a9fe95af44ed53762ba14",
+      "bytes": 205107,
+      "sha256": "c2c293442769792de5a5c4c7c60adecbf503b47b3653beba21f09898207c9bf7"
+    },
+    "data/yahoo/DX-Y.NYB.parquet": {
+      "git_blob": "ec15173c66dbca8c81d3c83755ca93cfd570dd27",
+      "bytes": 214591,
+      "sha256": "adfe46618e55e2cffec293eaf0cb925d0cd783a8a51047546ad78180b6faf5ea"
+    },
+    "data/yahoo/ECH.parquet": {
+      "git_blob": "d70f4927122f33c889c479c3b59c26296f84f62a",
+      "bytes": 121185,
+      "sha256": "f10ed8cf582f23314372310422cb6c3c2034b178a7c63fe8bdc02ed5f8ea1c61"
+    },
+    "data/yahoo/EEM.parquet": {
+      "git_blob": "1c00a41be426d2517cca39a8fb3c183bf4ae6b8f",
+      "bytes": 161091,
+      "sha256": "84e8d8c4cdbd255b724ac3a68ddda3154b1675d2f823e03b55947ed83e0ad5c1"
+    },
+    "data/yahoo/EFA.parquet": {
+      "git_blob": "2562e852ea2e402fe3ecd4cee6986869b20444bc",
+      "bytes": 172786,
+      "sha256": "5a14fc4722ecd5cb6beb9d94b4e1376da086fd119975b1d3fc2fc1386615adb9"
+    },
+    "data/yahoo/EIDO.parquet": {
+      "git_blob": "b655daa531a6639a6230781f7be0b78dd813e85b",
+      "bytes": 100816,
+      "sha256": "89207b20ce3637c8f4418f1c0a69bc58b6968082ac2f884e64ae3c710e1c5365"
+    },
+    "data/yahoo/EMB.parquet": {
+      "git_blob": "a7784f06b2cdc762fa873fa979b434af65d0ba26",
+      "bytes": 124524,
+      "sha256": "51a40b70793b02f413ce66727dd3f9ab73fc199aa419fb7164d01354489280e8"
+    },
+    "data/yahoo/EMLC.parquet": {
+      "git_blob": "06676f0fb6f0f3534d2fc4ba0297688f1e0fe7b0",
+      "bytes": 101187,
+      "sha256": "18b41ab5aa7139602badd59ab7fd6fe74853d150ab78fe2bc7e66a34a2e31df1"
+    },
+    "data/yahoo/EPOL.parquet": {
+      "git_blob": "24418b686402fdc09daabb1032a0fa65cde9583b",
+      "bytes": 99771,
+      "sha256": "a6970dd20d8c5d2a724dd44ebe4ebadaecc9d7e9e2cbe03adb5f86c181eeb217"
+    },
+    "data/yahoo/ETH-USD.parquet": {
+      "git_blob": "1802d7e195c9df742f50084c2542c8126db10bfa",
+      "bytes": 104089,
+      "sha256": "25277b6ec607aff36d43b711f69fcd326c7c4dadccc43bdd347fa673aa834e8b"
+    },
+    "data/yahoo/EUFN.parquet": {
+      "git_blob": "2e4b76a9ded6194cbded792f31cad1e2cb98d69a",
+      "bytes": 5848,
+      "sha256": "7d4e29a91de5f020120b5801e8dfaa52641b62e1fc50c02dcad69aab79ecb85f"
+    },
+    "data/yahoo/EURUSD_X.parquet": {
+      "git_blob": "f0ee04efa665f8c16cfd2f4f80301609bf2d6b9a",
+      "bytes": 122914,
+      "sha256": "760fb927085d3b49015a2a91b2891e240dcf9e8d28d738e807967189038eef6b"
+    },
+    "data/yahoo/EWA.parquet": {
+      "git_blob": "8337e2db32b3623eb2e6afa4ce8704793e157e11",
+      "bytes": 170010,
+      "sha256": "8cf6325e594abce6c67ab22f627dda5d247dddc7b9768a90ca545def8ade32c1"
+    },
+    "data/yahoo/EWC.parquet": {
+      "git_blob": "9acc148cb63c026b76fbbb15b441c2208b3f18aa",
+      "bytes": 178005,
+      "sha256": "522f9d9dcabfc901ae06b547b109eaa753542b1ccc205413efeb2050dc34895b"
+    },
+    "data/yahoo/EWD.parquet": {
+      "git_blob": "21005caa0f315d9d4caba585c0df06ba26c7916f",
+      "bytes": 168721,
+      "sha256": "22bdc63a0fd2983f1d53c41204ac28a571930e18e7dbd1c00bc7219416a91ea9"
+    },
+    "data/yahoo/EWG.parquet": {
+      "git_blob": "c84f216fd0956c452a56c68f42d3f223d2d5828a",
+      "bytes": 179846,
+      "sha256": "ac5ad0f1d2bf59f1e8bdea0b38affa5e8bc18d97bce60322237daab29e45813f"
+    },
+    "data/yahoo/EWH.parquet": {
+      "git_blob": "f8afead211b3ea704c4fa24353d40190c39bc664",
+      "bytes": 175537,
+      "sha256": "ee98da9c1077867f09dfd02614e068161fdd6c3c19c77a8c4cb3e16cc33ca952"
+    },
+    "data/yahoo/EWI.parquet": {
+      "git_blob": "75fb53678b70e80c9fc4c188fd2bb59c44100099",
+      "bytes": 173261,
+      "sha256": "bcf03ea9732f513568d4971720c8c51f13596cd5436b1c18861378733000ceac"
+    },
+    "data/yahoo/EWJ.parquet": {
+      "git_blob": "7b28b00b12a8ba6dcb7e15792baf7400503d15bb",
+      "bytes": 182775,
+      "sha256": "b1fe96a9b1d462dcf282413dba99cb25f25ecba0ccd7ad832b52093ec4ea4988"
+    },
+    "data/yahoo/EWL.parquet": {
+      "git_blob": "5f488915dcf476d1b90014ebc9301cd6d465ebc8",
+      "bytes": 173930,
+      "sha256": "cfb1a5ffe375c227c1e5d2f0c2138b7dede95d90d1d0e7e7626c280dc3db784d"
+    },
+    "data/yahoo/EWN.parquet": {
+      "git_blob": "7555a3c50f5fae60739e264a52af0feb3b3f16b1",
+      "bytes": 163462,
+      "sha256": "cbd3b37625e33e9bba5c665897c6a05f85a94d7e65d5603f7a3d449bd4093fa7"
+    },
+    "data/yahoo/EWP.parquet": {
+      "git_blob": "fca0bf469c89ebf7819bd2d37f3c0d01d01f311e",
+      "bytes": 176172,
+      "sha256": "6279d164f01b272ac147039319b1424095e437aa4b64c836f2c4f587e4a08da0"
+    },
+    "data/yahoo/EWQ.parquet": {
+      "git_blob": "13f2c49cb35004857f9d036cd737263018c06ad8",
+      "bytes": 172083,
+      "sha256": "942cc3ff24fea0cb11ecb85834382e9c019cf798e8dafb02fc7cf4edf981e92f"
+    },
+    "data/yahoo/EWS.parquet": {
+      "git_blob": "0955b986f45d63cce6fc8eaac82ca213fcd43722",
+      "bytes": 167055,
+      "sha256": "03572c96668dee51d2b931f31292fb94aff0fdc6bca8cef01f25c41e5475f359"
+    },
+    "data/yahoo/EWT.parquet": {
+      "git_blob": "eb56b5117c6f428d142a0f048957fe747a335a18",
+      "bytes": 162425,
+      "sha256": "4ba23cec4fdb61f42423d1108188f8d1453f6604d7c580dcc7de4436aa3c52d4"
+    },
+    "data/yahoo/EWU.parquet": {
+      "git_blob": "4c20079e150e8c5a34f364f771de691e53315c73",
+      "bytes": 173983,
+      "sha256": "90b365ad7a268a2cc9146c883fff4bb5135318cae3e5417a6134570c4aaa4b25"
+    },
+    "data/yahoo/EWW.parquet": {
+      "git_blob": "1f266f3d11905dd3f98a7ffca478068727153d9f",
+      "bytes": 189421,
+      "sha256": "fa8ef884e1202feb9556869db59f8a7180694af90db43a935c3ff22c696369e9"
+    },
+    "data/yahoo/EWY.parquet": {
+      "git_blob": "1fa8b230ebec63b8c619fa2c9abd9f7e94437d7d",
+      "bytes": 174040,
+      "sha256": "514b54e696f107f1543874cefc01065721830d0eba22edfb9a1506eb24684a8e"
+    },
+    "data/yahoo/EWZ.parquet": {
+      "git_blob": "4c4cc0b6d199b112eef359ac3f972082a68fe71a",
+      "bytes": 178252,
+      "sha256": "086a66f0c17930add1aa9a9bed6a4db2e987dc89c25ddebec24e26addb47ac17"
+    },
+    "data/yahoo/EZA.parquet": {
+      "git_blob": "aab3eee32ccaf0842874e1867d206921f9eaccaa",
+      "bytes": 150501,
+      "sha256": "35116413c65b7e49dc6278372e16424561768fa7fd58f8f5c6d2c917842dc006"
+    },
+    "data/yahoo/FPX.parquet": {
+      "git_blob": "ef22b68a16504e7cdab97a4882a57de024552bf5",
+      "bytes": 122737,
+      "sha256": "c85d4cba11c0e896eb37c96e338b89c852483099112abcd243e277e527fd5857"
+    },
+    "data/yahoo/FXI.parquet": {
+      "git_blob": "4ef90faa88761abede02833a4b371ade824e812a",
+      "bytes": 149806,
+      "sha256": "d468bf56c7ff0d7948498d2e9bfe145450f6846ee736734391dd8084e8a13c96"
+    },
+    "data/yahoo/GBPUSD_X.parquet": {
+      "git_blob": "1bfff473db9e88066825135bbd4f1e785e1395d7",
+      "bytes": 125555,
+      "sha256": "b6fb23f52436364ea154ab3852e1c356c8a8d25d485c84c4c61d679fdad2cb7f"
+    },
+    "data/yahoo/GC_F.parquet": {
+      "git_blob": "d7a5668f7b95989fd2737e3da2b06d5d7b91c608",
+      "bytes": 156966,
+      "sha256": "cb907eed08951343c14a4cc34ba6e1819cdb2ad3628ff1ec48bbd200db571494"
+    },
+    "data/yahoo/GDX.parquet": {
+      "git_blob": "4f7ef079402240a083977545aebfe2d667b8dd42",
+      "bytes": 141388,
+      "sha256": "5f68dc5506bd292a2102a8f72bd3f058074dff8c59e490d895f04285e9503b20"
+    },
+    "data/yahoo/GDXJ.parquet": {
+      "git_blob": "64fa624facce78da3adfe7486dd941af21633da6",
+      "bytes": 118778,
+      "sha256": "efbfa1b2b961b157ccea3f94019c506e5eed86af1caef3851d26a831eee0fdc0"
+    },
+    "data/yahoo/GLD.parquet": {
+      "git_blob": "8b46d75ea1179f9a7512b876a15844d06a38eeaa",
+      "bytes": 154138,
+      "sha256": "518b42d9ffec010c62a5cc0e3b092708e09e6bba162d35481e9a75a32a3183e8"
+    },
+    "data/yahoo/GSG.parquet": {
+      "git_blob": "6c0e269ad1ece23d3b4a32287889fb16c1cf845e",
+      "bytes": 113260,
+      "sha256": "f403b113bcf852c4d9440d9851d1b6b7884a00330843ddf8a7d4ab308a5a4cd4"
+    },
+    "data/yahoo/GXC.parquet": {
+      "git_blob": "3047ce8232c9416169cc05ae8a37bd6ffe06458f",
+      "bytes": 120869,
+      "sha256": "ec797663223930623c0c1debf8c44dd4635b736dfdd48dbca877599ecf35f39a"
+    },
+    "data/yahoo/HG_F.parquet": {
+      "git_blob": "656259b1fc4673d3d022bace27f80f814a5e51c7",
+      "bytes": 142277,
+      "sha256": "44bd809fe46438ce883992a9b214d55cca21ee23ddb2bba5f08f18abfc1e0b60"
+    },
+    "data/yahoo/HO_F.parquet": {
+      "git_blob": "6c806044800d3435ecec72ca4f7ee658cde2e899",
+      "bytes": 184161,
+      "sha256": "555d386983e6bda31ab99334d0318cf458a511ca435672f76e6580a77d50b1ea"
+    },
+    "data/yahoo/HSBC.parquet": {
+      "git_blob": "a2c37db5049ea99ec2f40e85edfe170f97790a7b",
+      "bytes": 180954,
+      "sha256": "c088ccd1ac86444fe43c450c9d473e2e49759d186d205ca4861ef4378dc21918"
+    },
+    "data/yahoo/HYG.parquet": {
+      "git_blob": "d5ee67cb2de8574e25bdc0be326eff309632caa8",
+      "bytes": 128984,
+      "sha256": "1aefb39aecfc092ef10e28fb9035e151d50451de29d3d3e419e4dd7fb3886077"
+    },
+    "data/yahoo/IBB.parquet": {
+      "git_blob": "97f434ebaa24b6574469f7f124698885f05bd1d6",
+      "bytes": 178478,
+      "sha256": "2881794c62d1f82fe55556c21f7cbafd9b08f1406830aefc2b31f7275275677b"
+    },
+    "data/yahoo/IEF.parquet": {
+      "git_blob": "a0770817f707483d1aa0b310f945feb8a7d31f12",
+      "bytes": 156467,
+      "sha256": "23d5d1b9f242addec53a4f20695d1c622dc9d55fd474898ec86b42b445c3ec9b"
+    },
+    "data/yahoo/IGV.parquet": {
+      "git_blob": "a86516373c644046ef0e48c5c27f8b241f612f7c",
+      "bytes": 167751,
+      "sha256": "c2f4fe8e0a534d34645c0d5076d31979486faf0fba9b3dceff1bad289cce05ff"
+    },
+    "data/yahoo/IJH.parquet": {
+      "git_blob": "8a29d917c5869fdb10b89e79f92ec310e44c6d82",
+      "bytes": 185476,
+      "sha256": "3b38f779bd2f1beee614fcab33557ea94ef325f7b1f2997e5fd17a1c105387d7"
+    },
+    "data/yahoo/ILF.parquet": {
+      "git_blob": "96e6396a24fb5fa7114a08ef312e3dff8d4596f9",
+      "bytes": 161891,
+      "sha256": "8f0c1942be8991d072bdb6f0c519bb91bc7881c2f2e8488547e72fa6b16bebac"
+    },
+    "data/yahoo/INDA.parquet": {
+      "git_blob": "ddc2833990b2eb2c9e4ee9350e8183b0f5b879ad",
+      "bytes": 95841,
+      "sha256": "f34dd9eb2a239f1a1d3099de2cfb07d6cfb07e7c2ffec4a5326ed53bdcc0f5fc"
+    },
+    "data/yahoo/IPO.parquet": {
+      "git_blob": "9bb4995f14c8223b2e23e7a366d630c24adc8fbc",
+      "bytes": 77704,
+      "sha256": "e67bb60bf777784c7d1e95777396d541eed7ab8d98d7f38c4ff18a2a7cd2a103"
+    },
+    "data/yahoo/ITB.parquet": {
+      "git_blob": "691dc9bc318ccc3703b37dc3ebc96b826455640f",
+      "bytes": 140689,
+      "sha256": "1980d37621e0d586ee4bec954a4cbb4f7b8f40a436fe7dc0d0526d0c5a64a2f2"
+    },
+    "data/yahoo/IWD.parquet": {
+      "git_blob": "bee33e74e7179aff84195e4e5fd65734c53ab793",
+      "bytes": 182719,
+      "sha256": "dbb28cd12b4fb3ae0072a5a8f021009cbd589aa8dac92cc4b8af50f34c24f6c6"
+    },
+    "data/yahoo/IWF.parquet": {
+      "git_blob": "9418a4bace9efc95d150e31080e9d92fd21c17e8",
+      "bytes": 183617,
+      "sha256": "eb2f15730de4a41d3a0e467effe387a9b3e6f5b9e073af88332e8499a5bcfdb4"
+    },
+    "data/yahoo/IWM.parquet": {
+      "git_blob": "79bcada368e86c4a047bc2b484889648cbc39b81",
+      "bytes": 192714,
+      "sha256": "8e978fd34de74f07b23d99df862c355bc2426d0a3ad0bd1633d698ad2d6139b8"
+    },
+    "data/yahoo/KBE.parquet": {
+      "git_blob": "59f68e4518bd5a7322010ddf7c33099dc6b1e2ca",
+      "bytes": 140713,
+      "sha256": "3e0305579e4bdaa843f353499c159263d10b98bcbd379dc47286fac47c2a151e"
+    },
+    "data/yahoo/KBWB.parquet": {
+      "git_blob": "70dd9d3da9f96c9a691a44991b7349b987bb791b",
+      "bytes": 100861,
+      "sha256": "1f1cbd213f39c1b8f1ef4fdbbbd1dea9f04fe1b133208f625a2ec277a81a91b6"
+    },
+    "data/yahoo/KC_F.parquet": {
+      "git_blob": "ee4bc9f1b3923e0dde7f862f2210fa8c26f18dcc",
+      "bytes": 143586,
+      "sha256": "4c3a84121a7661a23ca0c56f8766cf63c3b8d6cce12112218e48528d7787ccce"
+    },
+    "data/yahoo/KRE.parquet": {
+      "git_blob": "a0902a6e62519bf360c657ab6ab4b10dcc90a215",
+      "bytes": 140775,
+      "sha256": "fc07485a2b912f4df5cf8876959dd0fe07cb8f5105c4455bcf49afa3f496a690"
+    },
+    "data/yahoo/KWEB.parquet": {
+      "git_blob": "e0497902f49412b9c9ce59fa732ba0bef8af3041",
+      "bytes": 90771,
+      "sha256": "82f3368468e0610994e8eface087328853fad3904cea486ab004e4a0e355c366"
+    },
+    "data/yahoo/LE_F.parquet": {
+      "git_blob": "42bfd28d38832aa82cdc8c99fb3e8d3cb8afdde5",
+      "bytes": 142990,
+      "sha256": "41ebe43d154dd74d8f6d5a71b78e0b199c214fb90d33c3e8114d656b29d0850c"
+    },
+    "data/yahoo/LQD.parquet": {
+      "git_blob": "e6760df31716574b8f8561daf1a11b57308dabb3",
+      "bytes": 156109,
+      "sha256": "d3633abf2d374eca3ab0996648ac52da51181d5a539e873bc08da0861e5a084b"
+    },
+    "data/yahoo/LVMUY.parquet": {
+      "git_blob": "dcfeae7391390724927bc616627960689f807b97",
+      "bytes": 125769,
+      "sha256": "6f1e36ff56077ce1be6c76fc58272b87b35909765d079902fd7aa1a03068b8e3"
+    },
+    "data/yahoo/MAGS.parquet": {
+      "git_blob": "31818be704eaa76c80b0d89141ab99facd31cd1f",
+      "bytes": 27167,
+      "sha256": "1eb74f6a3dc7f8a18b9e75166dd451befa87e7871644dd20af5be870e2dbdf69"
+    },
+    "data/yahoo/MCHI.parquet": {
+      "git_blob": "92bfb2774f95c96644c1fd35a3ce7e9502909211",
+      "bytes": 104372,
+      "sha256": "9a424e9c58efe8cf718688aa833adc00fc89ea4c12c9b8fd4c1323726fb3f487"
+    },
+    "data/yahoo/MTUM.parquet": {
+      "git_blob": "9dae312e6211a5b59625af7a404731e7c0a3f2f2",
+      "bytes": 95510,
+      "sha256": "9101478230d591891751b8ab64e949be46177b05cf4ff03242678ad853f24038"
+    },
+    "data/yahoo/MU.parquet": {
+      "git_blob": "3ffcef45d628d4be0034d8d02b09fc7d1611b7f5",
+      "bytes": 257975,
+      "sha256": "a1d3ea82c5cf427001e4ba35cdb2195cf87f22df9f9358682ed84b12704c196b"
+    },
+    "data/yahoo/NG_F.parquet": {
+      "git_blob": "af9f8a700d433c6de64e08cbec00b4dc2ad71095",
+      "bytes": 162281,
+      "sha256": "72e9bc1ada8e45a5b32f1b4e03485900325beb08f16ec03a83c2eedf84dfc5ea"
+    },
+    "data/yahoo/OIH.parquet": {
+      "git_blob": "5d6361de45af5234ef8cd2b5231ecda5f275d809",
+      "bytes": 182184,
+      "sha256": "28518af022df3c2b5b4760408dc3fe64fe3e7fbe2d8681a4cac6c5671eb6dd05"
+    },
+    "data/yahoo/PA_F.parquet": {
+      "git_blob": "ed386d1d7ec5fcbdb7e19abef89f989cc5395d83",
+      "bytes": 146560,
+      "sha256": "ee6f22ee0ea0ea479757e63167abc7319df2809521bafe0ffc2d37ad828ebf8b"
+    },
+    "data/yahoo/PCY.parquet": {
+      "git_blob": "35e376fadfd4477a811be628732c4e29ca74262c",
+      "bytes": 113716,
+      "sha256": "920702ec13fc45453c4feb60c44e079113bdb6a33d13c77a1c951447ca5e8451"
+    },
+    "data/yahoo/PL_F.parquet": {
+      "git_blob": "3ac07632f6f11da5c17ad19cfc083141fc92213c",
+      "bytes": 143701,
+      "sha256": "5450e37cf6ed2d6432d54d15d2e0c5eede9d0e494bd77cbf14ed309aae57d68d"
+    },
+    "data/yahoo/QQQ.parquet": {
+      "git_blob": "fce75efb49d0c65efa00252a0735fb8c09b2377d",
+      "bytes": 201775,
+      "sha256": "45c9ba02bd86c98ebfc5b8de41569e6dc1270e2a5b72946c9165338573ec9007"
+    },
+    "data/yahoo/QUAL.parquet": {
+      "git_blob": "2e9ee2a0f4042cd487ad53ca0d8cc4a99cd6d4da",
+      "bytes": 93537,
+      "sha256": "39953a7640b25555973f2a068acfe2966e1499aeef80cd736a54239cb6d3409c"
+    },
+    "data/yahoo/RB_F.parquet": {
+      "git_blob": "68cc64e2409cda4f26709c5b9f05c968d2edf26e",
+      "bytes": 182322,
+      "sha256": "2eaf89c08dba332060afefbb95a9ac6deec189b3783b6333cbe39b4eb8c121bb"
+    },
+    "data/yahoo/RGI.parquet": {
+      "git_blob": "ccbc58752becd52b82e41dbb53288f690f57f743",
+      "bytes": 3930,
+      "sha256": "8a67daac38ca290eba5b9a2635137bab28fb9d756d11f3f3bf4a391b4153f98f"
+    },
+    "data/yahoo/RIO.parquet": {
+      "git_blob": "251a949c861c79c618c898fc2e7553ea1e110e96",
+      "bytes": 223374,
+      "sha256": "08a9e73820aaa6d45d973420b33ffef7ca9b9165da58ae3813636c5a8ac2dff1"
+    },
+    "data/yahoo/RSP.parquet": {
+      "git_blob": "0093bebd18906e8cca11a1dc2cc06d22996f8586",
+      "bytes": 163911,
+      "sha256": "9537c45cce565833760185f1870eeecc52fe244078b7cbc91ac59e140f088e7d"
+    },
+    "data/yahoo/RSPC.parquet": {
+      "git_blob": "9dfd50b3fedde33969367b92fc87b30f6b3bae33",
+      "bytes": 44835,
+      "sha256": "6782b26f7314a36dcf33fe2444501c43ae7d274ce8c4d51e49cc26b01caad7d1"
+    },
+    "data/yahoo/RSPD.parquet": {
+      "git_blob": "26eaad52ee7fd2e79cf76aa83c61637ccac4c75d",
+      "bytes": 120718,
+      "sha256": "6642856322b50e1b75c78bbc37bc0d1b9b381e028e2857b75651c24ff2881143"
+    },
+    "data/yahoo/RSPF.parquet": {
+      "git_blob": "d8c4f901c1df1ce9980f7eb9a30fa95652ac2c9d",
+      "bytes": 118749,
+      "sha256": "836d30c1099e25e8867e2ce39cc944f0f9af33a687cf639dbbc5b320df049cbf"
+    },
+    "data/yahoo/RSPG.parquet": {
+      "git_blob": "4aea6bc1741aac09636b731f42b0b281cef98cfa",
+      "bytes": 118962,
+      "sha256": "b1b08e3173388cfaff7d97331804304ef84d7e944b6aba445a726c69a17a0d64"
+    },
+    "data/yahoo/RSPH.parquet": {
+      "git_blob": "cd0ce43a3d2e5abdbbeb028ae32c6711a00083a1",
+      "bytes": 123083,
+      "sha256": "70092d4f57f0d989cbeb41d92f852e03c2501bea1318c1e3c831d7800f6ea1a9"
+    },
+    "data/yahoo/RSPM.parquet": {
+      "git_blob": "ab5ecc3dd9ae030e0d58993a2fdb223969344199",
+      "bytes": 117465,
+      "sha256": "cd5915fda2f031e032f066ac13b2a45afc89c26868d9799aa40869080cc9cbc7"
+    },
+    "data/yahoo/RSPR.parquet": {
+      "git_blob": "aceb6b507779b4e2a386ffe8b1cf54d5a74fce46",
+      "bytes": 66036,
+      "sha256": "0ddc86054347cd5a360019b727f5cba872b4752c35196a9818b83b5bdf170833"
+    },
+    "data/yahoo/RSPS.parquet": {
+      "git_blob": "931da0eb52ca650c209dcb2bbb1677a3ba6e2b12",
+      "bytes": 117341,
+      "sha256": "026dd9a57a322f6c341e1f2e0e2fadc455bae554b09b4c788e7faf3f148c745b"
+    },
+    "data/yahoo/RSPT.parquet": {
+      "git_blob": "636522669fefce67941dde8439a02d2aaedc0e2f",
+      "bytes": 127355,
+      "sha256": "d46f8c143c8f7467f91fbdbdeaa10479e6ab270946fe5e12523cb2c3dd2615f0"
+    },
+    "data/yahoo/RSPU.parquet": {
+      "git_blob": "34bdaa616cdab7f1a456644897e289392914d92d",
+      "bytes": 117423,
+      "sha256": "5e4376a569d53d6eb71ef2cbbbd5baffa68be46f531a4800af64c140be3b6608"
+    },
+    "data/yahoo/SB_F.parquet": {
+      "git_blob": "c2f9da572c76941ca7b25a477d18edc1ea86f2d0",
+      "bytes": 140648,
+      "sha256": "583cc94d7b08390bcc55bfa5c20afb1d0cb11d843b5078a72fea22b832a7f248"
+    },
+    "data/yahoo/SI_F.parquet": {
+      "git_blob": "6383d2a8a9617884fc19aa36cfab52e3011ae488",
+      "bytes": 154491,
+      "sha256": "be11093fc3da64f135c9b535eb451d32b38be5bd3244ce6bd9b4545efbfde600"
+    },
+    "data/yahoo/SMH.parquet": {
+      "git_blob": "0c5a367def5be734b08ef9c078e5f52deaf39024",
+      "bytes": 179692,
+      "sha256": "142f6d2c99f2bb44c2a31d29442ad11c19453261f82feac71899d4cbfebbc515"
+    },
+    "data/yahoo/SOL-USD.parquet": {
+      "git_blob": "0ce90127aec6f575c14a1e37a76bc8174036f17f",
+      "bytes": 76720,
+      "sha256": "f57b7dc657e902edb1720d97d3feef42533e1a89cad3aa9ddc2355d1ad1e370f"
+    },
+    "data/yahoo/SONY.parquet": {
+      "git_blob": "2087c9907bc4113f9c4ef7772df6cdec8c6724ae",
+      "bytes": 312732,
+      "sha256": "6ae96569b42f932a38b4f0f78351a603ed0b375446fca3a22382994c3defd639"
+    },
+    "data/yahoo/SOXX.parquet": {
+      "git_blob": "5c6a866d3b31ce8035c01c88409caf167e7da750",
+      "bytes": 173378,
+      "sha256": "b52fd652f99f3f2a0feb6c6a898f949e2d06aa043626df2f899699c8f2dd3c04"
+    },
+    "data/yahoo/SPHB.parquet": {
+      "git_blob": "f58c0e624167eedcde66ae15c55558ff909aa1ba",
+      "bytes": 102288,
+      "sha256": "469b7e9e43d4c89105bebd9a8d3fe9d2960f9889cc461d6085a88da7ea5fc063"
+    },
+    "data/yahoo/SPLV.parquet": {
+      "git_blob": "d813e687f0c3826261ddf57dc9122b3c99b98645",
+      "bytes": 104773,
+      "sha256": "53c4d7bd87362fc7662f78228ccb16fcefaed2557a3093b4b221cbb0209f47bc"
+    },
+    "data/yahoo/SPY.parquet": {
+      "git_blob": "7c7456429465c6e41875c56466befd3c7fc3e06c",
+      "bytes": 245024,
+      "sha256": "a017fb423edabf6e7331fe65978ea63c9088c7624e6c4c621dc5526fd9acc048"
+    },
+    "data/yahoo/SQM.parquet": {
+      "git_blob": "541d8aa6a90e4553fa38fa8098210695855b6e44",
+      "bytes": 207429,
+      "sha256": "f2b0cf46737f5e06582a97942639365277aeb00fe4d293a504e3621f8cf81da2"
+    },
+    "data/yahoo/TAN.parquet": {
+      "git_blob": "98a6b46f490b238ae0eee3378eb9562474882f5b",
+      "bytes": 122691,
+      "sha256": "3b40988c68e3f9eaff499deb18412558c101529cfce3c62a32c6b3736462dd35"
+    },
+    "data/yahoo/TIP.parquet": {
+      "git_blob": "b2d06008404e6612915d5b1e2a524883d0faa99d",
+      "bytes": 143593,
+      "sha256": "51612a786507247439c49b924991425bfd1da84a105ef8f20059883639a951f9"
+    },
+    "data/yahoo/TLT.parquet": {
+      "git_blob": "97c7a013f0b5717409795ed264d6847aa4ff4ff5",
+      "bytes": 166250,
+      "sha256": "73df7cedf94d36158511abc31d8fa97c15293d0d3e900765ec26018cd1c6a75c"
+    },
+    "data/yahoo/TUR.parquet": {
+      "git_blob": "27c160375441649805ac18ffe8934bd8979f4253",
+      "bytes": 120402,
+      "sha256": "cbecdd831d6bd4abd17a0a6c6e55fbfa213b755aa5b746c40ac03347b6551e43"
+    },
+    "data/yahoo/USDBRL_X.parquet": {
+      "git_blob": "db3cf0616f344b4d1033160ff21eafd24ca4c115",
+      "bytes": 119590,
+      "sha256": "a3b75109d8d128785c40e1de109d0a8add5ecb7ca4e9db9409e448d02f3ff3ad"
+    },
+    "data/yahoo/USDCAD_X.parquet": {
+      "git_blob": "fb6ab78d4b69fc2a4c8ae138a405b7056879678c",
+      "bytes": 122914,
+      "sha256": "112eb7be8ff7aa1b922cd987baadbba83f9d3654e45d92942334bf9b83c7d22d"
+    },
+    "data/yahoo/USDCHF_X.parquet": {
+      "git_blob": "38b8904c41937b30e06a8ed6bbc1c4ab6e7f65ea",
+      "bytes": 121970,
+      "sha256": "bc47879117d431bfe3815f0117e183bc1876464cdbd2d51bc533adc57ff3050d"
+    },
+    "data/yahoo/USDCLP_X.parquet": {
+      "git_blob": "5e8e47963468fac9991106a1dba6bb11eaa49e2b",
+      "bytes": 121551,
+      "sha256": "1036847164d3a00fcb1bf09abf8290a4df3f5b053ae916fc890000f7eb8c1d89"
+    },
+    "data/yahoo/USDHKD_X.parquet": {
+      "git_blob": "c88ee60b2f0384427f66e0386524237942f85318",
+      "bytes": 96942,
+      "sha256": "d3d27e92ef31475bd0cc75d55a34b8ba0279b03039343d9c4aba0d6f94433b4a"
+    },
+    "data/yahoo/USDIDR_X.parquet": {
+      "git_blob": "4e273b0a504e671d71535216619568bea2d23d03",
+      "bytes": 124291,
+      "sha256": "3335695f4fbbbefb0cbedb4292942ca7f85fe017eedfe647123a14f553a60a40"
+    },
+    "data/yahoo/USDJPY_X.parquet": {
+      "git_blob": "e5185131d46bd6dc2786f3c48d9fb187df402e2b",
+      "bytes": 157375,
+      "sha256": "6ed41d0d37a98b1bfa74ff850473b870375d9f632bd0009289104d8493444fdd"
+    },
+    "data/yahoo/USDMXN_X.parquet": {
+      "git_blob": "2700626b35c9255f5d7d79e12d7e7d8d71d7f28d",
+      "bytes": 130745,
+      "sha256": "1541a329296f4a89ff7152a5ae07c0aad93782bc109be0c9e624a68af5a37f7b"
+    },
+    "data/yahoo/USDPLN_X.parquet": {
+      "git_blob": "78fc1d7767b97e602fd9cc019f46094591f8eccf",
+      "bytes": 131546,
+      "sha256": "351a88fcce045db0c18f8d002b51ae2b9845f203525a909f30b366b48a25378c"
+    },
+    "data/yahoo/USDSEK_X.parquet": {
+      "git_blob": "e11c17a3a557a2fead0c71bbdcd77f768326295c",
+      "bytes": 143291,
+      "sha256": "b6b109dee6cdac68dbcf6f58c75b8e1c2c4eed12819222ab9bad303e850de015"
+    },
+    "data/yahoo/USDSGD_X.parquet": {
+      "git_blob": "889edb976a69a398b0e008241c250bab47671019",
+      "bytes": 120279,
+      "sha256": "219f95fa29aacd3b78a19a4640364bec7bd682b98654a74780519eb718b89c8e"
+    },
+    "data/yahoo/USDTRY_X.parquet": {
+      "git_blob": "276ad2cde9b6df8415011400bac4d92d44250fa1",
+      "bytes": 124754,
+      "sha256": "f67a41c7113521318eb4699787d4fdc0247ef6e2cf6b7dcde92f635e592e784f"
+    },
+    "data/yahoo/USDZAR_X.parquet": {
+      "git_blob": "33802accf079b696c9ef50dfd9e52f3a31eda6b7",
+      "bytes": 134050,
+      "sha256": "35928e94645dde7e57aa6abf50bf7d74e03e0ac980342f36ae5f6527f58a31e3"
+    },
+    "data/yahoo/USMV.parquet": {
+      "git_blob": "8bc71303547e3c608ed4662b6b676d00e8f7ca88",
+      "bytes": 102393,
+      "sha256": "3327fa4227cea40895a2c4662e07d689541ffa0c2fcfa69725fa98f2c26b5bd7"
+    },
+    "data/yahoo/VALE.parquet": {
+      "git_blob": "5bf6a5cdb55280bddd754e9812fe45537cedde6b",
+      "bytes": 164616,
+      "sha256": "bd9c00341d692f6c717195ab7c0594ad05a08a31c7231fa4054634127a31bbc5"
+    },
+    "data/yahoo/VGK.parquet": {
+      "git_blob": "1d185f1652f8c7973b8beb6b916c92bab4e1ef76",
+      "bytes": 143334,
+      "sha256": "c9e87f2cb3a659aab454b61690dcec7aaa3f4adf1b284c6617363f564540300a"
+    },
+    "data/yahoo/VPL.parquet": {
+      "git_blob": "4541b25a0c738d4a9fa50b5bc356ddaac9858ad3",
+      "bytes": 136522,
+      "sha256": "43dd7c76671a6e5aba138337d498be5c355132703b30d60cf6b828784277494f"
+    },
+    "data/yahoo/VWOB.parquet": {
+      "git_blob": "662ab2366535ae0c251596adc14270dff71fce58",
+      "bytes": 81702,
+      "sha256": "33122ae3dcdf116f8ddbf17fc15ebd94d8f715a88cf636dbbf0a930b041c3a89"
+    },
+    "data/yahoo/VXUS.parquet": {
+      "git_blob": "3b54d398694796e78d79789b073cabe1447ba3a5",
+      "bytes": 103646,
+      "sha256": "2e9514251d87d985f0da7e0afba1c948e25f33b50d4b2bc6820eb677afef699d"
+    },
+    "data/yahoo/XBI.parquet": {
+      "git_blob": "1c62638f91419f930b91b8c08d57d938e1ca1c5d",
+      "bytes": 146741,
+      "sha256": "7806e519598182bae7e990f7a937b85d8932dd99437a741e681d975211d25d0a"
+    },
+    "data/yahoo/XHB.parquet": {
+      "git_blob": "bf424f94a16e084a120436e98f21df3696964849",
+      "bytes": 142847,
+      "sha256": "0a18c5980a4baaa46c2d86a0cfe538ff5cdf5398fd2cb66ec1b00d9f6e07eede"
+    },
+    "data/yahoo/XLB.parquet": {
+      "git_blob": "dd3045366b9bd43114d650e44dc8d84a1c3bfdba",
+      "bytes": 188512,
+      "sha256": "1527abcf47cffca3d9db2a4735bb41f05ba4ca99b70a15539831c12bc9f9ab5c"
+    },
+    "data/yahoo/XLC.parquet": {
+      "git_blob": "cffe689a1491dc7513f128a4ec22d39279e35803",
+      "bytes": 60812,
+      "sha256": "cd7c7cc1757a2461a957024aedaf7a9b4500a814fd136f4b366a4b5a0725b36e"
+    },
+    "data/yahoo/XLE.parquet": {
+      "git_blob": "be38bef6eb7c72fc396341c99e1c40a36e35e3f6",
+      "bytes": 194059,
+      "sha256": "52d572ac8fe35e11e325b07c7e4b7b8c4144ebd87e8db5026ec7f5a4cc5c1fe5"
+    },
+    "data/yahoo/XLF.parquet": {
+      "git_blob": "cf5a9e7645907c9ff45cda88216f9015e0177fb5",
+      "bytes": 189471,
+      "sha256": "b56d8c084041e8450bcbfe2150ab55d9e50844e003da4cd3b68bba1a60fc7984"
+    },
+    "data/yahoo/XLI.parquet": {
+      "git_blob": "e3e58ce2472f29978dec0c0e42f647306db0f5ce",
+      "bytes": 189643,
+      "sha256": "59f8a655e091e5ca0b8eebd75324862853ed6bb307c82cd3725567a56196d74b"
+    },
+    "data/yahoo/XLK.parquet": {
+      "git_blob": "968d9102799f8c6aafd475b2933b330d7626514f",
+      "bytes": 190432,
+      "sha256": "889aabbd19939f81a61446d010eefd73d41b32f76d3ba6d079d43b0944e78e1d"
+    },
+    "data/yahoo/XLP.parquet": {
+      "git_blob": "0116965fcc839c32340f0cddc17ab697387964d1",
+      "bytes": 181953,
+      "sha256": "c3d621c625594ad66861018d664fac3398174e8db853f95bfef9558a51b3463d"
+    },
+    "data/yahoo/XLRE.parquet": {
+      "git_blob": "a3ad36d682752ff3a75310a86c27f281efd756bb",
+      "bytes": 72913,
+      "sha256": "5d1b961c0b105ab1f7626c36aadb9264da2f5d3e3c939bcd41678041d09e8726"
+    },
+    "data/yahoo/XLU.parquet": {
+      "git_blob": "218489ee7923e2e6ba352bf2fd37cef5d9378f90",
+      "bytes": 186820,
+      "sha256": "2e9e915a9d18cfd4beebbfc84af93ecb52aa87d7ff107e660d61564687808dde"
+    },
+    "data/yahoo/XLV.parquet": {
+      "git_blob": "893231b3b2ea28c97ffcbcca4dadfe9437013817",
+      "bytes": 184703,
+      "sha256": "352b2141cec3bc93accefeb7d1d8c5c50b2f718514b2f3c369eba16fa1b33b50"
+    },
+    "data/yahoo/XLY.parquet": {
+      "git_blob": "b027f1ea5145be9b8b4081ccb224010e620d2c0c",
+      "bytes": 190101,
+      "sha256": "a7138de990890521ce1f7a06885413e996e957eb4dfa9518a8bfb3b0b944a2a0"
+    },
+    "data/yahoo/XME.parquet": {
+      "git_blob": "8efc50fb98d037b354cc05021e7b0b17b2dd6e26",
+      "bytes": 140524,
+      "sha256": "f31f3ddabd971acd9c618c3ec3f38781fce45a88cf03926ae0bc294a4165fe0c"
+    },
+    "data/yahoo/XOP.parquet": {
+      "git_blob": "f8e3a98729e7831a2cf73bcb13bf03aaadb4be1c",
+      "bytes": 144684,
+      "sha256": "3eaa988eacd66095aab63a8a75a5343a06d472544b7f21069a47efb03dbc2585"
+    },
+    "data/yahoo/XRT.parquet": {
+      "git_blob": "f9d5b99fa54dace2536c9333f358a2e8c61a1cee",
+      "bytes": 143258,
+      "sha256": "4ab1ec8c5f4716c2dbafec31a7396438f48af215d0b0836caff2a1104f13659a"
+    },
+    "data/yahoo/ZC_F.parquet": {
+      "git_blob": "112aa985ef3ad4dfc5cbd92f25c272e59a57ce3b",
+      "bytes": 126438,
+      "sha256": "a44da3b58f8407301d96e12f124ae50b262b897fc12b8fad18e36f6eac246910"
+    },
+    "data/yahoo/ZQ_F.parquet": {
+      "git_blob": "af2d5a2bc30ddfb236d9493ae1d9686219a7cfab",
+      "bytes": 107448,
+      "sha256": "fcbf1d07e1fd562c26156515c31151ea0332e8fe5b44cfee51871ac352979582"
+    },
+    "data/yahoo/ZS_F.parquet": {
+      "git_blob": "ca66d5d1d2a89b9531b60b1d430637bdfaa71e2f",
+      "bytes": 136286,
+      "sha256": "b56b928b9ec33e2f31d6652e2ec946a250a314f61951d9e1e3a430534e7a2c30"
+    },
+    "data/yahoo/ZW_F.parquet": {
+      "git_blob": "36ceefd1317f228a5313cd2e63ebe2eafb8f2ed2",
+      "bytes": 127778,
+      "sha256": "8b6d90c64f4b56e51e0279b22e1f0e95aa11c1b0925fafe6f404e8ca16cbcdbd"
+    },
+    "data/yahoo/_DJI.parquet": {
+      "git_blob": "c24a09c74a8027825652da74f1211ce4a68260a5",
+      "bytes": 196816,
+      "sha256": "21957bf271bd27a57cd4631124a5c90f95e4c2ac2083a1ae68947911b02f563b"
+    },
+    "data/yahoo/_GSPC.parquet": {
+      "git_blob": "412527a7067ddf8f8654c51016e2fef0ff765112",
+      "bytes": 598913,
+      "sha256": "624f5d9c700ffc9ad8417b0fb490351c7490cb90a3b57992a663f1903dbdc291"
+    },
+    "data/yahoo/_KS11.parquet": {
+      "git_blob": "6fa84ec6d33d8b9b9727a59eea04480babaec04a",
+      "bytes": 200663,
+      "sha256": "87719cc67dd427f3e7c50ed9016d404c30005213369fdad7a03d85580e6ffd81"
+    },
+    "data/yahoo/_MOVE.parquet": {
+      "git_blob": "533edec91a55dc7b25a58f87eecd5313f0522fbd",
+      "bytes": 166385,
+      "sha256": "e0b542118a4c084a350483e9062b4b278e7216518bf626c4489253bf7f071212"
+    },
+    "data/yahoo/_RUT.parquet": {
+      "git_blob": "975743e7c3996f5da72c31b4882f0355faffa7e9",
+      "bytes": 297493,
+      "sha256": "9a1bcba5dbe73f43ff32fbba3314725be5a6297a11b3d7d921cfc054fb4b3025"
+    },
+    "data/yahoo/_SOX.parquet": {
+      "git_blob": "f8e80545558f4a8ec35f7323258e27ebf24c9059",
+      "bytes": 185230,
+      "sha256": "75d52761e221a513371c918750826705c9bfcc2e2af21343965a8c616bae392d"
+    },
+    "data/yahoo/_VIX.parquet": {
+      "git_blob": "d705d75473ff7727f593ad3ae8d3d974263bb1c1",
+      "bytes": 191593,
+      "sha256": "487e33d099b6b7150b7588959c49c238ba1ec473b935067384a8e6b63e264b27"
+    },
+    "data/yahoo/_VIX3M.parquet": {
+      "git_blob": "e131e926c38f6adfc9a7616694154b8840491fcc",
+      "bytes": 119329,
+      "sha256": "a9de2cb078b4b3841878e2f836959f5a0c5330d1ef0ab99e4512ed7856d59c3b"
+    },
+    "data/yahoo/_VIX9D.parquet": {
+      "git_blob": "f75bac65c1d13ebc0c8def4591273f806412d68b",
+      "bytes": 98487,
+      "sha256": "6334bb242702555dca06174121adadd8230ab00913546b32563a32598b830f8e"
+    },
+    "data/yahoo/_VVIX.parquet": {
+      "git_blob": "0ce4157606eb83531f2a1c2b406150fa37ba2814",
+      "bytes": 147652,
+      "sha256": "069b94047121e4ab88a453ddd3fb54f693625eafb37e56fe3877ec60e09f18d2"
+    }
+  },
+  "input_count": 415,
+  "spvector_input_count": 398,
+  "input_hashes_unchanged_after": true,
+  "spvector_readings": {
+    "as_of": "Nov 03, 2026",
+    "price": 754.3499755859375,
+    "score": 33,
+    "allocation_as_of": "2026-11-03",
+    "legs_as_of": "2026-11-03",
+    "equity_w": 100,
+    "cash_w": 0,
+    "auxiliary_allowed": false,
+    "overlay": {
+      "enabled": false
+    },
+    "overlay_log": {
+      "rows": 435,
+      "days": 81,
+      "vetoes": 0,
+      "first": "Jun 12, 2026",
+      "last": "Nov 03, 2026"
+    },
+    "legs": [
+      {
+        "key": "drawdown",
+        "value": 20.0,
+        "points": 5.7,
+        "weight": 1.0,
+        "lag": 10,
+        "active": true
+      },
+      {
+        "key": "recession",
+        "value": 3.6,
+        "points": 1.0,
+        "weight": 1.0,
+        "lag": 22,
+        "active": true
+      },
+      {
+        "key": "hy_widening",
+        "value": 85.5,
+        "points": 12.2,
+        "weight": 0.5,
+        "lag": 3,
+        "active": true
+      },
+      {
+        "key": "nfci",
+        "value": 0.0,
+        "points": 0.0,
+        "weight": 0.5,
+        "lag": 5,
+        "active": true
+      },
+      {
+        "key": "liquidity",
+        "value": 100.0,
+        "points": 14.3,
+        "weight": 0.5,
+        "lag": 0,
+        "active": true
+      }
+    ]
+  },
+  "market_asof": "2026-11-03",
+  "market_built_at": "2026-11-04T08:22:46.894058+00:00",
+  "outputs": {
+    "site/market_structure.html": {
+      "bytes": 221321,
+      "sha256": "ba01eb5e681e72a805206da80a111d31a0eb4ac4c4eb36d98133afcf2dab66df"
+    },
+    "site/stage_analysis.html": {
+      "bytes": 251140,
+      "sha256": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2"
+    },
+    "site/spvector.html": {
+      "bytes": 362039,
+      "sha256": "faf1dcca2a5916e0ce4a6792b607fc755d80797b3ec932c9327554247b3b789e"
+    }
+  },
+  "changed_of_30_D06_source_paths": [
+    "site/market_structure.html",
+    "site/spvector.html"
+  ],
+  "prior_proof": {
+    "docs/pr-crops/d06-macro-20261104/manifest.json": {
+      "members": 63,
+      "aggregate_sha256": "68bbf8be117fe16a002368a214a5ee0a0709c8784ae70385f1f5d58dc5d7b0f9",
+      "unchanged": true
+    },
+    "docs/pr-crops/d06-macro-ci-20261104/manifest.json": {
+      "members": 204,
+      "aggregate_sha256": "7d72bbf78ee75edfd01942882db6bbb85d221b9251f3615151ed20bc548c6762",
+      "unchanged": true
+    }
+  },
+  "producer_auxiliary_outputs_written": false
+}
