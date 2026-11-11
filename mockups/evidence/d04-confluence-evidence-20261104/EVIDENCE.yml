@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/confluence_screener.html.j2
+  - site/confluence_screener.html
+manifest: mockups/evidence/d04-confluence-evidence-20261104/manifest.json
