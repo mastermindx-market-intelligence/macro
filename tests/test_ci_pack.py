@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_728),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6009,6 +6009,54 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-11-11 (PR #10197, genuine shared-file conflict after qualification):
+    Preserve six accepted issuer/cache product and regression blobs exactly.
+    Receiving main8d6a5e11 retains the existing Forex command and later provenance.
+    Keep every current command and both complete history regions; compose only
+    this carrier's original two suite arguments on data-base-shim.
+    The planner/estimator blobfdd099b8 is identical at B, H and receiving M.
+    The original measured +4 contribution and its qualified H remain scoped;
+    add +4 once to current5966/5989/5724 for5970/5993/5728.
+    Preserve137/138/131job limits, tenpacks, selectors and runtime controls.
+    This is exact contribution conservation and source arithmetic, not a new
+    planner execution or a manual replacement for a deferred controller refresh.
+    Current natural hosted qualification is still owed; original900-second
+    replay, descendants and14unrun UNKNOWN are not replayed or settled.
+
+    2026-11-11 (PR #10197, preserve source identity before cache effects):
+    Compose current main f5093553 and both full histories. The existing
+    data-base-shim owner retains all main commands and both original test
+    references: weight38->42 (+4), commands7, tokens15->17 and895characters.
+    Apply that original +4 once to5966/5987/5724:5970/5991/5728.
+    New embedded-CIK regressions extend the already-enrolled identity file.
+    Preserve137/138/131jobs, tenpacks, every assertion and selection limit.
+    Source accounting only; successor natural proof remains required.
+
+    2026-11-09 (PR #10197, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    Keep the landed data-base-shim ledger and add the original two
+    builder-suite arguments. Their unchanged marginal+4
+    composes current5948/5969/5706 as5952/5973/5710.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #10197, current-main F09-preserving composition):
+    Preserve the four accepted availability/identity feature and test blobs.
+    Current main b84bd66 has400 owners and the landed beneficial-ownership
+    argument in the separate SharedShell command. Keep that command exact;
+    add only this carrier's two full-suite arguments to the builder command.
+    Current data-base-shim weight25->29: five commands,10->12 test tokens,
+    576->657 command characters, unchanged bucket0 and estimator functions.
+    Add own+4 once to5945/5966/5703 for5949/5970/5707. Preserve399 sibling
+    blocks, jobs137/138/131, ten packs,197 curated jobs and all current history.
+    The original19-line measured paragraph remains at its original7352 anchor.
+    This is static current-source conservation, not a new paired planner run.
+    Natural exact-successor CI and scoped source release remain required.
+    Original900-second replay/descendants and14unrun UNKNOWN stay fenced.
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
     lifecycle coverage and qualified Playwright dependency. Keep all
@@ -6259,6 +6307,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
     Source: PR10180 issuecomment6718493720. Original historical and
     scientific limitations remain; natural CI must qualify publication.
+
+    2026-11-08 (PR #10197, exact measured availability/identity enrollment):
+    preserve the four accepted feature/test objects from b2ab244d through
+    current head76880d29 and compose them onto actual main067c320.
+    Own contract-delta128593507088/run42435554017 measured three introduced,
+    zero inherited failures against basef762b33d: index5920->5924,
+    free5939->5943, Prophet5678->5682, with no newly selected jobs.
+    The complete data-base-shim preimage is unchanged on current main.
+    Restore only the two full-suite arguments: five commands,9->11 test
+    tokens,541->622 command characters, same bucket0, weight23->27.
+    Current main already retains landed #7352's separate free-content+2;
+    add this measured+4 once to current5920/5941/5678 for5924/5945/5682.
+    Keep all395 owners and394 other blocks, job ceilings137/138/131,
+    ten packs, #10735's split, #8240 enrollment, runtime controls and all
+    prior provenance. No unmerged sibling contribution is imported.
+    This is measured carrier-delta conservation plus current-source arithmetic,
+    not a newly executed paired planner/test result. Natural combined proof
+    must qualify this exact source; old900-second base/14unrun UNKNOWN stays.
+    Source: PR10197 issuecomments6706001170 and6716537008.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its
@@ -10013,3 +10080,4 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+

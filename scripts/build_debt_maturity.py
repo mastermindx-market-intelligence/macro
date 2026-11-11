@@ -75,6 +75,7 @@ _UNSET: Any = object()
 # Only these tags are ever requested -- the "bounded" half of "bounded
 # ingestion producer": this module has no path to any other XBRL concept.
 from engine.debt_maturity import BUCKETS as _BUCKETS  # noqa: E402
+from engine.debt_maturity import _canonical_cik, _canonical_cik_or_none  # noqa: E402
 
 _TAGS = tuple(tag for _key, tag, _en, _zh in _BUCKETS)
 
@@ -201,11 +202,11 @@ def resolve_cik(ticker: str) -> str | None:
         raw_cik = ticker_cik_map.get(ticker)
         if raw_cik is None:
             return None
-        # a float64 parquet column (e.g. 320193.0) must round-trip cleanly --
-        # never string()-and-strip a float repr, which leaves a trailing ".0".
+        # Use the same exact identity grammar as the ledger. _canon accepts
+        # integral parquet floats (320193.0), without truncating fractions or
+        # coercing booleans into another issuer's CIK.
         try:
-            cik_int = int(float(raw_cik))
-            return _canon(cik_int)
+            return _canon(raw_cik)
         except (TypeError, ValueError):
             return None
     return None
@@ -256,6 +257,16 @@ def _write_cache_from_full_companyfacts(cik: str, full_companyfacts: Mapping[str
     reported" or a fabricated "not loaded yet".
     """
     try:
+        # Validate before slimming erases the source identity or any cache effect.
+        # Missing embedded CIK remains supported; a present invalid or foreign one
+        # must never be relabelled as the requested issuer, even over a good cache.
+        cik = _canonical_cik(cik)
+        if full_companyfacts is not None:
+            if not isinstance(full_companyfacts, Mapping):
+                return False
+            if ("cik" in full_companyfacts
+                    and _canonical_cik_or_none(full_companyfacts["cik"]) != cik):
+                return False
         cache_dir = _cache_dir()
         cache_dir.mkdir(parents=True, exist_ok=True)
         now = _utc_now_iso()
@@ -393,3 +404,4 @@ def load_debt_maturity_facts(ticker: str) -> tuple[str | None, dict[str, Any] | 
     if cached.get("confirmed_no_filings"):
         return cik, None, "confirmed_no_filings"
     return cik, cached, "loaded"
+
