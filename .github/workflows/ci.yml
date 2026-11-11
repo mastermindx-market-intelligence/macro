@@ -3286,6 +3286,9 @@ on:
       # edit that weakened an interlock assertion would otherwise fire no run —
       # the exact half-registration this list exists to close.
       - "tests/test_finviz_tree_refresh.py"
+      # The member perf archive suite (2026-11-11) — same subject and same
+      # half-registration reason as its two siblings above.
+      - "tests/test_member_perf_archive.py"
       - "tests/test_notify_turn_events.py"
       - "tests/test_polygon_intraday.py"
       - "tests/test_thetadata_tape_sessions.py"
