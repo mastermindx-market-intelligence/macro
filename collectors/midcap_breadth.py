@@ -21,10 +21,8 @@ class MidCap400BreadthAdapter(BreadthAdapter):
     group = "midcap_breadth"
     session_calendar = "US"  # observation dates follow the cash/Connect session
 
-    def __init__(self) -> None:
-        self.cfg = config.load()["midcap_breadth"]
-        self.ycfg = config.load()["yahoo"]
-        self.cache_path = config.data_dir() / "midcap_breadth" / "_closes_cache.parquet"
+    def __init__(self, *, breadth_config=None, yahoo_config=None) -> None:
+        super().__init__(breadth_config=breadth_config, yahoo_config=yahoo_config)
 
     def constituents_checked(self, members):
         # S&P 400 carries ~400 names; anything under 350 means the scrape broke

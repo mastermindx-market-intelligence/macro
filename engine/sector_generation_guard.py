@@ -108,3 +108,63 @@ def session_alignment(artifact_session, consumer_session, *, today=None) -> dict
         status, reason = "aligned", "aligned"
     return {**out, "status": status, "reason": reason,
             "artifact_session": _fmt(art), "consumer_session": _fmt(con)}
+
+
+def rotation_context_from_inputs(*, consumer_session, rotation_events, fragmentation, today) -> dict:
+    """Original guarded rotation projection over captured values and explicit day.
+
+    Acquisition owns missing/unreadable input classification; None is explicit absence.
+    The composer supplies its admitted evaluation day. No file or wall-clock lookup
+    occurs here, and aligned nested rows are detached from captured auxiliary values.
+    """
+    from copy import deepcopy
+    import logging
+
+    def _aligned_copy(align: dict, ok_payload, data_key) -> dict:
+        out = dict(align)
+        out[data_key] = None
+        if align["status"] == "aligned" and isinstance(ok_payload.get(data_key), (list, tuple)):
+            out[data_key] = list(ok_payload[data_key])
+        return out
+
+    try:
+        consumer = consumer_session
+
+        ctx: dict = {"schema": "sector_cycles.rotation_context.v1"}
+
+        # --- events ---
+        ev = deepcopy(rotation_events)
+        if ev is None:
+            ctx["events"] = {"status": "missing_input", "reason": "missing_input",
+                             "artifact_session": None,
+                             "consumer_session": parse_session(consumer).isoformat()
+                             if parse_session(consumer) else None,
+                             "clock": "settled_daily_session", "active": None}
+        elif ev.get("schema") != "rotation_events.v1" or ev.get("ok") is not True:
+            ctx["events"] = {"status": "invalid_payload", "reason": "invalid_payload",
+                             "artifact_session": None,
+                             "consumer_session": parse_session(consumer).isoformat()
+                             if parse_session(consumer) else None,
+                             "clock": "settled_daily_session", "active": None}
+        else:
+            ctx["events"] = _aligned_copy(
+                session_alignment(ev.get("as_of"), consumer, today=today), ev, "active")
+
+        # --- fragmentation ---
+        fr = deepcopy(fragmentation)
+        if fr is None:
+            ctx["fragmentation"] = {"status": "missing_input", "reason": "missing_input",
+                                    "artifact_session": None,
+                                    "consumer_session": parse_session(consumer).isoformat()
+                                    if parse_session(consumer) else None,
+                                    "clock": "settled_daily_session", "sectors": None}
+        else:
+            ctx["fragmentation"] = _aligned_copy(
+                session_alignment(fr.get("as_of"), consumer, today=today), fr, "sectors")
+
+        return {"rotation_context": ctx, "rotation_alignment_version": 1}
+    except Exception as e:  # noqa: BLE001 — projection never breaks the build
+        logging.getLogger(__name__).warning("sector_cycles: rotation_context projection failed (%s) — stamped unavailable", e)
+        return {"rotation_context": {"schema": "sector_cycles.rotation_context.v1",
+                                     "status": "unavailable", "reason": "projection_error"},
+                "rotation_alignment_version": 1}
