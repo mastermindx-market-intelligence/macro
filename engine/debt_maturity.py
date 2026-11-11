@@ -179,7 +179,7 @@ def extract_maturity_ladder(
         return _empty_result("no_filings", canon_cik, as_of)
 
     facts_cik = _canonical_cik_or_none(companyfacts.get("cik"))
-    if facts_cik is not None and facts_cik != canon_cik:
+    if "cik" in companyfacts and facts_cik != canon_cik:
         return _empty_result("identity_mismatch", canon_cik, as_of)
 
     periods = _candidate_periods(companyfacts)
@@ -351,3 +351,4 @@ def extract_maturity_ladder_as_of(
         filtered["facts"] = facts
 
     return extract_maturity_ladder(filtered, cik=cik, as_of=as_of)
+
