@@ -45,7 +45,9 @@ from engine.validation import (
     newey_west_tstat,
     ret_moments,
 )
-from engine.signal_foundry.spec import construction_hash
+from engine.signal_foundry.spec import (
+    construction_hash, excess_return_contract, TargetContractError, EXCESS_TARGET_VERSION,
+)
 from engine.signal_foundry.transforms import apply_pipeline
 
 BATTERY_VERSION = "sf-battery-1"
@@ -152,19 +154,36 @@ def _build_target(spec: dict, repo_root: Path, feature_index: pd.DatetimeIndex) 
     horizon_d = int(target_spec["horizon_d"])
     tgt_path = target_spec["path"]
 
+    if kind == "excess_return":
+        # The explicit target contract below supersedes the legacy baseline label:
+        # price-benchmark simple returns on target bars, never the strategy baseline.
+        contract = excess_return_contract(spec, repo_root)
+        asset = _load_raw_price(contract["asset"], repo_root, strict=True)
+        benchmark = _load_raw_price(contract["benchmark"], repo_root,
+                                    strict=True, allow_missing=True)
+        if asset.index.tz != benchmark.index.tz:
+            raise TargetContractError("asset and benchmark clocks must use the same timezone")
+        # Reindex BEFORE shifting: h refers to target bars, not benchmark observations.
+        # Exact shared endpoints only; no interpolation, fill or calendar compression.
+        matched = benchmark.reindex(asset.index)
+        with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+            asset_return = asset.shift(-horizon_d) / asset - 1.0
+            benchmark_return = matched.shift(-horizon_d) / matched - 1.0
+            excess = asset_return - benchmark_return
+        if any(np.isinf(s.to_numpy()).any() for s in (asset_return, benchmark_return, excess)):
+            raise TargetContractError("nonfinite derived return; benchmark labels unavailable")
+        target = excess.dropna()
+        target.name = f"target_excess_return_{horizon_d}d"
+        target.attrs["target_contract"] = contract
+        return target
+
     tgt_entry = {"path": tgt_path, "column": target_spec.get("column", "Close")}
-    # Many target files store 'Close' or 'Adj Close' or similar
+    # Legacy non-excess kinds retain their existing data-column contract.
     tgt_series = _load_raw_price(tgt_entry, repo_root)
 
     if kind == "absolute_return":
         fwd = tgt_series.pct_change(horizon_d).shift(-horizon_d)
         target = fwd.dropna()
-
-    elif kind == "excess_return":
-        baseline_name = spec.get("baseline", "buy_and_hold")
-        fwd_asset = tgt_series.pct_change(horizon_d).shift(-horizon_d)
-        baseline_fwd = _compute_baseline_fwd(tgt_series, baseline_name, horizon_d)
-        target = (fwd_asset - baseline_fwd).dropna()
 
     elif kind == "drawdown_onset":
         # indicator: max drawdown within next horizon_d bars >= 5%
@@ -206,7 +225,8 @@ def _build_target(spec: dict, repo_root: Path, feature_index: pd.DatetimeIndex) 
     return target
 
 
-def _load_raw_price(entry: dict, repo_root: Path) -> pd.Series:
+def _load_raw_price(entry: dict, repo_root: Path, *, strict: bool = False,
+                    allow_missing: bool = False) -> pd.Series:
     """Load raw price series, trying common column names."""
     path = Path(entry["path"])
     if not path.is_absolute():
@@ -224,7 +244,28 @@ def _load_raw_price(entry: dict, repo_root: Path) -> pd.Series:
         raise ValueError(f"Unsupported target file format: {path.suffix}")
 
     if not isinstance(df.index, pd.DatetimeIndex):
+        if strict and pd.api.types.is_numeric_dtype(df.index.dtype):
+            raise TargetContractError("price clock must contain timestamps, not numeric row identifiers")
         df.index = pd.to_datetime(df.index)
+    if strict:
+        if df.index.hasnans or not df.index.is_unique or not df.index.is_monotonic_increasing:
+            raise TargetContractError("price clock must contain unique increasing timestamps")
+        col = entry.get("column")
+        if col not in df.columns or not df.columns.is_unique:
+            raise KeyError(f"Declared price column {col!r} is absent or ambiguous in {path.name}")
+        series = df[col]
+        if (pd.api.types.is_bool_dtype(series.dtype)
+                or not pd.api.types.is_numeric_dtype(series.dtype)
+                or pd.api.types.is_complex_dtype(series.dtype)):
+            raise TargetContractError("declared price column must be real numeric, never boolean")
+        series = series.astype(float)
+        observed = series.dropna()
+        if not np.isfinite(observed.to_numpy()).all() or (observed <= 0).any():
+            raise TargetContractError("declared price values must be finite and positive")
+        if not allow_missing and series.isna().any():
+            raise TargetContractError("asset price values are missing; refusing clock compression")
+        series.name = str(path.stem)
+        return series
     df = df.sort_index()
     df = df[~df.index.duplicated(keep="last")]
 
@@ -243,7 +284,7 @@ def _load_raw_price(entry: dict, repo_root: Path) -> pd.Series:
 
 
 def _compute_baseline_fwd(prices: pd.Series, baseline_name: str, horizon_d: int) -> pd.Series:
-    """Compute baseline forward returns for the excess_return target kind."""
+    """Legacy strategy comparator; not used by explicit price-benchmark labels."""
     if baseline_name == "buy_and_hold":
         return prices.pct_change(horizon_d).shift(-horizon_d)
     elif baseline_name == "sma_200":
@@ -634,6 +675,9 @@ def run_spec(
         "gates": spec.get("gates", {}),
         "registered_at": spec.get("registered_at"),
     }
+    if (spec.get("target") or {}).get("kind") == "excess_return":
+        # Corrected labels get a distinct trial configuration; never reset old history.
+        _ledger_config["target_contract"] = _target_contract_receipt(spec)
     ledger.log_trial(
         config=_ledger_config,
         family="signal_foundry",
@@ -672,6 +716,9 @@ def run_spec(
 
     try:
         target = _build_target(spec, repo_root, feature.index)
+    except TargetContractError as exc:
+        return _write_result(repo_root, spec, {}, {}, {}, "error",
+                             [f"invalid target contract: {exc}"], ran_at, ledger_n)
     except Exception as exc:
         return _write_result(
             repo_root, spec, {}, {}, {}, "data_missing",
@@ -973,6 +1020,14 @@ def _compute_verdict(
     return "pass_candidate", reasons
 
 
+def _target_contract_receipt(spec: dict) -> dict:
+    """Declaration/version only; the verdict separately states execution outcome."""
+    try:
+        return excess_return_contract(spec)
+    except (TargetContractError, TypeError, OSError) as exc:
+        return {"version": EXCESS_TARGET_VERSION, "status": "invalid", "reason": str(exc)}
+
+
 def _write_result(
     repo_root: Path,
     spec: dict,
@@ -998,6 +1053,9 @@ def _write_result(
         "ran_at": ran_at,
         "ledger_n_at_run": ledger_n,
     }
+
+    if (spec.get("target") or {}).get("kind") == "excess_return":
+        result["target_contract"] = _target_contract_receipt(spec)
 
     # Write to data/signal_foundry/results/<id>.json (SF-R10)
     try:
