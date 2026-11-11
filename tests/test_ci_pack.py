@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_994),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_729),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10202, A2 settlement-suite wiring): native CI
+    43086191771 contract job 130751117880 tested merge
+    e3e11d9608106a24a587a49cf3a39b05e68aaf7b, ordered parents base
+    19fa6c0821745d194475fd043ec879a333133666 and head
+    be66a3b77524d951a5c3cc13564799f34c93efce. The complete paired report
+    measured index 137 jobs / 5,971 weight / 10 packs versus base
+    137 / 5,966 / 10; free-content 137 / 5,994 / 10 versus
+    137 / 5,989 / 10; Prophet 131 / 5,729 / 10 versus
+    131 / 5,724 / 10. Exactly three introduced findings, zero inherited,
+    and no newly selected job: the existing owner's added settlement-suite
+    command accounts for five more weight units on each ordinary probe.
+    Record exactly those measured weights: 5,966 -> 5,971,
+    5,989 -> 5,994 and 5,724 -> 5,729. Preserve job ceilings
+    137 / 138 / 131, ten packs, selection, assertions and runtime controls.
+    These are planner weights, not measured execution durations.
+    Original log SHA256:
+    ff66568c296144a72c46c7025936820a35398464bc0ce101331d212afbbb6404.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

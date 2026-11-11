@@ -1085,9 +1085,11 @@ def test_prophet_is_read_from_the_served_tree_never_over_http(tmp_path, monkeypa
         served_reader=spy_served,
     )
     assert rc == 0
-    assert not [u for u in urls if "/prophet/" in u], (
-        f"prophet must not be fetched over HTTP — the wall 401s it: {urls}"
-    )
+    # Only the public R2 health-only receipt may be fetched. The actual
+    # premium /prophet/index.json and the paid plan book stay served-file reads.
+    assert [u for u in urls if "/prophet/" in u] == [
+        "https://example.invalid/prophet/health.json",
+    ], f"protected Prophet content must not be fetched over HTTP: {urls}"
     # The close-pass board is walled for the same reason (#3391 — the real board
     # is not free content) and is read off the LIVE PLANE root, not the
     # site.served tree and not over HTTP. The client artifact the SLA is
