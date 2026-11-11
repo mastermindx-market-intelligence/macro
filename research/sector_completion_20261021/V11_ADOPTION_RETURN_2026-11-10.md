@@ -2786,8 +2786,9 @@ all open in the controller queue.
   independent check returned READY at the checked head, one recording comment was posted,
   and the pull request sits armed in the controller queue. Not merged (28.3).
 - #10981 was CLOSED at 05:23:48Z — not by anyone's decision: #10997's description contained
-  "producer fix #10981", which GitHub read as a closing keyword. The COO reopened it at about
-  09:16Z; its label and head never moved. Armed, not merged (28.4).
+  the two words "producer" and "fix" directly before the #10981 reference, which GitHub read
+  as a closing keyword. The COO reopened it at about 09:16Z; its label and head never moved.
+  Armed, not merged (28.4).
 - The breadth archive #11024 was delivered as a draft, survived a head change and an addendum
   check, outlived a hung CI shard, and was armed at 13:54Z at head
   `0cc39be059c157ff42ab7a85be2feee7d28339e4` (28.6).
@@ -2827,10 +2828,11 @@ all open in the controller queue.
   labels, zero comments).
 - MERGED at 05:23:47Z on 2026-11-11. Re-read at 15:00Z on 2026-11-11: state MERGED. Sections
   1 to 27 are on main.
-- The accident it caused: GitHub read the words "producer fix #10981" in its description as a
-  closing keyword and closed #10981 one second later (28.4). New standing rule from ruling 4:
-  no close, fix or resolve word directly before `#<number>` in anything this programme
-  writes, including pull-request descriptions and comments.
+- The accident it caused: GitHub read the two words "producer" and "fix" placed directly
+  before the #10981 reference in its description as a closing keyword, and closed it one
+  second later (28.4). New standing rule from ruling 4: no close, fix or resolve word
+  directly before `#<number>` in anything this programme writes, including pull-request
+  descriptions and comments.
 
 ### 28.3 Lane 8, #10924: conflict resolved, checked READY, armed, in the queue
 
@@ -3343,8 +3345,9 @@ all open in the controller queue.
 4. **#10997's arm time differs between notes** — 04:13:43Z in the 04:14Z note, 04:14:16Z in
    the 04:26Z note. The merge time (05:23:47Z) is the fact that matters.
 5. **A message's own text disagreed with the clock**: the v2 proposal to the Prophet CEO sent
-   at 10:33Z says 10:40Z in its text. Their-clock timestamps in their messages run about 40
-   minutes ahead of ours; noted where used (28.15).
+   at 10:33Z says 10:40Z in its text. One their-clock timestamp in their messages is recorded
+   with the local time beside it (their 12:05Z was about our 11:08Z, roughly an hour ahead);
+   noted where used (28.15).
 6. **A worker return named the wrong commit**: #11039's inline return line named the capture
    commit rather than the final head; the check was ordered to pin both (28.9).
 
