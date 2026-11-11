@@ -1,0 +1,80 @@
+{
+  "base": "dce366adcf109daa9a2f0bf99ed68120da6b7957",
+  "law_pin": "bb2c2e4437e6ee250f9d4ee9b6b420abdfbbc178",
+  "sources": {
+    "engine/congress_members.py": {
+      "bytes": 13754,
+      "sha256": "c6c4260206baf20738b0702ac36cb38e8212ce2277098cb8e64686ddedfb6c92",
+      "git_blob": "b1560549cc4795999cc366f83a3233e30f244174"
+    },
+    "scripts/build_congress.py": {
+      "bytes": 44366,
+      "sha256": "53a053c7484cc1e2836ff6fe312d7da76e34419120cf2af96a00de421088d1db",
+      "git_blob": "5615d4faf068cd5d7777d86521a8d41e0fb05334"
+    },
+    "templates/congress_trades.html.j2": {
+      "bytes": 55183,
+      "sha256": "d1959a6506d042ef8a46ea29dbd06ff023b64e9c435296b920c2fd3e0b37e224",
+      "git_blob": "ff14f5516dfe2864a9a95557de7d4b1d5cba1979"
+    },
+    "tests/test_congress_chronology.py": {
+      "bytes": 9986,
+      "sha256": "85f7a8ce6a9c0db17d2d572a8d81a48c81d7de7b0cc2a850fcfabc25736f428c",
+      "git_blob": "268171b1222437249511c0ca3704788b9c8dbf33"
+    },
+    "tests/test_congress_score.py": {
+      "bytes": 45669,
+      "sha256": "89d9b6c75bf274a8b25bdbed91527b21ea6472e8425b6e87bb624841c48a9447",
+      "git_blob": "362459ed448a09468f14140746a3856b17710983"
+    }
+  },
+  "raw_wrapped_evidence": {
+    "baseline-date-cases.log.gz": {
+      "raw_bytes": 13527,
+      "raw_sha256": "364d4e2c047d1c436e3427cc4d12fe3670926ee025eb750683d6094a3558c7ed",
+      "gzip_sha256": "2c650f7fda665f62c27d14e50ebeacc97ea41a0a78b0578db37e1e570457da8e"
+    },
+    "baseline-retained-tests.log.gz": {
+      "raw_bytes": 179,
+      "raw_sha256": "f580ca48a18edfd76f13ee99ff439aa0507eba82b9edfac672b38c79b2d361ba",
+      "gzip_sha256": "94490906308d44ab69198959baac439ec94a9ab3f13a5d00e270566a43572838"
+    },
+    "focused-gate-0.log.gz": {
+      "raw_bytes": 279,
+      "raw_sha256": "37aeb0da115470c281cd507407b8975e19c5169d9836a625402f7807c30290e0",
+      "gzip_sha256": "9a42889474d888385755e71b15b17204c89ec8b5dda3205a00b91e3801699e9f"
+    },
+    "focused-gate-1.log.gz": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "focused-gate-2.log.gz": {
+      "raw_bytes": 152,
+      "raw_sha256": "afd7af3c8ce70715a4ec0ce64baa7b146dcacf4a0b4418524cf9c8c1a58e7199",
+      "gzip_sha256": "d8b564a7f728108f1088bf5629534f42f7e92dfb3264c42cb6ccce2b0002121a"
+    },
+    "focused-gate-3.log.gz": {
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "repaired-focused-tests-r1.log.gz": {
+      "raw_bytes": 180,
+      "raw_sha256": "54b62b9b07a5695bf5104757c33192b4828a2e7a933152496f9d71ba660e0e26",
+      "gzip_sha256": "11c95ee68db7ca4fb140c1a14409733c2e60c49b749db6bad3a7cf409138a58d"
+    },
+    "source-review.diff.gz": {
+      "raw_bytes": 12830,
+      "raw_sha256": "f0c24b6847e8a89e5d74284a6bd6c1adf945042ded386ddc474dd6492822d953",
+      "gzip_sha256": "f4578874a20e81e4f7fa2b652f8d906d1240247e2bca451071bce57e569bd274"
+    },
+    "ui.diff.gz": {
+      "raw_bytes": 1903,
+      "raw_sha256": "421f647bd78508856de21a976a82aa3c271bd7ff98f744eeb9f8cf6311061ebb",
+      "gzip_sha256": "dc4fa1a88368d41b274b5535876ce1124700de111936fccdab7bb9baaa6cf030"
+    }
+  },
+  "outcome": "LOCAL_SOURCE_AND_NATIVE_FIXTURE_QUALIFIED",
+  "remaining": "Hosted CI, incumbent merge and real installed/render consumer proof remain separate."
+}

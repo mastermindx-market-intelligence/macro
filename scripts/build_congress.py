@@ -64,6 +64,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 
 from engine import desk_grader  # noqa: E402
+from engine.congress_members import qualify_chronology  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -181,7 +182,7 @@ def _chamber(house) -> str:
 # data load
 # ---------------------------------------------------------------------------
 def _load_window(asof):
-    """Normalized in-window disclosures grouped by ticker: {ticker: [rows]}, plus the full feed.
+    """Eligible in-window disclosures grouped by ticker, plus the retained raw feed.
 
     FRESHNESS FIX (W1-S13 T2): window membership and decay are now keyed on TransactionDate
     (the actual trade date). Previously the window cutoff used ReportDate, meaning a
@@ -193,15 +194,17 @@ def _load_window(asof):
       late_filing      bool      — filing_lag_days > LATE_FILING_DAYS (STOCK Act limit)
       tx_age_days      int|None  — days from TransactionDate to asof (how old is the trade?)
       _td              date      — TransactionDate as date (used for decay + window)
+      chronology_status str      — eligible / unknown / invalid / excluded at the cutoff
     """
     import pandas as pd
     p = config.data_dir() / "quiver" / "congress.parquet"
-    df = pd.read_parquet(p)
-    df["_rd"] = pd.to_datetime(df.get("ReportDate"), errors="coerce")
-    df["_td"] = pd.to_datetime(df.get("TransactionDate"), errors="coerce")
+    df = qualify_chronology(pd.read_parquet(p), asof)
     cutoff = pd.Timestamp(asof) - pd.Timedelta(days=ROLLOFF_DAYS)
-    asof_ts = pd.Timestamp(asof)
     rows = []
+
+    def raw_date(value):
+        return None if value is None or pd.isna(value) else str(value)
+
     for r in df.to_dict("records"):
         rd = r.get("_rd")
         td = r.get("_td")
@@ -230,6 +233,9 @@ def _load_window(asof):
             "side": _side(r.get("Transaction")),
             "amount_low": low, "amount_high": high, "amount_mid": mid,
             "report_date": rd_date.isoformat() if rd_date else None,
+            "report_date_raw": raw_date(r.get("ReportDate")),
+            "transaction_date_raw": raw_date(r.get("TransactionDate")),
+            "chronology_status": r["_chronology_status"],
             "_rd": rd_date,
             "transaction_date": td_date.isoformat() if td_date else None,
             "_td": td_date,
@@ -238,8 +244,10 @@ def _load_window(asof):
             "tx_age_days": tx_age,
             "excess_return": _f(r.get("ExcessReturn")),
         })
-    # Window: keyed on TransactionDate now (was ReportDate)
-    in_window = [r for r in rows if r["_td"] is not None and r["_td"] >= cutoff.date()]
+    # Availability and economic age are separate: only disclosed, valid rows
+    # contribute, while the accepted transaction-date boundary stays inclusive.
+    in_window = [r for r in rows if r["chronology_status"] == "eligible"
+                 and r["_td"] >= cutoff.date()]
     by_ticker: dict[str, list] = {}
     for r in in_window:
         by_ticker.setdefault(r["ticker"], []).append(r)
@@ -857,7 +865,9 @@ def main() -> int:
             "n_act_now": sum(1 for a in items if a["act_now"]),
             "n_bipartisan": sum(1 for a in items if a["bipartisan"]),
             "n_front_line": sum(1 for a in items if a["entry"]["front_line"]),
-            "as_of": (feed[0]["report_date"] if feed else asof.isoformat()),
+            "as_of": max((r["report_date"] for r in feed
+                          if r["chronology_status"] == "eligible"), default=None),
+            "cutoff_date": asof.isoformat(),
         }
 
         # UNIFIED FORWARD DESK GRADER (5/10/20/30/60/90d) — snapshot today's surfaced watchlist
