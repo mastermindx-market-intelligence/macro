@@ -33094,6 +33094,17 @@ jobs:
           tests/test_us_board_snapshot_readers_grade.py
           tests/test_us_board_snapshot_reader_census.py
           -q
+      # Synthetic PIT source regressions must run on the CODE gate. The existing
+      # DATA owner retains its full command; these suites use temporary Git/data
+      # fixtures and do not perform a real historical market-control replay.
+      # Keep a separate step so the hermetic board command's -k filter cannot
+      # exclude PIT cases. Run all three complete suites without exclusions.
+      - name: PIT replay source, alpha results and sparse inputs (synthetic)
+        run: >-
+          python -m pytest tests/test_prophet_pit_replay.py
+          tests/test_prophet_pit_replay_alpha_result.py
+          tests/test_prophet_pit_replay_sparse_inputs.py -q
+
 
 
   unrun-intl-libraries:
