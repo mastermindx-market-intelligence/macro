@@ -22,6 +22,7 @@ def test_poly_sym_maps_class_share_dash_to_dot():
     assert bpi._poly_sym("BF-B") == "BF.B"
 
 
+@pytest.mark.data_gate
 def test_universe_is_curated_us_set():
     u = bpi._universe()
     assert isinstance(u, list) and len(u) > 50      # ~deep names + ETFs

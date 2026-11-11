@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_990),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_727),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #9454, Polygon intraday code-gate enrollment):
+    The existing data-base-shim owner adds one synthetic cadence command;
+    only the unchanged real-universe assertion is marked data_gate and the
+    complete unrun-data-plane command remains byte-identical. jsonschema
+    completes that suite's existing production import closure. Canonical
+    metadata loads 401 owners and measures this owner 38 -> 41: commands
+    7 -> 8, tests/test_ tokens 15 -> 16, with the run-text bucket unchanged.
+    Apply exactly that +3 contribution to the three established probes:
+    5966/5987/5724 -> 5969/5990/5727. Keep 137/138/131 job ceilings,
+    ten packs, selectors, assertions, timeouts and admission caps unchanged.
+    This is measured owner-estimator funding and source conservation, not
+    a new full-tree planner or hosted pass; successor CI remains required.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
