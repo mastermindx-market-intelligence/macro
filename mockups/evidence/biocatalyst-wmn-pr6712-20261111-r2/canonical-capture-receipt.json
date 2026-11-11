@@ -1,0 +1,9 @@
+{
+  "exit_code": 0,
+  "source": "3901ec90c4fd5c31df3eeb670c9992a7ac1155d9",
+  "kind": "SYNTHETIC_API_FIXTURE",
+  "fixture_file_sha256": "8464ba014a4a090493cb2d2a52267bbe02fe05f44c3a88d37fc3db62af7d2de4",
+  "html_unchanged": true,
+  "non_wmn_apis": "Explicit local503; no production entitlement/owner claim",
+  "request_count": 40
+}

@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - site/biocatalyst.css
+  - site/biocatalyst.js
+  - site/biocatalyst.html
+  - templates/biocatalyst.css
+  - templates/biocatalyst.js
+  - templates/biocatalyst.html.j2
+manifest: mockups/evidence/biocatalyst-wmn-pr6712-20261111-r2/manifest.json

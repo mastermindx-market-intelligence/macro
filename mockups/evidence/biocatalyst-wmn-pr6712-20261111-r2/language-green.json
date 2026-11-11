@@ -1,0 +1,8 @@
+{
+  "source": "3901ec90c4fd5c31df3eeb670c9992a7ac1155d9",
+  "tree": "c2a251fccdaf3ce84d3077a15972efa7bc4e6898",
+  "production_js": "c9c9ed154bef647445a89f92452427dcb98914d6",
+  "test_blob": "f4a30426004e34590df8be73b6440e1e087684c1",
+  "pytest_exit": 0,
+  "output": "....................................                                     [100%]\n36 passed, 19 deselected in 9.48s\n"
+}

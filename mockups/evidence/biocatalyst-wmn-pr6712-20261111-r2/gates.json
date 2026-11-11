@@ -1,0 +1,26 @@
+{
+  "source": "3901ec90c4fd5c31df3eeb670c9992a7ac1155d9",
+  "tree": "c2a251fccdaf3ce84d3077a15972efa7bc4e6898",
+  "base": "71405417a0ff9dfc615654deea6ea44a5305f735",
+  "gates": [
+    {
+      "gate": "design",
+      "exit_code": 0,
+      "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25309 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25309)\n"
+    },
+    {
+      "gate": "ui_evidence",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "gate": "p0b",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "capture_states": 40,
+  "capture_integrity": true,
+  "actual_served_assets": 11,
+  "utc": "2026-11-11T12:08:07.701275+00:00"
+}

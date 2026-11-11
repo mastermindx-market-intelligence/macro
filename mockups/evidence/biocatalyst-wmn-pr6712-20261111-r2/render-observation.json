@@ -1,0 +1,21 @@
+{
+  "source": "3901ec90c4fd5c31df3eeb670c9992a7ac1155d9",
+  "tree": "c2a251fccdaf3ce84d3077a15972efa7bc4e6898",
+  "rendered_by": "scripts.build_biocatalyst.render_from_state",
+  "source_blobs": {
+    "scripts/build_biocatalyst.py": "072df6e1fef255c7a7f7df927d8d7dafb77e8aa6",
+    "templates/biocatalyst.html.j2": "9a6f615011a8a820eaa0752b98751d448cf38c82",
+    "templates/biocatalyst.css": "f237f5c24f484a569d12590cf032ec36d47281a5",
+    "templates/biocatalyst.js": "c9c9ed154bef647445a89f92452427dcb98914d6",
+    "templates/theme.css": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+    "templates/theme.js": "21a1fb1627ac34badc6078cff486f98486e9b773",
+    "site/biocatalyst.html": "59fc75a76ed247da2e1e1620457f7e0eb0e7528b",
+    "site/biocatalyst.css": "f237f5c24f484a569d12590cf032ec36d47281a5",
+    "site/biocatalyst.js": "c9c9ed154bef647445a89f92452427dcb98914d6"
+  },
+  "fixture_sha256": "8464ba014a4a090493cb2d2a52267bbe02fe05f44c3a88d37fc3db62af7d2de4",
+  "html_sha256": "728e1ec1078587c62412d6446d35e608163a065e61a013a54ef24eb479e02780",
+  "site_css_sha256": "980cbd5941cd5ae6f38551cceb5432366292f30aafd98c897fff1c34fc63f94f",
+  "site_js_sha256": "2cd4aec30dbbbbbaa045d4c081a59af99fd397a8196741e52c9b9c335cde42ea",
+  "production": false
+}
