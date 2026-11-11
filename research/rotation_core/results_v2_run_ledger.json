@@ -51,6 +51,26 @@
      }
     }
    }
+  },
+  {
+   "host": {
+    "activity_entries": 46,
+    "activity_sha256": "9c05ec24c25e65a4ed497694b3b8dc4b37b3ed3589733c97d2e0bc2646c0a504",
+    "branch_created_commit": "a5f2fa229326b91cbdeb95f5cc9418cc74868bc3",
+    "ruleset_id": 27041175,
+    "ruleset_updated_at": "2026-11-11T07:21:36.088-08:00"
+   },
+   "index": 1,
+   "kind": "PHASE_A_CLEAN",
+   "phase_a_ast_sha256": {
+    "phase_a": "886092b6ceae491b20d87d7e9a4ee0805d04a74a64f0f8f5d0310823e40a576e",
+    "phase_a_strict": "9bb8090404b6377d9b2745f7f8960a2b2412b78734e364168fb3864f493567b7",
+    "phase_a_window": "14469b40ce70b96fc0bf742a6aa83dcdc3bda8bf04ad847810222f20e55c3139",
+    "states_identical_across_costs": "0825b22238947827140f0ddc3f252e8e6b54b005d8d11b4445d5f7cfe414686e"
+   },
+   "prev_chain_sha256": "17b2e06478e284f214bbbf609d444543d86b4343968c095c825312ab4de5066d",
+   "start_index": 0,
+   "utc": "2026-11-11T22:58Z"
   }
  ],
  "header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
