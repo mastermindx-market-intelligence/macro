@@ -1515,6 +1515,7 @@ jobs:
       - "lib/hk_calendar.py"
       - "lib/illus.py"
       - "lib/site_assets.py"
+      - "lib/theme_materials.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -12239,6 +12240,7 @@ jobs:
       - "templates/stocktable.js"
       - "templates/support.html.j2"
       - "templates/theme.css"
+      - "templates/theme.js"
       # 2026-09-16 (#7228 follow-up): test_macro_risk_dialog now reads the
       # shipped locale-aware direction tokens directly from this generated twin.
       # This exclusive job must own the literal dependency; widening is safe.
