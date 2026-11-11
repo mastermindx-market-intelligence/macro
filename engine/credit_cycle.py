@@ -45,9 +45,19 @@ def _state(gap: float | None, cfg: dict) -> str:
 
 def _chg(s: pd.Series, periods: int = 4) -> float | None:
     s = s.dropna()
-    if len(s) <= periods:
+    if s.empty or not isinstance(s.index, pd.DatetimeIndex):
         return None
-    v = s.iloc[-1] - s.iloc[-1 - periods]
+    # BIS is quarterly. Four surviving rows are not necessarily one year.
+    if s.index.hasnans or not s.index.is_monotonic_increasing:
+        return None
+    quarters = s.index.to_period("Q")
+    if quarters.has_duplicates:
+        return None
+    target = quarters[-1] - periods
+    mask = quarters == target
+    if not mask.any():
+        return None
+    v = s.iloc[-1] - s.loc[mask].iloc[0]
     return float(v) if np.isfinite(v) else None
 
 
