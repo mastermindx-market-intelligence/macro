@@ -267,9 +267,16 @@ HK_LEG_NOTE_ZH = {
     "inflow side supports issuance": "资金流入一侧支撑新股发行",
     "risk-on tape welcomes new issues": "风险偏好升温的盘面欢迎新股",
 }
-# missing-HK-leg plain disclosure (HIBOR is the only leg realistically absent keylessly)
+# Missing-input disclosure follows the existing engine keys, not a presumed missing feed.
 HK_MISSING_NOTE_EN = "Subscription-funding cost unavailable — this read excludes it."
 HK_MISSING_NOTE_ZH = "认购融资成本数据缺失 —— 本读数未纳入。"
+HK_MISSING_NOTES = {
+    "southbound": ("Southbound flow unavailable — this read excludes it.", "南向资金流数据缺失 —— 本读数未纳入。"),
+    "hibor": (HK_MISSING_NOTE_EN, HK_MISSING_NOTE_ZH),
+    "peg": ("HKD peg pressure unavailable — this read excludes it.", "港元联系汇率压力数据缺失 —— 本读数未纳入。"),
+    "risk": ("HK risk appetite unavailable — this read excludes it.", "香港风险偏好数据缺失 —— 本读数未纳入。"),
+}
+
 
 # ---- plain-word STANCE doctrine (glance-tier "so what do I do") -------------- #
 # Act / Get ready / Watch — don't chase / Protect gains / Stand aside / Ignore
@@ -531,8 +538,11 @@ def _hk_vm() -> dict:
            "stance_en": st_en, "stance_zh": st_zh,
            "note": b["note"], "note_zh": HK_NOTE_ZH}
     if out["missing_legs"]:
-        out["missing_note_en"] = HK_MISSING_NOTE_EN
-        out["missing_note_zh"] = HK_MISSING_NOTE_ZH
+        notes = [HK_MISSING_NOTES.get(key, (
+            "A backdrop input is unavailable — this read excludes it.",
+            "一项发行背景数据缺失 —— 本读数未纳入。")) for key in out["missing_legs"]]
+        out["missing_note_en"] = " ".join(note[0] for note in notes)
+        out["missing_note_zh"] = " ".join(note[1] for note in notes)
     return out
 
 
