@@ -27,6 +27,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -476,15 +477,31 @@ def _candidate_cte(window_minutes: int | None = None) -> str:
 
 def _cte(include_ident: bool = False, include_candidate: bool = False,
          candidate_window: int | None = None, bot_window: int | None = None,
-         bot_include_search: bool = False) -> str:
+         bot_include_search: bool = False, focus_excluded: bool = False) -> str:
     """Full `with …` prefix: the excluded-visitor + bot chains, optionally preceded by `ident`
     and followed by the soft candidate-identity chain (which requires `ident`). `candidate_window`
-    (minutes) bounds the candidate scans to the surface's window."""
+    (minutes) bounds the candidate scans to the surface's window.
+
+    `focus_excluded` bounds the `excluded` chain to the surface's window, the same shape
+    `_pages_cte` already uses. It requires `bot_window`, because the bot chain is what
+    declares `focus_visitors` and the bounded exclusion reads it — so the bot chain is
+    emitted FIRST. Row-identical for every surface that passes it: those surfaces only
+    ever read in-window events, so an excluded cookie with no in-window event cannot
+    change a row. Measured on production 2026-11-10, the unbounded `excl_link` arm was
+    1,452ms / 81,810 buffers scanning 123,819 rows across the WHOLE store; bounding it
+    to the window took the full Visitors fold 3.31s -> 2.23s and 318,790 -> 253,016
+    buffers, with the payload byte-identical."""
     parts = []
     if include_ident or include_candidate:
         parts.append(_IDENT_CTE)
-    parts.append(_excluded_cte())
-    parts.append(_bot_cte(bot_window, include_search=bot_include_search))
+    if focus_excluded:
+        if not bot_window:
+            raise ValueError("focus_excluded requires bot_window (it declares focus_visitors)")
+        parts.append(_bot_cte(bot_window, include_search=bot_include_search))
+        parts.append(_excluded_cte(focus_visitors=True))
+    else:
+        parts.append(_excluded_cte())
+        parts.append(_bot_cte(bot_window, include_search=bot_include_search))
     if include_candidate:
         parts.append(_candidate_cte(candidate_window))
     return "with " + ", ".join(parts) + " "
@@ -600,6 +617,14 @@ _QUERY_PRELUDE = "set local work_mem = '16MB'; "
 _REQUEST_BUDGET_S = 10.0
 _DEADLINE: contextvars.ContextVar[float | None] = contextvars.ContextVar(
     "fp_deadline", default=None)
+# Per-query and per-surface overrides, set only by the background warmer (below). They
+# exist because the warmer is the one caller nobody waits on, so it may exceed the panel
+# budget that protects the operator's request. Context-local, so a warm pass can never
+# widen the budget of a concurrent operator request.
+_BASE_TIMEOUT: contextvars.ContextVar[float | None] = contextvars.ContextVar(
+    "fp_base_timeout", default=None)
+_BUDGET_OVERRIDE: contextvars.ContextVar[float | None] = contextvars.ContextVar(
+    "fp_budget_override", default=None)
 
 # The management endpoint is one shared upstream; a handful of concurrent statements
 # per surface is the point, a stampede is not.
@@ -643,14 +668,15 @@ def _query(sql: str, timeout_cap_s: float | None = None):
     if not (pat and requests):
         return None
     ref = settings.supabase_project_ref()
-    timeout = _QUERY_TIMEOUT_S
+    base = _BASE_TIMEOUT.get() or _QUERY_TIMEOUT_S
+    timeout = base
     remaining = _remaining_budget()
     if remaining is not None:
         if remaining <= 0:
             raise TimeoutError(
                 f"analytics query budget exhausted ({_REQUEST_BUDGET_S:.0f}s) — "
                 "narrow the time window and retry")
-        timeout = max(1.0, min(float(_QUERY_TIMEOUT_S), remaining))
+        timeout = max(1.0, min(float(base), remaining))
     if timeout_cap_s is not None:
         timeout = min(timeout, max(0.5, float(timeout_cap_s)))
     try:
@@ -730,13 +756,64 @@ def _guard(fn):
     # Open the surface's budget here, so every _query underneath it — including the
     # ones _parallel runs on worker threads — shares one deadline rather than each
     # getting its own independent 20s.
-    token = _DEADLINE.set(time.monotonic() + _REQUEST_BUDGET_S)
+    budget = _BUDGET_OVERRIDE.get() or _REQUEST_BUDGET_S
+    token = _DEADLINE.set(time.monotonic() + budget)
     try:
         return {"ok": True, **fn()}
     except Exception as e:  # noqa: BLE001
         return {"ok": False, "error": str(e)}
     finally:
         _DEADLINE.reset(token)
+
+
+# ── Background warm ────────────────────────────────────────────────────────────
+# The two heaviest panels fold a 216MB table against a 224MB shared_buffers, so their
+# pages do not stay resident between visits. Measured on production 2026-11-10: the
+# Visitors fold is 2.2s warm and 23.4s cold, and the panel budget is 9s (the edge proxy
+# hangs up below 15s, so the budget cannot simply be raised). A cold panel therefore
+# fails before it can warm itself, and every retry starts cold again — the deadlock the
+# operator sees as "Couldn't load this panel". This loop breaks it: it re-runs the two
+# panels on a timer so their pages stay hot, and it is the only caller allowed to exceed
+# the panel budget, because nobody is waiting on it. Set ANALYTICS_WARM_INTERVAL_S=0 to
+# disable; the interval is the only knob that costs the shared store anything.
+_WARM_INTERVAL_S = float(os.environ.get("ANALYTICS_WARM_INTERVAL_S") or 120)
+_WARM_QUERY_TIMEOUT_S = float(os.environ.get("ANALYTICS_WARM_QUERY_TIMEOUT_S") or 60)
+_WARM_BUDGET_S = float(os.environ.get("ANALYTICS_WARM_BUDGET_S") or 90)
+
+
+def warm_panels() -> None:
+    """One warm pass over the two heaviest panels. Never raises."""
+    try:
+        if not status()["configured"]:
+            return
+    except Exception:  # noqa: BLE001 — a warm pass must never take the server down
+        return
+    t_base = _BASE_TIMEOUT.set(_WARM_QUERY_TIMEOUT_S)
+    t_budget = _BUDGET_OVERRIDE.set(_WARM_BUDGET_S)
+    try:
+        for fn in (visitors, sessions):
+            try:
+                fn(limit=100, minutes=1440)
+            except Exception:  # noqa: BLE001 — one panel failing must not stop the other
+                pass
+    finally:
+        _BUDGET_OVERRIDE.reset(t_budget)
+        _BASE_TIMEOUT.reset(t_base)
+
+
+def start_warmer() -> threading.Thread | None:
+    """Start the daemon warm loop. Returns the thread, or None when disabled."""
+    if _WARM_INTERVAL_S <= 0:
+        return None
+
+    def loop():
+        while True:
+            warm_panels()
+            time.sleep(_WARM_INTERVAL_S)
+
+    thread = threading.Thread(target=loop, name="fp-analytics-warm", daemon=True)
+    thread.start()
+    return thread
 
 
 # ---------- surfaces ----------
@@ -909,7 +986,7 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
         rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
-                           bot_window=m) +
+                           bot_window=m, focus_excluded=True) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
             # signed-in visitor's separate macro/terminal cookies stitch into one visit.
             ", ev as (select e.id, e.session_id, e.visitor_id, e.site, e.ip, e.type, e.created_at, "
@@ -990,8 +1067,8 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
             # A cookie signed into by 2+ DIFFERENT accounts (shared/kiosk device) is
             # AMBIGUOUS — excluded from the auto-merge so one person's activity is never
             # silently reassigned to another; those events stay under the cookie.
-            "with " + _IDENT_CTE +
-            ", " + _excluded_cte() + ", " + _bot_cte(m) + ", " + _candidate_cte(m) +
+            _cte(include_ident=True, include_candidate=True, candidate_window=m,
+                 bot_window=m, focus_excluded=True) +
             # ev: every (non-hidden) event tagged with its canonical identity (uid if known, else mm_aid)
             ", ev0 as ("
             "  select e.id, e.session_id, e.ip, e.created_at, e.visitor_id, i.uid, "
