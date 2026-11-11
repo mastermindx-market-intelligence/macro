@@ -1,6 +1,12 @@
 """Pure-function tests for engine/options_ivspread.py — Cremers-Weinbaum call−put IV spread
 (directional options confirmer, display-only until the forward-IC gate validates)."""
+import json
+import math
 import sys
+from datetime import date
+
+import numpy as np
+import pytest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -110,7 +116,9 @@ def test_snapshot_idempotent_and_prior_map(monkeypatch, tmp_path):
     assert pm["AAA"]["date"] is not None
 
 
-def test_build_snapshot_is_context_only():
+def test_build_snapshot_is_context_only(monkeypatch, tmp_path):
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     pay = S.build_snapshot()
     assert pay["is_context_only"] is True
     assert pay["scored"] is False
@@ -161,3 +169,422 @@ def test_fwd_ic_hac_t_is_finite_not_nan():
         "This indicates the t_hac key is still wrong (ic_summary returns 't_hac', "
         "not 't' or 'hac_t')."
     )
+
+
+# ---- admitted count qualification and arithmetic -------------------------- #
+def _spread_chain(underlying="XYZ"):
+    """The sign-reversal witness: all three admitted spreads are positive."""
+    frame = _chain(underlying)
+    frame = frame[frame["T"] < 0.1].copy().reset_index(drop=True)
+    frame["expiry"] = "2026-12-10"
+    frame["asof"] = "2026-11-10"
+    frame["oi"] = 1.0
+    frame["volume"] = 1.0
+    frame.loc[frame["is_call"], "iv"] = [0.36, 0.31, 0.31]
+    return frame
+
+
+@pytest.mark.parametrize("basis", ["oi", "volume"])
+@pytest.mark.parametrize("bad", [-3.0, -1.0, float("inf"), -float("inf"), "bad", "NaN", ""])
+def test_corrupt_active_operand_is_not_rescued_by_fallback(basis, bad):
+    chain = _spread_chain()
+    if basis == "volume":
+        chain["oi"] = 0.0
+    chain[basis] = chain[basis].astype(object)
+    chain.loc[0, basis] = bad
+    # -1 is masked by the positive put leg; -3 reverses the old weighted mean.
+    assert S.compute_ivspread(chain) is None
+    assert S.assess(S.compute_ivspread(chain)) is None
+
+
+@pytest.mark.parametrize("basis", ["oi", "volume"])
+def test_duplicate_positive_count_cannot_conceal_negative_operand(basis):
+    chain = _spread_chain()
+    if basis == "volume":
+        chain["oi"] = 0.0
+    duplicate = chain.iloc[[0]].copy()
+    chain.loc[0, basis] = -1.0
+    duplicate[basis] = 4.0
+    assert S.compute_ivspread(pd.concat([chain, duplicate], ignore_index=True)) is None
+
+
+@pytest.mark.parametrize("bad", [-1.0, float("inf"), "bad"])
+def test_unused_bad_volume_does_not_change_valid_oi_observation(bad):
+    chain = _spread_chain()
+    expected = S.compute_ivspread(chain)
+    chain["volume"] = chain["volume"].astype(object)
+    chain.loc[0, "volume"] = bad
+    assert S.compute_ivspread(chain) == expected
+
+
+@pytest.mark.parametrize("missing", [None, pd.NA, float("nan")])
+@pytest.mark.parametrize("volume_present", [False, True])
+def test_true_nullable_weights_preserve_volume_and_equal_fallback(missing, volume_present):
+    chain = _spread_chain()
+    chain["oi"] = pd.Series([missing] * len(chain), dtype=object)
+    chain["volume"] = 2.0 if volume_present else pd.Series([missing] * len(chain), dtype=object)
+    metric = S.compute_ivspread(chain)
+    assert metric is not None
+    assert metric["weight_kind"] == ("volume" if volume_present else "equal")
+    assert metric["ivspread"] == pytest.approx(0.02667, abs=1e-8)
+
+
+@pytest.mark.parametrize("dtype", ["Float64", "Int64", "UInt64"])
+def test_nullable_numeric_dtype_fallback(dtype):
+    chain = _spread_chain()
+    chain["oi"] = pd.Series([pd.NA] * len(chain), dtype=dtype)
+    metric = S.compute_ivspread(chain)
+    assert metric is not None and metric["weight_kind"] == "volume"
+    assert metric["ivspread"] == pytest.approx(0.02667, abs=1e-8)
+
+
+@pytest.mark.parametrize("columns,kind", [(("oi",), "volume"), (("oi", "volume"), "equal")])
+def test_absent_count_columns_keep_existing_fallback(columns, kind):
+    metric = S.compute_ivspread(_spread_chain().drop(columns=list(columns)))
+    assert metric is not None and metric["weight_kind"] == kind
+    assert metric["ivspread"] == pytest.approx(0.02667, abs=1e-8)
+
+
+def test_measured_zero_counts_use_equal_weights():
+    chain = _spread_chain()
+    chain[["oi", "volume"]] = 0.0
+    metric = S.compute_ivspread(chain)
+    assert metric is not None and metric["weight_kind"] == "equal"
+    assert metric["ivspread"] == pytest.approx(0.02667, abs=1e-8)
+
+
+@pytest.mark.parametrize("exclusion", ["expiry", "orphan", "wing", "iv", "spread"])
+@pytest.mark.parametrize("basis", ["oi", "volume"])
+def test_corrupt_counts_outside_admitted_support_do_not_suppress_metric(exclusion, basis):
+    chain = _spread_chain()
+    if basis == "volume":
+        chain["oi"] = 0.0
+    extra = chain.iloc[[0]].copy()
+    extra[basis] = -10.0
+    expected_frame = chain
+    if exclusion == "expiry":
+        extra["expiry"], extra["T"] = "2027-05-09", 180 / 365.0
+    elif exclusion == "orphan":
+        extra["K"] = 96.0
+    elif exclusion == "wing":
+        extra["K"] = 150.0
+    elif exclusion == "iv":
+        extra["iv"] = float("nan")
+    else:
+        # Both the bad count and the extreme IV are on a pair the incumbent
+        # spread rule excludes. The two remaining pairs still provide context.
+        chain.loc[0, ["iv", basis]] = [1.0, -10.0]
+        extra = chain.iloc[0:0]
+        expected_frame = chain[chain["K"] != 95.0]
+    expected = S.compute_ivspread(expected_frame)
+    actual = S.compute_ivspread(pd.concat([chain, extra], ignore_index=True))
+    assert actual == expected and actual is not None
+
+
+@pytest.mark.parametrize("basis", ["oi", "volume"])
+@pytest.mark.parametrize("dtype,scale", [
+    ("float32", 1e38),
+    ("float64", 5e307),
+    ("int64", 2_000_000_000_000_000_000),
+    ("uint64", 5_000_000_000_000_000_000),
+    ("float64", 5e-323),
+    ("float64", 1e-323),
+    ("float32", float(np.nextafter(np.float32(0), np.float32(1)))),
+])
+def test_finite_extreme_operands_preserve_weighted_mean_and_basis(basis, dtype, scale):
+    chain = _spread_chain()
+    if basis == "volume":
+        chain["oi"] = 0.0
+    chain[basis] = pd.Series([3 * scale, 3 * scale, scale, scale, 2 * scale, 2 * scale], dtype=dtype)
+    metric = S.compute_ivspread(chain)
+    assert metric is not None and metric["weight_kind"] == basis
+    # True weights 6:2:4 give (.06*6 + .01*2 + .01*4)/12 = .035.
+    assert metric["ivspread"] == pytest.approx(0.035, abs=5e-6)
+    assert 0.01 - 5e-6 <= metric["ivspread"] <= 0.06 + 5e-6
+    assert all(math.isfinite(metric[k]) for k in ("ivspread", "atm_spread", "spot", "tenor_days"))
+
+
+def test_overflowing_duplicate_leg_is_recomputed_from_original_operands():
+    chain = _spread_chain()
+    chain["oi"] = 1e308
+    chain = pd.concat([chain, chain.iloc[[0]], chain.iloc[[0]]], ignore_index=True)
+    metric = S.compute_ivspread(chain)
+    assert metric is not None and metric["weight_kind"] == "oi"
+    assert metric["ivspread"] == pytest.approx(0.035, abs=5e-6)
+
+
+def test_excluded_enormous_operand_cannot_underflow_admitted_weights():
+    chain = _spread_chain()
+    chain["oi"] = 5e-323
+    extra = chain.iloc[[0]].copy()
+    extra["K"], extra["oi"] = 96.0, 1e308  # unmatched strike
+    metric = S.compute_ivspread(pd.concat([chain, extra], ignore_index=True))
+    assert metric is not None and metric["weight_kind"] == "oi"
+    assert metric["ivspread"] == pytest.approx(0.02667, abs=5e-6)
+
+
+@pytest.mark.parametrize("n", [1, 2, 3])
+def test_thin_pair_context_and_assessment_floor_remain_distinct(n):
+    metric = S.compute_ivspread(_spread_chain().iloc[:2 * n])
+    assert metric is not None and metric["n_pairs"] == n
+    assert (S.assess(metric) is not None) is (n >= 3)
+
+
+@pytest.mark.parametrize("n", [4, 5])
+def test_relative_panel_counts_only_qualified_names_and_keeps_five_name_boundary(n):
+    frames = []
+    for i in range(n):
+        frame = _spread_chain(f"GOOD{i}")
+        frame.loc[frame["is_call"], "iv"] = 0.30 + i * 0.01
+        frames.append(frame)
+    bad = _spread_chain("BAD")
+    bad.loc[0, "oi"] = -3.0
+    metrics = S.ivspread_map(pd.concat([*frames, bad], ignore_index=True))
+    assert set(metrics) == {f"GOOD{i}" for i in range(n)}
+    for i in range(n):
+        assert metrics[f"GOOD{i}"]["ivspread"] == pytest.approx(i * 0.01)
+        expected = i * 0.01 - (0.02 if n == 5 else 0.0)
+        assert metrics[f"GOOD{i}"]["ivspread_rel"] == pytest.approx(expected)
+
+
+@pytest.mark.parametrize("column,value", [
+    ("spot", float("inf")), ("spot", -float("inf")), ("spot", float("nan")),
+    ("T", float("inf")), ("T", float("nan")),
+])
+def test_nonfinite_ancillary_fields_are_refused_before_persistence(column, value):
+    chain = _spread_chain()
+    chain[column] = value
+    assert S.compute_ivspread(chain) is None
+
+
+# ---- real session chain -> ledger -> strict JSON -> complete ticker page -- #
+@pytest.fixture
+def isolated_storage(monkeypatch, tmp_path):
+    from lib import config
+    data, site = tmp_path / "data", tmp_path / "site"
+    data.mkdir()
+    site.mkdir()
+    cfg = dict(config.load())
+    cfg["storage"] = {
+        **cfg["storage"], "data_dir": str(data), "site_dir": str(site),
+        "run_status_file": str(data / "run_status.json"),
+    }
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    return data, site
+
+
+def _write_session_chain(data, chain, day="2026-11-10"):
+    path = data / "polygon_gex" / "chains" / f"{day}.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    chain.to_parquet(path, index=False)
+    return path
+
+
+def _strict_json(path):
+    def reject_constant(value):
+        raise AssertionError(f"Nonfinite JSON literal: {value}")
+    return json.loads(path.read_text(), parse_constant=reject_constant)
+
+
+@pytest.mark.parametrize("basis,bad_value", [
+    ("oi", -3.0), ("oi", float("inf")),
+    ("volume", -3.0), ("volume", float("inf")),
+])
+def test_complete_writer_withholds_bad_neighbor_before_append_and_preserves_history(
+        isolated_storage, basis, bad_value):
+    from scripts import build_options_ivspread as writer
+    data, site = isolated_storage
+    prior = _spread_chain("OLD")
+    prior["asof"] = "2026-11-09"
+    assert S.snapshot(chain=prior) == 1
+    old_rows = S.load_history().copy()
+
+    bad, good = _spread_chain("BAD"), _spread_chain("GOOD")
+    if basis == "volume":
+        bad["oi"] = 0.0
+    bad.loc[0, basis] = bad_value
+    _write_session_chain(data, pd.concat([bad, good], ignore_index=True))
+    assert writer.main() == 0
+    payload = _strict_json(site / "options_ivspread" / "latest.json")
+    assert set(payload["names"]) == {"GOOD"}
+    assert payload["is_context_only"] is True and payload["scored"] is False
+    assert payload["names"]["GOOD"]["ivspread"] == pytest.approx(0.02667)
+    history = S.load_history()
+    assert set(history["underlying"]) == {"OLD", "GOOD"} and len(history) == 2
+    pd.testing.assert_frame_equal(
+        history[history["underlying"] == "OLD"].reset_index(drop=True),
+        old_rows.reset_index(drop=True))
+    assert np.isfinite(history.select_dtypes(include="number").to_numpy()).all()
+    path = data / "options_ivspread" / "snapshots.parquet"
+    before = path.read_bytes()
+    assert writer.main() == 0
+    assert path.read_bytes() == before  # actual writer retains append-only identity
+
+
+def test_all_refused_new_chain_adds_nothing_to_existing_ledger(isolated_storage):
+    from scripts import build_options_ivspread as writer
+    data, site = isolated_storage
+    assert S.snapshot(chain=_spread_chain("OLD")) == 1
+    path = data / "options_ivspread" / "snapshots.parquet"
+    before = path.read_bytes()
+    bad = _spread_chain("BAD")
+    bad.loc[0, "oi"] = -3.0
+    _write_session_chain(data, bad)
+    assert writer.main() == 0
+    assert path.read_bytes() == before
+    payload = _strict_json(site / "options_ivspread" / "latest.json")
+    assert payload["names"] == {} and payload["ranked"] == [] and payload["n"] == 0
+
+
+@pytest.mark.parametrize("bad", [float("inf"), -float("inf"), float("nan")])
+def test_nonfinite_latest_prior_is_withheld_without_rewriting_or_backfilling(isolated_storage, bad):
+    data, _ = isolated_storage
+    metric = S.compute_ivspread(_spread_chain("AAA"))
+    rows = [{"date": "2026-11-09", **metric},
+            {"date": "2026-11-10", **metric, "ivspread": bad},
+            {"date": "2026-11-10", **metric, "underlying": "BBB"}]
+    path = data / "options_ivspread" / "snapshots.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(path, index=False)
+    before = path.read_bytes()
+    actual = S.prior_spread_map()
+    assert set(actual) == {"BBB"}
+    assert actual["BBB"]["date"] == date(2026, 11, 10)
+    assert path.read_bytes() == before
+
+
+def test_actual_calendar_selects_session_chain_over_later_weekend_file(isolated_storage):
+    data, _ = isolated_storage
+    session = _spread_chain("SESSION")
+    weekend = _spread_chain("WEEKEND")
+    _write_session_chain(data, session, "2026-11-06")
+    _write_session_chain(data, weekend, "2026-11-08")
+    chain, chosen = S._latest_chain_dated()
+    assert chosen == date(2026, 11, 6)
+    assert set(chain["underlying"]) == {"SESSION"}
+
+
+@pytest.mark.parametrize("scored", [False, True])
+def test_snapshot_retains_existing_gate_authority(isolated_storage, scored):
+    data, _ = isolated_storage
+    gate = data / "options_ivspread" / "validation_gate.json"
+    gate.parent.mkdir(parents=True, exist_ok=True)
+    gate.write_text(json.dumps({"scored": scored, "status": "fixture"}))
+    payload = S.build_snapshot()
+    assert payload["is_context_only"] is True and payload["scored"] is scored
+
+
+class _OptionsDialogText:
+    """Parse the shipped role=dialog element, including both language spans."""
+    @staticmethod
+    def read(page):
+        from html.parser import HTMLParser
+        class Reader(HTMLParser):
+            def __init__(self):
+                super().__init__(convert_charrefs=True)
+                self.depth, self.found, self.parts = 0, False, []
+            def handle_starttag(self, tag, attrs):
+                void = tag in {"area", "base", "br", "col", "embed", "hr", "img",
+                               "input", "link", "meta", "param", "source", "track", "wbr"}
+                if self.depth:
+                    self.depth += int(not void)
+                elif dict(attrs).get("id") == "dlg-options":
+                    assert dict(attrs).get("role") == "dialog"
+                    self.found, self.depth = True, 1
+            def handle_startendtag(self, tag, attrs):
+                pass
+            def handle_endtag(self, tag):
+                if self.depth:
+                    self.depth -= 1
+            def handle_data(self, value):
+                if self.depth:
+                    self.parts.append(value)
+        parser = Reader()
+        parser.feed(page)
+        assert parser.found and parser.depth == 0
+        return " ".join(parser.parts)
+
+
+@pytest.mark.parametrize("raw,expected", [
+    (0.04, "+4.0pp"), (-0.04, "-4.0pp"),
+    (0.12, "+12.0pp"), (-0.12, "-12.0pp"),
+    (0.005, "+0.5pp"), (0.0, "+0.0pp"), (None, None),
+])
+def test_actual_writer_to_complete_bilingual_ticker_page(
+        isolated_storage, monkeypatch, tmp_path, raw, expected):
+    import socket
+    from scripts import build_options_ivspread as writer
+    from scripts import build_ticker_pages as ticker
+
+    data, site = isolated_storage
+    chain = _spread_chain()
+    if raw is None:
+        chain.loc[0, "oi"] = -3.0
+    else:
+        chain.loc[chain["is_call"], "iv"] = 0.30 + raw
+    _write_session_chain(data, chain)
+    assert writer.main() == 0
+    emitted = _strict_json(site / "options_ivspread" / "latest.json")
+    metric = emitted["names"].get("XYZ")
+    if raw is None:
+        assert metric is None
+    else:
+        assert metric["ivspread"] == pytest.approx(raw)
+    # Carry the real emitted decimal through the real confirmer to stockdata.
+    ivs = S.assess(metric)
+    blob = {
+        "ticker": "XYZ", "asof": "2026-11-10", "price": {"last": 100.0},
+        "profile": {"name": "Fixture XYZ", "sector": "Technology"},
+        "valuation": {"pe_ttm": 20.0}, "financials": {"gross_margin": 0.4},
+        "gex": {"iv30": 30.0}, "iv_spread": ivs,
+    }
+    stockdata = site / "stockdata" / "XYZ.json"
+    stockdata.parent.mkdir(parents=True, exist_ok=True)
+    stockdata.write_text(json.dumps(blob, allow_nan=False))
+    membership = data / "universe" / "membership.parquet"
+    membership.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"active": True, "ticker": "XYZ", "group": "sp500",
+                   "name": "Fixture XYZ", "sector": "Technology"}]).to_parquet(membership)
+    monkeypatch.setattr(ticker, "_ROOT", tmp_path)
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")  # incumbent offline logo seam
+    attempts = []
+    def blocked(*args, **kwargs):
+        attempts.append("network")
+        raise AssertionError("Native page proof must not acquire external inputs")
+    monkeypatch.setattr(socket.socket, "connect", blocked)
+    monkeypatch.setattr(socket, "getaddrinfo", blocked)
+    manifest = tmp_path / "render-manifest.json"
+    contexts = tmp_path / "contexts"
+    assert ticker.run(out=site / "stocks", site=site, context_only=False,
+                      dump_context=contexts, only_tickers={"XYZ"},
+                      manifest_out=manifest) == 0
+    assert attempts == []
+    receipt = _strict_json(manifest)
+    assert receipt["rendered_count"] == 1 and receipt["failure_count"] == 0
+    assert receipt["tickers"] == ["XYZ"]
+    page = (site / "stocks" / "XYZ.html").read_text()
+    assert len(page) > 10000 and "<html" in page.lower()
+    assert 'name="mmx-shell-document"' in page  # actual write_page shell injection
+    ctx = _strict_json(contexts / "XYZ.json")
+    dialogs = [d for d in ctx["deep"]["dialogs"] if d["id"] == "options"]
+    assert len(dialogs) == 1
+    dialog = dialogs[0]
+    rows = [row for panel in dialog["panels"] for row in panel.get("rows", [])]
+    spreads = [row for row in rows if row.get("k_en") == "Call-put IV spread"]
+    rendered = _OptionsDialogText.read(page)
+    if expected is None:
+        assert spreads == [] and "Call-put IV spread" not in rendered
+        assert "看涨-看跌IV价差" not in rendered
+    else:
+        assert len(spreads) == 1 and spreads[0]["v"] == expected
+        assert "Call-put IV spread" in rendered and "看涨-看跌IV价差" in rendered
+        assert expected in rendered
+
+
+@pytest.mark.parametrize("raw", [True, float("inf"), -float("inf"), float("nan"), 1e308, -1e308, "bad", None])
+def test_consumer_withholds_nonfinite_or_unmeasured_spread(raw):
+    from scripts import build_ticker_pages as ticker
+    dialog = ticker._deep_options({"gex": {"iv30": 30.0}, "iv_spread": {"ivspread": raw}}, None)
+    rows = [row for panel in dialog["panels"] for row in panel.get("rows", [])]
+    assert not any(row.get("k_en") == "Call-put IV spread" for row in rows)

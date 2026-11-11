@@ -31,7 +31,7 @@ def main() -> int:
     site = config.ROOT / config.load()["storage"]["site_dir"]
     out = site / "options_ivspread"
     out.mkdir(parents=True, exist_ok=True)
-    (out / "latest.json").write_text(json.dumps(payload, separators=(",", ":"), default=float))
+    (out / "latest.json").write_text(json.dumps(payload, separators=(",", ":"), default=float, allow_nan=False))
     log.info("options_ivspread: accrued %d rows, emitted %d names (scored=%s, %s)",
              added, payload["n"], payload["scored"], payload["gate_status"])
     return 0

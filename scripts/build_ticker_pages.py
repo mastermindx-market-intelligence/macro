@@ -1466,11 +1466,10 @@ def _deep_options(blob: dict, gex_v1: dict | None) -> dict | None:
                         "cls": "neg" if rr < 0 else "pos"})
         except (TypeError, ValueError):
             pass
-    if ivs.get("ivspread") is not None:
-        try:
-            vol.append({"k_en": "Call-put IV spread", "k_zh": "看涨-看跌IV价差", "v": f"{float(ivs['ivspread']):+.1f}pp", "v_en": "", "v_zh": ""})
-        except (TypeError, ValueError):
-            pass
+    spread = finite(ivs.get("ivspread"))
+    spread_pp = finite(spread * 100.0) if spread is not None else None
+    if spread_pp is not None:
+        vol.append({"k_en": "Call-put IV spread", "k_zh": "看涨-看跌IV价差", "v": f"{spread_pp:+.1f}pp", "v_en": "", "v_zh": ""})
     if vol:
         panels.append({"kind": "kv", "title_en": "Volatility pricing", "title_zh": "波动率定价", "rows": vol})
 

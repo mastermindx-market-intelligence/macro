@@ -29,6 +29,7 @@ isolated in snapshot()/load_*.
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime, timezone
 
 from lib import config
@@ -73,9 +74,9 @@ _CAVEAT_ZH = ("Cremers-Weinbaum 看涨−看跌隐含波动率价差（同行权
 def _f(x):
     try:
         v = float(x)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
-    return None if (v != v) else v   # NaN-safe
+    return v if math.isfinite(v) else None
 
 
 def _nearest_expiry(rows, target_days: float = _TARGET_DAYS, min_days: float = _MIN_DAYS):
@@ -96,37 +97,93 @@ def _nearest_expiry(rows, target_days: float = _TARGET_DAYS, min_days: float = _
         return None
 
 
+def _pair_weights(support, pairs, column: str):
+    """Qualified per-strike weights, or None for corrupt admitted operands.
+
+    True nullable cells and an absent column retain the zero-weight fallback.
+    Qualify before duplicate/leg sums so one negative row cannot be hidden by
+    its positive partner. Arithmetic recovery uses the same admitted operands.
+    """
+    import numpy as np
+    import pandas as pd
+
+    if column not in support.columns:
+        return pd.Series(0.0, index=pairs.index)
+    raw = support[column]
+    try:
+        parsed = pd.to_numeric(raw, errors="coerce")
+        counts = parsed.fillna(0.0)
+        bad = (raw.notna() & parsed.isna()) | ~np.isfinite(counts) | (counts < 0)
+        if bool(bad.any()) or bool(raw.map(lambda v: isinstance(v, (bool, np.bool_))).any()):
+            return None
+        # Integer aggregation can wrap to a finite positive value; promote it
+        # before either leg sum. Preserve the ordinary float32 producer path.
+        if pd.api.types.is_integer_dtype(counts.dtype):
+            counts = counts.astype("float64")
+
+        def aggregate(values):
+            frame = support.assign(_weight=values)
+            calls = frame[frame["_is_call"]].groupby("K")["_weight"].sum()
+            puts = frame[~frame["_is_call"]].groupby("K")["_weight"].sum()
+            return (calls.reindex(pairs.index) + puts.reindex(pairs.index))
+
+        with np.errstate(over="ignore", under="ignore", invalid="ignore"):
+            weights = aggregate(counts)
+            products = pairs["spread"] * weights
+            dtype = getattr(products.dtype, "numpy_dtype", products.dtype)
+            tiny = np.finfo(dtype).tiny
+            underflow = ((pairs["spread"] != 0) & (weights > 0)
+                         & (products.abs() < tiny)).any()
+            recover = (not bool(np.isfinite(weights).all())
+                       or not math.isfinite(float(weights.sum()))
+                       or not bool(np.isfinite(products).all()) or bool(underflow))
+            if recover:
+                scale = float(counts.max())
+                if not math.isfinite(scale) or scale <= 0:
+                    return None
+                # Cast BEFORE division and regroup from raw admitted operands:
+                # scaling an already-overflowed pair weight cannot recover it.
+                weights = aggregate(counts.astype("float64") / scale)
+        if (not bool(np.isfinite(weights).all())
+                or not math.isfinite(float(weights.sum()))):
+            return None
+        return weights
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
 def _matched_pairs(leg, spot: float):
-    """Matched call/put rows at the same strike within the moneyness band, one row per strike.
-    Returns a DataFrame indexed by K with [iv_c, iv_p, spread, oi_w, vol_w] or None."""
+    """Matched admitted IV pairs, plus qualified OI and volume weights.
+
+    A null weight column marks corrupt operands; a zero column marks genuine
+    absence. Only the active weighting basis may determine refusal/fallback.
+    """
     import pandas as pd
     try:
         df = leg.copy()
         df["iv"] = pd.to_numeric(df["iv"], errors="coerce")
         df["K"] = pd.to_numeric(df["K"], errors="coerce")
         df["_is_call"] = df["is_call"].astype(bool)
-        df["_oi"] = (pd.to_numeric(df["oi"], errors="coerce").fillna(0.0)
-                     if "oi" in df.columns else 0.0)
-        df["_vol"] = (pd.to_numeric(df["volume"], errors="coerce").fillna(0.0)
-                      if "volume" in df.columns else 0.0)
         df = df[(df["iv"] > 0.0) & df["K"].notna()]
         if spot > 0:
             df = df[(df["K"] / spot - 1.0).abs() <= _MNY_BAND]
         if df.empty:
             return None
-        calls = (df[df["_is_call"]].groupby("K")
-                 .agg(iv_c=("iv", "mean"), oi_c=("_oi", "sum"), vol_c=("_vol", "sum")))
-        puts = (df[~df["_is_call"]].groupby("K")
-                .agg(iv_p=("iv", "mean"), oi_p=("_oi", "sum"), vol_p=("_vol", "sum")))
+        calls = df[df["_is_call"]].groupby("K").agg(iv_c=("iv", "mean"))
+        puts = df[~df["_is_call"]].groupby("K").agg(iv_p=("iv", "mean"))
         m = calls.join(puts, how="inner")
         if m.empty:
             return None
         m["spread"] = m["iv_c"] - m["iv_p"]
-        m = m[m["spread"].abs() <= _MAX_PAIR_SPREAD]    # drop bad-data pairs (stale ITM IVs)
+        m = m[m["spread"].abs() <= _MAX_PAIR_SPREAD]
         if m.empty:
             return None
-        m["oi_w"] = m["oi_c"] + m["oi_p"]
-        m["vol_w"] = m["vol_c"] + m["vol_p"]
+        # Excluded expiries, wings, unmatched strikes and bad-IV pairs do not
+        # contribute, so their count fields must not suppress admitted data.
+        support = df[df["K"].isin(m.index)]
+        for column, key in (("oi", "oi_w"), ("volume", "vol_w")):
+            weights = _pair_weights(support, m, column)
+            m[key] = weights if weights is not None else float("nan")
         return m
     except Exception as e:  # noqa: BLE001
         log.debug("matched pairs failed (%s)", e)
@@ -142,21 +199,37 @@ def compute_ivspread(rows) -> dict | None:
         leg = _nearest_expiry(rows)
         if leg is None or leg.empty:
             return None
-        spot = float(leg["spot"].iloc[0])
+        spot = _f(leg["spot"].iloc[0])
+        if spot is None or spot <= 0:
+            return None
         m = _matched_pairs(leg, spot)
         if m is None or len(m) < 1:
             return None
         w = m["oi_w"]
         weight_kind = "oi"
+        if w.isna().any():
+            return None
         if float(w.sum()) <= 0:
             w, weight_kind = m["vol_w"], "volume"
+            if w.isna().any():
+                return None
         if float(w.sum()) <= 0:
             import pandas as pd
             w, weight_kind = pd.Series(1.0, index=m.index), "equal"
         ivspread = float((m["spread"] * w).sum() / w.sum())
+        if not math.isfinite(ivspread):
+            return None
+        lo, hi = float(m["spread"].min()), float(m["spread"].max())
+        if not (lo <= ivspread <= hi):
+            # Permit ordinary float32 roundoff, never a signed-weight reversal.
+            if not (math.isclose(ivspread, lo, rel_tol=1e-6)
+                    or math.isclose(ivspread, hi, rel_tol=1e-6)):
+                return None
         atm_k = (m.index.to_series() - spot).abs().idxmin()
         atm_spread = float(m.loc[atm_k, "spread"])
-        tenor = float(leg["T"].astype(float).iloc[0] * 365.0)
+        tenor = _f(float(leg["T"].iloc[0]) * 365.0)
+        if tenor is None or tenor <= 0 or not math.isfinite(atm_spread):
+            return None
         asof = leg["asof"].iloc[0]
         asof = str(asof.date()) if hasattr(asof, "date") else str(asof)[:10]
         return {
@@ -393,11 +466,8 @@ def prior_spread_map() -> dict[str, dict]:
         for tk, grp in led.groupby(key, sort=False):
             row = grp.iloc[-1]
             d = nyse_calendar.as_day(row.get("date"))
-            try:
-                v = float(row.get("ivspread"))
-            except (TypeError, ValueError):
-                continue
-            if v == v and d is not None:
+            v = _f(row.get("ivspread"))
+            if v is not None and d is not None:
                 out[str(tk)] = {"ivspread": v, "date": d}
         return out
     except Exception:  # noqa: BLE001

@@ -48438,6 +48438,57 @@ jobs:
       - "scripts/research_liquidity_shock_reversal.py"
       - "site/factordata/basket_washout_state.json"
       - "site/factordata/us_standouts.json"
+      # IV-spread #11080: measured suite closure and actual whole-page inputs.
+      - "config/site_access.yml"
+      - "engine/capital_need.py"
+      - "engine/china_heatmap_observations.py"
+      - "engine/debt_maturity.py"
+      - "engine/indicators_m2.py"
+      - "engine/market_heatmap.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/market_clock.py"
+      - "engine/marketing/movers_source.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/share_cards.py"
+      - "engine/marketing/source_authority.py"
+      - "engine/marketing/state.py"
+      - "engine/options_ivspread.py"
+      - "engine/sp500_heatmap.py"
+      - "engine/stocks_hub.py"
+      - "lib/numeric.py"
+      - "lib/pages.py"
+      - "lib/procutil.py"
+      - "lib/seo.py"
+      - "lib/shared_shell.py"
+      - "lib/site_assets.py"
+      - "scripts/build_options_ivspread.py"
+      - "scripts/build_ticker_pages.py"
+      - "scripts/validate_options_ivspread.py"
+      - "templates/_debt_maturity.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_valuation_assumptions.html.j2"
+      - "templates/_valuation_scenario.html.j2"
+      - "templates/data_base.js"
+      - "templates/shared_shell.css"
+      - "templates/shared_shell_bridge.js"
+      - "templates/ticker.html.j2"
+      - "templates/ticker_index.html.j2"
+      - "templates/ticker_news_panel.html.j2"
+      - "tests/test_options_ivspread.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -48446,9 +48497,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install options-skew engine test dependencies
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: options skew engine
-        run: python -m pytest tests/test_options_skew.py -q
+        run: python -m pytest tests/test_options_skew.py tests/test_options_ivspread.py -q
       - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
         run: python -m pytest tests/test_price_pressure.py -q -rs
 
