@@ -9852,6 +9852,9 @@ jobs:
       - "templates/navigation-refresh.css"
       - "templates/theme.css"
       - "tests/test_aibrief_page.py"
+      # contract-delta (PR #10918): tests/test_aibrief_page.py imports
+      # scripts.build_aibrief — flow-surface's closure must cover the script.
+      - "scripts/build_aibrief.py"
       - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
