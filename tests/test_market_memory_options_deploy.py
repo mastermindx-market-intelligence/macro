@@ -1015,11 +1015,20 @@ def test_legacy_api_dropin_migration_is_exact_and_fail_closed(tmp_path: Path) ->
     api_service = _text(API_SERVICE)
     setup = _text(SETUP)
     update = _text(UPDATE)
-    source_line = (
+    setup_source_line = (
         'source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"'
     )
+    # update.sh sources the helper from the preflight-resolved capsule, not the
+    # checkout: app/deploy/update.sh sources "$LIVE_SOURCE_CAPSULE/helpers/..."
+    # for all three helpers (unit-boundary, runtime-fence, dropin-migration).
+    capsule_source_line = (
+        'source "$LIVE_SOURCE_CAPSULE/helpers/'
+        'market-memory-options-dropin-migration.sh"'
+    )
     assert api_service.count("EnvironmentFile=-/etc/macro-ollama.env") == 1
-    assert source_line in setup and source_line in update
+    assert setup_source_line in setup
+    assert capsule_source_line in update
+    assert setup_source_line not in update
     update_migration = update.index("if ! mm_remove_exact_legacy_api_ollama_dropin")
     update_install = update.index(
         'install -m 0644 "$APP_DIR/app/deploy/macro-api.service" '
