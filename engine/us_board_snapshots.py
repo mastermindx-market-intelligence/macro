@@ -11,9 +11,13 @@ Readers see the base file and then each part, in that order, as one logical
 stream. Nothing is rotated away or truncated, so no reader loses a row. The
 layout mirrors ``outcomes_session_parts`` (``engine/options_signal_episode.py``).
 
-Every function takes the BASE path (``.../snapshots.jsonl``) and finds the
-parts directory beside it, so path overrides (tests, vintage trees, a
-``--snapshots`` flag) keep working unchanged.
+Every function takes the BASE path (``.../snapshots.jsonl``) and finds the parts
+directory that belongs to that exact file, so path overrides (tests, vintage
+trees, a ``--snapshots`` flag) keep working unchanged. The sidecar is owned by
+the base filename: the canonical ``snapshots.jsonl`` keeps ``snapshots_parts/``,
+and any other selected filename gets ``<stem>_parts/`` beside it. A second
+``*.jsonl`` in the same directory is therefore never read or written through the
+canonical ledger's parts.
 """
 from __future__ import annotations
 
@@ -22,6 +26,8 @@ from collections.abc import Iterator
 from pathlib import Path
 
 PARTS_DIRNAME = "snapshots_parts"
+CANONICAL_BASENAME = "snapshots.jsonl"
+PARTS_SUFFIX = "_parts"
 PART_MAX_BYTES = 48 * 1024 * 1024
 _PART_RE = re.compile(r"^part-(\d{6})\.jsonl$")
 
@@ -31,8 +37,28 @@ class SnapshotLedgerError(ValueError):
 
 
 def parts_dir(base: Path | str) -> Path:
-    """The directory that holds this ledger's parts (it may not exist)."""
-    return Path(base).parent / PARTS_DIRNAME
+    """The directory that holds this ledger's parts (it may not exist).
+
+    The sidecar belongs to the BASE FILE, not to the directory it sits in. The
+    canonical ``snapshots.jsonl`` keeps ``snapshots_parts/`` — the layout the
+    live ledger and #10571 use. Every other selected filename gets its own
+    ``<stem>_parts/`` so an override (``--snapshots``, a test file, a vintage
+    copy) reads and appends only its own parts even when it sits beside the
+    canonical ledger and its ``snapshots_parts/``.
+
+    A name that would resolve onto the canonical ``snapshots_parts/`` without
+    being the canonical file (``snapshots.bak``, ``snapshots``) is refused:
+    sharing that directory would merge two ledgers, which no reader can undo.
+    """
+    path = Path(base)
+    if path.name == CANONICAL_BASENAME:
+        return path.parent / PARTS_DIRNAME
+    sidecar = f"{path.stem}{PARTS_SUFFIX}"
+    if sidecar == PARTS_DIRNAME:
+        raise SnapshotLedgerError(
+            f"snapshot base {path.name} would share the canonical {PARTS_DIRNAME}/ "
+            f"directory with {CANONICAL_BASENAME}; give the override a distinct filename")
+    return path.parent / sidecar
 
 
 def part_paths(base: Path | str) -> list[Path]:

@@ -250,3 +250,108 @@ def test_append_refuses_a_gap_rather_than_writing_past_it(tmp_path):
     (b.parent / ubs.PARTS_DIRNAME / "part-000001.jsonl").unlink()
     with pytest.raises(ubs.SnapshotLedgerError):
         ubs.append_line(b, _row("D"))
+
+
+
+# ------------------------------------------------- selected-file identity
+#
+# Two differently named snapshot files can share one directory: the canonical
+# ledger plus an explicit override (the Fusion Race ``--snapshots`` flag, a
+# before-rollover copy, a vintage tree). Before the identity repair the parts
+# directory came from the parent directory alone, so selecting the second file
+# silently read and appended the canonical ledger's parts. The sidecar now
+# belongs to the selected base file.
+
+
+def _line(row: dict) -> str:
+    return json.dumps(row, separators=(",", ":"))
+
+
+def _write(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(_line(row) + "\n" for row in rows), encoding="utf-8")
+
+
+def _board(as_of: str, *tickers: str) -> dict:
+    return {"as_of": as_of, "buy": [{"ticker": ticker} for ticker in tickers]}
+
+
+def _override_beside_canonical(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
+    folder = tmp_path / "shared"
+    folder.mkdir()
+    canonical = folder / "snapshots.jsonl"
+    _write(canonical, [_board("2026-06-30", "NATIVE_BASE")])
+    part = folder / ubs.PARTS_DIRNAME / "part-000001.jsonl"
+    _write(part, [_board("2026-07-01", "PART_MEMBER"), _board("2026-07-02", "PART_MEMBER")])
+    override = folder / "snapshots-before-rollover.jsonl"
+    _write(override, [
+        _board("2026-06-30"),
+        _board("2026-07-01", "ALT_ONLY"),
+        _board("2026-07-02", "ALT_ONLY"),
+    ])
+    return folder, canonical, override, part
+
+
+def test_the_parts_directory_is_named_for_the_selected_base_file(tmp_path):
+    folder = tmp_path / "shared"
+    assert ubs.parts_dir(folder / "snapshots.jsonl") == folder / ubs.PARTS_DIRNAME
+    assert ubs.parts_dir(folder / "snapshots-before-rollover.jsonl") == (
+        folder / "snapshots-before-rollover_parts")
+
+
+def test_the_canonical_base_still_reads_base_then_snapshots_parts(tmp_path):
+    _, canonical, _, _ = _override_beside_canonical(tmp_path)
+    assert [json.loads(x)["as_of"] for x in ubs.read_lines(canonical)] == [
+        "2026-06-30", "2026-07-01", "2026-07-02"]
+    assert [p.name for p in ubs.physical_paths(canonical)] == [
+        "snapshots.jsonl", "part-000001.jsonl"]
+
+
+def test_an_override_beside_the_canonical_ledger_reads_only_its_own_rows(tmp_path):
+    _, _, override, _ = _override_beside_canonical(tmp_path)
+    assert ubs.physical_paths(override) == [override]
+    assert [json.loads(x)["as_of"] for x in ubs.iter_lines(override)] == [
+        "2026-06-30", "2026-07-01", "2026-07-02"]
+    assert "PART_MEMBER" not in ubs.read_text(override)
+    assert '"ticker":"ALT_ONLY"' in ubs.read_text(override)
+
+
+def test_append_to_an_override_never_writes_the_canonical_part(tmp_path):
+    folder, canonical, override, part = _override_beside_canonical(tmp_path)
+    before_part = part.read_bytes()
+    before_canonical = canonical.read_bytes()
+    # No sidecar yet, so the row stays in the selected file while it fits.
+    assert ubs.append_line(override, _line(_board("2026-07-03", "ALT_APPEND")),
+                           max_bytes=10 ** 6) == override
+    # Past the ceiling the override opens its OWN part, not the canonical one.
+    rolled = ubs.append_line(override, _line(_board("2026-07-04", "ALT_APPEND")),
+                             max_bytes=override.stat().st_size)
+    assert rolled == folder / "snapshots-before-rollover_parts" / "part-000001.jsonl"
+    assert part.read_bytes() == before_part
+    assert canonical.read_bytes() == before_canonical
+    assert "ALT_APPEND" in ubs.read_text(override)
+    assert "PART_MEMBER" not in ubs.read_text(override)
+
+
+def test_an_override_reads_its_own_part_directory(tmp_path):
+    folder, canonical, override, _ = _override_beside_canonical(tmp_path)
+    own = folder / "snapshots-before-rollover_parts" / "part-000001.jsonl"
+    _write(own, [_board("2026-07-03", "OWN_PART")])
+    assert ubs.physical_paths(override) == [override, own]
+    assert [json.loads(x)["as_of"] for x in ubs.read_lines(override)] == [
+        "2026-06-30", "2026-07-01", "2026-07-02", "2026-07-03"]
+    # The canonical ledger is untouched by the override's sidecar.
+    assert [json.loads(x)["as_of"] for x in ubs.read_lines(canonical)] == [
+        "2026-06-30", "2026-07-01", "2026-07-02"]
+    assert "OWN_PART" not in ubs.read_text(canonical)
+
+
+@pytest.mark.parametrize("name", ["snapshots.bak", "snapshots"])
+def test_a_name_that_would_share_the_canonical_sidecar_is_refused(tmp_path, name):
+    b = tmp_path / "us_board_ledger" / name
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.parts_dir(b)
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.read_lines(b)
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.append_line(b, _line(_board("2026-07-01", "X")))
