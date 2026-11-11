@@ -94,6 +94,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -331,6 +333,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2506,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3585,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8181,6 +8189,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -10700,6 +10710,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
@@ -11053,6 +11065,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -11425,6 +11439,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -12441,6 +12457,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -17110,6 +17128,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -23566,6 +23586,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/i18n.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23722,6 +23748,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -24162,6 +24190,8 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -27127,6 +27157,13 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - "engine/axes.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -27547,6 +27584,10 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/axes.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/options_hub_retention.py"
@@ -31461,6 +31502,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -32539,6 +32582,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -34187,6 +34232,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35468,6 +35515,8 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -41277,6 +41326,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -42981,6 +43032,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -44671,6 +44724,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45947,6 +46002,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/axes.py"
+      - "engine/regime.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -49837,6 +49894,13 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "engine/axes.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -50104,6 +50168,13 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "engine/axes.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/neuralweb/synapse.py"
+      - "engine/regime.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -50915,6 +50986,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
