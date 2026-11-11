@@ -134,15 +134,17 @@ def _ledger_path(data_root: Path) -> Path:
 
 
 def _load_ledger(data_root: Path) -> pd.DataFrame:
-    """Load ledger.parquet; return empty DataFrame with expected schema on miss."""
+    """Load existing history; initialize only when the ledger is genuinely absent."""
     p = _ledger_path(data_root)
     if not p.exists():
         return pd.DataFrame()
     try:
         return pd.read_parquet(p)
     except Exception as e:  # noqa: BLE001
-        log.warning("build_intraday_flow: ledger load failed (%s) — starting fresh", e)
-        return pd.DataFrame()
+        # An unreadable existing ledger is not an empty history. Let the
+        # append boundary fail soft without replacing the original bytes.
+        log.warning("build_intraday_flow: ledger load failed (%s) — preserving existing history", e)
+        raise
 
 
 def _write_ledger(df: pd.DataFrame, data_root: Path) -> None:
@@ -623,12 +625,18 @@ def _extract_stockdata_context(sd: dict) -> dict:
 
     # entry_signal — top-level.
     es = sd.get("entry_signal") or {}
+    # Carry the existing owner's boundary; never derive one from buy-zone/ATR.
+    from engine.intraday_flow import _finite_number  # noqa: PLC0415
+    chase_above = _finite_number(es.get("chase_above"))
+    if chase_above is not None and chase_above <= 0:
+        chase_above = None
     ctx["entry_signal"] = {
         "status": es.get("status"),
         "stop": es.get("stop"),
         "buy_zone": es.get("buy_zone"),
         "atr_pct": es.get("atr_pct"),
         "spot": es.get("spot"),
+        "chase_above": chase_above,
     } if es else None
 
     # prevClose — from tech.price.
@@ -1202,7 +1210,16 @@ def _advance_ledger(
             if _stance_fn is not None:
                 try:
                     dealer = (rec.get("options_entry") or {}).get("dealer")
-                    _eod_stance = _stance_fn(legs=legs, dealer=dealer)
+                    entry = rec.get("entry_signal") or {}
+                    result = _stance_fn(
+                        legs=legs, K=legs.K, dealer=dealer,
+                        live_present=False,
+                        entry_status=entry.get("status"),
+                        current_price=rec.get("prev_close"),
+                        chase_above=entry.get("chase_above"),
+                        squeeze_coiled=(rec.get("vol_squeeze") or {}).get("coiled"),
+                    )
+                    _eod_stance = result["key"]
                 except Exception as _se:  # noqa: BLE001
                     log.debug(
                         "build_intraday_flow: stance() for %s failed: %s", ticker, _se

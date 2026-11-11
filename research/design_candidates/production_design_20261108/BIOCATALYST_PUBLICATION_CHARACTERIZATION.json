@@ -1,0 +1,54 @@
+{
+  "status": "CURRENT_PUBLICATION_BINDING_GAP_REPRODUCED_NOT_FIX_ACCEPTANCE",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "path": "app/biocatalyst.py",
+    "blob_sha": "18dc16edf61749879a02043b00a1bbae66123d85",
+    "ranges": {
+      "_AUTHORITY": "174\u2013187",
+      "_meta": "2325\u20132346",
+      "_opaque_digest": "864\u2013867"
+    }
+  },
+  "extraction": {
+    "functions": [
+      "_meta",
+      "_opaque_digest"
+    ],
+    "constant": "_AUTHORITY",
+    "sha256": "b0261f8115345670af4109ae6d7ce974fe08604caf9ac924abce6fb3414a2ddd",
+    "input_sha256": "31d9646ad3448a78f2f353418cf0a39995f5c0b89cfd6f82d0a95add5fb61fa3"
+  },
+  "cases": [
+    {
+      "id": "different_generations_identical_public_metadata",
+      "current_metadata_equal": true,
+      "existing_generation_digests_differ": true,
+      "digests": [
+        "481117ae2349b857c756646c54a5ab63570c43ff22ffa6b62d209f1ab3615a21",
+        "dac809eef218f6daeb839059b510a37a563e88646bdd9ca21e800b05ca8a5deb"
+      ],
+      "required_future": "Project the existing generation binding consistently into queue/dossier/screen responses."
+    },
+    {
+      "id": "same_generation_different_operational_health",
+      "current_metadata_equal": false,
+      "generation_digest_equal": true,
+      "required_future": "Keep generation identity separate from operational clocks; neither is issuer identity or authorization."
+    }
+  ],
+  "execution": {
+    "app_imported": false,
+    "network_calls": 0,
+    "storage_calls": 0,
+    "browser_playback": false,
+    "generation_inputs": "controlled fictional fixtures"
+  },
+  "limits": [
+    "The opaque digest already exists for cursor binding; this does not add it to public API metadata.",
+    "No live source mismatch or current source generation was observed.",
+    "Publication equality does not prove exact historical retrieval, security identity or research authority.",
+    "The fixture never invokes publication, auth, alerts, prices or trading."
+  ]
+}

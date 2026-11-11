@@ -1,0 +1,118 @@
+{
+  "schema": "paper.government_revenue_source_fixtures.v1",
+  "illustrative": true,
+  "request": "2026-11-09T12:00:00Z",
+  "date_control": "2026-11-09",
+  "rows": [
+    {
+      "id": "A",
+      "known_at": "2026-11-09T10:00:00Z",
+      "effective_at": "2026-11-09T09:00:00Z"
+    },
+    {
+      "id": "B",
+      "known_at": "2026-11-09T15:00:00Z",
+      "effective_at": "2026-11-09T11:00:00Z"
+    },
+    {
+      "id": "C",
+      "known_at": null,
+      "effective_at": "2026-11-09T11:00:00Z"
+    },
+    {
+      "id": "D",
+      "known_at": "2026-11-09T11:00:00Z",
+      "effective_at": "2026-11-09T16:00:00Z"
+    }
+  ],
+  "expected": {
+    "strict_intraday_ids": [
+      "A"
+    ],
+    "metrics_intraday_ids": [
+      "A",
+      "B",
+      "D"
+    ],
+    "date_control_ids": [
+      "A",
+      "B",
+      "D"
+    ],
+    "strict_knowledge_only_ids": [
+      "A",
+      "D"
+    ]
+  },
+  "price_condition": {
+    "type": "price",
+    "op": "below",
+    "value": 304
+  },
+  "price_cases": [
+    {
+      "name": "First evaluation already below",
+      "manifest_last": 303,
+      "expected_fired": true,
+      "expected_basis": "eod",
+      "r5_transition_proven": false
+    },
+    {
+      "name": "Exactly at the threshold",
+      "manifest_last": 304,
+      "expected_fired": false,
+      "expected_basis": "eod",
+      "r5_transition_proven": false
+    },
+    {
+      "name": "Gap below the lower example level",
+      "manifest_last": 293,
+      "expected_fired": true,
+      "expected_basis": "eod",
+      "r5_transition_proven": false
+    },
+    {
+      "name": "Live quote selected ahead of manifest",
+      "quote_last": 303,
+      "manifest_last": 310,
+      "expected_fired": true,
+      "expected_basis": "live",
+      "r5_transition_proven": false
+    },
+    {
+      "name": "No available price",
+      "expected_fired": null,
+      "expected_basis": null,
+      "r5_transition_proven": false
+    }
+  ],
+  "r5_acceptance_examples": [
+    {
+      "prior_verified_regular_close": 305,
+      "new_verified_regular_close": 303,
+      "expected_new_crossing": true
+    },
+    {
+      "prior_verified_regular_close": 304,
+      "new_verified_regular_close": 293,
+      "expected_new_crossing": true
+    },
+    {
+      "prior_verified_regular_close": null,
+      "new_verified_regular_close": 303,
+      "expected_new_crossing": false,
+      "reason": "Seed the baseline; no historical replay."
+    },
+    {
+      "prior_verified_regular_close": 303,
+      "new_verified_regular_close": 302,
+      "expected_new_crossing": false
+    },
+    {
+      "prior_verified_regular_close": 305,
+      "new_verified_regular_close": 304,
+      "expected_new_crossing": false
+    }
+  ],
+  "scope": "Controlled helper characterization only. R5 acceptance examples are requirements, not implemented or executed alert behavior. No production rows, calls, collectors, lifecycle transitions, firing, or delivery."
+}
