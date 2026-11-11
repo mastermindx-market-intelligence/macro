@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
   "as_of": "2026-11-11",
-  "generated_at": "2026-11-11T11:36:53Z",
+  "generated_at": "2026-11-11T12:44:07Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -412,7 +412,7 @@
           "basket_id": "nuclear_power",
           "name_en": "Nuclear & SMR Power",
           "name_zh": "核电与小型模块化反应堆",
-          "score": 26,
+          "score": 25,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1115,7 +1115,7 @@
           "basket_id": "reshoring",
           "name_en": "Reshoring & Industrial Capex",
           "name_zh": "回流与工业资本开支",
-          "score": 51,
+          "score": 50,
           "label": "neutral",
           "label_en": "NEUTRAL",
           "label_zh": "中性",
@@ -1424,7 +1424,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-11T11:36:55Z",
-  "inputs_hash": "sha256:b4d76eaf2d88903c51b18a7cf9c9770c3ffd4787c803fc433aa8a3bf33aae7b7",
+  "produced_at": "2026-11-11T12:44:10Z",
+  "inputs_hash": "sha256:1b7580300bf7dd4035e9987ca55d17604fed3fc29d711a64074fa1e26957c185",
   "tier": "display"
 }
