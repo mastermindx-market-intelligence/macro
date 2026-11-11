@@ -10464,6 +10464,7 @@ jobs:
           tests/test_library_chg_1d.py
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
+          tests/test_aibrief_consumer_freshness.py
           tests/test_aibrief_w4_panels.py
           tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
