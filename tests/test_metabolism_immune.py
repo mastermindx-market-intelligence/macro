@@ -345,6 +345,116 @@ def test_lane_health_queue_stuck_ignores_non_queued():
     assert result["found"] is False
 
 
+def test_lane_health_queue_stuck_keeps_old_unverified_projection():
+    ancient = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    runs = [
+        {"id": 111, "name": "old-workflow", "status": "queued", "created_at": ancient},
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["ignored_stale_count"] == 0
+    assert "unverified queued projection" in result["stuck_runs"][0]
+
+
+def test_lane_health_queue_stuck_ignores_wrapper_with_active_child():
+    long_ago = (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat()
+    runs = [
+        {
+            "id": 222,
+            "name": "daily",
+            "status": "queued",
+            "created_at": long_ago,
+            "_queue_projection_state": "active_children",
+        },
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is False
+    assert result["ignored_active_count"] == 1
+
+
+def test_lane_health_queue_stuck_keeps_real_queued_child_actionable():
+    long_ago = (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat()
+    runs = [
+        {
+            "id": 333,
+            "name": "engine-render",
+            "status": "queued",
+            "created_at": long_ago,
+            "_queue_projection_state": "queued_children",
+        },
+    ]
+    result = check_queue_stuck(runs, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+
+
+def test_queue_health_annotation_probes_only_actionable_recent_queue():
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    now = datetime.now(timezone.utc)
+    runs = [
+        {
+            "id": 444,
+            "name": "daily",
+            "status": "queued",
+            "created_at": (now - timedelta(minutes=60)).isoformat(),
+        },
+        {
+            "id": 555,
+            "name": "fresh",
+            "status": "queued",
+            "created_at": (now - timedelta(minutes=10)).isoformat(),
+        },
+        {
+            "id": 666,
+            "name": "old-unverified",
+            "status": "queued",
+            "created_at": (now - timedelta(days=30)).isoformat(),
+        },
+    ]
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[{"status": "completed"}, {"status": "in_progress"}],
+    ) as job_fetch:
+        annotated = _annotate_queue_health_runs(
+            runs, _MINIMAL_REGISTRY["lane_health"]
+        )
+
+    by_id = {row["id"]: row for row in annotated}
+    assert by_id[444]["_queue_projection_state"] == "active_children"
+    assert "_queue_projection_state" not in by_id[555]
+    assert "_queue_projection_state" not in by_id[666]
+    assert job_fetch.call_count == 1
+    assert "/actions/runs/444/jobs?per_page=100" in job_fetch.call_args.args[0][1]
+
+
+def test_queue_health_annotation_keeps_mixed_queued_child_actionable():
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    run = {
+        "id": 777,
+        "name": "mixed-workflow",
+        "status": "queued",
+        "created_at": (datetime.now(timezone.utc) - timedelta(minutes=60)).isoformat(),
+    }
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[
+            {"status": "completed"},
+            {"status": "in_progress"},
+            {"status": "queued"},
+        ],
+    ):
+        annotated = _annotate_queue_health_runs(
+            [run], _MINIMAL_REGISTRY["lane_health"]
+        )
+
+    assert annotated[0]["_queue_projection_state"] == "queued_children"
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+
+
 # ── 12. Lane-health: runner-offline detector ─────────────────────────────────
 
 def test_lane_health_runner_offline_fires():
@@ -1845,3 +1955,240 @@ def test_run_immune_lane_surfaces_write_ci_status_failure():
     assert any("write_ci_status failed" in e for e in summary["errors"]), (
         f"a write_ci_status()==False must be surfaced in summary['errors']; got {summary['errors']}"
     )
+
+
+# Queue projection repair: workflow age and incomplete child evidence.
+def _queue_repair_run(age_minutes=60, **extra):
+    return {
+        "id": 991,
+        "name": "queue-evidence",
+        "status": "queued",
+        "created_at": (
+            datetime.now(timezone.utc) - timedelta(minutes=age_minutes)
+        ).isoformat(),
+        **extra,
+    }
+
+
+def test_queue_repair_old_workflow_new_attempt_keeps_observed_queued_child():
+    run = _queue_repair_run(
+        30 * 24 * 60,
+        run_attempt=2,
+        run_started_at=(
+            datetime.now(timezone.utc) - timedelta(minutes=1)
+        ).isoformat(),
+        _queue_projection_state="queued_children",
+    )
+    result = check_queue_stuck([run], _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert result["stuck_count"] == 1
+    assert result["ignored_stale_count"] == 0
+    assert "workflow age" in result["summary"]
+    assert "observed queued child" in result["stuck_runs"][0]
+
+
+@pytest.mark.parametrize(
+    ("state", "counter"),
+    [("active_children", "ignored_active_count"),
+     ("terminal_children", "ignored_terminal_count")],
+)
+def test_queue_repair_old_workflow_clears_only_with_child_evidence(state, counter):
+    run = _queue_repair_run(30 * 24 * 60, _queue_projection_state=state)
+    result = check_queue_stuck([run], _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is False
+    assert result[counter] == 1
+    assert result["ignored_stale_count"] == 0
+
+
+@pytest.mark.parametrize("state", [None, "queued_children"])
+def test_queue_repair_labels_age_and_evidence_without_inventing_child_wait(state):
+    run = _queue_repair_run()
+    if state:
+        run["_queue_projection_state"] = state
+    result = check_queue_stuck([run], _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert "workflow age" in result["summary"]
+    assert "queued >" not in result["summary"]
+    expected = "observed queued child" if state else "unverified queued projection"
+    assert expected in result["stuck_runs"][0]
+    assert result["observed_queued_count"] == int(bool(state))
+    assert result["unverified_count"] == int(not state)
+
+
+@pytest.mark.parametrize(
+    "jobs",
+    [
+        [],
+        [{}],
+        [{"status": "completed"}, {}],
+        [{"status": "in_progress"}, {"status": "unknown"}],
+        [{"status": "completed"}, {"status": "unknown"}],
+        [{"status": "in_progress"}, None],
+        [{"status": "completed"}, ""],
+        [{"status": "in_progress"}, {"status": None}],
+    ],
+)
+def test_queue_repair_incomplete_child_evidence_does_not_clear(jobs):
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    run = _queue_repair_run()
+    with patch("scripts.metabolism_immune._gh_json_list", return_value=jobs):
+        annotated = _annotate_queue_health_runs(
+            [run], _MINIMAL_REGISTRY["lane_health"]
+        )
+    assert "_queue_projection_state" not in annotated[0]
+    assert "_queue_projection_state" not in run
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert "unverified queued projection" in result["stuck_runs"][0]
+
+
+@pytest.mark.parametrize("sibling", [{}, None, {"status": "unknown"}])
+def test_queue_repair_queued_child_wins_over_incomplete_sibling(sibling):
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    with patch(
+        "scripts.metabolism_immune._gh_json_list",
+        return_value=[{"status": "queued"}, sibling, {"status": "in_progress"}],
+    ):
+        annotated = _annotate_queue_health_runs(
+            [_queue_repair_run()], _MINIMAL_REGISTRY["lane_health"]
+        )
+    assert annotated[0]["_queue_projection_state"] == "queued_children"
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert "observed queued child" in result["stuck_runs"][0]
+
+
+@pytest.mark.parametrize("status", ["completed", "in_progress", "queued"])
+@pytest.mark.parametrize("shape", ["scalar_line", "array_member", "malformed_line"])
+def test_queue_repair_raw_parser_preserves_incomplete_job_evidence(status, shape):
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    job = {"status": status}
+    if shape == "array_member":
+        output = json.dumps([job, None])
+    else:
+        bad = "null" if shape == "scalar_line" else "not-json"
+        output = json.dumps(job) + "\n" + bad + "\n"
+    completed = MagicMock(returncode=0, stdout=output, stderr="")
+    with patch(
+        "scripts.metabolism_immune.subprocess.run", return_value=completed
+    ) as provider:
+        annotated = _annotate_queue_health_runs(
+            [_queue_repair_run()], _MINIMAL_REGISTRY["lane_health"]
+        )
+    provider.assert_called_once()
+    command = provider.call_args.args[0]
+    assert command == [
+        "gh", "api", "/repos/{owner}/{repo}/actions/runs/991/jobs?per_page=100",
+        "--jq", ".jobs[]", "--paginate",
+    ]
+    assert provider.call_args.kwargs["timeout"] == 60
+    if status == "queued":
+        assert annotated[0]["_queue_projection_state"] == "queued_children"
+    else:
+        assert "_queue_projection_state" not in annotated[0]
+    assert check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])["found"]
+
+
+@pytest.mark.parametrize("shape", ["scalar_line", "array_member", "malformed_line"])
+def test_queue_repair_parser_default_behavior_is_unchanged(shape):
+    from scripts.metabolism_immune import _gh_json_list
+
+    job = {"status": "completed"}
+    if shape == "array_member":
+        output = json.dumps([job, None])
+    else:
+        bad = "null" if shape == "scalar_line" else "not-json"
+        output = json.dumps(job) + "\n" + bad + "\n"
+    with patch(
+        "scripts.metabolism_immune.subprocess.run",
+        return_value=MagicMock(returncode=0, stdout=output, stderr=""),
+    ):
+        assert _gh_json_list(["api", "/synthetic-fixture"]) == [job]
+
+
+@pytest.mark.parametrize("failure", ["nonzero", "timeout"])
+def test_queue_repair_failed_detail_read_stays_unverified(failure):
+    from subprocess import TimeoutExpired
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    partial = json.dumps({"status": "completed"})
+    options = (
+        {"return_value": MagicMock(returncode=1, stdout=partial, stderr="synthetic failure")}
+        if failure == "nonzero"
+        else {"side_effect": TimeoutExpired("synthetic gh", 60, output=partial)}
+    )
+    with patch(
+        "scripts.metabolism_immune.subprocess.run", **options
+    ) as provider:
+        annotated = _annotate_queue_health_runs(
+            [_queue_repair_run()], _MINIMAL_REGISTRY["lane_health"]
+        )
+    provider.assert_called_once()
+    assert "_queue_projection_state" not in annotated[0]
+    result = check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])
+    assert result["found"] is True
+    assert "unverified queued projection" in result["summary"]
+
+
+@pytest.mark.parametrize(("minutes", "found"), [(39, False), (41, True)])
+def test_queue_repair_keeps_existing_workflow_age_threshold(minutes, found):
+    result = check_queue_stuck(
+        [_queue_repair_run(minutes)], _MINIMAL_REGISTRY["lane_health"]
+    )
+    assert result["found"] is found
+
+
+def test_queue_repair_caller_keeps_old_unverified_projection_and_original_runs(tmp_path):
+    from engine.metabolism import immune
+    from scripts import metabolism_immune as script
+
+    runs = [_queue_repair_run(30 * 24 * 60)]
+    original = [dict(run) for run in runs]
+    with (
+        patch.object(script, "_fetch_runs_list", return_value=runs),
+        patch.object(script, "_fetch_runners_list", return_value=[]),
+        patch.object(script, "_fetch_key_ledger", return_value={}),
+        patch.object(script, "_gh_json_list") as job_fetch,
+        patch.object(script, "_notify") as notify,
+        patch.object(immune, "check_dead_cron", wraps=immune.check_dead_cron) as cron,
+        patch.object(immune, "has_fired_today", return_value=False),
+        patch.object(immune, "mark_fired_today") as mark,
+        patch("engine.metabolism.insight_bus.append_row") as append,
+    ):
+        rows = script.run_lane_health_checks(
+            _MINIMAL_REGISTRY, root=tmp_path, dry_run=True
+        )
+    assert len(rows) == 1
+    assert rows[0]["emitter"] == "metabolism_immune.lane_health"
+    assert "unverified queued projection" in rows[0]["summary"]
+    assert rows[0]["authority"]["is_context_only"] is True
+    assert cron.call_args.args[0] is runs
+    assert runs == original
+    job_fetch.assert_not_called()
+    notify.assert_not_called()
+    mark.assert_not_called()
+    append.assert_not_called()
+    assert not list(tmp_path.rglob("*"))
+
+
+@pytest.mark.parametrize(
+    ("statuses", "state"),
+    [(["completed"], "terminal_children"),
+     (["completed", "in_progress"], "active_children")],
+)
+def test_queue_repair_complete_child_evidence_still_clears(statuses, state):
+    from scripts.metabolism_immune import _annotate_queue_health_runs
+
+    output = "\n".join(json.dumps({"status": status}) for status in statuses)
+    with patch(
+        "scripts.metabolism_immune.subprocess.run",
+        return_value=MagicMock(returncode=0, stdout=output, stderr=""),
+    ):
+        annotated = _annotate_queue_health_runs(
+            [_queue_repair_run()], _MINIMAL_REGISTRY["lane_health"]
+        )
+    assert annotated[0]["_queue_projection_state"] == state
+    assert check_queue_stuck(annotated, _MINIMAL_REGISTRY["lane_health"])["found"] is False

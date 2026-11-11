@@ -2,14 +2,24 @@
 
 ## Session-owned technical reviews (Chairman amendment, 2026-11-03)
 
-The **active assigned session** owns its review and adjudication; a different ChatGPT Web conversation, third-party account, or former reviewer chat is **not** a default prerequisite. When Mastermind #2026 has **merged to protected master**, consult its [session-local review law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md) at that accepted pin. Until then use currently protected review/risk law; this unmerged source pointer grants **no** waiver. FAST and ordinary STANDARD changes can use an explicit adversarial **author self-review**, targeted tests and required CI when the zero-external-review policy is accepted. Do not dispatch independent Fabric/Dot reviewers simply because a source edit or PR exists.
+The **active assigned session** owns its review and adjudication; a different ChatGPT Web conversation, third-party account, or former reviewer chat is **not** a default prerequisite. Mastermind #2026 **merged into protected master on 2026-11-04**. Consult its [session-local review law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md) at that accepted pin. Mastermind #2018 closed without merging; it is not a pending approval or adoption gate. Apply current protected review/risk law; a proposed PR by itself grants **no** waiver. FAST and ordinary STANDARD changes can use an explicit adversarial **author self-review**, targeted tests and required CI when the zero-external-review policy is accepted. Do not dispatch independent Fabric/Dot reviewers simply because a source edit or PR exists.
 
 For genuinely review-sensitive work, **the same parent session** may spawn real distinct-context read-only technical reviewer subagents: ChatGPT Web Pro *only when its native spawn tool is actually exposed*, native Codex, native Claude, or an admitted original-root Fabric reviewer. Observe child launch, exact-head source, independent findings and parent disposition; one author's second pass is self-review, **not** a separate independent actor. No external Web chat requirement. Formal GitHub `APPROVED` by a genuinely non-author authenticated principal, current CI, recorded holds, protected merge-on-green checks, source custody and effect/denial fences remain separately enforced; never self-approve, self-merge, fake review, or bypass a required native approval. A proposed Mastermind policy PR is not an installed law or proof that ChatGPT Projects have been changed.
 
 
+## GitHub-native source authoring versus M2 host-local custody
+
+A GitHub-native branch/commit/PR operation is not an M2 filesystem or worktree operation. **Only after** Mastermind PR #2118 has actually merged into protected `master` and current protected `docs/DELIVERY_WORKFLOW.md` admits that route, an assigned Web/Codex/Claude session with real GitHub write permission may use the native API without M2 Studio Direct, the external SSD or a host-local worktree. Require exact repository/source pin, isolated branch or original operation carrier, blob/expected-head CAS, live-writer/effect reconciliation and truthful hosted CI. This conditional pointer does not install unmerged #2118.
+
+For **host-local** Claude/CLI edits and any process running on the M2, the incumbent SSD quarantine, `ship_loop_guard.py`, approved storage helper, occupied-checkout and sparse-worktree controls still apply. Never switch an explicitly denied or effect-unknown action to another carrier. Neither authoring route permits direct `main` pushes, self-approval, self-merge, held-PR release or bypass of Macro's separate `merge-on-green` checks.
+
 ## Finish-to-release: no draft graveyard
 
 An assigned session must drive its existing PR to the **actual user/machine outcome**, not stop at Draft or a published commit. Retain its original source carrier, repair concrete failing CI, make **non-held** stable reviewable candidates Ready, obtain genuinely required independent/formal checks, use the existing authorized merge-on-green controller, verify merged commit and owed production/browser proof. A pending check or published PR is not completion. Do not create a replacement PR, hand off to an archived reviewer chat, invent a watcher, or label an unmerged PR delivered. If an actual hold/permission/uncertain effect prevents the release, preserve the original exact target and next actionable repair; continue disjoint permitted work. Recorded `HOLD-FOR-SOL` stays **Draft / PARKED**, no `merge-on-green` label, no native auto-merge, no Ready or merge until the actual hold owner releases it; do not relabel the hold as DONE. An actually verified current-controller handoff may delegate an idle wait but **never** proves merged/accepted; the historical `scripts/ci_handoff.py` is absent from protected main and must not be invoked as a required exit ritual; red/held PRs retain an accountable reachable repair owner under `DEC:SESSION-OWNED-REVIEW-20261103`. Never self-approve, self-merge, bypass branch rules, remove recorded HOLD or replay denied effects. Follow Mastermind's [session-owned finish-to-release law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md#finish-to-release-ownership-a-pr-is-an-intermediate-artifact) after accepted source enrollment.
+
+## Reuse-first engineering (established infrastructure)
+
+For substantial implementation of existing machinery (agent harnesses, charts, dashboards, scheduling, storage, monitoring or UI), inspect incumbent Macro/Mastermind capabilities and credible maintained open-source options first. Prefer integrating, composing or extending proven libraries with a narrow adapter rather than rebuilding commodity infrastructure. Keep bespoke sector/intelligence/quantitative hypotheses and signals independently designed and scientifically validated. Check maintenance, compatibility, existing security/data boundaries and actual integration tests; no new sign-off. The scan is proportionate, not a new approval or documentation gate. Apply the protected shared [Reuse First policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) when accepted; a proposal alone does not change live settings.
 
 ## Standing commercial data rights
 
@@ -177,6 +187,36 @@ is a complete session however short or expensive it was: never pad a session to 
 substantial, and never stop while authorized work remains. Context compaction,
 rotation, or a `/clear` is a harness event and not an outcome — the guard's block
 ledger deliberately survives `resume` and `compact`.
+
+## Assigned Meta-CEO: delegate bounded labor to paid Fabric first (2026-10-12)
+
+**Only a current Chairman-assigned principal/Meta-CEO holds this role.**
+Ordinary Codex/Claude sessions remain bounded workers; neither a model label nor
+a historical role turns an unassigned session into a principal. The concrete
+Codex/Claude operating and proof contract is in
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md).
+
+An assigned Meta-CEO owns architecture, source/worker custody, prioritization,
+reviews, synthesis and acceptance. **Before substantial C0/C1/C2 routine
+implementation, research, tests or repair, make the delegate-versus-direct
+decision**. When an independent bounded leaf and eligible admitted provider
+exist, use the existing paid Subagent Fabric (GLM/Qwen/MiniMax/Grok as qualified)
+rather than burning frontier principal turns or spawning native Codex children.
+Codex on an already-enrolled host uses the installed
+`mastermind-fabric-delegate` skill and incumbent `fabric_task.py` adapter,
+not an invented queue or direct SSH/provider fallback. A native child is
+reserved for actual coordination/judgment; an inherited frontier-model fork
+is not a cheap leaf. Preserve the exact current `CODEX_THREAD_ID` root and
+any existing Executive/other-carrier effects, and never duplicate a run.
+
+Return compact status, artifact/commit hashes, tests, gaps and the next decision
+to the parent. Store full worker logs outside principal context and material
+cross-session decisions in existing Agent OS continuity. Don't create children
+merely to occupy free Ubuntu lanes; budget real non-overlapping work, admission,
+review and disk headroom. Record an exception to delegation when direct effort
+is demonstrably better, and never use another carrier to bypass a refusal.
+Updated source instructions alone are **not** fresh-session installation or
+real-path adoption proof.
 
 ## Context economy (frontier burn is CONTEXT × TURNS)
 
@@ -427,3 +467,9 @@ Disarming is never silent (#5291): `gh pr edit <n> --remove-label merge-on-green
 requires, in the same act, a visible marker (`merge-blocked` or a comment naming the
 session and intent) and responsibility through merged-or-handed-back. Never remove
 another session's arm without the applicable custody and continuation evidence.
+
+## Graph engineering for substantial missions
+
+Load [.agents/skills/mastermind-graph-engineering/SKILL.md](.agents/skills/mastermind-graph-engineering/SKILL.md) for multi-domain or long-horizon work. It resolves the shared Mastermind skill and its T3, Hermes and Paperclip guidance.
+
+Keep product direction, long-horizon planning and acceptance with the principal. Give admitted suborchestrators complete domain outcomes, let them coordinate admitted children and integrate evidence locally, and send compact decisions and proof upward. Preserve original root, actual parentage, scope, budget, writer custody and result return. Discover runtime depth limits before spawning; use the shallowest useful hierarchy and continue after accepted milestones.

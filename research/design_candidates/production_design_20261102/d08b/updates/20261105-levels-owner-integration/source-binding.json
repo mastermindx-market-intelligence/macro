@@ -1,0 +1,122 @@
+{
+  "packet": "D08B Levels unknown-regime owner integration proposal",
+  "status": "PROPOSED_NOT_APPLIED",
+  "runtime_verification": "NOT_RUNTIME_VERIFIED",
+  "assembled_at_utc": "2026-11-05T04:08:39Z",
+  "protected_law_pin": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "ref": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+    "source": "Valid compatible parent-session pin reused"
+  },
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "target_path": "terminal/components/levels/LevelsView.tsx",
+  "incumbent": {
+    "pr": 1248,
+    "head": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+    "branch": "sol/web-options-workspace-surface-flow-ux-20261103-c3",
+    "blob": "03211be2aa72b3d602f20aa4f495fb84e129c7b3",
+    "observation": "Open overlapping incumbent, not evidence of an active writer or lease"
+  },
+  "d08b_reference": {
+    "pr": 1266,
+    "head": "5903c07acf867366659cec689e6547b08c00ee87",
+    "blob": "430a2b84a1a78edffd68f522fa56e22e3d2c2ca8",
+    "role": "Read-only comparison reference; not patch base"
+  },
+  "paper_evidence": {
+    "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "artboard": "1QGP-0",
+    "name": "B14",
+    "observed_by": "parent session",
+    "observation": "Null regime explicitly Unknown",
+    "child_canvas_actions": []
+  },
+  "sources": [
+    {
+      "path": "terminal/components/levels/LevelsView.tsx",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "03211be2aa72b3d602f20aa4f495fb84e129c7b3",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/components/levels/LevelsView.tsx"
+    },
+    {
+      "path": "terminal/components/levels/levelsLabels.ts",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "25805b7b503ba31ee1547a7ec68dcc23f8d9b40c",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/components/levels/levelsLabels.ts"
+    },
+    {
+      "path": "terminal/public/data/levels_fixture.json",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "27b82e7aa3fdabf58661ac0f29e78d3045fcb3c7",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/public/data/levels_fixture.json"
+    },
+    {
+      "path": "terminal/lib/i18n.tsx",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "efd3688e2b4ca6bcd9e806d0096854158c1de214",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/lib/i18n.tsx"
+    },
+    {
+      "path": "terminal/lib/finFormat.ts",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "97a7fc601016c5575ebe1531b23c953f9de2aa77",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/lib/finFormat.ts"
+    },
+    {
+      "path": "terminal/lib/__tests__/levelsLoadFailureState.test.tsx",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "e2a17488e491998da7d9bf3beb5ef15ff254f657",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/lib/__tests__/levelsLoadFailureState.test.tsx"
+    },
+    {
+      "path": "terminal/lib/__tests__/levelsSource.test.ts",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "779766e3b72ed0fb01ced1d28fdc021f0d68096d",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/lib/__tests__/levelsSource.test.ts"
+    },
+    {
+      "path": "terminal/components/levels/levelsNavigation.ts",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "68693eac7bfa2a430865a505aa22b154759591fc",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/components/levels/levelsNavigation.ts"
+    },
+    {
+      "path": "terminal/package.json",
+      "ref": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+      "blob": "9dd3604673872fd8dee0b9828603e358f05dd048",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/98ffa891116ccc9e6be58a64148dbe45591e6ce8/terminal/package.json"
+    }
+  ],
+  "proposal": {
+    "base_git_blob": "03211be2aa72b3d602f20aa4f495fb84e129c7b3",
+    "proposed_git_blob": "539e4099c8d06780967b40b77f9377f0a2dc4414",
+    "proposed_sha256": "4bdb4f87367aec6a1d63cf831cfe2bb6edda4ce563bb4778445d98c794c63075",
+    "patch_sha256": "1be5efe068ba19f76ce60ef86468af7bc961d539593b72b530ef8901a471dc44",
+    "changed_files": 1,
+    "classification_logic": "Exact sticky / exact slippery / Unknown presentation",
+    "mutations_applied_to_source_or_remote": false
+  },
+  "verification_performed": [
+    "Read exact immutable source blobs",
+    "Confirm original local reference Git blob identities",
+    "Review two-hunk display-only diff"
+  ],
+  "verification_not_performed": [
+    "Patch application to source checkout",
+    "Typecheck",
+    "Unit/component test",
+    "Browser run",
+    "Screenshot",
+    "Paper edit",
+    "Production proof"
+  ],
+  "release_holds": [
+    "no merge",
+    "no Ready",
+    "no un-draft",
+    "no enqueue",
+    "no held relabel",
+    "no uncertain-operation retry",
+    "no production deployment"
+  ]
+}

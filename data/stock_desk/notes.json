@@ -1,164 +1,163 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-03",
-  "generated_at": "2026-11-04T17:51:37.504879+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-10T18:26:04.274147+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-11-03-PWR-20261104175137-1",
-      "ticker": "PWR",
-      "name": "Quanta Services Inc",
+      "id": "2026-11-06-FNV-20261110182604-1",
+      "ticker": "FNV",
+      "name": "Franco-Nevada",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "A leader with a fresh swing low and buy setup, but the accounting-quality warning plus a mixed weekly picture and negative factor composite argue against chasing here; this is a watch-and-verify, not a short.",
+      "horizon_d": 15,
+      "thesis": "The daily bottoming turn and positive MACD are offset by a mixed weekly regime, left-translated prior cycle and an imminent earnings event. The validated event-proximity brake supports watching rather than making a directional relative-return call.",
       "evidence": [
-        "Verdict: 'Leader \u00b7 accounting warning \u2014 verify before buying'",
-        "Selection axis z=1.23 (SUE z=2.42 validated)",
-        "Entry axis z=0.50, unblocked",
-        "Quality axis z=-0.50 with accounting=warn",
-        "Daily bottoming, weekly not yet turned (MIXED regime)"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Earnings in 1 day can override the setup",
+        "Daily phase stretched; investor phase late",
+        "Prior cycle left-translated",
+        "Above 50-day and 200-day averages"
       ],
-      "dissent": "The SUE z=2.42 is the lone validated FDR survivor and 68th-percentile selection is the strongest on the board; if accounting proves clean, momentum can persist and the leader extends.",
+      "dissent": "The rejected low and renewed daily momentum could persist, particularly if earnings confirm the turn.",
       "falsifier": {
-        "text": "PWR loses its 50-day average support, or the TURN SIGNALED reverts below the swing low before a weekly turn confirms.",
+        "text": "A favorable earnings reaction followed by a weekly trend turn and sustained performance above the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
-    },
-    {
-      "id": "2026-11-03-CVNA-20261104175137-2",
-      "ticker": "CVNA",
-      "name": "Carvana Co",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "A bullish FRESH BUY with strong daily technicals but a near-zero selection edge, negative composite factors, accounting-watch flag, and the deterministic verdict 'Neutral \u2014 no clear edge'; neither a clear long nor a short here.",
-      "evidence": [
-        "Verdict: 'Neutral \u2014 no clear edge'",
-        "Selection axis z=0.02, pct 50 (no leg above literature tier)",
-        "Quality factors composite -1.02 with accruals -1.34",
-        "Accounting flag = watch",
-        "Earnings due \u2014 caution to size down"
-      ],
-      "dissent": "With-trend bullish regime, FRESH BUY state, and seasonality up in 80% of past Novembers; if earnings land clean, the high-beta discretionary name could outperform sharply.",
-      "falsifier": {
-        "text": "CVNA fails to hold above its 10-day average after the earnings print, or the FRESH BUY state rolls over back below the swing low.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-02",
+      "check_by": "2026-11-27",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-03-CMG-20261104175137-3",
-      "ticker": "CMG",
-      "name": "Chipotle Mexican Grill Inc",
+      "id": "2026-11-06-BTG-20261110182604-2",
+      "ticker": "BTG",
+      "name": "B2Gold",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "The board says HOLD \u2014 EXTENDED even though the ladder only shows turn-signaled, and the selection axis is below the 50th percentile; the clean quality flag is offset by an extension brake, so no chase and no short.",
+      "horizon_d": 20,
+      "thesis": "The daily turn is constructive, but the larger trend is mixed and the Gold Miners basket remains below its long-term trend. That risk-control conflict, combined with essentially flat residual selection, leaves no accountable relative direction.",
       "evidence": [
-        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Verdict: Neutral \u2014 no clear edge",
+        "Selection z: -0.0096",
+        "Gold Miners basket below long-term trend",
+        "Daily momentum crossed up",
+        "Cycle not blocked"
+      ],
+      "dissent": "Right-translated cycling, positive MACD and price above both major moving averages could allow momentum to continue despite the weak basket.",
+      "falsifier": {
+        "text": "A confirmed weekly upturn accompanied by the Gold Miners basket reclaiming its long-term trend.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-GFI-20261110182604-3",
+      "ticker": "GFI",
+      "name": "Gold Fields",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The rebound above the 50-day average supports the bottoming setup, but price remains below the 200-day average and the industry basket is lagging. With a neutral verdict and no validated rank edge, the conflicting timeframes do not justify either chasing or shorting.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Price 0.5% below 200-day average",
+        "Nearly 30% below 52-week high",
+        "Gold Miners basket below long-term trend",
+        "Weekly timeframe has not turned"
+      ],
+      "dissent": "The large distance from the high may provide recovery room if the daily turn develops into a durable trend reversal.",
+      "falsifier": {
+        "text": "Price reclaims and holds above the 200-day average while the weekly timeframe turns upward.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-CNMD-20261110182604-4",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The stock has an intact daily rebound, but the extension and lottery-spike brakes argue against chasing while the left-translated prior cycle and weak earnings growth prevent a constructive relative call. The neutral verdict is therefore the most defensible read.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
         "Board state: HOLD \u2014 EXTENDED",
-        "Selection axis z=-0.39, pct 44",
-        "Quality axis z=0.59 with accounting=clean",
-        "Broad tape stress caution"
+        "Entry includes extension and lottery-spike risks",
+        "Prior cycle left-translated",
+        "Net-income growth: -64.4%"
       ],
-      "dissent": "CMG has the cleanest accounting flag on the board, strong fundamentals (54% ROE), and 67% up-rate in Nov; if the extension clears, the bottoming setup could resume higher.",
+      "dissent": "Positive revisions, clean accounting and price above both major moving averages could sustain momentum despite weak recent earnings growth.",
       "falsifier": {
-        "text": "CMG closes back below its 200-day average, or the daily swing low breaks before any weekly turn confirms.",
+        "text": "A pullback holds above the 50-day average and is followed by a weekly trend turn without another lottery-style spike.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-02",
+      "check_by": "2026-11-27",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-03-SBRA-20261104175137-4",
-      "ticker": "SBRA",
-      "name": "Sabra Health Care REIT",
+      "id": "2026-11-06-AEM-20261110182604-5",
+      "ticker": "AEM",
+      "name": "Agnico Eagle Mines",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "A genuine bearish structural tell in a 'constructive' looking name: the prior cycle topped early (left-translated), price is approaching the band, and the entry is HALF SIZE; this is a tiring-trend warning, not a base to buy.",
+      "horizon_d": 20,
+      "thesis": "AEM's daily bottoming signal and positive momentum are counterbalanced by a stretched, late cycle, left translation and a Gold Miners basket below trend. The risk controls support waiting for confirmation, not treating residual selection as a return forecast.",
       "evidence": [
-        "Prior cycle topped early \u2014 'a bearish structural tell'",
-        "Cycle translation = left",
-        "Verdict 'Constructive \u2014 building a base' but entry_tag HALF SIZE"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily phase stretched; investor phase late",
+        "Prior cycle left-translated",
+        "Gold Miners basket below long-term trend",
+        "Above 50-day and 200-day averages"
       ],
-      "dissent": "Near all-time-high (-7.7% off high), price above both moving averages, and revisions z=1.49 could keep the REIT supported if rate cuts resume. (softened: strong leader, momentum intact \u2014 extension is not a short (cautious-on-leader historically ~17% right); watch, don't chase)",
+      "dissent": "The rejected low, fresh momentum crossover and position above both major averages could develop into continued relative strength.",
       "falsifier": {
-        "text": "SBRA closes above its prior cycle high, invalidating the left-translation read.",
+        "text": "A weekly trend turn with the Gold Miners basket back above its long-term trend and AEM outperforming the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-03-UE-20261104175137-5",
-      "ticker": "UE",
-      "name": "Urban Edge Properties",
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Despite a bullish-seeming failed-cycle warning in the points, the deterministic verdict is 'Constructive \u2014 building a base' unblocked, with a positive selection axis, low volatility, and a fresh swing low; the base-building setup deserves the constructive lean the engine assigned.",
-      "evidence": [
-        "Verdict: 'Constructive \u2014 building a base'",
-        "Selection axis z=0.29 (revisions positive)",
-        "Entry axis z=0.29, unblocked",
-        "Fresh swing low 4 days ago",
-        "Failed cycle warning present (bearish caution)"
-      ],
-      "dissent": "The failed-cycle flag (broke below the low that began the cycle) plus below-200dma and overdue investor phase mean this could be a dead cat bounce in a still-downtrending REIT.",
-      "falsifier": {
-        "text": "UE closes back below its 50-day average, or the failed-cycle low breaks again.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "UE",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-12-02",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-11-03-CMCSA-20261104175137-6",
-      "ticker": "CMCSA",
-      "name": "Comcast Corp Class A",
+      "id": "2026-11-06-UHS-20261110182604-6",
+      "ticker": "UHS",
+      "name": "Universal Health Services",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Despite a strong entry axis (63rd percentile) and positive value composite, the selection axis is negative, the Communication Services basket is below trend, and the verdict is 'Neutral \u2014 no clear edge'; the entry setup is unattractive with an unloved basket.",
+      "horizon_d": 20,
+      "thesis": "Strong fundamentals and an intact daily turn argue against a bearish lean, while the extension brake, crowded health-care basket and negative residual-selection context argue against chasing. Given the neutral verdict and weak historical directional calibration, the accountable stance is neutral.",
       "evidence": [
-        "Verdict: 'Neutral \u2014 no clear edge'",
-        "Selection axis z=-0.36 (SUE negative -0.31)",
-        "Entry axis z=0.88 but HALF SIZE and basket below trend",
-        "Value composite z=2.09 (cheap, but crowded in a lagging basket)"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Board state: HOLD \u2014 EXTENDED",
+        "Health Care basket crowded and stretched",
+        "Residual selection z: -0.3332",
+        "Net-income growth: 30.4%; ROE: 20.5%"
       ],
-      "dissent": "CMCSA has the strongest value factor on the board, clean accounting, and a 63rd-percentile entry; if the market rotates from growth to value defensives, this laggard could catch a bid.",
+      "dissent": "Value, payout, low-beta characteristics and improving profits could support sustained relative outperformance even from an extended entry.",
       "falsifier": {
-        "text": "CMCSA breaks below its swing low, or the Communication Services basket falls further below trend.",
+        "text": "A controlled consolidation holds above the 50-day average and resolves into a weekly uptrend with sustained S&P 500 outperformance.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-02",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
