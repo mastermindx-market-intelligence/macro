@@ -275,6 +275,7 @@ async function logout() {
 const NAV_ICO = (inner) => `<svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 const CONTROL_ROOM_URL = "https://control.mastermind-x.com";
 const ICONS = {
+  capacity_router: NAV_ICO('<path d="M4 6h6l4 12h6M4 18h6L14 6h6"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/>'),
   overview:    NAV_ICO('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
   neural_web:  NAV_ICO('<circle cx="12" cy="12" r="2.4"/><circle cx="5" cy="6" r="1.7"/><circle cx="19" cy="6" r="1.7"/><circle cx="5" cy="18" r="1.7"/><circle cx="19" cy="18" r="1.7"/><path d="M10 11 6.4 7.2M14 11l3.6-3.8M10 13l-3.6 3.8M14 13l3.6 3.8"/>'),
   alerts:      NAV_ICO('<path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-2 6.5h16c-.5-1-2-2.5-2-6.5a6 6 0 0 0-6-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>'),
@@ -346,7 +347,7 @@ const ICONS = {
 /* One inventory, organized by operator task. Specialist tools stay searchable
    and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["capacity_router", "Capacity Router"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
   { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
   { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
   { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
@@ -375,7 +376,7 @@ const TAB_PREFETCH_PATHS = {
   marketing_overview: ["/api/marketing/overview"],
   marketing_departments: ["/api/marketing/departments"],
   marketing_campaigns: ["/api/marketing/campaigns"],
-  marketing_channels: ["/api/marketing/channels"],
+  marketing_channels: ["/api/marketing/channels", "/api/press/overview"],
   marketing_ads: ["/api/marketing/ad-central"],
   marketing_experiments: ["/api/marketing/experiments"],
   marketing_lobes: ["/api/marketing/lobes"],
@@ -769,6 +770,7 @@ function runAdminRender(id, render) {
   });
 }
 function go(id) {
+  if (window.CapacityRouter) window.CapacityRouter.unmount();
   if (!Object.prototype.hasOwnProperty.call(RENDER, id) || typeof RENDER[id] !== "function") {
     ++ADMIN_RENDER_EPOCH;
     adminPageFailure("overview", new Error("This admin page does not exist."), () => go("overview"));
@@ -920,6 +922,10 @@ function meter(label, pct, valText, cls) {
 }
 
 const RENDER = {};
+RENDER.capacity_router = () => window.CapacityRouter.mount($("#view"), {
+  isCurrent: () => CURRENT === "capacity_router",
+  onAuthFailure: showLogin,
+});
 
 function renderControlRoom() {
   const view = $("#view");
@@ -1246,7 +1252,7 @@ RENDER.overview = async () => {
   const serviceValue = !sv.available || typeof sv.healthy !== "boolean" ? "Unavailable"
     : sv.healthy ? "Running normally" : "Needs attention";
   const serverValue = sys.available && Number.isFinite(mem.used_pct) ? `${mem.used_pct}% memory` : "Unavailable";
-  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used` : "Host metrics are not available in this environment";
+  const serverDetail = sys.available && Number.isFinite(disk.used_pct) ? `${disk.used_pct}% disk used · ${fmtBytes(disk.free)} free` : "Host metrics are not available in this environment";
   const costValue = Number.isFinite(cost.monthly_usd) ? `${fmtUSD(cost.monthly_usd)} /mo` : "Unavailable";
   const costDetail = Number.isFinite(cost.effective_daily_usd) ? `${fmtUSD(cost.effective_daily_usd)} /day · estimate, not billed spend` : "No current cost estimate";
   const alerts = s.key_alerts && Array.isArray(s.key_alerts.items) ? s.key_alerts.items.length : null;
@@ -2885,7 +2891,7 @@ RENDER.system = async () => {
         ${meter("CPU load (last 1 min)", cpu.load1_pct, (cpu.load1 != null ? cpu.load1.toFixed(2) : "—") + ` / ${cpu.count} cores`)}
         ${meter("Memory", mem.used_pct, fmtBytes(mem.used) + " / " + fmtBytes(mem.total))}
         ${swap ? meter("Swap", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
-        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total))}
+        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total) + " · " + fmtBytes(disk.free) + " free")}
         <div class="sub">running for ${up} · load 5m/15m ${cpu.load5 != null ? cpu.load5.toFixed(2) : "—"} / ${cpu.load15 != null ? cpu.load15.toFixed(2) : "—"}</div>
         ` : `<div class="sub">Server stats are only available when this console is running on the server itself.</div>`}
       </div>
@@ -7007,16 +7013,67 @@ RENDER.marketing_campaigns = async () => {
   v.innerHTML = explainHtml + chipsHtml + oppHtml + cmpHtml;
 };
 
+/* Native Press measurements are a separate population from social accounts. */
+function pressAudienceCopy(en, zh) {
+  const text = document.documentElement.getAttribute("data-lang") === "zh" ? zh : en;
+  return `<span data-admin-en="${esc(en)}" data-admin-zh="${esc(zh)}">${esc(text)}</span>`;
+}
+function pressArticleHref(urls) {
+  for (const raw of Array.isArray(urls) ? urls : []) {
+    if (typeof raw !== "string") continue;
+    try {
+      const u = new URL(raw);
+      if (u.protocol === "https:" && !u.username && !u.password && !u.port &&
+          ["mastermind-x.com", "www.mastermind-x.com", "blog.mastermind-x.com", "mastermindx.ai"].includes(u.hostname)) return u.href;
+    } catch (_) { /* Unsafe or malformed destinations are not links. */ }
+  }
+  return null;
+}
+function renderPressAudience(doc, loading = false) {
+  const copy = pressAudienceCopy;
+  const heading = `<h2>${copy("Native Press account claims", "原生新闻账号声明")}</h2>`;
+  const a = doc && doc.ok === true && doc.signup_claims;
+  if (loading) return heading + `<p class="sub" role="status">${copy("Loading the separate Press measurement…", "正在读取独立的新闻衡量结果…")}</p>`;
+  if (!a || a.status !== "available" || !Array.isArray(a.rows) || !a.rows.length) {
+    const empty = a && a.status === "no_publications";
+    return heading + `<p>${empty ? copy("No published Press articles to measure yet.", "尚无已发布的新闻文章可供衡量。") : copy("Press measurement is unavailable.", "新闻衡量结果暂不可用。")}</p><p class="sub">${copy("This does not change the distribution-account panels above. Unavailable measurements are not zero readership.", "此状态不会改变上方的分发账号面板。无法获取衡量结果不代表没有读者。")}</p>`;
+  }
+  const valid = a.rows.every(r => r && typeof r.publication_id === "string" &&
+    Number.isSafeInteger(r.active_accounts_claiming_content) && r.active_accounts_claiming_content >= 0 &&
+    typeof r.published_at === "string") && typeof a.observed_at === "string";
+  if (!valid) return renderPressAudience(null);
+  const row = r => {
+    const href = pressArticleHref(r.urls);
+    const label = typeof r.slug === "string" && r.slug ? r.slug.replace(/-/g, " ") : r.publication_id;
+    const article = href ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>` : esc(label);
+    return `<tr><td>${article}<div class="sub">${esc(typeof r.desk === "string" ? r.desk : "—")}</div></td><td class="mono">${r.active_accounts_claiming_content}</td><td class="sub mono">${esc(r.published_at)}</td></tr>`;
+  };
+  const table = rows => `<div class="table-wrap"><table><thead><tr><th>${copy("Published article / desk", "已发布文章／栏目")}</th><th>${copy("Active account claims", "活跃账号声明")}</th><th>${copy("Measured since publication", "自发布时间起衡量")}</th></tr></thead><tbody>${rows.map(row).join("")}</tbody></table></div>`;
+  const more = a.rows.length > 8 ? `<details class="admin-secondary"><summary>${copy(`More measured articles (${a.rows.length - 8})`, `更多已衡量文章（${a.rows.length - 8}）`)}</summary>${table(a.rows.slice(8))}</details>` : "";
+  return heading + `<p>${copy("Accounts with a saved content label matching each article.", "已保存内容标签与相应文章匹配的账号。")}</p><p class="sub">${copy("Current active accounts only; a saved claim is not a verified referral, trial or email subscription. These counts are not page views or a conversion rate.", "仅含当前活跃账号；保存的声明不等于已核实的引荐、试用或邮件订阅。这些数字不是浏览量或转化率。")}</p><p class="sub mono">${copy("Observed", "观测时间")} ${esc(a.observed_at)}</p>` + table(a.rows.slice(0, 8)) + more + `<p class="sub">${copy(`Showing ${a.rows.length} recent Press publications, from a ledger of ${a.total_publications}. Each window starts at its own publication time and ends at the observation above.`, `显示最近 ${a.rows.length} 篇新闻文章，发布记录共 ${a.total_publications} 篇。每个窗口从该文章的发布时间开始，到上述观测时间结束。`)}</p>`;
+}
+
 /* ---- CHANNELS & DESKS ----------------------------------------------------- */
 RENDER.marketing_channels = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
-  const d = await api("/api/marketing/channels");
-  if (!d || !d.ok) { v.innerHTML = nwEmpty("Channels unavailable", (d && d.error) || "panel error"); return; }
-
-  if (d.note && !d.desk_network) {
-    v.innerHTML = nwEmpty("Channels & Desks — accruing", d.note); return;
-  }
+  const epoch = ADMIN_RENDER_EPOCH;
+  const pressRead = api("/api/press/overview").catch(() => null);
+  const pressSlot = `<section class="card" id="pressAudience">${renderPressAudience(null, true)}</section>`;
+  v.innerHTML = `<div id="marketingChannelsBody"><div class="spin">loading…</div></div>` + pressSlot;
+  const channelsView = $("#marketingChannelsBody");
+  const pressTask = pressRead.then(pressDoc => {
+    if (epoch !== ADMIN_RENDER_EPOCH || CURRENT !== "marketing_channels") return;
+    const pressView = $("#pressAudience");
+    if (pressView) pressView.innerHTML = renderPressAudience(pressDoc);
+  });
+  const d = await api("/api/marketing/channels").catch(() => null);
+  if (epoch !== ADMIN_RENDER_EPOCH || CURRENT !== "marketing_channels") return;
+  if (!d || !d.ok) {
+    channelsView.innerHTML = nwEmpty("Channels unavailable", (d && d.error) || "panel error");
+  } else if (d.note && !d.desk_network) {
+    channelsView.innerHTML = nwEmpty("Channels & Desks — accruing", d.note);
+  } else {
 
   const dn       = d.desk_network || {};
   const accts    = dn.accounts || [];
@@ -7079,7 +7136,9 @@ RENDER.marketing_channels = async () => {
          </tbody></table>`
       : nwEmpty("No publications yet", "Publication ledger populates after first distribution."));
 
-  v.innerHTML = heroHtml + acctHtml + pubLedgerHtml;
+  channelsView.innerHTML = heroHtml + acctHtml + pubLedgerHtml;
+  }
+  await pressTask;
 };
 
 /* Effective status of a desk: an operator override wins over the engine status.
@@ -13611,12 +13670,25 @@ function seoSearchConsoleBlock(sc) {
   const coverage = s.rows_may_be_incomplete === true
     ? "Results may be incomplete. Missing URLs do not prove zero traffic."
     : "Complete URL coverage has not been verified.";
+  const observed = s.observations || {};
+  const measured = s.available === true && s.window && observed.available === true &&
+    Number.isSafeInteger(observed.rows_observed) && observed.rows_observed > 0 &&
+    [observed.clicks, observed.impressions].every(n => Number.isSafeInteger(n) && n >= 0);
+  const translated = (en, zh) => `<span data-admin-en="${esc(en)}" data-admin-zh="${esc(zh)}">${
+    esc(typeof document !== "undefined" && document.documentElement.dataset.lang === "zh" ? zh : en)}</span>`;
+  const observations = measured
+    ? `${translated("Observed clicks in retained window", "留存窗口内观测到的点击")}: ${observed.clicks} · ${
+      translated("Observed impressions", "观测到的展示")}: ${observed.impressions}`
+    : s.available === true && s.window && observed.available === true && observed.rows_observed === 0
+      ? translated("No retained observations in this window; traffic is unknown.", "此窗口没有留存观测；流量未知。")
+      : translated("Retained window observations unavailable; no zero inferred.", "留存窗口观测不可用；不能推断为零。");
   return head + `<div class="card mkt-seo-gsc">
     <div class="mkt-seo-gsc-row">
       <span class="statpill s-mut mkt-seo-gsc-chip">${esc(label)}</span>
       <span class="mkt-seo-gsc-txt">${esc(s.note || "Current connection has not been checked.")}</span>
     </div>
     ${details.map(([key, value]) => `<div class="sub muted mkt-seo-gsc-hint">${esc(key)}: ${esc(value)}</div>`).join("")}
+    <div class="sub muted mkt-seo-gsc-hint">${observations}</div>
     <div class="sub muted mkt-seo-gsc-hint">${esc(coverage)}</div>
   </div>`;
 }

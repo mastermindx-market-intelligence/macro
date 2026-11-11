@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "230c07be3bc6a36403ae326168b8c6d7fd454865",
+  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual unchanged full 68-case isolated Chromium recapture for Macro #7036 from source commit 230c07be3bc6a36403ae326168b8c6d7fd454865; all 31 render inputs verified against actual Git objects and all present working files. All 68 case PNGs and all 10 contact-sheet HTML/PNG files are byte-identical to the pre-capture artifacts. Only the receipt/source binding changes. This is synthetic local fixture evidence, not signed-in production or Release Radar A1 product acceptance.",
-    "pr_branch": "claude/ssd-release-radar-a1-diagnostic-truth-d788ca4849d8a935",
-    "pr_parent_of_evidence_commit": "230c07be3bc6a36403ae326168b8c6d7fd454865",
+    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
+    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
+    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,14 +2148,14 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "34b920fb244decea46c8b215cec9cafebc46ba4c",
-        "blob_on_pr_branch": "34b920fb244decea46c8b215cec9cafebc46ba4c",
+        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
         "equal": true
       },
       {
         "path": "templates/_risk_radar_workspace.html.j2",
-        "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
+        "blob_at_source_revision": "7fc267f500e3f4f85a4685420f07a42228caecb9",
+        "blob_on_pr_branch": "7fc267f500e3f4f85a4685420f07a42228caecb9",
         "equal": true
       },
       {

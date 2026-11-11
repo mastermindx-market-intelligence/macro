@@ -1,0 +1,1137 @@
+[
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "orchestrator",
+    "assignment_ref": null,
+    "mission": "Lead P01–P23 completion of one Sector Intelligence product in Beta Shared Shell, preserving accepted work and completing every retained user journey.",
+    "why": "Fable is requested for cross-repository integration, authority-sensitive donor reconciliation, scientific/product tradeoffs and end-to-end continuity; bounded labor belongs to qualified economical lanes.",
+    "user_journey": "An authorized investor moves from measured Brief to sector/company/evidence/Cycles, saves a precise investigation, revisits it, and receives only supported monitoring outcomes.",
+    "machine_outcome": "All 134 capability dispositions and J01–J15 are accepted at their proper layers, with coherent data, normal release, natural-update/no-change proof and justified duplicate-UX retirement.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/MASTERPLAN_2026-10-21.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "research/sector_completion_20261021",
+        "agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-09.md",
+        "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "PREFERRED_AVENUE Fable; T3 development interface; CAPACITY_SELECTABLE for new assignments, with actual existing runtime placement. No worker has been dispatched by this packet.",
+      "#1244 is merged; compose #10780+#10839 and #1339, then retain #1249/#10777/#10703/#10707 behavior. Preserve GMI and Nuclear holds and original effects.",
+      "Read existing P19 ledger (80 confirmed, 24 partial, 15 unsupported, 13 not delivered, one confirmed contract gap, one block confirmed); these are historical candidate verdicts and all served proof is pending."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "One current owned integration/path map and release dependency graph within the existing program.",
+      "Bounded assignments for the nine delivery briefs, preserving current source custody and exact receipts.",
+      "Separate backend/design/product/release/operational/scientific acceptance with final 134-row evidence and terminal child outcomes."
+    ],
+    "acceptance": [
+      "First real owner generation reaches the already-landed /sectors route and one same-entity dossier/return path.",
+      "No unique donor behavior or historical defect is silently omitted; accepted unchanged work is reused.",
+      "P21/P22/P23 source-to-served chain, next natural update/no-change and rollback are proved before program completion."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Start with the affected source/custody reconciliation and the coherent-generation/first-sector vertical; advance every safe independent dependency through final P23 acceptance."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "backend",
+    "assignment_ref": null,
+    "mission": "P04/P06: complete the coherent Macro Sector generation and bounded native read contract.",
+    "why": "A native page needs one actual owner generation and accurate source clocks before the UI can claim coherent measurements.",
+    "user_journey": "A permitted reader requests the qualified Sector representation and sees a valid generation or a precise local unavailable state.",
+    "machine_outcome": "Existing captured publisher, selected-generation reader, API and projection compose with the real dated-context owner and current holdings/Central semantics.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "91add9613ad29dcfb82ff75036dd6519cfc6c06f",
+        "path": "app/sector_generation.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "91add9613ad29dcfb82ff75036dd6519cfc6c06f",
+        "path": "engine/sector_native_view.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "3894ea1befb9ffe7f45e3398a1334c6c14b13a51",
+        "path": "engine/sector_dated_context.py"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "app/sector_generation.py",
+        "app/sector_generation_reader.py",
+        "app/main.py",
+        "lib/sector_generation_contract.py",
+        "engine/sector_native_view.py",
+        "engine/sector_dated_context.py",
+        "engine/sector_central.py",
+        "collectors/sector_holdings.py",
+        "tests/test_sector_metric_definitions.py"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "Do not mutate .github/ci/legacy-jobs.yml or tests/test_ci_pack.py while the original ACTION_BLOCKED_NO_REPLAY CI proposal is unresolved.",
+        "Do not introduce a new publisher, cache service, scheduler, root selector or nightly advancer."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "Macro repository paths only. Reconcile #10780 and #10839 source carriers. Their leadership_rotation_context.py is already identical.",
+      "Preserve existing source/capture/publisher ownership, preview resource gating, entitled distinction, absolute private-root binding and no static fallback.",
+      "Native projection is not permission to render unvalidated optional members. Add bounded readers/projections for retained Brief/native calls/baskets only through this owner."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Integrated current-source generation contract and qualified optional dated context.",
+      "Explicit narrow producer projections for the retained consumer capabilities, with canonical identities, clocks, coverage and source-order receipts.",
+      "Focused source tests and one real API qualification receipt; release/root installation remains the existing release owner's act."
+    ],
+    "acceptance": [
+      "Unknown/duplicate API fields, missing/corrupt binding, incompatible source member and replacement generation refuse correctly.",
+      "One selected current generation supplies comparable core/history; older Brief baseline is retained explicitly.",
+      "Real bounded basket projection exists before basket_observation save is enabled; no Finviz classification substituted for a basket."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "designer",
+    "assignment_ref": null,
+    "mission": "P07/P08: complete only the missing native depth and consumer-context states in the existing Paper product system.",
+    "why": "The 47 reviewed core frames and retained donors must become a complete, legible production design contract without losing deep capabilities.",
+    "user_journey": "A reader can scan Brief immediately, investigate deep tables/charts/evidence, recover an interrupted action and return using clear controls on desktop and phone.",
+    "machine_outcome": "Exact editable additions and state mappings close full native calls/Bottoming Watch, four-universe confluence, phone flows and remaining full Cycles detail.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "design_refs/sector-paper-20261021/state_matrix.csv"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No new product file, token palette or ornamental analytics; no invented root IDs.",
+        "Do not edit frozen historical reference receipts as if they were new evidence."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "Paper file 01M6FAXA774QT1VRDMAG7DFQ2W; new core pages p-B-0/p-C-0/p-D-0 and retained p-2-0/p-3-0/p-4-0/p-5-0. Use the exact donor manifest in this packet.",
+      "S08 IQ2-0 is Source reader; S10 L8B-0 is Sector map. R3 56C-0 is Authority/contents, not Watches.",
+      "19 historical applicable missing states and 23 historical N/A rules need explicit current consumer disposition; do not commission 42 duplicate artboards.",
+      "One admitted Paper writer; inspect exact file/snapshot/custody first. Keep G4P-0 canary and original uncertain targets untouched."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Full native calls and separate Bottoming Watch compositions with actual six-key/five-column semantics, source counts/order/access and trace.",
+      "Complete four-universe Entry evidence and actual flow matrix/phone exact-value treatment; preserve current source identity and coverage.",
+      "Full Cycles controls, selected leg, narrative/DNA/timing/record depth, mobile picker/detents/fullscreen and contextual recovery; exact returned root IDs in the guide."
+    ],
+    "acceptance": [
+      "Rendered visual review at required widths/themes/languages; chart/table equivalent, readable units and visible action hierarchy.",
+      "No engineer text, source paths, fixtures, CI labels or compliance essays in customer frames; methods and provenance are available at point of need.",
+      "Every added design maps to an existing capability and real/proposed owner contract; existing frame count does not close acceptance."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "frontend",
+    "assignment_ref": null,
+    "mission": "P10/P11/P13/P17: integrate the native generation feed and four-job Sector workspace with exact continuation.",
+    "why": "The already-landed Shell route must lead to one coherent product and preserve every selected subject through deeper investigation.",
+    "user_journey": "Open /sectors → Brief → Explore/map/list/compare → dossier → exact company/Prophet/Screener destination → restored origin.",
+    "machine_outcome": "Current Terminal master composes #1339 with reviewed Paper while preserving Shell identity/region/access, legacy query aliases and bounded return.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "terminal/app/(shell)/sectors/page.tsx"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "7ded5375caf0aa595ca740bf0df36b175471192e",
+        "path": "terminal/lib/sectorNativeGeneration.ts"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "terminal/lib/sectorDepthReturn.ts"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "7ded5375caf0aa595ca740bf0df36b175471192e",
+        "path": "terminal/lib/__tests__/fixtures/sector_generation.captured.preview.v1.provenance.md"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "terminal/app/api/sector-intelligence/route.ts",
+        "terminal/components/intelligence/IntelligenceToolWorkspace.tsx",
+        "terminal/components/sector-intelligence/SectorIntelligenceWorkspace.tsx",
+        "terminal/components/sector-intelligence/SectorGenerationQualification.tsx",
+        "terminal/lib/sectorNativeGeneration.ts",
+        "terminal/lib/sectorIntelligence.ts",
+        "terminal/lib/sectorIntelligenceLex.ts",
+        "terminal/lib/sectorDepthReturn.ts",
+        "terminal/lib/__tests__/sectorNativeGeneration.test.ts",
+        "terminal/lib/__tests__/sectorWorkspaceRefresh.test.tsx",
+        "terminal/e2e/sector-native-generation.spec.ts"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "Do not rewrite shared Shell identity/navigation/token owners or remove /discover legacy state before compatibility proof.",
+        "Do not bypass #1339 upstream integration/release HOLD to obtain deployment proof."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "Terminal repository paths only. Preserve landed intelligenceResponse behavior; #1244 route/catalog need no rebuild absent a real new route change.",
+      "Add sectorJob through incumbent parser. Clean /sectors opens Brief; old missing-job URLs keep old meaning. Public/full return budgets remain 1024/8192 with canonical roundtrip validation.",
+      "Preserve generation+authorized-content identity, actor/access generation and abort ownership. Captured fixture is controlled code-path output, not production data.",
+      "Financials native transport ID xlf and Finance taxonomy sector:financials require an owner-qualified bridge; never guess from a label."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "One native workspace with source-backed Brief, exploration, comparison, selected dossier and clear regional/access states.",
+      "Exact typed navigation and logical-anchor restoration through company and research depth.",
+      "Focused source/consumer proof on the actual integrated candidate, with immutable source identity and current role/access."
+    ],
+    "acceptance": [
+      "Same-session replacement, rapid selection, history pagination, account/access switch and late reply cannot render stale private or wrong-subject data.",
+      "Back/Forward/reload and reduced/shared return preserve exactly supported state or report a truthful partial restoration.",
+      "63-session order consumes source ordinal; conviction and 21-session lead cannot masquerade as that order. Native source refusal has no static fallback."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "frontend",
+    "assignment_ref": null,
+    "mission": "P08/P15: deliver the complete native Cycles/dossier depth using retained components and current analytical owners.",
+    "why": "Cycles must remain a full investigation with its original controls and qualified clocks after Shell consolidation.",
+    "user_journey": "Select sector or basket → inspect price/RS/phase/legs → open narrative/DNA/timing/record → compare → company/research → restore original view.",
+    "machine_outcome": "One native controller integrates #1249 feature readers and #10707 capture/apply semantics, plus the full retained Cycles interaction system.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "abe704f1f1519cc904881fba401a720467049bde",
+        "path": "terminal/components/sector-intelligence/SectorCycleLens.tsx"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "abe704f1f1519cc904881fba401a720467049bde",
+        "path": "terminal/lib/sectorCycleBaskets.ts"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "74930f6931773b23072f91590319dc39fe5a7d07",
+        "path": "templates/sector_dossier_cycle.js"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "99968fd0533b39410040b01caf51f3e5b050c5be",
+        "path": "templates/sector_cycles_face.js"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "terminal/components/sector-intelligence/SectorCycleLens.tsx",
+        "terminal/components/sector-intelligence/SectorCycleLens.module.css",
+        "terminal/components/sector-intelligence/SectorBasketCompare.tsx",
+        "terminal/lib/sectorCycleSnapshot.ts",
+        "terminal/lib/sectorCycleBaskets.ts",
+        "terminal/e2e/sector-cycle-lens.spec.ts",
+        "terminal/lib/__tests__/sectorCycleSnapshot.test.ts",
+        "terminal/lib/__tests__/sectorCycleBaskets.test.ts",
+        "templates/sector_dossier_cycle.js",
+        "templates/sector_cycles_face.js",
+        "templates/si_workspace.js"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No new turn detector, forecast model or silent semantic switch; analytical changes belong P05/P18.",
+        "Do not copy whole legacy page chrome or restore static history as a fallback to native-generation refusal."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "terminal/ paths belong Terminal; templates/ belong Macro compatibility. Shared workspace/lex edits are serialized by the Terminal integration writer.",
+      "R4 eight Cycles donors BV/2KT/35L/3OW and6DC/6YW/7KW/87M; R3 2V5 contains actual mobile picker, leg sheet and landscape/fullscreen.",
+      "#1249 fixed600x132 preserveAspectRatio=none is a defect to repair using current svgChart helpers, not a target design.",
+      "Published #10707 captureView/applyView is absent from #10777; later unpublished fixes require original custody reconciliation."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Complete C01–C28 controls and exact-value alternatives in the unified workspace, preserving all actual source families and horizon meanings.",
+      "Source-bound capture/apply/disposal and exact generation handling without duplicate controller/listener/history ownership.",
+      "Optional narrative/DNA/timing/record consumers with meaningful valid/expired/absent/wrong-epoch states."
+    ],
+    "acceptance": [
+      "Real keyboard/touch, chart/list, selection/filter, scale/range and return cases across required locale/theme/width combinations.",
+      "Fixed turns keep fixed rhythm edges when today advances; phase age is measured/lower-bound appropriately; MODEL/PRIOR qualification is explicit.",
+      "Valid zero and negative relative values survive responsive rendering; stale or incompatible optional depth cannot erase a useful qualified core."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "backend",
+    "assignment_ref": null,
+    "mission": "P06/P12/P14: connect real typed industry research and assertion-level source reading to the Shared Shell consumer.",
+    "why": "The directory must open grounded economic explanations, company evidence and counterevidence using real qualified inputs.",
+    "user_journey": "Open a theme/company/sector profile → read economic mechanism and counterevidence → select the exact assertion → company continuation → return or save its native evidence.",
+    "machine_outcome": "Existing registry/mounts/binding/router implements the closed v2 union, native/context generation checks and real vertical input-to-render witnesses.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "app/theme_research.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/market_ontology/theme_research_registry.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/market_ontology/technology_research_registration.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/sector_intelligence/finance_research_registration.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/theme_graph/curation_assertion.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "scripts/build_consumer_cyclical_plnt_page.py"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "app/theme_research.py",
+        "engine/market_ontology/theme_research_registry.py",
+        "engine/market_ontology/theme_research_mounts.py",
+        "engine/market_ontology/theme_research_binding.py",
+        "engine/market_ontology/semiconductor_owner_bundle.py",
+        "engine/market_ontology/technology_research_registration.py",
+        "engine/sector_intelligence/finance_research_registration.py",
+        "engine/market_ontology/robotics_owner_bundle.py",
+        "engine/market_ontology/mining_theme_research.py",
+        "terminal/components/sector-intelligence"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No generic GMI snapshot store, fuzzy default vertical, fixture identity admission or invented company revenue/relationship magnitude.",
+        "No new model run or result consumption for GMI model01 while its original effect remains fenced.",
+        "No PLNT synthetic-card republication or R8 native-staging retry through any alternate carrier. No P&G refresh enable before actual reader/consumer qualification. Synthetic Industrials cases do not admit real company dossiers."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "All app/engine paths belong Macro; terminal/ belongs Terminal. Exact new real-loader files must stay in their incumbent vertical owner directory and current source assignment.",
+      "Use final §3.4–3.5: explicit request_schema=v2, closed entry_kind union, exact Tech/Finance profiles, unchanged v1 and single-document profile pagination.",
+      "Technology native tecd ID stays native; context_generation uses the existing fingerprint. Continuation/evidence require both expected fields. Two same-document assertions require exact native selector identities.",
+      "Reuse GMI #10676 frontend/native-link donor without consuming held model output. Continue Nuclear #9124 on its actual successor with existing holds.",
+      "Remaining sleeves at the current Macro pin: P&G #8245/#9105 are merged; private refresh remains off by default until real readers/consumer qualification. PLNT #10237/#10268 remove the synthetic public card; PublicCarrierHold and #7804's R8 native-staging denial remain binding. Healthcare #9399/#9418 separate regulator/manufacturer/capacity and qualified FDA records. Industrials T02 identity and #9109/#9408 synthetic source/certified work exist; #8250 is unresolved, the planned shared research module is absent, and neither EXPO nor PNR has real Shared Shell evidence through that work."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Complete exact registry entries, real owner loaders/query constructors, economic composer projections and native renderers.",
+      "Technology assertion-grained evidence.v2 selector and Finance canonical curation-reference grammar; current rights filtering for raw and derived content.",
+      "Real positive and negative source→render→assertion→company→return witness for each admitted vertical; remaining interim unavailable states stay explicit."
+    ],
+    "acceptance": [
+      "Old v1 fixtures unchanged; mixed fields, unknown profiles, foreign schemas and nonzero profile paging refuse privately.",
+      "A fixed native generation with changed rights/query yields context mismatch and 409 refresh_required; old evidence cannot be read through the new context.",
+      "Semis/Technology/Finance/Robotics/Mining/Nuclear and the retained consumer/healthcare/industrial sleeves each have their own real witness before available."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "backend",
+    "assignment_ref": null,
+    "mission": "P16 with P06/P12: admit exact Sector/GMI Investigation references and complete independent save/watch/note/alert outcomes.",
+    "why": "Users need a durable original research context and reliable recovery when account, connection or source evidence changes.",
+    "user_journey": "Save an investigation → continue editing → lose reply → check original status → reopen exact revision → compare newer evidence; separately manage watch/note/condition.",
+    "machine_outcome": "Existing Investigation v2, layouts, journal, evidence-diff, annotations, watchlist and alerts owners implement narrow identity/admission and actor-safe recovery.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "terminal/lib/investigationContracts.ts"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "api/investigation_contracts.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "terminal/lib/investigationSave.ts"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "supabase/migrations/0047_investigation_options_selection_evidence.sql"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/theme_graph/curation_assertion.py"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "terminal/lib/investigationContracts.ts",
+        "api/investigation_contracts.py",
+        "terminal/lib/investigations.ts",
+        "terminal/app/api/investigations/route.ts",
+        "terminal/lib/investigationSave.ts",
+        "terminal/lib/investigationJournal.ts",
+        "terminal/lib/investigationEvidenceDiff.ts",
+        "terminal/lib/investigationWatch.ts",
+        "terminal/app/api/watchlist/route.ts",
+        "terminal/app/api/watchlist/annotations/route.ts",
+        "terminal/app/api/alerts/route.ts",
+        "supabase/migrations/RESERVATIONS.json",
+        "supabase/migrations"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No new saved-research database, generic annotation reuse for unrelated source notes, retry queue or alert transport.",
+        "No DB application based solely on committed migration order; no blanket directory execution or weakening of validator checks."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "Terminal repository paths. The migrations directory scope permits one newly reserved, exact-preimage migration only; it does not authorize a sweep/replay of existing migrations.",
+      "Final §3.2–3.3 freezes v2-only sector/basket/company kinds, exact owner pairs and pinned evidence; v1 stays unchanged; thesis_refs remain empty.",
+      "Native Sector object identity is the exact owner-qualified wire ID; GMI evidence uses K1 evidence_id/curation_revision/assertion digest. Layout/query stays in existing layout owner.",
+      "Check save status remains the Paper control. owner_mismatch after an earlier uncertain operation does not prove original failure; retain actor-scoped original journal."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "TS/Python/service/installed-SQL admission parity with correct narrow evidence/subject probes and real readback.",
+      "Actor fence before writes and original lookup, access-generation invalidation, immutable pending payload and exact version/receipt recovery.",
+      "Sector/GMI evidence resolvers and layout adapter; independent watch/note outcomes; supported alert activation identity/readback through existing owner."
+    ],
+    "acceptance": [
+      "Actually read installed validator preimage; preserve 0039/0040/0042/0047 and any actual 0043 shape, RLS/ACL and atomic receipt/CAS behavior.",
+      "Lost reply, status not_found, edited pending draft, version conflict, actor switch, same-actor access loss and partial note/watch success have distinct tested outcomes.",
+      "Exact saved revision reopens with source rights enforced; missing historic bytes are unavailable. New Sector alert predicates stay unavailable until their evaluator/run/delivery proof exists."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "frontend",
+    "assignment_ref": null,
+    "mission": "P14/P17: finish native calls, Bottoming Watch, flows, themes and four-universe Entry evidence with complete compatibility.",
+    "why": "The unified opening must not discard the depth that made the existing Sector tools useful.",
+    "user_journey": "From Explore reach full native calls/trace, actual flows, theme/confluence tables and their exact company details, then return with the original universe and filters.",
+    "machine_outcome": "All R3A retained lenses and legacy destinations have real bounded native consumers with truthful units, population, access and return.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "templates/si_workspace.js"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "templates/subsectors.js"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/subsector_confluence.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_CAPABILITY_DISPOSITION_2026-11-02.csv"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "terminal/components/sector-intelligence",
+        "terminal/lib/sectorIntelligence.ts",
+        "terminal/lib/sectorIntelligenceLex.ts",
+        "terminal/lib/sectorDepthReturn.ts",
+        "templates/si_workspace.js",
+        "templates/subsectors.js",
+        "templates/sector_central.html.j2",
+        "templates/sector_cycles.html.j2"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No blanket redirect of every anchor to Brief and no premature route/source deletion.",
+        "Do not replace actual fund-flow inputs with price or volume proxies or convert display-only desk context into an actionable signal."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "terminal/ paths belong Terminal; templates/ belong Macro legacy compatibility. Shared codec/workspace files stay with the integration writer.",
+      "Native six keys fold into five columns; themes precede sectors; buy_soon ordering, qualified counts/preview and separate Bottoming Watch are retained.",
+      "R3A-66 producer counts and P20 n_listed denominator already exist. Copy must distinguish listed universe from rendered timed rows and never fabricate unrendered thin identities.",
+      "Preserve 24 exact anchors plus dynamic theme/read/narrative/group state; six legacy views and candidate Cycles/dossier precedence remain."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Full native call/trace and Bottoming Watch consumers based on the actual owner board/projection.",
+      "Actual flow matrix and phone exact values, full theme/compare/history controls and all four independent confluence universes.",
+      "Compatibility map and retained entrances mounting one native workspace, with no unique source retirement before proof."
+    ],
+    "acceptance": [
+      "Preview/full counts, theme order, exact href and source gates reproduce incumbent semantics.",
+      "Flow units/source periods, participation denominators, listed/priced/timed populations and four-universe IDs remain separate; no client mixed fallback.",
+      "Legacy direct entry, refresh, Back/Forward and company return preserve supported state; all relevant 134-row mappings and historical width cases pass."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "data-scientist",
+    "assignment_ref": null,
+    "mission": "P04/P05/P06/P18: close analytical identity, metric, membership, cycle/history and finite scientific disposition gaps.",
+    "why": "Trustworthy insights require correct denominators, horizons and knowledge clocks; preserved negative evidence prevents unsupported current-model claims.",
+    "user_journey": "A reader reproduces a displayed measurement, understands breadth/concentration/disagreement, and distinguishes reconstructed history, descriptive timing and qualified estimates.",
+    "machine_outcome": "Existing producers emit exact source definitions/ordinals/coverage/turn knowledge; finite existing-model parity and admitted research questions receive explicit dispositions.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/sector_cycles.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/cycle_rhythm.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/cycle_phase_age.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/cycle_ontology.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "engine/hazard_parity.py"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/B04_METRIC_DEFINITIONS.md"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "engine/sector_cycles.py",
+        "engine/sector_central.py",
+        "engine/leadership_rotation_context.py",
+        "engine/cycle_rhythm.py",
+        "engine/cycle_phase_age.py",
+        "engine/cycle_ontology.py",
+        "engine/hazard_parity.py",
+        "engine/hazard_score.py",
+        "engine/subsector_confluence.py",
+        "data/baskets/membership.json",
+        "research/sector_completion_20261021/B04_METRIC_DEFINITIONS.md",
+        "research/sector_completion_20261021/B12_HAZARD_PARITY.md"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "No new estimator, provider dataset or trading/sizing authority without a separately admitted finite protocol.",
+        "Do not force nightly/live ledger advancement from replay or UI refresh."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "P04=B01–B04; P05=B05–B07; P06=B08–B11; P18=B12. Reopen only changed obligations and preserve accepted repairs.",
+      "21/63 source ordinal differs from conviction order; native5/20/63, dossier21/63 and1M heat windows remain distinct.",
+      "Basket history currently reconstructed/current-membership; effective, knowledge and price/source availability evidence are required for as-known claims.",
+      "Current LIVE_HAZARD_PARITY=PARITY_FAILS remains until the exact owner-qualified result changes; historical 4/6 verdict does not certify current runtime."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "Existing admitted statistical models only under their frozen qualification and current parity; no LLM-generated source fact, causal mechanism or trade authority."
+      ]
+    },
+    "deliverables": [
+      "Owner-emitted display order and clear denominator/weight/contribution/overlap definitions, with unchanged authority flags.",
+      "Versioned turn-knowledge and effective/known/available-at membership inputs, or explicit unavailable capability where evidence is genuinely absent.",
+      "Qualified/PRIOR/NO-GO/underpowered/accruing disposition for each admitted finite question, preserving inert sizing and stopped lead-lag scope."
+    ],
+    "acceptance": [
+      "All-flat breadth null versus rising/priced zero; missing/tie/partial-weight/changed-roster cases reproduce definitions.",
+      "Fixed-turn timing window edges stay fixed; age uses actual sessions and appropriate lower bounds; pivot is not confirmation.",
+      "Current MODEL requires exact parity/epoch/cohort/direction/basis/horizon and whole-curve validity; negative results are retained and cannot authorize trades."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return exact owned head/diff, checks and user-path evidence with remaining gates to the assigned Fable integration principal; continue only on the same lawful assignment/carrier and close explicitly when terminal."
+    }
+  },
+  {
+    "schema_version": "mastermind.craft_brief.v1",
+    "role": "verifier",
+    "assignment_ref": null,
+    "mission": "P13/P19/P20/P21/P22/P23: verify the integrated candidate, normal release, actual served journeys and next natural update.",
+    "why": "A source merge or polished frame cannot establish that the intended users can complete the product journey.",
+    "user_journey": "Use real permitted account/access paths through Brief→depth→evidence→save/revisit/return, then observe a normal new source generation or qualified no-change.",
+    "machine_outcome": "Existing evidence ledger and release owners bind exact source/build/deployed/served identities, discriminating negative cases, rollback and final distinct acceptances.",
+    "source_refs": [
+      {
+        "repository": "mastermindx-market-intelligence/Mastermind",
+        "commit": "3652d8907df1738de551dd3032b42aa2a2acb482",
+        "path": "docs/sol_skills/INDEX.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "f7917b830c78fbaf18a3a86a3cd363011bc8b9a3",
+        "path": "research/sector_completion_20261021/ROUND3_ARCHITECTURE_CONTRACT_2026-11-09.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_ACCEPTANCE_2026-11-02.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/P19_CAPABILITY_DISPOSITION_2026-11-02.csv"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/macro",
+        "commit": "bf91cd8964c0fc3ea4ea2e987a21d7759b380032",
+        "path": "research/sector_completion_20261021/MASTERPLAN_2026-10-21.md"
+      },
+      {
+        "repository": "mastermindx-market-intelligence/mastermind-terminal",
+        "commit": "57ab4281d87ccb9e01e3bafcd42350034de1b222",
+        "path": "ops/SHARED_SHELL_BETA_DEPLOYMENT.md"
+      }
+    ],
+    "scope": {
+      "proposed_write_paths": [
+        "research/sector_completion_20261021/P19_CAPABILITY_DISPOSITION_2026-11-02.csv",
+        "research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv",
+        "research/sector_completion_20261021",
+        "agentos/handoffs/SECTOR-INTELLIGENCE-COMPLETION-2026-11-09.md"
+      ],
+      "non_goals": [
+        "No duplicate identity, lifecycle, publisher, retry, save, alert transport or task registry.",
+        "No replay or carrier substitution for denied/unknown effects; preserve actual source and release holds.",
+        "No source/design/test/merge receipt presented as deployed or accepted production.",
+        "Do not acquire credentials, change accounts/entitlements/release rules, reset pending attempts or run a second release controller.",
+        "Do not overwrite candidate/verifier history or fill final P23 columns before the corresponding acceptance."
+      ]
+    },
+    "workspace": {
+      "workspace_ref": null,
+      "host_ref": null
+    },
+    "inputs": [
+      "Final version 1.0 masterplan and this packet's frozen contract deltas supersede only the named Round 3 assumptions; read the complete associated source package at the handoff checkpoint.",
+      "Do not parallel-edit matrix against #10780 writer; source-bound row evidence is reconciled through the existing owner.",
+      "Use all J01–J15, 28 Round3 cases plus final contract delta cases; retain exact 19 applicable and23 historical N/A state dispositions and width defects.",
+      "Current live release holds, original denials/unknown effects, repository-required checks/approvals and native CRITICAL distinct review remain; no invented extra review/handoff ceremony.",
+      "Use existing ops/terminal-build.sh --target beta and Macro generation selection owner only when actually authorized/admissible. No forced producer job."
+    ],
+    "data_contract": {
+      "time": "Retain source session, publication/received/baseline, effective/knowledge/availability and saved-capture clocks separately; never restamp an old source as current.",
+      "missing": "Typed stale, partial, empty, invalid, denied, offline and uncertain outcomes; zero remains measured and missing remains missing. Optional failure is local to its capability.",
+      "corrections": "Preserve original source/research/saved revisions; use actual owner correction identity and explicit comparable baselines. Unknown removal is not a tombstone.",
+      "rights": "Existing auth, identity, entitlement and source-retention owners remain authoritative; recheck rights, filter derived prose and retire content on actor/access-generation change."
+    },
+    "methods": {
+      "deterministic": [
+        "Use incumbent owner schemas and code, exact source identities and focused boundary checks; retain unchanged accepted evidence."
+      ],
+      "model": [
+        "No model output supplies identity, source facts, ranking, gating, sizing, trading or release authority."
+      ]
+    },
+    "deliverables": [
+      "Exact candidate evidence and targeted repair decisions; no repetition of unchanged accepted source tests merely to inflate counts.",
+      "Measured latency/responsive/accessibility results with actual reference profile and raw observations; real actor/access/source cases.",
+      "Release identity chain, verified rollback compatibility, next natural update/no-change and final per-layer/per-row disposition; only then conditional duplicate-UX retirement."
+    ],
+    "acceptance": [
+      "30 warm and30 cold samples per principal profile, p95 targets100ms local/1.5s warm/3s cold, real bytes/transport bounds; source correctness and rights hold throughout.",
+      "320/390/430/768/1440 plus applicable D05 1024/1280/1600 structures; EN/ZH, light/dark, keyboard/touch/200%zoom/reduced motion and chart/table alternatives.",
+      "A permitted real user receives the accepted source generation and exact saved/returned context; natural update/readback establishes ongoing operation. Historical captured fixtures are never promoted to this proof."
+    ],
+    "stop_conditions": [
+      "Reconcile current writer, owned paths, exact base/head and pending effects before a modifying action; an actual conflicting writer/unknown effect blocks that action.",
+      "Explicit denial ends that action; use legitimate owner disposition, not another carrier or transformed payload.",
+      "Stop this bounded assignment only at its stated source/consumer proof or an evidenced blocked boundary; report the exact remaining dependency without claiming parent completion."
+    ],
+    "resource_constraints": [
+      "T3 execution uses existing Capacity/Fabric admission; workspace/host/null references in this authoring packet are not grants.",
+      "One integration writer serializes shared files; use isolated path-disjoint work only when admitted. No routine quota/account selection delegated to Chairman.",
+      "Reuse existing tests, fixtures, chart primitives and semantic tokens; broaden validation only for a concrete changed risk."
+    ],
+    "continuation": {
+      "record_owner": "Macro #7646 / WS:SECTOR-INTELLIGENCE-COMPLETION; existing source PR, P19 disposition ledger and dated handoff. This brief is authoring data, not an execution store.",
+      "next_action": "Return candidate, served and scientific evidence separately to Fable; repair only material failures, and complete P23 only when the original full acceptance ruler is met."
+    }
+  }
+]

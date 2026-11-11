@@ -160,14 +160,14 @@ def test_release_radar_fetch_targets_correct_path():
     assert "macrodata/release_forecast.json" in html
 
 
-def test_release_radar_fetch_uses_no_cache():
-    """Fetch uses {cache: 'no-cache'} per house pattern (sector_central.html.j2:670)."""
+def test_release_radar_fetch_uses_no_store():
+    """The Release Radar refresh requests fresh bytes without storing a response."""
     html = _render("macro")
     # Our section specifically
     idx = html.find("release_forecast.json")
     assert idx >= 0
     nearby = html[max(0, idx-60):idx+80]
-    assert "no-cache" in nearby
+    assert "no-store" in nearby
 
 
 def test_release_radar_footnote_bilingual():

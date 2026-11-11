@@ -1,0 +1,220 @@
+// Static Paper review export, not an integrated product component.
+// File 01M3NSZGE8JWN2EZCSF0DT05RM; node 1Q8U-0
+(
+    <div id="1Q8U-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>
+      <div id="1Q8V-0" style={{ backgroundColor: '#080808', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '24px', height: '1200px', padding: '40px', width: '1440px' }}>
+        <div id="1Q8W-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          D08C · 状态设计 · RESEARCH STATE SPECIMENS
+        </div>
+        <div id="1Q8X-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '32px', fontWeight: 600, lineHeight: '40px' }}>
+          清楚地说明现在知道什么
+        </div>
+        <div id="1Q8Y-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '18px' }}>
+          保留精确合约、输入与证据；只展示已满足条件的计算。
+        </div>
+        <div id="1Q90-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '20px', height: '300px', width: '1360px' }}>
+          <div id="1Q96-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1Q97-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1Q98-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R0
+              </div>
+              <div id="1Q99-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                空状态 · Empty
+              </div>
+            </div>
+            <div id="1Q9A-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              从一个明确的合约开始
+            </div>
+            <div id="1QG8-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              从调查证据中选取具体期权合约。汇总敞口单元格不能直接成为一条期权腿。
+            </div>
+            <div id="1QKN-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QKO-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                返回调查
+              </div>
+            </div>
+          </div>
+          <div id="1Q9C-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1Q9D-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1Q9E-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R1
+              </div>
+              <div id="1Q9F-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                输入不完整 · Incomplete
+              </div>
+            </div>
+            <div id="1Q9G-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              先补齐每条腿的假设
+            </div>
+            <div id="1QGN-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              选择买入或卖出、合约数量与每单位价格。0 是有效价格；空白仍表示未填写。
+            </div>
+            <div id="1QKQ-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QKR-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                检查未填写字段
+              </div>
+            </div>
+          </div>
+          <div id="1Q9I-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1Q9J-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1Q9K-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R2
+              </div>
+              <div id="1Q9L-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                加载中 · Loading
+              </div>
+            </div>
+            <div id="1Q9M-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              正在计算到期损益…
+            </div>
+            <div id="1QGQ-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              使用当前草稿与已限定日期的合约参考。修改输入后，旧请求结果不会覆盖新草稿。
+            </div>
+            <div id="1QKT-0" style={{ alignItems: 'center', borderColor: '#343434', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QKU-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                计算进行中
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="1Q92-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '20px', height: '300px', width: '1360px' }}>
+          <div id="1Q9O-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1Q9P-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1Q9Q-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R3
+              </div>
+              <div id="1Q9R-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                不支持 · Unsupported
+              </div>
+            </div>
+            <div id="1Q9S-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              保留计划，暂不显示曲线
+            </div>
+            <div id="1QGZ-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              当前组合包含不同到期日。此计算仅支持同一到期日；不会替换或删除任何期权腿。
+            </div>
+            <div id="1RUA-0" style={{ boxSizing: 'border-box', display: 'flex', gap: '12px' }}>
+              <div id="1RUB-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', paddingInline: '20px' }}>
+                <div id="1RUC-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                  编辑合约
+                </div>
+              </div>
+              <div id="1RUD-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', height: '44px', justifyContent: 'center', paddingInline: '20px' }}>
+                <div id="1RUE-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                  查看计算限制
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="1Q9U-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1Q9V-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1Q9W-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R4
+              </div>
+              <div id="1Q9X-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                参考缺失 · Unavailable
+              </div>
+            </div>
+            <div id="1Q9Y-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              合约参考尚未满足要求
+            </div>
+            <div id="1QHT-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              该日期的精确合约条款未获得确认。可继续记录研究；不会推断乘数或显示部分腿的结果。
+            </div>
+            <div id="1QKZ-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QL0-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                查看条款要求
+              </div>
+            </div>
+          </div>
+          <div id="1QB0-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1QB1-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1QB2-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R5
+              </div>
+              <div id="1QB3-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                证据较旧 · Stale
+              </div>
+            </div>
+            <div id="1QB4-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              证据已超过预期更新
+            </div>
+            <div id="1QKF-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              原始观测：10月29日16:10美东；持仓日：10月28日。已超过3个美东工作日，这不同于正常的前一交易日滞后。
+            </div>
+            <div id="1QL2-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QL3-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                获取当前证据
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="1Q94-0" style={{ boxSizing: 'border-box', display: 'flex', flexShrink: 0, gap: '20px', height: '300px', width: '1360px' }}>
+          <div id="1QBC-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1QBD-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1QBE-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R6
+              </div>
+              <div id="1QBF-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                部分数据 · Partial
+              </div>
+            </div>
+            <div id="1QBG-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              部分结构数据暂时缺失
+            </div>
+            <div id="1QKH-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              按到期日的持仓量未返回。其余可用面板仍显示各自的日期，不把缺失数值写成 0。
+            </div>
+            <div id="1QL5-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QL6-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                查看可用结构数据
+              </div>
+            </div>
+          </div>
+          <div id="1QBO-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1QBP-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1QBQ-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R7
+              </div>
+              <div id="1QBR-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                访问未确认 · Permission
+              </div>
+            </div>
+            <div id="1QBS-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              暂时无法验证 Options 访问
+            </div>
+            <div id="1QKJ-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              这不表示订阅已改变。当前无法确认访问权限；可再次检查访问，草稿仍在当前会话中。
+            </div>
+            <div id="1QL8-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QL9-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                重试访问检查
+              </div>
+            </div>
+          </div>
+          <div id="1QBU-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '20px', height: '300px', padding: '24px', width: '440px' }}>
+            <div id="1QBV-0" style={{ boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between' }}>
+              <div id="1QBW-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                R8
+              </div>
+              <div id="1QBX-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '11px', lineHeight: '14px' }}>
+                结果无效 · Error
+              </div>
+            </div>
+            <div id="1QBY-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, lineHeight: '28px' }}>
+              未获得可用的计算结果
+            </div>
+            <div id="1QKL-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '15px', lineHeight: '25px', minHeight: '92px' }}>
+              返回价格轴或参考信息与请求不一致。当前数值结果已隐藏，精确合约和研究草稿保持完整。
+            </div>
+            <div id="1QLB-0" style={{ alignItems: 'center', borderColor: '#6F6F6F', borderRadius: '8px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexShrink: 0, height: '44px', justifyContent: 'center', paddingInline: '16px' }}>
+              <div id="1QLC-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px' }}>
+                查看错误详情
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
