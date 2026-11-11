@@ -1,0 +1,56 @@
+{
+  "schema": "mastermind.paper_build_continuation.v1",
+  "state": "DESIGN_CONTRACT_PUBLISHED_IMPLEMENTATION_NOT_PUBLISHED",
+  "governance_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "parent_head": "29d785794dcd86408ac4c9ae546fdfccd20ecc65",
+  "owner": "attended Paper audit continuation / mastermindx-3",
+  "local_workspace": "/workspace/scratch/9825befc0cf0/expectation_period_phase",
+  "local_result": {
+    "tests": 64,
+    "failed": 0,
+    "skipped": 0,
+    "new_baseline_cases": 24,
+    "baseline_failures": 20,
+    "baseline_passes": 4,
+    "browser_cells": 8,
+    "rest_capture_cells": 8,
+    "canonical_focus_gate": "OPEN"
+  },
+  "local_core_blobs": {
+    "builder": "b2b3e9d641b6d0b0f06e624181b1b534812dfe6f",
+    "template": "6620aefef92ec7b4aca6508eba2acb3acf903890",
+    "tests": "05ebf1077670e1896a694eb8397a2239e25b4022",
+    "contract": "60ecebc84b9b68b06eeeda9855c1f02d2609e8d9"
+  },
+  "unreconciled_local_operation": {
+    "at": "2026-11-09T05:43Z",
+    "environment": "reported unavailable",
+    "interrupted_cell": "207",
+    "last_intended_effect": "append real-keyboard focus preparation to local capture adapter",
+    "local_effect": "unreconciled; do not replay",
+    "following_archive_and_capture": "not established",
+    "source_publication": "not attempted",
+    "paper_phase2_mutation": "not attempted",
+    "known_source_blobs": {
+      "builder": "b2b3e9d641b6d0b0f06e624181b1b534812dfe6f",
+      "template": "6620aefef92ec7b4aca6508eba2acb3acf903890",
+      "tests": "05ebf1077670e1896a694eb8397a2239e25b4022",
+      "contract": "60ecebc84b9b68b06eeeda9855c1f02d2609e8d9"
+    }
+  },
+  "runtime_acceptance": false,
+  "paper": {
+    "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+    "page_id": "p-2-0",
+    "parent_id": "3UR-0",
+    "card_id": "4FM-0",
+    "svg_id": "4GR-0",
+    "operations": "3 APPLIED including release",
+    "prior_prefix_chars": 152996,
+    "exact_prior_prefix": true,
+    "text_nodes_verified": 9,
+    "new_svg_id": "4GR-0",
+    "old_svg_absent": true,
+    "parent_after_chars": 160779
+  }
+}
