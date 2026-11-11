@@ -22174,6 +22174,15 @@ jobs:
     # broadening the self-mod-fence job selected by unrelated code PRs.
     scope: exclusive
     paths:
+      - "tests/test_fable_entrypoint_budget.py"
+      - "tests/test_instruction_budget_order.py"
+      - "tests/test_instruction_lazy_loading.py"
+      - "tests/test_permission_prompt_boundary.py"
+      - ".agents/skills/fable-mode/SKILL.md"
+      - ".claude/skills/fable-mode/**"
+      - "docs/agent_guides/**"
+      - "config/ruling_graph.yml"
+      - "research/execution_friction_20261011/instruction_order_baseline.json"
       - AGENTS.md
       - CLAUDE.md
       - docs/CODEX_META_CEO_FABRIC.md
@@ -22188,9 +22197,9 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - name: Install deterministic regression dependency
-        run: pip install pytest
+        run: pip install pytest pyyaml
       - name: Assigned Meta-CEO and Fabric parent-attribution contracts
-        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py tests/test_fable_entrypoint_budget.py tests/test_instruction_budget_order.py tests/test_instruction_lazy_loading.py tests/test_permission_prompt_boundary.py -q
 
   self-mod-fence:
     if: ${{ false }}
@@ -22199,6 +22208,11 @@ jobs:
     # test imports but not a hook reached by subprocess/path, so an edit under
     # .claude/hooks/ could otherwise skip the job that owns its contract.
     paths:
+      - ".claude/hooks/ship_loop_guard.py"
+      - "scripts/ship_loop_hold_wrapper.py"
+      - "scripts/metabolism_gc.py"
+      - "tests/test_fabric_existing_lane_completion.py"
+      - "tests/test_metabolism_gc_fails_closed.py"
       - ".claude/hooks/**"
       # The execution continuation law lives on four surfaces at once and is proven by
       # cross-surface parity, so an edit to ANY of them has to re-run that proof. Path
@@ -22333,7 +22347,7 @@ jobs:
         # while this guard admits only `claude/*`, so every hook-minted tree started
         # quarantined as `unsafe_branch` (2026-10-09). test_worktree_branch_name.py
         # pins that the guard admits what the hook mints.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_gc_liveness.py tests/test_worktree_placement.py tests/test_worktree_branch_name.py tests/test_worktree_sparse.py tests/test_fabric_lane_sparse_root.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_gc_liveness.py tests/test_worktree_placement.py tests/test_worktree_branch_name.py tests/test_worktree_sparse.py tests/test_fabric_lane_sparse_root.py tests/test_fabric_existing_lane_completion.py tests/test_metabolism_gc_fails_closed.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -34776,6 +34790,36 @@ jobs:
     gate: code
     timeout-minutes: 8
     runs-on: ubuntu-latest
+    paths:
+      - "tests/test_a2_oos_analysis.py"
+      - "tests/test_build_measurement_evidence_gap.py"
+      - "tests/test_construction_divergence_study.py"
+      - "tests/test_expect_drift_panel.py"
+      - "tests/test_f_hz1_study.py"
+      - "tests/test_factor_intelligence_state.py"
+      - "tests/test_falsosc_trial_v1.py"
+      - "tests/test_grade_breadth_divergence.py"
+      - "tests/test_intraday_large_cap_tech_leader_study.py"
+      - "tests/test_long_hold_gap_guard.py"
+      - "tests/test_macro_fire_context.py"
+      - "tests/test_measurement_research_implications.py"
+      - "tests/test_measurement_verdict_preservation.py"
+      - "tests/test_no_lookahead.py"
+      - "tests/test_options_history_gauntlet.py"
+      - "tests/test_options_history_retrospective.py"
+      - "tests/test_per_fire_sector_benchmark.py"
+      - "tests/test_pick_forward_dist.py"
+      - "tests/test_pick_forward_dist_phase1.py"
+      - "tests/test_register_factor_hypotheses.py"
+      - "tests/test_research_implication_card.py"
+      - "tests/test_run_w1_sev.py"
+      - "tests/test_run_w2_slq.py"
+      - "tests/test_thesis_funnel_history.py"
+      - "tests/test_verdict_preservation_edge_matrix.py"
+      - "tests/test_w3_fingerprint_stats.py"
+      - "research/options_intelligence/2026-10-14-oi-identification/test_oi_identification.py"
+      - "research/options_intelligence/2026-10-14-oi-identification/oi_identification.py"
+      - "tests/test_policy_turn_clock_monthly_coverage_audit.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34812,6 +34856,8 @@ jobs:
       # BODIES. A rewritten walk_forward with an unchanged signature still passes.
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
+      - name: OI reference identifiability and policy-turn metadata audit contracts
+        run: python -m pytest research/options_intelligence/2026-10-14-oi-identification/test_oi_identification.py tests/test_policy_turn_clock_monthly_coverage_audit.py -q
 
   admin-analytics-pages:
     # The live page reader must retain every exclusion while avoiding repeated
@@ -43735,15 +43781,30 @@ jobs:
     # self-check) breaks ci_pack packing, not this suite: it will still pass here.
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    paths:
+      - "tests/test_capture_page_evidence.py"
+      - "ux-evidence/_tools/test_validate_dossier.py"
+      - "ux-evidence/_tools/test_validate_topology.py"
+      - "ux-evidence/_tools/validate_dossier.py"
+      - "ux-evidence/_tools/validate_topology.py"
+      - "ux-evidence/_tools/artifacts.py"
+      - "ux-evidence/_tools/paths.py"
+      - "ux-evidence/_tools/secrets.py"
+      - "ux-evidence/_tools/topology_lib.py"
+      - "ux-evidence/_schema/product-topology.schema.json"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: install product-experience test deps
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml jsonschema
       - name: evidence capture — fake-driver harness contracts
         run: TZ=UTC python -m pytest tests/test_capture_page_evidence.py -q
+      - name: Product dossier validator mutation contracts, synthetic evidence only
+        run: python -B ux-evidence/_tools/test_validate_dossier.py
+      - name: Product topology validator mutation contracts, synthetic evidence only
+        run: python -B ux-evidence/_tools/test_validate_topology.py
 
   momoedge-browser-observe:
     scope: exclusive
@@ -48662,6 +48723,18 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "research/mining/test_resources_catalyst_r1_reference.py"
+      - "research/mining/test_resources_catalyst_r2_financing.py"
+      - "research/mining/test_resources_catalyst_r3_capital.py"
+      - "research/mining/test_resources_catalyst_r4_artifacts.py"
+      - "research/mining/test_resources_catalyst_r4_cohort.py"
+      - "research/mining/resources_catalyst_r1_reference.py"
+      - "research/mining/resources_catalyst_r2_financing.py"
+      - "research/mining/resources_catalyst_r3_capital.py"
+      - "research/mining/resources_catalyst_r4_cohort.py"
+      - "research/mining/R4_SOURCE_MANIFEST.json"
+      - "research/mining/R4_ENROLLMENT_AUDIT.json"
+      - "research/mining/R4_TARGET_AND_CLAIM_LABELS.json"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "tests/mining_casebook.py"
@@ -48761,6 +48834,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
       - name: mining economic dossier — per-sector composition suite (T04a)
         run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py tests/test_mining_witness_profiles.py tests/test_mining_economic_inputs.py tests/test_mining_updates.py tests/test_mining_witness_expectations.py -q
+      - name: Retained Mining catalyst reference and artifact contracts
+        run: python -m pytest research/mining/test_resources_catalyst_r1_reference.py research/mining/test_resources_catalyst_r2_financing.py research/mining/test_resources_catalyst_r3_capital.py research/mining/test_resources_catalyst_r4_artifacts.py research/mining/test_resources_catalyst_r4_cohort.py -q
 
   industrials-result-cash:
     # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
@@ -51339,6 +51414,15 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "admin/capacity_fabric_observer.py"
+      - "admin/capacity_ingest.py"
+      - "admin/tests/test_capacity_router.py"
+      - "research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py"
+      - "research/evidence/eval-os-tier-query-20261014/release-probe/bind_followon_adoption_probe.py"
+      - "research/evidence/eval-os-tier-query-20261014/release-probe/followon_adoption_probe.py"
+      - "app/deploy/update.sh"
+      - "scripts/check_qledger_metric_validity.py"
+      - "scripts/agentos.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -52904,11 +52988,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy jsonschema markupsafe
+        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy jsonschema markupsafe fastapi httpx
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
-        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py -q
+        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py admin/tests/test_capacity_router.py -q
+      - name: Follow-on adoption probe isolated binder and consumer contracts
+        run: python -m pytest research/evidence/eval-os-tier-query-20261014/release-probe/test_followon_adoption_probe.py -q
 
   press-account-claim-consumer:
     if: ${{ false }}  # Executed by the incumbent required ci-pack wrapper.

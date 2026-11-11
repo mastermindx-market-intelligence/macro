@@ -84,6 +84,7 @@ import re
 import subprocess
 import sys
 from collections import Counter
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -180,6 +181,281 @@ TIERS = (
 # suite discovery — the whole tree, classified by what pytest would collect
 # ─────────────────────────────────────────────────────────────────────────────
 
+@dataclass(eq=False)
+class _SuiteFunction:
+    attrs: dict[str, object] = field(default_factory=dict)
+    fixture: bool = False
+    uncertain: bool = False
+
+
+@dataclass(eq=False)
+class _SuiteClass:
+    attrs: dict[str, object] = field(default_factory=dict)
+    mro: tuple[_SuiteClass, ...] = ()
+    unittest: bool = False
+    uncertain: bool = False
+
+
+@dataclass(frozen=True)
+class _SuiteSymbol:
+    name: str
+
+
+_SUITE_UNKNOWN = object()
+
+
+def _suite_mro(bases: list[_SuiteClass]) -> tuple[_SuiteClass, ...] | None:
+    """C3, including attribute masks across diamonds; None is uncertainty."""
+    pending = [list(base.mro) for base in bases] + [list(bases)]
+    order: list[_SuiteClass] = []
+    while pending := [row for row in pending if row]:
+        head = next((row[0] for row in pending
+                     if all(row[0] not in other[1:] for other in pending)), None)
+        if head is None:
+            return None
+        order.append(head)
+        for row in pending:
+            if row[0] is head:
+                row.pop(0)
+    return tuple(order)
+
+
+def _suite_attrs(cls: _SuiteClass) -> dict[str, object]:
+    attrs: dict[str, object] = {}
+    for base in reversed(cls.mro):
+        attrs.update(base.attrs)
+    return attrs
+
+
+def _defines_collected_tests(tree: ast.Module) -> bool:
+    """Resolve local collection bindings without importing or executing a suite.
+
+    This is deliberately not a Python interpreter. Opaque imports alone are not
+    evidence of tests; unresolved bases or conditional collection definitions are
+    conservatively included. Function bodies are never searched for declarations.
+    """
+    builtin = _SuiteClass(attrs={
+        name: _SuiteSymbol(f"object.{name}") for name in ("__init__", "__new__")
+    })
+    builtin.mro = (builtin,)
+    case = _SuiteClass(unittest=True)
+    case.mro = (case, builtin)
+    async_case = _SuiteClass(unittest=True)
+    async_case.mro = (async_case, case, builtin)
+    roots = {
+        "builtins.object": builtin,
+        "unittest.TestCase": case, "unittest.case.TestCase": case,
+        "unittest.IsolatedAsyncioTestCase": async_case,
+        "unittest.async_case.IsolatedAsyncioTestCase": async_case,
+    }
+    module: dict[str, object] = {"object": builtin, "__name__": "<import>"}
+
+    def value(expr: ast.expr, scope: dict[str, object]) -> object:
+        if isinstance(expr, ast.Name):
+            return scope.get(expr.id, module.get(expr.id, _SUITE_UNKNOWN))
+        if isinstance(expr, ast.Constant):
+            return expr.value
+        if isinstance(expr, ast.Attribute):
+            owner = value(expr.value, scope)
+            if isinstance(owner, _SuiteSymbol):
+                name = f"{owner.name}.{expr.attr}"
+                return roots.get(name, _SuiteSymbol(name))
+            if isinstance(owner, _SuiteClass):
+                return _suite_attrs(owner).get(expr.attr, _SUITE_UNKNOWN)
+            if isinstance(owner, _SuiteFunction):
+                return owner.attrs.get(expr.attr, _SUITE_UNKNOWN)
+        if isinstance(expr, ast.Lambda):
+            return _SuiteFunction()
+        if isinstance(expr, (ast.Tuple, ast.List)):
+            return tuple(value(child, scope) for child in expr.elts)
+        return _SUITE_UNKNOWN
+
+    def assign(target: ast.expr, item: object, scope: dict[str, object]) -> None:
+        if isinstance(target, ast.Name):
+            scope[target.id] = item
+        elif isinstance(target, ast.Attribute):
+            owner = value(target.value, scope)
+            if isinstance(owner, (_SuiteClass, _SuiteFunction)):
+                owner.attrs[target.attr] = item
+        elif isinstance(target, (ast.Tuple, ast.List)):
+            values = item if isinstance(item, tuple) and len(item) == len(target.elts) else (
+                (_SUITE_UNKNOWN,) * len(target.elts))
+            for child, child_value in zip(target.elts, values):
+                assign(child, child_value, scope)
+
+    def target_may_collect(target: ast.expr, scope: dict[str, object]) -> bool:
+        if isinstance(target, ast.Name):
+            return (target.id == "__test__" or target.id.startswith(("test", "Test"))
+                    or has_items(target.id, scope.get(target.id), set(), {}))
+        if isinstance(target, ast.Attribute):
+            return target.attr == "__test__" or has_items(target.attr, value(target, scope), set(), {})
+        if isinstance(target, (ast.Tuple, ast.List)):
+            return any(target_may_collect(child, scope) for child in target.elts)
+        return False
+
+    def conditional(nodes: list[ast.stmt], scope: dict[str, object]) -> bool:
+        """Invalidate conditional bindings, without choosing an unknown branch."""
+        possible = False
+        for node in nodes:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                possible |= has_items(node.name, scope.get(node.name), set(), {})
+                scope[node.name] = _SUITE_UNKNOWN
+                possible |= node.name.startswith(("test", "Test")) or (
+                    isinstance(node, ast.ClassDef) and bool(node.bases))
+                continue  # Do not walk a function or class body as module code.
+            if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                for target in targets:
+                    possible |= target_may_collect(target, scope)
+                    assign(target, _SUITE_UNKNOWN, scope)
+            elif isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    name = alias.asname or alias.name.split(".")[0]
+                    possible |= has_items(name, scope.get(name), set(), {})
+                    scope[name] = _SUITE_UNKNOWN
+            elif isinstance(node, ast.Delete):
+                for target in node.targets:
+                    possible |= target_may_collect(target, scope)
+                    assign(target, _SUITE_UNKNOWN, scope)
+            for child in ast.iter_child_nodes(node):
+                if isinstance(child, ast.stmt):
+                    possible |= conditional([child], scope)
+                elif isinstance(child, ast.ExceptHandler):
+                    possible |= conditional(child.body, scope)
+        return possible
+
+    def bind(nodes: list[ast.stmt], scope: dict[str, object]) -> bool:
+        uncertain = False
+        for node in nodes:
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    name = alias.name if alias.asname else alias.name.split(".")[0]
+                    scope[alias.asname or name] = _SuiteSymbol(name)
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    name = f"{node.module}.{alias.name}" if not node.level else ""
+                    scope[alias.asname or alias.name] = roots.get(name, _SuiteSymbol(name))
+            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                decorators = [value(d.func if isinstance(d, ast.Call) else d, scope)
+                              for d in node.decorator_list]
+                scope[node.name] = _SuiteFunction(fixture=any(
+                    isinstance(d, _SuiteSymbol) and d.name in (
+                        "pytest.fixture", "pytest.yield_fixture") for d in decorators),
+                    # Unknown decorators may opt in a differently named function.
+                    # Descriptors also have wrapper and underlying-function flags;
+                    # do not mistake a wrapper opt-out for an empty collection.
+                    uncertain=any(not (isinstance(d, _SuiteSymbol) and (
+                        d.name.startswith("pytest.mark.") or d.name in (
+                            "pytest.fixture", "pytest.yield_fixture", "unittest.skip",
+                            "unittest.skipIf", "unittest.skipUnless"))) for d in decorators))
+            elif isinstance(node, ast.ClassDef):
+                bases = [value(base, scope) for base in node.bases] or [builtin]
+                known = [base for base in bases if isinstance(base, _SuiteClass)]
+                order = _suite_mro(known)
+                cls = _SuiteClass(
+                    unittest=any(base.unittest for base in known),
+                    uncertain=(len(known) != len(bases) or order is None
+                               or any(base.uncertain for base in known)
+                               or bool(node.keywords)),
+                )
+                cls.mro = (cls,) + (order or ())
+                cls.uncertain |= bind(node.body, cls.attrs)
+                for decorator in node.decorator_list:
+                    d = value(decorator.func if isinstance(decorator, ast.Call)
+                              else decorator, scope)
+                    if not (isinstance(d, _SuiteSymbol) and (
+                        d.name.startswith("pytest.mark.") or d.name in (
+                            "unittest.skip", "unittest.skipIf", "unittest.skipUnless"))):
+                        cls.uncertain = True
+                scope[node.name] = cls
+            elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+                if node.value is not None:
+                    item = value(node.value, scope)
+                    targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                    for target in targets:
+                        if item is _SUITE_UNKNOWN:
+                            uncertain |= target_may_collect(target, scope)
+                        assign(target, item, scope)
+            elif isinstance(node, ast.Delete):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        scope.pop(target.id, None)
+                    elif isinstance(target, ast.Attribute):
+                        owner = value(target.value, scope)
+                        if isinstance(owner, (_SuiteClass, _SuiteFunction)):
+                            owner.attrs.pop(target.attr, None)
+            elif isinstance(node, ast.If):
+                test = value(node.test, scope)
+                if (isinstance(node.test, ast.Compare) and len(node.test.ops) == 1
+                        and isinstance(node.test.ops[0], (ast.Eq, ast.NotEq))):
+                    left, right = value(node.test.left, scope), value(node.test.comparators[0], scope)
+                    if isinstance(left, (str, int, bool)) and isinstance(right, (str, int, bool)):
+                        test = left == right
+                        if isinstance(node.test.ops[0], ast.NotEq):
+                            test = not test
+                if test is not _SUITE_UNKNOWN and isinstance(test, (str, int, bool, type(None))):
+                    uncertain |= bind(node.body if test else node.orelse, scope)
+                else:
+                    uncertain |= conditional(node.body + node.orelse, scope)
+            elif not isinstance(node, (ast.Expr, ast.Pass)):
+                uncertain |= conditional([node], scope)
+        return uncertain
+
+    def class_items(name: str, item: _SuiteClass, active: set[_SuiteClass], memo: dict | None) -> bool:
+        if item in active:
+            return True  # A recursive dynamic namespace is not proved empty.
+        if item.uncertain:
+            return True
+        attrs = _suite_attrs(item)
+        if not attrs.get("__test__", True):
+            return False
+        if item.unittest:
+            for method, fn in attrs.items():
+                if method.startswith("test") and (
+                    fn is _SUITE_UNKNOWN or isinstance(fn, (_SuiteFunction, _SuiteClass, _SuiteSymbol))
+                ) and (not isinstance(fn, _SuiteFunction) or fn.uncertain
+                       or fn.attrs.get("__test__", True)):
+                    return True
+            # Pytest's unittest fallback deliberately ignores runTest.__test__.
+            return attrs.get("runTest") is not None
+        if not (name.startswith("Test") or attrs.get("__test__") is True):
+            return False
+        for ctor in ("__init__", "__new__"):
+            effective = attrs.get(ctor)
+            if effective == builtin.attrs[ctor]:
+                continue
+            if effective is _SUITE_UNKNOWN or isinstance(effective, _SuiteSymbol) or (
+                isinstance(effective, _SuiteFunction) and effective.uncertain
+            ):
+                return True
+            if effective:
+                return False
+        return any(has_items(key, child, active | {item}, memo) for key, child in attrs.items())
+
+    def has_items(name: str, item: object, active: set[_SuiteClass], memo: dict | None = None) -> bool:
+        if isinstance(item, _SuiteFunction):
+            if item.uncertain:
+                return True
+            return (bool(item.attrs.get("__test__", True)) and not item.fixture
+                    and (name.startswith("test") or item.attrs.get("__test__") is True))
+        if isinstance(item, _SuiteClass):
+            key = (name.startswith("Test"), item)
+            if memo is not None and key in memo:
+                return memo[key]
+            result = class_items(name, item, active, memo)
+            if memo is not None:
+                memo[key] = result
+            return result
+        return (item is _SUITE_UNKNOWN or isinstance(item, _SuiteSymbol)) and name.startswith(("test", "Test"))
+
+    uncertain = bind(tree.body, module)
+    if not module.get("__test__", True):
+        return False
+    # Bindings can mutate during construction; memoize only the final namespace.
+    memo: dict[tuple[bool, _SuiteClass], bool] = {}
+    return uncertain or any(has_items(name, item, set(), memo) for name, item in module.items())
+
+
 def defines_tests(path: Path, src: str | None = None) -> bool:
     """Would pytest collect anything from this file?
 
@@ -193,11 +469,16 @@ def defines_tests(path: Path, src: str | None = None) -> bool:
 
     Listing those as unrun work items would trade a blind census for a noisy one,
     and a guard that cries wolf gets ignored.  So the question asked is pytest's
-    own: does the file define a `test*` function, or a `Test*` class holding one?
-    (Those are `python_functions`/`python_classes` defaults, which apply because
-    the repo overrides neither.)  Verified against real collection: of 2,020
-    filename-shaped candidates this agrees with `pytest --collect-only` on all
-    2,020 — 2,017 suites, and exactly the three instruments above.
+    own: does the file expose a test function, an ordinary Test* container, or a
+    unittest.TestCase subclass? The last category has NO class-name requirement.
+    Imports, aliases, local inheritance and effective method masks are resolved
+    statically; module/class/function opt-outs and ordinary constructor exclusion
+    are honored. Empty TestCase subclasses still collect nothing. The historical
+    2,020-file name-prefix check missed later unittest suites (#11007).
+
+    The model does not import arbitrary helpers, execute decorators or reproduce
+    collection plugins. Supported local cases are qualified against real pytest;
+    collection-relevant uncertainty is included rather than silently excluded.
 
     A file that will not parse returns True.  pytest ERRORS at collection on it,
     which is louder than a miscounted row, and over-including is the safe direction
@@ -209,20 +490,12 @@ def defines_tests(path: Path, src: str | None = None) -> bool:
     """
     try:
         tree = ast.parse(path.read_text(errors="ignore") if src is None else src)
-    except (SyntaxError, ValueError):
+    except (SyntaxError, ValueError, RecursionError):
         return True
-    for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if node.name.startswith("test"):
-                return True
-        elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
-            if any(
-                isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and member.name.startswith("test")
-                for member in node.body
-            ):
-                return True
-    return False
+    try:
+        return _defines_collected_tests(tree)
+    except RecursionError:
+        return True  # An excessively deep namespace is not proved empty.
 
 
 def _tracked_candidates(root: Path) -> list[str] | None:

@@ -156,6 +156,95 @@ def _write(path: Path, body: str) -> Path:
     return path
 
 
+# #11007: accepted real-collection oracle plus binding/MRO discriminators.
+# Sources are synthetic and import-free at classification time.
+_COLLECTION_CASES = {
+    'qualified': ('import unittest\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\n', True),
+    'module_alias': ('import unittest as ut\nclass Battery(ut.TestCase):\n def test_ok(self): pass\n', True),
+    'imported': ('from unittest import TestCase\nclass Battery(TestCase):\n def test_ok(self): pass\n', True),
+    'import_alias': ('from unittest import TestCase as Case\nclass Battery(Case):\n def test_ok(self): pass\n', True),
+    'case_module': ('from unittest.case import TestCase as Case\nclass Battery(Case):\n def test_ok(self): pass\n', True),
+    'local_alias': ('import unittest\nCase = unittest.TestCase\nclass Battery(Case):\n def test_ok(self): pass\n', True),
+    'local_inheritance': ('import unittest\nclass Base(unittest.TestCase): pass\nclass Battery(Base):\n def test_ok(self): pass\n', True),
+    'inherited_method': ('import unittest\nclass Base(unittest.TestCase):\n def test_ok(self): pass\nclass Battery(Base): pass\n', True),
+    'mixin': ('import unittest\nclass Helper:\n def test_ok(self): pass\nclass Battery(Helper, unittest.TestCase): pass\n', True),
+    'run_test_only': ('import unittest\nclass Battery(unittest.TestCase):\n def runTest(self): pass\n', True),
+    'async_unittest': ('import unittest\nclass Battery(unittest.IsolatedAsyncioTestCase):\n async def test_ok(self): pass\n', True),
+    'skipped_unittest': ('import unittest\n@unittest.skip("synthetic")\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\n', True),
+    'empty_unittest': ('import unittest\nclass Battery(unittest.TestCase): pass\n', False),
+    'helper_named_case': ('class TestCase: pass\nclass Battery(TestCase):\n def test_ok(self): pass\n', False),
+    'ordinary_class': ('class Battery:\n def test_ok(self): pass\n', False),
+    'helper_only': ('class Helper:\n def build(self): pass\n', False),
+    'cli': ('def main(): pass\nif __name__ == "__main__": main()\n', False),
+    'pytest_function': ('def test_ok(): pass\n', True),
+    'pytest_class': ('class TestBattery:\n def test_ok(self): pass\n', True),
+    'pytest_inherited_method': ('class Base:\n def test_ok(self): pass\nclass TestBattery(Base): pass\n', True),
+    'module_optout': ('__test__ = False\ndef test_ok(): pass\n', False),
+    'class_optout': ('class TestBattery:\n __test__ = False\n def test_ok(self): pass\n', False),
+    'function_optout': ('def test_ok(): pass\ntest_ok.__test__ = False\n', False),
+    'constructor_pytest_class': ('class TestBattery:\n def __init__(self): pass\n def test_ok(self): pass\n', False),
+    'run_test_control': ('class Battery:\n def runTest(self): pass\n', False),
+    'rebound_before': ('from unittest import TestCase as Case\nCase = object\nclass Battery(Case):\n def test_ok(self): pass\n', False),
+    'rebound_after': ('from unittest import TestCase as Case\nclass Battery(Case):\n def test_ok(self): pass\nCase = object\n', True),
+    'function_replaced': ('def test_ok(): pass\ntest_ok = None\n', False),
+    'function_alias_optout': ('def test_ok(): pass\nalias = test_ok\nalias.__test__ = False\n', False),
+    'diamond_mask': ('class A:\n def test_ok(self): pass\nclass B(A): pass\nclass C(A):\n test_ok = None\nclass TestBattery(B, C): pass\n', False),
+    'inherited_optout': ('class Base:\n __test__ = False\n def test_ok(self): pass\nclass TestBattery(Base): pass\n', False),
+    'restored_optin': ('class Base:\n __test__ = False\n def test_ok(self): pass\nclass TestBattery(Base):\n __test__ = True\n', True),
+    'inherited_init': ('class Base:\n def __init__(self): pass\n def test_ok(self): pass\nclass TestBattery(Base): pass\n', False),
+    'restored_init': ('class Base:\n def __init__(self): pass\n def test_ok(self): pass\nclass TestBattery(Base):\n __init__ = object.__init__\n', True),
+    'inherited_new': ('class Base:\n def __new__(cls): return super().__new__(cls)\n def test_ok(self): pass\nclass TestBattery(Base): pass\n', False),
+    'restored_new': ('class Base:\n def __new__(cls): return super().__new__(cls)\n def test_ok(self): pass\nclass TestBattery(Base):\n __new__ = object.__new__\n', True),
+    'unittest_constructor': ("import unittest\nclass Battery(unittest.TestCase):\n def __init__(self, methodName='runTest'): super().__init__(methodName)\n def test_ok(self): pass\n", True),
+    'unittest_runtest_optout': ('import unittest\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\n test_ok.__test__ = False\n def runTest(self): pass\n runTest.__test__ = False\n', True),
+    'function_alias': ('def helper(): pass\ntest_alias = helper\n', True),
+    'class_alias': ('class Helper:\n def test_ok(self): pass\nTestAlias = Helper\n', True),
+    'fixture_control': ('import pytest\n@pytest.fixture\ndef test_helper(): return 1\n', False),
+    'nested_function_control': ('def helper():\n def test_hidden(): pass\n', False),
+    'false_branch_control': ('if False:\n def test_hidden(): pass\n', False),
+    'main_branch_control': ("if __name__ == '__main__':\n def test_hidden(): pass\n", False),
+    'external_method_mask': ('class Base:\n def test_ok(self): pass\nclass TestBattery(Base): pass\nTestBattery.test_ok = None\n', False),
+    'case_module_alias': ('import unittest.case as cases\nclass Battery(cases.TestCase):\n def test_ok(self): pass\n', True),
+    'conditional_class_rebinding': ('import unittest\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\nif bool([]):\n Battery = None\n', True),
+    'conditional_class_deletion': ('import unittest\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\nif bool([]):\n del Battery\n', True),
+    'decorator_optin': ('def mark(fn):\n fn.__test__ = True\n return fn\n@mark\ndef helper(): pass\n', True),
+    'tuple_class_alias': ('import unittest\nclass Battery(unittest.TestCase):\n def test_ok(self): pass\nSaved, Battery = Battery, None\n', True),
+    'staticmethod_wrapper_optout': ('class TestBattery:\n @staticmethod\n def test_ok(): pass\n test_ok.__test__ = False\n', True),
+    'classmethod_wrapper_optout': ('class TestBattery:\n @classmethod\n def test_ok(cls): pass\n test_ok.__test__ = False\n', True),
+    'qualified_builtin_init': ('import builtins\nclass TestBattery:\n __init__ = builtins.object.__init__\n def test_ok(self): pass\n', True),
+    'imported_builtin_new': ('from builtins import object as Plain\nclass TestBattery:\n __new__ = Plain.__new__\n def test_ok(self): pass\n', True),
+    'distinct_async_base': ('from unittest import TestCase, IsolatedAsyncioTestCase\nIsolatedAsyncioTestCase.__test__ = False\nclass Battery(TestCase):\n def test_ok(self): pass\n', True),
+}
+
+
+@pytest.mark.parametrize("case", list(_COLLECTION_CASES))
+def test_collection_bindings_match_qualified_cases(case: str, tmp_path: Path) -> None:
+    source, expected = _COLLECTION_CASES[case]
+    path = _write(tmp_path / "test_collection.py", source)
+    assert GUARD.defines_tests(path) is expected
+    assert GUARD.defines_tests(path, src=source) is expected
+
+
+def test_unresolved_collection_base_is_not_silently_excluded(tmp_path: Path) -> None:
+    source = "from provider import Base\nclass Battery(Base):\n def test_ok(self): pass\n"
+    assert GUARD.defines_tests(tmp_path / "test_unknown.py", src=source) is True
+
+
+def test_repeated_empty_class_references_finish_without_exponential_walk(tmp_path: Path) -> None:
+    source = "class Test0: pass\n" + "".join(
+        f"class Test{i}:\n    TestLeft = Test{i - 1}\n    TestRight = Test{i - 1}\n"
+        for i in range(1, 40)
+    )
+    subject = _write(tmp_path / "test_repeated.py", source)
+    result = subprocess.run(
+        [sys.executable, "-c", "from pathlib import Path; import sys; "
+         "from scripts.audit_unrun_tests import defines_tests; "
+         "assert defines_tests(Path(sys.argv[1])) is False", str(subject)],
+        cwd=ROOT, capture_output=True, text=True, check=False, timeout=10,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 # ── 2. discovery reaches the whole tree, and stops at its edges ──────────────
 
 @pytest.fixture

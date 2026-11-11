@@ -290,3 +290,111 @@ research/homepage_prophet_first/tests/test_product_contract.py: >-
   removed or separately authorized historical-only CI enrollment names the
   suite. Any future product reuse must first replace rejected-design assertions
   under the actual product owner; this waiver grants no product-test exemption.
+
+tests/test_entry_radar_leader_pivot_descriptor.py: >-
+  Transitive CI ownership, not an unexecuted exemption: existing research-price-panel runs
+  tests/test_entry_radar_rs_pullback_phase1.py. Its
+  Phase1LeaderPivotConsumerSuiteTests.test_pivot_consumer_65_case_conformance imports the
+  three pivot classes and executes their unittest.TestSuite, asserting exactly 65 executions
+  and zero skips, failures or errors. All three child files are already declared in that
+  owner. The literal run-token census cannot credit this transitive invocation; adding direct
+  invocations would duplicate the 65 tests. Owner: mastermidx4, current Mastermind#2028 /
+  Macro#11007 census recovery, preserving the original programme owner and retained-effect
+  boundaries. Delete when the wrapper is removed, or when the canonical census can credit
+  transitive ownership, or when an authorized replacement directly owns these cases.
+
+tests/test_entry_radar_leader_pivot_progress.py: >-
+  Transitive CI ownership, not an unexecuted exemption: existing research-price-panel runs
+  tests/test_entry_radar_rs_pullback_phase1.py. Its
+  Phase1LeaderPivotConsumerSuiteTests.test_pivot_consumer_65_case_conformance imports the
+  three pivot classes and executes their unittest.TestSuite, asserting exactly 65 executions
+  and zero skips, failures or errors. All three child files are already declared in that
+  owner. The literal run-token census cannot credit this transitive invocation; adding direct
+  invocations would duplicate the 65 tests. Owner: mastermidx4, current Mastermind#2028 /
+  Macro#11007 census recovery, preserving the original programme owner and retained-effect
+  boundaries. Delete when the wrapper is removed, or when the canonical census can credit
+  transitive ownership, or when an authorized replacement directly owns these cases.
+
+tests/test_entry_radar_leader_pivot_progress_edges.py: >-
+  Transitive CI ownership, not an unexecuted exemption: existing research-price-panel runs
+  tests/test_entry_radar_rs_pullback_phase1.py. Its
+  Phase1LeaderPivotConsumerSuiteTests.test_pivot_consumer_65_case_conformance imports the
+  three pivot classes and executes their unittest.TestSuite, asserting exactly 65 executions
+  and zero skips, failures or errors. All three child files are already declared in that
+  owner. The literal run-token census cannot credit this transitive invocation; adding direct
+  invocations would duplicate the 65 tests. Owner: mastermidx4, current Mastermind#2028 /
+  Macro#11007 census recovery, preserving the original programme owner and retained-effect
+  boundaries. Delete when the wrapper is removed, or when the canonical census can credit
+  transitive ownership, or when an authorized replacement directly owns these cases.
+
+artifacts/news-qbus-private-draft-20261020-c3/test_publisher_activation_operation.py: >-
+  Retained 13-case isolated QBUS activation fixture. The adjacent
+  publisher_activation_test_README.md requires an isolated POSIX UID 0 process and root-owned
+  temporary files; the actual operation keeps its UID/file-ownership guards. Operation SHA256
+  4f6b515ad32295b3b2ba6a896801cb32afbac5904ed8de9d30585720cda84428. Ordinary unprivileged
+  hosted pytest does not provide that environment. Original portable qualification receipts
+  remain historical; this row claims no new execution or activation. Owner: mastermidx4,
+  current Mastermind#2028 / Macro#11007 census recovery, preserving the original programme
+  owner and retained-effect boundaries. Delete when the owning programme lawfully admits the
+  required isolated runtime and names this suite in CI, or retires the fixture. No service
+  activation, credential operation or privileged runner authorization is supplied.
+
+research/defensive_v12/tests/test_account.py: >-
+  Retained Defensive V12 environment-bound fixture. Its import chain reaches cycle_failure.py,
+  which unconditionally imports empirical from /tmp/mmx_defensive_empirical_v11_20261011; the
+  README also requires the original /tmp/mmx_defensive_compounders_20261009 V1 environment.
+  These inputs were intentionally not redistributed; original nonredistributed-input manifest
+  digest 69703435b594cca35ea7f8e26673dc719c0ec9b3db3dc802df9ca531e0ce6ed3 remains the
+  reference. Owner: mastermidx4, current Mastermind#2028 / Macro#11007 census recovery,
+  preserving the original programme owner and retained-effect boundaries. Delete when genuine
+  dependencies are lawfully available in the owning CI runtime, an accepted hermetic
+  extraction replaces the dependency, or the fixture is retired. No stubs, new acquisition,
+  historical replay or trading authority is authorized by this row.
+
+research/defensive_v12/tests/test_cycle_failure.py: >-
+  Retained Defensive V12 environment-bound fixture. Its import chain reaches cycle_failure.py,
+  which unconditionally imports empirical from /tmp/mmx_defensive_empirical_v11_20261011; the
+  README also requires the original /tmp/mmx_defensive_compounders_20261009 V1 environment.
+  These inputs were intentionally not redistributed; original nonredistributed-input manifest
+  digest 69703435b594cca35ea7f8e26673dc719c0ec9b3db3dc802df9ca531e0ce6ed3 remains the
+  reference. Owner: mastermidx4, current Mastermind#2028 / Macro#11007 census recovery,
+  preserving the original programme owner and retained-effect boundaries. Delete when genuine
+  dependencies are lawfully available in the owning CI runtime, an accepted hermetic
+  extraction replaces the dependency, or the fixture is retired. No stubs, new acquisition,
+  historical replay or trading authority is authorized by this row.
+
+research/defensive_v12/tests/test_reclaim.py: >-
+  Retained Defensive V12 environment-bound fixture. Its import chain reaches cycle_failure.py,
+  which unconditionally imports empirical from /tmp/mmx_defensive_empirical_v11_20261011; the
+  README also requires the original /tmp/mmx_defensive_compounders_20261009 V1 environment.
+  These inputs were intentionally not redistributed; original nonredistributed-input manifest
+  digest 69703435b594cca35ea7f8e26673dc719c0ec9b3db3dc802df9ca531e0ce6ed3 remains the
+  reference. Owner: mastermidx4, current Mastermind#2028 / Macro#11007 census recovery,
+  preserving the original programme owner and retained-effect boundaries. Delete when genuine
+  dependencies are lawfully available in the owning CI runtime, an accepted hermetic
+  extraction replaces the dependency, or the fixture is retired. No stubs, new acquisition,
+  historical replay or trading authority is authorized by this row.
+
+research/defensive_v12/tests/test_slow_harvest.py: >-
+  Retained Defensive V12 environment-bound fixture. Its import chain reaches cycle_failure.py,
+  which unconditionally imports empirical from /tmp/mmx_defensive_empirical_v11_20261011; the
+  README also requires the original /tmp/mmx_defensive_compounders_20261009 V1 environment.
+  These inputs were intentionally not redistributed; original nonredistributed-input manifest
+  digest 69703435b594cca35ea7f8e26673dc719c0ec9b3db3dc802df9ca531e0ce6ed3 remains the
+  reference. Owner: mastermidx4, current Mastermind#2028 / Macro#11007 census recovery,
+  preserving the original programme owner and retained-effect boundaries. Delete when genuine
+  dependencies are lawfully available in the owning CI runtime, an accepted hermetic
+  extraction replaces the dependency, or the fixture is retired. No stubs, new acquisition,
+  historical replay or trading authority is authorized by this row.
+
+tests/test_elliott_source_contract_probe.py: >-
+  Historical source-contract fixture: the actual probe invokes git show for
+  4b1f8fddcc4eb6f36133fca4d42018678b74d30b:engine/cycle_ontology.py. An ordinary shallow
+  tested-tree checkout and ancestry adapter do not establish availability of that arbitrary
+  immutable historical object. Provisioning it explicitly is feasible, but is not part of this
+  census repair; current engine source is not an equivalent substitute. Owner: mastermidx4,
+  current Mastermind#2028 / Macro#11007 census recovery, preserving the original programme
+  owner and retained-effect boundaries. Delete when the canonical owner explicitly provides
+  and verifies that exact object for the owning CI job, or retires the fixture. No new
+  historical-model execution is claimed.
+

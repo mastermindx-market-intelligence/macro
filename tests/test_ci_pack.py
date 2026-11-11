@@ -5984,6 +5984,33 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     assert not owned_losses, owned_losses
 
 
+@pytest.mark.parametrize("owner_id,dependency", [
+    ("unrun-factor-research", "research/options_intelligence/2026-10-14-oi-identification/oi_identification.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/validate_dossier.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/validate_topology.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/artifacts.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/paths.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/secrets.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_tools/topology_lib.py"),  # ci-trigger-closure: data — planner input only, not read here
+    ("product-experience-capture", "ux-evidence/_schema/product-topology.schema.json"),  # ci-trigger-closure: data — planner input only, not read here
+])
+def test_unittest_dynamic_subjects_keep_named_ci_ownership(
+    owner_id, dependency, real_manifest_scopes,
+) -> None:
+    """Sibling imports need named ownership, independent of opaque fallbacks.
+
+    These subjects load through adjacent bare imports or file-location specs.
+    Either a declared path or future verified inference may supply ownership;
+    an accidental broad fallback is not the evidence this contract requires.
+    """
+    jobs, _ = real_manifest_scopes
+    owner = next(job for job in jobs if job.job_id == owner_id)
+    match = PACK._job_diff_match(owner, [dependency])
+    assert match is not None and match[1] in {"owned", "declared"}, (
+        owner_id, dependency, match
+    )
+
+
 # The packing probes and their ceilings: (changed path, max selected jobs, max
 # selected weight-seconds), plus one pack ceiling for every probe. The history of
 # each number is the docstring of the test below. scripts/check_contract_delta.py
@@ -5998,9 +6025,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6035,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (Macro #11007, unittest census and retained coverage):
+    Exact receiving main efcbb305 and the candidate were measured with the
+    unchanged native planner and exact tracked-tree inventory. All selected
+    job identities are identical on each probe; jobs 137/137/131 and ten packs
+    remain unchanged. Existing self-mod-fence gains 4 weight units and
+    unrun-factor-research gains 3 on every probe. The free-content probe also
+    selects product-experience-capture(+2) and eval-os-a1(+3). Fund only those
+    actual deltas: 5966/5987/5724 -> 5973/5999/5731. Meta-CEO(+8) and Mining(+2)
+    do not enter these probes. Preserve 137/138/131 job ceilings, ten packs,
+    estimator/selection rules, commands, timeouts and all admission limits.
+    These are measured planning weights, not elapsed runtime or new capacity.
+    Full paired curated closure is empty; all 17 newly named suites select
+    their existing owner. Historical qualification paragraphs remain intact.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

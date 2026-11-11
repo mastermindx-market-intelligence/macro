@@ -1,45 +1,5 @@
 # Macro Dashboard — shared agent operating rules
 
-## Session-owned technical reviews (Chairman amendment, 2026-11-03)
-
-The **active assigned session** owns its review and adjudication; a different ChatGPT Web conversation, third-party account, or former reviewer chat is **not** a default prerequisite. Mastermind #2026 **merged into protected master on 2026-11-04**. Consult its [session-local review law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md) at that accepted pin. Mastermind #2018 closed without merging; it is not a pending approval or adoption gate. Apply current protected review/risk law; a proposed PR by itself grants **no** waiver. FAST and ordinary STANDARD changes can use an explicit adversarial **author self-review**, targeted tests and required CI when the zero-external-review policy is accepted. Do not dispatch independent Fabric/Dot reviewers simply because a source edit or PR exists.
-
-For genuinely review-sensitive work, **the same parent session** may spawn real distinct-context read-only technical reviewer subagents: ChatGPT Web Pro *only when its native spawn tool is actually exposed*, native Codex, native Claude, or an admitted original-root Fabric reviewer. Observe child launch, exact-head source, independent findings and parent disposition; one author's second pass is self-review, **not** a separate independent actor. No external Web chat requirement. Formal GitHub `APPROVED` by a genuinely non-author authenticated principal, current CI, recorded holds, protected merge-on-green checks, source custody and effect/denial fences remain separately enforced; never self-approve, self-merge, fake review, or bypass a required native approval. A proposed Mastermind policy PR is not an installed law or proof that ChatGPT Projects have been changed.
-
-
-## GitHub-native source authoring versus M2 host-local custody
-
-A GitHub-native branch/commit/PR operation is not an M2 filesystem or worktree operation. **Only after** Mastermind PR #2118 has actually merged into protected `master` and current protected `docs/DELIVERY_WORKFLOW.md` admits that route, an assigned Web/Codex/Claude session with real GitHub write permission may use the native API without M2 Studio Direct, the external SSD or a host-local worktree. Require exact repository/source pin, isolated branch or original operation carrier, blob/expected-head CAS, live-writer/effect reconciliation and truthful hosted CI. This conditional pointer does not install unmerged #2118.
-
-For **host-local** Claude/CLI edits and any process running on the M2, the incumbent SSD quarantine, `ship_loop_guard.py`, approved storage helper, occupied-checkout and sparse-worktree controls still apply. Never switch an explicitly denied or effect-unknown action to another carrier. Neither authoring route permits direct `main` pushes, self-approval, self-merge, held-PR release or bypass of Macro's separate `merge-on-green` checks.
-
-## Finish-to-release: no draft graveyard
-
-An assigned session must drive its existing PR to the **actual user/machine outcome**, not stop at Draft or a published commit. Retain its original source carrier, repair concrete failing CI, make **non-held** stable reviewable candidates Ready, obtain genuinely required independent/formal checks, use the existing authorized merge-on-green controller, verify merged commit and owed production/browser proof. A pending check or published PR is not completion. Do not create a replacement PR, hand off to an archived reviewer chat, invent a watcher, or label an unmerged PR delivered. If an actual hold/permission/uncertain effect prevents the release, preserve the original exact target and next actionable repair; continue disjoint permitted work. Recorded `HOLD-FOR-SOL` stays **Draft / PARKED**, no `merge-on-green` label, no native auto-merge, no Ready or merge until the actual hold owner releases it; do not relabel the hold as DONE. An actually verified current-controller handoff may delegate an idle wait but **never** proves merged/accepted; the historical `scripts/ci_handoff.py` is absent from protected main and must not be invoked as a required exit ritual; red/held PRs retain an accountable reachable repair owner under `DEC:SESSION-OWNED-REVIEW-20261103`. Never self-approve, self-merge, bypass branch rules, remove recorded HOLD or replay denied effects. Follow Mastermind's [session-owned finish-to-release law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md#finish-to-release-ownership-a-pr-is-an-intermediate-artifact) after accepted source enrollment.
-
-## Reuse-first engineering (established infrastructure)
-
-For substantial implementation of existing machinery (agent harnesses, charts, dashboards, scheduling, storage, monitoring or UI), inspect incumbent Macro/Mastermind capabilities and credible maintained open-source options first. Prefer integrating, composing or extending proven libraries with a narrow adapter rather than rebuilding commodity infrastructure. Keep bespoke sector/intelligence/quantitative hypotheses and signals independently designed and scientifically validated. Check maintenance, compatibility, existing security/data boundaries and actual integration tests; no new sign-off. The scan is proportionate, not a new approval or documentation gate. Apply the protected shared [Reuse First policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) when accepted; a proposal alone does not change live settings.
-
-## Standing commercial data rights
-
-Chris has directly confirmed approved existing commercial licensing with full commercial rights for the Research Factory Yahoo/yfinance route (including the fixed nine sector ETFs), Massive/Polygon, Tiingo and ThetaData options. Apply [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) and the [shared source law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/COMMERCIAL_DATA_RIGHTS.md). The commercial gate is `APPROVED_BY_CHAIRMAN_ATTESTATION`; no repeated approval, contract upload or public-terms re-proof. Preserve separately evidenced historical/PIT, access, quality, budget, scientific and unresolved-effect facts.
-
-This repository is operated by multiple Claude accounts and Codex sessions. Repository files are the durable, shared source of instructions; promises or “memory” recorded only inside one chat do not carry to another session.
-
-
-Read the linked effect guide before the first relevant action. These are ordinary
-repository links, not automatic imports: load the applicable workspace, release,
-delegation or domain sections when the task needs them. The relocation does not
-weaken any permission, source-custody, review, hold or runtime control. Current
-protected Mastermind procedure and actual installed admission remain controlling;
-a historical model name, department label or command example is not a new grant.
-
-An architectural owner is not a live session. Data OS is a system boundary, not an
-AI approver to locate. The current assigned session resolves authorized technical
-contracts through existing interfaces. Preserve actual live writers, rights,
-reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
-
 ## Execution continuation law
 
 A blocked lane is not a finished mission. This section governs when a session may
@@ -188,36 +148,6 @@ substantial, and never stop while authorized work remains. Context compaction,
 rotation, or a `/clear` is a harness event and not an outcome — the guard's block
 ledger deliberately survives `resume` and `compact`.
 
-## Assigned Meta-CEO: delegate bounded labor to paid Fabric first (2026-10-12)
-
-**Only a current Chairman-assigned principal/Meta-CEO holds this role.**
-Ordinary Codex/Claude sessions remain bounded workers; neither a model label nor
-a historical role turns an unassigned session into a principal. The concrete
-Codex/Claude operating and proof contract is in
-[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md).
-
-An assigned Meta-CEO owns architecture, source/worker custody, prioritization,
-reviews, synthesis and acceptance. **Before substantial C0/C1/C2 routine
-implementation, research, tests or repair, make the delegate-versus-direct
-decision**. When an independent bounded leaf and eligible admitted provider
-exist, use the existing paid Subagent Fabric (GLM/Qwen/MiniMax/Grok as qualified)
-rather than burning frontier principal turns or spawning native Codex children.
-Codex on an already-enrolled host uses the installed
-`mastermind-fabric-delegate` skill and incumbent `fabric_task.py` adapter,
-not an invented queue or direct SSH/provider fallback. A native child is
-reserved for actual coordination/judgment; an inherited frontier-model fork
-is not a cheap leaf. Preserve the exact current `CODEX_THREAD_ID` root and
-any existing Executive/other-carrier effects, and never duplicate a run.
-
-Return compact status, artifact/commit hashes, tests, gaps and the next decision
-to the parent. Store full worker logs outside principal context and material
-cross-session decisions in existing Agent OS continuity. Don't create children
-merely to occupy free Ubuntu lanes; budget real non-overlapping work, admission,
-review and disk headroom. Record an exception to delegation when direct effort
-is demonstrably better, and never use another carrier to bypass a refusal.
-Updated source instructions alone are **not** fresh-session installation or
-real-path adoption proof.
-
 ## Context economy (frontier burn is CONTEXT × TURNS)
 
 Measured 2026-08-06 across 3,043 local transcripts (week of 07-30→08-06): of all
@@ -262,6 +192,76 @@ actual surface exposes that supported action.
 Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, so
 cutting thinking degrades quality for at most a sixth of the cost. The savings
 are in where work happens and how large the context is.
+
+## Session-owned technical reviews (Chairman amendment, 2026-11-03)
+
+The **active assigned session** owns its review and adjudication; a different ChatGPT Web conversation, third-party account, or former reviewer chat is **not** a default prerequisite. Mastermind #2026 **merged into protected master on 2026-11-04**. Consult its [session-local review law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md) at that accepted pin. Mastermind #2018 closed without merging; it is not a pending approval or adoption gate. Apply current protected review/risk law; a proposed PR by itself grants **no** waiver. FAST and ordinary STANDARD changes can use an explicit adversarial **author self-review**, targeted tests and required CI when the zero-external-review policy is accepted. Do not dispatch independent Fabric/Dot reviewers simply because a source edit or PR exists.
+
+For genuinely review-sensitive work, **the same parent session** may spawn real distinct-context read-only technical reviewer subagents: ChatGPT Web Pro *only when its native spawn tool is actually exposed*, native Codex, native Claude, or an admitted original-root Fabric reviewer. Observe child launch, exact-head source, independent findings and parent disposition; one author's second pass is self-review, **not** a separate independent actor. No external Web chat requirement. Formal GitHub `APPROVED` by a genuinely non-author authenticated principal, current CI, recorded holds, protected merge-on-green checks, source custody and effect/denial fences remain separately enforced; never self-approve, self-merge, fake review, or bypass a required native approval. A proposed Mastermind policy PR is not an installed law or proof that ChatGPT Projects have been changed.
+
+
+## GitHub-native source authoring versus M2 host-local custody
+
+A GitHub-native branch/commit/PR operation is not an M2 filesystem or worktree operation. **Only after** Mastermind PR #2118 has actually merged into protected `master` and current protected `docs/DELIVERY_WORKFLOW.md` admits that route, an assigned Web/Codex/Claude session with real GitHub write permission may use the native API without M2 Studio Direct, the external SSD or a host-local worktree. Require exact repository/source pin, isolated branch or original operation carrier, blob/expected-head CAS, live-writer/effect reconciliation and truthful hosted CI. This conditional pointer does not install unmerged #2118.
+
+For **host-local** Claude/CLI edits and any process running on the M2, the incumbent SSD quarantine, `ship_loop_guard.py`, approved storage helper, occupied-checkout and sparse-worktree controls still apply. Never switch an explicitly denied or effect-unknown action to another carrier. Neither authoring route permits direct `main` pushes, self-approval, self-merge, held-PR release or bypass of Macro's separate `merge-on-green` checks.
+
+## Finish-to-release: no draft graveyard
+
+An assigned session must drive its existing PR to the **actual user/machine outcome**, not stop at Draft or a published commit. Retain its original source carrier, repair concrete failing CI, make **non-held** stable reviewable candidates Ready, obtain genuinely required independent/formal checks, use the existing authorized merge-on-green controller, verify merged commit and owed production/browser proof. A pending check or published PR is not completion. Do not create a replacement PR, hand off to an archived reviewer chat, invent a watcher, or label an unmerged PR delivered. If an actual hold/permission/uncertain effect prevents the release, preserve the original exact target and next actionable repair; continue disjoint permitted work. Recorded `HOLD-FOR-SOL` stays **Draft / PARKED**, no `merge-on-green` label, no native auto-merge, no Ready or merge until the actual hold owner releases it; do not relabel the hold as DONE. An actually verified current-controller handoff may delegate an idle wait but **never** proves merged/accepted; the historical `scripts/ci_handoff.py` is absent from protected main and must not be invoked as a required exit ritual; red/held PRs retain an accountable reachable repair owner under `DEC:SESSION-OWNED-REVIEW-20261103`. Never self-approve, self-merge, bypass branch rules, remove recorded HOLD or replay denied effects. Follow Mastermind's [session-owned finish-to-release law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md#finish-to-release-ownership-a-pr-is-an-intermediate-artifact) after accepted source enrollment.
+
+## Reuse-first engineering (established infrastructure)
+
+For substantial implementation of existing machinery (agent harnesses, charts, dashboards, scheduling, storage, monitoring or UI), inspect incumbent Macro/Mastermind capabilities and credible maintained open-source options first. Prefer integrating, composing or extending proven libraries with a narrow adapter rather than rebuilding commodity infrastructure. Keep bespoke sector/intelligence/quantitative hypotheses and signals independently designed and scientifically validated. Check maintenance, compatibility, existing security/data boundaries and actual integration tests; no new sign-off. The scan is proportionate, not a new approval or documentation gate. Apply the protected shared [Reuse First policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) when accepted; a proposal alone does not change live settings.
+
+## Standing commercial data rights
+
+Chris has directly confirmed approved existing commercial licensing with full commercial rights for the Research Factory Yahoo/yfinance route (including the fixed nine sector ETFs), Massive/Polygon, Tiingo and ThetaData options. Apply [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) and the [shared source law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/COMMERCIAL_DATA_RIGHTS.md). The commercial gate is `APPROVED_BY_CHAIRMAN_ATTESTATION`; no repeated approval, contract upload or public-terms re-proof. Preserve separately evidenced historical/PIT, access, quality, budget, scientific and unresolved-effect facts.
+
+This repository is operated by multiple Claude accounts and Codex sessions. Repository files are the durable, shared source of instructions; promises or “memory” recorded only inside one chat do not carry to another session.
+
+
+Read the linked effect guide before the first relevant action. These are ordinary
+repository links, not automatic imports: load the applicable workspace, release,
+delegation or domain sections when the task needs them. The relocation does not
+weaken any permission, source-custody, review, hold or runtime control. Current
+protected Mastermind procedure and actual installed admission remain controlling;
+a historical model name, department label or command example is not a new grant.
+
+An architectural owner is not a live session. Data OS is a system boundary, not an
+AI approver to locate. The current assigned session resolves authorized technical
+contracts through existing interfaces. Preserve actual live writers, rights,
+reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
+
+## Assigned Meta-CEO: delegate bounded labor to paid Fabric first (2026-10-12)
+
+**Only a current Chairman-assigned principal/Meta-CEO holds this role.**
+Ordinary Codex/Claude sessions remain bounded workers; neither a model label nor
+a historical role turns an unassigned session into a principal. The concrete
+Codex/Claude operating and proof contract is in
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md).
+
+An assigned Meta-CEO owns architecture, source/worker custody, prioritization,
+reviews, synthesis and acceptance. **Before substantial C0/C1/C2 routine
+implementation, research, tests or repair, make the delegate-versus-direct
+decision**. When an independent bounded leaf and eligible admitted provider
+exist, use the existing paid Subagent Fabric (GLM/Qwen/MiniMax/Grok as qualified)
+rather than burning frontier principal turns or spawning native Codex children.
+Codex on an already-enrolled host uses the installed
+`mastermind-fabric-delegate` skill and incumbent `fabric_task.py` adapter,
+not an invented queue or direct SSH/provider fallback. A native child is
+reserved for actual coordination/judgment; an inherited frontier-model fork
+is not a cheap leaf. Preserve the exact current `CODEX_THREAD_ID` root and
+any existing Executive/other-carrier effects, and never duplicate a run.
+
+Return compact status, artifact/commit hashes, tests, gaps and the next decision
+to the parent. Store full worker logs outside principal context and material
+cross-session decisions in existing Agent OS continuity. Don't create children
+merely to occupy free Ubuntu lanes; budget real non-overlapping work, admission,
+review and disk headroom. Record an exception to delegation when direct effort
+is demonstrably better, and never use another carrier to bypass a refusal.
+Updated source instructions alone are **not** fresh-session installation or
+real-path adoption proof.
 
 ## Required context at the start of every task
 
@@ -315,64 +315,18 @@ motion. Change the appropriate shared family and its parity tests instead.
 
 ## Design system (any user-facing surface)
 
-`research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md` is the binding visual/composition
-law: archetype per route, canonical components (registry = the specimen at
-`mockups/design_system/specimen.html`), tokens only (extend `templates/theme.css`,
-never a parallel token root), density budgets, dark+light as two art directions,
-EN/ZH parity. Content law stays with `docs/DESIGN_DOCTRINE.md` (wins on conflict).
-Chairman design rule (2026-10-18): never add a colored left edge or equivalent
-accent stripe to a container; do not relocate it to another edge. Use neutral
-surface hierarchy, even borders, typography and labeled semantic ink. Preserve
-complete focus outlines and meaningful chart series. The doctrine owns this rule.
-Migration work follows `research/DESIGN_MIGRATION_FACTORY_V1.md`: builders execute
-a committed migration packet exactly and never invent design language — a builder
-that believes the packet is wrong stops and escalates.
+Before the first relevant design, implementation, or review action on any
+user-facing surface, read and follow the complete binding
+[shared design-system and theme requirements](docs/agent_guides/SHARED_DESIGN_SYSTEM.md).
+All relocated requirements remain binding. Repository paths in the guide are
+relative to the repository root. `research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md`
+remains binding visual/composition law; `docs/DESIGN_DOCTRINE.md` remains content
+law and wins on conflict.
 
 ### Theme art direction — required (TP-0, 2026-08-27)
 
-Dark and light are **two deliberate art directions of one semantic system**, not
-a design and its skin. They share information architecture, component semantics,
-spacing/type scales, state meanings, user actions, data contracts, ordering and
-density law, and interaction behavior. They do **not** have to share material
-treatment: dark is a command center (luminance depth, instrument calm, restrained
-glow); light is a research workspace (cool canvas, white material, hairline
-discipline, shadow instead of glow).
-
-**Token substitution alone is never proof of a light design.** "The same CSS
-still renders once the tokens swap" is exactly the failure this law exists to
-stop.
-
-Every material UI packet must name: DARK TREATMENT; LIGHT TREATMENT; which
-mechanisms intentionally differ and why; the reference/baseline; theme-specific
-degraded states; and the evidence matrix (dark/light × EN/ZH × desktop 1440 /
-mobile 390). A packet missing the light art direction or its evidence is
-`PARTIAL/BLOCKED`, never `PASS`.
-
-- **Designer:** state both art directions separately and supply both evidence
-  sets; never approve "same CSS, tokens swap" without arguing why the mechanism
-  genuinely works in both luminance environments.
-- **Builder:** if a frozen spec lacks LIGHT TREATMENT or its required evidence,
-  stop `PARTIAL/BLOCKED` — do not invent or silently translate one, and never
-  add an opaque runtime stylesheet to escape a design-system constraint.
-- **Reviewer:** `PASS` on a material UI change requires dark and light each
-  adjudicated as designs — hierarchy, material depth, semantic color, responsive
-  composition, EN/ZH parity. Functional browser success is necessary, never
-  sufficient.
-
-**Substantive product styling may not be authored as an opaque runtime
-stylesheet system inside page/composer JavaScript** — no multi-kilobyte
-`style.textContent` material system, no parallel palette/token family, no
-duplicated light/dark stylesheet branches invisible to the design-system
-checker. JavaScript may mount and recompose canonical DOM, set state
-classes/attributes, select existing variants, and apply genuinely data-dependent
-inline geometry; governed presentation source owns the material decisions.
-
-Forward-only enforcement (inherited debt reports, but does not newly block):
-`scripts/check_design_system.py --mode enforce-added` on changed lines,
-`scripts/check_runtime_style_injection.py` as a ratcheted budget that may only
-stay flat or shrink, and `scripts/check_ui_visual_evidence.py` for the committed
-dual-theme evidence receipt. CI checks evidence existence and state identity
-only — a human/Opus reviewer owns visual taste.
+Apply the linked guide's complete dual-theme, evidence, and enforcement
+requirements before the first relevant action.
 
 ## Workspace and git
 
