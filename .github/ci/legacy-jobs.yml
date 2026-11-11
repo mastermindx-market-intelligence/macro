@@ -6241,6 +6241,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -10697,6 +10698,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -11049,6 +11051,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11420,6 +11423,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -15659,6 +15663,83 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      # Actual source/metadata reads in the SA-W4 ownership contract.
+      - "config.yml"
+      - "engine/experiments_registry.py"
+      - "data/experiments/registry_seed.json"
+      - "engine/vol_shock_scorecard.py"
+      - "engine/neuralweb/metabolism.py"
+      # PR #10571: the existing closure analyzer recursively visits Python
+      # source read only for AST assertions. Keep that conservative contract;
+      # these declarations do not mean the audit executes those modules.
+      # CI 42562109040 / contract128980585606 reported these 65 missing paths;
+      # include the existing Neural Web package initializer as context too.
+      - "collectors/base.py"
+      - "collectors/holdings.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/alerts.py"
+      - "engine/axes.py"
+      - "engine/base_effect.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/election_cycle.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
+      - "engine/event_calendar.py"
+      - "engine/event_risk.py"
+      - "engine/holdings_signals.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/mtf_monitor.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/governance.py"
+      - "engine/neuralweb/read.py"
+      - "engine/oracle/__init__.py"
+      - "engine/oracle/compounds.py"
+      - "engine/oracle/graph.py"
+      - "engine/oracle/washout_counterread.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/rates_command_basis.py"
+      - "engine/regime.py"
+      - "engine/regime_one.py"
+      - "engine/research_codegen/__init__.py"
+      - "engine/research_codegen/accounting_contract.py"
+      - "engine/research_codegen/admission.py"
+      - "engine/research_codegen/bridge.py"
+      - "engine/research_codegen/contracts.py"
+      - "engine/research_codegen/evaluation.py"
+      - "engine/research_codegen/input_contract.py"
+      - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
+      - "engine/risk_radar.py"
+      - "engine/risk_radar_backtest.py"
+      - "engine/risk_state.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/trial_ledger.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "research/signal_engine/confluence.py"
+      - "scripts/notify.py"
+      - "scripts/oracle_reversion_screen.py"
+      - "scripts/oracle_screen.py"
+      - "scripts/validate_regime_fwd.py"
+      - "site/qledger/track_record.json"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a
       # change to one must select this job. Declared on all three control-plane
@@ -19503,6 +19584,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -23636,6 +23718,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -24075,6 +24158,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -24410,6 +24494,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25633,13 +25718,29 @@ jobs:
   sa-w4-improvement-lanes:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    paths:
+      - tests/test_standout_review.py
+      - tests/conftest.py
+      - tests/__init__.py
+      - engine/**
+      - lib/**
+      - collectors/**
+      - scripts/**
+      - research/signal_engine/**
+      - research/__init__.py
+      - config.yml
+      - config/**
+      - data/**
+      - site/**
     # SA-W4: standout improvement lanes — clamped review engine + Tier-0 replay +
     # lab come-back alerts.
     # Covers: whitelist/step/disjointness enforcement, dormant-reject on null baseline,
     # UNEVALUABLE=>reject, governance event schema, shadow book spec completeness,
     # replay data-gap honesty, never-raise on corrupt proposals,
     # registry_seed picklab entries (27 US + 20 CN + 20 HK).
-    # Network-free: all synthetic fixtures via tmp_path.
+    # Network-free: tmp_path fixtures plus committed registry seed and active
+    # data/site inputs; scope includes the full pytest import context.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28084,6 +28185,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -30991,6 +31093,41 @@ jobs:
       - name: Q15 noise-robust realized variance requirement suite
         run: python -m pytest tests/test_vol_noise_robust_realized.py -q
 
+  retirement-nearzero:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Retirement near-zero controller regression (2026-11-05, PR #10767). The
+    # near-zero fix and its controller harness
+    # (tests/js/retirement_nearzero.test.mjs) landed together, but NO job
+    # executed that harness, so its 2178-case contract was only ever verified
+    # out-of-band: a later template edit could have shipped a broken controller
+    # green. This job runs the accepted harness against BOTH surfaces it can
+    # break — the authored template AND the committed generated page — so a
+    # template-only edit, and a committed page that drifts from its template,
+    # both fail loudly.
+    # The harness is a plain node script (built-in fs/vm/assert only) that takes
+    # the target path as argv[2]. It is NOT a node:test suite, so it must be run
+    # positionally and never with `node --test`.
+    # gate: code because the verdict is a pure function of the PR tree
+    # (template + generated page + harness): no data, no network, no install.
+    # Declared (non-exclusive) ownership: the three named paths ride the owned
+    # tier, so editing ANY of them re-runs this job.
+    paths:
+      - templates/calculators/retirement.html.j2
+      - site/tools/calculators/retirement.html
+      - tests/js/retirement_nearzero.test.mjs
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: retirement near-zero controller (authored template)
+        run: node tests/js/retirement_nearzero.test.mjs templates/calculators/retirement.html.j2
+      - name: retirement near-zero controller (committed generated page)
+        run: node tests/js/retirement_nearzero.test.mjs site/tools/calculators/retirement.html
+
   free-content-estate:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: data
@@ -32391,6 +32528,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -32939,6 +33077,10 @@ jobs:
           tests/test_us_board_continuity_guard.py
           tests/test_build_stock_library_price_clock.py
           tests/test_canada_canonical_board.py
+          tests/test_us_board_snapshots.py
+          tests/test_us_board_snapshot_readers_build.py
+          tests/test_us_board_snapshot_readers_grade.py
+          tests/test_us_board_snapshot_reader_census.py
           -q
 
 
@@ -35315,6 +35457,7 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35921,6 +36064,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -37429,6 +37573,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
@@ -51160,6 +51305,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
