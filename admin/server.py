@@ -34,7 +34,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_first_party, auth, brain_guest, brief, causal_lab,
                chronicle,
-               codex_panel,
+               codex_panel, capacity_router,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
                flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
@@ -67,7 +67,7 @@ _CTYPES = {".html": "text/html; charset=utf-8",
 # The SPA bundle is public (the authenticated data is not), so give it
 # content-addressed URLs and let the browser/edge keep each immutable revision.
 # index.html itself remains no-store and always points at the current hashes.
-_STATIC_ASSET_NAMES = ("app.js", "styles.css", "preferences.js")
+_STATIC_ASSET_NAMES = ("app.js", "styles.css", "preferences.js", "capacity-router.js", "capacity-router.css")
 _STATIC_ASSET_VERSIONS = {
     name: hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
     for name in _STATIC_ASSET_NAMES if (STATIC / name).is_file()
@@ -150,6 +150,7 @@ _API_RESPONSE_CACHE: OrderedDict[str, tuple[float, bytes]] = OrderedDict()
 _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
 _API_CACHE_BYPASS_PATHS = {
+    "/api/capacity-router",
     "/api/session",
     "/api/auth-check",
     "/api/live_runs",
@@ -843,7 +844,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._file("index.html")
             if path == "/assets/theme-tokens.css":
                 return self._theme_tokens_file()
-            if path in ("/app.js", "/styles.css", "/preferences.js"):
+            if path in ("/app.js", "/styles.css", "/preferences.js", "/capacity-router.js", "/capacity-router.css"):
                 return self._file(path.lstrip("/"))
             if path == "/research-diagnostic-tokens.css":
                 from .research_diagnostic_tokens import stylesheet
@@ -908,6 +909,8 @@ class Handler(BaseHTTPRequestHandler):
                 # Each component is isolated so one failure degrades one landing tile.
                 # The full Health/AI-Cost tabs still fetch their dedicated endpoints.
                 return self._json(_summary_payload())
+            if path == "/api/capacity-router":
+                return self._json(capacity_router.panel((q.get("minutes") or ["15"])[0]))
             if path == "/api/flags":
                 return self._json(flags.snapshot())
             if path == "/api/brain/guest":
@@ -2048,6 +2051,11 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
             "directly. For remote access use admin.mastermind-x.com or an SSH tunnel.")
     settings.startup_check()
     httpd = ThreadingHTTPServer((host, port), Handler)
+    # Keep the two heaviest analytics panels' pages resident so a cold open cannot outrun
+    # the panel budget (see analytics_first_party.start_warmer). Deployed only: a local
+    # run should not add load to the shared store.
+    if settings.deployed():
+        analytics_first_party.start_warmer()
     mode = "DEPLOYED (auth required)" if settings.deployed() else (
         "local + auth" if settings.auth_enabled() else "local (open)")
     print(f"  Macro Admin → http://{host}:{port}   [{mode}]")
@@ -2058,3 +2066,4 @@ def serve(host: str = "127.0.0.1", port: int = 8787) -> None:
         print("\n  stopped.")
     finally:
         httpd.server_close()
+
