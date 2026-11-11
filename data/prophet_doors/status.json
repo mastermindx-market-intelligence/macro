@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-11-06",
+  "asof": "2026-11-10",
   "candidates": {
     "R": 0,
-    "T": 7,
-    "W": 31
+    "T": 6,
+    "W": 32
   },
   "deduped": {
     "R": 0,
-    "T": 7,
-    "W": 31
+    "T": 6,
+    "W": 32
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-09 12:08:57",
-  "runtime_s": 187.6,
+  "run_utc": "2026-11-11 17:21:56",
+  "runtime_s": 354.2,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -3,
-    "asof": "2026-11-09",
-    "n_members": 205,
+    "age_days": -1,
+    "asof": "2026-11-11",
+    "n_members": 155,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.724,
+        "emerging_score": 4.461,
         "rank": 1,
+        "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 3.66,
+        "rank": 2,
         "theme": "Commodities Metals"
       },
       {
-        "emerging_score": 2.122,
-        "rank": 2,
+        "emerging_score": 2.189,
+        "rank": 3,
         "theme": "Digital Entertainment"
       },
       {
-        "emerging_score": 1.872,
-        "rank": 3,
-        "theme": "Consumer Goods"
-      },
-      {
-        "emerging_score": 1.537,
+        "emerging_score": 1.776,
         "rank": 4,
-        "theme": "Electric Vehicles"
+        "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.505,
+        "emerging_score": 1.498,
         "rank": 5,
-        "theme": "Energy Renewable"
+        "theme": "Transportation & Logistics"
       }
     ]
   },
@@ -129,16 +129,16 @@
       "2B",
       "3B"
     ],
-    "aligned": 31,
-    "asof_max": "2026-11-06",
+    "aligned": 32,
+    "asof_max": "2026-11-10",
     "asof_mismatch": 0,
-    "asof_run": "2026-11-06",
+    "asof_run": "2026-11-10",
     "evaluated": 713,
     "fresh": 32,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 26.7,
+    "runtime_s": 57.1,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 60,
