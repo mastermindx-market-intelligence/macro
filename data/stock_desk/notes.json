@@ -1,175 +1,164 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-08",
-  "generated_at": "2026-09-09T13:22:29.133371+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-10T18:26:04.274147+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-08-AN-20260909132229-1",
-      "ticker": "AN",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The residual-alpha selection is modestly positive, while the constructive base-building verdict and unblocked entry provide a defined setup without an extension brake. Conviction stays low because prior constructive calls had only 32% directional accuracy.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.43, 57th percentile",
-        "Entry unblocked: 63rd percentile",
-        "No listed risk cautions"
-      ],
-      "dissent": "The quality and tailwind axes are below median, and momentum is essentially flat, so the base may fail to produce relative strength.",
-      "falsifier": {
-        "text": "A failed turn lower from the base accompanied by sustained underperformance versus the S&P 500.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "AN",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-08-WFC-20260909132229-2",
-      "ticker": "WFC",
-      "name": null,
+      "id": "2026-11-06-FNV-20261110182604-1",
+      "ticker": "FNV",
+      "name": "Franco-Nevada",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The fresh-buy entry is offset by near-zero residual-alpha selection and explicit accounting and crowded-basket risk controls. With no clear directional edge, the appropriate read is watchful rather than chasing or shorting the uptrend.",
+      "horizon_d": 15,
+      "thesis": "The daily bottoming turn and positive MACD are offset by a mixed weekly regime, left-translated prior cycle and an imminent earnings event. The validated event-proximity brake supports watching rather than making a directional relative-return call.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.05, 49th percentile",
-        "Entry unblocked: 62nd percentile",
-        "Accounting quality: watch",
-        "Financials basket: crowded and stretched"
+        "Earnings in 1 day can override the setup",
+        "Daily phase stretched; investor phase late",
+        "Prior cycle left-translated",
+        "Above 50-day and 200-day averages"
       ],
-      "dissent": "A fresh positive earnings-surprise context and immediate uptrend entry could sustain relative momentum despite the risk flags.",
+      "dissent": "The rejected low and renewed daily momentum could persist, particularly if earnings confirm the turn.",
       "falsifier": {
-        "text": "A sustained relative breakout versus the S&P 500 while the accounting warning and crowded-basket condition ease.",
+        "text": "A favorable earnings reaction followed by a weekly trend turn and sustained performance above the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-11-27",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-08-F-20260909132229-3",
-      "ticker": "F",
-      "name": null,
+      "id": "2026-11-06-BTG-20261110182604-2",
+      "ticker": "BTG",
+      "name": "B2Gold",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The turn signal and positive momentum context are counterbalanced by a negative recent earnings-surprise reading, accounting watch, and a sector basket below its long-term trend. Those shipped risk controls argue against a constructive call, but the active upturn is insufficient for a directional short.",
+      "thesis": "The daily turn is constructive, but the larger trend is mixed and the Gold Miners basket remains below its long-term trend. That risk-control conflict, combined with essentially flat residual selection, leaves no accountable relative direction.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Board state: TURN SIGNALED, direction up",
-        "SUE z: -0.89",
-        "Accounting quality: watch",
-        "Consumer Discretionary basket below long-term trend"
+        "Selection z: -0.0096",
+        "Gold Miners basket below long-term trend",
+        "Daily momentum crossed up",
+        "Cycle not blocked"
       ],
-      "dissent": "Positive revisions and momentum could confirm the turn and drive outperformance from a position still 15.3% below its high.",
+      "dissent": "Right-translated cycling, positive MACD and price above both major moving averages could allow momentum to continue despite the weak basket.",
       "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 with the turn intact and the sector basket recovering its long-term trend.",
+        "text": "A confirmed weekly upturn accompanied by the Gold Miners basket reclaiming its long-term trend.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-08-NX-20260909132229-4",
-      "ticker": "NX",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The lagging verdict is supported by weak residual-alpha selection, sharply poor entry characteristics, negative revisions, and an accounting warning. This is an actual relative-weakness case rather than an extension-only short, although the upward turn keeps conviction low.",
-      "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.74, 39th percentile",
-        "Entry axis: z -1.93, 23rd percentile",
-        "Revisions z: -1.09",
-        "Accounting quality: warn"
-      ],
-      "dissent": "The stock is at its reported high with an upward turn signal, so momentum persistence could overwhelm the weak cross-sectional profile.",
-      "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 after the turn signal, accompanied by improving revisions and no renewed lottery-spike behavior.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "NX",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-08-SMP-20260909132229-5",
-      "ticker": "SMP",
-      "name": null,
+      "id": "2026-11-06-GFI-20261110182604-3",
+      "ticker": "GFI",
+      "name": "Gold Fields",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The unblocked fresh-buy entry is favorable, but residual-alpha selection is near zero and the tailwind and quality axes are below median. With no explicit bearish risk block and an intact uptrend, there is not enough evidence for either a constructive call or a short.",
+      "thesis": "The rebound above the 50-day average supports the bottoming setup, but price remains below the 200-day average and the industry basket is lagging. With a neutral verdict and no validated rank edge, the conflicting timeframes do not justify either chasing or shorting.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.05, 49th percentile",
-        "Entry unblocked: 62nd percentile",
-        "Accounting quality: clean",
-        "Board state: FRESH BUY, direction up"
+        "Price 0.5% below 200-day average",
+        "Nearly 30% below 52-week high",
+        "Gold Miners basket below long-term trend",
+        "Weekly timeframe has not turned"
       ],
-      "dissent": "The immediate fresh-buy signal and positive momentum context could develop into durable relative strength.",
+      "dissent": "The large distance from the high may provide recovery room if the daily turn develops into a durable trend reversal.",
       "falsifier": {
-        "text": "A sustained relative breakout versus the S&P 500 supported by improving revisions and selection strength.",
+        "text": "Price reclaims and holds above the 200-day average while the weekly timeframe turns upward.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-08-PCRX-20260909132229-6",
-      "ticker": "PCRX",
-      "name": null,
-      "lean": "cautious",
+      "id": "2026-11-06-CNMD-20261110182604-4",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Despite a fresh-buy entry and clean accounting, the deterministic lagging verdict aligns with weak residual-alpha selection and deeply negative revisions. That genuine relative-weakness signal supports caution, but the favorable entry, quality, and tailwind keep conviction low.",
+      "horizon_d": 15,
+      "thesis": "The stock has an intact daily rebound, but the extension and lottery-spike brakes argue against chasing while the left-translated prior cycle and weak earnings growth prevent a constructive relative call. The neutral verdict is therefore the most defensible read.",
       "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.96, 36th percentile",
-        "Revisions z: -1.56",
-        "Entry unblocked: 64th percentile",
-        "Quality and tailwind: 55th percentile"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Board state: HOLD \u2014 EXTENDED",
+        "Entry includes extension and lottery-spike risks",
+        "Prior cycle left-translated",
+        "Net-income growth: -64.4%"
       ],
-      "dissent": "The fresh-buy state, upward direction, and supportive entry and quality axes could mark an inflection before revisions recover.",
+      "dissent": "Positive revisions, clean accounting and price above both major moving averages could sustain momentum despite weak recent earnings growth.",
       "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 with the fresh-buy trend intact and revisions turning materially less negative.",
+        "text": "A pullback holds above the 50-day average and is followed by a weekly trend turn without another lottery-style spike.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "PCRX",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-11-27",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-AEM-20261110182604-5",
+      "ticker": "AEM",
+      "name": "Agnico Eagle Mines",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "AEM's daily bottoming signal and positive momentum are counterbalanced by a stretched, late cycle, left translation and a Gold Miners basket below trend. The risk controls support waiting for confirmation, not treating residual selection as a return forecast.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily phase stretched; investor phase late",
+        "Prior cycle left-translated",
+        "Gold Miners basket below long-term trend",
+        "Above 50-day and 200-day averages"
+      ],
+      "dissent": "The rejected low, fresh momentum crossover and position above both major averages could develop into continued relative strength.",
+      "falsifier": {
+        "text": "A weekly trend turn with the Gold Miners basket back above its long-term trend and AEM outperforming the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-06-UHS-20261110182604-6",
+      "ticker": "UHS",
+      "name": "Universal Health Services",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "Strong fundamentals and an intact daily turn argue against a bearish lean, while the extension brake, crowded health-care basket and negative residual-selection context argue against chasing. Given the neutral verdict and weak historical directional calibration, the accountable stance is neutral.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Board state: HOLD \u2014 EXTENDED",
+        "Health Care basket crowded and stretched",
+        "Residual selection z: -0.3332",
+        "Net-income growth: 30.4%; ROE: 20.5%"
+      ],
+      "dissent": "Value, payout, low-beta characteristics and improving profits could support sustained relative outperformance even from an extended entry.",
+      "falsifier": {
+        "text": "A controlled consolidation holds above the 50-day average and resolves into a weekly uptrend with sustained S&P 500 outperformance.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

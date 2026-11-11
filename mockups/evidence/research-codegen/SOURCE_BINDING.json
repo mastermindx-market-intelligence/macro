@@ -1,0 +1,19 @@
+{
+  "scope": "ACTUAL_BRIDGE_BUILD_PANEL_AND_EXTRACTED_EXISTING_RENDERER_LOCAL_FIXTURE_NOT_DEPLOYMENT",
+  "files": {
+    "engine/research_codegen/bridge.py": "2b5f2e7e986954ee3b5824ffa31e3a8d6f697d6c1e11fd7ce50771f451cef11d",
+    "engine/experiments_registry.py": "26ea413ac79a4f8199f9352ff89f3c37635b830bdf17c5681535649961cb2208",
+    "admin/experiments.py": "5a7a0b4bcf1811cce048e7579e16f1c9ed0627ba1e39517c6a5217cd847ccb36",
+    "admin/static/app.js": "4c459f4b8a3876fc828d029a1fe91d1fbbf58758981158fd54be84e3ad28de9a",
+    "admin/static/styles.css": "740762f5cb2284c64cf5792249978be7665ef2243eb68d9fca4d62efe01bc1ca",
+    "admin/research_diagnostic_tokens.py": "289e54466b422d1c4d6060e49184e03498f23765db7a792bed6188793c4cacf4",
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2"
+  },
+  "payload_sha256": "9121e30e60f3b3bf8f4c92abc0e97be70ab571a5ca2f6321470d311f9599bd1c",
+  "matrix_sha256": "af3d00093da1159deb5e165d067b572ebbaf9a410df07221f6db06bc3a868198",
+  "fixture_sha256": "d8cf562f60543501564a6ae9bd1dd02373d42f5cb1cbde98c0cb5de9e46a0ab1",
+  "canonical_capture_sha256": "cc6898f11c858aa1305e05b48126128bcc026a053945b534990aa5bb73a18395",
+  "capture_fixture_sha256": "ca6ff2729c37ff00b646a87930cd048927628029ab21acffa8ebe532980a0b31",
+  "capture_fixture_adapter": "Fixture-only setTheme/setLang calls actual section buttons and checks observed section state; canonical tool captures rest state; separate actual matrix opened details.",
+  "visual_review": "Root inspected canonical desktop dark EN and mobile light ZH. Graphite no-shadow dark cards; white shadowed light cards. Read-only measured/refused hierarchy, wrapping and section-only mode controls accepted. Inherited surrounding admin stays dark/English."
+}

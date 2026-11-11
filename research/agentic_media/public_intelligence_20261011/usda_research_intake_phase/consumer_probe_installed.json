@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-10-14T13:40:20.571666+00:00",
+  "source_id": "usda-2026-10-09-wasde-676",
+  "source_sha256": "6cc97c08be7e683b6114ae8e16d49fce2f21dce3ed3f9933b0acbd2d37e6840b",
+  "reads": [
+    {
+      "key": "research_vault/catalog.json",
+      "present": true,
+      "sha256": "9478822a71ab3cf4eabedeec96ae9a329b9841b1fa84a3b71fa45c87147a28fb"
+    },
+    {
+      "key": "research_inbox/_processed/usda-2026-10-09-wasde-676.json",
+      "present": false,
+      "sha256": null
+    }
+  ],
+  "catalog_rows": 0,
+  "state": "PENDING_INCUMBENT_INGEST",
+  "writes": 0,
+  "provider_calls": 0,
+  "publication": false,
+  "stock_ticker": null,
+  "press_draft_accepted": false,
+  "installed_head_before": "a511bc976d02527e07db193467d987882f5ce3b4",
+  "installed_head_after": "a511bc976d02527e07db193467d987882f5ce3b4",
+  "stable_installed_head": true,
+  "local_fixture": false
+}

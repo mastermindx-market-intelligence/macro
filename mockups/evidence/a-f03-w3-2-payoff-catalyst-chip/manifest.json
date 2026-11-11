@@ -1,0 +1,305 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-24T02:49:51Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3316,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5957,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 3316,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 9,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 186298,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 17,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 932
+      },
+      "page_id": "macro:options",
+      "registry_route": "/options.html",
+      "route": "/options.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 636461,
+          "captured": true,
+          "file": "f1532854ddc2435a.png",
+          "force_state": null,
+          "height": 3316,
+          "locale": "en",
+          "sha256": "f1532854ddc2435aec84e94135ee68dcce37334f366931db76b048616a6d439c",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 637062,
+          "captured": true,
+          "file": "ccd26d152e9393fd.png",
+          "force_state": null,
+          "height": 3317,
+          "locale": "en",
+          "sha256": "ccd26d152e9393fd691c09ee3127ab663164eea161904914acc6ede3da836ac5",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 632829,
+          "captured": true,
+          "file": "861ab923d45014c9.png",
+          "force_state": null,
+          "height": 3146,
+          "locale": "zh",
+          "sha256": "861ab923d45014c982434d0525cd4cb984f944d6c662cdaec4759675f9424171",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 637890,
+          "captured": true,
+          "file": "bf0930fcafc6700f.png",
+          "force_state": null,
+          "height": 3147,
+          "locale": "zh",
+          "sha256": "bf0930fcafc6700f0fe74eac165bf758be21fc598012092e398ac105c4cd41be",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 572954,
+          "captured": true,
+          "file": "d01528b97e565884.png",
+          "force_state": null,
+          "height": 5957,
+          "locale": "en",
+          "sha256": "d01528b97e565884ad44928a7e8d734e62561478b3ed3de35b85f0fe0ffa5d42",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 581491,
+          "captured": true,
+          "file": "34a33914e9d194ee.png",
+          "force_state": null,
+          "height": 5958,
+          "locale": "en",
+          "sha256": "34a33914e9d194eea1a1b6e345adb1110737e6f7857745fc80e15607df65f150",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 561837,
+          "captured": true,
+          "file": "c715e723291fa974.png",
+          "force_state": null,
+          "height": 5418,
+          "locale": "zh",
+          "sha256": "c715e723291fa974fb74cc46f50e3a8413e95750dacdb60777d0102cb78fd50b",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 573196,
+          "captured": true,
+          "file": "43164aca856f6de9.png",
+          "force_state": null,
+          "height": 5419,
+          "locale": "zh",
+          "sha256": "43164aca856f6de9abf26630527bfbc12c28b6af18f8b63978f4ed5e2d35211b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/options.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 330,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w3_2_chip",
+    "resolved_sha_or_none": "6989e3e9a5ec43090b7a6a5370da69037a34f4a1",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Volumes/STORAGE/Offloaded/m1-20260917/lanes/repos/macro/.git/worktrees/mo-ext-fix-mo_a3_w3_2_chip (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/STORAGE/Offloaded/m1-20260917/lanes/wt/mo-ext-fix-mo_a3_w3_2_chip/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

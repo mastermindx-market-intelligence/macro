@@ -1,0 +1,60 @@
+{
+  "schema": "eval_os_independent_A1_hosted_selection_gap.v1",
+  "adjudication": "T22_REQUIRED_HOSTED_SELECTION_GAP_CONFIRMED_FOCUSED_CODE_JOB_PROPOSAL_PENDING",
+  "observed_at": "2026-10-14T00:05:01.083791+00:00",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "plan": {
+    "path": "../integration/ci-38487031782-plan/ci-plan.json",
+    "artifact_sha256": "fe2c5ad34feaf5df390134a185f71427cc29cf0a3fa6fea18dff37b3846610c3",
+    "plan_sha256": "4bfc8ebc0d33a6cb223b1b901c0c9a2dc9c8f7bd72ada9e0653be04117acc42e",
+    "run": 38487031782,
+    "subject_head_sha": "8d1a4d47bdb66ce4a456b76cea608172ff1e55b5",
+    "tested_tree_sha": "0235fef8efdcd64507c1249bc9cdf5e07571dcf4",
+    "base_sha": "f9a5a35cd66bd840ad37e7976cb42034359c22fa",
+    "eligible_jobs": 117,
+    "code_gate_jobs": 227,
+    "unowned_paths": 7,
+    "example_unowned_path": "tests/test_admin_intelligence_os.py",
+    "neural_web_eligible": false,
+    "neural_web_semantic_job": false,
+    "neural_web_in_skipped_list": false
+  },
+  "source_rule": "scripts/run_ci_pack.py GATE_VALUES/code-data contract andload_legacy_jobs filter; .github/workflows/ci.yml --gate code. Legacy neural-web gate:data is removed beforepathselection/skippedjob census; literal testpaths alone cannot make it hostedmerge proof.",
+  "required_suites_without_selected_code_owner": [
+    "tests/test_admin_intelligence_os.py",
+    "tests/test_admin_intelligence_os_ui.py",
+    "tests/test_evidence_findings.py",
+    "tests/test_evidence_findings_ui.py",
+    "tests/test_eval_os_adversarial_acceptance.py",
+    "tests/test_admin_theme_tokens.py",
+    "tests/test_admin_server.py",
+    "tests/test_response_eval.py"
+  ],
+  "readiness_existing_owner": {
+    "job": "qledger-cluster-honest-ci",
+    "pack": 5,
+    "selected": true,
+    "proof_id": "qledger forward-only desk adapters + evidence clock (P3) + nightly grader & W6 readiness runner",
+    "suites": [
+      "tests/test_qledger_desk_adapter.py",
+      "tests/test_qledger_evidence_clock.py",
+      "tests/test_grade_qledger.py",
+      "tests/test_w6_readiness_monitor.py"
+    ],
+    "ruling": "Publisherreadinessisnotwhollyunowned; existingselectedowner must bepreserved. Selectionisnotterminalexecutionproof."
+  },
+  "read_limit": "Testedtree0235 localmanifestpath unavailable atno-lazy gitreadrc128; no network/recovery attempted. Commands examined onretained subject8d manifest againstall117 selectedIDs; everyselectedpytest execution namesliteral tests, noneimplicitly runwholetestsdir. Retainedplan semantic proofIDs corroborate qledger owner. No claimaboutunavailabletestedtreebytesbeyond retainedplan.",
+  "minimal_repair_ruling": "Addonefocused gate:code A1purefixture/committedQAjobwithitsown literal suites andsource/fixturepaths plusdiscriminatingselectionregression. Preserve entirelegacyneural-web/datajob byte-identically; do not promote live-data health/constitution/registry checks into codegate. KeepexistingW6owner; includepublishercontrols only asnamedadditionalaffectedqualification.",
+  "acceptance_needed": [
+    "Newjobloadandselection actually occurs underordinary --gate code for A1API/UI/findings/fixture/publisher source/testpaths",
+    "ExplicitproperPython/Node/dependencies for actualclient/science tests",
+    "DiscriminatingoldRED/newGREENpath ownership regression without globalfallback or weakenedgates",
+    "Existingselected/sibling job commands andgatefields preserved",
+    "Finalpublishedheadretainedhostedplan listsnewjob+semanticproofsteps,then concluded actualjob execution; localtests/priorgreenCIcannotreplaceit"
+  ],
+  "CI_queries": false,
+  "tests_run": false,
+  "source_writes": false,
+  "new_operations": false
+}

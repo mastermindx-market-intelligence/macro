@@ -45,14 +45,14 @@ unverified:
   - claim: A naturally generated production briefing contains the dated regime evidence through the real provider and customer path.
     what_would_verify: "After accepted normal release, observe a natural production producer run and authenticated browser/machine-consumer read; do not force master_brain.run(persist=False) as a read-only probe."
 unresolved:
-  - "PR #7024 has not yet published the integrated UTC/scope repair as an immutable new head."
+  - "The UTC/scope repair is published at 14c05300; the current composition still requires new-head hosted qualification and source-release adjudication."
   - "Current-base compatibility and hosted checks remain unproven on the integrated candidate."
   - "Shared Lens PR #6860 remains a separate interaction dependency for touch/mobile disclosure acceptance."
   - "Natural production adoption and authenticated real-browser proof remain absent."
 next_actions:
   - "Run python3 scripts/agentos.py validate and git diff --check on the integrated worktree; repair only W1 record/schema findings."
-  - "Stage only the intended W1 source/test/manifest, workstream, handoff and source-integration receipt; commit on claude/hmm-briefing-context-20260909 and normal-push to origin."
-  - "Pin the new immutable PR #7024 head; run exact-head review plus latest-base integration/hosted checks without merging main into the carrier merely to remove ancestry lag."
+  - "Inspect the reconciled same-branch publication and its natural hosted checks; do not recreate the already published UTC/scope amendment."
+  - "Pin the new PR7024 head, self-check the substantive current-source composition and conclude its actual hosted checks; no independent review ceremony is added."
   - "After release gates pass, prove the real full-page Lens interaction and a natural production briefing before promoting beyond BUILT_NOT_PROVEN."
 do_not_redo:
   - "Do not reapply the six manifest lines; current expected manifest SHA256 is 97832e2ff228994a68daee95a6e67b6d00b65f26210350439c6406a3e20ff3a1."
@@ -66,6 +66,34 @@ danger_areas:
   - "Legacy regime probabilities lack full historical model/vintage custody; do not fabricate provenance or substitute later reconstruction for missing saved issuance."
   - "The shared Lens touch bug is owned by PR #6860; duplicating theme.js behavior inside W1 would create a second interaction implementation."
 ---
+
+## Current recovery qualification — 2026-11-11
+
+The original UTC/scope amendment is already published in PR #7024 at
+`14c05300e513936409643e098cf4980a00538a38`. Earlier local-only and unpublished
+statements below describe the dated September work, not the current remote state.
+The present candidate composes the same feature over accepted main
+`37ec007aeae2e6a99f3cf918c5957756191be720`, preserving all 32 historical assets,
+the existing direct-reader design, and the current policy and CI changes on main.
+
+Fresh isolated reader/producer/template tests passed **88 cases**, with two
+complete-inventory CI assertions deliberately deferred to natural hosted checks.
+The consumer test used a temporary root, stubbed model/translation and an
+intercepted ledger append. This is current source-behavior evidence, not the
+historical 85/247/252-test runs, complete CI, provider synthesis, browser acceptance
+or production adoption. Historical evidence dates and the original discovery's
+source-bound claim remain unchanged.
+
+The next action is exact new-head hosted qualification, source-release adjudication,
+then the existing full-page Lens and natural production proof. Current Web 5A
+self-check applies; no new independent reviewer is required by this record.
+PR #6860's retained effects and mobile interaction gap remain separate. The original
+thermal-refused preparation is not replayed. Status remains **BUILT_NOT_PROVEN**;
+this record grants no worker, provider, ledger, forecasting or trading authority.
+
+Original complete record: [published historical source](https://github.com/mastermindx-market-intelligence/macro/blob/14c05300e513936409643e098cf4980a00538a38/agentos/handoffs/REGIME-BRIEFING-CONTEXT-2026-09-11.md).
+
+## Historical narrative — retained September record
 ## §0 State — what is true right now
 W1 is **BUILT_NOT_PROVEN** on the existing PR #7024 carrier. The preserved UTC-refusal change,
 regression tests and six narrow CI-scope additions are present in the original worktree, with the

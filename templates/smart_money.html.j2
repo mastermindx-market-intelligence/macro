@@ -673,7 +673,7 @@ html[data-theme="light"] .census-metric strong { font-size:11px; }
 {%- else -%}—{%- endif -%}
 {%- endmacro %}
 {%- macro fl_logo(tk) -%}
-<img class="tlogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk }}.png" loading="eager" onerror="this.style.display='none'" alt="">
+<img class="tlogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk }}.png" loading="lazy" decoding="async" fetchpriority="low" onerror="this.style.display='none'" alt="">
 {%- endmacro -%}
 {%- macro fl_usdn(v) -%}
   {%- if v is none -%}—{%- else -%}
@@ -1031,6 +1031,8 @@ html[data-theme="light"] .census-metric strong { font-size:11px; }
       {%- set _ft = _fol_entry.get('follow_tier') or 'insufficient' -%}
       {%- if _ft == 'follow' -%}<div class="mc-line"><span class="ftier follow">{{ t('Follow','跟随') }}</span></div>
       {%- elif _ft == 'watch' -%}<div class="mc-line"><span class="ftier watch">{{ t('Watch','观察') }}</span></div>
+      {%- elif _ft == 'fade' -%}<div class="mc-line"><span class="ftier fade">{{ t('Fade','淡出') }}</span></div>
+      {%- else -%}<div class="mc-line"><span class="ftier insufficient">{{ t('LOW DATA','数据不足') }}</span></div>
       {%- endif -%}
     {%- endif -%}
   </a>
@@ -1332,7 +1334,7 @@ research/smart_money_grade_a_q1_2026.md
 {#- v3 macros — defined OUTSIDE the section guard so a missing data key never
     leaves a macro undefined. Logos per F10: yes here, never on wire rows. -#}
 {%- macro ii_logo(tk) -%}
-<img class="tlogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk }}.png" loading="eager" onerror="this.style.display='none'" alt="">
+<img class="tlogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk }}.png" loading="lazy" decoding="async" fetchpriority="low" onerror="this.style.display='none'" alt="">
 {%- endmacro -%}
 {%- macro ii_usdn(v) -%}
   {%- if v is none -%}—{%- else -%}

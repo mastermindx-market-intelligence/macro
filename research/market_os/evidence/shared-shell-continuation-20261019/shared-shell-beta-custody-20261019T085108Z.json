@@ -1,0 +1,202 @@
+{
+  "beta_children": [
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597724,
+      "mode": "0o700",
+      "nlink": 2,
+      "path": "/opt/terminal/beta/config",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598346,
+      "mode": "0o700",
+      "nlink": 2,
+      "path": "/opt/terminal/beta/scripts",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597725,
+      "mode": "0o777",
+      "nlink": 1,
+      "path": "/opt/terminal/beta/.source-provisioned",
+      "size": 134,
+      "symlink": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598401,
+      "mode": "0o700",
+      "nlink": 2,
+      "path": "/opt/terminal/beta/signal_layer",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597729,
+      "mode": "0o700",
+      "nlink": 3,
+      "path": "/opt/terminal/beta/contracts",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1598413,
+      "mode": "0o755",
+      "nlink": 16,
+      "path": "/opt/terminal/beta/terminal",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597808,
+      "mode": "0o700",
+      "nlink": 4,
+      "path": "/opt/terminal/beta/ingest",
+      "size": 4096,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 1597742,
+      "mode": "0o700",
+      "nlink": 5,
+      "path": "/opt/terminal/beta/hub",
+      "size": 4096,
+      "uid": 0
+    }
+  ],
+  "beta_repo_head": {
+    "error": "",
+    "exit": 0,
+    "out": "e45bde2cac07ac3b29285ff70c40d68900fad62c"
+  },
+  "caddy_beta_lines": [],
+  "caddy_service": {
+    "error": "",
+    "exit": 0,
+    "out": "MainPID=2712483\nExecMainStartTimestampMonotonic=2918519097212\nActiveState=active\nSubState=running"
+  },
+  "caddy_sha256": "838d2927f1f05b120eceafd7dc42039dc5b3a17ad0402f985ee77aa3cc9077f5",
+  "dependency_pair": [
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 336939,
+      "mode": "0o755",
+      "nlink": 2,
+      "path": "/opt/terminal/beta/terminal/node_modules/esbuild/bin/esbuild",
+      "size": 9707520,
+      "uid": 0
+    },
+    {
+      "dev": 2048,
+      "gid": 0,
+      "ino": 336939,
+      "mode": "0o755",
+      "nlink": 2,
+      "path": "/opt/terminal/beta/terminal/node_modules/@esbuild/linux-x64/bin/esbuild",
+      "size": 9707520,
+      "uid": 0
+    }
+  ],
+  "disk_inventory": {
+    "/root/.npm": {
+      "error": "",
+      "exit": 0,
+      "out": "53248\t/root/.npm"
+    },
+    "/tmp": {
+      "error": "",
+      "exit": 0,
+      "out": "178147328\t/tmp"
+    },
+    "/var/cache/apt/archives": {
+      "error": "",
+      "exit": 0,
+      "out": "20480\t/var/cache/apt/archives"
+    },
+    "/var/lib/apt/lists": {
+      "error": "",
+      "exit": 0,
+      "out": "215203840\t/var/lib/apt/lists"
+    },
+    "/var/lib/systemd/coredump": {
+      "error": "",
+      "exit": 0,
+      "out": "4096\t/var/lib/systemd/coredump"
+    },
+    "/var/log": {
+      "error": "",
+      "exit": 0,
+      "out": "593584128\t/var/log"
+    }
+  },
+  "hold": {
+    "exists": false,
+    "path": "/opt/terminal/.terminal-build-resource.lock/hold"
+  },
+  "lifecycle_pointers": [
+    {
+      "exists": false,
+      "path": "/opt/terminal/beta/.release-pending"
+    },
+    {
+      "exists": false,
+      "path": "/opt/terminal/beta/.accepted-runtime"
+    }
+  ],
+  "observed_at": "2026-10-19T08:51:09.898796+00:00",
+  "owner_processes": {
+    "error": "",
+    "exit": 1,
+    "out": ""
+  },
+  "owner_sha256": "4d1b7c05d975a30be21de9556cc9eef964d07f30ba468f88abd0b40a61a84247",
+  "policy_sha256": "9b6c95d2f3134f37640312106fcf10dd2be5a1d4c01002e959ac5cb71614fae9",
+  "services": {
+    "terminal-beta.service": {
+      "error": "",
+      "exit": 0,
+      "out": "MainPID=0\nExecMainStartTimestampMonotonic=0\nActiveState=inactive\nSubState=dead\nUnitFileState=disabled"
+    },
+    "terminal.service": {
+      "error": "",
+      "exit": 0,
+      "out": "MainPID=1635719\nExecMainStartTimestampMonotonic=7499599865545\nActiveState=active\nSubState=running\nUnitFileState=enabled"
+    }
+  },
+  "source_archive_leftovers": [],
+  "source_pointer": {
+    "dev": 2048,
+    "gid": 0,
+    "ino": 1597725,
+    "mode": "0o777",
+    "nlink": 1,
+    "path": "/opt/terminal/beta/.source-provisioned",
+    "size": 134,
+    "symlink": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "uid": 0
+  },
+  "source_receipt_sha256": "9aac8ec8c132eecf4d2664d8f1e18e8a6bffce5f6d7176e4021b15d6d953cfa4",
+  "space": {
+    "/": 3365433344,
+    "/opt/terminal": 13834047488
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "mastermind.attended.beta_public_recursive_dns_read.v1",
+  "observed_at": "2026-10-20T01:56:04.862509+00:00",
+  "answers": [
+    {
+      "argv": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "CNAME"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 63869\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n;; ANSWER SECTION:\nbeta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "A"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 32262\n;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n;; ANSWER SECTION:\nbeta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.98.106\nbeta.mastermind-x.com.eo.dnse3.com. 60 IN A\t43.159.99.101\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+time=3",
+        "+tries=1",
+        "+noall",
+        "+answer",
+        "+comments",
+        "beta.mastermind-x.com",
+        "AAAA"
+      ],
+      "exit": 0,
+      "stdout": ";; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31626\n;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; OPT=15: 00 11 (\"..\")\n;; ANSWER SECTION:\nbeta.mastermind-x.com.\t600\tIN\tCNAME\tbeta.mastermind-x.com.eo.dnse3.com.\n\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Recursive resolver observation. Prior targeted nonrecursive reads returned SERVFAIL with RA and no AA; they did not establish authoritative zone contents.",
+  "dns_changed": false
+}

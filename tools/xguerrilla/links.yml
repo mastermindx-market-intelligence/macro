@@ -1,0 +1,14 @@
+# One link slot per persona (§26.4). RETIRED as a posting surface by the
+# identity bio policy (t_4f2e5457): posts and replies now carry no URLs at all
+# (BL-9) and `validators.validate` refuses any link, so a slot here can never be
+# posted. The bio is the only URL surface in the network (BL-1…BL-4) and is
+# written once, at provisioning, to https://www.mastermind-x.com/x/<child-id>.
+# Rows kept because `config.load_personas` and the persona fixtures still read
+# them; nothing consumes a slot for posting.
+# Placeholder hosts: the real redirects land with the pilot, one per child.
+slots:
+  wren.mp4: https://links.example.com/xg/wren-mp4
+  harperbuilds: https://links.example.com/xg/harperbuilds
+  lowlit.austin: https://links.example.com/xg/lowlit-austin
+  mila.lifts: https://links.example.com/xg/mila-lifts
+  desk.and.dusk: https://links.example.com/xg/desk-and-dusk

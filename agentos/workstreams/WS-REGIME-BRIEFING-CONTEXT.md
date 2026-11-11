@@ -19,10 +19,38 @@ waves:
   - id: W1
     title: Existing reader, deterministic bilingual saved note, and shared rendered consumer
     status: in_progress
-    next_action: Review the recovered UTC and six-path integration on its new immutable head; conclude current-base checks, Lens acceptance and production proof.
-next_action: Complete new-head review and current-base checks for the integrated UTC/scope repair; keep W0 PR7015 and both release holds separate.
+    next_action: Conclude new-head hosted qualification and source-release adjudication on PR7024; then prove the full-page Lens interaction and natural production adoption.
+next_action: Conclude the current source composition's hosted checks and scoped release; preserve the independent W0, Lens and production-proof boundaries.
 discoveries: ["DSC:REGIME-BRIEF-READER-ALREADY-EXISTS"]
 ---
+
+## Current recovery qualification — 2026-11-11
+
+The original UTC/scope amendment is already published in PR #7024 at
+`14c05300e513936409643e098cf4980a00538a38`. Earlier local-only and unpublished
+statements below describe the dated September work, not the current remote state.
+The present candidate composes the same feature over accepted main
+`37ec007aeae2e6a99f3cf918c5957756191be720`, preserving all 32 historical assets,
+the existing direct-reader design, and the current policy and CI changes on main.
+
+Fresh isolated reader/producer/template tests passed **88 cases**, with two
+complete-inventory CI assertions deliberately deferred to natural hosted checks.
+The consumer test used a temporary root, stubbed model/translation and an
+intercepted ledger append. This is current source-behavior evidence, not the
+historical 85/247/252-test runs, complete CI, provider synthesis, browser acceptance
+or production adoption. Historical evidence dates and the original discovery's
+source-bound claim remain unchanged.
+
+The next action is exact new-head hosted qualification, source-release adjudication,
+then the existing full-page Lens and natural production proof. Current Web 5A
+self-check applies; no new independent reviewer is required by this record.
+PR #6860's retained effects and mobile interaction gap remain separate. The original
+thermal-refused preparation is not replayed. Status remains **BUILT_NOT_PROVEN**;
+this record grants no worker, provider, ledger, forecasting or trading authority.
+
+Original complete record: [published historical source](https://github.com/mastermindx-market-intelligence/macro/blob/14c05300e513936409643e098cf4980a00538a38/agentos/workstreams/WS-REGIME-BRIEFING-CONTEXT.md).
+
+## Historical narrative — retained September record
 
 ## Boundaries and recovery
 Design: research/REGIME_BRIEFING_CONTEXT_W1_DESIGN_2026-09-09.md.

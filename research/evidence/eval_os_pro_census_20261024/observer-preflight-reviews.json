@@ -1,0 +1,40 @@
+{
+  "schema": "eval_os.observer_preflight_review.v1",
+  "reviewer_role": "fresh non-authoring technical reviewer",
+  "reviewer_session": "/root/a1_probe_review",
+  "reviews": [
+    {
+      "artifact": "a1-installed-reader-observer.py",
+      "sha256": "fb6ae5050e11421706c4903405d584baf27b8b22a66887023013831a6a39aebd",
+      "verdict": "GO",
+      "scope": "one bounded read-only backend observation",
+      "repairs_accepted": [
+        "bounded nofollow source reads with pre/opened/post identity",
+        "preserve cleanup owner on outer timeout",
+        "truthful actual call accounting and unavailable metadata",
+        "projection-field counter units"
+      ],
+      "disposition": "ACCEPTED / STOP"
+    },
+    {
+      "artifact": "a1-readiness-generation-diff.py",
+      "sha256": "32d250d5168c6d65c0675f0c2cf9994d9cd8af49c79827e1e7b4c5010daf424b",
+      "verdict": "GO",
+      "scope": "one distinct bounded read-only named-generation comparison",
+      "repairs_accepted": [
+        "unswallowable outer budget exception",
+        "bounded normalized recorded timestamp",
+        "sanitized unavailable for malformed nested mappings"
+      ],
+      "disposition": "ACCEPTED / STOP"
+    }
+  ],
+  "limitations": [
+    "Reviewers performed no production actions.",
+    "GO is preflight scope judgment, not a GitHub approval or product acceptance.",
+    "Exact resulting receipt/source delta still requires independent review."
+  ],
+  "routing_rationale": "Platform subagent review in the current authorized Pro mission; source-only independent judgments, no external provider wake or runtime operation.",
+  "why_not_fable": "These were bounded source/documentation and observer-boundary reviews with no historical Fable continuity requirement."
+}
+

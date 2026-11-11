@@ -1,0 +1,130 @@
+{
+  "schema": "gmi.retained_micron_first_reader_judgment/v1",
+  "case_id": "C01",
+  "original_case_id": "C01-micron-planned-product-integration",
+  "addendum_id": "retained-micron-semantic-addendum-20261009-v1",
+  "first_reader": "/root/native_adoption_frontier",
+  "prior_pilot_unchanged": true,
+  "earlier_web_judgment_basis": "Fresh publisher-web representations, with raw-byte identity explicitly unproven",
+  "new_evidence_basis": "ACTUAL_RETAINED_UTF8_BYTES_AND_BOUND_CANDIDATE_READ",
+  "independent_principal_findings_read_before_freeze": false,
+  "later_comparison_status": "NOT_PERFORMED_AT_FIRST_READER_FREEZE",
+  "judgment": "SUPPORTED_WITH_MANDATORY_SCOPE_QUALIFIERS",
+  "source_entailment_only": true,
+  "source_binding": {
+    "source_bytes": 504119,
+    "source_sha256": "a7efabf9cec581ba684688368118e3e13df6a3043aff56667927e24df97e8b2e",
+    "candidate_bytes": 1930,
+    "candidate_sha256": "5e2a2c789599e5e146b6e2969ccc243ee5c85b7d74c67af76b7c437857c4383c",
+    "metadata_bytes": 1588,
+    "metadata_sha256": "dd72d31afce12ca727a171e6f635d7085c8c2d6bff6bea2750f9c29a04fe101b",
+    "span": {
+      "character_start": 370876,
+      "character_end": 371258,
+      "byte_start": 370936,
+      "byte_end": 371320,
+      "characters": 382,
+      "bytes": 384,
+      "sha256": "f79bce81f656e826b3aa74380eb9a2b63bf74fc0e60376dc2b40c64600eb890a",
+      "character_to_byte_coordinates_match": true
+    },
+    "context": {
+      "character_start": 369676,
+      "character_end": 372658,
+      "byte_start": 369736,
+      "byte_end": 372732,
+      "characters": 2982,
+      "bytes": 2996,
+      "sha256": "97be3fa06ae6122e27f12eef208c2b081e166dcc55d35dd3c94703f7b6f740dd"
+    }
+  },
+  "candidate_reference": {
+    "candidate_id": "manual:micron-hbm3e-h200:2024-02-26:1",
+    "document_id": "manual:micron-ir:hbm3e-h200:2024-02-26",
+    "native_dataset_id": null,
+    "temporal_row": null,
+    "identity_annotations": null
+  },
+  "semantic_findings": {
+    "predicate": "The announced memory configuration is intended for inclusion in the named downstream accelerator product.",
+    "candidate_kind_fit": "product_integration",
+    "candidate_lifecycle_fit": "planned",
+    "source_local_subject": "Micron",
+    "source_local_object": "NVIDIA",
+    "upstream_configuration": "24GB 8H HBM3E",
+    "downstream_configuration": "NVIDIA H200 Tensor Core GPUs",
+    "separate_context_fact": "The surrounding paragraph reports that Micron memory production had begun; this does not convert the downstream planned integration or expected shipping into completed delivery.",
+    "downstream_shipping_period": "calendar Q2 2024 as the source's expectation",
+    "document_date": "2024-02-26",
+    "publication_precision": "DATE",
+    "published_instant": null,
+    "canonical_subject_id": null,
+    "canonical_object_id": null,
+    "economics": {
+      "quantity": null,
+      "revenue_share": null,
+      "purchase_amount": null,
+      "customer_allocation": null,
+      "exclusivity": null
+    },
+    "current_supply_state": "UNESTABLISHED",
+    "independently_verified_commerce": false
+  },
+  "representation_qualification": {
+    "candidate_assertion_has_separate_downstream_product_field": false,
+    "implication": "The candidate's source span carries the H200 constraint while its typed product_scope identifies the memory configuration. Any later observation or display must preserve both the source span and this downstream constraint; interpreting the object label as all NVIDIA products would overstate the evidence.",
+    "candidate_mutated": false,
+    "semantic_scope_versioning": "Keep this source-specific qualifier with the immutable judgment reference; later corrections require a new observation/review revision."
+  },
+  "excluded_inferences": [
+    "Completed customer shipments or invoice counterparty",
+    "Present 2026 procurement or commercial continuation",
+    "Exclusivity or all-NVIDIA product coverage",
+    "Shipment count, fixed order volume, realized revenue, or exposure weights from product capacity/specifications",
+    "Canonical legal-entity or security IDs from source labels",
+    "A precise publication instant or system possession in 2024 from the printed source date",
+    "Authenticated capture actor, publisher custody or licensed processing purpose"
+  ],
+  "falsifiers_and_required_evidence": [
+    "A view that marks the integration as delivered using only the nearby production statement fails this retained source's tense distinction.",
+    "Dropping H200 or the specified memory configuration fails the bounded product predicate.",
+    "Actual delivery, revised configuration, discontinuation, procurement allocation or current continuation requires separately dated primary evidence; elapsed time is not such evidence.",
+    "A hash/coordinate mismatch would invalidate this byte-bound judgment and require a new record."
+  ],
+  "scope_of_acceptance": "Suitable evidence for an unadmitted document-scoped current-inspection observation with this exact candidate/source/span and the stated qualifiers.",
+  "limits": {
+    "native_production_admission": "NOT_ADMITTED",
+    "graph1_projection": null,
+    "authenticated_actor_or_source_custody": false,
+    "historical_system_replay": false,
+    "source_purpose_permission_receipt": null,
+    "production_rights_admitted": false,
+    "public_export_rights_admitted": false,
+    "training_rights_admitted": false,
+    "rank": false,
+    "gate": false,
+    "size": false,
+    "trade": false,
+    "prediction": false
+  },
+  "corpus_accounting": {
+    "original_case": "C01",
+    "new_economic_case": false,
+    "pilot_denominator_remains": 6
+  },
+  "process_ids": [
+    64638,
+    71456
+  ],
+  "process_exit_codes": [
+    0,
+    0
+  ],
+  "raw_source_body_in_artifact": false,
+  "complete_candidate_body_in_artifact": false,
+  "native_read_receipt": {
+    "relative_path": "native_read_receipt.json",
+    "sha256": "890ff36f83f707e16ad320b0062cefdd4042385b3d677cddb804eb12054bccea"
+  },
+  "frozen_at_utc": "2026-10-09T10:22:25.160514+00:00"
+}
