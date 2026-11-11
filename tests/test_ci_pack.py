@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -8107,6 +8107,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
+    Congress disclosure chronology (PR #11084, 2026-11-11) wires the existing
+    tests/test_congress_chronology.py into unrun-macro-panels. Exact tracked-tree
+    measurement at a05ff957 gives index 137 jobs / 5,968 weight, free-content
+    137 / 5,991, and Prophet 131 / 5,726, each in ten packs. Hosted contract-delta
+    run 43118438608 reports no newly selected job on any probe. The owner keeps
+    seven commands, its seven-minute timeout, data gate and existing scope;
+    pytest tokens increase 37 -> 38, command characters 1,520 -> 1,554 remain
+    in the same 800-character bucket, and owner weight increases 82 -> 84.
+    Fund only this measured +2 on each ceiling: 5,966 -> 5,968, 5,989 -> 5,991,
+    and 5,724 -> 5,726. Retain all job ceilings, the ten-pack bound, selectors,
+    execution limits, and every previous provenance entry.
+
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

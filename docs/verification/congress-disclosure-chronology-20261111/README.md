@@ -105,3 +105,9 @@ PR `ci.yml` selects the code gate. Thus a green PR check does not by itself
 mean these 103 tests executed hosted. The retained exact-source local
 103-pass receipt is current; the natural post-merge data-health return is
 a separate obligation.
+
+## CI planning-weight calibration
+
+The existing contract-delta job for PR #11084 (run43118438608/job130852380947) found three +2 planning-weight breaches and no new selected jobs after the Congress regression was wired into its existing data-health owner. The exact tracked-tree local measurement agrees: index137/5968, free-content137/5991, Prophet131/5726, each10packs. The owner stays at7commands and7minutes;37→38 pytest tokens explain weight82→84 without crossing a character bucket. Per the guard's explicit repair instruction, only weight ceilings5966→5968,5989→5991,5724→5726 are advanced, with dated provenance in the original absolute test. All job/pack limits, selectors, coverage and execution limits remain. The added control-plane test path selects the existing hosted absolute contract job. Raw measurement, source hashes and actual local absolute-test result are retained alongside this note.
+
+The actual existing absolute assertion completed successfully at 2026-11-11T23:54:07Z under the existing exact-tree inventory context (exit0). The losslessly compressed raw log and execution record bind this result to test source SHA256 e4c0d0d726c7463cefb7bcc9612268d37330a34dc491aaa9ff6eafeb40131b32. This check does not replace the successor head's natural hosted differential/control-plane CI. The Congress source, its103 accepted local tests and8 native images were unchanged by this calibration.

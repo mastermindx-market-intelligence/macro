@@ -1,0 +1,8 @@
+{
+  "started_at": "2026-11-11T23:51:29.268739+00:00",
+  "ended_at": "2026-11-11T23:54:07.092744+00:00",
+  "returncode": 0,
+  "command": "existing exact-tree inventory owner + pytest tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+  "log_sha256": "e772495c8c31ef72c0679c82bff61b8b3ddcf8ca964d5ca8a1b9c1072dc8d2cd",
+  "suite_sha256": "e4c0d0d726c7463cefb7bcc9612268d37330a34dc491aaa9ff6eafeb40131b32"
+}
