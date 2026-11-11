@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.container_edge_validation.v1",
   "recorded_at": "2026-11-11T12:14:42.331047+00:00",
-  "status": "SOURCE_QUALIFIED_EW_RECAPTURE_PENDING",
+  "status": "LOCAL_QUALIFIED_NOT_RELEASED",
   "governing_pin": "c42e812e4a754d7a95efd954441d3f01607a7fb5",
   "pr": 10654,
   "checks": [
@@ -120,6 +120,19 @@
       "captured_states_verified": 208,
       "owned_ui_paths": 15522,
       "note": "Rebased relocated product manifest paths and verified original screenshot hashes; final gate passes."
+    },
+    {
+      "name": "exact-source EW-P4 browser owner",
+      "cases": 68,
+      "contact_sheets": 5,
+      "render_inputs_bound": 31,
+      "source_snapshot": "80460a463f728946c18f0d1de3bc4b535f0002dd",
+      "exit_code": 0
+    },
+    {
+      "name": "EW-P4 full regression suite",
+      "passed": 164,
+      "exit_code": 0
     }
   ],
   "invalid_exploratory_run": {
@@ -132,5 +145,6 @@
   "browser_scope": "Representative public/static and explicitly documented existing fixtures; no real-account or production acceptance claim.",
   "preserved": "Status text/values, chart axes and marks, diagram/stage connectors, neutral structural separators, keyboard focus, reduced-motion behavior and invisible mobile hit areas.",
   "source_bindings": "input-bindings.json",
-  "release_state": "Draft PR; legacy style expectations repaired; exact-source EW-P4 68-shot recapture and final CI remain."
+  "release_state": "Local candidate complete; publication to original PR and exact-head CI/controller release remain.",
+  "source_snapshot": "80460a463f728946c18f0d1de3bc4b535f0002dd"
 }

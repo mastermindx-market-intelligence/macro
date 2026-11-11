@@ -52,3 +52,9 @@ The validation receipt records completed checks and their limitations. Hosted CI
 International History now asserts the even notice border and quiet surface instead of the retired 3px rail. The International theme freeze retains its ordinary append-only rule and recognizes only the exact pinned pre-migration theme blob to the exact accepted migrated theme blob; all other internal edits and future base changes still fail. Its existing semantic harness confirms that an unauthorized frozen-file change is rejected (9 tests and 2 subtests pass); the transmission predicate passes separately. EW-P4 warning assertions preserve the semantic warning token with its existing fallback, and all 22 Node glance cases pass. The separate 68-shot EW-P4 owner is recaptured from an exact committed source snapshot before release.
 
 The press replay now passes without rewriting any blog page. Two exact CSS objects emitted by the canonical free-content renderer (Products and Crypto Intelligence) were materialized so the press lane cannot mint assets outside its own scope. Their consumer and hash receipt is free-render-asset-repair.json.
+
+## Exact-source EW-P4 completion
+
+The existing EW-P4 browser owner completed all 68 cases and five contact sheets from source snapshot 80460a463f728946c18f0d1de3bc4b535f0002dd. All 31 registered render inputs were verified against that commit before and after capture. The current receipt binds the actual screenshots and current source bytes; the previous receipt is retained here and original images remain in Git history. The complete EW-P4 regression file passes 164 tests.
+
+The managed publisher saved the source snapshot through its original exact-HEAD commit after bounded standard Git index preparation. No publisher configuration, timeout, permission, remote or release control changed.
