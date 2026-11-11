@@ -1807,13 +1807,16 @@ def _positioning(t, f, short, insider, short_flow=None, short_state=None) -> dic
     # A CONTEXT confirmer (trend_pp = recent vs trailing short-ratio, in pts),
     # never a scored factor — see engine/short_volume.py.
     if short_flow:
+        short_ratio = short_flow.get("short_ratio")
         block["short_flow"] = {
-            "short_ratio_pct": _r((short_flow.get("short_ratio") or 0) * 100, 1),
+            "short_ratio_pct": _r(short_ratio * 100, 1) if short_ratio is not None else None,
             "trend_pp": _r(short_flow.get("trend_pp"), 2),
             "ratio_z": _r(short_flow.get("ratio_z"), 2),
             "n_days": short_flow.get("n_days"),
             "asof": short_flow.get("asof"),
         }
+        if short_flow.get("coverage"):
+            block["short_flow"]["coverage"] = short_flow["coverage"]
         from engine.short_volume import OBSERVED, ticker_state
         flow_state = ticker_state(short_flow)
         if flow_state != OBSERVED:
