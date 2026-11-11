@@ -6,7 +6,40 @@ function words(en,zh) { const f=document.createDocumentFragment(); for(const [la
 function node(tag,cls,en,zh) { const n=document.createElement(tag);if(cls)n.className=cls;if(en!==undefined)n.append(words(en,zh));return n; }
 function note(en,zh) { return node('p','ox-note',en,zh); }
 function day(v) { return typeof v==='string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number.isFinite(Date.parse(v)) && new Date(v).toISOString().slice(0,10)===v; }
-function instant(v) { return typeof v==='string' && /(?:Z|[+-]\d\d:\d\d)$/.test(v) && Number.isFinite(Date.parse(v)); }
+export function eventSelectionFromSearch(search) {
+  if(typeof search!=='string' || search.length>2048)return null;
+  try {
+    // URLSearchParams tolerates malformed escapes; the continuation does not.
+    decodeURIComponent(search.replace(/\+/g,' '));
+    const params=new URLSearchParams(search),keys=['research_date','research_ticker','research_side'];
+    if([...params.keys()].some(k=>k.startsWith('research_') && !keys.includes(k))
+        || keys.some(k=>params.getAll(k).length!==1))return null;
+    const [date,ticker,side]=keys.map(k=>params.get(k));
+    if(!day(date) || date.startsWith('0000-') || !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(ticker)
+        || !['up','down'].includes(side))return null;
+    return Object.freeze({date,ticker,side});
+  } catch (_) { return null; }
+}
+function instant(v) {
+  // Date.parse normalizes impossible dates and 24:00. Validate the written
+  // calendar/time first; retain native offsets and fractional-second precision.
+  const m=typeof v==='string' && /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-](\d{2}):(\d{2}))$/.exec(v);
+  return !!m && !m[1].startsWith('0000-') && day(m[1]) && +m[2]<24 && +m[3]<60
+    && (m[4]===undefined || +m[4]<60) && (m[5]===undefined || +m[5]<24 && +m[6]<60)
+    && Number.isFinite(Date.parse(v));
+}
+function instantAfter(a,b) {
+  // Called only after instant() validates both strings. Parse the whole second
+  // with its native offset, then compare every fractional digit without rounding.
+  const parts=v=>({whole:Date.parse(v.replace(/\.\d+/,'')),fraction:/\.(\d+)/.exec(v)?.[1]||''});
+  const left=parts(a),right=parts(b);
+  if(left.whole!==right.whole)return left.whole>right.whole;
+  for(let i=0;i<Math.max(left.fraction.length,right.fraction.length);i++){
+    const l=left.fraction[i]||'0',r=right.fraction[i]||'0';
+    if(l!==r)return l>r;
+  }
+  return false;
+}
 function cancel(reader) { try { void Promise.resolve(reader.cancel()).catch(()=>{}); } catch (_) {} }
 function field(dl,en,zh,value) { const row=node('div','ox-company-field');row.append(node('dt','',en,zh));const dd=node('dd');dd.textContent=value;row.append(dd);dl.append(row); }
 function pct(v) { return (v>0?'+':'')+(100*v).toFixed(2)+'%'; }
@@ -18,7 +51,8 @@ export function decodeResearch(value, selection) {
       || !['up','down'].includes(id.side) || !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(id.ticker)
       || c.source?.artifact!=='data/price_pressure/latest.json' || c.source.schema!=='price_pressure.v1'
       || !HEX.test(c.source.snapshot_sha256) || !instant(c.source.generated_utc)
-      || !instant(clock?.captured_at) || Date.parse(c.source.generated_utc)>Date.parse(clock.captured_at)
+      || !instant(clock?.captured_at) || !clock.captured_at.endsWith('Z')
+      || instantAfter(c.source.generated_utc,clock.captured_at)
       || Date.parse(clock.captured_at)>Date.now()+1000 || id.date>clock.captured_at.slice(0,10)
       || clock.clock_class!=='system_recorded' || clock.historical_availability!=='unknown'
       || clock.scope!=='retrospective_captured_read' || !n
@@ -34,6 +68,7 @@ export function decodeResearch(value, selection) {
       || ['date','ticker','side'].some(p=>k.asof.t0_evidence_ref.native_identity?.[p]!==id[p])
       || k.asof.t0_evidence_ref.native_digest?.sha256!==c.source.snapshot_sha256
       || k.asof.t0_evidence_ref.recorded_clock?.value!==clock.captured_at
+      || k.asof.value!==clock.captured_at || k.asof.grain!=='datetime'
       || k.calibrated?.state!=='unavailable'
       || ['opportunity_score','confidence','probability','impact'].some(p=>k.calibrated[p]!==null)
       || ['transmission','company_context','valuation_context','path_timing','portfolio_intersection'].some(p=>k[p]?.state!=='unavailable')) fail();
@@ -46,6 +81,8 @@ export function decodeResearch(value, selection) {
 export function mountResearch(root) {
   if(!root)return null;
   const form=root.querySelector('form'),output=root.querySelector('[data-research-result]'),clearButton=root.querySelector('[data-research-clear]'),submit=form.querySelector('button[type=submit]');
+  const selected=eventSelectionFromSearch(window.location.search);
+  if(selected){for(const key of ['date','ticker','side'])form.elements[key].value=selected[key];root.open=true;}
   let epoch=0,operation=null,disposed=false,subscription=null,canonicalOwner=owner();
   const copy={idle:['Choose an event from Pressure Watch, then inspect its evidence here.','从个股承压页面选择事件，然后在此查看其证据。'],
     loading:['Reading the selected event and composing its evidence…','正在读取所选事件并整理其证据…'],

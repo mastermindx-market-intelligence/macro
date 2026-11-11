@@ -1,15 +1,15 @@
 {
   "adapters": {
     "earnings": {
-      "count": 8482,
-      "dropped_from_source": 543,
-      "gap": "coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+      "count": 8587,
+      "dropped_from_source": 682,
+      "gap": "coverage: 2184/2351 tickers carried reported surprises; 682 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
       "retracted_by_authority": 0
     },
     "earnings_call": {
-      "count": 5119,
+      "count": 7304,
       "dropped_from_source": 0,
-      "gap": null,
+      "gap": "score projection sync: score_store_absent",
       "retracted_by_authority": 0
     },
     "macro_release": {
@@ -19,13 +19,13 @@
       "retracted_by_authority": 0
     },
     "prophet_ledger": {
-      "count": 440,
+      "count": 529,
       "dropped_from_source": 0,
       "gap": null,
       "retracted_by_authority": 0
     },
     "regime_flip": {
-      "count": 14,
+      "count": 15,
       "dropped_from_source": 0,
       "gap": null,
       "retracted_by_authority": 0
@@ -43,59 +43,60 @@
       "retracted_by_authority": 0
     }
   },
-  "as_of": "2026-10-23",
+  "as_of": "2026-11-11",
   "coverage": {
-    "end": "2026-10-22",
-    "note": "17614 events across 850 distinct date(s)",
-    "start": "2013-03-14"
+    "end": "2026-11-06",
+    "note": "20133 events across 906 distinct date(s)",
+    "start": "2008-03-25"
   },
-  "elapsed_s": 3.91,
+  "elapsed_s": 16.44,
   "gap_notes": [
-    "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+    "earnings: coverage: 2184/2351 tickers carried reported surprises; 682 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+    "earnings_call: score projection sync: score_store_absent",
     "macro_release: 35/35 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:139434495644722347a28956a49c92832ec0fa07e322ca8b42272b7bce6d05c2",
+  "inputs_hash": "sha256:39280bd46157be7a6fd858e80b2a74ad13cb795810f517aff27f42e7d033c568",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
       "present": true,
-      "rows": 5119,
-      "sha256": "sha256:d1b40bf6bab7a9f843b178e02b50fa7001ae0730815095b6b008105f6083417c"
+      "rows": 7304,
+      "sha256": "sha256:c2bb3897313bcc4c34647a71594157190d687a829856a3bffc65cbb4de0764d6"
     },
     "events": {
       "path": "data/chronicle/events.jsonl",
       "present": true,
-      "rows": 17614,
-      "sha256": "sha256:62cd50194c8b910fd9a4f1044f23bacec93407550806bfc4edf77beda5c41f88"
+      "rows": 20133,
+      "sha256": "sha256:624a0afeb1981ece06c62882513adaa3658babe6c9de78b2ef0e1c7c292436d1"
     },
     "state_log": {
       "path": "data/chronicle/state_log.jsonl",
       "present": true,
-      "rows": 57,
-      "sha256": "sha256:1cefe6414c725439b90c428b977bb33280374abf1913e5c2663f31cbdeb231e6"
+      "rows": 67,
+      "sha256": "sha256:8d069b36bf059fec3a8542a6164b0951104b083bdd43fc508ed61efb1948e8a1"
     }
   },
-  "produced_at": "2026-10-23T08:35:13Z",
+  "produced_at": "2026-11-11T11:39:23Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
   "source_fingerprints": {
     "data/chronicle/earnings_call_events.jsonl": {
       "present": true,
-      "sha256": "sha256:d1b40bf6bab7a9f843b178e02b50fa7001ae0730815095b6b008105f6083417c"
+      "sha256": "sha256:c2bb3897313bcc4c34647a71594157190d687a829856a3bffc65cbb4de0764d6"
     },
     "data/chronicle/state_log.jsonl": {
       "present": true,
-      "sha256": "sha256:1cefe6414c725439b90c428b977bb33280374abf1913e5c2663f31cbdeb231e6"
+      "sha256": "sha256:8d069b36bf059fec3a8542a6164b0951104b083bdd43fc508ed61efb1948e8a1"
     },
     "data/earnings/earnings.parquet": {
       "present": true,
-      "sha256": "sha256:6c24de2939b00f4ddbf16e543792e1f94f67b5beaa69c7a694741c0db8161098"
+      "sha256": "sha256:be9fea5139010b1fac95177d1cc7252882b446ff1687bbcb431ae329d396cc09"
     },
     "data/prophet/ledger.jsonl": {
       "present": true,
-      "sha256": "sha256:1102046918c4923b669685996b06cd32d100935e4afda5148cee0034373cde9c"
+      "sha256": "sha256:b2033a72f893225ead4a5fb604fc5b7783dba97b49843e14f427e8442b11bc90"
     },
     "data/prophet/ledger_corrections.jsonl": {
       "present": true,
@@ -115,7 +116,7 @@
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,
-      "sha256": "sha256:bde54a3b2b313f404fa9be941632bd5fdf0fb52a4d62401453438d8699316843"
+      "sha256": "sha256:19b7013cc90f18aa85817ed22ba065bee671b41ff18834898f28d9b1599dbef0"
     }
   },
   "tier": "display"

@@ -1342,7 +1342,11 @@ def build_country_view(
             "transitions_en": spec.transitions_en,
             "transitions_zh": spec.transitions_zh,
             "parts": parts,
-            "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
+            "method_en": (
+                "50 + growth impulse − inflation pressure − recession "
+                "stress + liquidity + current calibrated-risk state. "
+                "Descriptive only."
+            ),
             "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。",
         },
         "history": _spark(history),

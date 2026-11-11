@@ -2131,3 +2131,47 @@ def test_gap_predicate_revision_cannot_replace_selected_owner_revision(tmp_path)
     chain['nodes']['n1']['test']={'path':'other','op':'is_true'}
     (root/'knowledge/transmission/synth_chain.yaml').write_text(yaml.safe_dump(chain))
     with pytest.raises(explorer.SourceIncoherent,match='rev_mismatch'):_native_gap(root)
+
+
+
+def test_wti_export_binds_new_manifest_without_qualifying_owner(tmp_path):
+    root = _exposure_root(tmp_path)
+    before = explorer.compose_snapshot(root, chain=fx.SLUG)
+    path = root / explorer._WTI_OBSERVATION_REL
+    path.parent.mkdir(parents=True)
+    payload = b'{"fixture_only":"RAW_CAPTURE_PAYLOAD_MUST_STAY_PRIVATE"}'
+    path.write_bytes(payload)
+    after = explorer.compose_snapshot(root, chain=fx.SLUG)
+    read = next(r for r in after["source"]["reads"] if r["path"] == explorer._WTI_OBSERVATION_REL)
+    assert read == {"path": explorer._WTI_OBSERVATION_REL, "sha256": hashlib.sha256(payload).hexdigest(), "bytes": len(payload)}
+    assert after["source"]["source_manifest_hash"] != before["source"]["source_manifest_hash"]
+    assert after["source"]["built"] == before["source"]["built"]
+    assert after["source"]["asof"] == before["source"]["asof"]
+    assert "RAW_CAPTURE_PAYLOAD_MUST_STAY_PRIVATE" not in json.dumps(after)
+
+
+def test_wti_export_change_during_composition_refuses_mixed_generation(tmp_path, monkeypatch):
+    root = _exposure_root(tmp_path)
+    path = root / explorer._WTI_OBSERVATION_REL
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"fixture one")
+    build = explorer._build
+    def changed(*a, **k):
+        result = build(*a, **k)
+        path.write_bytes(b"fixture two")
+        return result
+    monkeypatch.setattr(explorer, "_build", changed)
+    with pytest.raises(explorer.SourceIncoherent, match="mid_read_mutation:.*CL_F.observation"):
+        explorer.compose_snapshot(root, chain=fx.SLUG)
+
+
+def test_wti_export_oversize_refuses_before_composition(tmp_path, monkeypatch):
+    root = _exposure_root(tmp_path)
+    path = root / explorer._WTI_OBSERVATION_REL
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"x" * (explorer.MAX_SOURCE_BYTES + 1))
+    def forbidden(*a, **k):
+        raise AssertionError("oversized source composed")
+    monkeypatch.setattr(explorer, "_build", forbidden)
+    with pytest.raises(explorer.SourceIncoherent, match="wti_observation_exceeds_bound"):
+        explorer.compose_snapshot(root, chain=fx.SLUG)

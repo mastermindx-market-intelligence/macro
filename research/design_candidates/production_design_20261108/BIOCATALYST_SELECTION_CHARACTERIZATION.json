@@ -1,0 +1,226 @@
+{
+  "status": "CURRENT_EXACT_ROW_RESTORE_GAP_REPRODUCED_NOT_FIX_ACCEPTANCE",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "path": "templates/biocatalyst.js",
+    "sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0"
+  },
+  "extraction": {
+    "constants": [
+      "TRIAL_ID",
+      "DATE_PARTS",
+      "WINDOW_VALUES",
+      "RADAR_HORIZON_VALUES",
+      "DEFAULT_RADAR_HORIZON",
+      "FIELD_VALUES",
+      "CHANGE_KIND_VALUES",
+      "TAPE_REVIEW_VALUES",
+      "STUDY_TYPE_VALUES",
+      "PEER_MAX_COHORT",
+      "PROSPECTIVE_CHANGE_KIND_VALUES",
+      "MODE_VALUES"
+    ],
+    "functions": [
+      {
+        "name": "str",
+        "first_line": 143,
+        "last_line": 143
+      },
+      {
+        "name": "clean",
+        "first_line": 144,
+        "last_line": 144
+      },
+      {
+        "name": "valueAt",
+        "first_line": 146,
+        "last_line": 146
+      },
+      {
+        "name": "nctOf",
+        "first_line": 295,
+        "last_line": 295
+      },
+      {
+        "name": "unique",
+        "first_line": 151,
+        "last_line": 152
+      },
+      {
+        "name": "dateParts",
+        "first_line": 232,
+        "last_line": 238
+      },
+      {
+        "name": "fullDate",
+        "first_line": 635,
+        "last_line": 640
+      },
+      {
+        "name": "isTrialId",
+        "first_line": 150,
+        "last_line": 150
+      },
+      {
+        "name": "parseCohort",
+        "first_line": 1183,
+        "last_line": 1185
+      },
+      {
+        "name": "defaultFilters",
+        "first_line": 418,
+        "last_line": 418
+      },
+      {
+        "name": "isMilestonesMode",
+        "first_line": 230,
+        "last_line": 231
+      },
+      {
+        "name": "isChangeMode",
+        "first_line": 370,
+        "last_line": 370
+      },
+      {
+        "name": "isProspectiveMode",
+        "first_line": 371,
+        "last_line": 371
+      },
+      {
+        "name": "isScreenMode",
+        "first_line": 227,
+        "last_line": 227
+      },
+      {
+        "name": "isPeerMode",
+        "first_line": 228,
+        "last_line": 228
+      },
+      {
+        "name": "activeChangeKind",
+        "first_line": 372,
+        "last_line": 372
+      },
+      {
+        "name": "milestoneIdentity",
+        "first_line": 737,
+        "last_line": 743
+      },
+      {
+        "name": "changeIdentity",
+        "first_line": 694,
+        "last_line": 697
+      },
+      {
+        "name": "prospectiveIdentity",
+        "first_line": 710,
+        "last_line": 713
+      },
+      {
+        "name": "screenIdentity",
+        "first_line": 744,
+        "last_line": 744
+      },
+      {
+        "name": "rowIdentity",
+        "first_line": 745,
+        "last_line": 749
+      },
+      {
+        "name": "rowTrial",
+        "first_line": 750,
+        "last_line": 769
+      },
+      {
+        "name": "selectedRow",
+        "first_line": 770,
+        "last_line": 773
+      },
+      {
+        "name": "readUrl",
+        "first_line": 948,
+        "last_line": 971
+      },
+      {
+        "name": "writeUrl",
+        "first_line": 972,
+        "last_line": 993
+      }
+    ],
+    "sha256": "06a92628a06d6aa71a4d6d6dde96a83242c83177b114fcde634d2d7af083f356"
+  },
+  "execution": {
+    "node": "v24.22.1",
+    "environment": "Node vm with controlled window location/history",
+    "browser_playback": false,
+    "dom_calls": 0,
+    "network_calls": 0,
+    "auth_calls": 0,
+    "real_storage_calls": 0,
+    "app_initialization_executed": false
+  },
+  "cases": [
+    {
+      "id": "exact_row_key_control",
+      "selected": "nct:NCT00000001:completion"
+    },
+    {
+      "id": "missing_exact_key_falls_back_by_trial",
+      "requested": "nct:NCT00000001:absent_kind",
+      "selected": "nct:NCT00000001:primary_completion",
+      "required_future": "A saved exact-row reference that is absent must remain unavailable, with an explicit current-trial action."
+    },
+    {
+      "id": "trial_only_fallback_depends_on_row_order",
+      "selected": "nct:NCT00000001:completion",
+      "required_future": "Preserve exact incumbent row identity, not only NCT or array position."
+    },
+    {
+      "id": "event_identity_is_not_a_source_version",
+      "before_identity": "nct:NCT00000001:primary_completion",
+      "after_identity": "nct:NCT00000001:primary_completion",
+      "before_date": "2026-10-22",
+      "after_date": "2026-11-12",
+      "required_future": "Keep stable event identity. Bind safe evidence/version metadata separately; do not add the mutable date to the canonical ID."
+    },
+    {
+      "id": "milestones_url_roundtrip_loses_exact_row",
+      "requested": "nct:NCT00000001:completion",
+      "selected": "nct:NCT00000001:primary_completion",
+      "serialized_url": "https://fixture.invalid/biocatalyst.html?trial=NCT00000001&field=all&window=90&condition=controlled+clinical+filter",
+      "selected_key_after_read": "",
+      "clinical_condition_filter_preserved": "controlled clinical filter",
+      "required_future": "Extend the existing URL/selection owner for exact saved-row context; the current condition query remains a clinical filter."
+    },
+    {
+      "id": "changes_url_roundtrip_loses_exact_row",
+      "requested": "NCT00000001|version-A|version-B|1",
+      "selected": "NCT00000001|version-A|version-B|0",
+      "serialized_url": "https://fixture.invalid/biocatalyst.html?trial=NCT00000001&mode=changes&field=all&window=90&condition=controlled+clinical+filter",
+      "selected_key_after_read": "",
+      "clinical_condition_filter_preserved": "controlled clinical filter",
+      "required_future": "Extend the existing URL/selection owner for exact saved-row context; the current condition query remains a clinical filter."
+    },
+    {
+      "id": "prospective_url_roundtrip_loses_exact_row",
+      "requested": "NCT00000001|change-B",
+      "selected": "NCT00000001|change-A",
+      "serialized_url": "https://fixture.invalid/biocatalyst.html?trial=NCT00000001&mode=prospective&field=all&window=90&condition=controlled+clinical+filter",
+      "selected_key_after_read": "",
+      "clinical_condition_filter_preserved": "controlled clinical filter",
+      "required_future": "Extend the existing URL/selection owner for exact saved-row context; the current condition query remains a clinical filter."
+    },
+    {
+      "id": "missing_trial_control",
+      "selected": null
+    }
+  ],
+  "limits": [
+    "Source fixtures are controlled and fictional.",
+    "Existing trial-level fallback may be intentional for the workbench; it is insufficient for the proposed exact saved-row return contract.",
+    "No live misrouting, dossier-generation mismatch or persistence success was observed.",
+    "The current dossier endpoint remains a current projection; exact historical retrieval is separate unimplemented integration.",
+    "This script does not implement local research conditions, issuer resolution, alerts or a new identity owner."
+  ]
+}

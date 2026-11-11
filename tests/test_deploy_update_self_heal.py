@@ -488,7 +488,7 @@ def test_movers_pre_mirror_pair_admission_preserves_good_and_unrelated_updates(t
 def test_movers_pre_mirror_guard_precedes_every_site_rsync():
     start = SCRIPT.index("# BEGIN MOVERS_BEFORE_MIRROR_GUARD")
     end = SCRIPT.index("# END MOVERS_BEFORE_MIRROR_GUARD", start)
-    rsync = SCRIPT.index('rsync -a --delete --min-size=1 "$APP_DIR/site/" "$APP_DIR/site.served/"')
+    rsync = SCRIPT.index('rsync -a --delete --min-size=1 --exclude=/ohlc "$APP_DIR/site/" "$APP_DIR/site.served/"')
     assert start < end < rsync < SCRIPT.index(CADDY_DIFF_LINE)
 
 
@@ -822,11 +822,26 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # Private dated-reference Plan: load-time identity/terms plus request-time math.
+    "app/options_plan.py",
+    "app/options_plan_source.py",
+    "engine/options_nbbo_cohort.py",
+    "lib/options_source_receipts.py",
+    "engine/options_plan_expiry.py",
+    "engine/options_payoff.py",
+    "engine/greeks.py",
+    "engine/intraday_greeks.py",
     # Native supplier conditional research imports and cached K3 validators.
     'app/company_supplier_research.py',
     'engine/company_intelligence/h20_reported_event.py',
     'engine/earnings_release/__init__.py',
     'engine/earnings_release/receipts.py',
+    'engine/earnings_release/binding.py',
+    'engine/earnings_release/figures.py',
+    'engine/earnings_release/filing_key.py',
+    'collectors/sec_document_spine.py',
+    'collectors/sec_request_pacer.py',
+    'engine/marketing/attribution.py',
     'engine/theme_graph/native_disclosure_propagation.py',
     'lib/economic_propagation.py',
     'lib/economic_propagation_v2.py',
@@ -902,6 +917,26 @@ MUST_RESTART = [
     "engine/sector_intelligence/__init__.py",
     "engine/sector_intelligence/contracts.py",
 
+    # Paid theme-research serving closure, reached LAZILY. The registry binds
+    # the semiconductor loader inside `_load_semiconductor_owner_bundle`
+    # (function-local import, deliberate: the loader pulls the Company
+    # Intelligence reader's requests/pandas/pyarrow stack, which
+    # `test_registry_import_closure_stays_light` forbids the registry to drag
+    # into producers). So the chain enters macro-api's `sys.modules` on the
+    # FIRST SERVED REQUEST and stays there for the life of the process — every
+    # bit as import-cached as a module-level import, and invisible to
+    # `test_api_load_time_import_closure_is_covered_by_restart_regex`, which
+    # walks module-level imports only. That blind spot is why these three had
+    # to be found by hand; the Energy seat reported them at #7870
+    # issuecomment-5866433049 item 3. Pinned here so the regex keeps covering
+    # them, since no closure walk will ever re-derive them.
+    "engine/market_ontology/semiconductor_owner_bundle.py",
+    "engine/market_ontology/semiconductor_witness_scope.py",
+    "engine/market_ontology/workspace_projection.py",
+    # The canonical theme-id resolver: the research composer compares an
+    # assertion's `scope.canonical_theme_id` against it on every request.
+    "engine/theme_graph/identity.py",
+
     # Capital Structure serving closure — imported by app/capital_structure.py.
     "engine/capital_structure/__init__.py",
     "engine/capital_structure/event_spine.py",
@@ -951,6 +986,8 @@ MUST_RESTART = [
     "engine/risk_envelope.py",
     "engine/neuralweb/brain_native_inputs.py",
     "engine/neuralweb/native_facts.py",
+    # T11's native request lazily imports and then caches its numeric checker.
+    "engine/neuralweb/response_eval.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
     "engine/intelligence_workspace/runtime.py",
@@ -995,11 +1032,17 @@ MUST_RESTART = [
     "engine/earnings_narrative/context_packets.py",
     "engine/earnings_narrative/contracts.py",
     "engine/earnings_narrative/digest.py",
+    "engine/earnings_narrative/economic_interpretation.py",
     "engine/earnings_narrative/private_publication.py",
     "engine/earnings_narrative/promotion.py",
     "engine/earnings_narrative/public_wire.py",
     "engine/earnings_narrative/story.py",
     "engine/earnings_narrative/story_packets.py",
+    "engine/earnings_release/__init__.py",
+    "engine/earnings_release/binding.py",
+    "engine/earnings_release/figures.py",
+    "engine/earnings_release/filing_key.py",
+    "engine/earnings_release/receipts.py",
     "engine/press/__init__.py",
     "engine/press/earnings_adapter.py",
     # CXI packet build reached from brain_gateway (+ its module-level siblings)
@@ -1026,6 +1069,13 @@ MUST_RESTART = [
     "engine/marketing/ledgers.py",
     "engine/marketing/opportunity_bus.py",
     "engine/marketing/publication.py",
+    # The catalyst public reader imports the source adapter and its store.
+    "engine/marketing/catalyst_source_adapter.py",
+    "engine/marketing/catalyst_source_store.py",
+    # The reader loads the pilot universe through the writer's load_universe and
+    # caches the rows for the process lifetime.
+    "engine/marketing/catalyst_source_cycle.py",
+    "config/catalyst_pilot_universe.json",
     # app/tape.py REST quotes, and lib modules on the chat path
     "engine/live_quotes.py",
     "lib/config.py",
@@ -1041,6 +1091,8 @@ MUST_NOT_RESTART = [
     'engine/price_pressure/artifact.py',
     'engine/entry_radar/live_eval.py',
     'engine/entry_radar/earnings_contexts.py',
+    # The catalyst SEC writer CLI runs as its own oneshot timer, never in macro-api.
+    'scripts/run_catalyst_source_cycle.py',
     'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
     'scripts/entry_radar_live.py',
     'contracts/opportunity_evidence/vector.v1.schema.json.bak',
@@ -1104,6 +1156,9 @@ MUST_NOT_RESTART = [
     "engine/theme_graph/materialize.py",
     "collectors/equity_earnings.py.bak",
     "engine/earnings_catalysts.py",
+    "engine/neuralweb/response_eval.py.bak",
+    "engine/neuralweb/response_evaluation.py",
+    "scripts/run_brain_eval.py",
 ]
 
 
@@ -1134,7 +1189,12 @@ def test_non_api_path_does_not_trigger_api_restart(path):
 ADMIN_MUST_RESTART = [
     # panel code (all import-cached by the running process)
     "admin/server.py",
+    "templates/theme.css",  # derived token response is process-pinned
+    "engine/qledger_store.py",  # A1 selected request scope is import-cached
     "admin/marketing.py",
+    # Retained GSC observations call the native builder and its classifier.
+    "engine/marketing/seo_search_console.py",
+    "engine/marketing/seo_director.py",
     "admin/metabolism_panel.py",
     "admin/neural_web.py",
     "admin/orchestrator_chat.py",
@@ -1199,6 +1259,7 @@ ADMIN_MUST_NOT_RESTART = [
     # rendered site + data artifacts are read from disk per request
     "site/index.html",
     "data/qbus/items.parquet",
+    "data/marketing/seo/search_console_daily.parquet",  # path name only; read per request
     "engine/neuralweb/doctrine/00_identity.md",
     # the panel's only entry into ask_brain is _post_filter_advice(); the
     # tool-schema / dispatch paths that lazily import cortex are never called
@@ -1207,7 +1268,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/master_brain.py",
     "engine/china_radar.py",
     # nightly-only marketing modules — the package is named, not globbed
-    "engine/marketing/seo_director.py",
     "engine/marketing/breaking_feed.py",
     # macro-api's chart path, on no panel path
     "engine/marketing/chart_render.py",
@@ -1220,7 +1280,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/research_codegen/transport.py",
     "engine/experiments_registry.py",
     "data/research_factory/review/queue.json",
-    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -1642,6 +1701,9 @@ def test_admin_closure_probe_is_not_vacuous():
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure
+    assert "engine/marketing/seo_search_console.py" in closure
+    # The probe stops at non-admin function bodies: _build_scorecard's nested
+    # classifier import is covered explicitly by ADMIN_MUST_RESTART above.
     assert "engine/marketing/seo_director.py" not in closure
     assert "engine/master_brain.py" not in closure
 
@@ -1661,3 +1723,117 @@ def test_dotted_import_still_reaches_the_package_init():
         "engine", "engine.marketing",
     }
     assert _ancestor_packages("lib") == set()
+
+
+@pytest.mark.parametrize(
+    ("helper_status", "prior_status", "expected_status"),
+    [(0, 0, 0), (37, 0, 37), (37, 19, 19)],
+)
+def test_ohlc_delivery_refusal_is_deferred_without_erasing_other_failures(
+    tmp_path, helper_status, prior_status, expected_status
+):
+    """Execute the real shell wrapper; a later success cannot erase a refusal."""
+    app = tmp_path / "app"
+    scripts = app / "scripts"
+    scripts.mkdir(parents=True)
+    helper = scripts / "publish_ohlc.py"
+    helper.write_text(
+        "import pathlib, sys\n"
+        "assert sys.argv[1:] == ['reconcile', '--lock-fd', '9']\n"
+        "root = pathlib.Path(__file__).parent\n"
+        "calls = root / 'calls'\n"
+        "number = int(calls.read_text()) if calls.exists() else 0\n"
+        "calls.write_text(str(number + 1))\n"
+        f"sys.exit({helper_status} if number == 0 else 0)\n"
+    )
+    wrapper = SCRIPT.split("# BEGIN OHLC_DELIVERY_RECONCILE\n", 1)[1].split(
+        "# END OHLC_DELIVERY_RECONCILE", 1
+    )[0]
+    final_status = SCRIPT.split("# BEGIN OHLC_DELIVERY_EXIT_STATUS\n", 1)[1].split(
+        "# END OHLC_DELIVERY_EXIT_STATUS", 1
+    )[0]
+    completed = tmp_path / "unrelated-completed"
+    command = (
+        "set -euo pipefail\n"
+        f"APP_DIR={shlex.quote(str(app))}\n"
+        f"DEPLOY_EXIT_STATUS={prior_status}\n"
+        + wrapper
+        + "\nreconcile_ohlc_delivery\n"
+        + f"printf completed > {shlex.quote(str(completed))}\n"
+        + "reconcile_ohlc_delivery\n"
+        + final_status
+        + '\nexit "${DEPLOY_EXIT_STATUS:-0}"\n'
+    )
+    result = subprocess.run(
+        ["bash", "-c", command], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == expected_status, result.stderr
+    assert completed.read_text() == "completed"
+    assert (scripts / "calls").read_text() == "2"
+    if helper_status:
+        assert "OHLC reconciliation refused (status 37)" in result.stderr
+
+
+@pytest.mark.parametrize("held_path", ["managed_link", "foreign_directory", "foreign_link"])
+def test_ohlc_delivery_rsync_preserves_selected_or_refused_paths(tmp_path, held_path):
+    """Run the production rsync command against disposable trees."""
+    import shutil
+
+    if shutil.which("rsync") is None:
+        pytest.skip("rsync is unavailable")
+    app = tmp_path / "app"
+    source = app / "site"
+    served = app / "site.served"
+    source.mkdir(parents=True)
+    served.mkdir()
+    (source / "index.html").write_text("new rendered page")
+    (served / "index.html").write_text("old")
+    (served / "unrelated-stale.txt").write_text("delete me")
+    target = app / "held"
+    target.mkdir()
+    (target / "SPY.json").write_text("retained bytes")
+    if held_path == "foreign_directory":
+        (served / "ohlc").mkdir()
+        (served / "ohlc" / "SPY.json").write_text("retained bytes")
+    elif held_path == "foreign_link":
+        (served / "ohlc").symlink_to("../held", target_is_directory=True)
+    else:
+        generations = app / "ohlc.served"
+        generations.mkdir()
+        (generations / "current").symlink_to("../held", target_is_directory=True)
+        (source / "ohlc").symlink_to("../ohlc.served/current", target_is_directory=True)
+        (served / "ohlc").symlink_to("../ohlc.served/current", target_is_directory=True)
+    rsync_line = next(
+        line.strip() for line in SCRIPT.splitlines()
+        if line.strip().startswith("rsync ")
+        and '"$APP_DIR/site/" "$APP_DIR/site.served/"' in line
+    )
+    result = subprocess.run(
+        ["bash", "-e", "-c", f"APP_DIR={shlex.quote(str(app))}\n{rsync_line}"],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert (served / "index.html").read_text() == "new rendered page"
+    assert not (served / "unrelated-stale.txt").exists()
+    assert (served / "ohlc" / "SPY.json").read_text() == "retained bytes"
+    if held_path == "foreign_link":
+        assert os.readlink(served / "ohlc") == "../held"
+    elif held_path == "managed_link":
+        assert os.readlink(served / "ohlc") == "../ohlc.served/current"
+
+
+def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
+    changed = SCRIPT.index('if [ "$OLD" != "$NEW" ]; then')
+    copy = SCRIPT.index('rsync -a --delete --min-size=1 --exclude=/ohlc ')
+    before_copy = SCRIPT.index("\treconcile_ohlc_delivery\n", changed)
+    noop = SCRIPT.index(
+        "# Reconcile artifact selection even when the repository did not change."
+    )
+    after_copy = SCRIPT.index("\nreconcile_ohlc_delivery\n", noop)
+    assert changed < before_copy < copy < noop < after_copy
+    assert SCRIPT[noop - 4:noop] == "fi\n\n"
+    assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]
+
+
+def test_admin_restart_expectations_are_disjoint():
+    assert not (set(ADMIN_MUST_RESTART) & set(ADMIN_MUST_NOT_RESTART))

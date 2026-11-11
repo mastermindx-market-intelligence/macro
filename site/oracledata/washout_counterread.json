@@ -1,52 +1,81 @@
 {
  "schema": "washout_counterread.v1",
- "as_of": "2026-10-22",
- "show": true,
- "growth_score": 91.6,
- "growth_band": "risk-off",
- "growth_extreme": true,
+ "as_of": "2026-11-09",
+ "show": false,
+ "growth_score": 74.0,
+ "growth_band": "caution",
+ "growth_extreme": false,
  "price_depths": [
   {
    "index": "SPY",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -0.77,
-   "depth_pctile": 44.2,
+   "drawdown_pct": -3.39,
+   "depth_pctile": 72.1,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "QQQ",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -4.54,
-   "depth_pctile": 70.0,
+   "drawdown_pct": -10.57,
+   "depth_pctile": 88.7,
    "extreme": false,
    "n_hist": 2520
   },
   {
    "index": "XLK",
    "metric": "price_63d_drawdown_pctile",
-   "drawdown_pct": -6.66,
-   "depth_pctile": 76.2,
-   "extreme": false,
+   "drawdown_pct": -15.41,
+   "depth_pctile": 94.7,
+   "extreme": true,
    "n_hist": 2520
   }
  ],
- "price_hits": [],
+ "price_hits": [
+  "XLK"
+ ],
  "ihm_depths": [
+  {
+   "index": "QQQ",
+   "metric": "ihm_macd_hist_depth_pctile",
+   "depth_pctile": 5.5,
+   "reason": "low_depth",
+   "washout_turn": false,
+   "extreme": true
+  },
   {
    "index": "IWM",
    "metric": "ihm_macd_hist_depth_pctile",
-   "depth_pctile": 13.8,
+   "depth_pctile": 70.0,
    "reason": "washout_turn",
    "washout_turn": true,
+   "extreme": true
+  },
+  {
+   "index": "SOXX",
+   "metric": "ihm_macd_hist_depth_pctile",
+   "depth_pctile": 5.4,
+   "reason": "low_depth",
+   "washout_turn": true,
+   "extreme": true
+  },
+  {
+   "index": "MAG7",
+   "metric": "ihm_macd_hist_depth_pctile",
+   "depth_pctile": 5.0,
+   "reason": "low_depth",
+   "washout_turn": false,
    "extreme": true
   }
  ],
  "ihm_hits": [
-  "IWM"
+  "QQQ",
+  "IWM",
+  "SOXX",
+  "MAG7"
  ],
- "message_en": "Capitulation-zone reading — historically two-sided. Growth scare 92 (extreme) alongside a depth extreme: IWM washout-turn (IHM). A washout can precede a bounce about as often as a further leg down.",
- "message_zh": "资本投降区读数——历史上双向。成长恐慌 92（极端），同时出现深度极值：IWM 动量拐点洗盘（IHM）。洗盘之后反弹与再下跌概率相当。",
+ "message_en": null,
+ "message_zh": null,
  "authority": {
   "tier": "display",
   "horizon_role": "context",

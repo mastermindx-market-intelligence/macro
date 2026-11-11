@@ -272,6 +272,24 @@
 	redir /research_vault /research_vault.html 301
 	redir /confluence_screener /confluence_screener.html 301
 	redir /research_screener /research_screener.html 301
+
+	# ── Identity chain: the child bio ref, /x/<child-id> (bio policy BL-2/BL-7) ─
+	# The bio is the ONLY URL surface in the network (BL-1…BL-4): every child's
+	# bio carries exactly https://www.mastermind-x.com/x/<child-id>, and this is
+	# the single hop it makes. The child id rides as ?ref= onto the public home
+	# shell, so the attribution key is the path segment (BL-2) rather than a
+	# campaign parameter, and no shortener the estate would have to keep alive
+	# sits in the middle (BL-3).
+	# BL-7: a destination that must MOVE is a second 301 here — the old id 301s
+	# to the new one — never a bio rewrite in flight. A bio is written once, at
+	# provisioning, and changes only by a registry edit with a reason (BL-6).
+	# `redir` sorts before `handle`/`file_server`, so this resolves ahead of the
+	# Site Access Boundary and needs no exemption in the wall itself.
+	@x_ref {
+		path_regexp x_ref ^/x/(?P<id>[a-z0-9][a-z0-9.]{2,30}[a-z0-9])/?$
+		not path *..*
+	}
+	redir @x_ref "/?ref={re.x_ref.id}" 301
 	# Consolidated-away page with real Google demand (63 impressions pre-outage):
 	# #4299 merged baskets_china into sector_central_china and left a meta-noindex
 	# redirect stub. A server-side 301 consolidates the URL's equity onto the
@@ -284,7 +302,7 @@
 		path /baskets_china.html
 		not {
 			query mmx_shell=1
-			header Referer https://beta.mastermind-x.com/*
+			header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
 		}
 	}
 	redir @baskets_seo_redirect /sector_central_china.html 301
@@ -298,7 +316,7 @@
 		path /movers.html
 		not {
 			query mmx_shell=1
-			header Referer https://beta.mastermind-x.com/*
+			header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
 		}
 	}
 	redir @movers_seo_redirect "/stocks/index.html#today-movers" 301
@@ -361,7 +379,7 @@
 	# original leak: direct JSON/JS/model-output URLs no longer bypass auth.
 	# PUBLIC-BOUNDARY-START
 	@reg_asset {
-		not path /api/* /sb/* /ws/tape / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /research_vault_app.js /market_memory.html /biocatalyst.html /biocatalyst.css /biocatalyst.js /finance_intelligence.html /finance_intelligence.css /finance_intelligence.js /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /navigation-refresh.css /product-nav-icons.css /logo_config.js /stock-logos.js /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /live/quotes.json /live/intraday_quotes.json /live/flow_pulse.json /live/breadth.json /live/release_publications.json /live/staleness.json /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /factordata/tech_lab.json /stock_seasonality.css /stock_seasonality.html /stock_seasonality.js /fundamental_forensics.css /fundamental_forensics.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /factordata/tech_events/* /stocks/* /products/* /tools/* /learn/* /blog/* /research/* /fonts/* *.html /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css
+		not path /api/* /sb/* /ws/tape / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /research_vault_app.js /market_memory.html /biocatalyst.html /biocatalyst.css /biocatalyst.js /finance_intelligence.html /finance_intelligence.css /finance_intelligence.js /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /navigation-refresh.css /product-nav-icons.css /logo_config.js /stock-logos.js /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /live/quotes.json /live/intraday_quotes.json /live/flow_pulse.json /live/breadth.json /live/release_publications.json /live/staleness.json /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /factordata/tech_lab.json /stock_seasonality.css /stock_seasonality.html /stock_seasonality.js /fundamental_forensics.css /fundamental_forensics.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /factordata/tech_events/* /stocks/* /products/* /tools/* /learn/* /blog/* /research/* /fonts/* *.html /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css /gmi.css /gmi.js
 	}
 	# PUBLIC-BOUNDARY-END
 	handle @reg_asset {
@@ -508,7 +526,7 @@
 		# tests/test_regwall_json_gate.py), so content is still only ever served
 		# from inside `handle @reg_asset` after the gate returns 2xx.
 		@reg_asset_err {
-			not path /api/* /sb/* /ws/tape / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /research_vault_app.js /market_memory.html /biocatalyst.html /biocatalyst.css /biocatalyst.js /finance_intelligence.html /finance_intelligence.css /finance_intelligence.js /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /navigation-refresh.css /product-nav-icons.css /logo_config.js /stock-logos.js /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /live/quotes.json /live/intraday_quotes.json /live/flow_pulse.json /live/breadth.json /live/release_publications.json /live/wires.json /live/intelligence.json /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /factordata/tech_lab.json /stock_seasonality.css /stock_seasonality.html /stock_seasonality.js /fundamental_forensics.css /fundamental_forensics.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /factordata/tech_events/* /stocks/* /products/* /tools/* /learn/* /blog/* /research/* /fonts/* *.html /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css
+			not path /api/* /sb/* /ws/tape / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /research_vault_app.js /market_memory.html /biocatalyst.html /biocatalyst.css /biocatalyst.js /finance_intelligence.html /finance_intelligence.css /finance_intelligence.js /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /navigation-refresh.css /product-nav-icons.css /logo_config.js /stock-logos.js /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /live/quotes.json /live/intraday_quotes.json /live/flow_pulse.json /live/breadth.json /live/release_publications.json /live/wires.json /live/intelligence.json /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /factordata/tech_lab.json /stock_seasonality.css /stock_seasonality.html /stock_seasonality.js /fundamental_forensics.css /fundamental_forensics.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /factordata/tech_events/* /stocks/* /products/* /tools/* /learn/* /blog/* /research/* /fonts/* *.html /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css /gmi.css /gmi.js
 		}
 		handle @reg_asset_err {
 			header Cache-Control "private, no-store"
@@ -552,7 +570,7 @@
 	# extension matcher here would override a protected response's no-store and
 	# turn the CDN into an authentication bypass.
 	@public_static {
-		path /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /biocatalyst.css /biocatalyst.js /finance_intelligence.css /finance_intelligence.js /navigation-refresh.css /stock-logos.js /logo_config.js /product-nav-icons.css /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /research_vault_app.js /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /stock_seasonality.css /research_screener.css /stock_seasonality.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /fonts/* /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css
+		path /favicon.svg /favicon.ico /apple-touch-icon.png /robots.txt /88bb90b05303e3cf469878ebc4dc7543.txt /sitemap.xml /llms.txt /brand-facts.json /onboard.css /onboard.js /tier_preview.css /tier_preview.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /biocatalyst.css /biocatalyst.js /finance_intelligence.css /finance_intelligence.js /navigation-refresh.css /stock-logos.js /logo_config.js /product-nav-icons.css /theme.js /help_refresh.js /dashboard-icons.css /dashboard-icons.js /chart_i18n.js /timemachine.js /tablesort.js /charts.js /risk_state_live.js /risk_envelope_live.js /china_risk_state_live.js /release_publications_live.js /heatmap.js /stocktable.js /globe-deck.js /sky.js /hub-welcome.js /vendor/d3-array.min.js /vendor/d3-geo.min.js /vendor/topojson-client.min.js /world-110m.json /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /research_vault_app.js /prophet/showcase.json /seasonalitydata/methodology.json /seasonalitydata/index.json /seasonalitydata/entities/SPY.json /marketdata/china_heatmap.json /stock_seasonality.css /research_screener.css /stock_seasonality.js /lightweight-charts-v5.js /chart.js /stockview.js /stockbrief.js /mtf.js /aidesk_lean.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js /plotly-2.32.0.min.js /lightweight-charts.js /cycle.css /sector_cycles.css /macro-desk.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /odds.css /capital_structure.css /government-revenue-parity.css /illus.css /illus.js /watchlist.js /watchstore.js /market_books.js /portfolio.js /portfolio_state.js /portfolio_import.css /portfolio_import.js /portfolio_import_ui.js /assets/css/* /assets/js/* /assets/landing/* /fonts/* /ontology.css /ontology.js /stock-dashboard.css /hk-stock-v36.js /canada-stock-v36.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /intl_workspace_surveillance.css /gmi.css /gmi.js
 		not query v=*
 	}
 	header @public_static Cache-Control "public, max-age=300, must-revalidate"
@@ -587,7 +605,7 @@
 	# (wh_banner.js, mm_charts.js, sector_cycles.js, …) answer 401 + no-store and
 	# MUST stay out, or the CDN caches a gated body under a public key.
 	@public_versioned {
-		path /onboard.css /onboard.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /biocatalyst.css /biocatalyst.js /finance_intelligence.css /finance_intelligence.js /product-nav-icons.css /theme.js /help_refresh.js /release_publications_live.js /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /assets/css/* /assets/js/* /assets/landing/* /navigation-refresh.css /stock-logos.js /logo_config.js /lightweight-charts-v5.js /chart.js /plotly-2.32.0.min.js /lightweight-charts.js /macro-desk.css /tablesort.js /illus.js /illus.css /chart_i18n.js /charts.js /dashboard-icons.css /cycle.css /dashboard-icons.js /stockview.js /sector_cycles.css /heatmap.js /tier_preview.css /stocktable.js /tier_preview.js /timemachine.js /risk_state_live.js /risk_envelope_live.js /vendor/topojson-client.min.js /vendor/d3-geo.min.js /vendor/d3-array.min.js /stockbrief.js /stock_seasonality.js /stock_seasonality.css /research_screener.css /sky.js /research_vault_app.js /odds.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /hub-welcome.js /globe-deck.js /capital_structure.css /government-revenue-parity.css /aidesk_lean.js /mtf.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /ontology.css /ontology.js /stock-dashboard.css /china_risk_state_live.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_surveillance.css /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /portfolio_state.js /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js
+		path /onboard.css /onboard.js /landing.css /scene-motion.css /scene-motion.js /chat.css /theme.css /market_memory.css /market_memory.js /market_memory_intent.js /market_memory_retained.js /market_memory_retained.css /biocatalyst.css /biocatalyst.js /finance_intelligence.css /finance_intelligence.js /product-nav-icons.css /theme.js /help_refresh.js /release_publications_live.js /adtest.js /account.js /nav_market.js /shared_shell_bridge.js /shared_shell.css /supabase.js /data_base.js /live.js /live_config.js /assets/css/* /assets/js/* /assets/landing/* /navigation-refresh.css /stock-logos.js /logo_config.js /lightweight-charts-v5.js /chart.js /plotly-2.32.0.min.js /lightweight-charts.js /macro-desk.css /tablesort.js /illus.js /illus.css /chart_i18n.js /charts.js /dashboard-icons.css /cycle.css /dashboard-icons.js /stockview.js /sector_cycles.css /heatmap.js /tier_preview.css /stocktable.js /tier_preview.js /timemachine.js /risk_state_live.js /risk_envelope_live.js /vendor/topojson-client.min.js /vendor/d3-geo.min.js /vendor/d3-array.min.js /stockbrief.js /stock_seasonality.js /stock_seasonality.css /research_screener.css /sky.js /research_vault_app.js /odds.css /markets.css /macro_suite.css /macro_suite_boot.js /macro_suite.js /hub-welcome.js /globe-deck.js /capital_structure.css /government-revenue-parity.css /aidesk_lean.js /mtf.js /mm_brain.js /mm_brain_visuals.js /mm_brain_visuals.css /ontology.css /ontology.js /stock-dashboard.css /china_risk_state_live.js /institutional_holding_research.css /institutional_holding_research.js /intl_workspace.css /intl_workspace_macro.css /intl_workspace_risk.css /intl_workspace_history.css /intl_workspace_surveillance.css /gmi.css /gmi.js /intl_workspace_state.js /intl_library_search.js /intl_workspace_scenario.js /intl_workspace.js /intl_workspace_entry.js /portfolio_state.js /mm_brain_presentation.js /mm_brain_markdown.js /mm_brain_finance.js /mm_brain_finance.css /mm_brain_finance_math_v1.js /mm_brain_math.js
 		query v=*
 	}
 	header @public_versioned Cache-Control "public, max-age=31536000, immutable"
@@ -618,10 +636,10 @@
 
 	# Shared Shell presentation admission changes framing only. The existing
 	# region and payload gates below still decide access. Restrict the exception
-	# to HTML explicitly requested by the exact beta parent.
+	# to HTML explicitly requested by either exact first-party shell parent.
 	# Never let an unmatched parent seed a public cached DENY response for the
 	# same opt-in URL that the beta parent will subsequently frame. Framing below
-	# still requires the exact beta Referer; this selector only narrows caching.
+	# still requires an exact approved parent Referer; this selector only narrows caching.
 	@shared_shell_requested {
 		path / *.html
 		query mmx_shell=1
@@ -633,13 +651,13 @@
 	@shared_shell_document {
 		path / *.html
 		query mmx_shell=1
-		header Referer https://beta.mastermind-x.com/*
+		header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
 	}
 	@outside_shared_shell {
 		not {
 			path / *.html
 			query mmx_shell=1
-			header Referer https://beta.mastermind-x.com/*
+			header_regexp Referer ^https://(beta|app)\.mastermind-x\.com/
 		}
 	}
 	header @outside_shared_shell {
@@ -648,7 +666,7 @@
 	}
 	header @shared_shell_document {
 		-X-Frame-Options
-		Content-Security-Policy "base-uri 'self'; object-src 'none'; frame-ancestors https://beta.mastermind-x.com"
+		Content-Security-Policy "base-uri 'self'; object-src 'none'; frame-ancestors https://beta.mastermind-x.com https://app.mastermind-x.com"
 		# Defer until after file_server/gate response headers: an allow-branch
 		# HTML TTL must never recache the framed document or its access response.
 		Cache-Control "private, no-store"
@@ -682,8 +700,11 @@ www.mastermind-x.com {
 		Strict-Transport-Security "max-age=31536000"
 	}
 
-	# Self-signed origin cert; pair with the CDN's non-strict HTTPS origin pull.
-	tls internal
+	# Keep the origin browser-trusted too. EdgeOne normally terminates public TLS,
+	# but stale/bypassed DNS can reach the origin directly; a Caddy-local certificate
+	# then surfaces as NET::ERR_CERT_AUTHORITY_INVALID. Automatic ACME certificate
+	# management remains enabled even with `auto_https disable_redirects`, and
+	# EdgeOne's non-strict HTTPS origin pull accepts the public certificate.
 
 	# Access logs go to journald (`journalctl -u caddy`). We deliberately do NOT
 	# write a file log: the stock caddy.service systemd sandbox only permits writes
@@ -717,8 +738,9 @@ www.mastermind-x.com {
 #   mastermind-x.com) in `journalctl -u caddy`. NB no renewal has been exercised
 #   since the apex moved behind the edge — the cert is still the original
 #   2026-06-30 issuance and ARI selects 2026-08-29 05:42 UTC for the first one.
-#   Watch that run. If it ever fails, the fix is `tls internal` here (origin-pull
-#   is non-strict, exactly like www above), NOT a DNS revert.
+#   Watch that run. If renewal ever fails, repair ACME/edge reachability; do not
+#   regress apex or www to `tls internal`, because a direct-origin/stale-DNS client
+#   would then receive an untrusted Caddy-local certificate.
 # * The MX hazard #3040 feared has NOT materialised. The apex still carries
 #   `10 m.northlighttrade.com` and it resolves alongside the apex CNAME (28/28
 #   across Google/Cloudflare/Quad9/OpenDNS/114DNS/AliDNS) because DNSPod answers

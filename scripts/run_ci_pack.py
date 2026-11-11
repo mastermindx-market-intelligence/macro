@@ -418,7 +418,11 @@ OBSERVED_COMMAND_SECONDS = {
     # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
-    "ci-control-plane-contracts": 1400,
+    # 2026-11-04 (#917): ci-control-plane-contracts split three ways; hosted group
+    # timings from runs 41806511589 / 41803222742 (median of the two).
+    "ci-control-plane-contracts": 815,
+    "ci-control-plane-census": 530,
+    "ci-control-plane-structure": 150,
     # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
     # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
     # These calibrate balancing only; install/checkout/queue are excluded.
@@ -599,10 +603,14 @@ def _browser_dependency_diagnostic_commands() -> tuple[str, ...]:
     return capture_commands()
 
 
-# Native cold acquisition retains its original TOTAL grant even when a
-# broader owner manifest later increases that job's declared timeout.
+# Native activation is closed to these existing owners and their original
+# TOTAL grants. Each setup still shares that total and its finite setup bound.
 NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 NATIVE_BROWSER_LOGICAL_JOB_ID = "ontology-explorer"
+NATIVE_BRAIN_LOGICAL_JOB_ID = "unrun-brain-gateway"
+NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES = 15
+NATIVE_BEA_LOGICAL_JOB_ID = "bea-gvc-current-descriptive-consumer"
+NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES = 10
 
 
 def _incumbent_browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
@@ -639,8 +647,6 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
         **incumbent,
         "acquisition": "native_parallel",
         "executed_strategy": "native_apt_transaction_download4_no_download_install_then_playwright_chromium",
-        "logical_job_timeout_minutes": NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
-        "activation_job_id": NATIVE_BROWSER_LOGICAL_JOB_ID,
         "native_source_sha256": {
             name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest() for name in BOUND_FILES
         },
@@ -655,7 +661,7 @@ def _browser_setup_spec(step: Mapping[str, Any]) -> dict[str, Any] | None:
 def _run_native_browser_setup(
     setup: Mapping[str, Any], *, job_deadline: float, setup_started_at: float, command_env: Mapping[str, str],
 ) -> CommandObservation:
-    """Ontology-only capture/acquisition consumes one original logical deadline."""
+    """Explicit owner capture/acquisition shares original job and setup deadlines."""
     commands = (*setup["diagnostics"], setup["command"])
     setup_deadline = min(job_deadline, setup_started_at + setup["timeout_minutes"] * 60)
     for command_index, command in enumerate(commands):
@@ -695,8 +701,20 @@ def _browser_setup_contract(job: LegacyJob) -> tuple[dict[str, Any], ...]:
         or job.definition["timeout-minutes"] <= 0
     ):
         raise ManifestError("browser setup requires a finite original logical-job deadline")
-    if any(spec.get("acquisition") == "native_parallel" for spec in contract) and job.job_id != NATIVE_BROWSER_LOGICAL_JOB_ID:
-        raise ManifestError("native browser acquisition is restricted to ontology-explorer")
+    if any(spec.get("acquisition") == "native_parallel" for spec in contract):
+        admitted_totals = {
+            NATIVE_BROWSER_LOGICAL_JOB_ID: NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BRAIN_LOGICAL_JOB_ID: NATIVE_BRAIN_LOGICAL_JOB_TIMEOUT_MINUTES,
+            NATIVE_BEA_LOGICAL_JOB_ID: NATIVE_BEA_LOGICAL_JOB_TIMEOUT_MINUTES,
+        }
+        if job.job_id not in admitted_totals:
+            raise ManifestError("native browser acquisition is restricted to ontology-explorer, unrun-brain-gateway and bea-gvc-current-descriptive-consumer")
+        contract = tuple(
+            {**spec, "logical_job_timeout_minutes": admitted_totals[job.job_id],
+             "activation_job_id": job.job_id}
+            if spec.get("acquisition") == "native_parallel" else spec
+            for spec in contract
+        )
     return contract
 
 
@@ -2055,6 +2073,33 @@ def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[Lega
     return packs
 
 
+def compact_scoped_packs(
+    jobs: Iterable[LegacyJob], pack_count: int
+) -> list[list[LegacyJob]]:
+    """Use fewer active bins without increasing the legacy modeled peak load.
+
+    Only build_plan's genuinely narrowed PR lane may use this compactor. The
+    ordinary partition_jobs function and main baseline pack names are unchanged.
+    Weights are planning estimates, not elapsed-time or speedup guarantees.
+    """
+    selected = list(jobs)
+    baseline = partition_jobs(selected, pack_count)
+    if any(job.weight < 0 for job in selected):
+        raise ValueError("scoped compaction requires nonnegative job weights")
+    peak = max((sum(job.weight for job in pack) for pack in baseline), default=0)
+    if not selected or peak == 0:
+        return baseline
+    total = sum(job.weight for job in selected)
+    # No packing below this bin count can retain the old peak. Search every
+    # feasible smaller greedy count; greedy feasibility need not be monotonic.
+    lower_bound = max(1, (total + peak - 1) // peak)
+    for active_count in range(lower_bound, min(pack_count, len(selected))):
+        candidate = partition_jobs(selected, active_count)
+        if max(sum(job.weight for job in pack) for pack in candidate) <= peak:
+            return candidate + [[] for _ in range(pack_count - active_count)]
+    return baseline
+
+
 # ---------------------------------------------------------------------------
 # Plan once, execute many (2026-08-11)
 #
@@ -2349,9 +2394,24 @@ def build_plan(
             f"{reason}"
         )
 
-    # Balance across the SELECTED set, not the full manifest — otherwise a
-    # scoped run would leave whole packs empty while one pack carried it all.
-    packs = partition_jobs(eligible, pack_count)
+    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
+        "pull_request" if changed_from is not None else "workflow_dispatch"
+    )
+    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
+        "pr_head" if event == "pull_request" else "main"
+    )
+    # Main and full-suite plans retain every legacy baseline check name.
+    # Only a genuinely narrowed active PR selection may compact execution.
+    narrowed_pr = (
+        role == "pr_head"
+        and changed_from is not None
+        and changed is not None
+        and scope_mode == "active"
+        and not invalidated
+        and len(eligible) < len(jobs)
+    )
+    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
+             else partition_jobs(eligible, pack_count))
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)
@@ -2380,12 +2440,6 @@ def build_plan(
         or os.environ.get("CI_BASE_SHA")
         or changed_from
         or tested_tree_sha
-    )
-    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
-        "pull_request" if changed_from is not None else "workflow_dispatch"
-    )
-    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
-        "pr_head" if event == "pull_request" else "main"
     )
     # `workflow` is resolved HERE, before the role/event validation below, so
     # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of
@@ -3493,6 +3547,175 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+# Exact paths compared by the international-workspace-browser frozen guard
+# (tests/test_intl_gs_foundation.py). The international-dislocation-explorer
+# job passes its own compared paths from its manifest step (F10) so that this
+# module's closure never names that guard's builder script.
+INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
+    "templates/theme.css",
+    "templates/_navlinks.html.j2",
+    "engine/intl_global_universe.py",
+    "engine/intl_global_observation.py",
+    "lib/intl_global_observation_adapter.py",
+)
+
+
+def prepare_canonical_main(
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main",
+    frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
+) -> str:
+    """Acquire actual main once, then deepen only its pinned history as needed.
+
+    ``frozen_paths`` are the exact repository paths the calling job's frozen
+    guard compares at the canonical base and the tested tree; every one must be
+    present offline at both before this returns.
+
+    The International frozen-file guard reads origin/main and its merge base
+    with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
+    ancestry; an unrestricted second fetch need not reacquire unrelated history
+    or auto-follow tags. Retain that ancestry with relative deepening, explicitly
+    create origin/main, and never repin to a main tip that moves during this call.
+
+    The manifest runs each synchronous fetch under the logical job's existing
+    deadline and process group. A failed/unknown fetch propagates immediately: only a completed
+    acquisition with valid bindings but insufficient ancestry earns a deeper rung.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
+    """
+    if base_ref != "main":
+        raise RuntimeError("canonical-main preparation requires base_ref='main'")
+    if not isinstance(tested_tree_sha, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", tested_tree_sha
+    ):
+        raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+    if (not isinstance(frozen_paths, tuple) or not frozen_paths or not all(
+            isinstance(path, str) and path and not path.startswith("/")
+            and ".." not in path.split("/") for path in frozen_paths)):
+        raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
+
+    root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
+    git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
+    canonical_sha: str | None = None
+    previous_depth = 0
+
+    def commit(ref: str) -> str:
+        result = _git_cmd(root, git_env, "rev-parse", "--verify", f"{ref}^{{commit}}")
+        value = result.stdout.strip().lower()
+        if result.returncode != 0 or not re.fullmatch(r"[0-9a-f]{40}", value):
+            raise RuntimeError(f"canonical-main preparation cannot resolve {ref!r}")
+        return value
+
+    def check_bindings() -> None:
+        if commit("HEAD") != tested_tree_sha:
+            raise RuntimeError("canonical-main preparation changed/mismatched tested HEAD")
+        if canonical_sha is not None and commit("origin/main") != canonical_sha:
+            raise RuntimeError("canonical-main preparation lost its pinned origin/main")
+
+    def is_shallow() -> bool:
+        result = _git_cmd(root, git_env, "rev-parse", "--is-shallow-repository")
+        if result.returncode != 0 or result.stdout.strip() not in {"true", "false"}:
+            raise RuntimeError("canonical-main preparation cannot determine shallow state")
+        return result.stdout.strip() == "true"
+
+    def require_local_objects(canonical_base: str) -> None:
+        # ``frozen_paths`` are the exact paths compared by the caller's guard.
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
+    for depth in _EXACT_TESTED_TREE_DEPTHS:
+        check_bindings()
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
+        # Absolute --depth can shorten already-qualified tested-tree history.
+        # Reuse the existing finite ancestry ladder as *additional* generations.
+        increment = depth - previous_depth
+        if is_shallow():
+            command.append(f"--deepen={increment}")
+        canonical_want = (
+            "+refs/heads/main:refs/remotes/origin/main"
+            if canonical_sha is None else canonical_sha
+        )
+        command.extend(["origin", canonical_want, tested_tree_sha])
+        print(
+            "::notice title=international-workspace-browser::acquiring canonical "
+            f"main {'tip' if canonical_sha is None else canonical_sha}; "
+            f"additional ancestry limit {depth}",
+            flush=True,
+        )
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
+        fetched_sha = commit("FETCH_HEAD")
+        if canonical_sha is None:
+            canonical_sha = commit("origin/main")
+        if fetched_sha != canonical_sha:
+            raise RuntimeError("canonical-main acquisition did not retain its first fetched main")
+        check_bindings()
+
+        merge_base = _git_cmd(root, git_env, "merge-base", canonical_sha, tested_tree_sha)
+        value = merge_base.stdout.strip().lower()
+        if merge_base.returncode not in (0, 1) or (
+            merge_base.returncode == 0 and not re.fullmatch(r"[0-9a-f]{40}", value)
+        ):
+            raise RuntimeError("canonical-main merge-base probe failed")
+        if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
+            root, git_env, tested_tree_sha
+        ):
+            require_local_objects(value)
+            check_bindings()
+            print(
+                "::notice title=international-workspace-browser::canonical main "
+                f"{canonical_sha}; tested tree {tested_tree_sha}; merge base {value}",
+                flush=True,
+            )
+            return canonical_sha
+        if not is_shallow():
+            raise RuntimeError("canonical-main ancestry is unavailable in a complete repository")
+        previous_depth = depth
+
+    raise RuntimeError(
+        "canonical-main ancestry remained unavailable after the bounded deepen ladder"
+    )
+
+
+_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS = (2, 8, 32, 128, 512, 2048, 8192)
+
+
 def _prepare_provided_actions(
     job: LegacyJob,
     *,
@@ -3502,18 +3725,16 @@ def _prepare_provided_actions(
     """Materialize the action semantics the pack workflow shares.
 
     setup-python 3.12 and setup-node 20 are supplied by the pack job itself.
-    The ordinary checkout is represented by the exact-tree reset. A manifest
-    checkout requesting fetch-depth 0 first deepens only the authoritative
-    tested tree, in bounded steps, until the synthetic merge parents have a
-    usable merge base. That is the actual history contract of every current
-    fetch-depth-0 consumer: each fetches its canonical base itself, none reads
-    tags/unrelated remote refs, and self-mod-fence needs the PR-commit ancestry
-    only through the branch point.
+    A fetch-depth-0 checkout needs visible tested parents and their merge
+    base; current consumers bind their own comparison subjects. Acquire only
+    the authoritative tested commit through a finite ladder. A successful
+    transfer alone is not proof of the required ancestry.
 
-    If exact-tree ancestry cannot be established within the bounded ladder, or
-    any exact fetch fails, preserve the established all-branches -> main-only
-    -> 30-day recovery ladder. Exact-base replay points ``origin`` at its
-    isolated base-only remote, so the same fail-closed recovery remains intact.
+    An exact-target transport failure or exhausted ladder fails closed.
+    Broad branch/tag, moving-main and time-window fallbacks can exhaust the
+    runner disk without establishing this exact subject's history. Exact-base
+    replay retains its isolated origin and the same readiness predicate.
+    This ladder is separate from canonical-main comparison acquisition.
     """
     contracts = _job_action_contract(job)
     if not any(
@@ -3530,8 +3751,7 @@ def _prepare_provided_actions(
         )
 
     git_env = _trusted_git_environment(root)
-    # Recheck this exact repository/tree before fetching: a later consumer must
-    # not re-shallow history already established by an earlier consumer.
+    # A later consumer must not re-shallow history already proved here.
     if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
         print(
             "::notice title=run-ci-pack::exact tested-tree ancestry already "
@@ -3539,126 +3759,36 @@ def _prepare_provided_actions(
             flush=True,
         )
         return
-    exact_fetch_failed = False
-    for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
-        try:
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--no-tags",
-                    f"--depth={depth}",
-                    "origin",
-                    tested_tree_sha,
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
-        except subprocess.CalledProcessError:
-            exact_fetch_failed = True
-            print(
-                "::warning title=run-ci-pack::exact tested-tree ancestry fetch failed "
-                f"at depth {depth}; retrying legacy all-branches deepen",
-                flush=True,
-            )
-            break
-
-        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
-            return
-
-        if index + 1 < len(_EXACT_TESTED_TREE_DEPTHS):
-            print(
-                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
-                f"at depth {depth}; deepening to "
-                f"{_EXACT_TESTED_TREE_DEPTHS[index + 1]}",
-                flush=True,
-            )
-
-    if not exact_fetch_failed:
-        print(
-            "::warning title=run-ci-pack::exact tested-tree ancestry remained "
-            f"incomplete through depth {_EXACT_TESTED_TREE_DEPTHS[-1]}; "
-            "retrying legacy all-branches deepen",
-            flush=True,
-        )
-
-    try:
+    for index, depth in enumerate(_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS):
+        # Transport failure propagates immediately. Only a completed fetch
+        # with insufficient ancestry permits the next, deeper exact request.
         subprocess.run(
             [
                 "git",
                 "fetch",
                 "--no-recurse-submodules",
-                "--prune",
-                "--tags",
-                "--depth=2147483647",
+                "--no-tags",
+                f"--depth={depth}",
                 "origin",
-                "+refs/heads/*:refs/remotes/origin/*",
+                tested_tree_sha,
             ],
             cwd=root,
             env=git_env,
             check=True,
         )
-    except subprocess.CalledProcessError:
-        # One broken sibling ref must not fail every fetch-depth-0 job. On
-        # 2026-09-21 an all-branches deepen died fleet-wide with "fatal:
-        # missing blob object ..." / "error: remote did not send all
-        # necessary objects" — a ref whose objects the server could not
-        # serve — and every design-governance run after it red as
-        # "infrastructure unknown". The checks behind this contract diff
-        # against main and the PR's own refs (already present in the
-        # workspace), so full main history is the part that must succeed.
-        print(
-            "::warning title=run-ci-pack::all-branches deepen failed; "
-            "retrying with refs/heads/main only",
-            flush=True,
-        )
-        try:
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--tags",
-                    "--depth=2147483647",
-                    "origin",
-                    "+refs/heads/main:refs/remotes/origin/main",
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
-        except subprocess.CalledProcessError:
-            # 2026-09-21 16:08Z: even the main-only full deepen died the same
-            # way ("fatal: missing blob object 9cd3bb31..."), while the
-            # all-branches fetch had SUCCEEDED on sibling runs minutes
-            # earlier — the failures are intermittent server-side pack
-            # assembly on these enormous full-history fetches, not one
-            # broken ref. The checks behind this contract only ever diff
-            # against a merge base that is hours-to-days old, so a bounded
-            # window is always sufficient in practice and is orders of
-            # magnitude smaller to assemble. Tags are dropped on this rung:
-            # none of the gated checks read tags, and a tag pinning
-            # unreachable history would re-break the fetch.
+        if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+            return
+        if index + 1 < len(_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS):
             print(
-                "::warning title=run-ci-pack::main-only deepen failed; "
-                "retrying refs/heads/main with --shallow-since=30 days",
+                "::notice title=run-ci-pack::exact tested-tree ancestry incomplete "
+                f"at depth {depth}; deepening to "
+                f"{_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS[index + 1]}",
                 flush=True,
             )
-            subprocess.run(
-                [
-                    "git",
-                    "fetch",
-                    "--no-recurse-submodules",
-                    "--shallow-since=30 days ago",
-                    "origin",
-                    "+refs/heads/main:refs/remotes/origin/main",
-                ],
-                cwd=root,
-                env=git_env,
-                check=True,
-            )
+    raise RuntimeError(
+        f"job {job.job_id!r}: exact tested-tree ancestry {tested_tree_sha} "
+        f"remained unavailable through depth {_PROVIDED_ACTIONS_TESTED_TREE_DEPTHS[-1]}"
+    )
 
 
 def _run_job(
@@ -3690,8 +3820,10 @@ def _run_job(
     specs = semantic_step_specs(job)
     by_index = {spec.step_index: spec for spec in specs}
     setups = {spec["step_index"]: spec for spec in _browser_setup_contract(job)}
-    if any(spec.get("acquisition") == "native_parallel" for spec in setups.values()):
-        timeout_minutes = min(timeout_minutes, NATIVE_BROWSER_LOGICAL_JOB_TIMEOUT_MINUTES)
+    native_limits = [spec["logical_job_timeout_minutes"] for spec in setups.values()
+                     if spec.get("acquisition") == "native_parallel"]
+    if native_limits:
+        timeout_minutes = min(timeout_minutes, *native_limits)
         timeout_seconds = int(timeout_minutes) * 60
         job_deadline = job_started_at + timeout_seconds
     observations: list[dict[str, Any]] = []
@@ -4048,6 +4180,23 @@ def _child_environment(
     if command_env.get("CI_CHANGED_FILES_FILE"):
         command_env.pop("CI_CHANGED_FILES_JSON", None)
     return _child_git_environment(command_env)
+
+
+def _export_tested_tree_sha(bound_tree_sha: str | None) -> bool:
+    """Publish the plan-bound tested tree to legacy steps as ``TESTED_TREE_SHA``.
+
+    The International canonical-main gates read ``CI_TESTED_TREE_SHA`` first and
+    ``TESTED_TREE_SHA`` second. ci.yml exports ``TESTED_TREE_SHA`` in the pack
+    step's ``env:``; the trusted and canary executors pass only CLI flags, so a
+    pack that knows its plan publishes the value once here, before either child
+    environment is assembled. An explicit value is never overridden (exact-base
+    replay sets ``CI_TESTED_TREE_SHA`` deliberately and keeps precedence).
+    Returns True only when this call set the variable.
+    """
+    if bound_tree_sha is None or os.environ.get("TESTED_TREE_SHA"):
+        return False
+    os.environ["TESTED_TREE_SHA"] = bound_tree_sha
+    return True
 
 
 def _child_git_environment(command_env: Mapping[str, str]) -> dict[str, str]:
@@ -4762,6 +4911,66 @@ def _base_replay_unavailable(base_sha: str, detail: object) -> dict[str, Any]:
     }
 
 
+# Parent environment names an exact-base replay child may inherit. Every
+# name is a non-capability setting: no token, no credential, no path into the
+# candidate checkout. `LC_*` locale names are admitted by prefix.
+#
+# `CI` is deliberately on the list. pytest decides whether the short-summary
+# `FAILED nodeid - msg` line carries the failure message via
+# `running_on_ci()`, i.e. whether `CI` is set. The candidate runs with the
+# runner's `CI=true` and emits the whole message; a replay without it trims
+# the message to the terminal width or drops it, so the semantic failure
+# atoms (`ci_semantic_proof` `:reason=` digest) do not match and a base-red
+# failure that has a message is refused as a signature mismatch (#10735 run
+# 41925067587 pack 11: candidate `FAILED ... - AssertionError...`, replay
+# `FAILED ...`). `CI` is a boolean the runner sets, not a bearer of any
+# capability. `PYTHONUTF8` and `PYTHONIOENCODING` keep the child's text
+# encoding identical to the candidate's.
+EXACT_BASE_REPLAY_SAFE_PARENT_ENV: frozenset[str] = frozenset({
+    "PATH",
+    "SHELL",
+    "LANG",
+    "CI",
+    "LANGUAGE",
+    "LC_ALL",
+    "TZ",
+    "TERM",
+    "COLORTERM",
+    "NO_COLOR",
+    "FORCE_COLOR",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "REQUESTS_CA_BUNDLE",
+    "CURL_CA_BUNDLE",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+    "PYTHONIOENCODING",
+    "PYTHONUTF8",
+    "PYTHONDONTWRITEBYTECODE",
+    "RUNNER_OS",
+    "RUNNER_ARCH",
+    "RUNNER_ENVIRONMENT",
+    "RUNNER_TOOL_CACHE",
+    "ImageOS",
+    "ImageVersion",
+})
+
+
+def _exact_base_replay_parent_env(environ: Mapping[str, str]) -> dict[str, str]:
+    """Return the allowlisted subset of ``environ`` for an exact-base replay."""
+    return {
+        key: value
+        for key, value in environ.items()
+        if key in EXACT_BASE_REPLAY_SAFE_PARENT_ENV or key.startswith("LC_")
+    }
+
+
 def _run_exact_base_replays(
     *,
     root: Path,
@@ -4814,47 +5023,11 @@ def _run_exact_base_replays(
                 base_changed_files = child_temp / "changed-files.json"
                 base_changed_files.write_text("null\n", encoding="utf-8")
                 # A replay is a base-only execution context, not a PR runner
-                # wearing a different cwd. Build from a small non-capability
-                # allowlist: denylisting GITHUB_TOKEN alone still leaves the
-                # Actions runtime/artifact and OIDC bearer tokens live.
-                safe_parent_names = {
-                    "PATH",
-                    "SHELL",
-                    "LANG",
-                    "LANGUAGE",
-                    "LC_ALL",
-                    "TZ",
-                    "TERM",
-                    "COLORTERM",
-                    "NO_COLOR",
-                    "FORCE_COLOR",
-                    "SSL_CERT_FILE",
-                    "SSL_CERT_DIR",
-                    "REQUESTS_CA_BUNDLE",
-                    "CURL_CA_BUNDLE",
-                    "HTTP_PROXY",
-                    "HTTPS_PROXY",
-                    "ALL_PROXY",
-                    "NO_PROXY",
-                    "http_proxy",
-                    "https_proxy",
-                    "all_proxy",
-                    "no_proxy",
-                    "PYTHONUTF8",
-                    "PYTHONIOENCODING",
-                    "PYTHONDONTWRITEBYTECODE",
-                    "RUNNER_OS",
-                    "RUNNER_ARCH",
-                    "RUNNER_ENVIRONMENT",
-                    "RUNNER_TOOL_CACHE",
-                    "ImageOS",
-                    "ImageVersion",
-                }
-                child_env = {
-                    key: value
-                    for key, value in os.environ.items()
-                    if key in safe_parent_names or key.startswith("LC_")
-                }
+                # wearing a different cwd. Build from the small non-capability
+                # allowlist in EXACT_BASE_REPLAY_SAFE_PARENT_ENV: denylisting
+                # GITHUB_TOKEN alone still leaves the Actions runtime/artifact
+                # and OIDC bearer tokens live.
+                child_env = _exact_base_replay_parent_env(os.environ)
                 # Re-exec the selected setup-python interpreter without copying
                 # candidate-controlled loader state.  The directory is derived
                 # and containment-checked against sys.base_prefix above.
@@ -5136,6 +5309,9 @@ def execute_pack(
         r"[0-9a-f]{40}", bound_tree_sha
     ):
         bound_tree_sha = None
+    # F10 review F1: both international legacy gates need the tested tree in the
+    # step environment on every executor, not only the ci.yml pack step.
+    _export_tested_tree_sha(bound_tree_sha)
     command_env = _child_environment(changed_files_file)
     if plan is not None:
         try:

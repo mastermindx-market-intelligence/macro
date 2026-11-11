@@ -6,6 +6,7 @@ import errno
 import importlib.util
 import json
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -1680,6 +1681,89 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_m
         assert "unowned path" not in reason, reason
 
 
+def test_macro_suite_copy_law_site_scanners_run_on_the_data_gate(real_manifest_scopes) -> None:
+    """A nightly-rendered page must never red the source merge gate (S1, 2026-11-05).
+
+    ``tests/test_macro_command_copy_law.py`` (and, for one test each, its
+    ``p4_copy`` and ``read_strip`` siblings) holds two kinds of test: the copy
+    law over fixture-rendered or synthetic payloads (a property of the code),
+    and scanners over the committed ``site/macro_*.html`` or the nightly
+    ``site/macrodata`` the nightly rewrites on every run (a property of the
+    data). On 2026-11-05 the nightly committed
+    a ``macro_business_activity.html`` carrying an unpaired ``Contraction``
+    label; ``market-os-macro-suite-pages`` went red on main at 04:41Z and
+    merge-on-green's main-red circuit breaker held every ordinary merge for 18
+    hours while no open PR could have caused or cured it (Mastermind #917,
+    checkpoint 13). The split pinned here: the scanners carry ``data_gate``,
+    the code job deselects them, and the ``gate: data`` sibling runs exactly
+    them on the data-health lane after each nightly.
+    """
+    manifest = _yaml(MANIFEST)
+    suite = "tests/test_macro_command_copy_law.py"
+    siblings = (
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_macro_command_read_strip.py",
+    )
+    code_job = manifest["jobs"]["market-os-macro-suite-pages"]
+    assert code_job["gate"] == "code"
+    for scanner in (suite, *siblings):
+        code_runs = [
+            str(step.get("run") or "") for step in code_job["steps"]
+            if scanner in str(step.get("run") or "")
+        ]
+        assert code_runs, f"the code job no longer runs {scanner}"
+        for run in code_runs:
+            assert "-m \"not data_gate\"" in run or "-m 'not data_gate'" in run, run
+
+    data_job = manifest["jobs"]["market-os-macro-suite-pages-data"]
+    assert data_job["gate"] == "data"
+    assert data_job["scope"] == "exclusive"
+    data_runs = [
+        str(step.get("run") or "") for step in data_job["steps"]
+        if re.search(r"pytest\s+tests/", str(step.get("run") or ""))
+    ]
+    assert data_runs == [
+        f"python -m pytest {suite} {' '.join(siblings)} -m data_gate -q"
+    ]
+    assert _job_pip_packages(data_job) == _job_pip_packages(code_job)
+    assert set(code_job["paths"]) == set(data_job["paths"]), (
+        "the data sibling declares the parent's closure; widen both together"
+    )
+
+    # The marker is real: every test whose verdict reads the committed
+    # site/macro_*.html (or couples it to the nightly macrodata) carries it;
+    # the template-bound halves of the split M2 and trace-row tests stay on
+    # the code gate. A new committed-site scanner is added to this set,
+    # never to the code gate.
+    marked: list[str] = []
+    for scanner in (suite, *siblings):
+        marked += re.findall(
+            r"^@pytest\.mark\.data_gate\s*\n(?:^@pytest\.mark\.[^\n]*\n)*^def (test_\w+)\(",
+            (ROOT / scanner).read_text(encoding="utf-8"),
+            re.M,
+        )
+    assert sorted(marked) == sorted({
+        "test_committed_payloads_have_zero_plain_fallbacks",
+        "test_committed_rates_page_keeps_relocated_needles_inside_details",
+        "test_user_facing_numbers_have_no_machine_floats",
+        "test_zh_l_zh_spans_are_translated",
+        "test_locale_spans_have_no_machine_text",
+        "test_rendered_pages_use_ratified_null_vocabulary",
+        "test_details_use_locale_pairing_not_lang_attributes",
+        "test_composites_disclose_composition_law_in_plain_words",
+        "test_trace_row_present_iff_trace_ref",
+        "test_committed_monetary_policy_page_keeps_restored_rows",
+        "test_rendered_sections_have_no_repeated_visible_sentence",
+        "test_axis_move_clauses_cover_every_axis_and_direction",
+        "test_unknown_tokens_are_empty_for_the_shipped_artifact",
+    }), marked
+
+    jobs, _ = real_manifest_scopes
+    code_jobs = {job.job_id for job in jobs if job.gate == "code"}
+    assert "market-os-macro-suite-pages" in code_jobs
+    assert "market-os-macro-suite-pages-data" not in code_jobs
+
+
 def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
@@ -2589,6 +2673,24 @@ def _isolate_pack_runner_planner_env(monkeypatch: pytest.MonkeyPatch) -> None:
         "CI_BASE_SHA",
     ):
         monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_tested_tree_sha():
+    """F10 #10367: ``execute_pack`` publishes the plan tree into the runner's own
+    ``os.environ`` as ``TESTED_TREE_SHA`` (never overriding). Keep it out of the
+    ambient env between tests (review INTL-GS-F10-AUDIT-2, N5) with an explicit
+    snapshot/restore: ``monkeypatch.delenv`` records no undo for an absent key, so
+    a value set during the test would survive teardown (INTL-GS-F10-HYGIENE-AUDIT).
+    """
+    before = os.environ.pop("TESTED_TREE_SHA", None)
+    try:
+        yield
+    finally:
+        if before is None:
+            os.environ.pop("TESTED_TREE_SHA", None)
+        else:
+            os.environ["TESTED_TREE_SHA"] = before
 
 
 def _stub_planner_paths(
@@ -4009,6 +4111,48 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     assert re.search(r"\bhttpx\b", publish_ops_install)
 
 
+
+def test_earnings_worker_control_plane_has_binding_code_gate_owner(real_manifest_scopes) -> None:
+    """An ops-only or test-only worker diff must execute its hermetic contract."""
+    jobs, _note = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id["earnings-release-identity"]
+
+    assert job.gate == "code"
+    assert job.is_scoped, "worker ownership must be proved after scope inference"
+    declared = set(job.definition.get("paths") or [])
+    required = {
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tools/earnings_worker/README.md",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "config/earnings_qual.yml",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    }
+    assert required <= declared
+
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition["steps"]
+        if isinstance(step, dict)
+    )
+    assert "tests/test_earnings_worker_launchd.py" in commands  # ci-trigger-closure: data — suite NAME checked in manifest commands, not opened
+
+    # These are the two previously-dark shapes from PR #7366 review: changing
+    # only the test contract or only one production control path must select the
+    # binding code-gate owner, not merely a broader gate:data ops pack.
+    for changed in (
+        "tests/test_earnings_worker_launchd.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/bootstrap_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/com.mastermind.earnings-worker.plist",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "ops/launchd/run_earnings_worker.sh",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    ):
+        selected, _reason = PACK.select_jobs(
+            [item for item in jobs if item.gate == "code"], [changed]
+        )
+        assert "earnings-release-identity" in {item.job_id for item in selected}
+
+
 def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> None:
     """ci-plan keeps full history; packs shallow-checkout the current tree.
 
@@ -4388,8 +4532,36 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "sa-w4-improvement-lanes",
+    "xguerrilla-identity-registry",
+    "public-site-figma-baseline-contracts",
+    # Preserve V91 coverage while bounding newly enrolled policy regressions.
+    "news-v91-vertical-proofs",
+    "press-account-claim-consumer",
+    # GDELT leaf suites own their exact import/read closure.
+    "gdelt-news-leaves",
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
+    # Actual page-query import/read closure; no unrelated fallback ownership.
+    "admin-analytics-pages",
+    # Paid Fabric source-only guidance and deterministic attribution tests are
+    # exclusively scoped; do not widen unrelated ordinary-code packing probes.
+    "meta-ceo-fabric-contracts",
+    # A1 pure product/finite QA must run on code PRs without the legacy data job.
+    "eval-os-a1",
+    # Qledger suites retain all named imports; opaque fixture roots are audited.
+    "qledger-cluster-honest-ci",
+    # F09 petroleum: native builder imports have opaque whole-root fallbacks.
+    # Keep its complete measured closure; do not widen ordinary packing probes.
+    "market-ontology-f09-petroleum-flow",
+    # R-28: a public link to an admin-only page fails before merge. Every template is
+    # walked, and naming the tree would wake the job on every template edit.
+    "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    # DR3: exact closure isolates the observation consumer; no packing ceiling change.
+    "rotation-observation-delivery",
 
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
@@ -4411,6 +4583,9 @@ CURATED_EXCLUSIVE = {
     # F04 real-Git acquisition reads three deploy scripts. Its dedicated job
     # preserves the broader self-heal owner without widening unrelated probes.
     "deploy-git-history",
+    # 2026-10-19/11-01 root-disk refills: the bounded store-maintenance job reads
+    # its script, units and the update.sh/setup.sh stanzas that self-arm them.
+    "deploy-git-store-maintenance",
     # PR #7861: Options matrix source/session/retention checks are hermetic.
     # The exclusive manifest scope retains both suites, their concrete import
     # closure, config.yml fallback and the retention-fixture wildcard. This
@@ -4418,11 +4593,13 @@ CURATED_EXCLUSIVE = {
     # the code gate, closure audit and packing ceilings remain unchanged.
     "options-matrix-code",
     "push-retry-policy",
+    "sector-cycles-page",  # measured literal closure of its one suite
     # 2026-10-14 LR T17: the measured-group-read suite is pure-synthetic; the
     # exclusive scope is its measured literal closure (no fallback smear).
     "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
+    "signal-builder-fail-closed",  # Synthetic #10094 builder/validator closure; no opaque subprocess widening.
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
@@ -4433,6 +4610,7 @@ CURATED_EXCLUSIVE = {
     "china-search-universe",
     "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "p08-synthetic-composition",  # Research-only composition: curated solver/adapter/test closure.
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -4440,6 +4618,10 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    # 2026-11-04 (#917 CI acceleration): the control-plane job split three ways so
+    # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
+    "ci-control-plane-structure",
+    "ci-control-plane-census",
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
@@ -4467,6 +4649,11 @@ CURATED_EXCLUSIVE = {
     # __init__.py pulls launch_slo_verifier -> earnings_narrative -> biocatalyst,
     # so the job's paths must cover its own import closure.
     "consumer-cyclical-economic-change",
+    # 2026-10-12 #7891 Technology ex-Semis: the registration shell loader's
+    # import_module(name) is an opaque dynamic import, so inferred scope rode the
+    # whole-tree fallback tier onto both code probes (+1 job each, fallback tier
+    # only). Curated to the measured closure plus the pending #7870 modules.
+    "technology-ex-semis-boundary",
     "options-payoff-lab-consumer",
     "options-catalyst-links",
     # 2026-09-23 Prophet US R6 wave 1 (#7823). `prophet-us-b4-prereg-registration` is
@@ -4478,6 +4665,8 @@ CURATED_EXCLUSIVE = {
     "earnings-economic-dossier",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",
+    # 2026-09-30: CDV-1 Task 4 owns the v2 private generation.
+    "earnings-economic-private-publication",
     # 2026-09-24 GMI Mining M1 integration T01' (R-MIN-02/R-MIN-26). `mining-economic-dossier`
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
@@ -4541,7 +4730,19 @@ CURATED_EXCLUSIVE = {
     # public documents test_public_pages_fetch_nothing_under_paid_prefixes
     # actually reads; the other two probes are unmoved.
     "regwall-boundary",
+    # 2026-11-01, R-28. Same class as regwall-boundary: the static serving
+    # boundary moved onto the merge gate. Curated for coverage, and so that a
+    # bake does not wake it on an unrelated pull request.
+    "site-access-boundary",
     "quant-q11-episode-duration",  # Q11 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    # 2026-09-24 Semiconductor B (#7870): the twelve B suites on the merge gate;
+    # the transport suites import app.main, whose closure smears whole-tree
+    # scan roots onto all three packing probes (+1 job each) when inferred.
+    "semiconductor-b-boundary",
+    # PR-S shared theme-research shell. Exclusive so the composer's
+    # company-intelligence / theme-graph fallback reads are not declared
+    # and the packing probes stay unselected. Paths are the owned closure.
+    "theme-research-shared-shell",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
@@ -4669,6 +4870,11 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-11-05 (S1, Mastermind #917 cp13): the `gate: data` sibling that runs
+    # the copy-law scanners over the NIGHTLY-RENDERED suite pages (marked
+    # `data_gate`), so a nightly commit can never red the source merge gate.
+    # Exclusive with the parent's declaration; never selected on the code gate.
+    "market-os-macro-suite-pages-data",
     # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
     # frozen Jinja/browser recipes through subprocess boundaries. Inference
     # therefore conservatively added scripts/**, site/**, and templates/**,
@@ -4693,6 +4899,7 @@ CURATED_EXCLUSIVE = {
     "covenant-headroom",
     "cycle-consistency",
     "ftr-tape-surfaces",
+    "sector-basket-links",  # renders two template blocks alone, no bake input
     "market-ontology-f09-usgs-mcs",
     "research-screener",
     "sanctions-map-page",
@@ -4760,14 +4967,38 @@ CURATED_EXCLUSIVE = {
     # Pure International browser helpers have a closed source/test dependency
     # set; unrelated page changes must not select their Node-only PR check.
     "international-workspace-pure-js",
+    # IM12 E3 correction receipts: superseding revision receipt, dependent-result
+    # invalidation and saved-evidence preservation. scope: exclusive pins the
+    # measured import closure of the correction contract suite (no config read).
+    "international-global-correction",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # IM18 watch-condition lifecycle contract: the pure evaluator consumes
+    # IM12 observation and IM15 dislocation outputs; the curated scope pins
+    # its measured engine import closure (universe/theme-graph rights ride
+    # the dislocation import; no config file is read by the suite).
+    "international-global-watch",
     # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
     "international-global-universe",
+    # IM18 replay contract: point-in-time as-known-at replay over the IM12
+    # observation and IM15 dislocation chains; the exclusive scope pins the
+    # measured suite closure (engine/test import chain plus configs and inits).
+    "international-global-replay",
+    # IM15 dislocation explorer UI (W3U): pytest + Chromium suites over the
+    # merged engine and the W2 seam; exact measured closure, no inference widening.
+    "international-dislocation-explorer",
     # IM17 transmission-evidence contract: edges, qualified transmission
     # events and the US relevance ordering; the frozen contagion models are
     # read by the test alone, so its curated scope must pin their closure.
     "international-transmission-evidence",
+    # IM17 W4B: the R14 §10.4 Transmission board view (presenter + template
+    # + CSS through the test-only builder); its curated scope pins the
+    # measured render-path import closure, so it must be pinned here too.
+    "international-transmission-board",
+    # INTL-GS §14 closures: graph-boundary label rule and the cross-surface
+    # observation-identity test; the curated scope pins the two suites'
+    # measured import/read closure.
+    "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
@@ -4876,6 +5107,11 @@ CURATED_EXCLUSIVE = {
     # build_free_content / plan_book packing probes. scope: exclusive pins it
     # to its measured closure, so it must be listed here.
     "gmi-classification-axes",
+    # 2026-10-22 GMI explorer (W3): the identity reader names
+    # scripts/build_security_master.py by path, so inference smeared the
+    # gmi-explorer job onto the templates/index.html, build_free_content and
+    # plan_book packing probes. scope: exclusive pins it to its measured closure.
+    "gmi-explorer",
     # GovRev dependency changes must not select GR3 on unrelated page templates.
     "group-linked-outsiders",
     "govrev-program-ontology",
@@ -4916,12 +5152,23 @@ CURATED_EXCLUSIVE = {
     # stage-1b suites), so inference never unions the research/ fallback roots
     # onto the packing probes.
     "grey-deer-pullback-stage1",
+    # 2026-10-12 Robotics re-land (#7908 after #8013, stacked on #7870).
+    # One exclusive gate:code job for the eight Robotics suites. The declaration
+    # is their measured import closure (including the #7870 shared shell);
+    # exclusivity keeps that closure off the packing probes. The
+    # cover-their-own-import-closure test keeps the list honest.
+    "robotics-theme-research",
     # 2026-10-13 Grey Deer W5 (#9128): the pullback forward-lane suites import
     # the frozen stage-1 runner, whose lazy risk_radar closure made inference
     # select the job on the plan_book (130 > 129) and build_free_content
     # (135 > 134 jobs, 5,604 > 5,600 s) probes. scope: exclusive pins it to its
     # measured 63-path closure; closure findings (); ceilings stay fixed.
     "grey-deer-pullback-forward",
+    # 2026-10-31 Grey Deer EW-P3 (amends #10219, EW-P3.T1): the forecast reader
+    # STUB suite is hermetic (tmp_path only) and imports stdlib, lib.nyse_calendar
+    # and engine.trial_ledger. scope: exclusive pins it to that declared 9-path
+    # closure (prereg section 11.4); ceilings stay fixed.
+    "grey-deer-ew-forecast-reader",
     # 2026-10-13 FIF X2-n saved-research notifications (seat R3): the three
     # hermetic suites reach engine.fundamental_forensics and the research-vault
     # store, so inference unioned the whole-tree fallback roots and selected the
@@ -4951,6 +5198,11 @@ CURATED_EXCLUSIVE = {
     # pins each to its measured static closure plus its fixture globs.
     "research-price-panel",
     "washout-turn-organ",
+    # 2026-10-21 W33-LF: the research record-claims render suites. As a step in
+    # washout-turn-organ they moved the index-template (5,843 > 5,837) and
+    # build_free_content (5,816 > 5,810) packing probes; its own exclusive job
+    # keeps the templates, the builder closure and the suites; ceilings stay fixed.
+    "research-record-claims",
     # 2026-10-14: rotation AST/render fallback curation; retain full static
     # closure plus observed runtime inputs. Assertions and probe limits stay fixed.
     "leadership-rotation-contract",
@@ -5003,6 +5255,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-21 W33-LD: the regime-history reader repairs (US basis, HK segment
+    # in force, Canada today marker, China 120d analogs). Its own exclusive job
+    # pins the four page templates, build_hk's static import closure and the
+    # suites instead of adding test paths to a shared job; ceilings stay fixed.
+    "regime-history-surfaces",
     # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
     # template and its six includes with jinja2 and the new pure helper alone. As an
     # ordinary job its inferred scope would ride the shared template packing probes;
@@ -5041,6 +5298,50 @@ CURATED_EXCLUSIVE = {
     "options-r1-rotation-relative-trend",
     # Options R1 W2B: exact import/read closure of the holdings-coverage suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
     "options-r1-sector-holdings-coverage",
+    # Synthetic OHLC delivery has an exact import/read closure; preserve every
+    # packing ceiling and keep this new code gate off unrelated render probes.
+    "ohlc-origin-delivery",
+    # Pure W3AR projection pins its complete import closure without selecting
+    # unrelated render probes or acquiring scientific execution authority.
+    "stock-identity-method-projection",
+    # 2026-10-10 Catalyst Loop #8678: eight focused suites have one
+    # gate:code exclusive CI home with a measured transitive source closure.
+    # Keep the curated contract aligned; do not loosen pack ceilings.
+    "catalyst-loop-integrated",
+    # AI Brief render-date countdown: an intentionally curated code-gated
+    # single-suite owner. Its explicit paths cover the static import closure
+    # and package ancestor init, without accepting unrelated render probes.
+    "aibrief-countdown-pr",
+    # 2026-11-01 GMI relationships (ORCH-REL M1/M2/M3): the eleven relationship
+    # suites get one gate:code exclusive home with their measured import/read
+    # closure (package v2, edges, SEC source packets, m2 extraction samples).
+    # Registered from the lanes' ci_registration_proposal*.yml; no pack
+    # ceiling is loosened and no unrelated render probe is selected.
+    "company-intelligence-relationships",
+    # EW-P4 descriptive UI (Grey Deer early-warning, EW-P5 FU2 split from
+    # dashboard-render-contract): the suite's import closure IS the dashboard render
+    # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
+    # suite reads by name; the curated-closure guard audits it like its parent.
+    "ew-p4-descriptive-ui",
+    # 2026-11-01 C19 Atom-clock guard: the 13F census sec_sources and rolling
+    # suites leave config/unrun_test_baseline.json for one gate:code exclusive
+    # home. paths: is the measured import/read closure plus ancestor inits;
+    # ceilings stay fixed.
+    "institutional-13f-ingestion-contracts",
+    # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
+    # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
+    # inference smeared this job's scan roots onto templates/index.html (138
+    # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
+    "global-liquidity-transmission",
+    # Options scenario contract: keep the ordinary code job explicitly scoped.
+    "options-scenario-contract",
+    # xguerrilla admission chain: one gate:code exclusive home for the
+    # tools/xguerrilla admission suite, selected only by edits to its own
+    # package, so the three packing probes keep their base aggregates
+    # with no ceiling moved.
+    "xguerrilla-admission",
 }
 
 
@@ -5058,6 +5359,440 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+@pytest.mark.parametrize("dependency", [
+    "tools/xguerrilla/__init__.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/net.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/persona.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/ADMISSION.md",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/tests/test_admission.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/future_package_helper.py",  # ci-trigger-closure: data
+    "tools/xguerrilla/internal/future_dependency.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_keeps_collection_and_future_dependencies(
+    dependency: str,
+) -> None:
+    """Conftest's tools/ alias must not hide package-local input changes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_admission.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_admission_scope_does_not_select_packing_probes(probe: str) -> None:
+    """Conservative package ownership preserves the three packing shapes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-admission")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
+
+
+def test_xguerrilla_registry_scope_keeps_collection_and_future_dependencies() -> None:
+    """Collection's tools/ alias cannot silently omit package dependencies."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    assert job.exclusive
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in (
+        "tools/xguerrilla/registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/cli.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/test_registry.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/tests/conftest.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/profiles.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/runtime_boundary.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/validators.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/drivers/base.py",  # ci-trigger-closure: data
+        "tools/xguerrilla/future_dependency.py",  # ci-trigger-closure: data
+        "tools/__init__.py",  # ci-trigger-closure: data
+        "research/agentic_media/handoffs/XG_IDENTITY_REGISTRY_V1.md",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(scoped[0], [dependency]) == (dependency, "declared")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    assert "python -m pytest tools/xguerrilla/tests/test_registry.py -q" in commands
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) -> None:
+    """The dedicated code owner adds no unrelated ordinary-probe weight."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "xguerrilla-identity-registry")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
+
+
+def test_sa_w4_scope_keeps_source_context_and_runtime_inputs() -> None:
+    """The real owner keeps its imports, dynamic roots and future ledger entries."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    assert job.exclusive
+    for dependency in (
+        "tests/test_standout_review.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "engine/us_board_snapshots.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_cn.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_hk.py",  # ci-trigger-closure: data
+        "engine/pick_lab/__init__.py",  # ci-trigger-closure: data
+        "engine/marketing/__init__.py",  # ci-trigger-closure: data
+        "scripts/replay_standout_books.py",  # ci-trigger-closure: data
+        "collectors/yahoo.py",  # ci-trigger-closure: data
+        "lib/market_session.py",  # ci-trigger-closure: data
+        "research/signal_engine/confluence.py",  # ci-trigger-closure: data
+        "research/__init__.py",  # ci-trigger-closure: data
+        "config.yml",  # ci-trigger-closure: data
+        "config/standout_review.yml",  # ci-trigger-closure: data
+        "data/experiments/registry_seed.json",  # ci-trigger-closure: data
+        "site/qledger/track_record.json",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/part-000999.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/unexpected.txt",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(job, [dependency]) == (dependency, "declared")
+    selected, reason = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, reason
+
+
+_SA_W4_REGISTRY_HOOKS = {
+    "track_record": "_refresh_track_record",
+    "radar_ic": "_refresh_radar_ic",
+    "calibration_hub": "_refresh_calibration_hub",
+    "vol_shock": "_refresh_vol_shock",
+    "parquet_ledger": "_refresh_parquet_ledger",
+    "qledger_promotion": "_refresh_qledger_promotion",
+    "cortex_evaluator": "_refresh_cortex_evaluator",
+}
+
+
+def _sa_w4_registry_input_paths(hook: str, row: dict, data_root: str) -> list[str]:
+    """Path selectors bound to the source expressions below; no artifact I/O."""
+    if hook not in _SA_W4_REGISTRY_HOOKS:
+        return []
+    paths = []
+    storage, track = row.get("storage"), row.get("track_json")
+    if hook in {"track_record", "vol_shock"}:
+        if isinstance(storage, str) and Path(storage).suffix == ".jsonl":
+            paths.append(storage)
+    if hook == "track_record":
+        if isinstance(track, str) and track:
+            paths.append(track)
+    elif hook == "radar_ic":
+        paths.append(track or "data/radar/radar_ic.json")  # ci-trigger-closure: data
+    elif hook == "calibration_hub":
+        selected = track or storage
+        if selected:
+            paths.append(selected)
+    elif hook == "vol_shock":
+        paths.append(data_root + "/vol_shock/log.jsonl")
+    elif hook == "parquet_ledger":
+        selected = str(track or storage or "").strip()
+        if selected.endswith(".parquet"):
+            paths.append(selected)
+    elif hook == "qledger_promotion":
+        paths.append("site/qledger/track_record.json")  # ci-trigger-closure: data
+    elif hook == "cortex_evaluator" and row.get("id"):
+        paths.append(data_root + "/neuralweb/machine_registry.jsonl")
+    return paths
+
+
+def _sa_w4_assert_paths_owned(job, paths) -> None:
+    for raw in paths:
+        assert isinstance(raw, str) and raw and "\\" not in raw, raw
+        path = posixpath.normpath(raw)
+        assert not posixpath.isabs(path) and path != ".." and not path.startswith("../"), raw
+        assert PACK._job_diff_match(job, [path]), (raw, path, job.paths)
+
+
+def _sa_w4_assert_registry_selectors(registry_source: str) -> str:
+    """Bind the ownership audit to the active hook and path-selector expressions."""
+    source = ast.parse(registry_source)
+    functions = {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+    assignments = {target.id: node.value for node in source.body if isinstance(node, ast.Assign)
+                   for target in node.targets if isinstance(target, ast.Name)}
+    hooks = assignments["_HOOKS"]
+    assert isinstance(hooks, ast.Dict)
+    assert {ast.literal_eval(key): value.id for key, value in zip(hooks.keys, hooks.values)} == _SA_W4_REGISTRY_HOOKS
+
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def assigned(function, name):
+        values = [node.value for node in ast.walk(function) if isinstance(node, ast.Assign)
+                  and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
+        assert len(values) == 1, name
+        return ast.dump(values[0], include_attributes=False)
+
+    root_returns = [ast.dump(node.value, include_attributes=False)
+                    for node in ast.walk(functions["_root"]) if isinstance(node, ast.Return)]
+    assert root_returns == [expression('config.ROOT')]
+    for function_name, reader, expected in (
+        ("_refresh_vol_shock", "vss.track_record", "vss.track_record()"),
+        ("_refresh_cortex_evaluator", "load_by_id", "load_by_id(hyp_id)"),
+    ):
+        calls = [ast.dump(node, include_attributes=False)
+                 for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and ast.dump(node.func, include_attributes=False) == expression(reader)]
+        assert calls == [expression(expected)], ("delegated reader", function_name)
+
+    expected_reads = {
+        "track_record": [("_jsonl_dates", 'e.get("storage") or ""'),
+                         ("_read_json", 'e.get("track_json") or ""')],
+        "radar_ic": [("_read_json", 'e.get("track_json") or "data/radar/radar_ic.json"')],
+        "calibration_hub": [("_read_json", 'e.get("track_json") or e.get("storage") or ""')],
+        "vol_shock": [("_jsonl_dates", 'e.get("storage") or ""')],
+        "parquet_ledger": [], "qledger_promotion": [("_read_json", '"site/qledger/track_record.json"')],
+        "cortex_evaluator": [],
+    }
+    for hook, function_name in _SA_W4_REGISTRY_HOOKS.items():
+        calls = [node for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and isinstance(node.func, ast.Name) and node.func.id in {"_read_json", "_jsonl_dates"}]
+        assert all(len(node.args) == 1 for node in calls), hook
+        actual = sorted((node.func.id, ast.dump(node.args[0], include_attributes=False)) for node in calls)
+        assert actual == sorted((reader, expression(selector)) for reader, selector in expected_reads[hook]), hook
+
+    jsonl = functions["_jsonl_dates"]
+    assert assigned(jsonl, "p") == expression('_root() / rel if rel else None')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not p or not p.exists() or p.suffix != ".jsonl"') for node in jsonl.body)
+    read_json = functions["_read_json"]
+    reads = [ast.dump(node.func.value, include_attributes=False) for node in ast.walk(read_json)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+             and node.func.attr in {"read_text", "read_bytes", "open"}]
+    assert reads == [expression('_root() / rel')]
+    parquet = functions["_refresh_parquet_ledger"]
+    assert assigned(parquet, "rel") == expression('str(e.get("track_json") or e.get("storage") or "").strip()')
+    assert assigned(parquet, "p") == expression('_root() / rel')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not rel.endswith(".parquet") or not p.exists()') for node in parquet.body)
+    parquet_reads = [node for node in ast.walk(parquet) if isinstance(node, ast.Call)
+                     and isinstance(node.func, ast.Attribute) and node.func.attr == "read_parquet"]
+    assert parquet_reads and all(node.args and ast.dump(node.args[0], include_attributes=False) ==
+                                 expression('p') for node in parquet_reads)
+
+    machine = functions["_load_machine_registry_entries"]
+    assert assigned(machine, "p") == expression('_root() / "data" / "neuralweb" / "machine_registry.jsonl"')
+    injected_hooks = [ast.literal_eval(value) for node in ast.walk(machine) if isinstance(node, ast.Dict)
+                      for key, value in zip(node.keys, node.values)
+                      if isinstance(key, ast.Constant) and key.value == "hook"]
+    assert injected_hooks == ["cortex_evaluator"]
+    seed_path = ast.literal_eval(assignments["SEED"])
+    assert seed_path == "data/experiments/registry_seed.json"
+    return seed_path
+
+
+def test_sa_w4_scope_covers_active_registry_read_paths() -> None:
+    """Audit pinned selectors and committed metadata without opening their targets."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    seed_path = _sa_w4_assert_registry_selectors(
+        (ROOT / "engine/experiments_registry.py").read_text())
+    # Read the seed from the committed blob, not the working tree: the audit
+    # must hold in every checkout profile. integration-baseline runs a sparse
+    # cone that omits data/ by design, so a working-tree read fails the whole
+    # main baseline there (1/1146, run 42945581053) even though the metadata
+    # is committed — this also honors the docstring's "without opening their
+    # targets": the blob IS the committed metadata, independent of any target
+    # checkout. (main-red-repair 2026-11-11, root-caused on #10571.)
+    seed = json.loads(subprocess.run(
+        ["git", "show", "HEAD:data/experiments/registry_seed.json"],
+        cwd=ROOT, check=True, capture_output=True, text=True).stdout)
+    config = yaml.safe_load((ROOT / "config.yml").read_text())
+    data_root = config["storage"]["data_dir"]
+    paths = [seed_path, "data/neuralweb/machine_registry.jsonl",  # ci-trigger-closure: data
+             data_root + "/neuralweb/machine_registry.jsonl"]
+    for row in seed["experiments"]:
+        paths.extend(_sa_w4_registry_input_paths(row.get("hook") or "", row, data_root))
+    _sa_w4_assert_paths_owned(job, paths)
+
+
+@pytest.mark.parametrize("before,after", [
+    ('vss.track_record()', 'vss.track_record(path="templates/new-input.jsonl")'),  # ci-trigger-closure: data
+    ('load_by_id(hyp_id)', 'load_by_id(hyp_id, root="outside")'),
+])
+def test_sa_w4_scope_detects_redirected_delegated_readers(before, after) -> None:
+    source = (ROOT / "engine/experiments_registry.py").read_text()
+    assert source.count(before) == 1
+    with pytest.raises(AssertionError, match="delegated reader"):
+        _sa_w4_assert_registry_selectors(source.replace(before, after))
+
+
+def test_sa_w4_delegated_readers_keep_declared_default_paths() -> None:
+    """The two delegated defaults must still resolve beneath configured data/."""
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def functions(path):
+        source = ast.parse((ROOT / path).read_text())
+        return source, {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+
+    def returns(function):
+        return sorted(ast.dump(node.value, include_attributes=False)
+                      for node in ast.walk(function) if isinstance(node, ast.Return))
+
+    def calls(function, name):
+        return [ast.dump(node, include_attributes=False) for node in ast.walk(function)
+                if isinstance(node, ast.Call)
+                and ast.dump(node.func, include_attributes=False) == expression(name)]
+
+    _, vol_shock = functions("engine/vol_shock_scorecard.py")
+    assert [ast.literal_eval(node) for node in vol_shock["track_record"].args.defaults] == [None]
+    assert calls(vol_shock["track_record"], "_read_log") == [expression('_read_log(_log_path(path))')]
+    assert returns(vol_shock["_log_path"]) == sorted([
+        expression('Path(path)'), expression('config.data_dir() / "vol_shock" / "log.jsonl"')])
+
+    source, metabolism = functions("engine/neuralweb/metabolism.py")
+    assert [ast.literal_eval(node) for node in metabolism["load_by_id"].args.defaults] == [None]
+    assert calls(metabolism["load_by_id"], "_load_registry") == [expression('_load_registry(root)')]
+    assert calls(metabolism["_load_registry"], "_registry_path") == [expression('_registry_path(root)')]
+    assert returns(metabolism["_registry_path"]) == sorted([
+        expression('Path(root) / "data" / "neuralweb" / "machine_registry.jsonl"'),
+        expression('Path(_cfg.data_dir()) / "neuralweb" / "machine_registry.jsonl"'),
+        expression('_REGISTRY_FILE')])
+    fallback = [node.value for node in source.body if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "_REGISTRY_FILE"
+                        for target in node.targets)]
+    assert len(fallback) == 1
+    assert ast.dump(fallback[0], include_attributes=False) == expression(
+        'Path("data") / "neuralweb" / "machine_registry.jsonl"')
+
+
+@pytest.mark.parametrize("hook,row,expected", [
+    pytest.param("track_record", {"storage": "data/example.jsonl/"},
+                 ["data/example.jsonl/"], id="jsonl_trailing_slash"),
+    pytest.param("track_record", {"storage": "data/.jsonl"}, [], id="jsonl_dotfile_not_suffix"),
+    ("track_record", {"storage": "data/example.parquet"}, []),
+    ("track_record", {"storage": "data/example.jsonl", "track_json": "site/example.parquet"},
+     ["data/example.jsonl", "site/example.parquet"]),
+    ("radar_ic", {"storage": "outside/metadata.json"}, ["data/radar/radar_ic.json"]),
+    ("calibration_hub", {"storage": "data/fallback.json", "track_json": ""}, ["data/fallback.json"]),
+    ("parquet_ledger", {"storage": "data/fallback.parquet", "track_json": "site/wrong.json"}, []),
+    ("parquet_ledger", {"track_json": " site/example.parquet "}, ["site/example.parquet"]),
+    ("vol_shock", {"storage": "data/example.jsonl"}, ["data/example.jsonl", "data/vol_shock/log.jsonl"]),
+    ("qledger_promotion", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"},
+     ["site/qledger/track_record.json"]),
+    ("cortex_evaluator", {"id": "example", "storage": "outside/metadata.json"},
+     ["data/neuralweb/machine_registry.jsonl"]),
+    ("inactive_hook", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"}, []),
+])
+def test_sa_w4_registry_selectors_distinguish_reads_from_metadata(hook, row, expected) -> None:
+    assert _sa_w4_registry_input_paths(hook, row, "data") == expected
+
+
+@pytest.mark.parametrize("hook,key,path", [
+    ("calibration_hub", "track_json", "templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "data/../templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "../outside.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "/outside.json"),  # ci-trigger-closure: data
+    pytest.param("track_record", "storage", "data/../templates/input.jsonl/",  # ci-trigger-closure: data
+                 id="jsonl_trailing_escape"),
+])
+def test_sa_w4_registry_scope_refuses_inputs_outside_owned_roots(hook, key, path) -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    selected = _sa_w4_registry_input_paths(hook, {key: path}, "data")
+    with pytest.raises(AssertionError):
+        _sa_w4_assert_paths_owned(job, selected)
+
+
+def test_us_board_rollover_suites_remain_enrolled_on_code_prs() -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "unrun-grading-board")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    for suite in (
+        "tests/test_us_board_snapshots.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_build.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_grade.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_reader_census.py",  # ci-trigger-closure: data
+    ):
+        assert commands.count(suite) == 1, suite
+
+
+def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
+    """A data-only Neural Web job must not make an A1 code PR falsely green."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    assert "eval-os-a1" in jobs, "Eval OS acceptance needs an ordinary PR code job"
+    job = jobs["eval-os-a1"]
+    commands = "\n".join(step["run"] for step in _yaml(MANIFEST)["jobs"][job.job_id]["steps"] if "run" in step)
+    suites = (
+        "tests/test_admin_intelligence_os.py",  # ci-trigger-closure: data
+        "tests/test_admin_intelligence_os_ui.py",  # ci-trigger-closure: data
+        "tests/test_admin_server.py",  # ci-trigger-closure: data
+        "tests/test_admin_theme_tokens.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings.py",  # ci-trigger-closure: data
+        "tests/test_evidence_findings_ui.py",  # ci-trigger-closure: data
+        "tests/test_eval_os_adversarial_acceptance.py",  # ci-trigger-closure: data
+        "tests/test_response_eval.py",  # ci-trigger-closure: data
+    )
+    assert "node --version" in commands, "UI contracts must not silently skip without Node"
+    owner = _yaml(MANIFEST)["jobs"]["qledger-cluster-honest-ci"]
+    assert owner["gate"] == "code"
+    assert any("tests/test_w6_readiness_monitor.py" in step.get("run", "") for step in owner["steps"])  # ci-trigger-closure: data
+    for suite in suites:
+        assert suite in commands, suite
+    for dependency in (*suites,
+        "tests/test_qledger_control_policy.py",  # ci-trigger-closure: data
+        ".gitignore",  # ci-trigger-closure: data
+        ".github/workflows/brain-eval.yml",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_bear_steepener_2026-07-29.json",  # ci-trigger-closure: data
+        "admin/intelligence_os.py",  # ci-trigger-closure: data
+        "admin/static/index.html",  # ci-trigger-closure: data
+        "admin/static/app.js",  # ci-trigger-closure: data
+        "admin/static/styles.css",  # ci-trigger-closure: data
+        "scripts/grade_qledger.py",  # ci-trigger-closure: data
+        "engine/neuralweb/eval/benchmark_eval_os_measurement_v1.json",  # ci-trigger-closure: data
+    ):
+        assert dependency in job.paths, dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, _ = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
+
+
+def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
+    """The tuple-joined seed is a real input even when AST inference misses it."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "qledger-cluster-honest-ci")
+    for dependency in (
+        "data/china_official/phrase_book.yml",  # ci-trigger-closure: data
+        "data/qledger/control_evidence_clock_start/new-clock.json",  # ci-trigger-closure: data
+        'config.yml',  # ci-trigger-closure: data
+        'tests/conftest.py',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval0_preregistration.v1.json',  # ci-trigger-closure: data
+        'research/alpha_intelligence/expectation_market_dynamics/eval1_preregistration.v1.json',  # ci-trigger-closure: data
+        "engine/qledger_validity.py",  # ci-trigger-closure: data
+        "scripts/check_qledger_metric_validity.py",  # ci-trigger-closure: data
+        "tests/test_qledger_validity.py",  # ci-trigger-closure: data
+    ):
+        assert PACK._job_diff_match(job, [dependency]), dependency
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
+    assert not selected, reason
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
@@ -5253,10 +5988,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # selected weight-seconds), plus one pack ceiling for every probe. The history of
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
+# PR #6651 CI-owner ruling: fund only the existing A1 planning-weight excess.
+# A1 weighs19; existing margin4 leaves15: 5858 -> 5873, no padding.
+# Minus-A1 population is a composed-source counterfactual, not a main baseline.
+# https://github.com/mastermindx-market-intelligence/macro/pull/6651#issuecomment-6377308165
+# Preserve protected GovRev memo coverage (+2 in its existing selected job).
+# App-parent bridge coverage retains its existing Node command in data-base-shim.
+# Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
+# all ten packs. Protected ceilings already cover this tree: no extra funding.
+# Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_884),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 136, 5_856),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 130, 5_634),
+    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5264,6 +6008,508 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-10 (PR #10571, current-main preserving composition):
+    Receiver cfd3834d retains its landed F09, ownership-ledger,
+    lifecycle coverage and qualified Playwright dependency. Keep all
+    original feature postimages and the accepted unrun-grading-board coverage.
+    The unchanged owner estimator measures 40 -> 48; apply its
+    original contribution to all three established probes, yielding
+    5966/5987/5724 from current5958/5979/5716. Keep137/138/131jobs,
+    ten packs, assertions, selectors, commands, timeouts and all
+    admission limits. Preserve both entire provenance histories.
+    This is owner-estimator execution and source conservation, not
+    a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
+    both contributions share data-base-shim. Keep all original command bytes,
+    the landed F09 token and both complete histories. Canonical metadata loads
+    current main at 6 commands/11 test tokens/627 joined characters, weight28;
+    the union is 7/15/814, weight38. Crossing the 800-character bucket adds one
+    unit to the original measured lifecycle+9, so the current marginal is+10.
+    Fund 5958/5979/5716 from 5948/5969/5706; retain 137/138/131 jobs, ten packs
+    and all selectors/assertions/admission limits. The old +9 measurements
+    below stay historical. This is source accounting, not a new timing or
+    whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #10226, reconcile the actual #10192 landing):
+    #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
+    Receiving main9a13c64 already contains both accepted filer postimages,
+    its single test enrollment and its +2 allowance. Retain them unchanged.
+    Only the accepted ledger step remains: commands5->6, test paths10->11,
+    joined characters576->627, owner weight25->28. Add only ledger+3:
+    5945/5966/5703->5948/5969/5706. Preserve400 owners,399 other blocks,
+    jobs137/138/131,ten packs and all current controls/history. The two
+    original #10226 paragraphs below remain historical, not new funding.
+    This is source accounting, not a new planner or timing measurement;
+    the successor still requires its own natural CI qualification.
+
+    2026-11-08 (PR #10226, second current-main conflict composition):
+    retain the accepted four filer/ledger objects and the original two
+    data-base-shim command enrollments. This owner is still byte-identical
+    to its prior base on main8251e41; PR10192 remains unmerged, so its own
+    filer+2 and ledger+3 union is still +5, counted once. Current main has
+    separately landed #10180 B17 coverage and its measured +3 contribution.
+    Preserve that accepted source and complete dated note; compose +5 onto
+    current5923/5944/5681 to yield5928/5949/5686. Keep jobs137/138/131,
+    ten packs, all commands/selectors/timeouts and runtime/admission limits.
+    The prior H6b52c699 had own CLEAR120 jobs/380 semantic proof steps;
+    that proof does not certify this new combined source. Natural new-head
+    CI must qualify it. This is exact source arithmetic, not a new full-tree
+    planner or timing measurement. Both historical paragraphs remain below.
+    Recheck actual10192 settlement before publication; do not double fund it.
+
+    2026-11-08 (PR #10226, filer/ledger current-owner accounting):
+    retain all four accepted filer/ledger source and test postimages.
+    Current main16b9445 has neither component command enrollment;
+    PR10192 is still unmerged at the composition's dependency read.
+    Removing the two accepted command additions from H's data-base-shim
+    reproduces the entire current owner. Preserve395 owners and394
+    other blocks. The existing estimator counts5->6 run commands,
+    9->11 test paths,541->627 joined command characters, weight23->28:
+    ledger+3 and filer+2, total+5 for the same selected owner.
+    Compose only this carrier's union onto5920/5941/5678, yielding
+    5925/5946/5683. Keep jobs137/138/131,ten packs and every current
+    selector, dependency, runtime and admission control. Original H
+    packing is outside its five-path diff, so no H note is transplanted.
+    All current history and landed7352/10735 accounting remain.
+    This is static source arithmetic, not a new paired planner or
+    current-tree failure claim. Natural own CI must qualify the result.
+    If10192 actually lands before publication, retain that new baseline
+    and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #6867, preserving current F09 receiver): retain the
+    landed beneficial-ownership argument in the existing Shared Shell step
+    and append the original lifecycle enrollment after its Node handshake.
+    Current owner weight 25 -> 34 keeps exactly the original +9 contribution;
+    carry ceilings 5945/5966/5703 -> 5954/5975/5712, retaining job ceilings
+    137/138/131, ten packs and every assertion, selector and runtime limit.
+    Both original lifecycle history entries and all main provenance remain
+    at their existing anchors. This is source-derived accounting, not a new
+    paired planner measurement; natural successor CI must qualify this head.
+
+    F09 C3 current-main conflict repair (2026-11-09): retain the complete
+    historical paired measurement below and current main's independent history.
+    The data-base-shim preimage and current weight estimator still establish
+    only +2 from the accepted suite token, with no new selected owner. Apply
+    that contribution to 5943/5964/5701 -> 5945/5966/5703; keep 137/138/131 jobs
+    and ten packs. This is source accounting, not a new planner execution.
+
+    2026-11-08 (PR #10192, accepted F09 suite accounting on current main):
+    own contract-delta run42241879921/job127973971361 compared exact base
+    4b2a019bf31317b994c6f07329565a62c38f7670 with head
+    e287b58381b87d1d1495b3c6f77a194e3eb7d582: index5912->5914,
+    free-content5927->5929, Prophet5668->5670, unchanged selected jobs and
+    ten packs, three introduced findings and zero inherited. Its existing
+    data-base-shim owner adds only tests/test_beneficial_ownership.py to the
+    SharedShell command. Current catalog4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a
+    retains that exact base owner; current runner computes23->25 from five
+    commands and9->10 test-path tokens in the same text-size bucket.
+    Compose only this measured +2 coverage cost onto current ceilings:
+    index5920->5922, free-content5941->5943, Prophet5678->5680.
+    Mainc9e06966920fa3b4b46341d344f90978f1fcd225 has actually landed #7352;
+    its independent +2 free-content benchmark allowance and history are
+    retained. The previous F09 candidate03f5407 conflicted with that landing;
+    this composition includes both actual source contributions once. Keep
+    selected-job ceilings137/138/131, ten packs, all assertions, selectors,
+    suites, runtime deadlines and existing provenance. No unmerged sibling
+    funding. This is source-composition arithmetic, not a new planner run;
+    old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
+
+    2026-11-09 (#6867 preserving conflict repair on main 15364780e3f3):
+    keep all 400 accepted owners and the registry/admission test additions.
+    The full data-base-shim owner preimage and runner 47164044 are unchanged
+    from the qualified 73efd50f receiver. Its original lifecycle enrollment
+    still adds exactly nine estimator units; retain the 5952/5973/5710
+    ceilings below and add no second allowance for isolated admission.
+    Preserve the nine accepted product/test/research postimages, all prior
+    provenance, job ceilings137/138/131, ten packs and admission limits.
+    This is static preserving composition, not a new full-tree measurement;
+    natural current-head CI must qualify the integrated source.
+
+    2026-11-09 (PR #10870, dependency-coverage correction): the separate
+    admission job conservatively owns tools/xguerrilla/** because pytest
+    conftest's tools/ package alias escapes static closure resolution. Its
+    existing collection dependencies and future package-local helpers select
+    the suite; all three packing probes remain outside that package. Every
+    command and all packing ceilings below remain unchanged.
+
+    2026-11-09 (PR #10870, one synthetic admission suite): natural contract
+    run 42536598947 / job 128902154215 measured head
+    bad01ea0772cce5209ae05cd0ad7f59341a293d9 against base
+    aec7f387badcdf69c9a947fafbc73b4c68470c7d on tested merge
+    4ccd84d857831ddceaa5d3aa887e9b24f3956f1f. Appending test_admission.py to
+    the existing marketing-social-publisher pytest command (five run commands,
+    test references 28->29, command characters 1248->1289, the same
+    800-character bucket) moved its estimator weight 62->64 and the three
+    probe weights to 5945/5966/5703, exactly +2 over their ceilings, with no
+    newly selected job and no job-count or pack-count breach. The gate's own
+    remedy was taken instead of funding: the append is reverted byte-for-byte
+    and the suite is curated into its own gate:code job `xguerrilla-admission`
+    (`scope: exclusive`, `paths:` = the suite's import closure under
+    tools/xguerrilla/), which none of the three probes selects. Probe
+    aggregates return to their base values and no ceiling moves. Job ceilings
+    137/138/131, the ten-pack bound, selectors, enrollment, assertions,
+    timeouts and admission/concurrency controls stay. This is measured planner
+    accounting, not an elapsed-time claim; natural successor CI must qualify
+    the repaired source.
+
+    2026-11-09 (PR #10571, snapshot base/parts readers, composed on accepted
+    main 071ed19f5ce87927f078f94f3e126c24d8a0307e; code/catalog unchanged
+    from 0c9d6da89853c532701a4547b98fed21cf429237): original contract run
+    41603010215 / job125805987737 measured c77b6e49 against b48e4e15:
+    index 137/5909 -> 138/5921, free 137/5924 -> 137/5932 and
+    Prophet 131/5665 -> 131/5673, all ten packs. The new homepage entrant
+    was SA-W4's opaque traversal fallback. Its complete conservative source,
+    pytest and runtime-input declaration now excludes that unowned template;
+    engine/scripts probes remain selected. Keep all four complete rollover
+    suites in the existing broad unrun-grading-board owner.
+
+    Current owner source accounting is 40 -> 48: three run commands remain
+    three; 18 explicit test-file arguments become 22; folded command text
+    grows from 836 to 1007 characters, retaining the same //800 contribution.
+    Compose only that intentional +8 onto current 5943/5964/5701:
+    expected weight ceilings 5951/5972/5709. Job ceilings 137/138/131 and
+    ten packs stay fixed. This is deterministic source-weight composition,
+    not a new full-tree or elapsed-time measurement. Natural exact-successor
+    CI must qualify actual selection, closure, weight and packs; no extra
+    entrant or unexplained increase is funded. The historical replay UNKNOWN
+    remains fenced. Preserve every earlier provenance paragraph below.
+
+    2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
+    natural contract job 128831388767 measured head
+    f218bb91b29683dd662eb573127620aae9e2c9d6 against base
+    cc44807949756df7b2359cb2342bf89b580d863f on tested merge
+    eebf82d4e21638dda150cbb8fda0b5a923467fba (the exact head tree).
+    The existing CODE data-base-shim owner gained one intended pytest step
+    for lifecycle JS, timing lifecycle, stance and TestAppendLedger.
+    Actual probes were index137/5943->5952, free137/5964->5973 and
+    Prophet131/5701->5710, all ten packs and no newly selected jobs.
+    Fund exactly the measured +9 per probe. Preserve job ceilings137/138/131,
+    ten packs, every existing suite/assertion, owner classification,
+    selectors, dependencies, timeouts and admission/concurrency controls.
+    This is measured planner weight, not an execution-time estimate.
+    All earlier landed contributions and provenance remain below.
+
+    2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
+    current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
+    contract run 42423716907 / job 128557542513 measured exact head
+    7921a9c1a6feedcf5209590b7c02012728ce7eec against base
+    b626135f8987ee724cdb7e0c639734835a4afe67 on tested merge
+    b095e1574342f5909d7ac9c10ae82fbc1d79dd1f. The existing
+    marketing-social-publisher command intentionally gained ten synthetic
+    suites: +20 estimator units, no new run step or newly selected job.
+    The measured shapes were index137/5914->5934, free137/5933->5953 and
+    Prophet131/5672->5692, all ten packs. Existing suites remain enrolled.
+
+    Compose this exact +20 onto the ceilings current main carries after
+    #7352's accepted +2 and #10180's B-17 +3, 5923/5944/5681
+    (both accepted compositions included): 5943/5964/5701, preserving every earlier provenance paragraph below,
+    including that +3 composition. The current marketing owner block is
+    byte-identical to the measured base before this lane's enrollment. All
+    current sibling jobs are preserved. Keep job ceilings137/138/131, ten
+    packs, assertions, selectors, commands, packages, timeouts and
+    admission/concurrency controls. This is arithmetic composition of
+    measured planner weights, not a new full-tree measurement or
+    execution-time claim. Natural successor CI must qualify the newly
+    composed tree; no padding is added.
+
+    2026-11-08 (PR #10180, measured B-17 enrollment integration):
+    Fixed current c91d58b2413d plus the five unchanged recovery objects
+    preserves all 395 owners. Native paired production measurements on
+    the SAME exact candidate source universe compare only the existing
+    manifest and the accepted nine-line B-17 enrollment. The full path
+    inventory and all required source bytes are bound to that candidate.
+    Prophet Lab weight is 64 before and 67 after; it is already selected
+    by all three probes. Every selected job ID is unchanged, with no
+    entrants or exits. Index is 137 jobs, weight 5920 to 5923; free-content
+    is 137 jobs, weight 5941 to 5944; plan-book is 131 jobs, 5678 to 5681.
+    All six measured plans retain ten packs. Fund precisely those three
+    measured weight units per probe, preserving job caps 137, 138, 131,
+    the ten-pack ceiling, every command, selector and runtime limit.
+    This is an actual paired planning result, not a runtime or full-CI
+    result. It preserves the accepted #7352 contribution and imports no
+    unmerged sibling funding. Native receipt18660 ended at06:57:59 UTC;
+    proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
+    Source: PR10180 issuecomment6718493720. Original historical and
+    scientific limitations remain; natural CI must qualify publication.
+
+    2026-11-08 (PR #7352, current-main shared-CI conflict repair):
+    preserve the accepted research-intelligence model benchmark source and its
+    existing research-vault enrollment. Current mainec26dac8 retains the
+    exact research-vault preimage from incorporated base0e48e731791f.
+    Restore only this carrier's 3 paths and one full suite argument;
+    all393 current owners and the other392 blocks stay unchanged.
+    Its exclusive owner keeps three commands, with43->44 test tokens
+    and2049->2095 characters, so the unchanged estimator is91->93.
+    Only free-content selects this owner: carry its accepted +2 from
+    current5939->5941, retaining index5920/Prophet5678, jobs137/138/131,
+    ten packs, every command/selector/timeout and admission limit.
+    Preserve landed #7694 accounting/provenance and all #10752 compactor
+    tests. No unmerged sibling funding or old runner is imported.
+    This is static source arithmetic, not a new whole-tree selected-set,
+    planner, pytest or elapsed-time result. Natural new-head CI must
+    qualify the actual composition. Original scope/effect fences remain.
+    Source: PR7352 issuecomment6711191891; dated evidence follows.
+
+    2026-11-07 second conflict composition for Macro #7352, main0e48e731:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged benchmark
+    source's previously measured two free-content units:5933->5935.
+    This is arithmetic composition, not a new planner or runtime measure.
+    No #7350/#7385 sibling allowance is imported. Keep all job-count
+    ceilings, ten-pack bounds, selectors, suites, timeouts and admission
+    limits. Preceding90f8 passed its own natural42395289016 proof; that
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7352 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 current-main composition for Macro #7352: retain the dated
+    November 6 benchmark-only paired measurement below. Main already includes
+    #8899's independently measured free-content contribution. Compose this
+    benchmark's own +2 only on that current 5,929 ceiling, yielding 5,931;
+    index 5,912 and Prophet 5,670 remain unchanged. This arithmetic composition
+    is not a new paired execution measurement. Natural current-head CI must
+    validate it. No unmerged #7285, #7320, #7327, #7350 or #7385 allowance is
+    imported; every existing job/count/pack/control limit stays unchanged.
+
+    2026-11-06 Macro #7352 offline grounded-extraction benchmark: the new
+    tests/test_research_intelligence_benchmark.py is enrolled ONCE in the
+    incumbent research-vault CODE job's existing pytest invocation — its
+    incumbent owner — and that same job's curated scope is widened by the
+    three new paths its own command now reads (the manifest fails to load
+    without them; see _scope_coverage_findings). Native paired measurement on
+    2026-11-06, base 0bb81c727ada4f09814afcf587238d089714109e against the
+    candidate working tree, with this same run_ci_pack blob and
+    scripts/check_contract_delta.py --base 0bb81c72:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,929 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 weight / 10 packs
+
+    Identical selected job IDs on both sides — newly selected: none, no
+    entrant and no exit. The sole definition delta is the incumbent
+    research-vault job's own estimated weight 91 -> 93, from the one added
+    `tests/test_` reference inside its EXISTING pytest command; that job is
+    already selected by the free-content probe, so the probe's aggregate
+    moves by exactly +2. Re-base only that one weight ceiling, to its
+    measured 5,929, with no padding. The free-content job-count ceiling
+    (138), the pack bound (10), the other two weight ceilings, every
+    selector and every suite stay unchanged. These are planner estimates,
+    not measured execution times.
+
+    2026-11-08 (PR #7694, current-main content-conflict composition):
+    preserve the accepted full Immune-suite enrollment below together with
+    current main cef4e3797c186d6da7adbaa9da450ca790b00f8b's landed QTUM
+    parser coverage and Options scenario owner registration. Current catalog
+    1d0e64e9304f080d22946aa78466d4dbe479b769 retains the exact original
+    metab-throttle-ux base block; restore only its accepted fourth test step.
+    All 393 owner IDs and every unrelated command remain unchanged.
+    Compose the independently measured +3 planning-weight contribution onto
+    current ceilings: index 5917 -> 5920, free-content 5936 -> 5939,
+    Prophet 5675 -> 5678. Keep job ceilings 137 / 138 / 131, ten packs,
+    every assertion, selector, timeout, suite and admission limit. This is
+    static composition arithmetic, not a new planner or pytest execution.
+    No unmerged sibling contribution is funded; new natural CI must qualify.
+
+    PR7694 (2026-11-07): its own hosted contract-delta run42402141866,
+    job128492021418, measured base33f418baa9ee552260c835ab200c09abce0c24b8
+    against head762c1101612903a7f33b6eba47a40caf104e1915. Adding the full
+    Immune suite as the fourth step of the existing metab-throttle-ux CODE
+    owner increases each already-selected probe by exactly three planning
+    weight units: index137/5914->5917, free-content137/5933->5936, and
+    Prophet131/5672->5675. Selected job identities and ten-pack counts are
+    unchanged; contract-delta reported newly selected: none on all probes.
+    Fund only this measured coverage increment. Preserve all job-count
+    ceilings, pack bounds, selectors, suites, timeouts and admission limits,
+    including the prior accepted GSC and gateway histories below. These
+    are planning weights, not elapsed-runtime measurements. No unmerged
+    sibling funding is included; successor natural CI remains required.
+
+    2026-11-07 (PR #8869, current-main conflict composition): preserve the
+    independently accepted QTUM enrollment increment below while retaining
+    current main abab066981e46860b1be51dcb05883aed1a6b5b0's later gateway and
+    GSC provenance. Current catalog bba5d6d1e73c6db56500867494c03eb3e27167bc
+    has the exact original unrun-scoring-engine base block. Restore only its
+    accepted five-line offline proof step; all 392 owner IDs remain unchanged.
+    Compose the accepted +3 planning-weight contribution into current ceilings:
+    index 5914 -> 5917, free-content 5933 -> 5936, Prophet 5672 -> 5675.
+    Keep job ceilings 137 / 138 / 131, ten packs, every assertion, selector,
+    timeout, suite and admission limit. This is source arithmetic, not a new
+    planner execution or pytest result; natural CI must qualify this new tree.
+
+    2026-11-07 (PR #8869, dormant QTUM parser enrollment): the source-preserving
+    union on receiver 4380697dcd5d was measured by the unchanged production packing
+    calculation at local inventory-binding commit ec0187a2782a / tree
+    b93594112a589dd599ab75505cb5a4f9a7a6899f. The original result was FAIL with
+    exactly three weight-only breaches. Against the accepted source-bound #8899
+    receiver component, the ordered selected job IDs are identical on every probe,
+    with no entrant or exit:
+
+        templates/index.html          137 jobs, 5,912 -> 5,915 weight, 10 packs
+        scripts/build_free_content.py 137 jobs, 5,929 -> 5,932 weight, 10 packs
+        engine/prophet/plan_book.py   131 jobs, 5,670 -> 5,673 weight, 10 packs
+
+    The sole manifest-owner change is the accepted offline QTUM suite in existing
+    unrun-scoring-engine, whose unchanged estimator rises 57 -> 60. Fund exactly
+    these three additional planning-weight units on each probe, with no padding.
+    Retain the existing job ceilings 137 / 138 / 131, ten-pack bound, all 390 owner
+    entries, all suites, selectors, declared weights, duration overrides, timeouts
+    and admission limits, including the already merged #8899 provenance coverage.
+    These are planning estimates, not measured execution times. This local
+    production calculation is not a pytest run or hosted CI result; it does not
+    replace the required checks of the containing published source.
+
+    P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
+    protected59e035e39607, preserving its gateway and prior provenance
+    histories below. Fresh canonical measurements on the actual composed
+    source are index137/5914, free-content137/5933 and Prophet131/5672,
+    all ten packs. The protected main manifest on that SAME source measures
+    5914/5931/5672 with identical selected job IDs; it is not a historical
+    main-tree baseline. Only the accepted eval-os-a1 GSC suite contributes
+    two free-content planning-weight units. Fund precisely5931->5933;
+    retain incoming index/Prophet ceilings, all job-count and pack bounds,
+    selectors, suites, timeouts and admission limits. No runtime claim.
+
+    Current-main composition (2026-11-07, PR10710): preserve the original
+    P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,
+    not a new planner run or execution-time measurement. Protected main7fdd55fe
+    carries index5912/free5929/plan-book5670, including the independent merged
+    free-content contribution. Add only this PR's own measured gateway+2 to
+    each selected probe:5914/5931/5672. Do not import unmerged sibling funding.
+    All job-count ceilings, ten-pack bounds, selectors, timeouts, suites and
+    admission limits remain unchanged; natural current-head CI must qualify
+    the composed source.
+
+    P15.T2.S3 (2026-11-04): paired manifest measurements against protected
+    355527d7d9de at candidate1184ddc9, using the same scope compiler and source
+    tree, have identical selected job IDs (no entrants/exits) for all probes:
+    index137/5912->5914, free-content137/5927->5929, plan-book131/5668->5670.
+    The sole selected-weight delta is unrun-brain-gateway108->110, from adding
+    test_options_question_widget_browser.py to its existing browser command.
+    The separate options-matrix-code39->41 does not select on these probes.
+    Fund exactly these two measured units, retaining every suite, job-count
+    ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
+    these are planning weights, not measured execution times.
+
+    P5.T9.S4 (2026-11-07): compose retained-GSC coverage with protected
+    cfdad6581bb2, preserving its provenance coverage below. Canonical
+    measurements on the actual composed source are index137/5912,
+    free-content137/5931 and Prophet131/5670, all ten packs. The protected
+    main manifest measured on that same source is 5912/5929/5670 with
+    identical selected job IDs; this is a same-source counterfactual, not
+    a historical main-tree baseline. Only eval-os-a1's already accepted
+    retained-GSC suite adds two planner-estimate units on free-content.
+    Fund exactly those two units; retain every incoming job and command,
+    job-count ceiling, ten-pack bound, selector and runtime timeout.
+
+    P5.T4.S1 (2026-11-05): candidate 51ed9ea0656bd against canonical
+    a20e6437cc8a8 appends the hermetic retained-GSC consumer suite to the
+    existing eval-os-a1 command. The shared contract census measures only
+    free-content137jobs/5927->5929/10packs, with no newly selected job.
+    Index137/5912 and Prophet131/5668 are unchanged. Account for exactly
+    those two estimator units; preserve all job-count/pack ceilings,
+    selectors, previous commands, runtime timeouts and admission controls.
+    This is a planner workload estimate, not runtime or funding authority.
+
+    PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
+    contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
+    index137jobs/5912->5912, free137jobs/5927->5929, Prophet131jobs/5668->5670,
+    all ten packs and identical selected job IDs (no entrants or exits).
+    The sole manifest delta enrolls tests/test_integrated_answer_provenance.py
+    in the existing integrated-answer-v0 owner alongside all four accepted
+    suites. Its unchanged planner estimate rises10->12 from that fifth literal
+    test path; no observed-runtime override or dependency-scope change.
+    Fund only the two additional planning-weight units on free-content and
+    Prophet. Preserve the homepage, every job-count ceiling, ten-pack bound,
+    selectors, suites, timeouts and admission limits. These are planner
+    estimates, not measured execution times.
+
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
+
+    2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
+    ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``
+    and ``site-access-boundary``. Both new jobs infer tier-gate's closure, so
+    every probe selects two more jobs while the steps only move. Canonical
+    measurement on main fc36c6c03b1f, against the same tree with the
+    pre-#10294 manifest:
+
+        templates/index.html          135 -> 137 jobs, 5,833 -> 5,835 weight
+        scripts/build_free_content.py 136 -> 138 jobs, 5,853 -> 5,855 weight
+        engine/prophet/plan_book.py   128 -> 130 jobs, 5,583 -> 5,585 weight
+
+    Ten packs each. The two split jobs are the only entrants and no job
+    leaves. Both are ``gate: data`` and ci.yml packs ``--gate code``, so an
+    ordinary code PR runs neither: no runner cost moves. Only the two
+    breached job ceilings move, to their measured values (index 136 -> 137,
+    free-content 136 -> 138). Plan-book sits exactly at its 130 ceiling and
+    stays. Weight and pack ceilings, selectors and suites stay unchanged.
+
+    2026-10-24 frozen-node canonical account reader (#10145): enroll the
+    two-test suite once in incumbent CODE billing-emails/account-preferences,
+    not DATA support-email-spine. Hosted 40073480536 measured base 5,875
+    against the stale 5,873 free-content ceiling, then head 5,877 (+2).
+    After moving to the proper owner and composing main 153fb1e318c7,
+    native measurements remain index 135/5,881, free-content 135/5,877,
+    plan-book 128/5,631, all ten packs, no new selected job. Fund the exact
+    four-unit excess (two inherited, two new); other ceilings stay unchanged.
+    Fresh main 9227e34f3a62 now owns the inherited GovRev baseline 5,875;
+    this composition retains only the two reader-test units above it: 5,877.
+
+    2026-10-14 (PR #6651, Eval OS A1): fund only the intended new
+    ``eval-os-a1`` CODE job on build_free_content.py, 134 -> 135 jobs.
+    Hosted contract-delta run 38568750084 / job 115868075914 measured
+    published 1b7916353dd4 on tested merge 7c610b6d8a77, base b4a515dcbab3:
+    eval-os-a1 is the sole entrant on that probe; no job leaves.
+    This job is already exclusive, and its builder dependency is real:
+    test_admin_server -> admin/server -> admin/press -> desk_planner ->
+    research_triage -> validators -> scripts/build_free_content._validate.
+    The other owners of the generic server/response suites are DATA-gated;
+    removing those suites would lose the required ordinary-PR proof.
+
+    On that exact tested merge, after adding the five missing A1 inputs,
+    canonical full-closure and packing measurements at 2026-10-14T14:25Z:
+
+        templates/index.html          135 jobs / 5,684 weight / 10 packs
+        scripts/build_free_content.py 135 jobs / 5,502 weight / 10 packs
+        engine/prophet/plan_book.py   129 jobs / 5,445 weight / 10 packs
+
+    A1 selects only the middle probe. Its closure is complete; the sole
+    remaining closure miss is leadership-rotation-science's inherited
+    rates input, already repaired separately on current main. Re-base only
+    the middle JOB ceiling to its exact measurement, without padding.
+    Current main 190311584167 already owns the neighboring 136/130 job
+    ceilings from the Market Memory / Leadership Rotation decision. Preserve
+    those exact protected-main values in the final integration; this
+    introduces no new baseline decision for either probe. All WEIGHT/PACK
+    ceilings, all eight A1 suites, existing job definitions and the selector
+    stay unchanged. Full source,
+    measurement and corrected advisory-review evidence lives under
+    research/evidence/eval-os-20261012/a1-ci-delta-20261014/.
+    Fresh checks of the final containing source remain mandatory.
+
+    2026-10-23 F11 selected-version composition on protected f564c087:
+    the one existing Brain invocation gains test_research_thesis_read.py.
+    Preserve canonical job/pack ceilings, selectors and all measurement history;
+    fund only its previously qualified two estimator units per probe.
 
     2026-10-23 Catalyst PR #9552 current-main integration: separate exact-tree
     canonical planner runs on main9732eb9f and merge9c1262d6 preserve
@@ -5326,6 +6572,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure and all old execution. Actual compiler93.59s measures selected
     index136/5868, free135/5840, Prophet128/5612, all ten packs. Fund only
     six added estimator units per probe; no job/pack/runtime limit changes.
+
+    2026-10-22 Expectation Surface nav row (ITP-ES wave 2, #10077) adds
+    tests/test_expectation_surface_nav.py as one run: step of the existing
+    `unrun-nav-chrome` navigation owner (contract-delta's unrun-suite gate;
+    no new job, no second navigation owner). Composed on protected main
+    d81eb778: index 136 jobs / 5,867, free-content 135 / 5,839, plan-book
+    128 / 5,611, all ten packs with identical selected IDs versus main
+    (136/5,864, 135/5,836, 128/5,608); newly selected: none. The +3 per
+    probe is the new step's estimator weight on the already-selected job.
+    Fund only 5,867/5,839/5,611; job ceilings 136/136/130, the ten-pack
+    limit and every other bound stay unchanged.
+    2026-11-01 merge of main d08e0da7765c into #10077: the post-#10294
+    ceilings above (137/5,886, 138/5,877, 130/5,636) already cover this
+    composition (measured 136/5,836, 137/5,863, 129/5,586, ten packs,
+    no breach), so the 10-22 funding is absorbed and no ceiling moves.
 
     2026-10-22 visual-evidence correction composes protected8c23f6 and
     native-plan Brief coverage without removing any suite. Actual compiler
@@ -5517,6 +6778,109 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,798 -> 5,805; retain every job-count bound, the plan-book weight bound,
     ten-pack limit, suite, selector and exclusive-scope contract unchanged.
     Planning weights are not measured execution times.
+
+    2026-10-21 SIC post-merge integrated measurement (seat, PR #9917 merge
+    commit b081a82d0e72 = main 2d50943eb154 merged INTO the integration
+    branch at 418093a864b5): main's B04-A0 funding (PR #9935, below) and the
+    SIC I-wave funding (the next paragraph) each measured against a base the
+    other did not contain, so the merge resolved the three tuples
+    provisionally to main's values (5,825 / 5,798 / 5,600) pending one
+    integrated probe. That probe, on the merged tree, measures
+    5,880 / 5,843 / 5,619 — exactly the SIC closure values (5,877 / 5,840 /
+    5,616) plus the three units B04-A0 adds to each (its own pytest step
+    lands in a job all three probes select). Fund exactly that measured
+    integrated value; neither side's claim is re-funded on its own. No
+    job-count, selector, pack or entrant change; the ten-pack bound is
+    untouched.
+
+    2026-10-21 SIC integration funding (seat, PR #9917 head 67ccd15e51d5 +
+    the RI07b MINOR 6 fix fdc3e02b29e3): the four I-wave lanes landed on the
+    B13-funded base cbf9e095ebd5 (ceilings 5,867 / 5,830 / 5,606 measured AT
+    closure there) as I09A2 (tests/test_sector_central_history.py appended to
+    the pinned sector_central line), I05R2 (tests/test_research_receiver_entry.py
+    appended to that line before the trailing -q, both byte-pins updated),
+    I06R (own tier-gate step) and I07R2 (own tier-gate step). Each lane
+    paragraph below claimed its own +2/+3 against the shared f4a1747e5e base,
+    but the ceilings are funded only by the integrated measurement: the local
+    probe on 67ccd15e51d5 measures all three probes at 5,877 / 5,840 / 5,616,
+    exactly ten estimator units over the B13 ceilings (two line appends at two
+    each + two own steps at three each = ten, uniform across the three probes
+    because every registration lands in the tier-gate job all three select).
+    Fund exactly that measured ten. No job-count, selector, pack or entrant
+    change; the ten-pack bound is untouched.
+
+    2026-10-21 SIC-I07R registers
+    tests/test_watchstore_sector_investigations_js.py as its own step in the
+    tier-gate job — its own step, not an append to the sector_central line,
+    because test_sector_receiver_contracts.py pins that line as an exact
+    substring. The local probe on f4a1747e5e measures all three probes AT
+    their ceilings (5,861 / 5,828 / 5,604); the new step adds exactly three
+    estimator units to each (5,864 / 5,831 / 5,607) — the packet anticipated
+    the two code probes only, but the tier-gate job is selected by all three,
+    so the plan_book probe moves by the same measured three. No job-count or
+    pack change, no new entrant. Fund only that measured excess. Job counts,
+    selectors and the ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-I06R registers tests/test_sector_prophet_context_dated.py
+    in tier-gate as its own step beside the receiver contracts: that run line
+    is byte-pinned by test_sector_receiver_contracts::
+    test_legacy_jobs_gate_line_lists_contract_suite, so the suite cannot join
+    the line itself. The local probe on the packet base f4a1747e5e09
+    (identical tree, registration reverted) measures all three probes at the
+    SIC-RCV ceilings (5,861 / 5,828 / 5,604). The own-step registration adds
+    exactly three estimator units to each (5,864 / 5,831 / 5,607; appending to
+    the pinned line instead would have added two, but that shape is barred),
+    no job-count or pack change, no new entrant — tier-gate is already
+    selected by all three probes. Fund only that measured excess on all three
+    weight ceilings; the packet named two tuples, but the plan_book probe
+    measures the same breach, and funding less would leave this assertion red
+    on the measured head. Job counts, selectors and the ten-pack bound remain
+    unchanged.
+
+    2026-10-21 SIC-I05R registers tests/test_research_receiver_entry.py on
+    the same tier-gate run line. The local probe on f4a1747e5e0 measures
+    the two code probes at the SIC-RCV ceilings (5,861 / 5,828) and
+    plan_book at 5,604; the registration adds exactly two estimator units
+    to each probe (5,863 / 5,830 / 5,606), no job-count or pack change, no
+    new entrant. Fund only that measured excess — the packet's "two tuples"
+    anticipated the code probes; the same +2 lands on plan_book's tuple
+    too, so all three are funded. Job counts, selectors and the ten-pack
+    bound remain unchanged.
+
+    2026-10-21 SIC-I09A registers tests/test_sector_central_history.py on the
+    same tier-gate run line. The local probe on f4a1747e5e0 measures the three
+    probes at the after-B06 ceilings (5,861 / 5,828 / 5,604 — probe re-run green
+    with only the registration reverted); the registration adds exactly two
+    estimator units to each (5,863 / 5,830 / 5,606), no job-count or pack
+    change, no new entrant. The packet named only the two data-probe tuples;
+    the plan_book ceiling moves by the same measured +2 because the tier-gate
+    job is selected by all three probe scopes, and leaving it would keep the
+    probe red. Fund only that measured excess. Job counts, selectors and the
+    ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-D-B13 registers tests/test_sector_central_score_version.py
+    on the sector tier-gate run line (the only .github/ci change since the
+    pushed head 5ac3a5df). The local probe on 4d0f689e measures all three
+    code probes exactly two estimator units above their ceilings
+    (5,865 -> 5,867 / 5,828 -> 5,830 / 5,604 -> 5,606), no job-count or
+    pack change, no new entrant. Fund only that measured excess. Job
+    counts, selectors and the ten-pack bound remain unchanged.
+
+    2026-10-21 SIC-RCV registers tests/test_sector_receiver_contracts.py on
+    the same tier-gate run line. The local probe on 66bc4205ab measures the
+    two code probes at the SIC-I01 ceilings (5,833 / 5,806); the registration
+    adds exactly three estimator units to each (5,836 / 5,809), no job-count
+    or pack change, no new entrant. Fund only that measured excess. Job
+    counts, the plan_book probe, selectors and the ten-pack bound remain
+    unchanged.
+
+    2026-10-21 SIC-I01 registers tests/test_sector_central_contract.py on the
+    tier-gate run line next to tests/test_sector_central_gate.py. The local
+    probe on 3d8d14acdc8 measures the two code probes at 135 jobs / 5,828
+    (index.html) and 5,801 (build_free_content); the registered suite adds
+    exactly two estimator units to each (5,830 / 5,803), no job-count or pack
+    change, no new entrant. Fund only that measured excess. Job counts, the
+    plan_book probe, selectors and the ten-pack bound remain unchanged.
 
     2026-10-21 Prophet Lab evidence dossier B04-A0 (PR #9935) adds one pytest
     step, tests/test_prophet_lab_dossier_b04a.py (closed reason map,
@@ -6350,6 +7714,56 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The fallback claims remain conservative until that audit; these two
     count changes do not assert direct ownership of the probe modules.
 
+    PR #7870 (2026-10-11): merge of origin/main 3ab976f5e6ca into the
+    Semiconductor B carrier (acc72f3fb3ef), driven by the base-sync
+    instruction on that PR. No job enters or leaves any probe on either
+    side: the carrier's one new job, ``semiconductor-b-boundary``, is
+    ``scope: exclusive`` and rides none. Both sides raise declared weights
+    on jobs that already ride templates/index.html: main wri-risk-core
+    43 -> 44 and unrun-grading-board 29 -> 34 (+6); the carrier
+    signal-contract 146 -> 148, tier-gate 41 -> 49 and unrun-intl-libraries
+    101 -> 122 (+31: tests/test_semiconductor_native_identity.py added to
+    the run line of signal-contract's K1 step, the T09 paid-transport step
+    added to tier-gate, and the T01, T02, T03 and T07/T08 steps added to
+    unrun-intl-libraries; the split is each job's declared-weight delta,
+    not a per-step measurement; the T10/T10b suites ride
+    ``unrun-subsector-themes``, which is ``scope: exclusive`` and does not
+    ride templates/index.html). Each side alone is under the bound.
+    Measured locally, full manifest, inference on (sparse checkout
+    omitting data/, mockups/ and verify_shots/, none of which this
+    measurement reads), merge-base 363b4e6296b7 / main / carrier -> merged:
+
+        templates/index.html          135 jobs, 5,764 / 5,770 / 5,795 -> 5,801 weight
+        scripts/build_free_content.py 133 jobs, 5,591 weight (merged)
+        engine/prophet/plan_book.py   128 jobs, 5,551 weight (merged)
+
+    The merged tree exceeds the 5,800 weight bound by one weight-second, and
+    only because two independently green sides' weight bumps sum. It is not
+    the first breach of that bound: the 2026-09-23 wave above
+    (B-HEAL-CI-PACK-CEILING-2) measured 132 jobs / 5,810 here and, per the
+    standing convention, did not raise the ceiling; it curated four
+    fallback-tier jobs ``scope: exclusive``. This entry departs from that
+    convention and raises instead, on a narrower delta than that smear: no
+    job enters or leaves the probe, the +37 is declared-weight growth on
+    five jobs already riding templates/index.html on both sides, and
+    curating any of the three carrier jobs ``scope: exclusive`` needs the
+    whole-job closure audit the #8656 entry requires and the 2026-09-23 wave
+    performed before a path list can replace a job's inferred coverage, which
+    a base-sync merge on a carrier under review does not perform. This is the decision the #8322 entry
+    said the next weight delta would need: the templates/index.html WEIGHT
+    ceiling moves to the exact merged measurement, 5,801, with no padding
+    (the #8656 shape for job ceilings). The other two weight ceilings, all three job ceilings
+    and the 10-pack bound stay unmoved (packs are 10 / 10 / 10). No suite,
+    registration, assertion, selector or declared weight is reduced to fit:
+    a declared weight is a measurement, and lowering one to clear the bound
+    would be the dodge this test exists to catch.
+    The incident this file bounds is still ~1,550 weight-seconds away; the
+    headroom under the new ceiling is zero, so the next weight delta on this
+    probe needs its own decision recorded here: curate at the source, or
+    raise again on evidence. The named follow-up is the #7870 release-head
+    merge, which re-measures this probe and records either a curation of
+    the three carrier jobs or a second raise on evidence.
+
     2026-10-11 (#8805, EVAL-1 partition clock receipt): the fifth
     Information-to-Price receipt suite registered in unrun-factor-research
     took templates/index.html from 5,802 (already over the ceiling; main run
@@ -6358,6 +7772,40 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     closure, so the probe reads 5,793 (head) against 5,805 before
     the move. No ceiling moves; no suite, registration, assertion or selector
     is removed or weakened.
+
+    2026-10-11 (#7870, second base-sync: origin/main c50af4eb0421 merged
+    into the carrier at 36e2064d5639). Summing each manifest's declared
+    weights over the merged selection: main alone 5,796 on
+    templates/index.html and 5,571 on scripts/build_free_content.py (under
+    its 5,800 / 5,600; the #8805 entry above measured 5,793 at its own
+    head), the carrier alone 5,801 and 5,591 (equal to its measured values,
+    so the merged selection is the carrier's: 135 and 133 jobs, no job
+    enters or leaves any probe), merged 5,827 and 5,602, measured on the
+    merged tree. scripts/run_ci_pack.py is identical on both sides, so the
+    weights are comparable. Main's +26 since 3ab976f5 is leader-radar-unit
+    +15, prophet-lab +9, dataos-identity-seams +3, collector-registry +2,
+    washout-turn-organ +2, billing-emails +1 and unrun-factor-research -6
+    (the #8805 curation); the carrier's +31 is the same signal-contract +2,
+    tier-gate +8 and unrun-intl-libraries +21 as the #7870 entry above.
+    Each side alone is under its bound; the breach again arises only from
+    summing two green sides. Per the rule that entry recorded, this is a
+    second raise on evidence to the exact merged measurements with no
+    padding: templates/index.html WEIGHT 5,801 -> 5,827 and
+    scripts/build_free_content.py WEIGHT 5,600 -> 5,602 (the first move of
+    that ceiling). engine/prophet/plan_book.py reads 5,562 under 5,600 and
+    stays; all three job ceilings and the 10-pack bound stay (packs are
+    10 / 10 / 10). No suite, registration, assertion, selector or declared
+    weight is reduced to fit. Both raises on this carrier remain recorded by
+    the seat and owed to the CI-contract owner's acceptance. Headroom is
+    again zero on both raised probes, so the #7870 release-head merge still
+    owes the curation-or-raise decision for the three carrier jobs; the
+    #8805 shape (move the added suites into an exclusive job with their
+    measured closure) is the curation candidate.
+
+    2026-10-12 (#7870 packing curation): the curation moved the duplicated
+    Semiconductor B suites onto the exclusive semiconductor-b-boundary job
+    and every probe is back at main's ceiling (135/5,800, 134/5,600,
+    129/5,600). No ceiling is raised.
 
     2026-10-13 (SNI INT1, ``sni-public-exposure-scan``): the WEIGHT ceiling
     on templates/index.html is RATCHETED 5,800 -> 5,803. This is the
@@ -6557,6 +8005,82 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Only a breached ceiling moves, to its measured head weight, no padding;
     job-count ceilings, the pack limit, selectors and every prior suite stay
     unchanged. Planning weights are not measured execution times.
+
+    Sector Intelligence candidate 4fd82658 merged onto main e5dd30c6
+    (2026-10-21): the three public-render-fastlane sector suites it registers
+    add six estimator units. The local probe on the merged tree measures
+    index.html 135 jobs / 5,828 (ceiling 5,822) and build_free_content 135
+    jobs / 5,801 (ceiling 5,795); plan_book unchanged. No new entrant, ten
+    packs. Fund only the two measured six-unit excesses: 5,822 -> 5,828 and
+    5,795 -> 5,801. Job ceilings, selectors and the pack bound stay unchanged.
+
+    Sector Intelligence integration merge of main f125051fdb37 into the #9917
+    branch (2026-11-02, merge-base 2d50943eb154): the merge took the three
+    tuples provisionally at main's values (5,886 / 5,877 / 5,636; 137 / 138 /
+    130 jobs). The integrated probe on the merged tree, after eight
+    curated-exclusive jobs were widened with the SIC closure files the merged
+    tree reaches (the closure test above; the widening changes no selection),
+    measures index 137 jobs / 5,897, free-content 137 jobs / 5,910 and
+    plan-book 131 jobs / 5,651, ten packs each. The one entrant is
+    cycle-forward-log on the plan-book probe: it declares no paths, so its
+    scope is inferred, and on the merged tree the planner selects it on the
+    fallback tier through its inferred engine/** root, where neither main
+    nor the pre-merge branch selected it alone. Fund exactly the measured
+    values:
+    5,886 -> 5,897, 5,877 -> 5,910, 5,636 -> 5,651 and the plan-book job
+    count 130 -> 131; the index/free-content job-count ceilings, selectors
+    and the ten-pack bound stay unchanged. Planning weights are not measured
+    execution times.
+
+    Sector Intelligence P20 (2026-11-02, #9917): the contract-delta gate on the
+    merged head (ci run 41426752895) found four new pytest suites named by no
+    run: step — tests/test_sector_paper_components.py,
+    test_sector_paper_copy_deck.py, test_sector_paper_cycles_ia.py and
+    test_sector_paper_state_matrix.py, the design_refs/sector-paper-20261021
+    guards. They are wired as one step of the UNSCOPED reference-integrity job
+    (the job that owns frozen design references), whose planning weight
+    therefore rises 9 -> 18 (one more command naming four tests/test_ files);
+    being unscoped it rides every probe, so each probe measures exactly nine
+    units more on the same job count and the same ten packs: index 137 jobs /
+    5,906, free-content 137 jobs / 5,919, plan-book 131 jobs / 5,660. No job
+    enters or leaves. Fund exactly the measured values: 5,897 -> 5,906,
+    5,910 -> 5,919, 5,651 -> 5,660; job-count ceilings, selectors and the
+    ten-pack bound stay unchanged. Planning weights are not measured execution
+    times.
+
+    Sector Intelligence P21 (2026-11-02, #9917 after merging main b6c20fa09b31):
+    the contract-delta gate on the PR merge ref (ci run 41443578532, job
+    125271753276, base main 210516fd0503) measured free-content 137 jobs /
+    5,921 and plan-book 131 jobs / 5,662 on ten packs against the P20 ceilings
+    5,919 / 5,660 (index 137 / 5,906, unchanged, inside its ceiling). The two
+    units per probe are main-side manifest growth between the P20 merge-base
+    and 210516fd0503 on jobs that already ride those probes: the pre-merge
+    branch tree still measures the P20 values, the merged tree measures
+    5,921 / 5,662; no job enters or leaves on free-content, and the two jobs
+    newly selected on plan-book versus the base (cycle-forward-log,
+    hk-cycle-ontology) were already funded inside the P20 131-job ceiling.
+    The same merged tree measures the same 5,921 / 5,662 after the
+    reference-integrity install string gained numpy + pandas (it is now
+    byte-identical to the thirteen sibling jobs' string, so the venv is shared
+    and no pack weight moves). Fund exactly the measured values:
+    5,919 -> 5,921, 5,660 -> 5,662; job-count ceilings, selectors and the
+    ten-pack bound stay unchanged. Planning weights are not measured execution
+    times.
+
+    Sector Intelligence P21 round 5 (2026-11-02, #9917 head c34dae8a62cd): the
+    contract-delta gate on the PR merge ref (ci run 41532187369, base main
+    90e0644f9f08) measured index 137 jobs / 5,909, free-content 137 jobs /
+    5,924 and plan-book 131 jobs / 5,665 on ten packs against the round-1
+    ceilings 5,906 / 5,921 / 5,662. The three units per probe are one
+    main-side job: ruling-graph, which rides all three probes, went from
+    weight 13 to 16 when its conflict-checker step became a pinned-base shell
+    script. The pre-merge branch tree still measures 5,906 / 5,921 / 5,662;
+    the merged trees with main 90e0644f9f08 and 68eebcdb1faa both measure
+    5,909 / 5,924 / 5,665 with job sets identical to the branch tree (no job
+    enters or leaves any probe). Fund exactly the measured values:
+    5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
+    selectors and the ten-pack bound stay unchanged. Planning weights are not
+    measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
@@ -8308,3 +9832,158 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+# Fast-ship compacts a genuinely scoped PR selection, never the main baseline.
+# Baseline pack names remain available for incumbent inherited-red comparisons.
+def _fastship_jobs(weights: list[int]) -> list[object]:
+    return [_plan_job(f"fastship-{i}", i, weight=w, paths=("engine/**",))
+            for i, w in enumerate(weights)]
+
+
+def _fastship_peak(packs: list[list[object]]) -> int:
+    return max((sum(job.weight for job in pack) for pack in packs), default=0)
+
+
+@pytest.mark.parametrize("weights,count,active", [
+    ([], 12, 0), ([0, 0, 0], 12, 1), ([50], 12, 1),
+    ([9, 5, 3], 12, 2), ([100] + [2] * 20, 12, 2),
+    ([10] * 12, 12, 12), ([5, 4, 3, 2, 1], 3, 3),
+])
+def test_fastship_compaction_preserves_every_job_object_without_larger_peak(weights, count, active):
+    jobs = _fastship_jobs(weights)
+    old = PACK.partition_jobs(jobs, count)
+    compact = PACK.compact_scoped_packs((job for job in jobs), count)
+    assert len(compact) == count
+    assert sum(bool(pack) for pack in compact) == active
+    assert _fastship_peak(compact) <= _fastship_peak(old)
+    assert sorted(id(job) for pack in compact for job in pack) == sorted(map(id, jobs))
+    assert all([j.ordinal for j in pack] == sorted(j.ordinal for j in pack) for pack in compact)
+    assert compact == PACK.compact_scoped_packs(reversed(jobs), count)
+
+
+@pytest.mark.parametrize("count", [0, -1])
+def test_fastship_compaction_keeps_positive_pack_count_validation(count):
+    with pytest.raises(ValueError, match="pack_count must be positive"):
+        PACK.compact_scoped_packs([], count)
+
+
+def test_fastship_fixed_seed_partition_properties():
+    import random
+    rng = random.Random(20261104)
+    for _ in range(300):
+        count = rng.randint(1, 12)
+        jobs = _fastship_jobs([rng.randint(0, 2000) for _ in range(rng.randint(0, 70))])
+        original = PACK.partition_jobs(jobs, count)
+        compact = PACK.compact_scoped_packs(jobs, count)
+        assert len(compact) == count
+        assert _fastship_peak(compact) <= _fastship_peak(original)
+        assert sorted(id(j) for p in compact for j in p) == sorted(map(id, jobs))
+        shuffled = list(jobs)
+        rng.shuffle(shuffled)
+        assert compact == PACK.compact_scoped_packs(shuffled, count)
+        assert all([j.ordinal for j in p] == sorted(j.ordinal for j in p) for p in compact)
+
+
+def test_fastship_compaction_changes_only_scoped_pr_pack_assignment(monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("unselected-site", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert plan.role == "pr_head"
+    assert plan.nonempty_pack_indices == (0, 1)
+    assert plan.matrix() == {"include": [{"pack": 0}, {"pack": 1}]}
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs[:-1])
+    assert plan.skipped_job_ids == ("unselected-site",)
+    assert len(plan.pack_jobs) == len(plan.pack_weights) == 12
+    assert max(plan.pack_weights) == 1400
+    assert {j.logical_job_id for j in plan.semantic_jobs} == set(plan.eligible_job_ids)
+    assert {j.logical_job_id: j.job_exec_sha256 for j in plan.semantic_jobs} == {
+        j.job_id: PACK.semantic_job_digest(j) for j in jobs[:-1]
+    }
+    assert all(j.pack_index in (0, 1) for j in plan.semantic_jobs)
+    fields = ("workflow_run_id", "workflow", "event", "role", "tested_tree_sha",
+              "subject_head_sha", "base_sha", "authority_changed", "changed_from",
+              "scope_mode", "changed_files_sha256", "pack_count", "eligible_job_ids",
+              "pack_jobs", "pack_weights", "semantic_jobs")
+    payload = PACK.plan_hash_payload(**{name: getattr(plan, name) for name in fields})
+    assert PACK._canonical_digest(payload) == plan.plan_sha256
+    assert PACK._canonical_digest({**payload, "pack_jobs": [list(reversed(p)) for p in plan.pack_jobs]}) != plan.plan_sha256
+
+
+@pytest.mark.parametrize("mode", ["active", "shadow", "off"])
+def test_fastship_main_baseline_keeps_original_named_pack_partition(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    # A blanket compactor would remove ten baseline check names; it is forbidden.
+    plan = PACK.build_plan(jobs, None, changed_from=None, scope_mode=mode, pack_count=12)
+    assert plan.role == "main"
+    assert plan.nonempty_pack_indices == tuple(range(12))
+    assert plan.pack_jobs == tuple(tuple(j.job_id for j in p) for p in PACK.partition_jobs(jobs, 12))
+
+
+@pytest.mark.parametrize("mode", ["shadow", "off"])
+def test_fastship_scope_override_full_suite_is_never_compacted(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-owner", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode=mode, pack_count=12)
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+@pytest.mark.parametrize("changed", [["scripts/run_ci_pack.py"], ["engine/example.py"]])
+def test_fastship_full_selection_and_authority_invalidators_keep_all_pack_names(monkeypatch, changed):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    plan = PACK.build_plan(jobs, changed, changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert len(plan.eligible_job_ids) == len(jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+def test_fastship_compaction_refuses_negative_weight_input():
+    with pytest.raises(ValueError, match="nonnegative"):
+        PACK.compact_scoped_packs(_fastship_jobs([10, -1]), 12)
+
+
+def test_fastship_compacted_plan_is_consumed_without_repartition(tmp_path, monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    plan = PACK.build_plan(
+        jobs, ["engine/example.py"], changed_from="c" * 40,
+        scope_mode="active", pack_count=12, event="pull_request", role="pr_head",
+        tested_tree_sha="a" * 40, subject_head_sha="b" * 40, base_sha="c" * 40,
+    )
+    plan_file = tmp_path / "compacted-plan.json"
+    plan_file.write_text(json.dumps(plan.to_dict()), encoding="utf-8")
+    changed_file = tmp_path / "changed.json"
+    changed_file.write_text('["engine/example.py"]', encoding="utf-8")
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda *args, **kwargs: jobs)
+    def forbidden(*args, **kwargs):
+        pytest.fail("the execution consumer must not replan or repartition")
+    monkeypatch.setattr(PACK, "partition_jobs", forbidden)
+    monkeypatch.setattr(PACK, "compact_scoped_packs", forbidden)
+    monkeypatch.setattr(PACK, "infer_job_scopes", forbidden)
+    consumed = PACK.load_authoritative_plan(
+        plan_file, workflow=tmp_path / "fixture.yml", changed_files_file=changed_file,
+        expect_plan_sha=plan.plan_sha256, expect_tested_tree_sha="a" * 40,
+        expect_subject_head_sha="b" * 40, expect_base_sha="c" * 40,
+    )
+    assert consumed == plan
+    assert consumed.nonempty_pack_indices == (0, 1)
+    assert {j.logical_job_id for j in consumed.semantic_jobs} == set(plan.eligible_job_ids)
+
+
+@pytest.mark.parametrize("base", [None, ""])
+def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    with pytest.raises(PACK.ManifestError, match="changed_from"):
+        PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
+                        scope_mode="active", pack_count=12,
+                        event="pull_request", role="pr_head")
