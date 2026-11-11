@@ -1,13 +1,14 @@
 {
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "regime": "mixed / no clear trend",
-  "breadth": -0.08,
+  "breadth": 0.08,
   "favored": [
     "oil",
-    "dollar"
+    "dollar",
+    "crypto"
   ],
   "correlation": "diversified",
-  "asof": "2026-11-08",
+  "asof": "2026-11-09",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
@@ -131,7 +132,7 @@
       ],
       "spark_asof": "2026-11-06"
     },
-    "breadth": -0.08,
+    "breadth": 0.08,
     "trend_top": [
       {
         "asset": "oil",
@@ -140,6 +141,11 @@
       },
       {
         "asset": "dollar",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
+        "asset": "crypto",
         "trend": "up",
         "z": 1.0
       },
@@ -157,36 +163,31 @@
         "asset": "copper",
         "trend": "mixed",
         "z": 0.33
-      },
-      {
-        "asset": "crypto",
-        "trend": "mixed",
-        "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 2,
-      "n_down": 3
+      "n_up": 3,
+      "n_down": 2
     },
     "intermarket": [
       {
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "mid",
-        "pctile": 69.0
+        "pctile": 71.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 78.661,
+        "ratio": 77.777,
         "trend": "mid",
-        "pctile": 50.0
+        "pctile": 49.0
       },
       {
         "pair": "oil_gold",
         "ratio": 0.022,
         "trend": "mid",
-        "pctile": 76.0
+        "pctile": 75.0
       },
       {
         "pair": "stocks_gold",
@@ -344,9 +345,9 @@
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": null,
+        "dominant": "em_crisis_capital_flight",
         "top_key": "em_crisis_capital_flight",
-        "top_val": 30.4
+        "top_val": 58.1
       }
     },
     "shadow": {

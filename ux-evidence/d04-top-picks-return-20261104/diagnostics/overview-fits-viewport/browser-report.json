@@ -1,0 +1,1231 @@
+{
+  "schema": "d04.top_picks_return.browser.v1",
+  "observed_at_utc": "2026-11-05T03:53:28.110032+00:00",
+  "browser": "151.0.7922.34",
+  "source_sha256": {
+    "templates/discovery.html.j2": "42cb71155c588c4e7fe22aa13c9a6c91227785b049ebf3b654739e3193bb108b",
+    "templates/discovery.js": "1a4e21d16db6dd754819a96a6d87e5f880be8fb4b8f701370204c9376c65aa07",
+    "templates/discovery-controls.css": "e549ec2d4acdfcaa020ee1fdb48764718257b2de56c4c54cd141b7a5b97be35a",
+    "site/discovery.html": "10c0b94b440fd89ed9f31348cd1f115dcbff926865e14a8be06e521b5e4c952e",
+    "site/discovery.js": "1a4e21d16db6dd754819a96a6d87e5f880be8fb4b8f701370204c9376c65aa07",
+    "site/discovery-controls.css": "e549ec2d4acdfcaa020ee1fdb48764718257b2de56c4c54cd141b7a5b97be35a",
+    "scripts/build_discovery.py": "f8fa57ecbe20662114af7fd8c2cd8ef4477ff7b8dd1f9572a49abbfb6fbcbeee",
+    "scripts/verify_top_picks_return_browser.py": "74b728d40bb80d9cbd40e4a58c475c2040fff80340fbc88eb3a88061c21a8efb"
+  },
+  "method": "Actual generated page and assets, committed ranking snapshot, same-origin labelled company fixture, incumbent Terminal overlay with labelled message fixture; changed-source cases inject declared mutations before page controller initialization.",
+  "limitations": [
+    "Not D07 content/authentication, live data, account persistence, shared-shell full-state transport, production or whole-D04 acceptance.",
+    "Fresh-document traversal is forced by disabling Chromium BFCache. Retained-document proof covers the incumbent overlay only.",
+    "Native traversal explicitly opens the existing company URL after source focus; ordinary keyboard activation and phone taps are separately tested through the incumbent overlay at all matrix widths."
+  ],
+  "passed": 43,
+  "cases": [
+    {
+      "name": "controls-filter-scope-aria-locale-1440-en-dark",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "viewport": 1440,
+        "controls": [
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 87.921875
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 76.515625
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 105.890625
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 225
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-1440-en-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-1440-en-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-1440-en-light",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "viewport": 1440,
+        "controls": [
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 87.921875
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 76.515625
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 105.890625
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 225
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-1440-en-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-1440-en-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-1440-zh-dark",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "viewport": 1440,
+        "controls": [
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 83.046875
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 131
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-1440-zh-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-1440-zh-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-1440-zh-light",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "viewport": 1440,
+        "controls": [
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 83.046875
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 131
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-1440-zh-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-1440-zh-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-390-en-dark",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "viewport": 390,
+        "controls": [
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 87.921875
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 76.515625
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 105.890625
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 225
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-390-en-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-390-en-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-390-en-light",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "viewport": 390,
+        "controls": [
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 87.921875
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 76.515625
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 105.890625
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 225
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-390-en-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-390-en-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-390-zh-dark",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "viewport": 390,
+        "controls": [
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 83.046875
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 131
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-390-zh-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-390-zh-dark",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "controls-filter-scope-aria-locale-390-zh-light",
+      "passed": true,
+      "geometry": {
+        "width": 390,
+        "viewport": 390,
+        "controls": [
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 56.53125
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 83.046875
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 131
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          },
+          {
+            "id": "",
+            "height": 44,
+            "width": 44
+          }
+        ]
+      },
+      "sector_rows": 24
+    },
+    {
+      "name": "incumbent-overlay-return-390-zh-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU"
+    },
+    {
+      "name": "native-document-back-390-zh-light",
+      "passed": true,
+      "key": "[\"sector\",\"strong\",\"Information Technology\",\"COHU\"]",
+      "destination": "stock.html#COHU",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "narrow-native-return",
+      "passed": true,
+      "key": "[\"global\",\"weak\",\"\",\"SOUN\"]",
+      "navigation": "explicit same-origin company URL after focused source link"
+    },
+    {
+      "name": "reordered",
+      "passed": true,
+      "note": "View settings restored. Rankings use the current snapshot. The source date has changed since your last visit.",
+      "original_key": "[\"sector\",\"strong\",\"Information Technology\",\"FTNT\"]"
+    },
+    {
+      "name": "missing-row",
+      "passed": true,
+      "note": "View settings restored. Rankings use the current snapshot. The previous company is no longer in this view. Returned to the view controls.",
+      "original_key": "[\"sector\",\"strong\",\"Information Technology\",\"FTNT\"]"
+    },
+    {
+      "name": "missing-sector",
+      "passed": true,
+      "note": "View settings restored. Rankings use the current snapshot. The previous sector is no longer supplied. Choose a sector to continue.",
+      "original_key": "[\"sector\",\"strong\",\"Information Technology\",\"FTNT\"]"
+    },
+    {
+      "name": "invalid-owned-version",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-path",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-tab",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-side",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-sector-size",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-filter-type",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-source-type",
+      "passed": true
+    },
+    {
+      "name": "invalid-owned-position",
+      "passed": true
+    },
+    {
+      "name": "foreign-string",
+      "passed": true
+    },
+    {
+      "name": "foreign-array",
+      "passed": true
+    },
+    {
+      "name": "replace-failure",
+      "passed": true
+    },
+    {
+      "name": "framed-early-opt-out",
+      "passed": true
+    },
+    {
+      "name": "shared-shell-opt-out",
+      "passed": true
+    },
+    {
+      "name": "later-deliberate-focus-and-filter-preserved",
+      "passed": true,
+      "visual_anchor_preserved": true,
+      "note": "Raw scroll pixels may change as the incumbent header changes geometry; visible content position and focus are the invariant."
+    },
+    {
+      "name": "same-document-native-back-forward",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "top-picks-1440-en-dark.png",
+    "return-1440-en-dark.png",
+    "top-picks-1440-en-light.png",
+    "return-1440-en-light.png",
+    "top-picks-1440-zh-dark.png",
+    "return-1440-zh-dark.png",
+    "top-picks-1440-zh-light.png",
+    "return-1440-zh-light.png",
+    "top-picks-390-en-dark.png",
+    "return-390-en-dark.png",
+    "top-picks-390-en-light.png",
+    "return-390-en-light.png",
+    "top-picks-390-zh-dark.png",
+    "return-390-zh-dark.png",
+    "top-picks-390-zh-light.png",
+    "return-390-zh-light.png",
+    "native-return-320-zh-light.png",
+    "reordered.png",
+    "missing-row.png",
+    "missing-sector.png",
+    "failure.png"
+  ],
+  "page_errors": [],
+  "failures": [
+    {
+      "type": "AssertionError",
+      "message": "",
+      "context": {
+        "url": "http://127.0.0.1:59653/discovery.html",
+        "note": "",
+        "active": "",
+        "key": null,
+        "history": {
+          "mmx.topPicks.v1": {
+            "version": 1,
+            "path": "/discovery.html",
+            "tab": "sectors",
+            "side": "strong",
+            "sector": "Communication Services",
+            "hideStretch": false,
+            "asOf": "2026-11-03",
+            "position": null
+          }
+        }
+      }
+    }
+  ],
+  "all_passed": false
+}
