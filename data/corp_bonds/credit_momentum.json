@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-10",
   "data_session": "2026-11-05",
   "authority": {
     "rank": false,
@@ -627,58 +627,58 @@
       "d21": -0.03,
       "velocity": {
         "vel21": -0.03,
-        "vel63": -2.4203,
+        "vel63": -1.8757,
         "vel21_pctile": 34.0476,
-        "vel63_pctile": 8.6905,
+        "vel63_pctile": 9.7222,
         "vel21_pctile_post2021": 35.6705,
-        "vel63_pctile_post2021": 10.2791,
+        "vel63_pctile_post2021": 11.5725,
         "accel_vel21": -0.05
       },
       "grids": {
         "1D": {
-          "macd": 1.8008,
-          "signal": 0.961,
-          "hist": 0.8398,
-          "hist_vel3": 0.2189,
-          "k": 75.4347,
-          "d": 64.283,
-          "depth_pctile": 60.4762,
+          "macd": 2.0856,
+          "signal": 1.5134,
+          "hist": 0.5722,
+          "hist_vel3": 0.2264,
+          "k": 68.3217,
+          "d": 57.447,
+          "depth_pctile": 63.0556,
           "as_of": "2026-11-06",
           "n_bars": 4762,
           "secondary_note": null
         },
         "2B": {
-          "macd": -8.6654,
-          "signal": -10.222,
-          "hist": 1.5566,
-          "hist_vel3": 0.0889,
-          "k": 80.2341,
-          "d": 82.5499,
-          "depth_pctile": 6.9757,
+          "macd": -7.3559,
+          "signal": -8.8015,
+          "hist": 1.4456,
+          "hist_vel3": -0.1338,
+          "k": 75.9686,
+          "d": 80.0437,
+          "depth_pctile": 10.0953,
           "as_of": "2026-11-06",
           "n_bars": 2381,
           "secondary_note": null
         },
         "3B": {
-          "macd": -11.534,
-          "signal": -11.7327,
-          "hist": 0.1987,
-          "hist_vel3": 1.6161,
-          "k": 50.1117,
-          "d": 37.37,
-          "depth_pctile": 2.5099,
+          "macd": -10.1829,
+          "signal": -10.458,
+          "hist": 0.2752,
+          "hist_vel3": 1.4102,
+          "k": 54.3718,
+          "d": 40.4156,
+          "depth_pctile": 4.1612,
           "as_of": "2026-11-05",
           "n_bars": 1587,
           "secondary_note": null
         },
         "W-FRI": {
-          "macd": -11.4151,
-          "signal": -10.0533,
-          "hist": -1.3618,
-          "hist_vel3": 1.297,
-          "k": 21.4997,
-          "d": 16.1261,
-          "depth_pctile": 3.2787,
+          "macd": -10.2178,
+          "signal": -9.125,
+          "hist": -1.0927,
+          "hist_vel3": 1.2126,
+          "k": 22.7285,
+          "d": 16.9587,
+          "depth_pctile": 6.0109,
           "as_of": "2026-11-06",
           "n_bars": 988,
           "secondary_note": null
@@ -1704,12 +1704,12 @@
     "tenors": {
       "2y": {
         "velocity_bp": {
-          "5d": -9.0,
-          "22d": -26.0,
-          "63d": 39.0
+          "5d": -15.0,
+          "22d": -33.0,
+          "63d": 21.0
         },
         "turn_watch": null,
-        "as_of": "2026-11-04",
+        "as_of": "2026-11-05",
         "measurement_origin": "last_captured_source_row",
         "trailing_publication_lag_rows": 1,
         "null_reason": null,
@@ -1717,12 +1717,12 @@
       },
       "5y": {
         "velocity_bp": {
-          "5d": -16.0,
-          "22d": -37.0,
-          "63d": 34.0
+          "5d": -19.0,
+          "22d": -44.0,
+          "63d": 18.0
         },
         "turn_watch": "rolldown_forming",
-        "as_of": "2026-11-04",
+        "as_of": "2026-11-05",
         "measurement_origin": "last_captured_source_row",
         "trailing_publication_lag_rows": 1,
         "null_reason": null,
@@ -1730,12 +1730,12 @@
       },
       "10y": {
         "velocity_bp": {
-          "5d": -15.0,
-          "22d": -41.0,
-          "63d": 25.0
+          "5d": -14.0,
+          "22d": -43.0,
+          "63d": 12.0
         },
         "turn_watch": "rolldown_forming",
-        "as_of": "2026-11-04",
+        "as_of": "2026-11-05",
         "measurement_origin": "last_captured_source_row",
         "trailing_publication_lag_rows": 1,
         "null_reason": null,
@@ -1743,12 +1743,12 @@
       },
       "20y": {
         "velocity_bp": {
-          "5d": -11.0,
-          "22d": -40.0,
-          "63d": 10.0
+          "5d": -8.0,
+          "22d": -41.0,
+          "63d": 2.0
         },
         "turn_watch": "rolldown_forming",
-        "as_of": "2026-11-04",
+        "as_of": "2026-11-05",
         "measurement_origin": "last_captured_source_row",
         "trailing_publication_lag_rows": 1,
         "null_reason": null,
@@ -1756,12 +1756,12 @@
       },
       "30y": {
         "velocity_bp": {
-          "5d": -9.0,
-          "22d": -38.0,
-          "63d": 9.0
+          "5d": -7.0,
+          "22d": -39.0,
+          "63d": 0.0
         },
         "turn_watch": "rolldown_forming",
-        "as_of": "2026-11-04",
+        "as_of": "2026-11-05",
         "measurement_origin": "last_captured_source_row",
         "trailing_publication_lag_rows": 1,
         "null_reason": null,
@@ -1770,7 +1770,7 @@
     },
     "null_reasons": [],
     "calculation_version": "fixed_grid_origin.v4",
-    "asof": "2026-11-05",
+    "asof": "2026-11-06",
     "state": "live"
   },
   "breadth": {
@@ -2025,6 +2025,6 @@
       "note": null
     }
   ],
-  "_timing_s": 33.91,
+  "_timing_s": 30.95,
   "_n_ledger_new": 0
 }

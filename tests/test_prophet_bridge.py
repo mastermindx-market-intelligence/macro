@@ -47,7 +47,7 @@ import json
 import math
 import os
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -1396,6 +1396,11 @@ def test_index_json_has_required_keys(tmp_path):
         idx = json.loads(bp.INDEX_PATH.read_text())
         for key in ["schema", "asof", "cadence", "authority_tier", "plan_count", "plans"]:
             assert key in idx, f"Missing key in index.json: {key}"
+        assert isinstance(idx["computed_at"], str)
+        computed = datetime.fromisoformat(idx["computed_at"].replace("Z", "+00:00"))
+        assert computed.tzinfo is not None and computed.utcoffset() == timedelta(0)
+        assert idx["computed_at"].endswith("Z") and len(idx["computed_at"]) == 20
+        assert idx["computed_at"] not in (idx["asof"], idx["recorded_at"], "2026-07-02")
         assert idx["source_asof"] == "2026-07-02"
         assert idx["source_board_asof"] == "2026-07-02"
         assert idx["source_delayed"] is False
@@ -2588,3 +2593,94 @@ class TestPlanSourceOriginCodec:
         with pytest.raises(ValueError, match="value is not canonical JSON"):
             originate_plans(path, "2026-07-02", set(), None,
                             standouts_doc=doc, source_binding=binding)
+
+# ---------------------------------------------------------------------------
+# V4-A2: genuine compute clock is distinct from six-clock settlement.
+# ---------------------------------------------------------------------------
+
+def test_v4_a2_compute_clock_explicit_utc_seconds():
+    import scripts.build_prophet as bp
+
+    fixed = datetime(2026, 10, 30, 15, 7, 11, 654321, tzinfo=timezone.utc)
+    with patch.object(bp, "datetime") as clock:
+        clock.now.return_value = fixed
+        assert bp._computed_at_now() == "2026-10-30T15:07:11Z"
+        clock.now.assert_called_once_with(timezone.utc)
+
+
+def test_v4_a2_compute_rerun_does_not_rewrite_source_vintage():
+    import scripts.build_prophet as bp
+
+    vintage = {
+        "asof": "2026-10-23",
+        "recorded_at": "2026-10-23",
+        "source_asof": "2026-10-23",
+        "source_board_asof": "2026-10-23",
+        "source_delayed": True,
+        "source_mixed_vintage": True,
+    }
+    fixed = [
+        datetime(2026, 10, 30, 15, 7, 11, tzinfo=timezone.utc),
+        datetime(2026, 10, 30, 15, 7, 12, tzinfo=timezone.utc),
+    ]
+    with patch.object(bp, "datetime") as clock:
+        clock.now.side_effect = fixed
+        before = dict(vintage, computed_at=bp._computed_at_now())
+        after = dict(vintage, computed_at=bp._computed_at_now())
+        assert clock.now.call_count == 2
+        assert all(c.args == (timezone.utc,) for c in clock.now.call_args_list)
+    assert before["computed_at"] != after["computed_at"]
+    assert all(before[k] == after[k] == v for k, v in vintage.items())
+    assert before["source_asof"] != before["computed_at"][:10]
+
+
+def test_v4_a2_one_stamp_immediately_precedes_canonical_index_write():
+    import ast
+    import inspect
+    import scripts.build_prophet as bp
+
+    node = ast.parse(inspect.getsource(bp.main)).body[0]
+    assert isinstance(node, ast.FunctionDef)
+    writes = []
+    for i, stmt in enumerate(node.body):
+        if not isinstance(stmt, ast.Expr) or not isinstance(stmt.value, ast.Call):
+            continue
+        call = stmt.value
+        if not isinstance(call.func, ast.Name) or call.func.id != "_write_json":
+            continue
+        if len(call.args) == 2 and isinstance(call.args[0], ast.Name) and call.args[0].id == "INDEX_PATH":
+            writes.append(i)
+    assert len(writes) == 1
+    before = node.body[writes[0] - 1]
+    assert isinstance(before, ast.Assign) and len(before.targets) == 1
+    target = before.targets[0]
+    assert isinstance(target, ast.Subscript)
+    assert isinstance(target.value, ast.Name) and target.value.id == "index"
+    assert isinstance(target.slice, ast.Constant) and target.slice.value == "computed_at"
+    assert isinstance(before.value, ast.Call)
+    assert isinstance(before.value.func, ast.Name)
+    assert before.value.func.id == "_computed_at_now"
+    assert not before.value.args and not before.value.keywords
+
+
+def test_v4_a2_compute_clock_is_covered_by_exact_index_bytes_sha256(tmp_path):
+    import scripts.build_prophet as bp
+
+    index = {
+        "schema": "prophet.index/v1",
+        "source_asof": "2026-10-23",
+        "source_delayed": True,
+        "asof": "2026-10-30",
+    }
+    path = tmp_path / "prophet" / "index.json"
+    index["computed_at"] = "2026-10-30T15:07:11Z"
+    bp._write_json(path, index)
+    original_bytes = path.read_bytes()
+    original_digest = hashlib.sha256(original_bytes).hexdigest()
+    index["computed_at"] = "2026-10-30T15:07:12Z"
+    bp._write_json(path, index)
+    changed_bytes = path.read_bytes()
+    changed_digest = hashlib.sha256(changed_bytes).hexdigest()
+    assert original_digest != changed_digest
+    assert json.loads(changed_bytes)["source_asof"] == "2026-10-23"
+    assert changed_digest == hashlib.sha256(changed_bytes).hexdigest()

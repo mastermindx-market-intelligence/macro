@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ISRG-BULL-20260731",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "at_t1",
   "detection_phase": "at_t1",
   "management_confidence": 70.8,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 2.304,
     "dist_to_t1_r": 0.196,
     "dist_to_t2_r": 1.696,
-    "horizon_pct_used": 204.4,
+    "horizon_pct_used": 208.9,
     "p1": 0.8695,
     "p2": 0.4347,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": "2026-11-06",
   "_first_t2_ts": null,
-  "days_elapsed": 92,
-  "tau": 2.0444,
+  "days_elapsed": 94,
+  "tau": 2.0889,
   "closed": true,
   "outcome": "EXPIRED"
 }

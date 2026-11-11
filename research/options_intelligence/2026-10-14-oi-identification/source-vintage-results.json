@@ -1,0 +1,194 @@
+{
+  "cases": {
+    "changed_total_control": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 1,
+        "SYNTH-CALL-2026-11-20-110": 0
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 201,
+        "spot": 100.0
+      },
+      "loader_same_vintage_branch_would_suppress": false,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": false,
+      "sum_absolute_exact_contract_change": 1,
+      "sum_absolute_strike_aggregated_change": 1.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [],
+        "new_oi": [
+          {
+            "K": 100.0,
+            "contracts": 1,
+            "dist_pct": 0.0,
+            "oi_delta": 1,
+            "oi_delta_pct": 2.0,
+            "oi_now": 51,
+            "oi_prior": 50,
+            "right": "call"
+          }
+        ]
+      }
+    },
+    "constant_total_redistribution": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 100,
+        "SYNTH-CALL-2026-11-20-110": -100
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "loader_same_vintage_branch_would_suppress": true,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": true,
+      "sum_absolute_exact_contract_change": 200,
+      "sum_absolute_strike_aggregated_change": 200.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [
+          {
+            "K": 110.0,
+            "contracts": 1,
+            "dist_pct": 10.0,
+            "oi_delta": -100,
+            "oi_delta_pct": -66.7,
+            "oi_now": 50,
+            "oi_prior": 150,
+            "right": "call"
+          }
+        ],
+        "new_oi": [
+          {
+            "K": 100.0,
+            "contracts": 1,
+            "dist_pct": 0.0,
+            "oi_delta": 100,
+            "oi_delta_pct": 200.0,
+            "oi_now": 150,
+            "oi_prior": 50,
+            "right": "call"
+          }
+        ]
+      }
+    },
+    "expiry_offset_hidden_by_strike_netting": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 100,
+        "SYNTH-CALL-2026-12-18-100": -100
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "loader_same_vintage_branch_would_suppress": true,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": true,
+      "sum_absolute_exact_contract_change": 200,
+      "sum_absolute_strike_aggregated_change": 0.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [],
+        "new_oi": []
+      }
+    },
+    "identical_control": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 0,
+        "SYNTH-CALL-2026-11-20-110": 0
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "loader_same_vintage_branch_would_suppress": true,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": true,
+      "sum_absolute_exact_contract_change": 0,
+      "sum_absolute_strike_aggregated_change": 0.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [],
+        "new_oi": []
+      }
+    },
+    "row_order_control": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 0,
+        "SYNTH-CALL-2026-11-20-110": 0
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "loader_same_vintage_branch_would_suppress": true,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": true,
+      "sum_absolute_exact_contract_change": 0,
+      "sum_absolute_strike_aggregated_change": 0.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [],
+        "new_oi": []
+      }
+    },
+    "same_oi_changed_spot": {
+      "exact_contract_changes": {
+        "SYNTH-CALL-2026-11-20-100": 0,
+        "SYNTH-CALL-2026-11-20-110": 0
+      },
+      "latest_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 101.0
+      },
+      "loader_same_vintage_branch_would_suppress": false,
+      "prior_summary": {
+        "contracts": 2,
+        "oi_total": 200,
+        "spot": 100.0
+      },
+      "same_vintage_mask": false,
+      "sum_absolute_exact_contract_change": 0,
+      "sum_absolute_strike_aggregated_change": 0.0,
+      "ungated_strike_clusters": {
+        "exit_oi": [],
+        "new_oi": []
+      }
+    }
+  },
+  "limits": [
+    "Calls the exact producer kernels. Does not invoke the store loader or inspect live data.",
+    "The documented loader branch at lines1208-1216 suppresses clusters when same_vintage is true; no production impact count is claimed.",
+    "Strike netting is legitimate for a net-by-strike view, but is not the per-contract absolute-change numerator specified by OIF18.",
+    "Equal full OI content would still not attest a common effective-session vintage. Receipt identity must be preserved separately."
+  ],
+  "schema": "options.oi.source_vintage_witness.v1",
+  "source_blob": "917bbd225ab2ed3ad5668b38dcbb4f4c4d0c988f",
+  "source_modified": false,
+  "source_path": "engine/positioning_persistence.py",
+  "source_ref": "a3f3afa1e1268908a54263043f21048c1b5bc1b4",
+  "source_sha256": "1acc388386a77e3158caf5382d531a55f4b52106c92c3248a93fa0ab361a254c",
+  "synthetic_only": true
+}
