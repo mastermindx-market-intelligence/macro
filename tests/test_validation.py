@@ -22,10 +22,12 @@ from engine.validation import (
     design_rank,
     dsr_verdict,
     ret_moments,
+    sortino_ratio,
     vif,
 )
 from scripts.calibrate_commodities import backtest as commodity_backtest
 from scripts.calibrate_forex import backtest_conviction, conviction_series
+from scripts.calibrate_vector import backtest as vector_backtest
 
 
 # --------------------------------------------------------------------------- #
@@ -100,6 +102,98 @@ def test_backtest_core_handles_long_short():
     bt = backtest_core(close, alloc, 10.0)
     assert bt["pos"].min() < 0 and bt["pos"].max() > 0       # genuinely both sides
     assert bt["turnover"].sum() > 0
+
+
+# Sortino uses zero-target downside over every observed period, including the
+# native core's initial zero. The scalar oracle is independent of the helper.
+def _sortino_oracle(returns, periods_per_year):
+    values = list(returns)
+    downside = math.sqrt(math.fsum(min(value, 0.0) ** 2 for value in values) / len(values))
+    return (math.fsum(values) / len(values) / downside * math.sqrt(periods_per_year)
+            if downside else math.nan)
+
+
+def test_sortino_drops_missing_observations_without_inventing_zero_returns():
+    values = [0.0, -0.125, 0.25, 0.125]
+    assert sortino_ratio(pd.Series([math.nan, *values, math.nan])) == pytest.approx(
+        _sortino_oracle(values, 252))
+
+
+@pytest.mark.parametrize("values", [[], [math.nan]])
+def test_sortino_without_observations_is_undefined(values):
+    assert math.isnan(sortino_ratio(pd.Series(values, dtype=float)))
+
+
+@pytest.mark.parametrize("nonfinite", [math.inf, -math.inf])
+def test_sortino_does_not_discard_infinite_observations(nonfinite):
+    assert math.isnan(sortino_ratio(pd.Series([0.0, -0.125, 0.25, nonfinite])))
+
+
+@pytest.mark.parametrize("scale", [1e-200, 1e200])
+def test_sortino_preserves_scale_invariance_without_squared_overflow_or_underflow(scale):
+    values = [0.0, -0.125, 0.25, 0.125]
+    assert sortino_ratio(pd.Series(values) * scale) == pytest.approx(_sortino_oracle(values, 252))
+
+
+def test_sortino_single_loss_has_negative_defined_ratio():
+    assert sortino_ratio(pd.Series([-0.125])) == pytest.approx(-math.sqrt(252))
+
+
+def test_sortino_retains_small_mean_after_cancellation_in_any_order():
+    expected = _sortino_oracle([1.0, 1e-16, -1.0], 252)
+    for values in ([1.0, 1e-16, -1.0], [1.0, -1.0, 1e-16]):
+        assert sortino_ratio(pd.Series(values)) == pytest.approx(expected, rel=1e-12, abs=0)
+
+
+@pytest.mark.parametrize("backtest,benchmark_key,periods_per_year", [
+    (commodity_backtest, "hold_sortino", 252),
+    (backtest_conviction, "hold_sortino", 252),
+    (vector_backtest, "hodl_sortino", 365),
+])
+@pytest.mark.parametrize("returns", [
+    [0.0, -0.125, 0.25, 0.125],       # one losing observation
+    [0.0, -0.125, -0.125, 0.5],       # identical losses still have downside
+    [0.0, -0.125, -0.125, -0.125],    # repeated losses give a negative ratio
+    [0.0, -0.125, 0.125, 0.0],       # zero mean with genuine downside
+    [0.0, 0.125, 0.0, 0.25],         # no downside remains undefined
+    [0.0, 0.0, 0.0, 0.0],           # flat remains undefined
+])
+def test_calibrator_sortino_uses_full_period_downside(backtest, benchmark_key, periods_per_year, returns):
+    idx = pd.date_range("2025-01-01", periods=len(returns), freq="D")
+    close = pd.Series(100.0 * np.cumprod(1.0 + np.asarray(returns)), index=idx)
+    result = backtest(close, pd.Series(1.0, index=idx))
+    expected = _sortino_oracle(returns, periods_per_year)
+    for key in ("sortino", benchmark_key):
+        if math.isnan(expected):
+            assert math.isnan(result[key])
+        else:
+            assert result[key] == round(expected, 2)
+
+
+@pytest.mark.parametrize("backtest,benchmark_key,periods_per_year", [
+    (commodity_backtest, "hold_sortino", 252),
+    (backtest_conviction, "hold_sortino", 252),
+    (vector_backtest, "hodl_sortino", 365),
+])
+def test_calibrator_sortino_uses_native_net_returns(backtest, benchmark_key, periods_per_year):
+    idx = pd.date_range("2025-01-01", periods=7, freq="D")
+    close = pd.Series([100.0, 99.0, 103.0, 98.0, 101.0, 100.0, 104.0], index=idx)
+    allocation = pd.Series([1.0, 0.0, 1.0, 0.5, 1.0, 0.0, 1.0], index=idx)
+    core = backtest_core(close, allocation, cost_bps=25.0)
+    result = backtest(close, allocation, cost_bps=25.0)
+    assert result["sortino"] == round(_sortino_oracle(core["net"], periods_per_year), 2)
+    assert result[benchmark_key] == round(_sortino_oracle(core["ret"], periods_per_year), 2)
+    assert result["cost_bps"] == 25.0
+
+
+@pytest.mark.parametrize("backtest", [commodity_backtest, backtest_conviction, vector_backtest])
+def test_calibrator_sortino_does_not_reward_nearly_equal_losses(backtest):
+    idx = pd.date_range("2025-01-01", periods=4, freq="D")
+    results = []
+    for returns in ([0.0, 0.104, -0.05, -0.051], [0.0, 0.04, -0.01, -0.02]):
+        close = pd.Series(100.0 * np.cumprod(1.0 + np.asarray(returns)), index=idx)
+        results.append(backtest(close, pd.Series(1.0, index=idx))["sortino"])
+    assert results[1] > results[0]
 
 
 # --------------------------------------------------------------------------- #
