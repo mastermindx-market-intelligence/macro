@@ -510,10 +510,9 @@ def _exact_date_ic_reference(universe, indicator="ema", horizon=_MATURITY_HORIZO
         if grid is None:
             grid = signals[tkr].index
 
-    first = next(iter(signals))
-    matured_dates = forwards[first].dropna().index
-    assert len(matured_dates) > 0
-    dates = grid[grid <= matured_dates[-1]][::max(1, horizon // 2)]
+    # Preserve the producer's original formation grid. Each ticker's maturity is
+    # checked independently below; a short first history cannot truncate peers.
+    dates = grid[::max(1, horizon // 2)]
 
     ics: list[float] = []
     for date in dates:
@@ -619,3 +618,48 @@ def test_characterize_ten_name_floor_is_intact():
 
     assert result["base_rate"] == {"n": 0, "insufficient": True}
     assert result["status"] == "insufficient"
+
+
+@pytest.mark.parametrize("first_bars,other_bars,expected_n", [(80, 120, 7), (400, 500, 39)])
+def test_characterize_preserves_mature_peers_with_short_first_history(
+        monkeypatch, tmp_path, first_bars, other_bars, expected_n):
+    """A short first ticker must not discard mature cross-sections from its peers."""
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=other_bars)
+    universe["S00"] = universe["S00"].iloc[:first_bars].copy()
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    persisted = json.loads((tmp_path / "indicator_characterization.json").read_text())
+    assert persisted == produced
+    result = persisted["ema"]
+    ref_n, ref_mean = _exact_date_ic_reference(universe)
+    assert ref_n == expected_n, "fixture must retain mature peers on the original grid"
+    assert result["base_rate"]["n"] == expected_n
+    assert result["status"] == "ok"
+    assert result["base_rate"]["mean_ic"] == pytest.approx(ref_mean, abs=1e-4)
+
+
+def test_characterize_missing_formation_dates_are_not_backfilled(monkeypatch, tmp_path):
+    """Missing rows cannot borrow earlier labels to pass the ten-name IC floor."""
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=80)
+    missing_date = universe["S00"].index[40]
+    # Keep the first ticker's grid intact, but leave only nine names on this date.
+    for tkr in list(universe)[1:22]:
+        universe[tkr] = universe[tkr].drop(index=missing_date)
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    persisted = json.loads((tmp_path / "indicator_characterization.json").read_text())
+    assert persisted == produced
+    ref_n, _ = _exact_date_ic_reference(universe)
+    assert ref_n == 4, "the missing formation date must remove one eligible cross-section"
+    assert persisted["ema"]["base_rate"] == {"n": 4, "insufficient": True}
+    assert persisted["ema"]["status"] == "insufficient"

@@ -858,22 +858,10 @@ def characterize(
         # Get a common date grid from the first ticker
         first_tkr = next(iter(ticker_signals))
         ref_index = ticker_signals[first_tkr][next(iter(ticker_signals[first_tkr]))].index
-        # Sample every `horizon` bars to avoid heavily overlapping forward returns
+        # Preserve the existing half-horizon formation grid. Exact-date reads
+        # below enforce maturity per ticker, including unequal history endpoints.
         step = max(1, horizon // 2)
-        # MATURITY CLAMP (#10996). `fwd` is NaN on the last `horizon` bars because that
-        # forward return has not been observed yet. Sampling those dates does not yield a
-        # missing label downstream: the `asof` read below silently substitutes the last
-        # MATURED return, so one stale return vector is reused against several different,
-        # later signal vectors and each reuse counts as fresh evidence. Truncate the grid
-        # to formation dates whose forward return has actually been observed, so an
-        # immature date can never enter the IC sample at all.
-        sample_index = ref_index
-        _ref_fwd = ticker_fwd.get(first_tkr)
-        if _ref_fwd is not None:
-            _matured = _ref_fwd.dropna()
-            sample_index = (ref_index[ref_index <= _matured.index[-1]]
-                            if len(_matured) else ref_index[:0])
-        sample_dates = sample_index[::step]
+        sample_dates = ref_index[::step]
 
         for date in sample_dates:
             # Build cross-section: ticker -> (signal_value, fwd_return)
