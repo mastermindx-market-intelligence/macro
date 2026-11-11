@@ -6,6 +6,7 @@ import errno
 import importlib.util
 import json
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -4531,8 +4532,11 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
+    # Preserve V91 coverage while bounding newly enrolled policy regressions.
+    "news-v91-vertical-proofs",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
@@ -5437,6 +5441,297 @@ def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) ->
     assert not selected, reason
 
 
+def test_sa_w4_scope_keeps_source_context_and_runtime_inputs() -> None:
+    """The real owner keeps its imports, dynamic roots and future ledger entries."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    assert job.exclusive
+    for dependency in (
+        "tests/test_standout_review.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "engine/us_board_snapshots.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_cn.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_hk.py",  # ci-trigger-closure: data
+        "engine/pick_lab/__init__.py",  # ci-trigger-closure: data
+        "engine/marketing/__init__.py",  # ci-trigger-closure: data
+        "scripts/replay_standout_books.py",  # ci-trigger-closure: data
+        "collectors/yahoo.py",  # ci-trigger-closure: data
+        "lib/market_session.py",  # ci-trigger-closure: data
+        "research/signal_engine/confluence.py",  # ci-trigger-closure: data
+        "research/__init__.py",  # ci-trigger-closure: data
+        "config.yml",  # ci-trigger-closure: data
+        "config/standout_review.yml",  # ci-trigger-closure: data
+        "data/experiments/registry_seed.json",  # ci-trigger-closure: data
+        "site/qledger/track_record.json",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/part-000999.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/unexpected.txt",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(job, [dependency]) == (dependency, "declared")
+    selected, reason = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, reason
+
+
+_SA_W4_REGISTRY_HOOKS = {
+    "track_record": "_refresh_track_record",
+    "radar_ic": "_refresh_radar_ic",
+    "calibration_hub": "_refresh_calibration_hub",
+    "vol_shock": "_refresh_vol_shock",
+    "parquet_ledger": "_refresh_parquet_ledger",
+    "qledger_promotion": "_refresh_qledger_promotion",
+    "cortex_evaluator": "_refresh_cortex_evaluator",
+}
+
+
+def _sa_w4_registry_input_paths(hook: str, row: dict, data_root: str) -> list[str]:
+    """Path selectors bound to the source expressions below; no artifact I/O."""
+    if hook not in _SA_W4_REGISTRY_HOOKS:
+        return []
+    paths = []
+    storage, track = row.get("storage"), row.get("track_json")
+    if hook in {"track_record", "vol_shock"}:
+        if isinstance(storage, str) and Path(storage).suffix == ".jsonl":
+            paths.append(storage)
+    if hook == "track_record":
+        if isinstance(track, str) and track:
+            paths.append(track)
+    elif hook == "radar_ic":
+        paths.append(track or "data/radar/radar_ic.json")  # ci-trigger-closure: data
+    elif hook == "calibration_hub":
+        selected = track or storage
+        if selected:
+            paths.append(selected)
+    elif hook == "vol_shock":
+        paths.append(data_root + "/vol_shock/log.jsonl")
+    elif hook == "parquet_ledger":
+        selected = str(track or storage or "").strip()
+        if selected.endswith(".parquet"):
+            paths.append(selected)
+    elif hook == "qledger_promotion":
+        paths.append("site/qledger/track_record.json")  # ci-trigger-closure: data
+    elif hook == "cortex_evaluator" and row.get("id"):
+        paths.append(data_root + "/neuralweb/machine_registry.jsonl")
+    return paths
+
+
+def _sa_w4_assert_paths_owned(job, paths) -> None:
+    for raw in paths:
+        assert isinstance(raw, str) and raw and "\\" not in raw, raw
+        path = posixpath.normpath(raw)
+        assert not posixpath.isabs(path) and path != ".." and not path.startswith("../"), raw
+        assert PACK._job_diff_match(job, [path]), (raw, path, job.paths)
+
+
+def _sa_w4_assert_registry_selectors(registry_source: str) -> str:
+    """Bind the ownership audit to the active hook and path-selector expressions."""
+    source = ast.parse(registry_source)
+    functions = {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+    assignments = {target.id: node.value for node in source.body if isinstance(node, ast.Assign)
+                   for target in node.targets if isinstance(target, ast.Name)}
+    hooks = assignments["_HOOKS"]
+    assert isinstance(hooks, ast.Dict)
+    assert {ast.literal_eval(key): value.id for key, value in zip(hooks.keys, hooks.values)} == _SA_W4_REGISTRY_HOOKS
+
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def assigned(function, name):
+        values = [node.value for node in ast.walk(function) if isinstance(node, ast.Assign)
+                  and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
+        assert len(values) == 1, name
+        return ast.dump(values[0], include_attributes=False)
+
+    root_returns = [ast.dump(node.value, include_attributes=False)
+                    for node in ast.walk(functions["_root"]) if isinstance(node, ast.Return)]
+    assert root_returns == [expression('config.ROOT')]
+    for function_name, reader, expected in (
+        ("_refresh_vol_shock", "vss.track_record", "vss.track_record()"),
+        ("_refresh_cortex_evaluator", "load_by_id", "load_by_id(hyp_id)"),
+    ):
+        calls = [ast.dump(node, include_attributes=False)
+                 for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and ast.dump(node.func, include_attributes=False) == expression(reader)]
+        assert calls == [expression(expected)], ("delegated reader", function_name)
+
+    expected_reads = {
+        "track_record": [("_jsonl_dates", 'e.get("storage") or ""'),
+                         ("_read_json", 'e.get("track_json") or ""')],
+        "radar_ic": [("_read_json", 'e.get("track_json") or "data/radar/radar_ic.json"')],
+        "calibration_hub": [("_read_json", 'e.get("track_json") or e.get("storage") or ""')],
+        "vol_shock": [("_jsonl_dates", 'e.get("storage") or ""')],
+        "parquet_ledger": [], "qledger_promotion": [("_read_json", '"site/qledger/track_record.json"')],
+        "cortex_evaluator": [],
+    }
+    for hook, function_name in _SA_W4_REGISTRY_HOOKS.items():
+        calls = [node for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and isinstance(node.func, ast.Name) and node.func.id in {"_read_json", "_jsonl_dates"}]
+        assert all(len(node.args) == 1 for node in calls), hook
+        actual = sorted((node.func.id, ast.dump(node.args[0], include_attributes=False)) for node in calls)
+        assert actual == sorted((reader, expression(selector)) for reader, selector in expected_reads[hook]), hook
+
+    jsonl = functions["_jsonl_dates"]
+    assert assigned(jsonl, "p") == expression('_root() / rel if rel else None')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not p or not p.exists() or p.suffix != ".jsonl"') for node in jsonl.body)
+    read_json = functions["_read_json"]
+    reads = [ast.dump(node.func.value, include_attributes=False) for node in ast.walk(read_json)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+             and node.func.attr in {"read_text", "read_bytes", "open"}]
+    assert reads == [expression('_root() / rel')]
+    parquet = functions["_refresh_parquet_ledger"]
+    assert assigned(parquet, "rel") == expression('str(e.get("track_json") or e.get("storage") or "").strip()')
+    assert assigned(parquet, "p") == expression('_root() / rel')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not rel.endswith(".parquet") or not p.exists()') for node in parquet.body)
+    parquet_reads = [node for node in ast.walk(parquet) if isinstance(node, ast.Call)
+                     and isinstance(node.func, ast.Attribute) and node.func.attr == "read_parquet"]
+    assert parquet_reads and all(node.args and ast.dump(node.args[0], include_attributes=False) ==
+                                 expression('p') for node in parquet_reads)
+
+    machine = functions["_load_machine_registry_entries"]
+    assert assigned(machine, "p") == expression('_root() / "data" / "neuralweb" / "machine_registry.jsonl"')
+    injected_hooks = [ast.literal_eval(value) for node in ast.walk(machine) if isinstance(node, ast.Dict)
+                      for key, value in zip(node.keys, node.values)
+                      if isinstance(key, ast.Constant) and key.value == "hook"]
+    assert injected_hooks == ["cortex_evaluator"]
+    seed_path = ast.literal_eval(assignments["SEED"])
+    assert seed_path == "data/experiments/registry_seed.json"
+    return seed_path
+
+
+def test_sa_w4_scope_covers_active_registry_read_paths() -> None:
+    """Audit pinned selectors and committed metadata without opening their targets."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    seed_path = _sa_w4_assert_registry_selectors(
+        (ROOT / "engine/experiments_registry.py").read_text())
+    # Read the seed from the committed blob, not the working tree: the audit
+    # must hold in every checkout profile. integration-baseline runs a sparse
+    # cone that omits data/ by design, so a working-tree read fails the whole
+    # main baseline there (1/1146, run 42945581053) even though the metadata
+    # is committed — this also honors the docstring's "without opening their
+    # targets": the blob IS the committed metadata, independent of any target
+    # checkout. (main-red-repair 2026-11-11, root-caused on #10571.)
+    seed = json.loads(subprocess.run(
+        ["git", "show", "HEAD:data/experiments/registry_seed.json"],
+        cwd=ROOT, check=True, capture_output=True, text=True).stdout)
+    config = yaml.safe_load((ROOT / "config.yml").read_text())
+    data_root = config["storage"]["data_dir"]
+    paths = [seed_path, "data/neuralweb/machine_registry.jsonl",  # ci-trigger-closure: data
+             data_root + "/neuralweb/machine_registry.jsonl"]
+    for row in seed["experiments"]:
+        paths.extend(_sa_w4_registry_input_paths(row.get("hook") or "", row, data_root))
+    _sa_w4_assert_paths_owned(job, paths)
+
+
+@pytest.mark.parametrize("before,after", [
+    ('vss.track_record()', 'vss.track_record(path="templates/new-input.jsonl")'),  # ci-trigger-closure: data
+    ('load_by_id(hyp_id)', 'load_by_id(hyp_id, root="outside")'),
+])
+def test_sa_w4_scope_detects_redirected_delegated_readers(before, after) -> None:
+    source = (ROOT / "engine/experiments_registry.py").read_text()
+    assert source.count(before) == 1
+    with pytest.raises(AssertionError, match="delegated reader"):
+        _sa_w4_assert_registry_selectors(source.replace(before, after))
+
+
+def test_sa_w4_delegated_readers_keep_declared_default_paths() -> None:
+    """The two delegated defaults must still resolve beneath configured data/."""
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def functions(path):
+        source = ast.parse((ROOT / path).read_text())
+        return source, {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+
+    def returns(function):
+        return sorted(ast.dump(node.value, include_attributes=False)
+                      for node in ast.walk(function) if isinstance(node, ast.Return))
+
+    def calls(function, name):
+        return [ast.dump(node, include_attributes=False) for node in ast.walk(function)
+                if isinstance(node, ast.Call)
+                and ast.dump(node.func, include_attributes=False) == expression(name)]
+
+    _, vol_shock = functions("engine/vol_shock_scorecard.py")
+    assert [ast.literal_eval(node) for node in vol_shock["track_record"].args.defaults] == [None]
+    assert calls(vol_shock["track_record"], "_read_log") == [expression('_read_log(_log_path(path))')]
+    assert returns(vol_shock["_log_path"]) == sorted([
+        expression('Path(path)'), expression('config.data_dir() / "vol_shock" / "log.jsonl"')])
+
+    source, metabolism = functions("engine/neuralweb/metabolism.py")
+    assert [ast.literal_eval(node) for node in metabolism["load_by_id"].args.defaults] == [None]
+    assert calls(metabolism["load_by_id"], "_load_registry") == [expression('_load_registry(root)')]
+    assert calls(metabolism["_load_registry"], "_registry_path") == [expression('_registry_path(root)')]
+    assert returns(metabolism["_registry_path"]) == sorted([
+        expression('Path(root) / "data" / "neuralweb" / "machine_registry.jsonl"'),
+        expression('Path(_cfg.data_dir()) / "neuralweb" / "machine_registry.jsonl"'),
+        expression('_REGISTRY_FILE')])
+    fallback = [node.value for node in source.body if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "_REGISTRY_FILE"
+                        for target in node.targets)]
+    assert len(fallback) == 1
+    assert ast.dump(fallback[0], include_attributes=False) == expression(
+        'Path("data") / "neuralweb" / "machine_registry.jsonl"')
+
+
+@pytest.mark.parametrize("hook,row,expected", [
+    pytest.param("track_record", {"storage": "data/example.jsonl/"},
+                 ["data/example.jsonl/"], id="jsonl_trailing_slash"),
+    pytest.param("track_record", {"storage": "data/.jsonl"}, [], id="jsonl_dotfile_not_suffix"),
+    ("track_record", {"storage": "data/example.parquet"}, []),
+    ("track_record", {"storage": "data/example.jsonl", "track_json": "site/example.parquet"},
+     ["data/example.jsonl", "site/example.parquet"]),
+    ("radar_ic", {"storage": "outside/metadata.json"}, ["data/radar/radar_ic.json"]),
+    ("calibration_hub", {"storage": "data/fallback.json", "track_json": ""}, ["data/fallback.json"]),
+    ("parquet_ledger", {"storage": "data/fallback.parquet", "track_json": "site/wrong.json"}, []),
+    ("parquet_ledger", {"track_json": " site/example.parquet "}, ["site/example.parquet"]),
+    ("vol_shock", {"storage": "data/example.jsonl"}, ["data/example.jsonl", "data/vol_shock/log.jsonl"]),
+    ("qledger_promotion", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"},
+     ["site/qledger/track_record.json"]),
+    ("cortex_evaluator", {"id": "example", "storage": "outside/metadata.json"},
+     ["data/neuralweb/machine_registry.jsonl"]),
+    ("inactive_hook", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"}, []),
+])
+def test_sa_w4_registry_selectors_distinguish_reads_from_metadata(hook, row, expected) -> None:
+    assert _sa_w4_registry_input_paths(hook, row, "data") == expected
+
+
+@pytest.mark.parametrize("hook,key,path", [
+    ("calibration_hub", "track_json", "templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "data/../templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "../outside.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "/outside.json"),  # ci-trigger-closure: data
+    pytest.param("track_record", "storage", "data/../templates/input.jsonl/",  # ci-trigger-closure: data
+                 id="jsonl_trailing_escape"),
+])
+def test_sa_w4_registry_scope_refuses_inputs_outside_owned_roots(hook, key, path) -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    selected = _sa_w4_registry_input_paths(hook, {key: path}, "data")
+    with pytest.raises(AssertionError):
+        _sa_w4_assert_paths_owned(job, selected)
+
+
+def test_us_board_rollover_suites_remain_enrolled_on_code_prs() -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "unrun-grading-board")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    for suite in (
+        "tests/test_us_board_snapshots.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_build.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_grade.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_reader_census.py",  # ci-trigger-closure: data
+    ):
+        assert commands.count(suite) == 1, suite
+
+
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     """A data-only Neural Web job must not make an A1 code PR falsely green."""
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
@@ -5703,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_953),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_711),
+    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_992),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_729),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +6008,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #8686, current-source privacy conflict composition):
+    Preserve all 401 accepted owners and both original mailer/privacy blobs.
+    Native fdd099b87cf72e8221372ef55de95efa2b7d284e owner estimation
+    confirms billing-emails 25 -> 30 for the original two-suite enrollment.
+    Carry only its +5 onto 5966/5987/5724, yielding 5971/5992/5729.
+    Keep 137/138/131 jobs, ten packs, selectors and admission limits.
+    Full inverse recovers main bbe1bcbd7b1b07ea039d3211b75cce9a3504c7dd.
+    This is source and owner-estimator proof, not full-tree timing or CI.
+    The successor still requires its own natural hosted qualification.
 
     2026-11-09 (PR #8686, actual conflict after the ledger repair landed):
     Receiving maind59a58ac retains PR10226's actual ledger+3 and the
@@ -5760,6 +6065,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Full decoded contract log SHA256:
     6d36cd720be3012ffc4cd3f8564170248ebcda2fc85c807b1be85d1e192a9496.
 
+    2026-11-10 (PR #10571, current-main preserving composition):
+    Receiver cfd3834d retains its landed F09, ownership-ledger,
+    lifecycle coverage and qualified Playwright dependency. Keep all
+    original feature postimages and the accepted unrun-grading-board coverage.
+    The unchanged owner estimator measures 40 -> 48; apply its
+    original contribution to all three established probes, yielding
+    5966/5987/5724 from current5958/5979/5716. Keep137/138/131jobs,
+    ten packs, assertions, selectors, commands, timeouts and all
+    admission limits. Preserve both entire provenance histories.
+    This is owner-estimator execution and source conservation, not
+    a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
+    both contributions share data-base-shim. Keep all original command bytes,
+    the landed F09 token and both complete histories. Canonical metadata loads
+    current main at 6 commands/11 test tokens/627 joined characters, weight28;
+    the union is 7/15/814, weight38. Crossing the 800-character bucket adds one
+    unit to the original measured lifecycle+9, so the current marginal is+10.
+    Fund 5958/5979/5716 from 5948/5969/5706; retain 137/138/131 jobs, ten packs
+    and all selectors/assertions/admission limits. The old +9 measurements
+    below stay historical. This is source accounting, not a new timing or
+    whole-tree planner run; the combined successor needs its own natural CI.
+
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
     Receiving main9a13c64 already contains both accepted filer postimages,
@@ -5806,6 +6134,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
 
+    2026-11-09 (PR #6867, preserving current F09 receiver): retain the
+    landed beneficial-ownership argument in the existing Shared Shell step
+    and append the original lifecycle enrollment after its Node handshake.
+    Current owner weight 25 -> 34 keeps exactly the original +9 contribution;
+    carry ceilings 5945/5966/5703 -> 5954/5975/5712, retaining job ceilings
+    137/138/131, ten packs and every assertion, selector and runtime limit.
+    Both original lifecycle history entries and all main provenance remain
+    at their existing anchors. This is source-derived accounting, not a new
+    paired planner measurement; natural successor CI must qualify this head.
+
     F09 C3 current-main conflict repair (2026-11-09): retain the complete
     historical paired measurement below and current main's independent history.
     The data-base-shim preimage and current weight estimator still establish
@@ -5834,6 +6172,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     funding. This is source-composition arithmetic, not a new planner run;
     old exact-base descendant UNKNOWN is unchanged, and new own CI is owed.
 
+    2026-11-09 (#6867 preserving conflict repair on main 15364780e3f3):
+    keep all 400 accepted owners and the registry/admission test additions.
+    The full data-base-shim owner preimage and runner 47164044 are unchanged
+    from the qualified 73efd50f receiver. Its original lifecycle enrollment
+    still adds exactly nine estimator units; retain the 5952/5973/5710
+    ceilings below and add no second allowance for isolated admission.
+    Preserve the nine accepted product/test/research postimages, all prior
+    provenance, job ceilings137/138/131, ten packs and admission limits.
+    This is static preserving composition, not a new full-tree measurement;
+    natural current-head CI must qualify the integrated source.
+
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
     conftest's tools/ package alias escapes static closure resolution. Its
@@ -5860,6 +6209,43 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     timeouts and admission/concurrency controls stay. This is measured planner
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
+
+    2026-11-09 (PR #10571, snapshot base/parts readers, composed on accepted
+    main 071ed19f5ce87927f078f94f3e126c24d8a0307e; code/catalog unchanged
+    from 0c9d6da89853c532701a4547b98fed21cf429237): original contract run
+    41603010215 / job125805987737 measured c77b6e49 against b48e4e15:
+    index 137/5909 -> 138/5921, free 137/5924 -> 137/5932 and
+    Prophet 131/5665 -> 131/5673, all ten packs. The new homepage entrant
+    was SA-W4's opaque traversal fallback. Its complete conservative source,
+    pytest and runtime-input declaration now excludes that unowned template;
+    engine/scripts probes remain selected. Keep all four complete rollover
+    suites in the existing broad unrun-grading-board owner.
+
+    Current owner source accounting is 40 -> 48: three run commands remain
+    three; 18 explicit test-file arguments become 22; folded command text
+    grows from 836 to 1007 characters, retaining the same //800 contribution.
+    Compose only that intentional +8 onto current 5943/5964/5701:
+    expected weight ceilings 5951/5972/5709. Job ceilings 137/138/131 and
+    ten packs stay fixed. This is deterministic source-weight composition,
+    not a new full-tree or elapsed-time measurement. Natural exact-successor
+    CI must qualify actual selection, closure, weight and packs; no extra
+    entrant or unexplained increase is funded. The historical replay UNKNOWN
+    remains fenced. Preserve every earlier provenance paragraph below.
+
+    2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
+    natural contract job 128831388767 measured head
+    f218bb91b29683dd662eb573127620aae9e2c9d6 against base
+    cc44807949756df7b2359cb2342bf89b580d863f on tested merge
+    eebf82d4e21638dda150cbb8fda0b5a923467fba (the exact head tree).
+    The existing CODE data-base-shim owner gained one intended pytest step
+    for lifecycle JS, timing lifecycle, stance and TestAppendLedger.
+    Actual probes were index137/5943->5952, free137/5964->5973 and
+    Prophet131/5701->5710, all ten packs and no newly selected jobs.
+    Fund exactly the measured +9 per probe. Preserve job ceilings137/138/131,
+    ten packs, every existing suite/assertion, owner classification,
+    selectors, dependencies, timeouts and admission/concurrency controls.
+    This is measured planner weight, not an execution-time estimate.
+    All earlier landed contributions and provenance remain below.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
