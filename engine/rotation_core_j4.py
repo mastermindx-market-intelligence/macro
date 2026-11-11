@@ -67,7 +67,8 @@ def run_j4(prices: pd.DataFrame, etf_px: pd.DataFrame, spy_px: pd.Series, pit: p
     raw = prices.pct_change(fill_method=None)
     big = raw.abs() > 0.60
     clip_log = {"n_abs_gt_60pct": int(big.sum().sum()), "n_clipped_50pct": int((raw.abs() > 0.5).sum().sum()),
-                "examples": [(c, str(i.date())) for i, c in raw[big].stack().index[:50]]}
+                "examples": [(str(c), str(pd.Timestamp(i).date())) for i, c in zip(*np.where(big.to_numpy()))][:0] or
+                            [(str(raw.columns[j]), str(raw.index[i].date())) for i, j in zip(*np.where(big.to_numpy()))][:50]}
     sr = raw.clip(-0.5, 0.5)
     er = etf_px.pct_change(fill_method=None)
     r63 = etf_px / etf_px.shift(63) - 1

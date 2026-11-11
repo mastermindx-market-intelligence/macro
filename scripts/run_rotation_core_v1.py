@@ -97,6 +97,10 @@ DEVIATIONS = [
              "turnover, TE and IR per contrast; ledger pinned; dirty-harness refusal; G6 rows labelled provisional."},
     {"kind": "convention", "text": "J5-B and B2 bond leg = VFITX before 2002-08-01 then IEF (header B2 rule applied "
              "consistently); GLD eligible for J5-B's defensive leg from its 253rd session (2005-11)."},
+    {"kind": "post_outcome_logging_fix", "text": "After the first Stage D run, the J4 clip-log 'examples' list was "
+             "found to list (ticker, first-session) pairs instead of the clipped (ticker, date) pairs (pandas stack "
+             "keeps NaN). The list was fixed and Stage D re-run once; every statistic was verified identical to the "
+             "first run (only examples, timestamps, code commit and input hashes of the code differ)."},
     {"kind": "convention", "text": "Bootstrap seeds: base 20261110 with family offsets (+1000 J2, +2000 J3, +3000 FI, "
              "+4000 J4, +500000 block sensitivity); chunks use seed+k, so adjacent tests share random streams (common "
              "random numbers, no bias)."},
