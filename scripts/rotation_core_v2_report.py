@@ -45,24 +45,28 @@ def write_selection_md(res, path):
     open(path, "w").write("\n".join(L) + "\n")
 
 
-def write_stage1_md(res, path):
-    L = ["# Rotation Core v2 — STAGE 1 (pre-1998 confirmation window, R13)", "",
-         f"{res['label']} Window {res['window'][0]} → {res['window'][1]}; selected setting {res['selected_setting']}; header "
-         f"`{res['header_sha256'][:12]}…`. Industry portfolios, not tradable. The exposure-matched mix is an after-the-fact attribution yardstick, not holdable; SPY (French market), RSP (EW proxy) and equal-weight industries are the holdable yardsticks. Dropped industry-days (no imputation): "
-         f"{res['dropped_industry_days']}.", "",
-         "| Book | vs matched mix, full | E1 1928–45 | E2 1946–97 | vs French market | vs EW proxy | vs BASE | MaxDD vs mix | Turnover | Costs/yr | False DEFEND / calm yr |",
-         "|---|---|---|---|---|---|---|---|---|---|---|"]
-    for name, key in (("H1", "H1"), ("H1 at 2× costs", "H1_at_2x_costs"), ("price-only control", "price_only_control"),
-                      ("H3", "H3"), ("H3 at 2× costs", "H3_at_2x_costs"), ("cash ablation", "cash_ablation")):
-        x = res[key]; mc = x["vs_matched_mix"]
-        L.append(f"| {name} | {_p(mc['observed'])} {_ci(mc['ci95'])} | {_p(x['eras']['E1_1928_1945']['observed'])} | "
-                 f"{_p(x['eras']['E2_1946_1997']['observed'])} | {_p(x['vs_French_market_(SPY_yardstick)']['ann'])} | "
-                 f"{_p(x['vs_EW_proxy_(RSP_yardstick)']['ann'])} | {_p(x['vs_BASE_equal_weight_industries']['ann'])} | "
-                 f"{_p(x['max_drawdown'], 1)} vs {_p(x['max_drawdown_matched_mix'], 1)} | {x['turnover_one_way_per_year']:.2f} | "
-                 f"{_p(x['costs_per_year'])} | {x['false_DEFEND_calls_per_calm_year']:.2f} |")
-    h2 = res["H2_paired_H1_minus_price_only"]
-    L += ["", f"H2 (H1 − price-only, paired): full {_p(h2['full']['ann'])} {_ci(h2['full']['ci95'])}; "
-          f"E1 {_p(h2['E1_1928_1945']['ann'])}; E2 {_p(h2['E2_1946_1997']['ann'])}.", "",
-          f"**R13 opening condition (H1 or H3 positive over its matched mix in both eras):** "
-          f"{res['opening_condition_H1_or_H3_positive_in_both_eras']}. No pooled Holm p at this stage.", ""]
+def write_final_md(res, path):
+    """Final conjunction (stage 2). Verdicts first; the 2020-2025 standalone estimate is the effect size; pooled
+    figures are labelled conditional on the gate."""
+    L = ["# Rotation Core v2 — FINAL CONJUNCTION (historical tier)", "", res["label"], "",
+         "| Hypothesis | Verdict | Failed legs | Fund veto fired |", "|---|---|---|---|"]
+    for h, v in res["verdicts"].items():
+        L.append(f"| {h} | {v['verdict']} | {len(v['failed_legs'])} of {v['legs_total']} | {v['fund_veto_fired']} |")
+    st = res["standalone_2020_2025_OUT_OF_SAMPLE_EFFECT_SIZE"]["block21"]
+    L += ["", "## 2020–2025 standalone (out-of-sample effect size; block 21; one-sided centred p governs)", "",
+          "| Reading / cost run / hypothesis | Annualised | 95% interval | p one-sided | p two-sided (labelled, not governing) |",
+          "|---|---|---|---|---|"]
+    for k, x in st.items():
+        L.append(f"| {k} | {_p(x['observed_ann'])} | {_ci(x['ci95_ann'])} | {x['p_one_sided_centred']:.4f} | "
+                 f"{x['p_two_sided_centred_LABELLED_NOT_GOVERNING']:.4f} |")
+    L += ["", "## Pooled pre-1998 + 2020–2025 (conditional on the pre-1998 gate, not an unbiased effect size)", "",
+          "| Block | Reading / cost / convention | Hypothesis | Annualised | p one-sided | Holm p | Rejected |", "|---|---|---|---|---|---|---|"]
+    for blk, d in res["pooled_CONDITIONAL_ON_GATE"].items():
+        for key, hy in d.items():
+            for h, x in hy.items():
+                hm = res["holm_m3"][blk][key][h]
+                L.append(f"| {blk}{' (sensitivity)' if blk != 'block21' else ''} | {key} | {h} | "
+                         f"{_p(x['observed_ann_CONDITIONAL_ON_GATE'])} | {x['p_one_sided_centred']:.4f} | "
+                         f"{hm['p_holm']:.4f} | {hm['reject_h0']} |")
+    L += ["", res["reporting_rule_i"], "", res["independence"], ""]
     open(path, "w").write("\n".join(L) + "\n")

@@ -1,4 +1,4 @@
-"""R15.3 reproduction check on 1998-2019: states and daily returns, old engine (1ca5228b3c) vs current."""
+"""R15.3 / R18.5 reproduction check on 1998-2019: states and daily returns, old engine (1ca5228b3c) vs current."""
 import sys, importlib, json
 import numpy as np, pandas as pd
 def load(root):
@@ -26,9 +26,24 @@ for tag, root in (("old", "/home/ubuntu2/tmp/rotation-core/repro_1ca5228b3c"), (
             books[nm] = (st, v2.simulate_states(st, legs, rf, S, E, **kw).returns)
     st3 = v2.h3_states(legs); books["H3"] = (st3, v2.simulate_states(st3, legs, rf, S, E).returns)
     res[tag] = books
-maxd, st_eq = 0.0, True
+maxd, sc_eq, wu = 0.0, True, {}
 for nm in res["old"]:
     so, ro = res["old"][nm]; sn, rn = res["new"][nm]
-    st_eq &= so.equals(sn)
+    sc = so.index >= S                                         # scored sessions: 1998-01-02 onward
+    sc_eq &= so[sc].equals(sn[so.index[sc]])
+    w = so.index[~sc]
+    diff = w[(so[w].fillna(-1) != sn[w].fillna(-1)).values]
+    if len(diff):
+        new_vals = set(sn[diff].fillna(-1))
+        assert new_vals <= ({-1} if nm == "H3" else {0}), "a warm-up difference other than S2's"
+        wu[nm] = diff
     maxd = max(maxd, float((ro - rn.reindex(ro.index)).abs().max()))
-print(json.dumps({"books": len(res["old"]), "states_identical": bool(st_eq), "max_abs_daily_return_diff": maxd}))
+print(json.dumps({"books": len(res["old"]), "scored_sessions_1998_2019_states_identical": bool(sc_eq),
+                  "max_abs_daily_return_diff": maxd}))
+def span(keys):
+    d = sorted(set().union(*[wu[k] for k in keys])) if keys else []
+    return {"books": len(keys), "sessions_max_per_book": max((len(wu[k]) for k in keys), default=0),
+            "first": str(d[0].date()) if d else None, "last": str(d[-1].date()) if d else None}
+print(json.dumps({"warmup_sessions_before_1998_changed_by_S2": {
+    "H1_family_now_NEUTRAL": span([k for k in wu if k != "H3"]),
+    "H3_now_no_state": span([k for k in wu if k == "H3"])}}))

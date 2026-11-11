@@ -26,3 +26,31 @@ def make_fixture(d, start="1926-07-01", end="1997-12-31", n_ind=49, seed=7, extr
                                                         for t, mm, r in zip(s, m, rf)]
     (d / "F-F_Research_Data_Factors_daily.csv").write_text("\n".join(f) + "\n")
     return d
+
+
+def make_fund_fixture(d, start="1998-12-22", end="2025-12-31", seed=11):
+    """Synthetic Yahoo-format parquet files (Date, Adj Close) for SPY, RSP and the SPDR funds (random; no real data)."""
+    import pyarrow as pa, pyarrow.parquet as pq
+    d = Path(d); d.mkdir(parents=True, exist_ok=True)
+    s = pd.bdate_range(start, end)
+    rng = np.random.default_rng(seed)
+    m = rng.normal(0.0003, 0.01, len(s))
+    funds = ["XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY", "XLRE", "XLC"]
+    late = {"XLRE": "2015-10-08", "XLC": "2018-06-19"}
+    series = {"SPY": m, "RSP": m + rng.normal(0, 0.002, len(s))}
+    for i, f in enumerate(funds):
+        series[f] = m * (0.4 + 0.12 * i) + rng.normal(0, 0.004, len(s))
+    for t, r in series.items():
+        px = 100 * np.cumprod(1 + r)
+        keep = s >= pd.Timestamp(late.get(t, start))
+        tbl = pa.table({"Date": pa.array(s[keep].to_pydatetime()), "Adj Close": pa.array(px[keep])})
+        pq.write_table(tbl, d / f"{t}.parquet")
+    return d
+
+
+def write_manifest(d, names=("49_Industry_Portfolios_Daily.csv", "F-F_Research_Data_Factors_daily.csv")):
+    import hashlib, json
+    d = Path(d)
+    files = {n: hashlib.sha256((d / n).read_bytes()).hexdigest() for n in names}
+    (d / "FIXTURE_MANIFEST.json").write_text(json.dumps({"files": files}))
+    return files

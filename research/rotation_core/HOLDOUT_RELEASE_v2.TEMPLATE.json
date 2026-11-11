@@ -1,5 +1,5 @@
 {
-  "_instructions": "TWO-STAGE TEMPLATE (ruling R13, HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files; the Rotation Core lead never does. Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json. Stage 2 (only if the committed stage-1 result meets the opening condition): copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json. The runner checks windows_released exactly and verifies the opening condition from the committed stage-1 result file. R15: stage 1 pins the rerun's engine commit and the rerun's selection-results commit; the runner refuses if engine/scripts/tests or the selection file differ from them.",
+  "_instructions": "TWO-STAGE TEMPLATE (R13, R16, R17, R18; HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files; the Rotation Core lead never does. Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json, commit and push it to origin/fable/rotation-core-20261110 (S5: a local-only commit is refused). Fill inputs_sha256 and versions from `python scripts/run_rotation_core_v2.py --manifest stage1` (O6). Stage 2 (only if every entry of the committed gate_history is open, R17): copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json; its engine_commit must equal the latest stage-1 run's; stage1_gate_sha256 is the sha256 of the committed results_v2_stage1_gate.json; inputs from `--manifest stage2` (the sealed files are hashed when made readable for the release). The opening list is a constant in code (H1, H3) and cannot be named in either release (R16 S1c).",
   "stage1": {
     "schema": "rotation_core.holdout_release/v2.stage1",
     "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
@@ -13,21 +13,29 @@
       "pre1998_1928_1997"
     ],
     "run_once": true,
-    "engine_commit": "<final engine commit after the R15 rerun>",
-    "selection_results_commit": "<commit holding results_v2_selection_rerun.json (R15)>"
+    "engine_commit": "<final engine commit after the R15 rerun; stage-1 runs pin it (S7)>",
+    "selection_results_commit": "<commit holding results_v2_selection_rerun.json (R15)>",
+    "selection_results_sha256": "<sha256 of results_v2_selection_rerun.json (S5)>",
+    "inputs_sha256": {
+      "industries_le2019": "<sha256>",
+      "factors": "<sha256>"
+    },
+    "versions": {
+      "python": "<>",
+      "numpy": "<>",
+      "pandas": "<>",
+      "pyarrow": "<>",
+      "scipy": "<>"
+    }
   },
   "stage2": {
     "schema": "rotation_core.holdout_release/v2.stage2",
     "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
     "released_by": "Prophet programme CEO",
     "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
-    "stage1_result_commit": "<commit of results_v2_stage1_pre1998.json>",
+    "stage1_result_commit": "<commit of research/rotation_core/results_v2_stage1_gate.json (the gate file, S7)>",
     "windows_released": [
       "2020-01-02..2025-12-31"
-    ],
-    "opening_condition_hypotheses": [
-      "H1",
-      "H3"
     ],
     "configurations": [
       "H1",
@@ -39,6 +47,23 @@
       "yardsticks",
       "pooled_holm_m3"
     ],
-    "run_once": true
+    "run_once": true,
+    "stage1_gate_sha256": "<sha256 of the committed results_v2_stage1_gate.json>",
+    "engine_commit": "<equal to the latest gate_history entry's engine_commit (S1a)>",
+    "inputs_sha256": {
+      "industries_full": "<sha256>",
+      "industries_le2019": "<sha256>",
+      "factors": "<sha256>",
+      "yahoo_SPY": "<sha256>",
+      "yahoo_RSP": "<sha256>",
+      "yahoo_XL*": "<one key per fund>"
+    },
+    "versions": {
+      "python": "<>",
+      "numpy": "<>",
+      "pandas": "<>",
+      "pyarrow": "<>",
+      "scipy": "<>"
+    }
   }
 }

@@ -35,12 +35,12 @@ R13 only ever skips reading 2020–2025 in that case. It never adds a way to pas
 
 **The lead's caveat, recorded before any number (one place where the stop is not costless).** H2's primary contrast is its own paired difference, H1 minus the price-only control, and its sign leg is on that difference. Suppose H1 and H3 both fail their pre-1998 eras while H2's paired difference is positive in both. Then R13 keeps 2020–2025 shut, and H2 never receives the test it could otherwise pass.
 
-That is a loss of power for H2, not a route to a false positive, so it is not a stop under R13's own test. The parent may name H2 in the Stage 2 release's opening-condition list if the parent wants H2 to be able to open the window. The runner reads that list from the release file.
+That is a loss of power for H2, not a route to a false positive, so it is not a stop under R13's own test. ~~The parent may name H2 in the Stage 2 release's opening-condition list if the parent wants H2 to be able to open the window. The runner reads that list from the release file.~~ *Struck by R16 S1c: the amendment governs. The opening list is the constant (H1 at the selected setting, H3) in code; no release can name or change it; a closed gate records H2 FAILED.*
 
 ## Guards (implemented in `scripts/run_rotation_core_v2.py`)
 
 - **Stage 1** requires a committed, clean `HOLDOUT_RELEASE_v2.json` whose `windows_released` is exactly `["pre1998_1928_1997"]`. It reads only the truncated `le2019` French copies, refuses any date after 1997-12-31 and any sealed path, and runs once.
-- **Stage 2** requires a second committed release, `HOLDOUT_RELEASE_v2_stage2.json`, with `windows_released` `["2020-01-02..2025-12-31"]`. It also requires a committed Stage 1 result file that satisfies the opening condition named in that release. It runs once.
+- **Stage 2** requires a second committed release, `HOLDOUT_RELEASE_v2_stage2.json`, with `windows_released` `["2020-01-02..2025-12-31"]`. It also requires the committed stage-1 gate file, every entry of whose `gate_history` is open (R17), pinned by sha256 in the release, with the same engine commit as the latest stage-1 run. It runs once. (Superseded wording: "satisfies the opening condition named in that release" — the opening list is now a constant, R16 S1c.)
 - **Order of work still open:** Sector Intelligence's reviewer findings on the engine. Stage 1 does not run until the parent forwards them or says there are none.
 
 ---
@@ -93,9 +93,9 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
   4. **First scored session:** 1928-01-02, taken from the frozen window, not from first state availability.
   5. **"Holds at 2× costs":** the stricter reading (g.2).
   6. **Drawdown condition:** "drawdown no worse than the matched mix" is assessed on the full pre-1998 window and on 2020–2025 separately, and both must hold.
-  7. **H2 at stage 1:** its era signs are recorded in the gate file but do not open the window unless the parent names H2 in the stage-2 release.
+  7. **H2 at stage 1:** ~~its era signs are recorded in the gate file but do not open the window unless the parent names H2 in the stage-2 release~~. *Superseded by R16 S1c: H2's signs are neither printed nor written at stage 1; they are inside the magnitudes hash only. H2 cannot open the window.*
   8. **Intra-month leg weighting:** OFFENCE and DEFENCE are equal weight every session over the member set fixed at month-end (R14(a) reading; the header is silent).
-- **Stage 1 is blind to magnitudes.**
+- **Stage 1 is blind to magnitudes.** *(The sealing mechanics below — mode-000 file, `open_sealed_stage1` — are superseded by R16 S6; see that section. The blind principle stands.)*
   - **What the run prints:** only the four gate signs (H1 and H3, each era), the gate result, non-return integrity diagnostics, and the sha256 of the results file. The diagnostics are session counts per era, offence-member counts, deferred executions, days holding after a last close, dropped industry-days, state counts and episode count. H2's era signs are written to the gate file, not printed.
   - **Sealing:** every return, excess, interval, p-value, drawdown and cost figure goes to `/home/ubuntu2/tmp/rotation-core/data/sealed_stage1/results_v2_stage1_pre1998.json`, written mode 000. The committed `results_v2_stage1_gate.json` carries the signs, gate result, diagnostics, engine commit and that file's sha256.
   - **Gate open:** the sealed file stays unopened; the final run recomputes pre-1998, and `verify_reproduction` refuses to print anything unless the recomputation's sha equals the sealed sha.
@@ -177,3 +177,114 @@ That is a loss of power for H2, not a route to a false positive, so it is not a 
   14. **Ties in beta ranking:** stable sort by beta then the fund order XLB … XLC (as the industry legs).
   15. **Named mapping (descriptive, hindsight):** offence XLK, defence XLP/XLU/XLV, the same H1 state, base = all eligible funds; reported beside the tier with no pass/fail.
 - **Pre-2020 fund span:** may be printed by the R15 rerun as a labelled descriptive table (not selection, not evidence). Stage 1 does not touch funds.
+
+---
+
+## R16 — nothing that decides pass or fail is written after a gate sign is known (CEO post-review batch 1, about 13:30Z)
+
+Recorded before any pre-1998 or 2020–2025 v2 number exists. Implemented in this change set; tests named in brackets.
+
+- **S1 — the whole stage-2 evaluator and the final conjunction exist now**, pinned by the same engine commit as stage 1 (`final_evaluation`, `conjunction_legs`, `fund_tier` in `scripts/run_rotation_core_v2.py`; primitives `window_arrays`, `bootstrap_draws`, `pooled_weights`, `two_sided_p`, `verdict` in the engine). Tested end to end on a synthetic fixture: pass case, every single-leg fail case (each of the 33 legs is hit), veto case, reproduction refusal on a wrong hash [`test_S1_*`].
+  - **(a)** `stage2_release` checks that its `engine_commit` equals the latest stage-1 run's, then the pinned-paths check.
+  - **(b)(i) Warm state.** Legs, beta, look-backs, armed memory, state AND holdings come from one continuous run from the first formed legs; each window is scored by slicing from its first date. No cold NEUTRAL restart.
+  - **(b)(ii) H2 pooled.** Paired daily difference H1 − price-only; the same years-weighted pooled statistic; the same stratified resample indices as H1 and H3; no mix.
+  - **(b)(iii) Holm sidedness.** The header's words: *"Holm p < 0.05 (m=3) on the pooled pre-1998 + 2020-2025 primary contrast"* (`historical_tier.pass_condition`), and *"80% power, Holm m=3"* (`power_statement_top`). It does not name a side. The frozen power figures were computed one-sided: `v2_power/power_v2_D.py:25` `k3 = z(1 - 0.05 / 3) + z(0.8)` and `v2_power/power_h1_actual_D.py:14` `inv_cdf(1 - 0.05 / 3)`, a one-sided critical value. **Dated clarification (2026-11-11, before any read):** one-sided (alternative: contrast > 0) governs, with the centred p of `rc.centred_p`; a two-sided centred p is reported beside it, labelled "not governing".
+  - **(b)(iv)** The pooled test must hold under both annualisation conventions (252 × sessions ÷ weekday sessions, and fixed 252); each convention weights the windows consistently (`pooled_weights`) [`test_S1_pooled_weights_*`].
+  - **(b)(v) Drawdown.** Checked at the base and at the strict cost run, under both leg readings, on pre-1998 and on 2020–2025. Fund drawdown is reported, not binding.
+  - **(b)(vi) Block 63.** The header's only words: *"stationary bootstrap block 21 (63 sensitivity), B=10,000"* (`unchanged`). Not binding: block 21 governs; block 63 is computed with its own seed stream and reported, labelled sensitivity.
+  - **(b)(vii)** Every sign leg of every hypothesis is computed at the base and the strict cost run (R18).
+  - **(c)** The opening list is the constant `OPENING_HYPOTHESES = ("H1", "H3")`. A stage-1 release may only repeat it; a stage-2 release that names it is refused. Stage 1 neither prints nor writes H2's signs (they are inside the magnitudes hash only). A closed gate records H2 FAILED [`test_S1c_*`, `test_S6_stage1_prints_only_signs_counts_and_hex`].
+- **S2, S3, S4, S8** — committed at `48c4d9dd4b` with the signals-only table (0 scored sessions differ in 17 books).
+- **S5** — the release pins the selection result by sha256 as well as by commit; `check_engine_commit` covers `engine/`, `scripts/`, `tests/`, the frozen header and every other file the runner reads under `research/rotation_core/` (the superseded selection file `results_v2_selection.json` and `v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt`); the selection rerun result is pinned separately by commit and sha256; stage 2 verifies the gate file's hash and reproduces the recorded magnitudes hash; a release, gate or selection file whose last commit is not contained in `origin/fable/rotation-core-20261110` after a fetch is refused [`test_S5_*`].
+- **S6 — replaces the sealing part of R13.h.** Stage 1 keeps no magnitudes file. It writes only the sixteen gate signs, NaN counts, the strict-run inequality count, integrity counts, the gate result and the sha256 of a canonical serialisation of the magnitudes. A closed gate publishes the magnitudes at once (`results_v2_stage1_pre1998_published.json`). The final run recomputes with fixed seeds and must reproduce the hash before anything prints. An exception during stage 1 prints only its type ("message withheld"). `write_sealed`, the mode-000 file and `open_sealed_stage1` are removed [`test_S6_*`].
+- **S7** — template: `stage1.engine_commit`, `stage1.selection_results_sha256`, `stage1.inputs_sha256`, `stage1.versions`; `stage2.stage1_result_commit` names the gate file; `stage2.stage1_gate_sha256`; `stage2.engine_commit`; the opening list is removed from stage 2.
+- **S9** — clarification: the arming memory `rolling(arm_memory + 1)` means armed at an age of at most 21 sessions (22 closes) [`test_S9_arming_memory_boundary_21_sessions`].
+- **S10** — silent choice: a leg is observed if any member has a close [`test_S10_*`].
+- **S11** — confirmation seeds, all in the release-pinned runner (`seeds_record()`): stage-1 standalone `20261113 + c` (block 63: `+ 500000 + c`); stage-2 standalone `20261114 + c` (`+ 500000 + c`); pooled pre-1998 stream `20261115 + c`, pooled 2020–2025 stream `20261115 + 100000 + c` (each `+ 500000` for block 63); c = chunk 0..19 of 500 resamples. **The three Holm contrasts share resample indices**: within one window and block length H1, H2, H3 and all four reading × cost runs use the same indices; the windows are resampled separately (stratified). Selection seeds stay as committed at `1ca5228b3c`.
+- **S12** — power keys labelled "Holm" are a normal approximation at the Bonferroni bound; already recorded under "Notes on the frozen header".
+- **Forward tier:** index weight is not a start condition; it may be null on any night (narrowness is descriptive with the frozen fallback).
+
+## R17 — the first gate result is final against later fixes (CEO post-review batch 2)
+
+1. Stage 2 can open only if the gate is open in the FIRST committed stage-1 run and in every later rerun of it. A closed gate, on the first run or any rerun, is closed for good for this protocol: later fixes may rerun and report pre-1998 as development data and can never open 2020–2025.
+2. After a closed gate, any successor is a new protocol carrying all trials (R13 d). After an open gate, an engine change before stage 2 forces a blind stage-1 rerun whose hash must be reproduced and whose gate must again be open.
+3. Enforced in code: the committed gate file carries a monotonic, hash-chained `gate_history` (`append_gate_entry`, `verify_chain`); each entry records `prev_chain_sha256`, the hash of all earlier entries. The runner refuses stage 2 if any entry is closed; refuses to append unless the local history extends the committed remote history (a deleted or rewritten entry is refused); refuses a second stage-1 run at the same engine commit [`test_R17_*`, `test_O8_*`].
+
+R17 was made before any confirmation read; it removes the only path found by which a fail could become a pass.
+
+## R18 — two cost runs (CEO 13:50Z; replaces O3)
+
+**Record of O3.** The CEO's first wording of O3 ("the matched mix pays no cost") was factually wrong: the mix is built from leg returns that are net of the monthly re-formation cost, so it does pay re-formation. The research lead corrected it before anything was built on it. That sentence is struck wherever it was copied; it appears nowhere else in this repository.
+
+1. **BASE run** (governs selection, the primary contrast, the Holm test and the base sign legs) — exactly what the engine computed at selection: legs carry the monthly re-formation cost at leg level at 10 bp; the book additionally pays 100 % out and 100 % in at each state switch; the matched mix is built from the same net legs and pays nothing for its daily rebalancing across legs. The one direction that favours the book: charging the mix's re-formation at leg level instead of netted across legs charges the mix the same or more in months when a member moves between legs or base membership changes. **Size on 1998–2019, counts and traded weight only, no return** (`v2_power/netting_counts_R18.py`, `.stdout`): 265 formations; months in which a member moved between offence and defence: 0; months with a base membership change: 0; months in which leg-level and netted traded weight differ: 0 for H1 (h3 b25), its price-only control and H3; traded weight per year, leg-level minus netted: 0.0000 for all three. On 1998–2019 the two charges are identical. Pre-1998 (industries entering the base) can differ; it is sealed and not measured.
+2. **STRICT run** — what "holds at 2× costs" means from now on, covering the whole conjunction (every sign leg, the pooled test under both annualisation conventions, the drawdown leg), under both leg readings: the book pays 20 bp per side on state switches AND 20 bp on the monthly re-formation of whatever it holds; the matched mix is built on GROSS leg returns and pays nothing; signals are unchanged (the relative line stays net at 10 bp, computed once). On every session the strict book return is no higher than the base run's and the strict mix return no lower, so the strict excess bounds every milder cost reading from below. Asserted session by session in a fixture test and counted at run time; a non-zero count is an integrity failure that closes the gate [`test_R18_*`, `test_O1_*`].
+3. The 10 bp reproduction against `1ca5228b3c` stays exact (`v2_power/repro_check.stdout`: scored sessions identical in all 17 books, maximum daily-return difference 0.0; warm-up sessions before 1998 changed by S2: H1-family books NEUTRAL on at most 133 sessions, 1997-01-02 → 1997-07-30; H3 without a state on 253 sessions, 1996-07-31 → 1997-07-30). In the single R15 rerun the only selection-file figures that change are the 2× rows, shown old beside new (`H1_at_2x_costs_before_R18_superseded`). The fund tier follows the same two runs (5 bp base; 10 bp on switches and re-formation with a costless mix for strict). The printed gate signs are sixteen: H1 and H3 × two eras × two leg readings × {base, strict}.
+
+R18 was made before any confirmation read and without a return; the base reading is unchanged from the engine that produced selection; the strict reading can only make passing harder.
+
+## Conventions O1–O8 (CEO post-review batch 2 and 13:46Z)
+
+- **O1 — relative line net of re-formation cost.** The net-of-re-formation-cost relative line governs because it is the reading under which the frozen signal counts were produced (97 qualifying / 83 firing at h=3; the gross reading gives 96 / 82). When the convention was recorded, the CEO had also been told its measured effect on the already-examined 1998-2019 selection window (six state-days, 0.02 pp/yr, no sign or selection change). No confirmation-window number existed. (i) The line is computed once, at the base 10 bp, by `relative_line(legs)`; no state function takes a cost argument; the state series and every execution are identical in the base and strict runs [`test_O1_states_identical_at_10_and_20bp_signal_line_computed_once`].
+- **O2 — arming memory of 22 closes** stands (S9).
+- **O3** — replaced by R18.
+- **O4 — warm-up padding** fixed by S2.
+- **O5 — NaN.** A NaN gate statistic is neither sign (`sign()` returns "NaN"); the gate fails closed; the run prints `NaN_count` for each of the sixteen statistics (non-finite statistic plus non-finite book days in the era); a non-zero count is an integrity failure reported as such [`test_O5_*`].
+- **O6 — inputs pinned.** The release carries `inputs_sha256` (sha256 of every input file's bytes) and `versions` (python, numpy, pandas, pyarrow, scipy); the runner refuses on mismatch; the gate entry records both. `--manifest stage1|stage2` prints them [`test_O6_*`].
+- **O7 — fixture dry run.** Refused unless the directory carries `FIXTURE_MANIFEST.json` whose sha256 values match the files and none of which equals a real input's hash (readable real inputs hashed; sealed French files from the recorded hashes). Every printed line begins "FIXTURE" [`test_O7_*`].
+- **O8 — run once.** The guard state is the committed file on the remote branch plus the chained `gate_history`; a deleted local marker cannot allow a second first run (stage 1, the selection rerun and the final run) [`test_O8_*`].
+
+O1–O3 are conventions, not corrections; not eligible as a later engine fix.
+
+## Limits (added)
+
+- Pre-1998 data is sealed by procedure only: the files are on disk and ordinary code can read them. The protection is the committed release, the commit pins and the record, not a technical lock.
+- Industries or sectors agreeing are never presented as that many independent confirmations: 49 industries at typical pairwise correlation are roughly 2 to 2.5 independent bets by the equal-correlation formula (8 to 12 by eigenvalue count); breadth is described as a share of members, not a count of confirmations. This rule applies to every results file and the PR draft.
+
+## Declared successor ideas, not started, not a trial of v2
+
+- An event study of the industry-breadth washout against a price-only twin (date-clustered, base rate beside hit rate). In v2 the washout sits in H1's ATTACK key in both arms, so v2 measures what breadth adds to arming, not what the washout adds to re-entry. Declared before any outcome and computed by nobody. It does not change the 55-trial count.
+
+## Conventions and silent choices as they now stand (numbered; one list for the outside readers)
+
+Items 1–15 are unchanged from above (amendment h items 1–8; F4 items 9–15), except item 5 (now R18) and item 7 (struck by S1c).
+
+1. Era-level mix built on the era alone, for the gate and the final conjunction.
+2. Annualisation 252 × sessions ÷ weekday sessions; the pooled test also under fixed 252; both must hold.
+3. Pooled construction: each window its own mix; stratified bootstrap; years-weighted mean of annualised window statistics.
+4. First scored session 1928-01-02.
+5. "Holds at 2× costs" = the R18 strict run over the whole conjunction.
+6. Drawdown no worse than the matched mix, on pre-1998 and on 2020–2025 separately, at both cost runs and both leg readings.
+7. *(Struck by S1c.)* H2's stage-1 signs are neither printed nor written; H2 cannot open the window.
+8. Intra-month leg weighting: equal every session over the month-end member set (R14(a)).
+9. Fund beta reference: SPY total return.
+10. Fund state mapping: the industry state at the last industry date on or before each fund session.
+11. Fund base under both R14 readings.
+12. Fund veto checked at the base (5 bp) and strict (10 bp switches and re-formation, costless mix) runs; any negative estimate fires it.
+13. Fund point estimate = the fund book's excess over its own matched mix on 2020–2025 alone.
+14. Beta ties: stable sort, fund order XLB … XLC.
+15. Named mapping XLK vs XLP/XLU/XLV: descriptive, hindsight, no pass/fail.
+16. **S2:** every 126-session quantity needs 126 formed-leg sessions and the SMA 50; before that the book is NEUTRAL and unarmed; H3 has no state before its momentum exists.
+17. **S3:** a missing industry-day is not a close: the level carries, the SMA is over the last 50 observed closes, and the industry is out of that day's breadth numerator and denominator.
+18. **S4:** the second reading drifts all three legs; signals stay on the governing reading (the header's words "used for the following month" and "rebalanced monthly" govern membership and the base; signals depend only on membership and the governing line).
+19. **S9/O2:** arming memory = armed at an age of at most 21 sessions (22 closes). Clarification.
+20. **S10:** a leg is observed if any member has a close.
+21. **S11:** seeds as listed under R16; shared indices across H1, H2, H3.
+22. **S1b(i):** warm state and warm holdings; scoring by slicing.
+23. **S1b(ii):** H2 pooled = paired difference, same weights and indices, no mix.
+24. **S1b(iii):** one-sided Holm governs; two-sided reported, labelled.
+25. **S1b(vi):** block 21 governs; block 63 reported as sensitivity.
+26. **O1:** the relative line is net of re-formation cost at 10 bp, computed once. Convention, not a correction.
+27. **R18 base run:** leg-level re-formation at 10 bp inside the legs; switches 100 % out and in; the mix on the same net legs, no cost for its daily rebalancing. Convention, not a correction.
+28. **O5:** NaN is neither sign; fails closed; an integrity failure closes the gate.
+
+**New silent choices made in this change set, without data (for ruling):**
+
+29. **Integrity failure closes the gate for good.** Under O5 and R18 a NaN or a strict-run violation closes the gate, and under R17 a closed gate is final. An engine bug that produced a NaN would therefore end the historical tier. Implemented as ruled; flagged because the combination was not stated.
+30. **H2's drawdown leg.** H2 has no matched mix. The leg is read as "H1's drawdown no worse than the price-only control's" (the yardstick of H2's own contrast), on both windows, both cost runs and both readings.
+31. **Fund veto for H2.** The fund point estimate for H2 is the paired difference of the fund-executed H1 and price-only books on 2020–2025; any negative estimate fires the veto, as for H1 and H3.
+32. **Gate integrity counts also close the gate.** The gate result is open only if every NaN count is 0 and the strict-run violation count is 0, as well as the sign condition.
+33. **Two-sided p:** centred, (1 + #{|d − obs| ≥ |obs|}) / (B + 1).
+34. **2020–2025 yardsticks:** SPY, RSP (Yahoo total return), BASE and the French market (added for continuity with pre-1998); named episodes E2020, E2022, E2025 from the v1 header's windows.
+35. **Descriptive state split:** H1's excess over the mix by the leg held that day (the largest start-of-day weight).
+36. **A stage-1 rerun at the same engine commit is refused**; a rerun needs an engine change (R17.2).
+37. **Selection rerun output** goes to `results_v2_selection_rerun.json` and `RESULTS_V2_SELECTION_RERUN.md`; `1ca5228b3c`'s files stay as the superseded record; the run-once guard reads the remote branch.

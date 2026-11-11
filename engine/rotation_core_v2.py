@@ -71,8 +71,6 @@ def _load_release(path: Path) -> dict | None:
 
 SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection_rerun.json"   # R15: rerun pins the setting
 SELECTED_REF = (3.0, 25.0)            # grid point selected at 1ca5228b3c (R13-g(i)); R14(d) sensitivity uses it
-SEALED_STAGE1_DIR = Path("/home/ubuntu2/tmp/rotation-core/data/sealed_stage1")
-STAGE1_SEALED = SEALED_STAGE1_DIR / "results_v2_stage1_pre1998.json"
 STAGE1_GATE = ROOT / "research/rotation_core/results_v2_stage1_gate.json"
 
 
@@ -88,57 +86,161 @@ def selected_setting(selection: Path | None = None) -> tuple[float, float]:
     return float(m.group(1)), float(m.group(2))
 
 
+BRANCH = "fable/rotation-core-20261110"
+REMOTE_REF = f"origin/{BRANCH}"
+OPENING_HYPOTHESES = ("H1", "H3")       # R16 S1c: constant; no release can name or change it
+ERAS_GATE = ("E1_1928_1945", "E2_1946_1997")
+PINNED_PATHS = ["engine", "scripts", "tests", "research/rotation_core/protocol_header_v2.json",
+                "research/rotation_core/results_v2_selection.json",                 # superseded 2x rows (R18.3)
+                "research/rotation_core/v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt"]  # O7 real-input hashes
+
+
+def _git(*a, check=True) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", str(ROOT), *a], capture_output=True, check=check)
+
+
 def check_engine_commit(commit: str) -> None:
-    """Refuse unless engine, scripts and tests at HEAD are identical to `commit` and the tree is clean."""
-    for args in (["diff", "--quiet", commit, "HEAD", "--", "engine", "scripts", "tests"],
-                 ["diff", "--quiet", "HEAD", "--", "engine", "scripts", "tests"]):
-        if subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True).returncode != 0:
-            raise SealedRefusal(f"refused: engine/scripts/tests differ from release engine_commit {commit}")
+    """Refuse unless engine, scripts, tests and the frozen header at HEAD are identical to `commit` and clean (S5)."""
+    for args in (["diff", "--quiet", commit, "HEAD", "--", *PINNED_PATHS], ["diff", "--quiet", "HEAD", "--", *PINNED_PATHS]):
+        if _git(*args, check=False).returncode != 0:
+            raise SealedRefusal(f"refused: engine/scripts/tests/header differ from release engine_commit {commit}")
 
 
-def stage1_release(release: Path = RELEASE) -> dict:
+def fetch_remote() -> None:
+    _git("fetch", "-q", "origin", f"+refs/heads/{BRANCH}:refs/remotes/{REMOTE_REF}", check=False)
+
+
+def on_remote(path: Path) -> None:
+    """S5: the commit that last touched `path` must be contained in the remote branch (a local-only commit is not
+    a release)."""
+    rel = str(Path(path).resolve().relative_to(ROOT))
+    c = _git("log", "-1", "--format=%H", "--", rel, check=False).stdout.decode().strip()
+    if not c or _git("merge-base", "--is-ancestor", c, REMOTE_REF, check=False).returncode != 0:
+        raise SealedRefusal(f"refused: {rel} is not committed on {REMOTE_REF}")
+
+
+def sha256_file(path) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def versions() -> dict:
+    import platform, numpy, pandas, pyarrow, scipy
+    return {"python": platform.python_version(), "numpy": numpy.__version__, "pandas": pandas.__version__,
+            "pyarrow": pyarrow.__version__, "scipy": scipy.__version__}
+
+
+def check_manifest(r: dict, inputs: dict) -> dict:
+    """O6: every input file's sha256 and the library versions must equal the release's manifest."""
+    got = {k: sha256_file(p) for k, p in inputs.items()}
+    if r.get("inputs_sha256") != got:
+        raise SealedRefusal("refused: input file hashes differ from the release manifest")
+    if r.get("versions") != versions():
+        raise SealedRefusal("refused: library versions differ from the release manifest")
+    return got
+
+
+def stage1_release(release: Path = RELEASE, inputs: dict | None = None) -> dict:
+    import hashlib
     r = _load_release(release)
     if r is None or r.get("windows_released") != [W_PRE]:
         raise SealedRefusal(f"refused: stage 1 needs a committed {Path(release).name} with windows_released exactly "
                             f"[\"{W_PRE}\"]")
     if r.get("protocol_header_sha256") != FROZEN_V2_SHA256:
         raise SealedRefusal("refused: release names a different header sha256")
+    if "opening_condition_hypotheses" in r and tuple(r["opening_condition_hypotheses"]) != OPENING_HYPOTHESES:
+        raise SealedRefusal("refused: the opening list is the constant (H1, H3)")
     sc = r.get("selection_results_commit", "<missing>")
-    if subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", sc, "HEAD", "--",
-                       str(SELECTION_RESULT.relative_to(ROOT))], capture_output=True).returncode != 0:
+    if _git("diff", "--quiet", sc, "HEAD", "--", str(SELECTION_RESULT.relative_to(ROOT)), check=False).returncode != 0:
         raise SealedRefusal("refused: selection results differ from the release's selection_results_commit")
+    if hashlib.sha256(Path(SELECTION_RESULT).read_bytes()).hexdigest() != r.get("selection_results_sha256"):
+        raise SealedRefusal("refused: selection results sha256 differs from the release")
     h, b = selected_setting()
     g = r.get("selected_grid_point", {})
     if (float(g.get("h_near_high_pct", -1)), float(g.get("b_breadth_drop_pp", -1))) != (h, b):
         raise SealedRefusal("refused: release names a configuration other than the committed selection")
     check_engine_commit(r.get("engine_commit", "<missing>"))
+    if inputs is not None:
+        check_manifest(r, inputs)
     return r
 
 
-def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> dict:
-    """Stage 2 opens only with a committed second release AND a committed stage-1 result that satisfies the
-    release's opening condition (checked here from the file, not from the release's word)."""
+# ------------------------------------------------------------------ R17 gate history (append-only, hash-chained)
+def chain_hash(entries: list) -> str:
+    import hashlib
+    return hashlib.sha256(canonical_bytes(entries)).hexdigest()
+
+
+def verify_chain(entries: list) -> None:
+    for i, e in enumerate(entries):
+        if e.get("prev_chain_sha256") != (chain_hash(entries[:i]) if i else None):
+            raise SealedRefusal(f"refused: gate_history entry {i} is not chained to its predecessors")
+
+
+def remote_gate_history(gate: Path = STAGE1_GATE) -> list:
     import json
+    rel = str(Path(gate).resolve().relative_to(ROOT))
+    out = _git("show", f"{REMOTE_REF}:{rel}", check=False)
+    return json.loads(out.stdout)["gate_history"] if out.returncode == 0 else []
+
+
+def append_gate_entry(gate: Path, entry: dict, remote_history: list | None) -> dict:
+    """O8/R17: a rerun appends; nothing is overwritten or deleted; a deleted local file cannot restart history."""
+    import json
+    local = json.loads(Path(gate).read_text())["gate_history"] if Path(gate).exists() else []
+    if remote_history:
+        if local[:len(remote_history)] != remote_history:
+            raise SealedRefusal("refused: local gate history does not extend the committed remote history "
+                                "(deleted or rewritten entry)")
+    verify_chain(local)
+    entry = dict(entry, run_index=len(local), prev_chain_sha256=chain_hash(local) if local else None)
+    hist = local + [entry]
+    doc = {"schema": "rotation_core.stage1_gate/v2", "header_sha256": FROZEN_V2_SHA256,
+           "opening_hypotheses": list(OPENING_HYPOTHESES), "gate_history": hist,
+           "gate_open_all_runs": all(e["gate_open"] is True for e in hist)}
+    Path(gate).write_text(json.dumps(doc, indent=1) + "\n")
+    return doc
+
+
+def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE, inputs: dict | None = None,
+                   check_remote: bool = True) -> dict:
+    """Stage 2 opens only with a committed second release AND a committed gate file whose EVERY entry is open (R17),
+    with the engine commit equal to the latest stage-1 run's, the gate file's hash pinned, the header pinned, no
+    opening list in the release (S1c), and both files on the remote branch (S5)."""
+    import json, hashlib
     r = _load_release(release2)
     if r is None or r.get("windows_released") != [W_H]:
         raise SealedRefusal(f"refused: stage 2 needs a committed {Path(release2).name} with windows_released [\"{W_H}\"]")
+    if "opening_condition_hypotheses" in r:
+        raise SealedRefusal("refused: the stage-2 release cannot name the opening list")
     if not (Path(stage1_result).exists() and _committed_clean(stage1_result)):
         raise SealedRefusal("refused: stage 2 needs the committed stage-1 gate file")
-    res = json.loads(Path(stage1_result).read_text())
-    hyps = r.get("opening_condition_hypotheses", ["H1", "H3"])
-    gs = res["gate_signs"]
-    readings = list(gs) if all(k.startswith("base_") for k in gs) else [None]
-    sig = lambda b_, h: (gs[b_] if b_ else gs).get(h)
-    ok = [h for h in hyps if all(sig(b_, h) is not None and all(sig(b_, h)[e] == "+" for e in ("E1_1928_1945", "E2_1946_1997"))
-                                 for b_ in readings)]
-    if not ok:
-        raise SealedRefusal(f"refused: opening condition not met in the committed stage-1 result for {hyps}")
-    r["_opened_by"] = ok
+    raw = Path(stage1_result).read_bytes()
+    if r.get("stage1_gate_sha256") != hashlib.sha256(raw).hexdigest():
+        raise SealedRefusal("refused: gate file hash differs from the stage-2 release")
+    if r.get("protocol_header_sha256") != FROZEN_V2_SHA256:
+        raise SealedRefusal("refused: release names a different header sha256")
+    hist = json.loads(raw)["gate_history"]
+    verify_chain(hist)
+    if not hist or not all(e["gate_open"] is True for e in hist):
+        raise SealedRefusal("refused: a stage-1 run recorded a closed gate; closed is final (R17)")
+    if r.get("engine_commit") != hist[-1]["engine_commit"]:
+        raise SealedRefusal("refused: stage-2 engine commit differs from the latest stage-1 run's")
+    check_engine_commit(r["engine_commit"])
+    if check_remote:
+        fetch_remote(); on_remote(release2); on_remote(stage1_result)
+    if inputs is not None:
+        check_manifest(r, inputs)
+    r["_gate_latest"] = hist[-1]
     return r
 
 
 def seal_guard(path, release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> None:
-    """Any path under the seal needs a valid stage-2 release (with its opening condition met)."""
+    """Any path under the seal needs a valid stage-2 release."""
     if SEALED_MARK in str(path):
         stage2_release(release2, stage1_result)
 
@@ -153,38 +255,22 @@ def canonical_bytes(obj) -> bytes:
     return (json.dumps(obj, sort_keys=True, default=float, separators=(",", ":")) + "\n").encode()
 
 
-def write_sealed(obj, path: Path = STAGE1_SEALED) -> str:
-    """Write the full stage-1 results sealed (mode 000) and return their sha256. Never prints a magnitude."""
-    import hashlib, os
-    raw = canonical_bytes(obj)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists():
-        raise SealedRefusal("refused: sealed stage-1 file already exists (run once)")
-    path.write_bytes(raw); os.chmod(path, 0)
-    return hashlib.sha256(raw).hexdigest()
+def magnitudes_sha(obj) -> str:
+    """S6: stage 1 keeps no magnitudes file; it records only this hash."""
+    import hashlib
+    return hashlib.sha256(canonical_bytes(obj)).hexdigest()
 
 
 def verify_reproduction(obj, expected_sha: str) -> None:
-    """Final run: its pre-1998 numbers must reproduce the sealed file byte for byte (by sha) before printing."""
-    import hashlib
-    got = hashlib.sha256(canonical_bytes(obj)).hexdigest()
+    """Final run: its pre-1998 recomputation must reproduce the recorded magnitudes hash before printing."""
+    got = magnitudes_sha(obj)
     if got != expected_sha:
-        raise SealedRefusal(f"refused: pre-1998 recomputation sha {got} != sealed {expected_sha}")
+        raise SealedRefusal(f"refused: pre-1998 recomputation sha {got} != recorded {expected_sha}")
 
 
-def open_sealed_stage1(gate: Path = STAGE1_GATE, release2: Path = RELEASE2, path: Path = STAGE1_SEALED) -> dict:
-    """Readable only after a recorded gate-CLOSED result, or with a valid stage-2 release."""
-    import json, os, hashlib
-    if not (Path(gate).exists() and _committed_clean(gate)):
-        raise SealedRefusal("refused: no committed stage-1 gate file")
-    g = json.loads(Path(gate).read_text())
-    if g.get("gate_open") is not False:
-        stage2_release(release2, gate)
-    os.chmod(path, 0o400)
-    raw = Path(path).read_bytes()
-    if hashlib.sha256(raw).hexdigest() != g["sealed_sha256"]:
-        raise SealedRefusal("refused: sealed file sha does not match the committed gate file")
-    return json.loads(raw)
+def sign(x) -> str:
+    """O5: a NaN is neither sign."""
+    return "NaN" if not np.isfinite(x) else ("+" if x > 0 else "-")
 
 
 def assert_stage1_window(end) -> None:
@@ -257,6 +343,7 @@ class Legs:
     returns: pd.DataFrame  # daily OFF, DEF, BASE leg returns (net of intra-leg re-formation cost at the leg level)
     valid: pd.DataFrame    # daily valid-member counts per leg
     dropped_industry_days: int
+    fee_bp: float = FEE_INDUSTRY_BP        # re-formation cost rate inside `returns` (net legs)
 
 
 def held_leg_returns(blk: np.ndarray) -> np.ndarray:
@@ -305,7 +392,8 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
         k = leg_size if leg_size is not None else len(bs) // 3
         formed[t] = (list(bs.index[-k:]), list(bs.index[:k]), list(bs.index))
     keys = pd.DatetimeIndex(sorted(formed))
-    cols = ["OFF", "DEF", "BASE", "OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"]
+    cols = ["OFF", "DEF", "BASE", "OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT",
+            "OFF_TURN", "DEF_TURN", "BASE_TURN", "OFF_DRIFT_TURN", "DEF_DRIFT_TURN", "BASE_DRIFT_TURN"]
     R = pd.DataFrame(np.nan, index=s, columns=cols)
     V = pd.DataFrame(0, index=s, columns=cols)
     unique_dropped = set()
@@ -330,6 +418,7 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
                 old = set(prev[["OFF", "DEF", "BASE"].index(col)])
                 repl = len(set(mem) - old) / max(1, len(mem))
                 R.loc[days[0], col] = (1 + R.loc[days[0], col]) / (1 + 2 * repl * fee) - 1   # re-formation cost
+                R.loc[days[0], col + "_TURN"] = 2 * repl
         # R14(b) / S4: drift reading for ALL three legs: equal weights at the month's first session, then held
         if len(days):
             for col, mem in zip(["OFF", "DEF", "BASE"], legs):
@@ -338,8 +427,11 @@ def form_legs(vw: pd.DataFrame, mkt: pd.Series, start=None, min_valid: int = 252
                 if prev is not None:
                     repl = len(set(mem) - set(prev[["OFF", "DEF", "BASE"].index(col)])) / max(1, len(mem))
                     R.loc[days[0], col + "_DRIFT"] = (1 + R.loc[days[0], col + "_DRIFT"]) / (1 + 2 * repl * fee) - 1
+                    R.loc[days[0], col + "_DRIFT_TURN"] = 2 * repl
         prev = legs
-    return Legs(formed, R, V, len(unique_dropped))
+    for c in [c for c in cols if c.endswith("_TURN")]:
+        R[c] = R[c].fillna(0.0)
+    return Legs(formed, R, V, len(unique_dropped), fee_bp)
 
 
 def observed_level_sma(vw: pd.DataFrame, n: int = 50) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -532,12 +624,27 @@ def targets_from_states(st: pd.Series, cash_for_defend: bool = False) -> pd.Data
     return T
 
 
-def base_view(legs_r: pd.DataFrame, base: str = "eq") -> pd.DataFrame:
-    """R14: 'eq' = equal weight every session over the month's set (code reading); 'drift' = equal at month start,
-    drifting. Returns OFF/DEF/BASE columns with BASE from the chosen reading."""
-    if base == "drift":                    # S4: all three legs drift; signals stay on the governing reading
-        return legs_r[["OFF_DRIFT", "DEF_DRIFT", "BASE_DRIFT"]].set_axis(["OFF", "DEF", "BASE"], axis=1)
-    return legs_r[["OFF", "DEF", "BASE"]].copy()
+def base_view(legs_r: pd.DataFrame, base: str = "eq", kind: str = "net", formed_fee_bp: float = FEE_INDUSTRY_BP,
+              book_fee_bp: float | None = None) -> pd.DataFrame:
+    """Leg returns OFF/DEF/BASE.
+    base: R14 'eq' (equal weight every session over the month's set; governing) or 'drift' (S4: all three legs
+      equal at the month's first session, then held).
+    kind (R18): 'net'   = as formed, re-formation cost at `formed_fee_bp` (BASE run: book and mix);
+                'gross' = no re-formation cost (STRICT run: the matched mix, which pays nothing);
+                'book'  = re-formation cost at `book_fee_bp` (STRICT run: the book, 20 bp industries / 10 bp funds)."""
+    suf = "_DRIFT" if base == "drift" else ""
+    names = ["OFF", "DEF", "BASE"]
+    net = legs_r[[n + suf for n in names]].set_axis(names, axis=1)
+    if kind == "net":
+        return net.copy()
+    turn = legs_r[[n + suf + "_TURN" for n in names]].set_axis(names, axis=1) if (names[0] + suf + "_TURN") in legs_r \
+        else pd.DataFrame(0.0, index=legs_r.index, columns=names)
+    gross = (1 + net) * (1 + turn * formed_fee_bp / 1e4) - 1
+    if kind == "gross":
+        return gross
+    if kind == "book":
+        return (1 + gross) / (1 + turn * book_fee_bp / 1e4) - 1
+    raise ValueError(kind)
 
 
 # --------------------------------------------------------------------------- F4: tradable fund tier
@@ -581,8 +688,10 @@ def tradable_veto(fund_estimates: dict) -> bool:
 
 
 def simulate_states(st: pd.Series, legs: Legs, rf: pd.Series, start, end, cash_for_defend=False,
-                    fee_bp=FEE_INDUSTRY_BP, name="v2", base: str = "eq") -> rc.Book:
-    R = base_view(legs.returns, base).loc[start:end]
+                    fee_bp=FEE_INDUSTRY_BP, name="v2", base: str = "eq", strict: bool = False) -> rc.Book:
+    """BASE run (strict=False): legs net of re-formation at legs.fee_bp; switches at fee_bp.
+    STRICT run (R18): switches at fee_bp (the caller passes 2x) and re-formation of held legs at the same 2x rate."""
+    R = (base_view(legs.returns, base, "book", legs.fee_bp, fee_bp) if strict else base_view(legs.returns, base)).loc[start:end]
     avail = legs.valid[["OFF", "DEF", "BASE"]].loc[start:end] > 0
     return rc.simulate(targets_from_states(st.loc[start:end], cash_for_defend), R, rf.reindex(R.index),
                        fee_bp, name, start=pd.Timestamp(start), end=pd.Timestamp(end), avail=avail,
@@ -599,7 +708,7 @@ def ann_factor(idx) -> float:
     return float(rc.TRADING_DAYS) * len(idx) / wk if wk else float(rc.TRADING_DAYS)
 
 
-def window_excess(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z) -> float:
+def window_excess(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z, ann: float | None = None) -> float:
     """THE gate / sign-leg statistic (R13-g): annualised mean daily excess of the book over its exposure-matched
     static mix, the mix built from the book's own average weights on [a, z] alone; annualised by observed sessions
     per year in [a, z]. One function for the gate and for the final conjunction."""
@@ -611,7 +720,7 @@ def window_excess(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z) ->
     W = np.concatenate([W, 1 - W.sum(axis=1, keepdims=True)], axis=1)
     L = np.concatenate([legs_r.loc[ii, ["OFF", "DEF", "BASE"]].fillna(0).values,
                         cash.reindex(ii).fillna(0).values[:, None]], axis=1)
-    return float(matched_mix_stat(r[None], W[None], L[None], ann=ann_factor(ii))[0])
+    return float(matched_mix_stat(r[None], W[None], L[None], ann=ann_factor(ii) if ann is None else ann)[0])
 
 
 def matched_mix_stat(r, w, legs_r, ann: float = rc.TRADING_DAYS):
@@ -640,3 +749,95 @@ def matched_contrast(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, mask,
     dist = np.concatenate(out)
     return {"observed": obs, "ci95": rc.ci95(dist), "p_one_sided_centred": rc.centred_p(dist, obs),
             "se": float(np.nanstd(dist, ddof=1)), "finite_draws": rc.finite_draws(dist), "n": int(len(r))}
+
+
+# --------------------------------------------------------------------------- S1: stage-2 evaluator primitives
+LEG_COLS = ["OFF", "DEF", "BASE"]
+
+
+def window_arrays(book: rc.Book, legs_r: pd.DataFrame, cash: pd.Series, a, z):
+    """Daily book return r, start-of-day weights W (OFF, DEF, BASE, cash) and leg returns L on [a, z]."""
+    idx = book.returns.index
+    ii = idx[(idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z))]
+    r = book.returns.loc[ii].to_numpy(dtype=float)
+    W = book.holdings.loc[ii, LEG_COLS].to_numpy(dtype=float)
+    W = np.concatenate([W, 1 - W.sum(axis=1, keepdims=True)], axis=1)
+    L = np.concatenate([legs_r.loc[ii, LEG_COLS].fillna(0).to_numpy(dtype=float),
+                        cash.reindex(ii).fillna(0).to_numpy(dtype=float)[:, None]], axis=1)
+    return ii, r, W, L
+
+
+def mix_series(W: np.ndarray, L: np.ndarray) -> np.ndarray:
+    """The exposure-matched static mix's daily return: the window's own average weights times the legs."""
+    return L @ W.mean(axis=0)
+
+
+def max_drawdown(x) -> float:
+    x = np.asarray(x, dtype=float)
+    if not len(x) or not np.all(np.isfinite(x)):
+        return float("nan")
+    v = np.cumprod(1 + x)
+    return float((v / np.maximum.accumulate(v) - 1).min())
+
+
+def raw_mix_excess(r, W, L) -> float:
+    """Mean daily excess over the matched mix, not annualised: mean(r) - sum_k mean(W_k) mean(L_k). Algebraically
+    the same quantity as matched_mix_stat / ann (the mix weights are constant within a sample)."""
+    return float(r.mean() - (W.mean(axis=0) * L.mean(axis=0)).sum())
+
+
+def bootstrap_draws(series: dict, B: int, block: int, seed: int, chunk: int = 500) -> dict:
+    """Stationary-bootstrap draws of each statistic on ONE window, all keys sharing the same resample indices.
+    series[key] = ("mix", r, W, L) -> mean(r) - sum_k mean(W_k) mean(L_k) per resample (mix rebuilt per resample);
+                  ("paired", d)    -> mean(d) per resample.
+    Returns key -> (B,) raw (daily, not annualised) draws. Chunk c uses seed + c."""
+    n = len(next(iter(series.values()))[1])
+    out = {k: [] for k in series}
+    done, c = 0, 0
+    while done < B:
+        b = min(chunk, B - done)
+        ii = rc.stationary_bootstrap_indices(n, b, block, seed + c)
+        for k, s in series.items():
+            if s[0] == "paired":
+                out[k].append(s[1][ii].mean(axis=1))
+            else:
+                _, r, W, L = s
+                m = r[ii].mean(axis=1)
+                for j in range(W.shape[1]):
+                    m = m - W[:, j][ii].mean(axis=1) * L[:, j][ii].mean(axis=1)
+                out[k].append(m)
+        done += b; c += 1
+    return {k: np.concatenate(v) for k, v in out.items()}
+
+
+def two_sided_p(dist: np.ndarray, obs: float) -> float:
+    """Two-sided centred p (reported beside the governing one-sided p, labelled)."""
+    d = np.asarray(dist, dtype=float)
+    if not np.isfinite(obs):
+        return float("nan")
+    return float((1 + np.sum(np.isfinite(d) & (np.abs(d - obs) >= abs(obs)))) / (len(d) + 1))
+
+
+def pooled_weights(windows: list, convention: str) -> np.ndarray:
+    """R15.5 / S1b(iv): weight c_w on each window's RAW mean daily statistic so that the pooled value is the
+    years-weighted mean of the windows' annualised statistics. 'weekday': ann_w = 252 n_w / weekday_w, years_w =
+    n_w / ann_w; 'fixed252': ann_w = 252, years_w = n_w / 252. Pooled = sum_w years_w ann_w m_w / sum_w years_w
+    = sum_w n_w m_w / sum_w years_w."""
+    n = np.array([len(ix) for ix in windows], dtype=float)
+    if convention == "weekday":
+        ann = np.array([ann_factor(ix) for ix in windows])
+    elif convention == "fixed252":
+        ann = np.full(len(windows), float(rc.TRADING_DAYS))
+    else:
+        raise ValueError(convention)
+    years = n / ann
+    return n / years.sum()
+
+
+def verdict(legs: dict, veto: bool | None) -> str:
+    """Final label for one hypothesis. legs: name -> bool (every leg of the conjunction)."""
+    if not all(v is True for v in legs.values()):
+        return "FAIL"
+    if veto:
+        return "signal not shown to be tradable"
+    return "survives falsification on history"

@@ -210,7 +210,8 @@ def _selection_points_at_committed_original(monkeypatch):
 def _good_release(tmp_path, name="r1.json", **over):
     body = {"windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
             "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "X",
-            "selection_results_commit": "HEAD"}
+            "selection_results_commit": "HEAD",
+            "selection_results_sha256": __import__("hashlib").sha256(ORIG_SELECTION.read_bytes()).hexdigest()}
     body.update(over)
     p = tmp_path / name; p.write_text(_json.dumps(body)); return p
 
@@ -262,97 +263,27 @@ def test_stage2_refused_without_second_release(tmp_path):
         v2.stage2_release(tmp_path / "none.json", tmp_path / "gate.json")
 
 
-def _gate(tmp_path, h1="+-", h3="++", h2="++", open_=True, h3_drift=None):
-    p = tmp_path / "gate.json"
-    sg = lambda x: {"E1_1928_1945": x[0], "E2_1946_1997": x[1]}
-    eq = {"H1": sg(h1), "H3": sg(h3), "H2": sg(h2)}
-    dr = {"H1": sg(h1), "H3": sg(h3_drift or h3), "H2": sg(h2)}
-    p.write_text(_json.dumps({"gate_signs": {"base_eq": eq, "base_drift": dr}, "gate_open": open_, "sealed_sha256": "x"}))
-    return p
-
-
-def test_stage2_checks_opening_condition_from_the_committed_gate_file(tmp_path, monkeypatch):
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
-    r2 = _rel(tmp_path, "r2.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3"])
-    assert v2.stage2_release(r2, _gate(tmp_path))["_opened_by"] == ["H3"]
-    with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(r2, _gate(tmp_path, h1="+-", h3="-+"))
-    with pytest.raises(v2.SealedRefusal):     # R14(c): H3 positive under eq but not drift -> closed
-        v2.stage2_release(r2, _gate(tmp_path, h3="++", h3_drift="+-"))
-    r2h2 = _rel(tmp_path, "r2b.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3", "H2"])
-    assert v2.stage2_release(r2h2, _gate(tmp_path, h1="+-", h3="-+"))["_opened_by"] == ["H2"]
-
-
 def test_stage2_release_with_wrong_window_refused(tmp_path, monkeypatch):
     monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    g = tmp_path / "gate.json"; g.write_text(_json.dumps({"gate_history": []}))
     with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), _gate(tmp_path))
+        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), g, check_remote=False)
 
 
-@pytest.fixture(scope="module")
-def blind_run(tmp_path_factory):
-    import io, contextlib
+def test_gate_statistic_is_the_same_function_as_the_era_point_estimate(tmp_path):
+    """R13-g.3: window_excess (gate, conjunction) equals matched_contrast's era point estimate."""
     import scripts.run_rotation_core_v2 as run
-    v2.SELECTION_RESULT = ORIG_SELECTION
-    d = tmp_path_factory.mktemp("blind")
-    fx = make_fixture(d / "fx")
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        g = run.blind_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv",
-                             d / "sealed.json", d / "gate.json", B_=20, engine_commit="fixture")
-    return d, fx, g, buf.getvalue()
-
-
-def test_stage1_stdout_has_no_magnitudes(blind_run):
-    import re
-    d, fx, g, out = blind_run
-    assert not re.search(r"\d\.\d", out), "a decimal number was printed at stage 1"
-    assert set(g["gate_signs"]["base_eq"]["H1"].values()) <= {"+", "-"}
-    assert set(g["gate_signs"]) == {"base_eq", "base_drift"}
-
-
-def test_sealed_file_unreadable_without_stage2_release_or_closed_gate(blind_run, monkeypatch, tmp_path):
-    d, fx, g, out = blind_run
-    import os, stat
-    assert stat.S_IMODE(os.stat(d / "sealed.json").st_mode) == 0
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
-    gate_open = dict(g, gate_open=True); gp = tmp_path / "g_open.json"; gp.write_text(_json.dumps(gate_open))
-    with pytest.raises(v2.SealedRefusal):                       # open gate, no stage-2 release
-        v2.open_sealed_stage1(gp, tmp_path / "no_r2.json", d / "sealed.json")
-    gate_closed = dict(g, gate_open=False); gc = tmp_path / "g_closed.json"; gc.write_text(_json.dumps(gate_closed))
-    res = v2.open_sealed_stage1(gc, tmp_path / "no_r2.json", d / "sealed.json")   # recorded closed gate: readable
-    assert "base_eq" in res and "H1" in res["base_eq"]
-    os.chmod(d / "sealed.json", 0)
-
-
-def test_reproduction_check_fails_on_a_one_byte_difference(blind_run, monkeypatch, tmp_path):
-    import os
-    d, fx, g, out = blind_run
-    os.chmod(d / "sealed.json", 0o400)
-    raw = (d / "sealed.json").read_bytes(); os.chmod(d / "sealed.json", 0)
-    obj = _json.loads(raw)
-    v2.verify_reproduction(obj, g["sealed_sha256"])             # identical recomputation passes
-    obj["label"] = obj["label"] + " "                            # one byte
-    with pytest.raises(v2.SealedRefusal):
-        v2.verify_reproduction(obj, g["sealed_sha256"])
-
-
-def test_recomputation_on_fixture_is_byte_identical(blind_run):
-    import scripts.run_rotation_core_v2 as run
-    d, fx, g, out = blind_run
-    res, gate, integ = run.compute_pre1998(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=20)
-    v2.verify_reproduction(res, g["sealed_sha256"])
-
-
-def test_gate_statistic_is_the_same_function_as_the_era_point_estimate(blind_run):
-    import os
-    d, fx, g, out = blind_run
-    os.chmod(d / "sealed.json", 0o400); res = _json.loads((d / "sealed.json").read_bytes()); os.chmod(d / "sealed.json", 0)
-    for b_ in ("base_eq", "base_drift"):
-        for h_ in ("H1", "H3"):
-            for e, x in res[b_][h_]["eras"].items():
-                assert x["window_excess"] == pytest.approx(x["observed"], abs=1e-15)   # matched_contrast == window_excess
-                assert g["gate_signs"][b_][h_][e] == ("+" if x["window_excess"] > 0 else "-")
+    fx = make_fixture(tmp_path / "fx", start="1940-01-01")
+    D = run.build(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", v2.PRE_END, 3.0, 25.0)
+    for reading in ("eq", "drift"):
+        for cost in ("base", "strict"):
+            bks, LR = run.run_books(D["legs"], D["states"], D["rf"], v2.PRE_END, reading, cost)
+            for k in ("H1", "H3"):
+                idx = bks[k].returns.index
+                for a_, z in (("1950-01-03", "1969-12-31"), ("1970-01-02", "1997-12-31")):
+                    m = pd.Series((idx >= a_) & (idx <= z), index=idx)
+                    mc = v2.matched_contrast(bks[k], LR, D["rf"], m, B=5)
+                    assert v2.window_excess(bks[k], LR, D["rf"], a_, z) == pytest.approx(mc["observed"], abs=1e-15)
 
 
 def test_R14_drift_base_hand_example():
