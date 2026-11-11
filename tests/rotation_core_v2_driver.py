@@ -6,11 +6,39 @@ temporary repository and fixtures; the only stubs are the host API (a chain buil
 history) and the engine-commit check, passed through `main(_ctx=...)`, which the command line never sets.
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+SYSTEM_TMP = os.path.realpath("/tmp")
+PATH_KEYS = ("root", "ledger_path", "release1", "release2", "selection", "ind_d", "ind_full", "fact", "fund_dir",
+             "final_j", "final_m", "stage1_published", "ledger_status_j", "ledger_status_m")
+
+
+def _under_tmp(p) -> bool:
+    r = os.path.realpath(str(p))
+    return r == SYSTEM_TMP or r.startswith(SYSTEM_TMP + os.sep)
+
+
+def check_config_paths(cfg: dict) -> None:
+    """R27.1(c): BEFORE importing the runner, every path in the config lies under the system temporary directory and
+    the remote is a local path there. (R27.1(a) in the runner is the control; this is the belt.)"""
+    c = cfg.get("ctx", {})
+    paths = [c[k] for k in PATH_KEYS if k in c] + [p for k in ("stage1_inputs", "stage2_inputs")
+                                                   for p in c.get(k, {}).values()]
+    paths += [cfg[k] for k in ("origin", "out", "capture_keys") if cfg.get(k)]
+    if "remote_url" in c:
+        paths.append(c["remote_url"])
+    bad = [p for p in paths if not _under_tmp(p)]
+    if bad:
+        raise SystemExit(f"refused: the driver accepts only paths under {SYSTEM_TMP} (R27.1(c))")
+
+
+if __name__ == "__main__":
+    check_config_paths(json.loads(Path(sys.argv[1]).read_text()))
+
 sys.path.insert(0, str(ROOT))
 
 from engine import rotation_core_v2 as v2  # noqa: E402
@@ -34,7 +62,8 @@ def host_stub(work, branch):
         if "/rules/branches/" in path:
             return [{"type": "non_fast_forward"}, {"type": "deletion"}]
         if "/rulesets/" in path:
-            return {"id": v2.RULESET_ID, "enforcement": "active", "bypass_actors": [], "updated_at": "stub"}
+            return {"id": v2.RULESET_ID, "enforcement": "active", "bypass_actors": [], "updated_at": "stub",
+                    "stub": True}
         raise AssertionError(path)
     return api
 

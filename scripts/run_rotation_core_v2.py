@@ -1182,6 +1182,15 @@ def check_witness(r2: dict, led, ctx) -> None:
     added = [c for c, b in v2.file_versions(rel, led.remote_sha, ctx.root) if v2.sha256_bytes(b) == start["release_sha256"]]
     if not added or w["release_commit"] != added[0]:
         raise v2.SealedRefusal("refused: witnessed release_commit is not the commit that added the stage-1 release")
+    import datetime                                                  # R27.5: the witness answered `match` after the GATE
+    ts = lambda x: datetime.datetime.fromisoformat(str(x).replace("Z", "+00:00"))
+    conf = r2.get("witness_confirmation_utc")
+    try:
+        ok = bool(conf) and ts(conf) > ts(gate["utc"])
+    except (ValueError, KeyError):
+        ok = False
+    if not ok:
+        raise v2.SealedRefusal("refused: witness_confirmation_utc is missing or not later than the gate record")
 
 
 class Ctx:
@@ -1229,37 +1238,129 @@ def verified_ledger(ctx=None) -> tuple:
     root = Path(ctx.root).resolve()
     docs = v2.check_release_history({p.name: v2.file_versions(str(Path(p).resolve().relative_to(root)), sha, ctx.root)
                                      for p in (ctx.release1, ctx.release2)}, entries)
-    v2.validate_ledger(entries, led.version_entries(), docs)
+    v2.validate_ledger(entries, led.version_entries(), docs, real=is_real(ctx))      # R27.1(b)
     return led, sha, entries
 
 
 SEALED_STAGES = ("pre1998", "confirm")
+RUNNER_SCRIPT = ROOT / "scripts/run_rotation_core_v2.py"
 
 
-def start_checks(argv: list, _ctx) -> None:
+def _inside(p, base) -> bool:
+    import os
+    if p is None:
+        return False
+    r, b = os.path.realpath(p), os.path.realpath(base)
+    return r == b or r.startswith(b + os.sep)
+
+
+def is_real(ctx) -> bool:
+    """R27.1: a context is REAL if root, ledger or a release path lies at or inside the real repository (real path), or
+    the remote URL is the pinned one, or branch + remote name the real branch on the real remote."""
+    return (any(_inside(x, ROOT) for x in (ctx.root, ctx.ledger_path, ctx.release1, ctx.release2))
+            or ctx.remote_url == v2.REMOTE_URL or (ctx.branch == v2.BRANCH and ctx.remote_url == v2.REMOTE_URL))
+
+
+def sealed_stage_gate(stage: str, _ctx, ctx) -> None:
+    """R27.1(a), after parse_args, for a sealed stage."""
+    import os
+    if _ctx is None:                                                 # the real run
+        main_file = getattr(sys.modules.get("__main__"), "__file__", None)
+        if not main_file or os.path.realpath(main_file) != os.path.realpath(RUNNER_SCRIPT):
+            raise v2.SealedRefusal("refused: a sealed stage runs only as `python -E scripts/run_rotation_core_v2.py`")
+        if "pytest" in sys.modules or any(k.startswith("PYTEST_") for k in os.environ):
+            raise v2.SealedRefusal("refused: a sealed stage never runs under pytest")
+        if sys.flags.optimize != 0:
+            raise v2.SealedRefusal("refused: a sealed stage never runs with -O")
+        return
+    if is_real(ctx):                                                 # a supplied context touching anything real
+        if ctx.host_api is not None or ctx.engine_check is not v2.check_engine_commit:
+            raise v2.SealedRefusal("refused: a supplied context that touches the real repository must use the real "
+                                   "host and engine checks")
+        rel = ctx.release1 if stage == "pre1998" else ctx.release2
+        if Path(rel).exists():
+            raise v2.SealedRefusal("refused: a supplied context that touches the real repository found a file at its "
+                                   "release path; refused before reading it")
+        return                                                       # ends in the missing-release refusal
+    for p in (ctx.root, ctx.ledger_path, ctx.release1, ctx.release2):   # a test context
+        if not _inside(p, v2.SYSTEM_TMP):
+            raise v2.SealedRefusal("refused: a test context's root, ledger and releases must lie under the system "
+                                   "temporary directory")
+    url = str(ctx.remote_url)
+    if "://" in url or url.startswith("git@") or not os.path.isabs(url):
+        raise v2.SealedRefusal("refused: a test context's remote must be a local filesystem path")
+
+
+def pre_lock_checks(argv: list, _ctx) -> None:
     """Before anything else: R26.2 no sealed stage with the real context while pytest is loaded; R25.1(a) -E enforced,
-    not interactive; R26.1 leftover private object directories removed unread; R26.4 environment; R26.3 import
-    environment and untracked/ignored code files."""
-    if _ctx is None and "pytest" in sys.modules and any(a in SEALED_STAGES for a in argv):
+    not interactive; R27.2 no loader or temporary-directory override."""
+    if _ctx is None and "pytest" in sys.modules and any(a in SEALED_STAGES or a.split("=", 1)[-1] in SEALED_STAGES
+                                                         for a in argv):
         raise SystemExit("refused: a sealed stage is never run with the real context while pytest is loaded (R26.2)")
     if not sys.flags.ignore_environment or sys.flags.inspect or sys.flags.interactive:
         raise SystemExit("refused: run as `python -E scripts/run_rotation_core_v2.py ...` (ignore_environment set, "
                          "not interactive, no inspect) (R25.1(a))")
+    v2.check_runtime_env()
+
+
+def start_checks(argv: list, _ctx) -> None:
+    """Under the lock (R27.3): R26.1 leftover private object directories removed unread; R26.4 environment; R27.2
+    repository-scope config and the gh socket; R25.3 tools; R26.3 import environment and untracked/ignored code."""
     v2.cleanup_leftover_object_dirs()
     v2.check_env_vars()
+    v2.check_repo_config(ROOT)
+    v2.tool("git"); v2.tool("gh"); v2.tool_versions()
     v2.check_import_environment(ROOT)
     v2.check_worktree_code(ROOT)
 
 
 def main(argv=None, _ctx=None) -> int:
-    import json
     argv = list(sys.argv[1:] if argv is None else argv)
-    start_checks(argv, _ctx)
+    preflight = "--preflight" in argv
+    try:
+        v2.no_core()                                                 # R27.6: first, every invocation
+        pre_lock_checks(argv, _ctx)
+        with v2.RunLock():                                           # R27.3: one invocation at a time
+            start_checks(argv, _ctx)
+            return _main(argv, _ctx)
+    except (v2.SealedRefusal, SystemExit) as e:
+        if preflight and isinstance(e.args[0] if e.args else None, str):
+            print(f"PREFLIGHT REFUSED: {e}")                         # the first refusal, nothing else
+            return 4
+        raise
+
+
+def preflight(ctx) -> int:
+    """R27.4: every start check (done before this point under the lock) plus the remote, the host record, the
+    ledger's chain and history, and the engine commit (the code at HEAD, clean, imported as committed). Reads no
+    release file, no data; writes nothing; pushes nothing."""
+    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url, code_root=ROOT)
+    sha = led.fetch()
+    rec = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
+    led.require_local_equals_remote()
+    ents = led.entries()
+    v2.verify_chain(ents)
+    for i, vv in enumerate(led.version_entries()):
+        if ents[:len(vv)] != vv:
+            raise v2.SealedRefusal(f"refused: committed ledger version {i} is not a prefix of the current ledger")
+    if is_real(ctx):
+        v2.check_real_host_records(ents)
+    head = v2._git("rev-parse", "HEAD", root=ctx.root).stdout.decode().strip()
+    v2.check_engine_commit(head, ctx.root)
+    print(f"PREFLIGHT PASS head {head} ledger_entries {len(ents)} activity_entries {rec['activity_entries']} "
+          f"ruleset {rec['ruleset_id']}")
+    return 0
+
+
+def _main(argv: list, _ctx) -> int:
+    import json
     ctx = _ctx or Ctx()
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--stage", choices=["select", "pre1998", "confirm"])
     ap.add_argument("--manifest", choices=["stage1", "stage2"], help="print input sha256 and library versions only")
+    ap.add_argument("--preflight", action="store_true",
+                    help="R27.4: run every start check and print PASS or the first refusal (reads no release or data)")
     ap.add_argument("--ledger-report", action="store_true",
                     help="R25.1(c): write the status the remote ledger proves (default-closed) and print its headline")
     ap.add_argument("--rehearsal", action="store_true",
@@ -1267,6 +1368,10 @@ def main(argv=None, _ctx=None) -> int:
     ap.add_argument("--dry-run-stage1-fixture", action="store_true",
                     help="stage 1 end to end on in-memory synthetic inputs from the committed generator (no path)")
     a = ap.parse_args(argv)
+    if a.stage in SEALED_STAGES:
+        sealed_stage_gate(a.stage, _ctx, ctx)                         # R27.1(a)
+    if a.preflight:
+        return preflight(ctx)
     if a.ledger_report:
         led, sha, entries = verified_ledger(ctx)
         st = ledger_status(entries)
@@ -1307,6 +1412,8 @@ def main(argv=None, _ctx=None) -> int:
         led, sha, entries = verified_ledger(ctx)
         rel1 = v2.stage1_release(ctx.release1, inputs=ctx.stage1_inputs, remote_sha=sha, root=ctx.root,
                                  selection=ctx.selection, engine_check=ctx.engine_check)
+        if ctx.engine_check is v2.check_engine_commit:
+            led.engine_commit = rel1["engine_commit"]               # R27.4: blob equality before each record push
         ins_sha = {k: v2.sha256_file(p) for k, p in ctx.stage1_inputs.items()}
         e = stage1_command(led, rel1, v2.sha256_file(ctx.release1), rel1["engine_commit"], ctx.stage1_inputs["industries_le2019"],
                            ctx.stage1_inputs["factors"], ins_sha, B_=ctx.B, publish_path=ctx.stage1_published,
@@ -1320,6 +1427,8 @@ def main(argv=None, _ctx=None) -> int:
         v2.check_release_pins(r2, sha, ctx.root, led)               # R22.2: branch head and gate commit
         check_witness(r2, led, ctx)                                  # R26.5
         ctx.engine_check(r2["engine_commit"])
+        if ctx.engine_check is v2.check_engine_commit:
+            led.engine_commit = r2["engine_commit"]
         with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
             ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)
             res = confirm_command(led, r2, v2.sha256_file(ctx.release2), r2["engine_commit"], ctx.ind_d, ctx.ind_full,

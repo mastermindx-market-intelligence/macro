@@ -56,10 +56,10 @@ def _committed_clean(path: Path, root: Path = None) -> bool:
     except ValueError:
         return False                                   # outside the repo: never counts as committed
     try:
-        subprocess.run([tool("git"), "-C", str(root), "ls-files", "--error-unmatch", rel], check=True, capture_output=True)
+        _git("ls-files", "--error-unmatch", rel, root=root)
     except subprocess.CalledProcessError:
         return False
-    out = subprocess.run([tool("git"), "-C", str(root), "status", "--porcelain", "--", rel], capture_output=True).stdout
+    out = _git("status", "--porcelain", "--", rel, root=root, check=False).stdout
     return out.strip() == b""
 
 
@@ -121,28 +121,113 @@ def check_env_vars() -> None:
             raise SealedRefusal(f"refused: the environment variable {k} is set")
 
 
+RUNTIME_REFUSED = ("LD_PRELOAD", "LD_LIBRARY_PATH", "LD_AUDIT", "TMPDIR", "TEMP", "TMP")
+OBJ_BASE = "/dev/shm"          # R27.2: the private object directory never touches a disk
+LOCK_PATH = "/dev/shm/rotation_core_v2.lock"
+SYSTEM_TMP = "/tmp"            # TMPDIR / TEMP / TMP are refused, so this is the system temporary directory
+
+
+def no_core() -> None:
+    """R27.6: no core file and no apport report: RLIMIT_CORE = 0 (inherited by children) and PR_SET_DUMPABLE = 0.
+    Refuses if either call fails."""
+    import ctypes, resource
+    try:
+        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+        libc = ctypes.CDLL(None, use_errno=True)
+        if libc.prctl(4, 0, 0, 0, 0) != 0:                    # PR_SET_DUMPABLE = 4
+            raise OSError(ctypes.get_errno(), "prctl")
+        if libc.prctl(3, 0, 0, 0, 0) != 0:                    # PR_GET_DUMPABLE = 3 -> must read 0
+            raise OSError("dumpable")
+    except (OSError, ValueError, AttributeError) as e:
+        raise SealedRefusal(f"refused: could not disable core dumps ({type(e).__name__})") from None
+
+
+def check_runtime_env() -> None:
+    """R27.2: the runner's own process refuses loader and temporary-directory overrides; /dev/shm must exist."""
+    import os
+    for k in RUNTIME_REFUSED:
+        if k in os.environ:
+            raise SealedRefusal(f"refused: the environment variable {k} is set")
+    if not os.path.isdir(OBJ_BASE):
+        raise SealedRefusal(f"refused: {OBJ_BASE} is absent")
+
+
+# R27.2: repository-scope config ALLOWLIST (common .git/config and the worktree config), each with its reason.
+REPO_CONFIG_ALLOWED = [
+    (r"core\.(repositoryformatversion|filemode|bare|logallrefupdates|ignorecase|precomposeunicode)", "git defaults"),
+    (r"extensions\.worktreeconfig", "per-worktree config (this repository uses worktrees)"),
+    (r"remote\.origin\.(url|fetch)", "the pinned remote and its refspec"),
+    (r"remote\.origin\.(promisor|partialclonefilter)", "this checkout is a blob-less partial clone of the remote"),
+    (r"branch\.[^=]+\.(remote|merge)", "upstream tracking of local branches"),
+    (r"branch\.[^=]+\.(t3-merge-base|t3-merge-base-ref|gh-merge-base)", "T3 / gh branch metadata (names only)"),
+    (r"user\.(name|email)", "commit identity"),
+    (r"core\.(sparsecheckout|sparsecheckoutcone)", "the worktree is a sparse checkout"),
+]
+
+
+def check_repo_config(root: Path = None) -> None:
+    import re
+    root = Path(root or ROOT)
+    pats = [re.compile(p + "=") for p, _ in REPO_CONFIG_ALLOWED]
+    for scope in ("--local", "--worktree"):
+        r = _git("config", scope, "--list", root=root, check=False)
+        if scope == "--worktree" and r.returncode != 0:
+            continue                                         # no worktree config in this repository
+        for ln in r.stdout.decode(errors="replace").splitlines():
+            if not any(p.match(ln) for p in pats):
+                raise SealedRefusal(f"refused: repository-scope git config key {ln.split('=', 1)[0]} is not allowed")
+
+
+def check_gh_socket() -> None:
+    r = subprocess.run([tool("gh"), "config", "get", "http_unix_socket"], capture_output=True, env=child_env())
+    if r.returncode != 0 or r.stdout.strip():
+        raise SealedRefusal("refused: gh http_unix_socket is set (or gh config is unreadable)")
+
+
+class RunLock:
+    """R27.3: one invocation at a time: an exclusive flock on a fixed file, held for the whole invocation."""
+    def __init__(self, path: str = LOCK_PATH):
+        self.path, self.fd = path, None
+
+    def __enter__(self):
+        import fcntl, os
+        self.fd = os.open(self.path, os.O_RDWR | os.O_CREAT, 0o600)
+        try:
+            fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            os.close(self.fd); self.fd = None
+            raise SealedRefusal("refused: another invocation of the runner holds the lock") from None
+        return self
+
+    def __exit__(self, *a):
+        import os
+        if self.fd is not None:
+            os.close(self.fd); self.fd = None
+        return False
+
+
 def cleanup_leftover_object_dirs() -> int:
     """R26.1: delete leftover private object directories of a killed run, WITHOUT reading their contents."""
     import glob, shutil, tempfile
     n = 0
-    for d in glob.glob(str(Path(tempfile.gettempdir()) / (OBJ_DIR_PREFIX + "*"))):
+    for d in glob.glob(str(Path(OBJ_BASE) / (OBJ_DIR_PREFIX + "*"))):
         shutil.rmtree(d, ignore_errors=True); n += 1
     return n
 
 
-CODE_SUFFIXES = (".py", ".pth", ".so", ".pyc")
+CODE_SUFFIXES = (".py", ".pth", ".so", ".pyc", ".pyd", ".dylib", ".zip", ".egg-link")
 
 
 def check_worktree_code(root: Path = None) -> None:
     """R26.3: no untracked OR ignored *.py, *.pth, *.so, or *.pyc outside __pycache__, anywhere in the working tree."""
     root = Path(root or ROOT)
-    r = _git("status", "--porcelain", "--untracked-files=all", "--ignored", root=root, check=False)
+    r = _git("status", "--porcelain", "-z", "--untracked-files=all", "--ignored", root=root, check=False)
     if r.returncode != 0:
         raise SealedRefusal("refused: git status failed")
-    for ln in r.stdout.decode(errors="replace").splitlines():
+    for ln in r.stdout.decode(errors="replace").split("\0"):
         if not ln.startswith(("?? ", "!! ")):
             continue
-        path = ln[3:].strip().strip('"')
+        path = ln[3:]
         if path.endswith(".pyc") and "__pycache__/" in path:
             continue
         if path.endswith(CODE_SUFFIXES) or path.endswith("/"):
@@ -187,14 +272,27 @@ def tool_versions() -> dict:
     if not _TOOL_VERSIONS:
         for n in ("git", "gh"):
             p = tool(n)
-            v = subprocess.run([p, "--version"], capture_output=True).stdout.decode().splitlines()
+            v = subprocess.run([p, "--version"], capture_output=True, env=child_env()).stdout.decode().splitlines()
             _TOOL_VERSIONS[n] = {"path": p, "version": v[0] if v else ""}
     return dict(_TOOL_VERSIONS)
 
 
+def child_env(extra: dict | None = None) -> dict:
+    """R27.2: every git / gh child gets a CONSTRUCTED environment, never the inherited one."""
+    import os, pwd
+    env = {"PATH": "/usr/bin:/bin", "HOME": pwd.getpwuid(os.getuid()).pw_dir, "LANG": "C", "LC_ALL": "C"}
+    env.update(extra or {})
+    return env
+
+
+GIT_FIXED = ["-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false"]
+
+
 def _git(*a, check=True, root=None, env=None, input=None) -> subprocess.CompletedProcess:
-    return subprocess.run([tool("git"), "-C", str(root or ROOT), *a], capture_output=True, check=check, env=env,
-                          input=input)
+    """git by absolute path, constructed environment (`env` = extra variables only, e.g. the private object store),
+    hooks, fsmonitor and the untracked cache disabled (R25.3, R27.2)."""
+    return subprocess.run([tool("git"), *GIT_FIXED, "-C", str(root or ROOT), *a], capture_output=True, check=check,
+                          env=child_env(env), input=input)
 
 
 # R25.2: the normalised syntax-tree sha256 of each Phase A function, registered by the runner at import; carried in
@@ -255,6 +353,12 @@ def check_engine_commit(commit: str, root: Path = ROOT) -> None:
     check_import_environment(root, commit)
 
 
+# R27.7: the only credential settings accepted: this host's helper for github.com and gist.github.com, each preceded by
+# the empty reset line that `gh auth setup-git` writes.
+CREDENTIAL_ALLOWED = {(f"credential.https://{h}.helper", v) for h in ("github.com", "gist.github.com")
+                      for v in ("", "!/usr/bin/gh auth git-credential")}
+
+
 def check_remote_identity(root: Path = ROOT, url: str = REMOTE_URL) -> None:
     """R23.3: origin's fetch and push URLs equal the pinned URL; no url.*.insteadOf / pushInsteadOf at any level;
     no GIT_CONFIG* variable in the environment."""
@@ -272,6 +376,17 @@ def check_remote_identity(root: Path = ROOT, url: str = REMOTE_URL) -> None:
     r = _git("config", "--get-regexp", r"^http\.(.*\.)?sslverify$", check=False, root=root)
     if any(ln.split()[-1].lower() in ("false", "0", "no", "off") for ln in r.stdout.decode().splitlines() if ln.split()):
         raise SealedRefusal("refused: http sslVerify is disabled in git config")
+    # R27.7: further redirections / re-trust at any scope
+    r = _git("config", "--get-regexp",
+             r"^(remote\..*\.proxy|http\.(.*\.)?(curloptresolve|sslcainfo|sslcapath|extraheader)|http\.sslbackend)$",
+             check=False, root=root)
+    if r.stdout.strip():
+        raise SealedRefusal("refused: a git proxy, resolve override, CA or extra-header setting is configured")
+    r = _git("config", "--get-regexp", r"^credential\.", check=False, root=root)
+    for ln in r.stdout.decode(errors="replace").splitlines():
+        key, _, val = ln.partition(" ")
+        if (key, val) not in CREDENTIAL_ALLOWED:
+            raise SealedRefusal(f"refused: git credential setting {key} is not the host's gh helper")
     for args in (("remote", "get-url", REMOTE), ("remote", "get-url", "--push", REMOTE)):
         got = _git(*args, check=False, root=root).stdout.decode().strip()
         if got != url:
@@ -524,10 +639,26 @@ def start_allowed(entries: list, new: dict, release: dict) -> None:
             raise SealedRefusal("refused: stage-2 engine commit differs from the latest stage-1 run's")
 
 
-def validate_ledger(entries: list, versions_entries: list, release_docs: dict) -> None:
+def check_real_host_records(entries: list) -> None:
+    """R27.1(b): on the REAL ledger every entry carries a host record of ruleset 27041175 with a parseable
+    updated_at, and never the test stub's flag."""
+    import datetime
+    for e in entries:
+        h = e.get("host")
+        if not isinstance(h, dict) or "stub" in h or h.get("ruleset_id") != RULESET_ID:
+            raise SealedRefusal(f"refused: ledger entry {e.get('index')} has no real host record")
+        try:
+            datetime.datetime.fromisoformat(str(h.get("ruleset_updated_at")).replace("Z", "+00:00"))
+        except ValueError:
+            raise SealedRefusal(f"refused: ledger entry {e.get('index')} has an unparseable ruleset updated_at") from None
+
+
+def validate_ledger(entries: list, versions_entries: list, release_docs: dict, real: bool = False) -> None:
     """R20.2/R20.3: chain; every committed version a prefix of the current; replay every START under the state
     rules; every GATE's gate_open equals gate_decision(its own signs) after a clean Phase A."""
     verify_chain(entries)
+    if real:
+        check_real_host_records(entries)
     for i, v in enumerate(versions_entries):
         if entries[:len(v)] != v:
             raise SealedRefusal(f"refused: committed ledger version {i} is not a prefix of the current ledger")
@@ -601,6 +732,7 @@ class GitLedger:
         self.remote_sha = None
         self.last_commit = None
         self.host_record = None            # R22.1/R23.2: the invocation's host-check record, copied into every entry
+        self.engine_commit = None          # R27.4: set by the runner once the release's engine commit is verified
 
     def fetch(self) -> str:
         self.remote_sha = fetch_remote(self.root, self.branch, self.remote_url)
@@ -650,19 +782,19 @@ class GitLedger:
             entry = dict(entry, host=self.host_record)
         entry = dict(entry, phase_a_ast_sha256=_PHASE_A["ast_sha256"])
         e = dict(entry, index=len(cur), prev_chain_sha256=chain_hash(cur) if cur else None)
-        if e["kind"] in RECORD_KINDS:                       # R26.3: the environment again, right before a record
-            check_import_environment(ROOT)                   # where the running code lives
+        if e["kind"] in RECORD_KINDS:                       # R26.3/R27.4: the environment again, right before a record
+            check_import_environment(ROOT, self.engine_commit)   # location AND blob equality at the engine commit
             check_worktree_code(self.code_root)
         # R26.1: every object of this entry is written into a private object directory (mode 700) layered over the
         # real store, used only by these child calls, and removed in every outcome before this method returns or
         # raises. The real store receives the objects only through the fetch after a successful push.
         real_objects = _git("rev-parse", "--path-format=absolute", "--git-path", "objects",
                             root=self.root).stdout.decode().strip()
-        td = tempfile.mkdtemp(prefix=OBJ_DIR_PREFIX, dir=tempfile.gettempdir())
+        td = tempfile.mkdtemp(prefix=OBJ_DIR_PREFIX, dir=OBJ_BASE)
         try:
-            env = dict(os.environ, GIT_OBJECT_DIRECTORY=td, GIT_ALTERNATE_OBJECT_DIRECTORIES=real_objects,
-                       GIT_INDEX_FILE=str(Path(td) / "index"))
-            blob = _git("hash-object", "-w", "--stdin", input=ledger_doc(cur + [e]), root=self.root,
+            env = {"GIT_OBJECT_DIRECTORY": td, "GIT_ALTERNATE_OBJECT_DIRECTORIES": real_objects,
+                   "GIT_INDEX_FILE": str(Path(td) / "index")}
+            blob = _git("hash-object", "-w", "--no-filters", "--stdin", input=ledger_doc(cur + [e]), root=self.root,
                         env=env).stdout.decode().strip()
             _git("read-tree", self.remote_sha, root=self.root, env=env)
             _git("update-index", "--add", "--cacheinfo", f"100644,{blob},{self.rel}", root=self.root, env=env)
@@ -670,7 +802,10 @@ class GitLedger:
             msg = (f"rotation-core run ledger: {e['kind']} (index {e['index']})\n\nWritten by the runner (R20.1).\n\n"
                    "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n").encode()
             c = _git("commit-tree", tree, "-p", self.remote_sha, input=msg, root=self.root, env=env).stdout.decode().strip()
-            p = _git("push", "-q", REMOTE, f"{c}:refs/heads/{self.branch}", check=False, root=self.root, env=env)
+            # R27.2: push to the pinned URL, not the remote name, so no tracking ref moves to objects about to be
+            # removed; the fetch below updates the tracking ref.
+            p = _git("push", "-q", self.remote_url, f"{c}:refs/heads/{self.branch}", check=False, root=self.root,
+                     env=env)
         finally:
             import shutil
             shutil.rmtree(td, ignore_errors=True)
@@ -698,7 +833,7 @@ def gh_api(path: str, paginate: bool = False):
     cmd = [tool("gh"), "api", "--hostname", "github.com", "-H", "Accept: application/vnd.github+json", path]
     if paginate:
         cmd[2:2] = ["--paginate", "--jq", ".[] | @json"]
-    r = subprocess.run(cmd, capture_output=True)
+    r = subprocess.run(cmd, capture_output=True, env=child_env())
     if r.returncode != 0:
         raise SealedRefusal("refused: the GitHub API call failed; the host record cannot be read")
     try:
@@ -749,13 +884,18 @@ def check_rules(rules: list, ruleset: dict) -> dict:
     if not isinstance(ruleset, dict) or ruleset.get("id") != RULESET_ID or ruleset.get("enforcement") != "active" \
             or ruleset.get("bypass_actors") != []:
         raise SealedRefusal("refused: the ledger ruleset is not active with no bypass actors")
-    return {"ruleset_id": RULESET_ID, "ruleset_updated_at": ruleset.get("updated_at")}
+    rec = {"ruleset_id": RULESET_ID, "ruleset_updated_at": ruleset.get("updated_at")}
+    if ruleset.get("stub"):
+        rec["stub"] = True                                   # R27.1(b): a REAL validation refuses this key
+    return rec
 
 
 def host_checks(remote_sha: str, root: Path = ROOT, api=None, branch: str = BRANCH, anchor: str = ANCHOR_COMMIT) -> dict:
     """R22.1 + R23.2, after the fetch and before anything else, on every invocation (stage 1, stage 2, the selection-
     rerun check). `api` exists for tests only; the real entry point never sets it."""
     from urllib.parse import quote
+    if api is None:
+        check_gh_socket()                                    # R27.2
     api = api or gh_api
     ref = f"refs/heads/{branch}"
     log = api(f"/repos/{GH_REPO}/activity?ref={quote(ref, safe='')}&per_page=100&direction=asc", paginate=True)

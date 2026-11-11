@@ -539,3 +539,66 @@ python -E scripts/run_rotation_core_v2.py --stage pre1998
 python -E scripts/run_rotation_core_v2.py --stage confirm
 python -E scripts/run_rotation_core_v2.py --ledger-report
 ```
+
+## R27 — scope of the runner's defences; the committed driver; children; one invocation (CEO, 17:30Z)
+
+0. **The standard a finding is classed against.**
+   - **In scope** (must be refused or neutralised by code): accident; anything tracked in the repository; anything in the repository's own directory (untracked or ignored files, `.git/config`, the worktree config, hooks); anything in the inherited environment; any use of a committed file (tests, the driver) as a way in.
+   - **Declared, not defended by code:** an operator who changes the host outside the repository (installed packages, binaries, system or user-level config files), who calls functions beneath `main` from their own Python, or who hand-builds ledger commits. Those are covered only by: one operator (the CEO), one run host, the append-only ruleset and activity log, default-closed (R25.1(c)), and the outside witness's timed record.
+1. **The committed driver cannot run a real sealed stage.** A context is REAL if root, ledger or a release path lies at or inside the real repository (real path), or the remote URL is the pinned one, or branch and remote together name the real branch on the real remote (`is_real`).
+   - (a) In `main`, after `parse_args`, for a sealed stage (`--stage pre1998`, `--stage=pre1998`, likewise `confirm`):
+     - **No context:** the real run. `__main__` must be the runner script by real path (no `-c`, no driver, no other file), `pytest` must not be loaded, no `PYTEST_*` variable may be set, and `sys.flags.optimize` must be 0.
+     - **A supplied context that touches anything REAL:** permitted only with the real host check and the real engine-commit check, and only if no file exists at the stage's release path. It therefore ends in the missing-release refusal. A file at that path refuses with a distinct message before it is read.
+     - **A supplied context with nothing REAL:** a test context. Root, ledger and releases must lie under `/tmp` by real path, and the remote must be a local filesystem path.
+   - (b) `validate_ledger` on a REAL ledger refuses any entry whose `host` record is missing, names another ruleset, has an unparseable `updated_at`, or carries the test stub's `"stub": true`.
+   - (c) The driver refuses any config with a path outside `/tmp` before importing the runner. The reader's exact config (real root, real branch, both stubs) is a test that is refused before import.
+2. **Children's environment and configuration.**
+   - Every `git` and `gh` child gets a constructed environment: `PATH=/usr/bin:/bin`, `HOME` from the password database, `LANG=C`, `LC_ALL=C`, plus the object-directory variables only inside `append`.
+   - Every `git` call carries `-c core.hooksPath=/dev/null -c core.fsmonitor=false -c core.untrackedCache=false`, and `hash-object` uses `--no-filters`.
+   - The push goes to the pinned URL, not the remote name; the fetch afterwards moves the tracking ref.
+   - **Authentication** works under the constructed environment (fetch, a dry-run push, and the `gh` API were verified). Nothing was widened.
+   - **Repository-scope config** (common `.git/config` and the worktree config) is an allowlist, each entry named in the code with its reason:
+     - `core.{repositoryformatversion, filemode, bare, logallrefupdates, ignorecase, precomposeunicode}`;
+     - `extensions.worktreeconfig`;
+     - `remote.origin.{url, fetch}`;
+     - `remote.origin.{promisor, partialclonefilter}` (this checkout is a blob-less partial clone);
+     - `branch.*.{remote, merge}`;
+     - `branch.*.{t3-merge-base, t3-merge-base-ref, gh-merge-base}` (T3/gh branch metadata, names only);
+     - `user.{name, email}`;
+     - `core.{sparsecheckout, sparsecheckoutcone}` (the worktree is a sparse checkout).
+
+     Anything else refuses. User and system scope keep the R26.4 block list (declared limit under R27.0).
+   - The runner's own process refuses `LD_PRELOAD`, `LD_LIBRARY_PATH`, `LD_AUDIT`, `TMPDIR`, `TEMP` and `TMP`.
+   - The private object directory lives under `/dev/shm` (refused if absent), mode 700.
+   - A non-empty `gh config get http_unix_socket` refuses.
+3. **One invocation at a time.** An exclusive `flock` on `/dev/shm/rotation_core_v2.lock` is taken before the leftover sweep and held for the whole invocation, in every mode (including `--ledger-report` and `--preflight`). A second invocation refuses without touching anything.
+4. **Notes.**
+   - Both stages compare the release's `versions()` (tools' paths and versions, the `.pth` hash, the `sitecustomize` hash, the Phase A function hashes) with the running interpreter's.
+   - The check before each record push includes blob equality of every loaded `engine.`/`scripts.`/`tests.` module against the release's engine commit.
+   - The worktree check also covers `.pyd`, `.dylib`, `.zip` and `.egg-link`, and parses `git status -z`.
+   - `--preflight` runs every start check: environment, repository config, tools, lock, worktree, modules, remote identity and fetch, ruleset, activity log, the ledger's chain and committed versions, the real host records, and the engine commit (HEAD, clean, loaded as committed). It prints `PREFLIGHT PASS …` or `PREFLIGHT REFUSED: <the first refusal>`, and reads no release or data, writes nothing and pushes nothing.
+5. **Witness procedure.**
+   - Before a sealed run, the witness records the branch and the release sha. After it, they record the first START sha and the GATE sha, each at arrival, with their own clock.
+   - The `WITNESS gate_commit` line is sent to the witness at once, before the signs are used for anything.
+   - Before the stage-2 release is written, the CEO sends the witness the `witnessed` block, and they answer `match` or `mismatch`.
+   - The stage-2 release carries `witness_confirmation_utc` (the time of their answer). The runner requires it non-empty and later than the GATE entry's time.
+
+6. **No core (reader's N2).**
+   - At the very start of every invocation, the runner sets `RLIMIT_CORE` to (0, 0) (children inherit it) and `PR_SET_DUMPABLE` to 0 through `ctypes` `prctl`, then reads back `PR_GET_DUMPABLE` as 0.
+   - It refuses if any of these calls fails.
+   - A native crash after the first sealed statistic leaves nothing for apport.
+7. **More refused git config at any scope (reader's N3):**
+   - `remote.*.proxy`, `http[.<url>].curloptResolve`, `http[.<url>].sslCAInfo`, `http[.<url>].sslCAPath`, `http.sslBackend` and `http[.<url>].extraHeader`;
+   - any `credential.*` setting other than this host's helper. The accepted settings are exactly `credential.https://github.com.helper` and `credential.https://gist.github.com.helper`, each with the empty reset line followed by `!/usr/bin/gh auth git-credential`.
+   - At repository scope the R27.2 allowlist already excludes them.
+
+**Run instructions (in order, from a clean login shell exporting no `GIT_*`, `GH_*`, `PYTHON*`, `PYTEST_*`, proxy, `LD_*` or temporary-directory variable):**
+
+```
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --preflight
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --stage pre1998
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --stage confirm
+env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E scripts/run_rotation_core_v2.py --ledger-report
+```
+
+`<venv>` is the interpreter whose `versions()` the release pins (on this host `/home/ubuntu2/.t3/worktrees/Macro/.venv-prophet`). After a release commit, the test suite is not run on the run host until that stage's record is on the remote.
