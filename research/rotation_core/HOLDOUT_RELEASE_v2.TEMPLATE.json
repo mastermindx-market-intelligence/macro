@@ -1,0 +1,12 @@
+{
+  "_instructions": "TEMPLATE. Only the Prophet programme CEO copies this to HOLDOUT_RELEASE_v2.json, fills it and commits it. The Rotation Core lead never writes HOLDOUT_RELEASE_v2.json. The runner refuses any path under data/french/sealed_post2019/ or any return dated on/after 2020-01-02 unless that file is committed and clean.",
+  "schema": "rotation_core.holdout_release/v2",
+  "protocol_header_sha256": "<sha256 of protocol_header_v2.json>",
+  "released_by": "Prophet programme CEO",
+  "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
+  "selection_commit": "<commit holding the 1998-2019 grid selection result>",
+  "selected_grid_point": {"h_near_high_pct": "<3|5>", "b_breadth_drop_pp": "<25|37.5>"},
+  "windows_released": ["pre1998_1928_1997", "2020-01-02..2025-12-31", "2026 (report only, unscored)"],
+  "configurations": ["H1", "H2", "H3", "H1_cash_ablation", "H1_tradable_funds", "H1_named_mapping_descriptive", "yardsticks"],
+  "run_once": true
+}
