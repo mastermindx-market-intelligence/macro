@@ -20,7 +20,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(120% 140% at 88% -20%, color-mix(in srgb,var(--info) 20%,transparent), transparent 60%)}
 .hero-inner{position:relative;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
-.hero-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
+.hero-eyebrow{font-size:var(--fs-sm,12.5px);font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
 .hero-state{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin:0;color:var(--text)}
 .hero-state .n{color:var(--ink-info, var(--info))}
 .stance{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;margin-top:14px;
@@ -39,21 +39,40 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .ledger{display:flex;flex-direction:column;gap:16px;margin-top:14px}
 .lc{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;
   padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
-.lc:hover{border-color:color-mix(in srgb,var(--info) 40%,var(--line));box-shadow:0 10px 30px -18px rgba(0,0,0,.5)}
-.lc.free{border-color:color-mix(in srgb,var(--info) 34%,var(--line))}
+.lc:hover{border-color:var(--line);background:var(--panel)}
+.lc.free{border-color:var(--line)}
 .lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
 /* rank chip — rank_score IS a real ordering, so the numeral carries information */
 .lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
   border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
-.lc.free .lc-rank{color:var(--ink-info, var(--info));border-color:color-mix(in srgb,var(--info) 40%,var(--line))}
+.lc.free .lc-rank{color:var(--text);background:var(--panel2);border-color:var(--line)}
 .lc-title{font-size:16px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}
-.lc-since{font-size:11.5px;color:var(--muted);margin-top:3px}
+.lc-since{font-size:var(--fs-sm,12.5px);color:var(--muted);margin-top:var(--sp-1,4px);overflow-wrap:anywhere}
 /* win-rate hero block — the number is the type hero, honestly paired with the older era */
-.lc-wr{text-align:right;flex:none;min-width:118px}
-.lc-wr-big{font-family:var(--font-mono);font-size:30px;font-weight:800;line-height:1;color:var(--ink-up, var(--up));letter-spacing:-.02em}
-.lc-wr-unit{font-size:11px;color:var(--muted);font-weight:600;margin-top:3px}
-.lc-wr-old{font-size:11.5px;color:var(--muted);margin-top:8px;font-family:var(--font-mono)}
-.lc-wr-old b{color:var(--text);font-weight:700}
+.lc-title-wrap{min-width:0}
+.lc-wr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2,8px) var(--sp-3,12px);width:310px;min-width:0;text-align:left}
+.lc-era{display:flex;flex-direction:column;gap:var(--sp-2,8px);min-width:0}
+.lc-era-label,.lc-sample,.lc-wr-unit{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.45}
+.lc-era-label{font-weight:600}
+.lc-wr-big,.lc-wr-old{font:700 var(--fs-h1,28px)/1.1 var(--font-mono);color:var(--text);font-variant-numeric:tabular-nums}
+.lc-rate-denominator{font-size:var(--fs-sm,12.5px);color:var(--muted);font-weight:500}
+.lc-wr-unit{grid-column:1/-1;border-top:1px solid var(--line);padding-top:var(--sp-2,8px)}
+.lc-method{margin-top:var(--sp-3,12px);border-top:1px solid var(--line);font-size:var(--fs-sm,12.5px);color:var(--muted)}
+.lc-method summary{min-height:44px;display:flex;align-items:center;gap:var(--sp-2,8px);cursor:pointer;color:var(--text);font-weight:600;list-style:none}
+.lc-method summary::-webkit-details-marker{display:none}
+.lc-method summary::before{content:"+";font:700 16px var(--font-mono);width:16px;flex:none}
+.lc-method[open] summary::before{content:"−"}
+.lc-method p{font-size:var(--fs-body,14px);line-height:1.55;margin:0 0 var(--sp-3,12px);max-width:85ch}
+.confluence-access{display:flex;align-items:center;gap:var(--sp-3,12px);flex-wrap:wrap;padding:var(--sp-4,16px);margin-top:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px)}
+.confluence-access[hidden],.confluence-access button[hidden]{display:none}
+.empty .btn{margin-top:var(--sp-4,16px)}
+.tkr,.btn{min-height:44px}
+.tkr{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.tkr .nm{font-size:var(--fs-sm,12.5px);min-width:0}
+.hero::before{background:none}
+html[data-theme="light"] .hero,html[data-theme="light"] .lc,html[data-theme="light"] .cta-band{background:var(--panel);border-color:var(--line);box-shadow:var(--card-shadow);backdrop-filter:none}
+html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:var(--card-shadow)}
+
 
 /* the line-up leg stack */
 .legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
@@ -79,11 +98,12 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .tkr{display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--text);
   background:color-mix(in srgb,var(--up) 12%,transparent);border:1px solid color-mix(in srgb,var(--up) 26%,transparent);
   border-radius:8px;padding:5px 10px}
-.tkr .nm{font-family:var(--font-ui);font-weight:500;font-size:11px;color:var(--muted)}
+.tkr .ticker-symbol{flex:none;white-space:nowrap}
+.tkr .nm{font-family:var(--font-ui);font-weight:500;font-size:var(--fs-sm,12.5px);color:var(--muted)}
 
 /* locked state — honest, built from active_count only. NO blurred text. */
 .locked{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding:14px 16px;border-radius:12px;
-  background:color-mix(in srgb,var(--info) 7%,transparent);border:1px dashed color-mix(in srgb,var(--info) 34%,var(--line))}
+  background:var(--panel2);border:1px dashed var(--line)}
 .locked .ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
   background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--ink-info, var(--info))}
 .locked .lk-tx{flex:1;min-width:180px;font-size:13px;color:var(--text);line-height:1.4}
@@ -133,7 +153,10 @@ a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(-
   .hero-state{font-size:26px}
   .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
   .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
-  .lc-wr-old{margin-top:4px}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+  .lc{padding:var(--sp-4,16px)}
+  .hero{padding:var(--sp-5,20px)}
+  .hero-eyebrow{overflow-wrap:anywhere}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
@@ -142,7 +165,7 @@ a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(-
             padding-bottom:3px; border-radius:var(--r-ctl,8px);
             transition:border-color .16s ease, background .16s ease; }
 .cs-tipped:hover,.cs-tipped:focus-visible{ border-bottom-color:var(--info); background:none; outline:none; }
-.cs-tipped:focus-visible{ box-shadow:0 0 0 2px color-mix(in srgb,var(--info) 35%,transparent); }
+.cs-tipped:focus-visible{ outline:2px solid var(--ink-info,var(--info)); outline-offset:3px; box-shadow:none; }
 
 /* LIGHT — crisp solid hairline; hover washes the material instead of brightening the rule */
 html[data-theme="light"] .cs-tipped{ border-bottom:1px solid color-mix(in srgb,var(--muted) 52%,transparent);
