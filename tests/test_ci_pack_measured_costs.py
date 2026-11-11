@@ -147,6 +147,100 @@ def test_stale_or_malformed_samples_are_unobserved(tmp_path):
     assert PACK.measured_job_weight_table(table, today=TODAY) == {}
 
 
+@pytest.mark.parametrize(
+    "samples",
+    [None, True, 7, 1.5, "not-an-array", {"unexpected": "mapping"}],
+    ids=["null", "boolean", "integer", "float", "string", "mapping"],
+)
+def test_malformed_sample_container_preserves_valid_jobs_and_falls_back(
+    tmp_path, monkeypatch, samples,
+):
+    path = _write_table(tmp_path / "containers.json", _table({
+        "invalid": {"samples": samples},
+        "valid": [_sample(10.0)],
+    }))
+    assert PACK.measured_job_weight_table(path, today=TODAY) == {"valid": 11}
+    monkeypatch.setattr(PACK, "MEASURED_JOB_SECONDS_PATH", path)
+    assert PACK._job_weight("invalid", {}) == PACK.UNOBSERVED_JOB_COST_SECONDS
+
+
+@pytest.mark.parametrize("invalid_first", [True, False])
+@pytest.mark.parametrize(
+    "invalid_fields",
+    [
+        pytest.param({"test_seconds": True}, id="test-true"),
+        pytest.param({"test_seconds": False}, id="test-false"),
+        pytest.param({"test_seconds": float("nan")}, id="test-nan"),
+        pytest.param({"test_seconds": float("inf")}, id="test-infinity"),
+        pytest.param({"test_seconds": 10 ** 400}, id="test-conversion-overflow"),
+        pytest.param({"dependency_install_seconds": True}, id="dependency-true"),
+        pytest.param({"dependency_install_seconds": False}, id="dependency-false"),
+        pytest.param({"dependency_install_seconds": float("nan")}, id="dependency-nan"),
+        pytest.param({"dependency_install_seconds": float("inf")}, id="dependency-infinity"),
+        pytest.param({"dependency_install_seconds": 10 ** 400},
+                     id="dependency-conversion-overflow"),
+        pytest.param({"test_seconds": 1e308, "dependency_install_seconds": 1e308},
+                     id="sum-overflow"),
+        pytest.param({"test_seconds": 1.7e308}, id="headroom-overflow"),
+    ],
+)
+def test_invalid_cost_sample_cannot_poison_valid_observations(
+    tmp_path, monkeypatch, invalid_fields, invalid_first,
+):
+    invalid = _sample(10.0)
+    invalid.update(invalid_fields)
+    valid = _sample(100.0, dependency_install_seconds=20.0)
+    mixed = [invalid, valid] if invalid_first else [valid, invalid]
+    path = _write_table(tmp_path / "costs.json", _table({
+        "all-invalid": [invalid],
+        "mixed": mixed,
+        "valid": [_sample(200.0)],
+    }))
+    assert PACK.measured_job_weight_table(path, today=TODAY) == {
+        "mixed": 132, "valid": 220,
+    }
+    monkeypatch.setattr(PACK, "MEASURED_JOB_SECONDS_PATH", path)
+    assert PACK._job_weight("all-invalid", {}) == PACK.UNOBSERVED_JOB_COST_SECONDS
+
+
+@pytest.mark.parametrize(
+    "malformed", ["invalid-utf8", "boolean-schema", "oversized-json-integer"]
+)
+def test_malformed_table_encoding_or_schema_uses_the_existing_bound(
+    tmp_path, monkeypatch, malformed,
+):
+    path = tmp_path / "malformed.json"
+    if malformed == "invalid-utf8":
+        path.write_bytes(bytes([255]))
+    elif malformed == "oversized-json-integer":
+        # Python may reject the integer during JSON decoding, before sample
+        # validation; a disabled digit limit still reaches conversion overflow.
+        path.write_text(
+            '{"schema":1,"jobs":{"invalid":{"samples":[{"observed":"2026-11-08",'
+            '"test_seconds":' + "9" * 5000 + '}]}}}', encoding="utf-8",
+        )
+    else:
+        document = _table({"invalid": [_sample(10.0)]})
+        document["schema"] = True
+        path = _write_table(path, document)
+    assert PACK.measured_job_weight_table(path, today=TODAY) == {}
+    monkeypatch.setattr(PACK, "MEASURED_JOB_SECONDS_PATH", path)
+    assert PACK._job_weight("invalid", {}) == PACK.UNOBSERVED_JOB_COST_SECONDS
+
+
+def test_valid_zero_and_omitted_dependency_keep_the_existing_arithmetic(tmp_path):
+    zero = _sample(0.0)
+    zero.pop("dependency_install_seconds")
+    path = _write_table(tmp_path / "valid-controls.json", _table({
+        "zero": [zero],
+        "rounded": [_sample(200.0)],
+        "combined": [_sample(100.0, dependency_install_seconds=20.0)],
+    }))
+    assert PACK.measured_job_weight_table(path, today=TODAY) == {
+        "zero": 0, "rounded": 220, "combined": 132,
+    }
+
+
 def test_table_loading_fails_safe_to_the_unobserved_bound(tmp_path):
     definition = {"steps": [{"run": "pytest tests/test_example.py"}]}
     for broken in (
