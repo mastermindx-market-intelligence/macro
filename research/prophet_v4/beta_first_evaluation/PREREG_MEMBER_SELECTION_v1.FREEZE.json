@@ -1,0 +1,13 @@
+{
+ "record": "freeze",
+ "file": "research/prophet_v4/beta_first_evaluation/PREREG_MEMBER_SELECTION_v1.md",
+ "file_sha256": "c832724ad1a4f361a82ae065d9369511a3337b3aed43c9e70a42c2eb8f38420f",
+ "freeze_utc": "2026-11-11T14:53:27Z",
+ "freeze_date_utc": "2026-11-11",
+ "freezing_authority": "Prophet programme CEO (Fable), Prophet x Sector Intelligence programme",
+ "carrying_commit": "95952afffd7cd5557335d7b9a076f78a510a947f",
+ "carrying_branch": "fable/prophet-beta-evaluation-audit-20261111",
+ "seed": 20261111,
+ "first_eligible_publication_date": "2026-11-12",
+ "note": "The file sha256 is the binding identifier. A later squash or merge may change which commit carries the file; it may not change the file. Any byte change to the file is a new version with its own freeze record."
+}
