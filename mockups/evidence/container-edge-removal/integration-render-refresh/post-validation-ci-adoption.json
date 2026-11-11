@@ -1,0 +1,43 @@
+{
+  "schema": "mastermind.container_edge_verified_tree_adoption.v1",
+  "source_head": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "verified_main": "43b5acdb0d0f264091f5aa33c129625fd0b28b8c",
+  "control_main": "82930233f83a2e62734e605becb1076508eefc31",
+  "adopted_main": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "verified_tree": "f20caedf5522e5c72b1523d8d629c50ecab4e884",
+  "verified_site_tree": "6230f19afd11ec22a7d98248d3316289942ba45d",
+  "control_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py",
+    "tests/test_ticker_news_snapshot_cursor_reconnect.py"
+  ],
+  "fresh_data_paths": [
+    "data/neuralweb/context_candidates.jsonl",
+    "data/neuralweb/context_risk.json",
+    "data/neuralweb/cortex/memo.json",
+    "data/neuralweb/daily_brief.json",
+    "data/neuralweb/daily_brief_history.jsonl",
+    "data/neuralweb/health.json",
+    "data/ops/nightly_timings/cortex.jsonl",
+    "site/neuralweb/cortex_memo.json",
+    "site/neuralwebdata/context_risk.json",
+    "site/neuralwebdata/daily_brief.json",
+    "site/neuralwebdata/health.json",
+    "site/neuralwebdata/orchestrator_runlog.json"
+  ],
+  "merge_exit_code": 1,
+  "merge_seconds": 32.56,
+  "remaining_conflicts": [
+    "tests/test_ci_pack.py"
+  ],
+  "site_differences_from_qualified_tree": [
+    "site/neuralweb/cortex_memo.json",
+    "site/neuralwebdata/context_risk.json",
+    "site/neuralwebdata/daily_brief.json",
+    "site/neuralwebdata/health.json",
+    "site/neuralwebdata/orchestrator_runlog.json"
+  ],
+  "all_presentation_bytes_identical_to_qualified_tree": true,
+  "all_published_data_files_exact_current_main": true,
+  "proof_reuse": "Only exact upstream data bytes differ from the fully qualified site tree; CI registration and its tests merge normally."
+}

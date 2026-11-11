@@ -1,0 +1,26 @@
+{
+  "schema": "mastermind.container_edge_followup_integration.v1",
+  "source_head": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "main": "cbdc7c613dc60bec3238c9972b7f850a57eb3b76",
+  "previous_base": "0386ca72ffa9accf9ca2cb7b2ee42a5221d82b9b",
+  "track_record": {
+    "path": "site/us_track_record.html",
+    "body_identical_all_three": true,
+    "body_sha256": "9e8cd28890b3e0f61bb373944cc402e82bc1ce859490f673898fe8a6a2bf19fd",
+    "body_bytes": 81551,
+    "main_raw_css_identical_to_previous_asset": true,
+    "candidate_css_only_change": "remove decorative 3px .tr-basis border-left",
+    "old_css_sha256": "1e6fe012e4b34cab6618644741c8b0705c3895a0fed2298a03d31157123d22a0",
+    "new_css_sha256": "a011dc5f74a1e771bfa92cfe72e48bdb5f418716f08976eecb2b3b22399015f0",
+    "blobs": {
+      "prior": "ac577322e300b01b430e9cb85606a0ecb16ae68424ec569df71e261f67405023",
+      "main": "eab7e8f62267188a5dd103145e8aa4602146ca2540095e00631fdf2dbd7a9dd9",
+      "candidate": "826df412fb04d329d620bd6ad337571b55df6054a97432946e015875dc22acf7"
+    }
+  },
+  "merge_exit_code": 1,
+  "merge_output": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging site/us_track_record.html\nCONFLICT (content): Merge conflict in site/us_track_record.html\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+  "unresolved": [
+    "site/us_track_record.html"
+  ]
+}
