@@ -810,17 +810,51 @@ def _calendar_mod(name: str | None):
     return nyse_calendar
 
 
+def asof_date(stamp: str) -> date:
+    """The calendar date an ``asof`` stamp names — in EITHER producer shape.
+
+    Two shapes reach the sentinel and both are conforming ISO-8601:
+
+    * ``2026-11-06`` — the bare session date every board writes (prophet_us,
+      prophet_live_armed, us_board_provisional, cn_board_live).
+    * ``2026-11-06T21:59:11.497903Z`` — a full UTC instant, which is exactly
+      what ``engine/entry_radar/live_eval.py``'s ``_iso`` emits for
+      /live/entry_radar.json (``astimezone(utc).isoformat()`` with no
+      ``timespec``, so the microseconds survive, then ``+00:00`` → ``Z``).
+
+    Reading BOTH through ``date.fromisoformat`` was the 2026-11-06 blindness:
+    the stdlib's DATE parser rejects any string that carries a time component,
+    so entry_radar_live raised on every single pass and graded INDETERMINATE
+    ("the sentinel is blind") for as long as that payload was served. That
+    disclosure is honest but it is a stop, not a verdict — a surface that
+    cannot be measured can never page a freeze, so the defect converted the one
+    surface it touched into a permanently unpoliced one.
+
+    The date is read AS WRITTEN and never re-anchored into another zone: the
+    date part of the stamp is the session the producer is vouching for, and
+    shifting a ``+09:00`` instant into UTC would silently move a session for
+    stamps near midnight. A genuinely unparseable stamp still raises
+    ValueError, so the caller keeps mapping that to INDETERMINATE.
+    """
+    try:
+        return date.fromisoformat(stamp)
+    except (TypeError, ValueError):
+        pass
+    return datetime.fromisoformat(str(stamp).replace("Z", "+00:00")).date()
+
+
 def sessions_behind(asof: str, now: datetime, *, calendar: str | None = None) -> int:
     """Completed sessions the store stamped ``asof`` is missing (0 = current).
+
+    ``asof`` may be a bare session date or a full ISO-8601 instant — see
+    ``asof_date``, which is the one parse path both shapes share.
 
     ``calendar="cn"`` routes through lib.cn_calendar; anything else is NYSE.
     Lazy, failure-guarded import for the same reason app.mailer is one: the
     sentinel must survive a broken tree. Raises so the caller can map the
     failure to INDETERMINATE.
     """
-    from datetime import date as _date  # noqa: PLC0415 — stdlib, kept with its one caller
-
-    return _calendar_mod(calendar).sessions_behind(_date.fromisoformat(asof), now)
+    return _calendar_mod(calendar).sessions_behind(asof_date(asof), now)
 
 
 def board_delay_stamp(body: str) -> str | None:
@@ -1483,7 +1517,7 @@ def check_surface(surface: dict, fr: FetchResult, now: datetime,
             # budget above NOR ahead of the calendar at all.
             if expected_session is not None:
                 out["asof_expected_session"] = expected_session.isoformat()
-                if date.fromisoformat(stamp) > expected_session:
+                if asof_date(stamp) > expected_session:
                     problems.append(
                         f"pack_ahead_of_calendar: as_of {stamp} is AHEAD of the"
                         " last completed session"

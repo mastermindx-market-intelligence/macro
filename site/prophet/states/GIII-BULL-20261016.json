@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GIII-BULL-20261016",
-  "asof": "2026-10-30",
+  "asof": "2026-11-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 71.7,
-  "raw_confidence": 73.7,
-  "delta_vs_base": 11.7,
+  "management_confidence": 78.1,
+  "raw_confidence": 77.2,
+  "delta_vs_base": 18.1,
   "recommended_action": null,
-  "human_state": "On Track",
+  "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 34.1,
-    "pace": 100.0,
+    "progress": 58.9,
+    "pace": 90.5,
     "retention": 50.0,
-    "overlay": 56.0
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.597,
-    "dist_to_t1_r": 0.903,
-    "dist_to_t2_r": 2.403,
-    "horizon_pct_used": 24.4,
-    "p1": 0.3978,
-    "p2": 0.1989,
+    "dist_to_stop_r": 2.239,
+    "dist_to_t1_r": 0.261,
+    "dist_to_t2_r": 1.761,
+    "horizon_pct_used": 46.7,
+    "p1": 0.8258,
+    "p2": 0.4129,
     "p3": null,
-    "move_r": 0.597,
-    "mfe_r": 0.597,
+    "move_r": 1.239,
+    "mfe_r": 1.49,
     "mae_r": 0.0
   },
   "rr_ratio": 1.5,
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 1.450000381469728,
+  "_mfe": 3.6200004577636733,
   "_mae": 0.0,
-  "_max_p1": 0.3978053172756452,
+  "_max_p1": 0.9931414150243265,
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 21,
+  "tau": 0.4667,
+  "closed": true,
+  "outcome": "T1_HIT"
 }

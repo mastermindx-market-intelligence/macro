@@ -24,6 +24,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 import app.integrated_answer as integrated_answer
 from app.integrated_answer import CONSUMED_RECEIPTS_HEADER
 from engine.company_intelligence.views import build_bundle as build_company_bundle
@@ -33,7 +35,7 @@ from engine.company_theme_exposure.views import build_bundle as build_cte_bundle
 from engine.company_theme_exposure.views import load_company_generation
 from engine.company_theme_exposure.views import write_generation as write_cte_generation
 from tests.test_company_theme_exposure import _crosswalk, _state
-from tests.test_integrated_answer_v0 import _client, _leg_by_id, _patch_all_seams
+from tests.test_integrated_answer_v0 import _client, _leg_by_id, _patch_all_seams, pin_capital_structure_leg
 
 TICKER = "ZZWP"
 SECOND = "ZZWQ"
@@ -42,6 +44,11 @@ PATH = f"/api/integrated-answer/v1/{TICKER}"
 NOW = "2026-02-03T00:00:00Z"
 SUMMARY_G1 = "wp32 synthetic primary summary, first publication"
 SUMMARY_G2 = "wp32 synthetic primary summary, corrected republication"
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _membership() -> dict[str, Any]:

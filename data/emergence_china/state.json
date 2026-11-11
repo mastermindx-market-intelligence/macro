@@ -1,32 +1,32 @@
 {
-  "2bc52f195aa4": {
-    "name_en": "Emerging Consumer Defensive cluster",
-    "name_zh": "\u65b0\u5174 Consumer Defensive \u96c6\u7fa4",
-    "score": 47.0
+  "09e43053c530": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 52.2
   },
-  "61a55f63f603": {
+  "1e05ffb7093d": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Consumer Cyclical",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Consumer Cyclical",
+    "score": 59.4
+  },
+  "382c381207b1": {
     "name_en": "Emerging Basic Materials cluster",
     "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
-    "score": 57.6
+    "score": 56.9
   },
-  "70b8ba0a1b49": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Consumer Cyclical",
-    "score": 42.6
+  "3aa342f3e923": {
+    "name_en": "Emerging Consumer Cyclical cluster",
+    "name_zh": "\u65b0\u5174 Consumer Cyclical \u96c6\u7fa4",
+    "score": 51.7
   },
-  "a4a163989ae7": {
-    "name_en": "Cross-sector cluster \u00b7 Healthcare + Consumer Defensive",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Healthcare + Consumer Defensive",
-    "score": 46.6
+  "67eba2a661da": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 47.5
   },
-  "bf5078f8b362": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 53.6
-  },
-  "c8c0ebc99e97": {
-    "name_en": "Cross-sector cluster \u00b7 Energy + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Energy + Industrials",
-    "score": 50.5
+  "c4d41c2e7b83": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Industrials",
+    "score": 42.4
   }
 }

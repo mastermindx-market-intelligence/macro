@@ -1,0 +1,72 @@
+{
+  "kind": "illustrative_design_fixture",
+  "scope": "five-reported-members",
+  "knowledgeCutoff": "2026-11-03T04:15:00-05:00",
+  "cutoffMode": "current_knowledge_fixture",
+  "previousAvailableAt": "2026-11-02T03:52:00-05:00",
+  "currentAvailableAt": "2026-11-03T03:52:00-05:00",
+  "previous": [
+    {
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "right": "C",
+      "valueMillions": 380
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "right": "P",
+      "valueMillions": -156
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 755,
+      "right": "C",
+      "valueMillions": 10
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 755,
+      "right": "P",
+      "valueMillions": null
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 760,
+      "right": "C",
+      "valueMillions": 20
+    }
+  ],
+  "current": [
+    {
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "right": "C",
+      "valueMillions": 400
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 750,
+      "right": "P",
+      "valueMillions": -132
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 765,
+      "right": "C",
+      "valueMillions": 30
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 755,
+      "right": "P",
+      "valueMillions": -40
+    },
+    {
+      "expiry": "2026-11-06",
+      "strike": 760,
+      "right": "C",
+      "valueMillions": null
+    }
+  ]
+}

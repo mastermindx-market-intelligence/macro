@@ -1,5 +1,5 @@
 {
-"applied": "2026-10-20T04:40:00.444087+00:00",
+"applied": "2026-11-10T11:48:23.702720+00:00",
 "rows_flagged": 223,
 "tickers_flagged": 66,
 "by_flag": {
@@ -2530,6 +2530,13 @@
 "statements": 246286000.0
 },
 {
+"ticker": "COHU",
+"fy": 2024,
+"col": "ni",
+"panel": -9100000.0,
+"statements": -69818000.0
+},
+{
 "ticker": "COLB",
 "fy": 2021,
 "col": "ni",
@@ -3144,13 +3151,6 @@
 "col": "ni",
 "panel": 4524000.0,
 "statements": 64284000.0
-},
-{
-"ticker": "INDV",
-"fy": 2024,
-"col": "ni",
-"panel": 7000000.0,
-"statements": 2000000.0
 },
 {
 "ticker": "INFQ",
@@ -3965,6 +3965,13 @@
 "statements": 421288000.0
 },
 {
+"ticker": "SATS",
+"fy": 2024,
+"col": "ni",
+"panel": -21580000.0,
+"statements": -6393932.0
+},
+{
 "ticker": "SBC",
 "fy": 2023,
 "col": "ni",
@@ -4210,6 +4217,13 @@
 "statements": 17234000.0
 },
 {
+"ticker": "SPHR",
+"fy": 2025,
+"col": "ni",
+"panel": 8087000.0,
+"statements": 33405000.0
+},
+{
 "ticker": "SPRY",
 "fy": 2021,
 "col": "ni",
@@ -4306,6 +4320,13 @@
 "col": "ni",
 "panel": 1469000000.0,
 "statements": 335000000.0
+},
+{
+"ticker": "SUPN",
+"fy": 2024,
+"col": "ni",
+"panel": 7000000.0,
+"statements": 73865000.0
 },
 {
 "ticker": "SWBI",
@@ -6100,6 +6121,13 @@
 "statements": 12478566.0
 },
 {
+"ticker": "SATS",
+"fy": 2024,
+"col": "cfo",
+"panel": -21595000.0,
+"statements": -4900057.0
+},
+{
 "ticker": "SCHL",
 "fy": 2021,
 "col": "cfo",
@@ -6231,6 +6259,13 @@
 "col": "cfo",
 "panel": -660900000.0,
 "statements": -500000.0
+},
+{
+"ticker": "SUPN",
+"fy": 2024,
+"col": "cfo",
+"panel": 36000000.0,
+"statements": 171951000.0
 },
 {
 "ticker": "SWBI",
@@ -9117,6 +9152,13 @@
 "statements": -3060154.0
 },
 {
+"ticker": "SATS",
+"fy": 2024,
+"col": "op_income",
+"panel": -22654000.0,
+"statements": -6404028.0
+},
+{
 "ticker": "SCHL",
 "fy": 2023,
 "col": "op_income",
@@ -9325,6 +9367,13 @@
 "col": "op_income",
 "panel": 2721400000.0,
 "statements": 354900000.0
+},
+{
+"ticker": "SUPN",
+"fy": 2024,
+"col": "op_income",
+"panel": 38000000.0,
+"statements": 81666000.0
 },
 {
 "ticker": "SWBI",

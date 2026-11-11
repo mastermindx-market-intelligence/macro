@@ -1,5 +1,5 @@
 {# Prophet "What changed today" button + dashboard.
-   Expects _dlt, _NBR_EN and _NBR_ZH from dashboard.html.j2. The Track Record
+   Expects _dlt from dashboard.html.j2. The Track Record
    partial is rendered immediately before this one and provides the shared trd-*
    glass-button, modal-shell and mobile bottom-sheet styles. #}
 {% set _wcd = namespace(entered=0, left=0, shifted=0, reasons=0) %}
@@ -96,39 +96,9 @@
 
       <div class="trd-stg trd-stg-2">
         <div class="wcd-list" role="list">
-          {% for _de in _dlt.entries %}
-          <div class="wcd-item" role="listitem">
-            <div class="wcd-item-hd">
-              <span class="nb-delta-tk">{{ _de.ticker }}</span>
-              {% if _de.get('entered_board') %}
-                <span class="nb-delta-verb nb-delta-enter">
-                  <span class="l-en">entered board{% if _de.cur_verb %} · {{ _de.cur_verb }}{% endif %}</span>
-                  <span class="l-zh">新上榜{% if _de.cur_verb %} · {{ _de.cur_verb }}{% endif %}</span>
-                </span>
-              {% elif _de.get('left_board') %}
-                <span class="nb-delta-verb nb-delta-leave">
-                  <span class="l-en">left board{% if _de.prev_verb %} · was {{ _de.prev_verb }}{% endif %}</span>
-                  <span class="l-zh">已离榜{% if _de.prev_verb %} · 原为 {{ _de.prev_verb }}{% endif %}</span>
-                </span>
-              {% elif _de.prev_verb != _de.cur_verb and (_de.prev_verb or _de.cur_verb) %}
-                <span class="nb-delta-verb">{{ _de.get('prev_verb','—') }} → {{ _de.get('cur_verb','—') }}</span>
-              {% endif %}
-            </div>
-            {% if _de.get('reasons_removed') %}
-            <span class="nb-delta-cleared">
-              <span class="l-en">cleared: {% for _rc in _de.reasons_removed %}{{ _NBR_EN.get(_rc, _rc) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
-              <span class="l-zh">已解除：{% for _rc in _de.reasons_removed %}{{ _NBR_ZH.get(_rc, _rc) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
-            </span>
-            {% endif %}
-            {% if _de.get('reasons_added') %}
-            <span class="nb-delta-added">
-              <span class="l-en">added: {% for _ra in _de.reasons_added %}{{ _NBR_EN.get(_ra, _ra) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
-              <span class="l-zh">新增：{% for _ra in _de.reasons_added %}{{ _NBR_ZH.get(_ra, _ra) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
-            </span>
-            {% endif %}
-          </div>
-          {% endfor %}
+          {% with rows=_dlt.entries %}{% include "_what_changed_rows.html.j2" %}{% endwith %}
         </div>
+        {% if pgate and pgate.get('what_changed') %}{% set _wc_n = pgate.what_changed.locked %}<p class="pg-more"><span class="l-en">{{ _wc_n }} more {{ 'name' if _wc_n == 1 else 'names' }} here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 {{ _wc_n }} 只 — <a href="plans.html">登录后查看完整名单</a></span></p>{% endif %}
       </div>
     </div>
 
