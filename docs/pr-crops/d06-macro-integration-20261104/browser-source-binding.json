@@ -1,0 +1,151 @@
+{
+  "source_head": "4ac468b3a552559ec20afa14e71b19ea3a1ae680",
+  "source_tree": "cd20a7b86184173ab4836d406d8f890b7643dece",
+  "protected_base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+  "stage_inputs": "site/stagedata",
+  "stage_file_hashes": {
+    "screener.json": {
+      "bytes": 1698798,
+      "sha256": "8722fe340e77b82faee4ba67858a345bd61721fad9d026a14c31cb28a47a6989"
+    },
+    "stage_board_weekly.json": {
+      "bytes": 1698807,
+      "sha256": "1dbd8951637b8cb8e9cb1d15b4f90d2243d2de5f03c19f2e3104055f74c5d357"
+    },
+    "stage_board_daily.json": {
+      "bytes": 1699048,
+      "sha256": "34abc5cdbd6b28be41179fc0a76512942589e2e371fb42f88e2450f3813664f7"
+    },
+    "industry_ranks.json": {
+      "bytes": 17141,
+      "sha256": "2d6115d5cd4f7c0e9c3d049956260d3f7911c3e63fadfd99e194ae83814e69e8"
+    },
+    "industry_heatmap.json": {
+      "bytes": 9273,
+      "sha256": "815f5d1247283601dd1dcb4b42e92db6962e0d9f8ba7e2c543f0335f6cd93883"
+    },
+    "ec_industry_heatmap.json": {
+      "bytes": 180242,
+      "sha256": "ee5cb22e19bf4ac9b081ebf42be350f1fa0a62af5d3623aa7550a0d1396475fb"
+    },
+    "industry_flows.json": {
+      "bytes": 104067,
+      "sha256": "0686e7bb058d19459cfad343f11da40e6bf65f33e135fe7f949ad4bd9bf634d1"
+    },
+    "earnings_table.json": {
+      "bytes": 599853,
+      "sha256": "606962ba809656a6c80aecaa3ab7cc2d330305cd43e9d45e84c636bc1ae58130"
+    },
+    "earnings_season.json": {
+      "bytes": 23870,
+      "sha256": "e04ed4d9f2ec48f7be756a03b6a2343cf29d0da80f83e4f176d435a33db9a2a3"
+    },
+    "earnings_compare.json": {
+      "bytes": 1268550,
+      "sha256": "f3add86b238a25367b56b7ef288a984c3cfa64bc078b4e670b84c6c98a093b36"
+    },
+    "altdata_trending.json": {
+      "bytes": 1194,
+      "sha256": "4c9d6abc09b72726199fdb8c9e4897337f42621a8f2d5ca5e7a8893df75c3354"
+    },
+    "research_index.json": {
+      "bytes": 857,
+      "sha256": "1651583352f01137456a1dfe69f942437d2ce1d7b3863e4e76658d3fe6a266ba"
+    }
+  },
+  "source_before": {
+    "tests/test_d06_market_structure.py": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+    "tests/test_build_market_structure_page.py": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+    "tests/test_market_structure_glance_copy.py": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+    "tests/test_d06_stage_analysis.py": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+    "tests/test_stage_analysis_page.py": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+    "tests/test_d06_spvector.py": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+    "tests/test_spvector_page.py": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+    "tests/test_spvector_gate_chips.py": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+    "tests/test_spvector_scorecard_basis.py": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+    ".github/ci/legacy-jobs.yml": "a96aae8e566aaefc736be8821cb15074e368d4152d41295beeac405e43b94cdf",
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f",
+    "scripts/build_market_structure_page.py": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+    "scripts/build_stage_analysis_page.py": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+    "scripts/build_spvector.py": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "scripts/d06_macro_fixtures.py": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+    "site/market_structure.html": "ba01eb5e681e72a805206da80a111d31a0eb4ac4c4eb36d98133afcf2dab66df",
+    "site/stage_analysis.html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+    "site/spvector.html": "faf1dcca2a5916e0ce4a6792b607fc755d80797b3ec932c9327554247b3b789e",
+    "tests/fixtures/market_structure_latest.json": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+    "docs/pr-crops/d06-macro-ci-20261104/run_browser.py": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8",
+    "design_refs/sector-paper-20261021/copy_deck.json": "c286b25ba4cc7dad14cfe5a33366fa07a213062613bae24b0b6174239f1149f1",
+    "tests/test_cycle_ontology.py": "299361e9d9e1c05a2639e1e6511735eae9972c67b8995b018047e1e789bc90b0",
+    "engine/cycle_ontology.py": "b5fff75d7ccedbc1c6e51932ff229d076a30061ad93ba07cfbdc39c4c613fe20",
+    "tests/test_ci_pack.py": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+    "tests/test_contract_delta.py": "c190955bdaf434cf7b7203cab2588deedbf5bd03079c2a1bada0c1c6c1df79cc",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58"
+  },
+  "source_after": {
+    "tests/test_d06_market_structure.py": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+    "tests/test_build_market_structure_page.py": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+    "tests/test_market_structure_glance_copy.py": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+    "tests/test_d06_stage_analysis.py": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+    "tests/test_stage_analysis_page.py": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+    "tests/test_d06_spvector.py": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+    "tests/test_spvector_page.py": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+    "tests/test_spvector_gate_chips.py": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+    "tests/test_spvector_scorecard_basis.py": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+    ".github/ci/legacy-jobs.yml": "a96aae8e566aaefc736be8821cb15074e368d4152d41295beeac405e43b94cdf",
+    "templates/market_structure.html.j2": "75d07b074bad490b2a9ede4610b521e77d18ac9fa5c8f7c83ff55202bb14a0e8",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f",
+    "scripts/build_market_structure_page.py": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+    "scripts/build_stage_analysis_page.py": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+    "scripts/build_spvector.py": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "scripts/d06_macro_fixtures.py": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+    "site/market_structure.html": "ba01eb5e681e72a805206da80a111d31a0eb4ac4c4eb36d98133afcf2dab66df",
+    "site/stage_analysis.html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+    "site/spvector.html": "faf1dcca2a5916e0ce4a6792b607fc755d80797b3ec932c9327554247b3b789e",
+    "tests/fixtures/market_structure_latest.json": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+    "docs/pr-crops/d06-macro-ci-20261104/run_browser.py": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8",
+    "design_refs/sector-paper-20261021/copy_deck.json": "c286b25ba4cc7dad14cfe5a33366fa07a213062613bae24b0b6174239f1149f1",
+    "tests/test_cycle_ontology.py": "299361e9d9e1c05a2639e1e6511735eae9972c67b8995b018047e1e789bc90b0",
+    "engine/cycle_ontology.py": "b5fff75d7ccedbc1c6e51932ff229d076a30061ad93ba07cfbdc39c4c613fe20",
+    "tests/test_ci_pack.py": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+    "tests/test_contract_delta.py": "c190955bdaf434cf7b7203cab2588deedbf5bd03079c2a1bada0c1c6c1df79cc",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58"
+  },
+  "source_stable": true,
+  "stage_data_stable": true,
+  "runs": [
+    {
+      "surface": "market",
+      "exit_code": 0,
+      "duration_seconds": 24.42,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+        "--only",
+        "market"
+      ],
+      "log": "market.log"
+    },
+    {
+      "surface": "actual",
+      "exit_code": 0,
+      "duration_seconds": 13.44,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+        "--only",
+        "actual",
+        "--stage-inputs",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/d06-macro-implementation-20261104-c4/site/stagedata"
+      ],
+      "log": "actual.log"
+    }
+  ],
+  "finished_at": "2026-11-04T13:02:34.120619+00:00"
+}

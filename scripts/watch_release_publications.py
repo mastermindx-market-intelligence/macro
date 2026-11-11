@@ -77,6 +77,7 @@ class SourceSpec:
     actual_parser: str | None = None
     feed_kind: str | None = None
     follow_entry_link: bool = False
+    actual_parser_version: int = 1
 
 
 SOURCES: tuple[SourceSpec, ...] = (
@@ -91,6 +92,7 @@ SOURCES: tuple[SourceSpec, ...] = (
         ("federal open market committee", "target range", "federal funds rate"),
         event_scoped=True,
         actual_parser="fomc",
+        actual_parser_version=2,
     ),
     SourceSpec(
         "bls_cpi",
@@ -148,7 +150,7 @@ SOURCES: tuple[SourceSpec, ...] = (
         "dol_claims",
         ("CLAIMS",),
         "U.S. Department of Labor",
-        "https://www.dol.gov/newsroom/releases/eta",
+        "https://www.dol.gov/index.php/newsroom/releases/eta",
         ("unemployment insurance", "initial claims"),
         event_scoped=True,
         actual_parser="claims",
@@ -448,6 +450,77 @@ def _fetch(spec: SourceSpec, prior: dict[str, Any], timeout: float) -> dict[str,
         raise
 
 
+def _begin_source_attempt(
+    prior: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+) -> dict[str, Any]:
+    """Start one durable attempt record inside the existing source state row."""
+    attempt = dict(prior)
+    try:
+        attempt_count = max(0, int(attempt.get("attempt_count") or 0)) + 1
+    except (TypeError, ValueError):
+        attempt_count = 1
+    attempted_at = now.isoformat()
+    attempt.update(
+        {
+            "attempt_count": attempt_count,
+            "first_attempt_at": attempt.get("first_attempt_at") or attempted_at,
+            "last_attempt_at": attempted_at,
+            "last_attempt_status": "in_progress",
+            "checked_at": attempted_at,
+            "source_url": source_url,
+        }
+    )
+    return attempt
+
+
+def _complete_source_attempt(
+    attempt: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    """Record a successful observation without erasing prior failure lineage."""
+    completed = dict(attempt)
+    completed.update(
+        {
+            "fingerprint": result.get("fingerprint"),
+            "etag": result.get("etag"),
+            "last_modified": result.get("last_modified"),
+            "content_type": result.get("content_type"),
+            "checked_at": now.isoformat(),
+            "source_url": source_url,
+            "last_attempt_status": "ok",
+            "last_success_at": now.isoformat(),
+        }
+    )
+    return completed
+
+
+def _fail_source_attempt(
+    attempt: dict[str, Any],
+    *,
+    now: datetime,
+    source_url: str,
+    error: str,
+) -> dict[str, Any]:
+    """Persist coarse failure lineage while keeping validators and last success."""
+    failed = dict(attempt)
+    failed.update(
+        {
+            "checked_at": now.isoformat(),
+            "source_url": source_url,
+            "last_attempt_status": "error",
+            "last_error": error,
+            "last_error_at": now.isoformat(),
+        }
+    )
+    return failed
+
+
 def _resolved_spec(spec: SourceSpec, event: dict[str, Any] | None) -> SourceSpec:
     if not event or "{" not in spec.url:
         return spec
@@ -497,7 +570,8 @@ def parse_fomc_actual(body: bytes) -> dict[str, Any] | None:
     text = _html_text(body)
     decision = re.search(
         r"decided to\s+(maintain|raise|lower)\s+the target range for the "
-        r"federal funds rate\s+(?:at|to)\s+([0-9][0-9./-]*)\s+to\s+"
+        r"federal funds rate\s+(?:by\s+[0-9][0-9./-]*\s+percentage "
+        r"point(?:s)?\s+)?(?:at|to)\s+([0-9][0-9./-]*)\s+to\s+"
         r"([0-9][0-9./-]*)\s+percent",
         text,
         flags=re.IGNORECASE,
@@ -979,6 +1053,40 @@ def _prepare_official_document(
         return document, True, type(exc).__name__
 
 
+def _claims_publication_is_bound(publication: dict[str, Any]) -> bool:
+    """Validate retained claims identity before keep-first can preserve its facts."""
+    try:
+        event_day = date.fromisoformat(str(publication.get("date")))
+        actual = publication.get("actual") or {}
+        week = datetime.strptime(str(actual.get("reference_period")), "%B %d, %Y").date()
+    except (TypeError, ValueError, AttributeError):
+        return False
+    expected = event_day - timedelta(days=(event_day.weekday() - 5) % 7 or 7)
+    url = _safe_official_document_url(publication.get("source_url"))
+    parsed = urlparse(url or "")
+    path = parsed.path.removeprefix("/index.php")
+    dated_path = path == f"/newsroom/releases/eta/eta{event_day:%Y%m%d}"
+    dated_node = bool(re.fullmatch(r"/node/\d+", path) and
+                      publication.get("source_document_date") == event_day.isoformat())
+    return bool(parsed.hostname in {"dol.gov", "www.dol.gov"} and
+                (dated_path or dated_node) and week == expected and
+                actual.get("source_url") == url)
+
+
+def _withdraw_unbound_claims(publications: dict[str, Any]) -> None:
+    """Use the incumbent unresolved/retry state; never keep an unbound actual live."""
+    for key, original in list(publications.items()):
+        if (not isinstance(original, dict) or original.get("source_id") != "dol_claims"
+                or original.get("data_ready") is not True or _claims_publication_is_bound(original)):
+            continue
+        row = dict(original)
+        for field in ("actual", "verified_at", "source_released_at", "source_time_basis", "reference_period"):
+            row.pop(field, None)
+        row.update(status="published_unparsed", data_ready=False,
+                   note="Release identity unverified; the previously displayed claims value has been withdrawn.")
+        publications[key] = row
+
+
 def detect(
     *,
     now: datetime,
@@ -996,6 +1104,7 @@ def detect(
         dict(state.get("publications") or {}),
         candidates,
     )
+    _withdraw_unbound_claims(publications)
     raw_repair_state = state.get(DEFECT_REPAIR_STATE_KEY)
     repair_state = dict(raw_repair_state) if isinstance(raw_repair_state, dict) else {}
     coverage_started_at_by_type = _coverage_started_at_by_type(state, now)
@@ -1032,7 +1141,7 @@ def detect(
                 publication.get("status") == "published_unparsed"
                 or (
                     not publication
-                    and timedelta(0) <= elapsed <= timedelta(hours=24)
+                    and timedelta(0) <= elapsed <= _alert_retention(event)
                 )
             )
             past_fast_window = now_et > _event_at(event) + _poll_after(event)
@@ -1110,6 +1219,11 @@ def detect(
             )
             if forced_repair and isinstance(repair_record, dict):
                 _start_defect_repair_attempt(repair_record, now)
+            attempt = _begin_source_attempt(
+                prior,
+                now=now,
+                source_url=resolved.url,
+            )
             try:
                 result = fetch_primary(resolved, {} if forced_repair else prior)
                 # A statement can become visible seconds before the scheduled
@@ -1135,14 +1249,12 @@ def detect(
                     and result.get("fingerprint")
                     and prior["fingerprint"] != result["fingerprint"]
                 )
-                source_state[state_key] = {
-                    "fingerprint": result.get("fingerprint"),
-                    "etag": result.get("etag"),
-                    "last_modified": result.get("last_modified"),
-                    "content_type": result.get("content_type"),
-                    "checked_at": now.isoformat(),
-                    "source_url": resolved.url,
-                }
+                source_state[state_key] = _complete_source_attempt(
+                    attempt,
+                    now=now,
+                    source_url=resolved.url,
+                    result=result,
+                )
                 if legacy_state_key != state_key:
                     source_state.pop(legacy_state_key, None)
                 detail_errors: list[str] = []
@@ -1166,6 +1278,13 @@ def detect(
                     )
                     if detail_error:
                         detail_errors.append(detail_error)
+                    # An undated listing (including a 304 or a different week's
+                    # entry) is not this event's release. Never parse its first
+                    # claims-shaped paragraph as a fallback or rebind old facts.
+                    if resolved.feed_kind == "dol_claims" and (
+                        document.get("binding_kind") != "feed_entry" or not publication_evidence
+                    ):
+                        continue
                     document_url = str(document.get("source_url") or resolved.url)
                     document_urls.append(document_url)
                     publication = _publication_for(publications, event)
@@ -1198,6 +1317,11 @@ def detect(
                         resolved,
                         document.get("body") or b"",
                     )
+                    if resolved.feed_kind == "dol_claims":
+                        parsed_actual = official_release_parsers.parse_claims_actual(
+                            document.get("body") or b"",
+                            event_day=date.fromisoformat(str(event["date"])),
+                        )
                     actual = (
                         None
                         if resolved.follow_entry_link
@@ -1337,7 +1461,7 @@ def detect(
                     if resolved.actual_parser:
                         publication["parser"] = {
                             "name": str(resolved.actual_parser),
-                            "version": 1,
+                            "version": int(resolved.actual_parser_version),
                         }
                     if actual and not keep_verified_binding:
                         publication["actual"] = {
@@ -1345,6 +1469,8 @@ def detect(
                             "source_url": official_url,
                         }
                         publication["verified_at"] = now.isoformat()
+                        if resolved.feed_kind == "dol_claims":
+                            publication["source_document_date"] = event["date"]
                     publications[event_key] = publication
                     if forced_repair and isinstance(repair_record, dict):
                         if successful_detail_repair:
@@ -1382,6 +1508,14 @@ def detect(
                     }
                 )
             except Exception as exc:  # noqa: BLE001 - source failure is display health
+                source_state[state_key] = _fail_source_attempt(
+                    attempt,
+                    now=now,
+                    source_url=resolved.url,
+                    error=type(exc).__name__,
+                )
+                if legacy_state_key != state_key:
+                    source_state.pop(legacy_state_key, None)
                 if forced_repair and isinstance(repair_record, dict):
                     _fail_defect_repair(repair_record, type(exc).__name__)
                 log.warning(

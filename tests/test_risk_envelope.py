@@ -31,7 +31,7 @@ from engine.risk_envelope import (
     canonical_json,
     compose_envelope,
 )
-from scripts.build_risk_envelope import build_sources, build
+from scripts.build_risk_envelope import build_sources, build, _issued_warning_duration
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _FIXTURE = _REPO_ROOT / "tests" / "fixtures" / "risk_envelope" / "gd1_dual_read_2026-08-18.json"
@@ -619,3 +619,105 @@ class TestSettledBuilder:
             pytest.skip("settled market-state artifact not present in this checkout")
         jsonschema.validate(env, json.loads(_SCHEMA_FILE.read_text(encoding="utf-8")))
         assert env["authority"]["envelope_may_gate"] is False
+
+
+class TestIssuedWarningDuration:
+    """Display-only caution+ duration comes from issued ledger sessions, never replay."""
+
+    @staticmethod
+    def _log(tmp_path, rows):
+        path = tmp_path / "data" / "risk_radar" / "forward_log.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+            encoding="utf-8",
+        )
+        return path
+
+    def test_five_consecutive_issued_sessions_crosses_display_floor(self, tmp_path):
+        path = self._log(tmp_path, [
+            {"asof": "2026-09-14", "state": "caution"},
+            {"asof": "2026-09-15", "state": "elevated"},
+            {"asof": "2026-09-16", "state": "caution"},
+            {"asof": "2026-09-17", "state": "risk-off"},
+            {"asof": "2026-09-18", "state": "caution"},
+        ])
+        out = _issued_warning_duration(path, "2026-09-18", "caution")
+        assert out == {
+            "issued_warning_sessions": 5,
+            "issued_warning_since": "2026-09-14",
+            "issued_warning_persistent": True,
+            "issued_warning_floor": 5,
+            "issued_warning_basis": "risk_radar_forward_log_first_writer_sessions",
+        }
+
+    def test_weekend_is_not_a_gap_but_missing_expected_session_is(self, tmp_path):
+        path = self._log(tmp_path, [
+            {"asof": "2026-09-11", "state": "caution"},  # Friday
+            {"asof": "2026-09-14", "state": "caution"},  # Monday
+            # Tuesday 09-15 deliberately absent: breaks the issued streak.
+            {"asof": "2026-09-16", "state": "caution"},
+            {"asof": "2026-09-17", "state": "elevated"},
+            {"asof": "2026-09-18", "state": "caution"},
+        ])
+        out = _issued_warning_duration(path, "2026-09-18", "caution")
+        assert out["issued_warning_sessions"] == 3
+        assert out["issued_warning_since"] == "2026-09-16"
+        assert out["issued_warning_persistent"] is False
+
+    def test_duplicate_or_state_mismatch_fails_closed(self, tmp_path):
+        duplicate = self._log(tmp_path, [
+            {"asof": "2026-09-17", "state": "caution"},
+            {"asof": "2026-09-18", "state": "caution"},
+            {"asof": "2026-09-18", "state": "caution"},
+        ])
+        assert _issued_warning_duration(duplicate, "2026-09-18", "caution") is None
+
+        clean = self._log(tmp_path, [
+            {"asof": "2026-09-17", "state": "caution"},
+            {"asof": "2026-09-18", "state": "elevated"},
+        ])
+        assert _issued_warning_duration(clean, "2026-09-18", "caution") is None
+
+    def test_calm_or_watch_is_zero_duration_not_persistence(self, tmp_path):
+        path = self._log(tmp_path, [
+            {"asof": "2026-09-17", "state": "caution"},
+            {"asof": "2026-09-18", "state": "watch"},
+        ])
+        out = _issued_warning_duration(path, "2026-09-18", "watch")
+        assert out["issued_warning_sessions"] == 0
+        assert out["issued_warning_since"] is None
+        assert out["issued_warning_persistent"] is False
+
+    def test_builder_carries_duration_as_radar_source_detail_only(self, tmp_path, gd1):
+        root = tmp_path
+        ms = json.loads(json.dumps(gd1["market_state"]))
+        ms["asof"] = "2026-09-18"
+        ms["radar"]["state"] = "caution"
+        lead = json.loads(json.dumps(gd1["leadership_crack"]))
+        lead["asof"] = "2026-09-18"
+        for rel, doc in (
+            ("data/market_state/latest.json", ms),
+            ("data/leadership_crack/latest.json", lead),
+        ):
+            path = root / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(doc), encoding="utf-8")
+        self._log(root, [
+            {"asof": "2026-09-14", "state": "caution"},
+            {"asof": "2026-09-15", "state": "caution"},
+            {"asof": "2026-09-16", "state": "elevated"},
+            {"asof": "2026-09-17", "state": "caution"},
+            {"asof": "2026-09-18", "state": "caution"},
+        ])
+        env = build(root=root, now=datetime(2026, 9, 19, tzinfo=timezone.utc))
+        radar = next(
+            row for row in env["provenance"]["sources"]
+            if row["source_id"] == "risk-radar-us"
+        )
+        assert radar["detail"]["issued_warning_sessions"] == 5
+        assert radar["detail"]["issued_warning_since"] == "2026-09-14"
+        assert radar["detail"]["issued_warning_persistent"] is True
+        # The fact remains source detail: it does not change the source-native score/state.
+        assert radar["state"] == "caution"
+        assert radar["score"] == ms["radar"]["top_score"]

@@ -1,0 +1,70 @@
+{
+  "cases_run": 13,
+  "census_source_pin": "f3a547cc09872d9aaa719759a6a2daa2832edad5",
+  "checks": [
+    {
+      "case": "test_absent_replay_does_not_recompute_or_substitute_latest",
+      "result": "PASS"
+    },
+    {
+      "case": "test_fixed_population_keeps_uninspected_and_halted_members",
+      "result": "PASS"
+    },
+    {
+      "case": "test_future_revision_cannot_change_earlier_selected_inputs",
+      "result": "PASS"
+    },
+    {
+      "case": "test_known_future_schedule_is_not_discarded_as_a_future_result",
+      "result": "PASS"
+    },
+    {
+      "case": "test_late_arrival_distinguishes_publication_from_system_observation",
+      "result": "PASS"
+    },
+    {
+      "case": "test_later_identity_generation_cannot_substitute_for_earlier_generation",
+      "result": "PASS"
+    },
+    {
+      "case": "test_missing_sector_dependency_refuses_before_inventing_context",
+      "result": "PASS"
+    },
+    {
+      "case": "test_naive_time_and_derived_replay_claims_are_refused",
+      "result": "PASS"
+    },
+    {
+      "case": "test_owner_inputs_remain_unchanged",
+      "result": "PASS"
+    },
+    {
+      "case": "test_replay_rejects_changed_bytes",
+      "result": "PASS"
+    },
+    {
+      "case": "test_replay_returns_exact_retained_decision_bytes",
+      "result": "PASS"
+    },
+    {
+      "case": "test_requested_clock_never_falls_back_to_a_more_convenient_clock",
+      "result": "PASS"
+    },
+    {
+      "case": "test_revision_becomes_visible_only_at_its_own_observation_cut",
+      "result": "PASS"
+    }
+  ],
+  "historical_coverage_proven": false,
+  "passed": true,
+  "predictive_skill_measured": false,
+  "production_capture_proven": false,
+  "scope": "SYNTHETIC_INCUMBENT_CONTRACT_PROOF_ONLY",
+  "sector_producer_enrolled": false,
+  "tested_source_sha256": {
+    "lib/dataos/nulls.py": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+    "lib/dataos/read_contract.py": "75bff1347ea8d630725a95a3a5994015974539eafd9c832c03943065ab336e78",
+    "lib/dataos/temporal.py": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+  },
+  "training_or_promotion_authorized": false
+}

@@ -1,0 +1,67 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://mastermindx.ai/contracts/theme_graph/activity_curation_receipt.v1.schema.json",
+    "title": "GMI activity curation receipt (v1)",
+    "description": "The receipt file a NAMED curator (or a seat acting curator under a Chairman delegation) writes for one activity proposal decision. The file BYTES are hashed into the ledger row's curation.receipt_sha256 by engine.theme_graph.probation.curate_activity_proposal; the bridge (engine.theme_graph.activity_history_bridge) re-reads the bytes at <receipts-dir>/<proposal_id with ':' replaced by '_'>.json and refuses any receipt that does not hash to that value and restate the row's decision. The receipt decides nothing about graph-membership use: that grant can come only from a Chairman ruling revision file.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema",
+        "proposal_id",
+        "proposal_sha256",
+        "curator",
+        "decision",
+        "reviewed_at",
+        "reasons"
+    ],
+    "properties": {
+        "schema": {
+            "const": "gmi.activity_curation_receipt/v1"
+        },
+        "proposal_id": {
+            "type": "string",
+            "pattern": "^actprop:[0-9a-f]{24}$"
+        },
+        "proposal_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "sha256 of the canonical JSON of the PROPOSED ledger row the receipt decides."
+        },
+        "curator": {
+            "type": "string",
+            "minLength": 1
+        },
+        "decision": {
+            "enum": [
+                "RATIFIED",
+                "REJECTED"
+            ]
+        },
+        "reviewed_at": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|[+-][0-9]{2}:[0-9]{2})$"
+        },
+        "reasons": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "code",
+                    "detail"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z][A-Z0-9_]+$"
+                    },
+                    "detail": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            }
+        }
+    }
+}

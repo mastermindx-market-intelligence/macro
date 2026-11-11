@@ -1,180 +1,164 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-15T19:18:02.634336+00:00",
+  "as_of": "2026-11-10",
+  "generated_at": "2026-11-11T16:17:20.664641+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-11-SIG-20260915191802-1",
-      "ticker": "SIG",
-      "name": null,
+      "id": "2026-11-10-AMZN-20261111161720-1",
+      "ticker": "AMZN",
+      "name": "Amazon.Com Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "The engine labels this 'no clear edge' with a neutral band, and the profile shows a mixed-but-unremarkable stretch: selection z is modestly positive on revisions but SUE is negative and momentum is only modestly context. With no cycle block and a calm tape, there is no distinct directional edge relative to the S&P 500.",
+      "horizon_d": 20,
+      "thesis": "The daily turn and positive trend are offset by a mixed weekly regime, left-translated prior cycle and contracting-liquidity risk control. The unvalidated rank supplies no basis for expecting relative outperformance.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "band: neutral",
-        "SUE z -0.37 (validated leg, fresh 75d)",
-        "entry z -1.07 (weak entry leg)",
-        "board state: FRESH BUY at -5.0% off high"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily bottoming; weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Above 50DMA and 200DMA; MACD positive",
+        "Macro-risk: contracting US net liquidity"
       ],
-      "dissent": "A fresh-buy signal near the high in a calm tape may reflect re-accelerating momentum that the stale SUE (75 days) is too slow to capture.",
+      "dissent": "Strong quality, earnings growth and an intact price trend could sustain leadership despite the macro and cycle cautions.",
       "falsifier": {
-        "text": "SIG breaks out to new highs on rising relative strength against the S&P 500 with no deterioration in earnings quality or revisions momentum.",
+        "text": "A confirmed weekly upturn accompanied by sustained outperformance versus the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-06",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-NX-20260915191802-2",
-      "ticker": "NX",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "The engine flags active relative weakness ('Lagging \u2014 relative weakness') with negative selection, an accounting-quality warning, and negative revisions/momentum. Against a calm tape that rewards leaders, NX's lagging profile and 'TURN SIGNALED' risk state support a cautious directional lean.",
-      "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "selection z -0.85 (all three legs negative)",
-        "revision z -1.50 (literature)",
-        "accounting flag: warn",
-        "board state: TURN SIGNALED, urgency caution"
-      ],
-      "dissent": "The upward price direction and only -5.9% from high may indicate the lagging verdict is transitioning; a quality warning alone has not historically triggered meaningful underperformance in calm regimes.",
-      "falsifier": {
-        "text": "NX closes above its prior recovery high and maintains relative strength versus the S&P 500 over the next two weeks, with no further deterioration in earnings revision momentum.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "NX",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 40
-        }
-      },
-      "check_by": "2026-11-06",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-11-TEL-20260915191802-3",
-      "ticker": "TEL",
-      "name": null,
+      "id": "2026-11-10-UBER-20261111161720-2",
+      "ticker": "UBER",
+      "name": "Uber Technologies Inc",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "Despite a fresh-buy board state, the engine returns a neutral band ('no clear edge') with a severely negative momentum leg (alpha z -1.17) and only slightly positive revisions. The -14.3% off-high and mixed quality give no durable directional edge.",
+      "horizon_d": 20,
+      "thesis": "The risk controls support watching the daily bottoming attempt, but not assuming relative upside while the weekly picture is mixed and price remains below its 200-day average. Selection is essentially cross-sectionally neutral and is not a forecast.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "momentum z -1.17 (context)",
-        "selection z -0.22",
-        "entry z +0.72 (strong entry leg)",
-        "accounting: clean"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis 63rd percentile; not blocked",
+        "Above 50DMA but 3.8% below 200DMA",
+        "Momentum context z-score -1.34",
+        "Macro-risk elevated"
       ],
-      "dissent": "Fresh-buy urgency ('now') plus a strong entry z could signal early accumulation after a deep correction; if the lagging momentum turns, TEL would be a leader rather than a neutral name.",
+      "dissent": "The rejected low, improving 10-day average and strong cash generation could turn this into a durable recovery before the weekly signal confirms.",
       "falsifier": {
-        "text": "TEL's relative momentum versus the S&P 500 turns positive and it closes above its 40-day rolling high with sustained improving revisions.",
+        "text": "A weekly trend confirmation with price reclaiming and holding above the 200-day average while outperforming the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-06",
+      "check_by": "2026-12-08",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-TKO-20260915191802-4",
-      "ticker": "TKO",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict (building a base) with positive selection on revisions (+1.42 z) and a favorable entry leg supports a measured constructive lean. The caution on accounting and weak basket are risk size-downs, not a directional bearish signal.",
+      "id": "2026-11-10-TTWO-20261111161720-3",
+      "ticker": "TTWO",
+      "name": "Take Two Interactive Softwre",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The daily buy setup is real, but the risk reshape argues against a directional call: the weekly trend is unconfirmed, the prior cycle topped early and its sector basket is below long-term trend. Those bearish checks are not yet enough to short an improving tape.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "revision z +1.42 (literature)",
-        "entry z +0.48, vol-squeeze present",
-        "momentum slightly positive (0.03)",
-        "board: TURN SIGNALED at -14.7% off high"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Daily bottoming with positive MACD",
+        "Weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Sector basket below long-term trend"
       ],
-      "dissent": "The 'TURN SIGNALED' board state and weak Communication Services basket could mean the base fails; the accounting watch flag suggests the earnings revision reading may be artificially inflated.",
+      "dissent": "Holding above both major moving averages with a clean accounting flag could allow the rebound to become sustained leadership.",
       "falsifier": {
-        "text": "TKO breaks below its recent base low and underperforms the S&P 500 with a fresh downgrade to earnings estimates.",
+        "text": "A confirmed weekly uptrend and sustained relative outperformance versus the S&P 500 despite continued sector weakness.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "TKO",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-13",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-CLH-20260915191802-5",
-      "ticker": "CLH",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict ('building a base') is anchored by strong selection: positive SUE (0.88), positive revisions (0.88), and positive momentum (0.5), all fresh at 16 days. The -1.1% off-high and 'TURN SIGNALED, now' board state support a favorable lean.",
+      "id": "2026-11-10-CNMD-20261111161720-4",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The short-term turn is offset by a late investor phase, left-translated prior cycle and the entry axis's lottery-spike risk control. With neutral selection and sharply deteriorating earnings, the evidence does not support expecting either relative leadership or failure.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "SUE z +0.88 (validated, fresh 16d)",
-        "revision z +0.88 (literature)",
-        "momentum z +0.50 (context)",
-        "no cautions, clean accounting"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis includes lottery-spike",
+        "Weekly timeframe has not turned",
+        "Prior cycle left-translated",
+        "Net-income growth -64.4%"
       ],
-      "dissent": "The near-high price with 'TURN SIGNALED' urgency could be a late-cycle reflection of already-priced earnings upside; retail-level extension from a clean fundamental print is fragile.",
+      "dissent": "Price is above both major averages and near its high, so momentum could persist even without supportive fundamentals.",
       "falsifier": {
-        "text": "CLH gives up its recent gains and prints a lower high relative to the S&P 500 with negative earnings revision momentum within the next month.",
+        "text": "A weekly trend confirmation followed by sustained outperformance versus the S&P 500 without another lottery-like price spike.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CLH",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-13",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-01",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-CSR-20260915191802-6",
-      "ticker": "CSR",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict (building a base) is driven by a strong revisions leg (z 2.02) and an insurance-style entry (vol-squeeze). Although SUE is neutral and momentum slightly negative, the revisions signal and no cycle block support a measured constructive lean.",
+      "id": "2026-11-10-ABNB-20261111161720-5",
+      "ticker": "ABNB",
+      "name": "Airbnb Inc Class A",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "This is a bullish, with-trend leader, so extension alone is not grounds for a bearish relative call. The validated risk reshape says not to chase because price is stretched above long-term trend amid contracting liquidity and a crowded sector, while the overall verdict remains neutral.",
       "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "revision z +2.02 (literature)",
-        "insider z +0.04 (validated)",
-        "entry z +0.29, vol-squeeze present",
-        "accounting: watch (caution, not block)"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh buy; bullish weekly agreement",
+        "26.0% above 200DMA and 1.9% below 52-week high",
+        "Entry axis 43rd percentile with extended and over-200DMA flags",
+        "Crowded and stretched sector basket"
       ],
-      "dissent": "The -15.4% off-high and negative momentum could indicate that strong revisions are already being re-rated downward; accounting watch flag adds fragility to the revisions signal.",
+      "dissent": "High quality, strong cash flow and intact momentum could keep compounding relative gains despite the extension brake.",
       "falsifier": {
-        "text": "CSR fails to hold above its prior high and underperforms the S&P 500 with a measurable downward revision to consensus earnings estimates.",
+        "text": "A decisive loss of the 50-day average followed by sustained underperformance versus the S&P 500.",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CSR",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-13",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-08",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-10-JAZZ-20261111161720-6",
+      "ticker": "JAZZ",
+      "name": "Jazz Pharmaceuticals",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "The leader designation and intact momentum argue against shorting it merely because the daily cycle is stretched. The accounting warning, negative earnings and unconfirmed weekly turn make a constructive relative call equally difficult, so the risk-controlled stance is neutral pending verification.",
+      "evidence": [
+        "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "Daily phase stretched; RSI 67",
+        "Above 50DMA and 200DMA; MACD positive",
+        "Quality flag: accounting warn",
+        "Net margin -8.3% and net-income growth -163.6%"
+      ],
+      "dissent": "Strong revisions and persistent leader momentum could dominate the accounting concern and produce continued relative strength.",
+      "falsifier": {
+        "text": "A weekly uptrend confirmation with sustained S&P 500 outperformance after the accounting warning remains unresolved.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-01",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
