@@ -5999,7 +5999,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_994),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6008,6 +6008,68 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10851, retain newly landed cursor/reconnect coverage):
+    Receiver 54b903f7 includes #9230 in ticker-news-qbus. Preserve its
+    snapshot-cursor selector, executed suite and separate free-content +2.
+    Add only this carrier's original seven selectors and intelligence step.
+    The current native estimator measures 108 -> 113, with only free-content
+    matching among the three probes. Apply this marginal +5 to yield
+    5966/5994/5724 from 5966/5989/5724. Keep all 401 owners, 400 sibling
+    blocks, 137/138/131 jobs, ten packs and runtime/admission limits.
+    Preserve current baseline removals before removing intelligence:
+    859 -> 858, without restoring federal-register or policy-calendar debt.
+    Root qualification records actual estimator/matcher execution and
+    exact source conservation; no full-tree planner, timing, hosted CI or
+    product/browser execution is claimed. Own successor CI remains owed.
+    Both main's history and this carrier's original 47 lines remain below.
+
+    2026-11-10 (PR #10851, current-main preserving composition):
+    Receiver cfd3834d retains its landed F09, ownership-ledger,
+    lifecycle coverage and qualified Playwright dependency. Keep all
+    original feature postimages and the accepted ticker-news-qbus coverage.
+    The unchanged owner estimator measures 106 -> 111; apply its
+    original contribution to only the free-content probe, yielding
+    5958/5984/5716 from current5958/5979/5716. Keep137/138/131jobs,
+    ten packs, assertions, selectors, commands, timeouts and all
+    admission limits. Preserve both entire provenance histories.
+    This is owner-estimator execution and source conservation, not
+    a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #10851, current-main conflict composition):
+    Preserve all 400 current owners, including the two landed activity-history
+    selectors in ticker-news-qbus, and retain its exact original provenance
+    test command and seven source/input selectors. Apply only the accepted
+    free-content +5 contribution to current 5964 -> 5969; index5943 and
+    Prophet5701, job counts, ten-pack ceilings, timeouts and admission stay
+    unchanged. The original measurement/history and all current-main history
+    remain below. Static inverse checks preserve the complete current source;
+    natural new-head CI must qualify this composed tree.
+
+    2026-11-08 (PR #10851, actual conflict with main73a0d5):
+    Compose the already measured ticker-news-qbus +5 free-content weight
+    with main's accepted #10180 Prophet Lab +3 on all three probes.
+    Current production estimator, blob 47164044, still reads ticker-news
+    as 106->111 and Prophet Lab as 64->67 in the exact three source sides.
+    Keep main's index5923 and plan5681; free5944+5=5949. No job-count,
+    pack, runtime or admission bound changes. Both existing evidence
+    explanations remain below. This repairs two actual conflicting hunks,
+    not an ancestry-only refresh. New-head CI must qualify the composition.
+
+    2026-11-08 (PR #10851, unified news provenance test enrollment):
+    Hosted contract-delta run 42463005182 / job 128676249618 at head 7b860d86,
+    tested against base 14fd85ad, measured free-content at 137 jobs / 5946
+    weight-seconds / 10 packs versus base 137 / 5941 / 10, with no newly
+    selected jobs. Index stayed 137 / 5920 / 10 and Prophet 131 / 5678 / 10.
+    The existing ticker-news-qbus owner now also runs the two intelligence
+    suites in one separate command: commands 2->3, explicit test paths 51->53,
+    command characters 2041->2130; the unchanged estimator is 106->111.
+    Account for exactly that measured +5 on the free-content weight ceiling.
+    Preserve every job-count and pack bound, selector, suite, assertion,
+    timeout and admission rule. Four actual builder input reads are added
+    to the same owner's declared closure; no new runner or owner is added.
+    These are planner weights, not elapsed runtime or production acceptance.
+    Natural new-head CI must validate the full composition.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

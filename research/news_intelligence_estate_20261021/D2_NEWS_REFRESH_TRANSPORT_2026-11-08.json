@@ -1,0 +1,35 @@
+{
+  "scope": "offline real-git refresh and actual producer-to-consumer proof",
+  "source_sha256": {
+    "macro:engine/intelligence.py": "fe1c5911719d18ebb19b9a7c8865c8b2a8ea962b0461010f838ac7ed1998a082",
+    "Mastermind:brain/bot_mcp.py": "31f54849179105aabbd2d16e02856ae8fe78288ed4b3e3dfcf64043b6b2675cf",
+    "Mastermind:portfolio/lenses.py": "0e490f692392e30474f465212f8eabd21215ca178fd61afbd9010191f4a1810b",
+    "Mastermind:data_layer/macro_refresh.py": "f20f46c132dda704f15d9ff5e1b902366646dd9b50656681569ee3c8ae457283"
+  },
+  "incumbent_functions_exercised": [
+    "engine.intelligence.load_and_build",
+    "data_layer.macro_refresh.ensure_clone",
+    "data_layer.macro_refresh.refresh",
+    "brain.bot_mcp.get_intelligence.handler",
+    "portfolio.lenses._news_row"
+  ],
+  "fixture_initial_commit": "e29a93ab720b4f010ff13e3336f5079afe92c82a",
+  "fixture_final_commit": "59ce8538eb6a5f0286fd40b9d4e5bc01865061ab",
+  "actual_checkout_head_matches_committed_update": true,
+  "artifact_bytes_preserved": true,
+  "artifact_sha256": "7ffe9ae84c0a03808667c720687e920814a3dbacabefafb600ead85c31e49f4b",
+  "news_origin": {
+    "source_asof": "2026-10-29T21:00:00+00:00",
+    "source_asof_basis": "financial_news.fetched_at",
+    "retained_from_previous_build": true,
+    "retained_reason": "candidate_darker_than_existing"
+  },
+  "intelligence_build_asof": "2026-11-08",
+  "bot_news_count": 3,
+  "portfolio_status": "stale_retained",
+  "r2_network_leg_stubbed": true,
+  "new_transport_implementation_required": false,
+  "production_refresh_executed": false,
+  "external_managed_production_artifact_verified": false,
+  "actual_model_call": false
+}

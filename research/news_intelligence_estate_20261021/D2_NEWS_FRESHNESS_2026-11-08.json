@@ -1,0 +1,43 @@
+{
+  "scope": "hermetic cross-repository producer-to-real-consumer proof",
+  "source_sha256": {
+    "macro/engine/intelligence.py": "fe1c5911719d18ebb19b9a7c8865c8b2a8ea962b0461010f838ac7ed1998a082",
+    "Mastermind/brain/bot_mcp.py": "31f54849179105aabbd2d16e02856ae8fe78288ed4b3e3dfcf64043b6b2675cf",
+    "Mastermind/portfolio/lenses.py": "0e490f692392e30474f465212f8eabd21215ca178fd61afbd9010191f4a1810b"
+  },
+  "news_origin": {
+    "source_asof": "2026-10-29T21:00:00+00:00",
+    "source_asof_basis": "financial_news.fetched_at",
+    "retained_from_previous_build": true,
+    "retained_reason": "candidate_darker_than_existing"
+  },
+  "bundle_build_asof": "2026-11-08",
+  "bot_news_count": 3,
+  "portfolio_status": "stale_retained",
+  "newer_standalone_count": 99,
+  "legacy_unified_clocks_remain_unknown": true,
+  "actual_model_call": false,
+  "authenticated_production_proof": false,
+  "procedure_pin": "1981aea5122943ce59d7ebe9706ddf5a658b377d",
+  "source_bases": {
+    "macro": "fca96b90d2d8f05a5ac1f57cd7f2cbe100e47445",
+    "Mastermind": "183bbd7ea0d71875984bea0f63bc81a98d930586"
+  },
+  "verification": {
+    "macro_before": {
+      "new_regressions_failed": 9,
+      "legacy_passed": 14
+    },
+    "macro_after": {
+      "passed": 23
+    },
+    "Mastermind_before": {
+      "new_regressions_failed": 14,
+      "existing_freshness_passed": 4
+    },
+    "Mastermind_after": {
+      "passed": 18,
+      "unrelated_deselected": 29
+    }
+  }
+}
