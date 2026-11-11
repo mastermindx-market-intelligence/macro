@@ -1,0 +1,89 @@
+{
+  "schema": "biocatalyst_selection_characterization.v1",
+  "source_repo": "mastermindx-market-intelligence/macro",
+  "source_commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+  "source_path": "templates/biocatalyst.js",
+  "source_sha256": "f0c7d9256cd57afc9b7ea2d343366f5c9ee895a139f7883543900cae120b99a0",
+  "trial_id": "NCT00000001",
+  "clinical_condition_filter": "controlled clinical filter",
+  "milestones": [
+    {
+      "event_id": "nct:NCT00000001:primary_completion",
+      "nct_id": "NCT00000001",
+      "kind": "primary_completion",
+      "trial": {
+        "title": "Controlled trial"
+      },
+      "milestone": {
+        "date": "2026-10-22"
+      },
+      "evidence": {
+        "source_clocks": {
+          "updated_at": "2026-10-10",
+          "retrieved_at": "2026-10-11"
+        }
+      }
+    },
+    {
+      "event_id": "nct:NCT00000001:completion",
+      "nct_id": "NCT00000001",
+      "kind": "completion",
+      "trial": {
+        "title": "Controlled trial"
+      },
+      "milestone": {
+        "date": "2026-10-29"
+      },
+      "evidence": {
+        "source_clocks": {
+          "updated_at": "2026-10-10",
+          "retrieved_at": "2026-10-11"
+        }
+      }
+    }
+  ],
+  "changes": [
+    {
+      "trial": {
+        "nct_id": "NCT00000001"
+      },
+      "change": {
+        "source_versions": {
+          "before": "version-A",
+          "after": "version-B"
+        },
+        "exact_operation_index": 0
+      }
+    },
+    {
+      "trial": {
+        "nct_id": "NCT00000001"
+      },
+      "change": {
+        "source_versions": {
+          "before": "version-A",
+          "after": "version-B"
+        },
+        "exact_operation_index": 1
+      }
+    }
+  ],
+  "prospective": [
+    {
+      "trial": {
+        "nct_id": "NCT00000001"
+      },
+      "prospective_change": {
+        "change_id": "change-A"
+      }
+    },
+    {
+      "trial": {
+        "nct_id": "NCT00000001"
+      },
+      "prospective_change": {
+        "change_id": "change-B"
+      }
+    }
+  ]
+}
