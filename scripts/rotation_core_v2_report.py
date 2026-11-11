@@ -68,5 +68,5 @@ def write_final_md(res, path):
                 L.append(f"| {blk}{' (sensitivity)' if blk != 'block21' else ''} | {key} | {h} | "
                          f"{_p(x['observed_ann_CONDITIONAL_ON_GATE'])} | {x['p_one_sided_centred']:.4f} | "
                          f"{hm['p_holm']:.4f} | {hm['reject_h0']} |")
-    L += ["", res["reporting_rule_i"], "", res["independence"], ""]
+    L += ["", res["descriptive_only"], "", res["reporting_rule_i"], "", res["independence"], ""]
     open(path, "w").write("\n".join(L) + "\n")

@@ -71,7 +71,6 @@ def _load_release(path: Path) -> dict | None:
 
 SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection_rerun.json"   # R15: rerun pins the setting
 SELECTED_REF = (3.0, 25.0)            # grid point selected at 1ca5228b3c (R13-g(i)); R14(d) sensitivity uses it
-STAGE1_GATE = ROOT / "research/rotation_core/results_v2_stage1_gate.json"
 
 
 def selected_setting(selection: Path | None = None) -> tuple[float, float]:
@@ -87,40 +86,113 @@ def selected_setting(selection: Path | None = None) -> tuple[float, float]:
 
 
 BRANCH = "fable/rotation-core-20261110"
-REMOTE_REF = f"origin/{BRANCH}"
+REMOTE = "origin"
+REMOTE_REF = f"{REMOTE}/{BRANCH}"
 OPENING_HYPOTHESES = ("H1", "H3")       # R16 S1c: constant; no release can name or change it
 ERAS_GATE = ("E1_1928_1945", "E2_1946_1997")
+GATE_READINGS, GATE_COSTS = ("eq", "drift"), ("base", "strict")
 PINNED_PATHS = ["engine", "scripts", "tests", "research/rotation_core/protocol_header_v2.json",
                 "research/rotation_core/results_v2_selection.json",                 # superseded 2x rows (R18.3)
-                "research/rotation_core/v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt"]  # O7 real-input hashes
+                "research/rotation_core/v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt"]  # recorded sealed hashes
+COVERED_MODULE_PREFIXES = ("engine.", "scripts.", "tests.")
+LEDGER = ROOT / "research/rotation_core/results_v2_run_ledger.json"
+SEALED_RECORD = ROOT / "research/rotation_core/v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt"
 
 
-def _git(*a, check=True) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", "-C", str(ROOT), *a], capture_output=True, check=check)
+class LedgerPushFailed(SealedRefusal):
+    pass
 
 
-def check_engine_commit(commit: str) -> None:
-    """Refuse unless engine, scripts, tests and the frozen header at HEAD are identical to `commit` and clean (S5)."""
-    for args in (["diff", "--quiet", commit, "HEAD", "--", *PINNED_PATHS], ["diff", "--quiet", "HEAD", "--", *PINNED_PATHS]):
-        if _git(*args, check=False).returncode != 0:
-            raise SealedRefusal(f"refused: engine/scripts/tests/header differ from release engine_commit {commit}")
+def _git(*a, check=True, root=None, env=None, input=None) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", str(root or ROOT), *a], capture_output=True, check=check, env=env, input=input)
 
 
-def fetch_remote() -> None:
-    _git("fetch", "-q", "origin", f"+refs/heads/{BRANCH}:refs/remotes/{REMOTE_REF}", check=False)
+def check_import_environment(root: Path = ROOT, commit: str | None = None) -> None:
+    """R20.8: refuse PYTHONPATH, a loaded sitecustomize/usercustomize, and any covered module imported from outside
+    the repository or differing from its blob at `commit`."""
+    import os, sys
+    if os.environ.get("PYTHONPATH"):
+        raise SealedRefusal("refused: PYTHONPATH is set")
+    if "usercustomize" in sys.modules:
+        raise SealedRefusal("refused: usercustomize is loaded")
+    sc = getattr(sys.modules.get("sitecustomize"), "__file__", None)
+    if sc is not None:
+        # R20.8 as amended (the distro interpreter always loads its own sitecustomize; -S would also drop the venv's
+        # site-packages): only the interpreter's own file is accepted, and its sha256 is pinned in versions().
+        import sysconfig
+        if Path(os.path.abspath(sc)).parent != Path(sysconfig.get_paths()["stdlib"]):
+            raise SealedRefusal("refused: a sitecustomize outside the interpreter's own library is loaded")
+    for name, mod in list(sys.modules.items()):
+        if not name.startswith(COVERED_MODULE_PREFIXES):
+            continue
+        f = getattr(mod, "__file__", None)
+        if f is None:
+            continue
+        try:
+            rel = Path(f).resolve().relative_to(Path(root).resolve())
+        except ValueError:
+            raise SealedRefusal(f"refused: covered module {name} imported from outside the repository") from None
+        if commit is not None:
+            want = _git("rev-parse", f"{commit}:{rel}", check=False, root=root).stdout.decode().strip()
+            got = _git("hash-object", str(rel), check=False, root=root).stdout.decode().strip()
+            if not want or want != got:
+                raise SealedRefusal(f"refused: covered module {name} differs from the engine commit")
 
 
-def on_remote(path: Path) -> None:
-    """S5: the commit that last touched `path` must be contained in the remote branch (a local-only commit is not
-    a release)."""
-    rel = str(Path(path).resolve().relative_to(ROOT))
-    c = _git("log", "-1", "--format=%H", "--", rel, check=False).stdout.decode().strip()
-    if not c or _git("merge-base", "--is-ancestor", c, REMOTE_REF, check=False).returncode != 0:
-        raise SealedRefusal(f"refused: {rel} is not committed on {REMOTE_REF}")
+def check_engine_commit(commit: str, root: Path = ROOT) -> None:
+    """S5/R20.8: pinned paths at HEAD identical to `commit`, no modified or UNTRACKED file under them, and a clean
+    import environment."""
+    if _git("diff", "--quiet", commit, "HEAD", "--", *PINNED_PATHS, check=False, root=root).returncode != 0:
+        raise SealedRefusal(f"refused: pinned paths differ from release engine_commit {commit}")
+    st = _git("status", "--porcelain", "--untracked-files=all", "--", *PINNED_PATHS, check=False, root=root)
+    if st.returncode != 0 or st.stdout.strip():
+        raise SealedRefusal("refused: modified or untracked files under the pinned paths")
+    check_import_environment(root, commit)
+
+
+def fetch_remote(root: Path = ROOT, branch: str = BRANCH) -> str:
+    """R20.5: fails closed; returns the sha just fetched. Every remote check takes this sha, never a stale ref."""
+    r = _git("fetch", "-q", REMOTE, f"+refs/heads/{branch}:refs/remotes/{REMOTE}/{branch}", check=False, root=root)
+    if r.returncode != 0:
+        raise SealedRefusal("refused: fetching the remote branch failed; no check runs on an unfetched ref")
+    return _git("rev-parse", f"refs/remotes/{REMOTE}/{branch}", root=root).stdout.decode().strip()
+
+
+def on_remote(path: Path, remote_sha: str, root: Path = ROOT) -> None:
+    """S5: the commit that last touched `path` (and the file content) must be contained in the fetched remote sha."""
+    rel = str(Path(path).resolve().relative_to(Path(root).resolve()))
+    c = _git("log", "-1", "--format=%H", "--", rel, check=False, root=root).stdout.decode().strip()
+    if not c or _git("merge-base", "--is-ancestor", c, remote_sha, check=False, root=root).returncode != 0:
+        raise SealedRefusal(f"refused: {rel} is not committed on the remote branch")
+    if _git("diff", "--quiet", remote_sha, "--", rel, check=False, root=root).returncode != 0:
+        raise SealedRefusal(f"refused: {rel} differs from the remote branch")
+
+
+def commit_on_remote(commit: str, remote_sha: str, root: Path = ROOT) -> None:
+    if _git("merge-base", "--is-ancestor", commit, remote_sha, check=False, root=root).returncode != 0:
+        raise SealedRefusal(f"refused: commit {commit} is not contained in the remote branch")
+
+
+def file_versions(rel: str, remote_sha: str, root: Path = ROOT) -> list:
+    """Every committed version of `rel` on the remote branch, oldest first: [(commit, bytes)] (deletions skipped)."""
+    out = _git("log", "--format=%H", "--reverse", remote_sha, "--", rel, check=False, root=root)
+    vs = []
+    for c in out.stdout.decode().split():
+        b = _git("show", f"{c}:{rel}", check=False, root=root)
+        if b.returncode == 0:
+            vs.append((c, b.stdout))
+    return vs
+
+
+def sha256_bytes(b: bytes) -> str:
+    import hashlib
+    return hashlib.sha256(b).hexdigest()
 
 
 def sha256_file(path) -> str:
-    import hashlib
+    import hashlib, io
+    if isinstance(path, io.StringIO):
+        return sha256_bytes(path.getvalue().encode())
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(1 << 20), b""):
@@ -129,9 +201,12 @@ def sha256_file(path) -> str:
 
 
 def versions() -> dict:
-    import platform, numpy, pandas, pyarrow, scipy
+    """Library versions, plus the sha256 of a loaded sitecustomize (R20.8 as amended), pinned by the release."""
+    import platform, sys, numpy, pandas, pyarrow, scipy
+    sc = getattr(sys.modules.get("sitecustomize"), "__file__", None)
     return {"python": platform.python_version(), "numpy": numpy.__version__, "pandas": pandas.__version__,
-            "pyarrow": pyarrow.__version__, "scipy": scipy.__version__}
+            "pyarrow": pyarrow.__version__, "scipy": scipy.__version__,
+            "sitecustomize_sha256": sha256_file(sc) if sc else None}
 
 
 def check_manifest(r: dict, inputs: dict) -> dict:
@@ -144,8 +219,9 @@ def check_manifest(r: dict, inputs: dict) -> dict:
     return got
 
 
-def stage1_release(release: Path = RELEASE, inputs: dict | None = None) -> dict:
-    import hashlib
+def stage1_release(release: Path = RELEASE, inputs: dict | None = None, remote_sha: str | None = None) -> dict:
+    """Committed stage-1 release, checked against the header, the selection rerun (commit, sha256, on the remote:
+    R20.9), the engine commit and the manifest."""
     r = _load_release(release)
     if r is None or r.get("windows_released") != [W_PRE]:
         raise SealedRefusal(f"refused: stage 1 needs a committed {Path(release).name} with windows_released exactly "
@@ -157,8 +233,12 @@ def stage1_release(release: Path = RELEASE, inputs: dict | None = None) -> dict:
     sc = r.get("selection_results_commit", "<missing>")
     if _git("diff", "--quiet", sc, "HEAD", "--", str(SELECTION_RESULT.relative_to(ROOT)), check=False).returncode != 0:
         raise SealedRefusal("refused: selection results differ from the release's selection_results_commit")
-    if hashlib.sha256(Path(SELECTION_RESULT).read_bytes()).hexdigest() != r.get("selection_results_sha256"):
+    if sha256_file(SELECTION_RESULT) != r.get("selection_results_sha256"):
         raise SealedRefusal("refused: selection results sha256 differs from the release")
+    if remote_sha is not None:                                           # R20.9
+        commit_on_remote(sc, remote_sha)
+        on_remote(SELECTION_RESULT, remote_sha)
+        on_remote(release, remote_sha)
     h, b = selected_setting()
     g = r.get("selected_grid_point", {})
     if (float(g.get("h_near_high_pct", -1)), float(g.get("b_breadth_drop_pp", -1))) != (h, b):
@@ -169,85 +249,294 @@ def stage1_release(release: Path = RELEASE, inputs: dict | None = None) -> dict:
     return r
 
 
-# ------------------------------------------------------------------ R17 gate history (append-only, hash-chained)
+# ------------------------------------------------------------------ R20 run ledger (append-only, hash-chained, pushed)
 def chain_hash(entries: list) -> str:
-    import hashlib
-    return hashlib.sha256(canonical_bytes(entries)).hexdigest()
+    return sha256_bytes(canonical_bytes(entries))
 
 
 def verify_chain(entries: list) -> None:
     for i, e in enumerate(entries):
-        if e.get("prev_chain_sha256") != (chain_hash(entries[:i]) if i else None):
-            raise SealedRefusal(f"refused: gate_history entry {i} is not chained to its predecessors")
+        if e.get("prev_chain_sha256") != (chain_hash(entries[:i]) if i else None) or e.get("index") != i:
+            raise SealedRefusal(f"refused: ledger entry {i} is not chained to its predecessors")
 
 
-def remote_gate_history(gate: Path = STAGE1_GATE) -> list:
+def ledger_doc(entries: list) -> bytes:
     import json
-    rel = str(Path(gate).resolve().relative_to(ROOT))
-    out = _git("show", f"{REMOTE_REF}:{rel}", check=False)
-    return json.loads(out.stdout)["gate_history"] if out.returncode == 0 else []
+    return (json.dumps({"schema": "rotation_core.run_ledger/v2", "header_sha256": FROZEN_V2_SHA256,
+                        "entries": entries}, indent=1, sort_keys=True) + "\n").encode()
 
 
-def append_gate_entry(gate: Path, entry: dict, remote_history: list | None) -> dict:
-    """O8/R17: a rerun appends; nothing is overwritten or deleted; a deleted local file cannot restart history."""
+def gate_keys(hyp: str) -> set:
+    return {f"{hyp}|{e}|{r}|{c}" for e in ERAS_GATE for r in GATE_READINGS for c in GATE_COSTS}
+
+
+def gate_decision(signs: dict) -> tuple[bool, dict]:
+    """R13/R14(c)/R18/R20.3: open iff H1 or H3 has EXACTLY its eight keys (two eras x two readings x base/strict),
+    all '+'. Any other key set (empty, short, extra) is closed; a NaN is neither sign (O5)."""
+    if set(signs) != gate_keys("H1") | gate_keys("H3"):
+        return False, {h: False for h in OPENING_HYPOTHESES}
+    per = {h: all(signs[k] == "+" for k in gate_keys(h)) for h in OPENING_HYPOTHESES}
+    return any(per.values()), per
+
+
+def _runs(entries: list) -> list:
+    """Group ledger entries into runs: [{"start": e, "outcome": e|None, "record": e|None}] in order."""
+    runs = []
+    for e in entries:
+        if e["kind"] == "START":
+            runs.append({"start": e, "outcome": None, "record": None})
+            continue
+        if not runs or e.get("start_index") != runs[-1]["start"]["index"]:
+            raise SealedRefusal(f"refused: ledger entry {e['index']} does not belong to the latest START")
+        r = runs[-1]
+        if e["kind"] in ("INTEGRITY_ABORT", "PHASE_A_CLEAN"):
+            if r["outcome"] is not None:
+                raise SealedRefusal("refused: two Phase A outcomes for one START")
+            r["outcome"] = e
+        elif e["kind"] in ("GATE", "FINAL"):
+            want = "GATE" if r["start"]["stage"] == "stage1" else "FINAL"
+            if e["kind"] != want or r["outcome"] is None or r["outcome"]["kind"] != "PHASE_A_CLEAN" or r["record"]:
+                raise SealedRefusal(f"refused: ledger entry {e['index']} is out of order")
+            r["record"] = e
+        else:
+            raise SealedRefusal(f"refused: unknown ledger entry kind {e['kind']}")
+    return runs
+
+
+def _identity(start: dict) -> tuple:
+    return (start["stage"], start["release_sha256"], start["engine_commit"],
+            canonical_bytes(start["inputs_sha256"]))
+
+
+def start_allowed(entries: list, new: dict, release: dict) -> None:
+    """R20.1 state rules for a new START (stage1 or stage2) after `entries`. Raises SealedRefusal."""
+    runs = _runs(entries)
+    gates = [r["record"] for r in runs if r["record"] and r["record"]["kind"] == "GATE"]
+    if any(g["gate_open"] is not True for g in gates):
+        raise SealedRefusal("refused: a stage-1 gate record is closed; closed is final (R17, R20.1)")
+    if any(r["record"] and r["record"]["kind"] == "FINAL" for r in runs):
+        raise SealedRefusal("refused: the final conjunction has run; nothing further may run (run once)")
+    last = runs[-1] if runs else None
+    if last is not None and last["outcome"] is not None and last["outcome"]["kind"] == "PHASE_A_CLEAN" \
+            and last["record"] is None:
+        if _identity(last["start"]) != _identity(new):
+            raise SealedRefusal("refused: a Phase-A-clean run has no record; the only permitted action is the "
+                                "identical rerun (same stage, release, engine commit and inputs) (R20.1)")
+        return
+    unrecorded = [r["start"]["index"] for r in runs if r["record"] is None]      # START-only and aborts
+    prior_commits = {r["start"]["engine_commit"] for r in runs if r["start"]["stage"] == new["stage"]}
+    if last is not None and last["outcome"] is None and _identity(last["start"]) == _identity(new):
+        return                                                    # START with no outcome: no sign existed
+    if new["engine_commit"] in prior_commits:
+        raise SealedRefusal("refused: this stage already ran (or aborted) at this engine commit; a rerun needs a new "
+                            "engine commit and a new release (R17, R19, item 36 as amended by R20.1)")
+    if unrecorded and release.get("ledger_records_cited") != unrecorded:
+        raise SealedRefusal(f"refused: the release must cite every run without a record (ledger START indices "
+                            f"{unrecorded}) in ledger_records_cited (R19.1)")
+    if new["stage"] == "stage2":
+        s1 = [r for r in runs if r["start"]["stage"] == "stage1"]
+        if not s1 or s1[-1]["record"] is None:
+            raise SealedRefusal("refused: stage 2 needs the latest stage-1 run to have an open gate record")
+        if new["engine_commit"] != s1[-1]["start"]["engine_commit"]:
+            raise SealedRefusal("refused: stage-2 engine commit differs from the latest stage-1 run's")
+
+
+def validate_ledger(entries: list, versions_entries: list, release_docs: dict) -> None:
+    """R20.2/R20.3: chain; every committed version a prefix of the current; replay every START under the state
+    rules; every GATE's gate_open equals gate_decision(its own signs) after a clean Phase A."""
+    verify_chain(entries)
+    for i, v in enumerate(versions_entries):
+        if entries[:len(v)] != v:
+            raise SealedRefusal(f"refused: committed ledger version {i} is not a prefix of the current ledger")
+    for e in entries:
+        if e["kind"] == "START":
+            doc = release_docs.get(e["release_sha256"])
+            if doc is None:
+                raise SealedRefusal(f"refused: ledger START {e['index']} names a release never committed")
+            start_allowed(entries[:e["index"]], e, doc)
+        if e["kind"] == "GATE":
+            if e["gate_open"] is not gate_decision(e["gate_signs"])[0]:
+                raise SealedRefusal(f"refused: ledger GATE {e['index']}: gate_open disagrees with its own signs")
+    _runs(entries)
+
+
+def check_release_history(versions_by_file: dict, entries: list) -> dict:
+    """R20.1: every version of every release file on the remote must map to ledger START entries, or be listed as
+    unused in a LATER version's `supersedes_unused_releases`. Returns sha256 -> document for all versions."""
     import json
-    local = json.loads(Path(gate).read_text())["gate_history"] if Path(gate).exists() else []
-    if remote_history:
-        if local[:len(remote_history)] != remote_history:
-            raise SealedRefusal("refused: local gate history does not extend the committed remote history "
-                                "(deleted or rewritten entry)")
-    verify_chain(local)
-    entry = dict(entry, run_index=len(local), prev_chain_sha256=chain_hash(local) if local else None)
-    hist = local + [entry]
-    doc = {"schema": "rotation_core.stage1_gate/v2", "header_sha256": FROZEN_V2_SHA256,
-           "opening_hypotheses": list(OPENING_HYPOTHESES), "gate_history": hist,
-           "gate_open_all_runs": all(e["gate_open"] is True for e in hist)}
-    Path(gate).write_text(json.dumps(doc, indent=1) + "\n")
-    return doc
+    docs, started = {}, {e["release_sha256"] for e in entries if e["kind"] == "START"}
+    for name, vs in versions_by_file.items():
+        shas = [sha256_bytes(b) for _, b in vs]
+        for (c, b), s in zip(vs, shas):
+            docs[s] = json.loads(b)
+        for i, s in enumerate(shas[:-1]):
+            later = [docs[x].get("supersedes_unused_releases", []) for x in shas[i + 1:]]
+            if s not in started and not any(s in L for L in later):
+                raise SealedRefusal(f"refused: an earlier {name} version has no ledger START and was not superseded "
+                                    "as unused by a later release")
+    return docs
 
 
-def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE, inputs: dict | None = None,
-                   check_remote: bool = True) -> dict:
-    """Stage 2 opens only with a committed second release AND a committed gate file whose EVERY entry is open (R17),
-    with the engine commit equal to the latest stage-1 run's, the gate file's hash pinned, the header pinned, no
-    opening list in the release (S1c), and both files on the remote branch (S5)."""
-    import json, hashlib
-    r = _load_release(release2)
+class MemoryLedger:
+    """In-memory ledger for the fixture dry run and tests (never a release path)."""
+    def __init__(self, entries=None, fail_on=()):
+        self._e = list(entries or []); self.fail_on = set(fail_on)
+
+    def entries(self) -> list:
+        return [dict(x) for x in self._e]
+
+    def append(self, entry: dict) -> dict:
+        if entry["kind"] in self.fail_on:
+            raise LedgerPushFailed(f"refused: pushing the {entry['kind']} ledger entry failed")
+        e = dict(entry, index=len(self._e), prev_chain_sha256=chain_hash(self._e) if self._e else None)
+        self._e.append(e)
+        return e
+
+
+class GitLedger:
+    """R20.1: the runner writes the record. Each append builds a commit from a temporary index on top of the just-
+    fetched remote head (the working tree is not touched), pushes it, and refuses to go on if the push fails. Only
+    after a successful push is the local branch fast-forwarded. Starts only when the local HEAD equals the fetched
+    remote head."""
+    def __init__(self, root: Path = ROOT, path: Path = LEDGER, branch: str = BRANCH):
+        self.root, self.branch = Path(root), branch
+        self.rel = str(Path(path).resolve().relative_to(self.root.resolve()))
+        self.remote_sha = None
+
+    def fetch(self) -> str:
+        self.remote_sha = fetch_remote(self.root, self.branch)
+        return self.remote_sha
+
+    def require_local_equals_remote(self) -> None:
+        head = _git("rev-parse", "HEAD", root=self.root).stdout.decode().strip()
+        if head != self.remote_sha:
+            raise SealedRefusal("refused: the local branch is not the fetched remote head (unpushed or stale commits)")
+
+    def _entries_at(self, sha: str) -> list:
+        import json
+        b = _git("show", f"{sha}:{self.rel}", check=False, root=self.root)
+        if b.returncode != 0:
+            if _git("cat-file", "-e", f"{sha}^{{commit}}", check=False, root=self.root).returncode != 0:
+                raise SealedRefusal("refused: remote commit unreadable")
+            return []
+        return json.loads(b.stdout)["entries"]
+
+    def entries(self) -> list:
+        if self.remote_sha is None:
+            raise SealedRefusal("refused: ledger read before a fetch")
+        return self._entries_at(self.remote_sha)
+
+    def version_entries(self) -> list:
+        import json
+        return [json.loads(b)["entries"] for _, b in file_versions(self.rel, self.remote_sha, self.root)]
+
+    def append(self, entry: dict) -> dict:
+        import os, tempfile
+        self.fetch()
+        cur = self.entries()
+        verify_chain(cur)
+        e = dict(entry, index=len(cur), prev_chain_sha256=chain_hash(cur) if cur else None)
+        blob = _git("hash-object", "-w", "--stdin", input=ledger_doc(cur + [e]), root=self.root).stdout.decode().strip()
+        with tempfile.TemporaryDirectory() as td:
+            env = dict(os.environ, GIT_INDEX_FILE=str(Path(td) / "index"))
+            _git("read-tree", self.remote_sha, root=self.root, env=env)
+            _git("update-index", "--add", "--cacheinfo", f"100644,{blob},{self.rel}", root=self.root, env=env)
+            tree = _git("write-tree", root=self.root, env=env).stdout.decode().strip()
+        msg = (f"rotation-core run ledger: {e['kind']} (index {e['index']})\n\nWritten by the runner (R20.1).\n\n"
+               "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n").encode()
+        c = _git("commit-tree", tree, "-p", self.remote_sha, input=msg, root=self.root).stdout.decode().strip()
+        p = _git("push", "-q", REMOTE, f"{c}:refs/heads/{self.branch}", check=False, root=self.root)
+        if p.returncode != 0:
+            raise LedgerPushFailed(f"refused: pushing the {e['kind']} ledger entry failed; nothing further runs")
+        if self.fetch() != c:
+            raise LedgerPushFailed("refused: the remote head after the push is not the ledger commit")
+        if _git("merge", "--ff-only", "-q", c, check=False, root=self.root).returncode != 0:
+            raise SealedRefusal("refused: the ledger entry is pushed but the local branch could not fast-forward")
+        return e
+
+
+# ------------------------------------------------------------------ R20.7 stage-2 opening (inside the runner only)
+_STAGE2_OPEN = {"open": False}
+
+
+def sealed_record() -> dict:
+    """basename -> recorded sha256 of the full French files, hashed unopened before sealing."""
+    out = {}
+    for ln in SEALED_RECORD.read_text().splitlines():
+        if ln.strip():
+            h, p = ln.split()[:2]
+            out[Path(p).name] = h
+    return out
+
+
+class stage2_opened:
+    """Unseal (mode 0400) the sealed files, check their recorded hashes, open the loaders; re-seal (mode 000) and
+    close on exit, whatever happens. Entered by the runner only after the stage-2 release and ledger verified."""
+    def __init__(self, sealed_paths, recorded: dict | None = None):
+        self.paths = [Path(p) for p in sealed_paths]; self.recorded = recorded
+
+    def __enter__(self):
+        import os
+        try:
+            for p in self.paths:
+                os.chmod(p, 0o400)
+            rec = sealed_record() if self.recorded is None else self.recorded
+            for p in self.paths:
+                if rec.get(p.name) != sha256_file(p):
+                    raise SealedRefusal(f"refused: {p.name} differs from its recorded sealed hash")
+        except BaseException:
+            self.__exit__(None, None, None)
+            raise
+        _STAGE2_OPEN["open"] = True
+        return self
+
+    def __exit__(self, *a):
+        import os
+        _STAGE2_OPEN["open"] = False
+        for p in self.paths:
+            try:
+                os.chmod(p, 0o000)
+            except OSError:
+                pass
+        return False
+
+
+def seal_guard(path) -> None:
+    """A path under the seal is readable only inside the runner's verified stage-2 context."""
+    if SEALED_MARK in str(path) and not _STAGE2_OPEN["open"]:
+        raise SealedRefusal("refused: sealed path outside the verified stage-2 run")
+
+
+def assert_window(end) -> None:
+    if pd.Timestamp(end) > rc.D_END and not _STAGE2_OPEN["open"]:
+        raise SealedRefusal("refused: a window end after 2019-12-31 outside the verified stage-2 run")
+
+
+def verify_release2(r: dict, entries: list) -> dict:
+    """Pure checks of the stage-2 release against the ledger: window, header, no opening list (S1c), the ledger
+    prefix pinned by length and chain hash, every gate record open and consistent, engine commit (S1a)."""
     if r is None or r.get("windows_released") != [W_H]:
-        raise SealedRefusal(f"refused: stage 2 needs a committed {Path(release2).name} with windows_released [\"{W_H}\"]")
+        raise SealedRefusal(f"refused: stage 2 needs a committed release with windows_released [\"{W_H}\"]")
     if "opening_condition_hypotheses" in r:
         raise SealedRefusal("refused: the stage-2 release cannot name the opening list")
-    if not (Path(stage1_result).exists() and _committed_clean(stage1_result)):
-        raise SealedRefusal("refused: stage 2 needs the committed stage-1 gate file")
-    raw = Path(stage1_result).read_bytes()
-    if r.get("stage1_gate_sha256") != hashlib.sha256(raw).hexdigest():
-        raise SealedRefusal("refused: gate file hash differs from the stage-2 release")
     if r.get("protocol_header_sha256") != FROZEN_V2_SHA256:
         raise SealedRefusal("refused: release names a different header sha256")
-    hist = json.loads(raw)["gate_history"]
-    verify_chain(hist)
-    if not hist or not all(e["gate_open"] is True for e in hist):
-        raise SealedRefusal("refused: a stage-1 run recorded a closed gate; closed is final (R17)")
-    if r.get("engine_commit") != hist[-1]["engine_commit"]:
+    n = r.get("ledger_prefix_len")
+    if not isinstance(n, int) or n < 1 or n > len(entries) or chain_hash(entries[:n]) != r.get("ledger_prefix_chain_sha256"):
+        raise SealedRefusal("refused: the release's pinned ledger prefix does not match the ledger")
+    runs = _runs(entries[:n])
+    gates = [x["record"] for x in runs if x["record"] and x["record"]["kind"] == "GATE"]
+    if not gates or any(g["gate_open"] is not True or g["gate_open"] is not gate_decision(g["gate_signs"])[0]
+                        for g in gates):
+        raise SealedRefusal("refused: a stage-1 gate record is closed or inconsistent; closed is final (R17)")
+    s1 = [x for x in runs if x["start"]["stage"] == "stage1"]
+    if s1[-1]["record"] is None:
+        raise SealedRefusal("refused: the latest stage-1 run in the pinned prefix has no gate record")
+    if r.get("engine_commit") != s1[-1]["start"]["engine_commit"]:
         raise SealedRefusal("refused: stage-2 engine commit differs from the latest stage-1 run's")
-    check_engine_commit(r["engine_commit"])
-    if check_remote:
-        fetch_remote(); on_remote(release2); on_remote(stage1_result)
-    if inputs is not None:
-        check_manifest(r, inputs)
-    r["_gate_latest"] = hist[-1]
-    return r
-
-
-def seal_guard(path, release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> None:
-    """Any path under the seal needs a valid stage-2 release."""
-    if SEALED_MARK in str(path):
-        stage2_release(release2, stage1_result)
-
-
-def assert_window(end, release2: Path = RELEASE2, stage1_result: Path = STAGE1_GATE) -> None:
-    if pd.Timestamp(end) > rc.D_END:
-        stage2_release(release2, stage1_result)
+    out = dict(r)
+    out["_gate_latest"] = s1[-1]["record"]
+    return out
 
 
 def canonical_bytes(obj) -> bytes:
@@ -279,13 +568,21 @@ def assert_stage1_window(end) -> None:
 
 
 # --------------------------------------------------------------------------- loaders
+def _lines(path):
+    """A file path, or an in-memory text buffer (R20.4: the fixture dry run takes no path)."""
+    import io
+    if isinstance(path, io.StringIO):
+        return io.StringIO(path.getvalue())
+    return open(path)
+
+
 def load_french_industries(path, end) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(value-weighted, equal-weighted) daily returns as fractions, NaN where missing (-99.99 / -999), dates <= end.
     Lines dated after `end` are skipped by their date field before any value is parsed."""
     seal_guard(path); assert_window(end)
     endk = pd.Timestamp(end).strftime("%Y%m%d")
     secs, cur = {}, None
-    for ln in open(path):
+    for ln in _lines(path):
         if "Weighted Returns -- Daily" in ln:
             cur = "vw" if "Value" in ln else "ew"; secs[cur] = {"cols": None, "rows": []}; continue
         if cur is None:
@@ -326,7 +623,7 @@ def load_french_market(path, end) -> tuple[pd.Series, pd.Series]:
     seal_guard(path); assert_window(end)
     endk = pd.Timestamp(end).strftime("%Y%m%d")
     rows = []
-    for ln in open(path):
+    for ln in _lines(path):
         p = [x.strip() for x in ln.split(",")]
         if len(p[0]) == 8 and p[0].isdigit() and p[0] <= endk:
             rows.append(p)

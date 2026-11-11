@@ -1,5 +1,5 @@
 {
-  "_instructions": "TWO-STAGE TEMPLATE (R13, R16, R17, R18; HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files; the Rotation Core lead never does. Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json, commit and push it to origin/fable/rotation-core-20261110 (S5: a local-only commit is refused). Fill inputs_sha256 and versions from `python scripts/run_rotation_core_v2.py --manifest stage1` (O6). Stage 2 (only if every entry of the committed gate_history is open, R17): copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json; its engine_commit must equal the latest stage-1 run's; stage1_gate_sha256 is the sha256 of the committed results_v2_stage1_gate.json; inputs from `--manifest stage2` (the sealed files are hashed when made readable for the release). The opening list is a constant in code (H1, H3) and cannot be named in either release (R16 S1c).",
+  "_instructions": "TWO-STAGE TEMPLATE (R13, R16-R20; HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files, and pushes them to origin/fable/rotation-core-20261110. The runner writes the run ledger itself (R20.1). Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json; inputs_sha256 and versions from `python scripts/run_rotation_core_v2.py --manifest stage1`. Stage 2: copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json; pin the ledger prefix that ends with the latest open GATE record (its length and chain hash, v2.chain_hash(entries[:n])); engine_commit equal to that run's. After any run without a record (START-only or INTEGRITY_ABORT), a release naming a new engine commit must cite those START indices in ledger_records_cited. A release version that was never used must be named in a later version's supersedes_unused_releases. The opening list is a constant in code (H1, H3).",
   "stage1": {
     "schema": "rotation_core.holdout_release/v2.stage1",
     "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
@@ -25,15 +25,17 @@
       "numpy": "<>",
       "pandas": "<>",
       "pyarrow": "<>",
-      "scipy": "<>"
-    }
+      "scipy": "<>",
+      "sitecustomize_sha256": "<>"
+    },
+    "ledger_records_cited": [],
+    "supersedes_unused_releases": []
   },
   "stage2": {
     "schema": "rotation_core.holdout_release/v2.stage2",
     "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
     "released_by": "Prophet programme CEO",
     "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
-    "stage1_result_commit": "<commit of research/rotation_core/results_v2_stage1_gate.json (the gate file, S7)>",
     "windows_released": [
       "2020-01-02..2025-12-31"
     ],
@@ -48,7 +50,6 @@
       "pooled_holm_m3"
     ],
     "run_once": true,
-    "stage1_gate_sha256": "<sha256 of the committed results_v2_stage1_gate.json>",
     "engine_commit": "<equal to the latest gate_history entry's engine_commit (S1a)>",
     "inputs_sha256": {
       "industries_full": "<sha256>",
@@ -63,7 +64,12 @@
       "numpy": "<>",
       "pandas": "<>",
       "pyarrow": "<>",
-      "scipy": "<>"
-    }
+      "scipy": "<>",
+      "sitecustomize_sha256": "<>"
+    },
+    "ledger_records_cited": [],
+    "supersedes_unused_releases": [],
+    "ledger_prefix_len": "<number of ledger entries through the latest open GATE record>",
+    "ledger_prefix_chain_sha256": "<chain_hash of those entries>"
   }
 }

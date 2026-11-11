@@ -238,6 +238,7 @@ O1–O3 are conventions, not corrections; not eligible as a later engine fix.
 ## Limits (added)
 
 - Pre-1998 data is sealed by procedure only: the files are on disk and ordinary code can read them. The protection is the committed release, the commit pins and the record, not a technical lock.
+- What remains procedural after R20 (unchanged): anyone can call the engine and runner functions directly from Python (for example `pre1998_report(IND_D, FACT)`, or `stage1_command` with an in-memory ledger), bypassing `main`, the ledger, the release checks and the loader guard. The recorded tool path (`scripts/run_rotation_core_v2.py --stage …`) cannot do so: it fetches (failing closed), replays the ledger, writes every record to the remote before going further, and the fixture dry run takes no path. The protection against a direct call remains the record and its review, not code.
 - Industries or sectors agreeing are never presented as that many independent confirmations: 49 industries at typical pairwise correlation are roughly 2 to 2.5 independent bets by the equal-correlation formula (8 to 12 by eigenvalue count); breadth is described as a share of members, not a count of confirmations. This rule applies to every results file and the PR draft.
 
 ## Declared successor ideas, not started, not a trial of v2
@@ -279,12 +280,86 @@ Items 1–15 are unchanged from above (amendment h items 1–8; F4 items 9–15)
 
 **New silent choices made in this change set, without data (for ruling):**
 
-29. **Integrity failure closes the gate for good.** Under O5 and R18 a NaN or a strict-run violation closes the gate, and under R17 a closed gate is final. An engine bug that produced a NaN would therefore end the historical tier. Implemented as ruled; flagged because the combination was not stated.
-30. **H2's drawdown leg.** H2 has no matched mix. The leg is read as "H1's drawdown no worse than the price-only control's" (the yardstick of H2's own contrast), on both windows, both cost runs and both readings.
-31. **Fund veto for H2.** The fund point estimate for H2 is the paired difference of the fund-executed H1 and price-only books on 2020–2025; any negative estimate fires the veto, as for H1 and H3.
-32. **Gate integrity counts also close the gate.** The gate result is open only if every NaN count is 0 and the strict-run violation count is 0, as well as the sign condition.
-33. **Two-sided p:** centred, (1 + #{|d − obs| ≥ |obs|}) / (B + 1).
-34. **2020–2025 yardsticks:** SPY, RSP (Yahoo total return), BASE and the French market (added for continuity with pre-1998); named episodes E2020, E2022, E2025 from the v1 header's windows.
-35. **Descriptive state split:** H1's excess over the mix by the leg held that day (the largest start-of-day weight).
-36. **A stage-1 rerun at the same engine commit is refused**; a rerun needs an engine change (R17.2).
-37. **Selection rerun output** goes to `results_v2_selection_rerun.json` and `RESULTS_V2_SELECTION_RERUN.md`; `1ca5228b3c`'s files stay as the superseded record; the run-once guard reads the remote branch.
+29. ~~Integrity failure closes the gate for good.~~ *Replaced by R19.1: an integrity failure is an INTEGRITY_ABORT before any sign exists, not a gate result.*
+30. **H2's drawdown leg (R19.2: accepted as a dated clarification, base and strict).** H2 has no matched mix. The leg is read as "H1's drawdown no worse than the price-only control's" (the yardstick of H2's own contrast), on both windows, both cost runs and both readings.
+31. **Fund veto for H2 (R19.3: accepted).** The fund point estimate for H2 is the paired difference of the fund-executed H1 and price-only books on 2020–2025; any negative estimate fires the veto, as for H1 and H3.
+32. ~~Gate integrity counts also close the gate.~~ *Replaced by R19.1: integrity counts are settled in Phase A, before any sign; the gate result is the sign condition only (exactly eight signs per hypothesis, R20.3).*
+33. **Two-sided p (R19.4: reported only, labelled "not governing"):** centred, (1 + #{finite d: |d − obs| ≥ |obs|}) / (B + 1). **Governing one-sided p, beside it for the reviewers:** (1 + #{finite d: d − obs ≥ obs}) / (B + 1) (`rc.centred_p`; non-finite draws never count as exceedances).
+34. **2020–2025 yardsticks (R19.5: descriptive only; enter no pass condition; labelled so where printed):** SPY, RSP (Yahoo total return), BASE and the French market (added for continuity with pre-1998); named episodes E2020, E2022, E2025 from the v1 header's windows.
+35. **Descriptive state split (R19.5: descriptive only; enters no pass condition):** H1's excess over the mix by the leg held that day (the largest start-of-day weight).
+36. **A stage-1 rerun at the same engine commit is refused** once a gate record exists (R19.6); the stage-2 run reproducing the stage-1 magnitudes hash is the reproducibility proof. *Amended by R20.1:* after a Phase-A-clean run with no gate record, the identical rerun is required and is the only permitted action.
+37. **(R19.7: accepted.) Selection rerun output** goes to `results_v2_selection_rerun.json` and `RESULTS_V2_SELECTION_RERUN.md`; `1ca5228b3c`'s files stay as the superseded record; the run-once guard reads the remote branch.
+
+## R19 — integrity is not a gate result (CEO, about 14:30Z; recorded before any confirmation read)
+
+1. **Two phases inside one command.** Phase A (integrity only) is computed, printed and recorded before any gate statistic or sign exists. It covers: input hashes; versions; the engine-commit check; every NaN count, per book × window × leg reading × cost run (non-finite book returns, non-finite weights, held legs with a non-finite return, cash held on a day with a non-finite rate, an empty window); the strict-inequality count (book against the same book at two cost levels, and legs against the same legs; nothing book against mix); held legs with no observed member close; and warm state (a state on every scored session, holdings carried in from before the window). Phase A is counts and booleans only: no mean, sum, cumulative return or drawdown, and no comparison of a book with its mix. An AST test pins the functions Phase A may call (`test_R19_phase_a_calls_no_gate_statistic_function`).
+   - **If Phase A is not clean:** `INTEGRITY_ABORT`. No gate statistic is computed in that process, no sign is printed or written, and no gate record is made. The abort record (time, engine commit, the non-zero counts, no magnitudes) goes to the run ledger. It is not a gate result and does not close the gate.
+   - **After an abort:** a fix is a new engine commit. It must leave every 1998–2019 scored state and 10 bp series identical (repro_check, the same two lines). It needs a new release from the CEO naming the new commit and citing the abort record (`ledger_records_cited`). The CEO will not release after an abort unless the cause is shown to be data or code handling of missing values, not anything touching the rule. Each abort is disclosed in the results.
+   - **Only a clean Phase A** lets Phase B compute the sixteen signs. From that point R17 applies in full.
+   - **The same two phases open the stage-2 final run:** an abort there comes before any 2020–2025 number.
+
+   An abort reveals no sign, so repair after it is not repair after a result; R16 and R17 are unaffected.
+2. **(item 30)** Accepted as a dated clarification: H2's drawdown leg is H1's drawdown no worse than the price-only control's, at base and strict.
+3. **(item 31)** Accepted: H2's fund veto is the paired difference of the fund-executed H1 and price-only books.
+4. **(item 33)** Accepted, reported only, labelled "not governing"; the governing one-sided formula is stated beside it in the list.
+5. **(items 34, 35)** Accepted as descriptive only; neither enters any pass condition. The results label them so where they are printed.
+6. **(item 36)** Accepted: a stage-1 rerun at the same engine commit is refused; the stage-2 final run reproducing the stage-1 magnitudes hash is the reproducibility proof. (Amended by R20.1.)
+7. **(item 37)** Accepted.
+
+Tests: `test_R19_*`, among them a NaN in one leg and a strict-inequality violation, each aborting with no sign in stdout or the ledger; a clean fixture proceeding with Phase A printed before the first sign; and the stage-2 abort before any 2020–2025 statistic.
+
+## R20 — the runner writes the record (CEO, after the independent re-implementer's review of `0eeca4f5ea`)
+
+The reviewer found three blockers in the enforcement of R17 (X1 an unpushed closed run is invisible; X2 a re-chained history passes; X3 `gate_open` is trusted) and five must-fix items (Y1–Y5). Each reproduction in `review_opus/synthetic2/guard_breaks.py` is now a test that fails to bypass (`test_R20_case1…case5`).
+
+1. **One append-only, hash-chained run ledger** (`research/rotation_core/results_v2_run_ledger.json`), committed on the remote branch by the runner itself (`GitLedger`). Each entry is a commit built from a temporary index on top of the just-fetched remote head and pushed. The working tree is touched only after the push succeeds, and the runner refuses to go on if a push fails. The ledger replaces the gate file and the separate `integrity_aborts` file.
+   - (a) **START** (release sha256, engine commit, input hashes, versions, time) is pushed before anything is loaded.
+   - (b) **INTEGRITY_ABORT** (counts only) **or PHASE_A_CLEAN** is pushed before any gate statistic is computed.
+   - (c) **GATE** (sixteen signs, counts, magnitudes sha256, gate_open) is pushed before any sign is printed or written elsewhere. If that push fails, nothing about signs is printed and the run exits non-zero. Stage 2 ends with a **FINAL** record (verdicts, results hash), pushed before any result is printed or written.
+   - **State rules** (`start_allowed`), enforced at the start of every stage-1 and stage-2 invocation, on the remote after a fetch that must succeed, and replayed over the whole ledger (`validate_ledger`):
+     - START with no outcome: only the identical rerun is allowed, or a new engine commit under R19 (new release, citation).
+     - INTEGRITY_ABORT: no sign existed; a new engine commit under R19 only.
+     - PHASE_A_CLEAN with no record: the ONLY permitted action is the identical rerun (same stage, release, engine commit and input hashes); any other engine commit or release is refused, permanently.
+     - A closed GATE: final; every later stage-1 and stage-2 invocation refuses, at any engine commit.
+     - A FINAL: nothing further runs.
+     - An open gate: a stage-1 rerun needs a new engine commit and a new release (R17.2), and stage 2 must use the latest gate's engine commit.
+   - **Release history:** every version of every release file committed on the remote must map to a ledger START, or be listed as unused in a later version's `supersedes_unused_releases` (a CEO commit that says so; `check_release_history`).
+   - The local branch must equal the fetched remote head before anything runs.
+2. **(X2)** Every committed version of the ledger on the remote branch must be a prefix of the current one; checked in stage 1 and stage 2. A dropped or re-chained entry refuses.
+3. **(X3)** Nothing recorded is trusted where it can be recomputed.
+   - Stage 2, after reproducing the magnitudes hash, re-derives the gate decision from the reproduced numbers and requires it open, with its signs equal to the recorded ones.
+   - Any GATE entry whose `gate_open` disagrees with its own signs refuses, at ledger validation and at the stage-2 release.
+   - `gate_decision` requires exactly the eight keys per hypothesis; an empty, short or extra key set is closed.
+4. **(Y1)** The fixture dry run takes no path: `--dry-run-stage1-fixture` builds its inputs in memory from the committed seeded generator (`tests/rotation_core_v2_fixture.fixture_texts`, seed 7); the loaders accept in-memory text; it writes to an in-memory ledger only; every line is stamped FIXTURE. O7's manifest guard is removed. What remains procedural is stated under Limits.
+5. **(Y2)** The remote fetch fails closed and returns the sha it fetched; every remote check takes that sha, never a stale ref.
+6. **(Y3)** The reproduction hash and the recorded gate signs are required arguments of `final_evaluation`: no default, no None.
+7. **(Y4)** Stage 2 verifies, in order: the ledger, the release, the engine commit. Then `stage2_opened` unseals the sealed files (mode 0400) inside the runner, checks them against the recorded sealed hashes (`v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt`) and the release manifest, opens the loaders, and re-seals (mode 000) and closes on exit, whatever happens. The loader guard no longer reads a release itself; it is open only inside that verified context. Code and fixture-tested only; no sealed file was touched.
+8. **(Y5)** The engine-commit check refuses:
+   - modified or untracked files under the pinned paths;
+   - `PYTHONPATH` being set;
+   - a loaded `usercustomize`;
+   - a covered module (`engine.`, `scripts.`, `tests.`) imported from outside the repository or differing from its blob at the engine commit.
+
+   **Implemented with one amendment, for ruling** (the literal text cannot be met on this host). The interpreter here always loads the distribution's own `sitecustomize` (`/usr/lib/python3.12/sitecustomize.py` → `/etc/python3.12/sitecustomize.py`, Ubuntu's crash-report hook). Only `-S` suppresses it, and `-S` also drops the virtual environment's site-packages, so numpy would not import. A literal "refuse if sitecustomize is loaded" therefore refuses every run. As implemented, a sitecustomize from any location other than the interpreter's standard library is refused, and the loaded file's sha256 is part of `versions()`, so the release manifest pins it and any change refuses.
+9. **(S5)** The stage-1 path checks that the selection rerun's commit is contained in the fetched remote head and that the selection file (and the release file) on disk equals the remote's.
+10. **Planted-edge fixtures** run end to end through the command path (`stage1_command` → ledger GATE → stage-2 release verified against the ledger → `stage2_opened` → `confirm_command` → FINAL), with the verdict asserted exactly. The vacuous end-to-end test is replaced.
+    - **Pass:** H3 "survives falsification on history" with 0 of 33 legs failed; H1 and H2 FAIL.
+    - **Late failure:** H3 FAIL on exactly the four `sign|h2020_2025|*` legs.
+    - **Veto:** H3 "signal not shown to be tradable", fund veto fired.
+
+    The planted regime is a ±0.15 %/day drift of the top beta third against the bottom third, alternating every two calendar years. The late-failure fixture uses a ±0.04 %/day regime alternating every two months from 2020. The veto fixture reverses the regime on the funds. All synthetic, B = 200.
+11. Phase A prints counts only and always leaves its ledger entry. Once PHASE_A_CLEAN is pushed, a failure during sign computation is recorded as nothing else (the run stands as clean-without-record: identical rerun only); it can never become an abort (`test_S6_exception_text_carries_no_value` checks the ledger after each failure).
+
+**Template:**
+- the stage-2 release pins the ledger prefix (`ledger_prefix_len`, `ledger_prefix_chain_sha256`) instead of a gate-file hash;
+- both releases may carry `ledger_records_cited` (R19) and `supersedes_unused_releases` (R20.1);
+- `versions` carries `sitecustomize_sha256`.
+
+**Test set (the one both readers should run):**
+
+```
+python -m pytest -q tests/test_rotation_core_v2.py tests/test_rotation_core_v2_funds.py \
+  tests/test_rotation_core_si_findings.py tests/test_rotation_core_v2_confirm.py tests/test_rotation_core_evaluation.py
+```
+
+The reviewer's 79 at `0eeca4f5ea` were the first four files. The lead's 118 included `tests/test_rotation_core_evaluation.py` (39 tests, the shared simulator and statistics of `engine/rotation_core_evaluation.py`, which v2 imports). Per-file counts at the final commit are in the lead's report.

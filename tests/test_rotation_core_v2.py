@@ -9,9 +9,13 @@ from engine import rotation_core_v2 as v2
 SEALED = "/home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019/49_Industry_Portfolios_Daily.csv"
 
 
-def test_sealed_path_refused_without_release(tmp_path):
+def test_sealed_path_refused_outside_the_verified_stage2_run(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.seal_guard(SEALED, release2=tmp_path / "HOLDOUT_RELEASE_v2_stage2.json", stage1_result=tmp_path / "r.json")
+        v2.seal_guard(SEALED)
+    with v2.stage2_opened([], recorded={}):            # the runner's verified context opens the loaders
+        v2.seal_guard(SEALED)
+    with pytest.raises(v2.SealedRefusal):              # and closes them on exit
+        v2.seal_guard(SEALED)
 
 
 def test_loader_refuses_sealed_path_before_reading():
@@ -21,14 +25,15 @@ def test_loader_refuses_sealed_path_before_reading():
 
 def test_window_after_2019_refused_without_release(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.assert_window("2020-01-02", release2=tmp_path / "HOLDOUT_RELEASE_v2_stage2.json", stage1_result=tmp_path / "r.json")
-    v2.assert_window("2019-12-31", release2=tmp_path / "x.json", stage1_result=tmp_path / "r.json")   # D window allowed
+        v2.assert_window("2020-01-02")
+    v2.assert_window("2019-12-31")   # D window allowed
 
 
 def test_uncommitted_release_file_does_not_unlock(tmp_path):
     rel = tmp_path / "HOLDOUT_RELEASE_v2_stage2.json"; rel.write_text(_json.dumps({"windows_released": ["2020-01-02..2025-12-31"]}))
-    with pytest.raises(Exception):     # not inside the repo -> not committed -> refused
-        v2.seal_guard(SEALED, release2=rel, stage1_result=tmp_path / "r.json")
+    assert v2._load_release(rel) is None     # not inside the repo -> not committed -> never a release
+    with pytest.raises(v2.SealedRefusal):
+        v2.seal_guard(SEALED)
 
 
 def _setup(n=420, drop_at=None, wash=None, start="2010-01-04", rel_low=None):
@@ -249,7 +254,7 @@ def test_stage1_cannot_read_1998_or_the_sealed_path(tmp_path):
         v2.assert_stage1_window("1998-01-02")
     v2.assert_stage1_window("1997-12-31")
     with pytest.raises(v2.SealedRefusal):
-        v2.seal_guard(SEALED, release2=tmp_path / "no_stage2.json", stage1_result=tmp_path / "no_gate.json")
+        v2.seal_guard(SEALED)
 
 
 def test_stage1_loader_truncates_at_1997(tmp_path):
@@ -260,14 +265,12 @@ def test_stage1_loader_truncates_at_1997(tmp_path):
 
 def test_stage2_refused_without_second_release(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(tmp_path / "none.json", tmp_path / "gate.json")
+        v2.verify_release2(v2._load_release(tmp_path / "none.json"), [])
 
 
-def test_stage2_release_with_wrong_window_refused(tmp_path, monkeypatch):
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
-    g = tmp_path / "gate.json"; g.write_text(_json.dumps({"gate_history": []}))
+def test_stage2_release_with_wrong_window_refused(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), g, check_remote=False)
+        v2.verify_release2({"windows_released": [v2.W_PRE]}, [])
 
 
 def test_gate_statistic_is_the_same_function_as_the_era_point_estimate(tmp_path):
