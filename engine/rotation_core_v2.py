@@ -199,7 +199,7 @@ def check_runtime_env() -> None:
 # are full-matched separately on `git config --list -z` output.
 SAFE_VALUE = r"[^\n!\-][^\n]*"            # no newline, no leading `!` or `-`
 REPO_CONFIG_ALLOWED = [
-    (r"core\.repositoryformatversion", r"0|1", "the two standard repository formats (this checkout: 1)"),
+    (r"core\.repositoryformatversion", r"1", "this checkout's repository format (R32.4: 0 only in a test repository)"),
     (r"core\.filemode", r"true", "this checkout's value"),
     (r"core\.bare", r"false", "a working checkout"),
     (r"core\.logallrefupdates", r"true", "this checkout's value"),
@@ -221,10 +221,13 @@ REPO_CONFIG_ALLOWED = [
 ]
 
 
-def check_repo_config(root: Path, remote_url: str) -> None:
+def check_repo_config(root: Path, remote_url: str, test_repo: bool = False) -> None:
+    """`test_repo=True` (a supplied test context's temporary repository only) also accepts repository format 0."""
     import re
     root = Path(root)
-    pats = [(re.compile(k), re.compile(v), why) for k, v, why in REPO_CONFIG_ALLOWED]
+    allowed = REPO_CONFIG_ALLOWED + ([(r"core\.repositoryformatversion", r"0", "a temporary test repository")]
+                                     if test_repo else [])
+    pats = [(re.compile(k), re.compile(v), why) for k, v, why in allowed]
     for scope in ("--local", "--worktree"):
         r = _git("config", scope, "--list", "-z", root=root, check=False)
         if r.returncode != 0:
@@ -387,6 +390,14 @@ def check_import_environment(root: Path = ROOT, commit: str | None = None) -> No
             raise SealedRefusal(f"refused: {v} is set (the sealed-run command line is `python -E ...`)")
     if "usercustomize" in sys.modules:
         raise SealedRefusal("refused: usercustomize is loaded")
+    rr = os.path.realpath(root)
+    for pkg in ("engine", "scripts", "tests"):                       # R32.2: the top-level packages themselves
+        mod = sys.modules.get(pkg)
+        if mod is None:
+            continue
+        locs = [getattr(mod, "__file__", None)] if getattr(mod, "__file__", None) else list(getattr(mod, "__path__", []))
+        if not locs or not all(os.path.realpath(x).startswith(rr + os.sep) for x in locs):
+            raise SealedRefusal(f"refused: package {pkg} is not the repository's own")
     paths = sysconfig.get_paths()
     stdlib_link = Path(os.path.abspath(paths["stdlib"]))
     roots = [os.path.realpath(paths[k]) for k in ("stdlib", "platstdlib", "purelib", "platlib")] + [os.path.realpath(root)]
@@ -474,15 +485,19 @@ def check_no_bytecode_modules(root: Path = ROOT) -> None:
 
 
 def refuse_shadowed_modules(root: Path = ROOT) -> None:
-    """R31.6(c): no loaded module whose top-level name is a standard-library or installed-package name has its file
-    under the repository root (the root of the running code)."""
+    """R31.6(c)/R32.8(a): strict outside pytest (no module but `engine`, `scripts`, `tests` and the script itself
+    loaded from the root); under pytest, the names-only rule (no standard-library or installed-package name)."""
     import os, sys
     import importlib.metadata as md
-    protected = set(sys.stdlib_module_names) | set(md.packages_distributions())
+    strict = "pytest" not in sys.modules
+    protected = None if strict else set(sys.stdlib_module_names) | set(md.packages_distributions())
     rr = os.path.realpath(root)
     for name, mod in list(sys.modules.items()):
         f = getattr(mod, "__file__", None)
-        if not f or name == "__main__" or name.split(".")[0] not in protected:
+        top = name.split(".")[0]
+        if not f or name == "__main__" or top in ("engine", "scripts", "tests"):
+            continue
+        if not strict and top not in protected:
             continue
         if os.path.realpath(f).startswith(rr + os.sep):
             raise SealedRefusal(f"refused: module {name} was loaded from the repository directory (R31.6)")

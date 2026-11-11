@@ -34,6 +34,8 @@ def check_config_paths(cfg: dict) -> None:
     c = cfg.get("ctx")
     if not isinstance(c, dict) or any(k not in c for k in REQUIRED_CTX_KEYS):
         raise SystemExit("refused: the driver config must name every context key (R28.5)")
+    if "://" in str(c["remote_url"]):                    # R32.5: a URL remote refuses on its own, before the path rule
+        raise SystemExit("refused: the driver accepts only a local remote path (R32.5)")
     if any(not isinstance(c[k], dict) for k in MAP_KEYS) or any(not isinstance(c[k], list) for k in LIST_KEYS):
         raise SystemExit("refused: malformed driver config (R28.5)")
     paths = [c[k] for k in PATH_KEYS] + [p for k in MAP_KEYS for p in c[k].values()] + \

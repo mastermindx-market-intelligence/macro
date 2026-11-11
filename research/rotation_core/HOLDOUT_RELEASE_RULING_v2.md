@@ -744,7 +744,7 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
 
 1. **One read of a release file.**
    - (a) `_load_release` returns the document with `_blob_sha256`, the sha256 of the exact blob bytes it parsed (`load_release_blob`). START records that hash. No `sha256_file` on a release or selection path remains on the run path; a parse-tree test enforces it.
-   - (b) `GitLedger.append` refuses, before any push, a START whose `release_sha256` is not the hash of a committed version of a release file at the fetched head. It uses `release_docs`, the same mapping `check_release_history` builds for `validate_ledger`. A START that can be pushed is therefore one the next invocation accepts. The runner's ledger always carries both release paths; the temporary test and rehearsal ledgers carry none and name no release.
+   - (b) `GitLedger.append` refuses, before any push, a START whose `release_sha256` is not the hash of a committed version of a release file at the fetched head. It uses `release_docs`, the same mapping `check_release_history` builds for `validate_ledger`. A START that can be pushed is therefore one the next invocation accepts. The runner's ledger in the real context carries both release paths, so a START that can be pushed names a committed release. The rehearsal ledger (a temporary remote) and the temporary test ledgers carry none and name no release. They never append to the real ledger, so their STARTs are not checked against release files. A release path outside the context root is not passed (`_release_paths` keeps only paths inside the root); in the real context both release paths are inside it.
    - (c) Before START (in `verified_ledger`, every mode) and in `--preflight`, the run refuses when the working-tree copy of a release or the selection file differs byte for byte from the blob at the fetched head, or exists in only one of the two.
    - (d) Tests:
      - a release re-saved with a trailing newline, and with CRLF, no index flag: refused before START, nothing spent;
@@ -756,7 +756,7 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
 |---|---|---|
 | START `release_sha256` | ledger | blob of the release at the fetched head (`load_release_blob`) |
 | START `engine_commit` | ledger | the release document (blob at the fetched head) |
-| START `inputs_sha256` | ledger; compared with the release manifest | the data files the run reads (outside the repository; the same bytes the loaders read) |
+| START `inputs_sha256` | ledger; compared with the release manifest | the data files the run reads (outside the repository). The same files, read twice: hashed by `check_manifest` before START, then opened again by the loaders. A file replaced between the two reads is not detected; that is a change of the host outside the repository (R27.0, declared). Hashing inside the loaders would touch the loaders on the compute path, so it is not done. |
 | START `versions` (tools, `sitecustomize`, `.pth`, Phase A hashes) | ledger; compared with the release manifest | computed in memory: tool `--version` output, installed files, the loaded source's syntax tree (the code that runs; R28.6 pins it to the engine commit's blobs) |
 | `host` record (activity count and hash, ruleset id and `updated_at`, creation commit) | every entry | the GitHub API, read after the fetch |
 | `phase_a_ast_sha256` | every entry | computed in memory from the loaded source (as above) |
@@ -773,7 +773,7 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
 | `stage1_gate` magnitudes (pin) | GATE vs reproduction | computed in memory, compared with the ledger blob |
 | sealed hashes (pin) | record vs sealed files | record: code blob at HEAD (`code_text`); files: bytes on disk, read inside the verified stage-2 run |
 | real-input hashes (pin) | record vs test-context inputs | record: code blob at HEAD; inputs: bytes on disk |
-| frozen header sha (pin) | constant vs header | the header's working-tree bytes (pinned to its blob by R28.6); the only read of the header |
+| frozen header sha (pin) | constant vs header | the header's working-tree bytes, pinned to the engine commit's blob by R28.6. In the sealed stages the header is read after the engine-commit check (R32.6: after `stage1_release` / `ctx.engine_check`); in the other modes it is read before `verified_ledger`. |
 
    No value is taken from working-tree bytes while the run reads a blob of the same file. The release hash was the one such value, and is fixed above.
 2. **`--manifest`** calls `io_check(p, "read")` on each path before hashing it.
@@ -793,10 +793,11 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
      - The runner refuses at its very top, after `import sys` and before any other import, unless `sys.flags.safe_path` is set when run as a script, so `scripts/argparse.py` is never imported.
      - `main` repeats the refusal with the `-E` check.
    - (b) **The root is appended, not inserted.** The repository root goes at the end of `sys.path` (`append`), so the standard library and site-packages always win.
-     - Every `engine.*`, `scripts.*` and `tests.*` module still resolves from the root (tested). Nothing named `engine`, `scripts` or `tests` exists in site-packages.
+     - Every `engine.*`, `scripts.*` and `tests.*` module still resolves from the root (tested). Nothing named `engine`, `scripts` or `tests` exists in site-packages; R32.2 also checks the three packages' own files.
+     - *Limit, corrected by R32.8:* with the root last on the path, a name found nowhere else (an optional import of numpy, pandas or scipy, such as `cython`) would resolve to a file at the root. R32.8 closes that: the root comes off the import path for the whole of `main`, and root-level files with optional names are refused.
      - The runner no longer imports the v1 runner, whose import inserts the root at the front of the path. Its two episode tables (`DPEAK`, `LPEAK`) are copied into the v2 runner verbatim, and a test pins them equal to v1's. The v1 runner is untouched.
      - The driver also appends.
-   - (c) **No shadowed name.** Before the first import from the root, again under the lock, and again before every record push (R26.3), the run refuses when any loaded module whose top-level name is a standard-library name (`sys.stdlib_module_names`) or an installed distribution's top-level name has its file under the repository root.
+   - (c) **No shadowed name** (as amended by R32.8). Before the first import from the root, again under the lock, and again before every record push (R26.3), a real run, which is never under pytest, refuses when any loaded module other than `engine`, `scripts`, `tests` (and the script itself) has its file under the repository root. Under pytest, which loads other tracked packages such as `lib`, the in-process check is names-only: no standard-library or installed-package name from the root.
    - (d) **Tests.** Planted `scripts/argparse.py` (with and without `-P`), `json.py` at the root, `engine/ctypes.py` and `engine/fcntl.py` (both lazily imported by the engine): none is ever imported, and the run refuses (without `-P` at the top, with `-P` by the untracked-code check). A run without `-P` refuses. A fake `json` module loaded from the root is refused by both checks.
    - (e) **Every import on the run path after the root is added, and what it resolves to** under the new order. Source modules swept: the runner, the v2 engine, the evaluation engine, the report writer and the fixture generator.
      - **Standard library:** `__future__`, `argparse`, `ast`, `ctypes`, `dataclasses`, `datetime`, `glob`, `hashlib`, `importlib.metadata`, `inspect`, `json`, `pathlib`, `platform`, `re`, `resource`, `shutil`, `subprocess`, `sysconfig`, `tempfile`, `textwrap`, `typing`, `urllib.parse`, `warnings`.
@@ -804,3 +805,42 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
      - **Site-packages:** `numpy`, `pandas`, `pyarrow`, `pyarrow.parquet`, `scipy`.
      - **Repository:** `engine` (an empty `__init__.py`), `engine.rotation_core_evaluation`, `engine.rotation_core_v2`, `engine.validation` (lazy, in `dsr`; it imports `math`, `numpy` and `pandas` only), `scripts.rotation_core_v2_report`, and `tests.rotation_core_v2_fixture` (only by `--dry-run-stage1-fixture`).
      - None of the repository modules changes `sys.path`.
+
+## R32 — the report module; top-level packages; metadata; format version; driver remote; wording (CEO, after the outside reader on `d4a3601b89`)
+
+1. **The report module no longer puts the root first.** `scripts/rotation_core_v2_report.py`'s `sys.path.insert(0, …)` is deleted. A comment says it is not an entry script and relies on the runner, which has already appended the root.
+   - A test asserts that no file on the R31.6(e) list calls `sys.path.insert` or touches `sys.meta_path` or `sys.path_hooks`. The list: the runner, the v2 engine, the evaluation engine, `engine/validation.py`, the report writer and the fixture generator.
+   - A second test asserts that `sys.path[0]` is not the root after each of the runner's three report import sites.
+   - **Sweep of statements on the run path that change import state:**
+     - the runner's `sys.path.append(ROOT)` (R31.6(b));
+     - the driver's `append` (tests only);
+     - `site.getsitepackages()` and `site.getusersitepackages()` in `site_dirs` (read-only queries; `getusersitepackages` caches `site.USER_SITE`, which changes no import path).
+
+     Nothing else changes `sys.path`, `sys.meta_path`, `sys.path_hooks` or `site` state. The v1 runner's insert is no longer on the run path (R31.6(b)).
+2. **Top-level packages.** `check_import_environment` refuses unless the file (or, for a namespace package, every `__path__` entry) of `engine`, `scripts` and `tests`, when loaded, lies under the root. Tested with a faked installed `engine` and a faked namespace `tests`.
+3. **Metadata errors refuse.** `_protected_names` refuses (R32.3) when installed-package metadata cannot be read, instead of falling back to standard-library names. Tested.
+4. **`core.repositoryformatversion`** is 1 only in the real context. 0 is accepted only with `check_repo_config(..., test_repo=True)`, which the runner never passes; only the tests do, for their temporary repositories. Tested both ways.
+5. **The driver refuses any remote containing `://`** before the `/tmp` rule, so that check stands on its own. Tested.
+6. **Wording made true:**
+   - the committed-release refusal in `append` covers the real context, and the rehearsal and test ledgers are named;
+   - `inputs_sha256` is "the same files, read twice", with the limit stated;
+   - the frozen header is pinned to the engine commit's blob, and in the sealed stages it is now read after the engine-commit check (a reorder with no compute effect).
+7. **Warm-up counts.** A test runs the rehearsal on synthetic data and enumerates every `count` line it prints and every integrity key it records (the same set). Each is either one of the three declared warm-up-inclusive counts, or its expression in `pre1998_stats` uses the window's index, eras, episodes or era values. The Phase A lines are taken on the two pseudo-eras, both from 1998-01-02.
+   - **Mechanical coverage:** every printed and recorded count key. The signs and magnitudes are covered by the R31.5 test, which spies on the statistics functions.
+   - **Not mechanical:** that a windowed expression truly restricts to the window. The test checks that the expression names the window's index; it does not evaluate it.
+8. **Only `engine`, `scripts` and `tests` load from the root (R32.8).**
+   - (a) **Strict check.** Outside pytest (every real run), any loaded module other than the three repository packages and the script itself whose file is under the root refuses. This runs before the first import from the root, under the lock, before every record push, and before unsealing in stage 2.
+   - (b) **Under pytest** the in-process check stays names-only; the strict rule is proven in subprocesses that are not pytest:
+     - a temporary repository holding a copy of the run's code, with a committed root-level `cython.py`, `bottleneck.py` or `numexpr.py`: the run refuses at the runner's top, before START, and the planted body never ran (a marker file under `/tmp` is absent);
+     - an arbitrary name (`zz_anything.py`, committed): nothing imports it, the run completes, and the marker is absent;
+     - the same module forced into `sys.modules` from the root: refused by the strict check before `main`.
+   - (b') **The root is off the import path for all of `main`.** Once `engine`, `scripts` and `tests` are imported (at the runner's top, while the root is appended), their submodules resolve through each package's own `__path__`. `main` therefore removes the root from `sys.path` at its start and restores it on exit (for in-process callers). For the whole invocation, no root-level module of any name can be found by an import. Tested: during `main` the root is absent, `engine.validation`, `scripts.rotation_core_v2_report` and `tests.rotation_core_v2_fixture` still import, and the path is restored afterwards.
+   - (c) **Optional names refused at the root.** Before numpy, pandas or scipy are imported (at the runner's top) and again under the lock, the run refuses when the root, in the working tree or in the tree at HEAD, has a module or package named like one of their optional imports.
+     - The list (`OPTIONAL_NAMES`, 54 names) was found mechanically: pandas' declared optional dependencies (`pandas.compat._optional.VERSIONS`), plus every `try: import X … except ImportError` in numpy, pandas, scipy and pyarrow outside their test folders, minus the standard library and installed packages. It includes `cython`, `bottleneck`, `numexpr`, `numba`, `tables`, `fsspec`, `matplotlib`, `jinja2`, `sqlalchemy`, `xarray`, `torch` and `zstandard`.
+     - It cannot be complete (an import of a computed name escapes the scan). (b') is what makes the guarantee hold regardless.
+   - (d) **Order relative to sealed reads.**
+     - Before `main`, the runner imports numpy and pandas before the root is appended, and after appending imports only the three repository packages and the standard library. No root-level module can run there, and the strict check runs right after.
+     - From the start of `main` the root is off the path, so no root-level module can be loaded at all.
+     - The first sealed read (`stage2_opened`: chmod, then hashing the sealed file) comes after the strict check under the lock. In stage 2 it also comes after an explicit `versions()` call (which performs every probe import: scipy, pyarrow) and a further strict check immediately before unsealing.
+     - So no sealed byte can be read between a root-level module running and the next check, and no blocker was found.
+     - **Limit, for what (a) alone would guarantee:** it detects a module after its top-level code has run. With (b') no such module can run inside `main`; before `main`, only the steps above run, and none can load a root-level module.

@@ -30,24 +30,57 @@ def _protected_names() -> set:
     try:
         import importlib.metadata as md
         names |= set(md.packages_distributions())
-    except Exception:                                      # unreadable metadata: the stdlib names still apply
-        pass
+    except Exception as e:                                 # R32.3: unreadable metadata refuses
+        raise SystemExit(f"refused: installed-package metadata cannot be read ({type(e).__name__}) (R32.3)") from None
     return names
 
 
-def refuse_shadowed_modules(root_real: str = _ROOT_REAL) -> None:
-    """R31.6(c): no loaded module whose top-level name is a standard-library or installed-package name has its file
-    under the repository root (that would be a shadow)."""
-    protected = _protected_names()
+def refuse_shadowed_modules(root_real: str = _ROOT_REAL, strict: bool | None = None) -> None:
+    """R31.6(c)/R32.8(a). Strict (any process that is not pytest, i.e. every real run): no loaded module other than the
+    repository's packages `engine`, `scripts`, `tests` (and the script itself) has its file under the root. Under
+    pytest, which legitimately loads other tracked packages, the names-only rule: no standard-library or
+    installed-package name loaded from the root."""
+    strict = ("pytest" not in sys.modules) if strict is None else strict
+    protected = None if strict else _protected_names()
     for name, mod in list(sys.modules.items()):
         f = getattr(mod, "__file__", None)
-        if not f or name == "__main__" or name.split(".")[0] not in protected:
+        top = name.split(".")[0]
+        if not f or name == "__main__" or top in REPO_PACKAGES:
+            continue
+        if not strict and top not in protected:
             continue
         if os.path.realpath(f).startswith(root_real + os.sep):
-            raise SystemExit(f"refused: module {name} was loaded from the repository directory (R31.6)")
+            raise SystemExit(f"refused: module {name} was loaded from the repository directory (R31.6, R32.8)")
+
+
+# R32.8(c): names numpy, pandas, scipy and pyarrow may try to import optionally (pandas' declared optional
+# dependencies plus every `try: import X / except ImportError` in the four packages, outside their tests; not
+# installed here). Found mechanically; it cannot be complete (computed names), which is why R32.8(b') also takes the
+# root off the import path.
+OPTIONAL_NAMES = frozenset("""appkit bottleneck cupy cupyx cython dask fastparquet foundation fsspec gcsfs hypothesis jax
+jinja2 matplotlib mpmath mypy numba numexpr odf pooch psutil psycopg2 pyiceberg pymysql pyqt4 pyqt5 pyreadstat pytables
+pyxlsb qtpy s3fs scikits scipy_doctest setuptools_scm sksparse sqlalchemy sympy tables torch uarray xarray xlsxwriter
+zstandard array_api_strict bs4 calamine adbc_driver_postgresql adbc_driver_sqlite pytest_run_parallel""".split())
+
+
+def refuse_optional_names_at_root(root_real: str = _ROOT_REAL) -> None:
+    """R32.8(c): before numpy, pandas or scipy are imported, refuse when a module or package named like one of their
+    optional imports exists at the root, in the working tree or in the tree at HEAD."""
+    import subprocess
+    entries = set(os.listdir(root_real))
+    r = subprocess.run(["/usr/bin/git", "-C", root_real, "ls-tree", "--name-only", "HEAD"], capture_output=True,
+                       env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "HOME": os.path.expanduser("~")})
+    if r.returncode != 0:
+        raise SystemExit("refused: cannot list the repository root at HEAD (R32.8)")
+    entries |= set(r.stdout.decode(errors="replace").split("\n"))
+    for e in entries:
+        stem = e[:-3] if e.endswith(".py") else e
+        if stem.lower() in OPTIONAL_NAMES:
+            raise SystemExit(f"refused: {e} at the repository root shadows an optional import (R32.8)")
 
 
 refuse_shadowed_modules()                                  # before the first import of anything from the root
+refuse_optional_names_at_root()                            # before numpy, pandas and scipy
 
 import argparse, hashlib  # noqa: E402,E401
 from pathlib import Path  # noqa: E402
@@ -61,6 +94,8 @@ if str(ROOT) not in sys.path:
 refuse_shadowed_modules()
 from engine import rotation_core_evaluation as rc  # noqa: E402
 from engine import rotation_core_v2 as v2  # noqa: E402
+import scripts  # noqa: E402,F401  (R32.8: the three repository packages, imported while the root is on the path)
+import tests  # noqa: E402,F401
 
 FR = Path("/home/ubuntu2/tmp/rotation-core/data/french")
 IND_D = FR / "le2019/49_Industry_Portfolios_Daily_le20191231.csv"
@@ -1438,15 +1473,35 @@ def start_checks(argv: list, _ctx) -> None:
     v2.check_repo_config(ROOT, v2.REMOTE_URL)
     v2.tool("git"); v2.tool("gh"); v2.tool_versions()
     v2.check_bytecode_flags()                                         # R29.3, under the lock
-    refuse_shadowed_modules()                                         # R31.6(c)
+    refuse_shadowed_modules()                                         # R31.6(c), R32.8(a)
+    refuse_optional_names_at_root()                                   # R32.8(c), under the lock
     v2.check_import_environment(ROOT)
     v2.check_no_bytecode_modules(ROOT)
     v2.check_worktree_code(ROOT)
 
 
+def _root_off_path() -> list:
+    """R32.8: once `engine`, `scripts` and `tests` are imported, their submodules resolve through each package's own
+    __path__; no name lookup needs the root. Taking it off sys.path means no root-level module (cython.py,
+    bottleneck.py, any name) can be found for the rest of the invocation. Returns the previous sys.path."""
+    import os as _os
+    saved = list(sys.path)
+    rr = _os.path.realpath(str(ROOT))
+    sys.path[:] = [p for p in sys.path if _os.path.realpath(p or ".") != rr]
+    return saved
+
+
 def main(argv=None, _ctx=None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     preflight = "--preflight" in argv
+    _saved_path = _root_off_path()
+    try:
+        return _main_guarded(argv, _ctx, preflight)
+    finally:
+        sys.path[:] = _saved_path                                    # restored for in-process callers (tests)
+
+
+def _main_guarded(argv, _ctx, preflight) -> int:
     try:
         v2.no_core()                                                 # R27.6: first, every invocation
         pre_lock_checks(argv, _ctx)
@@ -1572,13 +1627,15 @@ def _main_body(argv: list, _ctx) -> int:
         return 0
     if not FROZEN.exists():
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
-    v2.verify_header_v2(FROZEN)
+    if a.stage not in SEALED_STAGES:
+        v2.verify_header_v2(FROZEN)
     if a.stage == "pre1998":
         led, sha, entries = verified_ledger(ctx, a.stage)
         rel1 = v2.stage1_release(ctx.release1, inputs=ctx.stage1_inputs, remote_sha=sha, root=ctx.root,
                                  selection=ctx.selection, engine_check=ctx.engine_check)
         if ctx.engine_check is v2.check_engine_commit:
             led.engine_commit = rel1["engine_commit"]               # R27.4: blob equality before each record push
+        v2.verify_header_v2(FROZEN)                                  # R32.6: after the pin check (stage1_release)
         ins_sha = {k: v2.sha256_file(p) for k, p in ctx.stage1_inputs.items()}
         e = stage1_command(led, rel1, rel1["_blob_sha256"], rel1["engine_commit"], ctx.stage1_inputs["industries_le2019"],
                            ctx.stage1_inputs["factors"], ins_sha, B_=ctx.B, publish_path=ctx.stage1_published,
@@ -1592,8 +1649,11 @@ def _main_body(argv: list, _ctx) -> int:
         v2.check_release_pins(r2, sha, ctx.root, led)               # R22.2: branch head and gate commit
         check_witness(r2, led, ctx)                                  # R26.5
         ctx.engine_check(r2["engine_commit"])
+        v2.verify_header_v2(FROZEN)                                  # R32.6: after the pin check
         if ctx.engine_check is v2.check_engine_commit:
             led.engine_commit = r2["engine_commit"]
+        v2.versions()                                                # R32.8(d): every probe import before unsealing
+        refuse_shadowed_modules()
         with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
             ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)
             res = confirm_command(led, r2, r2["_blob_sha256"], r2["engine_commit"], ctx.ind_d, ctx.ind_full,

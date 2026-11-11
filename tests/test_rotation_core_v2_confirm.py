@@ -2068,14 +2068,14 @@ def test_R27_2_hash_object_no_filters_push_to_url_and_private_store_in_dev_shm(t
 
 def test_R27_2_repository_config_allowlist(tmp_path):
     origin, work, g = _git_env(tmp_path)
-    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(work, str(origin), test_repo=True)
     for key, val in (("core.editor", "vi"), ("core.pager", "less"), ("alias.x", "!sh"), ("diff.external", "x"),
                      ("filter.f.clean", "x"), ("remote.origin.pushurl", "x"), ("include.path", "/x")):
         g("config", key, val, cwd=work)
         with pytest.raises(v2.SealedRefusal, match="repository-scope"):
-            v2.check_repo_config(work, str(origin))
+            v2.check_repo_config(work, str(origin), test_repo=True)
         g("config", "--unset", key, cwd=work)
-    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(work, str(origin), test_repo=True)
     v2.check_repo_config(v2.ROOT, v2.REMOTE_URL)                                       # this repository today
 
 
@@ -2178,8 +2178,10 @@ def test_R27_6_no_core_in_force_inside_a_python_E_subprocess(tmp_path):
     r = _py(["scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"])     # main() applies it first
     assert r.returncode == 0
     import scripts.run_rotation_core_v2 as run, inspect
-    src = inspect.getsource(run.main)
+    src = inspect.getsource(run._main_guarded)
     assert src.index("v2.no_core()") < src.index("pre_lock_checks(")
+    main_src = inspect.getsource(run.main)                     # main only takes the root off the path first (R32.8)
+    assert main_src.index("_root_off_path()") < main_src.index("_main_guarded(") and "no_core" not in main_src
 
 
 def test_R27_6_no_core_refuses_if_the_call_fails(monkeypatch):
@@ -2582,20 +2584,20 @@ def test_R29_4_fetch_with_empty_refmap_refuses_a_rewrite_and_leaves_the_tracking
 
 def test_R29_4_repository_config_values_pinned(tmp_path):
     origin, work, g = _git_env(tmp_path)
-    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(work, str(origin), test_repo=True)
     for key, val in (("remote.origin.fetch", "+refs/heads/b:refs/remotes/origin/other"),
                      ("extensions.partialclone", "elsewhere"), ("remote.origin.promisor", "false"),
                      ("remote.origin.partialclonefilter", "tree:0")):
         old = g("config", "--get", key, cwd=work).stdout if key == "remote.origin.fetch" else None
         g("config", key, val, cwd=work)
         with pytest.raises(v2.SealedRefusal, match="repository-scope"):
-            v2.check_repo_config(work, str(origin))
+            v2.check_repo_config(work, str(origin), test_repo=True)
         if old:
             g("config", key, old.decode().strip(), cwd=work)
         else:
             g("config", "--unset", key, cwd=work)
     g("config", "extensions.partialclone", "origin", cwd=work)
-    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(work, str(origin), test_repo=True)
     v2.check_repo_config(v2.ROOT, v2.REMOTE_URL)
 
 
@@ -2800,12 +2802,12 @@ def test_R30_4_config_values_pinned(tmp_path):
         old = v2._git("config", "--get", key, root=work, check=False)
         g("config", key, val, cwd=work)
         with pytest.raises(v2.SealedRefusal, match="not allowed with that value"):
-            v2.check_repo_config(work, str(origin))
+            v2.check_repo_config(work, str(origin), test_repo=True)
         if old.returncode == 0:
             g("config", key, old.stdout.decode().strip(), cwd=work)
         else:
             g("config", "--unset", key, cwd=work)
-    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(work, str(origin), test_repo=True)
 
 
 # ------------------------------------------------------------------ R30.6 the hash alone decides
@@ -3044,3 +3046,207 @@ def test_R31_6_b_root_is_appended_and_repo_packages_still_resolve_from_the_root(
 def test_R31_6_episode_tables_equal_v1s():
     import scripts.run_rotation_core_v2 as run, scripts.run_rotation_core_v1 as v1
     assert run.DPEAK == v1.DPEAK and run.LPEAK == v1.LPEAK
+
+
+# ------------------------------------------------------------------ R32
+R31_6E_FILES = ("scripts/run_rotation_core_v2.py", "engine/rotation_core_v2.py", "engine/rotation_core_evaluation.py",
+                "engine/validation.py", "scripts/rotation_core_v2_report.py", "tests/rotation_core_v2_fixture.py")
+
+
+def test_R32_1_no_file_on_the_run_path_inserts_into_sys_path_first():
+    import ast
+    for rel in R31_6E_FILES:
+        tree = ast.parse((v2.ROOT / rel).read_text())
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "insert":
+                assert "path" not in ast.unparse(n.func.value), (rel, ast.unparse(n))
+            if isinstance(n, ast.Attribute) and n.attr in ("meta_path", "path_hooks"):
+                raise AssertionError((rel, ast.unparse(n)))
+
+
+def test_R32_1_after_each_report_import_site_the_root_is_not_first():
+    code = ("import sys, os; sys.path.append(%r)\n"
+            "import scripts.run_rotation_core_v2 as run\n"
+            "root = os.path.realpath(%r)\n"
+            "first = lambda: os.path.realpath(sys.path[0] or '.') == root\n"
+            "out = [first()]\n"
+            "from scripts.rotation_core_v2_report import write_ledger_status_md; out.append(first())\n"
+            "from scripts.rotation_core_v2_report import write_final_md; out.append(first())\n"
+            "from scripts.rotation_core_v2_report import write_selection_md; out.append(first())\n"
+            "print('FIRST', out)\n") % (str(v2.ROOT), str(v2.ROOT))
+    r = _py(["-c", code])
+    assert r.returncode == 0, r.stderr[-400:]
+    assert "FIRST [False, False, False, False]" in r.stdout
+    src = (v2.ROOT / "scripts/run_rotation_core_v2.py").read_text()
+    assert src.count("from scripts.rotation_core_v2_report import") == 3
+
+
+def test_R32_2_a_top_level_package_from_elsewhere_is_refused(monkeypatch, tmp_path):
+    import types
+    v2.check_import_environment(v2.ROOT)
+    with monkeypatch.context() as m:
+        fake = types.ModuleType("engine"); fake.__file__ = str(tmp_path / "site-packages" / "engine" / "__init__.py")
+        m.setitem(sys.modules, "engine", fake)
+        with pytest.raises(v2.SealedRefusal, match="package engine is not the repository's own"):
+            v2.check_import_environment(v2.ROOT)
+    with monkeypatch.context() as m:
+        ns = types.ModuleType("tests"); ns.__path__ = [str(tmp_path / "elsewhere")]
+        m.setitem(sys.modules, "tests", ns)
+        with pytest.raises(v2.SealedRefusal, match="package tests is not the repository's own"):
+            v2.check_import_environment(v2.ROOT)
+    v2.check_import_environment(v2.ROOT)
+
+
+def test_R32_3_unreadable_package_metadata_refuses(monkeypatch):
+    import importlib.metadata as md, scripts.run_rotation_core_v2 as run
+    def boom():
+        raise OSError("metadata")
+    monkeypatch.setattr(md, "packages_distributions", boom)
+    with pytest.raises(SystemExit, match="R32.3"):
+        run._protected_names()
+
+
+def test_R32_4_format_0_only_in_a_test_repository(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    assert v2._git("config", "--get", "core.repositoryformatversion", root=work).stdout.strip() == b"0"
+    v2.check_repo_config(work, str(origin), test_repo=True)
+    with pytest.raises(v2.SealedRefusal, match="core.repositoryformatversion"):
+        v2.check_repo_config(work, str(origin))                        # the real-context rule: 1 only
+    g("config", "core.repositoryformatversion", "1", cwd=work)
+    v2.check_repo_config(work, str(origin))
+    v2.check_repo_config(v2.ROOT, v2.REMOTE_URL)
+
+
+def test_R32_5_driver_refuses_a_url_remote_on_its_own(tmp_path):
+    c = _tctx_cfg(tmp_path)
+    for url in ("file:///tmp/o.git", "https://github.com/x/y.git", "ssh://h/tmp/o.git"):
+        r = _py([], {"argv": ["--stage", "pre1998"], "ctx": dict(c, remote_url=url)}, tmp_path)
+        assert r.returncode != 0 and "R32.5" in r.stderr
+
+
+def test_R32_6_header_is_read_after_the_pin_check_in_the_sealed_stages():
+    import ast, inspect, scripts.run_rotation_core_v2 as run
+    src = inspect.getsource(run._main_body)
+    pre = src[src.index('if a.stage == "pre1998":'):src.index('if a.stage == "confirm":')]
+    conf = src[src.index('if a.stage == "confirm":'):src.index('if a.stage == "select":')]
+    assert pre.index("stage1_release(") < pre.index("verify_header_v2(FROZEN)")
+    assert conf.index("ctx.engine_check(") < conf.index("verify_header_v2(FROZEN)")
+
+
+def test_R32_7_every_printed_or_recorded_rehearsal_figure_is_windowed_or_declared(tmp_path, monkeypatch):
+    """Mechanical over what the rehearsal prints and records: every `count` line printed (the integrity block) is a
+    declared warm-up-inclusive count or computed on the window's sessions (its source expression uses the window
+    index, the window's eras or the window's episodes); the Phase A lines are taken on the spec's window masks
+    (both pseudo-eras start 1998-01-02); signs and magnitudes come from statistics shown windowed by
+    test_R31_5_every_rehearsal_statistic_is_on_sessions_from_1998."""
+    import ast, inspect, scripts.run_rotation_core_v2 as run
+    ind, fac = fixture_texts(start="1996-01-02", end="2019-12-31")
+    lines = []
+    e = run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lines.append, B_=20, engine_commit="E",
+                              selection=ORIG_SELECTION)
+    printed = {ln.split()[2] for ln in lines if ln.startswith("REHEARSAL count ")}
+    recorded = {k for k, _ in run._flat(e["integrity"])}
+    assert printed == recorded and printed
+    src = textwrap_dedent(inspect.getsource(run.pre1998_stats))
+    tree = ast.parse(src)
+    integ = next(n.value for n in ast.walk(tree) if isinstance(n, ast.Assign)
+                 and any(isinstance(t, ast.Name) and t.id == "integrity" for t in n.targets))
+    windowed = {"idx", "ERAS_", "eps", "era_values"}
+    for k, v in zip(integ.keys, integ.values):
+        key = k.value
+        names = {x.id for x in ast.walk(v) if isinstance(x, ast.Name)}
+        if key in WARMUP_INCLUSIVE_COUNTS:
+            continue
+        assert names & windowed, (key, ast.unparse(v))
+    top = {k.split(".")[0] for k in printed}
+    assert top <= {k.value for k in integ.keys}
+    phase = [ln for ln in lines if ln.startswith("REHEARSAL PHASE_A ") and " rehearsal_1998_2019 " in ln]
+    assert phase and all((" P1_1998_2008 " in ln) or (" P2_2009_2019 " in ln) for ln in phase)
+    assert all(a >= run.REH_START for a, _ in run.REH_SPEC["eras"].values())
+
+
+def textwrap_dedent(s):
+    import textwrap
+    return textwrap.dedent(s)
+
+
+# ------------------------------------------------------------------ R32.8 only engine, scripts and tests load from the root
+CODE_COPY = ("engine/__init__.py", "engine/rotation_core_v2.py", "engine/rotation_core_evaluation.py",
+             "engine/validation.py", "scripts/__init__.py", "scripts/run_rotation_core_v2.py",
+             "scripts/rotation_core_v2_report.py", "tests/__init__.py", "tests/rotation_core_v2_fixture.py",
+             "research/rotation_core/protocol_header_v2.json", "research/rotation_core/results_v2_selection.json")
+
+
+def _code_repo(tmp_path, planted: dict):
+    """A temporary repository holding a copy of the run's code with `planted` files COMMITTED at its root."""
+    import shutil
+    root = tmp_path / "repo"
+    for rel in CODE_COPY:
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(v2.ROOT / rel, root / rel)
+    for name, body in planted.items():
+        (root / name).write_text(body)
+    def g(*a):
+        return subprocess.run([v2.tool("git"), *a], cwd=root, capture_output=True, check=True, env=v2.child_env())
+    g("init", "-q"); g("config", "core.repositoryformatversion", "1")
+    g("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A")
+    g("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "-m", "copy")
+    return root
+
+
+def _marker_body(marker):
+    return f"open({str(marker)!r}, 'w').write('RAN')\nraise ImportError('planted')\n"
+
+
+@pytest.mark.parametrize("name", ["cython.py", "bottleneck.py", "numexpr.py"])
+def test_R32_8_a_committed_optional_name_at_the_root_refuses_before_start_and_never_runs(tmp_path, name):
+    marker = tmp_path / "marker"
+    root = _code_repo(tmp_path, {name: _marker_body(marker)})
+    r = subprocess.run([PY, *RUN_FLAGS, "scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], cwd=root,
+                       capture_output=True, text=True, env=_clean_env())
+    assert r.returncode != 0 and "shadows an optional import (R32.8)" in r.stderr
+    assert "WITNESS" not in r.stdout and not marker.exists()               # refused before START, never ran
+
+
+def test_R32_8_a_an_arbitrary_root_module_is_never_found_and_a_loaded_one_is_refused(tmp_path):
+    marker = tmp_path / "marker"
+    root = _code_repo(tmp_path, {"zz_anything.py": _marker_body(marker)})
+    r = subprocess.run([PY, *RUN_FLAGS, "scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], cwd=root,
+                       capture_output=True, text=True, env=_clean_env())
+    assert r.returncode == 0, r.stderr[-400:]
+    assert not marker.exists()                                             # nothing imports it; it never ran
+    # a root module that IS loaded (here forced, as a probe would) is refused by the strict check before main
+    code = ("import sys; sys.path.append(%r)\n"
+            "try:\n    import zz_anything\nexcept ImportError:\n    pass\n"
+            "sys.modules['zz_anything'] = type(sys)('zz_anything'); sys.modules['zz_anything'].__file__ = %r\n"
+            "import scripts.run_rotation_core_v2\n") % (str(root), str(root / "zz_anything.py"))
+    r2 = subprocess.run([PY, *RUN_FLAGS, "-c", code], cwd=root, capture_output=True, text=True, env=_clean_env())
+    assert r2.returncode != 0 and "zz_anything was loaded from the repository directory" in r2.stderr
+
+
+def test_R32_8_root_is_off_the_import_path_during_main_and_restored_after():
+    code = ("import sys, os; sys.path.append(%r)\n"
+            "import scripts.run_rotation_core_v2 as run\n"
+            "seen = {}\n"
+            "def probe(*a, **k):\n"
+            "    seen['root_on_path'] = any(os.path.realpath(p or '.') == os.path.realpath(%r) for p in sys.path)\n"
+            "    import engine.validation, scripts.rotation_core_v2_report, tests.rotation_core_v2_fixture\n"
+            "    seen['submodules'] = True\n"
+            "    return 0\n"
+            "run._main_guarded = probe\n"
+            "run.main(['--dry-run-stage1-fixture'])\n"
+            "print('SEEN', seen, any(os.path.realpath(p) == os.path.realpath(%r) for p in sys.path))\n"
+            ) % (str(v2.ROOT), str(v2.ROOT), str(v2.ROOT))
+    r = _py(["-c", code])
+    assert r.returncode == 0, r.stderr[-400:]
+    assert "SEEN {'root_on_path': False, 'submodules': True} True" in r.stdout
+
+
+def test_R32_8_in_process_strict_and_names_only(monkeypatch):
+    import types, scripts.run_rotation_core_v2 as run
+    run.refuse_shadowed_modules()                                         # under pytest: names-only, passes
+    m = types.ModuleType("zz_any"); m.__file__ = str(v2.ROOT / "zz_any.py")
+    monkeypatch.setitem(sys.modules, "zz_any", m)
+    run.refuse_shadowed_modules()                                         # not a protected name: names-only passes
+    with pytest.raises(SystemExit, match="R32.8"):
+        run.refuse_shadowed_modules(strict=True)                         # the real run's rule refuses it

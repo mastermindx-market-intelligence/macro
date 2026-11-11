@@ -1,8 +1,6 @@
 """Markdown for the v2 selection-window results. Every number is labelled selection-window, not evidence."""
-import sys as _sys
-from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
-from engine import rotation_core_v2 as _v2  # noqa: E402
+# Not an entry script: imported by the runner, which has already appended the repository root (R32.1, R31.6(b)).
+from engine import rotation_core_v2 as _v2
 
 
 def _write(path, text):
