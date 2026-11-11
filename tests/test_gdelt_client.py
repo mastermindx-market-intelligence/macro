@@ -58,29 +58,57 @@ _SAMPLE_PARAMS = {"query": "tariff", "mode": "artlist", "format": "json", "maxre
 
 # ── throttle tests ────────────────────────────────────────────────────────────
 
+class _VirtualClock:
+    """Clock whose only time-advance is sleep().  Substituted for the throttle's
+    `_now` / `_sleep` seams so spacing tests assert exactly what the throttle
+    requested instead of a wall-clock measurement that flakes on loaded runners."""
+
+    def __init__(self, t0: float = 1000.0):
+        self.t = float(t0)
+        self.sleeps: list[float] = []
+
+    def now(self) -> float:
+        return self.t
+
+    def sleep(self, seconds: float) -> None:
+        self.sleeps.append(seconds)
+        self.t += seconds
+
+
 def test_throttle_spacing_between_two_calls(tmp_path):
-    """Two sequential calls must be spaced >= min_interval seconds apart."""
+    """Two sequential calls must be spaced >= min_interval seconds apart.
+
+    Deterministic: the throttle runs on a virtual clock, so the gap equals the
+    sleep the throttle itself requested — runner load cannot shrink it."""
+    clock = _VirtualClock()
     timestamps: list[float] = []
 
     def _fake_requests_get(*args, **kwargs):
-        timestamps.append(time.monotonic())
+        timestamps.append(clock.now())
         return _make_response(200, _gdelt_body(["headline one"]))
 
     min_interval = 0.05  # short for speed
     stamp_file = tmp_path / "gdelt" / "last_request"
+    stamp_file.parent.mkdir(parents=True, exist_ok=True)
 
     with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
          patch("requests.get", side_effect=_fake_requests_get):
-        # Ensure parent dir exists
-        stamp_file.parent.mkdir(parents=True, exist_ok=True)
-
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
 
     assert len(timestamps) == 2, "expected exactly two network requests"
     gap = timestamps[1] - timestamps[0]
-    assert gap >= min_interval * 0.9, (
-        f"requests were only {gap:.4f}s apart; expected >= {min_interval}s"
+    # Tolerance only absorbs float rounding of the virtual clock's t += sleep.
+    assert gap >= min_interval - 1e-9, (
+        f"requests were only {gap:.4f}s apart on the virtual clock; "
+        f"expected >= {min_interval}s"
+    )
+    # The second call must actually have paced: with the clock frozen between
+    # calls, the only legal sleep is the full remaining interval.
+    assert clock.sleeps and abs(clock.sleeps[0] - min_interval) < 1e-9, (
+        f"throttle did not request a {min_interval}s sleep; sleeps={clock.sleeps}"
     )
 
 
@@ -290,28 +318,42 @@ def test_cross_process_stamp_honoured(tmp_path):
     process must read it and enforce the spacing — proving cross-process pacing works.
     If the code were writing time.monotonic() this test would still pass by accident
     (same-process), but combined with test_stamp_is_wall_clock_unix_time it catches
-    the regression."""
+    the regression.
+
+    Deterministic: the throttle runs on the virtual clock, so the asserted gap is
+    the sleep the throttle requested — no wall-clock measurement."""
     stamp_file = tmp_path / "gdelt" / "last_request"
     stamp_file.parent.mkdir(parents=True, exist_ok=True)
     min_interval = 0.05
+    clock = _VirtualClock()
 
     # Simulate a prior process having fetched 0.5 * min_interval ago
-    prior_ts = time.time() - (min_interval * 0.5)
+    prior_ts = clock.now() - (min_interval * 0.5)
     stamp_file.write_text(str(prior_ts))
 
     request_times: list[float] = []
 
     def _fake_get(*args, **kwargs):
-        request_times.append(time.time())
+        request_times.append(clock.now())
         return _make_response(200, _gdelt_body(["x"]))
 
     with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
          patch("requests.get", side_effect=_fake_get):
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
 
     assert len(request_times) == 1
+    # The throttle must sleep out exactly the remaining half interval, so the
+    # request lands a full min_interval after the prior-process stamp.
+    assert len(clock.sleeps) == 1, (
+        f"expected exactly one pacing sleep; got {clock.sleeps}"
+    )
+    assert abs(clock.sleeps[0] - min_interval * 0.5) < 1e-9, (
+        f"throttle requested sleep {clock.sleeps[0]!r}; expected {min_interval * 0.5}s"
+    )
     elapsed_since_prior = request_times[0] - prior_ts
-    assert elapsed_since_prior >= min_interval * 0.9, (
+    assert elapsed_since_prior >= min_interval - 1e-9, (
         f"request fired only {elapsed_since_prior:.4f}s after prior-process stamp "
         f"(expected >= {min_interval}s); cross-process pacing not honoured"
     )
@@ -365,19 +407,37 @@ def test_non_json_unknown_text_still_retried_as_rate_limit(tmp_path):
 
 def test_wait_turn_public_gate_spaces_calls(tmp_path):
     """wait_turn() — used by hk_gdelt / missing_tape_gdelt / macro_news which keep
-    their own transport — must honour the same cross-process stamp as get_articles."""
+    their own transport — must honour the same cross-process stamp as get_articles.
+
+    Deterministic: wait_turn routes through _throttle, which runs on the virtual
+    clock, so we assert the requested sleep and the persisted stamp delta instead
+    of timing the second call with a wall clock (a scheduler pause between the
+    first stamp and a monotonic t0 could otherwise shrink the measured gap)."""
     stamp_file = tmp_path / "gdelt" / "last_request"
     stamp_file.parent.mkdir(parents=True, exist_ok=True)
     min_interval = 0.05
+    clock = _VirtualClock()
 
-    with patch.object(_gc, "_stamp_path", return_value=stamp_file):
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep):
         _gc.wait_turn(min_interval)          # claims the slot
-        t0 = time.monotonic()
+        first_stamp = float(stamp_file.read_text())
         _gc.wait_turn(min_interval)          # must wait out the interval
-        gap = time.monotonic() - t0
+        last_stamp = float(stamp_file.read_text())
 
-    assert gap >= min_interval * 0.9, (
-        f"second wait_turn returned after only {gap:.4f}s; expected >= {min_interval}s"
+    # Exactly one pacing sleep, for the full interval: with the clock frozen
+    # between calls the second wait_turn had zero elapsed credit.
+    assert len(clock.sleeps) == 1, (
+        f"expected exactly one pacing sleep; got {clock.sleeps}"
+    )
+    assert abs(clock.sleeps[0] - min_interval) < 1e-9, (
+        f"throttle requested sleep {clock.sleeps[0]!r}; expected {min_interval}s"
+    )
+    # The persisted stamp advanced by the same interval — the gap the next
+    # process will observe when it reads the stamp file.
+    assert abs(last_stamp - first_stamp - min_interval) < 1e-9, (
+        f"stamp advanced {last_stamp - first_stamp!r}s; expected {min_interval}s"
     )
 
 

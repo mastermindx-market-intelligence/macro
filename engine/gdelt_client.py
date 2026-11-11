@@ -158,6 +158,13 @@ def _clear_penalty() -> None:
         log.debug("gdelt_client: could not clear rate-limit breaker (non-fatal): %s", e)
 
 
+# Clock seams for tests: the throttle is the one piece whose spacing contract is
+# worth asserting exactly, so it reads the clock and sleeps through these module
+# globals.  Production behaviour is unchanged (they alias time.time / time.sleep).
+_now = time.time
+_sleep = time.sleep
+
+
 def _throttle(min_interval: float) -> None:
     """Cross-process rate limiter.  Acquires an exclusive lock on the stamp file,
     sleeps until >= min_interval seconds since the last stamped request, writes a
@@ -174,14 +181,14 @@ def _throttle(min_interval: float) -> None:
                 last_ts = float(raw)
             except (ValueError, TypeError):
                 last_ts = 0.0
-            now_ts = time.time()  # wall-clock — must be comparable across processes/reboots
+            now_ts = _now()  # wall-clock — must be comparable across processes/reboots
             elapsed = now_ts - last_ts
             if elapsed < min_interval:
-                time.sleep(min_interval - elapsed)
+                _sleep(min_interval - elapsed)
             # write wall-clock unix time so the stamp survives process restart
             fd.seek(0)
             fd.truncate()
-            fd.write(str(time.time()))
+            fd.write(str(_now()))
             fd.flush()
         finally:
             fcntl.flock(fd, fcntl.LOCK_UN)
