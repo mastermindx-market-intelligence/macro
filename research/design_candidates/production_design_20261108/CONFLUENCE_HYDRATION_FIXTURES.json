@@ -1,0 +1,256 @@
+{
+  "schema": "confluence_hydration_characterization.v1",
+  "source_repo": "mastermindx-market-intelligence/macro",
+  "source_commit": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+  "source_path": "templates/confluence_screener.html.j2",
+  "source_sha256": "a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b",
+  "scope": "Exact current pure DOM helpers; fake DOM; no auth, fetch, browser or installed runtime.",
+  "public_fixture": {
+    "built": "2026-09-25T22:00:00Z",
+    "recipe_labels": {
+      "L0002": "Fixture A: signal A AND signal B",
+      "L0003": "Fixture A: signal C AND signal D"
+    },
+    "note": "Recipe labels and built describe the test context; current DOM exposes only ordinal data-confluence-combo and current hydrate does not consume these metadata."
+  },
+  "cases": [
+    {
+      "id": "matching_control",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "combos": [
+        {
+          "combo_id": "L0002",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "AAA",
+              "name": "Fixture A"
+            }
+          ]
+        },
+        {
+          "combo_id": "L0003",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "BBB",
+              "name": "Fixture B"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Hydrate both only after shared artifact and recipe bindings, counts and identifiers pass."
+    },
+    {
+      "id": "different_generation_same_ordinal",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-26T22:00:00Z",
+      "payload_recipe_context": "Fixture B contains different recipes at the same ordinal IDs.",
+      "combos": [
+        {
+          "combo_id": "L0002",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "CCC",
+              "name": "Wrong-generation fixture"
+            }
+          ]
+        },
+        {
+          "combo_id": "L0003",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "DDD",
+              "name": "Wrong-generation fixture"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Reject the full response before replacement; preserve public evidence and existing protected recovery."
+    },
+    {
+      "id": "same_timestamp_changed_content",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "payload_recipe_context": "Artifact content differs despite the same second-resolution built timestamp.",
+      "combos": [
+        {
+          "combo_id": "L0002",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "EEE",
+              "name": "Different-content fixture"
+            }
+          ]
+        },
+        {
+          "combo_id": "L0003",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "FFF",
+              "name": "Different-content fixture"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 2,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Require matching artifact fingerprint, not timestamp equality alone."
+    },
+    {
+      "id": "empty_payload",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "",
+      "combos": [],
+      "expected_current": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "No success announcement; expected protected rows remain unreconciled."
+    },
+    {
+      "id": "unmatched_ids",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "combos": [
+        {
+          "combo_id": "L0999",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "AAA"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Reject unexpected and missing row IDs atomically."
+    },
+    {
+      "id": "partial_payload",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "combos": [
+        {
+          "combo_id": "L0002",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "AAA"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 1,
+        "remaining": 1,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Validate the complete expected set before replacing any card."
+    },
+    {
+      "id": "malformed_positive_count_ticker",
+      "wall_ids": [
+        "L0002"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "combos": [
+        {
+          "combo_id": "L0002",
+          "active_count": 1,
+          "active_tickers": [
+            {
+              "ticker": "INVALID TICKER"
+            }
+          ]
+        }
+      ],
+      "expected_current": {
+        "replacements": 1,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true,
+        "no_match_message": true
+      },
+      "required_future": "Reject the malformed list; never convert invalid data into zero matches."
+    },
+    {
+      "id": "no_expected_protected_rows",
+      "wall_ids": [],
+      "built": "2026-09-25T22:00:00Z",
+      "combos": [],
+      "expected_current": {
+        "replacements": 0,
+        "remaining": 0,
+        "hydrated": true,
+        "all_visible": true
+      },
+      "required_future": "Skip protected hydration and paid success UI."
+    },
+    {
+      "id": "schema_rejected_control",
+      "wall_ids": [
+        "L0002",
+        "L0003"
+      ],
+      "built": "2026-09-25T22:00:00Z",
+      "payload_schema": "tier_payload.v2",
+      "combos": [],
+      "expected_current": {
+        "replacements": 0,
+        "remaining": 2,
+        "hydrated": false,
+        "all_visible": false,
+        "error": "invalid payload"
+      },
+      "required_future": "Use a scoped version transition to make cached legacy consumers reject unbound payloads."
+    }
+  ]
+}

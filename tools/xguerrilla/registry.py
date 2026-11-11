@@ -53,7 +53,16 @@ BINDING_KEYS = frozenset({
 RECEIPT_KEYS = frozenset({"path", "sha256"})
 
 CREDENTIAL_KEY_RE = re.compile(r"password|secret|token|seed", re.IGNORECASE)
-BASE64ISH_RE = re.compile(r"^[A-Za-z0-9+/]{32,}={0,2}$")
+# GitHub token shapes. `_` is outside the base64 alphabet, so the generic class
+# below never saw `ghp_…` / `github_pat_…` and a real token sitting in a *value*
+# passed the scan. Suffix lengths stay tolerant (classic prefixes carry 36/40,
+# fine-grained PATs 82); the prefix is what identifies the material.
+GITHUB_TOKEN_RE = re.compile(
+    r"(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})")
+GITHUB_TOKEN_PREFIXES = ("ghp_", "gho_", "ghu_", "ghs_", "ghr_", "github_pat_")
+# base64url, not plain base64: `-` and `_` are the URL-safe alphabet and real
+# token material uses them.
+BASE64ISH_RE = re.compile(r"^[A-Za-z0-9_\-+/]{32,}={0,2}$")
 
 COSTED_STATES = frozenset({"admitted", "suspended"})
 
@@ -145,7 +154,18 @@ def _validate_credentials(doc: Any, where: str, errors: list[str]) -> None:
         for i, value in enumerate(doc):
             _validate_credentials(value, f"{where}[{i}]", errors)
     elif isinstance(doc, str):
-        if "://" in doc:
+        token = GITHUB_TOKEN_RE.search(doc)
+        if token:
+            # Name the prefix that actually matched. A message listing every
+            # prefix cannot tell a `ghp_` hit from a `github_pat_` one, and the
+            # operator gating on this refusal needs to know which family leaked.
+            matched = token.group(0)
+            family = next((p for p in GITHUB_TOKEN_PREFIXES
+                           if matched.startswith(p)), "github token")
+            errors.append(f"credential-like github token value at {where} "
+                          f"({family}…) — the registry carries keys, "
+                          "never material")
+        elif "://" in doc:
             try:
                 parsed = urlsplit(doc)
             except ValueError:
@@ -156,8 +176,8 @@ def _validate_credentials(doc: Any, where: str, errors: list[str]) -> None:
                               "— the registry carries keys, never material")
         elif BASE64ISH_RE.match(doc):
             errors.append(f"credential-like base64-looking value at {where} "
-                          "(32+ base64 chars) — the registry carries keys, "
-                          "never material")
+                          "(32+ base64/base64url chars) — the registry carries "
+                          "keys, never material")
 
 
 def validate_document(doc: dict) -> list[str]:
@@ -787,10 +807,19 @@ def links_outside_domain(text: str, entry: dict) -> list[str]:
 
 
 def _link_host(link: str) -> str | None:
-    match = re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://([^/@?#:]+)", link)
-    if match:
-        return match.group(1).lower()
-    return None
+    """Host of a link token, scheme or not.
+
+    ``validators.links_in_text`` also emits scheme-less tokens (``www.*`` and
+    bare dotted hosts); those parse as a netloc with ``urlsplit("//" + token)``
+    — the same parse the bio gate uses — so leaving the scheme off can no
+    longer move a link outside the declared domain without a refusal.
+    """
+    token = (link or "").strip()
+    if not token:
+        return None
+    parsed = urlsplit(token) if "://" in token else urlsplit("//" + token)
+    host = (parsed.hostname or "").lower()
+    return host or None
 
 
 def validate_bio_against_registry(text: str, doc: dict, handle: str, *,
