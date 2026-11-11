@@ -6036,6 +6036,27 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-11-11 (PR #11031, measured current-main composition):
+    Receiving main cdb3144ea48f retains the landed #9230 free-content+2,
+    V91, both complete histories and the AI Brief closure. Keep all401
+    owners and all six accepted implementation/instruction/waiver blobs.
+    Combine the existing lookahead and OI/policy pytest invocations, and
+    the existing eval API and follow-on probe invocations, without removing
+    a suite, test node or guard. Normal collection proves exact unions:
+    factor5+40=45; eval650+16=666. Actual combined runs passed45 and659
+    cases plus58 and26 subtests, with seven unchanged Linux-only skips
+    on macOS. The JUnit node sets equal both original unions exactly.
+    Unchanged native check_contract_delta.py on candidate49503dd141c5
+    versus receiving main completed in388.8s, zero introduced/inherited.
+    Actual base/head weights:5966->5972,5989->5999,5724->5730;
+    selected jobs137/137/131 and ten packs remain unchanged.
+    Keep original ceilings5973/5999/5731, jobs137/138/131 and ten packs.
+    These are planner weights, not runtime or an increased allowance.
+    Only this measured paragraph is added after that execution, with
+    exact inverse and executable-AST identity checked. Hosted Linux
+    execution, including the seven skipped cases and Node20, remains
+    required in fresh natural CI before source release or re-enrollment.
+
     2026-11-11 (Macro #11007, unittest census and retained coverage):
     Exact receiving main efcbb305 and the candidate were measured with the
     unchanged native planner and exact tracked-tree inventory. All selected
@@ -6072,6 +6093,32 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
+    mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union
+    at5958/5979/5716, including its separate800-character bucket crossing.
+    Retain every landed command and both complete histories. The original
+    ticker-news-qbus contribution still adds only free-content2, yielding
+    5958/5981/5716; index and Prophet remain currentmain-exact. No unmerged
+    sibling or second lifecycle allowance is funded. All400 owner IDs,
+    jobs137/138/131, ten packs, selectors and runtime controls remain.
+    This is preserving source accounting for the actual new conflict;
+    natural exact-successor proof is owed, with the old replay untouched.
+
+    2026-11-09 (PR #9230, existing ticker-news cursor regression suite):
+    Own contract run42270474570/job128073407247 measured only the
+    free-content probe5927->5929,137 selected jobs unchanged, no entrants
+    and ten packs; index5912 and Prophet5668 did not change. Preserve
+    that paired historical result without replaying the old uncertain pack.
+    On receiving main75e018ac, ticker-news-qbus still lacks this one test:
+    two commands,51->52 literal test refs,2041->2093 joined characters,
+    same character bucket2, owner106->108. Its exclusive literal paths
+    select only free-content among these probes. Add only its own +2:
+    free-content5969->5971. Keep index5948, Prophet5706, jobs137/138/131
+    and ten packs unchanged. Retain every current history/control; no
+    unmerged sibling is funded. This is current source accounting, not
+    a new planner execution. The new head needs its own required proof.
+    https://github.com/mastermindx-market-intelligence/Macro/pull/9230
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.

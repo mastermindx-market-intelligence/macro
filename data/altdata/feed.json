@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-11T08:01:03.853798+00:00",
+  "generated_utc": "2026-11-11T08:52:56.767806+00:00",
   "as_of": "2026-11-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -24612,10 +24612,17 @@
         "last_surprise_pct": 82.1
       },
       {
+        "ticker": "HMC",
+        "next_date": "2026-11-13",
+        "days_to": 2,
+        "eps_forecast": null,
+        "last_surprise_pct": null
+      },
+      {
         "ticker": "ACM",
         "next_date": "2026-11-16",
         "days_to": 5,
-        "eps_forecast": 1.57,
+        "eps_forecast": 1.59,
         "last_surprise_pct": -133.6
       },
       {
@@ -24657,7 +24664,7 @@
         "ticker": "LOW",
         "next_date": "2026-11-18",
         "days_to": 7,
-        "eps_forecast": 2.86,
+        "eps_forecast": 2.85,
         "last_surprise_pct": 4.3
       },
       {
