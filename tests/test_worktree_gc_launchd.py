@@ -27,7 +27,7 @@ COVERAGE
   3. an unreadable primary refuses, explains the TCC wall, and files a receipt
   4. a primary-read TIMEOUT is explained rather than traced, and refuses
   5. a policy file unreadable from origin/main refuses AND never starts the sweep
-  6. a sweep timeout returns 3, states that nothing is half-applied, files a receipt
+  6. a sweep timeout returns 3, records unverified removal/lock recovery, files a receipt
   7. the failure receipt is a DIFFERENT file from `last_run.json` (B — never clobbers it)
   8. a SUCCESSFUL run files a receipt too, so "no receipt" and "stale receipt" differ
   9. raising either timeout is a policy change that must re-justify itself in the source
@@ -36,6 +36,7 @@ COVERAGE
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -47,7 +48,9 @@ CP = subprocess.CompletedProcess
 
 
 def _git_ok(args, kw):
-    """A primary that answers everything: rev-parse, fetch, and both policy blobs."""
+    """A primary that answers the commit pin, fetch and coherent policy bundle."""
+    if tuple(args[-3:]) == ("rev-parse", "--verify", "origin/main^{commit}"):
+        return CP(args, 0, b"a" * 40 + b"\n", b"")
     if args[1] == "show" or "show" in args:
         return CP(args, 0, b"# extracted policy bytes\n", b"")
     return CP(args, 0, b".git\n", b"")
@@ -204,7 +207,7 @@ def test_policy_unreadable_from_main_refuses_and_never_starts_the_sweep(monkeypa
     def git(args, kw):
         if "show" in args:
             return CP(args, 128, b"", b"fatal: path does not exist in 'origin/main'")
-        return CP(args, 0, b".git\n", b"")
+        return _git_ok(args, kw)
 
     seen = _install(monkeypatch, tmp_path, git=git)
     assert wrapper.main() == 1
@@ -215,18 +218,20 @@ def test_policy_unreadable_from_main_refuses_and_never_starts_the_sweep(monkeypa
 
 # ── 3. the sweep's own cap ───────────────────────────────────────────────────
 
-def test_a_sweep_timeout_returns_3_and_states_nothing_is_half_applied(monkeypatch, tmp_path,
-                                                                     capsys):
+def test_a_sweep_timeout_records_unverified_removal_and_lock_recovery(monkeypatch, tmp_path,
+                                                                    capsys):
     def sweep(args, kw):
         raise subprocess.TimeoutExpired(cmd=args, timeout=wrapper.RUN_TIMEOUT_S)
 
     _install(monkeypatch, tmp_path, sweep=sweep)
     assert wrapper.main() == 3, "a timeout needs its OWN code — `1` cannot be told from a refusal"
     out = capsys.readouterr().out
-    assert "TIMED OUT" in out and "half-applied" in out
+    assert "TIMED OUT" in out and "recovery unverified" in out
+    assert "no deletions are half-applied" not in out
     rec = _receipt(tmp_path)
     assert rec["stage"] == "sweep" and rec["status"] == "timeout"
     assert rec["elapsed_s"] >= 0 and rec["run_timeout_s"] == wrapper.RUN_TIMEOUT_S
+    assert "unverified" in rec["detail"] and "original attempt" in rec["detail"]
 
 
 def test_the_receipt_is_a_different_file_from_last_run_json(monkeypatch, tmp_path):
@@ -304,11 +309,13 @@ def test_the_receipt_never_becomes_a_gate(monkeypatch, tmp_path, capsys):
     assert "could not write" in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("stage", ["read-primary", "extract-policy", "sweep"])
+@pytest.mark.parametrize("stage", ["read-primary", "resolve-source", "extract-policy", "sweep"])
 def test_every_receipt_carries_the_limits_it_was_judged_against(monkeypatch, tmp_path, stage):
     """An elapsed time means nothing without the cap it was measured against."""
     def git(args, kw):
         if stage == "read-primary":
+            return CP(args, 128, b"", b"fatal: nope")
+        if stage == "resolve-source" and "origin/main^{commit}" in args:
             return CP(args, 128, b"", b"fatal: nope")
         if stage == "extract-policy" and "show" in args:
             return CP(args, 128, b"", b"fatal: nope")
@@ -325,3 +332,75 @@ def test_every_receipt_carries_the_limits_it_was_judged_against(monkeypatch, tmp
     assert rec["stage"] == stage
     assert rec["git_timeout_s"] == wrapper.GIT_TIMEOUT_S
     assert rec["run_timeout_s"] == wrapper.RUN_TIMEOUT_S
+
+
+def test_launchd_extracts_coherent_bundle_before_running(monkeypatch, tmp_path):
+    monkeypatch.setattr(wrapper, "RECEIPT", tmp_path / "last_attempt.json")
+    source = 'a' * 40
+    reads = []
+    def git(*args):
+        if args == ('rev-parse', '--verify', 'origin/main^{commit}'):
+            return CP(args, 0, source.encode(), b'')
+        if args[0] == 'show':
+            reads.append(args[1])
+            return CP(args, 0, b'fixture bytes', b'')
+        return CP(args, 0, b'.git', b'')
+    def run(command, **kwargs):
+        folder = Path(command[1]).parent
+        assert (folder/'worktree_storage.py').read_bytes() == b'fixture bytes'
+        assert (folder/'config.json').read_bytes() == b'fixture bytes'
+        assert len(reads) == 3 and all(ref.startswith(source+':') for ref in reads)
+        return CP(command, 0)
+    monkeypatch.setattr(wrapper, '_git', git)
+    monkeypatch.setattr(wrapper.subprocess, 'run', run)
+    assert wrapper.main() == 0
+
+
+def test_missing_storage_dependency_refuses_before_deletion(monkeypatch, tmp_path):
+    monkeypatch.setattr(wrapper, "RECEIPT", tmp_path / "last_attempt.json")
+    def git(*args):
+        if args[0] == 'show' and args[1].endswith(':scripts/worktree_storage.py'):
+            return CP(args, 1, b'', b'missing')
+        return CP(args, 0, b'a'*40, b'')
+    monkeypatch.setattr(wrapper, '_git', git)
+    monkeypatch.setattr(wrapper.subprocess, 'run', lambda *a, **k: (_ for _ in ()).throw(AssertionError('must not run GC')))
+    assert wrapper.main() == 1
+
+
+def test_flat_gc_child_imports_exact_adjacent_helper_despite_ambient_package(tmp_path):
+    repo = Path(__file__).resolve().parents[1]
+    bundle = tmp_path / 'bundle'
+    bundle.mkdir()
+    tool = bundle / 'worktree_gc.py'
+    helper = bundle / 'worktree_storage.py'
+    tool.write_bytes((repo/'scripts/worktree_gc.py').read_bytes())
+    helper.write_bytes((repo/'scripts/worktree_storage.py').read_bytes())
+    ambient = tmp_path / 'ambient'
+    package = ambient / 'scripts'
+    package.mkdir(parents=True)
+    (package/'__init__.py').write_text('')
+    (package/'worktree_storage.py').write_text("raise RuntimeError('ambient decoy imported')\n")
+    code = (
+        "import runpy; ns=runpy.run_path(" + repr(str(tool)) + "); "
+        "print(ns['worktree_storage'].__file__)"
+    )
+    env = {**os.environ, 'PYTHONPATH':str(ambient), 'PYTHONDONTWRITEBYTECODE':'1'}
+    result = subprocess.run([os.sys.executable,'-B','-c',code],capture_output=True,text=True,env=env)
+    assert result.returncode == 0, result.stderr
+    assert Path(result.stdout.strip()).resolve() == helper.resolve()
+
+@pytest.mark.parametrize("returncode,source", [
+    (124, b""), (128, b""), (0, b""), (0, b".git"),
+])
+def test_unresolved_bundle_commit_refuses_before_extract_or_sweep(
+        monkeypatch, tmp_path, returncode, source):
+    def git(args, kw):
+        if "origin/main^{commit}" in args:
+            return CP(args, returncode, source, b"fixture unresolved source")
+        return _git_ok(args, kw)
+
+    seen = _install(monkeypatch, tmp_path, git=git)
+    assert wrapper.main() == 1
+    assert not _sweeps(seen) and not any("show" in args for args in seen)
+    rec = _receipt(tmp_path)
+    assert rec["stage"] == "resolve-source" and rec["status"] == "refused"

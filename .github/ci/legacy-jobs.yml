@@ -331,6 +331,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2503,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3581,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -4673,6 +4676,7 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - "scripts/worktree_storage.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -4824,6 +4828,8 @@ jobs:
       - "scripts/check_site_js.py"
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "scripts/__init__.py"
+      - "scripts/worktree_storage.py"
       - "site/**"
       - "templates/**"
     runs-on: ubuntu-latest
@@ -6388,6 +6394,7 @@ jobs:
       - "scripts/check_stock_dossier_integrity.py"
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"
+      - "scripts/worktree_storage.py"
       - "templates/china.html.j2"
       - "templates/ticker.html.j2"
       - "templates/ticker_index.html.j2"
@@ -7662,6 +7669,7 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8182,6 +8190,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/options_r5_shock.py"
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
@@ -9317,6 +9326,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/options_r5_shock.py"
+      - "scripts/worktree_storage.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -11883,6 +11893,7 @@ jobs:
     # generated-page population receipt there, while this small source-only job
     # follows the prophet-lab split precedent and runs in the actual PR code gate.
     paths:
+      - "scripts/worktree_storage.py"
       - "templates/hk.html.j2"
       - "templates/canada.html.j2"
       - "templates/stock-dashboard.css"
@@ -12439,6 +12450,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -14628,6 +14640,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -15174,6 +15187,7 @@ jobs:
       - "scripts/translate_profiles.py"
       - "scripts/validate_regime_fwd.py"
       - "scripts/worktree_sparse.py"
+      - "scripts/worktree_storage.py"
       - "site/basketdata/**"
       - "site/factordata/**"
       - "site/flowleaders/**"
@@ -15663,6 +15677,7 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      - "scripts/worktree_storage.py"
       # Actual source/metadata reads in the SA-W4 ownership contract.
       - "config.yml"
       - "engine/experiments_registry.py"
@@ -15912,6 +15927,7 @@ jobs:
     # backstop contracts (105-197 s measured).
     runs-on: ubuntu-latest
     paths:
+      - "scripts/worktree_storage.py"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a
       # change to one must select this job. Declared on all three control-plane
@@ -16112,6 +16128,7 @@ jobs:
     # (373-690 s measured).
     runs-on: ubuntu-latest
     paths:
+      - "scripts/worktree_storage.py"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a
       # change to one must select this job. Declared on all three control-plane
@@ -17106,6 +17123,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -19584,6 +19602,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -21081,6 +21100,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "lib/shared_shell.py"
       - "config.yml"
       - "config/sparse_worktree.json"
@@ -21783,6 +21803,8 @@ jobs:
     # closed rather than guarding nothing.
     scope: exclusive
     paths:
+      - "scripts/__init__.py"
+      - "scripts/worktree_storage.py"
       # the gate, its unit suite, and its import closure
       - "scripts/check_p0b_receipt_closure.py"
       - "tests/test_check_p0b_receipt_closure.py"
@@ -22219,6 +22241,10 @@ jobs:
       - scripts/ci_semantic_proof.py
       - scripts/check_self_mod_fence.py
       - scripts/worktree_gc.py
+      - scripts/worktree_storage.py
+      - scripts/install_worktree_storage.py
+      - tests/test_worktree_storage.py
+      - tests/test_install_worktree_storage.py
       # The launchd wrapper is the process that actually performs the sweep, and its
       # own failures were invisible for a month. Its suite reads the wrapper's SOURCE as
       # well as importing it, so inference cannot reach this pair — the same reason
@@ -22415,6 +22441,8 @@ jobs:
             --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
+      - name: external worktree storage and reversible installer contracts
+        run: python -m pytest tests/test_worktree_storage.py tests/test_install_worktree_storage.py -q
       - name: agent-os record and broad integration checks
         # Remains after every security-fence step. The scoped knowledge suites
         # below cannot prevent the live self-modification check from running.
@@ -24494,6 +24522,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -27543,6 +27572,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/options_hub_retention.py"
@@ -28185,6 +28215,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
@@ -29039,6 +29070,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -29648,6 +29680,7 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -31459,6 +31492,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -33342,6 +33376,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -34185,6 +34220,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -34823,6 +34859,7 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "admin/**"
       - "app/**"
       - "collectors/**"
@@ -36073,6 +36110,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -37582,6 +37620,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -40465,6 +40504,7 @@ jobs:
       - "scripts/build_subsector_rotation.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
+      - "scripts/worktree_storage.py"
       - "site/chat.html"
       - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
@@ -40720,6 +40760,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41271,6 +41312,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -44677,6 +44719,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45955,6 +45998,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -47658,6 +47702,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "lib/shared_shell.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
@@ -47795,6 +47840,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -48102,6 +48148,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -50747,6 +50794,7 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -51353,6 +51401,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -52929,6 +52978,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/worktree_storage.py"
       - "admin/**"
       - "app/**"
       - "collectors/**"

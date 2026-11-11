@@ -16,10 +16,10 @@ Two facts broke that quietly:
     CONFIG simply makes conservative decisions with no signal that policy and
     practice have diverged.
 
-So this wrapper re-extracts BOTH the tool and the config from ``origin/main``
+So this wrapper re-extracts the tool, its storage helper and the config from ``origin/main``
 on every run. The primary checkout serves only as the GIT VANTAGE POINT — the
 place worktrees are registered and refs are fetched — which is the one role it
-cannot be stale at. Most drift directions in the extracted pair are conservative
+cannot be stale at. Most drift directions in the extracted bundle are conservative
 (worktree_gc.py is fail-closed at every gate: locked, dirty, unpushed, open-PR,
 live-process, young, outside-roots), and a host that cannot READ origin/main
 refuses outright: for a deleter, blind means stop.
@@ -158,12 +158,23 @@ def main() -> int:
     if fetched.returncode != 0:
         print("(fetch failed — proceeding on last-known origin/main)", flush=True)
 
+    resolved = _git("rev-parse", "--verify", "origin/main^{commit}")
+    source = resolved.stdout.decode("ascii", errors="replace").strip()
+    if (resolved.returncode != 0 or len(source) != 40
+            or any(char not in "0123456789abcdef" for char in source)):
+        detail = (resolved.stderr.decode(errors="replace").strip()[:200]
+                  or "origin/main did not resolve to one complete commit SHA")
+        print("cannot resolve origin/main — refusing mixed or missing source", flush=True)
+        _receipt("resolve-source", "refused", detail, started)
+        return 1
+
     with tempfile.TemporaryDirectory(prefix="worktree-gc-") as work:
         tool = Path(work) / "worktree_gc.py"
         cfg = Path(work) / "config.json"
         for target, path in ((tool, "scripts/worktree_gc.py"),
+                             (Path(work) / "worktree_storage.py", "scripts/worktree_storage.py"),
                              (cfg, "config/worktree_gc.json")):
-            shown = _git("show", f"origin/main:{path}")
+            shown = _git("show", f"{source}:{path}")
             if shown.returncode != 0 or not shown.stdout:
                 print(f"cannot read {path} from origin/main — refusing "
                       "(fail-closed: policy truth unavailable)", flush=True)
@@ -182,13 +193,14 @@ def main() -> int:
                 timeout=RUN_TIMEOUT_S,
             )
         except subprocess.TimeoutExpired:
-            # Nothing partial escapes: worktree_gc.py removes one tree at a time, so a
-            # kill mid-sweep loses the REST of the sweep, never a half-deleted tree. The
-            # cost of this timeout is therefore a silent no-op day, which is precisely
-            # what the receipt is for.
-            print(f"== worktree-gc TIMED OUT after {RUN_TIMEOUT_S}s — swept nothing further; "
-                  "no deletions are half-applied ==", flush=True)
-            _receipt("sweep", "timeout", f"exceeded RUN_TIMEOUT_S={RUN_TIMEOUT_S}", started)
+            # A wrapper timeout does not prove child removal or storage-lock
+            # recovery settled. Preserve that uncertainty in the attempt receipt;
+            # last_run.json is still only the last completed sweep.
+            detail = (f"exceeded RUN_TIMEOUT_S={RUN_TIMEOUT_S}; child removal and "
+                      "storage-lock recovery unverified; reconcile the original attempt")
+            print(f"== worktree-gc TIMED OUT after {RUN_TIMEOUT_S}s — "
+                  "removal and storage-lock recovery unverified ==", flush=True)
+            _receipt("sweep", "timeout", detail, started)
             return 3
     print(f"== worktree-gc done rc={run.returncode} ==", flush=True)
     _receipt("sweep", "completed" if run.returncode == 0 else "tool-nonzero",

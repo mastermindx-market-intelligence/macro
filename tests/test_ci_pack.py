@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_994),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_729),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,36 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #6939, preserve landed #9230 during conflict repair):
+    Receiver fc2dffe6 retains ticker-news-qbus cursor/reconnect coverage and
+    its independent free-content+2. Preserve all13 accepted product/test/
+    plan/instruction postimages and all401 current owners. Original storage
+    insertions remain exactly50 lines across43 owners; all358 sibling blocks
+    and the complete inverses are main-exact. Native unchanged estimator
+    still changes only self-mod-fence46->51. Apply that original+5 once to
+    current5966/5989/5724 =>5971/5994/5729. Keep job ceilings137/138/131,
+    ten packs, every assertion/selector, runtime and admission limits.
+    Both complete histories are retained. This is source/owner accounting,
+    not a new product execution or full-tree planner; successor CI is owed.
+
+    2026-11-11 (PR #6939, original-carrier conflict composition):
+    Preserve every current-main owner and both complete provenance histories.
+    The unchanged canonical owner estimator verifies only self-mod-fence changes
+    46->51. Carry its existing contribution once: 5966/5987/5724
+    -> 5971/5992/5729. Keep 137/138/131 jobs, ten packs,
+    all selectors, assertions, commands and runtime limits. This is source
+    composition and owner-weight execution; full-tree hosted proof remains owed.
+
+    2026-11-10 (PR #6939, preserve accepted main and storage contribution):
+    Retain all400owners, all357unowned blocks and the original50 inserted
+    storage closure/enrollment lines across43owners. Six overlaps retain
+    current pins, shock/query-budget selectors and eval-os declarations.
+    Only self-mod-fence gains command weight46->51. Accepted #6867's
+    independent +10 remains; add storage's original +5 exactly once to
+    current5958/5979/5716 =>5963/5984/5721. Preserve every prior history,
+    job ceilings137/138/131, tenpacks and all selection/runtime limits.
+    This is source accounting; natural successor proof remains required.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6031,6 +6061,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and all selectors/assertions/admission limits. The old +9 measurements
     below stay historical. This is source accounting, not a new timing or
     whole-tree planner run; the combined successor needs its own natural CI.
+
+    2026-11-09 (PR #6939, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+5
+    composes current5948/5969/5706 as5953/5974/5711.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #6939, preserving current F09 receiver): retain the
+    landed beneficial-ownership argument and all 400 current catalog owners.
+    The original 43 storage closure/enrollment blocks keep unchanged receiver
+    preimages; only the self-mod-fence run commands gain weight 46 -> 51.
+    Carry the original +5 once: 5945/5966/5703 -> 5950/5971/5708, retaining
+    jobs 137/138/131, ten packs and every assertion, selector and runtime limit.
+    Both original storage history entries and all main provenance remain
+    at their existing anchors. This is source-derived accounting, not a new
+    paired planner measurement; natural successor CI must qualify this head.
 
     2026-11-09 (PR #9230, preserve landed Intraday Flow CI coverage):
     mainf3a8cf04 carries the accepted data-base-shim lifecycle/ledger union
@@ -6153,6 +6204,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     This is static preserving composition, not a new full-tree measurement;
     natural current-head CI must qualify the integrated source.
 
+    2026-11-09 (PR #6939, preserving conflict composition on main
+    a331ca44a5778706edd09398cfc25b64fcea284f): keep all 400 current owners,
+    current registry/admission coverage and every accepted accounting entry.
+    The 43 complete changed-owner preimages and estimator source are unchanged
+    from the accepted storage contribution. Retain its measured +5 exactly
+    once: 5943/5964/5701 -> 5948/5969/5706. This is source/accounting
+    composition; new natural CI must qualify it. No new local measurement,
+    per-owner runtime attribution, job/pack limit or admission change is made.
+
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
     conftest's tools/ package alias escapes static closure resolution. Its
@@ -6216,6 +6276,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     selectors, dependencies, timeouts and admission/concurrency controls.
     This is measured planner weight, not an execution-time estimate.
     All earlier landed contributions and provenance remain below.
+
+    2026-11-08 (PR #6939, external worktree storage CI composition):
+    Natural contract run 42518245285 / job 128845881749 measured head
+    5db669c2e5af8c9255928aa5cf4c7a3a36b40f62 against exact base
+    3c451abc66da836a07d6eb294a8ddec34f698be7 on tested merge
+    462eddc6ccfe27e6af54ec60c7e4f6f51136fb21. The paired probes were
+    index 137/5943->5948, free 137/5964->5969 and Prophet 131/5701->5706;
+    all plans retained ten packs and reported newly selected: none.
+    Fund exactly the measured +5 estimated-weight units per probe.
+    Keep job ceilings 137/138/131, maximum 10 packs, assertions, commands,
+    dependencies, selectors and runtime/admission limits unchanged.
+    Preserve all earlier accepted accounting below. This measures the
+    published storage composition, not per-owner runtime. The accompanying
+    39 exact missing import-closure declarations still require the next
+    natural contract check; no additional allowance is assumed for them.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural

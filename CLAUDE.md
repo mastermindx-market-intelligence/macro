@@ -15,6 +15,33 @@ When Mastermind #2118 is actually merged to protected `master`, an assigned Clau
 
 When editing through a local M2 shell/checkout, continue to use the approved SSD worktree and quarantine helpers. Never bypass local hooks, occupied-checkout restrictions, CAS, existing source writers, unknown/denied effects, Macro's `merge-on-green` controller or actual review/CI/release holds. Source location does not grant merge authority.
 
+## External worktree storage on admitted hosts
+
+These helpers apply to new eligible local worktrees only after the host's
+external-storage policy and client launcher have been admitted and configured.
+A validated `~/.config/mastermind/worktree-storage.json` binds placement to its
+verified external root. A missing, wrong, read-only or full volume never permits
+an internal-disk fallback. The existing creation-hook dispatcher uses the admitted
+host helper; it is not replaced by a second placement route. New standalone
+creation uses the helper with the actual `cwd`, `name` and `session_id`, without
+inventing or borrowing another session's identity.
+
+Existing active checkouts and shared Git stores stay in place. New external
+worktrees retain sparse defaults. The existing GC may release only its own
+storage lock after current volume, process, clean-tree, registration, activity
+and recoverability checks. Human-driven roots, foreign locks and exact Fabric
+cleanup restrictions remain protected; an unavailable volume blocks deletion
+and pruning. This adds no scheduler, authority registry or concurrency policy.
+
+Publishing this source does not install hooks, change client settings, grant
+native trust or activate cleanup. Before a future installer or activation action,
+consume the [host-hardening receipt](https://github.com/mastermindx-market-intelligence/Macro/pull/6939#issuecomment-5908916179)
+and the existing rollout's admission, identity, payload, field-level CAS and
+readback requirements. The historical
+`research/EXTERNAL_WORKTREE_STORAGE_ROLLOUT_2026_09_06.md` records the original
+staging and rollback boundaries; it does not prove the current host is installed
+or authorize an unverified native first creation.
+
 Signal-engine + static-site repo (engines in `engine/`, builders in `scripts/`, rendered site in `site/`, programs/masterplans in `research/`). Nightly pipeline runs on a self-hosted Mac Studio via GitHub Actions; render budget is law (~67 min, 4-core-bound) — heavy compute goes off the render path, artifacts to R2.
 
 

@@ -13,6 +13,33 @@ A GitHub-native branch/commit/PR operation is not an M2 filesystem or worktree o
 
 For **host-local** Claude/CLI edits and any process running on the M2, the incumbent SSD quarantine, `ship_loop_guard.py`, approved storage helper, occupied-checkout and sparse-worktree controls still apply. Never switch an explicitly denied or effect-unknown action to another carrier. Neither authoring route permits direct `main` pushes, self-approval, self-merge, held-PR release or bypass of Macro's separate `merge-on-green` checks.
 
+## External worktree storage on admitted hosts
+
+These helpers apply to new eligible local worktrees only after the host's
+external-storage policy and client launcher have been admitted and configured.
+A validated `~/.config/mastermind/worktree-storage.json` binds placement to its
+verified external root. A missing, wrong, read-only or full volume never permits
+an internal-disk fallback. The existing creation-hook dispatcher uses the admitted
+host helper; it is not replaced by a second placement route. New standalone
+creation uses the helper with the actual `cwd`, `name` and `session_id`, without
+inventing or borrowing another session's identity.
+
+Existing active checkouts and shared Git stores stay in place. New external
+worktrees retain sparse defaults. The existing GC may release only its own
+storage lock after current volume, process, clean-tree, registration, activity
+and recoverability checks. Human-driven roots, foreign locks and exact Fabric
+cleanup restrictions remain protected; an unavailable volume blocks deletion
+and pruning. This adds no scheduler, authority registry or concurrency policy.
+
+Publishing this source does not install hooks, change client settings, grant
+native trust or activate cleanup. Before a future installer or activation action,
+consume the [host-hardening receipt](https://github.com/mastermindx-market-intelligence/Macro/pull/6939#issuecomment-5908916179)
+and the existing rollout's admission, identity, payload, field-level CAS and
+readback requirements. The historical
+`research/EXTERNAL_WORKTREE_STORAGE_ROLLOUT_2026_09_06.md` records the original
+staging and rollback boundaries; it does not prove the current host is installed
+or authorize an unverified native first creation.
+
 ## Finish-to-release: no draft graveyard
 
 An assigned session must drive its existing PR to the **actual user/machine outcome**, not stop at Draft or a published commit. Retain its original source carrier, repair concrete failing CI, make **non-held** stable reviewable candidates Ready, obtain genuinely required independent/formal checks, use the existing authorized merge-on-green controller, verify merged commit and owed production/browser proof. A pending check or published PR is not completion. Do not create a replacement PR, hand off to an archived reviewer chat, invent a watcher, or label an unmerged PR delivered. If an actual hold/permission/uncertain effect prevents the release, preserve the original exact target and next actionable repair; continue disjoint permitted work. Recorded `HOLD-FOR-SOL` stays **Draft / PARKED**, no `merge-on-green` label, no native auto-merge, no Ready or merge until the actual hold owner releases it; do not relabel the hold as DONE. An actually verified current-controller handoff may delegate an idle wait but **never** proves merged/accepted; the historical `scripts/ci_handoff.py` is absent from protected main and must not be invoked as a required exit ritual; red/held PRs retain an accountable reachable repair owner under `DEC:SESSION-OWNED-REVIEW-20261103`. Never self-approve, self-merge, bypass branch rules, remove recorded HOLD or replay denied effects. Follow Mastermind's [session-owned finish-to-release law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md#finish-to-release-ownership-a-pr-is-an-intermediate-artifact) after accepted source enrollment.
