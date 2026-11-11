@@ -1,7 +1,7 @@
 {
   "schema": "rotation_core.protocol_header/v2",
   "protocol_id": "rotation-core-v2",
-  "status": "DRAFT revision 2 - NOT FROZEN. Written on the corrected engine (0dfec2426e). No v2 outcome computed. The parent freezes; the trial-ledger declaration is written at freeze.",
+  "status": "DRAFT revision 3 - NOT FROZEN. Freeze mechanics prepared (FREEZE_PLAN_v2.md). No v2 outcome computed.",
   "drafted_on_utc": "2026-11-11",
   "power_statement_top": "A 1-2 pp/yr rotation edge cannot be shown by any test available to us. From 1998-2019 variance (full-tilt proxy, Holm m=3, 80% power) the minimum detectable effect is 2.6 pp/yr on pre-1998 plus 2020-2025 pooled, 9.2 pp/yr on 2020-2025 alone, 10.1 pp/yr after five forward years and 7.1 after ten. Detecting 2 pp/yr would need about 127 clean years; 1 pp/yr about 509. The historical tier is a low-power falsification screen, not a confirmation.",
   "predecessors": {
@@ -82,16 +82,22 @@
           37.5
         ],
         "settings": 4,
-        "selection": "the setting with the highest 1998-2019 excess over its matched mix, chosen after freeze on 1998-2019 only; all 4 counted"
+        "selection": "the setting with the highest 1998-2019 annualised excess over its matched mix, chosen after freeze on 1998-2019 only; exact ties (difference below 1e-9) go to the more conservative setting: smaller h first, then larger b. All 4 settings are counted."
       },
       "arming_check_1998_2019": "Armed fraction on breadth (i): 11.8% (h=3, b=25), 7.6% (3, 37.5), 19.7% (5, 25), 13.7% (5, 37.5); the price key alone is on 37% (h=3) / 50% (h=5). Not degenerate: breadth removes more than half of the price-key days, so H2 is not empty by construction. Stand-in (ii) armed fraction (bottom 20% of its 6-month range) is 6.9% / 9.8%; it is recorded and not used, because (i) is not degenerate. No return was computed (v2_power/arming_check_D.py).",
       "primary_contrast": "annualised mean daily return of H1 minus the exposure-matched static mix of offence, defence and base at H1's average weights, rebuilt inside every bootstrap resample from that resample's own average weights (parent ruling A)",
-      "differs_from_run_B_R7": "R7 is prior negative evidence against H1's breadth key. H1 differs in two ways: (1) a second key is required - the offence/defence relative line must break its 50-session SMA after arming; R7 switched on the breadth drop alone; (2) legs are beta-sorted thirds re-formed monthly from data to t-1, not R7's fixed named cyclical and defensive groups; H1 also starts from equal weight, not from the cyclical leg."
+      "differs_from_run_B_R7": "R7 is prior negative evidence against H1's breadth key. H1 differs in two ways: (1) a second key is required - the offence/defence relative line must break its 50-session SMA after arming; R7 switched on the breadth drop alone; (2) legs are beta-sorted thirds re-formed monthly from data to t-1, not R7's fixed named cyclical and defensive groups; H1 also starts from equal weight, not from the cyclical leg.",
+      "precedence": {
+        "defend_and_attack_same_day": "If the DEFEND trigger and the ATTACK confirmation are both true at the same close, DEFEND wins (the defensive state is taken; the attack confirmation is discarded and the washout flag is reset).",
+        "trigger_on_last_session_of_month": "A trigger or confirmation at the last session of a month executes at the next close and is held to the end of the FOLLOWING month; the month-end reversion to NEUTRAL applies only to states set before the month's last session. Legs re-formed at that month-end are the legs the new state holds.",
+        "precedence_with_neutral": "A state already in force and re-triggered on a later day is extended to the end of the month of the re-trigger (same rule as above)."
+      }
     },
     "H2": {
       "name": "breadth adds information",
       "rule": "H1 minus the identical rule with the breadth key removed (armed = relative line within h% of its 126-session high alone; same h as selected for H1; same trigger and attack rules). Paired daily difference.",
-      "primary_contrast": "annualised mean of the paired daily difference H1 - H1_price_only"
+      "primary_contrast": "annualised mean of the paired daily difference H1 - H1_price_only",
+      "inherits": "H2's price-only control and the cash ablation use exactly the H1 grid point selected on 1998-2019; no second selection is made for any derived book."
     },
     "H3": {
       "name": "simplest direct control: 126-day relative momentum between the legs (run B R5 on beta-sorted legs)",
@@ -99,7 +105,7 @@
       "primary_contrast": "vs its exposure-matched static mix, rebuilt inside each resample",
       "why": "Parent ruling 12:05Z; trend-and-Sahm with defensives (SI's suggestion) is run B R6's near twin and showed no benefit. I have no better-motivated candidate."
     },
-    "mandatory_ablation": "H1 with cash in place of the defence leg (identical DEFEND dates, bills instead of defensives); reported, not tested"
+    "mandatory_ablation": "H1 with cash in place of the defence leg (identical DEFEND dates, bills instead of defensives); reported, not tested Inherits H1's selected grid point; no second selection."
   },
   "yardsticks_every_window": [
     "SPY (French market before 1993)",
@@ -162,7 +168,24 @@
       "1pp": 509
     },
     "run_C_arithmetic": "about 6 pp/yr detectable at five forward years with 5% active volatility; worse at higher volatility; adopted.",
-    "plain": "H1's tilt is at most the full-tilt proxy, so its active risk is lower and the true numbers are between these and somewhat smaller; the conclusion does not change: a 1-2 pp/yr edge is not demonstrable historically or in five forward years."
+    "plain": "H1's tilt is at most the full-tilt proxy, so its active risk is lower and the true numbers are between these and somewhat smaller; the conclusion does not change: a 1-2 pp/yr edge is not demonstrable historically or in five forward years.",
+    "pass_probability_under_joint_rule": {
+      "method": "normal approximation; per-window SE = D per-year sd / sqrt(years); windows 1928-45 (17.2y), 1946-97 (52y), 2020-25 (6y) treated as independent; D variance only, no point estimate",
+      "true_edge_2.6pp_(the_MDE)": {
+        "holm_significant": 0.8,
+        "significant_and_all_four_sub_windows_positive": 0.63,
+        "2020_25_positive_alone": 0.8
+      },
+      "true_edge_2pp": {
+        "holm_significant": 0.56,
+        "joint": 0.43
+      },
+      "true_edge_1pp": {
+        "holm_significant": 0.16,
+        "joint": 0.12
+      },
+      "plain": "The four positive-sign requirements cut the chance of passing at the MDE from 80% to about 63% (the 2020-2025 sign alone costs most of it), before the drawdown and 2x-cost conditions, which cut it further. A fail of this test is therefore NOT evidence of no effect: at a true 2 pp/yr edge it fails more often than it passes."
+    }
   },
   "trial_ledger_at_freeze": {
     "rotation_core_v2": "H1 grid 4, H2 1, H3 1, cash ablation 1, tradable version 1, named mapping 1 = 9",

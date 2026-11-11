@@ -1,4 +1,4 @@
-# Rotation Core — protocol header v2 (DRAFT revision 2, NOT FROZEN)
+# Rotation Core — protocol header v2 (DRAFT revision 3, NOT FROZEN)
 
 > **Power, stated first.** No test available to us can show a 1–2 pp/yr rotation edge. Minimum detectable effects at 80 % power, Holm m = 3, from 1998–2019 variance only:
 >
@@ -73,6 +73,13 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
 | **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
 | *ablation* | H1 with bills in place of the defence leg on identical dates: **mandatory, reported, not tested** | — |
 
+**State-machine precedence (decided now).**
+- **DEFEND and ATTACK on the same close:** DEFEND wins; the attack confirmation is discarded and the washout flag reset.
+- **Trigger on the last session of a month:** executes at the next close and is held to the end of the *following* month. Month-end reversion to NEUTRAL applies only to states set before the month's last session. The new state holds the legs re-formed at that month-end.
+- **Re-trigger while a state is in force:** extends it to the end of the re-trigger's month.
+
+**Grid selection.** Highest 1998–2019 excess over the matched mix; exact ties go to the more conservative setting (smaller h, then larger b). H2's price-only control and the cash ablation inherit the selected point; there is no second selection.
+
 **H1 against R7.** R7 is prior negative evidence against H1's breadth key. H1 differs in three ways:
 - it requires a second key, a break of the relative line after arming;
 - its legs are beta-sorted and re-formed monthly from data to t−1, not fixed named groups;
@@ -146,6 +153,16 @@ When conditions turn bad, does tilting from equal weight toward low-beta industr
   - the weight source confirmed (otherwise the fallback);
   - a nightly issuer writing QLedger claims from the frozen v2 code;
   - 50 nightly states per member before breadth is defined.
+
+## What the pass rule does to power (D variance only)
+
+| True edge | P(Holm significant) | P(significant **and** all four sub-windows positive) |
+|---|---|---|
+| 2.6 pp/yr (the MDE) | 0.80 | **0.63** |
+| 2.0 pp/yr | 0.56 | 0.43 |
+| 1.0 pp/yr | 0.16 | 0.12 |
+
+The sign requirements cut the pass chance at the MDE from 80 % to about 63 %; the 2020–2025 sign (6 years) costs most of it. The drawdown and 2× cost conditions cut it further. **A fail is not evidence of no effect:** at a true 2 pp/yr edge this test fails more often than it passes.
 
 ## Trial ledger at freeze
 
