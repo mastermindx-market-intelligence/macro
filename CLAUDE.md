@@ -1,5 +1,20 @@
 # Macro Dashboard — agent instructions
 
+## Local review within this Claude session
+
+Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026 merged into protected master on 2026-11-04, and #2030 also merged; #2018 closed without merging and is not a pending adoption gate. Follow the current protected session-local review law, not a stale PR condition; merged source does not by itself prove a particular reviewer machine is installed. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
+
+
+## Reuse-first implementation
+
+Before bespoke work on proven infrastructure or chart/UI plumbing, check the existing owner and maintained open-source candidates; use narrow integration/extension where sound. Protect unique quant logic, existing security boundaries and consumer proof. See the [shared engineering policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) after its protected acceptance; do not add a survey or approval step for small repairs.
+
+## Source authoring on M2: GitHub-native versus host-local
+
+When Mastermind #2118 is actually merged to protected `master`, an assigned Claude session with genuine GitHub-native write tools may publish scoped branch commits and PRs entirely through the authorized GitHub API, without acquiring an M2 worktree solely for that remote action. Follow the current protected Mastermind delivery workflow and [Macro's source-surface rules](AGENTS.md#github-native-source-authoring-versus-m2-host-local-custody). Until that merge, the candidate #2118 policy is not installed.
+
+When editing through a local M2 shell/checkout, continue to use the approved SSD worktree and quarantine helpers. Never bypass local hooks, occupied-checkout restrictions, CAS, existing source writers, unknown/denied effects, Macro's `merge-on-green` controller or actual review/CI/release holds. Source location does not grant merge authority.
+
 Signal-engine + static-site repo (engines in `engine/`, builders in `scripts/`, rendered site in `site/`, programs/masterplans in `research/`). Nightly pipeline runs on a self-hosted Mac Studio via GitHub Actions; render budget is law (~67 min, 4-core-bound) — heavy compute goes off the render path, artifacts to R2.
 
 
@@ -14,6 +29,18 @@ An architectural owner is not a live session. Data OS is a system boundary, not 
 AI approver to locate. The current assigned session resolves authorized technical
 contracts through existing interfaces. Preserve actual live writers, rights,
 reserved decisions and EFFECT_UNKNOWN; do not invent a registry or an owner.
+
+## Complete the original ship chain
+
+This Claude session does not count a Draft, PR, review request, CI wait or handoff as **completed delivery**. Existing `merge-on-green` plus a **verified actual controller/return path** can delegate only a proven idle wait; current protected main has no `scripts/ci_handoff.py` CLI, never `PROVEN_OUTCOME`; the unconditional stop decision is superseded by `DEC:SESSION-OWNED-REVIEW-20261103`. Follow the root [finish-to-release rule](AGENTS.md#finish-to-release-no-draft-graveyard): fix failed checks, advance a qualified Ready candidate, meet real review/hold gates and use the existing protected publisher when eligible, then verify exact merge and consumer proof. Preserve no-self-merge/no-self-approval and other effect boundaries. Do not create a successor PR or stop merely because a PR was published.
+
+## Permanent visual rule
+
+Chairman design rule (2026-10-18): never add a colored left edge or equivalent
+accent stripe to a container; do not relocate it to another edge. Use neutral
+surface hierarchy, even borders, typography and labeled semantic ink. Preserve
+complete focus outlines and meaningful chart series. The canonical rule lives in
+`docs/DESIGN_DOCTRINE.md`; the shared component specimen must follow it.
 
 ## Shared workspace + completion (STANDING)
 
@@ -70,6 +97,35 @@ The site has exactly two global header families. Authenticated/product pages use
 header. `nav_prefix` may vary by directory depth; typography, geometry, menu
 contents, search behavior, responsive breakpoints, and motion may vary only in
 the shared family source.
+
+## Assigned Meta-CEO: Fabric first for bounded execution (2026-10-12)
+
+This is **only** for an explicitly Chairman-assigned Codex or Claude principal;
+ordinary workers keep their bounded role. Read the shared, source-controlled
+[`docs/CODEX_META_CEO_FABRIC.md`](docs/CODEX_META_CEO_FABRIC.md)
+alongside the applicable current grant/Executive/Fabric admission procedure.
+An assigned principal owns mission direction, genuine C3 judgment, review,
+integration, acceptance and durable continuity. It should **decide on Fabric
+delegation before undertaking substantial C0/C1/C2 implementation, research,
+tests and repairs itself**. When there is real independent ready work, use
+qualified admitted paid Fabric workers and the existing sanctioned adapter.
+For enrolled Codex, this is the already-installed
+`mastermind-fabric-delegate` skill + `fabric_task.py` path with the verified
+current native-thread root, not Codex native `spawn_agent` as a labor shortcut.
+For Claude, the existing approved Executive/Fabric route applies; a native
+`Agent/Task` child is a distinct path, never silently counted as paid Fabric.
+
+Do not infer role, runtime identity, a root grant or provider access from the
+harness/model name. Never duplicate a submitted run or bypass a real denial.
+Decompose into bounded independent work, retain the parent as an active
+decision-maker, inspect compact returns with artifact hashes and tests, and keep
+long logs outside frontier context. Current resource, writer, user-consent,
+review, merge and release gates are unchanged. Do not fan out just to use
+114 physical lane ceilings; only genuine accepted work counts. A document or
+an installed adapter is not production adoption proof. Existing model-routing
+rules below still apply to separately justified native Claude children.
+
+**Assigned Codex Meta-CEO selective-read rule:** `AGENTS.md` is the Codex entrypoint. An assigned Codex principal reads only the relevant `CLAUDE.md` guide sections plus necessary current laws rather than duplicating the full Claude context. Ordinary Codex workers and Claude-native sessions retain their scoped source and tool rules; this never waives admission, permissions, custody or acceptance.
 
 ## Model routing (STANDING — token economy)
 
@@ -135,3 +191,9 @@ Memory files (account-local, `~/.claude/projects/<project>/memory/`) are one fac
 `Macro Dashboard/ObsidianBrain/` is a live symlink view over memory + research (Dataview MOCs). It is a *view* — edit sources (memory files, research docs), never the vault copies.
 
 <!-- Reconstructed 2026-07-05: PR #1215 shipped this file as 0 bytes (commit message described vault pointer + memory contract; content was lost — the #1052 zero-byte failure mode). Rebuilt from the memory index + program docs, with the model-routing standing rule added. -->
+
+## Graph engineering for substantial missions
+
+Load [.agents/skills/mastermind-graph-engineering/SKILL.md](.agents/skills/mastermind-graph-engineering/SKILL.md) for multi-domain or long-horizon work. It resolves the shared Mastermind skill and its T3, Hermes and Paperclip guidance.
+
+Keep product direction, long-horizon planning and acceptance with the principal. Give admitted suborchestrators complete domain outcomes, let them coordinate admitted children and integrate evidence locally, and send compact decisions and proof upward. Preserve original root, actual parentage, scope, budget, writer custody and result return. Discover runtime depth limits before spawning; use the shallowest useful hierarchy and continue after accepted milestones.

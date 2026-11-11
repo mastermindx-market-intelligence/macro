@@ -1,0 +1,62 @@
+{
+  "schema": "eval_os.current_integration_acceptance.v1",
+  "accepted_at": "2026-10-14T05:56:33.371653+00:00",
+  "head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+  "incoming_main": "c3ade6fe509b6b3f0eb8bb0120d77a3574cf57e2",
+  "source_delta": "Exact four CI path unions plus one RED-proved required A1 config path; all runtime bindings unchanged.",
+  "initial_tests": {
+    "passed": 249,
+    "failed": 1,
+    "skipped": 2,
+    "skip_reason": "Existing sparse mockup checks"
+  },
+  "post_repair_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "2",
+    "time": "277.926",
+    "timestamp": "2026-10-13T22:50:51.354574-07:00",
+    "hostname": "m2studio"
+  },
+  "tracked_closure": {
+    "head": "05a75a4131f5e695a1d31616ac9e2ecca6059c67",
+    "manifest_sha256": "1d9ba43c4f2576163a724ad16d2df79006522ba98c75b9dbce0b989af9612d8f",
+    "inventory_sha256": "26628a8b3ba1b7768028f5ae611022f212e70ef02b254108ace8477229c71e51",
+    "jobs": {
+      "eval-os-a1": {
+        "declared": 1175,
+        "closure": 1175,
+        "missing": []
+      },
+      "qledger-cluster-honest-ci": {
+        "exclusive": false,
+        "declared": 0,
+        "inferred_closure": 847,
+        "coverage_test": "not_applicable_to_inferred_scope",
+        "scope": "No missing-declared-input assertion is valid for this nonexclusive job."
+      },
+      "agentos-knowledge-contracts": {
+        "declared": 45,
+        "closure": 44,
+        "missing": []
+      }
+    },
+    "new_input_selects_a1": "config/market_memory_factory_bindings.v1.json",
+    "scope_correction": "Initial one-off assertion incorrectly applied exclusive declared-path coverage to the existing nonexclusive QLedger job. Retained computed closure reused after validating actual job mode, same HEAD, clean source and canonical inventory. No repository source changed.",
+    "raw_computation_log_sha256": "174ecd7adbb757e10787b5c16ef44d0154cab801345e3d8d33486e9fa2168990"
+  },
+  "proof_hashes": {
+    "c3ade-ci-qualification.xml": "34624b4f38f5d01b21979c5a3d35fc86408d6b20578325c56568f40aff946999",
+    "c3ade-ci-repair.xml": "6a11dd2890c9fc943fa2717700b555627425dc39c7d99b277b110955b00ac81c",
+    "c3ade-manifest-resolution.json": "cf5b7b146c6295cc8444ba547345aeb0cb0514c17ed3552513aeb911b8e2bb4b",
+    "05a75a-runtime-and-job-binding.json": "e30d1d344523a7f3a250dc3fffce827a570097007993aa07f9cf360d15129d21"
+  },
+  "review": "Root deterministic fieldwise preservation and repair adjudication. Existing Sol coordinator resume unavailable; no new independent review claimed.",
+  "published": true,
+  "hosted_containing_head_ci": false,
+  "production": false,
+  "published_branch": "claude/eval-os-a1-evidence-view-20260828",
+  "published_observed_at": "2026-10-14T05:58:05.586063+00:00"
+}

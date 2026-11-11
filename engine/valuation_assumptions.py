@@ -738,11 +738,16 @@ def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
             }
         ]
         for event in iter_classified_spine_events(wanted):
+            filing = event["filing"]
             events.append({
                 "id": event["event_id"],
                 "tickers": [event["issuer"]["ticker"]],
                 "kind": event["event"]["subtype"],
                 "ts": event["point_in_time"]["available_at"],
+                # Preserve the owner's exact document, never infer a URL from
+                # an accession or promote an unlinked event into evidence.
+                "links": {"source": filing.get("primary_document_url")},
+                "source_ref": filing.get("accession"),
             })
     except Exception as exc:
         log.warning("valuation: issuer event record lookup failed: %s", exc)
@@ -753,7 +758,7 @@ def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
     return max(dated, key=lambda e: str(e.get("ts") or e.get("date"))), True
 
 
-def issuer_guidance_hits(ticker: object) -> list[dict]:
+def issuer_guidance_hits(ticker: object, *, as_of: object = None) -> list[dict]:
     """SEC 8-K directional guidance hits for one issuer.
 
     Delegates to engine.guidance_gap, which already owns that parquet. No new
@@ -762,7 +767,8 @@ def issuer_guidance_hits(ticker: object) -> list[dict]:
     try:
         from engine.guidance_gap import hits_for_ticker
 
-        return hits_for_ticker(ticker)
+        from engine.guidance_source_evidence import with_source_context
+        return [with_source_context(hit, as_of=as_of) for hit in hits_for_ticker(ticker)]
     except Exception as exc:  # noqa: BLE001 — additive, never fatal
         log.warning("valuation: guidance hits unreadable: %s", exc)
         return []
@@ -785,7 +791,7 @@ def _attach_event_proposal(blob: dict, as_of: object = None) -> dict:
             proposal = _vep.best_proposal(
                 blob,
                 chronicle_events=[record] if record else (),
-                guidance_hits=issuer_guidance_hits(ticker),
+                guidance_hits=issuer_guidance_hits(ticker, as_of=as_of),
                 as_of=as_of,
             )
         blob["event_assumption_proposal"] = proposal

@@ -1,0 +1,176 @@
+{
+  "cell": "v2-sector-cycles__light__en__1440__d-l3-10-group",
+  "view": "v2",
+  "url": "/sector_cycles.html",
+  "theme": "light",
+  "lang": "en",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "variant": null,
+  "js": true,
+  "steps": [
+    {
+      "click": "#sc-groups .cyc-gchip[data-k]",
+      "matched": 5
+    }
+  ],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 2216,
+  "data_theme": "light",
+  "data_lang": "en",
+  "html_lang": "en",
+  "computed_bg": "rgb(232, 235, 241)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 79,
+      "y": 500,
+      "w": 186,
+      "h": 22,
+      "visible": true,
+      "text": "Sector rotation overlay"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 107,
+      "y": 355,
+      "w": 78,
+      "h": 15,
+      "visible": true,
+      "text": "2026-11-03"
+    },
+    "generation": {
+      "selector": "[data-gen]",
+      "x": 194,
+      "y": 355,
+      "w": 259,
+      "h": 15,
+      "visible": true,
+      "text": "Generation History matches the current read"
+    },
+    "stale_guard": null,
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 79,
+      "y": 660,
+      "w": 1282,
+      "h": 41,
+      "visible": true,
+      "text": "✦ Select all visible"
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 79,
+      "y": 701,
+      "w": 1282,
+      "h": 660,
+      "visible": true,
+      "text": "WASHED-OUT MID-CYCLE EUPHORIC Low Mid High 2020 2022 2024 2026 TODAY"
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 60,
+      "y": 1392,
+      "w": 1320,
+      "h": 631,
+      "visible": true,
+      "text": "SECTOR ROTATION · 2026-11-03 Every sector on the same clock — near the top means the move is late, near the bottom means it is washed out. Switch to Price for what actually happened, and tap a sector "
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": null,
+    "expect_visible_any": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "out": 35,
+      "head-fallback": 8
+    },
+    "head_fallback": [
+      "/account.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/macro-desk.css",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": null,
+  "png": {
+    "file": "cells/v2-sector-cycles__light__en__1440__d-l3-10-group.png",
+    "sha256": "4afc1621ba9b6e060bf092d816413e7a83d242b85c45ad37f6f65df0258c045d"
+  }
+}

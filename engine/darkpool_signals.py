@@ -305,33 +305,47 @@ def compute_name_metrics(
             m.exempt_rate = round(float(ex.iloc[-1]), 5)
             m.exempt_z = trailing_z(ex)
 
-    # off-exchange participation — exact-date inner join, never reindex/ffill
+    # off-exchange participation — exact-date inner join, never reindex/ffill.
+    # FINRA facility volume is a SUBSET of consolidated market volume, so a ratio
+    # above 1.0 is mathematically impossible. Cross-source EOD bars can occasionally
+    # arrive partial/stale; those observations must be excluded, never clipped to
+    # 100% and never allowed to manufacture an extreme z-score / standout.
     if consolidated_vol is not None and not consolidated_vol.empty:
         j = f[["total_vol"]].join(consolidated_vol.rename("cons"), how="inner")
         j = j[j["cons"] > 0]
         if not j.empty:
             part_raw = (j["total_vol"] / j["cons"]).dropna()
-            if not part_raw.empty:
+            part_valid = part_raw[(part_raw > 0) & (part_raw <= 1.0)]
+            invalid_n = int(len(part_raw) - len(part_valid))
+            m.extras["participation_invalid_rows"] = invalid_n
+            latest_dt = f.index[-1]
+            current_invalid = latest_dt in part_raw.index and latest_dt not in part_valid.index
+            m.extras["participation_current_invalid"] = bool(current_invalid)
+            if not part_valid.empty:
                 # Compare a name only against history in the SAME share units — a split
                 # re-bases the vendor's volume history but not FINRA's. See
                 # share_break_index for the seven names this was silently corrupting.
-                part = usable_history(part_raw)
-                m.history_rebased = len(part) < len(part_raw)
+                part = usable_history(part_valid)
+                m.history_rebased = len(part) < len(part_valid)
                 m.n_usable = len(part)
 
-                m.participation = round(float(part.iloc[-1]), 4)
-                m.participation_z = trailing_z(part)
-                hist = part.iloc[-(STREAK_WINDOW + 1):-1]
-                if len(hist) >= 5:
-                    m.participation_norm = round(float(hist.median()), 4)
-                m.streak = streak_above_norm(part)
-                t5, t40 = part.tail(5), part.tail(40)
-                if len(t5) >= 1:
-                    m.participation_5d = round(float(t5.mean()), 4)
-                if len(t5) >= 1 and len(t40) >= 5:
-                    m.participation_trend_pp = round(float((t5.mean() - t40.mean()) * 100), 2)
-                m.extras["spark"] = [round(float(v), 3) for v in part.tail(20).tolist()]
-                m.extras["part_dates"] = [str(d.date()) for d in part.tail(20).index]
+                # Do not silently backfill yesterday when today's denominator is bad.
+                # Participation-derived fields remain null unless the latest FINRA
+                # session itself survived both the physical-bound and split guards.
+                if latest_dt in part.index:
+                    m.participation = round(float(part.loc[latest_dt]), 4)
+                    m.participation_z = trailing_z(part)
+                    hist = part.iloc[-(STREAK_WINDOW + 1):-1]
+                    if len(hist) >= 5:
+                        m.participation_norm = round(float(hist.median()), 4)
+                    m.streak = streak_above_norm(part)
+                    t5, t40 = part.tail(5), part.tail(40)
+                    if len(t5) >= 1:
+                        m.participation_5d = round(float(t5.mean()), 4)
+                    if len(t5) >= 1 and len(t40) >= 5:
+                        m.participation_trend_pp = round(float((t5.mean() - t40.mean()) * 100), 2)
+                    m.extras["spark"] = [round(float(v), 3) for v in part.tail(20).tolist()]
+                    m.extras["part_dates"] = [str(d.date()) for d in part.tail(20).index]
 
     # dollar participation + price change (needs close)
     if close is not None and not close.empty:
