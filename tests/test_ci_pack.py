@@ -6,6 +6,7 @@ import errno
 import importlib.util
 import json
 import os
+import posixpath
 import re
 import shlex
 import shutil
@@ -4531,6 +4532,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
@@ -5437,6 +5439,297 @@ def test_xguerrilla_registry_scope_does_not_select_packing_probes(probe: str) ->
     assert not selected, reason
 
 
+def test_sa_w4_scope_keeps_source_context_and_runtime_inputs() -> None:
+    """The real owner keeps its imports, dynamic roots and future ledger entries."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    assert job.exclusive
+    for dependency in (
+        "tests/test_standout_review.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "engine/us_board_snapshots.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_cn.py",  # ci-trigger-closure: data
+        "engine/pick_lab/registry_hk.py",  # ci-trigger-closure: data
+        "engine/pick_lab/__init__.py",  # ci-trigger-closure: data
+        "engine/marketing/__init__.py",  # ci-trigger-closure: data
+        "scripts/replay_standout_books.py",  # ci-trigger-closure: data
+        "collectors/yahoo.py",  # ci-trigger-closure: data
+        "lib/market_session.py",  # ci-trigger-closure: data
+        "research/signal_engine/confluence.py",  # ci-trigger-closure: data
+        "research/__init__.py",  # ci-trigger-closure: data
+        "config.yml",  # ci-trigger-closure: data
+        "config/standout_review.yml",  # ci-trigger-closure: data
+        "data/experiments/registry_seed.json",  # ci-trigger-closure: data
+        "site/qledger/track_record.json",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/part-000999.jsonl",  # ci-trigger-closure: data
+        "data/us_board_ledger/snapshots_parts/unexpected.txt",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+        assert PACK._job_diff_match(job, [dependency]) == (dependency, "declared")
+    selected, reason = PACK.select_jobs([job], ["templates/index.html"])  # ci-trigger-closure: data
+    assert not selected, reason
+
+
+_SA_W4_REGISTRY_HOOKS = {
+    "track_record": "_refresh_track_record",
+    "radar_ic": "_refresh_radar_ic",
+    "calibration_hub": "_refresh_calibration_hub",
+    "vol_shock": "_refresh_vol_shock",
+    "parquet_ledger": "_refresh_parquet_ledger",
+    "qledger_promotion": "_refresh_qledger_promotion",
+    "cortex_evaluator": "_refresh_cortex_evaluator",
+}
+
+
+def _sa_w4_registry_input_paths(hook: str, row: dict, data_root: str) -> list[str]:
+    """Path selectors bound to the source expressions below; no artifact I/O."""
+    if hook not in _SA_W4_REGISTRY_HOOKS:
+        return []
+    paths = []
+    storage, track = row.get("storage"), row.get("track_json")
+    if hook in {"track_record", "vol_shock"}:
+        if isinstance(storage, str) and Path(storage).suffix == ".jsonl":
+            paths.append(storage)
+    if hook == "track_record":
+        if isinstance(track, str) and track:
+            paths.append(track)
+    elif hook == "radar_ic":
+        paths.append(track or "data/radar/radar_ic.json")  # ci-trigger-closure: data
+    elif hook == "calibration_hub":
+        selected = track or storage
+        if selected:
+            paths.append(selected)
+    elif hook == "vol_shock":
+        paths.append(data_root + "/vol_shock/log.jsonl")
+    elif hook == "parquet_ledger":
+        selected = str(track or storage or "").strip()
+        if selected.endswith(".parquet"):
+            paths.append(selected)
+    elif hook == "qledger_promotion":
+        paths.append("site/qledger/track_record.json")  # ci-trigger-closure: data
+    elif hook == "cortex_evaluator" and row.get("id"):
+        paths.append(data_root + "/neuralweb/machine_registry.jsonl")
+    return paths
+
+
+def _sa_w4_assert_paths_owned(job, paths) -> None:
+    for raw in paths:
+        assert isinstance(raw, str) and raw and "\\" not in raw, raw
+        path = posixpath.normpath(raw)
+        assert not posixpath.isabs(path) and path != ".." and not path.startswith("../"), raw
+        assert PACK._job_diff_match(job, [path]), (raw, path, job.paths)
+
+
+def _sa_w4_assert_registry_selectors(registry_source: str) -> str:
+    """Bind the ownership audit to the active hook and path-selector expressions."""
+    source = ast.parse(registry_source)
+    functions = {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+    assignments = {target.id: node.value for node in source.body if isinstance(node, ast.Assign)
+                   for target in node.targets if isinstance(target, ast.Name)}
+    hooks = assignments["_HOOKS"]
+    assert isinstance(hooks, ast.Dict)
+    assert {ast.literal_eval(key): value.id for key, value in zip(hooks.keys, hooks.values)} == _SA_W4_REGISTRY_HOOKS
+
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def assigned(function, name):
+        values = [node.value for node in ast.walk(function) if isinstance(node, ast.Assign)
+                  and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
+        assert len(values) == 1, name
+        return ast.dump(values[0], include_attributes=False)
+
+    root_returns = [ast.dump(node.value, include_attributes=False)
+                    for node in ast.walk(functions["_root"]) if isinstance(node, ast.Return)]
+    assert root_returns == [expression('config.ROOT')]
+    for function_name, reader, expected in (
+        ("_refresh_vol_shock", "vss.track_record", "vss.track_record()"),
+        ("_refresh_cortex_evaluator", "load_by_id", "load_by_id(hyp_id)"),
+    ):
+        calls = [ast.dump(node, include_attributes=False)
+                 for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and ast.dump(node.func, include_attributes=False) == expression(reader)]
+        assert calls == [expression(expected)], ("delegated reader", function_name)
+
+    expected_reads = {
+        "track_record": [("_jsonl_dates", 'e.get("storage") or ""'),
+                         ("_read_json", 'e.get("track_json") or ""')],
+        "radar_ic": [("_read_json", 'e.get("track_json") or "data/radar/radar_ic.json"')],
+        "calibration_hub": [("_read_json", 'e.get("track_json") or e.get("storage") or ""')],
+        "vol_shock": [("_jsonl_dates", 'e.get("storage") or ""')],
+        "parquet_ledger": [], "qledger_promotion": [("_read_json", '"site/qledger/track_record.json"')],
+        "cortex_evaluator": [],
+    }
+    for hook, function_name in _SA_W4_REGISTRY_HOOKS.items():
+        calls = [node for node in ast.walk(functions[function_name]) if isinstance(node, ast.Call)
+                 and isinstance(node.func, ast.Name) and node.func.id in {"_read_json", "_jsonl_dates"}]
+        assert all(len(node.args) == 1 for node in calls), hook
+        actual = sorted((node.func.id, ast.dump(node.args[0], include_attributes=False)) for node in calls)
+        assert actual == sorted((reader, expression(selector)) for reader, selector in expected_reads[hook]), hook
+
+    jsonl = functions["_jsonl_dates"]
+    assert assigned(jsonl, "p") == expression('_root() / rel if rel else None')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not p or not p.exists() or p.suffix != ".jsonl"') for node in jsonl.body)
+    read_json = functions["_read_json"]
+    reads = [ast.dump(node.func.value, include_attributes=False) for node in ast.walk(read_json)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+             and node.func.attr in {"read_text", "read_bytes", "open"}]
+    assert reads == [expression('_root() / rel')]
+    parquet = functions["_refresh_parquet_ledger"]
+    assert assigned(parquet, "rel") == expression('str(e.get("track_json") or e.get("storage") or "").strip()')
+    assert assigned(parquet, "p") == expression('_root() / rel')
+    assert any(isinstance(node, ast.If) and ast.dump(node.test, include_attributes=False) ==
+               expression('not rel.endswith(".parquet") or not p.exists()') for node in parquet.body)
+    parquet_reads = [node for node in ast.walk(parquet) if isinstance(node, ast.Call)
+                     and isinstance(node.func, ast.Attribute) and node.func.attr == "read_parquet"]
+    assert parquet_reads and all(node.args and ast.dump(node.args[0], include_attributes=False) ==
+                                 expression('p') for node in parquet_reads)
+
+    machine = functions["_load_machine_registry_entries"]
+    assert assigned(machine, "p") == expression('_root() / "data" / "neuralweb" / "machine_registry.jsonl"')
+    injected_hooks = [ast.literal_eval(value) for node in ast.walk(machine) if isinstance(node, ast.Dict)
+                      for key, value in zip(node.keys, node.values)
+                      if isinstance(key, ast.Constant) and key.value == "hook"]
+    assert injected_hooks == ["cortex_evaluator"]
+    seed_path = ast.literal_eval(assignments["SEED"])
+    assert seed_path == "data/experiments/registry_seed.json"
+    return seed_path
+
+
+def test_sa_w4_scope_covers_active_registry_read_paths() -> None:
+    """Audit pinned selectors and committed metadata without opening their targets."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    seed_path = _sa_w4_assert_registry_selectors(
+        (ROOT / "engine/experiments_registry.py").read_text())
+    # Read the seed from the committed blob, not the working tree: the audit
+    # must hold in every checkout profile. integration-baseline runs a sparse
+    # cone that omits data/ by design, so a working-tree read fails the whole
+    # main baseline there (1/1146, run 42945581053) even though the metadata
+    # is committed — this also honors the docstring's "without opening their
+    # targets": the blob IS the committed metadata, independent of any target
+    # checkout. (main-red-repair 2026-11-11, root-caused on #10571.)
+    seed = json.loads(subprocess.run(
+        ["git", "show", "HEAD:data/experiments/registry_seed.json"],
+        cwd=ROOT, check=True, capture_output=True, text=True).stdout)
+    config = yaml.safe_load((ROOT / "config.yml").read_text())
+    data_root = config["storage"]["data_dir"]
+    paths = [seed_path, "data/neuralweb/machine_registry.jsonl",  # ci-trigger-closure: data
+             data_root + "/neuralweb/machine_registry.jsonl"]
+    for row in seed["experiments"]:
+        paths.extend(_sa_w4_registry_input_paths(row.get("hook") or "", row, data_root))
+    _sa_w4_assert_paths_owned(job, paths)
+
+
+@pytest.mark.parametrize("before,after", [
+    ('vss.track_record()', 'vss.track_record(path="templates/new-input.jsonl")'),  # ci-trigger-closure: data
+    ('load_by_id(hyp_id)', 'load_by_id(hyp_id, root="outside")'),
+])
+def test_sa_w4_scope_detects_redirected_delegated_readers(before, after) -> None:
+    source = (ROOT / "engine/experiments_registry.py").read_text()
+    assert source.count(before) == 1
+    with pytest.raises(AssertionError, match="delegated reader"):
+        _sa_w4_assert_registry_selectors(source.replace(before, after))
+
+
+def test_sa_w4_delegated_readers_keep_declared_default_paths() -> None:
+    """The two delegated defaults must still resolve beneath configured data/."""
+    def expression(text):
+        return ast.dump(ast.parse(text, mode="eval").body, include_attributes=False)
+
+    def functions(path):
+        source = ast.parse((ROOT / path).read_text())
+        return source, {node.name: node for node in source.body if isinstance(node, ast.FunctionDef)}
+
+    def returns(function):
+        return sorted(ast.dump(node.value, include_attributes=False)
+                      for node in ast.walk(function) if isinstance(node, ast.Return))
+
+    def calls(function, name):
+        return [ast.dump(node, include_attributes=False) for node in ast.walk(function)
+                if isinstance(node, ast.Call)
+                and ast.dump(node.func, include_attributes=False) == expression(name)]
+
+    _, vol_shock = functions("engine/vol_shock_scorecard.py")
+    assert [ast.literal_eval(node) for node in vol_shock["track_record"].args.defaults] == [None]
+    assert calls(vol_shock["track_record"], "_read_log") == [expression('_read_log(_log_path(path))')]
+    assert returns(vol_shock["_log_path"]) == sorted([
+        expression('Path(path)'), expression('config.data_dir() / "vol_shock" / "log.jsonl"')])
+
+    source, metabolism = functions("engine/neuralweb/metabolism.py")
+    assert [ast.literal_eval(node) for node in metabolism["load_by_id"].args.defaults] == [None]
+    assert calls(metabolism["load_by_id"], "_load_registry") == [expression('_load_registry(root)')]
+    assert calls(metabolism["_load_registry"], "_registry_path") == [expression('_registry_path(root)')]
+    assert returns(metabolism["_registry_path"]) == sorted([
+        expression('Path(root) / "data" / "neuralweb" / "machine_registry.jsonl"'),
+        expression('Path(_cfg.data_dir()) / "neuralweb" / "machine_registry.jsonl"'),
+        expression('_REGISTRY_FILE')])
+    fallback = [node.value for node in source.body if isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "_REGISTRY_FILE"
+                        for target in node.targets)]
+    assert len(fallback) == 1
+    assert ast.dump(fallback[0], include_attributes=False) == expression(
+        'Path("data") / "neuralweb" / "machine_registry.jsonl"')
+
+
+@pytest.mark.parametrize("hook,row,expected", [
+    pytest.param("track_record", {"storage": "data/example.jsonl/"},
+                 ["data/example.jsonl/"], id="jsonl_trailing_slash"),
+    pytest.param("track_record", {"storage": "data/.jsonl"}, [], id="jsonl_dotfile_not_suffix"),
+    ("track_record", {"storage": "data/example.parquet"}, []),
+    ("track_record", {"storage": "data/example.jsonl", "track_json": "site/example.parquet"},
+     ["data/example.jsonl", "site/example.parquet"]),
+    ("radar_ic", {"storage": "outside/metadata.json"}, ["data/radar/radar_ic.json"]),
+    ("calibration_hub", {"storage": "data/fallback.json", "track_json": ""}, ["data/fallback.json"]),
+    ("parquet_ledger", {"storage": "data/fallback.parquet", "track_json": "site/wrong.json"}, []),
+    ("parquet_ledger", {"track_json": " site/example.parquet "}, ["site/example.parquet"]),
+    ("vol_shock", {"storage": "data/example.jsonl"}, ["data/example.jsonl", "data/vol_shock/log.jsonl"]),
+    ("qledger_promotion", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"},
+     ["site/qledger/track_record.json"]),
+    ("cortex_evaluator", {"id": "example", "storage": "outside/metadata.json"},
+     ["data/neuralweb/machine_registry.jsonl"]),
+    ("inactive_hook", {"storage": "outside/metadata.json", "track_json": "outside/metadata.json"}, []),
+])
+def test_sa_w4_registry_selectors_distinguish_reads_from_metadata(hook, row, expected) -> None:
+    assert _sa_w4_registry_input_paths(hook, row, "data") == expected
+
+
+@pytest.mark.parametrize("hook,key,path", [
+    ("calibration_hub", "track_json", "templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "data/../templates/new-input.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "../outside.json"),  # ci-trigger-closure: data
+    ("calibration_hub", "track_json", "/outside.json"),  # ci-trigger-closure: data
+    pytest.param("track_record", "storage", "data/../templates/input.jsonl/",  # ci-trigger-closure: data
+                 id="jsonl_trailing_escape"),
+])
+def test_sa_w4_registry_scope_refuses_inputs_outside_owned_roots(hook, key, path) -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "sa-w4-improvement-lanes")
+    selected = _sa_w4_registry_input_paths(hook, {key: path}, "data")
+    with pytest.raises(AssertionError):
+        _sa_w4_assert_paths_owned(job, selected)
+
+
+def test_us_board_rollover_suites_remain_enrolled_on_code_prs() -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "unrun-grading-board")
+    commands = "\n".join(step["run"] for step in job.definition["steps"] if "run" in step)
+    for suite in (
+        "tests/test_us_board_snapshots.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_build.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_readers_grade.py",  # ci-trigger-closure: data
+        "tests/test_us_board_snapshot_reader_census.py",  # ci-trigger-closure: data
+    ):
+        assert commands.count(suite) == 1, suite
+
+
 def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     """A data-only Neural Web job must not make an A1 code PR falsely green."""
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
@@ -5703,9 +5996,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_959),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_967),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_724),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +6006,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10741, preserve Net Worth and Savings Goal coverage):
+    Receiving main497d83de (same code as f5093553) contains Savings Goal paths and
+    both source/published commands. Preserve those, the original Net Worth
+    paths/step, all other owner bytes and both full histories. Canonical
+    calculator-input-integrity weight remains5->6 (+1): commands3->4,
+    one test token,362->530characters. Apply the original index-only +1
+    to5966/5987/5724:5967/5987/5724. Keep137/138/131jobs, tenpacks,
+    selectors, assertions, timeouts and resource admission unchanged.
+    This is source composition; the successor owes its own natural proof.
 
     2026-11-09 (PR #10741, compose the landed Intraday Flow increment):
     Receiver f3a8cf0450a13ca8d792c1e76b70871868441aa3 contains the
@@ -5722,6 +6025,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Job ceilings 137/138/131, ten packs and every other limit stay fixed.
     This is static source-accounting composition, not a new planner run;
     natural CI must qualify the combined head and partial-clone fixture.
+    2026-11-10 (PR #10571, current-main preserving composition):
+    Receiver cfd3834d retains its landed F09, ownership-ledger,
+    lifecycle coverage and qualified Playwright dependency. Keep all
+    original feature postimages and the accepted unrun-grading-board coverage.
+    The unchanged owner estimator measures 40 -> 48; apply its
+    original contribution to all three established probes, yielding
+    5966/5987/5724 from current5958/5979/5716. Keep137/138/131jobs,
+    ten packs, assertions, selectors, commands, timeouts and all
+    admission limits. Preserve both entire provenance histories.
+    This is owner-estimator execution and source conservation, not
+    a new full-tree planner or hosted pass; successor CI is required.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -5881,6 +6195,28 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     timeouts and admission/concurrency controls stay. This is measured planner
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
+
+    2026-11-09 (PR #10571, snapshot base/parts readers, composed on accepted
+    main 071ed19f5ce87927f078f94f3e126c24d8a0307e; code/catalog unchanged
+    from 0c9d6da89853c532701a4547b98fed21cf429237): original contract run
+    41603010215 / job125805987737 measured c77b6e49 against b48e4e15:
+    index 137/5909 -> 138/5921, free 137/5924 -> 137/5932 and
+    Prophet 131/5665 -> 131/5673, all ten packs. The new homepage entrant
+    was SA-W4's opaque traversal fallback. Its complete conservative source,
+    pytest and runtime-input declaration now excludes that unowned template;
+    engine/scripts probes remain selected. Keep all four complete rollover
+    suites in the existing broad unrun-grading-board owner.
+
+    Current owner source accounting is 40 -> 48: three run commands remain
+    three; 18 explicit test-file arguments become 22; folded command text
+    grows from 836 to 1007 characters, retaining the same //800 contribution.
+    Compose only that intentional +8 onto current 5943/5964/5701:
+    expected weight ceilings 5951/5972/5709. Job ceilings 137/138/131 and
+    ten packs stay fixed. This is deterministic source-weight composition,
+    not a new full-tree or elapsed-time measurement. Natural exact-successor
+    CI must qualify actual selection, closure, weight and packs; no extra
+    entrant or unexplained increase is funded. The historical replay UNKNOWN
+    remains fenced. Preserve every earlier provenance paragraph below.
 
     2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
     natural contract job 128831388767 measured head
