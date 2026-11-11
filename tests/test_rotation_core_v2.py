@@ -2,6 +2,7 @@
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import json as _json
 import pytest
 from engine import rotation_core_v2 as v2
 
@@ -10,7 +11,7 @@ SEALED = "/home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019/49_Industr
 
 def test_sealed_path_refused_without_release(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.seal_guard(SEALED, release=tmp_path / "HOLDOUT_RELEASE_v2.json")
+        v2.seal_guard(SEALED, release2=tmp_path / "HOLDOUT_RELEASE_v2_stage2.json", stage1_result=tmp_path / "r.json")
 
 
 def test_loader_refuses_sealed_path_before_reading():
@@ -20,14 +21,14 @@ def test_loader_refuses_sealed_path_before_reading():
 
 def test_window_after_2019_refused_without_release(tmp_path):
     with pytest.raises(v2.SealedRefusal):
-        v2.assert_window("2020-01-02", release=tmp_path / "HOLDOUT_RELEASE_v2.json")
-    v2.assert_window("2019-12-31", release=tmp_path / "x.json")       # D window allowed
+        v2.assert_window("2020-01-02", release2=tmp_path / "HOLDOUT_RELEASE_v2_stage2.json", stage1_result=tmp_path / "r.json")
+    v2.assert_window("2019-12-31", release2=tmp_path / "x.json", stage1_result=tmp_path / "r.json")   # D window allowed
 
 
 def test_uncommitted_release_file_does_not_unlock(tmp_path):
-    rel = tmp_path / "HOLDOUT_RELEASE_v2.json"; rel.write_text("{}")
+    rel = tmp_path / "HOLDOUT_RELEASE_v2_stage2.json"; rel.write_text(_json.dumps({"windows_released": ["2020-01-02..2025-12-31"]}))
     with pytest.raises(Exception):     # not inside the repo -> not committed -> refused
-        v2.seal_guard(SEALED, release=rel)
+        v2.seal_guard(SEALED, release2=rel, stage1_result=tmp_path / "r.json")
 
 
 def _setup(n=420, drop_at=None, wash=None, start="2010-01-04", rel_low=None):
@@ -186,3 +187,82 @@ def test_frozen_v2_header_accepted_and_one_byte_change_refused(tmp_path):
     bad = tmp_path / "h.json"; bad.write_bytes(bytes(raw))
     with pytest.raises(rc.HeaderMismatch):
         v2.verify_header_v2(bad)
+
+
+# ------------------------------------------------------------------ R13 staged release
+import json as _json
+from tests.rotation_core_v2_fixture import make_fixture
+
+
+def _rel(tmp_path, name, windows, **kw):
+    p = tmp_path / name; p.write_text(_json.dumps({"windows_released": windows, **kw})); return p
+
+
+def test_stage1_requires_exactly_the_pre1998_window(tmp_path, monkeypatch):
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage1_release(tmp_path / "missing.json")
+    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    assert v2.stage1_release(_rel(tmp_path, "r1.json", [v2.W_PRE]))
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage1_release(_rel(tmp_path, "r1b.json", [v2.W_PRE, v2.W_H]))
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage1_release(_rel(tmp_path, "r1c.json", [v2.W_H]))
+
+
+def test_uncommitted_release_never_counts(tmp_path):
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage1_release(_rel(tmp_path, "r1.json", [v2.W_PRE]))      # exists but not committed in the repo
+
+
+def test_stage1_cannot_read_1998_or_the_sealed_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    with pytest.raises(v2.SealedRefusal):
+        v2.assert_stage1_window("1998-01-02")
+    v2.assert_stage1_window("1997-12-31")
+    # with only a stage-1 release present, the sealed path stays refused
+    with pytest.raises(v2.SealedRefusal):
+        v2.seal_guard(SEALED, release2=tmp_path / "no_stage2.json", stage1_result=tmp_path / "no_result.json")
+
+
+def test_stage1_loader_truncates_and_runner_asserts_le_1997(tmp_path):
+    import scripts.run_rotation_core_v2 as run
+    fx = make_fixture(tmp_path / "fx", extra_after="1999-06-30")       # fixture extends past 1997
+    vw, _ = v2.load_french_industries(fx / "49_Industry_Portfolios_Daily.csv", v2.PRE_END)
+    assert vw.index.max() <= v2.PRE_END
+
+
+def test_stage2_refused_without_second_release(tmp_path):
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage2_release(tmp_path / "none.json", tmp_path / "res.json")
+
+
+def _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(0.01, 0.02), h2=(0.01, 0.01)):
+    p = tmp_path / "res.json"
+    p.write_text(_json.dumps({"eras": {k: {"E1_1928_1945": v[0], "E2_1946_1997": v[1]}
+                                       for k, v in (("H1", h1), ("H3", h3), ("H2", h2))}}))
+    return p
+
+
+def test_stage2_checks_opening_condition_from_the_committed_result(tmp_path, monkeypatch):
+    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    r2 = _rel(tmp_path, "r2.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3"])
+    ok = v2.stage2_release(r2, _stage1_result(tmp_path))                     # H3 positive in both eras
+    assert ok["_opened_by"] == ["H3"]
+    with pytest.raises(v2.SealedRefusal):                                    # neither H1 nor H3 positive in both
+        v2.stage2_release(r2, _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(-0.02, 0.02)))
+    r2h2 = _rel(tmp_path, "r2b.json", [v2.W_H], opening_condition_hypotheses=["H1", "H3", "H2"])
+    assert v2.stage2_release(r2h2, _stage1_result(tmp_path, h1=(0.01, -0.01), h3=(-0.02, 0.02)))["_opened_by"] == ["H2"]
+
+
+def test_stage2_release_with_wrong_window_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    with pytest.raises(v2.SealedRefusal):
+        v2.stage2_release(_rel(tmp_path, "r2.json", [v2.W_PRE]), _stage1_result(tmp_path))
+
+
+def test_stage1_runs_end_to_end_on_fixture(tmp_path):
+    import scripts.run_rotation_core_v2 as run
+    fx = make_fixture(tmp_path / "fx")
+    res = run.run_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=20)
+    assert set(res["eras"]) == {"H1", "H2", "H3"} and set(res["eras"]["H1"]) == {"E1_1928_1945", "E2_1946_1997"}
+    assert res["window"][1] == "1997-12-31"

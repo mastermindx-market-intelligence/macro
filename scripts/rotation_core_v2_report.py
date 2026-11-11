@@ -43,3 +43,26 @@ def write_selection_md(res, path):
           ", ".join(f"{k} {_p(v)}" for k, v in sel["observed_by_setting"].items()), "",
           f"Named episodes used for false-call counts: {', '.join(res['episodes'])}. Dropped industry-days (no imputation): {res['dropped_industry_days']}.", ""]
     open(path, "w").write("\n".join(L) + "\n")
+
+
+def write_stage1_md(res, path):
+    L = ["# Rotation Core v2 — STAGE 1 (pre-1998 confirmation window, R13)", "",
+         f"{res['label']} Window {res['window'][0]} → {res['window'][1]}; selected setting {res['selected_setting']}; header "
+         f"`{res['header_sha256'][:12]}…`. Industry portfolios, not tradable. Dropped industry-days (no imputation): "
+         f"{res['dropped_industry_days']}.", "",
+         "| Book | vs matched mix, full | E1 1928–45 | E2 1946–97 | vs French market | vs EW proxy | vs BASE | MaxDD vs mix | Turnover | Costs/yr | False DEFEND / calm yr |",
+         "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for name, key in (("H1", "H1"), ("H1 at 2× costs", "H1_at_2x_costs"), ("price-only control", "price_only_control"),
+                      ("H3", "H3"), ("H3 at 2× costs", "H3_at_2x_costs"), ("cash ablation", "cash_ablation")):
+        x = res[key]; mc = x["vs_matched_mix"]
+        L.append(f"| {name} | {_p(mc['observed'])} {_ci(mc['ci95'])} | {_p(x['eras']['E1_1928_1945']['observed'])} | "
+                 f"{_p(x['eras']['E2_1946_1997']['observed'])} | {_p(x['vs_French_market_(SPY_yardstick)']['ann'])} | "
+                 f"{_p(x['vs_EW_proxy_(RSP_yardstick)']['ann'])} | {_p(x['vs_BASE_equal_weight_industries']['ann'])} | "
+                 f"{_p(x['max_drawdown'], 1)} vs {_p(x['max_drawdown_matched_mix'], 1)} | {x['turnover_one_way_per_year']:.2f} | "
+                 f"{_p(x['costs_per_year'])} | {x['false_DEFEND_calls_per_calm_year']:.2f} |")
+    h2 = res["H2_paired_H1_minus_price_only"]
+    L += ["", f"H2 (H1 − price-only, paired): full {_p(h2['full']['ann'])} {_ci(h2['full']['ci95'])}; "
+          f"E1 {_p(h2['E1_1928_1945']['ann'])}; E2 {_p(h2['E2_1946_1997']['ann'])}.", "",
+          f"**R13 opening condition (H1 or H3 positive over its matched mix in both eras):** "
+          f"{res['opening_condition_H1_or_H3_positive_in_both_eras']}. No pooled Holm p at this stage.", ""]
+    open(path, "w").write("\n".join(L) + "\n")

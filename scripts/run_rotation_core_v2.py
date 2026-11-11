@@ -175,11 +175,101 @@ def run_selection():
     return res
 
 
+STAGE1_OUT_J = ROOT / "research/rotation_core/results_v2_stage1_pre1998.json"
+STAGE1_OUT_M = ROOT / "research/rotation_core/RESULTS_V2_STAGE1_PRE1998.md"
+SELECTED = (3, 25.0)                     # selection 1ca5228b3c (h3_b25), inherited by H2 control and ablation
+ERAS = {"E1_1928_1945": ("1928-01-01", "1945-12-31"), "E2_1946_1997": ("1946-01-01", "1997-12-31")}
+
+
+def run_stage1(ind_path=IND_D, fact_path=FACT, B_=10_000):
+    """Stage 1 of R13: pre-1998 only. Reads nothing dated after 1997-12-31."""
+    from engine import rotation_core_evaluation as rc
+    import scripts.run_rotation_core_v1 as v1
+    end = v2.PRE_END
+    v2.assert_stage1_window(end)
+    vw, ew = v2.load_french_industries(ind_path, end)
+    mkt, rf = v2.load_french_market(fact_path, end)
+    assert vw.index.max() <= end and mkt.index.max() <= end, "stage 1 read a date after 1997-12-31"
+    legs = v2.form_legs(vw, mkt)
+    bd = v2.current_leg_breadth(vw, legs)
+    rel = v2.relative_line(legs)
+    h, b = SELECTED
+    st1 = v2.h1_states(rel, bd, h, b); st0 = v2.h1_states(rel, bd, h, b, use_breadth=False); st3 = v2.h3_states(legs)
+    start = max([pd.Timestamp("1928-01-02")] + [x.first_valid_index() for x in (st1, st0, st3)])
+    s = vw.index
+    ew_proxy = ew.where(vw.notna().cumsum() >= 252).mean(axis=1)
+    level = (1 + mkt.reindex(s).fillna(0)).cumprod()
+    eps = {}
+    for name, (a, b2, c) in v1.LPEAK.items():
+        ep = rc.find_episode(level[(s >= start) & (s <= end)], a, b2, c)
+        if ep:
+            eps[name] = ep
+
+    def stats(st, tag, fee=10.0, cash_def=False, seed=0):
+        bk = v2.simulate_states(st, legs, rf, start, end, cash_for_defend=cash_def, fee_bp=fee, name=tag)
+        idx = bk.returns.index; r = bk.returns
+        full = pd.Series(True, index=idx)
+        out = {"vs_matched_mix": v2.matched_contrast(bk, legs.returns, rf, full, B=B_, seed=20261113 + seed), "eras": {}}
+        for e, (a, z) in ERAS.items():
+            em = pd.Series((idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z)), index=idx)
+            out["eras"][e] = v2.matched_contrast(bk, legs.returns, rf, em, B=B_, seed=20261113 + seed + 50)
+        W = bk.holdings[["OFF", "DEF", "BASE"]]; wbar = W.mean(); cashbar = 1 - wbar.sum()
+        mix = (legs.returns.loc[idx, ["OFF", "DEF", "BASE"]].fillna(0) * wbar).sum(axis=1) + cashbar * rf.reindex(idx).fillna(0)
+        yrs = len(r) / 252
+        for nm, ref in (("vs_French_market_(SPY_yardstick)", mkt), ("vs_EW_proxy_(RSP_yardstick)", ew_proxy),
+                        ("vs_BASE_equal_weight_industries", legs.returns["BASE"])):
+            out[nm] = _diff_stat(r.values, ref.reindex(idx).fillna(0).values, 20261113 + 300 + seed, B_)
+        pv = rc.pivot_table((1 - (st.reindex(idx) == v2.DEFEND).astype(float)), r, mkt.reindex(idx).fillna(0),
+                            level.reindex(idx), eps)
+        out.update({"CAGR": _ann(r), "CAGR_matched_mix": _ann(mix), "max_drawdown": _mdd(r), "max_drawdown_matched_mix": _mdd(mix),
+                    "matched_mix_weights": {**{k: round(float(v), 4) for k, v in wbar.items()}, "cash": round(float(cashbar), 4)},
+                    "turnover_one_way_per_year": float(bk.traded.sum() / yrs / 2), "costs_per_year": float(bk.costs.sum() / yrs),
+                    "deferred_executions": bk.meta["deferred_executions"],
+                    "false_DEFEND_calls_per_calm_year": pv["false_pivots_per_calm_year"],
+                    "share": {k: round(float((st.reindex(idx) == v).mean()), 3) for k, v in (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}})
+        return bk, out
+
+    bk1, s1 = stats(st1, "H1", seed=1)
+    bk0, s0 = stats(st0, "H1_price_only", seed=2)
+    _, s1x = stats(st1, "H1_2x", fee=20.0, seed=3)
+    _, s3x = stats(st3, "H3_2x", fee=20.0, seed=4)
+    _, sc = stats(st1, "H1_cash_ablation", cash_def=True, seed=5)
+    _, s3 = stats(st3, "H3", seed=6)
+    idx = bk1.returns.index
+    h2 = {"full": _diff_stat(bk1.returns.values, bk0.returns.reindex(idx).fillna(0).values, 20261113 + 700, B_)}
+    for e, (a, z) in ERAS.items():
+        m = (idx >= pd.Timestamp(a)) & (idx <= pd.Timestamp(z))
+        h2[e] = _diff_stat(bk1.returns.values[m], bk0.returns.reindex(idx).fillna(0).values[m], 20261113 + 710, B_)
+    eras = {"H1": {e: s1["eras"][e]["observed"] for e in ERAS}, "H3": {e: s3["eras"][e]["observed"] for e in ERAS},
+            "H2": {e: h2[e]["ann"] for e in ERAS}}
+    return {"label": "STAGE 1 of R13: pre-1998 confirmation window (previously examined by Pro run B; not clean). "
+                     "No pooled Holm p at this stage.",
+            "header_sha256": v2.FROZEN_V2_SHA256, "selected_setting": "h3_b25.0", "window": [str(start.date()), str(end.date())],
+            "dropped_industry_days": legs.dropped_industry_days,
+            "episodes": {k: {"peak": str(v["peak"].date()), "trough": str(v["trough"].date())} for k, v in eps.items()},
+            "H1": s1, "H1_at_2x_costs": s1x, "price_only_control": s0, "H2_paired_H1_minus_price_only": h2,
+            "H3": s3, "H3_at_2x_costs": s3x, "cash_ablation": sc, "eras": eras,
+            "opening_condition_H1_or_H3_positive_in_both_eras": {
+                h_: all(eras[h_][e] > 0 for e in ERAS) for h_ in ("H1", "H3")}}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--stage", choices=["select", "confirm"])
+    ap.add_argument("--stage", choices=["select", "pre1998", "h2020_2025", "confirm"])
+    ap.add_argument("--dry-run-stage1-fixture", metavar="DIR",
+                    help="run stage 1 end to end on a SYNTHETIC fixture directory (refuses real data paths); writes nothing")
     a = ap.parse_args()
+    if a.dry_run_stage1_fixture:
+        fx = Path(a.dry_run_stage1_fixture).resolve()
+        if "rotation-core/data" in str(fx) or str(fx).startswith(str(ROOT)):
+            raise SystemExit("refused: fixture dry run accepts only a synthetic fixture directory")
+        v2.verify_header_v2(FROZEN)
+        res = run_stage1(fx / "49_Industry_Portfolios_Daily.csv", fx / "F-F_Research_Data_Factors_daily.csv", B_=50)
+        print({"window": res["window"], "keys": sorted(res), "eras_present": sorted(res["eras"]["H1"]),
+               "dropped_industry_days": res["dropped_industry_days"], "episodes": len(res["episodes"])})
+        print("stage-1 fixture dry run OK (synthetic data; no real pre-1998 statistic computed or written)")
+        return 0
     if a.dry_run:
         out = pipeline("2019-12-31", IND_D)
         import json
@@ -189,9 +279,23 @@ def main() -> int:
     if not FROZEN.exists():
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
     v2.verify_header_v2(FROZEN)
-    if a.stage == "confirm":
-        v2.seal_guard(IND_FULL)        # raises unless the parent's release is committed
-        raise SystemExit("confirm stage: wire the released windows per HOLDOUT_RELEASE_v2.json (post-release task)")
+    if a.stage == "pre1998":
+        import json
+        v2.stage1_release()
+        if STAGE1_OUT_J.exists():
+            raise SystemExit("refused: stage 1 already run (results_v2_stage1_pre1998.json exists); run once")
+        res = run_stage1()
+        STAGE1_OUT_J.write_text(json.dumps(res, indent=1, default=float) + "\n")
+        from scripts.rotation_core_v2_report import write_stage1_md
+        write_stage1_md(res, STAGE1_OUT_M)
+        print("wrote", STAGE1_OUT_J, STAGE1_OUT_M, "opening condition:", res["opening_condition_H1_or_H3_positive_in_both_eras"])
+        return 0
+    if a.stage in ("h2020_2025", "confirm"):
+        r2 = v2.stage2_release()          # raises unless release 2 is committed and stage-1 result satisfies it
+        if (ROOT / "research/rotation_core/results_v2_stage2_2020_2025.json").exists():
+            raise SystemExit("refused: stage 2 already run; run once")
+        raise SystemExit(f"stage 2 released (opened by {r2['_opened_by']}); the stage-2 computation (all header "
+                         "configurations incl. tradable funds and pooled Holm) is wired after the release is committed")
     if a.stage == "select":
         import json
         if OUT_J.exists():

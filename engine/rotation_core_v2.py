@@ -42,8 +42,19 @@ class SealedRefusal(PermissionError):
     pass
 
 
+RELEASE2 = ROOT / "research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json"
+STAGE1_RESULT = ROOT / "research/rotation_core/results_v2_stage1_pre1998.json"
+W_PRE = "pre1998_1928_1997"
+W_H = "2020-01-02..2025-12-31"
+PRE_END = pd.Timestamp("1997-12-31")
+H_START, H_END = pd.Timestamp("2020-01-02"), pd.Timestamp("2025-12-31")
+
+
 def _committed_clean(path: Path) -> bool:
-    rel = str(path.relative_to(ROOT))
+    try:
+        rel = str(Path(path).resolve().relative_to(ROOT))
+    except ValueError:
+        return False                                   # outside the repo: never counts as committed
     try:
         subprocess.run(["git", "-C", str(ROOT), "ls-files", "--error-unmatch", rel], check=True, capture_output=True)
     except subprocess.CalledProcessError:
@@ -52,15 +63,53 @@ def _committed_clean(path: Path) -> bool:
     return out.strip() == b""
 
 
-def seal_guard(path, release: Path = RELEASE) -> None:
-    """Refuse any sealed path unless the parent-written release file is committed and clean."""
-    if SEALED_MARK in str(path) and not (release.exists() and _committed_clean(release)):
-        raise SealedRefusal(f"refused: {path} is under the hold-out seal and {release.name} is not committed")
+def _load_release(path: Path) -> dict | None:
+    import json
+    if not (Path(path).exists() and _committed_clean(path)):
+        return None
+    return json.loads(Path(path).read_text())
 
 
-def assert_window(end, release: Path = RELEASE) -> None:
-    if pd.Timestamp(end) > rc.D_END and not (release.exists() and _committed_clean(release)):
-        raise SealedRefusal(f"refused: window end {end} is after 2019-12-31 and {release.name} is not committed")
+def stage1_release(release: Path = RELEASE) -> dict:
+    r = _load_release(release)
+    if r is None or r.get("windows_released") != [W_PRE]:
+        raise SealedRefusal(f"refused: stage 1 needs a committed {Path(release).name} with windows_released exactly "
+                            f"[\"{W_PRE}\"]")
+    return r
+
+
+def stage2_release(release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> dict:
+    """Stage 2 opens only with a committed second release AND a committed stage-1 result that satisfies the
+    release's opening condition (checked here from the file, not from the release's word)."""
+    import json
+    r = _load_release(release2)
+    if r is None or r.get("windows_released") != [W_H]:
+        raise SealedRefusal(f"refused: stage 2 needs a committed {Path(release2).name} with windows_released [\"{W_H}\"]")
+    if not (Path(stage1_result).exists() and _committed_clean(stage1_result)):
+        raise SealedRefusal("refused: stage 2 needs the committed stage-1 result file")
+    res = json.loads(Path(stage1_result).read_text())
+    hyps = r.get("opening_condition_hypotheses", ["H1", "H3"])
+    ok = [h for h in hyps if all(res["eras"][h][e] is not None and res["eras"][h][e] > 0 for e in ("E1_1928_1945", "E2_1946_1997"))]
+    if not ok:
+        raise SealedRefusal(f"refused: opening condition not met in the committed stage-1 result for {hyps}")
+    r["_opened_by"] = ok
+    return r
+
+
+def seal_guard(path, release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> None:
+    """Any path under the seal needs a valid stage-2 release (with its opening condition met)."""
+    if SEALED_MARK in str(path):
+        stage2_release(release2, stage1_result)
+
+
+def assert_window(end, release2: Path = RELEASE2, stage1_result: Path = STAGE1_RESULT) -> None:
+    if pd.Timestamp(end) > rc.D_END:
+        stage2_release(release2, stage1_result)
+
+
+def assert_stage1_window(end) -> None:
+    if pd.Timestamp(end) > PRE_END:
+        raise SealedRefusal(f"refused: stage 1 reads nothing after {PRE_END.date()} (asked {end})")
 
 
 # --------------------------------------------------------------------------- loaders
