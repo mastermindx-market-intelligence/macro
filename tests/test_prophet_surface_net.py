@@ -602,11 +602,26 @@ def test_heartbeat_written_by_a_pass_is_gradable_by_check_e(tmp_path):
     assert doc["heartbeat"]["cadence_minutes"] == 30.0
     assert isinstance(doc["heartbeat"]["surfaces"], dict) and doc["heartbeat"]["surfaces"]
 
-    # Check E, fed the artifact this exact pass just wrote, at an instant well
-    # inside the 90-minute (3-cadence) budget -> clean.
-    fail, warn, facts = nl.evaluate_sentinel_heartbeat(doc, now + dt.timedelta(minutes=10))
-    assert fail == [] and warn == [], (fail, warn)
+    # Check E must keep this fresh heartbeat healthy while making the
+    # unavailable settlement evidence visible without inventing a recovery.
+    settlement = doc["prophet_settlement"]
+    assert settlement["schema"] == nl.PROPHET_SETTLEMENT_SCHEMA
+    assert settlement["status"] == "UNAVAILABLE_DATA"
+
+    fail, warn, facts = nl.evaluate_sentinel_heartbeat(
+        doc, now + dt.timedelta(minutes=10)
+    )
+    assert fail == [], fail
+    assert warn == [
+        "CHECK E INDETERMINATE: prophet_settlement reads UNAVAILABLE_DATA — "
+        "the issuer reports no gradable settlement; this is neither an "
+        "outage nor a recovery on its own"
+    ], warn
     assert facts["sentinel_heartbeat_age_minutes"] == pytest.approx(10.0)
+    assert facts["prophet_settlement_schema"] == nl.PROPHET_SETTLEMENT_SCHEMA
+    assert facts["prophet_settlement_status"] == "UNAVAILABLE_DATA"
+    assert "prophet_settlement_owed_session" not in facts
+    assert "prophet_settlement_source_asof" not in facts
 
 
 def test_check_e_pages_once_the_heartbeat_is_older_than_three_cadences():
