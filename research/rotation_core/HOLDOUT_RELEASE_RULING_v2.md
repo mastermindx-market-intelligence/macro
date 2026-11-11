@@ -960,17 +960,19 @@ Source: the outside reader, 22:40Z (runner :744–753, :1085–1124, :1660–166
      - :1116, any other exception;
      - :1124, the FINAL push did not complete.
    - The stage-1 hard-exit sites (:800, :808, :812, :824) do not matter here, because stage 1 never unseals.
-2. **The operator re-seals, on every exit.** The CEO runs stage 2 as one shell command: the `--stage confirm` invocation; then, unconditionally, `chmod 000` on every file under `sealed_post2019/` except `SHA256_FULL_FILES.txt`; then `stat -c '%a %n'` on that directory's files; then the exit code. For example:
+2. **The operator re-seals, on every exit.** The CEO runs stage 2 as one shell command: the `--stage confirm` invocation; then, unconditionally, `chmod 000` on every file under `sealed_post2019/` except `SHA256_FULL_FILES.txt`; then `stat -c '%a %n'` on that directory's files; then the exit code. Started detached, as R35.5 requires:
 
    ```
    cd /home/ubuntu2/.t3/worktrees/Macro/rotation-core
-   env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm; rc=$?; \
-   S=/home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019; \
-   find "$S" -maxdepth 1 -type f ! -name SHA256_FULL_FILES.txt -exec chmod 000 {} +; \
-   stat -c '%a %n' "$S"/*; date -u +%FT%TZ; echo "exit $rc"
+   H=$(git rev-parse --short HEAD)
+   setsid nohup bash -c 'env -i HOME=/home/ubuntu2 PATH=/usr/bin:/bin /home/ubuntu2/.t3/worktrees/Macro/.venv-prophet/bin/python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache scripts/run_rotation_core_v2.py --stage confirm; rc=$?; S=/home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019; find "$S" -maxdepth 1 -type f ! -name SHA256_FULL_FILES.txt -exec chmod 000 {} +; stat -c "%a %n" "$S"/*; date -u +%FT%TZ; echo "exit $rc"' > /home/ubuntu2/tmp/rotation-core/runs/confirm_$H.log 2>&1 < /dev/null &
    ```
+
+   `rc=$?` comes first after the invocation, and every later step is joined with `;`, never `&&`, so the `chmod` runs whatever the exit code.
 
    The CEO sends the witness the `stat` output and the clock time before anything else runs.
 3. **Mode check before every invocation.** Before `--stage pre1998`, before the stage-2 release is written, and before `--stage confirm`, the CEO runs the same `stat` and requires mode 0 on all six data files (the 12, 17 and 49 industry `.csv` files and their `.zip` files). If any is not 0: set it to 000, tell the witness the file and the time, and only then continue. If the shell itself dies during stage 2, this check is what catches it.
    - At the time of writing, all six are mode 0.
 4. **R34.3 gains one sentence** (see there): the stage-2 selection-file case ends in this same hard exit, so R35.2 applies to it.
+5. **The stage-2 command survives a dropped terminal.** The whole command of R35.2 (the invocation, the saved exit code, the unconditional `chmod`, the `stat`, the time) is started detached from the terminal with `setsid nohup bash -c '…' > <run log> 2>&1 < /dev/null &`, so a lost session does not kill the shell before the `chmod`. The CEO then waits on the log, `/home/ubuntu2/tmp/rotation-core/runs/confirm_<head>.log`. The example in R35.2 is in this form.
+6. **The limit, stated.** Between a hard exit and the `chmod`, the unsealed file is at mode 0400, readable by the owner only, for as long as that one command takes (the next statement of the same shell). The R35.3 mode checks catch the case where the shell itself was killed. Declared class: single-user host.
