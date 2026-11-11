@@ -47551,6 +47551,13 @@ jobs:
     # an uncovered import by file.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
+      - "templates/_macro_economic_backdrop.html.j2"
+      - "templates/_macro_economic_backdrop.css.j2"
+      - "tests/test_macro_economic_backdrop.py"
+      - "tests/test_macro_workspace_growth.py"
+      - "tests/test_macro_workspace_inflation.py"
+      - "tests/test_macro_workspace_financial_conditions.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
