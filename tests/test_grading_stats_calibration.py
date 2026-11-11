@@ -579,3 +579,40 @@ def test_no_scipy_or_sklearn_in_grading_stats():
     assert "sklearn" not in imported, (
         f"grading_stats must not import sklearn; found imports: {imported}"
     )
+
+
+
+import unittest
+
+class BrierResidualTests(unittest.TestCase):
+ def test_signs_and_repeat(self):
+  for k in (1,10000):
+   for ys,res in (([0,1],-.0384),([1,0],.0416)):
+    d=gs.brier_decomposition(np.tile([.51,.59],k),np.tile(ys,k))
+    self.assertAlmostEqual(d['within_bin_residual'],res)
+    self.assertEqual(d['binned_brier'],.2525)
+ def test_opposite_refinement(self):
+  d=gs.brier_decomposition([.4]*9+[.49]*11+[.51]*11+[.59]*9,[1]*9+[0]*11+[1]*11+[0]*9)
+  self.assertLess(d['refinement'],0);self.assertGreater(d['brier_score'],d['uncertainty'])
+ def test_limiting_cases(self):
+  for p,y,b in (([.51,.59],[0,1],100),([.5,.5],[0,1],10),([0,1],[0,1],10),([.9,.8,.1,.2],[1,1,0,0],10)):
+   self.assertAlmostEqual(gs.brier_decomposition(p,y,b)['within_bin_residual'],0)
+ def test_empty(self):
+  d=gs.brier_decomposition([],[]);self.assertIsNone(d['within_bin_residual']);self.assertIsNone(d['binned_brier'])
+ def test_invalid(self):
+  cases=[([.2],[0],0),([.2],[0],-1),([.2],[0],1.5),([.2],[0],True),([.2],[0],np.bool_(True)),([-.1],[0],10),([1.1],[0],10),([np.nan],[0],10),([np.inf],[0],10),([.2],[2],10),([.2],[np.nan],10),([[.2]],[[0]],10),(.2,0,10),([.2],[],10)]
+  for p,y,b in cases:
+   with self.subTest(p=p,y=y,b=b),self.assertRaises(ValueError):gs.brier_decomposition(p,y,b)
+ def test_random_oracle_and_legacy_keys(self):
+  rng=np.random.default_rng(10999)
+  for _ in range(500):
+   n=int(rng.integers(1,200));bins=int(rng.integers(1,30));p=rng.random(n);y=rng.integers(0,2,n)
+   d=gs.brier_decomposition(p,y,bins)
+   labels=np.minimum((p*bins).astype(int),bins-1);q=p.copy();res=0.
+   for k in np.unique(labels):
+    m=labels==k;x=p[m];z=y[m];q[m]=x.mean();res+=m.mean()*(np.var(x)-2*np.mean((x-x.mean())*(z-z.mean())))
+   raw=np.mean((p-y)**2);coarse=np.mean((q-y)**2)
+   self.assertLess(abs(raw-coarse-res),1e-14)
+   self.assertAlmostEqual(d['binned_brier'],coarse,delta=5.01e-7)
+   self.assertAlmostEqual(d['within_bin_residual'],res,delta=5.01e-7)
+   self.assertAlmostEqual(d['brier_score'],d['binned_brier']+d['within_bin_residual'],delta=1.01e-6)
