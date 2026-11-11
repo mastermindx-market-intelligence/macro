@@ -18,7 +18,7 @@ Nine caller modules were identified:
 
 engine/missing_tape_gdelt.py and collectors/hk_gdelt.py use the timeline (not
 artlist) endpoint with their own Session/urllib transport — those two pace through
-the PUBLIC wait_turn() gate below instead of get_articles, so the whole repo still
+the PUBLIC request_turn() guard below instead of get_articles, so the whole repo still
 shares ONE per-IP budget.  engine/macro_news.py no longer has a fetch loop of its
 own: like engine/news_vector.py it fans its bounded sub-queries out through
 get_articles, so every macro request is paced and breaker-guarded here.
@@ -26,10 +26,14 @@ get_articles, so every macro request is paced and breaker-guarded here.
 THROTTLE MECHANISM
 ------------------
 A stamp file under data/gdelt/last_request is locked with fcntl.flock before each
-request.  The lock-holder reads the stamp, sleeps until >= min_interval seconds have
-passed, writes a fresh stamp, then releases the lock before issuing the HTTP request.
-This gives cross-process serialisation on a single machine (all nightly jobs run on
-the same Mac Studio).
+request. The lock-holder reads the stamp, sleeps until >= min_interval seconds have
+passed, and keeps the lock through the synchronous transport. It stamps completion
+in finally before unlocking, including when the transport raises. This conservative
+floor applies after the preceding request completes, so a delayed sender cannot
+bunch requests after reserving an earlier slot. Retry backoffs run outside the lock.
+Cooperating processes share the same file and inode on a single machine. Existing
+pacing-error fail-open behavior and timeline breaker bypasses remain; wait_turn()
+is retained as a reservation-only compatibility API.
 
 RETRY POLICY (bounded to stay under render budget)
 ---------------------------------------------------
@@ -37,7 +41,8 @@ RETRY POLICY (bounded to stay under render budget)
   429 again -> sleep 75s -> final retry
   429 on final -> return (None, 'rate_limited')
   non-200 or non-json -> return (None, 'fetch_error')
-  Worst-case total wait per call: ~6s throttle + 30s + 75s < 2.5 minutes.
+  At most three paced transport attempts and two backoffs totalling 105 seconds.
+  Transport duration and contention for the shared lock add to elapsed time.
   Never raises.
 
 CIRCUIT BREAKER (keeps a boxed IP off the critical path)
@@ -65,6 +70,8 @@ import fcntl
 import json
 import logging
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -160,20 +167,36 @@ def _clear_penalty() -> None:
 
 # Clock seams for tests: the throttle is the one piece whose spacing contract is
 # worth asserting exactly, so it reads the clock and sleeps through these module
-# globals.  Production behaviour is unchanged (they alias time.time / time.sleep).
+# globals. The defaults retain wall-clock stamps (time.time / time.sleep).
 _now = time.time
 _sleep = time.sleep
 
 
-def _throttle(min_interval: float) -> None:
-    """Cross-process rate limiter.  Acquires an exclusive lock on the stamp file,
-    sleeps until >= min_interval seconds since the last stamped request, writes a
-    fresh stamp, then releases the lock.  Never raises."""
+def _close_stamp(fd) -> None:
+    """Release both resources without masking a transport result or exception."""
     try:
-        stamp = _stamp_path()
-        # open for read+write, create if absent
-        fd = open(stamp, "a+")  # noqa: WPS515 — need fd for flock
+        fcntl.flock(fd, fcntl.LOCK_UN)
+    except Exception as e:  # noqa: BLE001 — close must still run if unlock fails
+        log.debug("gdelt_client unlock error (non-fatal): %s", e)
+    finally:
         try:
+            fd.close()
+        except Exception as e:  # noqa: BLE001
+            log.debug("gdelt_client close error (non-fatal): %s", e)
+
+
+@contextmanager
+def _request_guard(min_interval: float) -> Iterator[None]:
+    """Pace and hold the existing file lock through one synchronous transport.
+
+    Ordinary pacing errors fail open. The body runs exactly once, outside that
+    error handler, and its exceptions propagate after completion/lock cleanup.
+    Keep this same open inode: replacing the stamp would split the shared lock.
+    """
+    fd = None
+    try:
+        try:
+            fd = open(_stamp_path(), "a+")  # noqa: WPS515 — need fd for flock
             fcntl.flock(fd, fcntl.LOCK_EX)
             fd.seek(0)
             raw = fd.read().strip()
@@ -185,25 +208,63 @@ def _throttle(min_interval: float) -> None:
             elapsed = now_ts - last_ts
             if elapsed < min_interval:
                 _sleep(min_interval - elapsed)
-            # write wall-clock unix time so the stamp survives process restart
+            # Preserve the reservation if transport dies without Python finally
+            # (for example, process termination). Keep the same locked inode.
             fd.seek(0)
             fd.truncate()
             fd.write(str(_now()))
             fd.flush()
+        except Exception as e:  # noqa: BLE001 — preserve one fail-open attempt
+            log.debug("gdelt_client throttle error (non-fatal): %s", e)
+            if fd is not None:
+                _close_stamp(fd)
+                fd = None
+
+        try:
+            yield
         finally:
-            fcntl.flock(fd, fcntl.LOCK_UN)
-            fd.close()
-    except Exception as e:  # noqa: BLE001 — throttle failure must never block a request
-        log.debug("gdelt_client throttle error (non-fatal): %s", e)
+            if fd is not None:
+                try:
+                    # Strengthen the provisional reservation to completion.
+                    # A raised transport may already have sent bytes.
+                    fd.seek(0)
+                    fd.truncate()
+                    fd.write(str(_now()))
+                    fd.flush()
+                except Exception as e:  # noqa: BLE001 — never replay the body
+                    log.debug("gdelt_client stamp error (non-fatal): %s", e)
+    finally:
+        if fd is not None:
+            _close_stamp(fd)
+
+
+def _throttle(min_interval: float) -> None:
+    """Compatibility reservation, without a transport body. Never raises."""
+    with _request_guard(min_interval):
+        pass
+
+
+@contextmanager
+def request_turn(min_interval: "float | None" = None) -> Iterator[None]:
+    """PUBLIC guard for callers keeping their own synchronous GDELT transport.
+
+    Preserve the timeline callers' existing breaker policy: while active they
+    proceed once without pacing. Ordinary pacing failures also remain fail-open.
+    """
+    if _penalty_active():
+        yield
+        return
+    with _request_guard(min_interval if min_interval is not None else _min_interval()):
+        yield
 
 
 def wait_turn(min_interval: "float | None" = None) -> None:
-    """PUBLIC pace gate for GDELT callers that keep their own transport
-    (timeline-endpoint modules: collectors/hk_gdelt, engine/missing_tape_gdelt,
-    plus engine/macro_news's fetch loop). Blocks until >= min_interval seconds
-    since the LAST GDELT request made by ANY module/process on this machine,
-    then claims the slot. The budget is per IP — pacing only yourself while
-    eight other modules hit the same endpoint still trips 429s. Never raises."""
+    """PUBLIC compatibility reservation sharing the cross-process stamp.
+
+    This ordinary call paces reservations only; it cannot control when a caller
+    sends after returning. Use request_turn() around the actual transport to
+    protect request spacing. An active breaker still bypasses pacing.
+    """
     if _penalty_active():
         return   # IP is 429-boxed — don't burn the pacing interval on a doomed call
     _throttle(min_interval if min_interval is not None else _min_interval())
@@ -313,10 +374,10 @@ def get_articles(
     reason: str | None = None
 
     for attempt in range(len(RETRY_SLEEPS) + 1):   # 0, 1, 2 → up to 3 attempts
-        _throttle(interval)
         try:
-            r = requests.get(GDELT_URL, params=params, timeout=timeout,
-                             headers={"User-Agent": _UA})
+            with _request_guard(interval):
+                r = requests.get(GDELT_URL, params=params, timeout=timeout,
+                                 headers={"User-Agent": _UA})
         except Exception as e:  # noqa: BLE001 — network error
             log.warning("gdelt_client: network error on attempt %d: %s", attempt, e)
             reason = "fetch_error"
