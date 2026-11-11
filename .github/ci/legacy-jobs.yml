@@ -128,6 +128,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/altdata_ledger.py"
       - "engine/altdata_models.py"
@@ -6734,6 +6735,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/alt_cycle.py"
       - "engine/altdata_ledger.py"
@@ -19746,6 +19748,7 @@ jobs:
       - engine/ai_desk_scorer.py
       - engine/alert_time.py
       - engine/alert_triage.py
+      - engine/alert_center_view.py
       - engine/alerts.py
       - engine/altdata_confirmers.py
       - engine/altdata_ledger.py
@@ -24818,6 +24821,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/alt_cycle.py"
       - "engine/altdata_confirmers.py"
@@ -28353,6 +28357,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
       - "engine/capital_need.py"
@@ -32607,6 +32612,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/alt_cycle.py"
       - "engine/altdata_ledger.py"
@@ -35513,6 +35519,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/alt_cycle.py"
       - "engine/altdata_ledger.py"
@@ -36236,6 +36243,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/altdata_confirmers.py"
       - "engine/altdata_ledger.py"
@@ -37779,6 +37787,7 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/debt_maturity.py"
       - "engine/cash_runway.py"
       - "engine/capital_need.py"
@@ -40061,6 +40070,8 @@ jobs:
     paths:
       - "tests/test_act_now_board_assembler.py"
       - "tests/test_action_board_lane_split.py"
+      - "tests/test_alert_center_explorer.py"
+      - "tests/test_alert_center_surface.py"
       - "tests/test_alert_coverage_recurrence.py"
       - "tests/test_alert_time_contract.py"
       - "tests/test_alert_triage.py"
@@ -40155,7 +40166,7 @@ jobs:
       # — the fake corroborator that held a `major` band at priority 60, which is also
       # the outbound push floor. Hermetic: monkeypatched readers, injected clock.
       - name: Alert Command Center — three clocks, ET board day, and exact evidence links
-        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py -q
+        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_center_explorer.py tests/test_alert_center_surface.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH C (2026-07-27) ─────────────────────────────
   # The PIT / frozen-tape share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -43018,6 +43029,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/altdata_ledger.py"
       - "engine/altdata_models.py"
@@ -50937,6 +50949,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/altdata_ledger.py"
       - "engine/altdata_models.py"
@@ -51674,6 +51687,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_time.py"
       - "engine/alert_triage.py"
+      - "engine/alert_center_view.py"
       - "engine/alerts.py"
       - "engine/altdata_confirmers.py"
       - "engine/altdata_ledger.py"

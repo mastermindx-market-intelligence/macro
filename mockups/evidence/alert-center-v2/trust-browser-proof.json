@@ -1,0 +1,146 @@
+{
+  "kind": "synthetic_adversarial_browser_cases",
+  "production_acceptance": false,
+  "cases": [
+    {
+      "name": "Validation verdict preserved: no_edge",
+      "passed": true
+    },
+    {
+      "name": "Validation verdict preserved: killed",
+      "passed": true
+    },
+    {
+      "name": "Validation verdict preserved: underpowered",
+      "passed": true
+    },
+    {
+      "name": "Validation verdict preserved: confirmer",
+      "passed": true
+    },
+    {
+      "name": "Snapshot day visible: None",
+      "passed": true
+    },
+    {
+      "name": "Snapshot day visible: invalid-day",
+      "passed": true
+    },
+    {
+      "name": "Snapshot day visible: 2999-01-01",
+      "passed": true
+    },
+    {
+      "name": "Legacy major filter remains exact",
+      "passed": true
+    },
+    {
+      "name": "Empty source link is not self-evidence",
+      "passed": true
+    },
+    {
+      "name": "Broken JSON has a useful source fallback",
+      "passed": true
+    },
+    {
+      "name": "Historical inspector keeps selected event detail and record clock",
+      "passed": true
+    },
+    {
+      "name": "Deep-linked selection restores a row beyond page one",
+      "passed": true
+    },
+    {
+      "name": "Real-builder proof binds exact source bytes and output",
+      "passed": true
+    },
+    {
+      "name": "Shared page assets are present in the real-builder preview",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "supplement-laptop-dark.png",
+      "state_origin": "real_snapshot",
+      "width": 1280,
+      "theme": "dark",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-laptop-light.png",
+      "state_origin": "real_snapshot",
+      "width": 1280,
+      "theme": "light",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-partial-dark.png",
+      "state_origin": "synthetic_source_outage",
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-partial-light.png",
+      "state_origin": "synthetic_source_outage",
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-empty-dark.png",
+      "state_origin": "synthetic_empty_window",
+      "width": 390,
+      "theme": "dark",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-empty-light.png",
+      "state_origin": "synthetic_empty_window",
+      "width": 390,
+      "theme": "light",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-no-match-dark.png",
+      "state_origin": "user_filter",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-no-match-light.png",
+      "state_origin": "user_filter",
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-rejected-evidence-dark.png",
+      "state_origin": "synthetic_validation",
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en",
+      "horizontal_overflow": false
+    },
+    {
+      "file": "supplement-rejected-evidence-light.png",
+      "state_origin": "synthetic_validation",
+      "width": 1440,
+      "theme": "light",
+      "locale": "en",
+      "horizontal_overflow": false
+    }
+  ],
+  "test_script_sha256": "dbf4df2ce316f0aa0f3119f7b3c4e2486d6894a80fc6d4884f1db14d455d7853",
+  "passed": true
+}

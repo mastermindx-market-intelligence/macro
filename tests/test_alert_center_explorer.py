@@ -1,0 +1,2332 @@
+"""V2 investigation projection: more visibility, never more signal authority."""
+from copy import deepcopy
+from datetime import date
+from pathlib import Path
+
+
+def project(signals, events=(), **kwargs):
+    assert (Path(__file__).parents[1] / 'engine/alert_center_view.py').is_file()
+    from engine.alert_center_view import build_explorer
+    return build_explorer(signals, list(events), **kwargs)
+
+
+def signal(id_, source='themes', type_='reco_change', asset='materials', **extra):
+    return dict(alert_id=id_, source=source, type=type_, asset=asset,
+                headline='Materials: rating changed', headline_zh='材料：评级变化',
+                source_label='Theme Rotation', source_label_zh='主题轮动',
+                priority=40, severity='minor', tier='watch', board_date='2026-09-08',
+                ts='2026-09-08', link='sector_central.html#theme-materials', **extra)
+
+
+def test_projection_keeps_every_signal_and_never_mutates_scores_or_ids():
+    rows = [signal(str(i), asset=f'subject_{i}') for i in range(85)]
+    before = deepcopy(rows)
+    result = project(rows)
+    assert result['signals'] == before
+    assert result['total_signals'] == 85
+    assert rows == before
+    assert result['sources'][0]['count'] == 85
+
+
+def test_specific_subject_can_bundle_distinct_changes_without_promotion():
+    rows = [signal('a'), signal('b', type_='theme_deteriorating')]
+    result = project(rows)
+    assert len(result['situations']) == 1
+    item = result['situations'][0]
+    assert item['member_ids'] == ['a', 'b']
+    assert item['primary_alert_id'] == 'a'
+    assert item['subject'] == 'Materials'
+    assert item['method'] == 'same_source_subject'
+    assert 'priority' not in item and 'confidence' not in item
+    assert result['signals'] == rows
+
+
+def test_shared_generic_links_categories_and_macro_names_do_not_join():
+    rows = [signal('a', source='altdata', type_='convergence', asset='NVDA'),
+            signal('b', source='altdata', type_='convergence', asset='MSFT'),
+            signal('c', source='macro', type_='credit', asset='macro'),
+            signal('d', source='macro', type_='regime', asset='macro')]
+    for row in rows:
+        row['link'] = 'alt_data.html#convergence'
+    assert project(rows)['situations'] == []
+
+
+def test_repeated_same_type_and_cross_source_aliases_do_not_fake_a_situation():
+    assert project([signal('a'), signal('b')])['situations'] == []
+    assert project([signal('a'), signal('b', source='rotation', type_='weak')])['situations'] == []
+
+
+def test_history_preserves_observed_clocks_and_never_interpolates_firings():
+    row = signal('a')
+    events = [dict(row, board_date=d, event_date=d, event_ts=None,
+                   date_precision='date', recorded_at='2026-09-09T12:00:00Z')
+              for d in ['2026-08-20', '2026-09-08']]
+    result = project([row], events)
+    assert result['history_total'] == 2
+    assert len(result['history']) == 2
+    assert [e['board_date'] for e in result['history']] == ['2026-09-08', '2026-08-20']
+    assert all(e['event_ts'] is None for e in result['history'])
+    assert all(e['alert_id'] == 'a' for e in result['history'])
+    assert result['history'][0]['recorded_at'] == '2026-09-09T12:00:00Z'
+
+
+def test_unknown_event_time_is_not_replaced_with_the_record_clock():
+    row = signal('a')
+    event = dict(row, board_date=None, event_date=None, event_ts=None,
+                 date_precision='unknown', recorded_at='2026-09-09T12:00:00Z')
+    h = project([row], [event])['history'][0]
+    assert h['board_date'] is None and h['event_ts'] is None
+    assert h['date_precision'] == 'unknown'
+
+
+def test_history_cap_is_explicit_and_unmatched_events_are_not_invented():
+    row = signal('a')
+    result = project([row], [row, row, signal('other', asset='other')], history_limit=1)
+    assert result['history_total'] == 2 and result['history_truncated'] == 1
+
+
+def test_canonical_builder_adds_explorer_without_changing_the_ranked_cap(monkeypatch):
+    from engine import alert_triage as at
+    rows = [dict(source='macro', type=f'rule_{i}', asset='macro', ts='2026-09-08',
+                 board_date='2026-09-08', tier='watch', raw_sev='medium',
+                 headline=f'Observed change {i}', detail='', edge='') for i in range(4)]
+    monkeypatch.setattr(at, '_macro_raw', lambda *args: at._read('macro', at.READ_OK, rows))
+    monkeypatch.setattr(at, '_jsonl_raw', lambda source, *args: at._read(source, at.READ_OK_ZERO, []))
+    monkeypatch.setattr(at, '_load_context', lambda: {'_state': at.READ_OK})
+    monkeypatch.setattr(at, '_registry_index', lambda: {})
+    monkeypatch.setattr(at, '_rule_scorecard', lambda: {})
+    monkeypatch.setattr(at, 'ic_severity_cap', lambda source, type_, band: (band, {}))
+    monkeypatch.setattr(at, '_events', lambda today: {'items': [], 'next': None})
+    uncapped = at.build_triage(today=date(2026, 9, 9), max_items=10)
+    capped = at.build_triage(today=date(2026, 9, 9), max_items=1)
+    assert 'explorer' in capped, 'The production assembler must feed the investigation UI'
+    assert len(capped['alerts']) == 1 and capped['summary']['total'] == 1
+    assert capped['alerts'] == uncapped['alerts'][:1]
+    assert capped['explorer']['signals'] == uncapped['alerts']
+    assert capped['explorer']['history_total'] == 4
+    assert capped['explorer']['situations'] == []
+
+
+def test_account_specific_watchlist_evidence_is_not_expanded_into_global_view():
+    public = signal('public')
+    private = signal('private', source='watchlist', type_='buy_zone_enter', asset='PERSONAL')
+    result = project([public, private], [public, private])
+    assert [a['alert_id'] for a in result['signals']] == ['public']
+    assert [a['alert_id'] for a in result['history']] == ['public']
+    assert result['restricted_sources'] == ['watchlist']
+    assert result['total_signals'] == 1
+
+
+def test_nonfinite_optional_metrics_are_null_in_the_json_projection_only():
+    import json
+    row = signal('a', validation={'hit': float('nan'), 'n': 0, 'ic': float('inf')})
+    result = project([row])
+    assert result['signals'][0]['validation'] == {'hit': None, 'n': 0, 'ic': None}
+    json.dumps(result, allow_nan=False)
+    assert row['validation']['hit'] != row['validation']['hit']
+
+
+def test_negative_history_limits_are_rejected():
+    import pytest
+    with pytest.raises(ValueError):
+        project([], history_limit=-1)
+
+
+def test_history_detail_is_the_original_event_not_the_latest_representative():
+    current = signal('a', detail='Latest summary', detail_zh='最新摘要')
+    old = dict(current, headline='Original event', detail='Original detail',
+               detail_zh='原始详情', board_date='2026-08-20', event_date='2026-08-20')
+    result = project([current], [old])
+    assert result['history'][0]['detail'] == 'Original detail'
+    assert result['history'][0]['detail_zh'] == '原始详情'
+    assert current['detail'] == 'Latest summary'
+
+
+def test_history_missing_detail_is_not_filled_from_the_latest_event():
+    current = signal('a', detail='Latest detail must not leak backward')
+    old = {k: v for k, v in current.items() if k != 'detail'}
+    result = project([current], [old])
+    assert result['history'][0]['detail'] == ''
+
+
+
+def test_macro_transition_gets_source_bound_action_brief_without_mutation():
+    row = signal('macro-transition', source='macro', type_='transition_state_change', asset='macro')
+    row.update({
+        'tier': 'act', 'severity': 'critical', 'priority': 76, 'age_days': 10,
+        'detail': "The regime's footing went from a new regime to shifting (4 warning flags active)",
+        'detail_zh': '周期状态由「新周期」转为「转换中」（4 个预警激活）',
+        'edge': 'High — a regime shift re-prices everything downstream.',
+        'edge_zh': '高 — 周期转变会重新定价其下游的一切。',
+        'link': 'macro.html#regime-radar',
+    })
+    before = deepcopy(row)
+    result = project([row])
+    projected = result['signals'][0]
+    brief = result['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['schema'] == 'mastermind.alert_brief.v1'
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.transition_state_change'
+    assert brief['attention'] == 'earlier_priority'
+    assert brief['change'] == row['detail']
+    assert brief['change_zh'] == row['detail_zh']
+    assert brief['next_action_label'] == 'Recheck regime'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+    assert '10 days old' in brief['limitation']
+
+
+def test_macro_risk_brief_keeps_source_risk_separate_from_attention_priority():
+    row = signal('macro-risk', source='macro', type_='risk_state_elevated', asset='macro')
+    row.update({
+        'tier': 'act', 'severity': 'major', 'priority': 64, 'age_days': 8,
+        'detail': 'Equity risk-state crossed into ELEVATED (63/100) — positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders',
+        'detail_zh': '股票风险状态进入偏高区（63/100）— 仓位/波动/宽度脆弱性上升；降低敞口、择优入场而非追高',
+        'edge': 'High — the equity-internal early-warning the credit gauge misses. De-risk response is sizing, not selection.',
+        'edge_zh': '高 — 信用指标看不到的股票内部早期预警。应对是调仓位，而非选股。',
+        'link': 'macro.html#dlg-risk',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'earlier_priority'
+    assert '63/100' in brief['change']
+    assert 'attention priority 64' in brief['limitation']
+    assert 'return forecast' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck risk'
+
+
+def test_unrecognized_macro_shape_abstains_from_family_specific_copy():
+    row = signal('macro-unknown', source='macro', type_='transition_state_change', asset='macro')
+    row.update({'tier': 'act', 'detail': 'The regime changed in an unsupported shape',
+                'detail_zh': '周期发生变化，但格式未知', 'link': 'macro.html#regime-radar'})
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'fallback'
+    assert brief['family'] is None
+    assert brief['change'] == row['detail']
+    assert brief['next_action_label'] == 'Inspect evidence'
+    assert brief['reassessment'] == ''
+
+
+def test_attention_language_uses_canonical_tier_and_freshness_not_numeric_priority():
+    fresh_act = signal('fresh-act'); fresh_act.update({'tier': 'act', 'priority': 1, 'age_days': 2})
+    old_act = signal('old-act'); old_act.update({'tier': 'act', 'priority': 100, 'age_days': 3})
+    fresh_watch = signal('fresh-watch'); fresh_watch.update({'tier': 'watch', 'priority': 99, 'age_days': 0})
+    old_watch = signal('old-watch'); old_watch.update({'tier': 'watch', 'priority': 100, 'age_days': 9})
+    context = signal('context'); context.update({'tier': 'context', 'priority': 100, 'age_days': 0})
+    rows = (fresh_act, old_act, fresh_watch, old_watch, context)
+    result = project(list(rows))
+    briefs = [result['briefs'][r['alert_id']] for r in rows]
+    assert [b['attention'] for b in briefs] == [
+        'review_first', 'earlier_priority', 'watch_next', 'for_awareness', 'for_awareness']
+
+
+def test_unknown_recency_never_impersonates_a_current_review_first_alert():
+    row = signal('unknown-age')
+    row.update({'tier': 'act', 'priority': 100, 'age_days': None, 'board_date': None})
+    assert project([row])['briefs'][row['alert_id']]['attention'] == 'earlier_priority'
+
+
+
+def test_fresh_watch_families_get_source_bound_decision_briefs_without_new_authority():
+    rows = []
+    commodity = signal('commodity-watch', source='commodity', type_='price_shock', asset='oil')
+    commodity.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Oil 95.47 $/bbl — the acute move is settling.',
+        'detail_zh': '原油 95.47 美元/桶 — 剧烈波动正在平息。',
+        'link': 'commodities.html#timeline', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    allocation = signal('allocation-watch', source='vector', type_='allocation_change', asset='vector')
+    allocation.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Optimal strategy moved 41% → 43% BTC (momentum × risk grid).',
+        'detail_zh': '最优策略从 41% 调整为 43% BTC（动量 × 风险网格）。',
+        'edge': 'Strategy output — beat buy-and-hold in backtest.',
+        'link': 'vector.html#allocation', 'fire_count': 7,
+        'validation': {'verdict': 'calibrated', 'note': 'Strategy output — beat buy-and-hold in backtest.'},
+    })
+    convergence = signal('convergence-watch', source='altdata', type_='convergence', asset='EXE')
+    convergence.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'EXE lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.',
+        'detail_zh': 'EXE 被 2 个独立替代数据渠道同时触发：重大8-K集群、特殊事件。',
+        'link': 'alt_data.html#convergence', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    rotation = signal('rotation-watch', source='rotation', type_='rotation_emerging', asset='consumerfarmdirect')
+    rotation.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Farm-Direct just turned improving & accelerating (1W +1.7%, 1M -4.3%, 3M -3.8%; accel +2.0). An early rotate-in candidate — context, not a buy list.',
+        'detail_zh': 'Farm-Direct 刚转为改善且加速（1周 +1.7%，1月 -4.3%，3月 -3.8%；加速 +2.0）。早期轮入候选 — 仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    rows.extend((commodity, allocation, convergence, rotation))
+    before = deepcopy(rows)
+    result = project(rows)
+    assert rows == before
+    briefs = [result['briefs'][row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in briefs] == [
+        'commodity.price_shock', 'vector.allocation_change',
+        'altdata.convergence', 'rotation.rotation_emerging']
+    assert all(brief['status'] == 'supported' for brief in briefs)
+    assert all(brief['attention'] == 'watch_next' for brief in briefs)
+    assert [brief['next_action_label'] for brief in briefs] == [
+        'Recheck oil', 'Open allocation', 'Inspect channels', 'Check rotation']
+    assert 'does not establish direction' in briefs[0]['limitation']
+    assert 'historical backtest' in briefs[1]['limitation']
+    assert 'channel count is not a probability' in briefs[2]['limitation']
+    assert 'not a buy list' in briefs[3]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive' for brief in briefs)
+
+
+def test_aged_vector_impulse_brief_exposes_decay_and_blind_spot_without_fresh_urgency():
+    row = signal('vector-impulse', source='vector', type_='impulse_warn_down', asset='vector')
+    row.update({
+        'tier': 'act', 'severity': 'critical', 'priority': 76, 'age_days': 16,
+        'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+        'detail_zh': 'DVOL 日内波幅激增（相对自身历史异常偏大）— 期权市场正在重新定价风险。BTC 81,264 美元。',
+        'edge': 'Forward de-risk window from a verified LEADING precursor cross (impulse radar). Holdout-validated, leak-free; act early — the edge decays in ~2-4 days. BLIND to slow/options-calm flushes.',
+        'edge_zh': '来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。已通过留出样本、无前视；优势在约 2-4 天内衰减。对缓慢/期权平静式下跌无效。',
+        'link': 'vector.html#impulse',
+        'validation': {'verdict': 'calibrated', 'note': 'Holdout-validated leading precursor.'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.impulse_warn_down'
+    assert brief['attention'] == 'earlier_priority'
+    assert brief['next_action_label'] == 'Recheck impulse'
+    assert '2–4 day edge window has elapsed' in brief['limitation']
+    assert 'slow or options-calm selloffs' in brief['limitation']
+    assert 'current impulse panel' in brief['next_action']
+
+
+
+def test_vector_impulse_window_copy_is_age_aware():
+    def row(alert_id, age):
+        value = signal(alert_id, source='vector', type_='impulse_warn_down', asset='vector')
+        value.update({
+            'tier': 'act', 'age_days': age,
+            'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+            'edge': 'Forward de-risk window; the edge decays in ~2-4 days.',
+            'link': 'vector.html#impulse',
+        })
+        return value
+    fresh, unknown = row('fresh-impulse', 1), row('unknown-impulse', None)
+    result = project([fresh, unknown])['briefs']
+    fresh_brief, unknown_brief = result[fresh['alert_id']], result[unknown['alert_id']]
+    assert fresh_brief['attention'] == 'review_first'
+    assert 'bounded to that short horizon' in fresh_brief['limitation']
+    assert 'has elapsed' not in fresh_brief['limitation']
+    assert unknown_brief['attention'] == 'earlier_priority'
+    assert 'event age is unavailable' in unknown_brief['limitation']
+    assert 'has elapsed' not in unknown_brief['limitation']
+
+
+def test_aged_impulse_takeaway_never_repeats_expired_act_early_copy():
+    row = signal('aged-impulse-copy', source='vector', type_='impulse_warn_down', asset='vector')
+    row.update({
+        'tier': 'act', 'age_days': 17,
+        'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+        'detail_zh': 'DVOL 日内波幅激增（相对自身历史异常偏大）— 期权市场正在重新定价风险。BTC 81,264 美元。',
+        'edge': 'Forward de-risk window from a verified LEADING precursor cross; act early — the edge decays in ~2-4 days.',
+        'edge_zh': '来自经验证领先前兆突破的前瞻减仓窗口；应尽早行动 — 优势在约 2-4 天内衰减。',
+        'link': 'vector.html#impulse',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['attention'] == 'earlier_priority'
+    assert 'originally reported' in brief['implication']
+    assert 'act early' not in brief['implication'].lower()
+    assert '历史' in brief['implication_zh']
+
+
+def test_rotation_brief_describes_actual_horizons_without_inventing_negative_returns():
+    row = signal('rotation-positive', source='rotation', type_='rotation_emerging', asset='security')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Security just turned leading & accelerating (1W +6.9%, 1M +4.4%, 3M +26.7%; accel +4.8). An early rotate-in candidate — context, not a buy list.',
+        'detail_zh': 'Security 刚转为领先且加速（1周 +6.9%，1月 +4.4%，3月 +26.7%；加速 +4.8）。早期轮入候选 — 仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '1W +6.9%, 1M +4.4%, 3M +26.7%' in brief['implication']
+    assert 'negative one- and three-month returns' not in brief['limitation']
+    assert 'descriptive' in brief['limitation']
+
+
+def test_allocation_brief_preserves_source_localized_implication():
+    row = signal('allocation-localized', source='vector', type_='allocation_change', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Optimal strategy moved 41% → 43% BTC (momentum × risk grid).',
+        'detail_zh': '最优策略从 41% 调整为 43% BTC（动量 × 风险网格）。',
+        'edge': 'Strategy output — beat buy-and-hold in backtest.',
+        'edge_zh': '来源本地化：策略输出在历史回测中跑赢买入并持有。',
+        'link': 'vector.html#allocation',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['implication_zh'] == row['edge_zh']
+
+
+def test_instrument_risk_regime_brief_separates_threshold_state_from_market_forecast():
+    commodity = signal('commodity-risk', source='commodity', type_='risk_regime', asset='copper')
+    commodity.update({
+        'tier': 'watch', 'severity': 'major', 'age_days': 10,
+        'headline': 'Copper risk turned Elevated', 'headline_zh': '铜风险转为升高',
+        'detail': 'Risk Index rose through the threshold to 34. Copper 6.47 $/lb.',
+        'detail_zh': '风险指数上穿阈值至 34。铜 6.47 美元/磅。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'confirmer', 'horizon': '21d', 'n': None},
+    })
+    forex = signal('forex-risk', source='forex', type_='risk_regime', asset='USDCAD')
+    forex.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'USD/CAD risk turned Calm', 'headline_zh': 'USD/CAD 风险转为平静',
+        'detail': 'Risk Index fell back below its threshold to 11. USD/CAD 1.3988.',
+        'detail_zh': '风险指数回落跌破阈值至 11。USD/CAD 1.3988。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented',
+                       'note': 'Conviction is documented, not separately backtested as a timing signal.'},
+    })
+    rows = [commodity, forex]
+    before = deepcopy(rows)
+    result = project(rows)['briefs']
+    assert rows == before
+    copper, fx = result[commodity['alert_id']], result[forex['alert_id']]
+    assert [copper['family'], fx['family']] == [
+        'commodity.risk_regime', 'forex.risk_regime']
+    assert [copper['attention'], fx['attention']] == ['for_awareness', 'watch_next']
+    assert '34' in copper['implication'] and 'instrument-specific' in copper['limitation']
+    assert 'confirmer' in copper['limitation'] and '10 days old' in copper['limitation']
+    assert '11' in fx['implication'] and 'not an all-clear' in fx['implication']
+    assert 'not separately backtested' in fx['limitation']
+    assert [copper['next_action_label'], fx['next_action_label']] == [
+        'Recheck commodity risk', 'Recheck FX risk']
+    assert [copper['next_action_label_zh'], fx['next_action_label_zh']] == [
+        '复核商品风险', '复核外汇风险']
+    assert '商品时间线' in copper['next_action_zh']
+    assert '外汇时间线' in fx['next_action_zh']
+    assert all(result[row['alert_id']]['evidence_scope'] == 'current_panel_not_historical_archive'
+               for row in rows)
+
+
+def test_macro_gex_brief_is_a_volatility_backdrop_not_a_directional_call():
+    row = signal('gex-flip', source='macro', type_='gex_flip_cross', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'GEX: net GEX changed sign (net +5bn, spot vs flip +0.2%)',
+        'detail_zh': 'GEX：净 GEX 转变方向（净 +5bn，现价相对翻转点 +0.2%）',
+        'edge': 'Medium — changes the volatility backdrop, not the direction.',
+        'edge_zh': '中 — 改变的是波动背景，而非方向。',
+        'link': 'macro_context.html#board', 'fire_count': 7,
+        'validation': {'verdict': 'confirmer', 'horizon': 'intraday/days',
+                       'extra': [('history', 'accruing (n small)')]},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.gex_flip_cross'
+    assert brief['attention'] == 'for_awareness'
+    assert brief['implication'] == row['edge']
+    assert 'not a directional call' in brief['limitation']
+    assert 'history is still accruing' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck gamma'
+    assert 'net GEX' in brief['next_action'] and 'spot-versus-flip' in brief['next_action']
+
+
+def test_macro_fragility_and_breadth_briefs_expose_non_timer_limits():
+    fragility = signal('fragility', source='macro', type_='hidden_fragility', asset='macro')
+    fragility.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'Complacency watch: calm tape starting to mask weakening internals',
+        'detail_zh': '自满预警：平静走势开始掩盖走弱的内部结构',
+        'edge': "Medium — a calm-over-weak CONTEXT (the conjunction matters, not low VIX alone). Size down, don't chase.",
+        'edge_zh': '中 — 平静掩盖走弱的背景（关键是组合而非单看低VIX）。缩小仓位，不要追高。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'documented'},
+    })
+    breadth = signal('breadth', source='macro', type_='breadth_divergence', asset='macro')
+    breadth.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'Breadth divergence: index near its 1y high while %>200dma is weak (16% pctile) — fewer names carrying the tape',
+        'detail_zh': '宽度背离：指数接近一年高点但 %>200日均线偏弱（16% 分位）— 抬指数的个股在减少',
+        'edge': 'Medium — fewer names carrying the index; a thinning-tape caution, not a timer.',
+        'edge_zh': '中 — 抬指数的个股在减少；属于宽度变薄的警示，而非择时。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'documented'},
+    })
+    result = project([fragility, breadth])['briefs']
+    f, b = result[fragility['alert_id']], result[breadth['alert_id']]
+    assert [f['family'], b['family']] == [
+        'macro.hidden_fragility', 'macro.breadth_divergence']
+    assert f['implication'] == fragility['edge'] and b['implication'] == breadth['edge']
+    assert 'conjunction' in f['limitation'] and 'not separately backtested' in f['limitation']
+    assert 'not a market-top probability or timer' in b['limitation']
+    assert '16% percentile' in b['limitation']
+    assert [f['next_action_label'], b['next_action_label']] == [
+        'Recheck fragility', 'Recheck breadth']
+
+
+def test_new_risk_family_copy_abstains_when_the_source_shape_is_unrecognized():
+    rows = [
+        signal('bad-risk', source='commodity', type_='risk_regime', asset='oil'),
+        signal('bad-gex', source='macro', type_='gex_flip_cross', asset='macro'),
+        signal('bad-breadth', source='macro', type_='breadth_divergence', asset='macro'),
+    ]
+    rows[0]['detail'] = 'Risk changed, but the source shape is unknown.'
+    rows[1]['detail'] = 'Dealer gamma changed in an unsupported form.'
+    rows[2]['detail'] = 'Breadth weakened in an unsupported form.'
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_theme_change_families_get_source_bound_decision_briefs_without_trade_authority():
+    reco = signal('theme-reco', source='themes', type_='reco_change', asset='ai_infra')
+    reco.update({
+        'tier': 'watch', 'age_days': 3,
+        'headline': '↑ AI Infrastructure: Avoid → Hold',
+        'headline_zh': '↑ AI 基础设施：规避 → 持有',
+        'detail': 'Theme recommendation for AI Infrastructure changed from Avoid to Hold (score 57, neutral).',
+        'detail_zh': 'AI 基础设施 的主题建议由「规避」变为「持有」（评分 57，中性）。',
+        'link': 'sector_central.html#theme-ai_infra', 'fire_count': 4,
+        'validation': {'verdict': 'documented',
+                       'note': 'Conviction is documented, not separately backtested as a timing signal.'},
+    })
+    deteriorating = signal('theme-down', source='themes', type_='theme_deteriorating', asset='managed_care')
+    deteriorating.update({
+        'tier': 'watch', 'age_days': 3,
+        'headline': '🔻 Managed Care & Insurers is deteriorating',
+        'headline_zh': '🔻 管理式医疗与保险 走弱',
+        'detail': 'Managed Care & Insurers broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.',
+        'detail_zh': '管理式医疗与保险 转入「走弱」 — 动量与广度同步转弱，当前建议「规避」。',
+        'link': 'sector_central.html#theme-managed_care', 'fire_count': 4,
+        'validation': {'verdict': 'documented'},
+    })
+    topping = signal('theme-top', source='themes', type_='theme_topping', asset='us_sector_energy')
+    topping.update({
+        'tier': 'watch', 'age_days': 4,
+        'headline': '⚠️ Energy (Equal-Weight): strength fading off the high',
+        'headline_zh': '⚠️ 能源（等权）：高位动能减弱',
+        'detail': 'Energy (Equal-Weight) dropped from dominant to fading as of the 2026-09-16 close — momentum cooling at a high. Historically this read flags elevated pullback risk over the next month, not a confirmed top — leaders inside the theme can keep running. Recommendation now Trim.',
+        'detail_zh': '能源（等权） 自「主导」转入「退潮」（截至 2026-09-16 收盘）— 高位动能降温。历史上该读数指向未来约一个月的回撤风险上升，并非确认见顶 — 主题内的领涨股仍可能续涨。当前建议「减仓」。',
+        'link': 'sector_central.html#theme-us_sector_energy', 'fire_count': 2,
+        'validation': {'verdict': 'documented'},
+    })
+    emerging = signal('theme-emerge', source='themes', type_='theme_emerging', asset='us_sector_utilities')
+    emerging.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': '🌱 Utilities (Equal-Weight) is emerging',
+        'headline_zh': '🌱 公用事业（等权） 进入新兴阶段',
+        'detail': 'Utilities (Equal-Weight) entered the EMERGING lifecycle — accelerating relative strength before it is extended (score 38) — held 2 consecutive sessions (constructive label shifts are debounced; risk label shifts fire immediately).',
+        'detail_zh': '公用事业（等权） 进入「新兴」阶段 — 相对强度加速且尚未过度延展（评分 38），已连续 2 个交易日确认（进取方向去抖，风险方向即时）。',
+        'link': 'sector_central.html#theme-us_sector_utilities',
+        'validation': {'verdict': 'documented'},
+    })
+    leadership = signal('theme-lead', source='themes', type_='leadership_rotation', asset='crypto')
+    leadership.update({
+        'tier': 'watch', 'age_days': 23,
+        'headline': '🔄 New theme leader: Crypto & Digital Assets',
+        'headline_zh': '🔄 新主题领涨：加密与数字资产',
+        'detail': 'Crypto & Digital Assets took the #1 theme rank (score 71), displacing Gold Miners — held #1 for 2 consecutive sessions with a 3-point margin over #2.',
+        'detail_zh': '加密与数字资产 升至主题排名第一（评分 71），取代 黄金矿业 — 已连续 2 个交易日保持第一，领先第二名 3 分。',
+        'link': 'sector_central.html#theme-crypto',
+        'validation': {'verdict': 'documented'},
+    })
+    rows = [reco, deteriorating, topping, emerging, leadership]
+    before = deepcopy(rows)
+    briefs = project(rows)['briefs']
+    assert rows == before
+    values = [briefs[row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in values] == [
+        'themes.reco_change', 'themes.theme_deteriorating', 'themes.theme_topping',
+        'themes.theme_emerging', 'themes.leadership_rotation']
+    assert all(brief['status'] == 'supported' for brief in values)
+    assert [brief['attention'] for brief in values] == [
+        'for_awareness', 'for_awareness', 'for_awareness', 'watch_next', 'for_awareness']
+    assert [brief['next_action_label'] for brief in values] == [
+        'Recheck recommendation', 'Recheck deterioration', 'Recheck pullback risk',
+        'Recheck emergence', 'Recheck leadership']
+    assert 'not a trade instruction' in values[0]['limitation']
+    assert 'momentum and breadth' in values[1]['next_action']
+    assert 'not a confirmed top' in values[2]['limitation']
+    assert 'held 2 consecutive sessions' in values[3]['implication']
+    assert 'not expected return' in values[4]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive'
+               for brief in values)
+
+
+def test_theme_briefs_preserve_asymmetric_confirmation_and_score_boundaries():
+    constructive = signal('theme-constructive', source='themes', type_='reco_change', asset='security')
+    constructive.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Theme recommendation for Security changed from Hold to Accumulate (score 64, emerging) — held 2 consecutive sessions (constructive flips wait for a second session; risk flips fire immediately).',
+        'detail_zh': 'Security 的主题建议由「持有」变为「加仓」（评分 64，新兴），已连续 2 个交易日确认（进取方向需连续确认，风险方向即时）。',
+        'link': 'sector_central.html#theme-security',
+        'validation': {'verdict': 'documented'},
+    })
+    downgrade = signal('theme-risk', source='themes', type_='reco_change', asset='retail')
+    downgrade.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Theme recommendation for Retail changed from Accumulate to Avoid (score 31, deteriorating).',
+        'detail_zh': 'Retail 的主题建议由「加仓」变为「规避」（评分 31，走弱）。',
+        'link': 'sector_central.html#theme-retail',
+        'validation': {'verdict': 'documented'},
+    })
+    c, d = [project([row])['briefs'][row['alert_id']] for row in (constructive, downgrade)]
+    assert 'confirmed for 2 sessions' in c['implication']
+    assert 'constructive changes are delayed for confirmation' in c['limitation']
+    assert 'risk-direction changes fire immediately' in d['limitation']
+    assert '64 is a model score, not a probability' in c['limitation']
+    assert '31 is a model score, not a probability' in d['limitation']
+
+
+def test_theme_family_specific_copy_abstains_on_unsupported_shapes():
+    types = ('reco_change', 'theme_deteriorating', 'theme_topping',
+             'theme_emerging', 'leadership_rotation')
+    rows = []
+    for type_ in types:
+        row = signal(f'bad-{type_}', source='themes', type_=type_, asset='theme')
+        row.update({'detail': f'{type_} changed in an unsupported shape.',
+                    'link': 'sector_central.html#theme-theme'})
+        rows.append(row)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_rotation_rollover_and_confirmed_turns_get_breadth_aware_briefs():
+    fading = signal('rotation-fading', source='rotation', type_='rotation_fading', asset='smartwatches')
+    fading.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': 'Smartwatches was leading but momentum has rolled over to weakening (1W +0.1%, 3M +7.8%; mom -0.0). A rotate-out / take-profit watch — context only.',
+        'detail_zh': 'Smartwatches 此前领先，但动量已转弱（1周 +0.1%，3月 +7.8%；动量 -0.0）。轮出/止盈观察 — 仅作参考。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    turn_down = signal('rotation-down', source='rotation', type_='rotation_turn_down', asset='materials')
+    turn_down.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': "Materials ran 39.6% off its 1-year low and has now rolled over on confirmed sessions — this week -2.4% vs the market's -0.7%/wk, 62% of members rolling with it. Context, not a sell list.",
+        'detail_zh': 'Materials 自一年低点上涨 39.6%，现已连续多个交易日确认转为下行——本周 -2.4%，市场为 -0.7%/周，62% 成分股同步走弱。仅作参考，非卖出清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    turn_up = signal('rotation-up', source='rotation', type_='rotation_turn_up', asset='batteries')
+    turn_up.update({
+        'tier': 'context', 'age_days': 11,
+        'detail': "Batteries fell 24.7% from its 1-year high and has now turned up on confirmed sessions — this week +8.3% vs the market's -0.3%/wk, 73% of members turning with it. Context, not a buy list.",
+        'detail_zh': 'Batteries 自一年高点回落 24.7%，现已连续多个交易日确认转为上行——本周 +8.3%，市场为 -0.3%/周，73% 成分股同步转向。仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    rows = [fading, turn_down, turn_up]
+    before = deepcopy(rows)
+    briefs = project(rows)['briefs']
+    assert rows == before
+    values = [briefs[row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in values] == [
+        'rotation.rotation_fading', 'rotation.rotation_turn_down', 'rotation.rotation_turn_up']
+    assert all(brief['status'] == 'supported' for brief in values)
+    assert all(brief['attention'] == 'for_awareness' for brief in values)
+    assert [brief['next_action_label'] for brief in values] == [
+        'Recheck rollover', 'Recheck turn down', 'Recheck turn up']
+    assert 'not a take-profit instruction' in values[0]['limitation']
+    assert '62% of members' in values[1]['implication']
+    assert 'not a sell list' in values[1]['limitation']
+    assert '73% of members' in values[2]['implication']
+    assert 'not a buy list' in values[2]['limitation']
+    assert '11 days old' in values[2]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive'
+               for brief in values)
+
+
+def test_rotation_turn_brief_discloses_concentration_and_leadership_basis():
+    down = signal('rotation-down-concentrated', source='rotation', type_='rotation_turn_down', asset='software')
+    down.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': "Software built 18.5% of lead over the market and has now rolled over on confirmed sessions — this week -3.2% vs the market's -0.8%/wk, 25% of members rolling with it · carried by one name. Context, not a sell list.",
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    up = signal('rotation-up-lead', source='rotation', type_='rotation_turn_up', asset='crop_inputs')
+    up.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': "Crop Inputs gave up 16.0% of its lead over the market and has now turned up on confirmed sessions — this week +6.4% vs the market's -1.2%/wk, 88% of members turning with it. Context, not a buy list.",
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    d, u = [project([row])['briefs'][row['alert_id']] for row in (down, up)]
+    assert 'leadership path' in d['implication'] and 'leadership path' in u['implication']
+    assert 'carried by one name' in d['limitation']
+    assert '25% breadth is concentrated' in d['limitation']
+    assert '88% of members' in u['implication']
+
+
+def test_rotation_family_specific_copy_abstains_on_unsupported_shapes():
+    rows=[]
+    for type_ in ('rotation_fading','rotation_turn_down','rotation_turn_up'):
+        row=signal(f'bad-{type_}',source='rotation',type_=type_,asset='rotation')
+        row.update({'detail':f'{type_} changed in an unsupported shape.',
+                    'link':'subsector_rotation.html#rotation-app'})
+        rows.append(row)
+    briefs=project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status']=='fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_emergence_narrative_forming_keeps_cluster_detection_context_only():
+    row = signal('emergence-forming', source='emergence', type_='narrative_forming',
+                 asset='6e6b1732126c')
+    row.update({
+        'tier': 'context', 'age_days': 5,
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'detail_zh': '评分 63.9（成形）；5 只个股共动收紧。关注：BILL, CPAY, GEN, DBX。供审阅的候选 — 非买入清单。',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'emergence.narrative_forming'
+    assert brief['attention'] == 'for_awareness'
+    assert 'score 63.9 (Forming)' in brief['implication']
+    assert '5 names tightening together' in brief['implication']
+    assert 'BILL, CPAY, GEN, DBX' in brief['implication']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'not a buy list' in brief['limitation']
+    assert 'no validated forward edge' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck forming narrative'
+    assert brief['evidence_label'] == 'Open current forming narrative'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_emergence_narrative_forming_fast_keeps_alert_bar_and_reformation_falsifier():
+    row = signal('emergence-fast', source='emergence', type_='narrative_forming',
+                 asset='b1eeeea0dba4')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 70.5 (Forming fast); 6 names tightening. Watch: PGNY, BILL, CPAY, GEN. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-b1eeeea0dba4',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'scores at least 55' in brief['next_action']
+    assert 'score falls below the source 55-point alert bar' in brief['reassessment']
+    assert 'constituent set materially re-forms' in brief['reassessment']
+
+
+def test_emergence_narrative_forming_abstains_on_score_anchor_or_shape_mismatch():
+    below = signal('emergence-below', source='emergence', type_='narrative_forming',
+                   asset='6e6b1732126c')
+    below.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 54.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+    })
+    wrong_anchor = signal('emergence-anchor', source='emergence', type_='narrative_forming',
+                          asset='6e6b1732126c')
+    wrong_anchor.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9 (Forming); 5 names tightening. Watch: BILL, CPAY, GEN, DBX. Candidate for review — not a buy list.',
+        'link': 'sector_central.html#ne-deadbeefcafe',
+    })
+    malformed = signal('emergence-shape', source='emergence', type_='narrative_forming',
+                       asset='6e6b1732126c')
+    malformed.update({
+        'headline': '🔥 New forming narrative — Cross-sector cluster · Information Technology + Financials',
+        'detail': 'Score 63.9; buy these names now.',
+        'link': 'sector_central.html#ne-6e6b1732126c',
+    })
+    rows = (below, wrong_anchor, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_demand_ahead_gets_expectations_gap_brief_without_mutation():
+    row = signal('demand-ahead', source='demand', type_='demand_ahead', asset='AVGO')
+    row.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': "ai_datacenter (+69% YoY) is running ahead of AVGO's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'detail_zh': 'ai_datacenter (+69% YoY) 跑在 AVGO 分析师评级调整之前——一个尚未充分计入价格的前瞻需求信号。供审阅参考；非买入信号。',
+        'link': 'demand.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'demand.demand_ahead'
+    assert brief['attention'] == 'for_awareness'
+    assert '69% YoY' in brief['implication']
+    assert 'AVGO' in brief['implication']
+    assert 'possible expectations gap' in brief['implication']
+    assert 'not proof the stock is underpriced' in brief['limitation']
+    assert 'not separately backtested' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck demand lead'
+    assert brief['evidence_label'] == 'Open current demand timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_demand_ahead_discloses_age_and_revision_catchup_falsifier():
+    row = signal('demand-old', source='demand', type_='demand_ahead', asset='CRWD')
+    row.update({
+        'tier': 'context', 'age_days': 11,
+        'detail': "own_rpo (+38% YoY) is running ahead of CRWD's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'link': 'demand.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '11 days old' in brief['limitation']
+    assert 'revisions catch up' in brief['reassessment']
+    assert 'demand measure decelerates' in brief['reassessment']
+    assert 'already discounts the change' in brief['reassessment']
+
+
+def test_demand_ahead_abstains_on_malformed_or_ticker_mismatched_shapes():
+    malformed = signal('demand-malformed', source='demand', type_='demand_ahead', asset='AVGO')
+    malformed.update({'detail': 'Demand is ahead in an unsupported shape.',
+                      'link': 'demand.html#timeline'})
+    mismatch = signal('demand-mismatch', source='demand', type_='demand_ahead', asset='AVGO')
+    mismatch.update({
+        'detail': "ai_datacenter (+69% YoY) is running ahead of HUBB's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'link': 'demand.html#timeline',
+    })
+    briefs = project([malformed, mismatch])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (malformed, mismatch))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (malformed, mismatch))
+
+
+def test_forex_residual_shock_gets_unexplained_move_brief_without_false_attribution():
+    row = signal('fx-residual', source='forex', type_='residual_shock', asset='USDCNH')
+    row.update({
+        'tier': 'context', 'age_days': 2,
+        'headline': "USD/CNH: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'CNH moved beyond what the dollar + rates explain (shock z +1.6) — possible intervention / flow / geopolitics. USD/CNH 6.6560.',
+        'detail_zh': 'CNH 走势超出美元+利率可解释范围（冲击 z +1.6）— 可能为干预/资金流/地缘。USD/CNH 6.6560。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.residual_shock'
+    assert brief['attention'] == 'for_awareness'
+    assert '+1.6 z-score residual' in brief['implication']
+    assert 'USD/CNH' in brief['implication']
+    assert 'does not identify intervention, flows or geopolitics as the cause' in brief['limitation']
+    assert 'not a probability or return forecast' in brief['limitation']
+    assert brief['next_action_label'] == 'Investigate FX residual'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_forex_residual_shock_discloses_staleness_and_normalization_falsifier():
+    row = signal('fx-residual-old', source='forex', type_='residual_shock', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 12,
+        'headline': "USD/JPY: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'JPY moved beyond what the dollar + rates explain (shock z +2.6) — possible intervention / flow / geopolitics. USD/JPY 153.8550.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '12 days old' in brief['limitation']
+    assert 'residual normalizes' in brief['reassessment']
+    assert 'dollar/rates model explains the move' in brief['reassessment']
+    assert 'newer source evidence identifies the driver' in brief['reassessment']
+
+
+def test_forex_residual_shock_abstains_on_pair_direction_or_shape_mismatch():
+    mismatch_pair = signal('fx-pair', source='forex', type_='residual_shock', asset='USDCNH')
+    mismatch_pair.update({
+        'headline': "USD/CNH: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'CNH moved beyond what the dollar + rates explain (shock z +1.6) — possible intervention / flow / geopolitics. EUR/USD 1.1470.',
+        'link': 'forex.html#timeline',
+    })
+    mismatch_direction = signal('fx-direction', source='forex', type_='residual_shock', asset='EURUSD')
+    mismatch_direction.update({
+        'headline': "EUR/USD: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'EUR moved beyond what the dollar + rates explain (shock z -2.3) — possible intervention / flow / geopolitics. EUR/USD 1.1470.',
+        'link': 'forex.html#timeline',
+    })
+    malformed = signal('fx-malformed', source='forex', type_='residual_shock', asset='EURUSD')
+    malformed.update({'headline': 'EUR/USD residual changed', 'detail': 'Unsupported residual shape.',
+                      'link': 'forex.html#timeline'})
+    rows = [mismatch_pair, mismatch_direction, malformed]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+def test_net_liquidity_flip_gets_source_bound_context_without_timing_claim():
+    row = signal('net-liq-contract', source='macro', type_='net_liquidity_roc_flip', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 4, 'fire_count': 4, 'continuity_verified': False,
+        'detail': 'Net liquidity 4-week RoC flipped negative (contracting) and held 2d: +41bn -> -65bn',
+        'detail_zh': '净流动性 4 周 RoC 转为负值（收缩）并持续 2 天：+41bn -> -65bn',
+        'edge': "Medium — a documented tail/headwind, but the liquidity edge weakened post-2021 (ETF era). Lean on it, don't trade it.",
+        'edge_zh': '中 — 有据可查的顺／逆风，但流动性优势在 2021 年后（ETF 时代）减弱。据此微调，而非直接交易。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'no_edge', 'note': 'No validated forward edge.'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.net_liquidity_roc_flip'
+    assert brief['attention'] == 'for_awareness'
+    assert 'contracting' in brief['implication'] and 'headwind' in brief['implication']
+    assert 'no statistically validated forward SPY edge' in brief['limitation']
+    assert '4 days old' in brief['limitation']
+    assert '4 recorded firings do not prove' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck liquidity'
+    assert brief['evidence_label'] == 'Open current Macro risk panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_positive_net_liquidity_flip_is_watch_next_but_not_a_probability():
+    row = signal('net-liq-expand', source='macro', type_='net_liquidity_roc_flip', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Net liquidity 4-week RoC flipped positive (expanding) and held 2d: -41bn -> +65bn',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'no_edge'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'expanding' in brief['implication'] and 'tailwind' in brief['implication']
+    assert 'timing signal' in brief['limitation']
+    assert 'crosses back through zero' in brief['reassessment']
+
+
+def test_net_liquidity_flip_abstains_when_detail_does_not_prove_a_sign_flip():
+    rows = []
+    for id_, detail in (
+        ('same-side', 'Net liquidity 4-week RoC flipped positive (expanding) and held 2d: +41bn -> +65bn'),
+        ('wrong-side', 'Net liquidity 4-week RoC flipped negative (contracting) and held 2d: +41bn -> +65bn'),
+        ('malformed', 'Net liquidity flipped negative in an unsupported shape'),
+    ):
+        row = signal(id_, source='macro', type_='net_liquidity_roc_flip', asset='macro')
+        row.update({'tier': 'watch', 'detail': detail, 'link': 'macro.html#dlg-risk'})
+        rows.append(row)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+def test_oi_crowding_gets_leverage_context_without_becoming_a_crash_call():
+    row = signal('oi-crowding', source='vector', type_='oi_crowding_derisk', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 5,
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into elevated (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'detail_zh': '未平仓合约升至偏高（与资金费率无关）。杠杆燃料堆积，并非下跌信号。 BTC $75,584.',
+        'edge': "OI-crowding de-risk nudge — funding-INDEPENDENT (breaks the cascade AND-gate). LOW-CONVICTION: open interest is anti-predictive standalone (measured lift ~0.36) — a 'fuel building' context flag, not a validated crash call.",
+        'edge_zh': '持仓拥挤减仓提示 — 与资金费率无关。低信心：未平仓合约单独使用为反向指标；仅为背景标记。',
+        'link': 'vector.html#leverage',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.oi_crowding_derisk'
+    assert brief['attention'] == 'for_awareness'
+    assert 'open interest moved into elevated' in brief['implication']
+    assert 'amplify a later move' in brief['implication']
+    assert 'does not establish a liquidation cascade' in brief['limitation']
+    assert 'anti-predictive standalone' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck leverage'
+    assert brief['evidence_label'] == 'Open current Bitcoin leverage panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_stretched_oi_crowding_is_watch_next_even_without_a_price():
+    row = signal('oi-stretched', source='vector', type_='oi_crowding_derisk', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into stretched (funding-independent). Leverage fuel loading, not a crash call.',
+        'link': 'vector.html#leverage',
+        'validation': {'verdict': 'calibrated'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'moved into stretched' in brief['implication']
+    assert 'crash direction, timing or probability' in brief['limitation']
+    assert 'open interest leaves elevated/stretched' in brief['reassessment']
+
+
+def test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state():
+    wrong_headline = signal('oi-head', source='vector', type_='oi_crowding_derisk', asset='vector')
+    wrong_headline.update({
+        'headline': 'Leverage alert',
+        'detail': 'Open interest crossed into elevated (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'link': 'vector.html#leverage',
+    })
+    bad_state = signal('oi-state', source='vector', type_='oi_crowding_derisk', asset='vector')
+    bad_state.update({
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into extreme (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'link': 'vector.html#leverage',
+    })
+    briefs = project([wrong_headline, bad_state])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (wrong_headline, bad_state))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (wrong_headline, bad_state))
+
+
+def test_vector_market_mode_gets_state_context_without_trade_or_cause_claims():
+    row = signal('market-mode', source='vector', type_='market_mode', asset='vector')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'detail_zh': '趋势效率使周期从 战略 转为 战术。',
+        'link': 'vector.html#allocation',
+        'validation': {
+            'verdict': 'documented',
+            'note': 'Conviction is documented, not separately backtested as a timing signal.',
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.market_mode'
+    assert brief['attention'] == 'for_awareness'
+    assert 'moved from Strategic to Tactical' in brief['implication']
+    assert 'at least one condition required for Strategic mode no longer holds' in brief['implication']
+    assert 'does not prove both trend efficiency and risk deteriorated' in brief['limitation']
+    assert 'not a directional return forecast' in brief['limitation']
+    assert 'does not separately backtest it as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert '2 recorded transitions' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck market mode'
+    assert brief['evidence_label'] == 'Open current Vector allocation panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_vector_market_mode_supports_reverse_transition_without_promising_persistence():
+    row = signal('market-mode-strategic', source='vector', type_='market_mode', asset='vector')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Market mode changed to Strategic',
+        'detail': 'Trend efficiency shifted the regime Tactical → Strategic.',
+        'link': 'vector.html#allocation',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'moved from Tactical to Strategic' in brief['implication']
+    assert 'current inputs now satisfy the source Strategic gate' in brief['implication']
+    assert 'does not guarantee the trend will persist' in brief['limitation']
+    assert 'verify market mode is still Strategic' in brief['next_action']
+    assert 'current mode is no longer Strategic' in brief['reassessment']
+
+
+def test_vector_market_mode_abstains_on_same_state_headline_or_asset_mismatch():
+    same = signal('market-mode-same', source='vector', type_='market_mode', asset='vector')
+    same.update({
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Tactical → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    mismatched = signal('market-mode-head', source='vector', type_='market_mode', asset='vector')
+    mismatched.update({
+        'headline': 'Market mode changed to Strategic',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    wrong_asset = signal('market-mode-asset', source='vector', type_='market_mode', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    rows = (same, mismatched, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_smile_regime_gets_taxonomy_brief_without_macro_outcome_claims():
+    row = signal('fx-smile', source='forex', type_='smile_regime', asset='dollar')
+    row.update({
+        'tier': 'watch', 'age_days': 19,
+        'headline': 'Dollar regime → Calm growth',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted US growth premium → Global reflation.',
+        'detail_zh': '美元微笑象限（美元方向 × 风险）从 US growth premium 转为 Global reflation。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.smile_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'US growth premium to Global reflation' in brief['implication']
+    assert '“Calm growth”' in brief['implication']
+    assert 'not proof of a growth outcome' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '19 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck dollar regime'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_forex_smile_regime_is_watch_next_and_has_input_falsifier():
+    row = signal('fx-smile-fresh', source='forex', type_='smile_regime', asset='dollar')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Dollar regime → US booming',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → US growth premium.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'dollar/risk inputs no longer fit that quadrant' in brief['reassessment']
+    assert 'newer transition supersedes this event' in brief['reassessment']
+
+
+def test_forex_smile_regime_abstains_on_zone_mismatch_or_nontransition():
+    mismatch = signal('fx-smile-mismatch', source='forex', type_='smile_regime', asset='dollar')
+    mismatch.update({
+        'headline': 'Dollar regime → World stressed',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Global reflation.',
+        'link': 'forex.html#timeline',
+    })
+    same = signal('fx-smile-same', source='forex', type_='smile_regime', asset='dollar')
+    same.update({
+        'headline': 'Dollar regime → In between',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Neutral.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-smile-asset', source='forex', type_='smile_regime', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Dollar regime → Calm growth',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Global reflation.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (mismatch, same, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_sector_rs_cross_low_gets_rotation_context_without_flow_or_sell_claims():
+    row = signal('sector-low', source='macro', type_='sector_rs_cross_low', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 11, 'continuity_verified': False,
+        'headline': '📉 A sector fell out of favor',
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 9)',
+        'detail_zh': 'XLP RS 相对 SPY 下穿 90 天第 10 百分位（现为 9）',
+        'edge': 'Context — descriptive rotation, not a timing signal.',
+        'edge_zh': '背景 — 描述性的轮动，而非择时信号。',
+        'link': 'macro.html#dlg-sector',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_rs_cross_low'
+    assert brief['attention'] == 'for_awareness'
+    assert 'bottom 10% of its 90-day rank' in brief['implication']
+    assert 'current percentile of 9' in brief['implication']
+    assert 'not evidence of fund flows' in brief['limitation']
+    assert 'rotation context rather than a timing signal' in brief['limitation']
+    assert 'a bottom signal or a sell instruction' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert '11 recorded crossings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck sector weakness'
+    assert brief['evidence_label'] == 'Open current Macro sector panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_sector_rs_cross_low_has_threshold_recovery_falsifier():
+    row = signal('sector-low-fresh', source='macro', type_='sector_rs_cross_low', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': 'XLU RS vs SPY crossed below 10th pctile of 90d (now 7)',
+        'link': 'macro.html#dlg-sector',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'XLU relative strength versus SPY' in brief['next_action']
+    assert 'at or below the 10th-percentile threshold' in brief['next_action']
+    assert 'recovers above the low-percentile threshold' in brief['reassessment']
+
+
+def test_sector_rs_cross_low_abstains_on_impossible_or_mismatched_shapes():
+    impossible = signal('sector-low-bad-rank', source='macro', type_='sector_rs_cross_low', asset='macro')
+    impossible.update({
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 19)',
+        'link': 'macro.html#dlg-sector',
+    })
+    wrong_asset = signal('sector-low-asset', source='macro', type_='sector_rs_cross_low', asset='XLP')
+    wrong_asset.update({
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 9)',
+        'link': 'macro.html#dlg-sector',
+    })
+    malformed = signal('sector-low-shape', source='macro', type_='sector_rs_cross_low', asset='macro')
+    malformed.update({
+        'detail': 'XLP relative strength is weak.',
+        'link': 'macro.html#dlg-sector',
+    })
+    rows = (impossible, wrong_asset, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_sector_rs_cross_high_gets_leadership_context_without_buy_or_flow_claims():
+    row = signal('sector-high', source='macro', type_='sector_rs_cross_high', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 18, 'fire_count': 3, 'continuity_verified': False,
+        'headline': '📈 A sector broke into leadership',
+        'detail': 'XLF RS vs SPY crossed above 90th pctile of 90d (now 90)',
+        'link': 'macro.html#dlg-sector',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_rs_cross_high'
+    assert 'top 10% of its 90-day rank' in brief['implication']
+    assert 'not evidence of fund flows' in brief['limitation']
+    assert 'instant buy signal' in brief['limitation']
+    assert '18 days old' in brief['limitation']
+    assert '3 recorded crossings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck sector leadership'
+
+
+def test_axis_confidence_floor_keeps_agreement_distinct_from_probability():
+    row = signal('inflation-confidence', source='macro', type_='inflation_confidence_floor', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 26,
+        'headline': '🎚️ Inflation read got muddy — trust the regime label less',
+        'detail': 'Inflation axis confidence dropped below 30%: 42% -> 27%',
+        'link': 'macro.html#regime-radar',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.inflation_confidence_floor'
+    assert 'agreement fell from 42% to 27%' in brief['implication']
+    assert 'not the probability that a regime label is correct' in brief['limitation']
+    assert '26 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck inflation confidence'
+    assert brief['evidence_label'] == 'Open current Regime Radar'
+
+
+def test_sector_holdings_accumulation_keeps_passive_flow_distinct_from_conviction():
+    row = signal('sector-flow', source='macro', type_='sector_holdings_accumulation', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 28,
+        'headline': '🐳 A sector ETF is over-weighting a stock beyond its price move',
+        'detail': 'XLC: CHTR weight +0.81pp beyond price (≈+$182M est. rebalance flow) (accumulating), 2026-08-14..2026-08-21 — cycle UNCONFIRMED TURN·HIGH-RISK · NIMBLE ONLY',
+        'link': 'us_stocks.html#accumulation',
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_holdings_accumulation'
+    assert 'XLC’s CHTR weight moved +0.81 percentage points' in brief['implication']
+    assert 'estimated rebalance flow of about +$182M' in brief['implication']
+    assert 'not discretionary manager conviction' in brief['limitation']
+    assert 'index reconstitution/float-weight flow' in brief['limitation']
+    assert 'not independent confirmation' in brief['limitation']
+    assert '28 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck passive sector flow'
+
+
+def test_commodity_positioning_keeps_cot_rank_as_crowding_context():
+    row = signal('commodity-positioning', source='commodity', type_='positioning', asset='oil')
+    row.update({
+        'tier': 'context', 'age_days': 17,
+        'headline': 'Oil COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (14th %ile, 3y).',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.positioning'
+    assert '14th percentile of its three-year range' in brief['implication']
+    assert 'crowded short' in brief['implication']
+    assert 'not proof a reversal or continuation is due' in brief['limitation']
+    assert '17 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck oil positioning'
+
+
+def test_remaining_context_families_abstain_on_inconsistent_shapes():
+    high = signal('sector-high-bad', source='macro', type_='sector_rs_cross_high', asset='macro')
+    high.update({
+        'headline': '📈 A sector broke into leadership',
+        'detail': 'XLF RS vs SPY crossed above 90th pctile of 90d (now 70)',
+        'link': 'macro.html#dlg-sector',
+    })
+    confidence = signal('confidence-bad', source='macro', type_='inflation_confidence_floor', asset='macro')
+    confidence.update({
+        'headline': '🎚️ Inflation read got muddy — trust the regime label less',
+        'detail': 'Inflation axis confidence dropped below 30%: 27% -> 42%',
+        'link': 'macro.html#regime-radar',
+    })
+    flow = signal('sector-flow-bad', source='macro', type_='sector_holdings_accumulation', asset='macro')
+    flow.update({
+        'headline': '🐳 A sector ETF is over-weighting a stock beyond its price move',
+        'detail': 'XLC: CHTR weight -0.81pp beyond price (trimming), 2026-08-21..2026-08-14',
+        'link': 'us_stocks.html#accumulation',
+    })
+    cot = signal('commodity-cot-bad', source='commodity', type_='positioning', asset='oil')
+    cot.update({
+        'headline': 'Oil COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (114th %ile, 3y).',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (high, confidence, flow, cot)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_momentum_gets_state_change_brief_without_directional_forecast():
+    row = signal('fx-momentum', source='forex', type_='momentum', asset='EURUSD')
+    row.update({
+        'tier': 'context', 'age_days': 2, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state neutral → bear. EUR/USD 1.1463.',
+        'detail_zh': '动量状态 中性 → 看空。EUR/USD 1.1463。',
+        'link': 'forex.html#timeline',
+        'validation': {
+            'verdict': 'documented',
+            'note': 'Conviction is documented, not separately backtested as a timing signal.',
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.momentum'
+    assert brief['attention'] == 'for_awareness'
+    assert 'EUR/USD momentum changed from neutral to bear at 1.1463' in brief['implication']
+    assert 'not a return forecast' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert 'do not prove the state persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX momentum'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_forex_momentum_fresh_bull_transition_keeps_context_attention():
+    row = signal('fx-momentum-bull', source='forex', type_='momentum', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'USD/JPY: Trend turned up',
+        'detail': 'Momentum state neutral → bull. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'for_awareness'
+    assert 'neutral to bull' in brief['implication']
+    assert 'calibrated probability' in brief['limitation']
+    assert 'no longer bull' in brief['reassessment']
+
+
+def test_forex_momentum_abstains_on_pair_direction_or_shape_mismatch():
+    wrong_direction = signal('fx-mom-dir', source='forex', type_='momentum', asset='EURUSD')
+    wrong_direction.update({
+        'headline': 'EUR/USD: Trend turned up',
+        'detail': 'Momentum state neutral → bear. EUR/USD 1.1463.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_pair = signal('fx-mom-pair', source='forex', type_='momentum', asset='EURUSD')
+    wrong_pair.update({
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state neutral → bear. GBP/USD 1.3344.',
+        'link': 'forex.html#timeline',
+    })
+    same_state = signal('fx-mom-same', source='forex', type_='momentum', asset='EURUSD')
+    same_state.update({
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state bear → bear. EUR/USD 1.1463.',
+        'link': 'forex.html#timeline',
+    })
+    rows = [wrong_direction, wrong_pair, same_state]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_trend_flip_keeps_ex_dollar_state_distinct_from_spot_forecast():
+    row = signal('fx-trend-flip', source='forex', type_='trend_flip', asset='USDCAD')
+    row.update({
+        'tier': 'context', 'age_days': 11,
+        'headline': 'USD/CAD: CAD 12-month trend turned up',
+        'detail': 'Idiosyncratic (ex-dollar) trailing-year momentum flipped down → up. USD/CAD 1.3805.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.trend_flip'
+    assert brief['attention'] == 'for_awareness'
+    assert 'CAD trailing-year momentum from down to up' in brief['implication']
+    assert 'idiosyncratic trend state' in brief['implication']
+    assert 'not a spot-price target' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '11 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck ex-dollar trend'
+
+
+def test_forex_structure_keeps_chart_state_descriptive():
+    row = signal('fx-structure', source='forex', type_='structure', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 12,
+        'headline': 'USD/JPY: Chart shape turned constructive',
+        'detail': 'Structure state neutral → constructive. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.structure'
+    assert 'USD/JPY structure from neutral to constructive' in brief['implication']
+    assert 'not breakout certainty' in brief['limitation']
+    assert '12 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX structure'
+
+
+def test_forex_positioning_keeps_cot_percentile_as_contrarian_context():
+    row = signal('fx-positioning', source='forex', type_='positioning', asset='EURUSD')
+    row.update({
+        'tier': 'context', 'age_days': 13,
+        'headline': 'EUR/USD COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (13th %ile, 3y) — contrarian context.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.positioning'
+    assert '13th percentile of its three-year range' in brief['implication']
+    assert 'crowded short' in brief['implication']
+    assert 'not proof a reversal is due' in brief['limitation']
+    assert '13 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX positioning'
+
+
+def test_forex_smile_flip_keeps_structural_bias_as_source_taxonomy():
+    row = signal('fx-smile-flip', source='forex', type_='smile_regime_flip', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 20,
+        'headline': 'Dollar smile flipped: US growth premium → Global reflation',
+        'detail': 'The dollar-smile decomposition regime changed: US growth premium → Global reflation. This shifts the structural USD bias — see dollar desk for context.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.smile_regime_flip'
+    assert 'US growth premium to Global reflation' in brief['implication']
+    assert 'source taxonomy' in brief['limitation']
+    assert 'not proof of a macro outcome' in brief['limitation']
+    assert '20 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck dollar smile'
+
+
+def test_forex_context_families_abstain_on_mismatched_semantics():
+    trend = signal('fx-trend-bad', source='forex', type_='trend_flip', asset='USDCAD')
+    trend.update({
+        'headline': 'USD/CAD: CAD 12-month trend turned down',
+        'detail': 'Idiosyncratic (ex-dollar) trailing-year momentum flipped down → up. USD/CAD 1.3805.',
+        'link': 'forex.html#timeline',
+    })
+    structure = signal('fx-structure-bad', source='forex', type_='structure', asset='USDJPY')
+    structure.update({
+        'headline': 'USD/JPY: Chart shape broke down',
+        'detail': 'Structure state neutral → constructive. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+    })
+    positioning = signal('fx-position-bad', source='forex', type_='positioning', asset='EURUSD')
+    positioning.update({
+        'headline': 'EUR/USD COT crowded short',
+        'detail': 'Speculative net positioning reached crowded long (101st %ile, 3y) — contrarian context.',
+        'link': 'forex.html#timeline',
+    })
+    smile = signal('fx-smile-bad', source='forex', type_='smile_regime_flip', asset='dollar')
+    smile.update({
+        'headline': 'Dollar smile flipped: US growth premium → Global reflation',
+        'detail': 'The dollar-smile decomposition regime changed: US growth premium → Global reflation. This shifts the structural USD bias — safe-haven bid active.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (trend, structure, positioning, smile)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_scenario_active_brief_preserves_threshold_without_claiming_intervention():
+    row = signal('fx-scenario', source='forex', type_='scenario', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 2, 'fire_count': 13, 'continuity_verified': False,
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'detail_zh': '干预关注压力情景超过激活阈值（2/2+项触发，强度25%）。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.scenario'
+    assert brief['attention'] == 'for_awareness'
+    assert '2/2+ legs firing and 25% intensity' in brief['implication']
+    assert 'not confirmation' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert 'do not prove the scenario stayed active' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX scenario'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert 'falls below its activation threshold' in brief['reassessment']
+
+
+def test_forex_scenario_inactive_edge_is_supported_without_relaxing_risk_blindly():
+    row = signal('fx-scenario-off', source='forex', type_='scenario', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Dollar squeeze pattern no longer active',
+        'detail': 'The dollar squeeze stress pattern fell below the activation threshold.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'no longer active' in brief['implication']
+    assert 'verify Dollar squeeze remains inactive' in brief['next_action']
+    assert 'reactivates' in brief['reassessment']
+    assert 'return forecast' in brief['limitation']
+
+
+def test_forex_scenario_abstains_on_impossible_threshold_or_name_mismatch():
+    impossible = signal('fx-scenario-impossible', source='forex', type_='scenario', asset='dollar')
+    impossible.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (1/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    mismatch = signal('fx-scenario-mismatch', source='forex', type_='scenario', asset='dollar')
+    mismatch.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The dollar squeeze stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-scenario-asset', source='forex', type_='scenario', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    rows = [impossible, mismatch, wrong_asset]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_bonds_move_brief_does_not_equate_calm_with_market_safety():
+    row = signal('move-calm', source='bonds', type_='rates_vol', asset='rates')
+    row.update({
+        'tier': 'watch', 'age_days': 3, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the calm band at 76. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'detail_zh': 'MOVE指数进入平静区间，报 76。MOVE跳升是债市系统性压力的温度计。',
+        'link': 'bonds.html#timeline',
+        'validation': {
+            'verdict': 'scored',
+            'scorecard_name': 'Bond-health drawdown gauge',
+            'ic': 0.234,
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'bonds.rates_vol'
+    assert brief['attention'] == 'for_awareness'
+    assert 'MOVE crossed into the calm band at 76' in brief['implication']
+    assert 'not proof markets are safe' in brief['limitation']
+    assert 'broader bond-health drawdown gauge' in brief['limitation']
+    assert 'does not make this single MOVE-band crossing an independent return forecast' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert 'do not prove the band persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck MOVE'
+    assert brief['evidence_label'] == 'Open current Bonds timeline'
+
+
+def test_bonds_move_elevated_state_is_context_not_equity_direction_call():
+    row = signal('move-elevated', source='bonds', type_='rates_vol', asset='rates')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Rates volatility (MOVE) → elevated',
+        'detail': "The MOVE index crossed into the elevated band at 126. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'scored', 'scorecard_name': 'Bond-health drawdown gauge'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'elevated band at 126' in brief['implication']
+    assert 'directional equity call' in brief['limitation']
+    assert 'MOVE leaves the elevated band' in brief['reassessment']
+
+
+def test_bonds_move_abstains_on_band_or_asset_mismatch():
+    mismatch = signal('move-mismatch', source='bonds', type_='rates_vol', asset='rates')
+    mismatch.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the elevated band at 126. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+    })
+    wrong_asset = signal('move-asset', source='bonds', type_='rates_vol', asset='credit')
+    wrong_asset.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the calm band at 76. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+    })
+    malformed = signal('move-shape', source='bonds', type_='rates_vol', asset='rates')
+    malformed.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': 'MOVE is calm so stocks are safe.',
+        'link': 'bonds.html#timeline',
+    })
+    rows = [mismatch, wrong_asset, malformed]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_stabilizing_shock_supports_gold_silver_and_copper_source_units():
+    cases = [
+        ('silver', 'Silver', '63.97', '$/oz', 10, 'for_awareness'),
+        ('gold', 'Gold', '4,485.60', '$/oz', 20, 'for_awareness'),
+        ('copper', 'Copper', '5.12', '$/lb', 1, 'watch_next'),
+    ]
+    for asset, label, price, unit, age, attention in cases:
+        row = signal('shock-' + asset, source='commodity', type_='price_shock', asset=asset)
+        row.update({
+            'tier': 'watch', 'age_days': age,
+            'detail': f'{label} {price} {unit} — the acute move is settling.',
+            'link': 'commodities.html#timeline',
+            'validation': {'verdict': 'documented'},
+        })
+        brief = project([row])['briefs'][row['alert_id']]
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'commodity.price_shock'
+        assert brief['attention'] == attention
+        assert f'acute {label.lower()} move is losing intensity' in brief['implication']
+        assert 'does not establish direction' in brief['limitation']
+        assert brief['next_action_label'] == f'Recheck {asset}'
+        if age > 2:
+            assert f'{age} days old' in brief['limitation']
+
+
+def test_commodity_stabilizing_shock_abstains_on_asset_or_unit_mismatch():
+    wrong_asset = signal('shock-asset', source='commodity', type_='price_shock', asset='gold')
+    wrong_asset.update({
+        'detail': 'Silver 63.97 $/oz — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_unit = signal('shock-unit', source='commodity', type_='price_shock', asset='silver')
+    wrong_unit.update({
+        'detail': 'Silver 63.97 $/bbl — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    unsupported = signal('shock-unsupported', source='commodity', type_='price_shock', asset='uranium')
+    unsupported.update({
+        'detail': 'Uranium 82.00 $/lb — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = [wrong_asset, wrong_unit, unsupported]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_momentum_brief_keeps_state_change_descriptive():
+    row = signal('commodity-momentum', source='commodity', type_='momentum', asset='silver')
+    row.update({
+        'tier': 'context', 'age_days': 3,
+        'headline': 'Silver momentum → bear',
+        'detail': 'Momentum state neutral → bear. Silver 65.47 $/oz.',
+        'detail_zh': '动量状态 中性 → 看空。白银 65.47 美元/盎司。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.momentum'
+    assert brief['attention'] == 'for_awareness'
+    assert 'Silver momentum from neutral to bear' in brief['implication']
+    assert 'not a directional forecast' in brief['implication']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck silver momentum'
+    assert brief['evidence_label'] == 'Open current commodity timeline'
+
+
+def test_commodity_momentum_abstains_on_headline_asset_or_unit_mismatch():
+    rows = []
+    wrong_headline = signal('commodity-mom-head', source='commodity', type_='momentum', asset='gold')
+    wrong_headline.update({
+        'headline': 'Gold momentum → bull',
+        'detail': 'Momentum state neutral → bear. Gold 4,387.50 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_headline)
+    wrong_asset = signal('commodity-mom-asset', source='commodity', type_='momentum', asset='silver')
+    wrong_asset.update({
+        'headline': 'Gold momentum → bear',
+        'detail': 'Momentum state neutral → bear. Gold 4,387.50 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_asset)
+    wrong_unit = signal('commodity-mom-unit', source='commodity', type_='momentum', asset='copper')
+    wrong_unit.update({
+        'headline': 'Copper momentum → bull',
+        'detail': 'Momentum state neutral → bull. Copper 6.80 $/oz.',
+        'link': 'commodities.html#timeline',
+    })
+    rows.append(wrong_unit)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_allocation_brief_keeps_optimal_as_source_model_label():
+    row = signal('commodity-allocation', source='commodity', type_='allocation', asset='copper')
+    row.update({
+        'tier': 'context', 'age_days': 4,
+        'headline': 'Copper allocation → 0%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'detail_zh': '最优策略从 50% 调整为 0%（动量 × 风险）。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.allocation'
+    assert brief['attention'] == 'for_awareness'
+    assert 'changed its Copper allocation from 50% to 0%' in brief['implication']
+    assert '“Optimal strategy” is the source model label' in brief['limitation']
+    assert 'not proof that the weight is optimal for an investor' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '4 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck copper allocation'
+
+
+def test_commodity_allocation_abstains_on_headline_or_weight_mismatch():
+    mismatch = signal('commodity-alloc-mismatch', source='commodity', type_='allocation', asset='silver')
+    mismatch.update({
+        'headline': 'Silver allocation → 50%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('commodity-alloc-asset', source='commodity', type_='allocation', asset='gold')
+    wrong_asset.update({
+        'headline': 'Silver allocation → 0%',
+        'detail': 'Optimal strategy moved 50% → 0% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    impossible = signal('commodity-alloc-bad', source='commodity', type_='allocation', asset='oil')
+    impossible.update({
+        'headline': 'Oil allocation → 101%',
+        'detail': 'Optimal strategy moved 50% → 101% (momentum × risk).',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, wrong_asset, impossible)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_value_brief_keeps_gsr_as_relative_rank_context():
+    for asset, label in (('gold', 'Gold'), ('silver', 'Silver')):
+        row = signal('commodity-value-' + asset, source='commodity', type_='value', asset=asset)
+        row.update({
+            'tier': 'context', 'age_days': 3,
+            'headline': f'{label}: gold/silver ratio silver rich',
+            'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+            'detail_zh': '金银比处于 3 年期第 18 百分位 — 白银相对黄金偏贵。',
+            'link': 'commodities.html#timeline',
+            'validation': {'verdict': 'documented'},
+        })
+        before = deepcopy(row)
+        brief = project([row])['briefs'][row['alert_id']]
+        assert row == before
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'commodity.value'
+        assert brief['attention'] == 'for_awareness'
+        assert 'three-year gold/silver-ratio percentile at 18' in brief['implication']
+        assert 'silver rich' in brief['implication']
+        assert 'not intrinsic fair value' in brief['limitation']
+        assert 'not separately backtested as a timing signal' in brief['limitation']
+        assert '3 days old' in brief['limitation']
+        assert brief['next_action_label'] == 'Recheck gold/silver ratio'
+
+
+def test_commodity_value_abstains_on_state_asset_or_percentile_mismatch():
+    mismatch = signal('commodity-value-state', source='commodity', type_='value', asset='gold')
+    mismatch.update({
+        'headline': 'Gold: gold/silver ratio silver cheap',
+        'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('commodity-value-asset', source='commodity', type_='value', asset='copper')
+    wrong_asset.update({
+        'headline': 'Gold: gold/silver ratio silver rich',
+        'detail': 'GSR at 18th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    impossible = signal('commodity-value-pct', source='commodity', type_='value', asset='silver')
+    impossible.update({
+        'headline': 'Silver: gold/silver ratio silver rich',
+        'detail': 'GSR at 108th %ile (3y) — silver rich vs gold.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, wrong_asset, impossible)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_bonds_curve_regime_brief_attributes_macro_interpretation_to_source():
+    row = signal('curve-bear-flat', source='bonds', type_='curve_regime', asset='curve')
+    row.update({
+        'tier': 'watch', 'age_days': 19, 'fire_count': 4, 'continuity_verified': False,
+        'headline': 'Curve regime → Bear flattener',
+        'detail': 'The Treasury-curve move turned bear flattener — short rates rising faster than long — a hawkish Fed; classic late-cycle tightening.',
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'bonds.curve_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'source classifies the Treasury move as bear flattener' in brief['implication']
+    assert 'source interpretation, not proof of Fed motive' in brief['limitation']
+    assert '19 days old' in brief['limitation']
+    assert 'do not prove the classification persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck curve'
+
+
+def test_bonds_curve_regime_fresh_bull_steepener_is_watch_next_not_trade_call():
+    row = signal('curve-bull-steep', source='bonds', type_='curve_regime', asset='curve')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Curve regime → Bull steepener',
+        'detail': 'The Treasury-curve move turned bull steepener — short rates falling faster than long — the market is pricing Fed cuts.',
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'source classifies the Treasury move as bull steepener' in brief['implication']
+    assert 'not proof of Fed motive' in brief['limitation']
+    assert 'directional trade' in brief['limitation']
+    assert 'current curve is no longer bull steepener' in brief['reassessment']
+
+
+def test_bonds_curve_regime_abstains_on_detail_or_asset_mismatch():
+    bad_detail = signal('curve-detail', source='bonds', type_='curve_regime', asset='curve')
+    bad_detail.update({
+        'headline': 'Curve regime → Bear flattener',
+        'detail': 'The Treasury curve changed for an unsupported reason.',
+        'link': 'bonds.html#timeline',
+    })
+    bad_asset = signal('curve-asset', source='bonds', type_='curve_regime', asset='rates')
+    bad_asset.update({
+        'headline': 'Curve regime → Bull steepener',
+        'detail': 'The Treasury-curve move turned bull steepener — short rates falling faster than long — the market is pricing Fed cuts.',
+        'link': 'bonds.html#timeline',
+    })
+    briefs = project([bad_detail, bad_asset])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (bad_detail, bad_asset))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (bad_detail, bad_asset))
+
+
+def test_commodity_complex_regime_keeps_stagflation_as_source_taxonomy():
+    row = signal('complex-stag', source='commodity', type_='complex_regime', asset='complex')
+    row.update({
+        'tier': 'watch', 'age_days': 27,
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'detail_zh': '美元 × 增长象限从 理想增长 切换为 滞胀。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.complex_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'Goldilocks to Stagflation' in brief['implication']
+    assert 'source quadrant label' in brief['limitation']
+    assert 'not proof the economy is in that macro state' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '27 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck commodity regime'
+    assert brief['evidence_label'] == 'Open current commodity timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_commodity_complex_reflation_is_watch_next_with_input_falsifier():
+    row = signal('complex-reflation', source='commodity', type_='complex_regime', asset='complex')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Commodity complex → Reflation',
+        'detail': 'The dollar × growth quadrant shifted Stagflation → Reflation.',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'directional commodity trade' in brief['limitation']
+    assert 'dollar/growth inputs no longer map to that quadrant' in brief['reassessment']
+    assert 'newer transition supersedes this event' in brief['reassessment']
+
+
+def test_commodity_complex_regime_abstains_on_headline_asset_or_transition_mismatch():
+    mismatch = signal('complex-mismatch', source='commodity', type_='complex_regime', asset='complex')
+    mismatch.update({
+        'headline': 'Commodity complex → Goldilocks',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    same = signal('complex-same', source='commodity', type_='complex_regime', asset='complex')
+    same.update({
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Stagflation → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('complex-asset', source='commodity', type_='complex_regime', asset='gold')
+    wrong_asset.update({
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, same, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_vector_momentum_trigger_keeps_old_bullish_transition_historical():
+    row = signal('vector-momentum-old', source='vector', type_='momentum_trigger', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 29,
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score +0.88 (bear → bull); ±0.5 is the trigger band.',
+        'detail_zh': '动量评分 +0.88（看空 → 看多）；±0.5 为触发区间。',
+        'edge': 'Lower conviction — the edge weakened after 2021 (ETF era).',
+        'edge_zh': '信心较低 — 该优势在 2021 年（ETF 时代）后减弱。',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.momentum_trigger'
+    assert brief['attention'] == 'for_awareness'
+    assert 'bear → bull' in brief['implication']
+    assert '+0.88' in brief['implication']
+    assert 'Lower conviction' in brief['limitation']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'edge weakened after 2021' in brief['limitation']
+    assert '29 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck momentum'
+    assert brief['evidence_label'] == 'Open current Vector momentum panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_vector_momentum_bearish_and_neutral_states_are_watch_next():
+    bearish = signal('vector-momentum-bear', source='vector', type_='momentum_trigger', asset='vector')
+    bearish.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Momentum turned Bearish',
+        'detail': 'Momentum score -0.88 (neutral → bear); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    neutral = signal('vector-momentum-neutral', source='vector', type_='momentum_trigger', asset='vector')
+    neutral.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Momentum cooled to neutral',
+        'detail': 'Momentum score +0.17 (bull → neutral); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    briefs = project([bearish, neutral])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'supported' for row in (bearish, neutral))
+    assert all(briefs[row['alert_id']]['attention'] == 'watch_next' for row in (bearish, neutral))
+    assert 'bearish state' in briefs[bearish['alert_id']]['implication']
+    assert 'neutral state' in briefs[neutral['alert_id']]['implication']
+    assert 'directional trade instruction' in briefs[bearish['alert_id']]['limitation']
+    assert 'current momentum state is no longer bear' in briefs[bearish['alert_id']]['reassessment']
+    assert 'current momentum state is no longer neutral' in briefs[neutral['alert_id']]['reassessment']
+
+
+def test_vector_momentum_trigger_abstains_on_headline_asset_or_score_mismatch():
+    wrong_headline = signal('vector-momentum-head', source='vector', type_='momentum_trigger', asset='vector')
+    wrong_headline.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score -0.88 (neutral → bear); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    wrong_asset = signal('vector-momentum-asset', source='vector', type_='momentum_trigger', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score +0.88 (neutral → bull); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    wrong_score = signal('vector-momentum-score', source='vector', type_='momentum_trigger', asset='vector')
+    wrong_score.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score -0.12 (neutral → bull); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    same = signal('vector-momentum-same', source='vector', type_='momentum_trigger', asset='vector')
+    same.update({
+        'headline': 'Momentum cooled to neutral',
+        'detail': 'Momentum score +0.12 (neutral → neutral); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    rows = (wrong_headline, wrong_asset, wrong_score, same)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_vector_structure_shift_keeps_old_bullish_transition_historical():
+    row = signal('vector-structure-old', source='vector', type_='structure_shift', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 30,
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now +0.91 (neutral → constructive).',
+        'detail_zh': '结构振荡器现为 +0.91（中性 → 偏多）。',
+        'edge': 'Lower conviction — the edge weakened after 2021 (ETF era).',
+        'edge_zh': '信心较低 — 该优势在 2021 年（ETF 时代）后减弱。',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.structure_shift'
+    assert brief['attention'] == 'for_awareness'
+    assert 'neutral → constructive' in brief['implication']
+    assert '+0.91' in brief['implication']
+    assert 'Lower conviction' in brief['limitation']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'edge weakened after 2021' in brief['limitation']
+    assert '30 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck structure'
+    assert brief['evidence_label'] == 'Open current Vector structure panel'
+
+
+def test_fresh_vector_structure_bearish_and_neutral_states_are_watch_next():
+    broken = signal('vector-structure-broken', source='vector', type_='structure_shift', asset='vector')
+    broken.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Structure Shift: Bearish trigger',
+        'detail': 'Structure oscillator now -0.94 (neutral → broken).',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    neutral = signal('vector-structure-neutral', source='vector', type_='structure_shift', asset='vector')
+    neutral.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Structure Shift: neutral',
+        'detail': 'Structure oscillator now +0.04 (constructive → neutral).',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    briefs = project([broken, neutral])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'supported' for row in (broken, neutral))
+    assert all(briefs[row['alert_id']]['attention'] == 'watch_next' for row in (broken, neutral))
+    assert 'broken structure state' in briefs[broken['alert_id']]['implication']
+    assert 'neutral structure state' in briefs[neutral['alert_id']]['implication']
+    assert 'directional trade instruction' in briefs[broken['alert_id']]['limitation']
+    assert 'current structure state is no longer broken' in briefs[broken['alert_id']]['reassessment']
+    assert 'current structure state is no longer neutral' in briefs[neutral['alert_id']]['reassessment']
+
+
+def test_vector_structure_shift_abstains_on_headline_asset_or_score_mismatch():
+    wrong_headline = signal('vector-structure-head', source='vector', type_='structure_shift', asset='vector')
+    wrong_headline.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now -0.94 (neutral → broken).',
+        'link': 'vector.html#structure',
+    })
+    wrong_asset = signal('vector-structure-asset', source='vector', type_='structure_shift', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now +0.91 (neutral → constructive).',
+        'link': 'vector.html#structure',
+    })
+    wrong_score = signal('vector-structure-score', source='vector', type_='structure_shift', asset='vector')
+    wrong_score.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now -0.12 (neutral → constructive).',
+        'link': 'vector.html#structure',
+    })
+    same = signal('vector-structure-same', source='vector', type_='structure_shift', asset='vector')
+    same.update({
+        'headline': 'Structure Shift: neutral',
+        'detail': 'Structure oscillator now +0.12 (neutral → neutral).',
+        'link': 'vector.html#structure',
+    })
+    rows = (wrong_headline, wrong_asset, wrong_score, same)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_triple_red_active_keeps_forced_deleveraging_as_hypothesis():
+    row = signal('triple-red-active', source='forex', type_='triple_red', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 22, 'continuity_verified': False,
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'detail_zh': '美元未发挥避险功能：美元、标普500及美债（价格）过去一月均下跌。警惕强制去杠杆风险。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.triple_red'
+    assert brief['attention'] == 'for_awareness'
+    assert 'USD, S&P 500 and Treasury prices all falling' in brief['implication']
+    assert 'do not establish forced deleveraging as the cause' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert 'not proof this co-movement persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck triple-red'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+
+
+def test_forex_triple_red_cleared_does_not_claim_system_safety():
+    row = signal('triple-red-clear', source='forex', type_='triple_red', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Triple-red cleared: safe-haven function may be restoring',
+        'detail': 'The dollar, equities, and Treasuries are no longer all declining together. The acute co-movement stress has eased.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.triple_red'
+    assert brief['attention'] == 'for_awareness'
+    assert 'acute triple-red co-movement has eased' in brief['implication']
+    assert 'does not prove safe-haven behavior is fully restored' in brief['limitation']
+    assert 'risk assets are safe to add' in brief['limitation']
+    assert 'return to simultaneous declines' in brief['reassessment']
+    assert brief['next_action_label'] == 'Recheck triple-red'
+
+
+def test_forex_triple_red_abstains_on_asset_headline_or_detail_mismatch():
+    wrong_asset = signal('triple-red-asset', source='forex', type_='triple_red', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'link': 'forex.html#timeline',
+    })
+    mixed = signal('triple-red-mixed', source='forex', type_='triple_red', asset='dollar')
+    mixed.update({
+        'headline': 'Triple-red cleared: safe-haven function may be restoring',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'link': 'forex.html#timeline',
+    })
+    malformed = signal('triple-red-malformed', source='forex', type_='triple_red', asset='dollar')
+    malformed.update({
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'All three assets fell so forced deleveraging is confirmed.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (wrong_asset, mixed, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_holdings_active_change_keeps_flow_normalization_distinct_from_conviction():
+    row = signal('holdings-active', source='macro', type_='holdings_active_change', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 5, 'fire_count': 44, 'continuity_verified': False,
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager added META by +25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'detail_zh': 'ARKK：经理 加仓 META 仓位 +25%（2026-09-09..2026-09-16，已按资金流标准化）',
+        'edge': 'Context — what an active manager did, not a recommendation.',
+        'link': 'us_stocks.html#holdings',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.holdings_active_change'
+    assert brief['attention'] == 'for_awareness'
+    assert 'ARKK' in brief['implication'] and 'META' in brief['implication']
+    assert 'flow-normalized holdings calculation' in brief['implication']
+    assert 'does not establish the manager’s motive, conviction' in brief['limitation']
+    assert 'context rather than a recommendation' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert '44 recorded firings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck manager holding'
+    assert brief['evidence_label'] == 'Open current tracked holdings'
+
+
+def test_holdings_active_change_abstains_on_sign_headline_or_window_mismatch():
+    wrong_sign = signal('holdings-sign', source='macro', type_='holdings_active_change', asset='macro')
+    wrong_sign.update({
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager added META by -25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    wrong_headline = signal('holdings-head', source='macro', type_='holdings_active_change', asset='macro')
+    wrong_headline.update({
+        'headline': 'Copy this manager trade',
+        'detail': 'ARKK: manager added META by +25% of position (2026-09-09..2026-09-16, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    bad_window = signal('holdings-window', source='macro', type_='holdings_active_change', asset='macro')
+    bad_window.update({
+        'headline': '🐳 A star fund manager made a notable move',
+        'detail': 'ARKK: manager cut META by -25% of position (2026-09-16..2026-09-09, flow-normalized)',
+        'link': 'us_stocks.html#holdings',
+    })
+    rows = (wrong_sign, wrong_headline, bad_window)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_circuit_breaker_open_is_missing_evidence_not_market_calm():
+    row = signal('breaker-open', source='macro', type_='circuit_breaker_open', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 10, 'fire_count': 7, 'continuity_verified': False,
+        'headline': '🔌 A data source went dark',
+        'detail': "Source 'china_universe' marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade",
+        'detail_zh': "数据源 'china_universe' 连续 3 次失败后被标记为中断 —采集器暂停直至恢复；相关信号置信度下降",
+        'edge': 'Plumbing — data health, not a market signal.',
+        'link': 'macro.html#health',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.circuit_breaker_open'
+    assert 'china_universe' in brief['implication']
+    assert '3 consecutive collection failures' in brief['implication']
+    assert 'not a market signal' in brief['limitation']
+    assert 'Missing evidence must not be interpreted as a quiet market' in brief['limitation']
+    assert '10 days old' in brief['limitation']
+    assert '7 recorded firings' in brief['limitation']
+    assert brief['next_action_label'] == 'Check source health'
+
+
+def test_circuit_breaker_open_abstains_on_wrong_asset_or_unsupported_shape():
+    wrong_asset = signal('breaker-asset', source='macro', type_='circuit_breaker_open', asset='china')
+    wrong_asset.update({
+        'headline': '🔌 A data source went dark',
+        'detail': "Source 'china_universe' marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade",
+        'link': 'macro.html#health',
+    })
+    malformed = signal('breaker-shape', source='macro', type_='circuit_breaker_open', asset='macro')
+    malformed.update({
+        'headline': '🔌 A data source went dark',
+        'detail': 'China universe is unavailable so China risk is zero.',
+        'link': 'macro.html#health',
+    })
+    briefs = project([wrong_asset, malformed])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (wrong_asset, malformed))
+
+
+def test_forex_transmission_effect_and_stability_are_relationship_context_only():
+    effect = signal('fx-trans-effect', source='forex', type_='transmission_shift', asset='dollar')
+    effect.update({
+        'tier': 'context', 'age_days': 5, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Dollar link to US bonds (10y) changed: now a headwind',
+        'detail': 'The US bonds (10y) dollar-transmission effect shifted from neutral to headwind.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    stability = signal('fx-trans-stability', source='forex', type_='transmission_shift', asset='dollar')
+    stability.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Dollar link to Gold: stability changed to flipping',
+        'detail': 'The Gold dollar-transmission stability shifted from stable to flipping.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    briefs = project([effect, stability])['briefs']
+    for row in (effect, stability):
+        brief = briefs[row['alert_id']]
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'forex.transmission_shift'
+        assert 'not a causal driver' in brief['limitation']
+        assert 'not separately backtested as a timing signal' in brief['limitation']
+        assert brief['next_action_label'] == 'Recheck dollar transmission'
+    assert 'US bonds (10y)' in briefs[effect['alert_id']]['implication']
+    assert '5 days old' in briefs[effect['alert_id']]['limitation']
+    assert '2 recorded transitions' in briefs[effect['alert_id']]['limitation']
+    assert 'Gold stability from stable to flipping' in briefs[stability['alert_id']]['implication']
+
+
+def test_forex_transmission_abstains_on_headline_detail_or_asset_mismatch():
+    mismatch = signal('fx-trans-mismatch', source='forex', type_='transmission_shift', asset='dollar')
+    mismatch.update({
+        'headline': 'Dollar link to Gold changed: now a headwind',
+        'detail': 'The Gold dollar-transmission effect shifted from neutral to tailwind.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_name = signal('fx-trans-name', source='forex', type_='transmission_shift', asset='dollar')
+    wrong_name.update({
+        'headline': 'Dollar link to Gold: stability changed to flipping',
+        'detail': 'The Oil dollar-transmission stability shifted from stable to flipping.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-trans-asset', source='forex', type_='transmission_shift', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Dollar link to Gold changed: now a tailwind',
+        'detail': 'The Gold dollar-transmission effect shifted from neutral to tailwind.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (mismatch, wrong_name, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)

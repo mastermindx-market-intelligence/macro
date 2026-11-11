@@ -1,0 +1,40 @@
+{
+  "schema": "mastermind.alert_center.legacy_parity.v3",
+  "observed_at": "2026-09-20T08:20:00Z",
+  "baseline": "origin/main",
+  "baseline_commit": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+  "candidate_commit": "34ead81ae062d15636af2af763f3859b523ba7a6",
+  "board_day": "2026-09-20",
+  "baseline_module_sha256": "f71ddcfb509a7f3831f5b2777c893a9af7a233c756369b6d75db4b7b24f8105e",
+  "candidate_module_sha256": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
+  "legacy_fields_compared": [
+    "alerts",
+    "asof",
+    "board_date",
+    "board_read",
+    "board_tz",
+    "coverage",
+    "coverage_state",
+    "cross_asset",
+    "events",
+    "quarantined",
+    "regime",
+    "risk_backdrop",
+    "storylines",
+    "summary",
+    "volume",
+    "weights",
+    "window_days"
+  ],
+  "ignored_fields": [
+    "generated_utc",
+    "explorer"
+  ],
+  "differences": [],
+  "baseline_payload_sha256": "6f46134e92d70bda5fc91ad4ef6cb0910cb98155f96b5e73aed3e5f85c044170",
+  "candidate_payload_sha256": "6f46134e92d70bda5fc91ad4ef6cb0910cb98155f96b5e73aed3e5f85c044170",
+  "baseline_alerts": 60,
+  "candidate_alerts": 60,
+  "same_input_context": true,
+  "production_acceptance": false
+}

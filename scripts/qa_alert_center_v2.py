@@ -1,0 +1,535 @@
+#!/usr/bin/env python3
+"""Browser proof for an isolated real-builder Alert Center output."""
+from __future__ import annotations
+import argparse
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import json
+from pathlib import Path
+import threading
+import unicodedata
+from playwright.sync_api import sync_playwright
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *args):
+        pass
+
+
+def plain(text: str) -> str:
+    text = str(text or '').strip()
+    while text and (unicodedata.category(text[0])[0] in 'PS' or text[0].isspace()):
+        text = text[1:]
+    return text.strip()
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--output', type=Path, required=True)
+    args = ap.parse_args()
+    out = args.output.resolve()
+    assert (out / 'alerts.html').is_file(), 'Run prove_alert_center_v2.py first'
+    payload = json.loads((out / 'factordata/alerts_triage.json').read_text())
+    by_id = {a['alert_id']: a for a in payload['explorer']['signals']}
+    report = {'checks': [], 'screenshots': [], 'page_errors': [], 'production_acceptance': False}
+    server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=str(out)))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    url = f'http://127.0.0.1:{server.server_port}/alerts.html'
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(viewport={'width': 1440, 'height': 900}, locale='en-US')
+            page = context.new_page()
+            page.on('pageerror', lambda error: report['page_errors'].append(str(error)))
+            page.goto(url, wait_until='domcontentloaded')
+            page.locator('#ac-results .acx-row').first.wait_for()
+            assert page.locator('#ac-results .acx-row').count() == 8
+            top_ids = [row['alert_id'] for row in payload['alerts'][:8]]
+            top_briefs = [payload['explorer']['briefs'][id_] for id_ in top_ids]
+            attention_labels = {
+                'review_first': 'Review first',
+                'earlier_priority': 'Earlier priority',
+                'watch_next': 'Watch next',
+                'for_awareness': 'For awareness',
+            }
+            expected_groups = []
+            for brief in top_briefs:
+                attention = brief['attention']
+                if attention not in expected_groups:
+                    expected_groups.append(attention)
+            visible_groups = page.locator('#ac-results .acx-attention-title').evaluate_all(
+                '(nodes) => nodes.map(node => node.textContent.trim())')
+            assert visible_groups == [attention_labels[value] for value in expected_groups]
+            assert ('Earlier priority' in visible_groups) == any(
+                brief['attention'] == 'earlier_priority' for brief in top_briefs)
+            assert ('Watch next' in visible_groups) == any(
+                brief['attention'] == 'watch_next' for brief in top_briefs)
+            report['checks'].append('Now renders only canonical tier+freshness groups present in the current snapshot')
+            assert all(brief['status'] == 'supported' for brief in top_briefs)
+            expected_actions = [brief['next_action_label'] + ' →' for brief in top_briefs]
+            visible_actions = page.locator('#ac-results .acx-row-action').evaluate_all(
+                '(rows) => rows.map(row => row.textContent.trim())')
+            assert visible_actions == expected_actions
+            report['checks'].append('Every first-glance row has a source-bound next action instead of generic evidence copy')
+            page.select_option('#ac-source', 'bonds')
+            ids = page.locator('#ac-results .acx-row').evaluate_all('(rows) => rows.map(r => r.dataset.alertId)')
+            assert ids and all(by_id[id_]['source'] == 'bonds' for id_ in ids)
+            report['checks'].append('Full-source Bonds evidence is reachable beyond the capped queue')
+            page.fill('#ac-search', 'NO_MATCH_EXPECTED_4729')
+            page.locator('#ac-noresults').wait_for(state='visible')
+            assert page.locator('#ac-results .acx-row').count() == 0
+            page.click('#ac-reset-empty')
+            assert page.locator('#ac-results .acx-row').count() == 25
+            report['checks'].append('Search AND source filtering, genuine no-results, and reset')
+            selected = page.locator('#ac-results .acx-row').first.get_attribute('data-alert-id')
+            page.locator('#ac-results .acx-row').first.click()
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert selected in page.url
+            assert page.locator('#ac-share').get_attribute('href') == page.url
+            page.reload(wait_until='domcontentloaded')
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator('#ac-detail-title').inner_text()
+            report['checks'].append('Evidence selection has a reloadable canonical-ID permalink')
+            page.keyboard.press('Escape')
+            assert not page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator(':focus').get_attribute('data-alert-id') == selected
+            report['checks'].append('Native Escape closes evidence and restores the selected row')
+            supported_id = next(k for k, v in payload['explorer']['briefs'].items() if v.get('status') == 'supported')
+            supported = payload['explorer']['briefs'][supported_id]
+            page.goto(url + '#view=explore&id=' + supported_id, wait_until='domcontentloaded')
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator('#ac-detail').get_by_text('Takeaway', exact=True).count() == 1
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == supported['next_action']
+            assert 'current source panel' in page.locator('#ac-detail').inner_text().lower()
+            report['checks'].append('A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary')
+            watch_id = top_ids[3]
+            watch_brief = payload['explorer']['briefs'][watch_id]
+            page.goto(url + '#view=explore&id=' + watch_id, wait_until='domcontentloaded')
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == watch_brief['next_action']
+            assert watch_brief['limitation'] in page.locator('#ac-detail').inner_text()
+            report['checks'].append('A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up')
+            risk_families = {
+                'commodity.risk_regime', 'forex.risk_regime', 'macro.gex_flip_cross',
+                'macro.hidden_fragility', 'macro.breadth_divergence',
+            }
+            risk_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in risk_families
+            }
+            assert set(risk_ids) == risk_families
+            for family in sorted(risk_families):
+                risk_id = risk_ids[family]
+                risk_brief = payload['explorer']['briefs'][risk_id]
+                page.goto(url + '#view=explore&id=' + risk_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert risk_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == risk_brief['next_action']
+                assert risk_brief['evidence_label'] in text
+            report['checks'].append('Five next-priority risk families render source-bound limits, actions and evidence destinations')
+            liquidity_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                if brief.get('family') == 'macro.net_liquidity_roc_flip')
+            liquidity_brief = payload['explorer']['briefs'][liquidity_id]
+            page.goto(url + '#view=explore&id=' + liquidity_id, wait_until='domcontentloaded')
+            liquidity_text = page.locator('#ac-detail').inner_text()
+            assert liquidity_brief['limitation'] in liquidity_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == liquidity_brief['next_action']
+            assert liquidity_brief['evidence_label'] in liquidity_text
+            page.screenshot(path=str(out / 'desktop-net-liquidity.png'))
+            report['screenshots'].append('desktop-net-liquidity.png')
+            report['checks'].append('Net-liquidity flips expose current-state sizing work without becoming timing signals')
+            oi_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                         if brief.get('family') == 'vector.oi_crowding_derisk')
+            oi_brief = payload['explorer']['briefs'][oi_id]
+            page.goto(url + '#view=explore&id=' + oi_id, wait_until='domcontentloaded')
+            oi_text = page.locator('#ac-detail').inner_text()
+            assert oi_brief['limitation'] in oi_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == oi_brief['next_action']
+            assert oi_brief['evidence_label'] in oi_text
+            page.screenshot(path=str(out / 'desktop-oi-crowding.png'))
+            report['screenshots'].append('desktop-oi-crowding.png')
+            report['checks'].append('OI crowding exposes leverage verification without becoming a crash call')
+            market_mode_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.market_mode')
+            market_mode_brief = payload['explorer']['briefs'][market_mode_id]
+            page.goto(url + '#view=explore&id=' + market_mode_id, wait_until='domcontentloaded')
+            market_mode_text = page.locator('#ac-detail').inner_text()
+            assert market_mode_brief['limitation'] in market_mode_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == market_mode_brief['next_action']
+            assert market_mode_brief['evidence_label'] in market_mode_text
+            page.screenshot(path=str(out / 'desktop-vector-market-mode.png'))
+            report['screenshots'].append('desktop-vector-market-mode.png')
+            report['checks'].append('Vector market mode exposes trend-efficiency/risk state without becoming a directional trade call')
+            vector_momentum_id = next((
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.momentum_trigger'), None)
+            if vector_momentum_id is None:
+                report['checks'].append('Current real snapshot has no Vector momentum-trigger observation; browser proof does not synthesize one')
+            else:
+                vector_momentum_brief = payload['explorer']['briefs'][vector_momentum_id]
+                page.goto(url + '#view=explore&id=' + vector_momentum_id, wait_until='domcontentloaded')
+                vector_momentum_text = page.locator('#ac-detail').inner_text()
+                assert vector_momentum_brief['limitation'] in vector_momentum_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == vector_momentum_brief['next_action']
+                assert vector_momentum_brief['evidence_label'] in vector_momentum_text
+                page.screenshot(path=str(out / 'desktop-vector-momentum-trigger.png'))
+                report['screenshots'].append('desktop-vector-momentum-trigger.png')
+                report['checks'].append('Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call')
+            structure_id = next((
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.structure_shift'), None)
+            if structure_id is None:
+                report['checks'].append('Current real snapshot has no Vector structure-shift observation; browser proof does not synthesize one')
+            else:
+                structure_brief = payload['explorer']['briefs'][structure_id]
+                page.goto(url + '#view=explore&id=' + structure_id, wait_until='domcontentloaded')
+                structure_text = page.locator('#ac-detail').inner_text()
+                assert structure_brief['limitation'] in structure_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == structure_brief['next_action']
+                assert structure_brief['evidence_label'] in structure_text
+                page.screenshot(path=str(out / 'desktop-vector-structure-shift.png'))
+                report['screenshots'].append('desktop-vector-structure-shift.png')
+                report['checks'].append('Vector structure shifts expose current-state verification without upgrading lower-conviction context into a trade call')
+            theme_families = {
+                'themes.reco_change', 'themes.theme_deteriorating',
+                'themes.theme_topping', 'themes.theme_emerging',
+                'themes.leadership_rotation',
+            }
+            theme_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in theme_families
+            }
+            assert set(theme_ids) == theme_families
+            for family in sorted(theme_families):
+                theme_id = theme_ids[family]
+                theme_brief = payload['explorer']['briefs'][theme_id]
+                page.goto(url + '#view=explore&id=' + theme_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert theme_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == theme_brief['next_action']
+                assert theme_brief['evidence_label'] in text
+            report['checks'].append('Five theme-change families render source-bound model limits, reassessment and current-page actions')
+            rotation_families = {
+                'rotation.rotation_fading', 'rotation.rotation_turn_down',
+                'rotation.rotation_turn_up',
+            }
+            rotation_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in rotation_families
+            }
+            assert set(rotation_ids) == rotation_families
+            for family in sorted(rotation_families):
+                rotation_id = rotation_ids[family]
+                rotation_brief = payload['explorer']['briefs'][rotation_id]
+                page.goto(url + '#view=explore&id=' + rotation_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert rotation_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == rotation_brief['next_action']
+                assert rotation_brief['evidence_label'] in text
+            report['checks'].append('Three rotation rollover families render breadth-aware limits and current-panel reassessment')
+            emergence_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                if brief.get('family') == 'emergence.narrative_forming')
+            emergence_brief = payload['explorer']['briefs'][emergence_id]
+            page.goto(url + '#view=explore&id=' + emergence_id, wait_until='domcontentloaded')
+            emergence_text = page.locator('#ac-detail').inner_text()
+            assert emergence_brief['limitation'] in emergence_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == emergence_brief['next_action']
+            assert emergence_brief['evidence_label'] in emergence_text
+            page.screenshot(path=str(out / 'desktop-forming-narrative.png'))
+            report['screenshots'].append('desktop-forming-narrative.png')
+            report['checks'].append('Forming narratives expose exact cluster verification without turning model score or watch names into trade authority')
+            demand_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                             if brief.get('family') == 'demand.demand_ahead')
+            demand_brief = payload['explorer']['briefs'][demand_id]
+            page.goto(url + '#view=explore&id=' + demand_id, wait_until='domcontentloaded')
+            demand_text = page.locator('#ac-detail').inner_text()
+            assert demand_brief['limitation'] in demand_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == demand_brief['next_action']
+            assert demand_brief['evidence_label'] in demand_text
+            page.screenshot(path=str(out / 'desktop-demand-ahead.png'))
+            report['screenshots'].append('desktop-demand-ahead.png')
+            report['checks'].append('Demand-ahead variants render an expectations-gap workflow without becoming buy signals')
+            residual_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.residual_shock')
+            residual_brief = payload['explorer']['briefs'][residual_id]
+            page.goto(url + '#view=explore&id=' + residual_id, wait_until='domcontentloaded')
+            residual_text = page.locator('#ac-detail').inner_text()
+            assert residual_brief['limitation'] in residual_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == residual_brief['next_action']
+            assert residual_brief['evidence_label'] in residual_text
+            page.screenshot(path=str(out / 'desktop-forex-residual.png'))
+            report['screenshots'].append('desktop-forex-residual.png')
+            report['checks'].append('FX residual shocks expose attribution work without claiming a causal driver')
+            momentum_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.momentum')
+            momentum_brief = payload['explorer']['briefs'][momentum_id]
+            page.goto(url + '#view=explore&id=' + momentum_id, wait_until='domcontentloaded')
+            momentum_text = page.locator('#ac-detail').inner_text()
+            assert momentum_brief['limitation'] in momentum_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == momentum_brief['next_action']
+            assert momentum_brief['evidence_label'] in momentum_text
+            page.screenshot(path=str(out / 'desktop-forex-momentum.png'))
+            report['screenshots'].append('desktop-forex-momentum.png')
+            report['checks'].append('FX momentum flips expose current-state verification without becoming directional forecasts')
+            fx_context_families = {
+                'forex.trend_flip': 'desktop-forex-trend-flip.png',
+                'forex.structure': 'desktop-forex-structure.png',
+                'forex.positioning': 'desktop-forex-positioning.png',
+                'forex.smile_regime_flip': 'desktop-forex-smile-flip.png',
+            }
+            for family, shot in fx_context_families.items():
+                context_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                  if brief.get('family') == family)
+                context_brief = payload['explorer']['briefs'][context_id]
+                page.goto(url + '#view=explore&id=' + context_id, wait_until='domcontentloaded')
+                context_text = page.locator('#ac-detail').inner_text()
+                assert context_brief['limitation'] in context_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == context_brief['next_action']
+                assert context_brief['evidence_label'] in context_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+            report['checks'].append('FX trend, structure, positioning and dollar-smile flips expose current-state verification without becoming forecasts or trade calls')
+            smile_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                            if brief.get('family') == 'forex.smile_regime')
+            smile_brief = payload['explorer']['briefs'][smile_id]
+            page.goto(url + '#view=explore&id=' + smile_id, wait_until='domcontentloaded')
+            smile_text = page.locator('#ac-detail').inner_text()
+            assert smile_brief['limitation'] in smile_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == smile_brief['next_action']
+            assert smile_brief['evidence_label'] in smile_text
+            page.screenshot(path=str(out / 'desktop-forex-smile-regime.png'))
+            report['screenshots'].append('desktop-forex-smile-regime.png')
+            report['checks'].append('Dollar-smile regimes expose source taxonomy and current inputs without claiming macro outcomes')
+            triple_red_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'forex.triple_red')
+            triple_red_brief = payload['explorer']['briefs'][triple_red_id]
+            page.goto(url + '#view=explore&id=' + triple_red_id, wait_until='domcontentloaded')
+            triple_red_text = page.locator('#ac-detail').inner_text()
+            assert triple_red_brief['limitation'] in triple_red_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == triple_red_brief['next_action']
+            assert triple_red_brief['evidence_label'] in triple_red_text
+            page.screenshot(path=str(out / 'desktop-forex-triple-red.png'))
+            report['screenshots'].append('desktop-forex-triple-red.png')
+            report['checks'].append('Triple-red co-movement exposes cross-asset stress verification without claiming forced deleveraging as the cause')
+            scenario_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.scenario')
+            scenario_brief = payload['explorer']['briefs'][scenario_id]
+            page.goto(url + '#view=explore&id=' + scenario_id, wait_until='domcontentloaded')
+            scenario_text = page.locator('#ac-detail').inner_text()
+            assert scenario_brief['limitation'] in scenario_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == scenario_brief['next_action']
+            assert scenario_brief['evidence_label'] in scenario_text
+            page.screenshot(path=str(out / 'desktop-forex-scenario.png'))
+            report['screenshots'].append('desktop-forex-scenario.png')
+            report['checks'].append('FX scenarios expose threshold-state verification without claiming the named real-world cause')
+            move_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                           if brief.get('family') == 'bonds.rates_vol')
+            move_brief = payload['explorer']['briefs'][move_id]
+            page.goto(url + '#view=explore&id=' + move_id, wait_until='domcontentloaded')
+            move_text = page.locator('#ac-detail').inner_text()
+            assert move_brief['limitation'] in move_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == move_brief['next_action']
+            assert move_brief['evidence_label'] in move_text
+            page.screenshot(path=str(out / 'desktop-bonds-move.png'))
+            report['screenshots'].append('desktop-bonds-move.png')
+            report['checks'].append('MOVE band changes expose current stress verification without equating calm with safety')
+            curve_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                            if brief.get('family') == 'bonds.curve_regime')
+            curve_brief = payload['explorer']['briefs'][curve_id]
+            page.goto(url + '#view=explore&id=' + curve_id, wait_until='domcontentloaded')
+            curve_text = page.locator('#ac-detail').inner_text()
+            assert curve_brief['limitation'] in curve_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == curve_brief['next_action']
+            assert curve_brief['evidence_label'] in curve_text
+            page.screenshot(path=str(out / 'desktop-bonds-curve.png'))
+            report['screenshots'].append('desktop-bonds-curve.png')
+            report['checks'].append('Curve regimes expose current taxonomy verification without treating macro interpretation as fact')
+            complex_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                              if brief.get('family') == 'commodity.complex_regime')
+            complex_brief = payload['explorer']['briefs'][complex_id]
+            page.goto(url + '#view=explore&id=' + complex_id, wait_until='domcontentloaded')
+            complex_text = page.locator('#ac-detail').inner_text()
+            assert complex_brief['limitation'] in complex_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == complex_brief['next_action']
+            assert complex_brief['evidence_label'] in complex_text
+            page.screenshot(path=str(out / 'desktop-commodity-complex-regime.png'))
+            report['screenshots'].append('desktop-commodity-complex-regime.png')
+            report['checks'].append('Commodity-complex quadrants expose source taxonomy without treating macro labels as economic facts')
+            silver_id = next(id_ for id_, row in by_id.items()
+                             if row.get('source') == 'commodity' and
+                             row.get('type') == 'price_shock' and row.get('asset') == 'silver')
+            silver_brief = payload['explorer']['briefs'][silver_id]
+            assert silver_brief['family'] == 'commodity.price_shock'
+            page.goto(url + '#view=explore&id=' + silver_id, wait_until='domcontentloaded')
+            silver_text = page.locator('#ac-detail').inner_text()
+            assert silver_brief['limitation'] in silver_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == silver_brief['next_action']
+            assert silver_brief['evidence_label'] in silver_text
+            page.screenshot(path=str(out / 'desktop-silver-shock.png'))
+            report['screenshots'].append('desktop-silver-shock.png')
+            report['checks'].append('Commodity shock workflow now covers silver without turning stabilization into a direction call')
+            commodity_decision_families = {
+                'commodity.momentum': 'desktop-commodity-momentum.png',
+                'commodity.allocation': 'desktop-commodity-allocation.png',
+                'commodity.value': 'desktop-commodity-value.png',
+                'commodity.positioning': 'desktop-commodity-positioning.png',
+            }
+            for family, shot in commodity_decision_families.items():
+                decision_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                   if brief.get('family') == family)
+                decision_brief = payload['explorer']['briefs'][decision_id]
+                page.goto(url + '#view=explore&id=' + decision_id, wait_until='domcontentloaded')
+                decision_text = page.locator('#ac-detail').inner_text()
+                assert decision_brief['limitation'] in decision_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == decision_brief['next_action']
+                assert decision_brief['evidence_label'] in decision_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+            report['checks'].append('Commodity momentum, allocation and gold/silver value states expose source-bound verification without becoming forecasts or recommendations')
+            sector_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                             if brief.get('family') == 'macro.sector_rs_cross_low')
+            sector_brief = payload['explorer']['briefs'][sector_id]
+            page.goto(url + '#view=explore&id=' + sector_id, wait_until='domcontentloaded')
+            sector_text = page.locator('#ac-detail').inner_text()
+            assert sector_brief['limitation'] in sector_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == sector_brief['next_action']
+            assert sector_brief['evidence_label'] in sector_text
+            page.screenshot(path=str(out / 'desktop-sector-rs-low.png'))
+            report['screenshots'].append('desktop-sector-rs-low.png')
+            report['checks'].append('Sector relative-strength breakdowns expose rotation verification without inventing flows or sell calls')
+            context_families = {
+                'forex.transmission_shift': (
+                    'desktop-forex-transmission.png',
+                    'FX transmission shifts expose current relationship verification without becoming causal or directional claims'),
+                'macro.holdings_active_change': (
+                    'desktop-holdings-active-change.png',
+                    'Flow-normalized manager activity exposes current holdings verification without becoming a copy trade'),
+                'macro.circuit_breaker_open': (
+                    'desktop-source-circuit-breaker.png',
+                    'Source outages expose missing-evidence handling without masquerading as market calm'),
+                'macro.sector_rs_cross_high': (
+                    'desktop-sector-rs-high.png',
+                    'Sector leadership crossings expose relative-strength verification without becoming flow evidence or buy calls'),
+                'macro.inflation_confidence_floor': (
+                    'desktop-inflation-confidence.png',
+                    'Axis-confidence floors expose regime-input disagreement without becoming probabilities or market direction calls'),
+                'macro.sector_holdings_accumulation': (
+                    'desktop-sector-passive-flow.png',
+                    'Passive sector-ETF residual flow stays distinct from discretionary manager conviction and stock recommendations'),
+            }
+            for family, (shot, statement) in context_families.items():
+                context_id = next((
+                    id_ for id_, brief in payload['explorer']['briefs'].items()
+                    if brief.get('family') == family), None)
+                if context_id is None:
+                    report['checks'].append(
+                        f'Current real snapshot has no {family} observation; browser proof does not synthesize one')
+                    continue
+                context_brief = payload['explorer']['briefs'][context_id]
+                page.goto(url + '#view=explore&id=' + context_id, wait_until='domcontentloaded')
+                context_text = page.locator('#ac-detail').inner_text()
+                assert context_brief['limitation'] in context_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == context_brief['next_action']
+                assert context_brief['evidence_label'] in context_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+                report['checks'].append(statement)
+            situation = next(s for s in payload['explorer']['situations']
+                             if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
+            situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
+            primary_id, related_id = situation_ids[:2]
+            page.goto(url + '#view=explore&id=' + primary_id, wait_until='domcontentloaded')
+            related_rows = page.locator('#ac-detail .acx-related-observation')
+            assert related_rows.count() >= 1
+            assert 'not independent confirmation' in page.locator('#ac-detail .acx-related-note').inner_text().lower()
+            page.screenshot(path=str(out / 'desktop-related-context.png'))
+            report['screenshots'].append('desktop-related-context.png')
+            related_row = page.locator(f'[data-related-alert-id="{related_id}"]')
+            assert related_row.count() == 1
+            related_row.click()
+            assert related_id in page.url
+            assert plain(by_id[related_id]['headline']) in page.locator('#ac-detail-title').inner_text()
+            report['checks'].append('Situation context links related observations without claiming independent confirmation')
+            page.click('#ac-close')
+            assert not page.locator('#ac-detail').evaluate('(d) => d.open')
+            page.click('[data-view="history"]')
+            page.go_back(wait_until='domcontentloaded')
+            assert page.locator('[data-view="explore"]').get_attribute('aria-current') == 'page'
+            page.goto(url + '#sev=major&cl=all&q=recurring&s=%E0%A4%A', wait_until='domcontentloaded')
+            assert page.locator('#ac-noresults').is_visible()
+            report['checks'].append('Browser back and malformed legacy hash values do not crash')
+            page.goto(url, wait_until='domcontentloaded')
+            viewport_specs = [
+                (1440, 900, 'desktop'),
+                (844, 390, 'mobile-landscape'),
+                (430, 932, 'mobile-430'),
+                (390, 844, 'mobile'),
+                (320, 568, 'mobile-320'),
+            ]
+            for width, height, size in viewport_specs:
+                page.set_viewport_size({'width': width, 'height': height})
+                for theme in ('dark', 'light'):
+                    for lang in ('en', 'zh'):
+                        page.evaluate('([theme,lang]) => {document.documentElement.dataset.theme=theme;document.documentElement.dataset.lang=lang;}', [theme, lang])
+                        page.evaluate('() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))')
+                        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'Horizontal overflow: {size}/{theme}/{lang}'
+                        browse_box = page.locator('#ac-browse-all').bounding_box()
+                        assert browse_box and browse_box['height'] >= 40, f'Browse Explore interaction floor: {size}/{theme}/{lang}'
+                        page.locator('#ac-more-filters').evaluate('(d) => {d.open = true}')
+                        reset_box = page.locator('#ac-reset').bounding_box()
+                        chip_boxes = page.locator('.acx-chip').evaluate_all(
+                            '(nodes) => nodes.map(n => n.getBoundingClientRect().height)')
+                        assert reset_box and reset_box['height'] >= 40, f'Reset interaction floor: {size}/{theme}/{lang}'
+                        assert chip_boxes and min(chip_boxes) >= 40, f'Quick-filter interaction floor: {size}/{theme}/{lang}'
+                        page.locator('#ac-more-filters').evaluate('(d) => {d.open = false}')
+                        first_row = page.locator('#ac-results .acx-row').first.bounding_box()
+                        assert first_row, f'Missing first alert row: {size}/{theme}/{lang}'
+                        tabs_box = page.locator('.acx-tabs').bounding_box()
+                        stale_box = page.locator('#ac-stale').bounding_box() if page.locator('#ac-stale').is_visible() else None
+                        if size == 'mobile-landscape':
+                            assert tabs_box and tabs_box['y'] + tabs_box['height'] <= height, f'Landscape workspace tabs offscreen: {theme}/{lang}'
+                            assert first_row['y'] < height, f'Landscape triage row does not enter first viewport: {theme}/{lang}'
+                        name = f'{size}-{theme}-{lang}.png'
+                        page.screenshot(path=str(out / name))
+                        report['screenshots'].append(name)
+                        report.setdefault('viewport_metrics', []).append({
+                            'name': name,
+                            'width': width,
+                            'height': height,
+                            'first_row': first_row,
+                            'tabs': tabs_box,
+                            'stale_notice': stale_box,
+                            'browse_height': browse_box['height'],
+                            'reset_height': reset_box['height'],
+                            'quick_filter_min_height': min(chip_boxes),
+                        })
+                        if size != 'mobile-landscape' and width >= 390:
+                            assert first_row['y'] + first_row['height'] <= height, f'No first-glance signal: {size}/{theme}/{lang}'
+            report['checks'].append('320/390/430 portrait + 844×390 landscape + 1440 × dark/light × EN/ZH: no overflow and >=40px standalone triage controls')
+            page.set_viewport_size({'width':1440, 'height':900})
+            page.evaluate("document.documentElement.dataset.theme='dark';document.documentElement.dataset.lang='en'")
+            page.click('[data-view="history"]')
+            page.locator('#ac-results .acx-row').first.click()
+            assert 'evt=' in page.url, 'Historical selection must identify its actual event date, not silently open only the latest signal'
+            report['checks'].append('History selection retains the actual firing clock in its permalink')
+            page.screenshot(path=str(out / 'desktop-evidence-history.png'))
+            report['screenshots'].append('desktop-evidence-history.png')
+            assert not report['page_errors'], report['page_errors']
+            report['passed'] = True
+            browser.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        report.setdefault('passed', False)
+        (out / 'browser-proof.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    main()

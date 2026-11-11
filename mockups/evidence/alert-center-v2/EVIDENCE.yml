@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - engine/alert_center_view.py
+  - templates/alerts.html.j2
+  - templates/alert_center.css
+  - templates/alert_center.js
+manifest: mockups/evidence/alert-center-v2/manifest.json

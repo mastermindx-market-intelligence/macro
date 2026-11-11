@@ -430,13 +430,13 @@ def test_partial_board_renders_the_missing_family_and_no_gauge(monkeypatch):
     html = _render(at.build_triage(now=NOW))
     assert "{{" not in html and "Undefined" not in html
     assert "Partial tape read" in html
-    assert "PARTIAL READ" in html
+    assert 'data-coverage-state="partial"' in html
     assert "读数不完整" in html
     # No needle is DRAWN from a partial read.  Assert on rendered markup, not on the
     # stylesheet — `.gauge-mark` is a CSS rule and is in the <style> block either way.
-    assert '<div class="gauge-mark"' not in html
+    assert 'data-overall-score=' not in html
     assert "The tape is broadly constructive" not in html
-    assert '<span class="covpill">' in html          # the partial-coverage strip rendered
+    assert 'data-missing-sources' in html  # missing families remain beside the headline
     assert "Bonds" in html
 
 
@@ -449,9 +449,9 @@ def test_complete_board_renders_the_gauge_and_a_stance(monkeypatch):
     })
     html = _render(at.build_triage(now=NOW))
     assert "{{" not in html and "Undefined" not in html
-    assert '<div class="gauge-mark"' in html         # the needle IS drawn on a full read
+    assert 'data-overall-score=' in html  # disclosed methodology, not a hero gauge
     assert "Partial tape read" not in html
-    assert '<span class="covpill">' not in html
+    assert 'data-missing-sources' not in html
 
 
 def test_the_card_says_re_fired_and_never_persisting_for_a_generic_log(monkeypatch):
@@ -461,10 +461,10 @@ def test_the_card_says_re_fired_and_never_persisting_for_a_generic_log(monkeypat
         r["asset"] = "commmetalssilver"
     _feed(monkeypatch, {"rotation": (at.READ_OK, rows)})
     html = _render(at.build_triage(now=NOW))
-    assert "re-fired" in html and "重复触发" in html
+    assert "re-fired" in html.lower() and "重复触发" in html
     # rendered PILLS, not the stylesheet (both classes exist in the <style> block)
-    assert '<span class="lifepill life-recurring">' in html
-    assert '<span class="lifepill life-persisting">' not in html
+    assert 'data-lifecycle="recurring"' in html
+    assert 'data-lifecycle="persisting"' not in html
     # the quick filter followed the vocabulary
     assert 'data-quick="recurring"' in html
     assert 'data-quick="persisting"' not in html

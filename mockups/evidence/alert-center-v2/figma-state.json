@@ -1,0 +1,20 @@
+{
+  "operation": "macro-alert-source-bound-native-figma-20260914-sol-001",
+  "file_key": "r1hSkfDg4vGzjWRySgrHE1",
+  "file_name": "MastermindX — Macro Alert Center — Market Changes Desk",
+  "primary_nodes": {
+    "desktop_dark": "6:2",
+    "desktop_light": "6:116",
+    "retained_source_desktop": "6:153",
+    "risk_inspector": "8:64",
+    "mobile_dark": "12:232",
+    "mobile_light": "12:344",
+    "retained_source_mobile": "12:456",
+    "risk_mobile_inspector": "13:300",
+    "handoff": "19:2"
+  },
+  "role": "approved action-led design reference; runtime authority remains the repository implementation",
+  "modified_this_turn": false,
+  "production_acceptance": false,
+  "continuation": "Preserve this file; do not create another Alert Center Figma file."
+}
