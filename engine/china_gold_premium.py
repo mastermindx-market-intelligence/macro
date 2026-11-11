@@ -466,6 +466,20 @@ def build_view_model(
         return _unavailable_vm(_REASON["not_configured"])
 
     now_ts = _as_utc(now if now is not None else pd.Timestamp.now(tz="UTC"))
+
+    def asof_reader(group, name):
+        # Filter before nearest/latest selection: a future quote must not hide
+        # an eligible observation. Canonical date-only inputs stay separate.
+        frame = reader(group, name)
+        if not isinstance(frame, pd.DataFrame) or frame.empty:
+            return frame
+        try:
+            stamps = _to_utc_index(frame.index)
+        except (TypeError, ValueError, OverflowError):
+            # Preserve the existing malformed-input refusal in the reader.
+            return frame
+        return frame.loc[stamps <= now_ts]
+
     canonical_cfg = cfg.get("canonical")
     intraday_cfg = cfg.get("intraday")
     close_proxy_cfg = cfg.get("close_proxy")
@@ -474,10 +488,10 @@ def build_view_model(
         canonical_cfg, reader=reader, intraday=False
     )
     intraday, intraday_sources, intraday_problem = _read_method(
-        intraday_cfg, reader=reader, intraday=True
+        intraday_cfg, reader=asof_reader, intraday=True
     )
     close_proxy, proxy_sources, proxy_problem = _read_close_proxy(
-        close_proxy_cfg, reader=reader
+        close_proxy_cfg, reader=asof_reader
     )
 
     # Nothing after the evaluation clock is knowable. Canonical rows are date
