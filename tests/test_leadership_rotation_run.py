@@ -215,6 +215,65 @@ def test_run_p1_refuses_before_loader(tmp_path, monkeypatch):
     assert calls == ["assert"]
 
 
+# LR-W6 accepted science ruling: V2/V2.1/T12R is SIZED but T13R says
+# H1/H2/H3 are NOT_EXECUTABLE. Even a passing old size gate does not allow
+# the one-time P1 market-data read until V3 is preregistered and powered.
+@pytest.mark.parametrize("record", [True, False])
+def test_p1_v3_and_unrecorded_look_refusals_are_before_market_effects(tmp_path, monkeypatch, record):
+    from scripts import leadership_rotation_run as lr
+
+    calls = []
+    monkeypatch.setattr(
+        st, "assert_protocol_landed", lambda *_a, **_k: calls.append("v1_v2")
+    )
+    monkeypatch.setattr(
+        st, "assert_prereg_landed", lambda *_a, **_k: calls.append("v2_1")
+    )
+    monkeypatch.setattr(
+        lr, "assert_size_gate_passed",
+        lambda *_a, **_k: (calls.append("v2_size") or {"sized": True}),
+    )
+
+    def forbidden(*_a, **_k):
+        raise AssertionError("embargo did not stop before data/look effects")
+
+    monkeypatch.setattr(lr, "count_prior_looks", forbidden)
+    monkeypatch.setattr(lr, "record_look", forbidden)
+    monkeypatch.setattr(st, "load_closes_from_git", forbidden)
+    output = tmp_path / "must-not-write-p1.json"
+
+    if record:
+        expected_type = lr.P1StatisticsNotQualified
+        expected_reason = "V3_STATISTICS_NOT_QUALIFIED"
+        expected_calls = ["v1_v2", "v2_1", "v2_size"]
+    else:
+        expected_type = lr.P1UnrecordedLookRefused
+        expected_reason = "P1_UNRECORDED_LOOK_REFUSED"
+        expected_calls = []
+
+    with pytest.raises(expected_type, match=expected_reason) as err:
+        lr.run_p1(str(tmp_path), commit="synthetic-commit", out=str(output), record=record)
+
+    assert err.value.reason == expected_reason
+    assert calls == expected_calls
+    assert not output.exists()
+
+
+def test_cli_rejects_removed_no_record_bypass(tmp_path):
+    from scripts import leadership_rotation_run as lr
+
+    # Parser refuses the retired option without any attempt to read a repo.
+    with pytest.raises(SystemExit) as err:
+        lr.main(["p1", "--repo", str(tmp_path), "--no-record"])
+    assert err.value.code == 2
+
+
+def test_p0_synthetic_composer_stays_available_while_p1_is_sealed():
+    # The LR-W6 embargo is read-path-only; P0 study/synthetic controls remain valid.
+    synthetic = evaluate_family({}, start=0, end=10, partition="P0")
+    assert synthetic["partition"] == "P0"
+
+
 # MUTATION: scripts/leadership_rotation_run.py:1020 omit a name from falsifier_controls
 def test_falsifier_controls_ten_names_all_pass():
     fc = falsifier_controls()
@@ -1404,3 +1463,386 @@ def test_unmatched_option_a_null_makes_h1_not_executable():
     gr["H1"]["null"] = {"status": "NOT_EXECUTABLE", "p_a": 1.0, "p_b": 1.0}
     for part in ("P1", "P2", "P3"):
         assert _group_verdicts(gr, part, holm, FAMILY_ORDER)["H1"] == "NOT_EXECUTABLE"
+
+
+
+# LR-W6 candidate H1 statistics: never a market-data read or a size/power verdict.
+def _v3_synthetic_phases():
+    from scripts import leadership_rotation_episodes as ep
+    return [
+        ep.UpPhase(T=10, P=60, rise=0.09, censored=False, qualifies=True),
+        ep.UpPhase(T=70, P=120, rise=0.10, censored=False, qualifies=True),
+    ]
+
+
+def test_v3_candidate_delay_is_not_mechanically_five_and_has_all_signs():
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    phases = _v3_synthetic_phases()
+    early = [12, 73]
+    later = [24, 95]
+    pos = compare(phases, early, later, measured_sessions=150)
+    neg = compare(phases, later, early, measured_sessions=150)
+    tie = compare(phases, early, early, measured_sessions=150)
+
+    assert pos["scope"] == "P0_SYNTHETIC_ONLY"
+    assert pos["status"] == "DESCRIPTIVE"
+    assert pos["n_onsets"] == 2
+    assert pos["a1"]["onset_delays"] == [2, 3]
+    assert pos["b2"]["onset_delays"] == [14, 25]
+    assert pos["h1_delay_advantage_sessions"] == 17.0
+    assert neg["h1_delay_advantage_sessions"] == -17.0
+    assert tie["h1_delay_advantage_sessions"] == 0
+    assert pos["candidate_delay_margin_met_only"] is True
+    assert neg["candidate_delay_margin_met_only"] is False
+    assert not pos["v3_preregistered"]
+    assert not pos["size_or_power_proven"]
+
+
+def test_v3_candidate_misses_are_censored_not_dropped():
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    phases = _v3_synthetic_phases()
+    both_miss = compare(phases, [], [], measured_sessions=150)
+    one_arm_misses = compare(phases, [12, 73], [], measured_sessions=150)
+    assert both_miss["a1"]["onset_delays"] == [41, 41]
+    assert both_miss["b2"]["onset_delays"] == [41, 41]
+    assert both_miss["h1_delay_advantage_sessions"] == 0.0
+    assert one_arm_misses["a1"]["n_missed"] == 0
+    assert one_arm_misses["b2"]["n_missed"] == 2
+    assert one_arm_misses["h1_delay_advantage_sessions"] == 38.5
+
+
+def test_v3_candidate_uses_first_match_and_original_late_burden():
+    from scripts import leadership_rotation_episodes as ep
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    # Even in an artificial overlap, the incumbent matcher assigns the
+    # single kept B2 alarm to only one qualifying onset, never to both.
+    overlapping = [
+        ep.UpPhase(T=10, P=100, rise=.09, censored=False, qualifies=True),
+        ep.UpPhase(T=30, P=110, rise=.10, censored=False, qualifies=True),
+    ]
+    result = compare(overlapping, [], [36], measured_sessions=150)
+    assert result["b2"]["n_detected"] == 1
+    assert result["b2"]["n_missed"] == 1
+    assert result["b2"]["onset_delays"] == [26, 41]
+
+    # T11 R3 distinguishes a late non-match from a repeat; neither can
+    # silently count as an early detection or disappear from the burden.
+    one = [ep.UpPhase(T=10, P=95, rise=.09, censored=False, qualifies=True)]
+    late = compare(one, [11, 35], [61], measured_sessions=130)
+    assert late["a1"]["n_repeated"] == 1
+    assert late["b2"]["n_late"] == 1
+    assert late["b2"]["n_detected"] == 0
+    assert late["b2"]["onset_delays"] == [41]
+    assert late["a1"]["unmatched_alarm_burden_per_pair_year"] > 0
+
+
+def test_v3_candidate_abstains_without_events_and_rejects_bad_inputs():
+    from scripts import leadership_rotation_episodes as ep
+    from scripts.leadership_rotation_v3_candidate import candidate_h1_synthetic_comparison as compare
+
+    none = compare([], [1], [2], measured_sessions=50)
+    assert none["status"] == "NOT_EXECUTABLE"
+    assert none["reason"] == "NO_QUALIFYING_ONSETS"
+    assert none["h1_delay_advantage_sessions"] is None
+
+    phases = _v3_synthetic_phases()
+    with pytest.raises(ValueError, match="synthetic calendar"):
+        compare(phases, [True], [], measured_sessions=150)
+    with pytest.raises(ValueError, match="positive integer"):
+        compare(phases, [], [], measured_sessions=0)
+    dupes = [
+        ep.UpPhase(T=10, P=70, rise=.1, censored=False, qualifies=True),
+        ep.UpPhase(T=10, P=80, rise=.1, censored=False, qualifies=True),
+    ]
+    with pytest.raises(ValueError, match="unique"):
+        compare(dupes, [], [], measured_sessions=150)
+
+
+def test_v3_candidate_accepts_existing_p0_generator_without_market_access():
+    """Actual G1/G2 family generator + frozen arms, not hand-picked events.
+
+    This is one synthetic wiring smoke test; it is NOT size, power, H1 alpha,
+    a fitted margin or a pre-registration receipt. Never invoke run_p1.
+    """
+    import numpy as np
+    from scripts import leadership_rotation_episodes as ep
+    from scripts import leadership_rotation_p0 as p0
+    from scripts import leadership_rotation_study as st
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h1_synthetic_comparison,
+    )
+
+    groups, truth = p0.simulate_family(
+        sigma=p0.G2_SIGMA,
+        delta=0.04,
+        rho=p0.G2_RHO,
+        n_formation=252 * 4,
+        seed_seq=np.random.SeedSequence([20261018, 104, 0]),
+    )
+    assert set(groups) == set(p0.GROUP_SIZES)
+    assert truth["n"] == 252 + 252 * 4 + p0.TAIL
+    ps = groups["defensive_sector"][0]
+    ratio, invalid = st.log_ratio(ps.num, ps.den)
+    assert not invalid.any()
+    start, end = st.WARMUP, st.WARMUP + 252 * 4 - 1
+    phases = ep.zigzag(ratio, start=start, end=end + 1)
+    _, a1, _ = st.arm_a1(ratio)
+    b2 = st.arm_b2(ratio)
+    a1 = [int(t) for t in a1 if start <= t <= end]
+    b2 = [int(t) for t in b2 if start <= t <= end]
+    result = candidate_h1_synthetic_comparison(
+        phases, a1, b2, measured_sessions=len(ratio),
+    )
+    assert result["scope"] == "P0_SYNTHETIC_ONLY"
+    assert result["size_or_power_proven"] is False
+    assert result["v3_preregistered"] is False
+    if result["status"] == "DESCRIPTIVE":
+        assert result["n_onsets"] > 0
+        assert result["a1"]["n_detected"] + result["a1"]["n_missed"] == result["n_onsets"]
+        assert result["b2"]["n_detected"] + result["b2"]["n_missed"] == result["n_onsets"]
+        assert -41 <= result["h1_delay_advantage_sessions"] <= 41
+    else:
+        assert result["reason"] == "NO_QUALIFYING_ONSETS"
+
+
+
+def test_v3_h2_p0_prior_control_matches_only_pre_alarm_matured_opportunities():
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    def e(t, *, pair="pair-a", q=2, active=False, feature=None, warmup=None):
+        return E(pair, t, q, t if feature is None else feature,
+                 active, t if warmup is None else warmup)
+
+    a1 = e(380, active=True)
+    controls = [
+        e(359, active=True),     # nearer but A1 active: must not be B1
+        e(360),                  # 20 sessions before A1: outcome not matured
+        e(390),                  # future origin, cannot be a historical control
+        e(345),                  # eligible 35 sessions back
+        e(356),                  # eligible 24 sessions back: deterministic winner
+        e(317),                  # eligible boundary 63 sessions back
+        e(357, q=1),             # different pre-origin volatility quintile
+        e(358, pair="pair-b"),   # other registered pair
+        e(356, warmup=240, q=4), # underwarmed mismatched candidate
+    ]
+    result = match(a1, controls)
+    assert result == match(a1, list(reversed(controls)))
+    assert result["status"] == "MATCHED"
+    assert result["scope"] == "P0_SYNTHETIC_ONLY"
+    assert result["control_t"] == 356
+    assert result["control_age_sessions"] == 24
+    assert result["control_forward20_matured_before_a1"] is True
+    assert result["v3_preregistered"] is False
+    assert result["size_or_power_proven"] is False
+
+
+def test_v3_h2_p0_selector_cannot_read_or_choose_future_y20_or_cross_pair():
+    from dataclasses import FrozenInstanceError
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    a1 = E("pair-a", 380, 2, 380, True, 380)
+    cross_pair = E("pair-b", 358, 2, 358, False, 358)
+    future = E("pair-a", 382, 2, 382, False, 382)
+    too_close = E("pair-a", 360, 2, 360, False, 360)
+    unmatched = match(a1, [cross_pair, future, too_close])
+    assert unmatched["status"] == "UNMATCHED"
+    assert unmatched["control_t"] is None
+    assert unmatched["reason"] == "NO_PRIOR_COMPARABLE_CONTROL"
+    assert unmatched["size_or_power_proven"] is False
+
+    # No outcome field in this frozen selector's input contract. Both features
+    # and matching decisions are fixed before any new forward-20 label.
+    with pytest.raises(TypeError):
+        E("pair-a", 350, 2, 350, False, 350, y20=999)
+    with pytest.raises(FrozenInstanceError):
+        a1.origin = 390
+
+
+def test_v3_h2_p0_selector_rejects_leaky_features_duplicates_and_bad_warmup():
+    from scripts.leadership_rotation_v3_candidate import (
+        SyntheticPriorControl as E, candidate_h2_prior_control_match as match,
+    )
+
+    a1 = E("pair-a", 380, 2, 380, True, 380)
+    prior = E("pair-a", 350, 2, 350, False, 350)
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        match(a1, [E("pair-a", 350, 2, 351, False, 350)])
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        match(E("pair-a", 380, 2, 381, True, 380), [prior])
+    with pytest.raises(ValueError, match="AMBIGUOUS_DUPLICATE_CONTROL"):
+        match(a1, [prior, prior])
+    with pytest.raises(ValueError, match="must have A1 active"):
+        match(E("pair-a", 380, 2, 380, False, 380), [prior])
+    with pytest.raises(ValueError, match="quintile must be 0..4"):
+        match(E("pair-a", 380, 5, 380, True, 380), [prior])
+
+    no_warmup = match(E("pair-a", 280, 2, 280, True, 200), [])
+    assert no_warmup["status"] == "NOT_EXECUTABLE"
+    assert no_warmup["reason"] == "A1_WARMUP_UNAVAILABLE"
+
+
+
+def _h3_synthetic_event(t, arm, *, weak, y, pair="pair-a",
+                        q=2, sign=1, feature=None):
+    from scripts.leadership_rotation_v3_candidate import SyntheticH3Event as E
+    return E(
+        pair_id=pair, origin=t, arm=arm, donor_weak=weak,
+        receiver_spy_sign=sign, volatility_quintile=q,
+        feature_asof=t if feature is None else feature, warmup_sessions=t,
+        residual_y20=y, matured_at=t + 20 if y is not None else None,
+    )
+
+
+def test_v3_h3_p0_effect_modifier_is_zero_without_planted_interaction():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    a1 = [
+        _h3_synthetic_event(380, "A1", weak=True, y=.013),
+        _h3_synthetic_event(450, "A1", weak=False, y=.009),
+    ]
+    b3 = [
+        _h3_synthetic_event(355, "B3", weak=True, y=.009),
+        _h3_synthetic_event(425, "B3", weak=False, y=.005),
+    ]
+    null = check(a1, b3)
+    assert null["status"] == "DESCRIPTIVE"
+    assert abs(null["delta_log_units"]) < 1e-12
+    assert null["n_weak"] == null["n_not_weak"] == 1
+    assert null["v3_preregistered"] is False
+    assert null["size_or_power_proven"] is False
+    assert null["matching_and_cluster_inference_proven"] is False
+
+    # A planted, synthetic donor-weakness-specific uplift changes the
+    # arithmetic but never the source dates selected or grants significance.
+    planted = check([
+        _h3_synthetic_event(380, "A1", weak=True, y=.020),
+        a1[1],
+    ], b3)
+    assert abs(planted["delta_log_units"] - .007) < 1e-12
+    assert planted["selected_dates"] == null["selected_dates"]
+    negative = check([
+        _h3_synthetic_event(380, "A1", weak=True, y=.006), a1[1],
+    ], b3)
+    assert negative["delta_log_units"] < 0
+
+
+def test_v3_h3_p0_controls_selected_by_past_dates_not_best_future_y():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    a1 = [
+        _h3_synthetic_event(380, "A1", weak=True, y=.020),
+        _h3_synthetic_event(450, "A1", weak=False, y=.010),
+    ]
+    controls = [
+        _h3_synthetic_event(350, "B3", weak=True, y=.020),
+        _h3_synthetic_event(355, "B3", weak=True, y=-.200),
+        _h3_synthetic_event(425, "B3", weak=False, y=.006),
+        _h3_synthetic_event(378, "B3", weak=True, y=.999),  # future outcome not matured by A1
+        _h3_synthetic_event(360, "B3", weak=True, y=.999),  # only 20 sessions before A1
+        _h3_synthetic_event(357, "B3", weak=True, y=.999, pair="different"),
+    ]
+    first = check(a1, controls)
+    second = check(a1, list(reversed(controls)))
+    assert first == second
+    assert first["n_selected"] == 2
+    assert first["selected_dates"][0]["b3_t"] == 355
+    assert first["selected_dates"][1]["b3_t"] == 425
+    assert first["status"] == "DESCRIPTIVE"
+    # The selected control remains the latest eligible event when every Y20
+    # label is altered; controls are selected before outcomes are read.
+    shifted = [__import__("dataclasses").replace(x, residual_y20=100.0)
+               for x in controls]
+    assert check(a1, shifted)["selected_dates"] == first["selected_dates"]
+
+
+def test_v3_h3_p0_fails_closed_on_missing_stratum_missing_outcome_or_bad_time():
+    from scripts.leadership_rotation_v3_candidate import (
+        candidate_h3_synthetic_interaction as check,
+    )
+    weak = _h3_synthetic_event(380, "A1", weak=True, y=.010)
+    control = _h3_synthetic_event(355, "B3", weak=True, y=.002)
+    no_stratum = check([weak], [control])
+    assert no_stratum["status"] == "NOT_EXECUTABLE"
+    assert no_stratum["delta_log_units"] is None
+    assert no_stratum["n_not_weak"] == 0
+
+    missing = check([
+        weak,
+        _h3_synthetic_event(450, "A1", weak=False, y=None),
+    ], [
+        control,
+        _h3_synthetic_event(425, "B3", weak=False, y=.003),
+    ])
+    assert missing["status"] == "NOT_EXECUTABLE"
+    assert missing["n_unmeasured"] == 1
+    assert missing["delta_log_units"] is None
+
+    with pytest.raises(ValueError, match="LOOKAHEAD_FEATURE_DATE"):
+        check([_h3_synthetic_event(380, "A1", weak=True, y=.010,
+                                  feature=381)], [control])
+    with pytest.raises(ValueError, match="exact future-only maturity"):
+        from dataclasses import replace
+        check([replace(weak, matured_at=400 + 1)], [control])
+    with pytest.raises(ValueError, match="AMBIGUOUS_DUPLICATE_H3_EVENT"):
+        check([weak], [control, control])
+    with pytest.raises(ValueError, match="donor_weak must be boolean"):
+        from dataclasses import replace
+        check([replace(weak, donor_weak=None)], [control])
+
+
+
+def test_v3_actual_g2_synthetic_pair_exercises_all_three_candidate_contrasts():
+    """Accepted G2 generator + existing frozen arm reader, no real market data.
+
+    This does NOT establish null size, power, honest group N, predictive status
+    or pass the original prereg V1/V2/V2.1 obligations.
+    """
+    import numpy as np
+    from scripts import leadership_rotation_p0 as p0
+    from scripts import leadership_rotation_study as st
+    from scripts.leadership_rotation_v3_candidate import candidate_v3_p0_pair_diagnostic
+
+    groups, truth = p0.simulate_family(
+        sigma=p0.G2_SIGMA, delta=.04, rho=p0.G2_RHO,
+        n_formation=252 * 4,
+        seed_seq=np.random.SeedSequence([20261018, 107, 1]),
+    )
+    assert truth["n"] == st.WARMUP + 252 * 4 + p0.TAIL
+    sample = groups["broadening_proxy"][0]
+    out = candidate_v3_p0_pair_diagnostic(
+        sample, start=st.WARMUP, end=st.WARMUP + 252 * 4 - 1,
+    )
+    assert out["scope"] == "P0_SYNTHETIC_ONLY"
+    assert out["status"] == "DIAGNOSTIC_ONLY"
+    assert out["pair_id"] == sample.pair_id
+    assert out["v3_preregistered"] is False
+    assert out["size_or_power_proven"] is False
+    assert out["predictive_capability_qualified"] is False
+    assert out["h1"]["status"] in ("DESCRIPTIVE", "NOT_EXECUTABLE")
+    assert out["h2"]["total_a1"] == (
+        out["h2"]["matched"] + out["h2"]["unmatched"]
+        + out["h2"]["feature_unavailable"]
+    )
+    assert all(t - 63 <= b < t - 20 for t, b in out["h2"]["control_dates"])
+    assert out["h3"]["n_a1"] + out["h3_feature_unavailable"]["a1"] <= out["h2"]["total_a1"]
+    assert out["h3"]["n_selected"] + out["h3"]["n_unpaired"] == out["h3"]["n_a1"]
+    assert out["h3"]["status"] in ("DESCRIPTIVE", "NOT_EXECUTABLE")
+    assert out["h3"]["matching_and_cluster_inference_proven"] is False
+    if out["h3"]["status"] != "DESCRIPTIVE":
+        assert out["h3"]["delta_log_units"] is None
+
+    # An accepted synthetic path can't pretend it read or reserved a live P1.
+    import inspect
+    code = inspect.getsource(candidate_v3_p0_pair_diagnostic)
+    assert "run_p1(" not in code
+    assert "store.read(" not in code
+    assert "config.data_dir(" not in code
