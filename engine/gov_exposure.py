@@ -176,12 +176,12 @@ def capex_burden(
     Returned dict:
         capex_ocf_latest    float | None  – capex/OCF latest FY (%)
         capex_ocf_prior     float | None  – capex/OCF prior FY (%)
-        capex_ocf_trend     str           – "rising" | "falling" | "flat"
+        capex_ocf_trend     str | None    – "rising" | "falling" | "flat"; None if undefined
         capex_yoy_pct       float | None  – capex YoY growth (%)
         fcf_latest_bn       float | None  – FCF latest FY ($B)
-        fcf_trend           str           – "improving" | "deteriorating" | "flat"
+        fcf_trend           str | None    – "improving" | "deteriorating" | "flat"; None if undefined
         net_debt_delta_bn   float | None  – net-debt YoY change ($B; + = more debt)
-        fcf_trap            bool          – capex_ocf > 80% AND fcf_latest < 0
+        fcf_trap            bool | None   – capex_ocf > 80% AND fcf_latest < 0; None if unresolved
         fy_latest           int
         evidence_tier       str           – "fingerprint"
         score_cap           int           – 60
@@ -227,17 +227,17 @@ def capex_burden(
         dl = _f(row, "debt_lt")
         dc = _f(row, "debt_cur")
         ca = _f(row, "cash")
-        if dl is None and dc is None:
+        if dl is None or dc is None or ca is None:
             return None
-        return (dl or 0.0) + (dc or 0.0) - (ca or 0.0)
+        return dl + dc - ca
 
     nd_l = _net_debt(latest)
     nd_p = _net_debt(prior)
     nd_delta = (nd_l - nd_p) if (nd_l is not None and nd_p is not None) else None
 
     # ── FCF trend ─────────────────────────────────────────────────────────────
-    fcf_l = ((cfo_l - capex_l) if capex_l is not None else cfo_l)
-    fcf_p = ((cfo_p - capex_p) if capex_p is not None else cfo_p)
+    fcf_l = (cfo_l - capex_l) if cfo_l is not None and capex_l is not None else None
+    fcf_p = (cfo_p - capex_p) if cfo_p is not None and capex_p is not None else None
 
     # ── qualitative labels ────────────────────────────────────────────────────
     if capex_ocf_l is not None and capex_ocf_p is not None:
@@ -245,16 +245,26 @@ def capex_burden(
         elif capex_ocf_l < capex_ocf_p - 3:  ocf_trend = "falling"
         else:                                  ocf_trend = "flat"
     else:
-        ocf_trend = "flat"
+        ocf_trend = None
 
-    if   fcf_l is not None and fcf_p is not None and fcf_l > fcf_p:  fcf_trend = "improving"
-    elif fcf_l is not None and fcf_p is not None and fcf_l < fcf_p:  fcf_trend = "deteriorating"
-    else:                                                               fcf_trend = "flat"
+    if fcf_l is None or fcf_p is None:
+        fcf_trend = None
+    elif fcf_l > fcf_p:
+        fcf_trend = "improving"
+    elif fcf_l < fcf_p:
+        fcf_trend = "deteriorating"
+    else:
+        fcf_trend = "flat"
 
-    fcf_trap = bool(
-        capex_ocf_l is not None and capex_ocf_l > 80.0
-        and fcf_l is not None and fcf_l < 0
-    )
+    # Preserve the conjunction, including a known false operand. Missing input
+    # is an unresolved assessment, not a reassuring negative assessment.
+    if ((capex_ocf_l is not None and capex_ocf_l <= 80.0)
+            or (fcf_l is not None and fcf_l >= 0)):
+        fcf_trap = False
+    elif capex_ocf_l is None or fcf_l is None:
+        fcf_trap = None
+    else:
+        fcf_trap = True
 
     return {
         "capex_ocf_latest":  round(capex_ocf_l, 1)      if capex_ocf_l  is not None else None,

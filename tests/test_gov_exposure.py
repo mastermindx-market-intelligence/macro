@@ -1,4 +1,4 @@
-"""Tests for engine/gov_exposure.py — hermetic, no network, no real parquets.
+"""Government funding and Demand burden tests, with isolated native Parquet/render paths.
 
 Covers:
   1. funding_to_mktcap — happy path, materiality bands, None-on-missing ticker,
@@ -13,6 +13,12 @@ Covers:
 """
 from __future__ import annotations
 
+import json
+import re
+import shutil
+from html.parser import HTMLParser
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -22,6 +28,283 @@ from engine.gov_exposure import (
     funding_to_mktcap,
     spender_capex_burden,
 )
+
+
+def _component_rows():
+    return [dict(fy=fy, cfo=10e9, capex=12e9, cash=20e9,
+                 debt_lt=25e9, debt_cur=5e9) for fy in range(2020, 2026)]
+
+
+@pytest.mark.parametrize("endpoint", [-1, -2])
+def test_missing_capex_withholds_only_unidentifiable_fcf_fields(endpoint):
+    rows = _component_rows()
+    rows[endpoint]["capex"] = None
+    r = capex_burden(rows)
+    assert r["fcf_trend"] is None
+    assert r["capex_ocf_trend"] is None
+    assert r["capex_yoy_pct"] is None
+    assert r["net_debt_delta_bn"] == 0.0
+    assert (r["fcf_latest_bn"], r["fcf_trap"]) == ((None, None) if endpoint == -1 else (-2.0, True))
+    assert r["fy_latest"] == 2025 and r["evidence_tier"] == "fingerprint" and r["score_cap"] == 60
+
+
+@pytest.mark.parametrize("endpoint", [-1, -2])
+@pytest.mark.parametrize("component", ["cash", "debt_lt", "debt_cur"])
+def test_net_debt_requires_each_component_at_both_endpoints(endpoint, component):
+    rows = _component_rows()
+    complete = capex_burden(rows)
+    rows[endpoint][component] = None
+    got = capex_burden(rows)
+    assert got == {**complete, "net_debt_delta_bn": None}
+
+
+@pytest.mark.parametrize("component,expected_delta", [("cash", 20.0), ("debt_lt", -25.0), ("debt_cur", -5.0)])
+def test_reported_balance_zero_is_a_measured_change(component, expected_delta):
+    rows = _component_rows()
+    rows[-1][component] = 0.0
+    r = capex_burden(rows)
+    assert r["net_debt_delta_bn"] == expected_delta
+    assert r["fcf_latest_bn"] == -2.0 and r["fcf_trap"] is True
+
+
+def test_reported_zero_capex_and_zero_fcf_remain_observations():
+    rows = _component_rows()
+    rows[-1]["capex"] = 0.0
+    r = capex_burden(rows)
+    assert (r["capex_ocf_latest"], r["capex_yoy_pct"], r["fcf_latest_bn"]) == (0.0, -100.0, 10.0)
+    assert r["fcf_trend"] == "improving" and r["fcf_trap"] is False
+    rows[-1]["capex"] = 10e9
+    r = capex_burden(rows)
+    assert r["fcf_latest_bn"] == 0.0 and r["fcf_trap"] is False
+
+
+@pytest.mark.parametrize("cfo,capex,expected_trap", [(0.0, 12e9, None), (-1e9, 12e9, None), (0.0, 0.0, False)])
+def test_undefined_ratio_is_not_flat_or_a_false_trap_assessment(cfo, capex, expected_trap):
+    rows = _component_rows()
+    rows[-1].update(cfo=cfo, capex=capex)
+    r = capex_burden(rows)
+    assert r["capex_ocf_latest"] is None and r["capex_ocf_trend"] is None
+    assert r["fcf_latest_bn"] == (cfo - capex) / 1e9
+    assert r["fcf_trap"] is expected_trap
+
+
+@pytest.mark.parametrize("latest_capex,trend", [(53e9, "flat"), (53.01e9, "rising"), (47e9, "flat"), (46.99e9, "falling")])
+def test_defined_ratio_trend_threshold_remains_three_percentage_points(latest_capex, trend):
+    rows = _component_rows()
+    for row in rows:
+        row.update(cfo=100e9, capex=50e9)
+    rows[-1]["capex"] = latest_capex
+    assert capex_burden(rows)["capex_ocf_trend"] == trend
+
+
+_FLOW_CONCEPTS = {
+    "cfo": "NetCashProvidedByUsedInOperatingActivities",
+    "capex": "PaymentsToAcquirePropertyPlantAndEquipment",
+    "revenue": "Revenues",
+}
+_BALANCE_CONCEPTS = {
+    "cash": "CashAndCashEquivalentsAtCarryingValue",
+    "debt_lt": "LongTermDebtNoncurrent",
+    "debt_cur": "LongTermDebtCurrent",
+}
+_FIXTURE_VALUES = {"cfo": 10e9, "capex": 12e9, "revenue": 50e9,
+                   "cash": 20e9, "debt_lt": 25e9, "debt_cur": 5e9}
+_SPENDERS = ("MSFT", "GOOGL", "AMZN", "META", "ORCL", "DHI", "LEN", "PHM", "NVR", "TOL", "KBH")
+_PIPELINE_CASES = {
+    "complete": {},
+    "missing_latest_capex": {("capex", 2025): None},
+    "missing_prior_capex": {("capex", 2024): None},
+    "all_capex_missing": {("capex", fy): None for fy in range(2020, 2026)},
+    **{f"missing_{endpoint}_{key}": {(key, fy): None}
+       for endpoint, fy in [("latest", 2025), ("prior", 2024)]
+       for key in ("cash", "debt_lt", "debt_cur")},
+    "zero_capex": {("capex", fy): 0.0 for fy in range(2020, 2026)},
+    "zero_cash": {("cash", fy): 0.0 for fy in range(2020, 2026)},
+    "zero_debt": {(key, fy): 0.0 for key in ("debt_lt", "debt_cur") for fy in range(2020, 2026)},
+    "zero_fcf": {("capex", fy): 10e9 for fy in range(2020, 2026)},
+    "zero_latest_cfo": {("cfo", 2025): 0.0},
+}
+
+
+def _companyfacts(edits):
+    """SEC-shaped fabricated values, not the financial results of named issuers."""
+    concepts = {}
+    for key, concept in {**_FLOW_CONCEPTS, **_BALANCE_CONCEPTS}.items():
+        entries = []
+        for fy in range(2020, 2026):
+            value = edits.get((key, fy), _FIXTURE_VALUES[key])
+            if value is None:
+                continue
+            row = {"fy": fy, "fp": "FY", "form": "10-K", "end": f"{fy}-12-31",
+                   "filed": f"{fy + 1}-02-15", "val": value}
+            if key in _FLOW_CONCEPTS:
+                row["start"] = f"{fy}-01-01"
+            entries.append(row)
+        concepts[concept] = {"units": {"USD": entries}}
+    return {"facts": {"us-gaap": concepts}}
+
+
+class _VisibleText(HTMLParser):
+    def __init__(self, language):
+        super().__init__(convert_charrefs=True)
+        self.language, self.hidden, self.parts = language, [], []
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"br", "hr", "img", "input", "link", "meta", "wbr"}:
+            return
+        classes = dict(attrs).get("class", "").split()
+        hidden = ((self.hidden[-1] if self.hidden else False)
+                  or ("l-zh" in classes and self.language == "en")
+                  or ("l-en" in classes and self.language == "zh"))
+        self.hidden.append(hidden)
+
+    def handle_endtag(self, tag):
+        if self.hidden:
+            self.hidden.pop()
+
+    def handle_data(self, text):
+        if not self.hidden or not self.hidden[-1]:
+            self.parts.append(text)
+
+
+def _burden_cells(html, ticker="MSFT"):
+    # A payer can also occur in the beneficiary table on the populated page.
+    rows = [r for r in re.findall(r"<tr\b[^>]*>.*?</tr>", html, re.S)
+            if f'href="stock.html#{ticker}"' in r
+            and len(re.findall(r"<td\b", r)) == 9]
+    assert len(rows) == 1, f"Expected exactly one payer row for {ticker}"
+    cells = re.findall(r"<td([^>]*)>(.*?)</td>", rows[0], re.S)
+    assert len(cells) == 9
+    texts = {}
+    for lang in ("en", "zh"):
+        texts[lang] = []
+        for _, cell in cells:
+            parser = _VisibleText(lang)
+            parser.feed(cell)
+            texts[lang].append(" ".join("".join(parser.parts).split()))
+    return cells, texts
+
+
+def _native_component_pipeline(tmp_path, monkeypatch, edits):
+    from collectors import edgar_facts as ef
+    from engine import demand_alerts
+    from lib import config
+    from scripts import build_demand as bd
+
+    source_root = Path(bd.__file__).resolve().parents[1]
+    root = tmp_path / "fixture"
+    root.mkdir(parents=True)
+    # Actual checkout-relative reads also bind template-only CI inference.
+    for relative in ("config.yml", "templates/demand.html.j2", "templates/_seo_head.html.j2",
+                     "templates/_site_nav.html.j2", "templates/_navlinks.html.j2"):
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source_root / relative, target)
+    monkeypatch.setattr(config, "ROOT", root)
+    monkeypatch.setattr(config, "data_dir", lambda: root / "data")
+
+    facts = {1000 + i: _companyfacts(edits if ticker == "MSFT" else {})
+             for i, ticker in enumerate(_SPENDERS)}
+    requests, debt_writes, pauses = [], [], []
+    def get_json(url):
+        cik = int(re.search(r"CIK(\d+)\.json$", url).group(1))
+        assert cik in facts
+        requests.append(cik)
+        return facts[cik]
+    monkeypatch.setattr(ef, "_get_json", get_json)
+    monkeypatch.setattr(ef.time, "sleep", lambda seconds: pauses.append(seconds))
+    monkeypatch.setattr(ef, "_dm_wire_cache", lambda cik, data: debt_writes.append((cik, data is facts[cik])))
+    rows = []
+    for i, ticker in enumerate(_SPENDERS):
+        parsed = ef._statements_for(1000 + i)
+        assert {r["fy"] for r in parsed} == set(range(2020, 2026))
+        rows.extend({**r, "ticker": ticker} for r in parsed)
+    assert requests == list(facts)
+    assert debt_writes == [(cik, True) for cik in facts]
+    assert pauses == [0.12] * len(facts)
+
+    frame = pd.DataFrame(rows)
+    path = root / "data/edgar/statements.parquet"
+    path.parent.mkdir(parents=True)
+    frame.to_parquet(path)
+    membership = root / "data/baskets/membership.json"
+    membership.parent.mkdir(parents=True)
+    membership.write_text(json.dumps({"baskets": {
+        "ai_semiconductors": {"name": "AI semiconductors", "members": [{"ticker": "NVDA"}]},
+        "housing": {"name": "Housing", "members": [{"ticker": "BLDR"}]}}}))
+    revision_path = root / "data/revisions/latest.parquet"
+    revision_path.parent.mkdir(parents=True)
+    pd.DataFrame({"breadth": [0.5, 0.5], "est_chg_30d": [2.0, 2.0], "est_chg_90d": [2.0, 2.0]},
+                 index=pd.Index(["NVDA", "BLDR"], name="ticker")).to_parquet(revision_path)
+
+    signals, reads, burdens = bd._collect(root)
+    assert set(signals) == {"ai_datacenter", "housing"}
+    assert all(s["fy_latest"] == 2025 and s["n_spenders"] >= 4 for s in signals.values())
+    assert set(reads) == {"NVDA", "BLDR"}
+    assert reads["NVDA"]["chain_key"] == "ai_datacenter" and reads["BLDR"]["chain_key"] == "housing"
+    assert all(r["consensus_dir"] == "rising" for r in reads.values())
+    for chain in signals:
+        direct = spender_capex_burden(pd.read_parquet(path), chain)
+        assert direct and burdens[chain] == direct, "the builder catch-all must not hide a burden error"
+    assert "MSFT" in burdens["ai_datacenter"] and burdens["ai_datacenter"]["MSFT"] is not None
+
+    alert_calls, writes = [], []
+    monkeypatch.setattr(demand_alerts, "rebuild", lambda data, **kw: alert_calls.append(data) or [])
+    def write_page(path, html):
+        path = Path(path)
+        assert root in path.parents
+        path.write_text(html)
+        writes.append(path)
+        return path
+    monkeypatch.setattr(bd, "write_page", write_page)
+    html = bd.build(root=root)
+    assert len(writes) == 1 and writes[0].read_text() == html
+    assert alert_calls == [reads]
+    assert not (root / "data/demand_chain/alerts.jsonl").exists()
+    assert "<html" in html and 'class="l-en"' in html and 'class="l-zh"' in html
+    json.dumps(burdens, allow_nan=False)
+    return {"rows": rows, "signals": signals, "reads": reads, "burdens": burdens,
+            "html": html, "output": writes[0]}
+
+
+@pytest.mark.parametrize("case", list(_PIPELINE_CASES))
+def test_native_companyfacts_parquet_builder_and_bilingual_disclosure(tmp_path, monkeypatch, case):
+    result = _native_component_pipeline(tmp_path, monkeypatch, _PIPELINE_CASES[case])
+    b = result["burdens"]["ai_datacenter"]["MSFT"]
+    cells, texts = _burden_cells(result["html"])
+    assert b["evidence_tier"] == "fingerprint" and b["score_cap"] == 60 and b["fy_latest"] == 2025
+    source_rows = [r for r in result["rows"] if r["ticker"] == "MSFT"]
+    for (key, fy), value in _PIPELINE_CASES[case].items():
+        parsed = next(r for r in source_rows if r["fy"] == fy)
+        assert parsed[key] is value if value is None else parsed[key] == value
+    if case in {"missing_latest_capex", "all_capex_missing"}:
+        assert b["fcf_latest_bn"] is None and b["fcf_trend"] is None
+        assert b["capex_ocf_latest"] is None and b["capex_ocf_trend"] is None and b["fcf_trap"] is None
+        assert all(texts[lang][i] == "—" for lang in texts for i in (1, 2, 3, 4, 5, 8))
+        assert "pos" not in cells[4][0] and "neg" not in cells[4][0]
+    elif case == "missing_prior_capex":
+        assert b["fcf_latest_bn"] == -2.0 and b["fcf_trap"] is True
+        assert b["fcf_trend"] is None and b["capex_ocf_trend"] is None
+        assert all(texts[lang][i] == "—" for lang in texts for i in (2, 3, 5))
+    elif case.startswith("missing_"):
+        assert b["net_debt_delta_bn"] is None
+        assert b["fcf_latest_bn"] == -2.0 and b["fcf_trap"] is True
+        assert all(texts[lang][6] == "—" for lang in texts)
+        assert "pos" not in cells[6][0] and "neg" not in cells[6][0]
+    elif case == "zero_capex":
+        assert (b["capex_ocf_latest"], b["fcf_latest_bn"], b["fcf_trap"]) == (0.0, 10.0, False)
+    elif case == "zero_fcf":
+        assert b["fcf_latest_bn"] == 0.0 and b["fcf_trap"] is False
+        assert texts["en"][4] == texts["zh"][4] == "+0.0"
+    elif case == "zero_latest_cfo":
+        assert b["capex_ocf_trend"] is None and b["fcf_trap"] is None
+        assert all(texts[lang][i] == "—" for lang in texts for i in (1, 2, 8))
+    else:
+        assert b["fcf_latest_bn"] == -2.0 and b["net_debt_delta_bn"] == 0.0
+        assert texts["en"][5] == "flat" and texts["zh"][5] == "持平"
+    assert "None" not in " ".join(texts["en"] + texts["zh"])
+    assert "A dash means required inputs are missing" in result["html"]
+    assert "破折号表示缺少必要输入或计算无定义" in result["html"]
 
 
 # ─── fixtures ─────────────────────────────────────────────────────────────────
@@ -232,15 +515,17 @@ class TestCapexBurden:
         assert r["fcf_trap"] is True          # FCF < 0
 
     def test_none_when_capex_missing_but_cfo_present(self):
-        """With no capex, no fcf_trap; but result still returned (FCF = CFO fallback)."""
+        """#11067 deliberately replaces the old CFO-as-FCF fallback contract."""
         rows = []
         for i in range(4):
             rows.append({"ticker": "X", "fy": 2020 + i, "cfo": 10e9})
         r = capex_burden(rows)
         assert r is not None
         assert r["capex_ocf_latest"] is None   # no capex available
-        assert r["fcf_trap"] is False
-        assert r["fcf_latest_bn"] is not None  # FCF falls back to CFO
+        assert r["fcf_trap"] is None
+        assert r["fcf_latest_bn"] is None
+        assert r["fcf_trend"] is None
+        assert r["capex_ocf_trend"] is None
 
 
 # ─── spender_capex_burden ─────────────────────────────────────────────────────

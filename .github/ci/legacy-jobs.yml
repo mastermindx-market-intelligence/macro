@@ -14811,6 +14811,8 @@ jobs:
       # offline (autouse no-network fixture, tmp_path data_dir). Deps are satisfied by
       # the install line above (pandas + pyarrow for the parquet write, pyyaml via
       # lib.config). 24 tests, 1.8 s measured locally.
+      - name: Demand annual components and full builder disclosure
+        run: python -m pytest tests/test_gov_exposure.py -q
       - name: symbol-directory archival collector tests (LHB-W2c / LHB-R8)
         run: >-
           python -m pytest

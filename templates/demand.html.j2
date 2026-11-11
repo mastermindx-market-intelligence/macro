@@ -128,7 +128,7 @@
             <span class="{{ 'neg' if b.capex_ocf_latest > 80 else '' }}">{{ '%.0f'|format(b.capex_ocf_latest) }}%</span>
           {% else %}—{% endif %}
         </td>
-        <td class="faint">{{ t(b.capex_ocf_trend, _w18c3_trend_zh) }}</td>
+        <td class="faint">{% if b.capex_ocf_trend is none %}—{% else %}{{ t(b.capex_ocf_trend, _w18c3_trend_zh) }}{% endif %}</td>
         <td class="num">
           {% if b.capex_yoy_pct is not none %}
             {{ '%+.0f'|format(b.capex_yoy_pct) }}%
@@ -144,7 +144,7 @@
           {% if b.net_debt_delta_bn is not none %}{{ '%+.1f'|format(b.net_debt_delta_bn) }}{% else %}—{% endif %}
         </td>
         <td class="faint">FY{{ b.fy_latest }}</td>
-        <td>{% if b.fcf_trap %}<span class="badge risk">{{ t('FCF trap','FCF陷阱') }}</span>{% endif %}</td>
+        <td>{% if b.fcf_trap is none %}—{% elif b.fcf_trap %}<span class="badge risk">{{ t('FCF trap','FCF陷阱') }}</span>{% endif %}</td>
       </tr>
       {% endif %}
       {% endfor %}
@@ -152,7 +152,7 @@
   </details>
   {% endif %}
   {% endfor %}
-  <p class="cav">{{ t('Annual XBRL (fingerprint-class); lag ~90 days from fiscal-year-end. Net-debt delta from balance-sheet YoY — may include acquisitions. Not a sell signal. Display-only.', '年度XBRL（指纹级）；财年末后约90天滞后。净债务变化来自资产负债表同比——可能包含并购。非卖出信号。仅展示。') }}</p>
+  <p class="cav">{{ t('Annual XBRL (fingerprint-class); lag ~90 days from fiscal-year-end. Net-debt delta from balance-sheet YoY — may include acquisitions. A dash means required inputs are missing or the calculation is undefined. Not a sell signal. Display-only.', '年度XBRL（指纹级）；财年末后约90天滞后。净债务变化来自资产负债表同比——可能包含并购。破折号表示缺少必要输入或计算无定义。非卖出信号。仅展示。') }}</p>
 </div>
 {% endif %}
 
