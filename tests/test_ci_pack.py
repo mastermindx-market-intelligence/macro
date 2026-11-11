@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #11044, HOUSE stress drawdown regression enrollment):
+    Own contract-delta run43047280002/job130614488352 compared subject
+    b41389f1e86f4046568a9421fa6031d9da233c95 on tested merge
+    28e18a569e4006f3568c0a9f0985dc80f6abbf17 against exact base
+    5e2f0530a7c5c95a0e461e81edac02cd1133acfa. Adding the existing
+    tests/test_portfolio.py suite to wri-risk-core increases the unchanged
+    estimator by exactly two units. Actual paired probes measured index
+    137/5966 -> 137/5968, free-content 137/5987 -> 137/5989 and
+    Prophet 131/5724 -> 131/5726; all retain ten packs and no newly
+    selected owner. Fund only this measured +2 in the three weight ceilings.
+    Keep job ceilings137/138/131, ten packs, every assertion, selector,
+    dependency, runtime deadline and admission/concurrency control unchanged.
+    This is measured planner weight, not elapsed time or a hosted pass on
+    the successor. All existing accounting remains below; fresh CI is owed.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
