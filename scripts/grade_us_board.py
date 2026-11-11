@@ -132,6 +132,7 @@ from engine.confluence_tiers import (  # noqa: E402 — 3D StochRSI for the ledg
     _stoch_rsi_kd,
     _to_daily,
 )
+from engine import us_board_snapshots  # noqa: E402
 
 BOARD_PATH = "site/factordata/us_standouts.json"
 LEDGER_DIR = ROOT / "data" / "us_board_ledger"
@@ -816,8 +817,8 @@ def collect_boards(receipt: dict | None = None) -> list[dict]:
     boards: dict[str, dict] = {}
 
     # 1) snapshots (forward-accruing source) — take precedence (exact bytes at build time)
-    if SNAPSHOTS_JSONL.exists():
-        for line in SNAPSHOTS_JSONL.read_text().splitlines():
+    if us_board_snapshots.exists(SNAPSHOTS_JSONL):
+        for line in us_board_snapshots.read_lines(SNAPSHOTS_JSONL):
             line = line.strip()
             if not line:
                 continue
@@ -1723,10 +1724,11 @@ def _assemble_track(*, df, board_dates, graded_dates, survivorship, n_excluded,
 # nightly snapshot
 # --------------------------------------------------------------------------- #
 def _snapshot_existing_as_of() -> set[str]:
-    """The set of ``as_of`` values already present in SNAPSHOTS_JSONL."""
+    """The set of ``as_of`` values already present in SNAPSHOTS_JSONL
+    (base plus snapshots_parts/, engine/us_board_snapshots.py)."""
     existing: set[str] = set()
-    if SNAPSHOTS_JSONL.exists():
-        for line in SNAPSHOTS_JSONL.read_text().splitlines():
+    if us_board_snapshots.exists(SNAPSHOTS_JSONL):
+        for line in us_board_snapshots.read_lines(SNAPSHOTS_JSONL):
             try:
                 existing.add(json.loads(line).get("as_of"))
             except json.JSONDecodeError:
@@ -1741,10 +1743,11 @@ def _append_snapshot_row(row: dict) -> None:
     ``absorb_pending_replays()`` both call it, so a lane that appends the wrong bytes
     (wrong separators, no trailing newline) has exactly one place to fix rather than
     two call sites that quietly drifted apart.
+    Rows go to the base until the rollover, then to snapshots_parts/.
     """
     LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-    with SNAPSHOTS_JSONL.open("a") as f:
-        f.write(json.dumps(row, separators=(",", ":")) + "\n")
+    us_board_snapshots.append_line(
+        SNAPSHOTS_JSONL, json.dumps(row, separators=(",", ":")))
 
 
 def snapshot_today() -> str | None:
