@@ -1,0 +1,11 @@
+{
+  "source_head": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "stale_merge_head": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "original_head_marker": "bac05c4c15f648acb845a67caa54a7103b28fa6b",
+  "applied_and_published_merge_commit": "7787d2f5cd50502407f55cc0706af92010bbe2ea",
+  "applied_merge_is_ancestor_of_current_head": true,
+  "exact_prepared_tree_retained": "778f074505717ee68c7722262b571aa242bd95d6",
+  "action": "git merge --quit",
+  "head_index_worktree_preserved": true,
+  "reason": "The publisher already committed the exact two-parent merge and subsequent evidence commits, but the original merge marker remained. No active merge or unknown commit effect was discarded."
+}

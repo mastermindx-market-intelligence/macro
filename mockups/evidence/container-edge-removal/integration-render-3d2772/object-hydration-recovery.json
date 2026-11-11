@@ -1,0 +1,32 @@
+{
+  "imported": [
+    {
+      "sha": "f2484d90566aed4aa22db70dfb02228cf1252778",
+      "bytes": 55147,
+      "source": "canonical GitHub repository blob API"
+    },
+    {
+      "sha": "65444194eaf10db596f00a4df4d5c5d90b3d50be",
+      "bytes": 7975,
+      "source": "canonical GitHub repository blob API"
+    },
+    {
+      "sha": "5e7d91d84d74369315e2220526a7e8110a3f0059",
+      "bytes": 211666,
+      "source": "canonical GitHub repository blob API"
+    },
+    {
+      "sha": "43ade7131960603bcf1649de654322e6dd456661",
+      "bytes": 779113,
+      "source": "canonical GitHub repository blob API"
+    },
+    {
+      "sha": "b8424f2610c7a38a9251a145d50f3e25bb8e25fc",
+      "bytes": 4110,
+      "source": "canonical GitHub repository blob API"
+    }
+  ],
+  "original_bulk_fetch_failure_preserved": true,
+  "remaining_missing": 0,
+  "no_repo_config_or_ref_changes": true
+}

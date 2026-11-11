@@ -1,0 +1,19 @@
+{
+  "source_main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "source_head": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "requested_immutable_blobs": 3731,
+  "fetch_exit_code": 1,
+  "seconds": 63.78,
+  "remaining_missing_count": 5,
+  "remaining_missing": [
+    "f2484d90566aed4aa22db70dfb02228cf1252778",
+    "65444194eaf10db596f00a4df4d5c5d90b3d50be",
+    "5e7d91d84d74369315e2220526a7e8110a3f0059",
+    "43ade7131960603bcf1649de654322e6dd456661",
+    "b8424f2610c7a38a9251a145d50f3e25bb8e25fc"
+  ],
+  "head_after": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "main_after": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "log": ".cache/glossary-output-repair/latest-render-hydration.log",
+  "scope": "Canonical origin Git object hydration only; no workspace file or repository configuration changes."
+}

@@ -1,0 +1,9 @@
+{
+  "head": "b032707276ed1d0a134ac384cc44366639912fc1",
+  "main": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+  "merge_exit_code": 128,
+  "seconds": 0.27,
+  "merge_head": "54b903f7b45ddf8000a8ab432d6ac1edd63be896",
+  "conflicts": [],
+  "log": "mockups/evidence/container-edge-removal/integration-render-3d2772/merge.log"
+}

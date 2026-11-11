@@ -1,0 +1,27 @@
+[
+  {
+    "path": "site/cycledata/cycle_engine.js",
+    "sha256": "edc1fbe3e50aa1a7b0e294ca580c479aeb627c61d280cec1395d2d328f00ef93",
+    "exact_main": true
+  },
+  {
+    "path": "site/marketsdata/markets_engine.js",
+    "sha256": "e0b9476d0d871792a3b7d8334324b67eca91fe5780722741f709e4401b2cf276",
+    "exact_main": true
+  },
+  {
+    "path": "site/measurementdata/measurement_data.js",
+    "sha256": "239250a7387fa8d62a85a36dc7a6beee4b44d4abe78138b7c3e75e8d8e64fbc9",
+    "exact_main": true
+  },
+  {
+    "path": "site/regimedata/regime_prior.js",
+    "sha256": "4bc5250daec7a0fc4ebc6a478eea57369b162a1297f966cc1f6fcac99284c7c5",
+    "exact_main": true
+  },
+  {
+    "path": "site/sector_central_data.js",
+    "sha256": "f67d0ffd5ca621fb2582d10b37d81254d02fabb51581d7155af24a4b7018ef6d",
+    "exact_main": true
+  }
+]
