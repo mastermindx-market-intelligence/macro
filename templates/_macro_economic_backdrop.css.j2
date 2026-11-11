@@ -50,7 +50,7 @@
   .ebd-head .ebd-h::before { content: ""; flex: none; width: 3px; height: 18px;
     border-radius: var(--r-pill);
     background: linear-gradient(180deg, var(--rail, var(--link)),
-      color-mix(in srgb, var(--rail, var(--link)) 35%, transparent)); }
+      transparent); }
   html[data-theme="light"] .ebd-head .ebd-h::before { background: var(--rail, var(--link)); }
   html[data-lang="zh"] .ebd .ebd-h { letter-spacing: 0; }
   .ebd-sub { margin: 0; font-size: var(--fs-sm, 12.5px); line-height: 1.4;
@@ -84,7 +84,7 @@
   html body .panel.ebd-card::before { content: ""; position: absolute;
     left: 0; top: 0; bottom: 0; width: 3px; pointer-events: none;
     background: linear-gradient(180deg, var(--ebd-spine),
-      color-mix(in srgb, var(--ebd-spine) 12%, transparent)); }
+      transparent); }
   html[data-theme="light"] body .panel.ebd-card::before { background: var(--ebd-spine); }
 
   .ebd-card--warn { --ebd-spine: var(--warn); }
@@ -158,7 +158,7 @@
     transition: transform var(--t-fast, .16s) ease; }
   .ebd-rc[open] > summary .ebd-rc-cue::after { transform: rotate(90deg); }
   .ebd-rc > summary:hover .ebd-rc-cue { color: var(--ink-link, var(--link)); }
-  html body .ebd-rc > summary:focus-visible { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent);
+  html body .ebd-rc > summary:focus-visible { outline: 2px solid var(--link);
     outline-offset: 3px; border-radius: var(--r-ctl); }
   .ebd-rc-body { margin: 8px 0 0; font-size: var(--fs-sm, 12.5px); line-height: 1.55;
     color: var(--ebd-ink-2); }
@@ -171,9 +171,9 @@
   .ebd-go:hover { text-decoration: underline; text-underline-offset: 3px; }
   /* DARK: the ink brightens (luminance is the affordance). LIGHT: the rule thickens
      (a brightened link on white is just a paler link — structure reads instead). */
-  html:not([data-theme="light"]) .ebd-go:hover { color: color-mix(in srgb, var(--link) 55%, var(--text)); }
+  html:not([data-theme="light"]) .ebd-go:hover { color: var(--text); }
   html[data-theme="light"] .ebd-go:hover { text-decoration-thickness: 2px; }
-  .ebd-go:focus-visible { outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent);
+  .ebd-go:focus-visible { outline: 2px solid var(--link);
     outline-offset: 2px; border-radius: var(--r-ctl); }
 
   .ebd-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
