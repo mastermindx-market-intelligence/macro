@@ -185,9 +185,16 @@ def test_focus_projection_preserves_full_semantics_and_reduces_link_output(monke
         return "from public.analytics_events e " + text.split("from public.analytics_events e ", 1)[1].split("group by", 1)[0]
     new_events = prefix + "select e.id " + event_selection(outer)
     old_events = old_prefix + "select e.id " + event_selection(old_outer)
-    needle="where e.visitor_id is not null and (e.user_id"
-    assert current.count(needle)==1
-    naive=current.replace(needle,"where e.visitor_id in (select visitor_id from focus_visitors) and e.visitor_id is not null and (e.user_id",1)
+    # The seed is a UNION of five index-driven membership arms (it used to be a single OR
+    # across five columns, which no index can drive). The naive optimization is unchanged:
+    # scope the seed itself to the window. Build it by scoping every arm, so the mutation
+    # still represents "restrict the seed", not "restrict one branch of it".
+    seed_start, seed_end = current.index("excl_seed as ("), current.index("excl_link as (")
+    seed = current[seed_start:seed_end]
+    assert seed.count("where e.") == 5
+    naive_seed = seed.replace(
+        "where e.", "where e.visitor_id in (select visitor_id from focus_visitors) and e.")
+    naive=current[:seed_start]+naive_seed+current[seed_end:]
     naive_prefix,naive_outer=naive.rsplit("select e.site",1)
     naive_events=naive_prefix+"select e.id "+event_selection(naive_outer)
     target_needle="where e2.visitor_id is not null"

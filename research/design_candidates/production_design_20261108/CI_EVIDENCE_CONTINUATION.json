@@ -1,0 +1,163 @@
+{
+  "observed_head": "0e9ccf41a0bb62ba0c0b28fd716b39017afd468e",
+  "status": "OBSERVED_NOT_ALL_ACCEPTED",
+  "checks": [
+    {
+      "id": 128910235424,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128910233935,
+      "name": "ci-pack-10",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 128910233902,
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233853,
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233833,
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233808,
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233791,
+      "name": "ci-pack-11",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233787,
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233775,
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233774,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233771,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233757,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128910233746,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909509012,
+      "name": "grader-manifest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909506839,
+      "name": "capability-broker",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909504869,
+      "name": "self-mod-fence",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909187032,
+      "name": "ci-authority/main",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909184251,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed",
+      "conclusion": "failure",
+      "output": {
+        "title": "CI authority context rejected",
+        "summary": "{\"schema\":\"ci.authority.v1\",\"event\":\"pull_request_target\",\"repository\":\"mastermindx-market-intelligence/macro\",\"pull_request_number\":10864,\"event_action\":\"synchronize\",\"head_sha\":\"0e9ccf41a0bb62ba0c0b28fd716b39017afd468e\",\"head_repository\":\"mastermindx-market-intelligence/macro\",\"base_sha\":\"f3a0ed74452645aef2b456788b2aa130d6b860e4\",\"base_ref\":\"main\",\"base_repository\":\"mastermindx-market-intelligence/macro\",\"author\":\"MastermindX1\",\"actor\":\"MastermindX1\",\"current_base_sha\":\"f3a0ed74452645aef2b456788b2aa130d6b860e4\",\"post_files_base_sha\":\"f3a0ed74452645aef2b456788b2aa130d6b860e4\",\"inventory_base_sha\":\"f3a0ed74452645aef2b456788b2aa130d6b860e4\",\"inventory_mode\":\"exact_changed_paths\",\"inventory_complete\":true,\"post_authorization_base_sha\":null,\"changed_files_snapshot_attempts\":1,\"changed_file_count\":28,\"authority_hit_count\":0,\"authority_hits\":[],\"author_admin_verified\":false,\"actor_admin_verified\":false,\"admin_verified\":false,\"allowed\":true,\"reason\":\"ordinary_change\",\"check_context\":\"ci-authority/codex/merge-queue-pilot\",\"context_base_ref\":\"codex/merge-queue-pilot\",\"context_active\":false,\"context_allowed\":false,\"context_reason\":\"inactive_base_context\"}",
+        "text": null,
+        "annotations_count": 0,
+        "annotations_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/check-runs/128909184251/annotations"
+      }
+    },
+    {
+      "id": 128909153058,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128909153043,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909153010,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128909152970,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 128909152818,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909151832,
+      "name": "fence-pack",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 128909141767,
+      "name": "ci-authority",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}
