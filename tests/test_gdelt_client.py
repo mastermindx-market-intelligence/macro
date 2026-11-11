@@ -58,29 +58,57 @@ _SAMPLE_PARAMS = {"query": "tariff", "mode": "artlist", "format": "json", "maxre
 
 # ── throttle tests ────────────────────────────────────────────────────────────
 
+class _VirtualClock:
+    """Clock whose only time-advance is sleep().  Substituted for the throttle's
+    `_now` / `_sleep` seams so spacing tests assert exactly what the throttle
+    requested instead of a wall-clock measurement that flakes on loaded runners."""
+
+    def __init__(self, t0: float = 1000.0):
+        self.t = float(t0)
+        self.sleeps: list[float] = []
+
+    def now(self) -> float:
+        return self.t
+
+    def sleep(self, seconds: float) -> None:
+        self.sleeps.append(seconds)
+        self.t += seconds
+
+
 def test_throttle_spacing_between_two_calls(tmp_path):
-    """Two sequential calls must be spaced >= min_interval seconds apart."""
+    """Two sequential calls must be spaced >= min_interval seconds apart.
+
+    Deterministic: the throttle runs on a virtual clock, so the gap equals the
+    sleep the throttle itself requested — runner load cannot shrink it."""
+    clock = _VirtualClock()
     timestamps: list[float] = []
 
     def _fake_requests_get(*args, **kwargs):
-        timestamps.append(time.monotonic())
+        timestamps.append(clock.now())
         return _make_response(200, _gdelt_body(["headline one"]))
 
     min_interval = 0.05  # short for speed
     stamp_file = tmp_path / "gdelt" / "last_request"
+    stamp_file.parent.mkdir(parents=True, exist_ok=True)
 
     with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
          patch("requests.get", side_effect=_fake_requests_get):
-        # Ensure parent dir exists
-        stamp_file.parent.mkdir(parents=True, exist_ok=True)
-
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
 
     assert len(timestamps) == 2, "expected exactly two network requests"
     gap = timestamps[1] - timestamps[0]
-    assert gap >= min_interval * 0.9, (
-        f"requests were only {gap:.4f}s apart; expected >= {min_interval}s"
+    # Tolerance only absorbs float rounding of the virtual clock's t += sleep.
+    assert gap >= min_interval - 1e-9, (
+        f"requests were only {gap:.4f}s apart on the virtual clock; "
+        f"expected >= {min_interval}s"
+    )
+    # The second call must actually have paced: with the clock frozen between
+    # calls, the only legal sleep is the full remaining interval.
+    assert clock.sleeps and abs(clock.sleeps[0] - min_interval) < 1e-9, (
+        f"throttle did not request a {min_interval}s sleep; sleeps={clock.sleeps}"
     )
 
 
