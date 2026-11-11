@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #11024, member perf archive suite accounting):
+    contract-delta run 43004476995 measured head 743645ca94ae against
+    base 65f534bdc136: all three probes exactly +2 over ceiling
+    (index 5,968 > 5,966; free 5,989 > 5,987; Prophet 5,726 > 5,724),
+    newly selected: none, jobs stay 137/138/131, ten packs. The +2 is
+    the accepted suite token for tests/test_member_perf_archive.py
+    appended to the existing fetch-finviz-owning step in
+    .github/ci/legacy-jobs.yml (same module, same subject; contract-
+    delta's own run: step wiring demand) — no new owner, no new job, no
+    selector change. Apply that contribution to 5966/5987/5724 ->
+    5968/5989/5726, retaining job ceilings. This is source-derived
+    accounting, not a new planner execution; natural successor CI must
+    qualify this head.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
