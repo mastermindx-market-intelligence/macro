@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "eacf01e4cfa8cb3736b65c022d39442fe0e7924c455e57018abdc1db72dd136d"
+    "sha256": "b9852a45d29c489c6ab25806125db76286fe9bf7842ab3e7674854c267e9cdb7"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -16086,43 +16086,38 @@
     }
   ],
   "source_composition": {
-    "recorded_at": "2026-11-11",
+    "recorded_at": "2026-11-11T21:54:18.302831+00:00",
     "kind": "metadata_only",
-    "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
+    "source_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
     "source_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-      "git_blob_sha": "276d8eba684549179b5ee5b8ea26cfb5b54c823f",
-      "sha256": "513c2cbbfda1e44f02fa598e39d9e6252b0e52fc8974df8313d1cf2505346727"
+      "git_blob_sha": "83704df8b1bac6f63578ddd97a1d93817b56614a",
+      "sha256": "ef4ed2b98d0cb050f0bc476f2943cd1ebb758d9623d08ee1c8a753402be19d49"
     },
-    "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
     "captured_fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+      "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
     },
     "captured_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
       "engine/i18n.py": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152",
       "templates/_icons.html.j2": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
     },
-    "composed_base_head": "cc4d551e39082aec1c235d584817e6cf8dc98a5d",
+    "composed_base_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
     "current_fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "eacf01e4cfa8cb3736b65c022d39442fe0e7924c455e57018abdc1db72dd136d"
+      "sha256": "b9852a45d29c489c6ab25806125db76286fe9bf7842ab3e7674854c267e9cdb7"
     },
     "current_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7",
       "engine/i18n.py": "4a65f2e09fbc7bdf02a69e56b55b3c1d96e7d90a603e2bc0619a62cb7c0e6de2",
       "templates/_icons.html.j2": "96c5fa3bfc317acb9cdc50d41af1b70b6d93afe538397246913100624f038af8"
     },
-    "qualification": "The unchanged native recipe reproduced all six HK/Canada normal, watch-only and null-buy HTML identities, exact owner populations, canonical transformations, routes and diagnostic overlays. All 39 loaded browser assets, verifier, font manifest and 20 retained screenshots match their accepted bytes. Only the added i18n glossary and unused icon dictionary entries change construction hashes. Current fixture and construction bindings are composed on the published source head; all original measured fields, browser identity, screenshot bytes and historical capture lineage remain unchanged. This is metadata-only reuse of that accepted capture, not a new browser execution, changed Flow visual acceptance, runtime settlement or production proof.",
-    "new_browser_execution": false,
     "prior_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-      "git_blob_sha": "ebea51df67f35a906c561a09bb059a88bcc09d51",
-      "sha256": "43332248be25ac3aac2033798372a4fb038afbb387f439c6bedac300c1913c04"
+      "git_blob_sha": "27c5a6aee491f6e3e350f10431f55f7525b75c12",
+      "sha256": "f83ae33764ea9e89d2cf6dc68f614e97130cef9c9de2db3dea6f2a3e12cbce9b"
     },
     "prior_source_composition": {
-      "recorded_at": "2026-11-07",
+      "recorded_at": "2026-11-11",
       "kind": "metadata_only",
       "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
       "source_receipt": {
@@ -16136,24 +16131,72 @@
         "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
       },
       "captured_construction_inputs": {
-        "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
+        "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d",
+        "engine/i18n.py": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152",
+        "templates/_icons.html.j2": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
       },
-      "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
+      "composed_base_head": "cc4d551e39082aec1c235d584817e6cf8dc98a5d",
       "current_fixture_receipt": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-        "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+        "sha256": "eacf01e4cfa8cb3736b65c022d39442fe0e7924c455e57018abdc1db72dd136d"
       },
       "current_construction_inputs": {
-        "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+        "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7",
+        "engine/i18n.py": "4a65f2e09fbc7bdf02a69e56b55b3c1d96e7d90a603e2bc0619a62cb7c0e6de2",
+        "templates/_icons.html.j2": "96c5fa3bfc317acb9cdc50d41af1b70b6d93afe538397246913100624f038af8"
       },
-      "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
-      "new_browser_execution": false
+      "qualification": "The unchanged native recipe reproduced all six HK/Canada normal, watch-only and null-buy HTML identities, exact owner populations, canonical transformations, routes and diagnostic overlays. All 39 loaded browser assets, verifier, font manifest and 20 retained screenshots match their accepted bytes. Only the added i18n glossary and unused icon dictionary entries change construction hashes. Current fixture and construction bindings are composed on the published source head; all original measured fields, browser identity, screenshot bytes and historical capture lineage remain unchanged. This is metadata-only reuse of that accepted capture, not a new browser execution, changed Flow visual acceptance, runtime settlement or production proof.",
+      "new_browser_execution": false,
+      "prior_receipt": {
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "git_blob_sha": "ebea51df67f35a906c561a09bb059a88bcc09d51",
+        "sha256": "43332248be25ac3aac2033798372a4fb038afbb387f439c6bedac300c1913c04"
+      },
+      "prior_source_composition": {
+        "recorded_at": "2026-11-07",
+        "kind": "metadata_only",
+        "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
+        "source_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+          "git_blob_sha": "276d8eba684549179b5ee5b8ea26cfb5b54c823f",
+          "sha256": "513c2cbbfda1e44f02fa598e39d9e6252b0e52fc8974df8313d1cf2505346727"
+        },
+        "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
+        "captured_fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
+        },
+        "captured_construction_inputs": {
+          "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
+        },
+        "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
+        "current_fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+        },
+        "current_construction_inputs": {
+          "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+        },
+        "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
+        "new_browser_execution": false
+      },
+      "equality_proof_sha256": "6d87a794d092cce4b50ba3c2aaf2b04590a94e150df61e90695d6cf18eff59a6",
+      "equality_boundary": {
+        "rendered_owner_cases": 6,
+        "loaded_assets": 39,
+        "preserved_screenshots": 20,
+        "unchanged_case_metadata": true,
+        "unchanged_measured_fields": true
+      }
     },
-    "equality_proof_sha256": "6d87a794d092cce4b50ba3c2aaf2b04590a94e150df61e90695d6cf18eff59a6",
+    "qualification": "The unchanged native renderer freshly reproduced all six HK/Canada normal, watch-only and null-buy HTML identities from the combined source. Full owner-case records, populations, transformations, routes and diagnostic overlays equal the current main receipts. All 39 loaded assets, verifier, font manifest and all 122 PNG entries in this evidence directory retain their exact committed identities. Only the i18n glossary and unused icon dictionary construction bindings differ from the current captured inputs. Main's newer AI Brief HTML/source fields and every browser measurement remain current; the feature parent's complete earlier composition is preserved below as history. This metadata-only qualification is a new source-render equality check, not a new browser execution, Flow visual acceptance, canonical build or production proof.",
+    "new_browser_execution": false,
+    "equality_proof_sha256": "0141e33690df295b337b47faf840ea70d5bb451a1583518129e00cd9367535cd",
+    "equality_proof_location": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json#/repair_extension/source_composition/equality_proof",
     "equality_boundary": {
       "rendered_owner_cases": 6,
       "loaded_assets": 39,
-      "preserved_screenshots": 20,
+      "preserved_evidence_pngs": 122,
       "unchanged_case_metadata": true,
       "unchanged_measured_fields": true
     }

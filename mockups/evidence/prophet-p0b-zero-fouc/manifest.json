@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "b9ab2c0d1604dd224fdabb59d87c094bfcd44845f3ff7f3e13af8d1cee271e91",
+        "sha256": "19976849fa650602a3ed477054e333755207b2e031b9f9c0fdf9b771af801785",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "f83ae33764ea9e89d2cf6dc68f614e97130cef9c9de2db3dea6f2a3e12cbce9b",
+        "sha256": "1c6540f7bc59985d2385a44a7f7af8a183b0e311c064b2c8fbb151fcde3eec57",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -553,7 +553,7 @@
     },
     "fixture_receipt": {
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "eacf01e4cfa8cb3736b65c022d39442fe0e7924c455e57018abdc1db72dd136d"
+      "sha256": "b9852a45d29c489c6ab25806125db76286fe9bf7842ab3e7674854c267e9cdb7"
     },
     "generated_at": "2026-11-05T08:31:02.001090+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
@@ -634,14 +634,797 @@
       "screenshots": 16
     },
     "source_composition": {
-      "recorded_at": "2026-11-11",
+      "recorded_at": "2026-11-11T21:54:18.302831+00:00",
       "kind": "metadata_only",
-      "source_head": "4793f8b56953e3ccce138e3ef36cb976b75b3d63",
-      "source_manifest_git_blob_sha": "ceb670ce2c419d56643939412e1b7d0411cdbf92",
-      "source_manifest_sha256": "7e5e8174ab9e3c6bc34464d18bd330c9bc6503f5449478ec6edd9104417f88ba",
-      "prior_qualification_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/7072#issuecomment-6802273672",
-      "qualification": "Reconcile only this current-repair index with the three exact JSON receipts already qualified and published at source_head. The six rendered HTML outputs and loaded browser inputs were proven equal in the linked prior qualification; that proof is retained, not rerun or broadened. The complete prior extension is appended verbatim to repair_extension_history. Original 2026-11-05 capture timestamp, every measurement, screenshot, environment and claim remain unchanged. No upstream receipt, renderer, capture or Flow evidence is changed. Proof remains browser fixture only; canonical build unavailable; production none.",
-      "new_browser_execution": false
+      "source_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+      "source_manifest_git_blob_sha": "0b443d05aa30f55202293728d4c01d7f3293de3a",
+      "source_manifest_sha256": "3732ee521eb8b341e6db7bb74ea751d95b7646199e68eb53ec8c8a54702ca303",
+      "composed_base_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+      "prior_manifest": {
+        "source_head": "23bbc91d31b7c43e48df682dad77b128523ba783",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "git_blob_sha": "139884d61e538b284d0022e94fd88e2b4a84bca8",
+        "sha256": "ea051c98e9cae3bb59586a515477e377b2d29a9b0d07c0590cfcc97dde0cfc75"
+      },
+      "prior_source_composition": {
+        "recorded_at": "2026-11-11",
+        "kind": "metadata_only",
+        "source_head": "4793f8b56953e3ccce138e3ef36cb976b75b3d63",
+        "source_manifest_git_blob_sha": "ceb670ce2c419d56643939412e1b7d0411cdbf92",
+        "source_manifest_sha256": "7e5e8174ab9e3c6bc34464d18bd330c9bc6503f5449478ec6edd9104417f88ba",
+        "prior_qualification_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/7072#issuecomment-6802273672",
+        "qualification": "Reconcile only this current-repair index with the three exact JSON receipts already qualified and published at source_head. The six rendered HTML outputs and loaded browser inputs were proven equal in the linked prior qualification; that proof is retained, not rerun or broadened. The complete prior extension is appended verbatim to repair_extension_history. Original 2026-11-05 capture timestamp, every measurement, screenshot, environment and claim remain unchanged. No upstream receipt, renderer, capture or Flow evidence is changed. Proof remains browser fixture only; canonical build unavailable; production none.",
+        "new_browser_execution": false
+      },
+      "qualification": "The unchanged native renderer freshly reproduced all six HK/Canada normal, watch-only and null-buy HTML identities from the combined source. Full owner-case records, populations, transformations, routes and diagnostic overlays equal the current main receipts. All 39 loaded assets, verifier, font manifest and all 122 PNG entries in this evidence directory retain their exact committed identities. Only the i18n glossary and unused icon dictionary construction bindings differ from the current captured inputs. Main's newer AI Brief HTML/source fields and every browser measurement remain current; the feature parent's complete earlier composition is preserved below as history. This metadata-only qualification is a new source-render equality check, not a new browser execution, Flow visual acceptance, canonical build or production proof.",
+      "new_browser_execution": false,
+      "equality_proof_sha256": "0141e33690df295b337b47faf840ea70d5bb451a1583518129e00cd9367535cd",
+      "equality_proof_serialization": "UTF-8 JSON; indentation=2; insertion order; one trailing newline",
+      "equality_proof": {
+        "schema": "mastermind.pr7072_source_composition_equality.v1",
+        "recorded_at": "2026-11-11T21:54:18.302831+00:00",
+        "claim": "https://github.com/mastermindx-market-intelligence/macro/pull/7072#issuecomment-6807733057",
+        "feature_head": "23bbc91d31b7c43e48df682dad77b128523ba783",
+        "composed_base_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+        "qualification_commit": "7a225e3fe4afc86535f2d553f548240998fb1bcf",
+        "qualification_tree": "53baebce428423872a6ffee70326182cb0f910af",
+        "source_receipts": {
+          "hk": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "git_blob_sha": "987911db43febd0de4da1c7dedd428eed5446643",
+            "sha256": "27a31b4e9788fbb6c75ab8de535035c908ec9a3cf8c3684fa8490100e87be59e"
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "git_blob_sha": "83704df8b1bac6f63578ddd97a1d93817b56614a",
+            "sha256": "ef4ed2b98d0cb050f0bc476f2943cd1ebb758d9623d08ee1c8a753402be19d49"
+          }
+        },
+        "render_command": [
+          "/opt/homebrew/opt/python@3.12/bin/python3.12",
+          "scripts/render_stock_dashboard_fixture.py",
+          "--market",
+          "all",
+          "--out-dir",
+          "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/macro7072-index-proof-6805924987-697a57d234a05a3a/artifacts/pr-recovery/7072-current-composition-20261111/fresh-render-materialized",
+          "--receipt",
+          "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/macro7072-index-proof-6805924987-697a57d234a05a3a/artifacts/pr-recovery/7072-current-composition-20261111/fresh-render-materialized/rendered-fixture.json"
+        ],
+        "render_returncode": 0,
+        "render_log_sha256": "b9852a45d29c489c6ab25806125db76286fe9bf7842ab3e7674854c267e9cdb7",
+        "rendered_fixture_git_blob_sha": "e680476044dcaeebd56aec72493a49e350551919",
+        "rendered_fixture_sha256": "b9852a45d29c489c6ab25806125db76286fe9bf7842ab3e7674854c267e9cdb7",
+        "complete_generated_fixture_equals_committed": true,
+        "owner_cases": [
+          {
+            "market": "hk",
+            "case": "normal",
+            "output": "hk_stocks.html",
+            "sha256": "8a5126f0c7bc2645ed03fa2eb621cc6d343c9567c8d41ce58f87119e203da021",
+            "all_case_metadata_equal": true
+          },
+          {
+            "market": "hk",
+            "case": "null-buy",
+            "output": "hk_stocks.null-buy.html",
+            "sha256": "865728437b19fe887ba3bd7a93c7cc2376c7a7d921050ce5aaa4e7decdb45454",
+            "all_case_metadata_equal": true
+          },
+          {
+            "market": "hk",
+            "case": "watch-only",
+            "output": "hk_stocks.watch-only.html",
+            "sha256": "57b9e86ebfcc3d09ee3d6dd45a38190b5fcc335185acb23bd1822b4a3e99fd7f",
+            "all_case_metadata_equal": true
+          },
+          {
+            "market": "ca",
+            "case": "normal",
+            "output": "canada_stocks.html",
+            "sha256": "7d78e3eda59b9a9596ee4144ed9e5c81b474cd6d268c8ef9acbf8c498f5371db",
+            "all_case_metadata_equal": true
+          },
+          {
+            "market": "ca",
+            "case": "null-buy",
+            "output": "canada_stocks.null-buy.html",
+            "sha256": "03141f86c8e4afa72433ed0dec2a5aeaeaee513053999712514ec4eb181a72da",
+            "all_case_metadata_equal": true
+          },
+          {
+            "market": "ca",
+            "case": "watch-only",
+            "output": "canada_stocks.watch-only.html",
+            "sha256": "b58945268e0343a189f7ef938d2443bec5b14076e76585b0193db324f75415d8",
+            "all_case_metadata_equal": true
+          }
+        ],
+        "construction_input_counts": {
+          "hk": 20,
+          "ca": 18
+        },
+        "loaded_assets": {
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-400.woff2": "ac02a6519f8b4efb8ebce4411d22f731e7cc0831ad4856efde4def4f622e17a0",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-700.woff2": "72cc73785af5c648b24f7c1ea72c6d5cf049c3652bda1839105e6bbb10a89a71",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/emoji.woff2": "5c3b63d79b1df63a439061d8b446c2b9a0d39d0ffba9a913284f574831f26b66",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/pin.css": "c45b4a8e41bff5def0b1f55ea2097832bb75dcaa3cee7af2e2628a1e0be2ada1",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-400.woff2": "4861f855e4d627c72dc9a0d5e5ccea06a5ff75afdeee3b5967be9ed52a294dc4",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-700.woff2": "c3eff6b66b01322f570db903f794c0882e7485c51994d2c6e2bce8a58523d2cd",
+          "site/account.js": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c",
+          "site/charts.js": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c",
+          "site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
+          "site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+          "site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+          "site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+          "site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+          "site/fonts/Inter-700.woff2": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+          "site/fonts/Inter-800.woff2": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+          "site/fonts/Inter-900.woff2": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+          "site/hk-stock-v36.js": "ae348f953da7ff49f2e10a42a74b6c81b76dcb8d25dd0d37003b831ac562a4d6",
+          "site/illus.css": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+          "site/illus.js": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+          "site/live.js": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+          "site/live_config.js": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+          "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+          "site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+          "site/nav_market.js": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587",
+          "site/navigation-refresh.css": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae",
+          "site/product-nav-icons.css": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea",
+          "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
+          "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+          "site/stocktable.js": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964",
+          "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+          "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "site/theme.js": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+          "site/canada-stock-v36.js": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0",
+          "site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315"
+        },
+        "retained_pngs": {
+          "mockups/evidence/prophet-p0b-zero-fouc/000de00ee7212785.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3ded4f3f3f7a7fd4d1da7a3458ebf3af1f097db5"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/0078ba59507a895c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8d866f17edb798c487979346620f309aa221cd4d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/03522c3a3d9ad7d8.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1229742377186dc6e213e9cf73dddcdfd75e2c5e"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/05395c8f9c9ad06c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4d9268aedcb684c95c8a9122f24d0a88be21c8c0"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/0581faecee451d4e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1dd2b4ab8d37d5311954bc3a9283de28c52dc114"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/07ef00fde6e912ff.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f3c9bf49c8fb353730a5fba116f78f40236dc893"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/0ceae0cac14f9ae7.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6720e9e3120b2246103d87df639a3955093006ab"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/0d5ae33a644fc319.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ee908861470ea36eba69fa97ad39ba451a78bbbb"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/0f4f498ec38e538d.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "de3843e4a2f7692b2e6c2d051550c56002b27555"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/127d3870e65e631f.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bf784859f7e8bc1c8d4585dbb32211c39905db47"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/13b1d11229d5435e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8a54cf5b698f65c7e03235750b2c9febb8b4220d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/15f09de8877c3647.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "271444867e4b55059cbf0d03d6569a3d2ccb1598"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/233d04b3244024d4.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ce8a97ecb440f8134eb161a3ee1fd2b2155997d1"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/272f378ffb69259a.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "039c745173544a396a4a7995da3b6830bc371f83"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/2d4b740fbd5b6735.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9b8e42309644905c0fe2ac9ff37198a61d6ea2ed"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/30c2e2193052ea27.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d56d9d91552201e77aa2d5444611220ef8d66667"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/33e73498d4ae5ab2.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ef6eabfba37556015e5101fe8d1a32b0823a16f0"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/35581656b5ab977d.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a9a4a156ef281c2ab484c78b38316087ee53688d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/373c16a746c060ac.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "21f861fb103639484b981e9d9da57cef174528c4"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/3a08076950864350.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "00f3899b43617f9a1dbbc061afbcee3cab5f406b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/3bece7a023e23a63.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2a5cda9a2b246344891585e74d8234f956ca7cbc"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/3cc48d329b79f876.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4d3bc17994ad2c1ed673521a51cdedcf0147a899"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/4d3752a595fb627c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "eae05fbd25b63fc1f095f37f9cba9fe7216c452f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/4df19e9d4bc75a23.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5ef12f545d64a550c0a893e6f5f933b19e8e3bb1"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/4f01402832cac5d7.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e52a7d147ab46d507605f77e6bba277721261d1d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/4fc1836a6679f7bb.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2d7c1fbf23624ac70ed954b06a75e61349f7cc6e"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/51d00c5dba2519e1.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "968a1d1891bd8a5c63f40bb7418ecdf5433a75f7"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/53d680593d6e8e13.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "306b9839a3a7edb187f359494063fe67909ad91b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/5b192f257accfab0.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0c24e629a0cc5a1f0d513bb698dc5a98df57e55d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/5b606b81fbd6ffb9.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ff34fc954cab083d1ef67cd775c314152f903720"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/5c93f4cc913b37a6.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ca483e88285f8c0e1605473c509f5f11ecaaf2e0"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/5d49df9b0c3160a1.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "24c130e3e70325ae62f3783d6a0fa5becfa7c25a"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/604a5a971882ba21.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2d43229b4b251de346f84312e9ff37b11f8b7223"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/6225072ca8722c9b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "44c1324296e55fec83ef6f3368931bc2cd3ec8cf"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/66044f1b7771ca8b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "dc7e6a2e2a77756c93d6c287467debb12445c2ea"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/67d81b3dfc3a5f84.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b26a7e46b1e624cdc5bcc4c675c9a0214db3b21f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/687d59b053658b4e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d2dcedc6294481c9b72c701b41c2ab09b5b7223b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/6df4248b08a8f880.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2fa345758084e773f3451d9eb4c0b5e19f4cbaf1"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/6f76ee8aeff5b11d.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "070546cba8ffbd94497f7fff2e98a0373b044cbd"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/7713793fde149902.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7a9cea72f1d74b66532e23e603db83b79bc6db09"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/77d4e6bf59c921a4.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a67a0395839059b0a34762115713253158c7d17"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/78a60ac924044b8c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d75445cd30ea1c92dc137d496838f2e2c323f02d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/78d3dc188bb8df94.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "503f12fb9f8a64c4cd3087426aa04d52bff1a6eb"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/7bfc2bb04f68268e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c5a3dcfa229efd6251004d5ee1d78830bb425c81"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/7c260aeba662758f.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c9935e3892613bc062d1b22d3f2537944cbd7f8c"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/7ee5deede5580e2a.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "467652b9b04db5ae422a61499b7186381390ea03"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/803d7bc7c4074ee5.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4cc05608a9f8abba6608409801fedf2fd7af3157"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/810db9b2813a13c8.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a4ce92f846bc25d333146f56a49e25097e3aad0c"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/8609277b2a2ea8e1.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cf7c3eab3685ec34d3b6d1b3edb88e2169229f3d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/87bfe9844ac94c9c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c4ce4f8d1273ecb81222d4f2c216048f6802d436"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/8b6287f58ca0126e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ff01bf68a0bf0eb31395f7b198f867e33dfcf965"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/8fc5e599a3c8112b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f3e5bf22a57f6a012181d472204f0a919bd4380f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9186e5851982fec1.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bad487632daa8be3ccb6cb2be927a96767e9519b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9708de235b923a3a.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c17e579f77bb0044d0ca3f25a3e7f420a7484622"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/97e64dc1fa615235.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5127e947563cdadc5331271dc24e0b553f24d40d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/98c14f78d459ceae.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bc3fe7e52ed401135b138b185dd75b12450f32ba"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9d23846ca1924aaf.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "6ab5fe8f32db073cf50ee7cbbd1f3dd4780cd99f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9f0f2cc26b336b9a.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "ec16221cf0a25960c4ac7c9c742a06255c2da75f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9f1ae3ba4d186fd8.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "4b28488a22b2c56ee0866c010343ffcc36908abd"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/9f47f340775f3b21.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5f89e015b48f0fb68f0c7f8d82ce3e234d355172"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/a04f16a764a42e6c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d9643ad132c4626426c9ebfaa44354c5ffd39d6b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/a3e68347548ea5ad.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d3125255ea5896e3c882a124c03fa3823d3b292e"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/a532f9d698fddb0b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "80bcb95f1d3edaaed2b23de668390ffcad8dfc69"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b08227d3479fa092.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "98e078e445bca921b8840661b8581f22378977a4"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b0efcb1e81ce7ef7.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f3dbaa1d48f2da6cb711565e383618205321ec29"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b2173f983f1a6748.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "666ab7b8db716631e5bc09dc5c50c736cb219a97"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b35c879e34d78019.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2f8392753c310f2fecc34347604ba2bba8ac70b1"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b3947feae5dee2c8.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b99b8a3e328c5ec3e116ff981bc03719bacb1ced"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b7dd43d21effa411.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b48d5647813e5c1b178efdc3ab0426938f42c99d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/b99d755b35a7df2d.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d31fa6e6d3b36320b0e394eda123e72457d09b0d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/c03b53f24e979b72.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f6e7a8d0aaac84047ecfde3ed36795062f77249e"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/c0eb893c382db8b6.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "825e616c6457982cebcf309d5d72c87e4a09eaff"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/c7baa1a7d1260ea9.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a21ed1fbafd138df1ed9e1aaf8409ce79ff82515"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/c8643d76f7d9efe4.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a91ed7f3646e479322bcde23ea961fd7f5304322"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9db4ced88922d818b13a46a0066c3b5ac68f24cf"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ca-filmstrip-00-composer-pending.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "08fad6f493fab4d9622fc4888e3f1672a7da6aad"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ca-filmstrip-01-enhanced.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f436bf5e85d5f3965604b168b95ad0e3ee9cc253"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2ab48ac40cc1833cd2849115d8d3ca8b5dade317"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ca-optional-json-pending.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "af4b43447350be86255c6af23b8f5825d4c8a38d"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/cb9f7c575b6adfdb.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f9193950f30d76d26ce38f0cec81bdcbde284973"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ce6a23837bc82035.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7282f8ba2f5f86fbadd475fc0d0e601bf9307c59"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/d2d7e37864b0f72f.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3e51ef32cb753cbc68debc42d30b99c223acde07"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/d44eabaac3a153f5.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0292cc3aefe7cd907aad29b531629b1fb4619fb0"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/d4c4f3ea9890ba16.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "96fd5b1e2721d5db576b4497b89892721ec5a27b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/d5ee1cf8864719d2.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "8dc64dcdc73d423796c03ec0dd2bf719662667f8"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/d6f8b4c65add2886.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "bb1d397babf413d3639b7842526c7f8d0bb81db2"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/de010e3cd23f6aa1.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7d7817baf35737491833207739b4882fc3ad495c"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/deca2e1c6beecdb8.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "857e740c573debba5c4ce0f6788b30edb9cbcce8"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/e16b8b21968b1340.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7fb2e6a71360d761169444f1872916feccdddbaf"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/e456d7426afeea54.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9ffe0c293674ac6c28d6f09a28c5ec560faee0fd"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/e658921409f7c60e.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "df5e768f24882a3c65e655eacf4c2146620aecd7"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ec8f62ed64dc69f9.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "255e449134bf015abd1795aa97ab4e246c33e29a"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/eca05f0c111a999b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "af45d50edf024f9340159175e61edc3558516a73"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ecef1980c168f78c.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "83fca5b2b33603626b10881e5c0f872302de9cb2"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ee7a634a90460db3.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "9da5e434a78499f5451d4e1bb2a6245783c55b27"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ef19b3c30149f9c4.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "f64e591460916cf5dda0164504fe30d9f8e83937"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/f0c50e951dfaadd0.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2e8839f5344ddd24bed252145a60805c3cfb7c78"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/f608b8403beb8574.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "7eae79dbbfee32b1f3d895e68efea8794177d5c8"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/f69b22cdfd3782f0.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b886212f7f1ce70f2abb0f8a4cf1f436d2c93c6c"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/fba27b42e73a57cb.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "be09de0c8692d85019a0ad69c3bcad02f7fccf78"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/ff3d69e88d1d445b.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3a4103a5ea8d51af472a64f222ef2d47a758f92f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "5869be6b02a7b3d332bd6dac62bbbb9a37583668"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/hk-filmstrip-00-composer-pending.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "67e02961dae82ace39570f1406a6514435386fc4"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/hk-filmstrip-01-enhanced.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "3b28c15ea465b23506c0601092bb16a05b4d0f84"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b1b4c54c68f77a47f45c607135396cf4db8a3840"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "23cb0015b9a8110388a2865baac0c0cc68a38817"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "972d46f0e03f07c6f3c1d78f30f8b957cd05b8ba"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "95dabf2c973210fff935c99ea4085a6ecc54795b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "890963ad8271f7c29539c75046219758ed89c9fa"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "0626fbe8332dca501f12b5934241d9ebbd5a9b96"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "d03e1c389596c47946b98bea9485d96a99715877"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "73e36a41e90649314956cf627f594ffd020d5e3c"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "2c6218f09e89e04e761b57dc1c04ce7cd0a84fd3"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e8f1f0c1104d4bc4cfaf2f7f0e1f8ecc8d001242"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c4959067122d51e2f9999ebf004e218c7d328669"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "b8971a0c0b6531c6e9ff8b10d58d81371a302660"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e7c155f30e41b59578c278e6bc6534898529207a"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "e8559ff9376ba3e80a59ec501e36069c2765081b"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "c62e5d581166a847d6cb47e425a4bd7eab3920a1"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "cd57b49da9f6f447bfd99dda43b0fec2d61a111f"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a47e42b85bd32f616171cbfbdb8d324994ab11a6"
+          },
+          "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1b77bd8847dc0b86dadcb22fd1e8b80a36833a42"
+          }
+        },
+        "unchanged_recipe_verifier_guard_and_tests": {
+          "scripts/render_stock_dashboard_fixture.py": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "23288e20270f251d3460014d8fb1876a9cfcd0cb"
+          },
+          "scripts/verify_stock_dashboard_mobile_layout.cjs": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "a54cd2f99b7c252102070de02c28af0d10e1db88"
+          },
+          "scripts/check_p0b_receipt_closure.py": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "1c9efc6651a5ff5ef93807e9c9312ed9a3e8db4b"
+          },
+          "tests/test_stock_dashboard_first_frame.py": {
+            "mode": "100644",
+            "type": "blob",
+            "sha": "600f398c0efd7e56a01c045e6604c378d1bbd70b"
+          }
+        },
+        "main_leaf_count": 149915,
+        "preserved_H_postimages": 228,
+        "all_unowned_main_leaves_preserved": true,
+        "new_browser_execution": false,
+        "canonical_build": "unavailable",
+        "production": "none"
+      }
     }
   },
   "repair_extension_history": [
@@ -2894,6 +3677,250 @@
       },
       "prior_manifest_sha256": "7e5e8174ab9e3c6bc34464d18bd330c9bc6503f5449478ec6edd9104417f88ba",
       "source_head": "4793f8b56953e3ccce138e3ef36cb976b75b3d63"
+    },
+    {
+      "source_head": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+      "prior_manifest_sha256": "3732ee521eb8b341e6db7bb74ea751d95b7646199e68eb53ec8c8a54702ca303",
+      "extension": {
+        "browser_receipts": {
+          "hk": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "27a31b4e9788fbb6c75ab8de535035c908ec9a3cf8c3684fa8490100e87be59e",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "ef4ed2b98d0cb050f0bc476f2943cd1ebb758d9623d08ee1c8a753402be19d49",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          }
+        },
+        "claims": {
+          "source_contract": "browser_fixture",
+          "browser_fixture": "reproducible",
+          "canonical_build": "unavailable",
+          "production": "none"
+        },
+        "fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
+        },
+        "generated_at": "2026-11-05T08:31:02.001090+00:00",
+        "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
+        "pass": true,
+        "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
+        "screenshots": [
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+            "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+            "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+            "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+            "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+            "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+            "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+            "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+            "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+            "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+            "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+            "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+            "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+            "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+            "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+            "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+            "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+          }
+        ],
+        "totals": {
+          "markets": 2,
+          "owner_cases_per_market": 3,
+          "primary_cases": 96,
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
+        },
+        "source_composition": {
+          "recorded_at": "2026-11-07",
+          "kind": "metadata_only",
+          "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
+          "source_manifest_git_blob_sha": "cbfd706b737dbf45623a4f1c9b56f7ccd83051f1",
+          "source_manifest_sha256": "6e386d93c4523ff0a24bc3b28cd242e6bdfe57f962ba1f7ca74b7cad585bc0c7",
+          "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
+          "qualification": "Original 2026-11-05 capture time and all browser measurements, rendered HTML, screenshots, verifier and browser identity remain unchanged. The prior capture extension is retained verbatim in repair_extension_history. Derived browser-receipt integrity hashes and accepted current-main fixture provenance are composed without a new browser execution. Each browser receipt records its original capture bindings and the current metadata bindings. Proof remains browser fixture only; canonical build unavailable; production none.",
+          "new_browser_execution": false
+        }
+      }
+    },
+    {
+      "source_head": "23bbc91d31b7c43e48df682dad77b128523ba783",
+      "prior_manifest_sha256": "ea051c98e9cae3bb59586a515477e377b2d29a9b0d07c0590cfcc97dde0cfc75",
+      "extension": {
+        "browser_receipts": {
+          "hk": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "b9ab2c0d1604dd224fdabb59d87c094bfcd44845f3ff7f3e13af8d1cee271e91",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "f83ae33764ea9e89d2cf6dc68f614e97130cef9c9de2db3dea6f2a3e12cbce9b",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          }
+        },
+        "claims": {
+          "source_contract": "browser_fixture",
+          "browser_fixture": "reproducible",
+          "canonical_build": "unavailable",
+          "production": "none"
+        },
+        "fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "eacf01e4cfa8cb3736b65c022d39442fe0e7924c455e57018abdc1db72dd136d"
+        },
+        "generated_at": "2026-11-05T08:31:02.001090+00:00",
+        "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
+        "pass": true,
+        "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
+        "screenshots": [
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+            "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+            "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+            "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+            "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+            "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+            "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+            "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+            "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+            "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+            "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+            "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+            "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+            "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+            "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+            "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+            "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+          }
+        ],
+        "totals": {
+          "markets": 2,
+          "owner_cases_per_market": 3,
+          "primary_cases": 96,
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
+        },
+        "source_composition": {
+          "recorded_at": "2026-11-11",
+          "kind": "metadata_only",
+          "source_head": "4793f8b56953e3ccce138e3ef36cb976b75b3d63",
+          "source_manifest_git_blob_sha": "ceb670ce2c419d56643939412e1b7d0411cdbf92",
+          "source_manifest_sha256": "7e5e8174ab9e3c6bc34464d18bd330c9bc6503f5449478ec6edd9104417f88ba",
+          "prior_qualification_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/7072#issuecomment-6802273672",
+          "qualification": "Reconcile only this current-repair index with the three exact JSON receipts already qualified and published at source_head. The six rendered HTML outputs and loaded browser inputs were proven equal in the linked prior qualification; that proof is retained, not rerun or broadened. The complete prior extension is appended verbatim to repair_extension_history. Original 2026-11-05 capture timestamp, every measurement, screenshot, environment and claim remain unchanged. No upstream receipt, renderer, capture or Flow evidence is changed. Proof remains browser fixture only; canonical build unavailable; production none.",
+          "new_browser_execution": false
+        }
+      }
     }
   ],
   "schema": "mastermind.p0_evidence.v2",
