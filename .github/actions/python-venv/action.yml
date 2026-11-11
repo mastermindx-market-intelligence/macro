@@ -31,6 +31,8 @@ runs:
       shell: bash
       run: |
         PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+        "$PYBIN" -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)' \
+          || { echo "::error::$PYBIN is not Python 3.12"; exit 1; }
         echo "pybin=$PYBIN" >> "$GITHUB_OUTPUT"
         "$PYBIN" --version
     - name: per-runner venv cache ($HOME/.cache/mm-venv-<runner>)

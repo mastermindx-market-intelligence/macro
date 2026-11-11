@@ -3,9 +3,8 @@
 Status: **planned, no carrier yet** (2026-11-11). This runbook is the operator
 guide for building the pool and moving the scheduled data jobs onto it, so the
 M2 Mac Studio hosts (`macstudio` = mac-builder-5/mac-builder-light,
-`macstudio-light` = mac-builder-3) can be freed. The analysis behind it lives
-in `/tmp/cil_diag/m2_runner_offload.md` (M2-side) and
-`.github/runner-policy.yml` (the declared pool model).
+`macstudio-light` = mac-builder-3, per the live runners API on 2026-11-11) can
+be freed. The declared pool model lives in `.github/runner-policy.yml`.
 
 ## The one-line switch
 
@@ -98,7 +97,10 @@ freshly-built parquet layers, plus the per-runner venv at
 
 * working tree + parquet store restores: **≥ 60 GB free** steady-state
   (thetadata lanes self-skip store-less — the 60 GB `thetadata_eod` store
-  stays on the M1 and is NOT this pool's problem);
+  stays on the M1 and is NOT this pool's problem). Caveat: daily.yml
+  `collect_tail` self-skips on every night it runs on `data-linux`, so its
+  round-robin cursor stops accruing entirely (it does not catch up on later
+  nights) until a ThetaData-Terminal-bearing lane carries it again;
 * headroom for the nightly `engine` band (the heaviest single CPU job,
   ~126 m measured green under a 300 m cap) and R2 restore staging:
   **120 GB free** is the comfortable floor;
