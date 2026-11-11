@@ -1,14 +1,14 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-11",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
   "blocks": {
     "rates": {
       "dominant_pc_share": 0.8276,
-      "first3_var": 0.9639,
-      "effective_dimension_pr": 1.4367,
+      "first3_var": 0.9638,
+      "effective_dimension_pr": 1.4369,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
@@ -19,8 +19,8 @@
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.6489,
-      "effective_factor_bets_pr": 2.1959,
+      "dominant_factor_pc_share": 0.6507,
+      "effective_factor_bets_pr": 2.1862,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
