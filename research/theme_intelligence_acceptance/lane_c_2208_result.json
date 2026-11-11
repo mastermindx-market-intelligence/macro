@@ -1,0 +1,172 @@
+{
+  "candidate": {
+    "base": "ca7533a67670e0393728fda4b1633b56720aa1e0",
+    "head": "2208fe40039d356929fac0f96b626edc33d42288",
+    "implementation_commit": "d1727e80a8bead258a545ceb6d938286baf64d31",
+    "tree": "29a774e0254d3224526466cbf0bf216fb5718b4a"
+  },
+  "candidate_acceptance_state": "REJECTED_FOR_REPAIR",
+  "candidate_operation_key": "theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001",
+  "checks": {
+    "direct_discriminators": {
+      "authority_invariance": {
+        "actual": {
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "may_trade": false
+        },
+        "expected": {
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "may_trade": false
+        },
+        "status": "PASS"
+      },
+      "consumer_failure_health": {
+        "consumer_observation": null,
+        "stale_legs": [],
+        "status": "FAIL"
+      },
+      "consumer_stale_health": {
+        "consumer_observation": {
+          "asof": "2000-01-03",
+          "measurement_receipt": {
+            "bar_status": "CLOSED",
+            "clocks": {
+              "observation_session": "2000-01-03"
+            }
+          },
+          "status": "MEASURED"
+        },
+        "stale_legs": [],
+        "status": "FAIL"
+      },
+      "parent_subtheme_separation": {
+        "fast_5_session_return_pct": 10.4081,
+        "parent_5_session_return_pct": 0.0,
+        "slow_5_session_return_pct": -9.6079,
+        "status": "PASS"
+      },
+      "stale_member_reclaim": {
+        "node_status": "UNAVAILABLE",
+        "stale_members": [
+          {
+            "lag_sessions": 5,
+            "last_observed_session": "2026-04-03",
+            "ticker": "STALE"
+          }
+        ],
+        "status": "PASS",
+        "volume_reclaim": {
+          "above_20d_mean_share": null,
+          "high_volume_positive_share": null,
+          "members_with_20d_reclaim_evidence": 0,
+          "members_with_volume": 0,
+          "reclaimed_20d_mean_share": null
+        }
+      }
+    },
+    "repository_admission": {
+      "agentos_validation": {
+        "errors": [],
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "agentos: 1140 records (69 workstreams, 321 decisions, 278 discoveries, 472 handoffs) — 0 error(s), 82 warning(s)"
+      },
+      "diff_check": {
+        "exit_code": 2,
+        "issues": [
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:70: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:71: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:72: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:73: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:135: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:136: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:137: trailing whitespace.",
+          "agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:138: trailing whitespace."
+        ],
+        "status": "FAIL",
+        "trailing_whitespace_issue_count": 8
+      },
+      "py_compile": {
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      "real_price_proof_reproducibility": {
+        "exact_manifest_or_result_bytes_committed": false,
+        "hash_occurrences": [
+          "2208fe40039d356929fac0f96b626edc33d42288:agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md:139:Bounded price-manifest SHA-256: `7fbd80bc049fdaa934c5d86e3047d1a2b9d9f21f8af68e680280937445b2025c`"
+        ],
+        "price_manifest_sha256": "7fbd80bc049fdaa934c5d86e3047d1a2b9d9f21f8af68e680280937445b2025c",
+        "status": "FAIL"
+      },
+      "sector_page_regression_suite": {
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "20 passed, 5 warnings"
+      },
+      "subsector_regression_suite": {
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "103 passed, 3 skipped, 5 warnings"
+      },
+      "thematic_state_regression_suite": {
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "45 passed, 3 skipped, 8 warnings"
+      },
+      "trial_registration": {
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "OK: no new unregistered multiple-testing harness (33 grandfathered)."
+      },
+      "unrun_test_audit": {
+        "dark_test_paths": [
+          "tests/test_build_subsector_closed_session_leadership.py",
+          "tests/test_subsector_closed_session_leadership.py",
+          "tests/test_thematic_state_leadership_receipt.py"
+        ],
+        "exit_code": 1,
+        "status": "FAIL"
+      }
+    }
+  },
+  "harness_status": "PASS",
+  "merge_recommendation": "HOLD",
+  "missing_expected_blockers": [],
+  "missing_positive_checks": [],
+  "not_yet_proven": [
+    "CORRECTION_SAFE_FIRST_SEEN_AND_FIRST_VISIBLE_HISTORY",
+    "TWO_DISTINCT_OBSERVATIONS_VS_REPEAT_RENDERS",
+    "DUPLICATE_EVIDENCE_FAMILY_IDENTITY_ACROSS_THEME_CONSUMERS",
+    "SPLIT_DIVIDEND_CORPORATE_ACTION_BASIS",
+    "DEPLOYED_BYTE_AND_BROWSER_PARITY",
+    "PREDICTIVE_OR_PROSPECTIVE_OUTCOMES"
+  ],
+  "operation_key": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "positive_checks": [
+    "AGENTOS_VALIDATION",
+    "AUTHORITY_INVARIANCE",
+    "PARENT_SUBTHEME_SEPARATION",
+    "PY_COMPILE",
+    "SECTOR_PAGE_REGRESSION_SUITE",
+    "SUBSECTOR_REGRESSION_SUITE",
+    "THEMATIC_STATE_REGRESSION_SUITE",
+    "TRIAL_REGISTRATION"
+  ],
+  "release_state": "DRAFT_HOLD_FOR_LANE_A_AND_INCUMBENT_OWNERS",
+  "repair_blockers": [
+    "DIFF_CHECK_FAILURE",
+    "NEW_TEST_SUITES_UNWIRED",
+    "PRODUCER_FAILURE_REASON_NOT_PROPAGATED_TO_HEALTH",
+    "REAL_PRICE_PROOF_NOT_REPRODUCIBLE_FROM_CARRIER",
+    "STALE_LEADERSHIP_OBSERVATION_NOT_PROPAGATED",
+    "UNAVAILABLE_PRODUCER_RECEIPT_LOST_AT_SHARED_CONSUMER"
+  ],
+  "schema": "theme_intelligence.lane_c_acceptance_result.v1",
+  "unexpected_blockers": []
+}
