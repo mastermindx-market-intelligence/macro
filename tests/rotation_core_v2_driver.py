@@ -103,6 +103,40 @@ def plant(cfg: dict) -> None:
     if kind == "bypass_worktree_check":                  # R31.1(d): show what START records when (c) is skipped
         run._check_worktree_against_head = lambda *a, **k: None
         return
+    if kind == "spy_order":                              # R33: order of strict checks, reads and late imports
+        log = Path(cfg["out"])
+        real_shadow, real_vl, real_io = run.refuse_shadowed_modules, run.verified_ledger, v2.io_check
+        real_v2_shadow = v2.refuse_shadowed_modules
+        state = {"mods": set(sys.modules)}
+
+        def w(line):
+            with open(log, "a") as f:
+                f.write(line + "\n")
+
+        def new_since():
+            new = sorted(set(sys.modules) - state["mods"])
+            return " new_before=[" + " ".join(new) + "]"
+
+        def shadow(*a, **k):
+            w("shadow" + new_since()); out = real_shadow(*a, **k); state["mods"] = set(sys.modules)
+            return out
+
+        def v2_shadow(*a, **k):
+            w("record_shadow" + new_since()); out = real_v2_shadow(*a, **k); state["mods"] = set(sys.modules)
+            return out
+
+        def vl(*a, **k):
+            out = real_vl(*a, **k); w("verified_ledger_done")
+            return out
+
+        def io_spy(path, k):
+            w(f"io {k}")
+            return real_io(path, k)
+        run.refuse_shadowed_modules, run.verified_ledger, v2.io_check = shadow, vl, io_spy
+        v2.refuse_shadowed_modules = v2_shadow
+        import atexit
+        atexit.register(lambda: w("late_imports " + " ".join(sorted(set(sys.modules) - state["mods"]))))
+        return
     if kind == "spy_io":                                 # R31.2: record io_check and hashing order
         log = Path(cfg["out"])
         real_io, real_sha = v2.io_check, v2.sha256_file

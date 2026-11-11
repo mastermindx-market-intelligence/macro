@@ -816,6 +816,8 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
      - the driver's `append` (tests only);
      - `site.getsitepackages()` and `site.getusersitepackages()` in `site_dirs` (read-only queries; `getusersitepackages` caches `site.USER_SITE`, which changes no import path).
 
+     - `main`'s removal of the root at its start and the restore when it returns (R32.8(b′)).
+
      Nothing else changes `sys.path`, `sys.meta_path`, `sys.path_hooks` or `site` state. The v1 runner's insert is no longer on the run path (R31.6(b)).
 2. **Top-level packages.** `check_import_environment` refuses unless the file (or, for a namespace package, every `__path__` entry) of `engine`, `scripts` and `tests`, when loaded, lies under the root. Tested with a faked installed `engine` and a faked namespace `tests`.
 3. **Metadata errors refuse.** `_protected_names` refuses (R32.3) when installed-package metadata cannot be read, instead of falling back to standard-library names. Tested.
@@ -839,8 +841,47 @@ env -i HOME=$HOME PATH=/usr/bin:/bin <venv>/bin/python -E -P -B -X pycache_prefi
      - The list (`OPTIONAL_NAMES`, 54 names) was found mechanically: pandas' declared optional dependencies (`pandas.compat._optional.VERSIONS`), plus every `try: import X … except ImportError` in numpy, pandas, scipy and pyarrow outside their test folders, minus the standard library and installed packages. It includes `cython`, `bottleneck`, `numexpr`, `numba`, `tables`, `fsspec`, `matplotlib`, `jinja2`, `sqlalchemy`, `xarray`, `torch` and `zstandard`.
      - It cannot be complete (an import of a computed name escapes the scan). (b') is what makes the guarantee hold regardless.
    - (d) **Order relative to sealed reads.**
-     - Before `main`, the runner imports numpy and pandas before the root is appended, and after appending imports only the three repository packages and the standard library. No root-level module can run there, and the strict check runs right after.
+     - Before `main`, the runner imports numpy and pandas before the root is appended. After appending, the only new top-level modules are `engine`, `scripts` and `tests` (measured; the other import statements re-bind modules already loaded). No other root-level module can run there, and the strict check runs right after.
      - From the start of `main` the root is off the path, so no root-level module can be loaded at all.
      - The first sealed read (`stage2_opened`: chmod, then hashing the sealed file) comes after the strict check under the lock. In stage 2 it also comes after an explicit `versions()` call (which performs every probe import: scipy, pyarrow) and a further strict check immediately before unsealing.
-     - So no sealed byte can be read between a root-level module running and the next check, and no blocker was found.
+     - *Reworded by R33.1, final after R33.4:*
+       - **Before R33.4**, imports happened after the last pre-read check:
+         - stage 1: `scipy` (through `versions()` at START) and `pyarrow.pandas_compat`;
+         - stage 2: `pyarrow.parquet` and its family, `pyarrow.dataset`, `ssl`, and, after FINAL, the report writer.
+       - **R33.4 moved them before the check.** `versions()` and `import pyarrow.parquet, pyarrow.dataset, pyarrow.pandas_compat` now run immediately before the pre-read strict check in stage 1, in the rehearsal and before unsealing in stage 2; the report writer is imported at the runner's top.
+       - **Measured after the change** (every module name, any depth) on a stage-1-then-stage-2 run through `main` with synthetic data: no module is newly imported after the pre-read check, nor between any two later checks, in either stage. Each record push (START, GATE, REPRODUCTION_OK, FINAL) runs the strict check first.
+       - **Limit:** the measurement covers the synthetic path. Real data could take another branch with a lazy import. Any such import happens inside `main`, where the root is off `sys.path` (R32.8(b′)), so it resolves from site-packages or the standard library or fails; it cannot reach a root file. The next record push re-checks.
+       - No sealed byte can be read after a root-level module has run, because no root-level module can be loaded inside `main`. No blocker was found.
      - **Limit, for what (a) alone would guarantee:** it detects a module after its top-level code has run. With (b') no such module can run inside `main`; before `main`, only the steps above run, and none can load a root-level module.
+
+## R33 — one sentence made literal; stage-1 symmetry (CEO, after the CEO's reader on `bae3b90eb1`)
+
+1. **The ordering sentence** in R32.8(d) is reworded to the measured facts: which imports happen after the last check before the reads in each stage, why none can reach the root (R32.8(b′)), and which record push re-checks each.
+   - **Sweep of R32 for other absolute claims:**
+     - "Nothing else changes `sys.path` …" (R32.1) now also lists R32.8's removal and restore.
+     - "the runner never passes `test_repo`" (R32.4): checked, true.
+     - "the planted body never ran" and "nothing imports it" (R32.8(b)): shown by the marker files in the tests.
+     - "after appending imports only …" (R32.8(d)): measured and reworded.
+     - "none can load a root-level module before `main`": true by the same measurement.
+2. **Stage-1 symmetry.** An explicit strict check (`refuse_shadowed_modules`) now runs immediately before the first read of pre-1998 data in stage 1 (before `stage1_release`, whose manifest check hashes the inputs) and in the rehearsal (before `window_text` reads the through-2019 files). It is one call each, with no compute effect.
+   - Tested through `main` with an order spy in the driver: in stage 1 a strict check follows `verified_ledger` and precedes the first `io_check` read.
+   - The rehearsal branch's order is checked in the source.
+3. **No child process before the configuration checks (MUST-FIX).** The runner's top keeps only the working-tree half of the optional-name check (`os.listdir`); before numpy loads, an import resolves from the working tree, so that is the half that matters. The tree-at-HEAD half runs under the lock through `v2._git`, after `check_env_vars` and `check_repo_config`.
+   - Every child process on the run path starts in one of two engine wrappers:
+     - `_git` (git with the pinned options and constructed environment);
+     - `_tool_run` (`gh` and the tools' `--version`, by absolute path, constructed environment). `gh_api`, `check_gh_socket` and `tool_versions` now go through it.
+   - **Sweep** (runner, both engines, `engine/validation.py`, the report writer, the fixture generator): every `subprocess.*`, `os.system`, `os.popen`, `os.fork*`, `os.posix_spawn*`, `os.exec*`, `os.spawn*` and `pty.spawn` call lies inside `_git` or `_tool_run`. Before this change there were five others: the runner's top-level `git ls-tree`, `check_gh_socket`, `tool_versions` and `gh_api` (direct `subprocess.run`), and the test-only driver's stub (not on the run path).
+   - Tested by a parse-tree test, and by importing the runner's top-level code with every child-process entry point replaced by a refusal: it completes.
+4. **Probe imports before the check.** Beside each `versions()` call that precedes a strict check (stage 1, the rehearsal, stage 2 before unsealing), the run imports `pyarrow.parquet`, `pyarrow.dataset` and `pyarrow.pandas_compat`. The report writer is imported at the runner's top.
+   - What is still imported after the last check: nothing, measured (see R32.8(d)). Tested through `main` over both stages: every interval after the pre-read check shows no new module.
+5. **START push.** A strict check runs directly before the START push. It is added as an explicit call in `GitLedger.append`, not by adding START to `RECORD_KINDS`, because that would also run the blob, worktree and bytecode checks at START. Tested.
+6. **Writes to the import path.** A parse-tree test finds every write to `sys.path`, `sys.meta_path` or `sys.path_hooks` (including through an alias of `sys`): `insert`, `append`, `extend`, `remove`, `pop`, `clear`, `+=`, item or slice assignment, `del` and rebinding.
+   - No run-path file other than the runner has one.
+   - The runner's are exactly the reviewed three: `append(ROOT)`, and the slice assignments that take the root off and restore the path.
+   - The detector is tested on each write form.
+7. **Root names by name.** The root-name check uses the part of the name before the first dot, so every suffix (`.py`, `.pyc`, `.so`, `.cpython-312-…so`, `.pyd`, `.zip`, `.egg-link`, …) is stripped. A root directory of that name is a hit with or without `__init__.py`. Tested, including a temporary repository with a bare `cython/` directory.
+8. **Namespace packages.** The strict check uses each `__path__` entry when a module has no `__file__`. A namespace package under the root whose top-level name is not `engine`, `scripts` or `tests` refuses: strict in a plain subprocess; names-only (for a protected name) under pytest, in both the runner and the engine. Tested.
+9. **Declared, wording only.**
+   - **Stage-1 order (N1):** after R33.2 and R33.4, stage 1 runs `verified_ledger`, then `versions()` with the pyarrow imports, then the strict check, then `stage1_release`, whose `check_manifest` hashes the inputs before comparing `versions()`. The probe imports have already happened, so the order matches stage 2's.
+   - **N6:** an installed distribution named `tests`, `scripts` or `engine` would run its `__init__` before R32.2 refuses it. Installed packages are the declared class (R27.0).
+   - **N8:** the R32.7 count test checks the names in each expression, not the values; it is a tripwire and does not prove that a figure excludes warm-up sessions.

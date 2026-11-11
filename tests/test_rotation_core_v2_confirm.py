@@ -3250,3 +3250,194 @@ def test_R32_8_in_process_strict_and_names_only(monkeypatch):
     run.refuse_shadowed_modules()                                         # not a protected name: names-only passes
     with pytest.raises(SystemExit, match="R32.8"):
         run.refuse_shadowed_modules(strict=True)                         # the real run's rule refuses it
+
+
+# ------------------------------------------------------------------ R33.2 a strict check right before the first pre-1998 read
+def test_R33_2_stage1_strict_check_after_verified_ledger_and_before_the_first_read(tmp_path):
+    S = _e2e_setup(tmp_path, None, 1.0, 20)
+    log = tmp_path / "order.log"
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": S["ctx"], "plant": "spy_order", "out": str(log)}, tmp_path)
+    assert r.returncode == 0, r.stderr[-500:]
+    ev = [ln.split()[0] for ln in log.read_text().splitlines()]
+    i_vl = ev.index("verified_ledger_done")
+    i_read = next(i for i, e in enumerate(ev) if e == "io" and i > i_vl)
+    assert "shadow" in ev[i_vl + 1:i_read], ev[:i_read + 1]
+
+
+def test_R33_2_rehearsal_strict_check_precedes_its_first_read():
+    import inspect, scripts.run_rotation_core_v2 as run
+    src = inspect.getsource(run._main_body)
+    reh = src[src.index("if a.rehearsal:"):src.index("if a.dry_run:")]
+    assert reh.index("refuse_shadowed_modules()") < reh.index("window_text(")
+    pre = src[src.index('if a.stage == "pre1998":'):src.index('if a.stage == "confirm":')]
+    assert pre.index("verified_ledger(") < pre.index("refuse_shadowed_modules()") < pre.index("stage1_release(")
+
+
+# ------------------------------------------------------------------ R33.3 child processes only through the wrappers
+RUN_PATH_FILES = ("scripts/run_rotation_core_v2.py", "engine/rotation_core_v2.py", "engine/rotation_core_evaluation.py",
+                  "engine/validation.py", "scripts/rotation_core_v2_report.py", "tests/rotation_core_v2_fixture.py")
+CHILD_CALLS = {"subprocess.run", "subprocess.Popen", "subprocess.call", "subprocess.check_call",
+               "subprocess.check_output", "subprocess.getoutput", "subprocess.getstatusoutput", "os.system",
+               "os.popen", "os.fork", "os.forkpty", "os.posix_spawn", "os.posix_spawnp", "pty.spawn"}
+
+
+def test_R33_3_child_processes_start_only_in_the_engine_wrappers():
+    import ast
+    found = []
+    for rel in RUN_PATH_FILES:
+        tree = ast.parse((v2.ROOT / rel).read_text())
+        for fn in [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))] + [tree]:
+            body = ([b for b in fn.body if not isinstance(b, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))]
+                    if isinstance(fn, ast.Module) else [fn])
+            for n in (x for b in body for x in ast.walk(b)):
+                if isinstance(n, ast.Call):
+                    name = ast.unparse(n.func)
+                    if name in CHILD_CALLS or name.startswith(("os.exec", "os.spawn")):
+                        found.append((rel, getattr(fn, "name", "<module>"), name))
+    owners = {(r, f) for r, f, _ in found}
+    assert owners == {("engine/rotation_core_v2.py", "_git"), ("engine/rotation_core_v2.py", "_tool_run")}, found
+
+
+def test_R33_3_no_child_process_before_main(tmp_path):
+    code = ("import subprocess, os, sys\n"
+            "def no(*a, **k):\n    raise SystemExit('CHILD PROCESS STARTED BEFORE MAIN')\n"
+            "subprocess.Popen.__init__ = no; os.system = no; os.popen = no; os.posix_spawn = no; os.fork = no\n"
+            "import importlib.util\n"
+            "spec = importlib.util.spec_from_file_location('runner_top', %r)\n"
+            "m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\n"
+            "print('TOP DONE')\n") % str(v2.ROOT / "scripts/run_rotation_core_v2.py")
+    r = _py(["-c", code])
+    assert r.returncode == 0 and "TOP DONE" in r.stdout, r.stderr[-400:]
+
+
+# ------------------------------------------------------------------ R33.4 nothing imported after the last check (measured)
+def test_R33_4_no_module_is_imported_after_the_last_check_in_either_stage(tmp_path):
+    import datetime
+    S = _e2e_setup(tmp_path, _edge_pass, 1.0, 20)
+    d, work, g, ctx = S["d"], S["work"], S["g"], S["ctx"]
+    log1 = tmp_path / "o1.log"
+    r = _py([], {"argv": ["--stage", "pre1998"], "ctx": ctx, "plant": "spy_order", "out": str(log1)}, tmp_path)
+    assert r.returncode == 0, r.stderr[-500:]
+    out1 = r.stdout.splitlines()
+    gate_commit = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS gate_commit"))
+    start = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS start_commit"))
+    ents = json.loads((work / "ledger.json").read_text())["entries"]
+    head = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    _commit_push(g, work, "r2.json", {
+        "windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256, "engine_commit": "E1",
+        "ledger_prefix_len": len(ents), "ledger_prefix_chain_sha256": v2.chain_hash(ents),
+        "branch_head_at_release": head, "gate_commit": gate_commit,
+        "inputs_sha256": {k: v2.sha256_file(p) for k, p in S["s2_in"].items()}, "versions": v2.versions(),
+        "witnessed": {"branch": "b", "release_commit": S["r1_commit"], "start_commit": start,
+                      "gate_commit": gate_commit, "witness_utc": "t", "acknowledged_at": "t"},
+        "witness_confirmation_utc": (datetime.datetime.now(datetime.timezone.utc)
+                                     + datetime.timedelta(minutes=2)).isoformat()})
+    log2 = tmp_path / "o2.log"
+    r = _py([], {"argv": ["--stage", "confirm"], "ctx": ctx, "plant": "spy_order", "out": str(log2)}, tmp_path)
+    assert r.returncode == 0, r.stderr[-500:]
+    for lg in (log1, log2):
+        lines = lg.read_text().splitlines()
+        i_vl = next(i for i, ln in enumerate(lines) if ln.startswith("verified_ledger_done"))
+        i_check = next(i for i, ln in enumerate(lines) if i > i_vl and ln.startswith("shadow"))
+        after = [ln for ln in lines[i_check + 1:] if ln.startswith(("record_shadow", "late_imports"))]
+        assert after and all(ln.endswith("new_before=[]") or ln == "late_imports " for ln in after), after
+        assert sum(ln.startswith("record_shadow") for ln in after) >= 2          # START and GATE / FINAL at least
+
+
+# ------------------------------------------------------------------ R33.5 strict check before the START push
+def test_R33_5_the_start_push_runs_the_strict_check(tmp_path, monkeypatch):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    calls = []
+    real = v2.refuse_shadowed_modules
+    monkeypatch.setattr(v2, "refuse_shadowed_modules", lambda *a, **k: (calls.append("check"), real(*a, **k)))
+    led.append(_start())
+    assert calls == ["check"]
+    assert "START" not in v2.RECORD_KINDS                                  # the explicit call, not RECORD_KINDS
+
+
+# ------------------------------------------------------------------ R33.6 no write to the import path outside the runner
+def _import_path_writes(rel) -> list:
+    import ast
+    tree = ast.parse((v2.ROOT / rel).read_text())
+    aliases = {"sys"} | {a.asname for n in ast.walk(tree) if isinstance(n, ast.Import) for a in n.names
+                         if a.name == "sys" and a.asname}
+    targets = {f"{s}.{p}" for s in aliases for p in ("path", "meta_path", "path_hooks")}
+    writes = []
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and ast.unparse(n.func.value) in targets \
+                and n.func.attr in ("insert", "append", "extend", "remove", "pop", "clear", "__setitem__", "sort",
+                                    "reverse", "__iadd__"):
+            writes.append(ast.unparse(n))
+        if isinstance(n, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+            tgts = n.targets if isinstance(n, ast.Assign) else [n.target]
+            for t in tgts:
+                base = t.value if isinstance(t, ast.Subscript) else t
+                if ast.unparse(base) in targets:
+                    writes.append(ast.unparse(n))
+        if isinstance(n, ast.Delete):
+            for t in n.targets:
+                if ast.unparse(t.value if isinstance(t, ast.Subscript) else t) in targets:
+                    writes.append(ast.unparse(n))
+    return writes
+
+
+def test_R33_6_only_the_runner_writes_the_import_path_and_only_as_reviewed():
+    for rel in RUN_PATH_FILES[1:]:
+        assert _import_path_writes(rel) == [], rel
+    w = _import_path_writes("scripts/run_rotation_core_v2.py")
+    assert sorted(w) == sorted(["sys.path.append(str(ROOT))",
+                                "sys.path[:] = [p for p in sys.path if _os.path.realpath(p or '.') != rr]",
+                                "sys.path[:] = _saved_path"]), w
+
+
+@pytest.mark.parametrize("src", ["import sys\nsys.path.insert(0, 'x')", "import sys as S\nS.path.append('x')",
+                                 "import sys\nsys.path += ['x']", "import sys\nsys.path[0:0] = ['x']",
+                                 "import sys\nsys.path = ['x']", "import sys\nsys.path.remove('x')",
+                                 "import sys\nsys.path.pop()", "import sys\nsys.meta_path.append(1)",
+                                 "import sys\nsys.path_hooks.insert(0, 1)", "import sys\nsys.path.extend(['x'])"])
+def test_R33_6_the_detector_catches_every_write_form(src):
+    f = v2.ROOT / "tests" / f"_tmp_path_probe_{os.getpid()}.py"
+    f.write_text(src)
+    try:
+        assert _import_path_writes(str(f.relative_to(v2.ROOT)))
+    finally:
+        f.unlink()
+
+
+# ------------------------------------------------------------------ R33.7 every suffix, directories with or without __init__
+@pytest.mark.parametrize("entry", ["cython.py", "cython.so", "cython.pyc", "cython.cpython-312-x86_64-linux-gnu.so",
+                                   "cython", "Bottleneck", "numexpr.pyd", "numexpr.zip", "numba.egg-link"])
+def test_R33_7_root_names_refuse_by_name_whatever_the_suffix(entry):
+    import scripts.run_rotation_core_v2 as run
+    with pytest.raises(SystemExit, match="R32.8"):
+        run.refuse_optional_names_at_root([entry, "engine", "lib"])
+    run.refuse_optional_names_at_root(["engine", "scripts", "tests", "lib", "research", "README.md", ".git"])
+
+
+def test_R33_7_a_root_directory_without_init_refuses_at_the_top(tmp_path):
+    root = _code_repo(tmp_path, {})
+    (root / "cython").mkdir()                                             # no __init__.py: a namespace candidate
+    r = subprocess.run([PY, *RUN_FLAGS, "scripts/run_rotation_core_v2.py", "--dry-run-stage1-fixture"], cwd=root,
+                       capture_output=True, text=True, env=_clean_env())
+    assert r.returncode != 0 and "shadows an optional import (R32.8)" in r.stderr
+
+
+# ------------------------------------------------------------------ R33.8 namespace packages
+def test_R33_8_a_namespace_package_under_the_root_is_refused(monkeypatch):
+    import types, scripts.run_rotation_core_v2 as run
+    code = ("import sys, types; sys.path.append(%r)\n"
+            "import scripts.run_rotation_core_v2 as run\n"
+            "ns = types.ModuleType('zz_ns'); ns.__path__ = [%r]; sys.modules['zz_ns'] = ns\n"
+            "run.refuse_shadowed_modules()\n") % (str(v2.ROOT), str(v2.ROOT / "zz_ns"))
+    r = _py(["-c", code])                                                  # not pytest: the strict rule
+    assert r.returncode != 0 and "module zz_ns was loaded from the repository directory" in r.stderr
+    ns = types.ModuleType("zz_ns"); ns.__path__ = [str(v2.ROOT / "zz_ns")]       # no __file__
+    monkeypatch.setitem(sys.modules, "zz_ns", ns)
+    run.refuse_shadowed_modules()                                         # names-only under pytest: not protected
+    js = types.ModuleType("json"); js.__path__ = [str(v2.ROOT / "json")]
+    monkeypatch.setitem(sys.modules, "json", js)
+    with pytest.raises(SystemExit, match="json"):
+        run.refuse_shadowed_modules()
+    with pytest.raises(v2.SealedRefusal, match="json"):
+        v2.refuse_shadowed_modules(v2.ROOT)

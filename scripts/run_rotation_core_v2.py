@@ -45,11 +45,12 @@ def refuse_shadowed_modules(root_real: str = _ROOT_REAL, strict: bool | None = N
     for name, mod in list(sys.modules.items()):
         f = getattr(mod, "__file__", None)
         top = name.split(".")[0]
-        if not f or name == "__main__" or top in REPO_PACKAGES:
+        if name == "__main__" or top in REPO_PACKAGES:
             continue
         if not strict and top not in protected:
             continue
-        if os.path.realpath(f).startswith(root_real + os.sep):
+        locs = [f] if f else [str(p) for p in (getattr(mod, "__path__", None) or [])]     # R33.8: namespace packages
+        if any(os.path.realpath(x).startswith(root_real + os.sep) for x in locs):
             raise SystemExit(f"refused: module {name} was loaded from the repository directory (R31.6, R32.8)")
 
 
@@ -63,24 +64,19 @@ pyxlsb qtpy s3fs scikits scipy_doctest setuptools_scm sksparse sqlalchemy sympy 
 zstandard array_api_strict bs4 calamine adbc_driver_postgresql adbc_driver_sqlite pytest_run_parallel""".split())
 
 
-def refuse_optional_names_at_root(root_real: str = _ROOT_REAL) -> None:
-    """R32.8(c): before numpy, pandas or scipy are imported, refuse when a module or package named like one of their
-    optional imports exists at the root, in the working tree or in the tree at HEAD."""
-    import subprocess
-    entries = set(os.listdir(root_real))
-    r = subprocess.run(["/usr/bin/git", "-C", root_real, "ls-tree", "--name-only", "HEAD"], capture_output=True,
-                       env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C", "HOME": os.path.expanduser("~")})
-    if r.returncode != 0:
-        raise SystemExit("refused: cannot list the repository root at HEAD (R32.8)")
-    entries |= set(r.stdout.decode(errors="replace").split("\n"))
+def refuse_optional_names_at_root(entries) -> None:
+    """R32.8(c)/R33.7: refuse when a root entry is named like an optional import of numpy, pandas, scipy or pyarrow.
+    The name is the part before the first dot, so every suffix (`.py`, `.pyc`, `.so`, `.cpython-312-…so`, …) is
+    stripped; a directory of that name is a hit with or without an `__init__.py`."""
     for e in entries:
-        stem = e[:-3] if e.endswith(".py") else e
-        if stem.lower() in OPTIONAL_NAMES:
+        if e and e.split(".", 1)[0].lower() in OPTIONAL_NAMES:
             raise SystemExit(f"refused: {e} at the repository root shadows an optional import (R32.8)")
 
 
 refuse_shadowed_modules()                                  # before the first import of anything from the root
-refuse_optional_names_at_root()                            # before numpy, pandas and scipy
+# R33.3: before numpy loads, only the working-tree half (an import resolves from the working tree); no child process
+# runs before check_env_vars and check_repo_config. The tree-at-HEAD half runs under the lock (start_checks).
+refuse_optional_names_at_root(os.listdir(_ROOT_REAL))
 
 import argparse, hashlib  # noqa: E402,E401
 from pathlib import Path  # noqa: E402
@@ -96,6 +92,7 @@ from engine import rotation_core_evaluation as rc  # noqa: E402
 from engine import rotation_core_v2 as v2  # noqa: E402
 import scripts  # noqa: E402,F401  (R32.8: the three repository packages, imported while the root is on the path)
 import tests  # noqa: E402,F401
+import scripts.rotation_core_v2_report  # noqa: E402,F401  (R33.4: loaded before main, not after the last check)
 
 FR = Path("/home/ubuntu2/tmp/rotation-core/data/french")
 IND_D = FR / "le2019/49_Industry_Portfolios_Daily_le20191231.csv"
@@ -1474,7 +1471,11 @@ def start_checks(argv: list, _ctx) -> None:
     v2.tool("git"); v2.tool("gh"); v2.tool_versions()
     v2.check_bytecode_flags()                                         # R29.3, under the lock
     refuse_shadowed_modules()                                         # R31.6(c), R32.8(a)
-    refuse_optional_names_at_root()                                   # R32.8(c), under the lock
+    head = v2._git("ls-tree", "--name-only", "-z", "HEAD", root=ROOT, check=False)     # R33.3: the pinned git form
+    if head.returncode != 0:
+        raise v2.SealedRefusal("refused: cannot list the repository root at HEAD (R32.8)")
+    refuse_optional_names_at_root(set(os.listdir(_ROOT_REAL)) |
+                                  set(head.stdout.decode(errors="replace").split("\0")))  # R32.8(c), under the lock
     v2.check_import_environment(ROOT)
     v2.check_no_bytecode_modules(ROOT)
     v2.check_worktree_code(ROOT)
@@ -1618,6 +1619,8 @@ def _main_body(argv: list, _ctx) -> int:
         return 0
     if a.rehearsal:
         v2.verify_header_v2(FROZEN)
+        v2.versions(); import pyarrow.parquet, pyarrow.dataset, pyarrow.pandas_compat  # noqa: E401,F401  R33.4: every probe import before the check
+        refuse_shadowed_modules()                                     # R33.2: right before the first data read
         rehearsal_command(window_text(ctx.ind_d), window_text(ctx.fact), selection=ctx.selection)
         return 0
     if a.dry_run:
@@ -1631,6 +1634,8 @@ def _main_body(argv: list, _ctx) -> int:
         v2.verify_header_v2(FROZEN)
     if a.stage == "pre1998":
         led, sha, entries = verified_ledger(ctx, a.stage)
+        v2.versions(); import pyarrow.parquet, pyarrow.dataset, pyarrow.pandas_compat  # noqa: E401,F401  R33.4: every probe import before the check
+        refuse_shadowed_modules()                                     # R33.2: right before the first pre-1998 read
         rel1 = v2.stage1_release(ctx.release1, inputs=ctx.stage1_inputs, remote_sha=sha, root=ctx.root,
                                  selection=ctx.selection, engine_check=ctx.engine_check)
         if ctx.engine_check is v2.check_engine_commit:
@@ -1652,7 +1657,7 @@ def _main_body(argv: list, _ctx) -> int:
         v2.verify_header_v2(FROZEN)                                  # R32.6: after the pin check
         if ctx.engine_check is v2.check_engine_commit:
             led.engine_commit = r2["engine_commit"]
-        v2.versions()                                                # R32.8(d): every probe import before unsealing
+        v2.versions(); import pyarrow.parquet, pyarrow.dataset, pyarrow.pandas_compat  # noqa: E401,F401  R32.8(d)/R33.4: every probe import before unsealing
         refuse_shadowed_modules()
         with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
             ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)

@@ -246,7 +246,7 @@ def check_repo_config(root: Path, remote_url: str, test_repo: bool = False) -> N
 
 
 def check_gh_socket() -> None:
-    r = subprocess.run([tool("gh"), "config", "get", "http_unix_socket"], capture_output=True, env=child_env())
+    r = _tool_run("gh", "config", "get", "http_unix_socket")
     if r.returncode != 0 or r.stdout.strip():
         raise SealedRefusal("refused: gh http_unix_socket is set (or gh config is unreadable)")
 
@@ -342,7 +342,7 @@ def tool_versions() -> dict:
     if not _TOOL_VERSIONS:
         for n in ("git", "gh"):
             p = tool(n)
-            r = subprocess.run([p, "--version"], capture_output=True, env=child_env())
+            r = _tool_run(n, "--version")
             if r.returncode != 0:
                 raise SealedRefusal(f"refused: {n} --version failed")
             v = r.stdout.decode().splitlines()
@@ -360,6 +360,12 @@ def child_env(extra: dict | None = None) -> dict:
 
 
 GIT_FIXED = ["-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "-c", "core.untrackedCache=false"]
+
+
+def _tool_run(name: str, *a) -> subprocess.CompletedProcess:
+    """R33.3: the one wrapper (besides `_git`) through which the run starts a child process: `gh` or a tool's
+    `--version`, by absolute path (R25.3), in the constructed environment (R27.2)."""
+    return subprocess.run([tool(name), *a], capture_output=True, env=child_env())
 
 
 def _git(*a, check=True, root=None, env=None, input=None) -> subprocess.CompletedProcess:
@@ -495,12 +501,13 @@ def refuse_shadowed_modules(root: Path = ROOT) -> None:
     for name, mod in list(sys.modules.items()):
         f = getattr(mod, "__file__", None)
         top = name.split(".")[0]
-        if not f or name == "__main__" or top in ("engine", "scripts", "tests"):
+        if name == "__main__" or top in ("engine", "scripts", "tests"):
             continue
         if not strict and top not in protected:
             continue
-        if os.path.realpath(f).startswith(rr + os.sep):
-            raise SealedRefusal(f"refused: module {name} was loaded from the repository directory (R31.6)")
+        locs = [f] if f else [str(p) for p in (getattr(mod, "__path__", None) or [])]     # R33.8: namespace packages
+        if any(os.path.realpath(x).startswith(rr + os.sep) for x in locs):
+            raise SealedRefusal(f"refused: module {name} was loaded from the repository directory (R31.6, R32.8)")
 
 
 def check_engine_commit(commit: str, root: Path = ROOT) -> None:
@@ -1094,6 +1101,8 @@ class GitLedger:
             entry = dict(entry, host=self.host_record)
         entry = dict(entry, phase_a_ast_sha256=_PHASE_A["ast_sha256"])
         e = dict(entry, index=len(cur), prev_chain_sha256=chain_hash(cur) if cur else None)
+        if e["kind"] == "START":                             # R33.5: the strict check directly before the START push
+            refuse_shadowed_modules(ROOT)
         if e["kind"] in RECORD_KINDS:                       # R26.3/R27.4: the environment again, right before a record
             check_import_environment(ROOT, self.engine_commit)   # location AND blob equality at the engine commit
             refuse_shadowed_modules(ROOT)                    # R31.6(c)
@@ -1146,10 +1155,10 @@ def gh_api(path: str, paginate: bool = False):
     for v in ("GH_HOST", "GH_REPO"):
         if os.environ.get(v):
             raise SealedRefusal(f"refused: {v} is set")
-    cmd = [tool("gh"), "api", "--hostname", "github.com", "-H", "Accept: application/vnd.github+json", path]
+    args = ["api", "--hostname", "github.com", "-H", "Accept: application/vnd.github+json", path]
     if paginate:
-        cmd[2:2] = ["--paginate", "--jq", ".[] | @json"]
-    r = subprocess.run(cmd, capture_output=True, env=child_env())
+        args[1:1] = ["--paginate", "--jq", ".[] | @json"]
+    r = _tool_run("gh", *args)
     if r.returncode != 0:
         raise SealedRefusal("refused: the GitHub API call failed; the host record cannot be read")
     try:
