@@ -69,11 +69,10 @@ def test_vector_card_momentum_copy_handles_down_flat_and_missing() -> None:
         assert phrase in html
 
 
-def test_hub_hero_describes_a_snapshot_not_the_viewers_clock(monkeypatch) -> None:
+def test_hub_hero_shows_site_live_status_not_data_freshness(monkeypatch) -> None:
     blob = [{"cc": "US", "macro_asof": "2026-09-18"}]
     monkeypatch.setattr(build_vector, "_globe_markets", lambda: blob)
     monkeypatch.setattr(build_vector, "_g_legend", lambda _blob: "")
-    # _hub_html reads _standout_labels (not _standout_tickers) as of this head.
     monkeypatch.setattr(build_vector, "_standout_labels", lambda _key: [])
     monkeypatch.setattr(build_vector, "_latest_report_data", lambda: None)
     monkeypatch.setattr(build_vector, "_g_markets", lambda *_a, **_k: "")
@@ -83,20 +82,19 @@ def test_hub_hero_describes_a_snapshot_not_the_viewers_clock(monkeypatch) -> Non
     monkeypatch.setattr(build_vector, "_hub_footer_html", lambda: "")
 
     html = build_vector._hub_html(_vm(), {}, [])
+    badge = html.split('<div class="hub-snapshot-meta">', 1)[1].split("</header>", 1)[0]
 
-    assert "Page built" in html
-    assert "页面生成于" in html
-    assert "Latest market snapshot" not in html
-    assert "Live ·" not in html
-    assert "实时 ·" not in html
-    assert "hub-snapshot-meta" in html
-    assert "hub-clock-wrap" in html
+    assert "SITE LIVE" in badge and "网站运行中" in badge
+    assert "Page built" not in badge and "页面生成于" not in badge
+    assert "Latest market snapshot" not in badge
+    assert "Live ·" not in badge and "实时 ·" not in badge
+    assert "hub-clock-wrap" not in badge
+    assert "data-asof" not in badge
     assert "livepulse" not in html
     assert "background:var(--info)" in html
     assert '@media(max-width:560px){.h .eyebrow{display:none}}' not in html
-    assert "setInterval(tick" not in html
     assert "setInterval" not in html
-    assert "live macro dashboard" not in html.lower()
+
 
 
 def test_hub_html_calls_standout_labels_not_tickers() -> None:
@@ -154,6 +152,12 @@ _SPARSE_START = pytest.mark.skipif(
 @_SPARSE_START
 def test_committed_start_artifact_matches_the_glance_contract() -> None:
     html = _START_HTML.read_text(encoding="utf-8")
+    badge = html.split('<div class="hub-snapshot-meta">', 1)[1].split("</header>", 1)[0]
+    assert "SITE LIVE" in badge and "网站运行中" in badge
+    assert "Page built" not in badge and "页面生成于" not in badge
+    assert "data-asof" not in badge
+    assert "hub-clock-wrap" not in badge
+
     for required in (
         "Explore",
         "Bond health",
