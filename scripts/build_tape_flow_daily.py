@@ -11,10 +11,11 @@ Modes (--mode):
 
 Storage:
   Daily features : data/tape_flow/daily/<ROOT>.parquet  (1 row/day, tiny, git-committable)
-  Raw tape        : data/tape_flow/raw/_manifest.json   (byte-count manifest ONLY —
-                    raw tape bytes are aggregated then discarded; nothing is uploaded
-                    to R2 today. Raw-plane retention is tracked as WP-TAPE-TRUTH in
-                    research/OPTIONS_CONFLUENCE_PROGRAM_BY_FABLE.md)
+  Raw tape        : immutable ZSTD Parquet root-session partitions when explicitly
+                    enabled via --raw-retention anchors|full; content-bound receipts
+                    live beside each partition. THETADATA_TAPE_ARCHIVE selects the
+                    production staging/cold root. The existing raw/_manifest.json
+                    remains a compact compatibility/index projection.
   State file      : data/tape_flow/_state.json          (resumability + round-robin cursor)
 
 Concurrency:
@@ -72,8 +73,11 @@ EPISODE_ROOTS = ETF_ANCHOR_SET  # use full ETF set; episode_nodes() filters dyna
 # History start for etf-history mode (R6 priority 3 — aligns with IV availability)
 ETF_HISTORY_START = date(2017, 1, 1)
 
-# Raw tape retention: ETF anchors + episode windows only
+# Legacy manifest census remains ETF-anchor scoped. Durable raw retention is
+# separately explicit via --raw-retention / THETADATA_TAPE_RAW_RETENTION.
 RAW_RETENTION_ROOTS = ETF_ANCHOR_SET
+RAW_RETENTION_ENV = "THETADATA_TAPE_RAW_RETENTION"
+_TERMINAL_REACHABLE: bool | None = None
 
 
 # ── concurrency guard ─────────────────────────────────────────────────────────
@@ -273,6 +277,27 @@ def _raw_manifest_path() -> Path:
     p = config.data_dir() / "tape_flow" / "raw"
     p.mkdir(parents=True, exist_ok=True)
     return p / "_manifest.json"
+
+
+def _raw_archive_policy() -> str:
+    value = os.environ.get(RAW_RETENTION_ENV, "none").strip().lower()
+    return value if value in {"none", "anchors", "full"} else "none"
+
+
+def _raw_archive_enabled(root: str) -> bool:
+    policy = _raw_archive_policy()
+    return policy == "full" or (policy == "anchors" and root.upper() in ETF_ANCHOR_SET)
+
+
+def _raw_archive_pair_exists(root: str, trade_date: date) -> bool:
+    if not _raw_archive_enabled(root):
+        return True
+    try:
+        from engine.options_tape_archive import archive_paths
+        parquet_path, receipt_path = archive_paths(root, trade_date)
+        return parquet_path.exists() and receipt_path.exists()
+    except Exception:
+        return False
 
 
 # ── store-write serialisation (data-loss fix, 2026-07-27) ────────────────────
@@ -497,20 +522,69 @@ def _process_root_day(root: str, trade_date: date, mode: str,
     from engine.tape_flow import aggregate_day
 
     t0 = time.perf_counter()
-    log.info("tape_flow: %s %s pulling tape …", root, trade_date)
+    capture_started_at = datetime.now(timezone.utc)
+    archive_receipt = None
 
-    # Pull both legs (2 requests per root-day; right=* → HTTP 400, so call+put separately)
-    calls_df = bulk_trade_quote(root, "call", trade_date, trade_date)
-    if calls_df is None:
-        log.warning("tape_flow: %s %s call leg failed — skipping", root, trade_date)
-        return {"root": root, "date": str(trade_date), "status": "error", "reason": "call_leg_failed"}
+    # Prefer already captured immutable bytes. Terminal-less workers can replay
+    # features from the archive without re-querying ThetaData.
+    try:
+        from engine.options_tape_archive import load_trade_nbbo
+        archived = load_trade_nbbo(root, trade_date)
+    except Exception as exc:
+        log.warning("tape_flow: %s %s raw archive integrity failure - %s", root, trade_date, exc)
+        return {
+            "root": root, "date": str(trade_date), "status": "error",
+            "reason": "raw_archive_integrity_failed", "detail": str(exc)[:300],
+        }
 
-    puts_df = bulk_trade_quote(root, "put", trade_date, trade_date)
-    if puts_df is None:
-        log.warning("tape_flow: %s %s put leg failed — skipping", root, trade_date)
-        return {"root": root, "date": str(trade_date), "status": "error", "reason": "put_leg_failed"}
+    if archived is not None:
+        raw_df, archive_receipt = archived
+        rights = raw_df["right"].astype(str).str.upper()
+        calls_df = raw_df[rights.isin(["C", "CALL"])].copy()
+        puts_df = raw_df[rights.isin(["P", "PUT"])].copy()
+        capture_completed_at = datetime.now(timezone.utc)
+        log.info("tape_flow: %s %s replaying archive rows=%d", root, trade_date, len(raw_df))
+    else:
+        if _TERMINAL_REACHABLE is False:
+            return {
+                "root": root, "date": str(trade_date), "status": "error",
+                "reason": "terminal_unreachable_archive_missing",
+            }
+        log.info("tape_flow: %s %s pulling tape ...", root, trade_date)
+        calls_df = bulk_trade_quote(root, "call", trade_date, trade_date)
+        if calls_df is None:
+            log.warning("tape_flow: %s %s call leg failed - skipping", root, trade_date)
+            return {"root": root, "date": str(trade_date), "status": "error", "reason": "call_leg_failed"}
 
-    # OI[t-1] and greeks chain for joined features
+        puts_df = bulk_trade_quote(root, "put", trade_date, trade_date)
+        if puts_df is None:
+            log.warning("tape_flow: %s %s put leg failed - skipping", root, trade_date)
+            return {"root": root, "date": str(trade_date), "status": "error", "reason": "put_leg_failed"}
+        capture_completed_at = datetime.now(timezone.utc)
+
+        if _raw_archive_enabled(root):
+            try:
+                from engine.options_tape_archive import archive_trade_nbbo
+                archive_receipt = archive_trade_nbbo(
+                    root=root,
+                    trade_date=trade_date,
+                    calls=calls_df,
+                    puts=puts_df,
+                    capture_started_at=capture_started_at,
+                    capture_completed_at=capture_completed_at,
+                )
+            except Exception as exc:
+                print(
+                    f"::error title=tape-flow-raw-archive-failed::{root} {trade_date} "
+                    f"raw trade+NBBO archive failed; feature completion withheld ({exc})",
+                    flush=True,
+                )
+                log.warning("tape_flow: %s %s raw archive failed - %s", root, trade_date, exc)
+                return {
+                    "root": root, "date": str(trade_date), "status": "error",
+                    "reason": "raw_archive_failed", "detail": str(exc)[:300],
+                }
+
     oi_prev = _get_prior_oi(root, trade_date)
     greeks = _get_greeks_chain(root, trade_date)
 
@@ -540,16 +614,18 @@ def _process_root_day(root: str, trade_date: date, mode: str,
     total_rows = (len(calls_df) if not calls_df.empty else 0) + \
                  (len(puts_df) if not puts_df.empty else 0)
 
-    # Raw tape retention: byte-count manifest only — the raw bytes are discarded
-    # after aggregation (no R2 raw-plane today; tracked as WP-TAPE-TRUTH in
-    # research/OPTIONS_CONFLUENCE_PROGRAM_BY_FABLE.md).
-    if retain_raw and total_rows > 0:
+    if archive_receipt is not None:
+        _update_raw_manifest(
+            root, trade_date, rows=total_rows,
+            bytes_approx=int(archive_receipt.get("compressed_bytes", 0)),
+        )
+    elif retain_raw and total_rows > 0:
         raw_calls = calls_df.memory_usage(deep=True).sum() if not calls_df.empty else 0
         raw_puts = puts_df.memory_usage(deep=True).sum() if not puts_df.empty else 0
         _update_raw_manifest(root, trade_date, rows=total_rows,
                              bytes_approx=int(raw_calls + raw_puts))
 
-    log.info("tape_flow: %s %s done — rows=%d elapsed=%.1fs", root, trade_date, total_rows, elapsed)
+    log.info("tape_flow: %s %s done - rows=%d elapsed=%.1fs", root, trade_date, total_rows, elapsed)
     return {
         "root": root,
         "date": str(trade_date),
@@ -560,6 +636,8 @@ def _process_root_day(root: str, trade_date: date, mode: str,
         "gross_premium": row.get("gross_premium"),
         "volume": row.get("volume"),
         "trade_count": row.get("trade_count"),
+        "raw_archive_status": archive_receipt.get("archive_status") if archive_receipt else None,
+        "raw_archive_bytes": archive_receipt.get("compressed_bytes") if archive_receipt else None,
     }
 
 
@@ -712,6 +790,18 @@ def main(argv: list[str] | None = None) -> None:
         help="End date YYYY-MM-DD for etf-history mode (default: today).",
     )
     parser.add_argument(
+        "--raw-retention", choices=["none", "anchors", "full"], default=None,
+        help=(
+            "Durably retain fetched raw trade+attached-NBBO rows. none=feature-only; "
+            "anchors=ETF anchors; full=every root in this run. Defaults to "
+            "THETADATA_TAPE_RAW_RETENTION or none."
+        ),
+    )
+    parser.add_argument(
+        "--raw-archive-root", default=None, metavar="PATH",
+        help="Archive root override for this process.",
+    )
+    parser.add_argument(
         "--force", action="store_true",
         help="Re-run even if state marks the root-day as completed.",
     )
@@ -733,8 +823,12 @@ def main(argv: list[str] | None = None) -> None:
         ),
     )
     args = parser.parse_args(argv)
+    if args.raw_retention is not None:
+        os.environ[RAW_RETENTION_ENV] = args.raw_retention
+    if args.raw_archive_root:
+        os.environ["THETADATA_TAPE_ARCHIVE"] = args.raw_archive_root
 
-    # [timing] t0 — process entry
+    # [timing] t0 - process entry
     t_global = time.perf_counter()
     _tick_prev = [t_global]
 
@@ -746,11 +840,20 @@ def main(argv: list[str] | None = None) -> None:
         _tick_prev[0] = _now
 
     from collectors.thetadata import reachable
-    if not reachable():
-        log.warning("tape_flow: ThetaData terminal not reachable — exiting gracefully")
-        _tick("reachable-check (MISS)")
+    from engine.options_tape_archive import resolve_archive_root
+
+    global _TERMINAL_REACHABLE
+    _TERMINAL_REACHABLE = reachable()
+    archive_root = resolve_archive_root()
+    if not _TERMINAL_REACHABLE and not archive_root.exists():
+        log.warning("tape_flow: ThetaData terminal unavailable and no raw archive root - exiting")
+        _tick("source-check (MISS)")
         sys.exit(0)
-    _tick("reachable-check (OK)")
+    if _TERMINAL_REACHABLE:
+        _tick("source-check (THETA)")
+    else:
+        log.warning("tape_flow: ThetaData terminal unavailable - replaying from %s", archive_root)
+        _tick("source-check (ARCHIVE)")
 
     state = _load_state()
 
@@ -841,8 +944,11 @@ def main(argv: list[str] | None = None) -> None:
 
     # Filter already-completed root-days (unless --force)
     if not args.force:
-        work = [(r, d) for r, d in work
-                if not _is_done(state, args.mode, r, d)]
+        work = [
+            (r, d) for r, d in work
+            if (not _is_done(state, args.mode, r, d))
+            or (_raw_archive_enabled(r) and not _raw_archive_pair_exists(r, d))
+        ]
 
     n_skipped = n_total - len(work)
     workers = _max_workers()

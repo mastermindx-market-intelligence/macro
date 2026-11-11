@@ -1,11 +1,10 @@
 """engine/tape_flow.py — per-name daily signed options-flow features from trade+NBBO.
 
-T2a implementation: aggregate-then-discard from ThetaData trade_quote endpoint.
-Raw trade rows are NEVER persisted; only derived features are written to disk.
-Raw-tape retention today is a byte-count manifest only (written by
-scripts/build_tape_flow_daily — no raw bytes are kept anywhere, R2 included);
-the raw-plane implementation is tracked as WP-TAPE-TRUTH in
-research/OPTIONS_CONFLUENCE_PROGRAM_BY_FABLE.md.
+T2a aggregation consumes ThetaData trade_quote rows. The pure aggregator still
+returns only derived features, but its incumbent caller can now persist the SAME
+fetched rows first as immutable ZSTD Parquet under engine/options_tape_archive.py.
+That archive is replayable, so a Terminal-less worker can derive the same feature
+row from content-bound source bytes instead of re-querying ThetaData.
 
 ## Signing provenance law (LIVE_ORDER_FLOW_BRAINSTORM_BY_FABLE §8.2)
 Every feature carries signing_source="tape" (Lee-Ready quote rule on NBBO).

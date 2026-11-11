@@ -343,6 +343,8 @@ data/thetadata_eod/_writer.lock
 # data/tape_flow/raw/ contains FULL tape bytes (ETF anchors + episode windows) — R2-plane only.
 # Only the manifest (_manifest.json) is committed; raw parquets are NEVER committed.
 data/tape_flow/raw/*.parquet
+data/tape_flow/raw/partitions/
+data/thetadata_tape_staging/
 # state file is tiny/git-tracked (resumable backfill):
 !data/tape_flow/_state.json
 !data/tape_flow/raw/_manifest.json
