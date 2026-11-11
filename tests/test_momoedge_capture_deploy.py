@@ -19,7 +19,16 @@ def test_native_host_wrapper_and_manifest_are_installable_and_secret_free() -> N
     manifest = json.loads(
         (ROOT / "ops" / "native_messaging" / "com.mastermind.optionsnbbocohort.momoedge_observe.json").read_text()
     )
-    assert stat.S_IMODE(wrapper.stat().st_mode) == 0o755
+    # Git records executability; the runner umask determines other checkout
+    # permission bits. Installed-host permissions need separate delivery proof.
+    relative = wrapper.relative_to(ROOT).as_posix()
+    entry = subprocess.run(
+        ["git", "ls-tree", "HEAD", "--", relative],
+        cwd=ROOT, capture_output=True, text=True, check=True, timeout=10,
+    ).stdout.split()
+    assert len(entry) == 4 and entry[:2] == ["100755", "blob"]
+    assert entry[3] == relative
+    assert wrapper.stat().st_mode & stat.S_IXUSR
     assert manifest["path"] == "/Users/chriswong/options-nbbo-ops-wt/ops/native_messaging/run_momoedge_browser_host.sh"
     source = wrapper.read_text() + json.dumps(manifest)
     for marker in ("TOKEN", "PASSWORD", "COOKIE", "AUTHORIZATION", "API_KEY"):

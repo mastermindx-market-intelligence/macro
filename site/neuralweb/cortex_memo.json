@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-11-09T10:28:27+00:00",
+  "as_of": "2026-11-11T15:47:35+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-11-08",
+    "as_of": "2026-11-11",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +20,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 178,
-      "total_rows": 186
+      "ungradeable": 179,
+      "total_rows": 187
     },
     "is_context_only": true
   },
@@ -39,7 +39,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgsCMfUQSbHywEAonkfSN'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgwQK3xaeA4VNdnKRDVu1'}"
       },
       {
         "provider": "oauth",
@@ -47,7 +47,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCMoeXnhk811GE6SSZ2'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgwQKC9wYzVxdGbhZDFLg'}"
       },
       {
         "provider": "oauth",
@@ -55,7 +55,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCP4BB1UL6ifDFsZ4Er'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgwQLSvUchnxdhKoxApVo'}"
       },
       {
         "provider": "oauth",
@@ -63,7 +63,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCTdMaS7gwzBhYYd17G'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgwQR19KxLXiXyAmAzMFV'}"
       },
       {
         "provider": "oauth",
@@ -71,7 +71,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgsCh31Uz7NjJrNdRoXoZ'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgwQeR94tj8Ys2Ppcs5Ev'}"
       },
       {
         "provider": "oauth",
@@ -79,13 +79,13 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgsCh3u3tqqXpi1VjuuEU'}"
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgwQeS5PLFaAfsMGdvo1S'}"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-11-09T10:15:20Z"
+    "context_as_of": "2026-11-11T12:31:22Z"
   }
 }
