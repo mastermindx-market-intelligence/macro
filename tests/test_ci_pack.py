@@ -4535,6 +4535,8 @@ CURATED_EXCLUSIVE = {
     "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
+    # Preserve V91 coverage while bounding newly enrolled policy regressions.
+    "news-v91-vertical-proofs",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
@@ -5996,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_987),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_728),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6006,6 +6008,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7022, measured Alert Center suite cost):
+    Natural CI42987625824 at head57c8578f on base497d83de measured
+    index137/5970, free-content137/5991 and Prophet131/5728, all ten
+    packs and no newly selected jobs. Contract-delta130412491242 found
+    exactly three introduced weight findings; pack130414749097 failed
+    only this assertion (992 passed, one skipped). The two retained
+    Alert Center suites make unrun-template-chips31->35. Fund only+4
+    from5966/5987/5724; keep137/138/131job bounds, ten packs, selectors,
+    commands, assertions, timeouts and admission controls. Receiver37ec007a
+    preserves the V91 exclusive enrollment, excluded from all three probes.
+    These are actual hosted measurements; the successor still needs its
+    natural full-tree CI. No workflow rerun or expanded job set is implied.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
