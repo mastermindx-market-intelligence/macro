@@ -76,3 +76,61 @@ def test_grading_row_contract():
     assert row["be_growth_2d_q1"] == -1 and row["be_infl_2d_q1"] == 1
     assert row["realized_growth_2d_at_63d"] is None and row["realized_infl_2d_at_63d"] is None
     assert row["revised"] is True
+
+
+
+def test_required_month_gaps_are_unavailable():
+    for rate in (-0.002, 0.002):
+        full = _const_growth(mom=rate)
+        for offset in range(13):
+            date = full.index[-1] - pd.DateOffset(months=offset)
+            # Missing anchor is a different as-of series, outside this gap contract.
+            if offset == 0:
+                continue
+            for representation in ('absent', 'nan'):
+                sparse = full.copy()
+                if representation == 'absent':
+                    sparse = sparse.drop(date)
+                else:
+                    sparse.loc[date] = np.nan
+                assert be._project(sparse) is None, (rate, offset, representation)
+
+
+def test_store_compute_preserves_complete_companion_and_grading(monkeypatch):
+    full = _const_growth(mom=-0.002)
+    for representation in ('absent', 'nan'):
+        sparse = full.copy()
+        missing = full.index[-2]
+        if representation == 'absent':
+            sparse = sparse.drop(missing)
+        else:
+            sparse.loc[missing] = np.nan
+        def read(group, sid):
+            assert group == 'fred'
+            return (sparse if sid == 'INDPRO' else full).to_frame('value')
+        monkeypatch.setattr(be.store, 'read', read)
+        result = be.compute()
+        assert result['growth']['missing'] == ['INDPRO']
+        assert set(result['growth']['series']) == {'PAYEMS'}
+        assert result['inflation']['missing'] == []
+        assert result['growth']['q1'] == result['inflation']['q1'] == 0
+        row = be.grading_row(result, '2026-01-01')
+        assert row['be_growth_2d_q1'] == row['be_infl_2d_q1'] == 0
+        assert row['realized_growth_2d_at_63d'] is None
+        assert row['realized_infl_2d_at_63d'] is None
+
+
+def test_all_incomplete_series_are_withheld(monkeypatch):
+    sparse = _const_growth().drop(_const_growth().index[-2])
+    monkeypatch.setattr(be.store, 'read', lambda *args: sparse.to_frame('value'))
+    assert be.compute() is None
+    assert be.grading_row({}, '2026-01-01')['be_growth_2d_q1'] is None
+
+
+def test_ancient_gaps_do_not_change_projection():
+    full = _const_growth()
+    expected = be._project(full)
+    assert be._project(full.drop(full.index[10])) == expected
+    sparse = full.copy()
+    sparse.iloc[10] = np.nan
+    assert be._project(sparse) == expected

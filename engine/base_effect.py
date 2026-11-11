@@ -78,6 +78,12 @@ def _project(level: pd.Series, mom_shift: float = 0.0) -> dict | None:
     level = level.dropna()
     if len(level) < _MIN_OBS:
         return None
+    # Denominator months and six-month momentum must be actual monthly observations.
+    # A row gap must not borrow an older base or compress several months into one.
+    anchor_month = pd.Timestamp(level.index[-1]).replace(day=1)
+    required = pd.date_range(end=anchor_month, periods=13, freq="MS")
+    if not required.isin(level.index).all():
+        return None
     logl = np.log(level.astype(float))
     mom = logl.diff().dropna()
     if len(mom) < MOM_WIN:
