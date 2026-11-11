@@ -98,8 +98,8 @@ def gtaa_io(monkeypatch):
     return mm
 
 
-def _gtaa_prices(mm, winners=1):
-    idx = pd.bdate_range("2015-01-01", periods=800)
+def _gtaa_prices(mm, winners=1, rows=800):
+    idx = pd.bdate_range("2015-01-01", periods=rows)
     wiggle = 0.00005 * np.sin(np.arange(len(idx)) / 7)
     return pd.DataFrame({a: 100 * np.cumprod(
         1 + (0.001 if i < winners else -0.001) + wiggle)
@@ -241,3 +241,115 @@ def test_gtaa_quote_matches_corrected_native_report_without_promoting_overlay():
     assert trend["dsr"] == 0.9952 and trend["sharpe"] is None
     assert "separate historical 60/40 + 30%" in trend["why"]
     assert "1.07" not in trend["why"] and "0.98 / 1.15" not in trend["why"]
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+def test_gtaa_cap_does_not_redistribute_released_exposure(gtaa_io, monkeypatch, profile):
+    mm = gtaa_io
+    idx = pd.bdate_range("2018-01-02", periods=800)
+    prices = pd.DataFrame({asset: 100 * np.exp((.001 if i == 0 else -.001) * np.arange(800))
+                           for i, asset in enumerate(mm.ASSETS)}, index=idx)
+    prof = mm.PROFILES[profile]
+    conviction = pd.DataFrame(0.0, index=idx, columns=prices.columns)
+    conviction["SPY"], conviction["IEF"] = 1.0, prof["w_cap"] / 20
+    monkeypatch.setattr(mm, "_conviction", lambda _prices: conviction)
+    final = mm._weights(prices, prof).iloc[-1]
+    assert final["SPY"] == pytest.approx(prof["w_cap"])
+    assert final["IEF"] == pytest.approx(prof["w_cap"] / 2)
+    assert final.sum() == pytest.approx(1.5 * prof["w_cap"])
+
+
+@pytest.mark.parametrize("profile", ["conservative", "moderate", "aggressive"])
+@pytest.mark.parametrize("winners", [0, 1, 9])
+def test_gtaa_final_caps_preserve_native_cash_financing_and_emit(gtaa_io, monkeypatch, profile, winners):
+    import json
+    from scripts import build_masterminds as builder
+
+    mm = gtaa_io
+    prices = _gtaa_prices(mm, winners)
+    monkeypatch.setattr(mm.ea, "bill_yield", lambda: pd.Series(4.0, index=prices.index))
+    result = mm.backtest(profile, prices)
+    weights, prof = result["weights"], mm.PROFILES[profile]
+    gross = weights.shift(1).fillna(0).sum(axis=1)
+    pd.testing.assert_series_equal(result["scorecard"]["gross_lev"], gross, check_names=False)
+    final_gross = float(gross.iloc[-1])
+    days = (prices.index[-1] - prices.index[-2]).days
+    cash = (max(1 - final_gross, 0) * .04 - max(final_gross - 1, 0) * .05) * days / 365
+    asset_return = float((weights.iloc[-2] * prices.pct_change(fill_method=None).iloc[-1]).sum())
+    assert result["scorecard"]["net"].iloc[-1] == pytest.approx(asset_return + cash, abs=1e-12)
+    assert weights.max().max() <= prof["w_cap"] + 1e-12
+    assert weights.sum(axis=1).max() <= prof["max_lev"] + 1e-12
+    if winners == 0:
+        assert weights.eq(0).all().all() and result["alloc"] == []
+    card = builder._rich_card(profile, result)
+    snap = builder._snap([card], [result], "2026-11-11 00:00 UTC")
+    published = json.loads(json.dumps(snap, allow_nan=False))["cards"][0]
+    assert published["alloc"] == result["alloc"]
+    assert published["gross_now"] == round(final_gross, 2)
+
+
+def test_gtaa_late_history_keeps_its_own_calendar_warmup(gtaa_io):
+    mm = gtaa_io
+    prices = _gtaa_prices(mm, 9, rows=900)
+    prices.loc[:prices.index[499], "BTC-USD"] = np.nan
+    result = mm.backtest("moderate", prices)
+    cutoff = prices["BTC-USD"].first_valid_index() + pd.Timedelta(days=300)
+    assert result["weights"].loc[prices.index < cutoff, "BTC-USD"].eq(0).all()
+    assert result["weights"]["BTC-USD"].iloc[-1] > 0
+    assert result["weights"].max().max() <= .4 + 1e-12
+
+
+def test_gtaa_missing_optional_asset_retains_cap_and_emit(gtaa_io):
+    mm = gtaa_io
+    prices = _gtaa_prices(mm, 1).drop(columns="BTC-USD")
+    result = mm.backtest("moderate", prices)
+    assert "BTC-USD" not in result["weights"]
+    assert result["weights"]["SPY"].iloc[-1] == pytest.approx(.4)
+    assert result["alloc"] == [{"asset": "SPY", "label_en": "S&P 500", "label_zh": "标普500", "weight": 40.0}]
+
+
+def test_gtaa_changing_volatility_preserves_finite_final_limits(gtaa_io, monkeypatch):
+    mm = gtaa_io
+    prices = _gtaa_prices(mm, 1, rows=900)
+    rng = np.random.default_rng(11003)
+    moves = np.r_[np.repeat(.001, 500), rng.normal(.001, .035, 400)]
+    prices["SPY"] = 100 * np.exp(np.cumsum(moves))
+    conviction = prices * 0
+    conviction["SPY"] = 1.0
+    monkeypatch.setattr(mm, "_conviction", lambda _prices: conviction)
+    weights = mm._weights(prices, mm.PROFILES["moderate"])
+    assert np.isfinite(weights.to_numpy()).all() and weights.min().min() >= 0
+    assert weights.max().max() <= .4 + 1e-12
+    assert weights.sum(axis=1).max() <= 1.6 + 1e-12
+
+
+def test_gtaa_phase0_uses_existing_trial_budget_without_writing(tmp_path, monkeypatch):
+    from scripts import mastermind_moderate_phase0 as phase
+
+    path = tmp_path / "trial_ledger.jsonl"
+    raw = b'{"family":"mastermind_moderate_phase0","kind":"declared_budget","n":8,"config_hash":"budget-fixture"}\n'
+    path.write_bytes(raw)
+    native_ledger = phase.TrialLedger
+    monkeypatch.setattr(phase, "TrialLedger", lambda _path: native_ledger(path))
+    ledger = phase._trial_ledger()
+    assert ledger.effective_n(phase.FAMILY) == 8 and ledger.literal_n(phase.FAMILY) == 0
+    assert path.read_bytes() == raw
+
+
+@pytest.mark.parametrize("state", ["absent", "different_family", "corrupt", "partial_corrupt", "under_budget", "invalid_utf8"])
+def test_gtaa_phase0_does_not_qualify_from_incomplete_trial_evidence(tmp_path, monkeypatch, state):
+    from scripts import mastermind_moderate_phase0 as phase
+
+    path = tmp_path / "trial_ledger.jsonl"
+    valid = b'{"family":"mastermind_moderate_phase0","kind":"declared_budget","n":8,"config_hash":"budget-fixture"}\n'
+    raw = {"different_family": valid.replace(b"mastermind_moderate_phase0", b"other"),
+           "corrupt": b'{invalid json}\n', "partial_corrupt": valid + b'{invalid json}\n',
+           "under_budget": valid.replace(b'"n":8', b'"n":2'), "invalid_utf8": b'\xff\n'}
+    if state != "absent":
+        path.write_bytes(raw[state])
+    before = path.read_bytes() if path.exists() else None
+    native_ledger = phase.TrialLedger
+    monkeypatch.setattr(phase, "TrialLedger", lambda _path: native_ledger(path))
+    with pytest.raises(RuntimeError, match="GTAA"):
+        phase._trial_ledger()
+    assert (path.read_bytes() if path.exists() else None) == before

@@ -42,8 +42,12 @@ FAMILY = "mastermind_moderate_phase0"
 
 def _trial_ledger() -> TrialLedger:
     ledger = TrialLedger(Path(__file__).resolve().parents[1] / "data" / "trial_ledger.jsonl")
-    if FAMILY not in ledger.families():
-        raise RuntimeError("GTAA historical diagnostics require the existing trial family")
+    if ledger.load_error or ledger.corrupt_lines:
+        raise RuntimeError("GTAA trial ledger could not be read completely")
+    if not (ledger.declared_budget(FAMILY) or ledger.literal_n(FAMILY)):
+        raise RuntimeError("GTAA trial budget is missing; qualification cannot infer a count")
+    if ledger.effective_n(FAMILY) < len(mm.PROFILES):
+        raise RuntimeError("GTAA trial budget is smaller than the exposed profile count")
     return ledger
 
 
@@ -172,8 +176,8 @@ def main() -> dict:
     for nm, a, b in CRISES:
         print(f"  {nm:<20}{cum(net, a, b):>11.1f}%{cum(b6040, a, b):>9.1f}%{cum(spy_bh, a, b):>9.1f}%")
 
-    # ---- robustness: kill the regime layer (the only revised-macro-data leg) ----
-    print("\n### SENSITIVITY — macro REGIME layer DISABLED (not a release-vintage test)")
+    # ---- sensitivity: remove regime; revised-history carry inputs remain ----
+    print("\n### SENSITIVITY — macro REGIME layer DISABLED (revised-history carry retained; not a release-vintage test)")
     M = mm
     orig = M._conviction
 

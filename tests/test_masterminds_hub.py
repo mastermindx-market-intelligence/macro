@@ -21,6 +21,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 import pandas as pd
+import pytest
 
 from scripts import build_masterminds as bmm
 
@@ -404,3 +405,38 @@ def test_historical_verdict_does_not_promote_a_losing_sharpe_or_drawdown():
         assert "out-of-sample-stable" not in en and "genuine risk-adjusted alpha" not in en
         assert "far shallower" not in en and "优势" not in zh
         assert "do not establish prospective robustness" in en
+
+
+@pytest.mark.parametrize("strategy,benchmark", [(1.05, 0.0), (1.05, -.3),
+    (float("nan"), .6), (float("inf"), .6), (1.05, float("inf")), (1e308, 1e-308)])
+def test_invalid_benchmark_or_nonfinite_sharpe_has_no_multiple(strategy, benchmark):
+    res = _committed_res()["moderate"]
+    res["scorecard"].update(sharpe=strategy, hodl_sharpe=benchmark)
+    assert bmm._rich_card("moderate", res)["sharpe_mult"] is None
+
+
+def test_missing_split_half_evidence_is_unavailable_not_a_failed_test():
+    res = _committed_res()
+    for row in res.values():
+        row.pop("oos")
+    cards = _cards(res)
+    en, zh = bmm._honest_note(cards)
+    assert "unavailable" in en and "暂不可用" in zh
+    assert "no profile beats" not in en and "full-sample only" not in en
+    assert all(not card["robust"] for card in cards)
+    en, zh = bmm._verdict("moderate", {}, res["moderate"]["scorecard"])
+    assert "unavailable" in en and "暂不可用" in zh
+    assert "does not beat in both" not in en
+
+
+@pytest.mark.parametrize("robust", [False, True])
+def test_cagr_win_does_not_invent_sharpe_or_drawdown_superiority(robust):
+    res = _committed_res()["moderate"]
+    sc = dict(res["scorecard"], sharpe=.3, hodl_sharpe=.6, maxdd=-60.0, hodl_maxdd=-30.0)
+    en, zh = bmm._verdict("moderate", dict(res["oos"], robust=robust), sc)
+    assert "full-sample CAGR also beats" in en and "全样本年化在此跑赢" in zh
+    assert "0.3 vs 0.6" in en and "-60.0% vs -30.0%" in en
+    assert "0.3 对 0.6" in zh and "-60.0% 对 -30.0%" in zh
+    assert "out-of-sample-stable" not in en and "alpha" not in en and "shallower" not in en
+    assert "优势" not in zh and "浅得多" not in zh
+    assert ("CAGR beat in both halves" in en) is robust
