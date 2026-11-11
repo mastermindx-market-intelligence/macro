@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-05",
+  "date": "2026-11-10",
   "authority": {
     "tier": "context_only",
     "may_rank": false,
@@ -76,41 +76,35 @@
     },
     "actor_semantics": "who_controls is a heuristic participation regime label, not beneficial-owner, seat, fund, institution, or ultimate-actor identity"
   },
-  "turnover_z20": 2.2384540913123945,
-  "turnover_z60": 0.7250361734020667,
-  "margin_balance": 23073.3367739,
-  "margin_chg_5d": -3.254858102225977,
-  "margin_to_mcap": 2.496354,
-  "southbound_net": -21326.2,
-  "southbound_z": -3.2892060526531735,
+  "turnover_z20": -0.6269630468672753,
+  "turnover_z60": -1.1364040133996107,
+  "margin_balance": 22945.60763663,
+  "margin_chg_5d": -0.1870637451410917,
+  "margin_to_mcap": 2.500738,
+  "southbound_net": -2739.42,
+  "southbound_z": -0.4875096131783754,
   "etf_share_chg": null,
   "zt_breadth": null,
   "failed_seal_ratio": null,
-  "qvix": null,
-  "qvix_z": null,
-  "broker_rs": 0.04301377321611715,
-  "regime": "forced_deleveraging",
+  "qvix": 17.5,
+  "qvix_z": -0.7854476745754432,
+  "broker_rs": 0.059419814808663145,
+  "regime": "dormant",
   "who_controls": "mixed",
-  "risk": "fire_sale",
+  "risk": "low",
   "evidence": [
-    "turnover_z20=2.24",
+    "turnover_z20=-0.63",
     "fin_pct_float=2.50%",
-    "broker_rs=0.0430 (positive, sector leading)"
+    "broker_rs=0.0594 (positive, sector leading)",
+    "qvix_z=-0.79 (inverted-semantics: high=stress)"
   ],
-  "contradictions": [
-    {
-      "a": "southbound_z=-3.29 (outflow)",
-      "b": "turnover_z20=2.24 (hot)",
-      "detail": "offshore selling into retail-driven volume — potential distribution"
-    }
-  ],
+  "contradictions": [],
   "data_gaps": [
-    "zt_breadth:null on 2026-11-05",
-    "qvix_z:null on 2026-11-05",
-    "etf_share_chg:null on 2026-11-05",
+    "zt_breadth:null on 2026-11-10",
+    "etf_share_chg:null on 2026-11-10",
     "northbound:DEAD post-2024-08-16 SLF-050",
-    "snapshot_staleness:published row 2026-11-05 is 1d behind tape tail 2026-11-06; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "snapshot_staleness:published row 2026-11-10 is 1d behind tape tail 2026-11-11; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ],
   "backfill": false,
-  "snapshot_note": "core legs null on 2026-11-06; publishing last fully-populated row (2026-11-05)"
+  "snapshot_note": "core legs null on 2026-11-11; publishing last fully-populated row (2026-11-10)"
 }

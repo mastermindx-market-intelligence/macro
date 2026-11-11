@@ -1,10 +1,10 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-11-05",
-  "generated_at": "2026-11-07T12:40:46.047150+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-11T09:35:59.049113+00:00",
   "is_context_only": true,
-  "n_snapshots": 1387,
-  "n_days": 48,
+  "n_snapshots": 1398,
+  "n_days": 49,
   "horizons": {
     "5": {
       "n_matured": 1353,
@@ -25,8 +25,8 @@
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0183,
-      "running_ic_t_hac": -0.312,
+      "running_ic": -0.0181,
+      "running_ic_t_hac": -0.308,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -49,18 +49,18 @@
           "hit_rate": 0.488
         }
       },
-      "running_ic": -0.0422,
-      "running_ic_t_hac": -0.847,
+      "running_ic": -0.0424,
+      "running_ic_t_hac": -0.852,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 1282,
+      "n_matured": 1313,
       "by_stage": {
         "running": {
-          "n": 1205,
-          "mean_fwd_rel": -0.028,
-          "hit_rate": 0.345
+          "n": 1236,
+          "mean_fwd_rel": -0.0258,
+          "hit_rate": 0.358
         },
         "coiling": {
           "n": 36,
@@ -73,32 +73,32 @@
           "hit_rate": 0.61
         }
       },
-      "running_ic": -0.0699,
-      "running_ic_t_hac": -1.043,
+      "running_ic": -0.0584,
+      "running_ic_t_hac": -0.94,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 585,
+      "n_matured": 618,
       "by_stage": {
         "running": {
-          "n": 519,
-          "mean_fwd_rel": -0.0532,
-          "hit_rate": 0.303
+          "n": 546,
+          "mean_fwd_rel": -0.0535,
+          "hit_rate": 0.302
         },
         "coiling": {
-          "n": 33,
-          "mean_fwd_rel": -0.0445,
-          "hit_rate": 0.242
+          "n": 35,
+          "mean_fwd_rel": -0.04,
+          "hit_rate": 0.257
         },
         "coiling_primed": {
-          "n": 33,
-          "mean_fwd_rel": 0.0077,
-          "hit_rate": 0.515
+          "n": 37,
+          "mean_fwd_rel": -0.0066,
+          "hit_rate": 0.459
         }
       },
-      "running_ic": -0.0749,
-      "running_ic_t_hac": -2.128,
+      "running_ic": -0.0943,
+      "running_ic_t_hac": -2.089,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -115,6 +115,38 @@
   "verdict": "measuring",
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
+    {
+      "date": "2026-10-16",
+      "id": "nasdaq:internet-content-information",
+      "name": "Internet Content & Information",
+      "stage": "running",
+      "fwd_rel": -0.117,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-16",
+      "id": "russell:packaging-containers",
+      "name": "Packaging & Containers",
+      "stage": "running",
+      "fwd_rel": -0.0535,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-16",
+      "id": "subsectors:scientific-technical-instruments",
+      "name": "Scientific & Technical Instruments",
+      "stage": "running",
+      "fwd_rel": -0.0298,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-16",
+      "id": "baskets:industrial-distribution",
+      "name": "Industrial Distribution & Capital Goods",
+      "stage": "running",
+      "fwd_rel": -0.0017,
+      "horizon_d": 21
+    },
     {
       "date": "2026-10-15",
       "id": "nasdaq:semiconductor-equipment-materials",
@@ -145,38 +177,6 @@
       "name": "Crypto & Digital Rails",
       "stage": "running",
       "fwd_rel": -0.0342,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-15",
-      "id": "baskets:mag7",
-      "name": "Magnificent Seven",
-      "stage": "running",
-      "fwd_rel": -0.0303,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-15",
-      "id": "russell:packaging-containers",
-      "name": "Packaging & Containers",
-      "stage": "running",
-      "fwd_rel": -0.0222,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-15",
-      "id": "baskets:reshoring",
-      "name": "Reshoring & Industrial Capex",
-      "stage": "running",
-      "fwd_rel": -0.0031,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-15",
-      "id": "nasdaq:internet-retail",
-      "name": "Internet Retail",
-      "stage": "running",
-      "fwd_rel": -0.0007,
       "horizon_d": 21
     }
   ],

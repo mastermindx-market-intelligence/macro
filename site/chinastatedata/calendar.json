@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-11-06",
-  "generated_at_utc": "2026-11-07T20:25:53.334998+00:00",
+  "asof": "2026-11-10",
+  "generated_at_utc": "2026-11-11T18:54:33.312588+00:00",
   "horizon_days": 45,
   "entries": [
     {
@@ -14,42 +14,6 @@
       "impact": "medium",
       "source_class": "static",
       "source": "china_calendar.political_windows",
-      "approx": true
-    },
-    {
-      "date": "2026-11-06",
-      "window_end": null,
-      "etype": "US_NFP",
-      "label_en": "US payrolls (NFP)",
-      "label_zh": "美国非农就业",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-11-09",
-      "window_end": null,
-      "etype": "FXRES",
-      "label_en": "FX reserves (SAFE)",
-      "label_zh": "外汇储备（外管局）",
-      "region": "cn",
-      "impact": "medium",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-11-09",
-      "window_end": null,
-      "etype": "TRADE",
-      "label_en": "Customs trade (exports/imports)",
-      "label_zh": "海关进出口数据",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
       "approx": true
     },
     {
@@ -411,6 +375,30 @@
       "source_class": "rule",
       "source": "engine.china_event_calendar",
       "approx": false
+    },
+    {
+      "date": "2026-12-22",
+      "window_end": null,
+      "etype": "HK_CPI",
+      "label_en": "HK CPI (composite)",
+      "label_zh": "香港 CPI（综合）",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-12-23",
+      "window_end": null,
+      "etype": "HK_TRADE",
+      "label_en": "HK external trade",
+      "label_zh": "香港对外商品贸易",
+      "region": "hk",
+      "impact": "medium",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": true
     }
   ],
   "data_gaps": [
