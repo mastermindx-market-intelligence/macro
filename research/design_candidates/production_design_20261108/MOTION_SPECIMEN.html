@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mastermind · Motion and state specimen</title>
+<style>
+/* ilx / "Signal Ink" — house illustration format (see lib/illus.py, docs/ILLUSTRATIONS.md).
+   Layout + reveal choreography. Colors come from the page: the SVG uses currentColor
+   (accent set as color: on .ilx via inline style) and theme vars (--up/--down), so a
+   dark/light flip or the ZH --up/--down swap flows through with no re-render. */
+
+.ilx {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: var(--ilx-h, 190px);
+  margin: 0;
+  color: var(--ink-info, var(--info));                 /* fallback accent; overridden inline per chart */
+  font-variant-numeric: tabular-nums;
+}
+.ilx svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;                  /* end-dot glow + labels aren't clipped */
+}
+
+/* ── the ink ─────────────────────────────────────────────────────────────── */
+.ilx-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;  /* keep 1.6px true despite the x-stretch */
+}
+.ilx-up   { stroke: var(--up); }
+.ilx-down { stroke: var(--down); }
+
+.ilx-area { stroke: none; }
+
+/* dual-tint waterline (baseline kind) + drawdown top rule */
+.ilx-water {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: .55;
+  vector-effect: non-scaling-stroke;
+}
+.ilx-water-top { stroke: var(--down); opacity: .5; }
+
+/* reference level (e.g. climate neutral 100) */
+.ilx-ref {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  opacity: .4;
+  vector-effect: non-scaling-stroke;
+}
+
+/* soft band zones (fear/euphoria gauge) */
+.ilx-band { opacity: .5; }
+
+/* end-of-series dot — the settle point */
+.ilx-dot {
+  fill: currentColor;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, currentColor 62%, transparent));
+}
+.ilx-dot-up   { fill: var(--up);   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--up)   62%, transparent)); }
+.ilx-dot-down { fill: var(--down); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--down) 62%, transparent)); }
+
+/* ── bars ────────────────────────────────────────────────────────────────── */
+.ilx-bar { fill: currentColor; opacity: .82; }
+.ilx-bar-up   { fill: var(--up);   opacity: .85; }
+.ilx-bar-down { fill: var(--down); opacity: .85; }
+
+/* ── HTML labels (page font; SVG carries no <text>) ──────────────────────── */
+.ilx-d {
+  position: absolute;
+  bottom: 1px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--muted);
+  opacity: .78;
+  letter-spacing: .01em;
+  pointer-events: none;
+}
+.ilx-d0 { left: 1px; }
+.ilx-d1 { right: 1px; }
+
+.ilx-tag {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: currentColor;
+  background: color-mix(in srgb, currentColor 12%, var(--panel));
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.ilx-tag .ilx-u { font-size: 9.5px; font-weight: 600; opacity: .82; }
+
+.ilx-reflab {
+  position: absolute;
+  left: 3px;                          /* left-anchored so it never collides with the
+                                         right-anchored end-value tag */
+  transform: translateY(-50%);
+  padding: 0 3px;
+  font-size: 9.5px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  border-radius: 3px;
+  opacity: .7;
+  pointer-events: none;
+}
+
+.ilx-bandlab {
+  position: absolute;
+  left: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .62;
+  pointer-events: none;
+}
+.ilx-bandlab-top    { top: 3px; }
+.ilx-bandlab-bottom { bottom: 14px; }
+
+/* multi end-chips (name each line — no legend box) */
+.ilx-chips {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px 8px;
+  pointer-events: none;
+}
+.ilx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+}
+.ilx-chip::before {
+  content: "";
+  width: 8px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--dot, var(--info));
+}
+
+/* ── Regime Tape — cockpit signature ────────────────────────────────────── */
+.ilx-regime-tape { min-height: 190px; }
+.ilx-regime-span { opacity: .075; }
+.ilx-regime-bull { opacity: .09; }
+.ilx-regime-bear { opacity: .085; }
+.ilx-tape-price {
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, currentColor 18%, transparent));
+}
+.ilx-tape-dot { r: 3.6; }
+.ilx-projection { opacity: .42; }
+.ilx-projection-hatch {
+  stroke: var(--muted);
+  stroke-width: 1;
+  opacity: .36;
+  vector-effect: non-scaling-stroke;
+}
+.ilx-alloc-base {
+  stroke: var(--line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ilx-alloc-fill {
+  fill: color-mix(in srgb, currentColor 15%, transparent);
+  stroke: none;
+}
+.ilx-alloc-step {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  opacity: .78;
+  vector-effect: non-scaling-stroke;
+}
+.ilx-event-tick {
+  stroke: var(--text);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: .34;
+  vector-effect: non-scaling-stroke;
+}
+.ilx-event {
+  --x: 50%;
+  position: absolute;
+  left: var(--x);
+  bottom: 10px;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  cursor: help;
+}
+.ilx-event i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 1px solid var(--panel);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--text) 18%, transparent);
+}
+.ilx-alloc-label,
+.ilx-projection-label {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9.5px;
+  line-height: 1;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  pointer-events: none;
+}
+.ilx-alloc-label { left: 3px; bottom: 22px; padding: 2px 4px 2px 0; }
+.ilx-projection-label {
+  --x: 75%;
+  left: var(--x);
+  top: 23px; /* clears the right-anchored current-value tag on narrow tapes */
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.ilx-regime-tape .ilx-d { bottom: 0; }
+
+/* ── Session filmstrip — OIP W1 estate-wide signature (lib/illus.py
+   session_filmstrip, W1_DESIGN_SPEC.md §3) ──────────────────────────────────
+   Local fallback declarations: the filmstrip's THREE homes are options.html
+   (Ticker mode — inside the .oew workspace scope, which already declares these
+   four custom properties) and gex.html (NO .oew ancestor at all). Declaring the
+   same pinned values here, scoped to .oew-film itself rather than only to .oew,
+   means the figure resolves correctly on BOTH pages with one CSS source: inside
+   .oew the two declarations are identical (no visual drift), and on gex.html
+   this is the ONLY place these properties exist. Values copied verbatim from
+   research/options_estate/WORKSPACE_DESIGN_SPEC.md §2.2 — never redeclare a
+   *different* number here. */
+.oew-film {
+  --oew-accent: #8e97c8;
+  --oew-stamp: #b49256;
+  --hair: color-mix(in srgb, var(--line) 72%, transparent);
+  --s3: 12px;
+  height: 64px;
+  margin-bottom: 2px;
+}
+html[data-theme="light"] .oew-film {
+  --oew-accent: #4c55a8;
+  --oew-stamp: #8a6a2e;
+  --hair: color-mix(in srgb, var(--line) 92%, transparent);
+}
+.oew-film svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.oew-film-track { stroke: var(--hair); stroke-width: 1; }
+.oew-film-closecap { stroke: var(--oew-stamp); stroke-width: 1.5; opacity: .85; }
+.oew-film-ink {
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.oew-film-dot { fill: currentColor; }
+.oew-film-tick { stroke: var(--oew-accent); stroke-width: 1.2; opacity: .65; }
+.oew-film-d { position: absolute; bottom: -15px; font-size: 9.5px; color: var(--muted); }
+.oew-film-d0 { left: 0; }
+.oew-film-d1 { right: 0; }
+.oew-film-ev {
+  position: absolute; top: 0; left: var(--x); transform: translateX(-50%);
+  width: 16px; height: 64px; cursor: help;
+}
+.oew-film-ev i {
+  position: absolute; top: 8px; left: 50%; width: 6px; height: 6px; margin-left: -3px;
+  border-radius: 50%; background: var(--oew-accent); opacity: 0; transition: opacity .15s;
+}
+.oew-film-ev:hover i, .oew-film-ev:focus-visible i { opacity: 1; }
+.oew-film-ev:focus-visible { outline: 2px solid var(--oew-accent); outline-offset: 1px; border-radius: 3px; }
+.oew-film-empty {
+  position: absolute; top: 50%; left: var(--s3); transform: translateY(-50%);
+  font-size: 11.5px; color: var(--muted);
+}
+.oew-film-null .oew-film-track { stroke-dasharray: 2 3; }
+@media (prefers-reduced-motion: reduce) {
+  .oew-film-ev i { transition: none; }
+}
+
+/* ── honest null ─────────────────────────────────────────────────────────── */
+.ilx-null { display: flex; align-items: center; justify-content: center; }
+.ilx-null svg { position: absolute; inset: 0; opacity: .5; }
+.ilx-hair { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 5; }
+.ilx-empty {
+  position: relative;
+  font-size: 11px;
+  color: var(--muted);
+  opacity: .8;
+}
+
+/* ── reveal choreography ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* start states (before .ilx-in) */
+  .ilx-path {
+    stroke-dasharray: var(--ilx-len, 600);
+    stroke-dashoffset: var(--ilx-len, 600);
+  }
+  .ilx-area, .ilx-water, .ilx-ref, .ilx-band, .ilx-tag, .ilx-d,
+  .ilx-reflab, .ilx-bandlab, .ilx-chips, .ilx-regime-span,
+  .ilx-projection, .ilx-alloc-fill, .ilx-alloc-step, .ilx-event-tick,
+  .ilx-event, .ilx-alloc-label, .ilx-projection-label { opacity: 0; }
+  .ilx-dot { transform: scale(0); transform-box: fill-box; transform-origin: center; }
+  /* bars scale up from the baseline edge of their own box (fill-box makes the origin
+     local to the rect): above-baseline bars grow from their bottom edge, below-baseline
+     bars from their top edge — both edges sit on the waterline. */
+  .ilx-bar {
+    transform: scaleY(0);
+    transform-box: fill-box;
+    transform-origin: center bottom;
+  }
+  .ilx-bar-down { transform-origin: center top; }
+
+  /* the draw — ink laid down left→right */
+  .ilx-in .ilx-path {
+    animation: ilx-draw 950ms cubic-bezier(.33, .62, .26, 1) 120ms forwards;
+  }
+  .ilx-in .ilx-path.ilx-m {
+    animation-delay: calc(120ms + var(--i, 0) * 90ms);
+  }
+  @keyframes ilx-draw { to { stroke-dashoffset: 0; } }
+
+  /* the veil settles under the ink.
+     `.ilx-in .ilx-area` is a DESCENDANT selector, but lib/illus.py emits an area
+     figure as <figure class="ilx ilx-area"> and illus.js adds .ilx-in to that SAME
+     element — so for kind="area" the reveal never matched and the figure stayed at
+     opacity 0 forever (bonds' 200px Bond-health chart was a void). The self-form
+     covers it without touching the nested case. */
+  .ilx-in .ilx-area, .ilx-area.ilx-in {
+    animation: ilx-fade 600ms ease 550ms forwards;
+  }
+  .ilx-in .ilx-water, .ilx-in .ilx-ref, .ilx-in .ilx-band {
+    animation: ilx-fade 500ms ease 300ms forwards;
+  }
+  .ilx-in .ilx-regime-span,
+  .ilx-in .ilx-projection,
+  .ilx-in .ilx-alloc-fill,
+  .ilx-in .ilx-alloc-step,
+  .ilx-in .ilx-event-tick {
+    animation: ilx-fade 500ms ease 260ms forwards;
+  }
+  .ilx-in .ilx-regime-span { animation-name: ilx-fade-regime; }
+  .ilx-in .ilx-projection { animation-name: ilx-fade-projection; }
+  .ilx-in .ilx-event-tick { animation-name: ilx-fade-event; }
+  .ilx-in .ilx-alloc-step { animation-name: ilx-fade-alloc-step; }
+  @keyframes ilx-fade-regime { to { opacity: .085; } }
+  @keyframes ilx-fade-projection { to { opacity: .42; } }
+  @keyframes ilx-fade-event { to { opacity: .34; } }
+  @keyframes ilx-fade-alloc-step { to { opacity: .78; } }
+  @keyframes ilx-fade { to { opacity: 1; } }
+  /* bands + waterline hold their intrinsic opacity (set on the element) via to:1 →
+     override the element's non-1 opacity by re-declaring in the final state */
+  .ilx-in .ilx-band  { animation-name: ilx-fade-band; }
+  .ilx-in .ilx-water { animation-name: ilx-fade-water; }
+  .ilx-in .ilx-ref   { animation-name: ilx-fade-ref; }
+  @keyframes ilx-fade-band  { to { opacity: .5; } }
+  @keyframes ilx-fade-water { to { opacity: .55; } }
+  @keyframes ilx-fade-ref   { to { opacity: .4; } }
+
+  /* the settle point lands with an overshoot + STATIC glow (no looping pulse —
+     settled data must not fake liveness) */
+  .ilx-in .ilx-dot {
+    animation: ilx-pop 500ms cubic-bezier(.34, 1.28, .5, 1) 900ms forwards;
+  }
+  .ilx-in .ilx-dot.ilx-m { animation-delay: calc(900ms + var(--i, 0) * 90ms); }
+  @keyframes ilx-pop { to { transform: scale(1); } }
+
+  /* bars rise from the baseline, gently staggered (cap total ≤ ~700ms) */
+  .ilx-in .ilx-bar {
+    animation: ilx-rise 480ms cubic-bezier(.22, .9, .26, 1.02) forwards;
+    animation-delay: calc(120ms + var(--i, 0) * 9ms);
+  }
+  @keyframes ilx-rise { to { transform: scaleY(1); } }
+
+  /* labels fade in after the draw */
+  .ilx-in .ilx-tag, .ilx-in .ilx-d, .ilx-in .ilx-reflab,
+  .ilx-in .ilx-bandlab, .ilx-in .ilx-chips, .ilx-in .ilx-event,
+  .ilx-in .ilx-alloc-label, .ilx-in .ilx-projection-label {
+    animation: ilx-fade 400ms ease 780ms forwards;
+  }
+}
+
+/* reduced motion + no-JS: everything at its final resting state, no transitions.
+   (These declarations also serve as the base when .ilx-in never arrives.) */
+@media (prefers-reduced-motion: reduce) {
+  .ilx-path { stroke-dashoffset: 0 !important; }
+  .ilx-dot  { transform: scale(1) !important; }
+  .ilx-bar  { transform: scaleY(1) !important; }
+}
+
+
+:root{color-scheme:dark;--bg:#080808;--panel:#121212;--line:#292929;--text:#F3F3F3;--muted:#B8B8B8;--quiet:#949494;--ink:#A8C2AD;--up:#A8C2AD;--down:#DEA4A5;--info:#A7B4C2;--warn:#C9B99B}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 Inter,system-ui,sans-serif}
+button,input{font:inherit}button{cursor:pointer;min-height:44px;border:1px solid var(--line);border-radius:9px;padding:10px 17px;background:var(--panel);color:var(--text)}
+button:hover{background:#222}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #C9B99B;outline-offset:4px}
+button:disabled{cursor:default;opacity:.55}a{color:#C9B99B}main{max-width:1200px;margin:auto;padding:42px 36px 80px}
+.brand{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:24px;font-size:13px;letter-spacing:.12em}
+.brand span:last-child{color:var(--quiet);letter-spacing:0}.eyebrow{font-size:12px;letter-spacing:.13em;color:#C9B99B;text-transform:uppercase}
+h1{font-size:clamp(36px,5vw,62px);line-height:1.08;letter-spacing:-.045em;max-width:850px;font-weight:550;margin:30px 0 20px}
+.lede{max-width:680px;color:var(--muted);font-size:18px;margin:0 0 36px}.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:14px;justify-content:space-between;margin-bottom:24px}
+.tabs{display:flex;padding:4px;gap:4px;border:1px solid var(--line);border-radius:12px}.tabs button{border:0;background:transparent}
+.tabs button[aria-pressed="true"]{background:#292929}.controls{display:flex;align-items:center;gap:18px;font-size:14px}.controls label{display:flex;align-items:center;gap:9px;min-height:44px}
+.stage{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.figure-panel{padding:30px;min-width:0;background:var(--panel)}.caption{display:flex;justify-content:space-between;gap:16px;font-size:13px;color:var(--quiet)}
+.figure-title{font-size:23px;font-weight:550;letter-spacing:-.02em;margin:14px 0 0}.l-zh{display:none!important}.ilx{margin:20px 0 5px!important}
+.ilx-empty{font-size:18px;opacity:1}.ilx-tag{font-size:16px}.timing{padding:30px}.step{display:flex;gap:17px;padding:19px 0;border-bottom:1px solid var(--line)}
+.step:last-child{border:0}.step b{font-size:14px;font-weight:500;color:#C9B99B}.step h3{font-size:18px;font-weight:550;margin:0 0 6px}.step p{font-size:14px;color:var(--muted);margin:0}.timing .eyebrow{margin-bottom:5px}
+.status{min-height:28px;margin-top:16px;color:var(--quiet);font-size:14px}.details{margin-top:30px;border-top:1px solid var(--line);padding-top:24px}
+.details-head{display:flex;justify-content:space-between;align-items:center;gap:20px}.details-head h2{font-size:22px;line-height:1.3;font-weight:550;margin:0}
+#detailsPanel{padding:24px 0 0;max-width:800px;color:var(--muted)}#detailsPanel p{margin:0 0 15px}
+[hidden]{display:none!important}footer{margin-top:42px;color:var(--quiet);font-size:13px;max-width:900px}
+body.reduce .ilx *{animation:none!important;transition:none!important}
+body.reduce .ilx-path{stroke-dashoffset:0!important;stroke-dasharray:none!important}
+body.reduce .ilx-area,body.reduce .ilx-water,body.reduce .ilx-ref,body.reduce .ilx-band,body.reduce .ilx-tag,body.reduce .ilx-d,body.reduce .ilx-reflab,body.reduce .ilx-bandlab,body.reduce .ilx-chips{opacity:1!important}
+body.reduce .ilx-dot,body.reduce .ilx-bar{transform:none!important}
+@media(max-width:700px){main{padding:24px 20px 54px}.brand{font-size:11px}.brand span:last-child{max-width:120px;text-align:right}.toolbar{align-items:flex-start}.controls{width:100%;justify-content:space-between}.stage{grid-template-columns:1fr}.figure-panel,.timing{padding:23px}.figure-panel{border-bottom:1px solid var(--line)}.caption{flex-wrap:wrap}.details-head{align-items:flex-start}h1{margin-top:30px}.tabs{width:100%}.tabs button{flex:1}}
+</style></head><body><main>
+<header class="brand"><strong>MASTERMIND</strong><span>DESIGN SPECIMEN · 08 NOV 2026</span></header>
+<h1>Motion that carries meaning.</h1>
+<p class="lede">A single reveal, then stillness. Missing history stays empty. Reduced motion lands directly on the same final state.</p>
+<div class="toolbar">
+<div class="tabs" aria-label="Illustration state"><button id="settledButton" aria-pressed="true" data-view="settled">Settled data</button><button id="emptyButton" aria-pressed="false" data-view="empty">Missing history</button></div>
+<div class="controls"><button id="replayButton">Replay specimen</button><label><input id="reduceMotion" type="checkbox"> Reduce motion</label></div>
+</div>
+<section class="stage" aria-label="Signal Ink motion specimen">
+<div class="figure-panel">
+<div class="caption"><span>SIGNAL INK · EXISTING RENDERER</span><span>Illustrative fixture</span></div>
+<h2 class="figure-title" id="figureTitle">One series. One clear arrival.</h2>
+<div id="settledPanel"><figure class="ilx ilx-area" style="color:var(--ink);--ilx-len:718.6;--ilx-h:260px" role="img" aria-label="Illustrative design fixture, rising from 18 to 56 demo points. Not market data."><svg viewBox="0 0 560 260" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ilxg-792a323f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".42"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs><path class="ilx-area" d="M0.0 252.0 L0.0 235.17 L32.94 213.03 L65.88 224.1 L98.82 190.89 L131.76 201.96 L164.71 157.68 L197.65 141.07 L230.59 163.21 L263.53 124.46 L296.47 113.39 L329.41 135.54 L362.35 85.72 L395.29 69.11 L428.24 91.25 L461.18 52.5 L494.12 41.43 L527.06 58.04 L560.0 24.83 L560.0 252.0 Z" fill="url(#ilxg-792a323f)"/><path class="ilx-path" d="M0.0 235.17 L32.94 213.03 L65.88 224.1 L98.82 190.89 L131.76 201.96 L164.71 157.68 L197.65 141.07 L230.59 163.21 L263.53 124.46 L296.47 113.39 L329.41 135.54 L362.35 85.72 L395.29 69.11 L428.24 91.25 L461.18 52.5 L494.12 41.43 L527.06 58.04 L560.0 24.83"/><circle class="ilx-dot" cx="560.0" cy="24.83" r="3.2"/></svg><span class="ilx-d ilx-d0">2026-01-01</span><span class="ilx-d ilx-d1">2026-01-18</span><span class="ilx-tag">56<span class="ilx-u"><span class="l-en">demo points</span><span class="l-zh">demo points</span></span></span></figure></div><div id="emptyPanel" hidden><figure class="ilx ilx-null" style="--ilx-h:260px" role="img" aria-label="No history yet. No values are plotted."><svg viewBox="0 0 560 260" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="130" x2="560" y2="130" class="ilx-hair"/></svg><span class="ilx-empty"><span class="l-en">No history yet</span><span class="l-zh">暂无历史</span></span></figure></div>
+<p class="status" id="status" role="status">Design data only · no live market feed</p>
+</div>
+<div class="timing"><div class="eyebrow">Choreography</div>
+<div class="step"><b>01</b><div><h3>Draw</h3><p>950 ms. The stroke reveals from left to right.</p></div></div>
+<div class="step"><b>02</b><div><h3>Reveal the area</h3><p>600 ms. A quiet fill supports the shape.</p></div></div>
+<div class="step"><b>03</b><div><h3>Settle</h3><p>The endpoint lands and stays still. No pulse that implies fresh data.</p></div></div>
+</div></section>
+<section class="details">
+<div class="details-head"><h2>How this reaches the product</h2><button id="detailsButton" aria-expanded="false" aria-controls="detailsPanel">Show build notes</button></div>
+<div id="detailsPanel" hidden>
+<p>Use <code>lib/illus.py</code> with the existing <code>templates/illus.css</code> and <code>templates/illus.js</code>. This file embeds their output from the pinned source; it does not introduce a second chart renderer.</p>
+<p>In-page figures reveal once. Opening an evidence dialog may reveal its chart again after the dialog entrance settles. Closing it restores focus to the invoking control. Reduced motion skips the choreography and shows the same final data.</p>
+<p>Read the producer’s availability and timestamps before rendering. An empty or insufficient series shows an honest null. Interactive candles, crosshairs and zoom remain on the existing Terminal chart stack.</p>
+<p>This specimen uses an explicitly synthetic index to demonstrate motion. It is not a market series, forecast, score, performance result, or live product path.</p>
+</div></section>
+<footer>Source: Macro <code>338a10852dcefa5d2bd07e5c6be0955c2b1e83fd</code> · <code>docs/ILLUSTRATIONS.md</code><br>Replay is an explicit specimen control. Product charts do not loop. No network requests, account writes or runtime commands are made by this page.</footer>
+</main>
+<script>/* ilx / "Signal Ink" — reveal trigger (see lib/illus.py, templates/illus.css).
+   Adds .ilx-in when a figure scrolls into view so the ink draws. On exit it removes
+   .ilx-in ONLY if the figure is display-hidden (its dialog closed) — so dialog charts
+   replay each time they open, while in-page charts animate once and stay drawn.
+   No dependencies. Reduced-motion: the class is still added; the CSS parks everything
+   at its final state. */
+(function () {
+  "use strict";
+  if (!("IntersectionObserver" in window)) {
+    // No observer support — just show everything drawn.
+    document.querySelectorAll(".ilx").forEach(function (el) { el.classList.add("ilx-in"); });
+    return;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var el = e.target;
+      if (e.isIntersecting) {
+        el.classList.add("ilx-in");
+      } else if (el.offsetParent === null) {
+        // Only reset when the element is display-hidden (offsetParent null ⇒ an
+        // ancestor is display:none, i.e. the dialog closed). A merely scrolled-off
+        // in-page chart keeps its drawn state.
+        el.classList.remove("ilx-in");
+      }
+    });
+  }, { threshold: 0.25 });
+
+  function mount(root) {
+    (root || document).querySelectorAll(".ilx:not([data-ilx-obs])").forEach(function (el) {
+      el.setAttribute("data-ilx-obs", "1");
+      io.observe(el);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { mount(document); });
+  } else {
+    mount(document);
+  }
+
+  // Charts injected into dialogs are already in the DOM at load but hidden
+  // (display:none). The observer normally adds .ilx-in the moment the dialog opens
+  // (display change ⇒ intersection change) and removes it on close, so reopening
+  // replays the draw. reveal() is the reliability FALLBACK the page calls after
+  // opening a dialog: it only touches figures the observer did NOT handle — never
+  // restarting one that is already drawing (that would flicker mid-draw).
+  function reveal(root) {
+    var pending = [];
+    (root || document).querySelectorAll(".ilx").forEach(function (el) {
+      if (el.classList.contains("ilx-in")) return; // observer got it — drawing/drawn
+      io.observe(el);                              // idempotent; keeps close-reset alive
+      pending.push(el);
+    });
+    if (!pending.length) return;
+    void pending[0].offsetWidth; // reflow so the class-add lands as a fresh transition
+    requestAnimationFrame(function () {
+      pending.forEach(function (el) {
+        if (el.offsetParent !== null) { el.classList.add("ilx-in"); }
+      });
+    });
+  }
+
+  window.ilxMount = mount;
+  window.ilxReveal = reveal;
+})();
+
+</script>
+<script>
+(function(){
+'use strict';
+var media=window.matchMedia('(prefers-reduced-motion: reduce)');
+var reduce=document.getElementById('reduceMotion');
+var replay=document.getElementById('replayButton');
+var current='settled';
+function reduced(){return media.matches||reduce.checked}
+function applyMotion(){
+ document.body.classList.toggle('reduce',reduced());
+ replay.disabled=current==='empty'||reduced();
+ replay.title=reduced()?'Reduced motion shows the final state.':'Replay this design specimen.';
+}
+reduce.checked=media.matches;
+reduce.addEventListener('change',applyMotion);
+if(media.addEventListener)media.addEventListener('change',applyMotion);
+document.querySelectorAll('[data-view]').forEach(function(button){
+ button.addEventListener('click',function(){
+ current=button.dataset.view;
+ document.querySelectorAll('[data-view]').forEach(function(b){b.setAttribute('aria-pressed',String(b===button))});
+ document.getElementById('settledPanel').hidden=current!=='settled';
+ document.getElementById('emptyPanel').hidden=current!=='empty';
+ document.getElementById('figureTitle').textContent=current==='settled'?'One series. One clear arrival.':'No history yet.';
+ document.getElementById('status').textContent=current==='settled'?'Design data only · no live market feed':'No fabricated points, trend or animation.';
+ applyMotion();
+ if(current==='settled'&&window.ilxReveal)window.ilxReveal(document.getElementById('settledPanel'));
+ });
+});
+replay.addEventListener('click',function(){
+ if(replay.disabled)return;
+ var figure=document.querySelector('#settledPanel .ilx');
+ figure.classList.remove('ilx-in');
+ void figure.offsetWidth;
+ if(window.ilxReveal)window.ilxReveal(document.getElementById('settledPanel'));
+});
+var detailButton=document.getElementById('detailsButton'),panel=document.getElementById('detailsPanel');
+detailButton.addEventListener('click',function(){
+ var open=detailButton.getAttribute('aria-expanded')==='true';
+ detailButton.setAttribute('aria-expanded',String(!open));
+ detailButton.textContent=open?'Show build notes':'Hide build notes';
+ panel.hidden=open;
+});
+document.addEventListener('keydown',function(e){
+ if(e.key==='Escape'&&!panel.hidden){panel.hidden=true;detailButton.setAttribute('aria-expanded','false');detailButton.textContent='Show build notes';detailButton.focus();}
+});
+applyMotion();
+})();
+</script></body></html>
