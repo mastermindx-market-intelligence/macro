@@ -224,7 +224,7 @@ def _good_release(tmp_path, name="r1.json", **over):
 def test_stage1_release_checks_window_header_config_and_engine_commit(tmp_path, monkeypatch):
     with pytest.raises(v2.SealedRefusal):
         v2.stage1_release(tmp_path / "missing.json")
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    monkeypatch.setattr(v2, "_committed_clean", lambda p, root=None: True)
     monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
     assert v2.stage1_release(_good_release(tmp_path))
     with pytest.raises(v2.SealedRefusal):         # selection file differs at the named commit

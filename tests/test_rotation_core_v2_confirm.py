@@ -148,14 +148,17 @@ def test_S6_exception_text_carries_no_value(fx, monkeypatch):
     import scripts.run_rotation_core_v2 as run
     def boom(*a, **k):
         raise ValueError("excess 0.0123 leaked")
-    for fn, kinds in (("prepare_pre1998", ["START"]), ("pre1998_stats", ["START", "PHASE_A_CLEAN"])):
+    for fn, kinds in (("prepare_pre1998", ["START"]), ("pre1998_stats", ["START", "PHASE_A_CLEAN", "GATE"])):
         led = v2.MemoryLedger()
         with monkeypatch.context() as m:
             m.setattr(run, fn, boom)
             with pytest.raises(SystemExit) as ei:
                 _s1(led, fx / IND, fx / FAC)
-            assert "0.0123" not in str(ei.value) and "withheld" in str(ei.value)
+            assert "0.0123" not in str(ei.value)
+            assert ("withheld" in str(ei.value)) if fn == "prepare_pre1998" else ("ValueError" in str(ei.value))
         assert [x["kind"] for x in led.entries()] == kinds     # R20.11: a sign-phase failure is never an abort
+        assert "0.0123" not in json.dumps(led.entries())
+    assert led.entries()[-1]["closed_by"] == "phase_b_exception"          # R21.1
 
 
 def test_O5_nan_is_neither_sign_and_fails_closed():
@@ -180,7 +183,7 @@ def test_gate_needs_all_eight_signs_of_one_hypothesis():
 
 
 def test_S1c_stage1_release_opening_list_is_the_constant(tmp_path, monkeypatch):
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
+    monkeypatch.setattr(v2, "_committed_clean", lambda p, root=None: True)
     monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
     import hashlib
     body = {"windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
@@ -322,7 +325,7 @@ def test_S11_seed_record_lists_every_stream():
     s = run.seeds_record()
     assert {"stage1_standalone_pre1998", "stage2_standalone_2020_2025", "pooled_pre1998", "pooled_2020_2025",
             "shared_indices"} <= set(s)
-    assert run.SEEDS == {"stage1": 20261113, "stage2": 20261114, "pooled": 20261115}
+    assert run.SEED_BASE == 20261113 and "SeedSequence" in s["pooled_pre1998"]["block21"]
 
 
 # ------------------------------------------------------------------ R19.1 Phase A / INTEGRITY_ABORT
@@ -385,7 +388,7 @@ def test_R19_clean_fixture_proceeds_and_phase_a_is_printed_before_any_sign(stage
     d, e, lines, _, led = stage1
     i_clean = lines.index("PHASE_A CLEAN")
     i_sign = min(i for i, ln in enumerate(lines) if ln.startswith("GATE_SIGN"))
-    assert i_clean < i_sign and all(ln.startswith("PHASE_A") for ln in lines[:i_clean + 1])
+    assert i_clean < i_sign and all(ln.startswith(("PHASE_A", "WITNESS start_commit")) for ln in lines[:i_clean + 1])
     assert sum(ln.startswith("GATE_SIGN") for ln in lines) == 16
 
 
@@ -402,28 +405,65 @@ def test_R19_abort_is_not_a_gate_result_and_a_fix_needs_a_new_commit_and_citatio
     assert kinds == ["START", "INTEGRITY_ABORT", "START", "PHASE_A_CLEAN", "GATE"] and e["kind"] == "GATE"
 
 
-def test_R19_phase_a_calls_no_gate_statistic_function():
-    import ast, inspect, textwrap
+PHASE_A_CALLS = {"Timestamp", "abs", "any", "append", "count_nonzero", "equals", "int", "isfinite", "items",
+                 "phase_a_strict", "phase_a_window", "reindex", "sorted", "states_identical_across_costs", "to_numpy"}
+PHASE_A_COMPARES = {   # finite checks, strict-book <= base-book, legs >= legs, weight equality, index masks, counts
+    "V_all[m] == 0", "W_all[m] > TOL", "bb[k].traded > 0", "bs[k].traded > 0", "ib <= pd.Timestamp(z)",
+    "ib >= pd.Timestamp(a)", "idx <= pd.Timestamp(wz)", "idx <= pd.Timestamp(z)", "idx >= pd.Timestamp(a)",
+    "idx >= pd.Timestamp(wa)", "idx[0] < pd.Timestamp(wa)", "ls >= lb - TOL", "np.abs(Ws - Wb) > 1e-09",
+    "np.count_nonzero(m) == 0", "np.count_nonzero(m) > 0", "rs <= rb + TOL", "v != 0"}
+PHASE_A_ARITH = {"rb + TOL", "lb - TOL", "Ws - Wb"}     # tolerance shifts and the same-book weight difference
+REDUCTIONS = {"sum", "mean", "prod", "cumsum", "cumprod", "max", "min", "std", "nansum", "nanmean", "average", "var",
+              "median", "quantile"}
+
+
+def _is_count(n) -> bool:
+    """A sum of counts: every leaf is np.count_nonzero(...) or int(...)."""
+    import ast
+    if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Add):
+        return _is_count(n.left) and _is_count(n.right)
+    return isinstance(n, ast.Call) and ((isinstance(n.func, ast.Attribute) and n.func.attr == "count_nonzero")
+                                        or (isinstance(n.func, ast.Name) and n.func.id == "int"))
+
+
+def phase_a_violations(src: str) -> list:
+    """R23.5: an ALLOWLIST. Every call must be a permitted name (never an arithmetic reduction); every comparison
+    must be one of the reviewed forms present today; arithmetic is limited to boolean masks (&), sums of counts and
+    the three reviewed tolerance/weight expressions."""
+    import ast
+    bad = []
+    for n in ast.walk(ast.parse(src)):
+        if isinstance(n, ast.Call):
+            f = n.func
+            name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else "?"
+            if name in REDUCTIONS or name not in PHASE_A_CALLS:
+                bad.append(f"call {name}")
+        elif isinstance(n, ast.Compare) and ast.unparse(n) not in PHASE_A_COMPARES:
+            bad.append(f"compare {ast.unparse(n)}")
+        elif isinstance(n, ast.BinOp):
+            if isinstance(n.op, ast.BitAnd) or _is_count(n) or ast.unparse(n) in PHASE_A_ARITH:
+                continue
+            bad.append(f"arith {ast.unparse(n)}")
+    return bad
+
+
+def test_R19_R23_5_phase_a_is_an_allowlist():
+    import inspect, textwrap
     import scripts.run_rotation_core_v2 as run
-    forbidden = {"window_excess", "matched_contrast", "matched_mix_stat", "mix_series", "raw_mix_excess", "max_drawdown",
-                 "bootstrap_draws", "standalone", "window_block", "paired_h2", "observed_raw", "window_series", "_cagr",
-                 "pre1998_stats", "fund_stats", "sign", "gate_decision", "centred_p", "two_sided_p", "holm", "ci95",
-                 "ann_factor", "pooled_weights", "find_episode", "pivot_table", "mean", "nanmean", "sum", "nansum",
-                 "cumsum", "cumprod", "prod", "average", "base_view", "simulate_states", "run_books"}
-    called = set()
+    assert set(run.PHASE_A_FUNCTIONS) == {"phase_a_window", "phase_a_strict", "phase_a", "states_identical_across_costs"}
     for name in run.PHASE_A_FUNCTIONS:
-        tree = ast.parse(textwrap.dedent(inspect.getsource(getattr(run, name))))
-        for n in ast.walk(tree):
-            if isinstance(n, ast.Call):
-                f = n.func
-                called.add(f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else "")
-            if isinstance(n, ast.BinOp) and isinstance(n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)):
-                src = ast.unparse(n)
-                assert "mix" not in src.lower(), src                       # nothing book-vs-mix
-    assert not (called & forbidden), called & forbidden
+        assert phase_a_violations(textwrap.dedent(inspect.getsource(getattr(run, name)))) == [], name
 
 
-
+@pytest.mark.parametrize("src", [
+    "def f(r):\n    return np.count_nonzero(r > 0)",                 # a return compared with a constant
+    "def f(r):\n    return np.count_nonzero(r)  + r.sum()",           # a reduction
+    "def f(r, mix):\n    return np.count_nonzero(r - mix > 0)",       # book against mix
+    "def f(r):\n    return np.mean(r)",
+    "def f(r):\n    return np.cumprod(1 + r)",
+    "def f(r):\n    return max(r)"])
+def test_R23_5_checker_rejects_sign_revealing_forms(src):
+    assert phase_a_violations(src)
 
 
 def test_R19_stage2_final_run_aborts_before_any_2020_2025_number(tmp_path, monkeypatch):
@@ -473,23 +513,29 @@ def _ledger(*runs):
                 led.append({"kind": "FINAL", "start_index": s["index"], "verdicts": {}})
             elif rec is not None:
                 led.append({"kind": "GATE", "start_index": s["index"], "gate_signs": rec,
-                            "gate_open": v2.gate_decision(rec)[0], "magnitudes_sha256": "m" * 64})
+                            "gate_open": v2.gate_decision(rec)[0], "magnitudes_sha256": "d" * 64})
     return led.entries()
 
 
-def test_R20_case1_rewritten_or_rechained_ledger_refused():
-    hist = _ledger(("stage1", "r1", "E1", "clean", _closed()), ("stage1", "r2", "E2", "clean", _all_plus()))
-    v1 = hist[:3]
-    # the closed run removed and the open run re-chained as the first run
+def test_R20_case1_rewritten_or_rechained_ledger_refused(tmp_path):
+    """Through a real temporary remote: a closed run then an open run are pushed; the ledger file is rewritten to
+    drop the closed run and re-chain the open one as run 0, committed and pushed as an ordinary commit. The
+    committed versions come from the remote's history, not from the test."""
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin)
+    led.fetch()
+    for e in _ledger(("stage1", "r1", "E1", "clean", _closed()), ("stage1", "r2", "E2", "clean", _all_plus())):
+        led.append({k: v for k, v in e.items() if k not in ("index", "prev_chain_sha256")})
+    hist = led.entries()
     rew = v2.MemoryLedger()
     for e in hist[3:]:
-        rew.append({k: v for k, v in e.items() if k not in ("index", "prev_chain_sha256")} | (
-            {"start_index": 0} if e["kind"] != "START" else {}))
-    docs = {"r1": {}, "r2": {}}
-    with pytest.raises(v2.SealedRefusal):                       # R20.2: an earlier committed version is not a prefix
-        v2.validate_ledger(rew.entries(), [v1, rew.entries()], docs)
-    with pytest.raises(v2.SealedRefusal):                       # and the full history itself: closed is final
-        v2.validate_ledger(hist, [v1, hist], docs)
+        rew.append({k: v for k, v in e.items() if k not in ("index", "prev_chain_sha256")} |
+                   ({"start_index": 0} if e["kind"] != "START" else {}))
+    (work / "ledger.json").write_bytes(v2.ledger_doc(rew.entries()))
+    g("commit", "-q", "-am", "rechain", cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    led.fetch()
+    with pytest.raises(v2.SealedRefusal, match="not a prefix"):
+        v2.validate_ledger(led.entries(), led.version_entries(), {"r1": {}, "r2": {}})
 
 
 def test_R20_case2_flipped_gate_open_refused():
@@ -523,8 +569,8 @@ def test_R20_case3_gate_record_pushed_before_any_sign_and_failed_push_prints_not
 def test_R20_case3_signs_reach_the_ledger_before_stdout(fx):
     order = []
     class Spy(v2.MemoryLedger):
-        def append(self, entry):
-            order.append(("ledger", entry["kind"])); return super().append(entry)
+        def append(self, entry, precheck=None):
+            order.append(("ledger", entry["kind"])); return super().append(entry, precheck)
     led = Spy()
     import scripts.run_rotation_core_v2 as run
     run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20,
@@ -537,7 +583,7 @@ def test_R20_case3_signs_reach_the_ledger_before_stdout(fx):
 
 def test_R20_case4_fixture_dry_run_takes_no_path(monkeypatch, capsys):
     import scripts.run_rotation_core_v2 as run, inspect
-    assert list(inspect.signature(run.fixture_dry_run).parameters) == ["out", "B_"]
+    assert list(inspect.signature(run.fixture_dry_run).parameters) == ["out", "B_", "selection"]   # no path
     monkeypatch.setattr(sys, "argv", ["run", "--dry-run-stage1-fixture", "/home/ubuntu2/tmp/rotation-core/data/french/le2019"])
     with pytest.raises(SystemExit):                                         # argparse: the flag takes no argument
         run.main()
@@ -581,7 +627,11 @@ def test_R20_1_closed_gate_is_final_for_every_later_invocation():
 
 def test_R20_1_start_only_and_abort_rules():
     led = _ledger(("stage1", "r1", "E1", None, None))
-    v2.start_allowed(led, _start(), {})                                      # identical rerun: no sign existed
+    with pytest.raises(v2.SealedRefusal):                                    # R21.2(ii): same release refused
+        v2.start_allowed(led, _start(), {"ledger_records_cited": [0]})
+    with pytest.raises(v2.SealedRefusal):                                    # new release, START not cited
+        v2.start_allowed(led, _start(rel="r1b"), {})
+    v2.start_allowed(led, _start(rel="r1b"), {"ledger_records_cited": [0]})   # same commit, new release citing it
     with pytest.raises(v2.SealedRefusal):
         v2.start_allowed(led, _start(eng="E2", rel="r2"), {})                # new commit without citing
     v2.start_allowed(led, _start(eng="E2", rel="r2"), {"ledger_records_cited": [0]})
@@ -618,13 +668,21 @@ def test_R20_1_every_release_version_maps_to_the_ledger_or_is_superseded_as_unus
     v2.check_release_history({"HOLDOUT_RELEASE_v2.json": [("c1", b1), ("c2", b2)]}, used)
 
 
-def test_R20_2_ledger_version_prefix_and_chain():
-    hist = _ledger(("stage1", "r1", "E1", "clean", _all_plus()))
-    v2.validate_ledger(hist, [hist[:1], hist[:2], hist], {"r1": {}})
-    dropped = [hist[0]]
-    with pytest.raises(v2.SealedRefusal):
-        v2.validate_ledger(dropped, [hist[:2], dropped], {"r1": {}})
-    bad = [dict(hist[0]), dict(hist[1], prev_chain_sha256="0" * 64)]
+def test_R20_2_ledger_version_prefix_and_chain(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin)
+    led.fetch()
+    for e in _ledger(("stage1", "r1", "E1", "clean", _all_plus())):
+        led.append({k: v for k, v in e.items() if k not in ("index", "prev_chain_sha256")})
+    vs = led.version_entries()
+    assert [len(v) for v in vs] == [1, 2, 3]                      # one committed version per pushed entry
+    v2.validate_ledger(led.entries(), vs, {"r1": {}})
+    (work / "ledger.json").write_bytes(v2.ledger_doc(led.entries()[:1]))         # drop two entries, ordinary commit
+    g("commit", "-q", "-am", "drop", cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    led.fetch()
+    with pytest.raises(v2.SealedRefusal, match="not a prefix"):
+        v2.validate_ledger(led.entries(), led.version_entries(), {"r1": {}})
+    bad = [dict(vs[-1][0]), dict(vs[-1][1], prev_chain_sha256="0" * 64)]
     with pytest.raises(v2.SealedRefusal):
         v2.verify_chain(bad)
 
@@ -645,9 +703,13 @@ def _git_env(tmp_path):
     return origin, work, g
 
 
+def _gled(work, origin, branch="b"):
+    return v2.GitLedger(root=work, path=work / "ledger.json", branch=branch, remote_url=str(origin))
+
+
 def test_R20_1_git_ledger_pushes_each_entry_and_refuses_on_push_failure(tmp_path):
     origin, work, g = _git_env(tmp_path)
-    led = v2.GitLedger(root=work, path=work / "ledger.json", branch="b")
+    led = _gled(work, origin)
     led.fetch(); led.require_local_equals_remote()
     s = led.append(_start())
     remote = subprocess.run(["git", "ls-remote", str(origin), "refs/heads/b"], capture_output=True).stdout.split()[0].decode()
@@ -662,31 +724,314 @@ def test_R20_1_git_ledger_pushes_each_entry_and_refuses_on_push_failure(tmp_path
 
 def test_R20_5_fetch_fails_closed_and_local_must_equal_remote(tmp_path):
     origin, work, g = _git_env(tmp_path)
-    led = v2.GitLedger(root=work, path=work / "ledger.json", branch="b")
+    led = _gled(work, origin)
     led.fetch()
     (work / "x").write_text("y"); g("add", "x", cwd=work); g("commit", "-q", "-m", "local only", cwd=work)
     with pytest.raises(v2.SealedRefusal):
         led.require_local_equals_remote()
     g("remote", "set-url", "origin", str(tmp_path / "nowhere.git"), cwd=work)
+    with pytest.raises(v2.SealedRefusal, match="fetching the remote branch failed"):
+        _gled(work, tmp_path / "nowhere.git").fetch()
     with pytest.raises(v2.SealedRefusal):
-        led.fetch()
-    with pytest.raises(v2.SealedRefusal):
-        v2.GitLedger(root=work, path=work / "ledger.json", branch="b").entries()     # no read before a fetch
+        _gled(work, origin).entries()                                            # no read before a fetch
 
 
-def test_R20_2_git_ledger_rewrite_on_the_remote_is_refused(tmp_path):
+def _closed_run_on_remote(tmp_path):
     origin, work, g = _git_env(tmp_path)
-    led = v2.GitLedger(root=work, path=work / "ledger.json", branch="b")
+    head_at_release = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    led = _gled(work, origin)
     led.fetch()
     s = led.append(_start()); led.append({"kind": "PHASE_A_CLEAN", "start_index": s["index"]})
     led.append({"kind": "GATE", "start_index": s["index"], "gate_signs": _closed(), "gate_open": False,
-                "magnitudes_sha256": "m" * 64})
+                "magnitudes_sha256": "d" * 64})
+    return origin, work, g, led, head_at_release
+
+
+def test_R20_2_git_ledger_ordinary_rewrite_on_the_remote_is_refused(tmp_path):
+    origin, work, g, led, h0 = _closed_run_on_remote(tmp_path)
     ents = led.entries()
     (work / "ledger.json").write_bytes(v2.ledger_doc(ents[:2]))       # drop the closed gate record and push
     g("commit", "-q", "-am", "rewrite", cwd=work); g("push", "-q", "origin", "b", cwd=work)
     led.fetch()
     with pytest.raises(v2.SealedRefusal):
         v2.validate_ledger(led.entries(), led.version_entries(), {"r1": {}})
+
+
+def test_R22_force_push_back_before_start_is_refused_without_the_activity_check(tmp_path):
+    origin, work, g, led, h0 = _closed_run_on_remote(tmp_path)
+    other = tmp_path / "other"
+    g("clone", "-q", "-b", "b", str(origin), str(other), cwd=tmp_path)
+    g("push", "-q", "-f", "origin", f"{h0}:refs/heads/b", cwd=other)          # rewind to before START
+    with pytest.raises(v2.SealedRefusal, match="not a fast-forward"):          # the existing clone: no forced fetch
+        led.fetch()
+    fresh = tmp_path / "fresh"
+    g("clone", "-q", "-b", "b", str(origin), str(fresh), cwd=tmp_path)
+    fl = _gled(fresh, origin); sha = fl.fetch()
+    assert fl.entries() == []                                                 # the record is gone from this view
+    # a release pinned at a later head (e.g. a stage-2 release after the gate) refuses on the ancestry pin
+    gate_head = led.last_commit
+    with pytest.raises(v2.SealedRefusal, match="branch_head_at_release"):
+        v2.check_release_pins({"branch_head_at_release": gate_head}, sha, fresh)
+    # rewound exactly to the stage-1 release head on a fresh clone: only the host record catches it (R22.1, R23.2)
+    v2.check_release_pins({"branch_head_at_release": h0}, sha, fresh)
+    log = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": h0, "ref": "refs/heads/b",
+            "timestamp": "t1"},
+           {"id": 2, "activity_type": "push", "before": h0, "after": gate_head, "ref": "refs/heads/b", "timestamp": "t2"},
+           {"id": 3, "activity_type": "force_push", "before": gate_head, "after": h0, "ref": "refs/heads/b",
+            "timestamp": "t3"}]
+    with pytest.raises(v2.SealedRefusal, match="force_push"):
+        v2.check_activity(log, sha, h0, lambda a, b: True, "refs/heads/b")
+
+
+def test_R22_delete_and_recreate_is_refused_without_the_activity_check(tmp_path):
+    origin, work, g, led, h0 = _closed_run_on_remote(tmp_path)
+    other = tmp_path / "other"
+    g("clone", "-q", "-b", "b", str(origin), str(other), cwd=tmp_path)
+    g("push", "-q", "origin", ":refs/heads/b", cwd=other)                      # delete
+    g("push", "-q", "origin", f"{h0}:refs/heads/b", cwd=other)                 # re-create before START
+    with pytest.raises(v2.SealedRefusal, match="not a fast-forward"):
+        led.fetch()
+
+
+# ------------------------------------------------------------------ R22.1 / R23.2 host record on recorded JSON
+PROBE = json.loads((Path(__file__).parent / "data/rotation_core_activity_probe_20261111.json").read_text())
+
+
+def _chain(n=4, ref="refs/heads/b"):
+    shas = [f"{i:040x}" for i in range(1, n + 1)]
+    log = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": shas[0], "ref": ref,
+            "timestamp": "2026-11-11T00:00:01Z"}]
+    for i in range(1, n):
+        log.append({"id": i + 1, "activity_type": "push", "before": shas[i - 1], "after": shas[i], "ref": ref,
+                    "timestamp": f"2026-11-11T00:00:{i + 1:02d}Z"})
+    order = {s_: i for i, s_ in enumerate(shas)}
+    return log, shas, (lambda a, b: a in order and b in order and order[a] <= order[b])
+
+
+def test_R22_1_activity_clean_chain_passes_and_is_recorded():
+    log, shas, anc = _chain()
+    rec = v2.check_activity(log, shas[-1], shas[1], anc, "refs/heads/b")
+    assert rec["activity_entries"] == 4 and re.fullmatch(r"[0-9a-f]{64}", rec["activity_sha256"])
+
+
+def test_R22_1_activity_refusals():
+    log, shas, anc = _chain()
+    cases = {
+        "force_push": [dict(e, activity_type="force_push") if e["id"] == 3 else e for e in log],
+        "deletion": log + [{"id": 9, "activity_type": "branch_deletion", "before": shas[-1], "after": v2.ZERO_SHA,
+                            "ref": "refs/heads/b", "timestamp": "2026-11-11T00:01:00Z"}],
+        "broken": [dict(e, before="f" * 40) if e["id"] == 3 else e for e in log],
+        "truncated": log[2:],                                   # does not reach the anchor / the creation
+        "not_head": log[:-1],
+        "other_ref": [dict(e, ref="refs/heads/x") if e["id"] == 2 else e for e in log],
+        "empty": []}
+    for name, lg in cases.items():
+        with pytest.raises(v2.SealedRefusal):
+            v2.check_activity(lg, shas[-1], shas[1], anc, "refs/heads/b")
+    with pytest.raises(v2.SealedRefusal, match="anchor"):        # a full chain that does not contain the anchor
+        v2.check_activity(log, shas[-1], "a" * 40, anc, "refs/heads/b")
+
+
+def test_R22_1_recorded_probe_log_with_force_push_deletion_and_recreation_refuses():
+    kinds = [e["activity_type"] for e in PROBE]
+    assert kinds == ["branch_creation", "push", "force_push", "branch_deletion", "branch_creation"]
+    with pytest.raises(v2.SealedRefusal, match="force_push"):
+        v2.check_activity(PROBE, PROBE[-1]["after"], PROBE[0]["after"], lambda a, b: True, PROBE[0]["ref"])
+    with pytest.raises(v2.SealedRefusal, match="force_push"):    # the clean-looking prefix up to the force push
+        v2.check_activity(PROBE[:3], PROBE[2]["after"], PROBE[0]["after"], lambda a, b: True, PROBE[0]["ref"])
+    v2.check_activity(PROBE[:2], PROBE[1]["after"], PROBE[0]["after"], lambda a, b: True, PROBE[0]["ref"])
+
+
+def test_R22_1_api_failure_and_unparsable_body_refuse(monkeypatch):
+    class R:
+        def __init__(self, code, out): self.returncode, self.stdout = code, out
+    monkeypatch.setattr(v2.subprocess, "run", lambda *a, **k: R(1, b""))
+    with pytest.raises(v2.SealedRefusal, match="API call failed"):
+        v2.gh_api("/x")
+    monkeypatch.setattr(v2.subprocess, "run", lambda *a, **k: R(0, b"not json"))
+    with pytest.raises(v2.SealedRefusal, match="did not parse"):
+        v2.gh_api("/x")
+    def raising(path, paginate=False):
+        raise v2.SealedRefusal("refused: the GitHub API call failed")
+    with pytest.raises(v2.SealedRefusal):
+        v2.host_checks("0" * 40, api=raising)
+
+
+def test_R23_2_rules_and_ruleset_checked():
+    good_rules = [{"type": "non_fast_forward"}, {"type": "deletion"}]
+    good_rs = {"id": v2.RULESET_ID, "enforcement": "active", "bypass_actors": [], "updated_at": "u"}
+    assert v2.check_rules(good_rules, good_rs) == {"ruleset_id": v2.RULESET_ID, "ruleset_updated_at": "u"}
+    for rules, rs in (([{"type": "deletion"}], good_rs), ([], good_rs),
+                      (good_rules, dict(good_rs, enforcement="evaluate")),
+                      (good_rules, dict(good_rs, bypass_actors=[{"actor_id": 1}])),
+                      (good_rules, {k: v for k, v in good_rs.items() if k != "bypass_actors"}),
+                      (good_rules, dict(good_rs, id=1))):
+        with pytest.raises(v2.SealedRefusal):
+            v2.check_rules(rules, rs)
+
+
+def test_R22_1_host_record_is_copied_into_every_ledger_entry(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    led.host_record = {"activity_entries": 7, "activity_sha256": "a" * 64, "ruleset_id": v2.RULESET_ID,
+                       "ruleset_updated_at": "u"}
+    s_ = led.append(_start()); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    assert all(e["host"] == led.host_record for e in led.entries())
+
+
+# ------------------------------------------------------------------ R22.2 release pins
+def test_R22_2_gate_commit_must_contain_the_gate_record(tmp_path):
+    origin, work, g, led, h0 = _closed_run_on_remote(tmp_path)
+    ents = led.entries()
+    gate = ents[-1]
+    r = {"branch_head_at_release": h0, "gate_commit": led.last_commit, "_gate_latest": gate}
+    v2.check_release_pins(r, led.remote_sha, work, led)
+    with pytest.raises(v2.SealedRefusal, match="does not contain"):
+        v2.check_release_pins(dict(r, gate_commit=h0), led.remote_sha, work, led)
+    with pytest.raises(v2.SealedRefusal, match="anchor"):
+        v2.check_release_pins(dict(r, activity_anchor_commit="b" * 40), led.remote_sha, work, led)
+    with pytest.raises(v2.SealedRefusal):
+        v2.check_release_pins({k: v for k, v in r.items() if k != "branch_head_at_release"}, led.remote_sha, work, led)
+
+
+# ------------------------------------------------------------------ R23.1 identical rerun binds permanently (D1, D2)
+def test_R23_1_d1_killed_identical_rerun_cannot_unlock_a_new_commit():
+    L = v2.MemoryLedger()
+    s0 = L.append(_start(rel="R1"))
+    L.append({"kind": "PHASE_A_CLEAN", "start_index": s0["index"]})
+    with pytest.raises(v2.SealedRefusal):
+        v2.start_allowed(L.entries(), _start(eng="E2", rel="R2"), {"ledger_records_cited": [0]})
+    v2.start_allowed(L.entries(), _start(rel="R1"), {})
+    L.append(_start(rel="R1"))                                                  # killed before Phase A
+    with pytest.raises(v2.SealedRefusal, match="permanently"):
+        v2.start_allowed(L.entries(), _start(eng="E2", rel="R2"), {"ledger_records_cited": [0, 2]})
+    with pytest.raises(v2.SealedRefusal):
+        L2 = v2.MemoryLedger(L.entries() + [dict(_start(eng="E2", rel="R2"), index=3,
+                                                 prev_chain_sha256=v2.chain_hash(L.entries()))])
+        v2.validate_ledger(L2.entries(), [], {"R1": {}, "R2": {"ledger_records_cited": [0, 2]}})
+    v2.start_allowed(L.entries(), _start(rel="R1"), {})                          # the identical rerun stays allowed
+    L.append(_start(rel="R1")); s3 = L.entries()[-1]
+    L.append({"kind": "PHASE_A_CLEAN", "start_index": s3["index"]})
+    L.append({"kind": "GATE", "start_index": s3["index"], "gate_signs": _all_plus(), "gate_open": True,
+              "magnitudes_sha256": "d" * 64})
+    v2.start_allowed(L.entries(), _start(eng="E2", rel="R2"), {"ledger_records_cited": [0, 2]})   # completed: free
+
+
+def test_R23_1_d2_failed_gate_push_leaves_only_the_identical_rerun(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    led = _gled(work, origin); led.fetch()
+    s_ = led.append(_start(rel="R1")); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    hook = origin / "hooks" / "pre-receive"; hook.write_text("#!/bin/sh\nexit 1\n"); hook.chmod(0o755)
+    with pytest.raises(v2.LedgerPushFailed, match="UNKNOWN"):
+        led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _closed(), "gate_open": False,
+                    "magnitudes_sha256": "d" * 64})
+    hook.unlink()
+    led.fetch()
+    ents = led.entries()
+    assert [e["kind"] for e in ents] == ["START", "PHASE_A_CLEAN"]
+    led.append(_start(rel="R1"))                                                 # identical rerun, killed after START
+    for st, rel in ((_start(eng="E2", rel="R2"), {"ledger_records_cited": [0, 2]}), (_start(rel="R9"), {})):
+        with pytest.raises(v2.SealedRefusal):
+            v2.start_allowed(led.entries(), st, rel)
+
+
+def test_R23_1_n2_start_rules_rechecked_on_fresh_entries_inside_append(tmp_path):
+    origin, work, g = _git_env(tmp_path)
+    a = _gled(work, origin); a.fetch()
+    other = tmp_path / "w2"; g("clone", "-q", "-b", "b", str(origin), str(other), cwd=tmp_path)
+    b = _gled(other, origin); b.fetch()
+    stale = b.entries()                                                           # [] when B checked
+    new = _start(eng="E2", rel="R2")
+    v2.start_allowed(stale, new, {})
+    s_ = a.append(_start()); a.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    a.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": _closed(), "gate_open": False,
+              "magnitudes_sha256": "d" * 64})
+    with pytest.raises(v2.SealedRefusal, match="closed"):
+        b.append(new, precheck=lambda cur: v2.start_allowed(cur, new, {}))
+    b.fetch()
+    assert [e["kind"] for e in b.entries()] == ["START", "PHASE_A_CLEAN", "GATE"]
+
+
+# ------------------------------------------------------------------ R23.3 remote identity
+def test_R23_3_remote_identity(tmp_path, monkeypatch):
+    origin, work, g = _git_env(tmp_path)
+    url = str(origin)
+    v2.check_remote_identity(work, url)
+    with pytest.raises(v2.SealedRefusal, match="pinned repository"):
+        v2.check_remote_identity(work, v2.REMOTE_URL)
+    g("config", "remote.origin.pushurl", str(tmp_path / "elsewhere.git"), cwd=work)
+    with pytest.raises(v2.SealedRefusal, match="pinned repository"):
+        v2.check_remote_identity(work, url)
+    g("config", "--unset", "remote.origin.pushurl", cwd=work)
+    g("config", "url./tmp/fake.git.insteadOf", url, cwd=work)
+    with pytest.raises(v2.SealedRefusal, match="insteadOf"):
+        v2.check_remote_identity(work, url)
+    g("config", "--remove-section", "url./tmp/fake.git", cwd=work)
+    g("config", "url./tmp/fake.git.pushInsteadOf", url, cwd=work)
+    with pytest.raises(v2.SealedRefusal, match="insteadOf"):
+        v2.check_remote_identity(work, url)
+    g("config", "--remove-section", "url./tmp/fake.git", cwd=work)
+    v2.check_remote_identity(work, url)
+    for var in ("GIT_CONFIG_COUNT", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_GLOBAL"):
+        monkeypatch.setenv(var, "1")
+        with pytest.raises(v2.SealedRefusal, match="GIT_CONFIG"):
+            v2.check_remote_identity(work, url)
+        monkeypatch.delenv(var)
+
+
+def test_R23_3_real_checkout_has_the_pinned_identity():
+    v2.check_remote_identity()
+
+
+# ------------------------------------------------------------------ R23.4 interpreter environment (real paths)
+def test_R23_4_startup_and_home_variables_refused(monkeypatch):
+    for var in ("PYTHONSTARTUP", "PYTHONHOME"):
+        monkeypatch.setenv(var, "/tmp/x")
+        with pytest.raises(v2.SealedRefusal, match=var):
+            v2.check_import_environment()
+        monkeypatch.delenv(var)
+
+
+def test_R23_4_location_test_follows_symlinks(monkeypatch, tmp_path):
+    import types, sysconfig
+    lib = tmp_path / "lib"; lib.mkdir(); elsewhere = tmp_path / "elsewhere"; elsewhere.mkdir()
+    (elsewhere / "evil.py").write_text("x = 1\n"); (lib / "evil.py").symlink_to(elsewhere / "evil.py")
+    (lib / "fine.py").write_text("x = 1\n")
+    real = sysconfig.get_paths()
+    monkeypatch.setattr(sysconfig, "get_paths", lambda *a, **k: dict(real, platstdlib=str(lib)))
+    m = types.ModuleType("fine_mod"); m.__file__ = str(lib / "fine.py")
+    monkeypatch.setitem(sys.modules, "fine_mod", m)
+    v2.check_import_environment()                                            # a real file inside an allowed root
+    m2 = types.ModuleType("evil_mod"); m2.__file__ = str(lib / "evil.py")     # link inside, real file outside
+    monkeypatch.setitem(sys.modules, "evil_mod", m2)
+    with pytest.raises(v2.SealedRefusal, match="evil_mod"):
+        v2.check_import_environment()
+
+
+def test_R22_4_every_loaded_module_lies_under_the_interpreter_or_the_repository(monkeypatch, tmp_path):
+    import types
+    v2.check_import_environment()
+    m = types.ModuleType("stray"); m.__file__ = str(tmp_path / "stray.py")
+    monkeypatch.setitem(sys.modules, "stray", m)
+    with pytest.raises(v2.SealedRefusal, match="stray"):
+        v2.check_import_environment()
+
+
+# ------------------------------------------------------------------ R23.7 fund veto fails closed
+def test_R23_7_fund_veto_fires_on_nan_and_negative_only_finite_nonnegative_passes():
+    assert v2.tradable_veto({"a": 0.01, "b": 0.0}) is False
+    assert v2.tradable_veto({"a": 0.01, "b": float("nan")}) is True
+    assert v2.tradable_veto({"a": float("inf"), "b": 0.1}) is True
+    assert v2.tradable_veto({"a": -1e-9}) is True
+
+
+# ------------------------------------------------------------------ R22.3 witness lines
+def test_R22_3_witness_lines_start_and_gate_before_any_sign(stage1):
+    d, e, lines, _, led = stage1
+    i_start = next(i for i, ln in enumerate(lines) if ln.startswith("WITNESS start_commit "))
+    i_gate = next(i for i, ln in enumerate(lines) if ln.startswith("WITNESS gate_commit "))
+    i_sign = min(i for i, ln in enumerate(lines) if ln.startswith("GATE_SIGN"))
+    assert i_start < i_gate < i_sign and lines[i_gate].endswith(f"ledger_index {e['index']}")
 
 
 # ------------------------------------------------------------------ R20.3 / R20.6 final run trusts nothing recorded
@@ -699,16 +1044,51 @@ def test_R20_6_reproduction_hash_and_signs_are_required(tmp_path):
             run.final_evaluation("p", "f", "c", "d", sha, signs, v2.MemoryLedger(), 0)
 
 
-def test_R20_3_gate_rederived_from_reproduced_numbers_must_equal_the_record(stage1, fx, tmp_path):
+def _stage2_ledger(signs, sha):
+    led = v2.MemoryLedger()
+    s_ = led.append(_start(eng="E1", rel="r1")); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    led.append({"kind": "GATE", "start_index": s_["index"], "gate_signs": signs, "gate_open": v2.gate_decision(signs)[0],
+                "magnitudes_sha256": sha})
+    ents = led.entries()
+    r2 = v2.verify_release2({"windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
+                             "engine_commit": "E1", "ledger_prefix_len": len(ents),
+                             "ledger_prefix_chain_sha256": v2.chain_hash(ents)}, ents)
+    return led, r2
+
+
+@pytest.fixture(scope="module")
+def stage2_dirs(tmp_path_factory):
+    d = tmp_path_factory.mktemp("s2")
+    return make_fixture(d / "full", extra_after="2025-12-31"), make_fund_fixture(d / "funds")
+
+
+def test_R20_3_R24_1a_stage1_not_reproduced_is_an_integrity_abort_with_no_final(stage1, fx, stage2_dirs, monkeypatch):
+    """R24.1(a): the reproduction runs as Phase A2, before any 2020-2025 statistic. Hash reproduced but the gate
+    re-derived differs from the record, and a plain hash mismatch: each ends INTEGRITY_ABORT, reason only, no FINAL."""
     import scripts.run_rotation_core_v2 as run
-    d, e, lines, _, led0 = stage1
-    full = make_fixture(tmp_path / "full", extra_after="2025-12-31")
-    funds = make_fund_fixture(tmp_path / "funds")
-    led = v2.MemoryLedger(); s = led.append(run.start_entry("stage2", "r2", "E1", {}))
-    with v2.stage2_opened([], recorded={}), pytest.raises(v2.SealedRefusal) as ei:
-        run.final_evaluation(fx / IND, full / IND, full / FAC, funds, e["magnitudes_sha256"], _all_plus(), led,
-                             s["index"], B_=20, out=lambda x: None)
-    assert "re-derived" in str(ei.value)                                     # hash reproduced; the gate is not
+    d, e, lines0, _, led0 = stage1
+    full, funds = stage2_dirs
+    def boom(*a, **k):
+        raise AssertionError("a 2020-2025 statistic was computed")
+    monkeypatch.setattr(run, "_final_phase_b", boom)
+    for sha in (e["magnitudes_sha256"], "a" * 64):
+        led, r2 = _stage2_ledger(_all_plus(), sha)
+        lines = []
+        with v2.stage2_opened([], recorded={}):
+            res = run.confirm_command(led, r2, "q1", "E1", fx / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
+                                      out=lines.append)
+        assert res == {"integrity_abort": True, "reason": "stage1_not_reproduced"}
+        ents = led.entries()
+        assert [x["kind"] for x in ents][-3:] == ["START", "PHASE_A_CLEAN", "INTEGRITY_ABORT"]
+        assert ents[-1]["reason"] == "stage1_not_reproduced" and not any(x["kind"] == "FINAL" for x in ents)
+        assert lines[-1] == "INTEGRITY_ABORT stage1_not_reproduced"
+        v2.validate_ledger(ents, [], {"r1": {}, "q1": {}})
+        # governed by R19: the same release refused; a new release citing the run may retry (the reference is fixed)
+        with pytest.raises(v2.SealedRefusal):
+            v2.start_allowed(ents, _start("stage2", "q1", "E1"), {"ledger_records_cited": [3]})
+        with pytest.raises(v2.SealedRefusal):
+            v2.start_allowed(ents, _start("stage2", "q2", "E1"), {})
+        v2.start_allowed(ents, _start("stage2", "q2", "E1"), {"ledger_records_cited": [3]})
 
 
 # ------------------------------------------------------------------ R20.7 unseal inside the runner, re-seal on exit
@@ -769,14 +1149,22 @@ def test_R20_8_untracked_file_under_pinned_paths_refused(monkeypatch):
         v2.check_engine_commit("HEAD")
 
 
-def test_R20_8_sitecustomize_hash_is_pinned_in_versions():
-    assert "sitecustomize_sha256" in v2.versions()
+def test_R20_8_sitecustomize_hash_is_pinned_in_versions(fx):
+    sc = getattr(sys.modules.get("sitecustomize"), "__file__", None)
+    v = v2.versions()
+    assert v["sitecustomize_sha256"] == (v2.sha256_file(sc) if sc else None)
+    ins = {"industries": fx / IND}
+    good = {"inputs_sha256": {k: v2.sha256_file(p) for k, p in ins.items()}, "versions": v}
+    v2.check_manifest(good, ins)
+    with pytest.raises(v2.SealedRefusal, match="library versions"):
+        v2.check_manifest(dict(good, versions=dict(v, sitecustomize_sha256="0" * 64)), ins)
+    with pytest.raises(v2.SealedRefusal, match="library versions"):
+        v2.check_manifest(dict(good, versions=dict(v, pth_sha256="0" * 64)), ins)
 
 
 # ------------------------------------------------------------------ R20.9 selection rerun on the remote
 def test_R20_9_stage1_checks_selection_commit_and_file_against_the_remote(tmp_path, monkeypatch):
-    monkeypatch.setattr(v2, "_committed_clean", lambda p: True)
-    monkeypatch.setattr(v2, "check_engine_commit", lambda c: None)
+    monkeypatch.setattr(v2, "_committed_clean", lambda p, root=None: True)
     import hashlib
     body = {"windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
             "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "X",
@@ -784,8 +1172,8 @@ def test_R20_9_stage1_checks_selection_commit_and_file_against_the_remote(tmp_pa
             "selection_results_sha256": hashlib.sha256(ORIG_SELECTION.read_bytes()).hexdigest()}
     p = tmp_path / "r1.json"; p.write_text(json.dumps(body))
     old = v2._git("rev-list", "--max-parents=0", "HEAD").stdout.decode().split()[0]   # a remote that lacks HEAD
-    with pytest.raises(v2.SealedRefusal):
-        v2.stage1_release(p, remote_sha=old)
+    with pytest.raises(v2.SealedRefusal, match="is not contained in the remote branch"):     # the remote check
+        v2.stage1_release(p, remote_sha=old, engine_check=lambda c: None)
 
 
 # ------------------------------------------------------------------ R20.10 planted-edge end to end, verdicts exact
@@ -803,55 +1191,128 @@ def _edge_late_fail(t):
     return _slow(t)
 
 
-def _e2e(d, edge, fund_sign=1.0, B_=200):
-    """Through the real command path: stage1_command -> ledger GATE -> the stage-2 release verified against the
-    ledger -> the runner's stage-2 context -> confirm_command -> FINAL record."""
-    import scripts.run_rotation_core_v2 as run
-    v2.SELECTION_RESULT = ORIG_SELECTION
+def _host_stub(work, branch):
+    """TEST-ONLY host API (R23.6): the activity chain is the temporary remote's own first-parent history from its
+    creation; the branch rules and the ruleset are present and active. The real entry point never sets this."""
+    def api(path, paginate=False):
+        if "/activity" in path:
+            shas = subprocess.run(["git", "-C", str(work), "rev-list", "--first-parent", "--reverse",
+                                   f"refs/remotes/origin/{branch}"], capture_output=True, check=True).stdout.decode().split()
+            ref = f"refs/heads/{branch}"
+            log = [{"id": 1, "activity_type": "branch_creation", "before": v2.ZERO_SHA, "after": shas[0], "ref": ref,
+                    "timestamp": "2026-11-11T00:00:00Z"}]
+            log += [{"id": i + 1, "activity_type": "push", "before": shas[i - 1], "after": shas[i], "ref": ref,
+                     "timestamp": f"2026-11-11T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(1, len(shas))]
+            return log
+        if "/rules/branches/" in path:
+            return [{"type": "non_fast_forward"}, {"type": "deletion"}]
+        if "/rulesets/" in path:
+            return {"id": v2.RULESET_ID, "enforcement": "active", "bypass_actors": [], "updated_at": "stub"}
+        raise AssertionError(path)
+    return api
+
+
+def _commit_push(g, work, name, doc):
+    (work / name).write_text(json.dumps(doc, indent=1))
+    g("add", name, cwd=work); g("commit", "-q", "-m", name, cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    return g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+
+
+def _e2e(d, edge, fund_sign=1.0, B_=200, capture=None):
+    """R23.6: through the real entry point main() with the real GitLedger on a temporary bare remote. Only the
+    host-API checks are a stub (ctx.host_api), and the engine-commit check (this test tree is not a commit)."""
+    import shutil, scripts.run_rotation_core_v2 as run
     d = Path(d)
+    origin, work, g = _git_env(d)
+    shutil.copy(ORIG_SELECTION, work / "sel.json")
+    g("add", "sel.json", cwd=work); g("commit", "-q", "-m", "selection", cwd=work); g("push", "-q", "origin", "b", cwd=work)
+    sel_commit = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
     pre = make_fixture(d / "pre", edge=edge)
     full = make_fixture(d / "full", extra_after="2025-12-31", edge=edge)
     funds = make_fund_fixture(d / "funds", edge=edge, edge_sign=fund_sign)
-    led = v2.MemoryLedger()
-    sink = []
-    g = run.stage1_command(led, {}, "r1", "E1", pre / IND, pre / FAC, {"x": "1"}, B_=B_, out=sink.append)
-    ents = led.entries()
-    r2 = v2.verify_release2({"windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
-                             "engine_commit": "E1", "ledger_prefix_len": len(ents),
-                             "ledger_prefix_chain_sha256": v2.chain_hash(ents)}, ents)
-    with v2.stage2_opened([], recorded={}):
-        res = run.confirm_command(led, r2, "r2", "E1", pre / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=B_,
-                                  out=sink.append)
-    return g, res, led
+    s1_in = {"industries_le2019": pre / IND, "factors": full / FAC}
+    s2_in = {"industries_full": full / IND, "industries_le2019": pre / IND, "factors": full / FAC,
+             **{f"yahoo_{t}": funds / f"{t}.parquet" for t in ["SPY", "RSP"] + v2.FUNDS}}
+    ctx = run.Ctx(root=work, ledger_path=work / "ledger.json", branch="b", remote_url=str(origin),
+                  release1=work / "r1.json", release2=work / "r2.json", selection=work / "sel.json",
+                  ind_d=pre / IND, ind_full=full / IND, fact=full / FAC, fund_dir=funds, stage1_inputs=s1_in,
+                  stage2_inputs=s2_in, sealed_paths=[], sealed_recorded={}, host_api=_host_stub(work, "b"),
+                  anchor=sel_commit, engine_check=lambda c: None, B=B_, final_j=d / "final.json",
+                  final_m=d / "final.md", stage1_published=d / "published.json")
+    import hashlib
+    _commit_push(g, work, "r1.json", {
+        "windows_released": [v2.W_PRE], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
+        "selected_grid_point": {"h_near_high_pct": 3, "b_breadth_drop_pp": 25}, "engine_commit": "E1",
+        "selection_results_commit": sel_commit,
+        "selection_results_sha256": hashlib.sha256((work / "sel.json").read_bytes()).hexdigest(),
+        "inputs_sha256": {k: v2.sha256_file(p) for k, p in s1_in.items()}, "versions": v2.versions(),
+        "branch_head_at_release": sel_commit})
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        assert run.main(["--stage", "pre1998"], _ctx=ctx) == 0
+    out1 = buf.getvalue().splitlines()
+    gate_commit = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS gate_commit"))
+    start_commit = next(ln.split()[2] for ln in out1 if ln.startswith("WITNESS start_commit"))
+    ents = json.loads((work / "ledger.json").read_text())["entries"]
+    head = g("rev-parse", "HEAD", cwd=work).stdout.decode().strip()
+    _commit_push(g, work, "r2.json", {
+        "windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256, "engine_commit": "E1",
+        "ledger_prefix_len": len(ents), "ledger_prefix_chain_sha256": v2.chain_hash(ents),
+        "branch_head_at_release": head, "gate_commit": gate_commit,
+        "inputs_sha256": {k: v2.sha256_file(p) for k, p in s2_in.items()}, "versions": v2.versions(),
+        "witnessed": {"start_commit": start_commit, "gate_commit": gate_commit, "acknowledged_at": "test"}})
+    mp = pytest.MonkeyPatch()
+    if capture is not None:                       # R21.4: record every stream key the final run draws from
+        orig = rc.stationary_bootstrap_indices
+        def spy(n, b, block, seed):
+            capture.append(tuple(seed.spawn_key) if isinstance(seed, np.random.SeedSequence) else seed)
+            return orig(n, b, block, seed)
+        mp.setattr(rc, "stationary_bootstrap_indices", spy)
+    try:
+        buf2 = io.StringIO()
+        with contextlib.redirect_stdout(buf2):
+            assert run.main(["--stage", "confirm"], _ctx=ctx) == 0
+    finally:
+        mp.undo()
+    res = json.loads((d / "final.json").read_text())
+    led_entries = json.loads((work / "ledger.json").read_text())["entries"]
+    gate = next(e for e in led_entries if e["kind"] == "GATE")
+    return gate, res, led_entries, out1
 
 
 SIGN_2020 = sorted(f"sign|h2020_2025|{r}|{c}" for r in ("eq", "drift") for c in ("base", "strict"))
 
 
+E2E_KEYS = []
+
+
 @pytest.fixture(scope="module")
 def e2e_pass(tmp_path_factory):
-    return _e2e(tmp_path_factory.mktemp("e2e_pass"), _edge_pass)
+    return _e2e(tmp_path_factory.mktemp("e2e_pass"), _edge_pass, capture=E2E_KEYS)
 
 
 def test_R20_10_planted_edge_must_pass(e2e_pass):
-    g, res, led = e2e_pass
+    g, res, ents, out1 = e2e_pass
     assert g["gate_open"] is True
     assert {h: v["verdict"] for h, v in res["verdicts"].items()} == {
         "H1": "FAIL", "H2": "FAIL", "H3": "survives falsification on history"}
     assert res["verdicts"]["H3"]["failed_legs"] == [] and res["verdicts"]["H3"]["fund_veto_fired"] is False
-    assert [x["kind"] for x in led.entries()] == ["START", "PHASE_A_CLEAN", "GATE", "START", "PHASE_A_CLEAN", "FINAL"]
-    assert led.entries()[-1]["verdicts"]["H3"] == "survives falsification on history"
+    assert [x["kind"] for x in ents] == ["START", "PHASE_A_CLEAN", "GATE", "START", "PHASE_A_CLEAN", "REPRODUCTION_OK",
+                                        "FINAL"]
+    assert ents[-1]["verdicts"]["H3"] == "survives falsification on history"
+    assert all(e["host"]["ruleset_id"] == v2.RULESET_ID for e in ents)              # R22.1/R23.2 recorded
+    assert res["witnessed"]["acknowledged_at"] == "test"
 
 
 def test_R20_10_planted_edge_fails_only_on_the_2020_2025_sign_legs(tmp_path):
-    g, res, led = _e2e(tmp_path, _edge_late_fail)
+    g, res, ents, out1 = _e2e(tmp_path, _edge_late_fail)
     assert g["gate_open"] is True
     assert res["verdicts"]["H3"]["verdict"] == "FAIL"
     assert res["verdicts"]["H3"]["failed_legs"] == SIGN_2020
 
 
 def test_R20_10_planted_edge_trips_the_fund_veto(tmp_path):
-    g, res, led = _e2e(tmp_path, _edge_pass, fund_sign=-1.0)
+    g, res, ents, out1 = _e2e(tmp_path, _edge_pass, fund_sign=-1.0)
     assert res["verdicts"]["H3"] == {"verdict": "signal not shown to be tradable", "failed_legs": [], "legs_total": 33,
                                      "fund_veto_fired": True}
     assert res["verdicts"]["H1"]["verdict"] == "FAIL" and res["verdicts"]["H2"]["verdict"] == "FAIL"
@@ -873,3 +1334,256 @@ def test_S1_final_structure(e2e_pass):
     assert set(res["holm_m3"]) == {"block21", "block63"} and len(res["holm_m3"]["block21"]) == 8
     assert set(res["funds"]["estimates"]) == {"eq|base", "eq|strict", "drift|base", "drift|strict"}
     assert len(res["standalone_2020_2025_OUT_OF_SAMPLE_EFFECT_SIZE"]["block21"]) == 12
+
+
+# ------------------------------------------------------------------ R21
+def test_R21_0_R22_4_pth_files_pinned_in_versions(tmp_path, monkeypatch):
+    v = v2.versions()
+    assert isinstance(v["pth_count"], int) and re.fullmatch(r"[0-9a-f]{64}", v["pth_sha256"])
+    d = tmp_path / "site-packages"; d.mkdir()
+    monkeypatch.setattr(v2, "site_dirs", lambda: [str(d)])
+    empty = v2.pth_digest()
+    (d / "x.pth").write_text("import os\n")
+    one = v2.pth_digest()
+    assert one[0] == 1 and one[1] != empty[1]
+    (d / "x.pth").write_text("import sys\n")
+    assert v2.pth_digest()[1] != one[1]
+
+
+def test_R21_1_phase_b_exception_records_a_closed_gate_on_the_remote(fx, tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v2 as run
+    led = run.temporary_remote(tmp_path)
+    orig, n = v2.window_excess, [0]
+    def after_first(*a, **k):
+        n[0] += 1
+        if n[0] > 1:                                      # the first era excess exists, then a failure
+            raise ValueError("value 0.0123 inside")
+        return orig(*a, **k)
+    monkeypatch.setattr(v2, "window_excess", after_first)
+    lines = []
+    with pytest.raises(SystemExit) as ei:
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append)
+    assert "ValueError" in str(ei.value) and "0.0123" not in str(ei.value)
+    led.fetch()
+    ents = led.entries()
+    assert [x["kind"] for x in ents] == ["START", "PHASE_A_CLEAN", "GATE"]
+    g = ents[-1]
+    assert g["gate_open"] is False and g["closed_by"] == "phase_b_exception" and g["exception_type"] == "ValueError"
+    assert "gate_signs" not in g and "magnitudes_sha256" not in g and "0.0123" not in json.dumps(ents)
+    assert not any(ln.startswith("GATE_SIGN") for ln in lines) and _no_magnitude("\n".join(lines))
+    v2.validate_ledger(ents, led.version_entries(), {"r1": {}})               # a consistent record
+    for st in (_start(eng="E2", rel="r2", ins={"a": "1"}), _start(ins={"a": "1"}), _start("stage2", "q", "E1")):
+        with pytest.raises(v2.SealedRefusal):                                    # closed: final at any commit
+            v2.start_allowed(ents, st, {"ledger_records_cited": []})
+
+
+def test_R21_1_memory_error_leaves_phase_a_clean_and_the_identical_rerun_completes(fx, tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v2 as run
+    led = run.temporary_remote(tmp_path)
+    def oom(*a, **k):
+        raise MemoryError()
+    with monkeypatch.context() as m:
+        m.setattr(v2, "window_excess", oom)
+        with pytest.raises(SystemExit):
+            run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+    led.fetch()
+    assert [x["kind"] for x in led.entries()] == ["START", "PHASE_A_CLEAN"]
+    with pytest.raises(v2.SealedRefusal):                                    # anything but the identical rerun
+        run.stage1_command(led, {}, "r1", "E2", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+    g = run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lambda x: None)
+    led.fetch()
+    assert g["kind"] == "GATE" and "gate_signs" in g
+    assert [x["kind"] for x in led.entries()] == ["START", "PHASE_A_CLEAN", "START", "PHASE_A_CLEAN", "GATE"]
+
+
+@pytest.fixture(scope="module")
+def open_stage1(tmp_path_factory):
+    """A planted-edge stage 1 whose gate is open, recorded in an in-memory ledger (B = 20)."""
+    import scripts.run_rotation_core_v2 as run
+    v2.SELECTION_RESULT = ORIG_SELECTION
+    d = tmp_path_factory.mktemp("open_s1")
+    pre = make_fixture(d / "pre", edge=_edge_pass)
+    full = make_fixture(d / "full", extra_after="2025-12-31", edge=_edge_pass)
+    funds = make_fund_fixture(d / "funds", edge=_edge_pass)
+    led = v2.MemoryLedger()
+    g = run.stage1_command(led, {}, "r1", "E1", pre / IND, pre / FAC, {"x": "1"}, B_=20, out=lambda x: None)
+    assert g["gate_open"] is True
+    return pre, full, funds, led.entries()
+
+
+def _confirm_with_planted(open_stage1, monkeypatch, target, exc):
+    import scripts.run_rotation_core_v2 as run
+    pre, full, funds, ents = open_stage1
+    led = v2.MemoryLedger(); [led.append({k: v for k, v in e.items() if k not in ("index", "prev_chain_sha256")}) for e in ents]
+    r2 = v2.verify_release2({"windows_released": [v2.W_H], "protocol_header_sha256": v2.FROZEN_V2_SHA256,
+                             "engine_commit": "E1", "ledger_prefix_len": len(ents),
+                             "ledger_prefix_chain_sha256": v2.chain_hash(led.entries())}, led.entries())
+    def boom(*a, **k):
+        raise exc
+    monkeypatch.setattr(run, target, boom)
+    lines = []
+    with v2.stage2_opened([], recorded={}):
+        res = run.confirm_command(led, r2, "q1", "E1", pre / IND, full / IND, full / FAC, funds, {"x": "1"}, B_=20,
+                                  out=lines.append)
+    return res, led.entries(), lines
+
+
+def test_R21_1_stage2_phase_b_exception_records_final_all_fail(open_stage1, monkeypatch):
+    res, ents, lines = _confirm_with_planted(open_stage1, monkeypatch, "fund_stats", ZeroDivisionError())
+    f = ents[-1]
+    assert [x["kind"] for x in ents][-4:] == ["START", "PHASE_A_CLEAN", "REPRODUCTION_OK", "FINAL"]
+    assert f["closed_by"] == "phase_b_exception" and f["exception_type"] == "ZeroDivisionError"
+    assert f["verdicts"] == {"H1": "FAIL", "H2": "FAIL", "H3": "FAIL"} and res["phase_b_exception"] == "ZeroDivisionError"
+    with pytest.raises(v2.SealedRefusal):
+        v2.start_allowed(ents, _start("stage2", "q2", "E1"), {})
+
+
+def test_R24_1b_stage2_refusal_in_phase_b_records_final_all_fail(open_stage1, monkeypatch):
+    res, ents, lines = _confirm_with_planted(open_stage1, monkeypatch, "fund_stats",
+                                             v2.SealedRefusal("refused: planted"))
+    f = ents[-1]
+    assert f["kind"] == "FINAL" and f["closed_by"] == "phase_b_refusal" and f["exception_type"] == "SealedRefusal"
+    assert f["verdicts"] == {"H1": "FAIL", "H2": "FAIL", "H3": "FAIL"} and "planted" not in json.dumps(ents)
+    v2.validate_ledger(ents, [], {"r1": {}, "q1": {}})
+
+
+def test_R24_1b_stage1_refusal_in_phase_b_records_a_closed_gate_on_the_remote(fx, tmp_path, monkeypatch):
+    import scripts.run_rotation_core_v2 as run
+    led = run.temporary_remote(tmp_path)
+    orig, n = v2.window_excess, [0]
+    def after_first(*a, **k):
+        n[0] += 1
+        if n[0] > 1:
+            raise v2.SealedRefusal("refused: planted 0.0123")
+        return orig(*a, **k)
+    monkeypatch.setattr(v2, "window_excess", after_first)
+    lines = []
+    with pytest.raises(SystemExit) as ei:
+        run.stage1_command(led, {}, "r1", "E1", fx / IND, fx / FAC, {"a": "1"}, B_=20, out=lines.append)
+    assert "SealedRefusal" in str(ei.value) and "0.0123" not in str(ei.value)
+    led.fetch()
+    ents = led.entries()
+    assert [x["kind"] for x in ents] == ["START", "PHASE_A_CLEAN", "GATE"]
+    g = ents[-1]
+    assert g["gate_open"] is False and g["closed_by"] == "phase_b_refusal" and g["exception_type"] == "SealedRefusal"
+    assert "gate_signs" not in g and "0.0123" not in json.dumps(ents) and not any("GATE_SIGN" in x for x in lines)
+    v2.validate_ledger(ents, led.version_entries(), {"r1": {}})
+    with pytest.raises(v2.SealedRefusal):
+        v2.start_allowed(ents, _start(eng="E2", rel="r2", ins={"a": "1"}), {})
+
+
+def test_R24_1_ledger_order_a2_before_final():
+    led = v2.MemoryLedger()
+    s_ = led.append(_start("stage2", "q1", "E1")); led.append({"kind": "PHASE_A_CLEAN", "start_index": s_["index"]})
+    bad = v2.MemoryLedger(led.entries())
+    bad.append({"kind": "FINAL", "start_index": s_["index"], "verdicts": {}})            # FINAL without A2
+    with pytest.raises(v2.SealedRefusal, match="out of order"):
+        v2._runs(bad.entries())
+    led.append({"kind": "REPRODUCTION_OK", "start_index": s_["index"]})
+    led.append({"kind": "FINAL", "start_index": s_["index"], "verdicts": {}})
+    assert v2._runs(led.entries())[0]["record"]["kind"] == "FINAL"
+
+
+# ------------------------------------------------------------------ R24.5 the command line runs the real checks
+def test_R24_5_main_without_ctx_runs_the_real_host_and_engine_checks(monkeypatch):
+    """Needs the network and the authenticated `gh` on the host (as the real run does)."""
+    import scripts.run_rotation_core_v2 as run
+    calls = {}
+    real_host, real_s1 = v2.host_checks, v2.stage1_release
+    def host_spy(*a, **k):
+        calls["host_api"] = a[2] if len(a) > 2 else k.get("api")
+        calls["host_record"] = real_host(*a, **k)
+        return calls["host_record"]
+    def s1_spy(*a, **k):
+        calls["engine_check"] = k.get("engine_check")
+        return real_s1(*a, **k)
+    monkeypatch.setattr(v2, "host_checks", host_spy)
+    monkeypatch.setattr(v2, "stage1_release", s1_spy)
+    with pytest.raises(v2.SealedRefusal) as ei:
+        run.main(["--stage", "pre1998"])
+    assert calls["host_api"] is None and calls["host_record"]["ruleset_id"] == v2.RULESET_ID      # the real API
+    assert calls["engine_check"] is v2.check_engine_commit                                       # the real check
+    assert "HOLDOUT_RELEASE_v2.json" in str(ei.value)                                            # then: no release
+
+
+def test_R24_5_no_option_or_environment_variable_sets_the_test_context(capsys):
+    import inspect, scripts.run_rotation_core_v2 as run
+    with pytest.raises(SystemExit):
+        run.main(["--help"])
+    help_text = capsys.readouterr().out
+    assert not re.search(r"ctx|host|engine.check|stub|anchor", help_text, re.I)
+    for f in (run.main, run.Ctx, run.verified_ledger, run.run_once_guard):
+        src = inspect.getsource(f)
+        assert "os.environ" not in src and "getenv" not in src and "environ[" not in src
+    assert inspect.signature(run.main).parameters["_ctx"].default is None
+
+
+def test_R21_3_nonfinite_pooled_p_is_counted_never_rejected_and_fails_its_hypothesis():
+    import scripts.run_rotation_core_v2 as run, copy
+    h, bad = run.holm_safe({"H1": float("nan"), "H2": 0.5, "H3": 0.001})
+    assert bad == ["H1"] and h["H1"]["reject_h0"] is False and h["H3"]["reject_h0"] is True
+    R = _passing_inputs()
+    point = copy.deepcopy(R["point"]); dd = copy.deepcopy(R["drawdown"])
+    pooled = {"block21": {"eq|base|weekday": {hy: {"observed_ann_CONDITIONAL_ON_GATE": 0.01, "p_one_sided_centred": 0.001}
+                                              for hy in run.HYPS}}}
+    pooled["block21"]["eq|base|weekday"]["H1"]["p_one_sided_centred"] = float("nan")
+    funds = {"eq|base": {hy: 0.01 for hy in run.HYPS}}
+    stand = {"block21": {f"eq|base|{hy}": {"observed_ann": 0.01, "p_one_sided_centred": 0.2} for hy in run.HYPS}}
+    n = run.nonfinite_by_hypothesis(pooled, point, dd, funds, stand)
+    assert n == {"H1": 1, "H2": 0, "H3": 0}
+    R["integrity_ok"] = {hy: n[hy] == 0 for hy in run.HYPS}
+    assert run.conjunction_legs("H1", R)["integrity"] is False
+    assert all(run.conjunction_legs("H3", R).values())
+    funds["eq|base"]["H3"] = float("nan"); point["eq|base"]["H2"]["h2020_2025"] = float("inf")
+    assert run.nonfinite_by_hypothesis(pooled, point, dd, funds, stand) == {"H1": 1, "H2": 1, "H3": 1}
+
+
+def test_R21_3_stage1_counts_nonfinite_gate_statistics(stage1):
+    d, e, lines, _, led = stage1
+    assert "count nonfinite_gate_statistics 0" in lines
+    assert any(ln.startswith("count dropped_industry_days_unique_eligible_industries_only") for ln in lines)
+
+
+def test_R21_4_every_stream_key_distinct_and_the_final_run_uses_exactly_them(e2e_pass):
+    import scripts.run_rotation_core_v2 as run
+    keys = run.stream_keys()                                             # B = 10,000: 20 chunks
+    assert len(keys) == len(set(keys)) == 4 * 2 * 20
+    states = {tuple(np.random.SeedSequence(run.SEED_BASE, spawn_key=k).generate_state(4)) for k in keys}
+    assert len(states) == len(keys)
+    assert all(isinstance(k, tuple) for k in E2E_KEYS)                   # no integer seed reaches the bootstrap
+    assert len(E2E_KEYS) == len(set(E2E_KEYS)) and set(E2E_KEYS) == set(run.stream_keys(200))
+
+
+def test_R21_5_fund_drawdowns_and_provenance(e2e_pass, tmp_path):
+    res = e2e_pass[1]
+    fd = res["funds"]["fund_drawdown_DESCRIPTIVE_not_a_leg_of_the_veto"]
+    assert len(fd) == 8 and all(set(v) == {"book", "matched_mix"} and v["book"] <= 0 for v in fd.values())
+    assert "through-2019 French file" in res["data_provenance"]
+
+
+def test_R21_6_rehearsal_on_synthetic_open_window(tmp_path):
+    import scripts.run_rotation_core_v2 as run
+    ind, fac = fixture_texts(start="1996-01-02", end="2019-12-31")
+    lines = []
+    e = run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lines.append, B_=20, engine_commit="E")
+    assert e["kind"] == "GATE" and e["window"] == "rehearsal_1998_2019"
+    assert set(k.split("|")[1] for k in e["gate_signs"]) == {"P1_1998_2008", "P2_2009_2019"} and len(e["gate_signs"]) == 16
+    assert lines and all(ln.startswith("REHEARSAL ") for ln in lines)
+    assert "REHEARSAL ledger START PHASE_A_CLEAN GATE" in lines
+
+
+def test_R21_6_rehearsal_refuses_inputs_outside_1996_2019():
+    import scripts.run_rotation_core_v2 as run
+    for start, end in (("1995-12-01", "2019-12-31"), ("1996-01-02", "2020-01-10")):
+        ind, fac = fixture_texts(start=start, end=end, n_ind=12)
+        with pytest.raises(v2.SealedRefusal):
+            run.rehearsal_command(io.StringIO(ind), io.StringIO(fac), out=lambda x: None, B_=20, engine_commit="E")
+
+
+def test_R21_6_window_text_keeps_only_dated_lines_in_range():
+    import scripts.run_rotation_core_v2 as run
+    ind, _ = fixture_texts(start="1994-01-03", end="2020-03-31", n_ind=6)
+    w = run.window_text(io.StringIO(ind))
+    run.check_rehearsal_input(w)
+    vw, _ = v2.load_french_industries(w, "2019-12-31")
+    assert vw.index.min() >= pd.Timestamp("1996-01-02") and vw.index.max() <= pd.Timestamp("2019-12-31")

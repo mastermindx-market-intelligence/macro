@@ -269,7 +269,7 @@ Items 1–15 are unchanged from above (amendment h items 1–8; F4 items 9–15)
 18. **S4:** the second reading drifts all three legs; signals stay on the governing reading (the header's words "used for the following month" and "rebalanced monthly" govern membership and the base; signals depend only on membership and the governing line).
 19. **S9/O2:** arming memory = armed at an age of at most 21 sessions (22 closes). Clarification.
 20. **S10:** a leg is observed if any member has a close.
-21. **S11:** seeds as listed under R16; shared indices across H1, H2, H3.
+21. **S11 / R21.4:** every confirmation stream is `numpy.random.SeedSequence(20261113, spawn_key=(stage, window, block, chunk))` with stage ids stage1 = 1, stage2 = 2, pooled = 3, rehearsal = 4 and window ids pre1998 = 1, h2020_2025 = 2, rehearsal_1998_2019 = 3, so every stream is distinct by construction (a test enumerates all 160 keys at B = 10,000 and their generated states). H1, H2 and H3 share indices within one window and block length. The 1998–2019 selection seeds are unchanged ("left as committed").
 22. **S1b(i):** warm state and warm holdings; scoring by slicing.
 23. **S1b(ii):** H2 pooled = paired difference, same weights and indices, no mix.
 24. **S1b(iii):** one-sided Holm governs; two-sided reported, labelled.
@@ -363,3 +363,122 @@ python -m pytest -q tests/test_rotation_core_v2.py tests/test_rotation_core_v2_f
 ```
 
 The reviewer's 79 at `0eeca4f5ea` were the first four files. The lead's 118 included `tests/test_rotation_core_evaluation.py` (39 tests, the shared simulator and statistics of `engine/rotation_core_evaluation.py`, which v2 imports). Per-file counts at the final commit are in the lead's report.
+
+## R21 — Phase B failures, retry rules, non-finite statistics, streams, rehearsal (CEO 15:20Z)
+
+0. **sitecustomize.** Final under R22.4 below.
+1. **An exception in Phase B** (amends R20.1 for PHASE_A_CLEAN without a record).
+   - After a clean Phase A, any exception while Phase B computes makes the runner push a GATE with `gate_open: false`, `closed_by: "phase_b_exception"` and the exception's type name only (no signs, no magnitudes, no message). That GATE is a closed gate under R17, final at any engine commit. The exceptions excluded are `MemoryError`, `OSError`, `KeyboardInterrupt` and `LedgerPushFailed`.
+   - In stage 2 the same rule records FINAL with every hypothesis FAIL and the same `closed_by`.
+   - For the four excluded types, and for process death, the PHASE_A_CLEAN entry stands and only the identical rerun is permitted.
+   - *(Note superseded by R24.1: the stage-1 reproduction is now Phase A2, before Phase B, and `SealedRefusal` is not exempt.)*
+2. **Retry rules, stated once.**
+   - (i) **INTEGRITY_ABORT:** never retried at the same engine commit (R19).
+   - (ii) **START with no Phase A outcome** (a failure in preparation or in Phase A code, before any statistic): a rerun at the same engine commit is permitted only under a new release that lists that START in `ledger_records_cited`. A rerun at a new engine commit follows R19's conditions. Nothing was computed, so neither is repair after a result.
+   - (iii) **PHASE_A_CLEAN without a record:** R20.1 as amended by R21.1 and R23.1.
+   - (iv) **A closed GATE:** final.
+3. **Non-finite statistics.**
+   - Phase A is unchanged: inputs only; book against the same book, legs against the same legs; never book against mix.
+   - A non-finite value in a Phase B statistic is not an abort. Its sign is not "+", and it is counted in the `integrity` block (`nonfinite_gate_statistics` at stage 1; `nonfinite_statistics_by_hypothesis` at stage 2).
+   - A non-finite pooled p enters Holm as 1 (never rejected) and is counted (`holm_safe`).
+   - Every hypothesis a non-finite statistic touches fails its integrity leg.
+4. **Bootstrap streams:** SeedSequence spawn keys; see list item 21.
+5. **Smaller items.**
+   - (1) Fund drawdown of the fund-executed book and of its matched mix is reported, descriptive only; it is not a leg of the veto.
+   - (2) The result text states: "Pre-1998 figures come from the through-2019 French file and the warm 2020 state from the full file's own history, both pinned by sha256 in the release manifest."
+   - (3) Accepted conventions, wording only:
+     - the monthly reset of retained members to equal weight is not charged under the drift reading, which affects only the stricter extra reading;
+     - a book switching into a leg at month-end also pays that leg's re-formation charge the next day, which is conservative.
+   - (4) S8's count covers eligible industries only, not the header's 366 scope. The printed key is `dropped_industry_days_unique_eligible_industries_only`.
+   - (5) The selection-rerun file's on-remote check is in `stage1_release` (`on_remote(selection, …)`).
+6. **Rehearsal (`--rehearsal`).**
+   - The complete stage-1 command (START, Phase A, Phase B, GATE; the same functions and ledger code) runs on the open 1998–2019 window only, with pseudo-eras 1998–2008 and 2009–2019, against a temporary bare remote. It never touches the real ledger or a release file, and every line is stamped `REHEARSAL`.
+   - Inputs are built in memory from the through-2019 files, keeping lines dated 1996-01-02..2019-12-31 by the date field alone. Any input whose first date is before 1996 or whose last date is after 2019-12-31 is refused.
+   - Its numbers are on an already-examined window and are evidence of nothing.
+   - Not run until authorised with the selection rerun.
+
+## R22 — the host's own record decides; ancestry pins; outside witness (CEO, after the SI reader's addendum)
+
+**Probe of `GET /repos/{owner}/{repo}/activity`, 2026-11-11 15:22Z.**
+- **Documentation:** `activity_type` ∈ {`push`, `force_push`, `branch_creation`, `branch_deletion`, `pr_merge`, `merge_queue_merge`}; cursor pagination via the Link header; no retention limit is stated.
+- **Scratch branch** `fable/rotation-core-ledger-probe-20261111` (two content-free commits on the freeze commit's tree; deleted at the end). The log read after each step was:
+  1. `branch_creation`;
+  2. `+ push`;
+  3. `+ force_push`;
+  4. `+ branch_deletion`;
+  5. `+ branch_creation` (re-created);
+  6. after the final deletion, `+ branch_deletion`.
+- **History is NOT lost on deletion:** the re-created branch's log still shows the earlier creation, the push, the force push and the deletion.
+- **Pagination** (`per_page=2`) returned all entries through the Link cursor.
+- The recorded log is `tests/data/rotation_core_activity_probe_20261111.json`.
+
+1. **On every invocation** of stage 1, stage 2 and the selection-rerun check, after the fetch and before anything else, the runner reads the whole log (all pages, `gh api --paginate`) and refuses unless:
+   - (a) the call succeeded and parsed;
+   - (b) the first entry is the branch's single `branch_creation` and every later entry is a plain `push`; any `force_push`, deletion or second creation refuses permanently;
+   - (c) the entries form one unbroken chain (`before` = previous `after`) from that creation, and the anchor commit lies inside it;
+   - (d) the newest `after` is the fetched head.
+   - **Anchor (a factual note on R22.1(c)):** the freeze commit `ac68f2e72a4de055c36b048cb02301ccd7544964` is not itself a push boundary. It arrived inside the push `3f5b44f3c6 → af488e68dd` (12:32:42Z), so no entry has it as `before` or `after`. The check therefore requires the chain to be complete from the branch's creation, and the anchor to be an ancestor of some entry's `after` and not of its `before`. This is at least as strict as "from the anchor".
+   - The entry count and the sha256 of the canonical (type, before, after) list are recorded in every ledger entry (`host`).
+   - On the real branch at `343347ea6b`: 34 entries, one chain, anchor inside, ruleset active.
+2. **No forced fetch.** The refspec has no `+`, so a non-fast-forward remote refuses. Each release pins `branch_head_at_release`, which must be an ancestor of the fetched head. The stage-2 release also pins `gate_commit`, which must be an ancestor and must contain the latest GATE entry.
+   - **Declared limit (R24.2):** a fresh clone rewound exactly to the release head is caught only by the host layers (ruleset 27041175 and the activity log's `force_push` entry) and by the outside witness, not by the local ancestry pin. The three layers are: the ruleset forbids the rewind; the activity log records it; the witness holds the shas outside this repository. Tests cover the host layers.
+3. **Outside witness.**
+   - The runner prints `WITNESS start_commit <40-hex>` after START, and `WITNESS gate_commit <40-hex> ledger_index <n>` after a successful GATE push and before any sign.
+   - The stage-2 release carries `witnessed` (the two shas and the acknowledgement times, filled by the CEO); the final result text cites it.
+4. **Start-up code, and push-state messages.**
+   - (1) Every module in `sys.modules` with a `__file__` must have its REAL path under the interpreter's stdlib, platstdlib, purelib, platlib or the repository; otherwise the run refuses. `versions()` pins `pth_sha256`, a sha256 over the sorted (relative name, sha256) of every `*.pth` in every site directory, and `pth_count`.
+   - **The sitecustomize deviation is accepted with these additions.** On this host the one loaded module whose real path is outside those roots is the distribution's `sitecustomize` (`/usr/lib/python3.12/sitecustomize.py` → `/etc/python3.12/sitecustomize.py`). It is accepted only where its link sits in the stdlib directory, with its content pinned (`sitecustomize_sha256`).
+   - (2) A push that did not confirm reports its state as UNKNOWN. The next invocation's fetch decides, and a gate record on the remote is final.
+   - (3) `main` passes the selection file as a parameter and never writes `v2.SELECTION_RESULT`.
+5. **Tests that now exercise their claim:**
+   - prefix and rewrite tests through a real temporary remote;
+   - force-push-back-before-START and delete-and-recreate against a temporary bare remote (non-forced fetch and ancestry pin; the host record for the fresh-clone case);
+   - activity-check tests on recorded JSON (clean chain, `force_push`, deletion, broken chain, truncated log, wrong head, other ref, API failure, unparsable body);
+   - the selection on-remote refusal asserted by message;
+   - the sitecustomize and `.pth` pins asserted by value and by refusal.
+
+## R23 — the reviewer's delta (CEO)
+
+1. **"Identical rerun only" binds permanently.** `start_allowed` scans ALL runs. A run with PHASE_A_CLEAN and no record, not later completed by a run of the same identity, binds every later START to its identity, whatever came after. This holds for stage 1 (GATE) and stage 2 (FINAL). The reviewer's D1 and D2 are tests that refuse. With this rule the GATE blob left in the local object store by a failed push is harmless: the forced rerun is deterministic. (N2) `append` re-evaluates the START's state rules on the freshly fetched entries, immediately before building the commit.
+2. **Ruleset 27041175** (`rotation-core-ledger-append-only`, rules `non_fast_forward` and `deletion`). After the fetch, the runner reads `GET /repos/…/rules/branches/<branch>` and `GET /repos/…/rulesets/27041175`, and refuses unless both rules are present, `enforcement == "active"` and `bypass_actors == []`. The ruleset id and `updated_at` are recorded in every ledger entry. The activity chain (R22.1) still catches "ruleset off, rewrite, ruleset on".
+3. **Remote identity.**
+   - The run refuses unless `git remote get-url origin` and `git remote get-url --push origin` both equal `https://github.com/mastermindx-market-intelligence/macro.git`.
+   - It refuses any `url.*.insteadof` or `url.*.pushinsteadof` at any level; this check runs first, because a rewrite changes what `get-url` reports.
+   - It refuses any `GIT_CONFIG*` environment variable.
+4. **Interpreter environment.**
+   - `PYTHONSTARTUP` and `PYTHONHOME` refuse, as `PYTHONPATH` does.
+   - The location test compares REAL paths; a test plants a link inside an allowed root that points outside, and it refuses.
+   - The documented sealed-run command line is `python -E scripts/run_rotation_core_v2.py --stage …`.
+5. **Phase A is an allowlist.** Every call in the four Phase A functions must be in an explicit set, never an arithmetic reduction. Every comparison must be one of the 17 reviewed forms present today. Arithmetic is limited to boolean masks, sums of counts and three reviewed tolerance and weight expressions. The checker rejects `count_nonzero(r > 0)`, a reduction, book-minus-mix, `mean`, `cumprod` and `max` (tests).
+6. **The planted edges run through `main()`** with the real `GitLedger` on a temporary bare remote, using real release files committed and pushed there. Two things are stubbed, through `Ctx` passed as `main(_ctx=…)`, which the command line and environment never set:
+   - the host API, with a chain built from the temporary remote's own history;
+   - the engine-commit check, because the test tree is not a commit.
+
+   The verdicts are as asserted. This replaces the in-memory end-to-end runs.
+7. **The fund veto fails closed:** it fires unless every estimate is finite and ≥ 0. A non-finite estimate is also counted in integrity (R21.3).
+8. **Test counts** come from one `--collect-only -q` at the final head (in the lead's report).
+
+**Sealed-run command lines:**
+
+```
+python -E scripts/run_rotation_core_v2.py --stage pre1998
+python -E scripts/run_rotation_core_v2.py --stage confirm
+```
+
+## R24 — rulings on the lead's five points (CEO)
+
+1. **A refusal in Phase B.**
+   - (a) **Phase A2: reproduction.** In stage 2, reproducing stage 1 is an integrity check on a window already released and read; it reveals nothing new. It runs after Phase A and before any 2020–2025 statistic: the magnitudes hash must equal the stage-1 GATE record's `magnitudes_sha256`, and the gate re-derived from the reproduced numbers must be open with signs equal to the record.
+     - **Outcome pushed before Phase B:** `REPRODUCTION_OK`, or `INTEGRITY_ABORT` with `reason: "stage1_not_reproduced"`. An exception during the reproduction gives `INTEGRITY_ABORT` with `reason: "stage1_reproduction_exception"` and the type only. In either abort case no 2020–2025 number is computed and nothing is printed but the reason.
+     - **Governed by R19:** an abort is not a final run and records no FINAL. A later run needs a new release from the CEO citing it, and can proceed only when the reproduction matches the recorded hash exactly. The stage-1 GATE record and its `magnitudes_sha256` are the fixed reference; no engine commit may change them.
+     - **Ledger order:** FINAL requires REPRODUCTION_OK.
+   - (b) **`SealedRefusal` is not exempt**, whatever its base class. It is caught explicitly before the `OSError` exemption; `LedgerPushFailed` stays exempt.
+     - Raised in Phase B, it is recorded like any other Phase B exception: stage 1 records a closed GATE, stage 2 a FINAL with every hypothesis FAIL, both with `closed_by: "phase_b_refusal"` and the type only.
+     - The design goal is that no refusal is reachable after that point.
+     - Tests: a planted refusal in each stage asserts the record; a reproduction mismatch leaves INTEGRITY_ABORT and no FINAL.
+2. **Declared limit:** a fresh clone rewound exactly to the release head is caught only by the host layers (ruleset 27041175 and the activity log's `force_push` entry) and by the outside witness, not by the local ancestry pin. (Written beside the three layers under R22.2.)
+3. **The anchor:** chain complete from the branch's creation, anchor inside one push. Accepted, stricter than the original wording.
+4. **sitecustomize:** the distribution `sitecustomize` keeps the one exception. Its link sits in the standard library and its content hash is pinned by the release; every other module is checked by real path. Accepted.
+5. **The test context:** accepted, with tests that:
+   - `main()` called as the command line calls it (no `_ctx`) runs the REAL host check (`api` None, so `gh api`) and passes the REAL engine-commit check to the release check, then refuses for lack of a release;
+   - the argument parser exposes no option, and `main`, `Ctx`, `verified_ledger` and `run_once_guard` read no environment variable, that could set the test context.

@@ -41,7 +41,8 @@ def write_selection_md(res, path):
     L += ["", f"**Selected setting: `{sel['selected']}`** ({sel['rule']}). {sel['inherit']}.",
           "Observed H1 excess over matched mix by setting (selection-window): " +
           ", ".join(f"{k} {_p(v)}" for k, v in sel["observed_by_setting"].items()), "",
-          f"Named episodes used for false-call counts: {', '.join(res['episodes'])}. Dropped industry-days (no imputation): {res['dropped_industry_days']}.", ""]
+          f"Named episodes used for false-call counts: {', '.join(res['episodes'])}. Dropped industry-days (no imputation; "
+          f"eligible industries only, not the header's 366 scope): {res['dropped_industry_days']}.", ""]
     open(path, "w").write("\n".join(L) + "\n")
 
 
@@ -68,5 +69,9 @@ def write_final_md(res, path):
                 L.append(f"| {blk}{' (sensitivity)' if blk != 'block21' else ''} | {key} | {h} | "
                          f"{_p(x['observed_ann_CONDITIONAL_ON_GATE'])} | {x['p_one_sided_centred']:.4f} | "
                          f"{hm['p_holm']:.4f} | {hm['reject_h0']} |")
-    L += ["", res["descriptive_only"], "", res["reporting_rule_i"], "", res["independence"], ""]
+    w = res.get("witnessed")
+    if w:
+        L += ["", f"Witnessed outside this repository (R22.3): start/release commit {w.get('start_commit')}, gate commit "
+                  f"{w.get('gate_commit')}; acknowledged {w.get('acknowledged_at')}."]
+    L += ["", res["descriptive_only"], "", res["data_provenance"], "", res["reporting_rule_i"], "", res["independence"], ""]
     open(path, "w").write("\n".join(L) + "\n")

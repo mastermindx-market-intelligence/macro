@@ -210,12 +210,21 @@ def run_selection():
 
 
 # ============================================================================ confirmation (R13, R16, R17, R18)
-SEEDS = {"stage1": 20261113, "stage2": 20261114, "pooled": 20261115}     # R13-h: fixed per stage before any read
+SEED_BASE = 20261113                  # R21.4: one base; every stream is a distinct SeedSequence spawn key
+STAGE_ID = {"stage1": 1, "stage2": 2, "pooled": 3, "rehearsal": 4}
+WINDOW_ID = {"pre1998": 1, "h2020_2025": 2, "rehearsal_1998_2019": 3}
+CHUNK = 500
 B_STAGE, BLOCK, BLOCK_SENS = 10_000, 21, 63
-OFF_BLOCK63 = 500_000                 # block-63 sensitivity stream: seed + 500000 + chunk
-OFF_WINDOW = {"pre1998": 0, "h2020_2025": 100_000}     # pooled test: one stream per window (stratified)
 PRE_START = pd.Timestamp("1928-01-02")
 ERAS = {"E1_1928_1945": (PRE_START, pd.Timestamp("1945-12-31")), "E2_1946_1997": (pd.Timestamp("1946-01-02"), v2.PRE_END)}
+PRE_SPEC = {"name": "pre1998", "stage": "stage1", "a": PRE_START, "z": v2.PRE_END, "eras": ERAS, "episodes": "LPEAK",
+            "label": "STAGE 1 of R13 (pre-1998; previously examined by Pro run B; not clean)"}
+REH_START, REH_END = pd.Timestamp("1998-01-02"), pd.Timestamp("2019-12-31")
+REH_SPEC = {"name": "rehearsal_1998_2019", "stage": "rehearsal", "a": REH_START, "z": REH_END,
+            "eras": {"P1_1998_2008": (REH_START, pd.Timestamp("2008-12-31")),
+                     "P2_2009_2019": (pd.Timestamp("2009-01-02"), REH_END)},
+            "episodes": "DPEAK",
+            "label": "REHEARSAL on the open, already-examined 1998-2019 window (pseudo-eras); evidence of nothing"}
 READINGS = ("eq", "drift")            # R14 leg-weighting readings
 COST_RUNS = ("base", "strict")        # R18
 CONVENTIONS = ("weekday", "fixed252")  # R15.5
@@ -239,15 +248,34 @@ def stage2_inputs(fund_dir=FUND_DIR) -> dict:
     return d
 
 
+def stream(stage: str, window: str, block: int):
+    """R21.4: chunk c of a stream draws from numpy.random.SeedSequence(SEED_BASE, spawn_key=(stage, window, block,
+    c)); distinct keys give independent, non-overlapping streams."""
+    sid, wid = STAGE_ID[stage], WINDOW_ID[window]
+    return lambda c: np.random.SeedSequence(SEED_BASE, spawn_key=(sid, wid, int(block), int(c)))
+
+
+CONFIRMATION_STREAMS = (("stage1", "pre1998"), ("stage2", "h2020_2025"), ("pooled", "pre1998"), ("pooled", "h2020_2025"))
+
+
+def stream_keys(B_=None) -> list:
+    """Every spawn key the confirmation runs use (stage 1, stage 2 standalone, both pooled streams; both blocks)."""
+    n = -(-(B_STAGE if B_ is None else B_) // CHUNK)
+    return [(STAGE_ID[st], WINDOW_ID[w], blk, c) for st, w in CONFIRMATION_STREAMS for blk in (BLOCK, BLOCK_SENS)
+            for c in range(n)]
+
+
 def seeds_record() -> dict:
-    """S11: every seed used by the confirmation runs, pinned by the release's engine commit."""
+    """S11/R21.4: every stream used by the confirmation runs, pinned by the release's engine commit."""
+    f = lambda st, w: {f"block{b}": f"SeedSequence({SEED_BASE}, spawn_key=({STAGE_ID[st]}, {WINDOW_ID[w]}, {b}, c))"
+                       for b in (BLOCK, BLOCK_SENS)}
     return {
-        "stage1_standalone_pre1998": {"block21": f"{SEEDS['stage1']} + c", "block63": f"{SEEDS['stage1']} + {OFF_BLOCK63} + c"},
-        "stage2_standalone_2020_2025": {"block21": f"{SEEDS['stage2']} + c", "block63": f"{SEEDS['stage2']} + {OFF_BLOCK63} + c"},
-        "pooled_pre1998": {"block21": f"{SEEDS['pooled']} + c", "block63": f"{SEEDS['pooled']} + {OFF_BLOCK63} + c"},
-        "pooled_2020_2025": {"block21": f"{SEEDS['pooled']} + {OFF_WINDOW['h2020_2025']} + c",
-                             "block63": f"{SEEDS['pooled']} + {OFF_WINDOW['h2020_2025']} + {OFF_BLOCK63} + c"},
-        "c": "chunk number 0..19 (500 resamples per chunk, B = 10,000)",
+        "stage1_standalone_pre1998": f("stage1", "pre1998"),
+        "stage2_standalone_2020_2025": f("stage2", "h2020_2025"),
+        "pooled_pre1998": f("pooled", "pre1998"),
+        "pooled_2020_2025": f("pooled", "h2020_2025"),
+        "rehearsal_1998_2019": f("rehearsal", "rehearsal_1998_2019"),
+        "c": "chunk number 0..19 (500 resamples per chunk, B = 10,000); every (stage, window, block, chunk) key distinct",
         "shared_indices": "within one window and one block length, H1, H2 and H3 and all four reading x cost runs use "
                           "the SAME resample indices; the three Holm contrasts therefore share indices (stratified: "
                           "the two windows are resampled separately, no block spans the join)",
@@ -352,14 +380,14 @@ def observed_raw(ser) -> dict:
     return {k: (float(s[1].mean()) if s[0] == "paired" else v2.raw_mix_excess(*s[1:])) for k, s in ser.items()}
 
 
-def standalone(ser, ii, B_, seed) -> dict:
+def standalone(ser, ii, B_, stage: str, window: str) -> dict:
     """One window alone: observed, 95% interval, one-sided centred p (governing) and two-sided p (labelled), for
     block 21 (governs) and block 63 (sensitivity)."""
     obs = observed_raw(ser)
     ann = v2.ann_factor(ii)
     out = {}
-    for blk, s0 in ((BLOCK, seed), (BLOCK_SENS, seed + OFF_BLOCK63)):
-        dr = v2.bootstrap_draws(ser, B_, blk, s0)
+    for blk in (BLOCK, BLOCK_SENS):
+        dr = v2.bootstrap_draws(ser, B_, blk, stream(stage, window, blk), chunk=CHUNK)
         out[f"block{blk}"] = {k: {"observed_ann": obs[k] * ann, "ci95_ann": rc.ci95(dr[k] * ann),
                                   "p_one_sided_centred": rc.centred_p(dr[k], obs[k]),
                                   "p_two_sided_centred_LABELLED_NOT_GOVERNING": v2.two_sided_p(dr[k], obs[k]),
@@ -492,17 +520,18 @@ def strict_inequality_violations(runs, rf, a, z) -> int:
 
 
 # ---------------------------------------------------------------------------- preparation (no statistic)
-def prepare_pre1998(ind_path=IND_D, fact_path=FACT) -> dict:
-    """Reads nothing after 1997-12-31; builds states and simulates every book at both readings and cost runs.
-    Computes no statistic."""
-    end = v2.PRE_END
-    v2.assert_stage1_window(end)
-    h, b = v2.selected_setting()
+def prepare_pre1998(ind_path=IND_D, fact_path=FACT, spec=PRE_SPEC, selection=None, root=None) -> dict:
+    """Reads nothing after the spec's end (1997-12-31 for stage 1); builds states and simulates every book at both
+    readings and cost runs. Computes no statistic."""
+    end = spec["z"]
+    if spec is PRE_SPEC:
+        v2.assert_stage1_window(end)
+    h, b = v2.selected_setting(selection, root)
     D = build(ind_path, fact_path, end, h, b)
-    assert D["vw"].index.max() <= end and D["mkt"].index.max() <= end, "stage 1 read a date after 1997-12-31"
+    assert D["vw"].index.max() <= end and D["mkt"].index.max() <= end, "a date after the window end was read"
     runs = {(r_, c_): run_books(D["legs"], D["states"], D["rf"], end, r_, c_) for r_ in READINGS for c_ in COST_RUNS}
     return {"D": D, "runs": runs, "legs": D["legs"], "states": D["states"], "rf": D["rf"], "h": h, "b": b,
-            "a": PRE_START, "z": end, "windows": dict(ERAS)}
+            "a": spec["a"], "z": end, "windows": dict(spec["eras"]), "spec": spec}
 
 
 def prepare_h2020(full_ind, fact, h, b, z) -> dict:
@@ -525,6 +554,8 @@ def prepare_funds(states, rf, fund_dir, a, z) -> dict:
 
 # ---------------------------------------------------------------------------- Phase B: statistics (after a clean A)
 def pre1998_stats(prep: dict, B_=B_STAGE) -> dict:
+    spec = prep.get("spec", PRE_SPEC)
+    PRE_START_, ERAS_ = spec["a"], spec["eras"]
     """Stage-1 statistics; only ever called after a clean Phase A. Magnitudes (hashed, never written at stage 1
     unless the gate closes), the sixteen gate signs, H2's signs (never printed or written at stage 1)."""
     import scripts.run_rotation_core_v1 as v1
@@ -534,40 +565,44 @@ def pre1998_stats(prep: dict, B_=B_STAGE) -> dict:
     ew_proxy = ew.where(vw.notna().cumsum() >= 252).mean(axis=1)
     level = (1 + mkt.reindex(s).fillna(0)).cumprod()
     eps = {}
-    for name, (a_, b2, c) in v1.LPEAK.items():
-        ep = rc.find_episode(level[(s >= PRE_START) & (s <= end)], a_, b2, c)
+    for name, (a_, b2, c) in getattr(v1, spec["episodes"]).items():
+        ep = rc.find_episode(level[(s >= PRE_START_) & (s <= end)], a_, b2, c)
         if ep:
             eps[name] = ep
-    mag, signs, h2signs = {}, {}, {}
+    mag, signs, h2signs, era_values = {}, {}, {}, []
     for (reading, cost), (bks, LR) in runs.items():
         yard = {"French_market_(SPY_yardstick)": mkt, "EW_proxy_(RSP_yardstick)": ew_proxy, "BASE_equal_weight": LR["BASE"]}
-        blk = window_block(bks, LR, rf, PRE_START, end, ERAS, yard, level, mkt, eps)
-        h2 = paired_h2(bks, PRE_START, end, ERAS)
+        blk = window_block(bks, LR, rf, PRE_START_, end, ERAS_, yard, level, mkt, eps)
+        h2 = paired_h2(bks, PRE_START_, end, ERAS_)
         mag[f"{reading}|{cost}"] = {"books": blk, "H2_paired": h2}
         for hyp in v2.OPENING_HYPOTHESES:
-            for e in ERAS:
+            for e in ERAS_:
+                era_values.append(blk[hyp]["eras"][e])
                 signs[f"{hyp}|{e}|{reading}|{cost}"] = v2.sign(blk[hyp]["eras"][e])
-        for e in ERAS:
+        for e in ERAS_:
             h2signs[f"H2|{e}|{reading}|{cost}"] = v2.sign(h2[e])
-    ser, ii = window_series(runs, rf, PRE_START, end)
-    mag["standalone_pre1998"] = standalone(ser, ii, B_, SEEDS["stage1"])
+    ser, ii = window_series(runs, rf, PRE_START_, end)
+    mag["standalone_" + spec["name"]] = standalone(ser, ii, B_, spec["stage"], spec["name"])
     idx = ii
-    integrity = {"sessions_per_era": {e: int(((idx >= a_) & (idx <= z)).sum()) for e, (a_, z) in ERAS.items()},
+    integrity = {"sessions_per_era": {e: int(((idx >= a_) & (idx <= z)).sum()) for e, (a_, z) in ERAS_.items()},
                  "offence_members_min": int(D["bd"]["n_members"][idx].min()),
                  "offence_members_max": int(D["bd"]["n_members"][idx].max()),
                  "deferred_executions_total_incl_warmup": int(sum(x.meta["deferred_executions"]
                                                                    for r_ in runs.values() for x in r_[0].values())),
                  "days_holding_after_last_close_total": int(sum(x.meta["days_holding_an_asset_after_its_last_close"]
                                                                 for r_ in runs.values() for x in r_[0].values())),
-                 "dropped_industry_days_unique": int(legs.dropped_industry_days),
+                 # R21.5(4): eligible industries only (members of a formed base), not the header's 366 scope
+                 "dropped_industry_days_unique_eligible_industries_only": int(legs.dropped_industry_days),
+                 # R21.3: a non-finite statistic is not an abort; it is counted here and its sign is not '+'
+                 "nonfinite_gate_statistics": int(sum(not np.isfinite(x) for x in era_values)),
                  "state_sessions": {k_: {nm: int((st.reindex(idx) == v).sum()) for nm, v in
                                          (("NEUTRAL", 0), ("DEFEND", 1), ("ATTACK", 2))}
                                     for k_, st in (("H1", D["states"]["H1"]), ("price_only", D["states"]["PO"]),
                                                    ("H3", D["states"]["H3"]))},
                  "episodes_found": len(eps)}
-    mag.update({"label": "STAGE 1 of R13 (pre-1998; previously examined by Pro run B; not clean)",
+    mag.update({"label": spec["label"],
                 "header_sha256": v2.FROZEN_V2_SHA256, "selected_setting": f"h{prep['h']:g}_b{prep['b']:g}",
-                "window": [str(PRE_START.date()), str(end.date())], "integrity": integrity,
+                "window": [str(PRE_START_.date()), str(end.date())], "integrity": integrity,
                 "seeds": seeds_record(), "B": B_, "block": BLOCK, "block_sensitivity": BLOCK_SENS,
                 "H2_signs": h2signs})
     return {"magnitudes": mag, "signs": signs, "h2_signs": h2signs, "integrity": integrity, "window_index": ii}
@@ -617,19 +652,32 @@ def record_phase_a(ledger, start_index: int, A: dict) -> dict:
                           "nonzero_counts": counts, "magnitudes": "none computed"})
 
 
+PHASE_B_SURVIVABLE = (MemoryError, OSError, KeyboardInterrupt)     # R21.1 (LedgerPushFailed is an OSError)
+
+
+def _survivable_not_refusal(e) -> bool:
+    """R24.1(b): SealedRefusal (a PermissionError, hence an OSError) is NOT exempt; LedgerPushFailed is."""
+    return isinstance(e, PHASE_B_SURVIVABLE) and (isinstance(e, v2.LedgerPushFailed) or not isinstance(e, v2.SealedRefusal))
+
+
+PHASE_B_SURVIVABLE_ONLY = (MemoryError, KeyboardInterrupt, OSError)   # used only after SealedRefusal is caught first
+
+
 def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, ind_path, fact_path,
-                   inputs_sha: dict, B_=B_STAGE, publish_path=None, out=print) -> dict:
+                   inputs_sha: dict, B_=B_STAGE, publish_path=None, out=print, spec=PRE_SPEC, selection=None,
+                   root=None) -> dict:
     """R20.1 stage 1. START pushed before anything is loaded; Phase A outcome pushed before any statistic; the gate
     record pushed BEFORE any sign is printed or written elsewhere (a failed push prints nothing about signs and
     exits non-zero). Exceptions carry no value."""
     import json, warnings
     warnings.filterwarnings("ignore")
-    start = start_entry("stage1", release_sha, engine_commit, inputs_sha)
+    start = start_entry(spec["stage"], release_sha, engine_commit, inputs_sha)
     v2.start_allowed(ledger.entries(), start, release)
-    s = ledger.append(start)
+    s = ledger.append(start, precheck=lambda cur: v2.start_allowed(cur, start, release))     # R23.1 N2
+    out(f"WITNESS start_commit {ledger.last_commit}")                                        # R22.3
     try:
-        prep = prepare_pre1998(ind_path, fact_path)
-        A = phase_a([("pre1998", prep)])
+        prep = prepare_pre1998(ind_path, fact_path, spec, selection, root)
+        A = phase_a([(spec["name"], prep)])
     except v2.SealedRefusal:
         raise
     except Exception as e:
@@ -641,26 +689,45 @@ def stage1_command(ledger, release: dict, release_sha: str, engine_commit: str, 
         out(f"INTEGRITY_ABORT recorded as ledger entry {pa['index']}: no gate statistic computed, no sign; "
             "not a stage-1 gate result (R19 item 1)")
         return dict(pa, integrity_abort=True)
-    try:
+    try:                                                   # ---- Phase B (R21.1)
         R = pre1998_stats(prep, B_)
-    except Exception as e:
-        raise SystemExit(f"stage 1 failed in Phase B: {type(e).__name__} (message withheld); the Phase-A-clean "
-                         "entry stands: only the identical rerun is permitted (R20.1)") from None
-    signs = R["signs"]
-    gate_open, per = gate_decision(signs)
-    status = {h_: ("OPEN" if per[h_] else "FAILED") for h_ in v2.OPENING_HYPOTHESES}
-    status["H2"] = "NOT SHOWN (decided at the final conjunction)" if gate_open else "FAILED (closed gate, amendment f)"
-    sha = v2.magnitudes_sha(R["magnitudes"])
+        signs = R["signs"]
+        gate_open, per = gate_decision(signs, tuple(spec["eras"]))
+        status = {h_: ("OPEN" if per[h_] else "FAILED") for h_ in v2.OPENING_HYPOTHESES}
+        status["H2"] = "NOT SHOWN (decided at the final conjunction)" if gate_open else "FAILED (closed gate, amendment f)"
+        sha = v2.magnitudes_sha(R["magnitudes"])
+    except BaseException as e:
+        if _survivable_not_refusal(e):
+            raise SystemExit(f"stage 1 failed in Phase B: {type(e).__name__} (message withheld); the Phase-A-clean "
+                             "entry stands: only the identical rerun is permitted (R20.1, R21.1)") from None
+        if not isinstance(e, Exception):
+            raise
+        # R21.1/R24.1(b): once an era excess may exist, a failure can depend on it: record a CLOSED gate, type only.
+        tname = type(e).__name__
+        closed_by = "phase_b_refusal" if isinstance(e, v2.SealedRefusal) else "phase_b_exception"
+        try:
+            ledger.append({"kind": "GATE", "start_index": s["index"], "utc": _now(), "gate_open": False,
+                           "closed_by": closed_by, "exception_type": tname})
+        except v2.LedgerPushFailed:
+            raise SystemExit(f"stage 1 failed in Phase B ({tname}); the closed-gate push did not confirm: its state is "
+                             "UNKNOWN; the next invocation's fetch decides, and a gate record on the remote is final "
+                             "(R22.4(2))") from None
+        out(f"GATE closed_by {closed_by} {tname}")
+        raise SystemExit(f"stage 1: Phase B raised {tname}; a closed gate is recorded (R21.1)") from None
     rec = {"kind": "GATE", "start_index": s["index"], "utc": _now(), "selected_setting": R["magnitudes"]["selected_setting"],
            "gate_signs": signs, "integrity": R["integrity"], "hypothesis_status": status,
            "gate_rule": "open iff H1 or H3 has exactly its eight signs, all '+': positive excess over its era-alone "
                         "matched mix in both eras under both leg readings in both the base and the strict cost run",
            "gate_open": bool(gate_open), "magnitudes_sha256": sha, "seeds": seeds_record()}
+    if spec is not PRE_SPEC:
+        rec["window"] = spec["name"]
     try:
         g = ledger.append(rec)
     except v2.LedgerPushFailed:
-        raise SystemExit("stage 1: the gate record could not be pushed; nothing about signs is printed or written. "
-                         "Only the identical rerun is permitted (R20.1)") from None
+        raise SystemExit("stage 1: the gate record's push did not confirm; nothing about signs is printed or written. "
+                         "Its state is UNKNOWN: the next invocation's fetch decides; if the gate record is on the "
+                         "remote it is final (R22.4(2))") from None
+    out(f"WITNESS gate_commit {ledger.last_commit} ledger_index {g['index']}")              # R22.3, before any sign
     for k in sorted(signs):
         out(f"GATE_SIGN {k.replace('|', ' ')} {signs[k]}")
     for k, v in _flat(R["integrity"]):
@@ -686,8 +753,9 @@ def conjunction_legs(hyp: str, R: dict) -> dict:
     R: {"holm": {"reading|cost|conv": {hyp: {"reject_h0": bool}}},
         "point": {"reading|cost": {hyp: {"pre1998", "E1_1928_1945", "E2_1946_1997", "h2020_2025"}}},
         "drawdown": {"reading|cost": {hyp: {"pre1998": (book, ref), "h2020_2025": (book, ref)}}},
-        "integrity_ok": bool}"""
-    legs = {"integrity": R["integrity_ok"] is True}
+        "integrity_ok": bool or {hyp: bool} (R21.3: a non-finite statistic touching a hypothesis fails it)}"""
+    ok = R["integrity_ok"]
+    legs = {"integrity": (ok.get(hyp) if isinstance(ok, dict) else ok) is True}
     for reading in READINGS:
         for cost in COST_RUNS:
             rc_ = f"{reading}|{cost}"
@@ -705,6 +773,16 @@ def fund_veto(estimates: dict) -> bool:
     return v2.tradable_veto(estimates)
 
 
+def fund_drawdowns(Fp: dict) -> dict:
+    """R21.5(1): max drawdown of the fund-executed book and of its matched mix on 2020-2025, every run; reported."""
+    out = {}
+    for (reading, cost), (bks, LR) in Fp["runs"].items():
+        for hyp in ("H1", "H3"):
+            ii, r, W, L = v2.window_arrays(bks[hyp], LR, Fp["rf"], Fp["a"], Fp["z"])
+            out[f"{reading}|{cost}|{hyp}"] = {"book": v2.max_drawdown(r), "matched_mix": v2.max_drawdown(v2.mix_series(W, L))}
+    return out
+
+
 def fund_stats(Fp: dict) -> dict:
     """F4 + R18 + R19.3, Phase B: point estimates on 2020-2025 alone, both readings, base and strict; H2 = paired
     difference of the fund-executed H1 and price-only books. Named mapping descriptive (hindsight)."""
@@ -718,13 +796,13 @@ def fund_stats(Fp: dict) -> dict:
     return {"estimates": est,
             "named_mapping_DESCRIPTIVE_hindsight_not_a_pass_condition":
                 {"H1_excess_eq_base": v2.window_excess(nb["H1"], nLR, rff, a, z)},
-            "fund_drawdown_reported_not_binding": {k: v2.max_drawdown(b_["H1"].returns.loc[a:z])
-                                                   for k, (b_, _) in ((f"{r}|{c}", v) for (r, c), v in Fp["runs"].items())},
+            "fund_drawdown_DESCRIPTIVE_not_a_leg_of_the_veto": fund_drawdowns(Fp),
             "veto": {h_: fund_veto({k: est[k][h_] for k in est}) for h_ in HYPS}}
 
 
 def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expected_signs: dict, ledger,
-                     start_index: int, B_=B_STAGE, h_end=v2.H_END, out=print, inputs_sha=None, engine_commit=None) -> dict:
+                     start_index: int, B_=B_STAGE, h_end=v2.H_END, out=print, inputs_sha=None, engine_commit=None,
+                     selection=None, root=None) -> dict:
     """S1 + R19.1 + R20: prepare pre-1998, 2020-2025 and the fund tier (books simulated, no statistic); Phase A over
     all three, its outcome pushed to the ledger; IntegrityAbort before any 2020-2025 number if not clean. Then Phase
     B: pre-1998 recomputed, its magnitudes hash REQUIRED to reproduce (R20.6), the gate re-derived from the
@@ -735,7 +813,7 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
         raise v2.SealedRefusal("refused: the reproduction hash is required (R20.6)")
     if not isinstance(expected_signs, dict) or not v2.gate_decision(expected_signs)[0]:
         raise v2.SealedRefusal("refused: the recorded gate signs are required and must be open (R20.3)")
-    Pp = prepare_pre1998(pre_ind, fact)
+    Pp = prepare_pre1998(pre_ind, fact, PRE_SPEC, selection, root)
     h, b = Pp["h"], Pp["b"]
     a, z = v2.H_START, pd.Timestamp(h_end)
     Hp = prepare_h2020(full_ind, fact, h, b, z)
@@ -745,14 +823,80 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
     record_phase_a(ledger, start_index, A)
     if not A["clean"]:
         raise IntegrityAbort(A)
-    # ---- Phase B
+    # ---- Phase A2 (R24.1(a)): reproduce stage 1 on the already released and read window, BEFORE any 2020-2025
+    # statistic; its outcome is pushed before Phase B starts.
+    reason, tname = None, None
+    try:
+        P = pre1998_stats(Pp, B_)
+        reopen, _ = v2.gate_decision(P["signs"])                     # R20.3: nothing recorded is trusted
+        if v2.magnitudes_sha(P["magnitudes"]) != expected_sha or not reopen or P["signs"] != expected_signs:
+            reason = "stage1_not_reproduced"
+    except v2.LedgerPushFailed:
+        raise
+    except v2.SealedRefusal as e:                                    # not exempt (R24.1(b)); nothing new revealed
+        reason, tname = "stage1_reproduction_exception", type(e).__name__
+    except PHASE_B_SURVIVABLE_ONLY:
+        raise
+    except Exception as e:
+        reason, tname = "stage1_reproduction_exception", type(e).__name__
+    if reason is not None:
+        ledger.append({"kind": "INTEGRITY_ABORT", "start_index": start_index, "utc": _now(), "reason": reason,
+                       **({"exception_type": tname} if tname else {})})
+        raise Stage1NotReproduced(reason)
+    ledger.append({"kind": "REPRODUCTION_OK", "start_index": start_index, "utc": _now(),
+                   "magnitudes_sha256": expected_sha})
+    try:                                                   # ---- Phase B (R21.1, R24.1(b))
+        return _final_phase_b(P, Pp, Hp, Fp, A, h, b, a, z, fund_dir, B_)
+    except v2.LedgerPushFailed:
+        raise
+    except v2.SealedRefusal as e:                          # R24.1(b): a refusal is not exempt, whatever its base
+        raise PhaseBException(type(e).__name__, "phase_b_refusal") from None
+    except PHASE_B_SURVIVABLE_ONLY:
+        raise
+    except Exception as e:
+        raise PhaseBException(type(e).__name__, "phase_b_exception") from None
+
+
+class Stage1NotReproduced(Exception):
+    """R24.1(a): Phase A2 found the stage-1 magnitudes or gate not reproduced; carries the reason only."""
+
+
+class PhaseBException(Exception):
+    """R21.1/R24.1(b): a non-exempt exception after the integrity steps; carries the type name and how it closed."""
+    def __init__(self, tname, closed_by="phase_b_exception"):
+        super().__init__(tname)
+        self.tname, self.closed_by = tname, closed_by
+
+
+def holm_safe(ps: dict) -> tuple[dict, list]:
+    """R21.3: a non-finite p never enters Holm as a value; it enters as 1 (never rejected) and is counted."""
+    bad = sorted(h for h, p in ps.items() if not np.isfinite(p))
+    return rc.holm({h: (p if np.isfinite(p) else 1.0) for h, p in ps.items()}), bad
+
+
+def nonfinite_by_hypothesis(pooled: dict, point: dict, dd: dict, fund_est: dict, stand: dict) -> dict:
+    """R21.3: every non-finite Phase B statistic that touches a hypothesis, counted per hypothesis."""
+    bad = lambda x: not (isinstance(x, (int, float, np.floating)) and np.isfinite(x))
+    n = {h: 0 for h in HYPS}
+    for blk in pooled.values():
+        for hy in blk.values():
+            for h, x in hy.items():
+                n[h] += bad(x["observed_ann_CONDITIONAL_ON_GATE"]) + bad(x["p_one_sided_centred"])
+    for rc_ in point:
+        for h in HYPS:
+            n[h] += sum(bad(v) for v in point[rc_][h].values())
+            n[h] += sum(bad(v) for pair in dd[rc_][h].values() for v in pair)
+    for est in fund_est.values():
+        for h in HYPS:
+            n[h] += bad(est[h])
+    for blk in stand.values():
+        for k, x in blk.items():
+            n[k.rsplit("|", 1)[1]] += bad(x["observed_ann"]) + bad(x["p_one_sided_centred"])
+    return n
+
+
+def _final_phase_b(P, Pp, Hp, Fp, A, h, b, a, z, fund_dir, B_) -> dict:
     import scripts.run_rotation_core_v1 as v1  # noqa: F401
-    P = pre1998_stats(Pp, B_)
-    v2.verify_reproduction(P["magnitudes"], expected_sha)
-    reopen, _ = v2.gate_decision(P["signs"])                  # R20.3: nothing recorded is trusted
-    if not reopen or P["signs"] != expected_signs:
-        raise v2.SealedRefusal("refused: the gate re-derived from the reproduced numbers is not open or its signs "
-                               "differ from the recorded ones")
     D, runs = Hp["D"], Hp["runs"]
     rf, mkt = D["rf"], D["mkt"]
     s = D["vw"].index
@@ -770,12 +914,12 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
                                        "H2_paired": paired_h2(bks, a, z, {})}
     ser_h, ii_h = window_series(runs, rf, a, z)
     ser_p, ii_p = window_series(Pp["runs"], Pp["rf"], PRE_START, v2.PRE_END)
-    stand = standalone(ser_h, ii_h, B_, SEEDS["stage2"])
+    stand = standalone(ser_h, ii_h, B_, "stage2", "h2020_2025")
     obs_p, obs_h = observed_raw(ser_p), observed_raw(ser_h)
     pooled, holm = {}, {}
-    for blk, extra in ((BLOCK, 0), (BLOCK_SENS, OFF_BLOCK63)):
-        dp = v2.bootstrap_draws(ser_p, B_, blk, SEEDS["pooled"] + OFF_WINDOW["pre1998"] + extra)
-        dh = v2.bootstrap_draws(ser_h, B_, blk, SEEDS["pooled"] + OFF_WINDOW["h2020_2025"] + extra)
+    for blk in (BLOCK, BLOCK_SENS):
+        dp = v2.bootstrap_draws(ser_p, B_, blk, stream("pooled", "pre1998", blk), chunk=CHUNK)
+        dh = v2.bootstrap_draws(ser_h, B_, blk, stream("pooled", "h2020_2025", blk), chunk=CHUNK)
         for conv in CONVENTIONS:
             c = v2.pooled_weights([ii_p, ii_h], conv)
             for reading in READINGS:
@@ -791,7 +935,7 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
                             "p_one_sided_centred": rc.centred_p(d, o),
                             "p_two_sided_centred_LABELLED_NOT_GOVERNING": v2.two_sided_p(d, o)}
                         ps[hyp] = rc.centred_p(d, o)
-                    holm.setdefault(f"block{blk}", {})[key] = rc.holm(ps)
+                    holm.setdefault(f"block{blk}", {})[key] = holm_safe(ps)[0]
     funds = fund_stats(Fp)
     point, dd = {}, {}
     for reading in READINGS:
@@ -808,7 +952,9 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
                                 "h2020_2025": hm["H2_paired"]["window"]}
             dd[rc_]["H2"] = {w: (x["H2_paired"]["max_drawdown_H1"], x["H2_paired"]["max_drawdown_price_only"])
                              for w, x in (("pre1998", pm), ("h2020_2025", hm))}
-    Rc = {"holm": holm[f"block{BLOCK}"], "point": point, "drawdown": dd, "integrity_ok": A["clean"]}
+    nonfinite = nonfinite_by_hypothesis(pooled, point, dd, funds["estimates"], stand)
+    Rc = {"holm": holm[f"block{BLOCK}"], "point": point, "drawdown": dd,
+          "integrity_ok": {hyp: bool(A["clean"] and nonfinite[hyp] == 0) for hyp in HYPS}}
     verdicts = {}
     for hyp in HYPS:
         lg = conjunction_legs(hyp, Rc)
@@ -826,6 +972,9 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
             "pre1998": P["magnitudes"], "h2020_2025": blocks, "standalone_2020_2025_OUT_OF_SAMPLE_EFFECT_SIZE": stand,
             "pooled_CONDITIONAL_ON_GATE": pooled, "holm_m3": holm, "governing": "block 21, one-sided centred p",
             "funds": funds, "strict_inequality_violations": A["strict_inequality_violations"],
+            "integrity": {"nonfinite_statistics_by_hypothesis": nonfinite},
+            "data_provenance": "Pre-1998 figures come from the through-2019 French file and the warm 2020 state from "
+                               "the full file's own history, both pinned by sha256 in the release manifest (R21.5).",
             "verdicts": verdicts, "seeds": seeds_record(), "conjunction_inputs": Rc,
             "descriptive_only": "Yardsticks (vs_yardsticks), named episodes, false-DEFEND counts, the state split and "
                                 "the named fund mapping are descriptive only; none enters any pass condition (R19.5).",
@@ -838,26 +987,44 @@ def final_evaluation(pre_ind, full_ind, fact, fund_dir, expected_sha: str, expec
 
 
 def confirm_command(ledger, r2: dict, release_sha: str, engine_commit: str, pre_ind, full_ind, fact, fund_dir,
-                    inputs_sha: dict, B_=B_STAGE, out=print) -> dict:
+                    inputs_sha: dict, B_=B_STAGE, out=print, selection=None, root=None) -> dict:
     """R20.1 stage 2: START pushed before anything is loaded; Phase A outcome pushed; the FINAL record (verdicts and
     the results hash) pushed before any result is printed or written."""
     start = start_entry("stage2", release_sha, engine_commit, inputs_sha)
     v2.start_allowed(ledger.entries(), start, r2)
-    s = ledger.append(start)
+    s = ledger.append(start, precheck=lambda cur: v2.start_allowed(cur, start, r2))         # R23.1 N2
+    out(f"WITNESS start_commit {ledger.last_commit}")
     g = r2["_gate_latest"]
     try:
         res = final_evaluation(pre_ind, full_ind, fact, fund_dir, g["magnitudes_sha256"], g["gate_signs"], ledger,
-                               s["index"], B_=B_, out=out, inputs_sha=inputs_sha, engine_commit=engine_commit)
+                               s["index"], B_=B_, out=out, inputs_sha=inputs_sha, engine_commit=engine_commit,
+                               selection=selection, root=root)
     except IntegrityAbort:
         out("INTEGRITY_ABORT: no 2020-2025 number computed; recorded in the ledger")
         return {"integrity_abort": True}
+    except Stage1NotReproduced as e:
+        out(f"INTEGRITY_ABORT {e}")                                  # the reason only (R24.1(a))
+        return {"integrity_abort": True, "reason": str(e)}
+    except PhaseBException as e:
+        tname = e.tname
+        try:
+            ledger.append({"kind": "FINAL", "start_index": s["index"], "utc": _now(),
+                           "verdicts": {h_: "FAIL" for h_ in HYPS}, "closed_by": e.closed_by,
+                           "exception_type": tname})
+        except v2.LedgerPushFailed:
+            raise SystemExit(f"stage 2 failed in Phase B ({tname}); the FINAL push did not confirm: state UNKNOWN, the "
+                             "next invocation's fetch decides (R22.4(2))") from None
+        out(f"FINAL closed_by {e.closed_by} {tname}: every hypothesis FAIL (R21.1, R24.1)")
+        return {"phase_b_exception": tname, "verdicts": {h_: {"verdict": "FAIL"} for h_ in HYPS}}
     rec = {"kind": "FINAL", "start_index": s["index"], "utc": _now(),
            "verdicts": {h_: v["verdict"] for h_, v in res["verdicts"].items()},
            "results_sha256": v2.magnitudes_sha(res)}
     try:
         ledger.append(rec)
     except v2.LedgerPushFailed:
-        raise SystemExit("stage 2: the FINAL record could not be pushed; nothing is printed or written") from None
+        raise SystemExit("stage 2: the FINAL push did not confirm; nothing is printed or written; state UNKNOWN, the "
+                         "next invocation's fetch decides (R22.4(2))") from None
+    res["witnessed"] = r2.get("witnessed")                       # R22.3: cited in the result text
     return res
 
 
@@ -865,7 +1032,7 @@ def confirm_command(ledger, r2: dict, release_sha: str, engine_commit: str, pre_
 FIXTURE_SEED = 7
 
 
-def fixture_dry_run(out=print, B_=50) -> dict:
+def fixture_dry_run(out=print, B_=50, selection=None) -> dict:
     """Stage 1 end to end on inputs built IN MEMORY by the committed seeded generator; takes no path; writes to an
     in-memory ledger only. Every printed line is stamped FIXTURE."""
     import io
@@ -874,41 +1041,132 @@ def fixture_dry_run(out=print, B_=50) -> dict:
     I, F = io.StringIO(ind), io.StringIO(fac)
     stamp = lambda s: out(f"FIXTURE {s}")
     return stage1_command(v2.MemoryLedger(), {}, "fixture-release", "fixture",
-                          I, F, {"industries": v2.sha256_file(I), "factors": v2.sha256_file(F)}, B_=B_, out=stamp)
+                          I, F, {"industries": v2.sha256_file(I), "factors": v2.sha256_file(F)}, B_=B_, out=stamp,
+                          selection=selection)
 
 
-def run_once_guard(path: Path, what: str) -> None:
-    """O8: the guard state is the committed file on the just-fetched remote (R20.5), not a local marker."""
-    sha = v2.fetch_remote()
-    rel = str(Path(path).resolve().relative_to(ROOT))
-    if Path(path).exists() or v2._git("cat-file", "-e", f"{sha}:{rel}", check=False).returncode == 0:
+# ---------------------------------------------------------------------------- R21.6 rehearsal (open 1998-2019 only)
+REH_INPUT_FIRST, REH_INPUT_LAST = pd.Timestamp("1996-01-01"), pd.Timestamp("2019-12-31")
+
+
+def window_text(path, first=pd.Timestamp("1996-01-02"), last=REH_INPUT_LAST):
+    """An in-memory copy of a French-format file keeping only data lines dated in [first, last], judged by the date
+    field alone (no value on another line is parsed), plus the non-data lines."""
+    import io
+    lo, hi = pd.Timestamp(first).strftime("%Y%m%d"), pd.Timestamp(last).strftime("%Y%m%d")
+    keep = []
+    for ln in v2._lines(path):
+        k = ln.split(",", 1)[0].strip()
+        if len(k) == 8 and k.isdigit() and not (lo <= k <= hi):
+            continue
+        keep.append(ln)
+    return io.StringIO("".join(keep))
+
+
+def check_rehearsal_input(buf) -> None:
+    """Refuse any rehearsal input whose first date is before 1996 or whose last date is after 2019-12-31."""
+    dates = [ln.split(",", 1)[0].strip() for ln in v2._lines(buf)]
+    dates = sorted(d for d in dates if len(d) == 8 and d.isdigit())
+    if not dates or pd.Timestamp(dates[0]) < REH_INPUT_FIRST or pd.Timestamp(dates[-1]) > REH_INPUT_LAST:
+        raise v2.SealedRefusal("refused: a rehearsal input must lie within 1996-01-01..2019-12-31")
+
+
+def temporary_remote(td: Path):
+    """A temporary bare remote and clone for the rehearsal ledger; never the real ledger."""
+    def g(*a, cwd):
+        subprocess.run(["git", *a], cwd=cwd, capture_output=True, check=True)
+    import subprocess
+    origin, work = Path(td) / "origin.git", Path(td) / "work"
+    g("init", "-q", "--bare", str(origin), cwd=td)
+    g("clone", "-q", str(origin), str(work), cwd=td)
+    g("checkout", "-q", "-b", "rehearsal", cwd=work)
+    g("config", "user.email", "rehearsal@localhost", cwd=work); g("config", "user.name", "rehearsal", cwd=work)
+    (work / "README").write_text("rotation-core rehearsal ledger (temporary)\n")
+    g("add", "README", cwd=work); g("commit", "-q", "-m", "rehearsal", cwd=work); g("push", "-q", "origin", "rehearsal", cwd=work)
+    led = v2.GitLedger(root=work, path=work / "rehearsal_ledger.json", branch="rehearsal", remote_url=str(origin))
+    led.fetch(); led.require_local_equals_remote()
+    return led
+
+
+def rehearsal_command(ind, fac, out=print, B_=B_STAGE, engine_commit=None) -> dict:
+    """R21.6: the complete stage-1 command (START, Phase A, Phase B, GATE; same functions, same ledger code) on the
+    OPEN 1998-2019 window, pseudo-eras 1998-2008 and 2009-2019, against a temporary bare remote. Every line is
+    stamped REHEARSAL. Its numbers are on a window already examined and are evidence of nothing."""
+    import tempfile
+    stamp = lambda x: out(f"REHEARSAL {x}")
+    for x in (ind, fac):
+        check_rehearsal_input(x)
+    commit = engine_commit or v2._git("rev-parse", "HEAD").stdout.decode().strip()
+    with tempfile.TemporaryDirectory(prefix="rc_rehearsal_") as td:
+        led = temporary_remote(Path(td))
+        e = stage1_command(led, {}, "rehearsal-release", commit, ind, fac,
+                           {"industries": v2.sha256_file(ind), "factors": v2.sha256_file(fac)}, B_=B_, out=stamp,
+                           spec=REH_SPEC)
+        stamp("ledger " + " ".join(x["kind"] for x in led.entries()))
+    stamp("done: evidence of nothing (open, already-examined window)")
+    return e
+
+
+class Ctx:
+    """Every path and host hook `main` uses. The real entry point builds it from constants only; `main(_ctx=...)` is
+    for tests (R23.6), never set from the command line or the environment."""
+    def __init__(self, **kw):
+        self.root = ROOT; self.ledger_path = v2.LEDGER; self.branch = v2.BRANCH; self.remote_url = v2.REMOTE_URL
+        self.release1 = v2.RELEASE; self.release2 = v2.RELEASE2; self.selection = v2.SELECTION_RESULT
+        self.ind_d, self.ind_full, self.fact, self.fund_dir = IND_D, IND_FULL, FACT, FUND_DIR
+        self.stage1_inputs = dict(STAGE1_INPUTS); self.stage2_inputs = None
+        self.sealed_paths = [IND_FULL]; self.sealed_recorded = None
+        self.host_api = None; self.anchor = v2.ANCHOR_COMMIT; self.engine_check = v2.check_engine_commit
+        self.B = B_STAGE
+        self.final_j, self.final_m, self.stage1_published = FINAL_J, FINAL_M, STAGE1_PUBLISHED
+        self.selection_rerun_j, self.selection_rerun_m = SELECTION_RERUN_J, SELECTION_RERUN_M
+        self.__dict__.update(kw)
+        if self.stage2_inputs is None:
+            self.stage2_inputs = stage2_inputs(self.fund_dir)
+
+
+def run_once_guard(path: Path, what: str, ctx=None) -> None:
+    """O8: the guard state is the committed file on the just-fetched remote (R20.5), not a local marker; the host
+    record is checked first (R22.1)."""
+    ctx = ctx or Ctx()
+    sha = v2.fetch_remote(ctx.root, ctx.branch, ctx.remote_url)
+    v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
+    rel = str(Path(path).resolve().relative_to(Path(ctx.root).resolve()))
+    if Path(path).exists() or v2._git("cat-file", "-e", f"{sha}:{rel}", check=False, root=ctx.root).returncode == 0:
         raise SystemExit(f"refused: {what} already run ({Path(path).name} exists locally or on the remote); run once")
 
 
-def verified_ledger() -> tuple:
-    """R20.1/R20.2/R20.5: fetch (fails closed), local == remote, every release version mapped, every ledger version a
-    prefix, the whole ledger replayed under the state rules."""
-    led = v2.GitLedger()
+def verified_ledger(ctx=None) -> tuple:
+    """R20.1/R20.2/R20.5/R22.1/R23.2/R23.3: fetch (not forced; remote identity pinned; fails closed); the host
+    record (activity chain, ruleset) checked before anything else; local == remote; every release version mapped;
+    every ledger version a prefix; the whole ledger replayed under the state rules."""
+    ctx = ctx or Ctx()
+    led = v2.GitLedger(root=ctx.root, path=ctx.ledger_path, branch=ctx.branch, remote_url=ctx.remote_url)
     sha = led.fetch()
+    led.host_record = v2.host_checks(sha, ctx.root, ctx.host_api, ctx.branch, ctx.anchor)
     led.require_local_equals_remote()
     entries = led.entries()
-    docs = v2.check_release_history({p.name: v2.file_versions(str(p.relative_to(ROOT)), sha)
-                                     for p in (v2.RELEASE, v2.RELEASE2)}, entries)
+    root = Path(ctx.root).resolve()
+    docs = v2.check_release_history({p.name: v2.file_versions(str(Path(p).resolve().relative_to(root)), sha, ctx.root)
+                                     for p in (ctx.release1, ctx.release2)}, entries)
     v2.validate_ledger(entries, led.version_entries(), docs)
     return led, sha, entries
 
 
-def main() -> int:
+def main(argv=None, _ctx=None) -> int:
     import json
+    ctx = _ctx or Ctx()
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--stage", choices=["select", "pre1998", "confirm"])
     ap.add_argument("--manifest", choices=["stage1", "stage2"], help="print input sha256 and library versions only")
+    ap.add_argument("--rehearsal", action="store_true",
+                    help="R21.6: the full stage-1 command on the open 1998-2019 window against a temporary remote")
     ap.add_argument("--dry-run-stage1-fixture", action="store_true",
                     help="stage 1 end to end on in-memory synthetic inputs from the committed generator (no path)")
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
     if a.manifest:
-        ins = STAGE1_INPUTS if a.manifest == "stage1" else stage2_inputs()
+        ins = ctx.stage1_inputs if a.manifest == "stage1" else ctx.stage2_inputs
         man = {}
         for k, p in ins.items():
             try:
@@ -919,13 +1177,16 @@ def main() -> int:
         return 0
     if a.dry_run_stage1_fixture:
         v2.verify_header_v2(FROZEN)
-        if not v2.SELECTION_RESULT.exists():          # before the R15 rerun exists, the dry run reads 1ca5228b3c's file
-            v2.SELECTION_RESULT = ROOT / "research/rotation_core/results_v2_selection.json"
-        fixture_dry_run(out=print)
+        sel = ctx.selection if Path(ctx.selection).exists() else ROOT / "research/rotation_core/results_v2_selection.json"
+        fixture_dry_run(out=print, selection=sel)        # R22.4(3): passed, never written into the module
         print("FIXTURE stage-1 fixture dry run OK (in-memory synthetic data; in-memory ledger; no real statistic)")
         return 0
+    if a.rehearsal:
+        v2.verify_header_v2(FROZEN)
+        rehearsal_command(window_text(ctx.ind_d), window_text(ctx.fact))
+        return 0
     if a.dry_run:
-        out = pipeline("2019-12-31", IND_D)
+        out = pipeline("2019-12-31", ctx.ind_d)
         print(json.dumps(out, indent=1))
         print("dry run OK: structure only; no return, contrast or selection printed or written")
         return 0
@@ -933,38 +1194,40 @@ def main() -> int:
         raise SystemExit("refused: protocol_header_v2.json is not frozen")
     v2.verify_header_v2(FROZEN)
     if a.stage == "pre1998":
-        led, sha, entries = verified_ledger()
-        rel1 = v2.stage1_release(inputs=STAGE1_INPUTS, remote_sha=sha)
-        ins_sha = {k: v2.sha256_file(p) for k, p in STAGE1_INPUTS.items()}
-        e = stage1_command(led, rel1, v2.sha256_file(v2.RELEASE), rel1["engine_commit"], IND_D, FACT, ins_sha,
-                           publish_path=STAGE1_PUBLISHED)
+        led, sha, entries = verified_ledger(ctx)
+        rel1 = v2.stage1_release(ctx.release1, inputs=ctx.stage1_inputs, remote_sha=sha, root=ctx.root,
+                                 selection=ctx.selection, engine_check=ctx.engine_check)
+        ins_sha = {k: v2.sha256_file(p) for k, p in ctx.stage1_inputs.items()}
+        e = stage1_command(led, rel1, v2.sha256_file(ctx.release1), rel1["engine_commit"], ctx.stage1_inputs["industries_le2019"],
+                           ctx.stage1_inputs["factors"], ins_sha, B_=ctx.B, publish_path=ctx.stage1_published,
+                           selection=ctx.selection, root=ctx.root)
         return 3 if e.get("integrity_abort") else 0
     if a.stage == "confirm":
-        led, sha, entries = verified_ledger()                       # R20.7: the release is verified first
-        r = v2._load_release(v2.RELEASE2)
-        v2.on_remote(v2.RELEASE2, sha)
+        led, sha, entries = verified_ledger(ctx)                    # R20.7: the release is verified first
+        r = v2._load_release(ctx.release2, ctx.root)
+        v2.on_remote(ctx.release2, sha, ctx.root)
         r2 = v2.verify_release2(r, entries)
-        v2.check_engine_commit(r2["engine_commit"])
-        ins = stage2_inputs()
-        with v2.stage2_opened([IND_FULL]):                          # unseal, check recorded hash, re-seal on exit
-            ins_sha = v2.check_manifest(r2, ins)
-            res = confirm_command(led, r2, v2.sha256_file(v2.RELEASE2), r2["engine_commit"], IND_D, IND_FULL, FACT,
-                                  FUND_DIR, ins_sha)
-        if res.get("integrity_abort"):
+        v2.check_release_pins(r2, sha, ctx.root, led)               # R22.2: branch head and gate commit
+        ctx.engine_check(r2["engine_commit"])
+        with v2.stage2_opened(ctx.sealed_paths, ctx.sealed_recorded):   # unseal, recorded hash, re-seal on exit
+            ins_sha = v2.check_manifest(r2, ctx.stage2_inputs)
+            res = confirm_command(led, r2, v2.sha256_file(ctx.release2), r2["engine_commit"], ctx.ind_d, ctx.ind_full,
+                                  ctx.fact, ctx.fund_dir, ins_sha, B_=ctx.B, selection=ctx.selection, root=ctx.root)
+        if res.get("integrity_abort") or res.get("phase_b_exception"):
             return 3
-        FINAL_J.write_text(json.dumps(res, indent=1, sort_keys=True, default=float) + "\n")
+        Path(ctx.final_j).write_text(json.dumps(res, indent=1, sort_keys=True, default=float) + "\n")
         from scripts.rotation_core_v2_report import write_final_md
-        write_final_md(res, FINAL_M)
+        write_final_md(res, ctx.final_m)
         print(json.dumps({h_: v["verdict"] for h_, v in res["verdicts"].items()}, indent=1))
-        print("wrote", FINAL_J, FINAL_M)
+        print("wrote", ctx.final_j, ctx.final_m)
         return 0
     if a.stage == "select":
-        run_once_guard(SELECTION_RERUN_J, "the R15 selection rerun")
+        run_once_guard(ctx.selection_rerun_j, "the R15 selection rerun", ctx)
         res = run_selection()
-        SELECTION_RERUN_J.write_text(json.dumps(res, indent=1, default=float) + "\n")
+        Path(ctx.selection_rerun_j).write_text(json.dumps(res, indent=1, default=float) + "\n")
         from scripts.rotation_core_v2_report import write_selection_md
-        write_selection_md(res, SELECTION_RERUN_M)
-        print("wrote", SELECTION_RERUN_J, SELECTION_RERUN_M, "selected:", res["selection"]["selected"])
+        write_selection_md(res, ctx.selection_rerun_m)
+        print("wrote", ctx.selection_rerun_j, ctx.selection_rerun_m, "selected:", res["selection"]["selected"])
         if res["selection"]["selected"] != "h3_b25.0":
             print("STOP: the rerun's selected setting is not h=3, b=25 (R16): tell the CEO")
         return 0
