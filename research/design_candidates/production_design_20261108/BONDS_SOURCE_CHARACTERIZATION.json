@@ -1,0 +1,112 @@
+{
+  "schema": "paper.bonds_source_characterization.v1",
+  "status": "CURRENT_BEHAVIOR_REPRODUCED_NOT_FIX_ACCEPTANCE",
+  "source_pin": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+  "source_sha256": {
+    "scripts/build_bonds.py": "6b23a5397d78fcc41da7187ff2d0dff1d5bcb341cbec5f274aff07638ddfe8eb",
+    "engine/bonds.py": "983e60492c12ea89699e9b4e824f95c00344691d8b9f82552125add4ca76ce57"
+  },
+  "execution_scope": {
+    "pure_functions": [
+      "_build_finra_vm",
+      "_build_corp_credit_bond_health",
+      "chart_curve_now"
+    ],
+    "exact_block": "bonds_frame / if legs health arithmetic",
+    "collector_run": false,
+    "repository_import": false,
+    "browser_run": false,
+    "curve_renderer": "_multi stub captures series; no rendered-product proof"
+  },
+  "finra_opposite_signs": [
+    {
+      "net_input": -0.2,
+      "retained_vm_net": -0.2,
+      "current_lows_pct": 20,
+      "current_machine_lows_share": 0.2
+    },
+    {
+      "net_input": 0.2,
+      "retained_vm_net": 0.2,
+      "current_lows_pct": 20,
+      "current_machine_lows_share": 0.2
+    }
+  ],
+  "finra_zero_and_missing": {
+    "zero": {
+      "net_input": 0,
+      "retained_vm_net": 0,
+      "current_lows_pct": 0,
+      "current_machine_lows_share": 0
+    },
+    "missing": {
+      "net_input": null,
+      "retained_vm_net": null,
+      "current_lows_pct": null,
+      "current_machine_lows_share": null
+    }
+  },
+  "health_fixture": {
+    "weights": {
+      "recession": 0.3,
+      "drawdown": 0.3,
+      "credit": 0.2,
+      "rates_vol": 0.1,
+      "plumbing": 0.1
+    },
+    "stress_values": {
+      "recession": 20,
+      "drawdown": 40,
+      "credit": null,
+      "rates_vol": 0,
+      "plumbing": null
+    },
+    "current_exact_score": 74.28571428571428,
+    "current_rounded_score": 74,
+    "active_legs": [
+      "recession",
+      "drawdown",
+      "rates_vol"
+    ],
+    "available_weight": 0.7,
+    "expected_weight": 1,
+    "proposed_coverage_state": "partial",
+    "coverage_block_implemented_by_this_harness": false
+  },
+  "curve_fixture": {
+    "controlled_build_date": "2026-10-16",
+    "sampled_rows": [
+      {
+        "role": "latest",
+        "offset": -1,
+        "sampled_frame_date": "2026-10-14",
+        "valid_tenors": 9
+      },
+      {
+        "role": "approx_3_months",
+        "offset": -64,
+        "sampled_frame_date": "2026-07-10",
+        "valid_tenors": 7
+      },
+      {
+        "role": "approx_1_year",
+        "offset": -252,
+        "sampled_frame_date": "2025-09-30",
+        "valid_tenors": 3
+      }
+    ],
+    "current_rendered_labels": [
+      "Today",
+      "3 mo ago"
+    ],
+    "sampled_frame_dates_in_current_series": false,
+    "suppressed_role": "approx_1_year",
+    "source_observation_dates": "not supplied by the fixture"
+  },
+  "limits": [
+    "Synthetic inputs; no live FINRA or Treasury data was queried.",
+    "FINRA denominator universe meaning remains unverified.",
+    "Raw-count missing/zero-denominator cases are proposed producer acceptance, not executed here.",
+    "The additive adapter and its actual page/machine consumer integration remain unimplemented."
+  ]
+}
