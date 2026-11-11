@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -121,6 +122,71 @@ def test_fetch_unions_extra_tickers(monkeypatch, tmp_path):
     # the seeded curation survives the full fetch() path
     assert mb.at["688508.SS", "sector"] == "Technology"
     assert mb.at["688508.SS", "name_en"] == "Wuxi Chipown Micro-electronics"
+
+
+def test_sina_outage_reuses_cached_membership_and_advances_closes(monkeypatch, tmp_path, capsys):
+    """Incident replay: Sina DNS failure must not freeze the whole price plane when the
+    committed members table is a usable last-known-good universe."""
+    _no_network(monkeypatch)
+    ad = cu.ChinaUniverseAdapter()
+    ad.dir = tmp_path
+    ad.closes_path = tmp_path / "closes.parquet"
+    ad.members_path = tmp_path / "members.parquet"
+    ad.dropped_path = tmp_path / "dropped.parquet"
+    ad.index_cache_path = tmp_path / "index_cons.parquet"
+    ad.cfg = {**ad.cfg, "size": 2, "index_constituents": []}
+    ad.extra_tickers = []
+    ad.extra_names = {}
+
+    cached = pd.DataFrame(
+        {
+            "name": ["Bank A / 银行甲", "Tech B / 科技乙"],
+            "name_zh": ["银行甲", "科技乙"],
+            "name_en": ["Bank A", "Tech B"],
+            "sector": ["Financial Services", "Technology"],
+            "mktcap_yi": [1000.0, 900.0],
+        },
+        index=pd.Index(["600000.SS", "000001.SZ"], name="ticker"),
+    )
+    cached.to_parquet(ad.members_path)
+
+    monkeypatch.setattr(
+        ad, "_sina_universe",
+        lambda: (_ for _ in ()).throw(OSError("nodename nor servname provided")),
+    )
+    idx = pd.to_datetime(["2026-09-10", "2026-09-11"])
+    fresh = pd.DataFrame(
+        {"600000.SS": [10.0, 10.2], "000001.SZ": [20.0, 20.3]},
+        index=idx,
+    )
+    monkeypatch.setattr(ad, "_download_closes", lambda tickers, period: fresh[list(tickers)])
+
+    ad.fetch()
+
+    out = pd.read_parquet(ad.closes_path)
+    assert str(out.index.max().date()) == "2026-09-11"
+    assert list(out.columns) == ["600000.SS", "000001.SZ"]
+    warning = capsys.readouterr().out
+    assert "::warning title=china-universe-membership-fallback::" in warning
+    assert "serving cached membership" in warning
+
+
+def test_cached_membership_never_masks_a_programming_error(monkeypatch, tmp_path):
+    ad = cu.ChinaUniverseAdapter()
+    ad.dir = tmp_path
+    ad.members_path = tmp_path / "members.parquet"
+    ad.cfg = {**ad.cfg, "size": 2, "index_constituents": []}
+    pd.DataFrame(
+        {"name_zh": ["银行甲", "科技乙"], "mktcap_yi": [1000.0, 900.0]},
+        index=pd.Index(["600000.SS", "000001.SZ"], name="ticker"),
+    ).to_parquet(ad.members_path)
+    monkeypatch.setattr(
+        ad, "_sina_universe",
+        lambda: (_ for _ in ()).throw(KeyError("programming defect")),
+    )
+
+    with pytest.raises(KeyError, match="programming defect"):
+        ad._load_universe()
 
 
 # ---------------------------------------------------------------------------
@@ -280,3 +346,36 @@ def test_stock_price_adapter_survives_total_yahoo_outage_when_repair_recovers(mo
     adapter = china_stock_prices.ChinaStockPriceAdapter.__new__(china_stock_prices.ChinaStockPriceAdapter)
     adapter.cfg = {}
     assert adapter.fetch(tickers=["600118.SS"]) == recovered
+
+def _cached_membership_adapter(tmp_path, *, size: int = 4):
+    ad = cu.ChinaUniverseAdapter()
+    ad.dir = tmp_path
+    ad.members_path = tmp_path / "members.parquet"
+    ad.cfg = {**ad.cfg, "size": size, "index_constituents": []}
+    return ad
+
+
+def test_cached_membership_refuses_absent_store(tmp_path):
+    ad = _cached_membership_adapter(tmp_path)
+    with pytest.raises(RuntimeError, match="absent"):
+        ad._cached_universe()
+
+
+def test_cached_membership_refuses_missing_required_fields(tmp_path):
+    ad = _cached_membership_adapter(tmp_path)
+    pd.DataFrame(
+        {"name_zh": ["银行甲"]},
+        index=pd.Index(["600000.SS"], name="ticker"),
+    ).to_parquet(ad.members_path)
+    with pytest.raises(RuntimeError, match="missing columns"):
+        ad._cached_universe()
+
+
+def test_cached_membership_refuses_below_width_floor(tmp_path):
+    ad = _cached_membership_adapter(tmp_path, size=4)
+    pd.DataFrame(
+        {"name_zh": ["银行甲", "科技乙"], "mktcap_yi": [1000.0, 900.0]},
+        index=pd.Index(["600000.SS", "000001.SZ"], name="ticker"),
+    ).to_parquet(ad.members_path)
+    with pytest.raises(RuntimeError, match="too small"):
+        ad._cached_universe()

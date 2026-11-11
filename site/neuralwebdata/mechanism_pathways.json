@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-06",
+  "as_of": "2026-11-10",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,9 +28,9 @@
       "family": "inflation",
       "driver": "oil_shock",
       "pathway_role": "primary",
-      "as_of": "2026-09-06",
-      "direction_en": "oil spiking — energy leads, breakevens up",
-      "direction_zh": "油价飙升 — 能源领涨、盈亏平衡上行",
+      "as_of": "2026-11-10",
+      "direction_en": "oil collapsing — energy lags, breakevens down",
+      "direction_zh": "油价崩跌 — 能源落后、盈亏平衡下行",
       "confidence_ceiling": "context_only",
       "coverage_score": 1.0,
       "coherence": "supported",
@@ -38,17 +38,17 @@
       "nodes": [
         {
           "node_id": "driver_oil_shock",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "oil_shock",
           "observation": {
-            "en": "oil spiking — energy leads, breakevens up",
-            "zh": "油价飙升 — 能源领涨、盈亏平衡上行"
+            "en": "oil collapsing — energy lags, breakevens down",
+            "zh": "油价崩跌 — 能源落后、盈亏平衡下行"
           },
-          "direction": 1,
-          "value": 0.85,
-          "z_or_percentile": 2.33,
+          "direction": -1,
+          "value": 1.5,
+          "z_or_percentile": 1.82,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -58,17 +58,17 @@
         },
         {
           "node_id": "leg_oil_shock_0",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "oil (WTI)",
           "observation": {
-            "en": "oil (WTI) (+1.2σ)",
-            "zh": "原油(WTI) (+1.2σ)"
+            "en": "oil (WTI) (-1.4σ)",
+            "zh": "原油(WTI) (-1.4σ)"
           },
-          "direction": "positive",
-          "value": 1.2,
-          "z_or_percentile": 1.2,
+          "direction": "negative",
+          "value": -1.4,
+          "z_or_percentile": -1.4,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -78,17 +78,17 @@
         },
         {
           "node_id": "leg_oil_shock_1",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "10y breakeven",
+          "entity": "energy sector RS",
           "observation": {
-            "en": "10y breakeven (+1.1σ)",
-            "zh": "10年盈亏平衡通胀 (+1.1σ)"
+            "en": "energy sector RS (-2.1σ)",
+            "zh": "能源板块相对强度 (-2.1σ)"
           },
-          "direction": "positive",
-          "value": 1.1,
-          "z_or_percentile": 1.1,
+          "direction": "negative",
+          "value": -2.1,
+          "z_or_percentile": -2.1,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -98,17 +98,17 @@
         },
         {
           "node_id": "leg_oil_shock_2",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "energy sector RS",
+          "entity": "10y breakeven",
           "observation": {
-            "en": "energy sector RS (+0.4σ)",
-            "zh": "能源板块相对强度 (+0.4σ)"
+            "en": "10y breakeven (-1.5σ)",
+            "zh": "10年盈亏平衡通胀 (-1.5σ)"
           },
-          "direction": "positive",
-          "value": 0.4,
-          "z_or_percentile": 0.4,
+          "direction": "negative",
+          "value": -1.5,
+          "z_or_percentile": -1.5,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -118,7 +118,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order1",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -138,7 +138,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order2",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -158,7 +158,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order3",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -183,8 +183,8 @@
           "dst_node": "leg_oil_shock_0",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
             "market_drivers.evidence_legs[0]"
@@ -195,8 +195,8 @@
           "dst_node": "leg_oil_shock_1",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
             "market_drivers.evidence_legs[1]"
@@ -207,8 +207,8 @@
           "dst_node": "leg_oil_shock_2",
           "mechanism_type": "evidence_leg",
           "expected_lag": "same_day",
-          "expected_sign": "positive",
-          "observed_sign": "positive",
+          "expected_sign": "negative",
+          "observed_sign": "negative",
           "status": "measured",
           "evidence_refs": [
             "market_drivers.evidence_legs[2]"
@@ -253,11 +253,11 @@
       ]
     },
     {
-      "family": "crypto",
-      "driver": "crypto_liquidity",
+      "family": "rates",
+      "driver": "fed_repricing",
       "pathway_role": "alternate",
-      "as_of": "2026-09-06",
-      "direction_en": "crypto liquidity surging — BTC/ETH lead up",
+      "as_of": "2026-11-10",
+      "direction_en": "dovish repricing — cuts priced in, front-end down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -265,17 +265,17 @@
       "stale_legs": [],
       "nodes": [
         {
-          "node_id": "driver_crypto_liquidity",
-          "as_of": "2026-09-06",
+          "node_id": "driver_fed_repricing",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "crypto_liquidity",
+          "entity": "fed_repricing",
           "observation": {
-            "en": "crypto liquidity surging — BTC/ETH lead up",
+            "en": "dovish repricing — cuts priced in, front-end down",
             "zh": ""
           },
           "direction": "",
-          "value": 0.36,
+          "value": 0.83,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -283,17 +283,114 @@
           "evidence_refs": [
             "market_drivers.primary"
           ]
+        },
+        {
+          "node_id": "transmission_expectations_order1",
+          "as_of": "2026-11-10",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
+          "observation": {
+            "en": "Market inflation expectations drift above the model/survey → unanchoring risk; the dollar firms as the Fed is expected to stay restrictive. Counter-intuitively, gold's MEASURED response to this wedge is a headwind — the higher real yields from a restrictive Fed dominate the inflation-hedge bid.",
+            "zh": "市场通胀预期高于模型/调查→脱锚风险；美元因预期美联储维持紧缩而走强。与直觉相反，黄金对此缺口的实测反应为逆风——紧缩带来的更高实际收益率压过了通胀对冲买盘。"
+          },
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
+          "lag_class": "same_day",
+          "pathway_role": "transmission_order_1",
+          "evidence_refs": [
+            "transmission.chains.expectations.order1"
+          ]
+        },
+        {
+          "node_id": "transmission_expectations_order2",
+          "as_of": "2026-11-10",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
+          "observation": {
+            "en": "Unanchoring → the Fed stays restrictive → real yields rise; long-duration growth de-rates while defensives are relatively favored.",
+            "zh": "脱锚→美联储维持紧缩→实际收益率上行；长久期成长下修，防御相对受青睐。"
+          },
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
+          "lag_class": "days_1_5",
+          "pathway_role": "transmission_order_2",
+          "evidence_refs": [
+            "transmission.chains.expectations.order2"
+          ]
+        },
+        {
+          "node_id": "transmission_expectations_order3",
+          "as_of": "2026-11-10",
+          "domain": "transmission",
+          "source_artifact": "data/transmission/latest.json",
+          "entity": "transmission channel",
+          "observation": {
+            "en": "The textbook 'real-asset hedge' (energy, materials, gold) is unreliable for this wedge: with the Fed held restrictive, the measured beneficiaries are the dollar and defensives, not the inflation-beneficiary sectors.",
+            "zh": "教科书式的“实物资产对冲”（能源、材料、黄金）对此缺口并不可靠：在美联储维持紧缩下，实测受益者是美元与防御板块，而非通胀受益板块。"
+          },
+          "direction": "",
+          "value": null,
+          "z_or_percentile": null,
+          "source_tier": "context_only",
+          "lag_class": "weeks_1_4",
+          "pathway_role": "transmission_order_3",
+          "evidence_refs": [
+            "transmission.chains.expectations.order3"
+          ]
         }
       ],
-      "edges": [],
+      "edges": [
+        {
+          "src_node": "driver_fed_repricing",
+          "dst_node": "transmission_expectations_order1",
+          "mechanism_type": "transmission_channel",
+          "expected_lag": "same_day",
+          "expected_sign": "",
+          "observed_sign": null,
+          "status": "measured",
+          "evidence_refs": [
+            "transmission.chains.expectations.order1"
+          ]
+        },
+        {
+          "src_node": "transmission_expectations_order1",
+          "dst_node": "transmission_expectations_order2",
+          "mechanism_type": "transmission_channel",
+          "expected_lag": "days_1_5",
+          "expected_sign": "",
+          "observed_sign": null,
+          "status": "measured",
+          "evidence_refs": [
+            "transmission.chains.expectations.order2"
+          ]
+        },
+        {
+          "src_node": "transmission_expectations_order2",
+          "dst_node": "transmission_expectations_order3",
+          "mechanism_type": "transmission_channel",
+          "expected_lag": "weeks_1_4",
+          "expected_sign": "",
+          "observed_sign": null,
+          "status": "measured",
+          "evidence_refs": [
+            "transmission.chains.expectations.order3"
+          ]
+        }
+      ],
       "coverage_basis": "scare_trigger"
     },
     {
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "alternate",
-      "as_of": "2026-09-06",
-      "direction_en": "AI/semis leadership — narrow tech-led tape",
+      "as_of": "2026-11-10",
+      "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
@@ -302,16 +399,16 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-09-06",
+          "as_of": "2026-11-10",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
           "observation": {
-            "en": "AI/semis leadership — narrow tech-led tape",
+            "en": "AI/semis unwind — tech-led de-rating",
             "zh": ""
           },
           "direction": "",
-          "value": 0.34,
+          "value": 0.77,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

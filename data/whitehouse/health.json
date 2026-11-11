@@ -1,10 +1,41 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-06T23:53:39.328173+00:00",
-  "posts_seen": 8,
-  "seen_total": 165,
-  "evaluated": 0,
+  "as_of": "2026-11-11T06:18:12.572636+00:00",
+  "posts_seen": 19,
+  "seen_total": 345,
+  "evaluated": 5,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-11-11-presidential-message-on-national-diabetes-month-a726",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-11-presidential-message-on-the-birthday-of-the-united-states-marine-corps",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-11-presidential-message-on-national-alzheimers-disease-awareness-month-59dc",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-11-presidential-message-on-critical-infrastructure-security-and-resilience-month-aa",
+      "importance": 25,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-10-first-lady-melania-trumps-fostering-the-future-together-grows-its-international-",
+      "importance": 10,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

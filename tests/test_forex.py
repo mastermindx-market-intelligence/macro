@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -422,6 +423,101 @@ def test_transmission_flipping_flag():
     asset = np.exp(aret.cumsum()) * 100
     out = FT.transmission(broad, {"SPY": asset}, None, None, CFG["transmission"])
     assert out["rows"][0]["stability"] == "flipping" and "US equities" in out["unstable"]
+
+
+def _tx_signed_pair(direction: str) -> dict:
+    """Synthetic transmission with one headwind asset (SPY, inverse of USD) and
+    one tailwind asset (GC=F, same-sign as USD). ``direction`` is the USD
+    63d move: strengthening | weakening. Lists stay signed vs a strengthening
+    dollar; only the read copy is direction-aware."""
+    idx = _idx(400)
+    rng = np.random.default_rng(7)
+    uret = pd.Series(rng.normal(0, 0.004, 400), index=idx)
+    drift = 0.003 if direction == "strengthening" else -0.003
+    uret.iloc[-63:] = uret.iloc[-63:] + drift
+    broad = np.exp(uret.cumsum()) * 100
+    spy = np.exp((-uret).cumsum()) * 100
+    gold = np.exp(uret.cumsum()) * 100
+    out = FT.transmission(broad, {"SPY": spy, "GC=F": gold}, None, None, CFG["transmission"])
+    assert out, f"transmission returned empty for {direction}"
+    return out
+
+
+def _en_role(read: str, name: str) -> str:
+    """Semantic role of ``name`` in the EN read: lean | lift | absent."""
+    import re
+    if name not in read:
+        return "absent"
+    chunks = re.split(r";| and a ", read)
+    hit = [c for c in chunks if name in c]
+    assert hit, (name, read)
+    blob = " ".join(hit).lower()
+    lean = "headwind" in blob or "lean" in blob
+    lift = "tailwind" in blob or "lift" in blob
+    if lean and not lift:
+        return "lean"
+    if lift and not lean:
+        return "lift"
+    raise AssertionError(f"ambiguous EN framing for {name!r} in {read!r} chunks={hit}")
+
+
+def _zh_role(read_zh: str, name_zh: str) -> str:
+    """Semantic role of ``name_zh`` in the ZH read: lean | lift | absent."""
+    import re
+    if name_zh not in read_zh:
+        return "absent"
+    chunks = re.split(r"[；，。]", read_zh)
+    hit = [c for c in chunks if name_zh in c]
+    assert hit, (name_zh, read_zh)
+    blob = "".join(hit)
+    lean = "逆风" in blob or "压制" in blob
+    lift = "顺风" in blob or "提振" in blob
+    if lean and not lift:
+        return "lean"
+    if lift and not lean:
+        return "lift"
+    raise AssertionError(f"ambiguous ZH framing for {name_zh!r} in {read_zh!r} chunks={hit}")
+
+
+def test_transmission_read_four_cells_en_zh():
+    """W4: all four (direction × list) cells, EN and ZH, at the engine.
+
+    Truth table (lists signed vs strengthening dollar; correlation is symmetric):
+      strengthening + headwind_for → LEANED ON
+      strengthening + tailwind_for → LIFTED
+      weakening     + headwind_for → LIFTED
+      weakening     + tailwind_for → LEANED ON
+    Pins semantic verbs, not byte-exact prose.
+    """
+    firm = _tx_signed_pair("strengthening")
+    soft = _tx_signed_pair("weakening")
+    assert firm["usd_dir"] == "strengthening", firm["usd_dir"]
+    assert soft["usd_dir"] == "weakening", soft["usd_dir"]
+    # Public list contract: signed vs strengthening dollar, independent of usd_dir.
+    for out in (firm, soft):
+        assert "US equities" in out["headwind_for"], out
+        assert "Gold" in out["tailwind_for"], out
+        assert out["rows"][0]["key"] in ("SPY", "GC=F")
+
+    hw_en, tw_en = "US equities", "Gold"
+    hw_zh, tw_zh = "美国股票", "黄金"
+
+    # strengthening / firm
+    assert _en_role(firm["read"], hw_en) == "lean", firm["read"]
+    assert _en_role(firm["read"], tw_en) == "lift", firm["read"]
+    assert _zh_role(firm["read_zh"], hw_zh) == "lean", firm["read_zh"]
+    assert _zh_role(firm["read_zh"], tw_zh) == "lift", firm["read_zh"]
+
+    # weakening / soft — the inverted branch. Pre-fix counterexample was
+    # "a weaker dollar is a tailwind for Gold" (wrong list, wrong verb) and
+    # ZH named neither list.
+    assert _en_role(soft["read"], hw_en) == "lift", soft["read"]
+    assert _en_role(soft["read"], tw_en) == "lean", soft["read"]
+    assert _zh_role(soft["read_zh"], hw_zh) == "lift", soft["read_zh"]
+    assert _zh_role(soft["read_zh"], tw_zh) == "lean", soft["read_zh"]
+    # The pre-fix inversion: Gold presented as a weakening-dollar tailwind.
+    assert _en_role(soft["read"], tw_en) != "lift"
+    assert "a tailwind for Gold" not in soft["read"]
 
 
 def test_scorecards_finite_and_maxdd_nonpositive():
@@ -1046,6 +1142,116 @@ def test_latest_json_old_keys_unchanged():
             assert k in s, f"_stance missing key '{k}'"
 
 
+
+# --------------------------------------------------------------------------- #
+# Current-window transmission evidence (issue #10961).
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("usd_constant", [0.0, 0.001, -0.001])
+def test_transmission_terminal_constant_usd_never_reuses_older_estimates(usd_constant):
+    idx = _idx(350)
+    rng = np.random.default_rng(10961)
+    usd = pd.Series(rng.normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd + pd.Series(rng.normal(0, 0.001, len(idx)), index=idx)
+    usd.iloc[-80:] = usd_constant
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+@pytest.mark.parametrize("asset_constant", [0.0, 0.002])
+def test_transmission_terminal_constant_asset_has_zero_beta_and_no_correlation(asset_constant):
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(12).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    asset.iloc[-80:] = asset_constant
+    beta, corr = FT._beta_corr(asset, usd, 63)
+    assert beta == pytest.approx(0.0, abs=1e-12)
+    assert corr is None
+
+
+def test_transmission_terminal_fast_refusal_preserves_a_valid_slow_window():
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(13).normal(0, 0.004, len(idx)), index=idx)
+    usd.iloc[-80:] = 0.0
+    asset = -2.0 * usd
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+    beta, corr = FT._beta_corr(asset, usd, 252)
+    assert beta == pytest.approx(-2.0)
+    assert corr == pytest.approx(-1.0)
+
+
+@pytest.mark.parametrize("window,n,available", [(63, 20, False), (63, 21, True),
+                                               (252, 83, False), (252, 84, True)])
+def test_transmission_terminal_keeps_minimum_paired_sample_policy(window, n, available):
+    idx = _idx(n)
+    usd = pd.Series(np.linspace(-0.01, 0.01, n), index=idx)
+    result = FT._beta_corr(3.0 * usd, usd, window)
+    if available:
+        assert result[0] == pytest.approx(3.0)
+        assert result[1] == pytest.approx(1.0)
+    else:
+        assert result == (None, None)
+
+
+@pytest.mark.parametrize("column,value", [("asset", np.inf), ("asset", -np.inf),
+                                           ("usd", np.inf), ("usd", -np.inf)])
+def test_transmission_terminal_nonfinite_observation_refuses_the_window(column, value):
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(14).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    (asset if column == "asset" else usd).iloc[-4] = value
+    assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+def test_transmission_terminal_overflowed_variance_is_unavailable():
+    idx = _idx(350)
+    usd = pd.Series(np.random.default_rng(15).normal(0, 0.004, len(idx)), index=idx)
+    asset = -usd.copy()
+    usd.iloc[-64:] = np.tile([-1e308, 1e308], 32)
+    with np.errstate(over="ignore", invalid="ignore"):
+        assert FT._beta_corr(asset, usd, 63) == (None, None)
+
+
+@pytest.mark.parametrize("window", [63, 252])
+def test_transmission_terminal_preserves_alignment_and_ignores_older_nonfinite_values(window):
+    idx = _idx(400)
+    usd = pd.Series(np.random.default_rng(16).normal(0, 0.004, len(idx)), index=idx)
+    asset = -1.5 * usd
+    # Independent missing observations retain the existing paired-observation rule.
+    asset = asset.drop(idx[-5])
+    usd = usd.drop(idx[-9])
+    asset.iloc[0] = np.inf
+    beta, corr = FT._beta_corr(asset, usd, window)
+    assert beta == pytest.approx(-1.5)
+    assert corr == pytest.approx(-1.0)
+
+
+def test_transmission_terminal_both_flat_omits_stale_rows():
+    idx = _idx(600)
+    returns = pd.Series(np.random.default_rng(17).normal(0, 0.004, len(idx)), index=idx)
+    broad = np.exp(returns.cumsum()) * 100
+    asset = np.exp((-returns).cumsum()) * 100
+    broad.iloc[-301:] = broad.iloc[-301]
+    asset.iloc[-301:] = asset.iloc[-301]
+    assert FT.transmission(broad, {"SPY": asset}, None, None, CFG["transmission"]) == {}
+
+
+def test_transmission_terminal_fast_flat_keeps_slow_evidence_without_a_current_headwind():
+    import json
+
+    idx = _idx(600)
+    returns = pd.Series(np.random.default_rng(18).normal(0, 0.004, len(idx)), index=idx)
+    broad = np.exp(returns.cumsum()) * 100
+    asset = np.exp((-returns).cumsum()) * 100
+    broad.iloc[-81:] = broad.iloc[-81]
+    asset.iloc[-81:] = asset.iloc[-81]
+    out = FT.transmission(broad, {"SPY": asset}, None, None, CFG["transmission"])
+    row = out["rows"][0]
+    assert row["beta_fast"] is None and row["corr_fast"] is None
+    assert row["corr_slow"] == pytest.approx(-1.0)
+    assert row["effect"] == "neutral"
+    assert out["headwind_for"] == out["tailwind_for"] == []
+    json.dumps(out, allow_nan=False)
+
+
 if __name__ == "__main__":
     for fn in [test_orthogonalize_strips_dollar_beta, test_carry_sign_and_vol_penalty,
                test_riskoff_factor_archetype_sign, test_factor_panel_naive_bullish_bounds,
@@ -1059,7 +1265,8 @@ if __name__ == "__main__":
                test_real_rate_regime_quadrants, test_fed_path_tightening_sign,
                test_dollar_positioning_crowded, test_trend_stack_all_up,
                test_strength_meter_zero_sum_and_usd, test_transmission_known_inverse,
-               test_transmission_flipping_flag, test_scorecards_finite_and_maxdd_nonpositive,
+               test_transmission_flipping_flag, test_transmission_read_four_cells_en_zh,
+               test_scorecards_finite_and_maxdd_nonpositive,
                test_dollar_desk_assembles_gracefully, test_haven_basket_is_carry_mirror,
                test_calibrate_dollar_reer_leg, test_forex_link_reads_and_degrades,
                test_regime_z_causal_excludes_t, test_regime_forward_label_leak_free,

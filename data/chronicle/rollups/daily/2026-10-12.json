@@ -1,0 +1,296 @@
+{
+  "as_of": "2026-10-12",
+  "coverage": {
+    "end": "2026-10-11",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-30 to 2026-10-11; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-30"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-10-11",
+      "events": [
+        {
+          "date": "2026-10-11",
+          "id": "cev-research_vault-3e89189a0040",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-u3jutia0kcw-5915c8",
+          "tickers": [],
+          "title": "Morgan Stanley: MS Savone Global Reflections 10 Oct 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-10",
+      "events": [
+        {
+          "date": "2026-10-10",
+          "id": "cev-research_vault-c81c6afe8815",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xyyijkslpal-b997fb",
+          "tickers": [],
+          "title": "Other: Q4 2026 Corporate Bond Market Outlook",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-10",
+          "id": "cev-research_vault-c957b5402666",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-dbzxdymzfwl-25864a",
+          "tickers": [],
+          "title": "MUFG: Asia FX Weekly",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-09",
+      "events": [
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-563ddf08df7f",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-bysgsalbed9-23bafe",
+          "tickers": [],
+          "title": "UBS: Japanese equities",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-7305295c7bad",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-qvymtn8aohk-00548d",
+          "tickers": [],
+          "title": "J.P. Morgan: REPLAY Intel Insights Conf. Call: Sales & Trading Views on Macro, Midterms, and Earnings Season Setup",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-10-09",
+          "id": "cev-research_vault-9de6b54454ae",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-boh0tbzdmrw-bc9fcb",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-10-08",
+      "events": []
+    },
+    {
+      "date": "2026-10-07",
+      "events": []
+    },
+    {
+      "date": "2026-10-06",
+      "events": []
+    },
+    {
+      "date": "2026-10-05",
+      "events": []
+    },
+    {
+      "date": "2026-10-02",
+      "events": []
+    },
+    {
+      "date": "2026-10-01",
+      "events": [
+        {
+          "date": "2026-10-01",
+          "id": "cev-earnings_call-d7c27ded6d01",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:MKC:2026Q3",
+          "tickers": [
+            "MKC"
+          ],
+          "title": "Earnings call: MKC Q3 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-01",
+          "id": "cev-earnings_call-f9c24bcac70e",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:AYI:2026Q4",
+          "tickers": [
+            "AYI"
+          ],
+          "title": "Earnings call: AYI Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-01",
+          "id": "cev-prophet_ledger-96ff05aea6a9",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "PBH-BULL-20260925",
+          "tickers": [
+            "PBH"
+          ],
+          "title": "Prophet close: PBH BULL → INVALIDATED (-3.9% in 6d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-01",
+          "id": "cev-prophet_ledger-a27d02542d64",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "SHO-BULL-20260918",
+          "tickers": [
+            "SHO"
+          ],
+          "title": "Prophet close: SHO BULL → T1_HIT (+2.4% in 13d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-01",
+          "id": "cev-prophet_ledger-a49db134fa2c",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "SHW-BULL-20260925",
+          "tickers": [
+            "SHW"
+          ],
+          "title": "Prophet close: SHW BULL → INVALIDATED (-2.5% in 6d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-10-01",
+          "id": "cev-prophet_ledger-f6056bb06192",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "SEDG-BULL-20260827",
+          "tickers": [
+            "SEDG"
+          ],
+          "title": "Prophet close: SEDG BULL → INVALIDATED (-7.9% in 35d)",
+          "weight_hint": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-09-30",
+      "events": [
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-a58b6b82f5ae",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:CALM:2027Q1",
+          "tickers": [
+            "CALM"
+          ],
+          "title": "Earnings call: CALM Q1 FY2027 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-b9caad78bced",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:FDS:2026Q4",
+          "tickers": [
+            "FDS"
+          ],
+          "title": "Earnings call: FDS Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-bd916a1ef356",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:CAG:2027Q1",
+          "tickers": [
+            "CAG"
+          ],
+          "title": "Earnings call: CAG Q1 FY2027 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-d6d897bb791e",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:MU:2026Q4",
+          "tickers": [
+            "MU"
+          ],
+          "title": "Earnings call: MU Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-e4aaad79f5ec",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:PRGS:2026Q3",
+          "tickers": [
+            "PRGS"
+          ],
+          "title": "Earnings call: PRGS Q3 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-f94c359669f5",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:YRD:2026Q2",
+          "tickers": [
+            "YRD"
+          ],
+          "title": "Earnings call: YRD Q2 FY2026 — cautious",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-earnings_call-fa500cf75cdf",
+          "kind": "earnings",
+          "source": "earnings_call",
+          "source_ref": "defeatbeta:JBL:2026Q4",
+          "tickers": [
+            "JBL"
+          ],
+          "title": "Earnings call: JBL Q4 FY2026 — confident",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-prophet_ledger-1d32f1398cb6",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "ITW-BULL-20260918",
+          "tickers": [
+            "ITW"
+          ],
+          "title": "Prophet close: ITW BULL → INVALIDATED (-4.5% in 12d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-30",
+          "id": "cev-prophet_ledger-3a3d19727e01",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "ATR-BULL-20260918",
+          "tickers": [
+            "ATR"
+          ],
+          "title": "Prophet close: ATR BULL → INVALIDATED (-2.6% in 12d)",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}
