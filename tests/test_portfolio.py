@@ -5,6 +5,9 @@ crisis drawdowns. Pure-math on synthetic data; snapshot() smoke-tested vs the st
 """
 from __future__ import annotations
 
+import json
+from unittest.mock import patch
+
 import numpy as np
 import pandas as pd
 
@@ -75,3 +78,87 @@ def test_snapshot_smoke():
     if "risk_budget" in s:
         for sch in ("equal_weight", "inverse_vol", "erc"):
             assert sch in s["risk_budget"]
+
+
+def _covid_replay(returns):
+    frame = pd.DataFrame({"A": returns, "B": returns},
+                         index=pd.bdate_range("2020-02-19", periods=len(returns)))
+    return next(row for row in stress_replay(frame) if row["crisis"] == "2020 COVID")
+
+
+def test_stress_replay_includes_opening_loss():
+    row = _covid_replay([-0.2] + [0.0] * 9)
+    assert row["book_return_pct"] == -20.0
+    assert row["book_maxdd_pct"] == -20.0
+
+
+def test_stress_replay_includes_compounded_opening_losses():
+    row = _covid_replay([-0.2, -0.25] + [0.0] * 8)
+    assert row["book_return_pct"] == -40.0
+    assert row["book_maxdd_pct"] == -40.0
+
+
+def test_stress_replay_preserves_recovered_opening_loss():
+    row = _covid_replay([-0.2, 0.25] + [0.0] * 8)
+    assert row["book_return_pct"] == 0.0
+    assert row["book_maxdd_pct"] == -20.0
+
+
+def test_stress_replay_total_loss_is_finite_and_json_safe():
+    row = _covid_replay([-1.0] + [0.0] * 9)
+    assert row["book_return_pct"] == -100.0
+    assert row["book_maxdd_pct"] == -100.0
+    assert json.loads(json.dumps(row, allow_nan=False)) == row
+
+
+def test_stress_replay_zero_prefix_does_not_change_risk():
+    for returns in ([-0.2] + [0.0] * 9,
+                    [-0.2, -0.25] + [0.0] * 8,
+                    [-0.2, 0.25] + [0.0] * 8):
+        assert _covid_replay(returns) == _covid_replay([0.0] + returns)
+
+
+def test_stress_replay_keeps_positive_peak_and_flat_controls():
+    for returns, expected_return, expected_drawdown in (
+        ([0.0, -0.2] + [0.0] * 8, -20.0, -20.0),
+        ([0.2, -0.25] + [0.0] * 8, -10.0, -25.0),
+        ([0.0] * 10, 0.0, 0.0),
+    ):
+        row = _covid_replay(returns)
+        assert row["book_return_pct"] == expected_return
+        assert row["book_maxdd_pct"] == expected_drawdown
+
+
+def test_stress_replay_matches_scalar_initial_capital_oracle():
+    rng = np.random.default_rng(11002)
+    for returns in rng.uniform(-0.3, 0.4, size=(200, 20)):
+        wealth, peak, worst = 1.0, 1.0, 0.0
+        for daily_return in returns:
+            wealth *= 1.0 + daily_return
+            peak = max(peak, wealth)
+            worst = min(worst, wealth / peak - 1.0)
+        row = _covid_replay(returns)
+        assert row["book_return_pct"] == round((wealth - 1.0) * 100, 1)
+        assert row["book_maxdd_pct"] == round(worst * 100, 1)
+
+
+def test_snapshot_carries_opening_loss_from_native_price_returns():
+    # Only external config/store I/O is supplied; returns_frame, risk budgeting,
+    # snapshot and stress replay execute their actual producer composition.
+    idx = pd.bdate_range("2019-10-01", "2020-06-30")
+    rng = np.random.default_rng(11002)
+    frames = {}
+    for series in ("SPY", "BTC-USD", "510300.SS"):
+        returns = pd.Series(rng.normal(0.0, 0.002, len(idx)), index=idx)
+        returns.loc["2020-02-19":"2020-04-30"] = 0.0
+        returns.loc["2020-02-19"] = -0.2
+        frames[series] = pd.DataFrame({"close": 100.0 * (1.0 + returns).cumprod()})
+    with patch("lib.config.load", return_value={}), patch(
+        "lib.store.read", side_effect=lambda group, series: frames.get(series)
+    ):
+        result = snapshot()
+    row = next(item for item in result["stress_replay"] if item["crisis"] == "2020 COVID")
+    assert row["markets"] == ["US", "Crypto", "China"]
+    assert row["book_return_pct"] == -20.0
+    assert row["book_maxdd_pct"] == -20.0
+    assert json.loads(json.dumps(result, allow_nan=False))["stress_replay"] == result["stress_replay"]

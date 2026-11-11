@@ -139,12 +139,15 @@ def stress_replay(rets: pd.DataFrame) -> list:
         # equal-weight daily-rebalanced book of the available markets
         book = w.mean(axis=1)
         eq = (1 + book).cumprod()
+        # Drawdown includes the capital exposed to the first return, matching
+        # book_return_pct's unit-capital basis even after an opening total loss.
+        dd_eq = pd.concat([pd.Series([1.0]), eq], ignore_index=True)
         worst = min(per_mkt, key=per_mkt.get)
         best = max(per_mkt, key=per_mkt.get)
         out.append({
             "crisis": name, "span": f"{lo}..{hi}", "markets": cols,
             "book_return_pct": round(float(eq.iloc[-1] - 1) * 100, 1),
-            "book_maxdd_pct": round(_maxdd(eq) * 100, 1),
+            "book_maxdd_pct": round(_maxdd(dd_eq) * 100, 1),
             "worst_market": {worst: per_mkt[worst]}, "best_market": {best: per_mkt[best]},
             "per_market_pct": per_mkt,
         })
