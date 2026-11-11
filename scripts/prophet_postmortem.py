@@ -118,6 +118,7 @@ sys.path.insert(0, str(ROOT))
 
 from engine import postmortem as pm  # noqa: E402
 from engine import track_scoring as ts  # noqa: E402
+from engine import us_board_snapshots  # noqa: E402
 from engine.price_ladder import is_adjusted as _px_is_adjusted  # noqa: E402
 
 RETRO_REL = Path("data/us_board_ledger/retro_grades.parquet")
@@ -294,26 +295,25 @@ def load_snapshots(root: Path) -> dict[str, dict[str, dict]]:
     """
     out: dict[str, dict[str, dict]] = {}
     p = root / SNAPSHOTS_REL
-    if not p.exists():
+    if not us_board_snapshots.exists(p):
         return out
-    with p.open(encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                doc = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            d = str(doc.get("as_of") or "")
-            if not d:
-                continue
-            bucket = out.setdefault(d, {})
-            for lane in ("buy", "watch", "leaders", "laggards"):
-                for row in (doc.get(lane) or []):
-                    tk = row.get("ticker")
-                    if tk and tk not in bucket:
-                        bucket[str(tk)] = row
+    for line in us_board_snapshots.iter_lines(p):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            doc = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        d = str(doc.get("as_of") or "")
+        if not d:
+            continue
+        bucket = out.setdefault(d, {})
+        for lane in ("buy", "watch", "leaders", "laggards"):
+            for row in (doc.get(lane) or []):
+                tk = row.get("ticker")
+                if tk and tk not in bucket:
+                    bucket[str(tk)] = row
     return out
 
 
@@ -338,22 +338,21 @@ def board_days(retro: pd.DataFrame, snaps: dict[str, dict[str, dict]],
         for d, tk in zip(sub["as_of"], sub["ticker"]):
             days.setdefault(str(d), set()).add(str(tk))
     p = root / SNAPSHOTS_REL
-    if p.exists():
-        with p.open(encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    doc = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                d = str(doc.get("as_of") or "")
-                if not d:
-                    continue
-                for row in (doc.get(LANE) or []):
-                    if row.get("ticker"):
-                        days.setdefault(d, set()).add(str(row["ticker"]))
+    if us_board_snapshots.exists(p):
+        for line in us_board_snapshots.iter_lines(p):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                doc = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            d = str(doc.get("as_of") or "")
+            if not d:
+                continue
+            for row in (doc.get(LANE) or []):
+                if row.get("ticker"):
+                    days.setdefault(d, set()).add(str(row["ticker"]))
     return days
 
 
@@ -562,7 +561,8 @@ def load_retro_membership(root: Path) -> tuple[dict[str, dict[str, list[str | No
 
 
 def load_snapshot_membership(root: Path) -> tuple[dict[str, dict[str, list[str | None]]], dict]:
-    """{date: {ticker: [rank_by|None]}} for the buy lane from snapshots.jsonl.
+    """{date: {ticker: [rank_by|None]}} for the buy lane from snapshots.jsonl
+    (base plus snapshots_parts/, engine/us_board_snapshots.py).
 
     The nightly snapshot carries the board-page `rank_by` stamp at the top level
     (written by scripts.grade_us_board.snapshot_today), so every buy-lane ticker on that
@@ -588,66 +588,65 @@ def load_snapshot_membership(root: Path) -> tuple[dict[str, dict[str, list[str |
     }
     out: dict[str, dict[str, list[str | None]]] = {}
     p = root / SNAPSHOTS_REL
-    if not p.exists():
-        status["error"] = "missing"
-        return out, status
     try:
-        fh = p.open(encoding="utf-8")
-    except OSError as e:
+        if not us_board_snapshots.exists(p):
+            status["error"] = "missing"
+            return out, status
+        lines = us_board_snapshots.iter_lines(p)
+    except (OSError, us_board_snapshots.SnapshotLedgerError) as e:
         status["error"] = f"{type(e).__name__}: {e}"[:300]
         return out, status
     seen: dict[str, tuple[str | None, frozenset[str]]] = {}
     try:
-        with fh:
-            for line in fh:
-                status["n_lines"] += 1
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    doc = json.loads(line)
-                except json.JSONDecodeError:
-                    status["n_malformed_lines"] += 1
-                    continue
-                if not isinstance(doc, dict):
-                    status["n_malformed_lines"] += 1
-                    continue
-                d = _iso_date_key(doc.get("as_of"))
-                if d is None:
-                    status["n_lines_without_as_of"] += 1
-                    continue
-                status["n_docs"] += 1
-                out.setdefault(d, {})
-                stamp = pm.integrity_stamp(doc.get("rank_by"))
-                if stamp is not None:
-                    status["rank_by_column_present"] = True
-                buy_rows = doc.get(LANE, [])
-                members: set[str] = set()
-                if not isinstance(buy_rows, list):
-                    status["n_invalid_membership_records"] += 1
-                else:
-                    for row in buy_rows:
-                        if not isinstance(row, dict):
-                            status["n_invalid_membership_records"] += 1
-                            continue
-                        tk = _integrity_ticker_key(row.get("ticker"))
-                        if tk is None:
-                            status["n_invalid_membership_records"] += 1
-                            continue
-                        members.add(tk)
-                        out.setdefault(d, {}).setdefault(tk, []).append(stamp)
-                        status["n_buy_records"] += 1
-                        if stamp is None:
-                            status["n_missing_stamp_records"] += 1
-                if d in seen:
-                    status["n_duplicate_as_of_docs"] += 1
-                    prev_stamp, prev_members = seen[d]
-                    if prev_stamp != stamp or prev_members != frozenset(members):
-                        status["n_conflicting_duplicate_observations"] += 1
-                        status["conflicting_duplicate_dates"].append(d)
-                else:
-                    seen[d] = (stamp, frozenset(members))
-    except (OSError, UnicodeError) as exc:
+        for line in lines:
+            status["n_lines"] += 1
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                doc = json.loads(line)
+            except json.JSONDecodeError:
+                status["n_malformed_lines"] += 1
+                continue
+            if not isinstance(doc, dict):
+                status["n_malformed_lines"] += 1
+                continue
+            d = _iso_date_key(doc.get("as_of"))
+            if d is None:
+                status["n_lines_without_as_of"] += 1
+                continue
+            status["n_docs"] += 1
+            out.setdefault(d, {})
+            stamp = pm.integrity_stamp(doc.get("rank_by"))
+            if stamp is not None:
+                status["rank_by_column_present"] = True
+            buy_rows = doc.get(LANE, [])
+            members: set[str] = set()
+            if not isinstance(buy_rows, list):
+                status["n_invalid_membership_records"] += 1
+            else:
+                for row in buy_rows:
+                    if not isinstance(row, dict):
+                        status["n_invalid_membership_records"] += 1
+                        continue
+                    tk = _integrity_ticker_key(row.get("ticker"))
+                    if tk is None:
+                        status["n_invalid_membership_records"] += 1
+                        continue
+                    members.add(tk)
+                    out.setdefault(d, {}).setdefault(tk, []).append(stamp)
+                    status["n_buy_records"] += 1
+                    if stamp is None:
+                        status["n_missing_stamp_records"] += 1
+            if d in seen:
+                status["n_duplicate_as_of_docs"] += 1
+                prev_stamp, prev_members = seen[d]
+                if prev_stamp != stamp or prev_members != frozenset(members):
+                    status["n_conflicting_duplicate_observations"] += 1
+                    status["conflicting_duplicate_dates"].append(d)
+            else:
+                seen[d] = (stamp, frozenset(members))
+    except (OSError, UnicodeError, us_board_snapshots.SnapshotLedgerError) as exc:
         status["error"] = f"{type(exc).__name__}: {exc}"[:300]
         return out, status
     status["readable"] = True
