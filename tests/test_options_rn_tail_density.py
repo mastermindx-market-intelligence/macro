@@ -61,6 +61,13 @@ def _dense_quotes(basis):
     return K, k, _dense_iv(k), K >= basis.forward
 
 
+def _aligned_flat_quotes(basis, n_nodes=801):
+    """A compatible fine-grid control, not an empirical validation surface."""
+    grid = rn.default_grid(basis, rn.flat_smile(0.2, basis.T), n_nodes)
+    K = grid[(grid >= 70) & (grid <= 130)]
+    return K, np.log(K / basis.forward), np.full(K.size, 0.2), K >= basis.forward
+
+
 def _walk_keys(obj):
     if isinstance(obj, dict):
         for key, val in obj.items():
@@ -123,9 +130,11 @@ def test_req1_smile_density_is_nonnegative_sums_to_one_and_has_monotone_cdf():
     assert dens.negative_mass <= 1e-12
     assert dens.raw_negative_mass < rn.NEG_MASS_TOL
     assert np.all(dens.atom_masses >= -1e-12)
-    cdf = dens.cdf(np.linspace(dens.grid[0], dens.grid[-1], 300))
+    cdf = dens.cdf(np.linspace(dens.grid[0], dens.grid[-1], 300, endpoint=False))
     assert np.all(np.diff(cdf) >= -1e-12)
     assert cdf.min() >= 0.0 and cdf.max() <= 1.0
+    with pytest.raises(rn.ProbabilityUnavailableError, match="unidentified_right_tail"):
+        dens.cdf([dens.grid[-1]])
 
 
 def test_req1_arbitrage_free_black76_grid_is_left_unchanged_by_repair():
@@ -274,16 +283,17 @@ def test_req4_smile_wings_are_explicit_and_lee_capped():
 
 def test_req5_perturbation_interval_widens_with_quote_uncertainty():
     basis = _dense_basis()
-    _, k, iv, _ = _dense_quotes(basis)
+    _, k, iv, _ = _aligned_flat_quotes(basis)
 
     def fitter(kk, vv):
-        return rn.fit_smile(kk, vv, basis.T, 0.0, 5)
+        return rn.flat_smile(float(np.mean(vv)), basis.T)
 
     widths = []
     for scale in (0.0, 0.5, 2.0):
         pi = rn.perturbation_interval(basis, k, iv, rn.iv_half_width(k, scale), 90.0, fitter,
-                                      n_draws=12, seed=7, n_nodes=401)
+                                      n_draws=12, seed=7, n_nodes=801)
         assert pi["measure"] == "Q"
+        assert pi["available"] and pi["n_qualified"] == pi["n_draws"] == 12
         widths.append(pi["width"])
     assert widths[0] == 0.0
     assert widths[1] > 0.0
@@ -322,15 +332,22 @@ def test_req5_weak_wing_support_restricts_output_to_price_bounds_only():
     assert 0.0 <= b["L"] <= b["U"] <= 1.0
 
 
-def test_req5_full_density_only_when_identified_and_point_sits_inside_bounds():
+@pytest.mark.parametrize("n_nodes", [401, 801])
+def test_req5_full_density_only_when_identified_and_point_sits_inside_bounds(n_nodes):
     basis = _dense_basis()
-    K, _, iv, calls = _dense_quotes(basis)
-    rep = rn.rn_tail_report(basis, K, iv, calls, band_scale=0.1, lam=0.0, n_draws=8, n_nodes=801)
+    K, k, iv, calls = _aligned_flat_quotes(basis, n_nodes)
+    rep = rn.rn_tail_report(basis, K, iv, calls, band_scale=0, lam=0.0, n_draws=8, n_nodes=n_nodes)
     assert rep["identification"] == rn.IDENT_FULL
     b = rep["identified_bounds"]
     assert b["L"] <= rep["point_estimate"] <= b["U"]
     pi = rep["perturbation_interval"]
-    assert pi is not None and pi["width"] > 0.0
+    assert pi is not None and pi["width"] == 0.0
+    assert pi["n_qualified"] == pi["n_draws"] == 8
+    assert rep["numerical_validity"] == {"qualified": True, "reasons": []}
+    smile = rn.fit_smile(k, iv, basis.T, 0, 5)
+    assert rep["point_estimate"] == rn.q_tail_probability(smile, basis, 90, n_nodes=n_nodes)
+    assert rep["point_estimate"] == rn.density_from_smile(smile, basis, n_nodes).cdf([90])[0]
+    K, _, iv, calls = _dense_quotes(basis)
     wide = rn.rn_tail_report(basis, K, iv, calls, band_scale=2.0, lam=0.0, n_draws=8, n_nodes=801)
     assert wide["identification"] == rn.IDENT_BOUNDS
     assert "identified_interval_too_wide" in wide["identification_reasons"]
@@ -377,8 +394,8 @@ _P_TERMS = ("physical", "real_world", "realworld", "p_measure", "objective", "cr
 
 def test_req6_report_is_labeled_risk_neutral_and_carries_no_physical_keys():
     basis = _dense_basis()
-    K, _, iv, calls = _dense_quotes(basis)
-    rep = rn.rn_tail_report(basis, K, iv, calls, band_scale=0.1, lam=0.0, n_draws=4, n_nodes=401)
+    K, _, iv, calls = _aligned_flat_quotes(basis)
+    rep = rn.rn_tail_report(basis, K, iv, calls, band_scale=0, lam=0.0, n_draws=4, n_nodes=801)
     assert rep["measure"] == "Q"
     assert "not a physical probability" in rep["measure_label"]
     assert rep["perturbation_interval"]["measure"] == "Q"
@@ -475,3 +492,225 @@ def test_no_silent_activation_module_contract():
     assert list(logging.getLogger().handlers) == handlers_before
     new_modules = set(sys.modules) - modules_before
     assert not [m for m in new_modules if not m.startswith(("numpy", "scipy"))]
+
+
+# ---------------------------------------------------------------------------
+# research-v2 — one probability object and explicit numerical availability
+# These are development fixtures under NUMERICAL_CONSISTENCY_REVISION.md.
+# ---------------------------------------------------------------------------
+
+
+def _atomic_density(grid, strikes=(80.0, 100.0, 120.0), masses=(0.25, 0.50, 0.25), repair=True):
+    grid = np.asarray(grid, dtype=float)
+    strikes, masses = np.asarray(strikes), np.asarray(masses)
+    basis = rn.from_forward(float(strikes @ masses), 1.0, 0.25)
+    calls = np.maximum(strikes[None, :] - grid[:, None], 0.0) @ masses
+    return rn.density_from_call_grid(grid, calls, basis, repair=repair)
+
+
+@pytest.mark.parametrize("repair", [False, True])
+@pytest.mark.parametrize("grid", [[60, 80, 100, 120, 140], [80, 100, 120]])
+def test_v2_atom_cdf_limits_interval_mass_and_reintegration_share_one_law(repair, grid):
+    dens = _atomic_density(grid, repair=repair)
+    query = [-1, 0, 70, 79, 80, 99, 100, 101, 119, 120, 121, 200]
+    expected = [0, 0, 0, 0, 0.25, 0.25, 0.75, 0.75, 0.75, 1, 1, 1]
+    assert np.allclose(dens.cdf(query), expected, atol=1e-14, rtol=0)
+    assert np.allclose(dens.cdf_left([80, 100, 120]), [0, 0.25, 0.75], atol=1e-14, rtol=0)
+    assert dens.left_tail_probability(100) == pytest.approx(0.75)
+    assert np.diff(dens.cdf([99, 101]))[0] == pytest.approx(0.50)
+    assert np.diff(dens.cdf([70, 79]))[0] == 0
+    assert np.allclose(rn.reintegrate_call_prices(dens, grid), dens.calls, atol=1e-14, rtol=0)
+    outside = rn.extrapolation_mass(dens, 80, 120)
+    assert outside["mass_below_quoted"] == 0
+    assert outside["mass_above_quoted"] == 0
+    assert outside["extrapolated_mass"] == 0
+    assert outside["extrapolated_mass_available"] is True
+    assert outside["mass_strictly_outside_grid"] == 0
+    # Endpoint components are still reported even though their atoms are in-grid.
+    if len(grid) == 3:
+        assert outside["grid_truncation_mass"] == 0.50
+
+
+def test_v2_redundant_collinear_knots_leave_probabilities_and_prices_unchanged():
+    coarse = _atomic_density([60, 80, 100, 120, 140])
+    fine = _atomic_density([60, 70, 80, 90, 100, 110, 120, 130, 140])
+    x = np.arange(50.0, 151.0)
+    assert np.array_equal(coarse.cdf(x), fine.cdf(x))
+    assert np.array_equal(coarse.cdf_left(x), fine.cdf_left(x))
+    assert np.allclose(rn.reintegrate_call_prices(coarse, x[10:-10]),
+                       rn.reintegrate_call_prices(fine, x[10:-10]), atol=1e-14, rtol=0)
+
+
+def test_v2_tail_means_do_not_locate_atoms_or_identify_boundary_probabilities():
+    first = _atomic_density([80, 100, 120], (60, 140), (0.5, 0.5))
+    second = _atomic_density([80, 100, 120], (40, 80, 120, 160), (0.25,) * 4)
+    assert np.array_equal(first.calls, second.calls)
+    assert first.basis == second.basis
+    for dens in (first, second):
+        assert np.array_equal(dens.cdf([80, 100, 119]), [0.5, 0.5, 0.5])
+        assert dens.cdf_left([120])[0] == 0.5
+        for x, side in ((60, "left"), (120, "right"), (140, "right")):
+            with pytest.raises(rn.ProbabilityUnavailableError, match=f"unidentified_{side}_tail"):
+                dens.cdf([x])
+        with pytest.raises(rn.ProbabilityUnavailableError, match="unidentified_left_tail"):
+            dens.cdf_left([80])
+        with pytest.raises(rn.ProbabilityUnavailableError):
+            dens.cdf([100, 140])
+        outside = rn.extrapolation_mass(dens, 80, 120)
+        assert outside["mass_below_quoted"] is None
+        assert outside["mass_above_quoted"] is None
+        assert outside["extrapolated_mass"] is None
+        assert outside["extrapolated_mass_available"] is False
+        assert outside["mass_strictly_outside_grid"] is None
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_v2_small_positive_unresolved_tails_are_never_discarded(side):
+    eps = 5e-13
+    masses = (eps, 0.75 - eps, 0.25) if side == "left" else (0.25, 0.75 - eps, eps)
+    dens = _atomic_density([80, 100, 120], (60, 100, 140), masses, repair=False)
+    assert 0 < getattr(dens, f"{side}_mass") < 1e-12
+    with pytest.raises(rn.ProbabilityUnavailableError, match=f"unidentified_{side}_tail"):
+        dens.cdf([60 if side == "left" else 120])
+
+
+@pytest.mark.parametrize("forward,query,left_limit", [(70 + 1e-13, 0, False), (110 - 1e-13, 80, True)])
+def test_v2_near_endpoint_moments_do_not_force_endpoint_atoms(forward, query, left_limit):
+    dens = rn.density_from_call_grid([80, 100, 120], [30, 20, 10],
+                                     rn.from_forward(forward, 1, 0.25), repair=False)
+    assert dens.forward_ok
+    with pytest.raises(rn.ProbabilityUnavailableError, match="unidentified_left_tail"):
+        (dens.cdf_left if left_limit else dens.cdf)([query])
+
+
+def test_v2_rounded_product_cannot_certify_a_left_endpoint():
+    dens = rn.density_from_call_grid([1, 10, 20], [6.3, 0, 0],
+                                     rn.from_forward(7, 1, 0.25), repair=False)
+    assert 10 * dens.atom_masses[0] == 7
+    # The exact product of the canonical binary floats is smaller than 7.
+    # Two possible left-tail placements therefore differ at zero.
+    with pytest.raises(rn.ProbabilityUnavailableError, match="unidentified_left_tail"):
+        dens.cdf([0])
+
+
+def test_v2_rounded_right_mean_does_not_certify_an_endpoint():
+    last = float(2 ** 52)
+    dens = rn.density_from_call_grid([last - 2, last - 1, last], [1.125, 0.375, 0.125],
+                                     rn.from_forward(last - 1, 1, 0.25), repair=False)
+    assert dens.right_mass == 0.25 and dens.calls[-1] > 0
+    assert dens.right_mean == last  # The positive excess mean rounds away.
+    with pytest.raises(rn.ProbabilityUnavailableError, match="unidentified_right_tail"):
+        dens.cdf([last])
+
+
+@pytest.mark.parametrize("grid,calls,forward,reason", [
+    ([80, 100, 120], [25, 15, 0], 100, "negative_probability_mass"),
+    ([80, 100, 120], [30, 20, 10], 110.01, "infeasible_forward_moment"),
+    ([80, 100, 120], [21, 1, 1], 100, "right_tail_without_mass"),
+    ([-20, 0, 20], [110, 90, 70], 90, "negative_support"),
+])
+def test_v2_invalid_measures_cannot_be_hidden_by_clipping(grid, calls, forward, reason):
+    dens = rn.density_from_call_grid(grid, calls, rn.from_forward(forward, 1, 0.25), repair=False)
+    with pytest.raises(rn.ProbabilityUnavailableError, match=reason):
+        dens.cdf([100])
+    # Raw diagnostics remain accessible for an unavailable probability object.
+    assert isinstance(dens.raw_report, dict)
+
+
+def test_v2_repaired_atoms_use_the_repaired_monotone_slopes_without_redifferencing():
+    basis = _dense_basis()
+    grid = np.linspace(60, 140, 81)
+    calls = rn.black76_price(basis, grid, 0.2, True) + np.random.default_rng(1).normal(0, 0.02, grid.size)
+    dens = rn.density_from_call_grid(grid, calls, basis)
+    assert np.array_equal(dens.atom_masses, np.diff(dens.slopes) / basis.discount)
+    assert np.all(dens.atom_masses >= 0)
+    assert dens.negative_mass == 0
+
+
+@pytest.mark.parametrize("n_nodes", [3, 5, 11, 21, 51, 101])
+def test_v2_incompatible_coarse_grid_reports_withhold_point_and_interval(n_nodes):
+    basis = _dense_basis()
+    K, _, iv, calls = _dense_quotes(basis)
+    report = rn.rn_tail_report(basis, K, iv, calls, band_scale=0.1, lam=0, n_draws=2, n_nodes=n_nodes)
+    assert report["schema"] == "options.rn_tail_density/research-v2"
+    assert report["identification"] == rn.IDENT_BOUNDS
+    assert report["point_estimate"] is None and report["perturbation_interval"] is None
+    assert report["numerical_validity"]["qualified"] is False
+    assert report["numerical_validity"]["reasons"]
+
+
+def test_v2_partial_quote_coverage_cannot_qualify_a_full_surface():
+    basis = rn.from_forward(100, 1, 0.01)
+    strikes = np.array([20, 70, 80, 85, 90, 95, 100, 105, 110, 150, 200], dtype=float)
+    report = rn.rn_tail_report(basis, strikes, np.full(strikes.size, 0.2), strikes >= 100,
+                               k_star_ratio=0.99, band_scale=0.1, lam=0, n_draws=2, n_nodes=801)
+    coverage = report["reintegration"]
+    assert coverage["n_supplied"] == strikes.size
+    assert coverage["n_unchecked"] > 0
+    assert coverage["n_checked"] + coverage["n_unchecked"] == strikes.size
+    assert coverage["complete_coverage"] is False
+    assert "incomplete_quote_coverage" in report["identification_reasons"]
+    assert report["point_estimate"] is None and report["perturbation_interval"] is None
+
+
+@pytest.mark.parametrize("n_nodes", [401, 801])
+def test_v2_retained_smooth_fixture_withholds_incompatible_uncertainty(n_nodes):
+    basis = _dense_basis()
+    K, _, iv, calls = _dense_quotes(basis)
+    report = rn.rn_tail_report(basis, K, iv, calls, band_scale=0.1, lam=0, n_draws=8, n_nodes=n_nodes)
+    assert report["reintegration"]["within"] is True
+    assert report["reintegration"]["complete_coverage"] is True
+    assert report["identification"] == rn.IDENT_BOUNDS
+    assert "uncertainty_draws_unavailable" in report["identification_reasons"]
+    assert report["point_estimate"] is None and report["perturbation_interval"] is None
+    diagnostics = report["perturbation_diagnostics"]
+    assert diagnostics["n_draws"] == diagnostics["n_finite"] == 8
+    assert diagnostics["n_qualified"] + diagnostics["n_unavailable"] == 8
+    assert diagnostics["unavailable_reasons"]["reintegration_outside_source_bands"] > 0
+
+
+def test_v2_uncertainty_never_reports_survivor_quantiles(monkeypatch):
+    basis = _dense_basis()
+    _, k, iv, _ = _aligned_flat_quotes(basis)
+    draw_count = 0
+    original = rn.density_from_smile
+
+    def unavailable_second_draw(*args, **kwargs):
+        nonlocal draw_count
+        draw_count += 1
+        if draw_count == 2:
+            raise rn.ProbabilityUnavailableError("synthetic_unavailable_draw")
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(rn, "density_from_smile", unavailable_second_draw)
+    result = rn.perturbation_interval(basis, k, iv, 0, 90,
+                                      lambda kk, vv: rn.flat_smile(float(np.mean(vv)), basis.T),
+                                      n_draws=3, seed=7, n_nodes=801)
+    assert draw_count == result["n_draws"] == 3
+    assert result["n_unavailable"] == 1 and result["n_qualified"] == result["n_finite"] == 2
+    assert result["n_qualified"] + result["n_unavailable"] == 3
+    assert result["unavailable_reasons"]["synthetic_unavailable_draw"] == 1
+    assert result["available"] is False
+    assert all(result[key] is None for key in ("lo", "hi", "p05", "p95", "width"))
+
+
+def test_v2_finite_incompatible_draws_are_not_silently_dropped():
+    basis = _dense_basis()
+    _, k, iv, _ = _aligned_flat_quotes(basis)
+    vols = iter([0.2, 0.3, 0.2])
+    result = rn.perturbation_interval(basis, k, iv, 0, 90,
+                                      lambda kk, vv: rn.flat_smile(next(vols), basis.T),
+                                      n_draws=3, seed=7, n_nodes=801)
+    assert result["n_draws"] == result["n_finite"] == 3
+    assert result["n_qualified"] == 2 and result["n_unavailable"] == 1
+    assert result["unavailable_reasons"]["reintegration_outside_source_bands"] == 1
+    assert result["available"] is False
+    assert all(result[key] is None for key in ("lo", "hi", "p05", "p95", "width"))
+
+
+def test_v2_uncertainty_input_errors_are_not_downgraded_to_unavailability():
+    basis = _dense_basis()
+    def broken_fitter(_k, _iv):
+        raise ValueError("caller fitter error")
+    with pytest.raises(ValueError, match="caller fitter error"):
+        rn.perturbation_interval(basis, [-0.1, 0.1], [0.2, 0.2], 0.01, 90, broken_fitter, n_draws=1)

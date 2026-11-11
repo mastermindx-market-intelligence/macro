@@ -83,3 +83,15 @@ Before source release, demonstrate:
 - Preserved Q/P refusal, research-only/nonadmitted restrictions, bounded inputs and import inertness.
 
 Use the existing hermetic test module and code CI owner. Known fixtures and ordinary source tests do not establish prospective predictive performance. Any later empirical study must identify the revised method and use the existing authorized research process; this repair does not start one.
+
+## Implementation and synthetic qualification
+
+The contract above was committed at `1233c7ce9765691d249ba2ff7250921e5e10ab75` before implementation or new synthetic execution. The following records subsequent source qualification, not a change to that prospective contract.
+
+The original source passed its 27 existing tests. The initial new contract regressions produced **23 failures and one passing input-error control** against that source. The final complete module runs **57 tests, all passing, with zero skips** on Python 3.14.7. The existing code CI owner remains `quant-q13-rn-tail-density`, running the full module without filtering.
+
+The cases cover exact and redundant-knot atom laws, both CDF limits, closed-range accounting, unresolved and tiny positive tails, invalid signed measures, complete quote coverage, and unavailable or finite-but-incompatible uncertainty draws. An exact rational certificate, evaluated only when an endpoint query needs it, prevents rounded products or near-endpoint moments from inventing a forced left atom. A rounded right mean cannot override a positive terminal call.
+
+The retained smooth fixture was tested at 3, 5, 11, 21, 51, 101, 401 and 801 nodes. Its six coarse configurations withhold invalid point estimates. At 401 and 801 nodes the central curve passes reintegration and covers every quote, but all eight requested perturbation draws fail the original source bands; the report therefore retains bounds and the failure counts. Compatible grid-aligned controls at both fine resolutions produce full reports, and separate compatible uniform-band draws preserve deterministic, widening uncertainty intervals. The four older assertions that depended on v1 endpoint or draw assumptions now exercise the explicit v2 behavior.
+
+Pricing, parity and quote-band functions, smoothing, PAVA repair, default grid, model-free bounds, the standalone frozen classifier, and the Q-to-P refusal are unchanged by AST comparison. The empirical evaluation harness and historical research records were not executed or modified. Natural current-head CI and its semantic gate remain necessary release evidence; these synthetic checks confer no admission or predictive-performance claim.
