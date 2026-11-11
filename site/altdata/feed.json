@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-11-10T21:17:45.699592+00:00",
-  "as_of": "2026-11-10",
+  "generated_utc": "2026-11-11T02:29:08.640381+00:00",
+  "as_of": "2026-11-11",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -6120,6 +6120,15 @@
           "parties": "D/R"
         },
         {
+          "ticker": "AAPL",
+          "net": -10,
+          "buys": 2,
+          "sells": 12,
+          "members": 6,
+          "est_usd": 16001.0,
+          "parties": "D/R"
+        },
+        {
           "ticker": "TJX",
           "net": -10,
           "buys": 0,
@@ -6183,24 +6192,6 @@
           "parties": "R"
         },
         {
-          "ticker": "AAPL",
-          "net": -6,
-          "buys": 6,
-          "sells": 12,
-          "members": 7,
-          "est_usd": 48003.0,
-          "parties": "D/R"
-        },
-        {
-          "ticker": "NVDA",
-          "net": -6,
-          "buys": 6,
-          "sells": 12,
-          "members": 7,
-          "est_usd": 48003.0,
-          "parties": "D/R"
-        },
-        {
           "ticker": "GOOGL",
           "net": -6,
           "buys": 0,
@@ -6211,6 +6202,15 @@
         },
         {
           "ticker": "HON",
+          "net": -6,
+          "buys": 0,
+          "sells": 6,
+          "members": 3,
+          "est_usd": 0.0,
+          "parties": "R"
+        },
+        {
+          "ticker": "HONA",
           "net": -6,
           "buys": 0,
           "sells": 6,
@@ -21152,18 +21152,18 @@
         "sample": "A Study to Learn About Study Medicine Called Berobenatide in Adults With Knee Pain and Overweight or Obesity (VESPER-OA 1)"
       },
       {
-        "ticker": "GSK",
-        "phase3_starts": 27,
-        "halts": 0,
-        "hot": true,
-        "sample": "A Study on the Impact of Recombinant Zoster Vaccine on Major Adverse Cardiovascular Events in Adults >=50 Years of Age With Established Cardiovascular Disease o"
-      },
-      {
         "ticker": "AZN",
         "phase3_starts": 26,
         "halts": 0,
         "hot": true,
         "sample": "A Study to Evaluate the Effectiveness and Safety of the Drug AZD6234 for Managing Weight in Adults Who Are Obese or Overweight. These Participants May or May No"
+      },
+      {
+        "ticker": "GSK",
+        "phase3_starts": 25,
+        "halts": 0,
+        "hot": true,
+        "sample": "A Study on the Impact of Recombinant Zoster Vaccine on Major Adverse Cardiovascular Events in Adults >=50 Years of Age With Established Cardiovascular Disease o"
       },
       {
         "ticker": "MRK",
@@ -21730,14 +21730,6 @@
           "sellers": 14
         },
         {
-          "ticker": "LTH",
-          "buy_usd": 0.0,
-          "sell_usd": 1817748969.0,
-          "net_usd": -1817748969.0,
-          "buyers": 0,
-          "sellers": 26
-        },
-        {
           "ticker": "AVAH",
           "buy_usd": 0.0,
           "sell_usd": 1668169794.0,
@@ -21760,6 +21752,14 @@
           "net_usd": -1169349355.0,
           "buyers": 0,
           "sellers": 1067
+        },
+        {
+          "ticker": "LTH",
+          "buy_usd": 0.0,
+          "sell_usd": 1154928030.0,
+          "net_usd": -1154928030.0,
+          "buyers": 0,
+          "sellers": 21
         },
         {
           "ticker": "BIRK",
@@ -21786,20 +21786,20 @@
           "sellers": 32
         },
         {
-          "ticker": "CRWV",
-          "buy_usd": 0.0,
-          "sell_usd": 969215316.0,
-          "net_usd": -969215316.0,
-          "buyers": 0,
-          "sellers": 450
-        },
-        {
           "ticker": "SNOW",
           "buy_usd": 0.0,
           "sell_usd": 956770775.0,
           "net_usd": -956770775.0,
           "buyers": 0,
           "sellers": 155
+        },
+        {
+          "ticker": "CRWV",
+          "buy_usd": 0.0,
+          "sell_usd": 946783239.0,
+          "net_usd": -946783239.0,
+          "buyers": 0,
+          "sellers": 409
         },
         {
           "ticker": "INGM",
@@ -23267,93 +23267,93 @@
     "patents": [
       {
         "ticker": "QCOM",
-        "patents": 1356,
-        "ipc_classes": 50,
-        "sample_title": "capacitor current-leakage compensation circuit"
+        "patents": 1256,
+        "ipc_classes": 48,
+        "sample_title": "non-periodic power, current, and thermal limits management"
       },
       {
         "ticker": "TSM",
-        "patents": 1067,
-        "ipc_classes": 58,
-        "sample_title": "removable tray assembly for cmp systems"
+        "patents": 989,
+        "ipc_classes": 53,
+        "sample_title": "automatic leveling immersion cooling tank and method of operating the same"
       },
       {
         "ticker": "IBM",
-        "patents": 827,
-        "ipc_classes": 64,
-        "sample_title": "wire structure for low resistance interconnects"
+        "patents": 743,
+        "ipc_classes": 62,
+        "sample_title": "multipathing for source code execution"
       },
       {
         "ticker": "AAPL",
-        "patents": 762,
-        "ipc_classes": 69,
-        "sample_title": "context-based object viewing within 3d environments"
+        "patents": 705,
+        "ipc_classes": 67,
+        "sample_title": "methods and user interfaces for account recovery"
       },
       {
         "ticker": "INTC",
-        "patents": 644,
-        "ipc_classes": 54,
-        "sample_title": "photonic alignment device and method"
+        "patents": 606,
+        "ipc_classes": 51,
+        "sample_title": "access point configured for multi-ap group operations using restricted target wake time (r-twt) service period (sp)"
       },
       {
         "ticker": "MSFT",
-        "patents": 555,
-        "ipc_classes": 52,
-        "sample_title": "reduction of intersymbol interference by matching a voxel lattice constant and a point spread function shadow in optical systems"
+        "patents": 524,
+        "ipc_classes": 49,
+        "sample_title": "head-mounted display device with selective color see-through visor"
       },
       {
         "ticker": "MU",
-        "patents": 519,
-        "ipc_classes": 29,
-        "sample_title": "apparatus and electronic devices including transistors comprising two-dimensional materials"
+        "patents": 489,
+        "ipc_classes": 28,
+        "sample_title": "memory sub-system enclosure"
       },
       {
         "ticker": "LPL",
-        "patents": 469,
+        "patents": 442,
         "ipc_classes": 27,
-        "sample_title": "display device"
+        "sample_title": "display device including multiple flexible printed circuit boards and electrode, line, and via interconnections for series-disposed light emitting diodes"
       },
       {
         "ticker": "AMAT",
-        "patents": 352,
-        "ipc_classes": 55,
-        "sample_title": "electrostatic chuck with perforated or screened chucking electrode"
+        "patents": 318,
+        "ipc_classes": 53,
+        "sample_title": "inner spacer liner for gate-all-around device"
       },
       {
         "ticker": "NVDA",
-        "patents": 338,
+        "patents": 318,
         "ipc_classes": 36,
-        "sample_title": "path perception diversity and redundancy in autonomous machine applications"
-      },
-      {
-        "ticker": "HMC",
-        "patents": 337,
-        "ipc_classes": 86,
-        "sample_title": "alternating current generation circuit and temperature raising device"
+        "sample_title": "application programming interface to perform delayed memory transaction information check"
       },
       {
         "ticker": "SONY",
-        "patents": 317,
-        "ipc_classes": 55,
-        "sample_title": "information processing device, information processing method, and program"
+        "patents": 300,
+        "ipc_classes": 54,
+        "sample_title": "methods and communications devices"
+      },
+      {
+        "ticker": "HMC",
+        "patents": 298,
+        "ipc_classes": 79,
+        "sample_title": "vehicle lighting device, vehicle lighting control method, and storage medium"
       },
       {
         "ticker": "TXN",
-        "patents": 286,
-        "ipc_classes": 45,
-        "sample_title": "reducing startup time in a crystal oscillator"
+        "patents": 270,
+        "ipc_classes": 44,
+        "sample_title": "apparatus and methods to render 3d digital content having multiple views"
       },
       {
         "ticker": "BA",
-        "patents": 276,
-        "ipc_classes": 86,
-        "sample_title": "beacon-based approach guidance system"
+        "patents": 262,
+        "ipc_classes": 85,
+        "sample_title": "composite fuselage barrel with improved eme protection and method of making thereof"
       },
       {
         "ticker": "BAC",
-        "patents": 273,
+        "patents": 257,
         "ipc_classes": 14,
-        "sample_title": "using artificial intelligence (ai) for reconciliation of migrated information"
+        "sample_title": "system and method for centralized analysis and monitoring of process data via baseline data mapping"
       }
     ],
     "bills": [
@@ -24549,277 +24549,277 @@
     ],
     "earnings": [
       {
-        "ticker": "REZI",
-        "next_date": "2026-11-10",
-        "days_to": 0,
-        "eps_forecast": 0.4,
-        "last_surprise_pct": 22.9
-      },
-      {
-        "ticker": "CRWV",
-        "next_date": "2026-11-10",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": 13.2
-      },
-      {
-        "ticker": "IBRX",
-        "next_date": "2026-11-10",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": 11.1
-      },
-      {
-        "ticker": "JBGS",
-        "next_date": "2026-11-10",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": null
-      },
-      {
         "ticker": "EZPW",
         "next_date": "2026-11-11",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.4,
         "last_surprise_pct": 20.5
       },
       {
         "ticker": "SHFS",
         "next_date": "2026-11-11",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "TR",
         "next_date": "2026-11-11",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "AMAT",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 4.06,
         "last_surprise_pct": 3.5
       },
       {
         "ticker": "AVAH",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 0.19,
         "last_surprise_pct": 31.2
       },
       {
         "ticker": "CSCO",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 1.15,
         "last_surprise_pct": 9.1
       },
       {
         "ticker": "CBRS",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": 81.0
       },
       {
         "ticker": "LUNR",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": -128.6
       },
       {
         "ticker": "NBIS",
         "next_date": "2026-11-12",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": 82.1
       },
       {
         "ticker": "ACM",
         "next_date": "2026-11-16",
-        "days_to": 6,
+        "days_to": 5,
         "eps_forecast": 1.57,
         "last_surprise_pct": -133.6
       },
       {
         "ticker": "BIDU",
         "next_date": "2026-11-16",
-        "days_to": 6,
+        "days_to": 5,
         "eps_forecast": 0.57,
         "last_surprise_pct": -35.3
       },
       {
         "ticker": "INFQ",
         "next_date": "2026-11-16",
-        "days_to": 6,
+        "days_to": 5,
         "eps_forecast": null,
         "last_surprise_pct": 14.3
       },
       {
         "ticker": "DIS",
         "next_date": "2026-11-17",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 1.67,
         "last_surprise_pct": 9.6
       },
       {
         "ticker": "HD",
         "next_date": "2026-11-17",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 3.86,
         "last_surprise_pct": 4.5
       },
       {
         "ticker": "NVDA",
         "next_date": "2026-11-17",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 2.49,
         "last_surprise_pct": 6.2
       },
       {
         "ticker": "LOW",
         "next_date": "2026-11-18",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 2.86,
         "last_surprise_pct": 4.3
       },
       {
         "ticker": "P",
         "next_date": "2026-11-18",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 0.27,
         "last_surprise_pct": 21.1
       },
       {
         "ticker": "TJX",
         "next_date": "2026-11-18",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 1.33,
         "last_surprise_pct": 3.4
       },
       {
         "ticker": "BABA",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 1.31,
         "last_surprise_pct": -43.3
       },
       {
         "ticker": "ESE",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 2.59,
         "last_surprise_pct": 3.8
       },
       {
         "ticker": "ESTC",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 0.14,
         "last_surprise_pct": 140.0
       },
       {
         "ticker": "KEYS",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 3.09,
         "last_surprise_pct": 30.6
       },
       {
         "ticker": "VEEV",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 1.68,
         "last_surprise_pct": 3.7
       },
       {
         "ticker": "WMT",
         "next_date": "2026-11-19",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 0.64,
         "last_surprise_pct": 11.0
       },
       {
         "ticker": "A",
         "next_date": "2026-11-23",
-        "days_to": 13,
+        "days_to": 12,
         "eps_forecast": 1.72,
         "last_surprise_pct": 9.5
       },
       {
         "ticker": "HPE",
         "next_date": "2026-11-23",
-        "days_to": 13,
+        "days_to": 12,
         "eps_forecast": 1.17,
         "last_surprise_pct": 24.4
       },
       {
         "ticker": "DELL",
         "next_date": "2026-11-24",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": 6.41,
         "last_surprise_pct": 43.2
       },
       {
         "ticker": "WDAY",
         "next_date": "2026-11-24",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": 1.28,
         "last_surprise_pct": 104.8
       },
       {
         "ticker": "CLSK",
         "next_date": "2026-11-24",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": null,
         "last_surprise_pct": -33.3
       },
       {
         "ticker": "DE",
         "next_date": "2026-11-25",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 4.07,
         "last_surprise_pct": 6.5
       },
       {
         "ticker": "CRWD",
         "next_date": "2026-12-01",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 0.0,
         "last_surprise_pct": -80.0
       },
       {
         "ticker": "MDB",
         "next_date": "2026-12-01",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 0.08,
         "last_surprise_pct": 575.0
       },
       {
         "ticker": "MRVL",
         "next_date": "2026-12-01",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 0.79,
         "last_surprise_pct": -4.6
       },
       {
         "ticker": "OKTA",
         "next_date": "2026-12-01",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 0.43,
         "last_surprise_pct": 31.8
       },
       {
         "ticker": "GTLB",
         "next_date": "2026-12-01",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": null,
         "last_surprise_pct": -85.7
+      },
+      {
+        "ticker": "CRM",
+        "next_date": "2026-12-02",
+        "days_to": 21,
+        "eps_forecast": 2.41,
+        "last_surprise_pct": 110.6
+      },
+      {
+        "ticker": "FIVE",
+        "next_date": "2026-12-02",
+        "days_to": 21,
+        "eps_forecast": 1.12,
+        "last_surprise_pct": 25.4
+      },
+      {
+        "ticker": "AI",
+        "next_date": "2026-12-02",
+        "days_to": 21,
+        "eps_forecast": null,
+        "last_surprise_pct": 6.2
+      },
+      {
+        "ticker": "SNOW",
+        "next_date": "2026-12-02",
+        "days_to": 21,
+        "eps_forecast": null,
+        "last_surprise_pct": 13.7
       }
     ],
     "retail": [
@@ -24928,7 +24928,7 @@
           "patent_cluster",
           "stocktwits_bull"
         ],
-        "why": "13f_add: Aberdeen Group plc +$6,670,361,081 \u00b7 analyst_upgrade_cluster: net upgrades +19 revision delta \u00b7 congress_buy: 1 member(s) net +6 \u00b7 gov_grant_accel: $8,513,023, 2.2x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 519 grants, 29 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 213,009 watching"
+        "why": "13f_add: Aberdeen Group plc +$6,670,361,081 \u00b7 analyst_upgrade_cluster: net upgrades +19 revision delta \u00b7 congress_buy: 1 member(s) net +6 \u00b7 gov_grant_accel: $8,513,023, 2.2x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 489 grants, 28 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 213,009 watching"
       },
       {
         "ticker": "MSFT",
@@ -24942,7 +24942,7 @@
           "patent_cluster",
           "trump"
         ],
-        "why": "analyst_upgrade_cluster: net upgrades +20 revision delta \u00b7 app_demand: 4.77\u2605 \u00d7 20,502,926 reviews \u00b7 github_momentum: +0.42% stars \u00b7 hf_model_momentum: +26.9% model downloads \u00b7 patent_cluster: 555 grants, 52 IPC classes \u00b7 trump: MICROSOFT CORP"
+        "why": "analyst_upgrade_cluster: net upgrades +20 revision delta \u00b7 app_demand: 4.77\u2605 \u00d7 20,502,926 reviews \u00b7 github_momentum: +0.42% stars \u00b7 hf_model_momentum: +26.9% model downloads \u00b7 patent_cluster: 524 grants, 49 IPC classes \u00b7 trump: MICROSOFT CORP"
       },
       {
         "ticker": "BA",
@@ -24954,7 +24954,7 @@
           "patent_cluster",
           "stocktwits_bull"
         ],
-        "why": "gov_grant_accel: $12,921,445, 2.4x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 276 grants, 86 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 198,233 watching"
+        "why": "gov_grant_accel: $12,921,445, 2.4x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 262 grants, 85 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 198,233 watching"
       },
       {
         "ticker": "IBM",
@@ -24967,7 +24967,7 @@
           "patent_cluster",
           "special_situation"
         ],
-        "why": "github_momentum: +0.26% stars \u00b7 gov_contract: $31,958,970 awarded \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 827 grants, 64 IPC classes \u00b7 special_situation: Delistings"
+        "why": "github_momentum: +0.26% stars \u00b7 gov_contract: $31,958,970 awarded \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 743 grants, 62 IPC classes \u00b7 special_situation: Delistings"
       },
       {
         "ticker": "INTC",
@@ -24978,7 +24978,7 @@
           "gov_grant_accel",
           "patent_cluster"
         ],
-        "why": "darkpool_accum: DPI z -1.77 \u00b7 gov_grant_accel: $15,290,151, 2.8x grant accel \u00b7 patent_cluster: 644 grants, 54 IPC classes"
+        "why": "darkpool_accum: DPI z -1.77 \u00b7 gov_grant_accel: $15,290,151, 2.8x grant accel \u00b7 patent_cluster: 606 grants, 51 IPC classes"
       },
       {
         "ticker": "HUBB",
@@ -25001,7 +25001,7 @@
           "trump",
           "unusual_options"
         ],
-        "why": "patent_cluster: 352 grants, 55 IPC classes \u00b7 trump: APPLIED MATERIALS \u00b7 unusual_options: 4.12\u00d7 vol/OI, balanced"
+        "why": "patent_cluster: 318 grants, 53 IPC classes \u00b7 trump: APPLIED MATERIALS \u00b7 unusual_options: 4.12\u00d7 vol/OI, balanced"
       },
       {
         "ticker": "AAPL",
@@ -25013,7 +25013,7 @@
           "lobbying",
           "patent_cluster"
         ],
-        "why": "13f_add: ARROWSTREET CAPITAL, LIMITED PARTNERSHIP +$3,022,607,684 \u00b7 cnbc_pick: Joe Terranova \u00b7 lobbying: $4,150,000 lobbied \u00b7 patent_cluster: 762 grants, 69 IPC classes"
+        "why": "13f_add: ARROWSTREET CAPITAL, LIMITED PARTNERSHIP +$3,022,607,684 \u00b7 cnbc_pick: Joe Terranova \u00b7 lobbying: $4,150,000 lobbied \u00b7 patent_cluster: 705 grants, 67 IPC classes"
       },
       {
         "ticker": "NVDA",
@@ -25025,7 +25025,7 @@
           "retail_buzz",
           "trump"
         ],
-        "why": "github_momentum: +0.32% stars \u00b7 patent_cluster: 338 grants, 36 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 trump: Nvidia Corp"
+        "why": "github_momentum: +0.32% stars \u00b7 patent_cluster: 318 grants, 36 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 trump: Nvidia Corp"
       },
       {
         "ticker": "META",
@@ -25114,7 +25114,7 @@
           "patent_cluster",
           "special_situation"
         ],
-        "why": "insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 1356 grants, 50 IPC classes \u00b7 special_situation: Acquisitions"
+        "why": "insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 1256 grants, 48 IPC classes \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "URI",
@@ -25136,7 +25136,7 @@
           "fda_label_expansion",
           "special_situation"
         ],
-        "why": "clinical_phase3_start: 27 new Phase-3 \u00b7 fda_label_expansion: JEMPERLI \u00b7 special_situation: M&A / Divestitures"
+        "why": "clinical_phase3_start: 25 new Phase-3 \u00b7 fda_label_expansion: JEMPERLI \u00b7 special_situation: M&A / Divestitures"
       },
       {
         "ticker": "MRK",
@@ -25169,7 +25169,7 @@
           "patent_cluster",
           "stocktwits_bull"
         ],
-        "why": "material_8k: 3 material 8-Ks (items 5.02, 7.01, 8.01) \u00b7 patent_cluster: 273 grants, 14 IPC classes \u00b7 stocktwits_bull: 83% bull \u00b7 147,324 watching"
+        "why": "material_8k: 3 material 8-Ks (items 5.02, 7.01, 8.01) \u00b7 patent_cluster: 257 grants, 14 IPC classes \u00b7 stocktwits_bull: 83% bull \u00b7 147,324 watching"
       },
       {
         "ticker": "TXT",

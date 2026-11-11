@@ -1863,3 +1863,379 @@ The 19:22Z note's rung sentence, exactly: "Rung reached at 19:22Z: lanes 4, 6 an
 Terminal master (not deployed); Macro #10923 (design guide) MERGED. Lanes 1, 3, 5, 8 and 9
 DELIVERED to pull requests (lane 8's #10924 armed, waiting on CI capacity). Nothing of v1.1 is
 served or production-proven. No APPLY, no migration action, no reservation-ledger edit."
+
+## 26. Status at 21:50Z — lane 3 armed after a READY fourth review; lane 1 rows and lane 7 rows consumer delivered and reviewed; all three Terminal follow-ups merged
+
+Sub-sections 26.1 to 26.10 fold the notes written between 19:54Z and 21:50Z, grouped by subject
+rather than by clock time. Where a note corrects an earlier section or an earlier act of this
+thread, the correction is stated in 26.8. In this window all three Terminal follow-ups MERGED
+(#1443 at 20:30:56Z, #1445 at 20:38:24Z, #1444 at 20:43:22Z; none deployed), section 25 reached
+main (#10971 MERGED at 19:53:42Z, so sections 1 to 25 are on main), lane 3's #1429 reached a
+closing head that passed a fourth, delta-only review and was armed by this thread at 21:19:49Z,
+the lane 1 rows increment was delivered as Macro #10973 at `c700d4b5795e` and reviewed READY WITH
+FOLLOW-UP, and lane 7's rows consumer was delivered as Terminal #1448 at `9726503b8a3d` and
+reviewed NOT READY with its fix round in progress. Nothing of v1.1 is served or production-proven.
+
+### 26.1 What changed in this window
+
+- All three Terminal follow-ups merged: #1443 (lane 4) at 20:30:56Z, #1445 (lane 7) at 20:38:24Z
+  and #1444 (lane 6) at 20:43:22Z. None of them is deployed (26.5).
+- Section 25 reached main: #10971 MERGED at 19:53:42Z, so sections 1 to 25 are on main (26.5).
+- Lane 3's #1429 reached its closing head `fcc993e8b897`, passed a fourth review restricted to
+  the delta with `VERDICT: READY`, and was armed by this thread at 21:19:49Z. It is armed, not
+  merged (26.2).
+- The lane 1 rows increment was delivered as Macro #10973 at head `c700d4b5795e` and reviewed
+  `READY WITH FOLLOW-UP`; its fix order is running on the same branch (26.3).
+- Lane 7's rows consumer was delivered as Terminal #1448 at head `9726503b8a3d` and reviewed
+  `NOT READY`; its fix round is running. It is not armed (26.4).
+- The lane 1 rows wire was frozen after a read-only census: five new typed blocks beside the
+  existing seven, so the closed set grows from seven to twelve (26.3).
+- Macro #10924's head moved from `77061fee951e` to `3f28ce8cede1` by the merge controller's own
+  update-branch merge, not by a push from this programme; Macro merges still wait on CI capacity
+  (26.6).
+
+### 26.2 Lane 3, #1429: landing head, third review NOT READY, closing round, fourth review READY, armed
+
+- **Landing head.** The landing round returned at about 20:11Z at head
+  `eb5831e56d5511ef66969243122bcbce258f5873` on #1429. Author-reported: master merged at round
+  start; lane suite 58 files, 1,419 tests passed; the type checker exits 0 after `npm ci`; two
+  lint errors the author calls baseline (`SectorPopulationMembers.tsx:140`,
+  `InvestigationWorkspace.tsx:272`). The round raised the limits inside the lane's own parser to
+  admit the five new blocks: the string cap from 262,144 to 528,384 characters, the node budget
+  from 200,000 to 600,000, and the 10,000-key cap now applies to objects only. The 4 MiB document
+  bound and the route's ingress guard are unchanged. The calls-board mount and the final master
+  merge were deferred as ordered, both gated on #1445 being merged.
+- **Foreign files found and removed.** This thread's custody read (compare API) at 20:12Z found
+  the diff against master held 34 files: 24 lane 3 files under `terminal/` (this thread's first
+  count said 22; 24 is correct) and ten files under
+  `docs/verification/pr1425-ci-portability-20261110/`, which came in with commit `0fd16f5bc4e0`
+  by the pull-request-duty session (13:07:54Z) and belong to parked #1425. No `supabase/` file
+  was in the diff. DECISION of the programme COO thread: the ten files must not reach master
+  through #1429. Lane 3 was ordered to remove them with one ordinary commit, no history rewrite,
+  no force-push, #1425 and its branch untouched. Done: cleaned head
+  `a25bf77e8bafcac202e27aad26e34727626b6cc5`; this thread's compare re-read at 20:19Z shows 24
+  files, none outside `terminal/`, 88 commits ahead of master and 3 behind.
+- **Third review, NOT READY.** The third independent review (launched at about 20:14Z on exactly
+  `eb5831e56d55`, eleven attack items) returned at about 20:26Z: `VERDICT: NOT READY at
+  eb5831e56d5511ef66969243122bcbce258f5873`, 1 blocker, 1 should-fix, 9 notes. The reviewer was
+  read-only and ran its mutations in its own detached tree.
+  - Blocker B-1: lane 1's producer sends `unaccounted: null` whenever the roster clock does not
+    agree (`lib/sector_population.py:613`, read in the lane 1 tree at `a089d2f9b4d7`). Lane 3's
+    decoder (`terminal/lib/sectorPopulation.ts:388`) required an integer and refused the whole
+    page, so the member list would read unavailable for every capture whose roster clock does
+    not agree. Lane 3's tests used a shape the producer never sends.
+  - Should-fix SF-1: the Follow copy returns "Following" for any state it does not recognise.
+  - The reviewer measured the raised parser limits: nothing under 4 MiB is catastrophic (worst
+    case 392 ms and about 347 MB of heap for a flat 4 MiB array, against 266 ms and 201 MB
+    before), and the node budget did not need raising for tonight's blocks (largest about 12,000
+    nodes). The reviewer's local results at that head: lane files 10 of 10, 180 tests; wider
+    suites 93 files, 2,121 tests; type checker clean. CI at that head was cancelled by the next
+    push, so the required checks were unknown, not red. Verdict posted on #1429:
+    issuecomment-6778479418.
+- **Closing round.** The final order was sent at about 20:29Z. B-1 is fixed fail-closed: the
+  configured count and the unaccounted segment are stated only when the clock status is `agree`,
+  the two clock strings are exactly equal, and `unaccounted` is an integer; otherwise "not
+  stated", and the member list still renders. A page with no `roster_clock` (the wire before
+  #10965) keeps decoding as before. SF-1 is fixed fail-closed; the vacuous test regex is
+  replaced; the navigation helper returns "none" when a rule throws; a snapshot date after the
+  fact's date degrades that one entry; a bad `name_zh` reads null for that one entry instead of
+  refusing the page. An early refusal for an over-budget array is added to the parser bounds,
+  and the node budget stays at 600,000 (26.7). A test-first check of one residue the reviewer
+  could not reproduce was included: a pending save from one account showing its Check control
+  under another account. Not in this round: the raw generation id (it predates the lane) and the
+  two lint errors. With #1445 merged by then, the same round carried the final master merge and
+  the calls-board mount under the reviewer's seven mount conditions.
+- **Closing head returned.** Lane 3 returned at about 21:09Z: closing head
+  `fcc993e8b8971c8e1306d45fc611d8c435bb97dc`, part 2 done. Author-reported: eight fix commits,
+  one per ordered item, each written test-first; master merged clean (`d13ac3730`, no conflicts,
+  taking in #1441, #1443, #1444 and #1445); calls-board mount `16acbf21c` under the seven mount
+  conditions; one repair commit `fcc993e8b` for four type errors the unit runner does not catch,
+  one of them real (a null population threw instead of refusing; pinned by a failing test
+  first). Results at the closing head: lane files 10 of 10, 192 tests; wider suites 93 files,
+  2,144 tests; `npm ci` and the type checker exit 0. Author-declared deviation: the save-state
+  residue was fixed by splitting the save button into a per-account journal and a per-render
+  view, not by resetting state on account change; handed to the reviewer as an attack item. This
+  thread's custody check at 21:09Z (compare API, master to the head): 99 ahead, 0 behind; 25
+  files, every path under `terminal/`, none under `supabase/`. The count grew from 24 to 25 and
+  the reviewer was asked to name the new path. The pull request was open, not a draft, not
+  armed, one comment (this thread's, 20:29Z), CI running on the new head with "Quote Hub tests"
+  already green.
+- **Fourth review, READY.** The fourth (delta) review was launched at about 21:10Z on the range
+  `eb5831e56d55..fcc993e8b897` only, read-only, ten attack items and at least six mutations.
+  Returned at about 21:19Z: `VERDICT: READY at fcc993e8b8971c8e1306d45fc611d8c435bb97dc`,
+  0 blockers, 0 should-fix, 8 notes. B-1 confirmed fixed with six pages built in the producer's
+  real shape (all three count fields null), run through both the decoder and the route (200
+  each); the reverse cases never state counts. 18 mutations run, 14 failed a test; the 4 that
+  did not are test gaps, not defects (two mount guards, one redundant and one needing a test row
+  whose theme slug equals a sector id; the render's own `countsStated` condition; none on the
+  fixes themselves). The master merge is clean: every path outside the 25 files is
+  byte-identical to master `7f7f36987`; `route.ts` has no diff in the range; no assertion was
+  weakened. The reviewer's local results: lane files 10 of 10, 192 tests; wider suites 93 files,
+  2,144 tests; `npm ci` and the type checker exit 0. The reviewer corrected this thread's brief
+  on one point: `SaveInvestigationButton.tsx` (the 25th path) last landed with #1436 (lane 6),
+  not lane 4 (26.8).
+- **Armed, not merged.** #1429 was armed by this thread at 21:19:49Z, pinned to head
+  `fcc993e8b897`. Before arming, this thread read the pull request: head unchanged, no reviews,
+  one comment (this thread's), 10 checks green, none red, the rest running ("Quote Hub tests"
+  green; the other two required contexts still running). Verdict and arm notice posted as
+  issuecomment-6779556724. Rung: DELIVERED and armed, CI running; not merged. At the last read
+  (21:43Z) its checks were not finished.
+- **Follow-ups kept for lane 3's next round**, with the mount of lane 7's five readers, after
+  #1429 merges: a test row with a theme slug equal to a real sector id; a render test for the
+  unaccounted segment under a non-agreeing clock; a wider sent-claim test in both languages;
+  B-1 test shapes aligned to the producer's exact clock objects; decide whether account A's
+  unconfirmed-save record should survive account B saving, and whether a save in flight for A
+  should disable B's Save button; plus the two carried from the third review (the raw generation
+  id, lint).
+
+### 26.3 Lane 1 rows increment, Macro #10973: census, frozen wire, build, review r1, fix order
+
+- **Census.** The read-only rows census returned at 19:40Z (Terminal master `139dcbdaac16`).
+  Findings that changed the plan: no Terminal reader exists for either block on the product path
+  (the confluence component is props-only and mounted only on the dev page with a synthetic
+  fixture; the theme table renders "unavailable" unconditionally); the curated-baskets artifact
+  is `site/marketdata/basket_confluence.json` (the 19:22Z note had looked under
+  `site/basketdata/` and called it missing; correction); measured consumer-field projections
+  sp500 146,841 bytes, Nasdaq 16,615, Russell 1,071, baskets 260,452, China 300,418, so even one
+  universe exceeds the 60 KiB carry cap and the 64 KiB serving cap; Chinese company names exist
+  for 0 of 1,020 roster pairs; no committed producer artifact carries the per-theme 21-session
+  and 63-session series.
+- **The frozen wire** (`/tmp/si_plan/v11/LANE1_WIRE_V11_ROWS.md`): five NEW typed blocks beside
+  the seven, all entitled-only; the seven are untouched and byte-identical for the same inputs;
+  names `confluence_universe_sp500`, `confluence_universe_nasdaq`,
+  `confluence_universe_russell`, `confluence_universe_baskets`, `theme_rows`; the closed set
+  grows from seven to twelve. A separate cap for the five: 512 KiB at carry and 516 KiB at
+  serving, about twice tonight's largest (baskets, 260 KB); the 60 and 64 KiB caps on the seven
+  and the 4 MiB bound on a served document do not move; the build must measure the entitled
+  projection and stop if the worst case (all five at the cap) would come within 256 KiB of 4 MiB.
+  Over the cap reads `block_too_large`, never a shortened row set. Both `subsectors` and
+  `sectors` arrays are carried for the three index universes, each row keeping its own `kind`.
+  Theme rows carry one row per theme id with `name`, `name_zh`, `chart_key`, the state mapping
+  and the `perf` windows from `baskets.json`; no `href` is carried because no producer writes
+  one. Not carried, recorded as missing producer facts: Chinese company names and the per-theme
+  series; no mainland China rows block.
+- **Build delivered.** Ordered at about 19:53Z (delegate `si-v11-lane1-glm-rows-build-1955z`,
+  branch `claude/si-lane1-rows-20261110` from `a089d2f9b4d7`, six owned files, eleven test items
+  including three mutations). Returned at about 20:36Z as Macro **#10973**, head `c700d4b5795e`,
+  base `claude/si-lane1-pit-fields-20261110` (stacked on #10965), one commit, not a draft, no
+  labels. This thread's custody check (compare API against `a089d2f9b4d7`): exactly the six
+  owned files, +894 −18. Author-reported: five blocks built from real artifacts (S&P 65
+  subsectors with 430 members and 11 sectors; Nasdaq 0 and 6; Russell 0 and 0; baskets 49 rows
+  with 1,020 members; theme rows 49); sizes 151,948 / 16,099 / 552 / 252,432 / 39,626 bytes; the
+  two existing blocks byte-identical to the base by hash; entitled document 206,013 bytes
+  without the five and 666,626 bytes with them, so the envelope condition holds with room;
+  `511 passed, 1 skipped` across five test files; three mutations each caught. Two
+  discrepancies were handed to the reviewer: the return said 22 row keys where the wire lists 21
+  (this thread read the shipped tuple: it has 21, so the prose was a miscount), and the theme
+  rows specimen is 36 bytes larger than the stated canonical size. CI on #10973 was not
+  concluded; it was not armed; it is last in the Macro order.
+- **Review r1, READY WITH FOLLOW-UP.** The independent review (delegate
+  `si-v11-lane1-rows-review-r1-2042z`, launched at about 20:41Z, twelve attack items including
+  entitlement leakage, render-path cost, other size ceilings and at least five mutations)
+  returned at about 21:46Z: `VERDICT: READY WITH FOLLOW-UP at c700d4b5795e`, 0 blockers, 3
+  should-fix, 9 notes; 12 mutations, 9 failed a test; 111 tests passed at the head.
+  - Should-fix 1: the five new blocks add 460,828 bytes (366,929 to 827,757; gzip 49,186 to
+    100,255) to `site/sector_central_data.js`, a render-blocking script on `sector_central.html`,
+    and nothing on that page reads them.
+  - Should-fix 2: the new tests pin one night's exact counts, sizes and build-time strings; they
+    run in the data-health job after each nightly, and replayed on the 2026-11-08 files two pins
+    already fail.
+  - Should-fix 3: three rules have no test that fails when they break (the stub rule before the
+    audience rule; the `coverage` allow-list; the string check on a theme's `name_zh`).
+  - Confirmed with no finding: the five blocks match the frozen wire on every deciding rule; the
+    seven existing blocks are byte-identical to the base; a real preview document carries none
+    of the new bytes (preview 175,132 bytes, entitled 666,626 bytes, bound 4 MiB); every file
+    opened is a fixed literal; hostile source files never raise; the carry costs about 50 to 80
+    ms per nightly.
+  - Review record posted at about 21:48Z: issuecomment-6780166051, naming this thread and
+    stating the pull request is not armed. At that read: head `c700d4b5795e`, base
+    `claude/si-lane1-pit-fields-20261110`, no labels, no comments; `ci-authority` and
+    `ci-authority/main` red while the base is a stacked branch.
+- **Fix order and rulings.** Sent at about 21:49Z to the same build worker thread (client
+  request id `si-v11-lane1-rows-fix-r1-2152z`): eight items, being the 3 should-fix, three
+  ordered notes, a prose correction and one census question. Rulings of the programme COO thread:
+  the script copy is written without the five row blocks while the generation member keeps all
+  twelve, and the script copy must not grow from this pull request; the night-specific pins are
+  replaced by equalities against the source file read in the same test, not by looser checks,
+  re-basing the pull request's own new tests with every changed assertion listed; a
+  `baskets.json` with a date but no readable basket list keeps a null `perf_as_of`, recorded as
+  clarification 1 appended to the wire document (section 7), with no rule and no specimen byte
+  changed, so lane 7's fixtures stay valid; a 64 MiB size check before parsing, for the new
+  readers only (render budget protection); `config/dag.yml` gains the one new source file in the
+  builder's read list. Not taken: a depth bound on carried values, because a bound risks
+  refusing a real block on a later night; follow-up. Census question, no build: which Macro
+  builder writes the null `label_zh` and `sector_zh`, and whether an existing Macro source
+  already holds those Chinese names; the follow-up is decided from the answer.
+
+### 26.4 Lane 7 rows consumer, Terminal #1448: delivered, review r1 NOT READY, fix round
+
+- **Ordered.** The lane 7 consumer round (readers for the five blocks) was ordered at about
+  20:41Z, from master after #1445 had merged, on a new branch and a new pull request: one pure
+  reader per new block, wired to its own two components; index tabs read `subsectors`, with
+  `sectors` only as a labelled roll-up; a build-time date labelled as such; the theme table from
+  `theme_rows` with the link composed from `chart_key`; four unavailable states with their own
+  copy; real specimens committed unchanged as fixtures; a "Mount note for lane 3" in the
+  description. Its own review follows; lane 3 mounts the readers in a later round.
+- **Delivered.** Lane 7 returned at 21:27Z: rows consumer pull request **#1448** at
+  `9726503b8a3d37d56455cc7482996e9aff413b5d`, branch `claude/si-lane7-rows-consumer`, one commit
+  on master `7f7f36987`. Author-reported: four readers for the confluence universe blocks and
+  one for theme rows; the two existing depth components take the reads through new optional
+  props; own English and Chinese copy for each unavailable reason; sector rows only as a
+  labelled roll-up; a build time labelled as a build time; six real specimens committed as
+  fixtures with SHA-256 pins; lane suite 348 of 348, type checker clean, eslint clean, three
+  mutations each caught, desktop end-to-end 3 of 3. One self-caught defect in its first cut (it
+  dropped the member emergence marker; regression test added). Author-declared deviations: six
+  fixtures, not five (the sixth is the served twelve-block object), and each fixture carries one
+  trailing newline beyond the specimen, with tests pinning both hashes. Stated missing producer
+  facts: Chinese company names (null for all 1,020 members; the ticker alone renders) and the
+  per-theme 21- and 63-session relative-strength series. This thread's custody check at 21:28Z
+  (compare API): 1 ahead, 0 behind; 22 files, every path under `terminal/`, none under
+  `supabase/`, none of lane 3's four files. Open, not a draft, no labels, no comments, not
+  armed, linked to this thread.
+- **Review r1, NOT READY.** The independent review was launched at 21:29Z (read-only, sixteen
+  attack items) and returned at about 21:39Z: `VERDICT: NOT READY at
+  9726503b8a3d37d56455cc7482996e9aff413b5d`, 2 blockers, 7 should-fix, 9 notes; 18 mutations, 15
+  failed a test.
+  - Blocker 1: the theme table ignores the unavailable reason and tells a reader who is not
+    entitled (or a block over the cap) that the generation "does not carry" the table.
+  - Blocker 2: the theme table is shown under the history date; with the real fixtures the page
+    says 2026-11-03 over 49 rows dated 2026-11-06.
+  - Confirmed with no finding: wire match key for key; fixtures byte-identical to lane 1's
+    specimens; every composed link confined to the site and its directory; the universes board's
+    unavailable copy and date labels; custody (22 files under `terminal/`).
+  - Review record posted at about 21:44Z: issuecomment-6780054458, naming this thread and
+    stating the pull request is not armed. Before posting, this thread read the pull request:
+    head unchanged, no labels, no comments, no arm; 10 checks green, 16 running, CodeQL red.
+- **Fix order and rulings.** Sent to lane 7's same thread (first round, same thread, same model;
+  no second worker), client request id `si-v11-lane7-rows-consumer-fix-r1-2146z`: 17 numbered
+  items, being the 2 blockers, the 7 should-fix and 8 from the notes; same branch, new commits,
+  test first, fixture bytes unchanged. Rulings of the programme COO thread: the S&P sector
+  roll-up rows render with no link, and a test pins every rendered link in the real fixtures
+  against the route registry; no translation is authored in the consumer, and the null Chinese
+  labels are recorded as a missing producer fact; the carried read drops `emerging` and
+  `emergence_href`, because the frozen wire does not define them, and lane 7's own regression
+  test for that marker is replaced by its opposite, the one ordered change of an assertion;
+  theme numbers get a unit only where the producer source establishes it, otherwise they print
+  as carried.
+- **New producer gap recorded for lane 1**, to route after the rows review of #10973 returns:
+  `label_zh` for the 65 S&P subsector and 11 S&P sector rows, and `sector_zh` on every row, are
+  null in the carried blocks. #1448 is NOT armed; its fix round is in progress. A dependency is
+  recorded: the fixtures pin lane 1's specimen bytes, so if the review of #10973 changes the
+  wire, lane 7 gets a delta round.
+
+### 26.5 Terminal follow-ups merged; section 25 on main
+
+- The three Terminal follow-ups opened and armed in section 25 all merged: #1443 (lane 4) MERGED
+  at 20:30:56Z, #1445 (lane 7) MERGED at 20:38:24Z, and #1444 (lane 6) MERGED at 20:43:22Z
+  (GitHub timestamps; #1444 read at 21:20Z). They had entered the merge queue in the order #1443
+  at 20:00:06Z, #1445 at 20:09:55Z and #1444 at 20:15:57Z, each waiting on the queue's own
+  checks. Once an armed pull request is in the queue its auto-merge field reads empty; that is
+  normal and is not a disarm. The Terminal merge queue was empty at 21:20Z; at 21:43Z it held
+  only #1446 (another session's, entered 21:41:53Z). None of the three is deployed.
+- Section 25 is on main: #10971 MERGED at 19:53:42Z (GitHub timestamp), so sections 1 to 25 are
+  on main and this section is the next status pull request.
+- #1445's merge unblocked two things ordered to wait on it: lane 3's final master merge and
+  calls-board mount (26.2), and the lane 7 consumer round (26.4).
+
+### 26.6 Macro pull requests as last read
+
+The last full Macro read in this window is 21:20Z ("unchanged" from the 19:52Z reading); #10924
+was also read at 20:42Z and #10973 at about 21:48Z.
+
+| Pull request | Head (last read) | Labels | Holder | State as last read |
+|---|---|---|---|---|
+| #10924 | `3f28ce8cede1` (20:42Z) | `merge-on-green` | Lane 8 (this programme) | Open, armed. The head moved from `77061fee951e` at 19:54:09Z by a GitHub "update branch" merge of main (committer GitHub), the merge controller re-proving a stale proof; not a push by this programme. At 20:42Z: 13 checks passed, 1 failed (the always-red pilot check, the expected one; not opened to confirm), 1 pending. |
+| #10929 | `c5d8c31db57d` (25.23; not re-read) | none; held draft | Lane 1 (Macro generation) | Held draft; base of #10954 |
+| #10931 | `3290bfe75f96` (25.6; not re-read) | armed | Another session, not this programme | Open, armed; this programme waits on its merge to arm #10956 |
+| #10954 | `0d43d893cc70` (25.23; not re-read) | none | Lane 1 (round 3 follow-up) | Open; base of #10965 |
+| #10956 | `ffec9a8d6f64` (25.23; not re-read) | none | Lane 5 | Open; waits on #10931 |
+| #10965 | `a089d2f9b4d7` (25.23; not re-read) | none | Lane 1 (point-in-time fields) | Open; fix commit checked in 25.19 |
+| #10973 | `c700d4b5795e` (about 21:48Z) | none | Lane 1 (rows increment, this window) | Open; reviewed READY WITH FOLLOW-UP; fix order running; `ci-authority` and `ci-authority/main` red while the base is a stacked branch |
+
+Release order: #10924, then #10929, then #10954, then #10965 (25.18), with #10973 last, stacked
+on #10965 as this window's notes record. #10956 is outside that stack: it waits on #10931
+(another session's) before it can be armed (25.23). #10971 no longer waits on anything: MERGED
+at 19:53:42Z.
+
+### 26.7 Decisions recorded in this window
+
+- **The parser node budget stays at 600,000, with its measurement.** This thread measured the
+  real twelve-block specimen `typed_blocks_entitled.json` (482,104 bytes): 26,428 JSON nodes,
+  about 18 bytes per node; largest block 14,194 nodes (baskets); longest string 284 characters;
+  widest object 49 keys; longest array 83 items. A lawful 4 MiB document at that density holds
+  about 233,000 nodes, which the old 200,000 node budget would refuse. So 600,000 stays (the
+  third reviewer had preferred 200,000 before this measurement existed), with the early
+  over-budget array refusal added (26.2). Lane 3 was told to put these numbers in the code
+  comment.
+- **The Chinese-label gap.** Chinese company names exist for 0 of 1,020 roster pairs (census,
+  26.3), and the carried blocks carry null `label_zh` on the 65 S&P subsector and 11 S&P sector
+  rows and null `sector_zh` on every row (lane 7 review, 26.4). Recorded as a missing producer
+  fact, a new producer gap for lane 1 and a census question (26.3); no translation is authored
+  in the consumer, and search by Chinese company name is therefore not buildable now.
+- **The access-class observation, recorded for the Chairman's information, no action taken.**
+  The static copies of these blocks sit in the same access class as their source files:
+  readable by registered Free accounts while the paywall switch is off. No new exposure, but
+  the API's entitled-only rule is not the only gate those bytes cross.
+- **Other decisions of this window:** the rows wire frozen and the build ordered stacked on
+  #10965 (26.3); the ten foreign verification files must not reach master through #1429 (26.2);
+  the closing-round rulings on the third review (26.2); section 26 itself deferred until lane
+  3's closing head and the rows review were in, so one status pull request covers them and does
+  not take a Macro CI slot twice.
+
+### 26.8 Corrections, to earlier notes and to this thread's own briefs
+
+Errors by the programme COO thread, recorded plainly:
+
+1. **Two notes carried a stale #10971 status.** The 20:19Z and 20:29Z notes still listed #10971
+   (section 25) as waiting, because Macro was not re-read in those windows. It had MERGED at
+   19:53:42Z; the 20:42Z note corrects both.
+2. **The wrong lane was named for `SaveInvestigationButton.tsx`.** This thread's fourth-review
+   brief treated the 25th path as lane 4's; the reviewer corrected it: the file last landed with
+   #1436 (lane 6) (26.2).
+3. **Client request ids were named ahead of the clock, with no effect.** The lane 7 fix order
+   carried id `si-v11-lane7-rows-consumer-fix-r1-2146z` and the lane 1 fix order carried
+   `si-v11-lane1-rows-fix-r1-2152z`, both suffixed with a minute later than the clock read when
+   they were sent; the fourth review's request id was suffixed `2112z` while the clock read
+   21:10Z.
+4. **The deleted-lines count in the review brief was wrong.** The brief said 18 deleted lines in
+   the test files; it is 13 in tests and 5 in source.
+5. **Two smaller corrections recorded in the notes.** The 19:22Z note called the
+   curated-baskets artifact missing after looking under `site/basketdata/`; the census found it
+   at `site/marketdata/basket_confluence.json` (26.3). The third-review commission said the ten
+   foreign files "are being removed" before the removal order had been sent; the order went out
+   about a minute later and the removal is done (26.2). The same note corrects this thread's
+   first file count: 24 lane 3 files, not 22.
+
+### 26.9 Rung reached at 21:50Z, per lane
+
+- Lane 4, lane 6 and lane 7: MERGED to Terminal master, and their three follow-ups #1443, #1444
+  and #1445 MERGED too (26.5). Not deployed.
+- Lane 3 (#1429): DELIVERED at `fcc993e8b897`, fourth review READY, armed by this thread at
+  21:19:49Z, CI running at the last read. Not merged.
+- Lane 1: #10965 DELIVERED; the rows increment #10973 DELIVERED at `c700d4b5795e` and reviewed
+  READY WITH FOLLOW-UP, with the follow-up in progress on the same branch. Not armed, not
+  merged.
+- Lane 7's rows consumer #1448: DELIVERED at `9726503b8a3d`, reviewed NOT READY, fixes in
+  progress. Not armed.
+- Lane 5 (#10956): DELIVERED (not re-read in this window; 25.23).
+- Lane 8 (#10924): DELIVERED and armed, waiting on CI capacity and the merge controller's later
+  sweep.
+- Lane 9: DELIVERED (not re-read in this window).
+- Nothing of v1.1 is served or production-proven: no v1.1 engine code is on Macro main, and the
+  Terminal master merges are not deployments.
+
+### 26.10 Open items, and the one item that needs a person
+
+- In progress: the lane 1 rows follow-up on #10973's branch (eight items, 26.3); the lane 7
+  consumer fix round on #1448's branch (17 items, 26.4); #1429 armed, waiting on its checks and
+  auto-merge.
+- Owed after they land: #1429's post-merge verification, its next-round follow-ups and the mount
+  of lane 7's five readers (26.2); routing the `label_zh` and `sector_zh` producer gap after the
+  #10973 fix returns, and the Chinese-label census question (26.3).
+- Reads owed: #10924 and the Macro merge controller's later sweep; #10931 (another session's),
+  whose merge unblocks #10956's arm.
+- HUMAN ITEM (unchanged): the Terminal migration-ownership App and environment-key enrollment.
+  Until it is done, #1410 and #1425 stay parked and untouched; neither was touched in this
+  window.
+- The standing limits are unchanged from section 25, which lists them (25.24); this window added
+  none and removed none.
