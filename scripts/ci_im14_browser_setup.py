@@ -75,6 +75,12 @@ def project_sources(original: bytes, mirror_list: bytes) -> bytes:
     suites = set()
     projected = []
     for stanza in re.split(r"\n[ \t]*\n", original.decode("ascii").strip()):
+        # Comment/blank paragraphs are not entries. Keep non-Deb822 control
+        # separators on the original refusal path rather than splitting them away.
+        if (not any(ch in stanza for ch in "\r\v\f\x1c\x1d\x1e")
+                and all(not line.strip(" \t") or line.lstrip(" \t").startswith("#")
+                        for line in stanza.split("\n"))):
+            continue
         fields = {}
         for line in stanza.splitlines():
             if line.lstrip().startswith("#"):

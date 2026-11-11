@@ -26,6 +26,52 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 PRIVATE = "/var/tmp/mm-im14-apt.Abc123deFG"
 
 
+@pytest.mark.parametrize("placement", ["before", "between", "after", "surround"])
+def test_projection_ignores_comment_only_paragraphs_without_changing_sources(placement):
+    comment = b"# Hosted image metadata\n\t# Source pockets follow"
+    primary, security = SOURCES.split(b"\n\n")
+    variants = {
+        "before": comment + b"\n\n" + SOURCES,
+        "between": primary + b"\n\n" + comment + b"\n\n" + security,
+        "after": SOURCES + b"\n" + comment + b"\n",
+        "surround": comment + b"\n\n" + primary + b"\n\n" + comment
+        + b"\n\n" + security + b"\n" + comment + b"\n",
+    }
+    assert im14.project_sources(variants[placement], MIRRORS) == im14.project_sources(SOURCES, MIRRORS)
+
+
+@pytest.mark.parametrize("separator", [b"\n\n\n\n", b"\n \t\n \t\n\n"])
+def test_projection_ignores_empty_paragraphs_between_sources(separator):
+    assert im14.project_sources(SOURCES.replace(b"\n\n", separator), MIRRORS) == im14.project_sources(SOURCES, MIRRORS)
+
+
+@pytest.mark.parametrize("control", [b"\v", b"\f", b"\r", b"\x1c", b"\x1d", b"\x1e"])
+def test_projection_refuses_non_deb822_paragraph_separators(control):
+    malformed = SOURCES.replace(b"\n\n", b"\n\n" + control + b"\n\n")
+    with pytest.raises(ValueError, match="unqualified Ubuntu source syntax"):
+        im14.project_sources(malformed, MIRRORS)
+
+
+@pytest.mark.parametrize("sources", [b"", b" \t\n\n", b"# No sources\n\n\t# Still no sources\n"])
+def test_projection_requires_source_inventory_after_ignoring_comments(sources):
+    with pytest.raises(ValueError, match="unqualified Ubuntu suite inventory"):
+        im14.project_sources(sources, MIRRORS)
+
+
+@pytest.mark.parametrize("field", [b"Trusted: yes", b"not-a-field", b"X-Vendor-Profile: metadata"])
+def test_projection_does_not_skip_nonempty_paragraphs_starting_with_a_comment(field):
+    malformed = b"# This paragraph still contains a field\n" + field + b"\n\n" + SOURCES
+    with pytest.raises(ValueError):
+        im14.project_sources(malformed, MIRRORS)
+
+
+def test_projection_refuses_when_comments_replace_a_required_source():
+    primary, security = SOURCES.split(b"\n\n")
+    commented = b"\n".join(b"# " + line for line in security.splitlines())
+    with pytest.raises(ValueError, match="unqualified Ubuntu suite inventory"):
+        im14.project_sources(primary + b"\n\n" + commented, MIRRORS)
+
+
 def test_projection_preserves_the_qualified_binary_repository_inputs():
     assert im14.project_sources(SOURCES, MIRRORS) == SOURCES.replace(
         im14.MIRROR.encode(), im14.HTTPS_ARCHIVE.encode()
