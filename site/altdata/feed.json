@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-11-09T08:50:15.375069+00:00",
-  "as_of": "2026-11-09",
+  "generated_utc": "2026-11-10T21:17:45.699592+00:00",
+  "as_of": "2026-11-10",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -5947,15 +5947,6 @@
     "political": {
       "buys": [
         {
-          "ticker": "TSM",
-          "net": 6,
-          "buys": 6,
-          "sells": 0,
-          "members": 3,
-          "est_usd": 48003.0,
-          "parties": "D/R"
-        },
-        {
           "ticker": "MU",
           "net": 6,
           "buys": 6,
@@ -5974,13 +5965,13 @@
           "parties": "D"
         },
         {
-          "ticker": "NFLX",
+          "ticker": "TSM",
           "net": 4,
           "buys": 4,
           "sells": 0,
           "members": 2,
           "est_usd": 32002.0,
-          "parties": "D/R"
+          "parties": "D"
         },
         {
           "ticker": "ESE",
@@ -6080,6 +6071,15 @@
           "members": 1,
           "est_usd": 16001.0,
           "parties": "R"
+        },
+        {
+          "ticker": "AEIS",
+          "net": 2,
+          "buys": 2,
+          "sells": 0,
+          "members": 1,
+          "est_usd": 16001.0,
+          "parties": "D"
         }
       ],
       "sells": [
@@ -7804,14 +7804,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "INM",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "VATE",
         "category": "Divestitures",
         "confidence": "high",
@@ -8034,6 +8026,14 @@
         "activist": true,
         "filer": null,
         "detail": "Activist Campaigns"
+      },
+      {
+        "ticker": "DBX",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "EWI",
@@ -8556,6 +8556,14 @@
         "detail": "Tender Offers"
       },
       {
+        "ticker": "WEN",
+        "category": "Activist Campaigns",
+        "confidence": "high",
+        "activist": true,
+        "filer": null,
+        "detail": "Activist Campaigns"
+      },
+      {
         "ticker": "TBRG",
         "category": "Going-Private",
         "confidence": "high",
@@ -8910,7 +8918,7 @@
       {
         "ticker": "WTRG",
         "category": "Acquisitions",
-        "confidence": "medium",
+        "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -10668,6 +10676,14 @@
         "detail": "Activist Campaigns"
       },
       {
+        "ticker": "DFH",
+        "category": "Issuer Tenders",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Issuer Tenders"
+      },
+      {
         "ticker": "JACK",
         "category": "Activist Campaigns",
         "confidence": "high",
@@ -11021,14 +11037,6 @@
       },
       {
         "ticker": "QNT",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
-        "ticker": "VNT",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -12253,11 +12261,11 @@
       },
       {
         "ticker": "RILY",
-        "category": "Acquisitions",
+        "category": "Divestitures",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Divestitures"
       },
       {
         "ticker": "HUMA",
@@ -12298,6 +12306,14 @@
         "activist": false,
         "filer": null,
         "detail": "Spin-Offs"
+      },
+      {
+        "ticker": "VST",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "ARI",
@@ -14724,14 +14740,6 @@
         "detail": "M&A / Divestitures"
       },
       {
-        "ticker": "LHX",
-        "category": "M&A / Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "M&A / Divestitures"
-      },
-      {
         "ticker": "LEVI",
         "category": "M&A / Divestitures",
         "confidence": "high",
@@ -15098,6 +15106,14 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
+      },
+      {
+        "ticker": "VTRS",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "AIR",
@@ -17548,14 +17564,6 @@
         "detail": "Going-Private"
       },
       {
-        "ticker": "BRC",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "IBOC",
         "category": "Delistings",
         "confidence": "high",
@@ -17653,14 +17661,6 @@
       },
       {
         "ticker": "SKYD",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "PRCH",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -17996,6 +17996,22 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "MSGK",
+        "category": "Spin-Offs",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Spin-Offs"
+      },
+      {
+        "ticker": "FIVN",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "LNC",
         "category": "Issuer Tenders",
         "confidence": "high",
@@ -18138,6 +18154,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "KRRO",
+        "category": "Deal Terminations",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Deal Terminations"
       },
       {
         "ticker": "MZTI",
@@ -18306,6 +18330,14 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
+      },
+      {
+        "ticker": "INGN",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
       },
       {
         "ticker": "GNE",
@@ -19404,6 +19436,14 @@
         "detail": "Delistings"
       },
       {
+        "ticker": "EQR",
+        "category": "Delistings",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Delistings"
+      },
+      {
         "ticker": "WYFI",
         "category": "Acquisitions",
         "confidence": "high",
@@ -20076,6 +20116,38 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "DTE",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
+        "ticker": "FCAP",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "LPTH",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
+        "ticker": "LNN",
+        "category": "Activist Campaigns",
+        "confidence": "high",
+        "activist": true,
+        "filer": null,
+        "detail": "Activist Campaigns"
+      },
+      {
         "ticker": "ANDE",
         "category": "Acquisitions",
         "confidence": "high",
@@ -20248,17 +20320,6 @@
     ],
     "analyst": [
       {
-        "ticker": "CRWD",
-        "net_up_30d": 38,
-        "breadth": 0.83,
-        "est_chg_30d": 0.29,
-        "n_analysts": 46,
-        "bull_ratio": 0.91,
-        "rising": true,
-        "revision_delta": 38,
-        "hot": true
-      },
-      {
         "ticker": "WDAY",
         "net_up_30d": 37,
         "breadth": 0.95,
@@ -20306,9 +20367,20 @@
         "ticker": "FIVE",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": -0.03,
+        "est_chg_30d": 0.03,
         "n_analysts": 24,
         "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 24,
+        "hot": true
+      },
+      {
+        "ticker": "FTNT",
+        "net_up_30d": 24,
+        "breadth": 0.63,
+        "est_chg_30d": 3.31,
+        "n_analysts": 38,
+        "bull_ratio": 0.82,
         "rising": true,
         "revision_delta": 24,
         "hot": true
@@ -20333,6 +20405,17 @@
         "bull_ratio": 0.96,
         "rising": true,
         "revision_delta": 22,
+        "hot": true
+      },
+      {
+        "ticker": "CDNS",
+        "net_up_30d": 21,
+        "breadth": 1.0,
+        "est_chg_30d": 2.91,
+        "n_analysts": 21,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 21,
         "hot": true
       },
       {
@@ -20380,12 +20463,34 @@
         "hot": true
       },
       {
-        "ticker": "CVX",
+        "ticker": "ELV",
         "net_up_30d": 18,
-        "breadth": 1.0,
-        "est_chg_30d": 12.06,
-        "n_analysts": 18,
-        "bull_ratio": 1.0,
+        "breadth": 0.9,
+        "est_chg_30d": 2.4,
+        "n_analysts": 20,
+        "bull_ratio": 0.95,
+        "rising": true,
+        "revision_delta": 18,
+        "hot": true
+      },
+      {
+        "ticker": "CB",
+        "net_up_30d": 18,
+        "breadth": 0.82,
+        "est_chg_30d": 1.02,
+        "n_analysts": 22,
+        "bull_ratio": 0.91,
+        "rising": true,
+        "revision_delta": 18,
+        "hot": true
+      },
+      {
+        "ticker": "EBAY",
+        "net_up_30d": 18,
+        "breadth": 0.75,
+        "est_chg_30d": 2.49,
+        "n_analysts": 24,
+        "bull_ratio": 0.88,
         "rising": true,
         "revision_delta": 18,
         "hot": true
@@ -20394,9 +20499,20 @@
         "ticker": "COP",
         "net_up_30d": 17,
         "breadth": 0.81,
-        "est_chg_30d": 13.63,
+        "est_chg_30d": 11.57,
         "n_analysts": 21,
         "bull_ratio": 0.91,
+        "rising": true,
+        "revision_delta": 17,
+        "hot": true
+      },
+      {
+        "ticker": "EOG",
+        "net_up_30d": 17,
+        "breadth": 0.74,
+        "est_chg_30d": 7.7,
+        "n_analysts": 23,
+        "bull_ratio": 0.87,
         "rising": true,
         "revision_delta": 17,
         "hot": true
@@ -20413,34 +20529,12 @@
         "hot": true
       },
       {
-        "ticker": "CVLT",
-        "net_up_30d": 16,
-        "breadth": 0.89,
-        "est_chg_30d": 1.49,
-        "n_analysts": 18,
-        "bull_ratio": 0.94,
-        "rising": true,
-        "revision_delta": 16,
-        "hot": true
-      },
-      {
         "ticker": "RTX",
         "net_up_30d": 16,
         "breadth": 0.89,
         "est_chg_30d": 2.56,
         "n_analysts": 18,
         "bull_ratio": 0.94,
-        "rising": true,
-        "revision_delta": 16,
-        "hot": true
-      },
-      {
-        "ticker": "CB",
-        "net_up_30d": 16,
-        "breadth": 0.8,
-        "est_chg_30d": 1.02,
-        "n_analysts": 20,
-        "bull_ratio": 0.9,
         "rising": true,
         "revision_delta": 16,
         "hot": true
@@ -20457,12 +20551,12 @@
         "hot": true
       },
       {
-        "ticker": "EOG",
+        "ticker": "CVX",
         "net_up_30d": 16,
-        "breadth": 0.73,
-        "est_chg_30d": 8.71,
-        "n_analysts": 22,
-        "bull_ratio": 0.86,
+        "breadth": 0.8,
+        "est_chg_30d": 12.34,
+        "n_analysts": 20,
+        "bull_ratio": 0.9,
         "rising": true,
         "revision_delta": 16,
         "hot": true
@@ -20471,7 +20565,7 @@
         "ticker": "FANG",
         "net_up_30d": 16,
         "breadth": 0.67,
-        "est_chg_30d": 14.2,
+        "est_chg_30d": 14.89,
         "n_analysts": 24,
         "bull_ratio": 0.83,
         "rising": true,
@@ -20490,34 +20584,12 @@
         "hot": true
       },
       {
-        "ticker": "ELV",
+        "ticker": "GNRC",
         "net_up_30d": 15,
-        "breadth": 0.88,
-        "est_chg_30d": 2.53,
-        "n_analysts": 17,
-        "bull_ratio": 0.94,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "DOCU",
-        "net_up_30d": 15,
-        "breadth": 0.79,
-        "est_chg_30d": 0.0,
-        "n_analysts": 19,
-        "bull_ratio": 0.89,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "BE",
-        "net_up_30d": 15,
-        "breadth": 0.71,
-        "est_chg_30d": 8.63,
-        "n_analysts": 21,
-        "bull_ratio": 0.86,
+        "breadth": 1.0,
+        "est_chg_30d": 10.91,
+        "n_analysts": 15,
+        "bull_ratio": 1.0,
         "rising": true,
         "revision_delta": 15,
         "hot": true
@@ -21137,21 +21209,21 @@
       },
       {
         "ticker": "NVS",
-        "phase3_starts": 9,
+        "phase3_starts": 7,
         "halts": 2,
         "hot": true,
         "sample": "A Study of the Efficacy and Safety of Zigakibart + Atrasentan in Adult Patients With Primary IgA Nephropathy"
       },
       {
         "ticker": "REGN",
-        "phase3_starts": 7,
+        "phase3_starts": 5,
         "halts": 1,
         "hot": true,
         "sample": "Linvoseltamab Versus Daratumumab, Bortezomib, Cyclophosphamide, and Dexamethasone (Dara-Vcd) in Adult Participants With Newly Diagnosed Systemic Light Chain Amy"
       },
       {
         "ticker": "AMGN",
-        "phase3_starts": 7,
+        "phase3_starts": 5,
         "halts": 3,
         "hot": true,
         "sample": "Home Self-administration of Maridebart Cafraglutide With Autoinjector in Adults Living With Obesity or Overweight"
@@ -21545,10 +21617,10 @@
         },
         {
           "ticker": "RSG",
-          "buy_usd": 1509627811.0,
+          "buy_usd": 1401482049.0,
           "sell_usd": 829600.0,
-          "net_usd": 1508798211.0,
-          "buyers": 94,
+          "net_usd": 1400652449.0,
+          "buyers": 87,
           "sellers": 1
         },
         {
@@ -21558,6 +21630,14 @@
           "net_usd": 711917032.0,
           "buyers": 53,
           "sellers": 0
+        },
+        {
+          "ticker": "CRBG",
+          "buy_usd": 372698059.0,
+          "sell_usd": 561784.0,
+          "net_usd": 372136275.0,
+          "buyers": 48,
+          "sellers": 2
         },
         {
           "ticker": "GPI",
@@ -21622,14 +21702,6 @@
           "net_usd": 93635950.0,
           "buyers": 48,
           "sellers": 0
-        },
-        {
-          "ticker": "BRVE",
-          "buy_usd": 89640000.0,
-          "sell_usd": 0.0,
-          "net_usd": 89640000.0,
-          "buyers": 5,
-          "sellers": 0
         }
       ],
       "sells": [
@@ -21652,10 +21724,10 @@
         {
           "ticker": "FANG",
           "buy_usd": 0.0,
-          "sell_usd": 3755760533.0,
-          "net_usd": -3755760533.0,
+          "sell_usd": 3754748217.0,
+          "net_usd": -3754748217.0,
           "buyers": 0,
-          "sellers": 15
+          "sellers": 14
         },
         {
           "ticker": "LTH",
@@ -21700,10 +21772,10 @@
         {
           "ticker": "MDLN",
           "buy_usd": 0.0,
-          "sell_usd": 1074693625.0,
-          "net_usd": -1074693625.0,
+          "sell_usd": 1053691320.0,
+          "net_usd": -1053691320.0,
           "buyers": 0,
-          "sellers": 9
+          "sellers": 8
         },
         {
           "ticker": "NVDA",
@@ -21714,20 +21786,20 @@
           "sellers": 32
         },
         {
-          "ticker": "SNOW",
-          "buy_usd": 0.0,
-          "sell_usd": 982147273.0,
-          "net_usd": -982147273.0,
-          "buyers": 0,
-          "sellers": 161
-        },
-        {
           "ticker": "CRWV",
           "buy_usd": 0.0,
-          "sell_usd": 970468477.0,
-          "net_usd": -970468477.0,
+          "sell_usd": 969215316.0,
+          "net_usd": -969215316.0,
           "buyers": 0,
-          "sellers": 451
+          "sellers": 450
+        },
+        {
+          "ticker": "SNOW",
+          "buy_usd": 0.0,
+          "sell_usd": 956770775.0,
+          "net_usd": -956770775.0,
+          "buyers": 0,
+          "sellers": 155
         },
         {
           "ticker": "INGM",
@@ -22808,14 +22880,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -24477,319 +24549,277 @@
     ],
     "earnings": [
       {
-        "ticker": "CEG",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 3.9,
-        "last_surprise_pct": 8.1
-      },
-      {
-        "ticker": "HIMS",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 0.07,
-        "last_surprise_pct": -42.9
-      },
-      {
-        "ticker": "NRG",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 3.44,
-        "last_surprise_pct": -10.2
-      },
-      {
-        "ticker": "ONTO",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 2.27,
-        "last_surprise_pct": 14.9
-      },
-      {
-        "ticker": "RDNT",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 0.21,
-        "last_surprise_pct": 61.1
-      },
-      {
-        "ticker": "TGTX",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 0.37,
-        "last_surprise_pct": -87.8
-      },
-      {
-        "ticker": "TTD",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 0.08,
-        "last_surprise_pct": -36.4
-      },
-      {
-        "ticker": "TTWO",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": 0.49,
-        "last_surprise_pct": -112.5
-      },
-      {
-        "ticker": "LIF",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": null
-      },
-      {
-        "ticker": "PLUG",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": 12.5
-      },
-      {
-        "ticker": "RKLB",
-        "next_date": "2026-11-09",
-        "days_to": 0,
-        "eps_forecast": null,
-        "last_surprise_pct": 14.3
-      },
-      {
         "ticker": "REZI",
         "next_date": "2026-11-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 0.4,
         "last_surprise_pct": 22.9
       },
       {
         "ticker": "CRWV",
         "next_date": "2026-11-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": 13.2
       },
       {
         "ticker": "IBRX",
         "next_date": "2026-11-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": 11.1
       },
       {
         "ticker": "JBGS",
         "next_date": "2026-11-10",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
+        "ticker": "EZPW",
+        "next_date": "2026-11-11",
+        "days_to": 1,
+        "eps_forecast": 0.4,
+        "last_surprise_pct": 20.5
+      },
+      {
         "ticker": "SHFS",
         "next_date": "2026-11-11",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "TR",
         "next_date": "2026-11-11",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": null,
         "last_surprise_pct": null
       },
       {
         "ticker": "AMAT",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 4.06,
         "last_surprise_pct": 3.5
       },
       {
         "ticker": "AVAH",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 0.19,
         "last_surprise_pct": 31.2
       },
       {
         "ticker": "CSCO",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 1.15,
         "last_surprise_pct": 9.1
       },
       {
-        "ticker": "EZPW",
-        "next_date": "2026-11-12",
-        "days_to": 3,
-        "eps_forecast": 0.4,
-        "last_surprise_pct": 20.5
-      },
-      {
         "ticker": "CBRS",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": 81.0
       },
       {
         "ticker": "LUNR",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": -128.6
       },
       {
         "ticker": "NBIS",
         "next_date": "2026-11-12",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": null,
         "last_surprise_pct": 82.1
       },
       {
         "ticker": "ACM",
         "next_date": "2026-11-16",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 1.57,
         "last_surprise_pct": -133.6
       },
       {
         "ticker": "BIDU",
         "next_date": "2026-11-16",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": 0.57,
         "last_surprise_pct": -35.3
       },
       {
         "ticker": "INFQ",
         "next_date": "2026-11-16",
-        "days_to": 7,
+        "days_to": 6,
         "eps_forecast": null,
         "last_surprise_pct": 14.3
       },
       {
         "ticker": "DIS",
         "next_date": "2026-11-17",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 1.67,
         "last_surprise_pct": 9.6
       },
       {
         "ticker": "HD",
         "next_date": "2026-11-17",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 3.86,
         "last_surprise_pct": 4.5
       },
       {
         "ticker": "NVDA",
         "next_date": "2026-11-17",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 2.49,
         "last_surprise_pct": 6.2
       },
       {
         "ticker": "LOW",
         "next_date": "2026-11-18",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 2.86,
         "last_surprise_pct": 4.3
       },
       {
         "ticker": "P",
         "next_date": "2026-11-18",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 0.27,
         "last_surprise_pct": 21.1
       },
       {
         "ticker": "TJX",
         "next_date": "2026-11-18",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 1.33,
         "last_surprise_pct": 3.4
       },
       {
+        "ticker": "BABA",
+        "next_date": "2026-11-19",
+        "days_to": 9,
+        "eps_forecast": 1.31,
+        "last_surprise_pct": -43.3
+      },
+      {
         "ticker": "ESE",
         "next_date": "2026-11-19",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 2.59,
         "last_surprise_pct": 3.8
       },
       {
         "ticker": "ESTC",
         "next_date": "2026-11-19",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 0.14,
         "last_surprise_pct": 140.0
       },
       {
         "ticker": "KEYS",
         "next_date": "2026-11-19",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 3.09,
         "last_surprise_pct": 30.6
       },
       {
         "ticker": "VEEV",
         "next_date": "2026-11-19",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 1.68,
         "last_surprise_pct": 3.7
       },
       {
         "ticker": "WMT",
         "next_date": "2026-11-19",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 0.64,
         "last_surprise_pct": 11.0
       },
       {
         "ticker": "A",
         "next_date": "2026-11-23",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": 1.72,
         "last_surprise_pct": 9.5
       },
       {
         "ticker": "HPE",
         "next_date": "2026-11-23",
-        "days_to": 14,
+        "days_to": 13,
         "eps_forecast": 1.17,
         "last_surprise_pct": 24.4
       },
       {
-        "ticker": "BABA",
-        "next_date": "2026-11-24",
-        "days_to": 15,
-        "eps_forecast": 1.31,
-        "last_surprise_pct": -43.3
-      },
-      {
         "ticker": "DELL",
         "next_date": "2026-11-24",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 6.41,
         "last_surprise_pct": 43.2
       },
       {
         "ticker": "WDAY",
         "next_date": "2026-11-24",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 1.28,
         "last_surprise_pct": 104.8
       },
       {
         "ticker": "CLSK",
         "next_date": "2026-11-24",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": null,
         "last_surprise_pct": -33.3
       },
       {
         "ticker": "DE",
         "next_date": "2026-11-25",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 4.07,
         "last_surprise_pct": 6.5
+      },
+      {
+        "ticker": "CRWD",
+        "next_date": "2026-12-01",
+        "days_to": 21,
+        "eps_forecast": 0.0,
+        "last_surprise_pct": -80.0
+      },
+      {
+        "ticker": "MDB",
+        "next_date": "2026-12-01",
+        "days_to": 21,
+        "eps_forecast": 0.08,
+        "last_surprise_pct": 575.0
+      },
+      {
+        "ticker": "MRVL",
+        "next_date": "2026-12-01",
+        "days_to": 21,
+        "eps_forecast": 0.79,
+        "last_surprise_pct": -4.6
+      },
+      {
+        "ticker": "OKTA",
+        "next_date": "2026-12-01",
+        "days_to": 21,
+        "eps_forecast": 0.43,
+        "last_surprise_pct": 31.8
+      },
+      {
+        "ticker": "GTLB",
+        "next_date": "2026-12-01",
+        "days_to": 21,
+        "eps_forecast": null,
+        "last_surprise_pct": -85.7
       }
     ],
     "retail": [
@@ -25044,16 +25074,6 @@
         "why": "13f_add: Ascentis Wealth Management, LLC +$2,679,146,768 \u00b7 cnbc_pick: Steve Grasso \u00b7 insider_mspr: MSPR 100.0"
       },
       {
-        "ticker": "TSM",
-        "score": 2,
-        "weighted_score": 1.2,
-        "channel_list": [
-          "congress_cluster",
-          "patent_cluster"
-        ],
-        "why": "congress_cluster: 3 members net +6 \u00b7 patent_cluster: 1067 grants, 58 IPC classes"
-      },
-      {
         "ticker": "GME",
         "score": 2,
         "weighted_score": 1.2,
@@ -25170,7 +25190,18 @@
           "special_situation",
           "trump"
         ],
-        "why": "analyst_upgrade_cluster: net upgrades +18 revision delta \u00b7 special_situation: Divestitures \u00b7 trump: CHEVRON CORP"
+        "why": "analyst_upgrade_cluster: net upgrades +16 revision delta \u00b7 special_situation: Divestitures \u00b7 trump: CHEVRON CORP"
+      },
+      {
+        "ticker": "COP",
+        "score": 3,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "news_sentiment",
+          "trump"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +17 revision delta \u00b7 news_sentiment: 0.84 bullish news (50 art) \u00b7 trump: CONOCOPHILLIPS"
       }
     ]
   }
