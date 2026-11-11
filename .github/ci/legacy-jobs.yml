@@ -5405,6 +5405,8 @@ jobs:
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
       - name: admin navigation and copy UX guardrails
         run: python -m pytest tests/test_admin_navigation_ux.py -q
+      - name: Capacity Router rendered behavior and identity boundaries
+        run: node --test admin/tests/capacity_router_ui_test.cjs
 
   path-prune-lint:
     if: ${{ false }}
@@ -51230,6 +51232,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "admin/capacity_fabric_observer.py"
+      - "admin/capacity_ingest.py"
+      - "admin/tests/test_capacity_router.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -52795,11 +52800,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy jsonschema markupsafe
+        run: pip install pytest pandas numpy pyarrow pyyaml requests scipy jsonschema markupsafe fastapi httpx
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
-        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py -q
+        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py admin/tests/test_capacity_router.py -q
 
   press-account-claim-consumer:
     if: ${{ false }}  # Executed by the incumbent required ci-pack wrapper.
