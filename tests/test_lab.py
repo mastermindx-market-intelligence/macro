@@ -42,6 +42,21 @@ def _fake_universe(n_tickers: int = 2, n_bars: int = 600) -> dict[str, pd.DataFr
     return {f"T{i}": _fake_ohlcv(n_bars, seed=i) for i in range(n_tickers)}
 
 
+@pytest.fixture
+def synthetic_store(monkeypatch):
+    """Replace only store I/O; exercise the actual load and benchmark readers."""
+    from lib import store
+
+    frame = _fake_ohlcv(seed=97)
+
+    def read(group, name):
+        assert group in {"stocks", "yahoo"}
+        return frame.copy()
+
+    monkeypatch.setattr(store, "read", read)
+    return frame
+
+
 # ---------------------------------------------------------------------------
 # 1. Import smoke test
 # ---------------------------------------------------------------------------
@@ -304,12 +319,12 @@ def test_trial_to_ledger():
 # 11. load() with shortcuts
 # ---------------------------------------------------------------------------
 
-def test_load_quick():
+def test_load_quick(synthetic_store):
     """load('quick') should return at most 8 tickers and each is a DataFrame."""
     from engine import lab
 
     result = lab.load("quick")
-    # The quick list might not all exist in the store; just check types
+    assert result, "the deterministic store must exercise the loader assertions"
     for ticker, df in result.items():
         assert isinstance(df, pd.DataFrame)
         assert "close" in df.columns
@@ -319,18 +334,19 @@ def test_load_quick():
 # 12. bench() returns a Series
 # ---------------------------------------------------------------------------
 
-def test_bench_returns_series():
+def test_bench_returns_series(synthetic_store):
     from engine import lab
 
     s = lab.bench("_GSPC")
     assert isinstance(s, pd.Series)
+    pd.testing.assert_series_equal(s, synthetic_store["close"].rename("_GSPC"))
 
 
 # ---------------------------------------------------------------------------
 # 13. characterize() returns a dict and writes indicator_characterization.json
 # ---------------------------------------------------------------------------
 
-def test_characterize_returns_dict_and_writes_json():
+def test_characterize_returns_dict_and_writes_json(synthetic_store):
     """characterize() must return a dict with per-indicator keys and write JSON."""
     import json
     import tempfile
@@ -364,7 +380,7 @@ def test_characterize_returns_dict_and_writes_json():
             )
 
 
-def test_characterize_unknown_indicator():
+def test_characterize_unknown_indicator(synthetic_store):
     """characterize() must mark unknown indicator names rather than raising."""
     import tempfile
     from pathlib import Path
@@ -381,7 +397,7 @@ def test_characterize_unknown_indicator():
     assert result["__not_a_real_indicator__"]["status"] == "unknown_indicator"
 
 
-def test_characterize_writes_json():
+def test_characterize_writes_json(synthetic_store):
     """characterize() must write data/lab/indicator_characterization.json."""
     import json
     import tempfile
