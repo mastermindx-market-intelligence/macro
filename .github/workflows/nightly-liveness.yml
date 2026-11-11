@@ -142,4 +142,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           DISCORD_WEBHOOK_WATCHLIST: ${{ secrets.DISCORD_WEBHOOK_WATCHLIST }}
+          # Data-lane preflight: graded against the registry (and against online
+          # runners when a runner-list token is ever supplied as RUNNER_LIST_TOKEN).
+          MACRO_DATA_LANE: ${{ vars.MACRO_DATA_LANE }}
         run: python3 scripts/check_runner_queue_hostage.py

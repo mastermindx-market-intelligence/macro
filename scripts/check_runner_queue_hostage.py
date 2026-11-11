@@ -62,6 +62,19 @@ watchdog for "no runner can take this job" must not itself need a runner from th
 pool under test.  Three looks a day bound detection latency to ~6h on top of the
 8h threshold.
 
+DATA-LANE PREFLIGHT (added 2026-11-11).  ``vars.MACRO_DATA_LANE`` re-points ~66
+scheduled data jobs in one act (docs/RUNNER_DATA_LINUX_POOL.md), and its VALUE is
+invisible to ``check_runner_policy.py`` (R16 can only pin the expression's shape).
+A typo'd or premature value would not page here for 8h.  So the same lane also
+grades the variable directly, the moment it is set: the workflow passes
+``MACRO_DATA_LANE`` in, and a non-empty value fails unless the label registry
+declares it ``live`` with a carrier.  When a token able to list runners is
+supplied as ``RUNNER_LIST_TOKEN`` (GITHUB_TOKEN cannot — listing runners needs
+administration access), the value must ALSO be carried by an online runner.  An
+unset variable is healthy (jobs use their fallback labels).  A value that is not
+a live registered label is a POSITIVE observation, not blindness, so it fails;
+only an unreadable registry or runners API is INDETERMINATE.
+
 Usage:
     python3 scripts/check_runner_queue_hostage.py               # live
     python3 scripts/check_runner_queue_hostage.py --selftest    # synthetic
@@ -245,6 +258,88 @@ def evaluate(
     }
 
 
+def evaluate_data_lane(
+    value: "str | None",
+    registry_view: "dict | None",
+    online_labels: "set[str] | None" = None,
+) -> dict:
+    """Grade ``vars.MACRO_DATA_LANE``.  Pure.
+
+    ``registry_view`` is ``load_registry_view()``'s shape (``{}``/None = blind).
+    ``online_labels`` is the union of labels on ONLINE runners, or None when no
+    runner listing was possible.  Returns ``{"verdict": "ok"|"breach"|
+    "indeterminate", "reason": str}``.
+    """
+    lane = (value or "").strip()
+    if not lane:
+        return {"verdict": "ok", "reason": "MACRO_DATA_LANE unset; switched jobs use their fallback labels"}
+    if not registry_view:
+        return {"verdict": "indeterminate",
+                "reason": f"MACRO_DATA_LANE={lane!r} but the label registry is unreadable"}
+    entry = registry_view.get(lane)
+    if not isinstance(entry, dict):
+        return {"verdict": "breach",
+                "reason": f"MACRO_DATA_LANE={lane!r} is not a label declared in "
+                          ".github/runner-policy.yml label_registry — every switched "
+                          "data job is queued on a label no runner carries"}
+    if entry.get("status") != "live" or not entry.get("carried_by"):
+        return {"verdict": "breach",
+                "reason": f"MACRO_DATA_LANE={lane!r} but the registry says "
+                          f"status={entry.get('status')!r} carried_by="
+                          f"[{','.join(entry.get('carried_by') or [])}] — activation "
+                          "order is carrier first, registry second, variable last"}
+    if online_labels is None:
+        return {"verdict": "ok",
+                "reason": f"MACRO_DATA_LANE={lane!r} is registry-live (online carriers "
+                          "not verified: no runner-list token)"}
+    if lane not in online_labels:
+        return {"verdict": "breach",
+                "reason": f"MACRO_DATA_LANE={lane!r} is registry-live but no ONLINE "
+                          "runner carries it"}
+    return {"verdict": "ok", "reason": f"MACRO_DATA_LANE={lane!r} has an online carrier"}
+
+
+def fetch_online_labels(repo: str, token: "str | None") -> "set[str] | None":
+    """Union of labels on online repo + org runners; None when not listable."""
+    if not token:
+        return None
+    labels: set[str] = set()
+    owner = repo.split("/", 1)[0]
+    for url in (
+        f"https://api.github.com/repos/{repo}/actions/runners?per_page=100",
+        f"https://api.github.com/orgs/{owner}/actions/runners?per_page=100",
+    ):
+        payload = _get(url, token, what="runner list")
+        if payload is None:
+            continue
+        for runner in payload.get("runners") or []:
+            if isinstance(runner, dict) and runner.get("status") == "online":
+                labels |= {
+                    str(item.get("name"))
+                    for item in runner.get("labels") or []
+                    if isinstance(item, dict) and item.get("name")
+                }
+    return labels or None
+
+
+def check_data_lane() -> int:
+    """Run the data-lane preflight from the environment.  0 ok/indeterminate, 1 breach."""
+    report = evaluate_data_lane(
+        os.environ.get("MACRO_DATA_LANE"),
+        load_registry_view(),
+        fetch_online_labels(REPO, os.environ.get("RUNNER_LIST_TOKEN")),
+    )
+    if report["verdict"] == "breach":
+        print(f"::error title=data-lane-preflight::{report['reason']}", flush=True)
+        _notify({"fail_reasons": [report["reason"]]})
+        return 1
+    if report["verdict"] == "indeterminate":
+        _warn("data-lane-preflight-blind", report["reason"])
+        return 0
+    print(f"::notice title=data-lane-preflight::{report['reason']}", flush=True)
+    return 0
+
+
 def _get(url: str, token: "str | None", *, what: str) -> "dict | None":
     req = urllib.request.Request(url, headers={
         "Accept": "application/vnd.github+json",
@@ -394,6 +489,21 @@ def _selftest() -> int:
                         workflow_name="daily", created_at="2026-09-24T09:00:00Z")],
                    now=now, hosted=hosted)["ok"], False)
 
+    # Data-lane preflight: unset ok; typo / orphaned / offline are breaches.
+    lane_view = dict(view, **{"data-linux": {"status": "orphaned", "carried_by": []}})
+    for value, online, want in (
+        (None, None, "ok"), ("", None, "ok"), ("macstudio", None, "ok"),
+        ("data-linx", None, "breach"), ("data-linux", None, "breach"),
+        ("macstudio", {"self-hosted"}, "breach"), ("macstudio", {"macstudio"}, "ok"),
+    ):
+        got_lane = evaluate_data_lane(value, lane_view, online)["verdict"]
+        if got_lane != want:
+            failures += 1
+            print(f"::error title=selftest::data lane {value!r}: {got_lane}, expected {want}", flush=True)
+    if evaluate_data_lane("data-linux", {})["verdict"] != "indeterminate":
+        failures += 1
+        print("::error title=selftest::blind registry must be indeterminate", flush=True)
+
     if failures:
         return 1
     print("::notice title=runner-queue-hostage::selftest ok", flush=True)
@@ -410,6 +520,11 @@ def main(argv: "list[str] | None" = None) -> int:
     if args.selftest:
         return _selftest()
 
+    lane_rc = check_data_lane()
+    return max(lane_rc, _check_hostages(args))
+
+
+def _check_hostages(args: argparse.Namespace) -> int:
     max_queue = (
         timedelta(hours=args.max_queue_hours) if args.max_queue_hours else MAX_QUEUE
     )

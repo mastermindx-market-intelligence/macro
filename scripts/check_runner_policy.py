@@ -30,6 +30,16 @@ runners needs an admin token CI does not carry), so these are DECLARATION gates 
 fire when a human writes a death down. The live-state dead-man switch for the same
 class is ``scripts/check_runner_queue_hostage.py``.
 
+R16 (added 2026-11-11) owns the REPOSITORY-VARIABLE runs-on boundary. A runs-on
+expression such as ``${{ vars.MACRO_DATA_LANE || 'macstudio' }}`` shows R11 only
+its quoted fallback — the variable's VALUE lives in GitHub settings, invisible to
+every static rule, so a typo there sends every switched job to a label nobody
+carries. R16 therefore pins the SHAPE instead: a ``vars.*`` operand may appear in
+``runs-on`` only for an allowlisted variable, only as the exact
+``[self-hosted, "${{ vars.<NAME> || '<fallback>' }}"]`` form, and only with a
+fallback from that variable's registered set. The value side is checked live by
+``check_runner_queue_hostage.py``'s data-lane preflight (nightly-liveness).
+
 Rule R14 (added 2026-09-01) owns the live/pending capacity boundary for the PC CI
 pool. ``pool_topology.pc-ci.slots`` is the live, routable inventory and stays at
 three; the fourth slot is declared only as ``pending_slots``/``pending_carriers``/
@@ -132,6 +142,21 @@ _QUOTED_LITERAL_RE = re.compile(r"'([^']*)'")
 _COMPARISON_LITERAL_RE = re.compile(r"(?:==|!=)\s*'[^']*'")
 
 
+# R16 — repository variables allowed to select a runs-on label, each mapped to the
+# fallback labels its switch may default to. The variable VALUE is not visible to
+# any static rule (it lives in GitHub settings); the live preflight in
+# scripts/check_runner_queue_hostage.py grades it against the label registry.
+# CI_EXECUTION_ROUTE and AD1_M1_LANE select lanes through job-level ``if:`` and
+# are deliberately NOT runs-on variables — R16 never looks at ``if:``.
+RUNS_ON_VARIABLES: dict[str, frozenset[str]] = {
+    "MACRO_DATA_LANE": frozenset({"macstudio", "macstudio-light"}),
+}
+_VARS_REFERENCE_RE = re.compile(r"\bvars\s*(?:\.\s*([A-Za-z_][A-Za-z0-9_]*)|\[)")
+_RUNS_ON_VARIABLE_FORM_RE = re.compile(
+    r"^\$\{\{\s*vars\.([A-Za-z_][A-Za-z0-9_]*)\s*\|\|\s*'([^']*)'\s*\}\}$"
+)
+
+
 @dataclass(frozen=True)
 class Finding:
     rule: str
@@ -226,6 +251,82 @@ def runs_on_labels(job: dict) -> set[str]:
             return found
         return _labels_from_scalar(str(labels or ""))
     return set()
+
+
+def _runs_on_scalars(value: object) -> list[str]:
+    """Every string a ``runs-on`` value is built from (plain, list or group form)."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    if isinstance(value, dict):
+        found = [str(value.get("group", ""))]
+        labels = value.get("labels")
+        found.extend(_runs_on_scalars(labels) if labels is not None else [])
+        return found
+    return [] if value is None else [str(value)]
+
+
+def _runs_on_variable_findings(documents: dict[str, dict]) -> list[Finding]:
+    """R16: ``vars.*`` in runs-on only as an exact, allowlisted, typo-proof switch."""
+    findings: list[Finding] = []
+    for relative, document in sorted(documents.items()):
+        for job_id, job in (document.get("jobs") or {}).items():
+            if not isinstance(job, dict) or "runs-on" not in job:
+                continue
+            value = job.get("runs-on")
+            scalars = _runs_on_scalars(value)
+            where = f"{relative}:{job_id}"
+            for scalar in scalars:
+                references = _VARS_REFERENCE_RE.findall(scalar)
+                if not references:
+                    continue
+                names = sorted({name for name in references if name})
+                if "" in references or any(name not in RUNS_ON_VARIABLES for name in names):
+                    findings.append(
+                        Finding(
+                            "R16",
+                            f"{where} runs-on reads a repository variable outside the "
+                            f"R16 allowlist {sorted(RUNS_ON_VARIABLES)}: {scalar.strip()!r} — "
+                            "its value is invisible to every static label rule",
+                        )
+                    )
+                    continue
+                match = _RUNS_ON_VARIABLE_FORM_RE.match(scalar.strip())
+                if match is None:
+                    findings.append(
+                        Finding(
+                            "R16",
+                            f"{where} runs-on must use the exact form "
+                            f"\"${{{{ vars.{names[0]} || '<fallback>' }}}}\": {scalar.strip()!r}",
+                        )
+                    )
+                    continue
+                name, fallback = match.group(1), match.group(2)
+                allowed = RUNS_ON_VARIABLES[name]
+                if fallback not in allowed:
+                    findings.append(
+                        Finding(
+                            "R16",
+                            f"{where} vars.{name} fallback {fallback!r} is not one of "
+                            f"{sorted(allowed)} — a typo here routes every switched job "
+                            "to a label no runner carries while the variable is unset",
+                        )
+                    )
+                if not (
+                    isinstance(value, list)
+                    and len(value) == 2
+                    and value[0] == "self-hosted"
+                    and value[1] == scalar
+                ):
+                    findings.append(
+                        Finding(
+                            "R16",
+                            f"{where} vars.{name} switch must be exactly "
+                            f"[self-hosted, \"${{{{ vars.{name} || '<fallback>' }}}}\"]",
+                        )
+                    )
+    return findings
 
 
 def needs_names(job: dict) -> set[str]:
@@ -797,6 +898,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                     )
 
     findings.extend(_label_registry_findings(registry, documents))
+    findings.extend(_runs_on_variable_findings(documents))
 
     for route in registry.get("protected_hosted_routes") or []:
         workflow = route.get("workflow")
