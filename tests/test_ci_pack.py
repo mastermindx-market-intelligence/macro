@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7592, China breadth coverage enrollment):
+    Own contract run43074203713/job130709660884 on tested merge
+    f23300a596fa (head6c2c25d145e1, base93068439bfcc) measured
+    index137 jobs /5966->5968, free-content137 jobs /5989->5991,
+    and plan-book131 jobs /5724->5726. Each uses ten packs, with
+    no newly selected owners. The existing china-board-breadth owner
+    adds test_china_breadth_coverage.py to its existing pytest command
+    and yfinance>=0.2.50 to its existing install. The unchanged estimator
+    has two commands,3->4 literal test references,181->237 joined
+    characters and character bucket zero: owner weight8->10.
+    Fund only that additional test reference's +2 on each probe.
+    Keep job ceilings137/138/131, the ten-pack bound, all selectors,
+    assertions, timeouts and runtime/admission controls unchanged.
+    This is paired planner evidence and source accounting, not an
+    execution-time measurement. Natural successor CI remains required.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
