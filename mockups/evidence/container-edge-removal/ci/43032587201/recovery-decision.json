@@ -1,0 +1,92 @@
+{
+  "schema": "mastermind.container_edge_ci_recovery_decision.v1",
+  "recorded_at": "2026-11-11 14:33:42 UTC",
+  "subject_head": "0d26e84a15a0578d15bc1521021676d547d2aaf2",
+  "workflow_run_id": 43032587201,
+  "original_failed_job_id": 130564015729,
+  "original_result": "NATIVE_COMPLETION_RESPONSE_UNKNOWN; preserved without reclassification",
+  "original_target_readback": {
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-11-11T14:10:38Z",
+    "runner_name": "GitHub Actions 1000581507",
+    "runner_group_name": "GitHub Actions",
+    "labels": [
+      "ubuntu-latest"
+    ],
+    "artifact_upload": "success",
+    "checkout_cleanup": "success",
+    "complete_job": "success"
+  },
+  "hosted_vm_lifecycle_source": "https://docs.github.com/en/actions/how-tos/manage-runners/github-hosted-runners/use-github-hosted-runners",
+  "effect_boundary": {
+    "authored_acquisition": "Local native APT downloads and transaction receipts under a job-local /tmp directory. Package installation and browser installation were not entered after the unknown completion response.",
+    "permissions": {
+      "contents": "read"
+    },
+    "explicit_application_deployment_secrets": false,
+    "native_transaction_cache_export": false,
+    "known_persistent_output": "The completed semantic artifact; original ZIP and JSON preserved in commit573ccd3104faaee79cb835e86d057509c4a769bc before a possible overwrite.",
+    "known_independent_persistent_mutation_identified": false,
+    "qualification": "Inherited APT hooks can have effects; their theoretical extension point is not a demonstrated external mutation. Terminal hosted-job disposal settles continuing VM-local liveness. Original command success and exact intermediate effects are not retroactively claimed."
+  },
+  "comparable_success": {
+    "run_id": 43030400365,
+    "job_id": 130557685526,
+    "logical_job": "unrun-brain-gateway",
+    "tested_commit": "93c3f74b54415ea0d0ed1cdb583b7e969998e78c",
+    "setup_started_at": "2026-11-11T13:48:21.4767449Z",
+    "setup_finished_at": "2026-11-11T13:48:43.2853036Z",
+    "subsequent_browser_tests": "169 passed in118.30seconds",
+    "runner_image": "ubuntu-24.04 /20261101.360.1",
+    "playwright_distribution": "1.64.1",
+    "driver_bundle_sha256": "829521b67ed7be90c7d6d6098ff39f2241562d47e4ad7ccab13710924a56001d",
+    "source_bindings": [
+      {
+        "ref": "0d26e84a15a0578d15bc1521021676d547d2aaf2",
+        "path": "scripts/ci_browser_native_setup.py",
+        "status": "fulfilled",
+        "sha": "3e400c1691b5be2825237004bce42d881f2d230b"
+      },
+      {
+        "ref": "0d26e84a15a0578d15bc1521021676d547d2aaf2",
+        "path": "scripts/ci_apt_native_stage.py",
+        "status": "fulfilled",
+        "sha": "2446beea8a43546c78251fdf32d8e648982229f4"
+      },
+      {
+        "ref": "0d26e84a15a0578d15bc1521021676d547d2aaf2",
+        "path": "scripts/ci_apt_cold_acquisition.py",
+        "status": "fulfilled",
+        "sha": "7d402b92c83b837fd38b965b9974b44696ff3f60"
+      },
+      {
+        "ref": "93c3f74b54415ea0d0ed1cdb583b7e969998e78c",
+        "path": "scripts/ci_browser_native_setup.py",
+        "status": "fulfilled",
+        "sha": "3e400c1691b5be2825237004bce42d881f2d230b"
+      },
+      {
+        "ref": "93c3f74b54415ea0d0ed1cdb583b7e969998e78c",
+        "path": "scripts/ci_apt_native_stage.py",
+        "status": "fulfilled",
+        "sha": "2446beea8a43546c78251fdf32d8e648982229f4"
+      },
+      {
+        "ref": "93c3f74b54415ea0d0ed1cdb583b7e969998e78c",
+        "path": "scripts/ci_apt_cold_acquisition.py",
+        "status": "fulfilled",
+        "sha": "7d402b92c83b837fd38b965b9974b44696ff3f60"
+      }
+    ],
+    "limit": "The exact APT transaction and package-cache equality are not established. This success supports an infrastructure hypothesis; it does not prove the cause of this attempt's sanitized FETCH errors."
+  },
+  "authorized_next_step": {
+    "action": "At most one normal targeted GitHub Actions job rerun after the original workflow is terminal and every failed job has been classified.",
+    "carrier": "Existing GitHub Actions run/job owner; same subject commit and immutable event inputs.",
+    "original_transaction_reuse": false,
+    "source_or_mirror_or_timeout_or_gate_change": false,
+    "new_attempt_receipt_required": true,
+    "action_dispatched": false
+  }
+}
