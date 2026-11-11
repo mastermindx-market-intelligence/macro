@@ -1,5 +1,34 @@
 # Fable CEO — Sector Intelligence and Sector Cycles completion brief
 
+## Final four-round handoff — version 1.0, 9 November 2026
+
+**All four requested planning rounds are complete.** Start with the [final masterplan](https://github.com/mastermindx-market-intelligence/macro/blob/2250739f174f502adffa6ce2274274faddf6fb3c/research/sector_completion_20261021/SHARED_SHELL_MASTERPLAN_2026-11-09.md), [complete Fable/T3 implementation packet](https://github.com/mastermindx-market-intelligence/macro/blob/dde2d9d411bf6236b5405f01fac3b8cef87ff98c/research/sector_completion_20261021/FINAL_FABLE_T3_PACKET_2026-11-09.md) and [ten validated authoring briefs](https://github.com/mastermindx-market-intelligence/macro/blob/ba1d27baff363ea8830d46150c7f36f7805b5c1c/research/sector_completion_20261021/FINAL_IMPLEMENTATION_BRIEFS_2026-11-09.json). They continue Macro #7646 / sector-central-redesign-20260921-sol-001 / WS:SECTOR-INTELLIGENCE-COMPLETION. This is a concrete GitHub handoff, not a claim of transport delivery, worker pickup/START or production acceptance.
+
+The canonical customer destination is **one SectorIntelligenceWorkspace in Beta Shared Shell**, using Macro analytical producers and existing native source. Retain Brief → Explore/compare → dossier/Cycles → evidence/company → durable investigation → exact return, all B01–B12/P01–P23/J01–J15 and all 134 capabilities. Retire competing UX only after actual destination/access/context parity.
+
+The [Paper guide](https://github.com/mastermindx-market-intelligence/macro/blob/e3cec4b2ed20f49aef9da65ccdf6701a1ef81bdd/research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md) preserves 47 editable reviewed Frames in the existing R4 [Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-B-0), [States/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-C-0) and [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-D-0) pages. Final packet §5 gives exact retained donors, five bounded missing design groups and all 42 historical missing-state dispositions. S08 is Source reader, S10 Sector map; actual Watches donors exclude Authority node 56C-0.
+
+### First implementation action
+
+After actual assignment through existing runtime/Capacity/Fabric owners, reconcile current affected source/custody/denial/unknown effects and start the real **coherent-generation → already-landed /sectors → selected dossier → exact return** vertical. Terminal #1244 is merged; do not rebuild the entrance. Integrate #10780/#10839 and #1339 through their incumbent owners while preserving real holds. Independent missing design, deep native controls and real research may advance in admitted disjoint lanes.
+
+The ten briefs are one Fable coordinator plus generation, design, native workspace, Cycles, research, persistence/actions, retained depth/compatibility, analytics/history and integrated proof/release. They contain exact inputs, proposed source paths, contracts, acceptance and return; null assignment/workspace/host fields deliberately mean unbound authoring. The compiler admitted their structure, not their execution.
+
+### Essential final corrections and gates
+
+- The P19 ledger already exists: 80 CONFIRMED, 24 PARTIAL, 15 UNSUPPORTED, 13 NOT_DELIVERED, one contract-gap confirmation and one block confirmation. All served proof is PENDING_P22. Blank final matrix cells were intentional pending P23; preserve the active writer.
+- R3A-66 basket count fields are already implemented; fix accurate counted/listed/scored copy and the new consumer. R3A-92 requires the actual correction witness.
+- Research v2 stays in the existing router with real native profile loaders, separate native/context generations and assertion-level evidence/current rights. Save stays in Investigation v2 with narrow references, actual installed admission parity and actor-safe unknown-operation recovery.
+- Preserve #1339's release hold, #10839's original CI-registration denial, #10777's existing controller/conflict/check conditions, #10703/#10707's unique and unpublished behavior, GMI model01 uncertainty/publication holds, Nuclear successor proof, PLNT PublicCarrierHold/R8 staging denial and P&G refresh off by default until real consumer qualification.
+- Reuse merged P&G, PLNT, Healthcare and Industrials source. Synthetic Industrials and PLNT cases cannot become real dossier evidence. Every one of the ten verticals requires its own real source-to-consumer witness.
+- P21/P22/P23 require actual source/build/deployed/data identities, permitted served journeys, next natural update/no-change and rollback compatibility. No forced nightly, source-only completion claim or premature duplicate-surface deletion.
+
+Current Chairman instruction, user AGENTS, actual repository controls and pinned applicable law govern execution/review. This packet adds no blanket independent reviewer ceremony and clears no hold. Fable owns direction, integration and separate backend/design/product/release/operational/scientific acceptance. Full source briefs stay in GitHub; any later authorized transport is recipient/action/link/return only.
+
+## Historical 21 October brief — superseded destination and launch frontier
+
+The following original text is preserved as history. Its source, staffing, Paper, publication and launch observations are not current admission or execution instructions. The version 1.0 material above and final packet control current scope and assignments.
+
 Prepared 21 October 2026 UTC. Pass this brief together with:
 
 1. `Sector_Intelligence_and_Cycles_Completion_Masterplan_2026-10-21.md` — full census, findings, scope, task dependencies, acceptance and primary sources.
