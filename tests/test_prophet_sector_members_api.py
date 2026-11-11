@@ -36,8 +36,7 @@ from app import prophet_sector_members as route
 from tests.test_prophet_sector_members import LANE1, carried_blocks, synthetic_capture
 
 if LANE1:
-    from tests.test_sector_generation_reader import _publish
-    from tests.test_sector_population import PUBLISHED, _real_bundle
+    from tests.test_prophet_sector_members import PUBLISHED, _publish, _real_bundle
 
 REPO = Path(__file__).resolve().parents[1]
 URL = "/api/prophet/sector-members/v1"

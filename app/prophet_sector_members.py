@@ -65,7 +65,40 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-# --- one-shot capture helpers (shared by the route and the qualification run) ---
+# --- the Sector reader: an optional owner until Sector lane 1 lands on main -----
+
+#: The Sector programme's selected-generation reader (lane 1). Its two halves
+#: are ``lib/sector_generation_contract.py`` and
+#: ``scripts.vps_live_orchestrator.read_selected_generation``; until both are on
+#: this tree the sector side is NOT INSTALLED, which the route answers with the
+#: contract's fail-closed ``sector_unavailable`` envelope. The lookup is an
+#: explicit presence check — never an ImportError caught and ignored.
+_SECTOR_CONTRACT_MODULE = "lib.sector_generation_contract"
+_SECTOR_READER_MODULE = "scripts.vps_live_orchestrator"
+_SECTOR_CONTRACT_NAMES = ("SECTOR_GENERATION_DOMAIN", "SECTOR_GENERATION_MEMBERS",
+                          "_decode_member", "population_from_bundle")
+
+
+class SectorReaderNotInstalled(RuntimeError):
+    """The Sector reader is not on this tree (lane 1 not landed)."""
+
+
+def sector_reader():
+    """``(contract module, read_selected_generation)`` or ``None`` when absent."""
+    import importlib
+    import importlib.util
+
+    if importlib.util.find_spec(_SECTOR_CONTRACT_MODULE) is None:
+        return None
+    contract = importlib.import_module(_SECTOR_CONTRACT_MODULE)
+    reader = getattr(importlib.import_module(_SECTOR_READER_MODULE),
+                     "read_selected_generation", None)
+    if reader is None or not all(hasattr(contract, n) for n in _SECTOR_CONTRACT_NAMES):
+        return None
+    return contract, reader
+
+
+# --- one-shot capture helpers -----------------------------------------------------
 
 
 def capture_sector_join(generations_root: Path | None) -> tuple[Any, Mapping[str, Any], Mapping[str, Any] | None, Mapping[str, Any] | None]:
@@ -75,11 +108,14 @@ def capture_sector_join(generations_root: Path | None) -> tuple[Any, Mapping[str
     The member documents for group context are decoded from the SAME captured
     bytes the population was built from (no second pointer read, no fallback).
     """
-    from lib.sector_generation_contract import (
-        SECTOR_GENERATION_DOMAIN, SECTOR_GENERATION_MEMBERS, _decode_member,
-        population_from_bundle,
-    )
-    from scripts.vps_live_orchestrator import read_selected_generation
+    reader = sector_reader()
+    if reader is None:
+        raise SectorReaderNotInstalled("sector_reader_not_installed")
+    contract, read_selected_generation = reader
+    SECTOR_GENERATION_DOMAIN = contract.SECTOR_GENERATION_DOMAIN
+    SECTOR_GENERATION_MEMBERS = contract.SECTOR_GENERATION_MEMBERS
+    _decode_member = contract._decode_member
+    population_from_bundle = contract.population_from_bundle
 
     snapshot = read_selected_generation(
         generations_root=Path(generations_root), domain=SECTOR_GENERATION_DOMAIN,

@@ -33,6 +33,8 @@ from __future__ import annotations
 
 import ast
 import copy
+import importlib
+import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -42,13 +44,19 @@ import pytest
 from app import prophet_sector_members as route_mod
 from engine import prophet_sector_members as engine
 
-try:  # The Sector lane-1 reader and its real-bundle helpers (not yet on main).
-    from tests.test_sector_generation_reader import _publish
-    from tests.test_sector_population import PUBLISHED, _real_bundle, _real_carry_blocks
-    LANE1 = True
-except ImportError:
+# The Sector lane-1 reader and its real-bundle test helpers (not yet on main):
+# an explicit presence check, so the real mode runs exactly when lane 1 exists.
+LANE1 = (route_mod.sector_reader() is not None
+         and importlib.util.find_spec("tests.test_sector_population") is not None
+         and importlib.util.find_spec("tests.test_sector_generation_reader") is not None)
+if LANE1:
+    _publish = importlib.import_module("tests.test_sector_generation_reader")._publish
+    _population_helpers = importlib.import_module("tests.test_sector_population")
+    PUBLISHED = _population_helpers.PUBLISHED
+    _real_bundle = _population_helpers._real_bundle
+    _real_carry_blocks = _population_helpers._real_carry_blocks
+else:
     _publish = PUBLISHED = _real_bundle = _real_carry_blocks = None
-    LANE1 = False
 
 #: The real bundle's session (``tests/test_sector_population.py::SESSION``),
 #: shared by the synthetic capture so both modes speak about the same day.
