@@ -350,11 +350,49 @@ def _ledger_close(ledger: Mapping[str, Mapping], pid: str) -> str | None:
     return r.get("close_date") if r else None
 
 
+NOT_LIVE_EXCLUSION_REASON = "not_live_origination"
+
+
+def is_backfilled(plan: Mapping) -> bool:
+    """True when the plan row itself says it did not originate live (outage backfill)."""
+    return str(plan.get("origination_mode") or "").startswith("outage_backfill")
+
+
+def auditable_first_availability(plan: Mapping) -> pd.Timestamp | None:
+    """Earliest instant at which the plan is auditable as existing.
+
+    Live plans are governed by their publication clock (``recorded_at``). A backfilled
+    plan did not exist as bytes before its ``backfill_executed_at`` receipt, so the UTC
+    date of that timestamp — later than the nominal recorded_at date — is its first
+    availability, mirroring how the header treats ``recorded_at`` as a run date whose
+    session a participant could already see. A plan may never be presented as a live
+    historical call before this instant (``research/PROPHET_OUTAGE_BACKFILL_2026_08.md``).
+    """
+    if not is_backfilled(plan):
+        return None
+    ts = plan.get("backfill_executed_at")
+    if not ts:
+        return None
+    t = pd.Timestamp(ts)
+    if t.tzinfo is not None:
+        t = t.tz_convert("UTC").tz_localize(None)
+    return t.normalize()
+
+
 def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal: pd.DatetimeIndex,
                     closes: pd.DataFrame, raw: pd.DataFrame, sector_of_plan: Mapping[str, str | None],
                     window_start, window_end, excluded_ids: frozenset = frozenset(),
-                    era: str = INCUMBENT_ERA) -> tuple[list[Position], dict[str, int], dict]:
-    """Prophet-as-built positions (C6 definition in the header) + exclusion counts."""
+                    era: str = INCUMBENT_ERA, not_live_ids: frozenset = frozenset(),
+                    avail_floor: Mapping[str, pd.Timestamp] | None = None,
+                    ) -> tuple[list[Position], dict[str, int], dict]:
+    """Prophet-as-built positions (C6 definition in the header) + exclusion counts.
+
+    ``not_live_ids`` are excluded outright with reason ``not_live_origination``:
+    outage-reconstructed plans may never enter a historical book (deviation D5).
+    ``avail_floor`` maps plan ids to an earliest auditable-availability instant; the
+    publication session is floored at the first calendar session at/after it. Used only
+    by the separately labelled replay sensitivity, never by the primary population.
+    """
     ws, we = pd.Timestamp(window_start), pd.Timestamp(window_end)
     reasons: dict[str, int] = {}
     pos: list[Position] = []
@@ -372,6 +410,9 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
         if pid in excluded_ids:
             bump("excluded_by_sensitivity")
             continue
+        if pid in not_live_ids:
+            bump(NOT_LIVE_EXCLUSION_REASON)
+            continue
         if p.get("direction") != "BULL":
             bump("not_long")
             continue
@@ -379,6 +420,13 @@ def build_positions(plans: Iterable[Mapping], ledger: Mapping[str, Mapping], cal
             bump("no_publication_clock")
             continue
         P = publication_session(cal, p["price_basis_date"], p["recorded_at"])
+        if avail_floor is not None and pid in avail_floor:
+            fa = session_on_or_after(cal, avail_floor[pid])
+            if fa is None:
+                bump("published_after_window")   # not auditable anywhere in this calendar
+                continue
+            if fa > P:
+                P = fa
         if P is None or P > we:
             bump("published_after_window")
             continue
@@ -457,10 +505,24 @@ def _mechanical_exit(p, E, cal, raw, we):
 
 
 def prophet_targets(positions: Sequence[Position], dates: Sequence[pd.Timestamp]) -> dict:
+    """Equal weight across OPEN POSITIONS (header C6), not across distinct assets.
+
+    With ``n_live_positions_for_asset`` overlapping same-ticker positions the asset
+    carries ``n_live_positions_for_asset / N_live_positions``; staggered same-ticker
+    overlaps therefore drift the target as positions open and close. With no overlaps
+    this coincides with the per-asset ``1/N`` used before deviation D5 was corrected.
+    """
     out = {}
     for d in dates:
-        live = sorted({p.asset for p in positions if p.entry <= d < p.exit})
-        out[d] = {a: 1.0 / len(live) for a in live} if live else {}
+        live_assets = [p.asset for p in positions if p.entry <= d < p.exit]
+        n = len(live_assets)
+        if not n:
+            out[d] = {}
+            continue
+        cnt: dict[str, int] = {}
+        for a in live_assets:
+            cnt[a] = cnt.get(a, 0) + 1
+        out[d] = {a: cnt[a] / n for a in sorted(cnt)}
     return out
 
 

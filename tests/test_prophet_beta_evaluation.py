@@ -189,6 +189,102 @@ def test_mechanical_exit_uses_published_levels():
     assert pos[0].exit == cal[10] and pos[0].exit_basis == "mechanical_invalidation"
 
 
+# ── origination availability (deviation D5) ───────────────────────────────────
+
+def _bf_plan(pid, basis, rec, executed_at, **kw):
+    p = _plan(pid, basis, rec, **kw)
+    p["origination_mode"] = "outage_backfill_2026_08_09"
+    p["backfill_executed_at"] = executed_at
+    return p
+
+
+def test_auditable_first_availability_uses_utc_receipt_date():
+    bf = _bf_plan("B1", "2026-08-07", "2026-08-09", "2026-08-11T05:32:28.853265+00:00")
+    # pre-open UTC execution on 08-11 -> the 08-11 session is the first a user could see
+    assert ev.auditable_first_availability(bf) == pd.Timestamp("2026-08-11")
+    live = _plan("L1", "2026-08-07", "2026-08-09")
+    assert ev.auditable_first_availability(live) is None and not ev.is_backfilled(live)
+
+
+def test_backfilled_plans_excluded_from_primary_book_detected_from_data():
+    cal = _cal(40, "2026-08-03")
+    closes = _panel(cal, {**{e: 0.0 for e in ETFS}, "SPY": 0.0, "AAA": 0.001, "ZZZ": 0.0})
+    raw = closes.copy()
+    plans = [
+        _plan("LIVE", "2026-08-07", "2026-08-09", asset="AAA"),
+        _bf_plan("BF1", "2026-08-07", "2026-08-09", "2026-08-11T05:32:28+00:00", asset="AAA"),
+    ]
+    not_live = frozenset(p["id"] for p in plans if ev.is_backfilled(p))   # detected, not listed
+    assert not_live == {"BF1"}
+    pos, excl, _ = ev.build_positions(plans, {}, cal, closes, raw, {}, "2026-08-10", cal[-1],
+                                      not_live_ids=not_live)
+    assert [p.plan_id for p in pos] == ["LIVE"]
+    assert excl == {ev.NOT_LIVE_EXCLUSION_REASON: 1}
+    assert excl[ev.NOT_LIVE_EXCLUSION_REASON] == 1 and pos[0].entry == pd.Timestamp("2026-08-10")
+
+
+def test_no_position_enters_before_its_auditable_availability():
+    """A backfilled replay admitted at all must enter no earlier than the first session
+    at/after its backfill receipt; in the primary population it must not enter at all."""
+    cal = _cal(40, "2026-08-03")
+    closes = _panel(cal, {**{e: 0.0 for e in ETFS}, "SPY": 0.0, "AAA": 0.001})
+    raw = closes.copy()
+    bf = _bf_plan("BF1", "2026-08-07", "2026-08-09", "2026-08-11T05:32:28.853265+00:00")
+    # old (defective) clock: basis 08-07 + recorded 08-09 -> publication session 08-10
+    assert ev.publication_session(cal, "2026-08-07", "2026-08-09") == pd.Timestamp("2026-08-10")
+    avail = {"BF1": ev.auditable_first_availability(bf)}
+    pos, _, _ = ev.build_positions([bf], {}, cal, closes, raw, {}, "2026-08-10", cal[-1],
+                                   avail_floor=avail)
+    assert [p.plan_id for p in pos] == ["BF1"]
+    assert pos[0].entry == pd.Timestamp("2026-08-11")      # receipt UTC date, not the nominal 08-10
+    # the invariant in general: every position enters at/after its plan's auditable availability
+    for p in pos:
+        a = ev.auditable_first_availability(bf)
+        assert a is None or p.entry >= ev.session_on_or_after(cal, a)
+    # availability beyond the window end excludes the plan outright
+    bf_late = _bf_plan("BF2", "2026-08-07", "2026-08-09", "2026-11-30T05:00:00+00:00")
+    pos2, excl2, _ = ev.build_positions([bf_late], {}, cal, closes, raw, {}, "2026-08-10",
+                                        pd.Timestamp("2026-11-06"), avail_floor={"BF2": ev.auditable_first_availability(bf_late)})
+    assert pos2 == [] and excl2 == {"published_after_window": 1}
+
+
+def test_per_position_weights_with_staggered_same_ticker_overlap():
+    cal = _cal(10)
+    # two staggered same-ticker positions in AAA plus one BBB: on overlap days AAA
+    # must carry 2/N (per open position), not 1/N (per distinct ticker).
+    pos = [ev.Position("p1", "AAA", None, cal[1], cal[4], False, "x", None, None),
+           ev.Position("p2", "AAA", None, cal[2], cal[8], False, "x", None, None),
+           ev.Position("p3", "BBB", None, cal[0], cal[6], False, "x", None, None)]
+    t = ev.prophet_targets(pos, list(cal))
+    assert t[cal[3]] == {"AAA": 2.0 / 3.0, "BBB": 1.0 / 3.0}    # both AAA positions live
+    assert t[cal[1]] == {"AAA": 0.5, "BBB": 0.5}                # one AAA live
+    assert t[cal[6]] == {"AAA": 1.0}                            # BBB exited at cal[6]
+    assert t[cal[8]] == {}                                      # everything closed
+    assert all(abs(sum(w.values()) - 1.0) < 1e-12 for w in t.values() if w)
+
+
+def test_per_position_weights_equal_per_asset_without_overlap():
+    cal = _cal(8)
+    pos = [ev.Position("p1", "AAA", None, cal[0], cal[5], False, "x", None, None),
+           ev.Position("p2", "BBB", None, cal[2], cal[7], False, "x", None, None)]
+    t = ev.prophet_targets(pos, list(cal))
+    assert t[cal[3]] == {"AAA": 0.5, "BBB": 0.5} and t[cal[6]] == {"BBB": 1.0}
+
+
+def test_ledger_loader_skips_comment_lines_and_counts_real_bad_rows(tmp_path):
+    from scripts.run_prophet_beta_evaluation import load_jsonl
+    f = tmp_path / "ledger.jsonl"
+    f.write_text('# prophet ledger schema v3 — documentation header\n'
+                 '{"id": "A"}\n'
+                 '\n'
+                 '{"id": (not json\n'
+                 '# another comment\n'
+                 '{"id": "B"}\n', encoding="utf-8")
+    rows, bad = load_jsonl(f)
+    assert [r["id"] for r in rows] == ["A", "B"]
+    assert bad == 1     # only the genuinely malformed data row counts
+
+
 # ── costs and no-fill accounting ─────────────────────────────────────────────
 
 def test_no_fill_stays_in_cash_and_costs_scale():

@@ -39,7 +39,7 @@ LABELS = {
     "C6_exact_incumbent_prophet": "Incumbent Prophet book, as built",
     "C7_independent_emergence": "Prophet plans outside leading sectors",
     "C6A_context_aligned_prophet": "Prophet plans inside leading sectors (diagnostic)",
-    "X6_exposure_matched_reference": "SPY/cash at Prophet's own invested weight (reference)",
+    "X6_exposure_matched_reference": "Exposure-weight arithmetic reference only (SPY/BIL at the book's invested weight)",
 }
 
 
@@ -75,10 +75,15 @@ def git(*args) -> str:
 
 
 def load_jsonl(p: Path) -> tuple[list[dict], int]:
+    """Parse JSONL, skipping blank lines and ``#`` documentation comments.
+
+    The malformed-row counter is reserved for actual bad data rows; schema comment
+    headers are not data defects (review NOTE).
+    """
     rows, bad = [], 0
     for line in p.read_text().splitlines():
         line = line.strip()
-        if not line:
+        if not line or line.startswith("#"):
             continue
         try:
             rows.append(json.loads(line))
@@ -111,6 +116,11 @@ def _pp(x: float | None, signed: bool = True) -> str:
     return f"{x * 100:+.1f} pp" if signed else f"{x * 100:.1f}%"
 
 
+def _pct(x: float | None) -> str:
+    """A standalone return is a percentage, not a percentage-point difference."""
+    return "n/a" if x is None else f"{x * 100:+.1f}%"
+
+
 def _ci_pp(c) -> str:
     return "n/a" if not c else f"[{c[0] * 100:+.1f}, {c[1] * 100:+.1f}] pp"
 
@@ -122,27 +132,34 @@ def plain_words(a: dict) -> tuple[list[str], list[str]]:
     c6, w = c["C6_exact_incumbent_prophet"], a["window"]
     d6 = a["post_hoc_diagnostics"]["C6_exact_incumbent_prophet"]
     es = a["event_study"]["horizons"]
+    pop = a["population"]["excluded_cohort"]
     head = [
         f"Release level: descriptive only (L0). The window is {w['sessions']} sessions; the predeclared "
         f"minimum for any accepted historical claim is 252 sessions including an 8% market drawdown.",
-        f"Market over the window: SPY {_pp(w['spy_total_return'])} total return, deepest drawdown {_pp(w['spy_max_drawdown'])}.",
-        f"Incumbent Prophet book (as built, {c6['sample']['positions']} positions): {_pp(c6['total_net_return'])} net, "
+        f"Market over the window: SPY {_pct(w['spy_total_return'])} total return, deepest drawdown {_pct(w['spy_max_drawdown'])}.",
+        f"Population: live-published plans only. {pop['era_plans_excluded']} outage-reconstructed plans that no user "
+        f"could see on their nominal publication dates are excluded from every headline number (deviation D5); "
+        f"the superseded as-run numbers are retained under sensitivity.superseded_as_run.",
+        f"Incumbent Prophet book (as built, {c6['sample']['positions']} positions): {_pct(c6['total_net_return'])} net, "
         f"{_pp(c6['vs_passive_market']['total_diff'])} versus SPY, 95% CI {_ci_pp(c6['vs_passive_market']['total_diff_ci95'])}. "
-        f"The interval includes zero.",
+        f"The interval includes zero: this is not evidence of outperformance, and the sample is far too short.",
         f"Beta capture: beta {c6['beta_vs_market']:.2f} (95% CI {c6['beta_ci95'][0]:.2f} to {c6['beta_ci95'][1]:.2f}), "
         f"mean invested weight {c6['mean_invested'] * 100:.0f}%; upside capture {c6['upside_capture']:.2f}, "
         f"downside capture {c6['downside_capture']:.2f}.",
         f"Without its largest single contributor ({d6['without_top_contributor']['dropped_asset']}) the book is "
         f"{_pp(d6['without_top_contributor']['excess_total_vs_spy'])} versus SPY "
         f"(CI {_ci_pp(d6['without_top_contributor']['excess_total_ci95'])}).",
-        f"Published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by "
+        f"Live-published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by "
         f"{_pp(es['21']['excess_vs_spy']['mean'])} on average (date-cluster CI {_ci_pp(es['21']['excess_vs_spy']['ci95_date_cluster'])}); "
         + ("most of that gap was the stock versus its own sector ETF, not the sector choice."
          if abs(es["21"]["stock_minus_sector_etf"]["mean"]) > abs(es["21"]["sector_etf_minus_spy"]["mean"])
          else "most of that gap came from the sector choice, not the stock versus its sector."),
-        "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY "
-        f"(K3 {_pp(k['K3']['ann_diff'])}/yr, K4 {_pp(k['K4']['ann_diff'])}/yr, K5 {_pp(k['K5']['ann_diff'])}/yr annualised; "
-        "none significant after Holm).",
+        "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY on this "
+        f"window (K3 {_pp(k['K3']['ann_diff'])}/yr, K4 {_pp(k['K4']['ann_diff'])}/yr, K5 {_pp(k['K5']['ann_diff'])}/yr "
+        "annualised; none significant after Holm). Insignificant results mean value is not shown, not that there is none.",
+        "The exposure-matched reference (X6) is an exposure-weight arithmetic reference only: it matches risky weight "
+        "alone, and because the book is essentially fully invested, K2 nearly repeats the SPY comparison (K1) and "
+        "cannot identify member-selection value.",
         "Prophet plans inside leading sectors did better than plans outside them in this window "
         f"(K7 {_pp(k['K7']['ann_diff'])}/yr annualised, Holm p {k['K7']['p_holm']:.2f}); this is not significant"
         + (" and its largest contributor is the same single name." if
@@ -154,12 +171,23 @@ def plain_words(a: dict) -> tuple[list[str], list[str]]:
         f"Short sample: one {a['window']['sessions']}-session window (SPY {_pp(a['window']['spy_total_return'])}); "
         "no rebound or crash regime was observed.",
         "Annualised differentials from 63 daily returns are very noisy; read total-window differences and their intervals.",
+        f"Population (deviation D5): {pop['era_plans_excluded']} outage-reconstructed plans "
+        f"({pop['of_which_replayed_receipted_bake']} receipted replays, "
+        f"{pop['of_which_synthetic_board_reconstructions']} synthetic-board reconstructions) are excluded because "
+        "their earliest auditable availability is after their nominal publication session; the correction was made "
+        "after outcomes were seen, follows a rule that predates the evaluation, and lowers the headline.",
+        "X6 is an exposure-weight arithmetic reference, not a selection-matched comparator: it matches only risky "
+        "weight, so K2 nearly repeats K1. A comparator matched on eligible cohort, concentration, sector/factor "
+        "exposure, timing and costs requires a new pre-declared protocol; X6 is not replaced retrospectively.",
+        a["population"]["mrna"]["price_authentication"] + "; it affects any population that admits the replayed plans.",
         "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; "
         f"{len(a['coverage']['member_universe_missing_price_files'])} point-in-time members had no price file and were excluded.",
         "Sector labels are current-basis GICS, not the classification in force at each date.",
         "Prophet plans are read from the 2026-11-09 plan snapshot, not each plan's as-published bytes; entries use the "
         "publication clock and close-only fills, so results differ from the plan record's own same-bar outcomes.",
-        "Model book: equal weight across open published plans. It is not user holdings, a portfolio recommendation or sizing advice.",
+        "Model book: equal weight across open positions (per position, not per distinct ticker; no same-ticker "
+        "overlaps occur in this sample, so the two coincide here). It is not user holdings, a portfolio "
+        "recommendation or sizing advice.",
         "The event-study date-cluster intervals treat publication dates as independent although nearby dates share "
         "overlapping market paths, so those intervals are likely too narrow.",
         "Issuer-excluded peer counts are unavailable: identity is the listing ticker only.",
@@ -198,6 +226,15 @@ def main(argv=None) -> int:
         {"id": "D4", "kind": "presentation", "when": "after outcome access",
          "what": "event-study horizons with fewer than 5 distinct publication dates are marked status=too_few_dates",
          "why": "H=63 matured for a single publication date; a one-cluster bootstrap interval is degenerate and must not be displayed as uncertainty"},
+        {"id": "D5", "kind": "population_correction", "when": "after outcome access (2026-11-10)",
+         "what": None,   # filled in below, once the before/after numbers are computed
+         "why": "the runner had treated backfilled plans as if historically published although their earliest auditable "
+                "availability is their backfill receipt, after their nominal publication session (e.g. MRNA-BULL-20260616 "
+                "entered at the 2026-08-10 close although instantiated 2026-08-11T05:32Z). research/PROPHET_OUTAGE_BACKFILL_2026_08.md "
+                "forbids presenting reconstructed picks as live historical calls; that rule predates this evaluation. "
+                "Correction made after outcomes were seen and it lowers the headline. Source: independent review "
+                "REVIEW_beta_evaluation.md (sha256 6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a), "
+                "BLOCKER finding, accepted by the programme CEO."},
     ]
 
     prices_dir = Path(args.prices_dir or (ROOT / "data/yahoo" if (ROOT / "data/yahoo/SPY.parquet").exists()
@@ -235,6 +272,39 @@ def main(argv=None) -> int:
     sector_of_ticker = {tk: sector_map.get(lab) for tk, lab in pit_label.items() if sector_map.get(lab)}
 
     era = [p for p in plans if p.get("selection_era") == ev.INCUMBENT_ERA]
+
+    # ── origination cohorts, detected from the data (deviation D5) ────────────────
+    # Non-live (outage-backfilled) plans may not be presented as live historical
+    # calls (research/PROPHET_OUTAGE_BACKFILL_2026_08.md). The stamped
+    # origination_mode set must equal the disclosure artifact's minted set in BOTH
+    # directions; a mismatch is a data defect, not a judgment call.
+    bf_disc = json.loads((ROOT / "data/prophet/backfill_disclosures.json").read_text())
+    window_kind = {w["id"]: w.get("kind") for w in bf_disc["windows"]}
+    minted: dict[str, str] = {}      # plan_id -> window kind (replay | reconstruction)
+    for w in bf_disc["backfills"]:
+        for m in w["minted"]:
+            minted[m["plan_id"]] = window_kind.get(w["id"], w.get("kind"))
+    stamped = {p["id"] for p in plans if ev.is_backfilled(p)}
+    if stamped != set(minted):
+        raise SystemExit(f"origination receipts disagree with stamped plans: "
+                         f"stamped-not-minted={sorted(stamped - set(minted))} "
+                         f"minted-not-stamped={sorted(set(minted) - stamped)}")
+    # every stamped plan must carry its backfill execution receipt
+    missing_receipt = [p["id"] for p in plans if ev.is_backfilled(p) and not p.get("backfill_executed_at")]
+    if missing_receipt:
+        raise SystemExit(f"backfilled plans without backfill_executed_at receipt: {missing_receipt}")
+    era_ids = {p["id"] for p in era}
+    not_live = frozenset(stamped & era_ids)                     # primary-population exclusions
+    replay_ids = {pid for pid, kind in minted.items() if kind == "replay"}
+    recon_ids = {pid for pid, kind in minted.items() if kind != "replay"}
+    replay_avail = {p["id"]: ev.auditable_first_availability(p) for p in era
+                    if p["id"] in replay_ids}
+    by_mode: dict[str, int] = {}
+    for p in era:
+        if ev.is_backfilled(p):
+            m = str(p.get("origination_mode"))
+            by_mode[m] = by_mode.get(m, 0) + 1
+
     plan_etf, disagreements, unmapped = {}, 0, 0
     for p in era:
         br = ((p.get("board_read") or {}).get("fields") or {}).get("sector") or {}
@@ -267,10 +337,20 @@ def main(argv=None) -> int:
     sw = ev.style_weights(rets.loc[pre[1:], ev.BENCH], rets.loc[pre[1:], list(ev.SECTOR_ETFS)])
     t4, t5, uni_audit = ev.targets_c4_c5(closes, raw, cal, first_decision, win1, act, sector_of_ticker, sw)
 
-    # Prophet positions
-    positions, excl, extra = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1)
+    # Prophet positions — primary population is LIVE-PUBLISHED plans only (deviation D5):
+    # the 16 outage-reconstructed era plans are excluded with reason not_live_origination.
+    positions, excl, extra = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1,
+                                                not_live_ids=not_live)
     pos_nc, excl_nc, _ = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1,
-                                            excluded_ids=corrected_ids)
+                                            excluded_ids=corrected_ids, not_live_ids=not_live)
+    # sensitivity (a): the 13 receipted replays admitted from the first session at/after
+    # their actual backfill_executed_at; the 3 synthetic-board reconstructions never admitted.
+    pos_s1, excl_s1, _ = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1,
+                                            not_live_ids=frozenset(recon_ids & era_ids),
+                                            avail_floor=replay_avail)
+    # superseded as-run population (the v1 population, retained verbatim; never the headline)
+    pos_asrun, _, extra_asrun = ev.build_positions(era, ledger, cal, closes, raw, plan_etf, win0, win1)
+    backfilled_entered_asrun = sorted({p.plan_id for p in pos_asrun} & not_live)
     subsets = {
         "C6_exact_incumbent_prophet": positions,
         "C7_independent_emergence": [p for p in positions if p.aligned is False],
@@ -422,10 +502,16 @@ def main(argv=None) -> int:
                                         "beta_vs_market": ev.point_metrics(r_drop, rm, rc)["beta_vs_market"]},
         }
 
-    # event study (policy-free, all era plans published in-window)
+    # event study (policy-free, LIVE-PUBLISHED era plans published in-window; D5)
     pub = extra["pub_sessions"]
     es = ev.event_study(pub, {p["id"]: p["asset"] for p in era}, plan_etf, closes, cal, win1, B, seed)
     for h, v in es.items():
+        if v.get("n_dates", 0) and v["n_dates"] < 5:
+            v["status"] = "too_few_dates"
+    # as-run event study retained for the superseded block (same seed -> v1 numbers)
+    es_asrun = ev.event_study(extra_asrun["pub_sessions"], {p["id"]: p["asset"] for p in era},
+                              plan_etf, closes, cal, win1, B, seed)
+    for h, v in es_asrun.items():
         if v.get("n_dates", 0) and v["n_dates"] < 5:
             v["status"] = "too_few_dates"
 
@@ -455,6 +541,153 @@ def main(argv=None) -> int:
             c3_total += 1
             if closes.at[end, s] / closes.at[x, s] < closes.at[end, ev.BENCH] / closes.at[x, ev.BENCH]:
                 c3_failed += 1
+
+    # ── deviation D5 blocks: origination population, sensitivity, superseded as-run ──
+    # sensitivity (a): replays admitted from their auditable availability (never the headline)
+    book_s1 = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(pos_s1, dates), tradable, bps(1.0))
+    r_s1 = book_s1.net.to_numpy()
+    vs_s1 = ev.bootstrap_vs(r_s1, rm, rm, rc, idx10)
+    mrna_s1 = next((p for p in pos_s1 if p.plan_id == "MRNA-BULL-20260616"), None)
+    mrna_asrun = next((p for p in pos_asrun if p.plan_id == "MRNA-BULL-20260616"), None)
+
+    # superseded as-run books: the v1 population, recomputed with the same pinned engine,
+    # seed, prices and costs so nothing is hidden and the numbers can be compared directly.
+    asrun_subsets = {
+        "C6_exact_incumbent_prophet": pos_asrun,
+        "C7_independent_emergence": [p for p in pos_asrun if p.aligned is False],
+        "C6A_context_aligned_prophet": [p for p in pos_asrun if p.aligned is True],
+    }
+    asrun_rows, asrun_books = {}, {}
+    for cid, ps in asrun_subsets.items():
+        b = ev.simulate_book(dates, rets, cash_r, ev.prophet_targets(ps, dates), tradable, bps(1.0))
+        asrun_books[cid] = b
+        r = b.net.to_numpy()
+        vs = ev.bootstrap_vs(r, rm, rm, rc, idx10)
+        asrun_rows[cid] = {
+            "positions": len(ps),
+            "total_net_return": ev.compound(r),
+            "excess_total_vs_spy": vs["total_diff"], "excess_total_ci95": vs["total_diff_ci95"],
+            "ann_excess_vs_spy": vs["ann_diff"], "ann_excess_ci95": vs["ann_diff_ci95"],
+            "beta_vs_market": ev.point_metrics(r, rm, rc)["beta_vs_market"],
+            "hit_rate_vs_spy": ev.position_hits(ps, closes),
+        }
+    inv6_asrun = asrun_books["C6_exact_incumbent_prophet"].invested.to_numpy()
+    rx6_asrun = inv6_asrun * rm + (1 - inv6_asrun) * rc
+    k1_asrun = ev.bootstrap_vs(asrun_books["C6_exact_incumbent_prophet"].net.to_numpy(),
+                               series["C1_passive_market"], rm, rc, idx10)
+    k2_asrun = ev.bootstrap_vs(asrun_books["C6_exact_incumbent_prophet"].net.to_numpy(), rx6_asrun, rm, rc, idx10)
+    k7_asrun = ev.bootstrap_vs(asrun_books["C6A_context_aligned_prophet"].net.to_numpy(),
+                               asrun_books["C7_independent_emergence"].net.to_numpy(), rm, rc, idx10)
+    exec_by_kind: dict[str, set] = {}
+    for p in era:
+        if ev.is_backfilled(p):
+            exec_by_kind.setdefault(minted[p["id"]], set()).add(str(p["backfill_executed_at"]))
+
+    population = {
+        "primary": "live-published incumbent-era plans only (deviation D5): every C6/C7/C6A position, "
+                   "event-study plan, attribution leg, coverage count and contrast in this artifact uses this population",
+        "excluded_cohort": {
+            "reason": ev.NOT_LIVE_EXCLUSION_REASON + ": outage-reconstructed plans are not live historical "
+                      "publications and may never be presented as live historical calls "
+                      "(research/PROPHET_OUTAGE_BACKFILL_2026_08.md)",
+            "detection": "plan rows' origination_mode startswith outage_backfill, each carrying a "
+                         "backfill_executed_at receipt, cross-checked in both directions against the minted "
+                         "sets in data/prophet/backfill_disclosures.json; the run refuses on any disagreement; "
+                         "no hard-coded id list",
+            "era_plans_excluded": len(not_live),
+            "of_which_replayed_receipted_bake": len(replay_ids & era_ids),
+            "of_which_synthetic_board_reconstructions": len(recon_ids & era_ids),
+            "origination_mode_counts": by_mode,
+            "backfill_executed_at_by_kind": {k: sorted(v) for k, v in exec_by_kind.items()},
+            "plan_ids": sorted(not_live),
+            "would_have_entered_positions_as_run": len(backfilled_entered_asrun),
+            "would_have_entered_ids_as_run": backfilled_entered_asrun,
+        },
+        "mrna": {
+            "note": "MRNA-BULL-20260616 (origination_mode outage_backfill_2026_08_09, instantiated "
+                    "2026-08-11T05:32:28Z) is NOT in the primary book: as run it entered at the 2026-08-10 "
+                    "close, a session before it existed for any user.",
+            "as_run_entry": str(mrna_asrun.entry.date()) if mrna_asrun else None,
+            "in_sensitivity_a": mrna_s1 is not None,
+            "sensitivity_a_entry": str(mrna_s1.entry.date()) if mrna_s1 else None,
+            "price_authentication": "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and "
+                                    "adjusted closes agree; volume 199,252,300) is present only in the single "
+                                    "price cache used by this runner and is not authenticated by any second source",
+        },
+        "review": {"file": "REVIEW_beta_evaluation.md (independent scientific review, 2026-11-10)",
+                   "sha256": "6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a"},
+    }
+
+    sensitivity = {
+        "label": "SENSITIVITY — separately labelled, never the headline; descriptive only (L0)",
+        "backfill_replays_admitted_after_availability": {
+            "definition": f"the {len(replay_ids & era_ids)} receipted replays of the 2026-08-09 bake admitted "
+                          f"from the first session at/after their actual backfill_executed_at "
+                          f"({sorted(exec_by_kind.get('replay', set()))[0] if exec_by_kind.get('replay') else 'n/a'}); "
+                          f"the {len(recon_ids & era_ids)} synthetic-board reconstructions "
+                          f"({', '.join(sorted(recon_ids & era_ids))}) never admitted",
+            "excluded_from_this_variant": excl_s1,
+            "positions": len(pos_s1),
+            "total_net_return": ev.compound(r_s1),
+            "excess_total_vs_spy": vs_s1["total_diff"], "excess_total_ci95": vs_s1["total_diff_ci95"],
+            "ann_excess_vs_spy": vs_s1["ann_diff"], "ann_excess_ci95": vs_s1["ann_diff_ci95"],
+            "beta_vs_market": ev.point_metrics(r_s1, rm, rc)["beta_vs_market"],
+            "mean_invested": float(book_s1.invested.mean()),
+            "hit_rate_vs_spy": ev.position_hits(pos_s1, closes),
+        },
+        "superseded_as_run": {
+            "reason": "v1 as-run population included the 16 outage-reconstructed plans as if historically "
+                      "published; superseded by the deviation-D5 primary correction, which lowers the headline. "
+                      "Retained verbatim so nothing is hidden; never render as the current result.",
+            "same_engine_seed_prices_costs": True,
+            "C6_exact_incumbent_prophet": asrun_rows["C6_exact_incumbent_prophet"],
+            "C7_independent_emergence": asrun_rows["C7_independent_emergence"],
+            "C6A_context_aligned_prophet": asrun_rows["C6A_context_aligned_prophet"],
+            "contrasts": {
+                "K1_C6_minus_C1": k1_asrun, "K2_C6_minus_X6": k2_asrun, "K7_C6A_minus_C7": k7_asrun,
+            },
+            "attribution_C6": ev.attribution_bridge(asrun_books["C6_exact_incumbent_prophet"], rets, cash_r,
+                                                    ev.asset_sector_map(asrun_subsets["C6_exact_incumbent_prophet"])),
+            "event_study_h21": es_asrun["21"],
+            "event_study_h42": es_asrun["42"],
+        },
+    }
+
+    # fill D5's what with the concrete before -> after numbers
+    d5 = next(d for d in deviations if d["id"] == "D5")
+    c6_now = next(r for r in comp_rows if r["id"] == "C6_exact_incumbent_prophet")
+    a6_old = asrun_rows["C6_exact_incumbent_prophet"]
+
+    def _p4(x):
+        return f"{x * 100:+.4f}%"
+
+    def _p4pp(x):
+        return f"{x * 100:+.4f} pp"
+
+    def _ci4(c):
+        return f"[{c[0] * 100:+.3f}, {c[1] * 100:+.3f}]"
+
+    d5["what"] = (
+        f"primary population corrected to live-published plans only: {len(not_live)} outage-reconstructed "
+        f"incumbent-era plans ({len(replay_ids & era_ids)} receipted replays of the 2026-08-09 bake instantiated "
+        f"2026-08-11T05:32:28Z; {len(recon_ids & era_ids)} synthetic-board reconstructions of the never-published "
+        f"2026-08-11 board executed 2026-08-13T13:31:33Z) excluded from C6/C7/C6A, the all-published-plans event "
+        f"study, attribution, coverage counts and every contrast using them (reason "
+        f"{ev.NOT_LIVE_EXCLUSION_REASON}, detected from origination_mode/backfill_executed_at and the disclosure "
+        f"receipts, never a hard-coded id list). Before -> after: C6 total {_p4(a6_old['total_net_return'])} -> "
+        f"{_p4(c6_now['total_net_return'])}; C6 vs SPY {_p4pp(a6_old['excess_total_vs_spy'])} -> "
+        f"{_p4pp(c6_now['vs_passive_market']['total_diff'])} (CI {_ci4(a6_old['excess_total_ci95'])} -> "
+        f"{_ci4(c6_now['vs_passive_market']['total_diff_ci95'])} pp); C6 positions {a6_old['positions']} -> "
+        f"{c6_now['sample']['positions']}; K1 {_p4pp(k1_asrun['ann_diff'])} -> "
+        f"{_p4pp(contrasts['K1']['ann_diff'])}/yr; K2 {_p4pp(k2_asrun['ann_diff'])} -> "
+        f"{_p4pp(contrasts['K2']['ann_diff'])}/yr; K7 {_p4pp(k7_asrun['ann_diff'])} -> "
+        f"{_p4pp(contrasts['K7']['ann_diff'])}/yr; event study H=21 "
+        f"{_p4pp(es_asrun['21']['excess_vs_spy']['mean'])} -> {_p4pp(es['21']['excess_vs_spy']['mean'])} "
+        f"(n {es_asrun['21']['excess_vs_spy']['n']} -> {es['21']['excess_vs_spy']['n']}, dates "
+        f"{es_asrun['21']['n_dates']} -> {es['21']['n_dates']}). The superseded population is retained verbatim "
+        f"under sensitivity.superseded_as_run; sensitivity (a) admits the {len(replay_ids & era_ids)} replays only "
+        f"from their auditable availability and admits the synthetic-board reconstructions never."
+    )
 
     code_commit = git("rev-parse", "HEAD")
     dirty = git("status", "--porcelain", "--", "engine/prophet_beta_evaluation.py",
@@ -503,10 +736,13 @@ def main(argv=None) -> int:
                                        "c3_minus_reference": {k: k3x[k] for k in ("ann_diff", "ann_diff_ci95", "p_one_sided")}},
         "attribution": attribution,
         "event_study": {"ruler": "engine.grading.forward_metrics next-bar fill; fixed horizons in sessions; policy-free",
-                        "population": "all incumbent-era plans with a publication session in the window (entered or not)",
-                        "plans": len(pub), "horizons": es},
+                        "population": "all LIVE-PUBLISHED incumbent-era plans with a publication session in the window "
+                                      "(entered or not); outage-reconstructed plans excluded (deviation D5)",
+                        "plans": len(pub), "excluded_backfilled_plans": len(not_live), "horizons": es},
         "stability_halves": halves,
         "post_hoc_diagnostics": diagnostics,
+        "population": population,
+        "sensitivity": sensitivity,
         "failed_leaders": {"c3_sector_picks": c3_total, "lagged_spy_over_hold": c3_failed},
         "rebounds": {"status": "not_evaluable",
                      "reason": "window holds no SPY drawdown deep enough for a rebound test (see window.spy_max_drawdown)"
