@@ -120,6 +120,116 @@ source/PR evidence, not in a parallel memory service. This reduces
 frontier-context churn; it does **not** guarantee a model never compacts.
 A fresh chat cannot inherit or transfer a live worker lease.
 
+## Operating deputy: run the control loop one tier below the principal
+
+Chairman direction 2026-11-11, after the first use in the Sector Intelligence
+programme. This section changes **where work happens**, not who may do what:
+every admission, review, hold, merge, consent and human gate is unchanged, and
+it creates no second team, no new root and no new START.
+
+**Why.** A principal's cost is context size times turn count. In an
+orchestrated mission most principal turns are not decisions: worker completion
+notices, CI and merge reads, wake polls, re-briefs after a stall. Each one is
+billed at the principal's full context. Move the loop down one tier and keep
+the decisions at the top.
+
+```text
+Chairman
+  Principal (Fable thread CEO)   mission, frozen specs and limits, reserved
+                                 decisions, cross-programme agreements,
+                                 acceptance, reports to the Chairman
+    Operating deputy (ONE Opus thread, long-lived)
+                                 decomposition, worker briefs, worker returns,
+                                 local repair, CI and merge follow-through,
+                                 integration, proof
+      Workers per current routing, and a further suborchestrator only for a
+      separable domain
+```
+
+The principal may still start a worker directly when that worker's return is
+itself an input to a principal decision (an independent review it will
+adjudicate, an analysis feeding a ruling). Everything else starts below the
+deputy.
+
+1. **One deputy per mission, one thread, same original root.** It is a
+   suborchestrator that owns outcomes and solves problems locally. A layer that
+   only forwards messages is not this pattern and should be removed.
+2. **State lives on disk, not in either context.** A standing brief (mission,
+   limits verbatim, lanes, the reserved list, routing, file paths), numbered
+   ruling files that the brief indexes, and a state file the deputy rewrites at
+   every wake. A successor must be able to take over from those files alone.
+3. **Worker returns go to the deputy.** Nothing wakes the principal except an
+   escalation line, a deputy digest, or the principal's own long-interval
+   fallback wake.
+4. **Decision rights.** The deputy decides, and records as `DECIDED:` in its
+   state file, anything reversible inside the frozen spec and limits: worker
+   choice and routing, re-briefs, repair order, check re-runs, sequencing,
+   test and registration repairs under the stated rules, and any act a ruling
+   pre-authorizes. Reserved to the principal: a change to scope, spec,
+   acceptance or limits; any irreversible or outward effect not pre-authorized
+   (releasing a hold, arming the top of a stack, a migration, a deploy, a
+   secret, a message to another programme or to the Chairman); accepting a
+   known defect or weakening a check; a conflict between two rulings or two
+   owners; scarce capacity beyond what a ruling allows; `EFFECT_UNKNOWN`;
+   anything a human must do.
+5. **Escalation format.** One message of at most about 150 words, detail in a
+   file: `DEPUTY: DECISION NEEDED #n - <question>. Options: A ...; B ....
+   Recommend: <A|B> because .... Evidence: <path, PR at sha, file:line>.
+   Blocks: <lane>; other lanes continue. Default at <time>: <option|hold>.`
+   or `DEPUTY: BLOCKER #n - ...`. A default on silence is allowed only for a
+   reversible choice. One blocked lane never stops the others.
+6. **The principal's side.** Answer with a numbered ruling file and one
+   message. Rule the class, not the instance, so the next similar case does
+   not come up. Read the named evidence itself before any release or
+   irreversible decision; a summary is never enough for those. Do not do the
+   deputy's reads for it.
+7. **The deputy obeys the same context economy.** One-line worker returns, no
+   logs or diffs in its own context (cheap readers do the reading), waits on
+   scheduled wakes and never by polling. Moving the grind to an Opus thread
+   that rides a large context saves nothing.
+8. **Choose the shape by the mission, not by habit.**
+
+   | Mission | Shape |
+   |---|---|
+   | One task, or fewer than about ten worker returns | No deputy: one session and its workers |
+   | Many returns but mostly waiting (CI, merges, nightly proofs), few judgment calls | Watch-only deputy on a cheap model: it watches, restarts and reports, and escalates every judgment |
+   | Many lanes with repairs and trade-offs | Operating deputy on Opus with the decision rights of item 4 |
+   | A separable domain with its own workers (another repository, a research track) | A domain lead under the deputy: same rules, narrower grant |
+
+   The deputy's model follows the decisions it is trusted with, not its rank.
+   **Same-model pairs.** The gain has two parts: a price gap between the
+   tiers, and a small principal context that holds direction while the
+   deputy's context absorbs operations. A deputy on the principal's own model
+   keeps only the second part, so it pays only on a mission of many hours and
+   many lanes. A cheap principal with a cheap deputy is not a shape to use: if
+   the mission needs direction-setting judgment, put a stronger model at the
+   top; if it does not, run it flat.
+   **Principal model.** A Fable principal is for a mission whose judgment is
+   the deliverable (a protocol, an agreement with another programme, a release
+   with real risk). Other missions take an Opus principal, flat or with a
+   deputy by the table above.
+   **Independent review reports to the decider.** A review that gates a
+   release or an acceptance returns to whoever makes that decision, never to
+   the lead whose work it checks.
+   **Depth.** At most three levels below the principal (deputy, domain lead,
+   worker). Every level owns decisions; none only forwards.
+9. **Failure handling.** The principal keeps one fallback wake that reads the
+   deputy's state file. A silent deputy is restarted by a message in its own
+   thread. A replacement starts from the same files; never run two deputies on
+   one mission.
+10. **What never moves down.** Work that is the principal's own judgment
+    (protocol design, an agreement with another programme, taste) stays with
+    the principal whatever the shape.
+11. **Check that it helped.** Count principal turns per accepted outcome. If
+    escalations exceed about a quarter of the deputy's runs, its decision
+    rights or brief are too narrow: widen them with one ruling instead of
+    answering case by case.
+
+First use, for calibration only: a GLM deputy in the Sector Intelligence
+programme on 2026-11-11 took about 60 runs and sent 7 escalations, answered by
+9 rulings. Several of those escalations were reversible choices that item 4
+now leaves with an Opus deputy.
+
 ## Admission and proof ruler
 
 - Use actual **ready and non-overlapping** work, provider/model economics,
