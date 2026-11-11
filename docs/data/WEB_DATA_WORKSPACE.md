@@ -196,3 +196,51 @@ Source tests and a real source-checkout dossier are not installation. The accept
 An optional paired `filings_ref` / `filings_sha256` on `history_dossier` binds a retained `earnings_8k_dates.parquet`. `filings_offset` counts matched filing records (50 per page), not source row positions. All 8 source fields and canonical CIK/accession keys are validated using the existing Earnings filing-identity owner. Source ticker labels are not promoted to historical security identities. Filing date, report date and source-claimed acceptance time remain distinct; no earnings values, consensus, surprise or causal explanation is inferred.
 
 The same batched decoder serves CLI dossiers and an explicitly selected private offline browser timeline. Both declared Parquet sizes and observed logical Arrow bytes are bounded; this is not a peak-process-memory guarantee. Default readers never open outcome partitions, and the original DataWorkspace descriptor/mutation guards remain in charge of transport reads. Source capture and private export are distinct from public publication, complete historical coverage and strict point-in-time eligibility.
+
+## Tiingo statement comparisons
+
+The additive `tiingo_compare_statements` action composes the existing research
+reader over two explicitly selected immutable captures in the host's already
+bound canonical Tiingo archive. Check installed capabilities before using it;
+source availability alone does not establish an installed action. No ingestion,
+provider request, credential access, archive write or root binding is added.
+
+```json
+{"action":"tiingo_compare_statements","root":"tiingo","vendor_symbol":"jpm","as_reported_capture":"2026-10-12:<exact 64-hex reported receipt ID>","restated_capture":"2026-10-12:<exact 64-hex restated receipt ID>","start":"2023-01-01","end":"2026-10-09","observed_before":"2026-10-13T00:00:00Z","acknowledge_hindsight":true,"offset":0,"limit":20}
+```
+
+Replace the example references with retained source receipts. The first capture
+must have the original `asReported=true` request dimension and the second
+`asReported=false`. A ticker or `latest` alias cannot select a capture. Date
+bounds filter vendor release labels; `observed_before` limits local capture
+clocks and does not prove the historical publication or availability time.
+
+The reader validates both captures before pagination, with a 20,000-row cap per
+capture and on the combined comparison keys. Each response contains at most
+50 fiscal-period/section/metric keys and retains the existing 128 KiB response
+cap; reduce `limit` when a page exceeds that cap. Use `pagination.next_offset`
+and repeat both exact capture references and the same bounds for each page.
+Counts cover the complete bounded comparison, while `comparison_rows` contains
+only the requested page. Multiple release claims stay ambiguous, vendor
+permanent-ID disagreements stay conflicts, and missing metrics stay missing.
+Original source rows, receipts, capture clocks and vendor release labels remain
+attached to every returned comparison.
+
+Equal or changed vendor values do not prove a restatement event, materiality,
+common units, canonical historical identity or complete statement history.
+Historical known-at, canonical identity, point-in-time eligibility and
+redistribution admission remain false. This action is retrospective research;
+it does not promote a local manifest into any of those authorities.
+
+The immutable runtime export must include `lib/dataos/tiingo_workspace.py`, the
+existing Tiingo reader/archive dependencies and
+`scripts/tiingo_research_query.py` from the accepted merged source. Keep the
+current host binding and launcher integrity controls. Verify one actual bounded
+comparison and its refusal behavior from the export before selecting it, then
+verify the same action through the installed command.
+
+## Historical transcript source projection
+
+`history_dossier` can optionally compose exact `stored_report_date` call metadata using paired `transcripts_ref`/`transcripts_version`. `history_transcript` retrieves bounded original paragraph fragments by same-version source row and metadata digest. Neither operation uses a new root, collector, cache, model, role resolver or transcript store. `DataWorkspace._file` supplies and revalidates every descriptor; full-file content hashes are not inferred from statv1 tokens or selected-record hashes.
+
+The body reader intentionally does not call Terminal transcript intake or the held TFG/Q&A compiler: source speaker text remains an unverified label and the output claims no roles, original availability, historical issuer mapping or market causation. An offline catalogue is a bounded metadata projection only. The current full source remains under its existing owner. Current Data & Lab statement comparisons, Lab runs and legacy history must remain separately verified during release selection.

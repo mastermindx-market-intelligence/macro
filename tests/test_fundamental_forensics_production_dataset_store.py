@@ -6,6 +6,7 @@ fallback from the conditional-write law fails loudly.
 """
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import json
 from datetime import datetime, timedelta, timezone
@@ -425,3 +426,77 @@ def test_statement_trees_role_is_additive_digest_bound_and_required_when_package
     store3.raw_put(row3["object_key"], bytes(tampered))
     with pytest.raises(PDS.ProductionDatasetError):
         PDS.load_latest_generation(store3, "ISS:US-XNAS-AAPL")
+
+
+# ---------------------------------------------------------------------------
+# A17: a failed component never completes a generation; a stale generation
+# never rewinds latest
+# ---------------------------------------------------------------------------
+
+
+class _ReadBackLiesStore(PDS.InMemoryStrictConditionalStore):
+    """Accepts every create but echoes different bytes for one key."""
+
+    def __init__(self, lying_key: str) -> None:
+        super().__init__()
+        self._lying_key = lying_key
+
+    def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
+        payload = super().get_bytes_strict_bounded(key, maximum_bytes)
+        if key == self._lying_key and payload:
+            return payload[:-1] + bytes([payload[-1] ^ 0x01])
+        return payload
+
+
+def _role_keys() -> dict[str, str]:
+    probe, publication = _publish()
+    generation = PDS.load_generation(probe, "mmx.issuer.fip1", publication.generation_id)
+    return {row["role"]: row["object_key"] for row in generation.manifest["objects"]}
+
+
+def _manifest_keys(store: PDS.InMemoryStrictConditionalStore) -> list[str]:
+    return [key for key in store.list_prefix("") if "/generations/" in key]
+
+
+def test_a17_component_collision_leaves_no_manifest_and_no_latest() -> None:
+    keys = _role_keys()
+    for role in ("ledger_json", "registry_json", "lineage_evidence_json"):
+        store = PDS.InMemoryStrictConditionalStore()
+        store.raw_put(keys[role], b'{"planted":"different bytes"}')
+        with pytest.raises(PDS.ProductionDatasetError, match="collision"):
+            PDS.publish_production_dataset(store, _material())
+        assert _manifest_keys(store) == [], role
+        assert store.get_bytes(PDS.production_latest_key("mmx.issuer.fip1")) is None, role
+        assert PDS.load_latest_generation(store, "mmx.issuer.fip1") is None, role
+
+
+def test_a17_read_back_mismatch_is_not_completion() -> None:
+    store = _ReadBackLiesStore(_role_keys()["entity_json"])
+    with pytest.raises(PDS.ProductionDatasetError, match="read-back mismatch"):
+        PDS.publish_production_dataset(store, _material())
+    assert _manifest_keys(store) == []
+    assert store.get_bytes(PDS.production_latest_key("mmx.issuer.fip1")) is None
+
+
+def test_a17_stale_generation_is_kept_by_id_but_never_rewinds_latest() -> None:
+    store, newer = _publish(_material(admitted_at=T_LATER))
+    with pytest.raises(PDS.ProductionDatasetError, match="cannot rewind"):
+        PDS.publish_production_dataset(store, _material(admitted_at=T_ADMITTED))
+    latest = PDS.load_latest_generation(store, "mmx.issuer.fip1")
+    assert latest is not None and latest.generation_id == newer.generation_id
+    # The stale generation's objects and manifest were written and verified
+    # before the pointer refused, so it stays loadable by exact id for audit.
+    stale_id = PDS.publish_production_dataset(
+        PDS.InMemoryStrictConditionalStore(), _material(admitted_at=T_ADMITTED), skip_pointer=True
+    ).generation_id
+    assert PDS.load_generation(store, "mmx.issuer.fip1", stale_id).generation_id == stale_id
+    assert stale_id != newer.generation_id
+
+    # An equal admission clock is stale too: a different generation admitted
+    # at the same instant cannot replace latest.
+    store2, first = _publish(_material(admitted_at=T_ADMITTED))
+    rival = dataclasses.replace(_material(admitted_at=T_ADMITTED), source_recorded_at_floor=T_FLOOR + timedelta(days=1))
+    with pytest.raises(PDS.ProductionDatasetError, match="cannot rewind"):
+        PDS.publish_production_dataset(store2, rival)
+    latest2 = PDS.load_latest_generation(store2, "mmx.issuer.fip1")
+    assert latest2 is not None and latest2.generation_id == first.generation_id

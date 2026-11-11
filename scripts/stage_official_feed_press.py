@@ -1,5 +1,5 @@
 """scripts/stage_official_feed_press.py — private staging for ONE qualified
-official-feed (OCC) Press candidate.
+official-feed (OCC or DOJ) Press candidate.
 
 One explicit invocation stages exactly one already-qualified official candidate
 through the incumbent Press runner.  This is a thin caller, not a second
@@ -56,6 +56,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -64,7 +65,7 @@ _REPO = Path(__file__).resolve().parent.parent
 # An existing later entry does not protect against an earlier foreign package.
 sys.path.insert(0, str(_REPO))
 
-from engine.press import desk_planner, writer  # noqa: E402
+from engine.press import desk_planner, validators, writer  # noqa: E402
 from engine.press.official_feed_candidate import plan_official_feed_candidate  # noqa: E402
 # The incumbent runner owns the staging rail and its small shared helpers; a
 # thin caller imports them rather than forking copies that can drift.
@@ -177,9 +178,10 @@ def _attempt_day(row: dict, *, ledger: bool) -> str:
     Legacy records without an instant use their explicit booked date. Never
     replace a malformed clock with a date that would silently free capacity.
     """
-    instant = row.get("ts" if ledger else "staged_at")
+    key = "ts" if ledger else "staged_at"
+    instant = row.get(key)
     try:
-        if instant:
+        if key in row:
             stamp = datetime.fromisoformat(instant.replace("Z", "+00:00"))
             if stamp.tzinfo is None:
                 raise ValueError("timezone required")
@@ -211,6 +213,7 @@ def _same_source(row: dict, plan: dict) -> bool:
 
 def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
                                   qualification_path, qualification_sha256,
+                                  release_path=None, policy_path=None,
                                   now: datetime | None = None) -> dict:
     """Stage one qualified official-feed candidate as an ordinary Brief slot.
 
@@ -238,6 +241,7 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
         qualification_path=Path(qualification_path),
         qualification_sha256=str(qualification_sha256).lower(),
         root=root, as_of=moment.isoformat(), cfg=cfg,
+        release_path=release_path, policy_path=policy_path,
     )
     run_date = str(plan["validation_context"]["as_of"])
     identity = {
@@ -255,6 +259,18 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
         return {"staged": False, "rail": STAGE_RAIL, "reason": reason,
                 "run_date": run_date, "public_article_approved": False,
                 "allow_emit": False, **identity}
+
+    # A third-party-only candidate cannot satisfy the existing own-value gate.
+    # Refuse before reserving its immutable attempt or spending provider tokens.
+    context = plan["validation_context"]
+    available = {value for value, tier in validators.fact_tier_index(context)
+                 if tier == "first_party" and math.isfinite(value)}
+    if not available:
+        return _refuse("no usable first-party numeric context for the existing own-value gate")
+    minimum = int(context.get("min_anchored_receipts")
+                  or (cfg.get("validators") or {}).get("min_anchored_receipts") or 0)
+    if len(available) < minimum:
+        return _refuse(f"insufficient distinct first-party receipts ({len(available)} of {minimum})")
 
     # 2. Existing canonical coverage blocks the same source across dates and
     #    revisions — published first, then anything live in staging, with the
@@ -343,13 +359,15 @@ def stage_official_feed_candidate(root, cfg, *, feed_path, feed_sha256,
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
-        description="Privately stage ONE qualified official-feed (OCC) Press "
+        description="Privately stage ONE qualified official-feed (OCC or DOJ) Press "
                     "candidate through the incumbent runner. Never emits.")
     ap.add_argument("--feed", required=True, help="retained feed evidence file")
     ap.add_argument("--feed-sha256", required=True, help="SHA256 of the feed evidence")
     ap.add_argument("--qualification", required=True, help="retained qualification file")
     ap.add_argument("--qualification-sha256", required=True,
                     help="SHA256 of the qualification file")
+    ap.add_argument("--release", help="DOJ only: retained full release bound by qualification")
+    ap.add_argument("--policy", help="DOJ only: retained reuse policy bound by qualification")
     ap.add_argument("--root", default="", help="repo root override (tests)")
     ap.add_argument("--confirm-private-staging", action="store_true",
                     help="required acknowledgement: the calling principal authorizes "
@@ -386,6 +404,8 @@ def main(argv=None) -> int:
             feed_path=Path(args.feed), feed_sha256=args.feed_sha256,
             qualification_path=Path(args.qualification),
             qualification_sha256=args.qualification_sha256,
+            release_path=Path(args.release) if args.release else None,
+            policy_path=Path(args.policy) if args.policy else None,
         )
     except ValueError as exc:
         # Every planning refusal is a ValueError carrying its own reason.  The

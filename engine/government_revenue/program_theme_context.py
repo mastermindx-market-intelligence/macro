@@ -60,6 +60,9 @@ class OwnerSnapshot:
   if self.owner_kind=='program_ontology':
    from engine.government_revenue.program_ontology import load_program_ontology_graph
    load_program_ontology_graph(payload)
+  elif self.owner_kind=='program_dossier':
+   from engine.government_revenue.program_dossier import is_valid_program_dossier_payload
+   if not is_valid_program_dossier_payload(payload):raise ValueError('program_dossier_owner_invalid')
   elif self.owner_kind=='defense_economics':
    from engine.government_revenue.defense_economics import validate_defense_economics_payload
    validate_defense_economics_payload(payload)
@@ -111,10 +114,17 @@ def _ref(ref,rail,owners,cutoff):
  # Restrict economics to actual admitted fact IDs; profile text is not a fact.
  if owner.owner_kind=='budget' and rail=='funding_stage':
   if not ref['pointer'].startswith('/documents/') or not isinstance(node,dict) or node.get('document_stage')!='allocation_plan' or 'amounts' not in node or row.get('document_kind')!='legislative_allocation_spend_plan':raise ValueError('allocation_context_reference_required')
- if owner.owner_kind=='program_ontology' and rail=='funding_stage' and (not ref['pointer'].startswith('/evidence/') or not isinstance(node,dict) or node.get('evidence_class')!='official_alliance_policy' or node.get('claim_scopes')!=['policy_context']): raise ValueError('policy_context_reference_required')
+ agreement_ref=owner.owner_kind=='program_ontology' and ref['pointer'].startswith('/public_agreement_assertions/')
+ if agreement_ref:
+  from engine.government_revenue import program_ontology as po
+  if len(ref['pointer'].split('/'))!=3 or not isinstance(node,dict) or node.get('id')!=ref['row_id'] or not any(r['id']==node['id'] for r in po.current_public_agreement_rows(p,analysis_as_of=cutoff)):raise ValueError('agreement_reference_not_current')
+ if owner.owner_kind=='program_ontology' and rail=='funding_stage' and not agreement_ref and (not ref['pointer'].startswith('/evidence/') or not isinstance(node,dict) or node.get('evidence_class')!='official_alliance_policy' or node.get('claim_scopes')!=['policy_context']): raise ValueError('policy_context_reference_required')
  if owner.owner_kind=='program_ontology' and rail=='exposure' and not ref['pointer'].startswith('/role_assertions/'): raise ValueError('documentary_participation_required')
  if owner.owner_kind=='identity_atlas' and rail=='exposure' and '/entities/' not in ref['pointer']: raise ValueError('reviewed_entity_reference_required')
- if owner.owner_kind=='program_ontology' and rail=='next_event':
+ if agreement_ref and rail=='next_event':
+  year=node.get('expected_launch_year')
+  if isinstance(year,bool) or not isinstance(year,int) or year<cutoff.year:raise ValueError('past_agreement_target')
+ if owner.owner_kind=='program_ontology' and rail=='next_event' and not agreement_ref:
   if not ref['pointer'].startswith('/milestones/') or not isinstance(node,dict):raise ValueError('milestone_reference_required')
   end=node.get('date') if node.get('temporal_kind')=='date' else (node.get('window') or {}).get('to')
   if not isinstance(end,str) or datetime.fromisoformat(end).date()<cutoff.date():raise ValueError('past_milestone_as_next_event')
@@ -178,12 +188,26 @@ def compose_program_theme_context(assignments,*,owners,generated_at,as_of):
      elif kind=='program_ontology' and node.get('evidence_class')=='official_alliance_policy' and node.get('claim_scopes')==['policy_context']:classes.append('policy_commitment_only')
      else:raise ValueError('mixed_documentary_reference_class_invalid')
     if set(classes)!={'congressional_notification_only','policy_commitment_only'}:raise ValueError('mixed_documentary_classes_required')
+   # One legislative allocation plan plus one current prototype agreement; both
+   # stay visibly partial with their own amounts and no summation.
+   staged_mixed=item['reason_code']=='mixed_allocation_and_prototype_agreement'
+   if staged_mixed:
+    if theme!='golden_dome' or rail!='funding_stage' or item['state']!='partial':raise ValueError('mixed_allocation_agreement_scope_invalid')
+    classes=[]
+    for ref in refs:
+     row,node=_ref(ref,rail,owners,cutoff);kind=owners[ref['owner_key']].owner_kind
+     if kind=='budget' and row.get('document_kind')=='legislative_allocation_spend_plan' and isinstance(node,dict) and node.get('document_stage')=='allocation_plan':classes.append('allocation_plan_only')
+     elif kind=='program_ontology' and ref['pointer'].startswith('/public_agreement_assertions/'):classes.append('prototype_agreement_only')
+     else:raise ValueError('mixed_allocation_agreement_reference_class_invalid')
+    if len(classes)!=2 or set(classes)!={'allocation_plan_only','prototype_agreement_only'}:raise ValueError('mixed_allocation_agreement_classes_required')
    if item['state'] in ('supported','partial','stale') and not refs: raise ValueError('evidenced_rail_reference_missing')
    for ref in refs:
     row,node=_ref(ref,rail,owners,cutoff);used.add(ref['owner_key'])
-    if rail=='funding_stage' and owners[ref['owner_key']].owner_kind=='budget' and (item['state']!='partial' or item['reason_code']!='allocation_plan_only'):raise ValueError('allocation_stage_promotion')
+    if rail=='funding_stage' and owners[ref['owner_key']].owner_kind=='budget' and (item['state']!='partial' or item['reason_code'] not in ('allocation_plan_only','mixed_allocation_and_prototype_agreement')):raise ValueError('allocation_stage_promotion')
     if rail=='funding_stage' and owners[ref['owner_key']].owner_kind=='fms' and row.get('stage')=='congressional_notification' and (item['state']!='partial' or item['reason_code']!='congressional_notification_only' and not mixed):raise ValueError('notification_stage_promotion')
-    if rail=='funding_stage' and owners[ref['owner_key']].owner_kind=='program_ontology' and (item['state']!='partial' or item['reason_code']!='policy_commitment_only' and not mixed): raise ValueError('policy_commitment_stage_promotion')
+    agreement_ref=owners[ref['owner_key']].owner_kind=='program_ontology' and ref['pointer'].startswith('/public_agreement_assertions/')
+    if agreement_ref and (theme!='golden_dome' or rail not in ('funding_stage','next_event') or item['state']!='partial' or item['reason_code'] not in (('prototype_agreement_only','mixed_allocation_and_prototype_agreement') if rail=='funding_stage' else ('reported_launch_availability_target',))):raise ValueError('prototype_agreement_stage_promotion')
+    if rail=='funding_stage' and owners[ref['owner_key']].owner_kind=='program_ontology' and not agreement_ref and (item['state']!='partial' or item['reason_code']!='policy_commitment_only' and not mixed): raise ValueError('policy_commitment_stage_promotion')
     if rail=='economics' and owners[ref['owner_key']].owner_kind=='defense_economics':
      axis,_=_pointer(owners[ref['owner_key']].payload(),ref['pointer'].split('/facts/')[0])
      if axis['state']=='stale' and item['state'] in ('supported','partial'): raise ValueError('stale_finance_promotion')

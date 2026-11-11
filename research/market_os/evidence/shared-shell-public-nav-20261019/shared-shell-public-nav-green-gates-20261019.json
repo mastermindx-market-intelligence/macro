@@ -1,0 +1,99 @@
+{
+  "source_head": "da2104b788b9fd75475b149f40ede07845e1f80d",
+  "completed_at": "2026-10-19T03:43:33.223963+00:00",
+  "prior_python": {
+    "log": "/tmp/shared-shell-public-nav-green-python-injection-20261019.log",
+    "passed": 34
+  },
+  "prior_node": {
+    "log": "/tmp/shared-shell-public-nav-green-node-bridge-20261019.log",
+    "passed": 70,
+    "failed": 0,
+    "skipped": 0
+  },
+  "prior_full_site_publication_idempotence": {
+    "log": "/tmp/shared-shell-public-nav-injector-idempotence-20261019.log",
+    "html_files": 13039,
+    "documents": 13028,
+    "fragments": 11,
+    "changed": 0
+  },
+  "retained_source_checks": [
+    {
+      "name": "template-site-sync-project-env",
+      "argv": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.89,
+      "log": "/tmp/shared-shell-public-nav-template-site-sync-project-env-20261019.log",
+      "sha256": "66f2c3439a152ba48501fb7430a52091923a07c1213bcf4baa683326db3c8695",
+      "tail": "template\u2194site sync OK (129 pairs checked)\n"
+    },
+    {
+      "name": "git-diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.53,
+      "log": "/tmp/shared-shell-public-nav-git-diff-check-20261019.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail": ""
+    }
+  ],
+  "missing_dependency_refusal_retained": "/tmp/shared-shell-public-nav-template-site-sync-20261019.log",
+  "theme_files_unchanged_from_head": true,
+  "generated_source_boundary_receipt": "/tmp/shared-shell-public-nav-generated-only-reconciliation-20261019.json",
+  "tracked_changed": [
+    "site/about.html",
+    "site/baskets.html",
+    "site/baskets_china.html",
+    "site/canada.html",
+    "site/canada_stock.html",
+    "site/chat.html",
+    "site/china.html",
+    "site/china_lookup.html",
+    "site/china_special_situations.html",
+    "site/etfs.html",
+    "site/factors.html",
+    "site/flow_desk.html",
+    "site/flow_leaders.html",
+    "site/gex.html",
+    "site/glossary.html",
+    "site/hk_lookup.html",
+    "site/hk_stocks.html",
+    "site/index.html",
+    "site/intl_stock.html",
+    "site/macro.html",
+    "site/markets.html",
+    "site/news.html",
+    "site/ontology.html",
+    "site/options_screener.html",
+    "site/reference.html",
+    "site/reports.html",
+    "site/research_screener.html",
+    "site/sector_central.html",
+    "site/shared_shell.css",
+    "site/signal_lab.html",
+    "site/special_situations.html",
+    "site/stock.html",
+    "site/stocks/index.html",
+    "site/subsector_rotation.html",
+    "site/subsector_rotation_china.html",
+    "site/tech_lab.html",
+    "site/us_stocks.html",
+    "site/vector_allocation.html",
+    "templates/about.html",
+    "templates/chat.html",
+    "templates/index.html",
+    "templates/shared_shell.css",
+    "tests/js/shared_shell_bridge.test.cjs",
+    "tests/test_shared_shell_injection.py"
+  ],
+  "committed": false,
+  "pushed": false
+}

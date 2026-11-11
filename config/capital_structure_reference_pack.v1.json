@@ -1,7 +1,26 @@
 {
   "acceptance_rows": [
     "A07",
-    "A09"
+    "A09",
+    "A13",
+    "A33",
+    "A42"
+  ],
+  "closed_gaps": [
+    {
+      "closed_by": "EDRY",
+      "closed_on": "2026-10-19",
+      "gap_id": "foreign_issuer_f3_witness",
+      "note": "chosen as the first candidate in accession order passing every criterion; see the selection record",
+      "selection_record": "research/capital_structure/e2e_20261013/reference/G0_SELECTION.md"
+    },
+    {
+      "closed_by": "RPID",
+      "closed_on": "2026-10-19",
+      "gap_id": "held_out_pattern_witness",
+      "note": "chosen as the first candidate in accession order passing every criterion; the answer is sealed out of the repository",
+      "selection_record": "research/capital_structure/e2e_20261013/reference/G0_SELECTION.md"
+    }
   ],
   "fact_origins": {
     "adjudicated_gold": true,
@@ -13,18 +32,8 @@
   },
   "gaps": [
     {
-      "gap_id": "foreign_issuer_f3_witness",
-      "note": "No qualified foreign-issuer F-3 form/venue case yet; E0 did not guess one.",
-      "owed_by": "L0/T0 with one exact source packet"
-    },
-    {
-      "gap_id": "held_out_pattern_witness",
-      "note": "Held-out pattern case not yet nominated.",
-      "owed_by": "T0"
-    },
-    {
       "gap_id": "whk_replacement_issuer",
-      "note": "WHK no longer supplies an S-3-family case; old witness preserved, replacement not guessed.",
+      "note": "WHK no longer supplies an S-3-family case; old witness preserved, replacement not guessed. G0-S walked the deterministic candidate list (293 S-3/S-3/A issuers in the window): 60 candidates tested against SEC primary documents before the budget stop, with first-failure tally c1_nasdaq_domestic_issuer=16, c2_s3_exhibit_files_ex4_warrant_prefund_or_convertible_note=204 (183 by the accession inventory in the served universe, 21 by reading the EX-4.x documents), c3_424b_takedown_under_that_s3=22, c4_operand_spans_exercisable_shares_terms=1 (the only EX-4.x exhibit was a blank warrant form); 50 further candidates not tested (budget). No candidate passed every criterion, so the gap stays open with this failure list.",
       "owed_by": "L0/T0 with one exact source packet"
     },
     {
@@ -283,6 +292,77 @@
       "path": "tests/fixtures/capital_structure/source_store/sample_filing.txt",
       "provenance": "synthetic",
       "sha256": "1683d4cf84b1231e353b088dcf1d0804d5e92f58cef4e373e130bdea0f404515"
+    },
+    {
+      "accession": "0000919574-26-005806",
+      "allowed_source": "sec_edgar_public_filing",
+      "bytes": 1377,
+      "cik": "0001731388",
+      "consumers": [
+        "test_capital_structure_g0_reference.py"
+      ],
+      "details": {
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1731388/000091957426005806/p15057625_f-3.htm",
+        "document_name": "p15057625_f-3.htm",
+        "full_document_sha256": "d6050da3219bea1115b304a41ca92f6ea9780198a47a0b2ebaed3d11da6d6428",
+        "http_status": 200,
+        "retrieved_at": "2026-10-19T08:05:03Z"
+      },
+      "expectations": [
+        {
+          "claim": "EuroDry Ltd. (CIK 0001731388, Nasdaq, Marshall Islands) filed an F-3 (not F-3ASR) on 2026-08-27 (accession 0000919574-26-005806) whose prospectus invokes General Instruction I.B.5 and states, in its own text, the non-affiliate float of $65,613,529 as of August 25, 2026 and that no securities were offered under I.B.5 in the trailing twelve months; the I.B.5 baby-shelf cap is 65613529/3 = 21871176.33 USD (Decimal half-even to cents), bound to the two fixture spans",
+          "test": "tests/test_capital_structure_g0_reference.py::test_g0_foreign_f3_gold_binds_exact_spans"
+        }
+      ],
+      "filed": "2026-08-27",
+      "form": "F-3",
+      "gold_id": "gold:reference_g0:foreign_f3_ib5_baby_shelf",
+      "path": "tests/fixtures/capital_structure/reference/g0/foreign_f3_witness_edry_f3.txt",
+      "provenance": "real_edgar_g0",
+      "sha256": "8d2e041b99f775759df47ab22c4ddfe005ebb82251a7e38c2e843abd1cc7eb4a"
+    },
+    {
+      "accession": "0001104659-26-063928",
+      "allowed_source": "sec_edgar_public_filing",
+      "bytes": 2269,
+      "cik": "0001380106",
+      "consumers": [
+        "test_capital_structure_g0_reference.py",
+        "test_capital_structure_g0_verification.py"
+      ],
+      "details": {
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1380106/000110465926063928/tm2614072-1_424b5.htm",
+        "cutoff": "2026-05-19",
+        "document_name": "tm2614072-1_424b5.htm",
+        "full_document_sha256": "6e8b954f96e64e8ad1e1e8ed9b4da643ef4fd2e3021870c6b02e84a0586c2acd",
+        "http_status": 200,
+        "path_id": "held_out.ib6_headroom",
+        "retrieved_at": "2026-10-19T08:12:08Z",
+        "rule_id": "form_s3.I.B.6"
+      },
+      "expectations": [
+        {
+          "claim": "the held-out Rapid Micro Biosystems 424B5 supplement (filed on the cutoff date, registration statement ending in six-zero-eight-one) states the non-affiliate float with its measurement date and a trailing I.B.6 none-offered statement, both bound to fixture spans; the expected answer is sealed out of the repository before the G0-E lane launches and is compared only by the G0-V lane",
+          "test": "tests/test_capital_structure_g0_reference.py::test_g0_held_out_gold_is_sealed_without_an_answer"
+        }
+      ],
+      "filed": "2026-05-19",
+      "form": "424B5",
+      "gold_id": "gold:reference_g0:held_out_ib6_headroom",
+      "path": "tests/fixtures/capital_structure/reference/g0/held_out_pattern_witness_rpid_424b5.txt",
+      "provenance": "real_edgar_g0",
+      "sealed": true,
+      "sha256": "945085ad29cf03405cbae64e9c2561ddeec09d022321aa71923e743bc62511ca",
+      "held_out_result": {
+        "outcome": "typed_unavailable",
+        "reason": "before_first_bound_event",
+        "difference": null,
+        "conditional_arithmetic": "not_run",
+        "sealed_sha256": "6b0513dc75d7ea5578ed5dc3b960b20d3a5d580372ef74135f539e4a71c02b47",
+        "verified_on": "2026-10-19",
+        "verified_by": "tests/test_capital_structure_g0_verification.py",
+        "cutoff_instant": "2026-05-19T23:59:59Z"
+      }
     }
   ],
   "identities": [
@@ -300,7 +380,6 @@
       "fiscal_year_end": "0531",
       "former_names": [],
       "in_policy_form_counts": {
-        "424B5": 2,
         "S-3ASR": 3
       },
       "issuer_id": "sec:cik:0000001750",
@@ -325,6 +404,24 @@
       "registry_name": "AAR CORP",
       "replacement": null,
       "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "in_policy_form_counts_now": {
+          "S-3ASR": 3
+        },
+        "latest_in_policy_anchor_rederived": {
+          "S-3ASR": {
+            "accession": "0001104659-26-085644",
+            "filing_date": "2026-07-22"
+          }
+        },
+        "note": "anchors re-derived from the 2026-10-19 submissions index; unchanged from the E0 anchor",
+        "registry_name_now": "AAR CORP",
+        "tickers_now": [
+          "AIR"
+        ]
+      },
       "sic": "3720",
       "sic_description": "Aircraft & Parts",
       "source_ids": [
@@ -356,10 +453,6 @@
         }
       ],
       "in_policy_form_counts": {
-        "424B3": 21,
-        "424B5": 21,
-        "EFFECT": 10,
-        "POS AM": 1,
         "S-3": 6,
         "S-3/A": 1
       },
@@ -389,6 +482,29 @@
       "registry_name": "Clene Inc.",
       "replacement": null,
       "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "in_policy_form_counts_now": {
+          "S-3": 6,
+          "S-3/A": 1
+        },
+        "latest_in_policy_anchor_rederived": {
+          "S-3": {
+            "accession": "0001437749-25-028483",
+            "filing_date": "2025-09-05"
+          },
+          "S-3/A": {
+            "accession": "0001437749-23-027170",
+            "filing_date": "2023-09-29"
+          }
+        },
+        "note": "anchors re-derived from the 2026-10-19 submissions index; unchanged from the E0 anchor",
+        "registry_name_now": "Clene Inc.",
+        "tickers_now": [
+          "CLNN"
+        ]
+      },
       "sic": "2834",
       "sic_description": "Pharmaceutical Preparations",
       "source_ids": [
@@ -402,6 +518,7 @@
     },
     {
       "all_tickers": [
+        "IRLA",
         "QNCX"
       ],
       "archetype": "QNCX",
@@ -413,6 +530,11 @@
       ],
       "fiscal_year_end": "1231",
       "former_names": [
+        {
+          "from": "2022-08-09",
+          "name": "Quince Therapeutics, Inc.",
+          "to": "2026-10-09"
+        },
         {
           "from": "2016-01-05",
           "name": "Cortexyme, Inc.",
@@ -431,7 +553,7 @@
         "S-3ASR": 1
       },
       "issuer_id": "sec:cik:0001662774",
-      "label_drift": false,
+      "label_drift": true,
       "latest_in_policy_anchor": {
         "S-3": {
           "accession": "0001193125-26-328769",
@@ -446,20 +568,44 @@
           "filing_date": "2020-06-01"
         }
       },
-      "prior_label": "Quince Therapeutics",
+      "prior_label": "Quince Therapeutics, Inc.",
       "prior_reference": {
         "doc": "research/CAPITAL_STRUCTURE_INTELLIGENCE_V2_MASTERPLAN_2026-08-18.md",
         "section": "§16.3"
       },
       "qualification": "qualified",
-      "reason": "company_tickers.json and the submissions index agree on CIK and registrant name",
+      "reason": "company_tickers.json and the submissions index agree on CIK 0001662774; the registrant RENAMED: Quince Therapeutics, Inc. is a formerName (to 2026-10-09) and the registry now reads IRulya Therapeutics Inc. with primary ticker IRLA (QNCX retained); the former name is kept as a historical witness and the prior label is not reused",
       "recent_window": [
         "2016-01-05",
         "2026-10-09"
       ],
-      "registry_name": "Quince Therapeutics, Inc.",
+      "registry_name": "IRulya Therapeutics Inc.",
       "replacement": null,
       "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": true,
+        "latest_in_policy_anchor_rederived": {
+          "S-3": {
+            "accession": "0001193125-26-328769",
+            "filing_date": "2026-07-31"
+          },
+          "S-3/A": {
+            "accession": "0001193125-26-333764",
+            "filing_date": "2026-08-05"
+          },
+          "S-3ASR": {
+            "accession": "0001193125-20-157335",
+            "filing_date": "2020-06-01"
+          }
+        },
+        "note": "renamed to IRulya Therapeutics Inc. (formerName Quince Therapeutics, Inc. to 2026-10-09); primary ticker now IRLA; anchors re-derived and unchanged",
+        "registry_name_now": "IRulya Therapeutics Inc.",
+        "tickers_now": [
+          "IRLA",
+          "QNCX"
+        ]
+      },
       "sic": "2836",
       "sic_description": "Biological Products, (No Diagnostic Substances)",
       "source_ids": [
@@ -467,9 +613,9 @@
         "sec_submissions_cik_0001662774"
       ],
       "state_of_incorporation": "CA",
-      "submissions_name": "Quince Therapeutics, Inc.",
-      "ticker": "QNCX",
-      "ticker_as_of": "2026-10-13"
+      "submissions_name": "IRulya Therapeutics Inc.",
+      "ticker": "IRLA",
+      "ticker_as_of": "2026-10-19"
     },
     {
       "all_tickers": [
@@ -490,11 +636,7 @@
           "to": "2026-06-09"
         }
       ],
-      "in_policy_form_counts": {
-        "424B3": 1,
-        "424B4": 1,
-        "EFFECT": 2
-      },
+      "in_policy_form_counts": {},
       "issuer_id": "sec:cik:0001921603",
       "label_drift": true,
       "latest_in_policy_anchor": {},
@@ -512,6 +654,17 @@
       "registry_name": "WhiteHawk Minerals Corp.",
       "replacement": null,
       "replacement_owed": true,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "in_policy_form_counts_now": {},
+        "latest_in_policy_anchor_rederived": {},
+        "note": "anchors re-derived from the 2026-10-19 submissions index; unchanged from the E0 anchor",
+        "registry_name_now": "WhiteHawk Minerals Corp.",
+        "tickers_now": [
+          "WHK"
+        ]
+      },
       "sic": "1311",
       "sic_description": "Crude Petroleum & Natural Gas",
       "source_ids": [
@@ -537,13 +690,6 @@
       "fiscal_year_end": "0630",
       "former_names": [],
       "in_policy_form_counts": {
-        "424B3": 11,
-        "424B4": 1,
-        "424B5": 8,
-        "AW": 1,
-        "EFFECT": 35,
-        "POS AM": 23,
-        "RW": 1,
         "S-3": 12,
         "S-3/A": 2
       },
@@ -573,6 +719,29 @@
       "registry_name": "LIGHTPATH TECHNOLOGIES INC",
       "replacement": null,
       "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "in_policy_form_counts_now": {
+          "S-3": 12,
+          "S-3/A": 2
+        },
+        "latest_in_policy_anchor_rederived": {
+          "S-3": {
+            "accession": "0001654954-25-013371",
+            "filing_date": "2025-11-21"
+          },
+          "S-3/A": {
+            "accession": "0001654954-25-013724",
+            "filing_date": "2025-12-05"
+          }
+        },
+        "note": "anchors re-derived from the 2026-10-19 submissions index; unchanged from the E0 anchor",
+        "registry_name_now": "LIGHTPATH TECHNOLOGIES INC",
+        "tickers_now": [
+          "LPTH"
+        ]
+      },
       "sic": "3674",
       "sic_description": "Semiconductors & Related Devices",
       "source_ids": [
@@ -605,11 +774,6 @@
         }
       ],
       "in_policy_form_counts": {
-        "424B3": 16,
-        "424B4": 5,
-        "424B5": 4,
-        "EFFECT": 12,
-        "POS AM": 2,
         "S-3": 5,
         "S-3/A": 1
       },
@@ -639,6 +803,30 @@
       "registry_name": "Edible Garden AG Inc",
       "replacement": null,
       "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "in_policy_form_counts_now": {
+          "S-3": 5,
+          "S-3/A": 1
+        },
+        "latest_in_policy_anchor_rederived": {
+          "S-3": {
+            "accession": "0001477932-26-004651",
+            "filing_date": "2026-07-31"
+          },
+          "S-3/A": {
+            "accession": "0001477932-25-000502",
+            "filing_date": "2025-01-28"
+          }
+        },
+        "note": "anchors re-derived from the 2026-10-19 submissions index; unchanged from the E0 anchor",
+        "registry_name_now": "Edible Garden AG Inc",
+        "tickers_now": [
+          "EDBL",
+          "EDBLW"
+        ]
+      },
       "sic": "0100",
       "sic_description": "Agricultural Production-Crops",
       "source_ids": [
@@ -649,13 +837,230 @@
       "submissions_name": "Edible Garden AG Inc",
       "ticker": "EDBL",
       "ticker_as_of": "2026-10-13"
+    },
+    {
+      "all_tickers": [
+        "EDRY"
+      ],
+      "archetype": "EDRY",
+      "case_supply": "supplied",
+      "case_supply_reason": "F-3 (not F-3ASR) present in the recent submissions index and in the served-universe manifest inside the window",
+      "cik": "0001731388",
+      "details": {
+        "g0_case": {
+          "case_reason": "Nasdaq-listed FPI (20-F filer, Marshall Islands) whose F-3 (not F-3ASR) invokes General Instruction I.B.5 and states the non-affiliate public float with its measurement date and the trailing-twelve-month I.B.5 position; first candidate in accession order passing every criterion",
+          "filing": {
+            "accession": "0000919574-26-005806",
+            "canonical_url": "https://www.sec.gov/Archives/edgar/data/1731388/000091957426005806/p15057625_f-3.htm",
+            "filing_date": "2026-08-27",
+            "form": "F-3",
+            "full_document_sha256": "d6050da3219bea1115b304a41ca92f6ea9780198a47a0b2ebaed3d11da6d6428",
+            "http_status": 200,
+            "primary_document": "p15057625_f-3.htm",
+            "retrieved_at": "2026-10-19T08:05:03Z"
+          },
+          "fixture": {
+            "path": "tests/fixtures/capital_structure/reference/g0/foreign_f3_witness_edry_f3.txt",
+            "sha256": "8d2e041b99f775759df47ab22c4ddfe005ebb82251a7e38c2e843abd1cc7eb4a"
+          },
+          "foreign_private_issuer": true,
+          "fpi_evidence": "20-F annual reports in the recent submissions index; registration on Form F-3",
+          "gap_id": "foreign_issuer_f3_witness",
+          "numerical_path": {
+            "computed": {
+              "cap": "21871176.33",
+              "exact": "65613529/3",
+              "method": "limit = public_float / 3; cap = limit - sold_trailing_ib5 (Decimal half-even to cents)",
+              "unit": "USD"
+            },
+            "float_measurement_date": "August 25, 2026",
+            "operands": [
+              {
+                "name": "public_float",
+                "span_label": "public_float",
+                "span_text_sha256": "69b5a6438f2b3b1760d1b027ac194881175a5bd5063b6831abe17cf94ea47adc",
+                "value": "65613529"
+              },
+              {
+                "name": "sold_trailing_ib5",
+                "span_label": "ib5_trailing_sales",
+                "span_text_sha256": "6180d65085523758971eecc212266417bfb97092c61c62c22408ad3d401b5320",
+                "value": "0"
+              }
+            ],
+            "path_id": "foreign_f3.ib5_baby_shelf_cap",
+            "rule_id": "form_f3.I.B.5"
+          },
+          "role": "foreign_issuer_f3_witness",
+          "venue": "nasdaq"
+        }
+      },
+      "exchanges": [
+        "Nasdaq"
+      ],
+      "fiscal_year_end": "1231",
+      "former_names": [],
+      "in_policy_form_counts": {
+        "F-3": 4
+      },
+      "issuer_id": "sec:cik:0001731388",
+      "label_drift": false,
+      "latest_in_policy_anchor": {
+        "F-3": {
+          "accession": "0000919574-26-005806",
+          "filing_date": "2026-08-27"
+        }
+      },
+      "prior_label": "EuroDry Ltd.",
+      "prior_reference": {
+        "doc": "research/capital_structure/e2e_20261013/reference/G0_SELECTION.md",
+        "section": "gap foreign_issuer_f3_witness"
+      },
+      "qualification": "qualified",
+      "reason": "company_tickers.json and the submissions index agree on CIK and registrant name; chosen by the deterministic G0-S selection rule (first candidate passing every criterion of the gap row, tested in accession order from the served universe)",
+      "recent_window": [
+        "2018-02-16",
+        "2026-10-16"
+      ],
+      "registry_name": "EuroDry Ltd.",
+      "replacement": null,
+      "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "note": "identity first qualified in this G0-S requalification"
+      },
+      "sic": "4400",
+      "sic_description": "Water Transportation",
+      "source_ids": [
+        "sec_company_tickers",
+        "sec_submissions_cik_0001731388"
+      ],
+      "state_of_incorporation": "1T",
+      "submissions_name": "EuroDry Ltd.",
+      "ticker": "EDRY",
+      "ticker_as_of": "2026-10-19"
+    },
+    {
+      "all_tickers": [
+        "RPID"
+      ],
+      "archetype": "RPID",
+      "case_supply": "supplied",
+      "case_supply_reason": "S-3 (0001104659-23-126443, 333-276081) with 424B5 takedowns present in the recent submissions index and in the served-universe manifest inside the window",
+      "cik": "0001380106",
+      "details": {
+        "g0_case": {
+          "atm_evidence": {
+            "note": "sales agreement with TD Securities (USA) LLC entered into on December 15, 2023; sales through March 31, 2026 as stated in the supplement",
+            "span_label": "atm_programme"
+          },
+          "case_reason": "Nasdaq-listed domestic S-3 baby-shelf issuer (I.B.6) with an active ATM sales agreement and a concurrent registered direct takedown, whose 424B5 supplement states both the non-affiliate public float (with its measurement date) and the prior-12-calendar-month I.B.6 position; not one of the six archetypes nor one of the two other G0 cases",
+          "domestic_evidence": "Delaware incorporation; 10-K/10-Q filer; no 20-F/40-F/6-K in the submissions index",
+          "filing": {
+            "accession": "0001104659-26-063928",
+            "canonical_url": "https://www.sec.gov/Archives/edgar/data/1380106/000110465926063928/tm2614072-1_424b5.htm",
+            "filing_date": "2026-05-19",
+            "form": "424B5",
+            "full_document_sha256": "6e8b954f96e64e8ad1e1e8ed9b4da643ef4fd2e3021870c6b02e84a0586c2acd",
+            "http_status": 200,
+            "primary_document": "tm2614072-1_424b5.htm",
+            "registration_statement": "333-276081",
+            "retrieved_at": "2026-10-19T08:12:08Z"
+          },
+          "fixture": {
+            "path": "tests/fixtures/capital_structure/reference/g0/held_out_pattern_witness_rpid_424b5.txt",
+            "sha256": "945085ad29cf03405cbae64e9c2561ddeec09d022321aa71923e743bc62511ca"
+          },
+          "foreign_private_issuer": false,
+          "gap_id": "held_out_pattern_witness",
+          "numerical_path": {
+            "cutoff": "2026-05-19",
+            "note": "expected answer computed from these two spans is sealed out of the repository (seated before the G0-E lane launches); the pack carries no expected number",
+            "operands": [
+              {
+                "name": "public_float",
+                "span_label": "public_float_ib6",
+                "span_text_sha256": "824fc1c57976294497c6ff8a67cbb907e10f070d8c000cb781c9e2d0ad379169"
+              },
+              {
+                "name": "sold_trailing",
+                "span_label": "ib6_trailing_sales",
+                "span_text_sha256": "b1460ac36ce821623e4980f2b7d43e4d9b23a5543cd39520fcbd9298e2a7e895"
+              }
+            ],
+            "path_id": "held_out.ib6_headroom",
+            "rule_id": "form_s3.I.B.6",
+            "sealed": true
+          },
+          "registered_direct_evidence": {
+            "concurrent_accession": "0001104659-26-063933",
+            "note": "concurrent registered direct offering to directors and officers (securities purchase agreement dated May 18, 2026); its own 424B5 was filed the same day under the same registration statement",
+            "span_label": "registered_direct"
+          },
+          "role": "held_out_pattern_witness",
+          "sealed": true,
+          "venue": "nasdaq"
+        }
+      },
+      "exchanges": [
+        "Nasdaq"
+      ],
+      "fiscal_year_end": "1231",
+      "former_names": [
+        {
+          "from": "2006-10-23",
+          "name": "RAPID MICRO BIOSYSTEMS INC",
+          "to": "2009-07-15"
+        }
+      ],
+      "in_policy_form_counts": {
+        "S-3": 1
+      },
+      "issuer_id": "sec:cik:0001380106",
+      "label_drift": false,
+      "latest_in_policy_anchor": {
+        "S-3": {
+          "accession": "0001104659-23-126443",
+          "filing_date": "2023-12-15"
+        }
+      },
+      "prior_label": "RAPID MICRO BIOSYSTEMS, INC.",
+      "prior_reference": {
+        "doc": "research/capital_structure/e2e_20261013/reference/G0_SELECTION.md",
+        "section": "gap held_out_pattern_witness"
+      },
+      "qualification": "qualified",
+      "reason": "company_tickers.json and the submissions index agree on CIK and registrant name; chosen by the deterministic G0-S selection rule (first candidate passing every criterion of the gap row, tested in accession order from the served universe)",
+      "recent_window": [
+        "2006-10-23",
+        "2026-08-14"
+      ],
+      "registry_name": "RAPID MICRO BIOSYSTEMS, INC.",
+      "replacement": null,
+      "replacement_owed": false,
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "drift": false,
+        "note": "identity first qualified in this G0-S requalification"
+      },
+      "sic": "3826",
+      "sic_description": "Laboratory Analytical Instruments",
+      "source_ids": [
+        "sec_company_tickers",
+        "sec_submissions_cik_0001380106"
+      ],
+      "state_of_incorporation": "DE",
+      "submissions_name": "RAPID MICRO BIOSYSTEMS, INC.",
+      "ticker": "RPID",
+      "ticker_as_of": "2026-10-19"
     }
   ],
   "masterplan": {
     "commit": "93c82c9058eed8c39e34046753c5274ad5d80eb7",
     "path": "research/capital_structure/e2e_20261013/MASTERPLAN.md"
   },
-  "qualified_on": "2026-10-13",
+  "qualified_on": "2026-10-19",
   "requalification_procedure": {
     "note": "Manual research-seat procedure; not a collector and not part of any nightly lane.",
     "pacing": "at most 1 request per second; SEC fair access allows 10",
@@ -671,8 +1076,9 @@
   "request_policy": {
     "fair_access_source_id": "sec_developer_resources_fair_access",
     "max_requests_per_second": 1,
-    "note": "one-shot research-seat qualification; the nightly collector and its class reserves are untouched",
-    "requests_made": 13,
+    "note": "research-seat qualification and G0-S selection; every request carried the declared user agent, paced at most 1 per second, hosts limited to data.sec.gov and www.sec.gov; failures are counted (the 2026-10-19 re-fetch of the March 2026 C&DI update page returned HTTP 404)",
+    "requests_failed": 1,
+    "requests_made": 297,
     "user_agent": "MastermindMarketIntelligence-ResearchSeat/1.0 (+https://www.mastermind-x.com)"
   },
   "rights": {
@@ -961,6 +1367,14 @@
       "publisher": "U.S. Securities and Exchange Commission, Division of Corporation Finance",
       "qualification": "qualified",
       "reason": "Compliance and Disclosure Interpretations are Division staff positions, not Commission rules; they govern applicability reasoning with their interpretation dates and never mint facts.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 301465,
+        "http_status": 200,
+        "note": "re-fetched; page edition label now 'Last Reviewed or Updated: Oct. 15, 2026' (was Sept. 25, 2026); all six question spans 116.21-116.26 re-extracted and verified word-for-word identical (same per-span sha256), so the qualified edition of the spans is unchanged and the E0 receipt is retained",
+        "retrieved_at": "2026-10-19T07:47:33Z",
+        "sha256": "689b028118d4cbd3ba4e34c1d6e9b3c83647a154763c84f30377123d44e2f380"
+      },
       "retrieved_at": "2026-10-13T13:32:50Z",
       "rights": "us_government_work_public_domain",
       "sections": [
@@ -1038,6 +1452,14 @@
       "publisher": "U.S. Securities and Exchange Commission, Division of Corporation Finance",
       "qualification": "qualified",
       "reason": "Update notice naming Question 116.26; witness for the interpretation date of the continuing-ATM position on the I.B.1 to I.B.6 transition.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 53435,
+        "http_status": 404,
+        "note": "re-fetched; the URL now returns HTTP 404 with the SEC 'Oops! Page Not Found.' page; the March 19, 2026 update page is no longer served. The E0 edition receipt (sha256 ddc004247d10d84e14f0b6030e7f57ccc4c932839b48efecc6482825b2184b03) is retained as the witness for the 2026-03-19 interpretation date, which the main C&DI page also witnesses via the span 116.26 bracket '[March 19, 2026]' (verified identical in this requalification)",
+        "retrieved_at": "2026-10-19T07:47:34Z",
+        "sha256": "ee242e8e000b149b3b700c2d82cb051d76e7c146a13ff52b3d7ce4e3acd6d06e"
+      },
       "retrieved_at": "2026-10-13T13:32:50Z",
       "rights": "us_government_work_public_domain",
       "sha256": "ddc004247d10d84e14f0b6030e7f57ccc4c932839b48efecc6482825b2184b03",
@@ -1049,6 +1471,13 @@
     },
     {
       "bytes": null,
+      "e0_rendered_receipt": {
+        "page_text_chars": 150607,
+        "page_text_sha256": "25b336964180ff319bfc0f211a92951e81e0bf7ecc599cd9e7169b967938ee05",
+        "rendered_at": "2026-10-13T13:39Z",
+        "section_5635_chars": 45650,
+        "section_5635_sha256": "25c790344f44c97acedca33ac085c5ffae077172479d9db0c9208106d01d2030"
+      },
       "edition_date": "2020-01-15",
       "edition_label": "Rule 5635 adopted Mar. 12, 2009 (SR-NASDAQ-2009-018); 5635(d) amended Jan. 15, 2020 (SR-NASDAQ-2020-004)",
       "enforceable": true,
@@ -1065,19 +1494,53 @@
       "qualification": "browser_qualified",
       "reason": "Listing rule binding on Nasdaq-listed issuers; applicability needs transaction type, price versus Minimum Price, quantity versus 20% of outstanding and voting power, and public-offering status.",
       "rendered_receipt": {
-        "method": "built-in browser; SHA-256 of document.body.innerText via crypto.subtle",
-        "page_text_chars": 150607,
-        "page_text_sha256": "25b336964180ff319bfc0f211a92951e81e0bf7ecc599cd9e7169b967938ee05",
-        "rendered_at": "2026-10-13T13:39Z",
+        "finding": "page text changed since E0 (150607 -> 150424 chars) but the Rule 5635 section is byte-identical (same 45650 chars, same sha256 25c790344f44c97acedca33ac085c5ffae077172479d9db0c9208106d01d2030); the 5635 edition (5635(d) amended 2020-01-15, SR-NASDAQ-2020-004) is unchanged. Record the new page_text digest as the 2026-10-19 rendered receipt; keep edition_date 2020-01-15.",
+        "method": "built-in browser; SHA-256 of document.body.innerText via crypto.subtle; section_5635 = innerText sliced from the first '5635. Shareholder Approval' to the first following '5640. Voting Rights' (untrimmed) -- this slice reproduces E0's 45650-char digest exactly",
+        "page_text_chars": 150424,
+        "page_text_sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
+        "rendered_at": "2026-10-19T07:10:34Z",
+        "rule_5615a3": "see rule_5615a3.json (span sha256 c74cf26cabdd92772464dc06149f01f342c2f1e6519ad309bbb152e455653fcc, rendered 2026-10-19T06:53:13Z)",
         "section_5635_chars": 45650,
-        "section_5635_sha256": "25c790344f44c97acedca33ac085c5ffae077172479d9db0c9208106d01d2030"
+        "section_5635_sha256": "25c790344f44c97acedca33ac085c5ffae077172479d9db0c9208106d01d2030",
+        "source_id": "nasdaq_rule_5600_series",
+        "url": "https://listingcenter.nasdaq.com/rulebook/nasdaq/rules/nasdaq-5600-series"
       },
-      "retrieved_at": "2026-10-13T13:39Z",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": null,
+        "http_status": null,
+        "note": "browser render by the seat (the rulebook returns 403 to a non-browser GET; no fetch made in this lane); Rule 5635 section byte-identical to E0 (45650 chars, same sha256) so the 5635 edition (2020-01-15) is kept; spans unchanged and their digests still match the L0 pinned_spans",
+        "retrieved_at": "2026-10-19T07:10:34Z",
+        "sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3"
+      },
+      "retrieved_at": "2026-10-19T07:10:34Z",
       "rights": "excerpt_limited",
-      "sha256": "25b336964180ff319bfc0f211a92951e81e0bf7ecc599cd9e7169b967938ee05",
+      "sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
       "source_class": "exchange_rule",
       "source_id": "nasdaq_rule_5600_series",
       "spans": [
+        {
+          "amendment_trail": "Amended November 24, 2025 (SR-NASDAQ-2025-037)",
+          "chars": 117,
+          "interpretation_date": "2025-11-24",
+          "label": "nasdaq_5615_a_3_A_fpi_home_country_practice",
+          "rendered_at": "2026-10-19T08:20:51Z",
+          "rendered_page_text_sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
+          "rule": "5615(a)(3)(A)",
+          "sha256": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+          "text": "(A) A Foreign Private Issuer may follow its home country practice in lieu of the requirements of the Rule 5600 Series"
+        },
+        {
+          "amendment_trail": "Amended November 24, 2025 (SR-NASDAQ-2025-037)",
+          "chars": 306,
+          "interpretation_date": "2025-11-24",
+          "label": "nasdaq_5615_a_3_B_i_annual_report_disclosure",
+          "rendered_at": "2026-10-19T08:20:51Z",
+          "rendered_page_text_sha256": "adbee39938f63d9e7680d067398cabf1f1304845679746d0600fb68da7b465c3",
+          "rule": "5615(a)(3)(B)(i)",
+          "sha256": "87f96f8b7b3ecd7051bcfa2604049db4d2d6fd9cdab4bc2c95f1b6e8c3862240",
+          "text": "(i) A Foreign Private Issuer that follows a home country practice in lieu of one or more of the Listing Rules shall disclose in its annual reports filed with the Commission each requirement that it does not follow and describe the home country practice followed by the Company in lieu of such requirements."
+        },
         {
           "amendment_trail": "Amended Jan. 15, 2020 (SR-NASDAQ-2020-004)",
           "chars": 363,
@@ -1146,6 +1609,14 @@
         "34-105513",
         "IC-36160"
       ],
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 68055,
+        "http_status": 200,
+        "note": "re-fetched; the page still shows Rule Type 'Proposed' and file number S7-2026-17; no final action; E0 receipt retained",
+        "retrieved_at": "2026-10-19T07:47:35Z",
+        "sha256": "4c53de9132cf1e2ab778f50ff84e00f48c49fd2e20b7c3e4a0b288568193ef8b"
+      },
       "retrieved_at": "2026-10-13T13:32:50Z",
       "rights": "us_government_work_public_domain",
       "rin": "3235-AN41",
@@ -1167,6 +1638,14 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Status witness: row 'S7-2026-17 Registered Offering Reform Corporation Finance Proposed Rule 33-11418, 34-105513, IC-36160 May 18, 2026'.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 221529,
+        "http_status": 200,
+        "note": "re-fetched; the 2026 index still lists S7-2026-17 Registered Offering Reform as 'Proposed Rule'; E0 receipt retained",
+        "retrieved_at": "2026-10-19T07:47:36Z",
+        "sha256": "65b5dbed279f62c5d10b42e3b3fd4a54e1b6e7cae3c52b72fc0fdf7724bcb3ca"
+      },
       "retrieved_at": "2026-10-13T13:32:50Z",
       "rights": "us_government_work_public_domain",
       "sha256": "1eedf1705e374f36241149cf002630f49dd299df6abb6b16ba5014c85f062ba7",
@@ -1190,6 +1669,14 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Fair-access policy: no more than 10 requests per second regardless of machine count; IPs may be blocked; a declared user agent is expected.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 68457,
+        "http_status": 200,
+        "note": "re-fetched; the fair-access text (10 requests per second, declared user agent) is present unchanged; E0 receipt retained",
+        "retrieved_at": "2026-10-19T07:47:37Z",
+        "sha256": "468640de736a8f79d3d86c76e59ee86355e298734143fd3a328950780afdfe2d"
+      },
       "retrieved_at": "2026-10-13T13:32:50Z",
       "rights": "us_government_work_public_domain",
       "sha256": "02ec27631470d6623ece58465be7dcaa9c136c4f6eec518509fe42989f10852f",
@@ -1209,6 +1696,14 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Ticker to CIK to registrant-name registry used for archetype identity requalification.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 799264,
+        "http_status": 200,
+        "note": "re-fetched; registry names for AIR, CLNN, WHK, LPTH, EDBL unchanged; QNCX (CIK 0001662774) now maps to title 'IRulya Therapeutics Inc.' with tickers IRLA and QNCX - recorded as label drift on that identity; EDRY (0001731388) and RPID (0001380106) verified present with matching titles",
+        "retrieved_at": "2026-10-19T07:47:38Z",
+        "sha256": "bbffa40adbea620bba590da9a193ea14b21bfc04992f102549a2688d4e7d32df"
+      },
       "retrieved_at": "2026-10-13T13:39:07Z",
       "rights": "us_government_work_public_domain",
       "sha256": "a9595d33a34615553ee706c95458fff0bb9fec9642a9d61710f3e5dbd45ca23e",
@@ -1228,6 +1723,21 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype AIR.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 160368,
+        "exchanges_now": [
+          "NYSE"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; in-policy anchors re-derived from the recent index; label drift re-checked against company_tickers.json and formerNames",
+        "registry_name_now": "AAR CORP",
+        "retrieved_at": "2026-10-19T07:47:39Z",
+        "sha256": "17f488626e95bab5ec8f8c4a36acb0189ccccb0fba7cbfddc2b3fa97f7f3cfcc",
+        "tickers_now": [
+          "AIR"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:39:07Z",
       "rights": "us_government_work_public_domain",
       "sha256": "17f488626e95bab5ec8f8c4a36acb0189ccccb0fba7cbfddc2b3fa97f7f3cfcc",
@@ -1247,6 +1757,21 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype CLNN.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 117118,
+        "exchanges_now": [
+          "Nasdaq"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; in-policy anchors re-derived from the recent index; label drift re-checked against company_tickers.json and formerNames",
+        "registry_name_now": "Clene Inc.",
+        "retrieved_at": "2026-10-19T07:47:40Z",
+        "sha256": "97aef0e7a74728aa07015b727c5e17e6900ca1b0b418a8901aa5e6b66b172bb1",
+        "tickers_now": [
+          "CLNN"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:40:12Z",
       "rights": "us_government_work_public_domain",
       "sha256": "f689ee96869229bd3de6292d9ae4837434779fbfe69b24b8b1125958e1ee1f08",
@@ -1266,6 +1791,23 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype QNCX.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 73680,
+        "exchanges_now": [
+          "Nasdaq",
+          "Nasdaq"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; LABEL DRIFT: registrant renamed from Quince Therapeutics, Inc. to IRulya Therapeutics Inc. (formerName to 2026-10-09; tickers now IRLA + QNCX); in-policy anchors re-derived and unchanged (S-3 0001193125-26-328769 2026-07-31, S-3/A 0001193125-26-333764 2026-08-05, S-3ASR 0001193125-20-157335 2020-06-01)",
+        "registry_name_now": "IRulya Therapeutics Inc.",
+        "retrieved_at": "2026-10-19T07:47:41Z",
+        "sha256": "5df0e0b6fe5525294f70cf795d737722ff2a6e921dd9aa2a132e16ccbfb61fc5",
+        "tickers_now": [
+          "IRLA",
+          "QNCX"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:40:12Z",
       "rights": "us_government_work_public_domain",
       "sha256": "0c6a767c8062446a443a08a5d371e9e8c05f1f882f8ff9f57e80b8e575706f6a",
@@ -1285,6 +1827,21 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype WHK.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 13940,
+        "exchanges_now": [
+          "NYSE"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; in-policy anchors re-derived from the recent index; label drift re-checked against company_tickers.json and formerNames",
+        "registry_name_now": "WhiteHawk Minerals Corp.",
+        "retrieved_at": "2026-10-19T07:47:42Z",
+        "sha256": "5a1c5af4943ba3770a2c66adce5b99ca529b1a4bfd7ecb734809093862ff26d7",
+        "tickers_now": [
+          "WHK"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:40:12Z",
       "rights": "us_government_work_public_domain",
       "sha256": "6583025489b4ce956b5c262e9206f93eaea51ea3a3b9efaa99546a35e69c9cdc",
@@ -1304,6 +1861,21 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype LPTH.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 170304,
+        "exchanges_now": [
+          "Nasdaq"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; in-policy anchors re-derived from the recent index; label drift re-checked against company_tickers.json and formerNames",
+        "registry_name_now": "LIGHTPATH TECHNOLOGIES INC",
+        "retrieved_at": "2026-10-19T07:47:43Z",
+        "sha256": "51758bf908fb0e4015db1b8333c692d58a8ce94b24e6e216862d2cf4bc46160d",
+        "tickers_now": [
+          "LPTH"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:40:12Z",
       "rights": "us_government_work_public_domain",
       "sha256": "51758bf908fb0e4015db1b8333c692d58a8ce94b24e6e216862d2cf4bc46160d",
@@ -1323,6 +1895,23 @@
       "publisher": "U.S. Securities and Exchange Commission",
       "qualification": "qualified",
       "reason": "Issuer identity, former names, exchange, SIC and recent filing index for archetype EDBL.",
+      "requalification_2026_10_19": {
+        "as_of": "2026-10-19",
+        "bytes": 57647,
+        "exchanges_now": [
+          "Nasdaq",
+          "Nasdaq"
+        ],
+        "http_status": 200,
+        "note": "re-fetched; in-policy anchors re-derived from the recent index; label drift re-checked against company_tickers.json and formerNames",
+        "registry_name_now": "Edible Garden AG Inc",
+        "retrieved_at": "2026-10-19T07:47:44Z",
+        "sha256": "a5af1cd70222c8bca38bdd82f221548552acacdec0de3413fd8bf2c7d27c21fb",
+        "tickers_now": [
+          "EDBL",
+          "EDBLW"
+        ]
+      },
       "retrieved_at": "2026-10-13T13:40:12Z",
       "rights": "us_government_work_public_domain",
       "sha256": "a5af1cd70222c8bca38bdd82f221548552acacdec0de3413fd8bf2c7d27c21fb",
@@ -1331,8 +1920,46 @@
       "spans": [],
       "title": "SEC submissions index CIK 0001809750",
       "url": "https://data.sec.gov/submissions/CIK0001809750.json"
+    },
+    {
+      "bytes": 30936,
+      "edition_date": "2026-10-19",
+      "edition_label": "as retrieved",
+      "enforceable": false,
+      "http_status": 200,
+      "jurisdiction": "US-federal",
+      "publisher": "U.S. Securities and Exchange Commission",
+      "qualification": "qualified",
+      "reason": "Issuer identity, former names, exchange, SIC and recent filing index for the G0-S chosen foreign_issuer_f3_witness issuer EuroDry Ltd..",
+      "retrieved_at": "2026-10-19T08:05:02Z",
+      "rights": "us_government_work_public_domain",
+      "sha256": "bc0f5a5f3e13fb2e9d0b683fb9c9090724e87d54a05de77492412884b649afe0",
+      "source_class": "identity_registry",
+      "source_id": "sec_submissions_cik_0001731388",
+      "spans": [],
+      "title": "SEC submissions index CIK 0001731388",
+      "url": "https://data.sec.gov/submissions/CIK0001731388.json"
+    },
+    {
+      "bytes": 54255,
+      "edition_date": "2026-10-19",
+      "edition_label": "as retrieved",
+      "enforceable": false,
+      "http_status": 200,
+      "jurisdiction": "US-federal",
+      "publisher": "U.S. Securities and Exchange Commission",
+      "qualification": "qualified",
+      "reason": "Issuer identity, former names, exchange, SIC and recent filing index for the G0-S chosen held_out_pattern_witness issuer RAPID MICRO BIOSYSTEMS, INC..",
+      "retrieved_at": "2026-10-19T08:12:07Z",
+      "rights": "us_government_work_public_domain",
+      "sha256": "9839e33bd916b7c049068d7de7412817d62aed937ea7600a8882a6bdb8404e0f",
+      "source_class": "identity_registry",
+      "source_id": "sec_submissions_cik_0001380106",
+      "spans": [],
+      "title": "SEC submissions index CIK 0001380106",
+      "url": "https://data.sec.gov/submissions/CIK0001380106.json"
     }
   ],
-  "task": "E0",
-  "version": "capital-structure-reference-qualification/1.0.0"
+  "task": "G0-S",
+  "version": "capital-structure-reference-qualification/1.1.0"
 }

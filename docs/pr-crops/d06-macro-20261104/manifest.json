@@ -1,0 +1,323 @@
+{
+  "schema": "d06.macro.artifact_manifest.v1",
+  "member_count": 63,
+  "aggregate_sha256": "68bbf8be117fe16a002368a214a5ee0a0709c8784ae70385f1f5d58dc5d7b0f9",
+  "aggregate_rule": "SHA256 of sorted member SHA256 + space + repository-relative path + LF; self excluded",
+  "members": [
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/actual-browser.json",
+      "bytes": 8892,
+      "sha256": "f1c3a4e47976e72aa0d10f91942fe78729041a330e0f92a90c42cee7fe02b65e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/actual-final.log",
+      "bytes": 72,
+      "sha256": "d3c4e846ab687739e47ac07e8cea486fe9aca5fc28364948d442393ad5612230"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-1440-dark-zh.png",
+      "bytes": 179328,
+      "sha256": "b9f3ac13b55ff6fbb0bd1b3b95dfd0edccc3897148328142ce9dcba64bdbfd0c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-1440-light-en.png",
+      "bytes": 175236,
+      "sha256": "52d147107daa3d4ec0ff4489fe6688cce2396187cfa39670791955c799d0ea45"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-320-light-en.png",
+      "bytes": 96603,
+      "sha256": "5b686717d1426591825e69d872a115808d6015b0d931f5f585c25a887c2e0f9d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-390-dark-en.png",
+      "bytes": 109492,
+      "sha256": "a1a773e16ae01c1fa58ad5537815edff6462dad67ba8905a72107e50b11c3ad7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-390-light-zh.png",
+      "bytes": 109880,
+      "sha256": "a85f60c549084bc5b45818d72ffe6560f341248f571d5d3c1bdc8ccb639d2822"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-720-light-en.png",
+      "bytes": 135454,
+      "sha256": "4d90fcd8e26f861d4a02bb46d7e90da2998925c721bb05cb972aebf2eb70a85b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-browser.json",
+      "bytes": 3639,
+      "sha256": "703ae1628496d93be282a3eee2a79c8182f1fdb5b1d24675fe3c69892b4cd016"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-final.log",
+      "bytes": 72,
+      "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-missing-zh.png",
+      "bytes": 37866,
+      "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/market-partial-outer-only.png",
+      "bytes": 50100,
+      "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/manifest.json",
+      "bytes": 6281,
+      "sha256": "688df16ba68a931917f22fac071ddc059deb5bb334273cd8e2b28c5ce588d6ce"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/market-desktop-743I-0.jpg",
+      "bytes": 165929,
+      "sha256": "ed76af89977e09a95ad1da5de4011f11e21557660a545628b1e16cab349bf635"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/market-desktop-743I-0.jsx",
+      "bytes": 23369,
+      "sha256": "32f70c1e636785b90d916f88a44bbdaadb191b7efff1f4554d89dd970db4786e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/market-phone-743J-0.jpg",
+      "bytes": 88770,
+      "sha256": "b452d568acc9971ed3e319b7c9951d77e869557c5c32836930dc22644b14d1ed"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/market-phone-743J-0.jsx",
+      "bytes": 26356,
+      "sha256": "4b6b8db70fa37dc0b31dca788ec2688cbf7cf412b465286e9bced4d4cacc3cde"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/spv-desktop-1XGT-0.jpg",
+      "bytes": 184493,
+      "sha256": "9662f2972871212ae92b42fbd2ed9ac4fc4ff89b155c067be8a0067aa7a40918"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/spv-desktop-1XGT-0.jsx",
+      "bytes": 22270,
+      "sha256": "dcbd05f0007cccd65090c2636c73b99d1c95d1363bbb3313559f216f9de11994"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/spv-phone-1XGU-0.jpg",
+      "bytes": 91239,
+      "sha256": "ae3bc0308eab4d2073030e5ba8e9772376115d69d0494149977e24d32f04fdbe"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/spv-phone-1XGU-0.jsx",
+      "bytes": 24939,
+      "sha256": "1e336d9dec268b085cbadb9572c126661feb33a8ae621f1481716ecb4932c2d3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/stage-desktop-743K-0.jpg",
+      "bytes": 152334,
+      "sha256": "2e572b414bd88834d17021b67b6bf512390b8386139d59f23c22b48d3ad65898"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/stage-desktop-743K-0.jsx",
+      "bytes": 39500,
+      "sha256": "8c441409b847a6aff99448ec468d825333fdb1cae58b05d4b1c8330388e7dd53"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/stage-phone-1XGS-0.jpg",
+      "bytes": 84730,
+      "sha256": "3791668df5696b495eb1d9f4ea5f24d3e601d6dbb36f56ae17fca26d88fdd053"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/paper/stage-phone-1XGS-0.jsx",
+      "bytes": 19633,
+      "sha256": "1993126da6d82a9090cdfc46d0c9f3c93506ac1fa2ac11184c2ce0f8b09f9b19"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-1440-dark-zh.png",
+      "bytes": 119716,
+      "sha256": "0da055719ad33382cef022e2945300724290b388684d607e72081192d96618db"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-1440-light-en.png",
+      "bytes": 121075,
+      "sha256": "c0371dbaf93af6ecd54da239e945d6631c1e4fb9b05677d37f6827e4ff1d747a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-320-light-en.png",
+      "bytes": 70401,
+      "sha256": "aac170d7e3846c4f5e5fcc435992eeff8a8baff5fdcd512e13022e50d7805d1a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-390-dark-en.png",
+      "bytes": 74056,
+      "sha256": "44bbc9b29b74066f18e20eb1f17187d257a4dbe479fd98f9e39309eab42b15e3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-390-light-zh.png",
+      "bytes": 82869,
+      "sha256": "2ff694edb770274787b0c8b7d5d0635be314b952cbb8400e45c4b86dfb5c25d8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-actual-1440-en.png",
+      "bytes": 123254,
+      "sha256": "91908e38e2b6f490732a8e172d188a4432179af3bed08149f7920b684c2ac626"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-actual-390-zh.png",
+      "bytes": 80723,
+      "sha256": "9a7f18ca1349a23b8398d5f5dbb7adb0a050ae1bd0edbce94dbc677348a1cef1"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-browser.json",
+      "bytes": 10861,
+      "sha256": "ffd6c79e4effee6a0feb1b8644039c96ed7e1bb51c48f4481f4ecda385f42340"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-depth.png",
+      "bytes": 40992,
+      "sha256": "a60df1df76880a294212a56ba2148089cecbc590f7c89e0d0d399f115c2ba5d3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-final.log",
+      "bytes": 69,
+      "sha256": "7355e42c9e1a087bc9cd4a102fcdfcbe42f0ea94cc47af98918bb2b97bccc5a8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-last-available.png",
+      "bytes": 35542,
+      "sha256": "acb7dd4c59aa2b0f5053b9d3ca22ab8a3404dea56bff362125497b7346794900"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-missing.png",
+      "bytes": 33392,
+      "sha256": "abd7ab43e696e71a9b6ab239bcb4ab8695d84398ed37fa580c2f49198645426f"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-pinned-inputs.json",
+      "bytes": 83949,
+      "sha256": "5756be3fc625b9514ea5bb5432297782316161648ecc75005d16123dbdb39d26"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-study-1440.png",
+      "bytes": 68189,
+      "sha256": "104c365bead6aea1c6170364c5ae399c1653f47b2a475eb0dcd5ec048149122e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/spv-study-390.png",
+      "bytes": 59048,
+      "sha256": "b3ba607254c068aef9abfdb089dd61634e060980071d592d7d70c139567663eb"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-1440-dark-en.png",
+      "bytes": 268764,
+      "sha256": "8c77703c74489e09ad97e5607a56a031247a9c821182e728000bb489e6087c52"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-1440-light-zh.png",
+      "bytes": 257157,
+      "sha256": "0a5db11843954172214db8720af72e8e71344c05ed6d5ac6dc96a2ca5cfe7553"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-320-light-en.png",
+      "bytes": 112410,
+      "sha256": "8e0268e6e9c15e619f1e510187a37e526bb77a02e01a09435dbf49a9f0b1d561"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-390-dark-zh.png",
+      "bytes": 125693,
+      "sha256": "d3f59b729119dc0b13524695d0e2c4abd204ea969668f2d5f759a27bda8d31d6"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-390-light-en.png",
+      "bytes": 118575,
+      "sha256": "24c66a247fc393191fcab87b19f764d66e068a0762f15679a89d433bdfd0bb45"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-actual-1440-en.png",
+      "bytes": 268733,
+      "sha256": "e4e170de59e0d3faa009551337606d58656f36e23a7aa4e7d17a0419e0d2531b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-actual-390-zh.png",
+      "bytes": 123014,
+      "sha256": "8a37ace982bc5e7fbc4f3cd6c42734f60c6c1798bf6e6d446d4506276154d1fe"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-arc-empty.png",
+      "bytes": 43539,
+      "sha256": "051328ed1246a102d198c10d6db2a118851418b5b807eb6c9dcbff2d6a0848d4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-arc-unknown.png",
+      "bytes": 43455,
+      "sha256": "f4c548ba57a70c5b0788a7d43b7293743b63f4268121b45919bb53b483ad0d2c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-browser.json",
+      "bytes": 7159,
+      "sha256": "138f7e833b56c2aaf3f20e6b8223916ba704a9a69586ec40b900a5f59c912767"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-filtered-fixture.csv",
+      "bytes": 570,
+      "sha256": "0ad7acc2b9f912697baaf1253ccee14de251214b1dfec3c3b50448ce723d7167"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-final.log",
+      "bytes": 71,
+      "sha256": "1c40fb7a894d6a6557cb054a64eb1b10e22890726f041ef2c22c573700703456"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-independent-board.png",
+      "bytes": 69221,
+      "sha256": "042a5de9961638b37237da8c0f3371803ce3a3e2aa2d50dced72ac4367da8d7c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-nonempty-earnings-en.png",
+      "bytes": 50370,
+      "sha256": "6e0d4d6183d8a27b0c6584213ec4882a6520e69b6ee09bdeede6eef17fc9d98a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-nonempty-earnings-zh.png",
+      "bytes": 48759,
+      "sha256": "e987001f0f864e0b82904fc5fbf9037810826348af5838313623a28000dec141"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-overflow-before.png",
+      "bytes": 90181,
+      "sha256": "0fcb07506066b0174df725881bdbe608a87efaa9edb418bdabb8c216e1965d99"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-pinned-inputs.json",
+      "bytes": 3702,
+      "sha256": "49c70e2746f2e550b162eeba62d2fd0520349f2d6e482760ea4c7bae43245221"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-recovered-filtered.png",
+      "bytes": 53070,
+      "sha256": "adec93d2f6b2121d79e0d4d4962b89686a35163546ea3c0d9cd266d672456b2e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/stage-valid-empty-research.png",
+      "bytes": 39804,
+      "sha256": "49bd127afd28d43ee299c9447d0e4982b98d4fdffdd36af99db9aad64443bed3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/tested-source-hashes.json",
+      "bytes": 5736,
+      "sha256": "05b60628f762375eb4d05c6f5d3ee1b6cc435d57ad4d61fe7500b8a5506c0b86"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/unit-final.log",
+      "bytes": 341,
+      "sha256": "c8a55f225c508fd520201f51f91d8455d5ee31f8fd512690d0a3c24a3aea8d36"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/unit-fixture-shape-failure.log",
+      "bytes": 302473,
+      "sha256": "41d122341b5dbce82210432579590c7d312f8bf453bad91b2ed8dbd96fae1ad6"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/verification.json",
+      "bytes": 4394,
+      "sha256": "ea42e4178a3b286997a7cfb5252facec7baae02aa70b0efcb86c06fcee4e2ca1"
+    }
+  ]
+}

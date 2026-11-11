@@ -1,0 +1,239 @@
+# RIG round 9 receipt — normalized from critic_return/*_visual_taste.md (byte-exact agent returns) by the seat's rig_normalize9.py; values copied, not rewritten.
+schema: mastermind.rig_review.v1
+reference_id: sector-intelligence-cycles-20261021
+role: visual_taste
+artifact_sha: 4161d40440a050ec3c03229475ef5938e0fa6c49
+review_round: 9
+supersedes:
+  artifact_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
+  receipt: reviews/round8_213a91b9/visual_taste.yml
+reviewer:
+  identity: opus-auditor-visual-taste-sic-20261021-r9
+  model: 'claude-opus-5-5 (native reviewer agent a48a38779cafe1df4, ROUTE: review, MODE: READ_ONLY; the round-8
+    agent resumed by message, no re-spawn)'
+  independent_of_author: true
+  prior_design_participation: false
+  sibling_results_read: false
+quarantine:
+  first_pass_inputs:
+  - user/business job (baseline.yml user_job)
+  - production-before artifact (16 served-site captures + production source paths)
+  - proposed-after artifact (42 frozen boards 0-41 incl. HTML specimen boards 23-41 + design_refs/sector-paper-20261021
+    at 4161d404; the 43 proposal/ blobs byte-identical to 213a91b9)
+  - capability ledger (baseline.yml) + 9-row user task manifest + the reviewer's own round-8 receipt (reviews/round8_213a91b9/<role>.yml,
+    byte-exact archive)
+  - the round-8 verdict conditions SIC-V8-C01/C03/C04/VT1 (restated with the SIC-ADJ-06(b) reconciliation) and the
+    adjudications SIC-ADJ-06 / SIC-ADJ-05 / SIC-ADJ-04 / SIC-ADJ-03 / SIC-ADJ-02 / SIC-ADJ-01a / SIC-ADJ-01 as stated
+    in the commission; the wave-8 diff set, blob identity and the pytest run as the round-9 checks
+  first_pass_path: critic_return/first_pass_visual_taste.md
+  rationale_received_after_first_pass: true
+first_pass:
+  frozen_at: '2026-11-02T02:16:38.104Z'
+  verdict: PASS
+  round8_dispositions:
+  - id: VTC-048
+    disposition: cured
+    evidence:
+    - 4161d404:cycles_repair/README.md:136, cycles_repair/capture.log:57 and proposal.yml:1329 each contain 'the
+      global header search-field row (the site-nav search input; the seat's measured bounding box (16, 82, 374,
+      116) at 390 px; the wave-7 record's region label was wrong — VTC-048'. Each line has 'x 16-374' x2 and 'y
+      82-116' x2, and 'hero' x0
+    - 4161d404:proposal.yml:2231 contains 'inside the global header search-field row, bbox (16, 82, 374, 116) at
+      390 px (measured; the wave-7 region label was wrong — VTC-048', with 'hero' x0
+    - git grep -n 'hero-title band' 4161d404 -- design_refs/sector-paper-20261021 proposal.yml printed nothing,
+      rc=1
+  - id: VTC-049
+    disposition: implementation_bound
+    evidence:
+    - Carried as SIC-V8-VT2 for verification at P19-P23 under SIC-ADJ-06(c). Not in round-9 scope. The quarantine
+      kept verdict.yml closed, so the carried text was not re-read in pass 1
+  findings: []
+  strengths:
+  - The relabel is consistent word-for-word across the three long records and the measured box is carried exactly
+  - The record does not quote the false label anywhere in the tree, while the immutable 213a91b9 message is honestly
+    called out
+  - 'Wave 8 was record-only for the visual lane: a subtree-level blob identity proves no visual regression is possible'
+  round1_residuals: []
+  rig: sector-intelligence-cycles-20261021
+  issue: macro#7646
+  mode: READ_ONLY
+  tree_check:
+    head: 2c55ac135b4870bf2492e76e585d89d5bb5901e8
+    frozen_sha_manifest: 4161d40440a050ec3c03229475ef5938e0fa6c49
+    frozen_sha_proposal: 4161d40440a050ec3c03229475ef5938e0fa6c49
+    equal: true
+    previous_sha: 213a91b9428f339dcac3ddf7dd1dd3d1346d5c17
+  inputs_opened_pass1:
+  - git rev-parse HEAD
+  - manifest.yml (frozen_sha lines, HEAD)
+  - proposal.yml:39, :45 (HEAD), :1329 and :2231 (4161d404)
+  - design_refs/sector-paper-20261021/cycles_repair/README.md:136 (4161d404)
+  - design_refs/sector-paper-20261021/cycles_repair/capture.log:57 (4161d404)
+  - git grep 'hero-title band' over design_refs/sector-paper-20261021 and proposal.yml at 4161d404
+  - git log -1 --format=%B 4161d404
+  - git diff --name-only 213a91b9 4161d404 (file names only)
+  - git ls-tree -r of the proposal/ mockup subtree at both shas
+  - sha256 of own round-8 second_pass_visual_taste.md (archived and live, HEAD), hashed only and content not displayed
+  not_opened:
+  - verdict.yml
+  - reviews/README.md
+  - continuity.yml
+  - proposal.yml lines 2261-2295
+  - reviews/product_regression.yml
+  - reviews/critic_return/*product_regression*
+  - reviews/round8_213a91b9/*product_regression*
+  - tests/test_sector_paper_copy_deck.py content
+  - Reviewer A task output
+  conditions: []
+  conditions_check:
+  - id: SIC-V8-VT1
+    result: met
+    clauses:
+      a: met. All four lines name the global header search-field row at 390 px. README:136, capture.log:57 and proposal:1329
+        also name the site-nav search input and keep x 16-374 / y 82-116. proposal:2231 is a 273-character comment
+        that carries the same box as bbox (16, 82, 374, 116). No copy keeps the old label.
+      b: met. The git grep printed nothing (rc=1). proposal.yml:39 names the mislabel ('the 31/39 diff box is the
+        global header search-field row, mislabeled in the wave-7 record') without quoting the false label. That
+        is acceptable, because the clause targets the false label, not an erratum that describes it.
+      c: met. The wave-8 message says 'the immutable 213a91b9 commit message carries the wrong region label ('the
+        hero-title band')'.
+      d: 'met under SIC-ADJ-06(b). git diff --name-only 213a91b9 4161d404 names no PNG, boards_manifest.yml, copy_deck.json,
+        build_cycles.py, cycles.css or cycles.html. Outside the RIG ledger the diff names only cycles_repair/README.md,
+        cycles_repair/capture.log and tests/test_sector_paper_copy_deck.py. The test file is named by the other
+        lane (Reviewer A''s SIC-V8-C01), so it is not a (d) failure. I accept the reconciliation: the test file
+        is not in the visual byte set and does not render.'
+      e: met, vacuously. 'placeholder' occurs 0 times in all four lines and in the wave-8 message, so no glyph claim
+        needs attribution. The only box stated is (16, 82, 374, 116).
+    evidence:
+    - call 3 python substring scan of the four lines
+    - call 2 git grep, rc=1
+    - call 4 commit-message scan
+    - call 4 diff --name-only
+  - id: SIC-V8-C04
+    result: partial (visual-lane half)
+    evidence:
+    - 'Visual half met: the diff set outside the ledger is README.md, capture.log and tests/test_sector_paper_copy_deck.py,
+      as the wave-8 message states'
+    - No PNG or visual source byte changed. The proposal/ tree id is 9de212758b4641ee834b0aa6370a9aa88e6e7bab at
+      both shas
+    - The message carries 43 sha256 lines
+    - Test-run half (64 passed, 2 skipped) is Reviewer A's lane and was not re-run here
+  review_round: 9
+  png_identity:
+    blobs_compared: 43
+    identical: true
+    evidence: 'ls-tree -r of mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal at 213a91b9
+      and at 4161d404: 43 entries (42 .png plus boards_manifest.yml); cmp prints identical; tree id 9de21275 is
+      the same at both shas'
+  advisory_notes:
+  - proposal.yml:2231 gives the box as bbox (16, 82, 374, 116), not the x 16-374 / y 82-116 form, and does not repeat
+    'site-nav search input'. The coordinates are identical and the line makes no false claim, so this is not a finding
+  - 'The archived round-8 visual receipt matches the live copy: reviews/round8_213a91b9/critic_return/second_pass_visual_taste.md
+    and reviews/critic_return/second_pass_visual_taste.md both hash to sha256 68382c6e1d7385bfeeb78a4a849d5d6015a55e57df239643443f78192ed04578
+    at HEAD'
+  verdict_as_filed: PASS
+  quarantine_breaches: []
+second_pass:
+  amended_at: '2026-11-02T09:03:08.273Z'
+  rationale_received: true
+  amendments:
+  - finding: verdict-pass1
+    action: upheld
+    note: Nothing in verdict.yml :40-90, the revision_mandate_round8 rows, continuity.yml (five R3C carried-block
+      items, unchanged) or the reviews/README.md round-8 / re-freeze-8 text contradicts the pass-1 facts. The PNG
+      subtree is identical to 213a91b9, so the faces are not re-reviewed (SIC-ADJ-06(a)).
+  - finding: VTC-048
+    action: upheld
+    note: Cured, as filed in pass 1. The seat's proof row matches the measured facts.
+  verdict: PASS
+  pass1_receipt:
+    path: research/reference_integrity/sector-intelligence-cycles-20261021/reviews/critic_return/first_pass_visual_taste.md
+    file_sha256: 9dc6fbe2f3bf8b87719cda0cce87453c62fe3f0b3e824a36e3e2fffd30fa89a9
+    verdict_in_pass1: PASS
+  findings_after_pass2: []
+  round8_dispositions_after_pass2:
+  - id: VTC-048
+    disposition: cured
+  - id: VTC-049
+    disposition: implementation_bound
+  conditions: []
+  conditions_check_after_pass2:
+  - id: SIC-V8-VT1
+    result: met
+    note: Clauses (a)-(e) are met as in pass 1, with (d) under SIC-ADJ-06(b). The verdict.yml :74 condition text
+      is the one I verified against.
+  - id: SIC-V8-C04
+    result: partial (visual-lane half)
+    note: 'Visual half met: outside the ledger the diff names only README.md, capture.log and the test file; all
+      43 blobs are identical. verdict.yml :76 carries no line count, so the 2260 disclosure does not touch this
+      condition''s text. The test-run half and the proposal.yml diff-confinement half belong to the product lane
+      or the authority.'
+  implementation_bound_check:
+    id: SIC-V8-VT2
+    text_is_mine: true
+    binds_at: P19-P23
+    note: Word for word from round8_213a91b9/critic_return/second_pass_visual_taste.md:47. Verified before acceptance
+      on ZH captures at 1440 and 390. One theme per width is enough because theme does not affect wrapping.
+  tool_calls: 5 of 5
+  inputs_opened_pass2:
+  - reviews/critic_return/first_pass_visual_taste.md (hash only, HEAD be8a2010)
+  - verdict.yml :40-90 (HEAD), lines cut to 900 characters
+  - proposal.yml line counts at 213a91b9 / 4356fa60 / 4161d404 / 2c55ac13
+  - proposal.yml :2261-2295 (2c55ac13), lines cut to 700 characters; full text of :2271 from ':2231' onward and
+    the context around '2260' in :2283
+  - reviews/round8_213a91b9/critic_return/second_pass_visual_taste.md (lines matching VTC-049 / SIC-V8-VT2 / ladder_state_pattern)
+  - git log -1 --format=%B 2c55ac13 (only the '2260' phrase extracted)
+  - continuity.yml (id lines only)
+  - reviews/README.md (round 8 / re-freeze 8 / round 9 lines)
+  - git grep -i 'placeholder' over design_refs/sector-paper-20261021 and proposal.yml at 4161d404 and 2c55ac13,
+    output cut to 80 characters
+  reviewer_identity: opus-auditor-visual-taste-sic-20261021-r9
+  mode: READ_ONLY
+  rationale_adequacy:
+  - id: VTC-048
+    adequate: true
+    note: 'The revision_mandate_round8 VTC-048 row (proposal.yml:2266-2271 at 2c55ac13) uses the verdict.yml :53
+      note verbatim as its cure. Its proof is the same set of facts I checked in pass 1: the four label lines, the
+      empty label grep with proposal.yml:39 naming the mislabel without quoting it, the wave-8 commit message statement,
+      the diff set outside the ledger under SIC-ADJ-06(b), and the 42-PNG plus boards_manifest.yml blob identity.
+      It claims nothing beyond that. One wording point is in advisory_notes: the phrase ''the only placeholder-glyph
+      attribution is to that measured bounding box''.'
+  - id: VTC-049/SIC-V8-VT2
+    adequate: true
+    note: The carried text at verdict.yml :79 and at the proposal.yml VTC-049 mandate row is my round-8 pass-2 recommended
+      text (round8_213a91b9/critic_return/second_pass_visual_taste.md:47) word for word, from 'On every ZH Cycles
+      surface that renders cycles.ladder_state_pattern' to 'verified on the production proof captures (P19-P23)
+      before acceptance.' It binds correctly. It is implementation-bound under SIC-ADJ-05 / SIC-ADJ-06(c) with disposition
+      implementation_bound_approval_condition. Its proof says it is not a wave-8 edit and the specimen is not re-rendered.
+      It is outcome text that leaves the mechanism to the implementer. The finding note it carries names boards
+      34/35 and the desk board 41, so the desk surface is unambiguously in scope.
+  - id: record-disclosure-2260
+    adequate: true
+    note: Verified independently. `git show <sha>:proposal.yml | wc -l` gives 2227 at 213a91b9, 2259 at 4356fa60,
+      2259 at 4161d404 and 2295 at 2c55ac13. The 2c55ac13 message contains '2260 → 2295 lines only by the EOF append'.
+      proposal.yml:2283 contains '(the file keeps 2260 lines through wave 8'. So the figure is wrong by one at the
+      frozen sha and the EOF append is +36, as disclosed. The material claim (nothing inserted above :2067/:2190)
+      does not depend on the figure. It touches no PNG, boards_manifest.yml, copy_deck.json, build_cycles.py, cycles.css,
+      cycles.html or design_refs byte, and no visual-lane clause cites a line count. It changes nothing in the visual
+      lane. I concur that it is a minor DEFECT of the record for the authority to adjudicate in the ledger; I do
+      not refile it as a VTC finding. My pass-1 receipt cites no line count, so this does not make any of my pass-1
+      statements false.
+  advisory_notes:
+  - In the VTC-048 proof row (proposal.yml:2271 at 2c55ac13), the phrase 'the only placeholder-glyph attribution
+    is to that measured bounding box' implies that such an attribution exists. My pass-1 scan found 'placeholder'
+    zero times in README.md:136, capture.log:57, proposal.yml:1329, proposal.yml:2231 and the wave-8 message, so
+    clause (e) holds only vacuously. The tree has other 'placeholder' hits, for example copy_deck.json:296 search_placeholder,
+    and 8 occurrences in proposal.yml at 4161d404 versus 10 at 2c55ac13. I could not read their context inside this
+    call budget, so this is not a finding. If the authority touches :2271 for the 2260 cure anyway, 'any placeholder-glyph
+    statement is attributed to that box (none in the four lines)' would be exact.
+  - 'Carried from pass 1: proposal.yml:2231 states the box only as bbox (16, 82, 374, 116). The coordinates are
+    the same and the line makes no false claim.'
+  verdict_as_filed: PASS
+  quarantine_breaches: []
+  second_pass_path: critic_return/second_pass_visual_taste.md
+  disposition_notes: 'Judged as frozen at 4161d404; the pass-2 grant revealed proposal.yml in full incl. revision_mandate_round8
+    (:2261-2295; the :2283 PRC-055 proof row), verdict.yml (round 8: SIC-V8-C01/C03/C04/VT1, SIC-ADJ-05/06, implementation_bound_notes
+    SIC-V8-VT2 / SIC-V8-C02), continuity.yml, reviews/README.md, the reviewer''s own round-8 records and the wave-8
+    (4161d404) / re-freeze-8 (2c55ac13) commit message bodies only; the be8a2010 receipt-commit body and every other-lane
+    file stayed quarantined. Amendment actions are normalized to the checker vocabulary (upheld/downgraded/withdrawn);
+    the critic''s own wording is kept in action_as_filed and a raised severity in severity_after_pass2.'

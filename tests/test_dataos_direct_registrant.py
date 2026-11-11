@@ -745,3 +745,168 @@ def test_root_later_ordinary_refresh_keeps_historical_window(root_published, roo
     body = (json.dumps(first['spy_option_root'], indent=2, sort_keys=True) + '\n').encode()
     assert b.VendorAliasTable.from_records(saved).resolve_option_underlying(
         'thetadata', 'SPY', date(2026, 10, 16), decision_at='2026-10-16T12:00:00Z', evidence_bytes=body) is None
+
+
+# R19: fund registrants may legitimately expose an empty submissions ticker list.
+FUND_URL = 'https://www.sec.gov/files/company_tickers_mf.json'
+FUND_IDS = {'QQQ': ('0001067839', 'S000101292', 'C000271435'),
+            'SMH': ('0001137360', 'S000034411', 'C000105869')}
+
+
+@pytest.fixture(scope='session')
+def fund_listing(synthetic_captures, tmp_path_factory):
+    root = tmp_path_factory.mktemp('fund-reference-synthetic')
+    frame = pd.read_parquet(EVIDENCE / 'listing-2026-10-15.parquet')
+    for i, symbol in enumerate(('QQQ', 'SMH')):
+        frame.loc[i, 'symbol'] = symbol
+        frame.loc[i, 'etf'] = True
+    artifact = root / 'snapshots' / '2026-10-15.parquet'
+    artifact.parent.mkdir()
+    frame.to_parquet(artifact, index=False)
+    sources = [(sid, receipts.SourceFetch(value='synthetic', content=b'synthetic source', requested_url=url,
+        started_at='2026-10-15T01:00:00.000000Z', completed_at='2026-10-15T01:00:01.000000Z'))
+        for sid, url in [(receipts.NASDAQ_LISTED_SOURCE_ID, 'https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt'),
+                         (receipts.OTHER_LISTED_SOURCE_ID, 'https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt')]]
+    receipt = receipts.build_symbol_directory_completion_receipt(kind='listing_snapshot', observation_date='2026-10-15',
+        artifact_path=artifact, source_fetches=sources,
+        collector_started_at='2026-10-15T00:59:59.000000Z', collector_completed_at='2026-10-15T01:00:02.000000Z',
+        pre_dedupe_rows=len(frame), duplicate_occurrences=0, duplicate_key_count=0,
+        source_row_counts=((receipts.NASDAQ_LISTED_SOURCE_ID, 5000), (receipts.OTHER_LISTED_SOURCE_ID, 6500)),
+        pre_dedupe_spy_occurrences=({'source_id':receipts.OTHER_LISTED_SOURCE_ID,'symbol':'SPY',
+            'security_name':'Synthetic listing','exchange':'P','etf':True,'test_issue':False,'is_preferred':False},),
+        non_authoritative_footers=tuple(receipts.footer_diagnostic(source_id=sid,
+            text='File Creation Time: 10/15/2026 01:00:00') for sid,_ in sources))
+    return artifact.read_bytes(), json.dumps(receipt, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()+b'\n'
+
+
+def fund_source(fund_listing, symbol='QQQ'):
+    cik, series, shareclass = FUND_IDS[symbol]
+    body = json.dumps({'cik':cik,'name':'Synthetic '+symbol+' Registrant','tickers':[],'exchanges':[]}).encode()
+    capture = dict(url=f'https://data.sec.gov/submissions/CIK{cik}.json',
+        final_url=f'https://data.sec.gov/submissions/CIK{cik}.json',status=200,bytes=len(body),
+        sha256=hashlib.sha256(body).hexdigest(),request_started_at='2026-10-15T09:59:20Z',read_completed_at='2026-10-15T09:59:21Z')
+    mapping = json.dumps({'fields':['cik','seriesId','classId','symbol'],'data':[[int(cik),series,shareclass,symbol]]}).encode()
+    mc = dict(url=FUND_URL,final_url=FUND_URL,status=200,bytes=len(mapping),sha256=hashlib.sha256(mapping).hexdigest(),
+        request_started_at='2026-10-15T09:59:30Z',read_completed_at='2026-10-15T09:59:31Z')
+    return dict(symbol=symbol,response_body=body,capture=capture,listing_body=fund_listing[0],
+        listing_receipt_body=fund_listing[1],fund_reference_body=mapping,fund_reference_capture=mc)
+
+
+def change_fund_body(source, body):
+    source['fund_reference_body'] = body
+    source['fund_reference_capture'].update(bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+
+
+@pytest.mark.parametrize('symbol',['QQQ','SMH'])
+def test_fund_empty_submissions_can_bind_captured_series_class(fund_listing,symbol):
+    source=fund_source(fund_listing,symbol); before=copy.deepcopy(source)
+    result=b.prepare_direct_registrant(**source,decision_at=NOW)
+    row=result['registrant']; link=row['fund_reference']
+    assert result['resolution'].listing_key.render()=='US-XNAS-'+symbol
+    assert row['known_at']=='2026-10-15T09:59:31+00:00'
+    assert link['schema']=='mastermind.sec_fund_reference.v1'
+    assert (link['cik'],link['series_id'],link['class_id'],link['symbol'])==(*FUND_IDS[symbol],symbol)
+    assert link['capture']==source['fund_reference_capture']
+    assert row['scope']=='pending_transition_independence_only'
+    assert source==before and 'security_id' not in row
+
+
+@pytest.mark.parametrize('mode',['missing_body','missing_capture','missing_both','wrong_scope','contradictory_tickers'])
+def test_fund_requires_explicit_complete_evidence(fund_listing,mode):
+    source=fund_source(fund_listing)
+    if mode=='missing_body':source.pop('fund_reference_body')
+    elif mode=='missing_capture':source.pop('fund_reference_capture')
+    elif mode=='missing_both':source.pop('fund_reference_body');source.pop('fund_reference_capture')
+    elif mode=='wrong_scope':source['symbol']='SPY'
+    else:
+        x=json.loads(source['response_body']);x['tickers']=['OTHER'];source['response_body']=json.dumps(x).encode()
+        source['capture'].update(bytes=len(source['response_body']),sha256=hashlib.sha256(source['response_body']).hexdigest())
+    with pytest.raises(b.IdentityError):b.prepare_direct_registrant(**source,decision_at=NOW)
+
+
+@pytest.mark.parametrize('kind',['wrong_cik','bool_cik','bad_series','bad_class','no_symbol','duplicate','conflicting','bad_fields','unknown_key','bad_row','nonfinite'])
+def test_fund_mapping_disagreement_is_not_resolved_by_ticker_equality(fund_listing,kind):
+    source=fund_source(fund_listing);x=json.loads(source['fund_reference_body']);row=x['data'][0]
+    if kind=='wrong_cik':row[0]=1137360
+    elif kind=='bool_cik':row[0]=True
+    elif kind=='bad_series':row[1]='C000101292'
+    elif kind=='bad_class':row[2]='S000271435'
+    elif kind=='no_symbol':row[3]='QQQM'
+    elif kind=='duplicate':x['data'].append(list(row))
+    elif kind=='conflicting':x['data'].append([1137360,'S000034411','C000105869','QQQ'])
+    elif kind=='bad_fields':x['fields'][0]='unknown'
+    elif kind=='unknown_key':x['extra']='unrecognized'
+    elif kind=='bad_row':row.pop()
+    else:row[0]=float('nan')
+    change_fund_body(source,json.dumps(x).encode())
+    with pytest.raises(b.IdentityError):b.prepare_direct_registrant(**source,decision_at=NOW)
+
+
+@pytest.mark.parametrize('field,value',[('url','https://example.com/funds.json'),('final_url','https://example.com/funds.json'),
+    ('status',True),('status',403),('bytes',True),('sha256','0'*64),
+    ('request_started_at','2026-10-14T09:59:30Z'),('request_started_at','2026-10-15T09:59:32Z'),
+    ('read_completed_at','2026-10-15T10:00:01Z'),('read_completed_at','2026-10-15T09:59:31')])
+def test_fund_capture_provenance_and_clock_are_required(fund_listing,field,value):
+    source=fund_source(fund_listing);source['fund_reference_capture'][field]=value
+    with pytest.raises(b.IdentityError):b.prepare_direct_registrant(**source,decision_at=NOW)
+
+
+@pytest.mark.parametrize('raw',[b'{"fields":[],"fields":[],"data":[]}',b'[]',b'\xff',b' '*(2*1024*1024+1)], ids=['duplicate-key','nonobject','invalid-utf8','oversize'])
+def test_fund_strict_bounded_json(fund_listing,raw):
+    source=fund_source(fund_listing);change_fund_body(source,raw)
+    with pytest.raises(b.IdentityError):b.prepare_direct_registrant(**source,decision_at=NOW)
+
+
+def test_fund_native_manifest_v2_roundtrip_and_v1_unchanged(fund_listing,tmp_path):
+    source=fund_source(fund_listing);record=copy.deepcopy(source)
+    for key in ('response_body','listing_body','listing_receipt_body','fund_reference_body'):
+        (tmp_path/key).write_bytes(record[key]);record[key]=key
+    p=tmp_path/'manifest.json';p.write_text(json.dumps({'schema':'mastermind.direct_registrant_input.v2','sources':[record]}))
+    assert b.read_direct_registrant_inputs(p)==[source]
+    p.write_text(json.dumps({'schema':'mastermind.direct_registrant_input.v1','sources':[record]}))
+    with pytest.raises(b.IdentityError):b.read_direct_registrant_inputs(p)
+
+
+def test_fund_retained_state_preserves_metadata_and_no_replay(fund_listing,tmp_path):
+    source=fund_source(fund_listing);state,res=b._direct_registrant_state(tmp_path,[source],NOW)
+    row=state['observations']['QQQ'];row.update(status='BOUND',security_id='SEC:US-XNAS-QQQ')
+    state['sha256']=b._reference_digest({k:state[k] for k in ('schema','observations')})
+    p=tmp_path/b.RECEIPT_NAME;p.write_text(json.dumps({'direct_registrant_intake':state}));before=p.read_bytes()
+    replay,_=b._direct_registrant_state(tmp_path,[],NOW)
+    assert replay['observations']==state['observations'] and p.read_bytes()==before
+    with pytest.raises(b.IdentityError,match='already retained'):b._direct_registrant_state(tmp_path,[source],NOW)
+
+
+@pytest.mark.parametrize('change',['series','future','source_url'])
+def test_fund_retained_metadata_cannot_be_silently_relabelled(fund_listing,tmp_path,change):
+    source=fund_source(fund_listing);state,_=b._direct_registrant_state(tmp_path,[source],NOW)
+    row=state['observations']['QQQ'];row.update(status='BOUND',security_id='SEC:US-XNAS-QQQ')
+    link=row['fund_reference']
+    if change=='series':link['series_id']='S000000001'
+    elif change=='future':link['capture']['read_completed_at']='2026-10-15T10:00:01Z'
+    else:link['capture']['url']='https://example.com/funds.json'
+    state['sha256']=b._reference_digest({k:state[k] for k in ('schema','observations')})
+    p=tmp_path/b.RECEIPT_NAME;p.write_text(json.dumps({'direct_registrant_intake':state}));before=p.read_bytes()
+    with pytest.raises(b.IdentityError):b._direct_registrant_state(tmp_path,[],NOW)
+    assert p.read_bytes()==before
+
+
+def test_fund_canonical_independence_fence_still_owns_mint(fund_listing):
+    source=fund_source(fund_listing);result=b.prepare_direct_registrant(**source,decision_at=NOW)
+    old=cohort();mint=b.mint_master_rows([result['resolution']],old,NOW,direct_registrant_inputs=[source])
+    assert mint[1]=={'QQQ':'SEC:US-XNAS-QQQ'} and len(mint[0])==len(old)+1
+    new=next(row for row in mint[0] if row['security_id']=='SEC:US-XNAS-QQQ')
+    assert new['issuer_id'] is None and new['issuer_cik'] is None
+    old[0]['issuer_cik']=FUND_IDS['QQQ'][0]
+    refused=b.mint_master_rows([result['resolution']],old,NOW,direct_registrant_inputs=[source])
+    assert not refused[1] and refused[4]
+
+
+def test_fund_unassigned_symbol_row_is_not_a_conflicting_ticker(fund_listing):
+    source=fund_source(fund_listing)
+    value=json.loads(source['fund_reference_body'])
+    value['data'].append([1048606,'S000002797','C000219432',''])
+    change_fund_body(source,json.dumps(value).encode())
+    prepared=b.prepare_direct_registrant(**source,decision_at=NOW)
+    assert prepared['registrant']['fund_reference']['symbol']=='QQQ'
+    assert prepared['registrant']['fund_reference']['series_id']=='S000101292'

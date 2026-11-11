@@ -66,6 +66,19 @@
   <div class="mmh-step"><button class="segbtn" id="mmh-filings-prev" type="button" disabled>Previous filings</button><button class="segbtn" id="mmh-filings-next" type="button" disabled>Next filings</button></div>
   <p class="mmr-note"><span class="l-en">All retained Item 2.02 filings on this filing date, not just the selected price proxies. Metadata does not establish the original earnings-release time, earnings surprise, historical ticker identity, or the cause of a market move.</span><span class="l-zh">显示该披露日期保留的全部 2.02 项披露，并不限于所选价格代理资产。元数据不能证明原始财报发布时间、业绩意外、历史代码身份或市场变动原因。</span></p>
 </section>
+<section class="mmr-panel mmh-evidence" id="mmh-transcripts" hidden aria-label="Reported earnings-call records">
+  <h3><span class="l-en">Earnings-call records</span><span class="l-zh">业绩电话会议记录</span></h3>
+  <p id="mmh-transcripts-status" class="mmr-note"></p>
+  <div class="mmh-table-wrap" tabindex="0"><table id="mmh-transcripts-table"><thead><tr>
+    <th scope="col"><span class="l-en">Source symbol</span><span class="l-zh">来源代码</span></th>
+    <th scope="col"><span class="l-en">Fiscal period</span><span class="l-zh">财务期间</span></th>
+    <th scope="col"><span class="l-en">Recorded date</span><span class="l-zh">记录日期</span></th>
+    <th scope="col"><span class="l-en">Source text access</span><span class="l-zh">来源文本访问</span></th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="mmh-step"><button class="segbtn" id="mmh-transcripts-prev" type="button" disabled>Previous calls</button><button class="segbtn" id="mmh-transcripts-next" type="button" disabled>Next calls</button></div>
+  <p class="mmr-note"><span class="l-en">All retained call records for this reported date, not only the selected price proxies. This offline file contains metadata, not call text. Use the exact read request with installed Data &amp; Lab to retrieve original paragraphs. Report dates and speaker labels do not establish publication timing or verified roles.</span><span class="l-zh">显示该记录日期的全部保留会议记录，并不限于所选价格代理资产。离线文件仅含元数据，不含会议正文。请通过已安装的 Data &amp; Lab 使用精确读取请求获取原始段落。记录日期和发言人标签不能证明发布时间或角色。</span></p>
+  <pre id="mmh-transcript-request" hidden aria-label="Exact Data and Lab transcript read request"></pre>
+</section>
 <details class="mmr-panel mmh-evidence" id="mmh-evidence"><summary><span class="l-en">Source evidence and limits</span><span class="l-zh">来源依据与限制</span></summary>
   <p id="mmh-basis"></p><p id="mmh-cutoff"></p><p id="mmh-coverage-note"></p>
   <p class="mmr-note"><span class="l-en">This explicit proxy panel does not establish whole-market breadth, historical stock membership, original news or consensus forecasts.</span><span class="l-zh">此明确选定的代理资产组合不代表全市场广度、历史成分股、原始新闻或当时的共识预测。</span></p>
@@ -78,5 +91,6 @@
 {% if outcome_data %}<script id="mmh-outcomes-data" type="application/octet-stream" data-sha256="{{ outcome_sha }}">{{ outcome_data }}</script>{% endif %}
 {% if macro_data %}<script id="mmh-macro-data" type="application/octet-stream" data-sha256="{{ macro_payload_sha }}">{{ macro_data }}</script>{% endif %}
 {% if filing_data %}<script id="mmh-filings-data" type="application/octet-stream" data-sha256="{{ filing_payload_sha }}">{{ filing_data }}</script>{% endif %}
+{% if transcript_data %}<script id="mmh-transcripts-data" type="application/octet-stream" data-sha256="{{ transcript_payload_sha }}">{{ transcript_data }}</script>{% endif %}
 <script>{{ js|safe }}</script>
 </body></html>

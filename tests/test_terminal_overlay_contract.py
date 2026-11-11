@@ -23,6 +23,74 @@ def _read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def test_terminal_router_preserves_explicit_browser_targets():
+    """The overlay's own new-tab recovery link must escape the capture router."""
+    import json
+
+    source = _read("templates/theme.js")
+    start = source.index("  var TERMINAL_PAGES =")
+    end = source.index("  /* ---- nb-spot", start)
+    harness = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const fs = require('node:fs');
+const source = JSON.parse(fs.readFileSync(0, 'utf8'));
+const listeners = [], opens = [];
+const context = {
+  URL, location: {href: 'https://www.mastermind-x.com/stocks/CNDT.html'},
+  MM_TERMINAL_ORIGIN: 'https://app.mastermind-x.com',
+  document: {body: null, addEventListener(type, fn) {
+    if (type === 'click') listeners.push(fn);
+  }},
+  mmTerminalOn: () => true,
+  openTerminal: (ticker, anchor, url) => opens.push({ticker, anchor, url}),
+};
+vm.runInNewContext(source, context);
+assert.equal(listeners.length, 1);
+const direct = 'https://app.mastermind-x.com/terminal?sym=CNDT&from=macro&ret=' +
+  encodeURIComponent(context.location.href);
+const cases = [
+  {name: 'ordinary direct link', href: direct, overlay: true},
+  {name: 'ordinary analyzer link', href: '../stock.html#CNDT', overlay: true},
+  {name: 'explicit same frame', href: direct, target: '_self', overlay: true},
+  {name: 'same frame keyword is case insensitive', href: direct, target: '_SELF', overlay: true},
+  {name: 'Open separately recovery link', href: direct, target: '_blank'},
+  {name: 'named browsing context', href: direct, target: 'research'},
+  {name: 'parent frame', href: direct, target: '_parent'},
+  {name: 'top frame', href: direct, target: '_top'},
+  {name: 'analyzer in new tab', href: '../stock.html#CNDT', target: '_blank'},
+  {name: 'download', href: direct, download: true},
+  {name: 'modified click', href: direct, ctrlKey: true},
+  {name: 'middle click', href: direct, button: 1},
+  {name: 'already consumed', href: direct, defaultPrevented: true},
+  {name: 'foreign destination', href: 'https://example.com/terminal?sym=CNDT'},
+];
+for (const c of cases) {
+  opens.length = 0;
+  const anchor = {
+    getAttribute: key => key === 'href' ? c.href : key === 'target' ? c.target || null : null,
+    hasAttribute: key => key === 'download' && !!c.download,
+  };
+  const event = {
+    button: c.button || 0, ctrlKey: !!c.ctrlKey, defaultPrevented: !!c.defaultPrevented,
+    target: {closest: () => anchor},
+    preventDefault() {this.defaultPrevented = true;},
+    stopPropagation() {this.stopped = true;},
+  };
+  listeners[0](event);
+  assert.equal(opens.length, c.overlay ? 1 : 0, c.name);
+  assert.equal(event.defaultPrevented, !!c.overlay || !!c.defaultPrevented, c.name);
+  assert.equal(!!event.stopped, !!c.overlay, c.name);
+  if (c.overlay) assert.equal(opens[0].ticker, 'CNDT', c.name);
+}
+"""
+    node = shutil.which("node")
+    assert node is not None, "node is required for the Terminal capture router contract"
+    result = subprocess.run([node, "-e", harness], input=json.dumps(source[start:end]),
+                            text=True, capture_output=True, timeout=15)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_overlay_asset_is_paired_and_published_by_the_builder():
     template = _read("templates/terminal_overlay.js")
     assert template == _read("site/terminal_overlay.js")
@@ -131,6 +199,25 @@ def test_iframe_load_fallback_requires_a_load_before_revealing():
     assert "clearTimeout(state.frameLoadFallbackTimer)" in code
 
 
+def test_overlay_restores_explicit_invoker_after_dashboard_is_unlocked():
+    theme = _read("templates/theme.js")
+    code = _read("templates/terminal_overlay.js")
+    assert "function openTerminal(t, trigger, requestedUrl, returnFocus)" in theme
+    assert "returnFocus: returnFocus || trigger || null" in theme
+    assert "openTerminal(x.t, box, null, trigger)" in theme
+    assert "returnFocus: null" in code
+    assert "function isReturnFocusCandidate(el)" in code
+    assert "el.closest('[inert],[aria-hidden=\"true\"]')" in code
+    assert "function resolveReturnFocus(primary)" in code
+    assert ".site-nav .search-trigger, .site-nav a[href], .site-nav button:not([disabled])" in code
+    assert "state.returnFocus = config.returnFocus || config.trigger || document.activeElement || null" in code
+    assert "state.returnFocus || state.activeElement" in code
+    unlocked = code.index("document.documentElement.classList.remove('mm-terminal-lock')")
+    resolved = code.index("resolveReturnFocus(requestedReturnFocus)", unlocked)
+    focused = code.index("restoreFocus.focus({ preventScroll: true })", resolved)
+    assert unlocked < resolved < focused
+
+
 def test_overlay_restores_the_exact_dashboard_position_without_smooth_scroll():
     code = _read("templates/terminal_overlay.js")
     assert "state.scrollX = window.scrollX" in code
@@ -171,7 +258,9 @@ def test_close_reveals_dashboard_immediately_without_an_opaque_exit_frame():
 def test_mobile_close_does_not_refocus_ticker_and_override_saved_scroll():
     code = _read("templates/terminal_overlay.js")
     assert "function unlockDashboard(options)" in code
-    assert "options && options.restoreFocus === false ? null : state.activeElement" in code
+    from rjsmin import jsmin
+
+    assert "options&&options.restoreFocus===false?null:(state.returnFocus||state.activeElement)" in jsmin(code)
     assert "unlockDashboard({ restoreFocus: false });" in code
     assert "unlockDashboard();" in code  # Desktop keeps keyboard focus restoration.
 

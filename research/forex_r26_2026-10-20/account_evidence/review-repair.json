@@ -1,0 +1,53 @@
+{
+  "program": "forex-r26-native-completion-20261020-sol-001",
+  "repair_parent": "2d4550791063d02b3ade2a95a48b6e728cbd7a00",
+  "independent_review": {
+    "operation": "forex-r26-native-review-2d45507-20261021-003",
+    "verdict": "REQUEST_CHANGES",
+    "findings": [
+      {
+        "priority": "P1",
+        "finding": "Routine same-account SIGNED_IN clears drafts, editor and pending mutation reconciliation."
+      },
+      {
+        "priority": "P2",
+        "finding": "Successful empty reload shows definitive empty-account copy while a save remains unresolved."
+      }
+    ]
+  },
+  "repair": {
+    "auth": "Only an owner change or actual SIGNED_OUT invalidates the account epoch; initial status changes still notify subscribers.",
+    "account": "An inventory read may refresh known records but cannot resolve a pending mutation or restore definitive empty-account copy."
+  },
+  "regression_before_fix": {
+    "result": "4 pytest failures",
+    "node": "19 of 20 subtests passed; the new routine SIGNED_IN intent test failed",
+    "browser": "All three new adversarial browser regressions failed",
+    "seconds": 34.37,
+    "log": "account-review-red.log"
+  },
+  "verification_after_fix": {
+    "command": "python3.14 -m pytest tests/test_forex_watch_workspace_browser.py tests/test_forex_watch_client_js.py tests/test_forex_r26_workspace.py -q",
+    "result": "29 passed",
+    "node_subtests": 20,
+    "browser_cases": 13,
+    "pytest_seconds": 39.17,
+    "log": "account-review-green.log"
+  },
+  "source_sha256": {
+    "templates/forex_watch_client.js": "0e1e908c6db5a3eb685e747b867a8e25e0d5e0c2759a7e702716063fbb87bd6d",
+    "site/forex_watch_client.js": "0e1e908c6db5a3eb685e747b867a8e25e0d5e0c2759a7e702716063fbb87bd6d",
+    "templates/forex_r26.js": "6076e46f58671e9ef4865b113ce257f8baeca76505305f8e8a332fe99b86ba8e",
+    "site/forex_r26.js": "6076e46f58671e9ef4865b113ce257f8baeca76505305f8e8a332fe99b86ba8e",
+    "tests/js/forex_watch_client.test.cjs": "52ab8cf4441da955a438b15710fd1bd67ea34c18811d8c856a6bbc2318fa97a4",
+    "tests/test_forex_watch_workspace_browser.py": "3f8a6d26d50e7842d382bd9bcad02b0f54695987ce2eb22924ea2ad959ad4c2a",
+    "tests/test_forex_watch_client_js.py": "2677b4e0a66b8cbfecacf952a4f895f72e30707d2b68f7aabeec765802ee5ef3",
+    "tests/test_forex_r26_workspace.py": "877a69630353bed001ea11293daff2135bde96c53c5c21dbb088eb27081a2062"
+  },
+  "limitations": [
+    "Controlled account fixture; not production or PostgreSQL/RLS proof.",
+    "The prior 2d45507 review remains REQUEST_CHANGES. Fresh exact-head delta review is required.",
+    "The initial validation.json remains bound to its original source and is not relabeled as this repair proof.",
+    "No activation, admitted finalized 4H feed or delivery acceptance."
+  ]
+}

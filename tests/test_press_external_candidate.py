@@ -472,7 +472,10 @@ def test_reviewed_risk_history_requires_complete_object_jsonl(inputs, suffix):
     else:
         fact = P.plan_external_candidate(**inputs)['validation_context']['facts'][-1]
         assert fact['id'] == 'risk_radar' and fact['dated'] == '2026-10-10'
-        assert fact['values'] == ['70', '0.19', '0.11', '0.06']
+        # This legacy row has no target/calibration evidence. Keep its dated
+        # state receipt, but do not make its naked probabilities quotable.
+        assert fact['values'] == ['70']
+        assert 'probability' not in fact['text']
         assert fact['receipt'] == 'sha256:' + row['sha256']
 
 

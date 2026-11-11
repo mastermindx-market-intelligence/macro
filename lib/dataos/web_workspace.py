@@ -19,7 +19,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
+from lib.dataos.read_contract import (READ_CONTRACT_VERSION, ReadMode, ReadRefusal, ReadRequest,
+                                      RefusalCode, ViewContract, replay, select_generation)
 from lib.dataos.registry import load_registry
+from lib.dataos.temporal import TemporalError
 from lib.dataos.web_readers import ReaderError, inspect_file, read_rows
 
 MAX_RESPONSE_BYTES = 131072
@@ -29,6 +32,14 @@ READABLE_SUFFIXES = frozenset({".parquet", ".csv", ".json", ".jsonl", ".ndjson"}
 HIDDEN_NAMES = frozenset({".git", ".env", ".ssh", ".aws", ".config"})
 SENSITIVE_MARKERS = ("credential", "secret", "apikey", "api_key", "access_token",
                      "refresh_token", "private_key")
+
+# U03 (DATA-OS-COMPLETION): a read may name a declared view (D00.01) — the fields of the canonical ReadRequest.
+VIEW_FIELDS = frozenset({"mode", "contract", "cutoff", "clock", "output_id", "generation", "dataset_id"})
+VIEW_CONTRACT_FIELDS = frozenset({"purpose", "identity", "field_units", "adjustment_reference",
+                                  "coverage", "refusal_reasons"})
+VIEW_ENVELOPE_FIELDS = frozenset({"schema_version", "observed_at", "implementation_revision",
+                                  "source_access", "production_qualification"})
+_HEX40 = frozenset("0123456789abcdef")
 
 
 class WorkspaceError(Exception):
@@ -94,6 +105,74 @@ def _bound_int(value: int, minimum: int, maximum: int, code: str = "INVALID_ARGU
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise WorkspaceError(code)
     return value
+
+
+def _str_map(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict) or len(value) > 32 or not all(
+            isinstance(k, str) and isinstance(v, str) and len(k) <= 80 and len(v) <= 200
+            for k, v in value.items()):
+        raise WorkspaceError("INVALID_VIEW")
+    return dict(value)
+
+
+def _view_request(view: Any) -> tuple[ReadRequest, dict[str, Any]]:
+    """Parse a requested view into the canonical ReadRequest; refusals keep their typed code."""
+    if not isinstance(view, dict) or set(view) - VIEW_FIELDS or not {"mode", "contract"} <= set(view):
+        raise WorkspaceError("INVALID_VIEW")
+    contract = view["contract"]
+    if (not isinstance(contract, dict) or set(contract) - VIEW_CONTRACT_FIELDS
+            or not VIEW_CONTRACT_FIELDS - {"refusal_reasons"} <= set(contract)):
+        raise WorkspaceError("INVALID_VIEW")
+    reasons = contract.get("refusal_reasons", [])
+    if not isinstance(reasons, list) or len(reasons) > 32 or not all(
+            isinstance(r, str) and len(r) <= 80 for r in reasons):
+        raise WorkspaceError("INVALID_VIEW")
+    for name in ("purpose", "coverage"):
+        if not isinstance(contract[name], str) or len(contract[name]) > 200:
+            raise WorkspaceError("INVALID_VIEW")
+    for name in ("mode", "cutoff", "clock", "output_id", "dataset_id"):
+        if view.get(name) is not None and (not isinstance(view[name], str) or len(view[name]) > 200):
+            raise WorkspaceError("INVALID_VIEW")
+    generation = view.get("generation")
+    if generation is not None and (not isinstance(generation, str) or len(generation) > 80
+                                   or not generation.startswith("statv1:")):
+        raise WorkspaceError("INVALID_VIEW")
+    declared = {"purpose": contract["purpose"], "identity": _str_map(contract["identity"]),
+                "field_units": _str_map(contract["field_units"]),
+                "adjustment_reference": _str_map(contract["adjustment_reference"]),
+                "coverage": contract["coverage"], "refusal_reasons": list(reasons)}
+    try:
+        request = ReadRequest(mode=view["mode"], contract=ViewContract(
+                purpose=declared["purpose"], identity=declared["identity"],
+                field_units=declared["field_units"], adjustment_reference=declared["adjustment_reference"],
+                coverage=declared["coverage"], refusal_reasons=tuple(reasons)),
+            cutoff=view.get("cutoff"), clock=view.get("clock"), output_id=view.get("output_id"))
+    except ReadRefusal as exc:
+        raise WorkspaceError("VIEW_REFUSED_" + exc.code.value) from None
+    except (TemporalError, TypeError, ValueError):
+        raise WorkspaceError("INVALID_VIEW") from None
+    return request, declared
+
+
+def _view_gate(request: ReadRequest, source_revision: str | None) -> None:
+    """Refuse what the workspace cannot prove, BEFORE any source is opened (D00.D1).
+
+    RECONSTRUCT needs a known_at-bound generation history and REPLAY a retained output; this adapter
+    has neither, so both refuse with the canonical typed code. CURRENT needs the full code revision."""
+    try:
+        if request.mode is ReadMode.REPLAY:
+            replay(request, None)
+        elif request.mode is ReadMode.RECONSTRUCT:
+            select_generation((), cutoff=request.cutoff, clock=request.clock)
+    except ReadRefusal as exc:
+        raise WorkspaceError("VIEW_REFUSED_" + exc.code.value) from None
+    except TemporalError:
+        raise WorkspaceError("INVALID_VIEW") from None
+    if request.mode is not ReadMode.CURRENT:
+        raise WorkspaceError("VIEW_REFUSED_" + RefusalCode.UNBOUND_DEPENDENCY.value)
+    if (not isinstance(source_revision, str) or len(source_revision) != 40
+            or not set(source_revision) <= _HEX40):
+        raise WorkspaceError("VIEW_REFUSED_" + RefusalCode.MISSING_CURRENT_EVIDENCE.value)
 
 
 class DataWorkspace:
@@ -340,6 +419,67 @@ class DataWorkspace:
                                 query_receipt_sha256=receipt, result=rows,
                                 temporal_caution="Filtering stored rows does not reconstruct point-in-time availability.",
                                 price_basis="PRESERVED_AS_STORED_NOT_REBASED")
+
+    def read_view(self, ref: str, view: dict[str, Any] | None = None,
+                  columns: list[str] | None = None, time_column: str | None = None,
+                  start: str | None = None, end: str | None = None,
+                  equals: dict[str, Any] | None = None, offset: int = 0, limit: int = 100,
+                  expected_version: str | None = None) -> dict[str, Any]:
+        """U03: one bounded read under a declared view (D00.01) — values plus canonical evidence.
+
+        The rows are exactly the legacy read's rows. The view block names what this CURRENT read binds
+        (code revision, statv1 file version) and lists every binding it cannot prove as a gap; it never
+        upgrades a statv1 file version into a content hash or producer generation."""
+        _bound_int(limit, 1, 200)
+        _bound_int(offset, 0, 2**63 - 1)
+        if expected_version is not None and (not isinstance(expected_version, str) or len(expected_version) > 80):
+            raise WorkspaceError("INVALID_ARGUMENT")
+        request, declared = _view_request(view)
+        _view_gate(request, self.source_revision)
+        dataset_id = view.get("dataset_id")
+        if dataset_id is None:
+            dataset, dataset_gap = None, "DATASET_NOT_DECLARED"
+        else:
+            row = self.registry.get(dataset_id)
+            if row is None:
+                raise WorkspaceError("DATASET_NOT_REGISTERED")
+            registry_basis = row.basis or None
+            declared_basis = declared["adjustment_reference"].get("basis")
+            if registry_basis is not None and declared_basis is not None and declared_basis != registry_basis:
+                raise WorkspaceError("VIEW_REFUSED_" + RefusalCode.BASIS_CHANGED.value)
+            dataset = {"dataset_id": row.dataset_id, "version": row.version,
+                       "status": str(getattr(row.status, "value", row.status)),
+                       "registry_basis": registry_basis, "storage_binding": "DECLARED_NOT_VERIFIED"}
+            dataset_gap = "STORAGE_BINDING_DECLARED_NOT_VERIFIED"
+        generation = view.get("generation")
+        if generation is not None and expected_version is not None and generation != expected_version:
+            raise WorkspaceError("INVALID_VIEW")
+        pin = generation if generation is not None else expected_version
+        try:
+            base = self.read(ref, columns=columns, time_column=time_column, start=start, end=end,
+                             equals=equals, offset=offset, limit=limit, expected_version=pin)
+        except WorkspaceError as exc:
+            if generation is not None and exc.code in {"SOURCE_VERSION_MISMATCH", "SOURCE_NOT_FOUND", "SOURCE_CHANGED"}:
+                raise WorkspaceError("GENERATION_UNAVAILABLE") from None
+            raise
+        source = base["source"]
+        block = {"mode": request.mode.value, "label": "current", "contract": declared, "dataset": dataset,
+                 "generation": source["file_version"],
+                 "generation_basis": "statv1_file_version_not_a_producer_generation",
+                 "evidence": {"source_revision": self.source_revision, "file_version": source["file_version"],
+                              "identity_generation_id": None, "action_revision_set_id": None, "receipt_sha256s": []},
+                 "binding_gaps": ["IDENTITY_GENERATION_UNBOUND", "ACTION_REVISION_SET_UNBOUND",
+                                  "SOURCE_RECEIPTS_UNBOUND", "CONTENT_HASH_NOT_COMPUTED",
+                                  "IDENTITY_DECLARED_NOT_VERIFIED_AGAINST_ROWS", dataset_gap],
+                 "qualification": "VIEW_DECLARED_NOT_PRODUCTION_QUALIFIED",
+                 "read_contract_version": READ_CONTRACT_VERSION}
+        payload = {k: v for k, v in base.items() if k not in VIEW_ENVELOPE_FIELDS}
+        payload["action"] = "read_view"
+        digest_input = {k: payload[k] for k in ("source", "query", "query_receipt_sha256", "result", "price_basis")}
+        digest_input.update(view=block, implementation_revision=self.source_revision)
+        digest = hashlib.sha256(json.dumps(digest_input, sort_keys=True, default=_json_default, allow_nan=False,
+                                           separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+        return self._result(**payload, view=block, view_digest_sha256=digest)
 
 
 def load_workspace_config(path: Path, *, source_revision: str | None = None) -> DataWorkspace:

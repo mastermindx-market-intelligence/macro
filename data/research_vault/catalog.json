@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-10-15T23:23:05.236076+00:00",
-  "count": 2959,
+  "generated_at": "2026-10-19T08:48:02.670798+00:00",
+  "count": 2960,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -58,6 +58,7 @@
     "KKR",
     "LSEG",
     "MUFG",
+    "Mastermind Research",
     "MetLife",
     "Metlife",
     "Mizuho",
@@ -114,6 +115,37 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "mastermind-research-2026-10-19-cndt-settlement",
+      "title": "Conduent's proposed settlement: gross funding and unresolved net cost",
+      "institution": "Mastermind Research",
+      "side": "independent",
+      "desk": "Issuer Events",
+      "published_at": "2026-10-19",
+      "summary_points": [
+        "Conduent's October 16 filing describes a proposed $80 million aggregate settlement obligation; monitoring, administration and counsel costs share that fund.",
+        "The agreement requires funding within 14 days after preliminary approval, not 14 days after signing.",
+        "Proposed documented-loss recoveries are capped at $3,500 per eligible claimant; no payment is established.",
+        "Counsel may request up to 34% of the fund as fees plus reasonable costs, subject to court approval; this is not an awarded fee.",
+        "Qualifying California Subclass B pro-rata payments receive a proposed 20% adjustment within the fund, not extra issuer liability.",
+        "Management expects no material financial impact and cites cyber insurance; net cost and recovery timing remain unproved.",
+        "This original Research report is published October 19; the underlying issuer event remains October 16. No subsequent court-docket check is asserted.",
+        "Proposed orders and placeholder notices do not establish approval or an operating claims website. No valuation, price, return or trade claim is made."
+      ],
+      "tags": [
+        "cybersecurity",
+        "proposed-settlement",
+        "insurance",
+        "issuer-event"
+      ],
+      "tickers": [
+        "CNDT"
+      ],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-zarzrnqfgu6-29437b",
       "title": "GS Novak GS U.S. Industrials & Materials tough EPS start 14 Oct 2026",

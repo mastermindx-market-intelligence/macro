@@ -269,7 +269,9 @@ def extract_working_capital_components(*,ticker,bound,document_id,event_id,fisca
 # Extend the same profile catalogue with explicitly signed source components.
 
 def financial_fact_rules(ticker,year,quarter):
-    return {**_financial_base_rules(ticker,year,quarter),**working_capital_fact_rules(ticker,year,quarter)}
+    from engine.company_intelligence.defense_space_profiles import space_fact_rules, space_adverse_fact_rules
+    return {**_financial_base_rules(ticker,year,quarter),**working_capital_fact_rules(ticker,year,quarter),**space_fact_rules(ticker,year,quarter),**space_adverse_fact_rules(ticker,year,quarter)}
 
 def extract_financial_facts(**kwargs):
-    return _extract_base_financial_facts(**kwargs)+extract_working_capital_components(**kwargs)
+    from engine.company_intelligence.defense_space_profiles import extract_space_facts, extract_space_adverse_facts
+    return _extract_base_financial_facts(**kwargs)+extract_working_capital_components(**kwargs)+extract_space_facts(**kwargs)+extract_space_adverse_facts(**kwargs)

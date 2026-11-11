@@ -20,7 +20,7 @@ SCHEMA = "research_vault.generation_evidence.v1"
 MAX_BYTES = 128 * 1024 * 1024
 MAX_LINE_BYTES = 32 * 1024 * 1024
 KINDS = frozenset({"write_intent", "write_result", "catalog_observed",
-                   "publication_plan", "terminal"})
+                   "publication_plan", "terminal", "continuation_origin"})
 
 
 class EvidenceUnavailable(RuntimeError):

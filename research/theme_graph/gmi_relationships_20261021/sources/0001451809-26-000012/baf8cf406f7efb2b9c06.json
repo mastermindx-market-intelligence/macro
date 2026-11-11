@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T21:06:57Z",
+ "accession": "0001451809-26-000012",
+ "cik": "0001451809",
+ "doc_byte_length": 1797085,
+ "doc_sha256": "568771611c495d5ee81c5aa62e4061177df08c685c30ad77b993be6c0a20008b",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "sitm-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 311093,
+  "byte_start": 310324,
+  "normalized": "•Package, Assembly and Testing. Upon the completion of processing at the foundry, we use third-party contractors for packaging, assembly, and testing, including Advanced Semiconductor Engineering, Inc. (“ASE”) in Taiwan, Carsem (M) Sdn Bhd. (“Carsem”) in Malaysia, United Test and Assembly Center Ltd. (“UTAC”) in Thailand, Hana Semiconductor (Ayutthaya) Co., Ltd in Thailand, Daishinku Corp. (“Daishinku”) in Japan, and STATS ChipPAC Pte Ltd. in Singapore.",
+  "normalized_sha256": "7462ef6164f686f51527e5447bf92c9c82544f1d2f2bef982c823053dd6082ab",
+  "raw": "&#8226;</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:700;line-height:120%;padding-left:23.5pt\">Package, Assembly and Testing</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">. Upon the completion of processing at the foundry, we use third-party contractors for packaging, assembly, and testing, including Advanced Semiconductor Engineering, Inc. (&#8220;ASE&#8221;) in Taiwan, Carsem (M) Sdn Bhd. (&#8220;Carsem&#8221;) in Malaysia, United Test and Assembly Center Ltd. (&#8220;UTAC&#8221;) in Thailand, Hana Semiconductor (Ayutthaya) Co., Ltd in Thailand, Daishinku Corp. (&#8220;Daishinku&#8221;) in Japan, and STATS ChipPAC Pte Ltd. in Singapore.",
+  "raw_sha256": "baf8cf406f7efb2b9c06741ba88c3130457b784b88719e6b32b7f9efce91a481"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1451809/000145180926000012/sitm-20251231.htm",
+ "xbrl_contexts": []
+}

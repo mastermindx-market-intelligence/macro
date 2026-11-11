@@ -1,0 +1,116 @@
+{
+  "schema": "mastermind.prophet.us_reference_live_acceptance.v1",
+  "observed_at_utc": "2026-10-01T02:40:14.944264+00:00",
+  "production_url": "https://www.mastermind-x.com/us_stocks.html",
+  "source_binding": {
+    "origin_main": "6e7ef32c1ee53f1f559035cbdd35bcdab1364d81",
+    "live_page_sha256": "648e46c0efc20f6fd08313eb38ba223d470c6e7f9f20ea03fef33ee1b79631f5",
+    "committed_site_page_sha256": "648e46c0efc20f6fd08313eb38ba223d470c6e7f9f20ea03fef33ee1b79631f5",
+    "live_equals_current_committed": true,
+    "last_modified": "Thu, 01 Oct 2026 01:09:12 GMT"
+  },
+  "anonymous": {
+    "page_status": 200,
+    "candidate_rows": [
+      "COCO",
+      "ECG",
+      "LRCX"
+    ],
+    "candidate_row_count": 3,
+    "disclosed_total": 151,
+    "premium_payload_status": 401,
+    "premium_payload_reason": "authentication_required",
+    "new_plan_copy_present": true,
+    "exact_relation_unavailable_copy_present": true
+  },
+  "authenticated_browser": {
+    "proof_method": "existing authorized Google Chrome session; temporary tabs/windows; no cookies, tokens, passwords, or storage state exported",
+    "premium_payload_fetch": {
+      "status": 200,
+      "total": 66,
+      "preview": 3,
+      "locked": 63,
+      "candidate_pool": {
+        "preview": 3,
+        "locked": 148,
+        "total": 151
+      },
+      "has_candidate_html": true
+    },
+    "hydrated_candidate_rows": 151,
+    "hydrated_unique_tickers": 151,
+    "dom_total": 151,
+    "ui_matrix": [
+      {
+        "viewport": 1440,
+        "lang": "en",
+        "theme": "dark",
+        "rows": 151,
+        "en_visible": true,
+        "zh_visible": false
+      },
+      {
+        "viewport": 1440,
+        "lang": "zh",
+        "theme": "light",
+        "rows": 151,
+        "en_visible": false,
+        "zh_visible": true
+      },
+      {
+        "viewport": 390,
+        "lang": "zh",
+        "theme": "light",
+        "rows": 151,
+        "en_visible": false,
+        "zh_visible": true
+      },
+      {
+        "viewport": 390,
+        "lang": "en",
+        "theme": "dark",
+        "rows": 151,
+        "en_visible": true,
+        "zh_visible": false
+      }
+    ],
+    "relation_contract": {
+      "observed_states": [
+        "none",
+        "related_security"
+      ],
+      "exact_relation_state": "unavailable",
+      "sample_related_records": [
+        {
+          "ticker": "AEO",
+          "plan_id": "AEO-BULL-20260826"
+        },
+        {
+          "ticker": "NVDA",
+          "plan_id": "NVDA-BULL-20260917"
+        },
+        {
+          "ticker": "CDNS",
+          "plan_id": "CDNS-BULL-20260922"
+        }
+      ],
+      "no_exact_candidate_plan_join_claimed": true
+    },
+    "clocks": {
+      "assessment_clock_count": 68,
+      "sample_assessment_asof": "2026-09-25",
+      "sample_quote_time": "not supplied",
+      "plan_records_asof": "2026-09-25",
+      "plan_source_board_asof": "2026-09-25",
+      "plan_published": "2026-09-30"
+    }
+  },
+  "claim_limits": {
+    "product_reference_path_accepted": true,
+    "four_market_completion": false,
+    "h1_performance_proven": false,
+    "trading_profit_proven": false,
+    "candidate_exact_plan_relation_available": false,
+    "quote_time_completeness_proven": false
+  }
+}

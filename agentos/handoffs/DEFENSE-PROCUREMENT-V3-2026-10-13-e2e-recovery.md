@@ -9,6 +9,12 @@ changed:
   - path: research/defense_intelligence/DEFENSE_E2E_CONTINUATION_2026-10-12.md
     what: Records original failure, source custody, accepted integrations and remaining release/product/scientific gates.
 verified:
+  - claim: Primary PR9066 merged normally and its API/page/economics bytes are installed.
+    command: Normal gh squash merge and read-only installed source hash comparison.
+    result: Merge087ac9; four qualified byte identities match; no entitled journey claim.
+  - claim: Current-main Space and PAC-3 generation has local frozen proof and browser qualification.
+    command: govrev_candidate_proof.py prove and verify --committed; original source-ASGI browser harness.
+    result: 104 passed and one skipped across105 cases; 24 route plus eight targeted cases pass; proof and browser artifacts linked below.
   - claim: Quartet financial-owner, refresh and composer integration checks passed.
     command: pytest owner-adapter, existing refresh, cohort and economics suites in the sole integration checkout.
     result: 96 passed; separate builder wiring 25 passed.
@@ -22,8 +28,8 @@ verified:
     command: pytest recognition-owner guard and defense economics suites.
     result: 39 passed and 22 hostile subtests passed.
 unverified:
-  - claim: The new source has concluded exact-head CI and protected release.
-    what_would_verify: Updated carrier head, complete required checks and admitted merge/release.
+  - claim: Navigation and export follow-up PR9498 has concluded binding CI and installed acceptance.
+    what_would_verify: Exact bf821833 checks, normal release and actual signed-in deep-link/back/export verification.
   - claim: The whole investor workflow is independently accepted in production.
     what_would_verify: Real publisher generation, installed API/static identity, authenticated browser journeys and independent review.
   - claim: Research is activated and has predictive value.
@@ -36,15 +42,16 @@ danger_areas:
   - Preserve original PR7175 and Terminal PR778 custody and unresolved original Fabric effects.
   - Source checks and local fixtures do not prove installed entitlement or scientific efficacy.
 next_actions:
-  - Publish the integrated current-source revision on PR9066 and build the frozen canonical investor generation.
-  - Bind all published twins and assets before the final serialized proof; save and push the coherent source revision.
-  - Complete protected release and actual entitled investor acceptance, then continue remaining included contracts.
+  - Consume PR9498 exact-head CI and original independent behavior review; release and verify actual signed-in navigation and downloaded exports.
+  - Keep draft PR9490 held for the original review return; directory_owner_or_mode refusal is not retry permission.
+  - Release the reviewed FMS persistence composition after PR9498; reuse unchanged browser and protocol review evidence.
+  - Complete natural publisher, installed entitlement and independent acceptance; advance supported theme evidence in parallel.
 do_not_redo:
   - D6-C0 and the existing FMS daily schedule.
   - Historical PR7186 row-cap repair.
   - Accepted evidence unless its actual source, input or contract changes.
   - Uncertain Fabric operations through a new identity, account or carrier.
-prs: [7175, 9066]
+prs: [7175, 9066, 9490, 9496, 9498, 9499]
 decisions: []
 ---
 
@@ -964,3 +971,30 @@ committed-proof verification accepts the existing 105-case proof unchanged.
 The same foreground observer (4372) remains responsible for the running
 pack results; this repair is not a green hosted check or release.
 Evidence: current_release_proof_20261015/ci-scope-repair/ below this program.
+
+### October16 00:49 UTC current product release preparation
+
+Primary PR9066 is merged at087ac9aba1ac7ee1c172042ad447f7998b06d540 and read-only installed checks match the qualified API, page and both economics payloads. Canonical financial generation449f7f3c5b6a8c9faa181a28 was published once using the previously reviewed CAS/journal/readback control path:12 acknowledged writes and complete10-event exact readback; no unknown effect and no replay authorized. Its receipt is in current_main_product_20261015.
+
+Current branch `codex/defense-space-capacity-release` source432d851f694df09245d72a470740ed7b3db5cc98 composes seven NOC Space facts and reviewed PAC-3 public capacity over main21fe5ad.347 affected tests, curated CI closure, full105-case proof and32 browser cases pass. Artifacts: `research/defense_intelligence/e2e_20261011/current_main_product_20261015/` and `mockups/evidence/defense-space-capacity-current-main-20261015/`.655 ledger rows remain byte-identical; all six research verdicts remain evidence insufficient. Local financial5a5bc26d8f2c10a2931c0350 is prepared but not published.
+
+PR9490 remains draft: CI38828866998 succeeded; original history review has unknown completion and its permitted collector refused directory_owner_or_mode with retry_authorized=false. Chris has been asked once to restore that same return path through its existing owner; no replacement or permission change. Original NASA, Q3, P2 and other unknown carriers remain unchanged. NASA source preparation is saved on its original branchfc24fdda7635 with no committed-release proof or canonical admission. Theme-owner gap census defense-theme-owner-gap-census-01a13300-a actually launched on the existing Fabric; its original result remains to consume. Installed entitled acceptance, second-principal privacy and scientific admission/maturity obligations remain open.
+
+### October16 merged-source qualification
+
+Source1b99b50 incorporates main3cae8c8 and the native generated HTML. Its full frozen proof passes104 cases with one skip in523.98s; committed-source witness verification passes. All32 browser cases and the frozen CI import closure pass. Current evidence replaces the historical pre-merge capture at the existing linked location; the previous capture is retained in Git. Source release, bounded financial5a publication and installed/entitled acceptance remain required.
+
+### October16 evidence navigation and export qualification
+
+Source478258 repairs production-observed FMS deep links, Back/Forward and source-access defects and restores export amount provenance. The full native proof and browser evidence are retained in `research/defense_intelligence/e2e_20261011/navigation_export_20261016/`. Source-byte verification, binding CI, normal release and the same real signed-in journey/downloads remain required. PR9496 remains frozen on e39 with its existing observer; the original held review returns are not duplicated.
+
+### October16 installed Space release and FMS persistence composition
+
+PR9496 merged at1c430d9 and its five qualified API/page/data artifacts were observed installed. Financial successor5a completed12 acknowledged conditional writes and complete10-event readback, with no unknown effect. The actual signed-in Space/PAC-3 and local saved-view journeys are retained in `current_main_product_20261015/release/`. Ten live mobile timing bounds leave the precise three-second target unverified. FMS persistence sourcee7a554 reuses the unchanged accepted protocol review, passes73 composition tests, CI closure and a fresh full105-case proof. PR9498 remains the next dependent release; original review returns and other acceptance obligations remain open.
+### Current delivery frontier — October17
+
+PR9498 merged at599ac1d; allfive installed hashes match. Actual signed-in CSV/JSON exports preserve12 record identities, numeric amounts, eight amount-provenance fields and source clocks. BrowserBack restores record/search. Evidence: `navigation_export_20261016/review_repair/INSTALLED_EXPORT_VERIFICATION.json` and `INSTALLED_BACK_SOURCE_OBSERVATION.json`.
+
+PR9499 original86354 passed all12CIpacks andci-gate in39081917808; original observer75005 is terminal and consumed. GitHub then reported a conflict with the squash-merged navigation release. Combined source3b19b0f6a0f387811bc45b64ca80352076396780 reconciles it and repairs the production-observed POST-only workspace source action.81affectedUIchecks pass and the final native proof passes104with1conditional skip; existing `fms_persistence_proof_20261016/` holds the sealed exact-source proof. Next: committed witness, push same9499, concluded new-headCI, normalmerge, installedNorway26-82/Virginia/source journeys and the existing natural FMS operation. No duplicate collector or schedule.
+
+The accepted persistence protocol is unchanged. Original9490publisher-history refusal, dossier independent-review observation refusal, NASA/P2/Q3/capacity unknown effects remain on their original operations. Dossier-sharing patchc287 stays preserved at `codex/defense-dossier-review-held` and excluded. Financial5a is already published/readback complete; do not replay. Allsix research themes remainEVIDENCE_INSUFFICIENT and no new research observations were issued. Whole-program acceptance remains incomplete, including Terminal778 privacy/database/authenticated integration and original held returns.

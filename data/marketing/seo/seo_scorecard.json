@@ -1,12 +1,12 @@
 {
   "schema": "seo_scorecard.v1",
-  "as_of": "2026-10-11T19:22:24Z",
-  "health_score": 88,
+  "as_of": "2026-11-08T19:21:02Z",
+  "health_score": 85,
   "issue_counts_by_severity": {
     "critical": 0,
     "high": 51,
-    "medium": 54,
-    "low": 1
+    "medium": 55,
+    "low": 3
   },
   "deltas_vs_prior": {
     "health_score": -1,
@@ -17,10 +17,10 @@
   },
   "families_summary": {
     "core": {
-      "pages": 176,
-      "with_canonical": 162,
-      "with_desc": 161,
-      "with_og": 161,
+      "pages": 184,
+      "with_canonical": 170,
+      "with_desc": 169,
+      "with_og": 169,
       "with_jsonld": 7,
       "in_sitemap": 21
     },
@@ -65,7 +65,7 @@
       "in_sitemap": 0
     },
     "stocks": {
-      "pages": 2750,
+      "pages": 2756,
       "sampled": 25,
       "with_canonical": 25,
       "with_title": 25,

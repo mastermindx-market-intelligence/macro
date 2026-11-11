@@ -71,6 +71,86 @@
      server-rendered read". */
   var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   var bakedSession;   /* undefined until first read; "" when the page carries none */
+  var lastFeed = null, lastShownSession = "", requestPending = false;
+
+  /* A new build is not a new market observation. These are eligibility checks
+     for this source's display, not another risk score or a trading gate. The
+     five-minute artifact budget matches the existing live-envelope consumer;
+     the quote budget comes from the producer and includes vendor delay. */
+  function clockMs(value) {
+    if (typeof value !== "string") return NaN;
+    var iso = value.replace(" UTC", "Z").replace(" ", "T");
+    if (!/(Z|[+-]\d{2}:\d{2})$/.test(iso)) return NaN;
+    return Date.parse(iso);
+  }
+
+  function assessmentProblem(d) {
+    if (!d || d.schema !== "risk_state.v1") return "unavailable";
+    var built = clockMs(d.built), now = Date.now();
+    if (!isFinite(built) || built > now + 120000 || now - built > 5 * 60 * 1000)
+      return "expired";
+    var disp = d.display || {};
+    if (["RISK_ON", "MIXED", "RISK_OFF"].indexOf(disp.verdict) < 0 ||
+        typeof disp.score !== "number" || !isFinite(disp.score) ||
+        disp.score < 0 || disp.score > 100) return "unavailable";
+    if (d.live_active === true) {
+      // The producer derives this deadline from all required admitted quotes.
+      // A fresh build or newest provenance clock cannot renew an expired leg.
+      var expiry = clockMs(d.stale_after);
+      if (!isFinite(expiry) || now >= expiry) return "expired";
+      var event = clockMs((d.live || {}).source_event_time);
+      var budget = d.quote_stale_after_min === undefined ? 20 : d.quote_stale_after_min;
+      if (d.stale === true || typeof budget !== "number" || !isFinite(budget) || budget <= 0 ||
+          !isFinite(event) || event > now + 120000 || now - event > budget * 60000)
+        return "expired";
+    } else {
+      var session = d.session || {}, expected = session.expected_session;
+      if (session.open === true || !DATE_RE.test(expected || "") ||
+          !DATE_RE.test(d.nightly_asof || "") || d.nightly_asof !== expected)
+        return "previous_session";
+    }
+    return "";
+  }
+
+  function unavailableAssessment() {
+    var asof = lastShownSession || pageSession();
+    var suffixEn = asof ? " · " + asof : "";
+    var suffixZh = asof ? " · " + asof : "";
+    var pairs = [
+      [".mx5-thesis", "Current market assessment unavailable. The displayed score is a historical snapshot" + suffixEn + ".",
+       "当前市场评估暂不可用。所示评分为历史快照" + suffixZh + "。"],
+      [".mx5-sub-line", "Historical snapshot" + suffixEn, "历史快照" + suffixZh],
+      ["[data-wtd-primary] .mx5-action-label", "Current risk assessment unavailable.", "当前风险评估暂不可用。"],
+      ["[data-wtd-primary] .mx5-action-sub", "Last displayed assessment" + suffixEn, "最近显示的评估" + suffixZh]
+    ];
+    pairs.forEach(function (p) {
+      var el = document.querySelector(p[0]);
+      if (el) {
+        setBL(el, p[1], p[2]);
+        if (p[0] === "[data-wtd-primary] .mx5-action-label") {
+          // The existing warning reader restores this same baseline on quiet.
+          // Expiry must invalidate the baseline as well as the visible label.
+          el.setAttribute("data-wtd-base-en", p[1]);
+          el.setAttribute("data-wtd-base-zh", p[2]);
+          el.setAttribute("data-wtd-base-verdict", "UNAVAILABLE");
+        }
+      }
+    });
+    var pill = document.getElementById("ms-live-pill");
+    if (pill) pill.classList.remove("on");
+    var date = document.getElementById("ms-date");
+    if (date) { date.textContent = "· " + (asof || "—"); date.classList.remove("ms-date-live"); }
+    var flip = document.querySelector(".mx5-flip");
+    if (flip) flip.style.display = "none";
+    var gauge = document.querySelector(".mx5-gauge-svg");
+    if (gauge) gauge.setAttribute("aria-label", "Historical market score" + suffixEn + "; current assessment unavailable");
+  }
+
+  function feedFailed() {
+    /* A brief transport failure need not erase a still-eligible observation.
+       Every timer tick rechecks its age, so it cannot remain current forever. */
+    if (!lastFeed || assessmentProblem(lastFeed)) unavailableAssessment();
+  }
 
   /* The session the RENDER is showing: the chart's last graded row and the
      board's own as-of stamps, whichever is newest. Memoised on first call,
@@ -111,6 +191,7 @@
      render, which is always a real single-session snapshot. */
   function feedIsCurrent(d) {
     var floor = pageSession();
+    if (lastShownSession > floor) floor = lastShownSession;
     if (!floor) return true;              /* page carries no as-of — nothing to hold */
     var s = feedSession(d);
     return !!s && s >= floor;
@@ -254,15 +335,25 @@
   function patchMacro(d) {
     var word = document.getElementById("ms-word");
     if (!word) return;
-    var disp = d.display || {};
-    if (!disp.verdict) return;
+    if (!d || d.schema !== "risk_state.v1") { feedFailed(); return; }
+    var disp = d.display || {}, problem = assessmentProblem(d);
+    if (["RISK_ON", "MIXED", "RISK_OFF"].indexOf(disp.verdict) < 0) {
+      unavailableAssessment(); return;
+    }
     /* Feed behind the render: keep the served read WHOLE — gauge, copy, chart and
        freshness chip alike. Patching any one of them is what split the card. */
     if (!feedIsCurrent(d)) {
-      var offPill = document.getElementById("ms-live-pill");
-      if (offPill) offPill.classList.remove("on");
+      unavailableAssessment();
       return;
     }
+    /* A dated settled snapshot may still improve historical context. An expired
+       live tick must never repaint the gauge or append a provisional chart point. */
+    if (problem && (d.live_active === true || !DATE_RE.test(d.nightly_asof || "") ||
+        typeof disp.score !== "number" || !isFinite(disp.score) ||
+        disp.score < 0 || disp.score > 100)) {
+      unavailableAssessment(); return;
+    }
+    if (lastFeed && clockMs(d.built) < clockMs(lastFeed.built)) { feedFailed(); return; }
     /* Stale-feed guard: display.verdict is the SERVER-debounced band word — it needs
        2 consecutive live ticks to flip, so after a nightly band flip it sits stale for
        a whole closed session (2026-07-16: green "Risk-on" painted over a correctly
@@ -368,8 +459,12 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
-      if (wl && actionPair)
+      if (wl && actionPair) {
+        wl.setAttribute("data-wtd-base-en", actionPair[0]);
+        wl.setAttribute("data-wtd-base-zh", actionPair[1]);
+        wl.setAttribute("data-wtd-base-verdict", disp.verdict);
         setBL(wl, actionPair[0], actionPair[1]);
+      }
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
         setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
@@ -431,19 +526,31 @@
     if (rg && d.nightly_asof) rg.textContent = d.nightly_asof;
     var pill = document.getElementById("ms-live-pill");
     if (pill) pill.classList.toggle("on", !!(d.live_active && d.realtime));
+    lastShownSession = feedSession(d);
+    lastFeed = d;
+    if (problem) unavailableAssessment();
   }
 
   function tick() {
-    fetch(URL + "?t=" + Date.now(), { cache: "no-store" })
+    feedFailed();
+    if (requestPending) return;
+    requestPending = true;
+    var options = { cache: "no-store" };
+    if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function")
+      options.signal = AbortSignal.timeout(10000);
+    fetch(URL + "?t=" + Date.now(), options)
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
-        if (!d || d.schema !== "risk_state.v1") return;
-        try { patchMacro(d); } catch (e) {}
+        requestPending = false;
+        if (!d || d.schema !== "risk_state.v1") { feedFailed(); return; }
+        try { patchMacro(d); } catch (e) { unavailableAssessment(); }
       })
-      .catch(function () {});
+      .catch(function () { requestPending = false; feedFailed(); });
   }
 
   if (document.readyState !== "loading") tick();
   else document.addEventListener("DOMContentLoaded", tick);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) tick(); });
+  if (typeof window.addEventListener === "function") window.addEventListener("pageshow", tick);
   setInterval(tick, Math.max(15, POLL) * 1000);
 })();

@@ -70,7 +70,8 @@ def _packed(payload: dict) -> tuple[str,str]:
 def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: str,
                    include_outcomes: bool=False, macro_path: Path | None=None,
                    expected_macro_sha256: str | None=None, filings_path: Path | None=None,
-                   expected_filings_sha256: str | None=None) -> dict:
+                   expected_filings_sha256: str | None=None, transcripts_catalog_path: Path | None=None,
+                   expected_transcripts_catalog_sha256: str | None=None) -> dict:
     from jinja2 import Environment, FileSystemLoader, StrictUndefined
     if type(include_outcomes) is not bool:
         raise HistoricalExperienceError('explicit boolean outcome export required')
@@ -80,6 +81,8 @@ def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: s
         raise HistoricalExperienceError('filing source path and exact digest must be supplied together')
     if filings_path is not None and Path(filings_path).name != 'earnings_8k_dates.parquet':
         raise HistoricalExperienceError('exact earnings filing source filename required')
+    if (transcripts_catalog_path is None)!=(expected_transcripts_catalog_sha256 is None):
+        raise HistoricalExperienceError('transcript catalogue and exact digest must be supplied together')
     root,destination=Path(root),Path(destination)
     if destination.exists(): raise FileExistsError(destination)
     if destination.is_symlink() or any(p.is_symlink() for p in destination.parents):
@@ -114,6 +117,14 @@ def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: s
         timeline.update(manifest_sha256=expected_manifest_sha256,filings_sha256=expected_filings_sha256)
         filing_events=len(timeline['rows'])
         filing_data,filing_payload_sha=_packed(timeline)
+    transcript_data=transcript_payload_sha=None
+    transcript_records=0
+    if transcripts_catalog_path is not None:
+        from engine.neuralweb.market_memory_history_transcripts import read_transcript_catalog_path
+        catalog=read_transcript_catalog_path(transcripts_catalog_path,expected_sha256=expected_transcripts_catalog_sha256)
+        catalog.update(manifest_sha256=expected_manifest_sha256,transcripts_catalog_sha256=expected_transcripts_catalog_sha256)
+        transcript_records=len(catalog['rows'])
+        transcript_data,transcript_payload_sha=_packed(catalog)
     templates=Path(__file__).resolve().parents[2]/'templates'
     css='\n'.join((templates/name).read_text(encoding='utf-8') for name in ('theme.css','market_memory_retained.css','market_memory_history.css'))
     js=(templates/'market_memory_history.js').read_text(encoding='utf-8')
@@ -122,7 +133,8 @@ def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: s
         css=css,js=js,state_data=state_data,state_sha=state_sha,
         outcome_data=outcome_data,outcome_sha=outcome_sha,
         macro_data=macro_data,macro_payload_sha=macro_payload_sha,
-        filing_data=filing_data,filing_payload_sha=filing_payload_sha).encode()
+        filing_data=filing_data,filing_payload_sha=filing_payload_sha,
+        transcript_data=transcript_data,transcript_payload_sha=transcript_payload_sha).encode()
     if len(html)>MAX_BROWSER_BYTES:
         raise HistoricalExperienceError('browser file exceeds byte budget')
     _write_exclusive(destination,html)
@@ -132,4 +144,5 @@ def export_browser(root: Path, destination: Path, *, expected_manifest_sha256: s
             'outcomes_included':include_outcomes,'public_publication':False,
             'point_in_time_evaluation':False,'macro_events':macro_events,
             'macro_sha256':expected_macro_sha256,'filing_events':filing_events,
-            'filings_sha256':expected_filings_sha256}
+            'filings_sha256':expected_filings_sha256,'transcript_records':transcript_records,
+            'transcripts_catalog_sha256':expected_transcripts_catalog_sha256}

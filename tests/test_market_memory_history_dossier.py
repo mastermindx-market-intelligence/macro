@@ -111,3 +111,18 @@ def test_dossier_refuses_wrong_filing_date_or_qualification(monkeypatch,tmp_path
                     {'historical_ticker_identity_proven':True},{'intraday_publication_time_verified':True}):
         with pytest.raises(HistoricalExperienceError):
             compose_daily_dossier(market,filings={**read(),**changes})
+
+
+
+def test_shared_dossier_rejects_wrong_transcript_date_or_authority(monkeypatch,tmp_path):
+    from tests.test_market_memory_history_archive import make_archive
+    from tests.test_market_memory_history_transcripts import day
+    from engine.neuralweb.market_memory_history_dossier import compose_daily_dossier
+    from engine.neuralweb.market_memory_history import HistoricalExperienceError
+    ar,root,receipt=make_archive(monkeypatch,tmp_path)
+    market=ar.read_day(root,'2020-03-16',expected_manifest_sha256=receipt['manifest_sha256'])
+    calls=day()
+    assert compose_daily_dossier(market,transcripts=calls)['transcripts']['total_events']==1
+    for field,value in [('calendar_date','2020-03-17'),('point_in_time_eligible',True),
+        ('publication_time_verified',True),('historical_security_identity_proven',True)]:
+        with pytest.raises(HistoricalExperienceError):compose_daily_dossier(market,transcripts={**calls,field:value})

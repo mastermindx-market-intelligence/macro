@@ -338,6 +338,10 @@
       if (!r.ok) throw _httpErr(r, 'absent');
       return r.json();
     }).then(function (j) {
+      if (!j || typeof j !== 'object' || Array.isArray(j) ||
+          typeof j.ticker !== 'string' || j.ticker !== t) {
+        throw new Error('malformed ticker');
+      }
       _tickerCache[t] = j;
       delete _neg[t];
       delete _inflight[t];

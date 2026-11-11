@@ -60,3 +60,26 @@ def test_filing_context_workflow_example_is_executable(case):
     skill=(WORKFLOW/'SKILL.md').read_text()
     for term in ('filings_sha256','filings_offset','source-claimed','not the original press-release time'):
         assert term in skill
+
+
+
+def test_transcript_workflow_examples_are_executable_without_imputed_identity(case):
+    from tests.test_dataos_web_history import transcript_source
+    path,ref,version=transcript_source(case)
+    text=(WORKFLOW/'references/requests.md').read_text()
+    assert '## Transcript source context' in text
+    section=text.split('## Transcript source context',1)[1].split('\n## ',1)[0]
+    requests=[json.loads(block.strip()) for block in re.findall(r'```json\n(.*?)```',section,flags=re.S)]
+    assert {q['action'] for q in requests}=={'history_dossier','history_transcript'}
+    first=next(q for q in requests if q['action']=='history_dossier')
+    first.update(ref='fixture:history/manifest.json',manifest_sha256=case.receipt['manifest_sha256'],
+        date='2020-03-16',transcripts_ref=ref,transcripts_version=version)
+    listed=dispatch(case.ws,first,config_path=case.config);item=listed['result']['transcripts']['events'][0]
+    second=next(q for q in requests if q['action']=='history_transcript')
+    second.update(ref=ref,expected_version=version,row_position=item['source_row_position'],expected_metadata_sha256=item['metadata_sha256'])
+    result=dispatch(case.ws,second,config_path=case.config)
+    assert result['result']['metadata']['transcripts_id'] is None
+    assert result['result']['speaker_roles_verified'] is False
+    skill=(WORKFLOW/'SKILL.md').read_text()
+    for required in ('history_transcript','transcripts_version','not a full content hash','next_cursor','source labels'):
+        assert required in skill

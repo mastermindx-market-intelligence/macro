@@ -129,3 +129,23 @@ Keep source versions, mapping, date bounds, limits, ledger receipts and the full
 `market_memory_history dossier` and `market_memory_history export` accept `--filings PATH --filings-sha256 EXACT64` together. The selected file must be named `earnings_8k_dates.parquet`; the existing file owner still enforces regular-file, source-hash and byte limits. `dossier --filings-offset N` paginates matched filing records. No filing offset is accepted for an offline export because its source-bound timeline is exported once and the browser paginates locally.
 
 No option implicitly selects a source, updates a provider, installs a schedule or changes an existing archive. Export requires a new output path. Without an explicit filing binding the old market/macro view remains unchanged and no filing source is opened. Default machine reads still never open outcomes. A browser requested with `--include-outcomes` is explicitly educational, not a blind-evaluation security boundary.
+
+## Transcript source context
+
+Require installed `history.transcripts` and `history_transcript` capabilities. Describe the original closed source family `stock_earning_call_transcripts.parquet`; substitute the actual bound reference and its `file_version` below. Do not replace a version token with an invented content hash. Default day requests read metadata only, not transcript paragraphs or price outcomes.
+
+```json
+{"action":"history_dossier","ref":"web_test_runs:<observed archive>/manifest.json","manifest_sha256":"<exact manifest digest>","date":"2020-03-16","transcripts_ref":"fundamental_history:transcripts/stock_earning_call_transcripts.parquet","transcripts_version":"<observed statv1 file version>"}
+```
+
+Continue date listing by passing the returned `next_offset` as `transcripts_offset`; this is a matched-record index. To read one listed body, use its original `source_row_position` and metadata digest:
+
+```json
+{"action":"history_transcript","ref":"fundamental_history:transcripts/stock_earning_call_transcripts.parquet","expected_version":"<same observed statv1 file version>","row_position":0,"expected_metadata_sha256":"<selected record metadata_sha256>"}
+```
+
+The zero above is only a placeholder; substitute the actual row position, even when the vendor `transcripts_id` is null. Optional `max_chars` is1–12000(default6000). Continue with `paragraph_offset` and `character_offset` from the exact `next_cursor`, retaining `expected_record_sha256` from the first page. Source paragraph numbers need not be sequential and are not the cursor. Output fragments identify original character boundaries; only `next_cursor:null` completes that requested text range. A source-version mismatch or source replacement refuses rather than retrieving different text.
+
+`record_sha256` covers the canonical selected metadata and original paragraphs; `page_sha256` covers the returned fragments. Neither is a checksum of the complete Parquet corpus. The source may contain other decoded rows in the bounded column chunk, but only the selected record is exposed. The interface performs no role inference, Q&A reconstruction, source intake, provider call or source write. Date lookup reports the retained source universe, not the selected price cohort.
+
+The local accepted history CLI can produce an offline metadata-only catalogue through the existing host config with `transcripts-catalog --config HOST_CONFIG --ref BOUND_REF --expected-version OBSERVED_VERSION --output NEW_JSON`. It refuses overwrite and closes the original mutation guard before writing. Pass that file and its receipt SHA256 to the existing `export` command as `--transcripts-catalog NEW_JSON --transcripts-catalog-sha256 EXACT64`. The offline browser's read-request button computes the same exact metadata digest and retains the source-version binding. Bodies are not duplicated into that HTML, no external calls occur, and publication/point-in-time/trading qualification remains unproven.
