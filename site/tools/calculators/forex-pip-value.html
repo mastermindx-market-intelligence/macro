@@ -374,14 +374,21 @@
   // object, or {ok:false, msg} for invalid input. Never returns NaN/Infinity.
   function compute(inp){
     var U=inp.U, p=inp.p, q=inp.q;
-    if(!(U>0)) return {ok:false, msg:"Enter a position size above zero (100,000 = 1 standard lot)."};
-    if(!(p>0)) return {ok:false, msg:"Choose a pip size."};
-    if(!(q>0)) return {ok:false, msg:"Enter the quote→account rate (use 1 if the quote currency is your account currency)."};
+    if(!(U>0) || !isFinite(U)) return {ok:false, msg:"Enter a position size above zero (100,000 = 1 standard lot)."};
+    if(!(p>0) || !isFinite(p)) return {ok:false, msg:"Choose a pip size."};
+    if(!(q>0) || !isFinite(q)) return {ok:false, msg:"Enter the quote→account rate (use 1 if the quote currency is your account currency)."};
     var pipQuote = p * U;
     var pipAccount = pipQuote * q;
     // a mini lot is a fixed 10,000 units (0.1 standard lot) — a reference figure
     // that does NOT depend on the size entered above
     var perMiniLot = p * 10000 * q;
+    // Every displayed amount must be representable, including the fixed
+    // mini-lot reference, which can overflow while the position value is finite.
+    if(!isFinite(pipQuote) || !isFinite(pipAccount) || !isFinite(perMiniLot)){
+      return {ok:false,
+        msg:"These inputs produce a pip value outside the supported numeric range. Reduce the position size or conversion rate.",
+        msgZh:"这些输入产生的每点价值超出可计算范围。请减小仓位规模或换算汇率。"};
+    }
     return {
       ok:true, pipQuote:pipQuote, pipAccount:pipAccount, perMiniLot:perMiniLot,
       sameCcy: Math.abs(q - 1) < 1e-9
@@ -423,7 +430,9 @@
     function render(){
       var inp={ U:numFrom(els.units), p:pipSize, q:numFrom(els.qrate) };
       var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      if(!res.ok){ dash();
+        outPlain.textContent=document.documentElement.getAttribute("data-lang")==="zh" && res.msgZh ? res.msgZh : res.msg;
+        outPlain.className="co-plain"; return; }
       outMain.textContent   = money(res.pipAccount);
       outQuote.textContent  = plain(res.pipQuote);
       outAccount.textContent= money(res.pipAccount);
@@ -462,6 +471,7 @@
       });
     }
     ["units","qrate"].forEach(function(id){ els[id].addEventListener("input", render); });
+    document.addEventListener("langchange",render);
     render();
   });
 })();
@@ -601,3 +611,4 @@
 <script defer data-whb data-root="../../" src="../../wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
+
