@@ -1,0 +1,71 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const ui=require('../templates/government-revenue-investor.js');
+const original=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/defense_economics.json')));
+function copy(){return JSON.parse(JSON.stringify(original));}
+function host(){return {innerHTML:'',querySelectorAll(){return[]},querySelector(){return null}};}
+function environment(){global.location={href:'https://local.test/government_revenue.html?mode=programs&ticker=IRDM&issuer=LMT&item=program%3Atest&agency=Navy&campaign=read#source'};global.document={activeElement:null,documentElement:{getAttribute(){return'en'}}};global.addEventListener=()=>{};global.history={pushState(_a,_b,url){global.location.href=new URL(url,global.location.href).href;}};}
+test('exact schema fixture is accepted',()=>assert.equal(ui.validate(copy()),true));
+test('missing financial owner fields are not populated from source prose',()=>{const p=copy();p.profiles[0].axes.economics.summary_en='Some source prose';p.profiles[0].axes.economics.facts=[];assert.equal(ui.validate(p),true);});
+test('wrong contract, generation, identity, authority and duplicate quartet fail closed',()=>{for(const mutate of [p=>p.contract='other',p=>p.generated_at='bad',p=>p.authority.can_size=true,p=>p.profiles[0].authority.can_rank=true,p=>p.profiles[1].ticker_display='LMT',p=>p.profiles[0].program_workshare=.2,p=>p.profiles[0].shareholder_capture.state='asserted']){const p=copy();mutate(p);assert.equal(ui.validate(p),false);}});
+test('unbound or mismatched financial receipt cannot render',()=>{const good=copy();const p=good.profiles.find(p=>p.axes.economics.facts.length);assert.ok(p);for(const mutate of [f=>f.owner_ref='invented',f=>f.period='2099Q4',f=>f.source_span.receipt_state='unreviewed',f=>f.source_span.text_sha256='x',f=>f.fact_class='score']){const x=copy(),f=x.profiles.find(p=>p.axes.economics.facts.length).axes.economics.facts[0];mutate(f);assert.equal(ui.validate(x),false);}});
+test('recognition missing owner cannot smuggle computed figures',()=>{const p=copy();p.profiles[0].axes.recognition.price_response={state:'missing_owner',owner_ref:null,observed_at:null,return_pct:99};assert.equal(ui.validate(p),false);});
+test('issuer URL is independent and preserves every desk query/hash',()=>{const old='https://local.test/government_revenue.html?mode=programs&ticker=IRDM&agency=Navy&item=p&campaign=r#source';const u=new URL(ui.issuerUrl(old,'RTX'),'https://local.test');assert.equal(u.searchParams.get('issuer'),'RTX');assert.equal(u.searchParams.get('ticker'),'IRDM');assert.equal(u.searchParams.get('agency'),'Navy');assert.equal(u.searchParams.get('item'),'p');assert.equal(u.hash,'#source');});
+test('legacy quartet seed only without independent issuer, unknown values do not become identities',()=>{assert.equal(ui.issuerFrom('https://local.test/?ticker=NOC'),'NOC');assert.equal(ui.issuerFrom('https://local.test/?ticker=NOC&issuer=RTX'),'RTX');assert.equal(ui.issuerFrom('https://local.test/?ticker=NOC&issuer=UNKNOWN'),'LMT');});
+test('source navigation permits reviewed primary domains and rejects unsafe URLs',()=>{assert.ok(ui.safeSource('https://www.sec.gov/Archives/a'));for(const s of ['javascript:alert(1)','https://sec.gov.example.test/a','https://secret@www.sec.gov/a','http://www.sec.gov/a'])assert.equal(ui.safeSource(s),'');});
+test('company bridge explicit navigation scopes the company while issuer/query/hash persist',()=>{const u=new URL(ui.companyUrl('https://local.test/?issuer=LHX&mode=programs&item=p&agency=Navy&campaign=r#source','LHX'),'https://local.test');assert.equal(u.searchParams.get('ticker'),'LHX');assert.equal(u.searchParams.get('issuer'),'LHX');assert.equal(u.searchParams.get('mode'),'companies');assert.equal(u.searchParams.get('campaign'),'r');assert.equal(u.searchParams.has('agency'),false);assert.equal(u.hash,'#source');});
+test('per-call authenticated dedicated endpoint and last-good cache, invalid and paid-gate behavior',async()=>{environment();const h=host();let headers=0,answer={ok:true,json:async()=>copy()};const c=ui.create({host:()=>h,authHeaders:async()=>{headers++;return {Accept:'application/json',test:'current'}},fetch:async(url,opts)=>{assert.equal(url,'/api/government-revenue/defense-economics');assert.equal(opts.credentials,'same-origin');assert.equal(opts.headers.test,'current');return answer;}});c.mount();await c.load();assert.equal(c.state().status,'ready');assert.match(h.innerHTML,/Evidence insufficient/);assert.match(h.innerHTML,/Not supplied/);assert.match(h.innerHTML,/Observed price response/);answer={ok:true,json:async()=>({})};await c.load(true);assert.equal(c.state().status,'invalid');assert.match(h.innerHTML,/last verified source context/);answer={ok:false,status:403};await c.load(true);assert.equal(c.state().status,'locked');assert.equal(c.state().content_id,null);assert.doesNotMatch(h.innerHTML,/data-axis=/);assert.equal(headers,3);});
+test('cold failed read is unavailable rather than a valid empty period',async()=>{environment();const h=host(),c=ui.create({host:()=>h,fetch:async()=>{throw Error('read')}});await c.load();assert.equal(c.state().status,'unavailable');assert.match(h.innerHTML,/not a valid empty financial period/);});
+test('ZH uses translated controls and no markup injected from owner prose',async()=>{environment();global.document.documentElement.getAttribute=()=> 'zh';const h=host(),p=copy();p.profiles[0].axes.demand.summary_zh='<script>bad</script>';const c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>p})});await c.load();assert.match(h.innerHTML,/国防研究/);assert.match(h.innerHTML,/证据与限制/);assert.match(h.innerHTML,/&lt;script&gt;/);assert.doesNotMatch(h.innerHTML,/<script>/);});
+test('actual composer emitted valuation leg uses schema field and displays algebraic scenario',async()=>{environment();global.location.href='https://local.test/government_revenue.html?issuer=NOC';const p=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/scenario_composer.json')));assert.equal(p.profiles[2].axes.recognition.valuation_scenario.schema,'valuation_scenario.v1');assert.equal(ui.validate(p),true);const h=host(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>p})});await c.load();assert.match(h.innerHTML,/Algebraic scenario; not an observed expectation/);assert.match(h.innerHTML,/sales_growth_pct/);});
+test('ZH context siblings render without English fallback leaking into action copy',async()=>{environment();global.document.documentElement.getAttribute=()=> 'zh';const p=copy();p.profiles[0].contrary_case='English contrary';p.profiles[0].contrary_case_zh='相反来源证据';p.profiles[0].next_condition='English next';p.profiles[0].next_condition_zh='观察公司披露';p.profiles[0].invalidation='English invalidation';p.profiles[0].invalidation_zh='来源更正触发复核';const h=host(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>p})});await c.load();assert.match(h.innerHTML,/相反来源证据/);assert.match(h.innerHTML,/观察公司披露/);assert.match(h.innerHTML,/来源更正触发复核/);assert.doesNotMatch(h.innerHTML,/English contrary|English next|English invalidation/);});
+
+test('qualified reported financial facts are visible at rest with source period and units',async()=>{environment();global.location.href='https://local.test/government_revenue.html?issuer=NOC';const h=host(),c=ui.create({host:()=>h,fetch:async()=>({ok:true,json:async()=>copy()})});await c.load();assert.match(h.innerHTML,/gr-investor-primary/);assert.match(h.innerHTML,/2093 USD millions/);assert.match(h.innerHTML,/Reported segment sales · 2026Q2/);assert.match(h.innerHTML,/Limits and contrary evidence/);});
+test('saved issuer select method replaces only issuer and rejects unknown input',async()=>{environment();let replaced='';global.history.replaceState=(_a,_b,url)=>{replaced=url;global.location.href=new URL(url,global.location.href).href;};const c=ui.create({host:()=>host(),fetch:async()=>({ok:true,json:async()=>copy()})});assert.equal(c.select('LHX',{history:'replace'}),true);assert.match(replaced,/issuer=LHX/);assert.match(replaced,/ticker=IRDM/);assert.match(replaced,/agency=Navy/);assert.equal(c.state().ticker,'LHX');assert.equal(c.select('UNKNOWN'),false);assert.equal(c.state().ticker,'LHX');});
+
+// Exercise the real issuer controller with the page's real history functions.
+function historyJourney(){
+  const vm=require('node:vm'),page=fs.readFileSync(path.join(__dirname,'../templates/government-revenue-page.js.j2'),'utf8');
+  let url=new URL('https://local.test/government_revenue.html?mode=awards&ticker=LMT&issuer=LMT&item=award%3Akept&agency=Navy&campaign=read#source'),focus='',position=0;
+  const initial={foreign:{kept:true},governmentRevenue:{schema:1,q:'Navy',truth:'official'}},entries=[{url:url.href,state:initial}],listeners=[];
+  const location={get href(){return url.href},get search(){return url.search},get pathname(){return url.pathname},get hash(){return url.hash}};
+  const history={get state(){return entries[position].state},pushState(state,_title,next){url=new URL(next,url);entries.splice(++position);entries.push({url:url.href,state})},replaceState(state,_title,next){url=new URL(next,url);entries[position]={url:url.href,state}}};
+  const controls={};function control(id){return controls[id]||(controls[id]={value:'',focus(){focus=id}})}
+  const row={dataset:{row:'award:kept'},focus(){focus='row'}},tab={dataset:{mode:'awards'},focus(){focus='tab'}};
+  const button=t=>({focus(){focus='issuer:'+t}});
+  const document={activeElement:null,documentElement:{getAttribute(){return'en'}},querySelectorAll(selector){return selector==='.queue-row'?[row]:selector==='.mode-tab'?[tab]:[]},querySelector(selector){const match=selector.match(/^#defenseInvestor \[data-investor-ticker="(LMT|RTX|NOC|LHX)"\]$/);return match?button(match[1]):null}};
+  const ctx={URL,URLSearchParams,console,document,location,history,themeUI:{restoreHistoryView(){return false}},state:{q:'Navy',truth:'official',mode:'awards',ticker:'LMT',agency:'Navy',selected:'award:kept'},pendingSelection:'',missingCandidateSelection:'',identityGeneration:null,$:control,preserveFilterValue(){},closeTopOverlay(){},overlaySurface(){return null},applyFilters(){},activateMode(){},addEventListener(type,fn){if(type==='popstate')listeners.push(fn)}};
+  vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,'../templates/government-revenue-investor.js'),'utf8'),ctx);
+  const h=host();ctx.investorUI=ctx.createGovernmentRevenueInvestor({host:()=>h});ctx.investorUI.mount();
+  for(const name of ['syncUrl','deskSearchKey','restoreUrl','restoreHistoryView']){const start=page.indexOf('  function '+name+'('),end=page.indexOf('\n  function ',start+1);assert.ok(start>=0&&end>start);vm.runInContext(page.slice(start,end),ctx);}
+  listeners.push(ctx.restoreHistoryView);
+  return {ctx,entries,initial,get focus(){return focus},get url(){return url},move(delta){position+=delta;url=new URL(entries[position].url);listeners.forEach(fn=>fn())}};
+}
+test('quartet Back/Forward preserves real desk snapshot and restores issuer focus',()=>{
+  const j=historyJourney(),c=j.ctx.investorUI;
+  c.select('RTX',{history:'push'});c.select('NOC',{history:'push'});j.move(-1);
+  assert.equal(c.state().ticker,'RTX');assert.equal(j.ctx.state.q,'Navy');assert.equal(j.ctx.state.truth,'official');assert.equal(j.ctx.state.mode,'awards');assert.equal(j.ctx.state.ticker,'LMT');assert.equal(j.ctx.state.selected,'award:kept');assert.equal(j.focus,'issuer:RTX');
+  assert.deepEqual(j.entries[1].state.foreign,{kept:true});assert.equal(j.initial.governmentRevenueInvestor,undefined);assert.notEqual(j.entries[1].state,j.initial);
+  assert.equal(j.url.searchParams.get('campaign'),'read');assert.equal(j.url.hash,'#source');j.move(1);assert.equal(c.state().ticker,'NOC');assert.equal(j.focus,'issuer:NOC');
+});
+test('workspace entries clear inherited issuer focus ownership and preserve return context',()=>{
+  const j=historyJourney();j.ctx.investorUI.select('RTX',{history:'push'});const issuerState=j.ctx.history.state;
+  j.ctx.state.selected='award:next';j.ctx.syncUrl(true);assert.equal(j.ctx.history.state.governmentRevenueInvestor,undefined);assert.equal(issuerState.governmentRevenueInvestor.ticker,'RTX');
+  j.move(-1);assert.equal(j.focus,'issuer:RTX');assert.equal(j.ctx.state.selected,'award:kept');j.move(1);assert.equal(j.ctx.state.selected,'award:next');assert.equal(j.focus,'tab');assert.equal(j.ctx.state.q,'Navy');assert.equal(j.ctx.state.truth,'official');
+  assert.deepEqual(j.ctx.history.state.foreign,{kept:true});
+});
+test('replace, silent selection and invalid issuer preserve their history contracts',()=>{
+  const j=historyJourney(),c=j.ctx.investorUI;c.select('LHX',{history:'replace'});assert.equal(j.entries.length,1);assert.equal(j.ctx.history.state.governmentRevenue.q,'Navy');assert.equal(j.initial.governmentRevenueInvestor,undefined);
+  const state=j.ctx.history.state,url=j.url.href;c.select('RTX',{history:'none'});assert.equal(j.ctx.history.state,state);assert.equal(j.url.href,url);assert.equal(c.select('UNKNOWN',{history:'push'}),false);assert.equal(j.entries.length,1);assert.equal(c.state().ticker,'RTX');
+});
+test('ordinary workspace history restores row focus and absent snapshot remains an honest default',()=>{
+  const j=historyJourney();j.ctx.restoreHistoryView();assert.equal(j.focus,'row');
+  j.ctx.history.replaceState(null,'',j.url.href);j.ctx.restoreHistoryView();assert.equal(j.ctx.state.q,'');assert.equal(j.ctx.state.truth,'all');assert.equal(j.focus,'row');
+});
+
+test('Escape-cleared desk search stays cleared across repeated issuer Back/Forward',()=>{
+  const j=historyJourney(),search=j.ctx.$('deskSearch');search.value='Navy';let prevented=false;
+  j.ctx.deskSearchKey.call(search,{key:'Escape',preventDefault(){prevented=true}});assert.equal(prevented,true);assert.equal(search.value,'');assert.equal(j.ctx.state.q,'');
+  j.ctx.investorUI.select('RTX',{history:'push'});j.ctx.investorUI.select('NOC',{history:'push'});j.move(-1);
+  assert.equal(j.ctx.state.q,'');assert.equal(search.value,'');assert.equal(j.ctx.state.truth,'official');assert.equal(j.focus,'issuer:RTX');j.move(1);assert.equal(j.ctx.state.q,'');assert.equal(j.focus,'issuer:NOC');
+});

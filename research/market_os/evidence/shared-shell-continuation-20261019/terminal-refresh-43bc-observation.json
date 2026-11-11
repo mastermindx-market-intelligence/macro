@@ -1,0 +1,101 @@
+{
+  "record_type": "Incumbent Terminal refresh and fresh CI observation",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "pull_request": 1062,
+  "refreshed_head": "43bc48091225effdd8193a8ca6de584809b17f97",
+  "parents": [
+    "bd158476d6ba1394b2867fa09db6faa762473158",
+    "f5689344ba3257efce2ecb7f4bf8aa98578e046f"
+  ],
+  "committed_at": "2026-10-19T08:39:56Z",
+  "verified_signature": true,
+  "owner_artifact": {
+    "path": "ops/terminal-build.sh",
+    "git_blob": "016d6744123764a9f55c80cf761c6e2d63f4a5a4",
+    "sha256": "6d05d3d5745e0e0a29262c89ba61cf881c2605201cce5b0fc85a52bde0e42ec8",
+    "equal_to_reviewed_bd158": true
+  },
+  "fresh_ci": {
+    "run_id": 39224380821,
+    "event": "workflow_dispatch",
+    "created_at": "2026-10-19T08:39:58Z",
+    "jobs_observed_at": "2026-10-19T08:50:38Z",
+    "jobs": [
+      {
+        "id": 117967009704,
+        "name": "Quote Hub tests",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117967010025,
+        "name": "Terminal e2e tablet-2 (shard)",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 117967010032,
+        "name": "Terminal unit + typecheck (shard)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 117967010118,
+        "name": "Terminal e2e tablet-1 (shard)",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 117967010143,
+        "name": "Ingest + signal-layer tests",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 117967010181,
+        "name": "Investigation PostgreSQL invariants",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 117967010202,
+        "name": "Terminal e2e mobile-2 (shard)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 117967010219,
+        "name": "Terminal e2e serial (shard)",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 117967010247,
+        "name": "Terminal e2e desktop-3 (shard)",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 117967010286,
+        "name": "Terminal e2e desktop-1 (shard)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 117967010297,
+        "name": "Terminal e2e mobile-1 (shard)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "id": 117967010699,
+        "name": "Terminal e2e desktop-2 (shard)",
+        "status": "queued",
+        "conclusion": null
+      }
+    ]
+  },
+  "admission": "PENDING; fresh-head required CI and actual protected merge still owed",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "limits": "Old bd158 success is historical. This is an existing controller continuation, not a new dispatch or watcher."
+}

@@ -1,0 +1,22 @@
+{
+  "market_state": {
+    "verdict": "RISK_ON",
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好",
+    "score": 61,
+    "color": "green",
+    "caveat_en": "US caveat must not surface.",
+    "caveat_zh": "美股说明不得出现。"
+  },
+  "hk_market_state": null,
+  "cn_market_state": {
+    "verdict": "RISK_OFF",
+    "label_en": "Risk-off",
+    "label_zh": "风险规避",
+    "score": 40,
+    "color": "red",
+    "caveat_en": "Display-only and lighter than the US read: China sample has no leading risk radar.",
+    "caveat_zh": "仅供展示，较美股版更轻量：此中国样例没有领先的风险雷达。"
+  },
+  "stance": {}
+}

@@ -70,6 +70,12 @@ def lockup_rows(cal: pd.DataFrame, lockups: pd.DataFrame | None = None,
         if (today - priced).days > lookback_days:
             continue
         tkr = r.get("ticker")
+        # A retained conditional prospectus is not an exact date. Do not replace
+        # its unknown release with the fallback calendar's 180-day assumption.
+        if lockups is not None and tkr in lockups.index:
+            term_row = lockups.loc[tkr]
+            if isinstance(term_row.get("prospectus_archive_content"), bytes):
+                continue
         days, source = _lockup_days_for(tkr, lockups)
         expiry = priced + timedelta(days=days)
         days_to = int((expiry.normalize() - today).days)
@@ -104,6 +110,7 @@ def summary(rows: list[dict]) -> dict:
         "approaching": len(appr),
         "just_expired": len(recent),
         "next_ticker": (nxt["ticker"] if nxt else None),
+        "next_company": (nxt.get("company") if nxt else None),
         "next_date": (nxt["expiry_date"] if nxt else None),
         "next_days": (nxt["days_to"] if nxt else None),
         "next_size_usd": (nxt.get("size_usd") if nxt else None),

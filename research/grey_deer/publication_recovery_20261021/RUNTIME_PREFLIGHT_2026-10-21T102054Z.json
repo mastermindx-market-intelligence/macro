@@ -1,0 +1,321 @@
+{
+  "observed_at": "2026-10-21T10:20:54.719492+00:00",
+  "service": {
+    "MainPID": "3972732",
+    "NRestarts": "0",
+    "ActiveState": "active",
+    "ActiveEnterTimestamp": "Wed 2026-10-21 08:30:43 UTC"
+  },
+  "installed": "fe7afd0111141bae27927715e709d074fea729e2",
+  "namespace_installed": "fe7afd0111141bae27927715e709d074fea729e2",
+  "books": {
+    "autonomous": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10538,
+          "sha256": "0e0a85db720d63b8e29efe946c8c573be8c74bfdc3dcacc49b243bc4aa92f558",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 1411,
+          "sha256": "7869964267ad65e3533aa43a034fe81e7fd62df3628cb6bc7b4b1b8b641dcbea",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 12606,
+          "sha256": "778f2846e0e9e527b314a91e0cf105604186c8f081085c0b543a63da54df0a91",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    },
+    "china": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10786,
+          "sha256": "1ce9ad2c7fdd5a7d979e100dd05988743eb4fc3f84d540ef9f95e7047a322b0d",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 2823,
+          "sha256": "40041d51f109c3dc4a16728cacf0f9ee4392b3ddb96a8b4881e0a0c113107a06",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 18251,
+          "sha256": "ed5f35b9d22c1630a25f696611d2152578afa464037cdb75bd4ed483919ee5a7",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    },
+    "hk": {
+      "authority_files": {
+        "nav_history.jsonl": {
+          "bytes": 10636,
+          "sha256": "1095f0dea3775d594484bcb0a9de7298d40765a30eea74b8964b6a0864b65443",
+          "nonempty": true
+        },
+        "account.json": {
+          "bytes": 2208,
+          "sha256": "90f63ac286b4de07ef245a686a60d8fd51a5b836a77a1f62d60f67a67c940441",
+          "nonempty": true
+        },
+        "fills.jsonl": {
+          "bytes": 13401,
+          "sha256": "e37be161fd3f39371160c785142d798ee32edf1568c3a4da1c090a40f7617f93",
+          "nonempty": true
+        }
+      },
+      "pending_or_wal": [],
+      "settlement_receipt_count": 0
+    }
+  },
+  "cohort": {
+    "sha256": "75d5182d55ffc7e569f50008d9293682cadf56130d42b00eaba23412e2e8585c",
+    "bytes": 90345
+  },
+  "scripts/deploy_from_git.sh": {
+    "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f"
+  },
+  "scripts/deploy_code_to_vps.sh": {
+    "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+  },
+  "market_view": {
+    "sha256": "17e4621d51d0b517fa9143214936c89997784ad85fe5779740ebaba7134b5df5",
+    "asof": "2026-08-07",
+    "built_at": "2026-08-10T22:40:11.583831+00:00",
+    "seq": 9,
+    "publication": null,
+    "mtf_asof": "2026-08-05"
+  },
+  "selected_public_runtime_flags": {
+    "MASTERMIND_SERVE_ONLY": "0",
+    "MASTERMIND_VPS_AUTHORITATIVE": "1",
+    "MASTERMIND_JOBSTORE": "memory",
+    "MASTERMIND_MACRO_MANAGED_EXTERNALLY": "1"
+  },
+  "macro_head": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+  "health": {
+    "exception_type": "TimeoutError",
+    "error": "timed out"
+  },
+  "source_metadata_capture": {
+    "head": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+    "stable_git_and_working_bytes": true,
+    "sources": {
+      "regime": {
+        "path": "data/regime/latest.json",
+        "git_blob": "578db43685468fec5e5d1262986e3f272b464512",
+        "sha256": "a4b038121eda5f24568d0b08e5e52cd880387d08889927eaaa48bac57d790077",
+        "bytes": 981334,
+        "date_claims": [
+          {
+            "path": "asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "liquidity_quality.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "conditions.vintages.nfci.asof",
+            "value": "2026-10-09"
+          },
+          {
+            "path": "conditions.vintages.anfci.asof",
+            "value": "2026-10-09"
+          },
+          {
+            "path": "conditions.vintages.stlfsi.asof",
+            "value": "2026-10-09"
+          },
+          {
+            "path": "conditions.vintages.hy_oas.asof",
+            "value": "2026-10-19"
+          },
+          {
+            "path": "conditions.vintages.ebp.asof",
+            "value": "2026-09-01"
+          },
+          {
+            "path": "conditions.vintages.ofr_fsi.asof",
+            "value": "2026-10-16"
+          },
+          {
+            "path": "conditions.vintages.vix.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "conditions.vintages.vix_term.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "conditions.vintages.pct_above_200.asof",
+            "value": "2026-10-19"
+          },
+          {
+            "path": "conditions.vintages.us10y.asof",
+            "value": "2026-10-19"
+          },
+          {
+            "path": "conditions.vintages.recession_risk.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "business_cycle.asof",
+            "value": "2026-10-31"
+          },
+          {
+            "path": "business_cycle.tiers.leading.asof",
+            "value": "2026-10-31"
+          },
+          {
+            "path": "business_cycle.tiers.coincident.asof",
+            "value": "2026-09-30"
+          },
+          {
+            "path": "business_cycle.tiers.lagging.asof",
+            "value": "2026-09-30"
+          },
+          {
+            "path": "base_effect.as_of",
+            "value": null
+          },
+          {
+            "path": "regime_hmm.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.tape.passport.freshness.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.macro.growth_legs.payrolls_trend.freshness.asof",
+            "value": "2026-09-01"
+          },
+          {
+            "path": "regime_one.macro.growth_legs.indpro_trend.freshness.asof",
+            "value": "2026-09-01"
+          },
+          {
+            "path": "regime_one.macro.growth_legs.wei_trend.freshness.asof",
+            "value": "2026-10-10"
+          },
+          {
+            "path": "regime_one.macro.growth_legs.gdpnow_trend.freshness.asof",
+            "value": "2026-07-01"
+          },
+          {
+            "path": "regime_one.macro.inflation_legs.sticky_cpi_direction.freshness.asof",
+            "value": "2026-09-01"
+          },
+          {
+            "path": "regime_one.macro.passport.freshness.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.forward.p_quad.passport.freshness.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.forward.base_effect.passport.freshness.asof",
+            "value": "2026-10-20 00:00:00"
+          },
+          {
+            "path": "regime_one.fused_risk.passport.freshness.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "regime_one.flip_attribution.asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "quad_vector.asof",
+            "value": "2026-10-20"
+          }
+        ],
+        "mtf_nodes": [
+          {
+            "path": "mtf_signals",
+            "keys": [
+              "asof",
+              "tf",
+              "universe",
+              "source",
+              "note",
+              "signals"
+            ],
+            "metadata": {
+              "asof": "2026-08-05"
+            }
+          }
+        ]
+      },
+      "cycles": {
+        "path": "site/sectordata/sector_cycles.json",
+        "git_blob": "35a3bb3797ef208ec011a672125bc09842544b77",
+        "sha256": "4fa69a3719646dd087b9a929a47a74098b93f5715e83f4d7bc25723ff85f6ae1",
+        "bytes": 1912840,
+        "date_claims": [
+          {
+            "path": "meta.rs_history.as_of",
+            "value": "2026-10-20"
+          }
+        ],
+        "mtf_nodes": []
+      },
+      "rrg": {
+        "path": "site/marketdata/subsector_rotation.json",
+        "git_blob": "2da0de1392b7e49a0ef3d0e86c95cf59c6538b86",
+        "sha256": "a13021d4fd4424964d66db4b89289ff465775a0385dc0ece2685e7b00194bf09",
+        "bytes": 760130,
+        "date_claims": [
+          {
+            "path": "asof",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "track_record.as_of",
+            "value": "2026-10-20"
+          },
+          {
+            "path": "track_record.generated_at",
+            "value": "2026-10-21T05:08:45.857961+00:00"
+          }
+        ],
+        "mtf_nodes": []
+      },
+      "group_flow": {
+        "path": "site/basketdata/flow.json",
+        "git_blob": "90a8ecc5ded221837b1aab17ada7b942576d8049",
+        "sha256": "3ed5f88da6be74a20f29b48ca16434aeb80d0210bd1b5656d97d7df5b553ad21",
+        "bytes": 198708,
+        "date_claims": [
+          {
+            "path": "as_of",
+            "value": "2026-10-19"
+          }
+        ],
+        "mtf_nodes": []
+      }
+    },
+    "scope": "raw metadata only; not publisher admission or production publication"
+  },
+  "namespace_timeout_probe": {
+    "expected_timeout_observed": true,
+    "launcher_reaped": true,
+    "process_group_gone": true,
+    "exit_code": -9,
+    "stderr": "",
+    "application_invoked": false,
+    "portfolio_invoked": false
+  },
+  "completed_at": "2026-10-21T10:21:05.527931+00:00"
+}

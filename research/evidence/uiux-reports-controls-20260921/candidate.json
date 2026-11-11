@@ -1,0 +1,16 @@
+{
+  "base": "f7539ad7e4e22cd889ff6d75190c2e1d686a0a53",
+  "new_css": "b219cddc",
+  "archive_nodes_unchanged": true,
+  "archive_count": 7,
+  "source_script_matches_generated": true,
+  "old_page_sha256": "83b9a1dabd0f6061bd8562b5678d10638dcbb320cc0d50f790a6c12c5eb66d52",
+  "new_page_sha256": "3b4867cca08de06cb68eca18a2e37ef13d5849f28ccf7f192aab5d7af86de0eb",
+  "scope": [
+    "templates/reports.html.j2",
+    "site/reports.html",
+    "site/assets/css/b219cddc.css",
+    "tests/test_reports_timeline_ui.py"
+  ],
+  "verification_mode": "immutable GitHub source in standalone test fixture; not a Git checkout or publishing path"
+}
