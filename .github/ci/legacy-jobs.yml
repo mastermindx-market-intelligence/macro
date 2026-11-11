@@ -22013,7 +22013,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps (the builder suite runs real builders)
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
       # test_site_shim.py itself (units + tripwire + source guard) runs on the
       # template-site-sync lane, which #3635 wired and which needs only pyyaml.
       # This job exists for the suite that lane CANNOT host: it RUNS each builder,
@@ -22037,6 +22037,10 @@ jobs:
       # select only the hermetic append class from that existing test module.
       - name: Intraday Flow snapshot lifecycle and ledger preservation
         run: python -m pytest tests/test_intraday_flow_lifecycle_js.py tests/test_intraday_flow_timing_lifecycle.py tests/test_intraday_flow_stance.py tests/test_intraday_flow.py::TestAppendLedger -q
+      # Synthetic cadence and write-preservation checks belong to PR code CI;
+      # retain the complete real-universe case in unrun-data-plane below.
+      - name: Polygon intraday cadence and write preservation
+        run: python -m pytest tests/test_polygon_intraday.py -q -m "not data_gate"
 
   forex-r26-consumer:
     if: ${{ false }}
