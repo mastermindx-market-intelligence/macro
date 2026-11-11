@@ -616,7 +616,10 @@ def _check_density_gate(theme_df: pd.DataFrame, theme: str) -> tuple[bool, str]:
     if "matched_n" in recent.columns and "n_bonds" in recent.columns:
         matched = pd.to_numeric(recent["matched_n"], errors="coerce")
         denom = pd.to_numeric(recent["n_bonds"], errors="coerce").replace(0, np.nan)
-        ratio = (matched / denom).replace([np.inf, -np.inf], np.nan).dropna()
+        # Filter the input pair before division: a finite count divided by
+        # infinity becomes zero and would misclassify missing coverage as low.
+        finite_pair = np.isfinite(matched) & np.isfinite(denom)
+        ratio = (matched[finite_pair] / denom[finite_pair]).replace([np.inf, -np.inf], np.nan).dropna()
         if ratio.empty:
             return False, "no finite matched_n observations (density gate: no repricing coverage)"
         avg_match_ratio = float(ratio.mean())

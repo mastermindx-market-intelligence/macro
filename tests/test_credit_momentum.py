@@ -296,6 +296,40 @@ class TestDensityGate:
         open_, reason = _check_density_gate(df, "test_theme")
         assert open_ is True, f"finite window with two non-finite rows should stay open: {reason}"
 
+    def test_gate_boundary_ignores_unavailable_denominators(self):
+        """An unavailable count is not a zero match-ratio observation."""
+        from engine.credit_momentum import _check_density_gate
+        for unavailable in (np.inf, -np.inf, np.nan):
+            df = self._gate_df(
+                [10.0] * 20 + [unavailable], [6.0] * 21, self._dates(21)
+            )
+            open_, reason = _check_density_gate(df, "test_theme")
+            assert open_ is True, f"unavailable denominator lowered the 60% boundary: {reason}"
+
+    def test_gate_closed_when_no_finite_count_pair_exists(self):
+        from engine.credit_momentum import _check_density_gate
+        df = self._gate_df(
+            [np.inf] * 20 + [10.0], [6.0] * 20 + [np.nan], self._dates(21)
+        )
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False
+        assert reason == "no finite matched_n observations (density gate: no repricing coverage)"
+
+    def test_gate_finite_zero_match_still_lowers_boundary(self):
+        from engine.credit_momentum import _check_density_gate
+        df = self._gate_df([10.0] * 21, [6.0] * 20 + [0.0], self._dates(21))
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is False
+        assert "too few repricing bonds" in reason
+
+    def test_gate_partial_finite_window_policy_is_preserved(self):
+        from engine.credit_momentum import _check_density_gate
+        df = self._gate_df(
+            [np.nan] * 20 + [10.0], [np.nan] * 20 + [6.0], self._dates(21)
+        )
+        open_, reason = _check_density_gate(df, "test_theme")
+        assert open_ is True, reason
+
     def test_gate_closed_one_date_repeated_21_times(self):
         from engine.credit_momentum import _check_density_gate
         one = pd.Timestamp(date(2026, 1, 5))
