@@ -22,7 +22,7 @@ accounting (no-entry and no-fill counts, exposure-matched reference), year-block
 discipline.
 
 **Pipeline:**
-1. **Load.** Read the vendor cache and repo blobs into aligned panels. Every input's sha256 goes into the artifact.
+1. **Load.** Read Yahoo and French files from the scratch cache, and repo blobs (including every FRED series) in memory via `git show` at the pin, into aligned panels. Every input's sha256 goes into the artifact.
 2. **Signals.** Compute T, C, M, MTF, RS63, VEL, R12-1, R126 exactly as the JSON defines them.
 3. **Books.** Run 36 configurations, each one continuous simulation.
 4. **Metrics.** Compute the contrasts (F1–F5, FI), bootstrap, Holm and DSR.
@@ -79,9 +79,9 @@ baselines. That is still decision-useful: it shows where the edge is not.
 1. **J4 delisted prices.** Authorise use of a licensed vendor credential (Massive/Polygon or Tiingo) for delisted
    S&P 500 / 1500 daily prices, if one exists for this purpose? Without it, J4 historical stays L0 and the prospective
    shadow is its only test. *Default: no credential; Yahoo best-effort only.*
-2. **FRED content.** IMCE landmine (q) says "no store/cache/archive of FRED content in any database". DTB3,
-   `SAHMREALTIME` and BAA are cached in scratch only and never committed. Acceptable, or should the repo stores / ^IRX
-   be used exclusively? *Default: scratch cache, with repo stores where they exist (HY OAS, DBAA).*
+2. **FRED content.** FRED terms prohibit caching. Rotation Core deleted its scratch FRED caches, and Phase 2 reads
+   DTB3, `SAHMREALTIME`, DBAA and HY OAS from the repo's existing `data/fred` store at the pin, in memory, writing no
+   copy. Confirm this is acceptable, or name a different owner for these series. *Default: repo store, in memory.*
 3. **Hold-out opening.** Open Stage H automatically once Stage D is committed, or only after you adjudicate the Stage D
    results? *Default: automatic, because the candidates are locked by the header.*
 4. **Prospective shadow (L2).** WS:GREY-DEER forbids a new risk-episode ledger; risk episodes belong to
