@@ -5998,9 +5998,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_728),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6008,29 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #7114, preserve the current free-content allowance):
+    Receiving main dce366ad retains the exact ruling-graph owner from this
+    branch's incorporated base71405417. Keep all 401 owner identities and
+    400 sibling blocks; retain the original routing title and two test tokens.
+    Including the full literal base-binding command, the unchanged estimator
+    counts 7 commands, 3->5 test references, 2537->2616 joined characters and
+    the same bucket3: owner weight16->20. Add only the original public-source
+    measured +4 to current5966/5989/5724, giving5970/5993/5728. Main's already
+    landed free-content +2 stays funded. Preserve both complete histories,
+    jobs137/138/131, ten packs and all selection/runtime/admission controls.
+    This is source conservation, not a new planner or native CLI execution.
+    Natural successor CI remains owed; N0/no-launch and private holds remain.
+
+    2026-11-11 (PR #7114, current-main preserving composition):
+    Receiver 37ec007a retains all401 owners and its accepted +8 accounting.
+    The original ruling-graph harness enrollment keeps its exact owner preimage
+    and unchanged legacy estimator contribution of +4. Preserve every prior
+    provenance paragraph and all main-side assertions, including the tracked
+    registry-seed read. Compose 5966/5987/5724 as
+    5970/5991/5728; retain137/138/131 jobs, ten packs and all
+    selection/runtime/admission limits. This is source-conservation accounting,
+    not a fresh full-tree planner or hosted pass; natural successor CI is owed.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6020,6 +6043,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #7114, current-main source integration):
+    Preserve all400owners and399unowned owner blocks, including accepted
+    browser dependency corrections. Retain the original ruling-graph
+    title and two test arguments; owner weight16->20 remains marginal+4.
+    Keep all47 subject-history lines and every current-main history.
+    Current5958/5979/5716 plus the original+4 yields5962/5983/5720;
+    retain the independent accepted #6867 accounting, job ceilings
+    137/138/131, tenpacks and all selection/runtime limits.
+    This is source accounting; natural successor proof remains required.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6057,6 +6090,28 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     unmerged sibling is funded. This is current source accounting, not
     a new planner execution. The new head needs its own required proof.
     https://github.com/mastermindx-market-intelligence/Macro/pull/9230
+
+    2026-11-09 (PR #7114, retain landed ledger and original CI contribution):
+    Receiving main75e018ac includes the independent data-base-shim ledger.
+    Preserve every original subject history region and current46-line history.
+    The subject owner preimages remain unchanged; original marginal+4
+    composes current5948/5969/5706 as5952/5973/5710.
+    Keep all400 owners, all197 curated owners and every existing assertion.
+    Retain job ceilings137/138/131, ten packs and current selection rules.
+    Only source-accounting limits are composed; no runtime/admission change.
+    Prior actual product/research and paired-probe evidence stays attached
+    to its recorded generation; fresh successor hosted qualification is owed.
+
+    2026-11-09 (PR #7114, preserving current F09 receiver): retain the
+    landed beneficial-ownership coverage and all 400 catalog owners while
+    preserving the original ruling-graph N0 conformance enrollment.
+    Its unchanged-estimator contribution remains +4; carry current ceilings
+    5945/5966/5703 -> 5949/5970/5707, retaining jobs 137/138/131, ten packs
+    and every assertion, selector and runtime/admission limit. Both original
+    N0 history entries and all main provenance remain at their existing anchors.
+    This is source-derived accounting, not a new paired planner measurement.
+    Natural successor CI must qualify this head; launch_authorized stays false
+    and no private candidate, provider or installed runtime is qualified.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.
@@ -6153,6 +6208,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     This is static preserving composition, not a new full-tree measurement;
     natural current-head CI must qualify the integrated source.
 
+    2026-11-09 (#7114 preserving conflict repair on main 0fbea3e4cc54):
+    retain all 400 accepted owners and current registry/admission tests.
+    The complete ruling-graph owner preimage and runner 47164044 remain
+    unchanged from qualified receiver 73efd50f. Carry only the published
+    N0 source's measured +4: current 5943/5964/5701 -> 5947/5968/5705.
+    Preserve all twelve accepted source/evidence postimages and historical
+    accounting, job ceilings137/138/131, ten packs and every runtime limit.
+    No private candidate or native/provider activation is qualified here.
+    This is static preserving composition; natural successor CI remains
+    required for the newly integrated source.
+
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
     conftest's tools/ package alias escapes static closure resolution. Its
@@ -6216,6 +6282,20 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     selectors, dependencies, timeouts and admission/concurrency controls.
     This is measured planner weight, not an execution-time estimate.
     All earlier landed contributions and provenance remain below.
+
+    2026-11-08 (PR #7114, published N0 harness source composition):
+    Natural contract run 42520097292 / job 128851499146 measured head
+    2c2ceb7d2f4ce3de093aabcb4edcbb33d998313b against exact base
+    1bc13940103c033d72ea0dcc33d51e77edef7f42 on tested merge
+    7c83542b6509d4310ab66ecafa28aef713bf5e84. The paired probes were
+    index 137/5943->5947, free 137/5964->5968 and Prophet 131/5701->5705;
+    all plans retained ten packs and reported newly selected: none.
+    Fund exactly the measured +4 estimated-weight units per probe.
+    Keep job ceilings 137/138/131, maximum 10 packs, assertions, commands,
+    dependencies, selectors and runtime/admission limits unchanged.
+    Preserve all earlier accepted accounting below. This is the current
+    published source measurement, not the historical private preparation
+    or a claim of harness/native/runtime activation. No padding is added.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural

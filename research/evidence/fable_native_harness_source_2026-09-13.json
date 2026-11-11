@@ -1,0 +1,91 @@
+{
+  "base": {
+    "commit": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+    "repository": "mastermindx-market-intelligence/macro"
+  },
+  "baseline": {
+    "actual_agent_launches": 0,
+    "direct_fable_requests_allowed": 10,
+    "direct_requests_evaluated": 10,
+    "guard_blob": "2d64ebbfc1690493d2e47c6e10db7eda5afb7a75",
+    "interpretation": "The old hook accepted repeated well-formed orchestration requests and a workflow audit line; this is hook decision evidence, not live spend or session evidence.",
+    "ten_way_fable_workflow_allowed": true
+  },
+  "blockers": [
+    "Executive connector state read returned invalid_mcp_response with gateway 404; no runtime admission attempted.",
+    "Authorized Mac ping succeeded but process tool reported Desktop Commander MCP backend not found; installed Claude version remains unknown."
+  ],
+  "candidate_contract": {
+    "declared_version_fixture": "2.1.219",
+    "executive_jobs_submitted": 0,
+    "global_profile_installed": false,
+    "host_changes": 0,
+    "launch_authorized": false,
+    "modes": [
+      "router_only",
+      "native_leaf"
+    ],
+    "observed_installed_version": null,
+    "provider_calls": 0,
+    "tree_budget_implemented": false
+  },
+  "collision_review": {
+    "disjoint_pr_file_lists": [
+      7103,
+      7098,
+      7108
+    ],
+    "scope": "Exact file lists of these relevant open PRs plus earlier partial host worktree observations. Not exhaustive current fleet clearance."
+  },
+  "disposition": "BUILT_NOT_PROVEN / SOURCE_ONLY",
+  "observed_date": "2026-09-13",
+  "operation": "fable-native-harness-20260913-sol-001",
+  "procedure": {
+    "bootstrap_major": 1,
+    "commit": "9ed16bf0fcc5b47e870350ff2413ff5c8c73b447",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "skillpack_version": "1.0.1"
+  },
+  "schema": "mastermind.fable_harness_source_evidence.v1",
+  "source_files": {
+    ".claude/hooks/agent_routing_context.py": {
+      "git_blob_sha": "22423c6ec3a7b18dd1dafa3b436deaec5e6d1ed0",
+      "sha256": "64725ad135eca740cb3a537bf6fb142bcb3e72164e68d66f63970eb9082db8cd"
+    },
+    ".claude/hooks/model_routing_guard.py": {
+      "git_blob_sha": "24240588f22d90cb03f1b13a4e6dfa93fc179f25",
+      "sha256": "95d947ebfb98d78e1cd0968b2c008179586f8ce64ab82c911b5e6f5f7b3e1e22"
+    },
+    ".claude/settings.json": {
+      "git_blob_sha": "76eca5317d19ad73bc86e81ceabb9bc707d1516b",
+      "sha256": "e91a1a7878092cf63b2ded54366e4ef2977432f3c837665fb380f2f667be0b8c"
+    },
+    "scripts/fable_harness_profile.py": {
+      "git_blob_sha": "bc508fb004b6e745f961b4cf8367d2e93764bf26",
+      "sha256": "4624eca32fb9b4fd3139f8148c3ced50e70af42ee28bf0c8d1bb94fb4909135e"
+    },
+    "tests/test_fable_harness_profile.py": {
+      "git_blob_sha": "401c4e0dd50dc80066df9831debfb0112e7fef5a",
+      "sha256": "8d4c1012612d6c7ab42fe34626021d540463412dd5eadf3b47ae014ff3506acb"
+    }
+  },
+  "unproven": [
+    "Hosted full repository CI and Agent OS validation",
+    "Independent semantic review and source release",
+    "Current complete writer-collision clearance",
+    "Actual CLI effective settings, served model, tool and skill scope",
+    "Executive admission, capacity/account binding and atomic hierarchical budgets",
+    "Real parent-child-result production journey"
+  ],
+  "validation": {
+    "command": "python -m pytest -q tests/test_fable_harness_profile.py --junitxml=fable-profile-tests.xml",
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "2459f569eb7ba38aab2f882eb18d8cf44ef1a5745fcf48c3fa46c085a6428382",
+    "method": "Actual hook entrypoint via runpy for the policy matrix; two real hook subprocess checks plus one compiler CLI subprocess check. No Claude or provider processes.",
+    "reported_summary": "110 passed in 2.29s",
+    "scope": "Dedicated source suite in an exact-source partial repository snapshot, not full repository CI.",
+    "skipped": 0,
+    "tests": 110
+  }
+}

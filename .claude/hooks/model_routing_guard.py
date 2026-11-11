@@ -10,11 +10,178 @@ validated as code, not direct Agent tool calls.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+import stat
 import sys
 from pathlib import Path
+
+# Opt-in native harness restrictions, not a new model router or budget store.
+# Unprofiled sessions retain their existing behavior during staged adoption.
+NATIVE_PROFILE_SCHEMA_VERSION = 1
+NATIVE_PROFILE_ENV = "MASTERMIND_NATIVE_DELEGATION_MODE"
+NATIVE_PROFILE_MODES = ("router_only", "native_leaf")
+NATIVE_LEAF_ROUTE = ("census", "scout", "sonnet")
+NATIVE_BINDING_ENV = "MASTERMIND_NATIVE_PROFILE_BINDING"
+NATIVE_PROFILE_SOURCE_PATHS = (
+    ".claude/hooks/model_routing_guard.py",
+    ".claude/hooks/agent_routing_context.py",
+    ".claude/settings.json",
+    ".claude/agent-routing.json",
+    ".claude/agents/scout.md",
+    "scripts/fable_harness_profile.py",
+)
+MAX_PROFILE_INPUT_CHARS = 262144
+NATIVE_LAUNCH_TOOLS = frozenset({
+    "Agent", "Task", "Workflow", "TeamCreate", "SendMessage", "Skill",
+})
+
+
+def _unique_object(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError("non-finite JSON value")
+
+
+def _read_profile_payload() -> dict:
+    raw = sys.stdin.read(MAX_PROFILE_INPUT_CHARS + 1)
+    if len(raw) > MAX_PROFILE_INPUT_CHARS:
+        raise ValueError("oversize hook input")
+    payload = json.loads(raw, object_pairs_hook=_unique_object,
+                         parse_constant=_reject_json_constant)
+    if not isinstance(payload, dict):
+        raise ValueError("hook input is not an object")
+    return payload
+
+
+def verify_native_source_binding(payload: dict, mode: str) -> str | None:
+    """Check source/CWD continuity, not authority, identity, quota or a signature.
+
+    The existing host owner must protect the environment and source. A caller
+    who can rewrite both source and this observation can forge a new binding;
+    this check is not an OS sandbox or an Executive admission substitute.
+    """
+    raw = os.environ.get(NATIVE_BINDING_ENV)
+    if not isinstance(raw, str) or not raw or len(raw) > 8192:
+        return "HARNESS_BINDING_REQUIRED: compiled source/workspace binding is required."
+    try:
+        binding = json.loads(raw, object_pairs_hook=_unique_object,
+                             parse_constant=_reject_json_constant)
+        if (not isinstance(binding, dict)
+                or set(binding) != {"schema_version", "mode", "project_root", "files"}
+                or type(binding["schema_version"]) is not int
+                or binding["schema_version"] != 1
+                or binding["mode"] != mode
+                or not isinstance(binding["project_root"], str)
+                or not isinstance(binding["files"], dict)
+                or set(binding["files"]) != set(NATIVE_PROFILE_SOURCE_PATHS)):
+            raise ValueError("shape")
+        requested_root = Path(binding["project_root"])
+        if not requested_root.is_absolute():
+            raise ValueError("root")
+        root = requested_root.resolve(strict=True)
+        if requested_root != root or not root.is_dir():
+            raise ValueError("root")
+        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
+        payload_cwd = payload.get("cwd")
+        for observed in (payload_cwd, project_dir):
+            if (not isinstance(observed, str)
+                    or not Path(observed).is_absolute()
+                    or Path(observed).resolve(strict=True) != root):
+                return "HARNESS_WORKSPACE_MISMATCH: delegation must use the bound project."
+        if Path(__file__).resolve(strict=True) != root / ".claude/hooks/model_routing_guard.py":
+            return "HARNESS_SOURCE_MISMATCH: hook did not load from the bound source."
+        for relative in NATIVE_PROFILE_SOURCE_PATHS:
+            expected = binding["files"][relative]
+            if not isinstance(expected, str) or re.fullmatch(r"[0-9a-f]{64}", expected) is None:
+                raise ValueError("digest")
+            current = root
+            for component in Path(relative).parts:
+                current = current / component
+                if current.is_symlink():
+                    raise ValueError("symlink")
+            metadata = current.stat()
+            if (not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+                    or metadata.st_size > 1_000_000):
+                raise ValueError("file")
+            with current.open("rb") as stream:
+                raw_source = stream.read(1_000_001)
+            if (len(raw_source) > 1_000_000
+                    or hashlib.sha256(raw_source).hexdigest() != expected):
+                return "HARNESS_SOURCE_MISMATCH: compiled source changed; refresh through its owner."
+    except (OSError, ValueError, TypeError, KeyError, RecursionError):
+        return "HARNESS_BINDING_INVALID: source/workspace binding could not be verified."
+    return None
+
+
+def native_profile_refusal(payload: dict, mode: str) -> str | None:
+    """Return a restriction only; never grant a Job, model spend or permission.
+
+    native_leaf is an opt-in read-only census candidate, not a fleet budget.
+    Its compiled CLI agent definition removes Bash, MCP and delegation tools.
+    Actual settings/tool adoption is a separate runtime qualification gate.
+    """
+    if mode not in NATIVE_PROFILE_MODES:
+        return "HARNESS_PROFILE_INVALID: unknown mode; do not fall back to legacy routing."
+    tool = payload.get("tool_name")
+    if not isinstance(tool, str) or not tool:
+        return "HARNESS_INPUT_INVALID: missing tool identity."
+    if tool not in NATIVE_LAUNCH_TOOLS:
+        return None
+    ti = payload.get("tool_input")
+    if not isinstance(ti, dict):
+        return "HARNESS_INPUT_INVALID: launch input must be an object."
+    if mode == "router_only":
+        return ("ROUTER_REQUIRED: native agent/workflow/team/skill launches and resume messages are "
+                "disabled in this harness. Request the existing Executive OS child "
+                "admission and router; if unavailable, report BLOCKED. Do not launch "
+                "another provider CLI or switch carriers to evade this decision.")
+    if tool not in {"Agent", "Task"}:
+        return "ROUTER_REQUIRED: workflows, teams, skills and resume messages require governed admission."
+    if "agent_id" in payload:
+        return "NATIVE_LEAF_ONLY: a native helper cannot create descendants."
+    if any(key in ti for key in ("resume", "resume_id", "agent_id", "team_name")):
+        return "ROUTER_REQUIRED: resumed agents and teammates need reconciled admission."
+    allowed_keys = {"description", "prompt", "subagent_type", "agent_type",
+                    "model", "run_in_background", "isolation"}
+    if set(ti) - allowed_keys:
+        return "HARNESS_INPUT_INVALID: unqualified native launch field."
+    if "subagent_type" in ti and "agent_type" in ti:
+        return "HARNESS_INPUT_INVALID: ambiguous agent identity."
+    sub = ti.get("subagent_type", ti.get("agent_type"))
+    route, expected_agent, expected_model = NATIVE_LEAF_ROUTE
+    if sub != expected_agent:
+        return ("NATIVE_LEAF_ONLY: only the read-only scout census is admitted by "
+                "this profile; independent leaders belong to Executive child Jobs.")
+    # Exact alias required: no inheritance, Fable, full-ID guessing or substring match.
+    if ti.get("model") != expected_model:
+        return ("NATIVE_MODEL_PIN_REQUIRED: census must explicitly request sonnet; "
+                "FABLE-WHY is an explanation, not budget or launch authority.")
+    if (os.environ.get("CLAUDE_CODE_SUBAGENT_MODEL") != expected_model
+            or os.environ.get("CLAUDE_CODE_SUBAGENT_MODEL_FORCE") != "0"):
+        return ("NATIVE_MODEL_ENV_REQUIRED: the compiled sonnet/default-model environment "
+                "must be present; ambient force/inheritance is not qualified.")
+    prompt = ti.get("prompt")
+    if not isinstance(prompt, str):
+        return "HARNESS_INPUT_INVALID: commission must be text."
+    markers = ROUTE_RE.findall(prompt)
+    if markers != [route]:
+        return "NATIVE_LEAF_ONLY: exactly one ROUTE: census marker is required."
+    if "run_in_background" in ti and type(ti["run_in_background"]) is not bool:
+        return "HARNESS_INPUT_INVALID: run_in_background must be a boolean."
+    if "isolation" in ti and ti["isolation"] != "worktree":
+        return "HARNESS_INPUT_INVALID: unqualified isolation mode."
+    return None
+
 
 FABLE_OK_TYPES = {"orchestrator"}
 # The line anchors are load-bearing: a mid-sentence prose mention ("we considered
@@ -42,6 +209,9 @@ def _load_registry() -> dict:
         data = json.load(f)
     if not isinstance(data.get("routes"), dict):
         raise ValueError("registry has no routes object")
+    for spec in data["routes"].values():
+        if not isinstance(spec, dict):
+            raise ValueError("registry route is not an object")
     return data
 
 
@@ -165,7 +335,7 @@ def _route_direct_spawn(ti: dict, tool: str, registry: dict) -> None:
 
     route = route_match.group(1).lower()
     spec = registry["routes"].get(route)
-    if not spec:
+    if not isinstance(spec, dict):
         _deny(
             f"Blocked: unknown ROUTE {route!r}. Allowed routes: "
             + ", ".join(sorted(registry["routes"]))
@@ -260,11 +430,23 @@ def _validate_workflow(script: str) -> None:
 
 
 def main() -> None:
+    mode = os.environ.get(NATIVE_PROFILE_ENV)
     try:
-        payload = json.load(sys.stdin)
+        payload = _read_profile_payload() if mode is not None else json.load(sys.stdin)
     except Exception:
-        # Existing hook convention: malformed hook input should not brick Claude.
+        if mode is not None:
+            _deny("HARNESS_INPUT_INVALID: malformed or oversized input; launch refused.")
+        # Unprofiled compatibility only. Profiled launches always fail closed.
         return
+
+    if mode is not None:
+        refusal = native_profile_refusal(payload, mode)
+        if refusal:
+            _deny(refusal)
+        if payload.get("tool_name") in NATIVE_LAUNCH_TOOLS:
+            binding_refusal = verify_native_source_binding(payload, mode)
+            if binding_refusal:
+                _deny(binding_refusal)
 
     tool = str(payload.get("tool_name") or "")
     ti = payload.get("tool_input") or {}
@@ -302,5 +484,7 @@ if __name__ == "__main__":
     except SystemExit:
         raise
     except Exception:
-        # Preserve prior fail-open behavior only for truly unexpected hook failures.
+        if os.environ.get(NATIVE_PROFILE_ENV) is not None:
+            _deny("HARNESS_GUARD_ERROR: policy evaluation failed; launch refused.")
+        # Preserve compatibility only outside the explicitly selected harness.
         sys.exit(0)
