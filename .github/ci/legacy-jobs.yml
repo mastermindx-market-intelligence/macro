@@ -35394,6 +35394,13 @@ jobs:
       # and combined_v1 exclusion under the release-forecast owner lane.
       - name: Release Radar — coherent-target ridge governance (Wave 2B)
         run: python -m pytest tests/test_release_cpi_coherent_governance.py tests/test_release_cpi_coherent_shadow.py -q
+      # A1 (#6868): Release Radar diagnostic truth — the additive per-item
+      # diagnostics adapter, its single producer seam (byte-identical artifacts
+      # with and without it), and the EXECUTED Release Radar renderer: the
+      # template's own script runs in Node (the pack runner's setup-node), and
+      # the suite FAILS rather than skips when node is absent under CI.
+      - name: Release Radar — diagnostic truth adapter, producer seam, executed renderer (#6868)
+        run: python -m pytest tests/test_release_diagnostics.py -q
 
   unrun-brain-desks:
     # master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts.
@@ -47827,6 +47834,20 @@ jobs:
       # Dashboard suites and the helper suites they import.
       - "tests/test_dashboard_template_render.py"
       - "tests/test_risk_radar_workspace.py"
+      # #6868 A1: the Release Radar diagnostic-truth suite EXECUTES the dashboard
+      # template's own script (declared above) against verbatim producer items,
+      # so it needs the adapter it drives (engine/*.py), the producer whose
+      # single seam it pins, and the fixture it renders.
+      - "tests/test_release_diagnostics.py"
+      - "tests/fixtures/release_diagnostics/radar_items.json"
+      - "scripts/build_release_forecast.py"
+      - "research/release_playbook/results/playbook_v1.json"
+      # The producer's own measured read/receipt closure (the curated-closure
+      # audit names these three by path): the coherent-ridge PREREG it reads,
+      # the requalification receipt it cites, and the display copy it writes.
+      - "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md"
+      - "research/rates_inflation_command/seat_20261014/m0_results/m0_requal_2026-10-14.json"
+      - "site/macrodata/release_forecast.json"
       # #7798: source-dated Hottest Desk leadership/recommendation contract.
       - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
@@ -47856,6 +47877,7 @@ jobs:
       - "templates/si_workspace.js"
       # The receipt test binds the committed shots to their render inputs.
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr7036_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       # The site-copy test reads the published byte copy of the shared glance source.
       - "site/rotation_events.js"
@@ -48054,7 +48076,7 @@ jobs:
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
         run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
-      - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
+      - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings + A1 diagnostic truth
         run: >-
           python -m pytest
           tests/test_dashboard_template_render.py
@@ -48066,7 +48088,8 @@ jobs:
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
-          tests/test_macro_mtf_sort_key.py -q
+          tests/test_macro_mtf_sort_key.py
+          tests/test_release_diagnostics.py -q
 
   ew-p4-descriptive-ui:
     # EW-P4 descriptive observation UI (Grey Deer early-warning). Split out of
@@ -48149,6 +48172,7 @@ jobs:
       - "templates/rotation_glance.css"
       - "templates/si_workspace.js"
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr7036_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       - "site/rotation_events.js"
       - "templates/_macro_sector_desk.html.j2"
