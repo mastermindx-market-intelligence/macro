@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/run_ci_pack.py",
+    "--validate-only"
+  ],
+  "exit_code": 2,
+  "duration_seconds": 0.13,
+  "log": "ci-manifest.log"
+}
