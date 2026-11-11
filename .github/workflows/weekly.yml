@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   weekly-report:
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 300   # was 45 -> 120 -> 300. EVERY archived run (10/10, 2026-06-13..07-11) died at the cap:
                            # a timeout kill concludes "cancelled" not "failed", so GitHub never notified (#2193 class —
                            # same as asia-close's 8-day silent death). Measured 07-11 (run 29156750557): at the 120m kill
@@ -31,12 +31,8 @@ jobs:
                            # alert when the committed stamp exceeds 7.5 days.
     steps:
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: restore attention store from R2 (wiki chip reads it at render)
         # data/attention/*.parquet are git-ignored (R2 data plane; deep history 2015-07→,

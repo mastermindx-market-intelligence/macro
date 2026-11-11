@@ -43,7 +43,7 @@ jobs:
     # the job-level pipeline-asia concurrency group still serializes the real work.
     # Dead-lane monitoring is UNAFFECTED by the extra quick green runs: the heartbeat
     # watches R2 anchor freshness (scripts/audit_r2.py, 26h), not run conclusions.
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 60    # ≥ MAX_FLOOR_WAIT (45m hold) + slack
     outputs:
       run: ${{ steps.decide.outputs.run }}
@@ -54,7 +54,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          /opt/homebrew/bin/python3.12 - <<'PY'
+          # Host-neutral interpreter: PATH python3.12 (data-linux pool) with the
+          # Homebrew absolute path as the Mac fallback — same resolution order as
+          # .github/actions/python-venv, which this checkout-less job cannot use.
+          PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+          "$PYBIN" - <<'PY'
           import json, os, sys, time, urllib.request
           from datetime import datetime, timezone
 
@@ -187,7 +191,7 @@ jobs:
       # multi-slot gate jobs above never queue/cancel behind a 90-150m real run.
       group: pipeline-asia
       cancel-in-progress: false
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 165   # was 90 -> 120 -> 165. EVERY run 07-03..07-10 died at the cap: measured 07-10 (run 29089281652) collect --group asia = 68m + build_china alone = 36m, so the kill lands mid-chain — everything after build_subsector_confluence (build_hk, build_china_news ingest, all CN-SYS lobes, masterminds) had been DEAD for 8 days while the run reads "cancelled" not "failed". Last natural success 07-02 at ~86m; the lane grew ~+35m in a week as W8/CN-SYS modules landed. 165m restores the full chain; the runtime diet landed 2026-07-11 — collect-path (us_scope tail gate + pure-REST pool moves + CNInfo caps, #2199) and build-path (skip the duplicate library rebuild + [timing] section ticks in build_china_library, this PR). Target ~110m steady-state; keep 165m as headroom against CNInfo/GDELT bad days. 2026-07-14: the post-build_china builder chain went parallel (band A/B below, engine-job cluster pattern) — expected ~18-25m further off the steady state; timeout deliberately UNTOUCHED until the bands' step-summary wall-times confirm it.
     steps:
       # W2 runtime telemetry (research/NIGHTLY_RESILIENCE_AND_LIVE_TRANSITION_MASTERPLAN_2026-08-06.md
@@ -209,12 +213,8 @@ jobs:
       # after merge it is main. `git push` (no args) then pushes the CURRENT branch to
       # its origin counterpart, so a branch test commits to the branch, never to main.
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: restore china breadth close cache
         uses: actions/cache@v4
@@ -264,7 +264,7 @@ jobs:
         # host regression (new runner, brew migration, relabel).
         run: |
           if ! command -v pdftotext >/dev/null 2>&1; then
-            echo "::warning title=asia-close pdftotext missing::pdftotext (poppler) missing on ${RUNNER_NAME:-unknown} — hk_cbbc_sld will fail all SLD extractions this run (call_levels store freezes, HK magnet analysis goes stale). Fix: brew install poppler on this Mac."
+            echo "::warning title=asia-close pdftotext missing::pdftotext (poppler) missing on ${RUNNER_NAME:-unknown} — hk_cbbc_sld will fail all SLD extractions this run (call_levels store freezes, HK magnet analysis goes stale). Fix: brew install poppler (macOS) or apt-get install poppler-utils (data-linux)."
           fi
       - name: timings band — collectors (W2)
         run: python3 scripts/nightly_timings.py mark --band collectors || echo "::warning::timings band mark failed (non-fatal)"
@@ -1252,7 +1252,7 @@ jobs:
       # makes concurrent commits to main race-safe, exactly as in the `asia` job.
       group: pipeline-asia-ths-rescrape
       cancel-in-progress: false
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 190   # scrape budget is 150m (--budget-minutes below); the rest is
                            # checkout + deps + the commit/push loop. The script's own wall
                            # budget is the real bound — the job cap is only the backstop.
@@ -1263,12 +1263,8 @@ jobs:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - name: install deps
         run: pip install -r requirements.txt
       - name: weekly THS concept re-scrape (receipted, complete-or-fail)

@@ -128,7 +128,7 @@ jobs:
     # it an errored et_gate job would skip collect via needs-status and silently kill
     # the whole nightly; with it, only an explicit run=false stands the pipeline down.
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     # was 100 — the collectors step's real baseline has grown to ~60-67m (the old "~35m"
     # budget), and on 2026-07-11 it spiked to 98.5m (EDGAR 8-K velocity ~18m, OpenFIGI
     # ~10m, shadow-importance ~14m on a Friday close). The job was CANCELLED at exactly
@@ -199,12 +199,8 @@ jobs:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: restore breadth close cache
         uses: actions/cache@v4
@@ -1293,7 +1289,7 @@ jobs:
     # this job would then be the one lane that skipped the night. Do not add an
     # always() here — it would sever the skip propagation this depends on.
     needs: collect
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     # Measured 2026-08-06 (run 31067383446, `collect`): event spine 3s;
     # document-terms compiler 20.8m before it failed on #4740 — a full successful
     # pass reads every new complete submission back from R2, so it is longer, not
@@ -1317,12 +1313,8 @@ jobs:
       # ref: main + an explicit pull, the us_scan_tier / us_prophet_ledgers idiom:
       # the tree must already contain the market commit `collect` just pushed.
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       # ── THE HANDOFF ─────────────────────────────────────────────────────────
       # Downloaded AFTER the checkout and the pull, never before: both would
@@ -1868,7 +1860,7 @@ jobs:
     # this back to the store-bearing label in the same PR that graduates the
     # canary — until then a self-skipped tape lane is the designed degraded mode,
     # a 24h-hostage nightly is not.
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     # Budget arithmetic (re-cut 2026-08-02 after the 5-night starvation cancel,
     # 07-29→08-02: shadow-importance outgrew its "~13-14m" estimate to 80-120m+
     # and the job died at the old 150m cap with every later step — earnings
@@ -1891,12 +1883,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: ThetaData Terminal — health-check (probe-only, non-fatal)
         # The ThetaData Terminal v3 is a local Java daemon the tape_flow steps need.
@@ -2307,7 +2295,7 @@ jobs:
   engine:
     needs: [et_gate, collect, government_revenue_projection]
     if: always() && needs.et_gate.outputs.run != 'false'            # a scraper failure must still produce a dashboard from cached data
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 300    # was 240 — the 2026-08-07 night died AT the raised 240 cap too (22:00:48→02:05:48, killed in the final commit/push band ~2 min from done: last step group logged 02:03:28, so the workload is now ~242m and the site commit never landed → THIRD consecutive stale-site night and the frozen /prophet surface found 2026-08-08). 300 = the observed ~242m + ~58m headroom on the same cold-spare law as before. NOT a wedge: step groups tick seconds apart through the tail band, this is workload size. build_site is NO LONGER the creep lever (back to ~24m on 08-07 after the earlier 61.7m peak — do not inherit that label); the next profile must find where the other ~80m vs the 135-160m era went before any further cap raise. W4 PROFILE 2026-08-08 (that directive, executed same-day; evidence = jobs-API steps[] for the five 08-05→08-08 engine executions — read steps[].conclusion, NOT the run log: after a cancel the if:always() cleanup steps keep ticking seconds apart and mimic an almost-done tail): the '~2 min from done / NOT a wedge / workload is now ~242m' reading above is OVERTURNED. The 08-07 cancelled step was 'Prophet nightly' — 23:07:57→02:00:56 = 173m on mac-builder-1, a step the very next execution measured at 24 SECONDS (run 31226002132, same asof 2026-08-07, same first-unfrozen standouts board, mac-builder-2) — and builders-parallel + tail-desks were SKIPPED (~53m of real work at green pace), so the night was killed ~53m short, not 2 min. Its 02:04 partial commit contains ZERO site/prophet|data/prophet|data/prophet_arena writes: build_prophet WEDGED pre-first-write and logged nothing, because the step buffered stdout to RUNNER_TEMP and cat it only on completion — fixed at the step itself (#4980: 15m step timeout + continue-on-error + PYTHONUNBUFFERED streaming, the arming-pass belt-and-braces). TRUE steady-state workload measured green 2026-08-08: 126.3m — BELOW the 135-160m era (build_site back at 23.9m/24.9m after the frozen-slice fix; prophet-us doors/grades/miss-audit moved to us_prophet_ledgers). There is NO unattributed ~80m. The ~205m kills decompose (jobs API, runs 31056495943 mac-builder-5 + 31067383446 mac-builder-1): engine-core 72-73m (the build_site peak) + Intelligence Hub 15.6-17.5m + then-in-engine prophet-us tail modules + commit-band variance (19.4m vs 6.2m green). The ONE band still creeping: 'restore, acquire, project, and snapshot Filing Forensics SEC sources (hard gate)' — 7.4m → 11.4m → 15.2m → 23.3m → 23.8m across those five successive executions (fixed 12-ticker list; the growth is the run-clock-hashed receipts growing the immutable source store, not the SEC download, which is flat ~128MB) — trim in flight 2026-08-08 as #4986 (acquire/project/sync → filing-forensics-sec.yml 02:30Z off-render lane, engine keeps a constant-cost restore; expect restores-preamble ~26m→~3m in engine.jsonl once merged). AMENDED DOCTRINE: no future raise without (1) the jobs-API step timeline of the killed job and (2) data/ops/nightly_timings/engine.jsonl bands (live since 08-08) — this comment has now carried a wrong workload narrative twice, both times written from the run log alone; with prophet belted and SEC off-render the honest warm floor is ~105m, so 300 is pure cold-spare headroom and the next cap move on a healthy fortnight is DOWN, not up. Prior: was 200 — the 2026-08-05 AND 08-06 nights were BOTH hard-cancelled at ~205m (cap + grace) on different hosts (mac-builder-5, then mac-builder-1), before the pages artifact landed → publish's "No artifacts named github-pages", two consecutive stale-site nights, and the 6-day Prophet-pick gap found 2026-08-06. Two hosts rules out one sick machine; this is workload creep plus the cold-spare law the collect job's 185→240 bump above already states: the macstudio label can fail over to a cold runner (fresh venv, no warm GHA/R2 caches), so the cap must clear the COLD pace, not the warm one. 240 = the observed ~205m kill point + 35m headroom; the job exits when its steps finish, so a larger cap costs nothing on a healthy night. The real fix is the workload trim — the cap raise buys the nights back while that lands. Prior: was 150 — 5 of the 8 nightlies 2026-07-16→07-23 got CANCELLED at exactly the 150m cap (the greens finished 133m/147m/148.6m — success had become a coin flip). Measured step timings (07-21 green vs 07-24 cancelled jobs): checkout 3s→14.5m (huge variance on the 14k-file tree), R2 restores + signal/ledger preamble ~10–20m, "run regime engine + build dashboard + daily brief" 74–84m (inside it: build_site ~33m, build_news ~26–29m incl. GDELT 429-backoff stalls, share_cards ~7m), parallel regional/desk builders 31–33m normal with one >61m blowout (07-23 night, cut mid-step), tail band (NW/LLM desks → hub) ~35m. Normal total 135–160m; worst observed combination ≈190m. The timeout-cancel grace window does NOT reliably save the deploy: 07-24's "commit engine outputs" (if: always) ran post-cancel but the pages-artifact upload still failed → publish red; 07-23 was hard-killed before commit → stale site. So the cap must cover the whole job: 200m clears the worst observed night with headroom. Next lever if creep resumes: build_site — W3 re-measure 2026-08-06 (never inherit step-cost labels): build_news is NO LONGER the lever; the GDELT circuit breaker (#3442, 2026-07-24) already collapsed it from ~26–29m to a measured 4.3–5.9m/night (07-27 green 5.9m, 08-03 4.3m, 08-05 4.7m, 08-06 5.4m — ~2m of that is the nightly one-time 429 ladder that arms the breaker). The band that IS creeping is build_site: ~33m (07-21 measurement) → 35.7m (07-27) → 42.0m (08-03) → 61.7m/57.8m (08-05/08-06) — +25m in two weeks, the single largest step in the job. Profile build_site's page loop before touching anything else. Prior history: was 120 (crept 61m→116m→125m, breached 07-13/07-14); was 70 (cancelled at special-situations pre-commit; fixed by parallelising the ~22 regional/desk builders — serial band ~75m → longest cluster, special-situations' ~28m EDGAR sweep). pages.yml deploys the COMMITTED main tree, so any cancel before "commit engine outputs" leaves the live site serving a stale dashboard until a later run lands.
     env:
       COLLECT_LANE: nightly   # job-level sentinel: inherited by every step; ensures all
@@ -2323,12 +2311,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: timings band — restores-preamble (W2)
         run: python3 scripts/nightly_timings.py mark --band restores-preamble || echo "::warning::timings band mark failed (non-fatal)"
@@ -5293,7 +5277,7 @@ jobs:
   factor_series:
     needs: [et_gate, collect]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 45
     steps:
       - name: timings — job start mark (W2)
@@ -5302,12 +5286,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       # build_factor_series._closes() reads the Git-tracked S&P 500/600/400
       # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from
@@ -5366,7 +5346,7 @@ jobs:
   factor_panel:
     needs: [et_gate, factor_series]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 20
     steps:
       - name: timings — job start mark (W2)
@@ -5375,12 +5355,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from
       # checkout. It must never overlay them from Actions cache; only daily.collect
@@ -5476,7 +5452,7 @@ jobs:
   oracle_offrender:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 40
     steps:
       - name: timings — job start mark (W2)
@@ -5485,12 +5461,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: fetch massive_stock_day store from R2 (the one heavy oracle input not committed)
         if: always()
@@ -5621,7 +5593,7 @@ jobs:
   tech_lab_offrender:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 120    # was 40 — EVERY nightly 2026-07-19→07-26 was CANCELLED at exactly the 40m cap, mid-way through the first heavy step, so steps 2-5 (incl. the confluence-screener page render AND the commit) were skipped and NOTHING published for 8 days. Cause: #3013 (merged 2026-07-19T01:40, ~4.5h before #3061 added the screener render here) expanded the single-pass build from 64 signals to 195 on a 231-ticker universe — a ~3x workload increase with no re-budget. Measured from the 07-26 job log: 50 tickers/12m28s then 50/11m50s ≈ 14.6s/ticker → 231 tickers ≈ 56m for build_tech_lab_data alone. Whole-job worst case: checkout up to ~15m (the 14k-file tree, see the engine job's note) + 57m lab data + 11m combo miner + ~1m screener page + ~2m m2_profiles + up to ~10m commit/push-retry band ≈ 96m. 120 clears that with headroom. The combo-miner figure is measured end-to-end, not inherited and not extrapolated: this job's own comment claimed "~8 min", and a full 2026-07-27 run on the runner host logged `panel: 323.4s` + `mine_long: 187.7s` + `mine_short: 140.9s` + `artifact: 1.7s` = **654.4s ≈ 11m**. Note mine_short is ~25% CHEAPER than mine_long (58 vs 59 legs but far fewer surviving combos) — an earlier symmetry estimate put the total at ~13m, so even the arithmetic shortcut was wrong. A stale step-cost label is precisely what produced this outage; re-measure, never inherit, and never extrapolate one half from the other. NOTE the per-step `set +e … exit 0` wrappers make a *script* error non-fatal but do NOTHING for a job timeout: the cap hard-cancels the running step, skips every later step, and the `::warning` alarm the step would have printed never fires — the job just reports "cancelled", which reads like this repo's known-benign cancellations. That is why an 8-day publish outage went unnoticed. If the signal count or universe grows again, re-measure and re-budget HERE.
     steps:
       - name: timings — job start mark (W2)
@@ -5630,12 +5602,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: timings band — lab-data (W2)
         run: python3 scripts/nightly_timings.py mark --band lab-data || echo "::warning::timings band mark failed (non-fatal)"
@@ -5750,7 +5718,7 @@ jobs:
   standout_audit_us:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 40
     steps:
       - name: timings — job start mark (W2)
@@ -5759,12 +5727,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: SA-W1 — US standout attribution + fitness card
         run: |
@@ -6052,7 +6016,7 @@ jobs:
   us_scan_tier:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 60
     steps:
       - name: timings — job start mark (W2)
@@ -6061,12 +6025,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: heal shallow curated caches from deeper LOCAL history
         # §4.5 deliverable 2, re-measured: the collector already fetches from
@@ -6185,7 +6145,7 @@ jobs:
   us_prophet_ledgers:
     needs: [et_gate, engine, us_scan_tier]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     # Budget: ~5.5m of module time (measured above) + checkout/venv/pip. Checkout of the
     # 14k-file tree has been observed at 3s..14.5m (see the engine job's timeout comment),
     # so the cap is sized like the us_scan_tier sibling rather than to the module cost.
@@ -6200,12 +6160,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: Prophet doors — accrue Door T (theme-relay) + Door R (re-arm) flags (shadow, zero authority)
         # Prophet W3 shadow doors (research/PROPHET_DOORS_PREREG.md, frozen before first accrual).
@@ -6339,7 +6295,7 @@ jobs:
   stock_briefs:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 45
     env:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
@@ -6350,12 +6306,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       # Catalyst-stock context is R2-only (site/stockdata is gitignored), so a
       # clean stock_briefs checkout has no deterministic ladder record to brief.
@@ -6450,7 +6402,7 @@ jobs:
   cortex:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 30
     env:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -6476,12 +6428,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       # Factor Intelligence P2 — registration persistence fix. Operator hypothesis
       # registrations MUST be written in the tree that commits machine_registry.jsonl
@@ -6601,7 +6549,7 @@ jobs:
   causal:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 45
     env:
       REPLAY_BOARDED_PATH: ${{ vars.REPLAY_BOARDED_PATH }}
@@ -6612,12 +6560,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: build causal feature inventory (CHF W1 refresh, nightly)
         # Refreshes config/causal_priors.yml kill-mask mirror and
@@ -6801,7 +6745,7 @@ jobs:
   active_build_map:
     needs: [et_gate, collect]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 10
     steps:
       - name: timings — job start mark (W2)
@@ -6810,11 +6754,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - name: generate active build map
         env:
           GH_TOKEN: ${{ github.token }}
@@ -6884,7 +6825,7 @@ jobs:
   ledger_heartbeat:
     needs: [et_gate, engine]
     if: always() && needs.et_gate.outputs.run != 'false'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 5
     steps:
       - name: timings — job start mark (W2)
@@ -6893,12 +6834,8 @@ jobs:
         with:
           ref: main
       - run: git pull origin main
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: check forward-ledger advance (CSP-W6 heartbeat)
         # Detection only — never gates or fails the deploy (CSP-R1).

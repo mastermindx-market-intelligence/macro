@@ -1887,7 +1887,7 @@ def test_fms_cadence_keeps_single_writer_and_existing_resource_limits():
     assert workflow["jobs"]["acquire"]["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["acquire"]
-    assert job["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert job["runs-on"] == ["self-hosted", "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     assert job["timeout-minutes"] == "30"
     commands = [step.get("run", "") for step in job["steps"]]
     assert sum("python -m collectors.fms_notifications_live acquire" in cmd for cmd in commands) == 1
@@ -2067,7 +2067,7 @@ def test_fms_publisher_handoff_verifies_released_source_matches_served_twin():
     verify = workflow["jobs"]["verify_publish"]
     assert verify["needs"] == ["acquire", "publish"]
     assert verify["if"] == "needs.acquire.outputs.publish_default == 'true'"
-    assert verify["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert verify["runs-on"] == ["self-hosted", "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     assert verify["timeout-minutes"] == "5"
     checkout = next(step for step in verify["steps"] if step.get("uses", "").startswith("actions/checkout@"))
     assert checkout["with"]["ref"] == "$" + "{{ github.event.repository.default_branch }}"

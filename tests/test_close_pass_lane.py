@@ -74,6 +74,7 @@ def _nightly_card_call_site() -> Path:
 import scripts.close_pass_mirror as M  # noqa: E402
 import scripts.close_pass_publish as P  # noqa: E402
 import scripts.close_pass_reconcile as RC  # noqa: E402
+import scripts.check_runner_policy as policy  # noqa: E402
 from scripts.workflow_run_source import resolved_workflow_text  # noqa: E402
 from engine import us_board_rank  # noqa: E402
 from engine.close_pass import board as CB  # noqa: E402
@@ -1749,12 +1750,15 @@ def test_the_minute_avoids_the_other_crons_on_the_two_host_pool():
         # Read the resolved LABELS, not the file's text. A regex over the line
         # matched `runs-on: ubuntu-latest  # never the macstudio pool` on three
         # lanes — the comment saying they are off this pool made them look like
-        # they were on it.
+        # they were on it. Since the MACRO_DATA_LANE switch (2026-11-11) many
+        # lanes carry a `${{ vars.MACRO_DATA_LANE || '<label>' }}` entry whose
+        # QUOTED FALLBACK is the label actually used while the variable is
+        # unset, so resolve entries through the policy checker's literal
+        # extractor rather than matching the raw expression string (which would
+        # silently blind this audit to every switched lane).
         labels: set[str] = set()
         for job in ((spec or {}).get("jobs") or {}).values():
-            runs_on = (job or {}).get("runs-on")
-            labels |= ({runs_on} if isinstance(runs_on, str)
-                       else set(runs_on or ()) if isinstance(runs_on, list) else set())
+            labels |= policy.runs_on_labels(job)
         if not (labels & POOL):
             continue
         for entry in ((spec or {}).get(True) or {}).get("schedule") or ():
@@ -1808,7 +1812,13 @@ def test_the_lane_is_not_bolted_onto_the_closing_bell_spine():
     closing_bell = (ROOT / ".github" / "workflows" / "closing-bell.yml").read_text(
         encoding="utf-8")
     assert "close_pass" not in closing_bell
-    assert WORKFLOW["jobs"]["publish"]["runs-on"] == ["self-hosted", "macstudio"]
+    # MACRO_DATA_LANE switch (2026-11-11): unset, the quoted fallback IS the
+    # historical literal route. Pin the fallback so a silent default change to
+    # some other pool reds here.
+    assert WORKFLOW["jobs"]["publish"]["runs-on"] == [
+        "self-hosted",
+        "${{ vars.MACRO_DATA_LANE || 'macstudio' }}",
+    ]
 
 
 def test_the_receipt_is_graded_inside_the_nightly_not_after_it():

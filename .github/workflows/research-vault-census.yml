@@ -27,7 +27,7 @@ concurrency:
 jobs:
   census:
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     timeout-minutes: 20
     env:
       # The shared bucket name is included only so the F1 private-store factory
@@ -44,7 +44,8 @@ jobs:
       - name: Fail closed on private R2 configuration
         run: |
           set -euo pipefail
-          /opt/homebrew/bin/python3.12 - <<'PY'
+          PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+          "$PYBIN" - <<'PY'
           import os
           import sys
 
@@ -84,7 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           VENV="$RUNNER_TEMP/research-vault-census-venv"
-          /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+          "$PYBIN" -m venv "$VENV"
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/pip" install --quiet boto3
 

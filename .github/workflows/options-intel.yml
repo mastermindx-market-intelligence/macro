@@ -145,13 +145,9 @@ jobs:
             echo "SKIP_REASON=engine-${concl}" >> "$GITHUB_ENV"
           fi
 
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
         if: env.SKIP_REASON == ''
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+        uses: ./.github/actions/python-venv
       - name: install requirements
         if: env.SKIP_REASON == ''
         run: pip install -r requirements.txt

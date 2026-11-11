@@ -146,7 +146,7 @@ def test_sec_lane_is_scheduled_off_the_render_path_and_never_cancelled(lane: dic
     assert "workflow_dispatch" in triggers
     assert lane["concurrency"]["cancel-in-progress"] is False
     job = lane["jobs"]["acquire_project_sync"]
-    assert "macstudio-light" in job["runs-on"]
+    assert "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}" in job["runs-on"]
     assert job["timeout-minutes"] <= 90
 
 

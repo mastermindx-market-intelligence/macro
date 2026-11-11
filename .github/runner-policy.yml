@@ -103,6 +103,30 @@ pool_topology:
     slots: 1
     labels: [self-hosted, m1-theta]
     forbidden_labels: [macstudio, macstudio-light, theta-m1, codex, render-heavy]
+  data-linux:
+    # ── M2 OFFLOAD DATA POOL (2026-11-11) ─────────────────────────────────────
+    # A SEPARATE Linux x64 pool for Macro's scheduled data lanes, so the Mac
+    # Studio hosts can be freed. Deliberately NOT ci-linux (the pc-ci pool is
+    # the trusted CI executor's reserved capacity — forbidden-label separation
+    # both ways) and NOT render-linux (pc-render's serial-renderer reservation).
+    # `slots: 0` is the honest declaration: NO carrier exists yet. R14 forbids
+    # pending_* keys outside pc-ci, so a not-yet-built pool declares zero live
+    # slots here and its label sits `orphaned` in label_registry below — the
+    # doctrinally correct status for "zero carriers, whatever the reason".
+    #
+    # ACTIVATION ORDER (operator-owned; docs/RUNNER_DATA_LINUX_POOL.md):
+    #   1. register the runner(s) with the `data-linux` label via the runners
+    #      API — never a file edit (same law as the pc-render restore);
+    #   2. same PR/commit: flip label_registry.data-linux to `live` with the
+    #      real carried_by roster;
+    #   3. only then set repository variable MACRO_DATA_LANE=data-linux, which
+    #      is the one-line switch every data lane's runs-on defaults away from
+    #      (`${{ vars.MACRO_DATA_LANE || '<today's label>' }}`).
+    # Steps out of order re-create the 2026-08-17 queued-job-hostage freeze: a
+    # cron firing onto a carrier-less label holds its concurrency group 24h.
+    slots: 0
+    labels: [self-hosted, Linux, X64, data-linux]
+    forbidden_labels: [ci-linux, ci-linux-canary, render-linux]
 
 # ── LABEL REGISTRY (rules R11/R12, added 2026-08-17) ─────────────────────────
 # WHY THIS EXISTS. Runner labels are assigned through the runners API and live
@@ -287,6 +311,21 @@ label_registry:
     carried_by: [pc-ci-1]
     note: >
       P1-accepted single-slot PC canary carried by pc-ci-1; dispatch-only.
+  data-linux:
+    status: orphaned
+    carried_by: []
+    note: >
+      PLANNED Linux x64 data pool for the M2 offload (pool_topology.data-linux,
+      docs/RUNNER_DATA_LINUX_POOL.md) — zero carriers as of 2026-11-11, hence
+      `orphaned` by the zero-carriers rule above. No workflow names this label
+      literally: the movable data lanes select it only through the
+      `${{ vars.MACRO_DATA_LANE || 'macstudio' }}` runs-on switch, which
+      defaults to today's Mac labels while the variable is unset, so R12/R15
+      cannot fire and no waiver is needed. The queue-hostage risk lives at
+      activation time instead: setting MACRO_DATA_LANE before a carrier is
+      registered re-creates the 2026-08-17 freeze — the runbook's activation
+      order (carrier first, registry second, variable last) is the guard, and
+      scripts/check_runner_queue_hostage.py remains the live detector.
   m1-theta:
     status: live
     carried_by: [m1-nightly-2]

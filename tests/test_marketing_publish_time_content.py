@@ -1374,7 +1374,7 @@ def test_marketing_publish_workflow_can_render_and_host_a_card():
         (root / ".github" / "workflows" / "marketing-publish.yml").read_text(
             encoding="utf-8"))
     job = wf["jobs"]["publish"]
-    assert job["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert job["runs-on"] == ["self-hosted", "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
 
     install = next(st for st in job["steps"] if st.get("name") == "install deps")
     for pkg in ("pillow", "boto3", "pyarrow", "pyyaml"):

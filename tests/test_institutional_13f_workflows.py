@@ -33,11 +33,21 @@ def _step(job: dict, name: str) -> dict:
     return next(step for step in job["steps"] if step.get("name") == name)
 
 
-def _assert_isolated_locked_runtime(job: dict) -> None:
+def _assert_isolated_locked_runtime(job: dict, *, host_neutral: bool = False) -> None:
     step = _step(job, "Python 3.12 (isolated locked runtime)")
     command = step["run"]
     assert 'VENV="$RUNNER_TEMP/institutional-13f-venv"' in command
-    assert '/opt/homebrew/bin/python3.12 -m venv "$VENV"' in command
+    if host_neutral:
+        # bulk-reconcile rides the MACRO_DATA_LANE switch: resolve python3.12
+        # from PATH first (data-linux pool) with the Homebrew path as fallback
+        # (macstudio), so the same workflow runs on either pool.
+        assert (
+            'PYBIN="$(command -v python3.12 '
+            '|| echo /opt/homebrew/bin/python3.12)"' in command
+        )
+        assert '"$PYBIN" -m venv "$VENV"' in command
+    else:
+        assert '/opt/homebrew/bin/python3.12 -m venv "$VENV"' in command
     assert 'echo "$VENV/bin" >> "$GITHUB_PATH"' in command
     assert command.count('"$VENV/bin/pip" install') == 1
     assert "-r requirements/institutional-13f-macos-arm64-py312.lock" in command
@@ -168,7 +178,7 @@ def test_bulk_workflow_publishes_only_the_bounded_projection() -> None:
     assert workflow["concurrency"]["cancel-in-progress"] == "false"
     job = workflow["jobs"]["reconcile_publish"]
     assert job["if"] == "github.ref == 'refs/heads/main'"
-    _assert_isolated_locked_runtime(job)
+    _assert_isolated_locked_runtime(job, host_neutral=True)
 
     build_step = _step(
         job, "Retain SEC ZIP revisions and build completed-quarter census"

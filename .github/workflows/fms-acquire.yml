@@ -48,7 +48,7 @@ jobs:
     outputs:
       publish_default: ${{ steps.persist.outputs.publish_default }}
       source_sha: ${{ steps.persist.outputs.source_sha }}
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     timeout-minutes: 30
     steps:
       - name: validate selected branch before acquisition
@@ -63,12 +63,8 @@ jobs:
           ref: ${{ env.FMS_TARGET_REF }}
           fetch-depth: 1
 
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
 
       - name: acquire FMS congressional notifications (State + FR fetch → DSCA staged replay → R2 write → readback proof → triad + graph)
@@ -172,7 +168,7 @@ jobs:
   verify_publish:
     needs: [acquire, publish]
     if: needs.acquire.outputs.publish_default == 'true'
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     timeout-minutes: 5
     permissions:
       contents: read
