@@ -128,9 +128,30 @@ def cmd_registry_check(args) -> int:
         print(f"registry lock {lock_path!r} is required for the mutation-without-bump "
               "check — run `registry-lock` first (fail-closed)")
         return 2
-    personas = None
-    if args.personas:
-        personas = config.load_personas(args.personas)
+    personas: dict | None
+    if args.skip_bindings:
+        # Documented use: the lock-only structural check (registry-lock itself
+        # never checks bindings either). Loud, so nobody mistakes the skip
+        # for a pass.
+        print("bindings NOT checked: --skip-bindings — the persona↔entry "
+              "symmetry check did not run")
+        personas = None
+    else:
+        # Fail closed: the default invocation checks bindings against the
+        # repo personas. A missing or empty personas directory is a refusal,
+        # never a silently skipped check.
+        personas_dir = args.personas or DEFAULT_PERSONAS
+        if not os.path.isdir(personas_dir):
+            print(f"personas directory {personas_dir!r} does not exist — the "
+                  "persona↔entry binding check could not run; refusing "
+                  "(fail-closed)")
+            return 2
+        personas = config.load_personas(personas_dir)
+        if not personas:
+            print(f"personas directory {personas_dir!r} holds no persona rows — "
+                  "the persona↔entry binding check could not run; refusing "
+                  "(fail-closed)")
+            return 2
     slots: list[str] = []
     if args.proxies:
         slots = [s.name for s in net.load(args.proxies)]
@@ -232,7 +253,13 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("registry-check", help="read-only registry gate; refusals on stdout")
     p.add_argument("--registry", required=True)
     p.add_argument("--lock", default="")
-    p.add_argument("--personas", default="", help="persona dir for the symmetry check")
+    p.add_argument("--personas", default=DEFAULT_PERSONAS,
+                   help="persona dir for the binding check (default: the repo "
+                        "personas; missing or empty refuses — fail-closed)")
+    p.add_argument("--skip-bindings", action="store_true", dest="skip_bindings",
+                   help="lock-only structural check: skip the persona↔entry "
+                        "binding check (the run says loudly that bindings were "
+                        "NOT checked)")
     p.add_argument("--proxies", default="", help="proxy inventory for credential slot names")
     p.add_argument("--expect-revision", type=int, default=None, dest="expect_revision")
     p.set_defaults(func=cmd_registry_check)

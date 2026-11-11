@@ -1,0 +1,750 @@
+{
+  "source": "Mastermind Paper list_resources(limit=200,includeArchived=true), returned without truncated flag",
+  "count": 82,
+  "resources": [
+    {
+      "id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+      "name": "Archived · GMI Round 2 · merged into Product system",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793765876925,
+      "createdAt": 1792682766692,
+      "open": true
+    },
+    {
+      "id": "01M38EVF74SJWG1GANN5VP380Z",
+      "name": "Mastermind · Market Dashboard Popups · Redesign",
+      "type": "file",
+      "parentId": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+      "updatedAt": 1791863669874,
+      "createdAt": 1790211636518,
+      "open": true,
+      "active": true
+    },
+    {
+      "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "name": "Intelligence Hub · R4 Workspace",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794144666523,
+      "createdAt": 1789789837397,
+      "open": true
+    },
+    {
+      "id": "01M5JRN1HWF62YK527NKCY7WD5",
+      "name": "Paper E2E acceptance — file+page+order verified",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792889590789,
+      "createdAt": 1792704939654,
+      "open": true
+    },
+    {
+      "id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "name": "PROPHET",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793765892379,
+      "createdAt": 1790659721339,
+      "open": true
+    },
+    {
+      "id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "name": "Terminal",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793766289777,
+      "createdAt": 1790659510736,
+      "open": true
+    },
+    {
+      "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "name": "News Intelligence · R3 Ledger + R2 States",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794143198354,
+      "createdAt": 1792576017219,
+      "open": true
+    },
+    {
+      "id": "01M5K0V5AGPSDXKA2K1PH1ABNE",
+      "name": "Paper visual row guard canary 2026-10-22 (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792886402532,
+      "createdAt": 1792713528722,
+      "open": true
+    },
+    {
+      "id": "01M5JV8SY6WP21H72WKK7GJ5R6",
+      "name": "Paper reviewed deletion regression 2026-10-22 (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792880555379,
+      "createdAt": 1792707684365,
+      "open": true
+    },
+    {
+      "id": "01M5K3WQXMD1QKXM2SBD7VABW1",
+      "name": "Paper exact Copy link canary 2026-10-22 (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792889596290,
+      "createdAt": 1792716726268,
+      "open": true
+    },
+    {
+      "id": "01M5JKR6H0JNN07BA3YKQDXBNC",
+      "name": "Young harmony (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793781567635,
+      "createdAt": 1792699800170,
+      "open": true,
+      "archived": true
+    },
+    {
+      "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "name": "Terminal · Options R1 · Design Upgrade · 2026-10-21",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792774355265,
+      "createdAt": 1792568689955,
+      "open": true
+    },
+    {
+      "id": "01M5HDPF3HSZFJJAFMARVQSHZR",
+      "name": "Jolly vase",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792832772859,
+      "createdAt": 1792659897531,
+      "open": true
+    },
+    {
+      "id": "01M5JS8TNZKQ01SJS4D0S9VQFC",
+      "name": "Paper E2E acceptance — file+page+order verified (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792878471220,
+      "createdAt": 1792705588017,
+      "open": true
+    },
+    {
+      "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "name": "GMI Explorer · Product system",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793766286203,
+      "createdAt": 1792652290902,
+      "open": true
+    },
+    {
+      "id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+      "name": "MASTERMIND PAGES (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792875845354,
+      "createdAt": 1792674768914,
+      "open": true
+    },
+    {
+      "id": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "name": "MarketOntology",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792233720204,
+      "createdAt": 1790667821633,
+      "open": true
+    },
+    {
+      "id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "name": "Mastermind · Market Guide · Re-envisioning",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1791863677279,
+      "createdAt": 1790026150345,
+      "open": true
+    },
+    {
+      "id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "name": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792621008360,
+      "createdAt": 1792600853914,
+      "open": true
+    },
+    {
+      "id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "name": "International Markets · Core + Global Surveillance",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794146170422,
+      "createdAt": 1790667747592,
+      "open": true
+    },
+    {
+      "id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "name": "Mastermind AI",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1791863674834,
+      "createdAt": 1790667635324,
+      "open": true
+    },
+    {
+      "id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "name": "Expectation Surface · R1 · 2026-10-21",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1792755635669,
+      "createdAt": 1792575562658,
+      "open": true
+    },
+    {
+      "id": "01M3NRCX55B452A12819WNE1RH",
+      "name": "Mastermind OS",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794055028788,
+      "createdAt": 1790657852654,
+      "open": true
+    },
+    {
+      "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "name": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793960093061,
+      "createdAt": 1793663609128,
+      "open": true
+    },
+    {
+      "id": "01M312VSDSZFVT45674GDVJVZN",
+      "name": "Mastermind Product Design System — Canonical",
+      "type": "file",
+      "parentId": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+      "updatedAt": 1793960092875,
+      "createdAt": 1789964182975,
+      "open": true
+    },
+    {
+      "id": "01M6JA41WWACWMRRVMVX1NQP9K",
+      "name": "Mastermind Paper v20 Scratch Acceptance 2026-11-04",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793765878722,
+      "createdAt": 1793763444710,
+      "open": true
+    },
+    {
+      "id": "01M5HPWFPQ2Z5X79A9H8MJFKK0",
+      "name": "Young harmony",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793781559990,
+      "createdAt": 1792669531934,
+      "open": true,
+      "archived": true
+    },
+    {
+      "id": "01M5HQ8VMMY87NVDENZAGJNYKM",
+      "name": "Young harmony (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793781559990,
+      "createdAt": 1792669937374,
+      "open": true,
+      "archived": true
+    },
+    {
+      "id": "01M5HRAG5659SFE58D3PTA7D0V",
+      "name": "Young harmony (copy)",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793781559990,
+      "createdAt": 1792671039726,
+      "open": true,
+      "archived": true
+    },
+    {
+      "id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+      "name": "DUPLICATE DO NOT EDIT",
+      "type": "file",
+      "parentId": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+      "updatedAt": 1793741325460,
+      "createdAt": 1790657141927,
+      "open": true,
+      "archived": true
+    },
+    {
+      "id": "01M6JNN71ZN4867VJZ83PPXQZ0",
+      "name": "AERLOR — Hospitality Website & Design System",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793960251682,
+      "createdAt": 1793775541387,
+      "open": true
+    },
+    {
+      "id": "01M6PXFEP1E1T59M2B3N673PMG",
+      "name": "Market Memory · Revision evidence · R1 · 2026-11-05",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793960092848,
+      "createdAt": 1793917958914,
+      "open": true
+    },
+    {
+      "id": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "name": "Macro · Policy Monitor · Production Design",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1793960092868,
+      "createdAt": 1793925729367,
+      "open": true
+    },
+    {
+      "id": "01M6XNXMVK65A0JRXKJHXT7ZCF",
+      "name": "Paper MCP write-path verification · design-lead · 2026-11-08",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794144916410,
+      "createdAt": 1794144916410,
+      "open": true
+    },
+    {
+      "id": "01M6XQ0KYY6ZDDV6F3G85SX6WW",
+      "name": "MASTERMIND · Migration Directory · START HERE",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794146062367,
+      "createdAt": 1794146062367,
+      "open": true
+    },
+    {
+      "id": "01M6XQBG616KHKS5011KKQTQSN",
+      "name": "RECOVERY ONLY - MASTERMIND PAGES - 2026-11-08 - NOT FOR EDITING",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794146420569,
+      "createdAt": 1794146420569,
+      "open": true
+    },
+    {
+      "id": "01M6Y4G3644Y8918FCX2NS9M68",
+      "name": "Mastermind - Live Site Baselines - Historical Wave 1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794160200972,
+      "createdAt": 1794160200972,
+      "open": true
+    },
+    {
+      "id": "01M6Y34XE4JKS3A40GMMZ954JE",
+      "name": "Mastermind - BioCatalyst - Blueprint and Builder Contracts",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158786056,
+      "createdAt": 1794158786056,
+      "open": true
+    },
+    {
+      "id": "01M6Y3VVGX4K4MXZ8JK2A1YG28",
+      "name": "Mastermind - Bonds and Transmission - Pre-R30 Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159537766,
+      "createdAt": 1794159537766,
+      "open": true
+    },
+    {
+      "id": "01M6Y3T1K3573JYPMBATASW1W5",
+      "name": "Mastermind - Bonds and Cross-Asset Transmission - Studies",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159478446,
+      "createdAt": 1794159478446,
+      "open": true
+    },
+    {
+      "id": "01M6Y3RNXNXP3YX0NFBT0YEXS4",
+      "name": "Mastermind - Bonds - Decision Workspace R1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159433724,
+      "createdAt": 1794159433724,
+      "open": true
+    },
+    {
+      "id": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+      "name": "Mastermind - Bot Paper Portfolio - V3 Design",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158979174,
+      "createdAt": 1794158979174,
+      "open": true
+    },
+    {
+      "id": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+      "name": "Mastermind - Market Breadth - Command Center R1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159043284,
+      "createdAt": 1794159043284,
+      "open": true
+    },
+    {
+      "id": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+      "name": "Mastermind - Catalyst Intelligence - Decision Desk and Integration",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158488369,
+      "createdAt": 1794158488369,
+      "open": true
+    },
+    {
+      "id": "01M6Y396T7MXR7VQXSRKMYS3RM",
+      "name": "Mastermind - China Intelligence - Historical Study",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158926734,
+      "createdAt": 1794158926734,
+      "open": true
+    },
+    {
+      "id": "01M6Y3GS3GDTC3Q1J64QCGZHJ8",
+      "name": "Mastermind - Commodities - R1 Source and Legacy Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159174835,
+      "createdAt": 1794159174835,
+      "open": true
+    },
+    {
+      "id": "01M6Y3HE0HWCX4H3K3HKXCWSE0",
+      "name": "Mastermind - Company Intelligence - Archive Not for Build",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159196247,
+      "createdAt": 1794159196247,
+      "open": true
+    },
+    {
+      "id": "01M6Y3DCDDW541ZR38J1V52A9Y",
+      "name": "Mastermind - Confluence Screener - R2 and Governed References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159063540,
+      "createdAt": 1794159063540,
+      "open": true
+    },
+    {
+      "id": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+      "name": "Mastermind - Crypto Intelligence - R4 References and Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159117060,
+      "createdAt": 1794159117060,
+      "open": true
+    },
+    {
+      "id": "01M6Y384WPAGQ6BXMHTCZT0WYK",
+      "name": "Mastermind - Earnings and Dossiers - Source Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158891999,
+      "createdAt": 1794158891999,
+      "open": true
+    },
+    {
+      "id": "01M6Y3NE9G4K5625JQS7GDVZ2Z",
+      "name": "Mastermind - Forex - Prior Studies Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159327608,
+      "createdAt": 1794159327608,
+      "open": true
+    },
+    {
+      "id": "01M6Y3PVKKXC83MRGJYCX77959",
+      "name": "Mastermind - Forex - R17-R24 and Alternate Studies",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159374003,
+      "createdAt": 1794159374003,
+      "open": true
+    },
+    {
+      "id": "01M6Y4CC5V5NZ92G3A0X3XZN3B",
+      "name": "Mastermind - Forex Guided Intelligence - Source Revisions",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794160079106,
+      "createdAt": 1794160079106,
+      "open": true
+    },
+    {
+      "id": "01M6Y2EJJ05SE2NCVBHKSE2BX8",
+      "name": "Mastermind - Design Foundations and Archetypes - Migrated References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158054026,
+      "createdAt": 1794158054026,
+      "open": true
+    },
+    {
+      "id": "01M6Y3397SE03G626MJ72N90PF",
+      "name": "Mastermind - Government Revenue - R5 and Builder Contracts",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158732604,
+      "createdAt": 1794158732604,
+      "open": true
+    },
+    {
+      "id": "01M6Y3X59BVYPETH1DRC4YSVAW",
+      "name": "Mastermind - Intelligence Hub - Earlier Archive and References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159580532,
+      "createdAt": 1794159580532,
+      "open": true
+    },
+    {
+      "id": "01M6Y486E4X85MVP1AWS8H6E53",
+      "name": "Mastermind - Intelligence Hub - R4 Original Source Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159942157,
+      "createdAt": 1794159942157,
+      "open": true
+    },
+    {
+      "id": "01M6Y3J4X0V4E4J5H2GMAKJVMQ",
+      "name": "Mastermind - International Markets - R9 Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159219687,
+      "createdAt": 1794159219687,
+      "open": true
+    },
+    {
+      "id": "01M6Y2QK8TQZRN8T4BHG10CJXT",
+      "name": "Mastermind - Intraday Flow - R1 Draft",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158349665,
+      "createdAt": 1794158349665,
+      "open": true
+    },
+    {
+      "id": "01M6Y2T8WVHR3AS82TSSCNN6YS",
+      "name": "Mastermind - Legacy Navigation and Entry Designs - Reference",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158437339,
+      "createdAt": 1794158437339,
+      "open": true
+    },
+    {
+      "id": "01M6Y2V2M0J28M2PYAHWZ8SB98",
+      "name": "Mastermind - Market Memory - Evidence Workspace R1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158463685,
+      "createdAt": 1794158463685,
+      "open": true
+    },
+    {
+      "id": "01M6Y1NJ2SKGG89DZ13E4NVAE2",
+      "name": "Mastermind - Market Structure, Stages and Allocation - D06 R1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794157782111,
+      "createdAt": 1794157234338,
+      "open": true
+    },
+    {
+      "id": "01M6Y36EQAT1J5B6Q7AVYKV2DW",
+      "name": "Mastermind - MedTech - Regulatory Catalyst R13 References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158836525,
+      "createdAt": 1794158836525,
+      "open": true
+    },
+    {
+      "id": "01M6Y3BP50DDJVKT3Q7FMTSY3K",
+      "name": "Mastermind - News Intelligence - September Source Study",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159007971,
+      "createdAt": 1794159007971,
+      "open": true
+    },
+    {
+      "id": "01M6Y2RQMB5WNV6DHHAY5PJVZS",
+      "name": "Mastermind - Options Research Desk - R1",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158386893,
+      "createdAt": 1794158386893,
+      "open": true
+    },
+    {
+      "id": "01M6Y2X53ABR4MME4ATS15B8SH",
+      "name": "Mastermind - Macro and Policy Watch - Reference Studies",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158531762,
+      "createdAt": 1794158531762,
+      "open": true
+    },
+    {
+      "id": "01M6Y39WH7QVTH07RTWHTSRP65",
+      "name": "Mastermind - Returns Calendar - Terminal and Dossier",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158948967,
+      "createdAt": 1794158948967,
+      "open": true
+    },
+    {
+      "id": "01M6Y2SGKNTEESDJX96ZSJJGPF",
+      "name": "Mastermind - Ranked Search and Discovery - T47 Draft",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158412476,
+      "createdAt": 1794158412476,
+      "open": true
+    },
+    {
+      "id": "01M6Y4HE5S5YRCQSSWKS5QDBDY",
+      "name": "Mastermind - Sector Intelligence - Legacy Archive",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794160244992,
+      "createdAt": 1794160244992,
+      "open": true
+    },
+    {
+      "id": "01M6Y3K1SSX1M108ZY90KJX382",
+      "name": "Mastermind - Sector Intelligence - R2 and Study References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159249280,
+      "createdAt": 1794159249280,
+      "open": true
+    },
+    {
+      "id": "01M6Y3Z73MXTN3MDX5661VV0KB",
+      "name": "Mastermind - Sector Intelligence - R3 Completion",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794159647935,
+      "createdAt": 1794159647935,
+      "open": true
+    },
+    {
+      "id": "01M6Y2Z642VN20X8WDSWV07M0M",
+      "name": "Mastermind - Shared Market - Research and Reading References",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158598345,
+      "createdAt": 1794158598345,
+      "open": true
+    },
+    {
+      "id": "01M6Y31C449F02KGRNPGK94Q8D",
+      "name": "Mastermind - Shared Market - Search and Comparison",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158670027,
+      "createdAt": 1794158670027,
+      "open": true
+    },
+    {
+      "id": "01M6Y2GT8S3YP4TK052PPESZEC",
+      "name": "Mastermind - Shared Shell - F01 Candidate and Integration",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158127452,
+      "createdAt": 1794158127452,
+      "open": true
+    },
+    {
+      "id": "01M6Y32A3E4XC51FQVJN98YRPH",
+      "name": "Mastermind - Shared Market - Tools and Research Launcher",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158700719,
+      "createdAt": 1794158700719,
+      "open": true
+    },
+    {
+      "id": "01M6Y309YH7PJZMF23R7EDH3CM",
+      "name": "Mastermind - Shared Market - Watchlists and Save States",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158635030,
+      "createdAt": 1794158635030,
+      "open": true
+    },
+    {
+      "id": "01M6Y2P933V2Z18V1S8703YXEJ",
+      "name": "Mastermind - Shared Shell - Earlier Design Studies",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158306475,
+      "createdAt": 1794158306475,
+      "open": true
+    },
+    {
+      "id": "01M6Y37BWE719DWW5Z0DQS6DS9",
+      "name": "Mastermind - Synthetic Catalyst Cases - Archive Not for Build",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794158866390,
+      "createdAt": 1794158866390,
+      "open": true
+    },
+    {
+      "id": "01M2WGNCX9475G79JRKJTCM08P",
+      "name": "MASTERMIND PAGES - MOVED - Navigation only",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1794162274545,
+      "createdAt": 1789810881455,
+      "open": true
+    },
+    {
+      "id": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+      "name": "Others",
+      "type": "file",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1790659428220,
+      "createdAt": 1790659425497,
+      "open": true
+    },
+    {
+      "id": "01M3NSTSZ248TQSMQQR62DC06J",
+      "name": "Untitled project",
+      "type": "folder",
+      "parentId": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "updatedAt": 1790659440157,
+      "createdAt": 1790659356642,
+      "archived": true
+    },
+    {
+      "id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "name": "Projects",
+      "type": "folder",
+      "updatedAt": 1789789202462,
+      "createdAt": 1789789202462
+    }
+  ],
+  "observed_date": "2026-11-08",
+  "observation_time_precision": "date"
+}

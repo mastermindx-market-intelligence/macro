@@ -1,0 +1,67 @@
+{
+  "schema": "d04.top_picks_return.browser.v1",
+  "observed_at_utc": "2026-11-05T03:39:07.060475+00:00",
+  "browser": "151.0.7922.34",
+  "source_sha256": {
+    "templates/discovery.html.j2": "24ec38ca43c7adb3f173fef20454c00f3f8e2e9c9c715bd5bad8c1b64e74deb7",
+    "templates/discovery.js": "dd575bda74f9da6fa5acf2683fdbd2fb1aa3df11900b1f94ae05b574adeb8a72",
+    "templates/discovery-controls.css": "f016c9952b1297118c00b2c2d0ebe2c6483f5a292b8c94e2d61059cb07ff2c3e",
+    "site/discovery.html": "3c5345741a14222524e56727b2ba2b1b5791d642752cc3514b2acfc27eb28ded",
+    "site/discovery.js": "dd575bda74f9da6fa5acf2683fdbd2fb1aa3df11900b1f94ae05b574adeb8a72",
+    "site/discovery-controls.css": "f016c9952b1297118c00b2c2d0ebe2c6483f5a292b8c94e2d61059cb07ff2c3e",
+    "scripts/build_discovery.py": "f8fa57ecbe20662114af7fd8c2cd8ef4477ff7b8dd1f9572a49abbfb6fbcbeee",
+    "scripts/verify_top_picks_return_browser.py": "465d05194aa2f2ce107a437a2430629e9afbd738f516f1543e318b7b39b84e33"
+  },
+  "method": "Actual generated page and assets, committed ranking snapshot, same-origin labelled company fixture, incumbent phone Terminal overlay with labelled message fixture; changed-source cases inject declared mutations before page controller initialization.",
+  "limitations": [
+    "Not D07 content/authentication, live data, account persistence, shared-shell full-state transport, production or whole-D04 acceptance.",
+    "Fresh-document traversal is forced by disabling Chromium BFCache. Retained-document proof covers the incumbent overlay only.",
+    "320px native traversal explicitly opens the existing company URL after focus; ordinary phone taps are separately tested through the incumbent overlay."
+  ],
+  "passed": 1,
+  "cases": [
+    {
+      "name": "controls-filter-scope-aria-locale-1440-en-dark",
+      "passed": true,
+      "geometry": {
+        "width": 1440,
+        "viewport": 1440,
+        "controls": [
+          {
+            "id": "discovery-tab-global",
+            "height": 44,
+            "width": 87.921875
+          },
+          {
+            "id": "discovery-tab-sectors",
+            "height": 44,
+            "width": 76.515625
+          },
+          {
+            "id": "discovery-tab-sector",
+            "height": 44,
+            "width": 105.890625
+          },
+          {
+            "id": "secsel",
+            "height": 44,
+            "width": 225
+          }
+        ]
+      },
+      "sector_rows": 24
+    }
+  ],
+  "screenshots": [
+    "top-picks-1440-en-dark.png",
+    "failure.png"
+  ],
+  "page_errors": [],
+  "failures": [
+    {
+      "type": "TimeoutError",
+      "message": "Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/stock.html#COHU\" until 'load'\n============================================================"
+    }
+  ],
+  "all_passed": false
+}
