@@ -47,17 +47,23 @@ def parts_dir(base: Path | str) -> Path:
     canonical ledger and its ``snapshots_parts/``.
 
     A name that would resolve onto the canonical ``snapshots_parts/`` without
-    being the canonical file (``snapshots.bak``, ``snapshots``) is refused:
-    sharing that directory would merge two ledgers, which no reader can undo.
+    being the canonical file is refused: ``snapshots.bak``, ``snapshots`` and
+    any case variant of them (``Snapshots.bak`` on a case-insensitive
+    filesystem would create or read the very same ``snapshots_parts/``
+    directory, merging two ledgers, which no reader can undo). The comparison
+    is case-insensitive so the refusal holds identically on case-sensitive and
+    case-insensitive filesystems; use the exact canonical spelling for the
+    canonical ledger.
     """
     path = Path(base)
     if path.name == CANONICAL_BASENAME:
         return path.parent / PARTS_DIRNAME
     sidecar = f"{path.stem}{PARTS_SUFFIX}"
-    if sidecar == PARTS_DIRNAME:
+    if sidecar.casefold() == PARTS_DIRNAME.casefold():
         raise SnapshotLedgerError(
             f"snapshot base {path.name} would share the canonical {PARTS_DIRNAME}/ "
-            f"directory with {CANONICAL_BASENAME}; give the override a distinct filename")
+            f"directory with {CANONICAL_BASENAME} on a case-insensitive filesystem; "
+            f"give the override a distinct filename")
     return path.parent / sidecar
 
 
@@ -96,9 +102,16 @@ def physical_paths(base: Path | str) -> list[Path]:
     """``[base, part-000001, ...]``; empty when there is no ledger at all.
 
     Parts without the base file are refused: the base holds every row before the
-    rollover, so reading the parts alone would silently drop history.
+    rollover, so reading the parts alone would silently drop history. A symlinked
+    base is refused too: the sidecar belongs to the file's own name, so an alias
+    link would either read a truncated ledger or append into another ledger's
+    parts. Point readers and writers at the real ledger file instead, matching
+    the symlink refusal for the parts directory itself.
     """
     base = Path(base)
+    if base.is_symlink():
+        raise SnapshotLedgerError(
+            f"snapshot base is a symlink: {base}; use the real ledger file it points to")
     parts = part_paths(base)
     if not base.exists():
         if parts:

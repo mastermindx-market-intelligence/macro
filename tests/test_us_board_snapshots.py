@@ -355,3 +355,36 @@ def test_a_name_that_would_share_the_canonical_sidecar_is_refused(tmp_path, name
         ubs.read_lines(b)
     with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
         ubs.append_line(b, _line(_board("2026-07-01", "X")))
+
+
+@pytest.mark.parametrize("name", ["Snapshots.bak", "SNAPSHOTS.bak", "Snapshots", "SNAPSHOTS.TXT"])
+def test_case_variants_of_the_canonical_stem_are_refused_like_the_exact_spelling(tmp_path, name):
+    # On a case-insensitive filesystem (APFS) Snapshots.bak would resolve its
+    # sidecar onto the very same snapshots_parts/ directory and silently merge
+    # two ledgers; the refusal must not depend on the filesystem's case policy.
+    b = tmp_path / "us_board_ledger" / name
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.parts_dir(b)
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.read_lines(b)
+    with pytest.raises(ubs.SnapshotLedgerError, match="distinct filename"):
+        ubs.append_line(b, _line(_board("2026-07-01", "X")))
+
+
+def test_a_symlinked_base_is_refused_and_the_real_ledger_still_reads_whole(tmp_path):
+    led = tmp_path / "us_board_ledger"
+    led.mkdir()
+    real = led / "snapshots.jsonl"
+    _write(real, [_board("2026-06-30", "NATIVE_BASE")])
+    part = led / ubs.PARTS_DIRNAME / "part-000001.jsonl"
+    _write(part, [_board("2026-07-01", "PART_MEMBER")])
+    alias = tmp_path / "alias-snapshots.jsonl"
+    alias.symlink_to(real)
+    with pytest.raises(ubs.SnapshotLedgerError, match="symlink"):
+        ubs.read_lines(alias)
+    with pytest.raises(ubs.SnapshotLedgerError, match="symlink"):
+        list(ubs.iter_lines(alias))
+    with pytest.raises(ubs.SnapshotLedgerError, match="symlink"):
+        ubs.append_line(alias, _line(_board("2026-07-02", "Y")))
+    assert [json.loads(x)["as_of"] for x in ubs.read_lines(real)] == [
+        "2026-06-30", "2026-07-01"]
