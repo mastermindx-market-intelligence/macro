@@ -42,7 +42,8 @@ WHAT THIS FILE DOES (all at the sizing/display tier — the evidence gate is unt
   sector_bias()— display-only defensive-rotation tilt for a midterm H2, labelled as mostly
                  generic seasonality.
 
-All functions are pure (date in -> dict out) and never raise. Sources: this repo's backtest
+Explicit invalid dates are unavailable (context/sector_bias=None; neutral modulation).
+Omitted dates retain current-date behavior. All functions never raise. Sources: this repo's backtest
 (workflow midterm-milkshake-backtest); Hirsch / Stock Trader's Almanac for the window timing.
 """
 from __future__ import annotations
@@ -109,10 +110,9 @@ _SECTOR_ZH = ("历次中期选举年下半年，防御板块（医疗、必需�
 def _as_date(asof) -> _dt.date:
     if asof is None:
         return _dt.date.today()
-    if isinstance(asof, _dt.date) and not isinstance(asof, _dt.datetime):
-        return asof
-    if isinstance(asof, _dt.datetime):
-        return asof.date()
+    if isinstance(asof, _dt.date):
+        # Reconstruct a real date: pandas.NaT is date-like but has non-finite fields.
+        return _dt.date(asof.year, asof.month, asof.day)
     # str / pandas.Timestamp / numpy datetime — parse leniently without importing pandas
     s = str(asof)[:10]
     return _dt.date.fromisoformat(s)
@@ -128,14 +128,14 @@ def _in_span(d: _dt.date, start: tuple, end: tuple) -> bool:
 
 
 # ---- public API ------------------------------------------------------------
-def context(asof=None) -> dict:
+def context(asof=None) -> dict | None:
     """Where we are in the 4-year cycle + the Hirsch midterm-drawdown window, with MEASURED
     odds. Pure; never raises. `show` is True only when the chip has something worth saying
     (a midterm year — the only bucket with even a suggestive edge)."""
     try:
         d = _as_date(asof)
     except Exception:
-        d = _dt.date.today()
+        return None
     y = d.year
     yt = year_in_term(y)
     is_mid = yt == 2
@@ -177,7 +177,9 @@ def modulation(asof=None, spy_risk_on=None) -> dict:
     try:
         d = _as_date(asof)
     except Exception:
-        d = _dt.date.today()
+        return {"band_delta": 0.0, "gross_mult": 1.0, "active": False,
+                "risk_on_slice": False, "sizing_only": True,
+                "reason_en": None, "reason_zh": None}
     in_window = (year_in_term(d.year) == 2) and _in_span(d, _WIN_START, _WIN_END)
     risk_on = bool(spy_risk_on) if spy_risk_on is not None else False
     band_delta = 0.0
@@ -204,7 +206,7 @@ def sector_bias(asof=None) -> dict | None:
     try:
         d = _as_date(asof)
     except Exception:
-        d = _dt.date.today()
+        return None
     if not ((year_in_term(d.year) == 2) and _in_span(d, (7, 1), (12, 31))):
         return None
     return {
@@ -213,3 +215,4 @@ def sector_bias(asof=None) -> dict | None:
         "note_en": _SECTOR_EN, "note_zh": _SECTOR_ZH,
         "display_only": True,
     }
+
