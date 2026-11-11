@@ -1083,32 +1083,33 @@ html:not(.js) .fv-reveal{opacity:1;transform:none}
    inherit currentColor (restrained glow lives on the hero card, not the glyph).
    LIGHT TREATMENT (research workspace): same information architecture, different
    material. Paper --card, hairline --line, SHORT SHADOW instead of glow on the
-   See-all chip. Caption / empty-why / footer ink is mixed toward --ink because
-   --muted/--faint wash out on white. The h1 stays 22px ink, no uppercase tracking.
+   See-all chip. Caption / empty-why / footer use the existing --text token for
+   contrast on white; the short shadow uses --glass-brd and hover uses --ink-link.
+   The h1 stays 22px ink, no uppercase tracking.
    Footer <b> is --ink (a source label on paper, not a faint caption).
    Mechanisms that INTENTIONALLY differ: (1) See-all depth — dark = flat hairline
    chip; light = paper chip + 1px shadow. (2) Caption contrast — dark can use
-   --muted/--faint; light deepens toward --ink. (3) Footer label weight — dark
+   --muted/--faint; light uses --text. (3) Footer label weight — dark
    muted, light ink. Shared on purpose: spacing, type scale, chip geometry, icon
    stroke (currentColor), interaction (checkbox latch, LENS ?). */
 /* post-stack: consolidate */
 html[data-theme="light"] .fv-hero-eyebrow h1{color:var(--ink)}
 html[data-theme="light"] .fv-hero-eyebrow .asof{color:var(--muted)}
-html[data-theme="light"] .fv-caption{color:color-mix(in srgb,var(--ink) 62%,var(--muted))}
-html[data-theme="light"] .q-empty .empty-why{color:color-mix(in srgb,var(--ink) 58%,var(--muted))}
+html[data-theme="light"] .fv-caption{color:var(--text)}
+html[data-theme="light"] .q-empty .empty-why{color:var(--text)}
 html[data-theme="light"] .fv-see-all{
   background:var(--card);border-color:var(--line);color:var(--ink);
-  box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)
+  box-shadow:0 1px 2px var(--glass-brd)
 }
 html[data-theme="light"] .fv-see-all:hover{
-  border-color:color-mix(in srgb,var(--blue) 45%,var(--line));
-  box-shadow:0 2px 6px color-mix(in srgb,var(--ink) 10%,transparent)
+  border-color:var(--ink-link, var(--blue));
+  box-shadow:0 2px 6px var(--glass-brd)
 }
-html[data-theme="light"] .fv-board-count{color:color-mix(in srgb,var(--ink) 55%,var(--muted))}
-html[data-theme="light"] .foot{color:color-mix(in srgb,var(--ink) 48%,var(--muted));border-top-color:var(--line)}
+html[data-theme="light"] .fv-board-count{color:var(--text)}
+html[data-theme="light"] .foot{color:var(--text);border-top-color:var(--line)}
 html[data-theme="light"] .foot b{color:var(--ink)}
 html[data-theme="light"] .ic-svg{color:inherit}
-html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--muted))}
+html[data-theme="light"] .rk.na{color:var(--text)}
 </style>
 {% include "_state_inks.html.j2" %}
 </head>
