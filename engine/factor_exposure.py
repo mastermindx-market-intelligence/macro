@@ -14,19 +14,19 @@ then on BTC, … But SPY/QQQ/BTC are 0.6–0.9 correlated, so each univariate be
 re-counts the same market move and the "exposures" sum to nonsense. Instead we
 estimate a MULTIVARIATE model: the factors are orthogonalized in economic priority
 order (market first, then style, then macro), so every reported beta is the
-*marginal* exposure beyond the higher-priority factors. Because the factors are
-then mutually orthogonal the slopes decouple into univariate cov/var (the same
-trick engine.residual_alpha uses for sector ⟂ market) — fast and exact, no per-stock
-matrix solve. `raw_betas()` keeps the un-orthogonalized univariate betas too: they
+*marginal* exposure beyond the higher-priority factors. The factors are mutually
+orthogonal on that common window. Missing stock observations can
+break orthogonality on a ticker's fitted sample, so its coefficients use a joint
+centered fit in that fixed basis. `raw_betas()` keeps univariate raw betas too: they
 are the right number for a single-factor *shock* ("if oil +10%, the book moves …",
 a total derivative) and they let the Phase-0 quantify the double-counting the
 orthogonal set removes.
 
 This is MEASUREMENT, not prediction — a thermometer, not a signal. So it does NOT go
 through the IC/FDR/DSR alpha gauntlet; the honest gate (scripts/factor_exposure_phase0.py)
-is whether the betas are STABLE out-of-sample, and the working assumption it
-verifies is that only PORTFOLIO-LEVEL aggregates are trustworthy — a single stock's
-oil/rate beta is noisy, but averaged across a book the idiosyncratic noise cancels.
+is whether the betas are STABLE out-of-sample and whether aggregation improves each
+factor's persistence. That benefit is measured separately for each factor; it must
+not be assumed for every secondary beta. The confidence metadata records the result.
 
 ADDITIVE / leaf — nothing in the scoring path imports it. China is intentionally
 absent as a *ticker* universe: the only onshore proxy we cache (510300.SS) trades on
@@ -38,9 +38,9 @@ proxies on their own session closes) — chartered in the WRI masterplan, not bu
 
 Crypto IS in the exposable universe: BTC-USD/ETH-USD (the coins) plus IBIT/ETHA/COIN
 (spot-crypto ETFs + the Coinbase equity) get shipped betas like SPY/QQQ, so a user
-holding them sees a real book contribution. They load btc-heavy with high idiosyncratic
-vol and low R² on the equity factors — that is correct (crypto is its own bet), not a
-bug the orthogonalization should hide. Timezone note: crypto trades ~24/7 while the
+holding them sees a real book contribution. Independent crypto variation can leave
+idiosyncratic risk; BTC itself is a factor and can be exactly spanned by this model.
+Timezone note: crypto trades ~24/7 while the
 factor returns are US-session closes, so there is some async — but BTC-USD is ALREADY
 the `btc` FACTOR, computed exactly this way (daily pct_change of the same close series),
 so exposing BTC-USD/ETH-USD as tickers is CONSISTENT with existing treatment, not a new
@@ -62,10 +62,10 @@ log = logging.getLogger(__name__)
 
 TRADING_YEAR = 252
 
-NOTE = ("Multivariate factor betas (market, growth, size, rates, dollar, oil, crypto), "
+NOTE = ("Multivariate market, style and macro factor betas, "
         "orthogonalized so each beta is the MARGINAL exposure — not the double-counted "
-        "univariate kind. A risk/exposure lens, not a signal; trust the portfolio "
-        "aggregate, not any single stock's secondary beta.")
+        "univariate kind. A risk/exposure lens. Interpret secondary betas with each "
+        "factor's historical confidence and scope.")
 
 
 @dataclass(frozen=True)
@@ -112,25 +112,23 @@ FACTORS: list[Factor] = [
 FACTOR_ORDER = [f.key for f in FACTORS]
 FACTOR_BY_KEY = {f.key: f for f in FACTORS}
 
-# Confidence tiers MEASURED by the Phase-0 out-of-sample stability test
-# (reports/factor-exposure-phase0.md, 22 monthly rebalances). The number is the
-# in-sample→next-quarter rank-persistence; `scope` says where the read is trustworthy:
-#   single — reliable per stock AND aggregated  | book — only meaningful for a basket
-#   low    — weak even aggregated (show as context, expect ~0 for most equity books)
-# The UI uses this to style each beta (full / muted / footnoted) — honesty baked in.
+# Historical Phase-0 evidence: reports/factor-exposure-validation-2026-11-11.md.
+# 20 evaluated monthly dates, 2024-10-31..2026-05-29; factor data ends 2026-09-25.
+# `persist` is mean cross-sectional rank persistence from 252 finite factor
+# observations to the next 63 (overlapping forward windows, not independent trials).
+# Qualitative UI tiers/scopes retain their relative interpretation, not automatic
+# cutoffs or a promise of future stability. single = individual display; book =
+# basket-qualified; low = weak historical persistence, shown as context.
 FACTOR_CONFIDENCE = {
-    "mkt":    {"tier": "high",   "scope": "single", "persist": 0.69},
-    "size":   {"tier": "high",   "scope": "single", "persist": 0.63},
-    "growth": {"tier": "high",   "scope": "single", "persist": 0.50},
-    "rates":  {"tier": "medium", "scope": "single", "persist": 0.36},
-    "oil":    {"tier": "medium", "scope": "book",   "persist": 0.22},   # 0.22→0.49 with book size
-    "china":  {"tier": "low",    "scope": "low",    "persist": 0.19},   # flat ~0.17 even aggregated
-    "usd":    {"tier": "low",    "scope": "low",    "persist": 0.11},
-    "btc":    {"tier": "low",    "scope": "low",    "persist": 0.02},
-    # gold (GC=F) is a clean, well-identified factor in-sample (metals/miners R²≈0.60) but has
-    # not yet been through the Phase-0 out-of-sample stability test on this factor set — so it
-    # reads low/untested (persist unmeasured) until that runs, rather than carrying a fabricated number.
-    "gold":   {"tier": "low",    "scope": "low",    "persist": None},
+    "mkt":    {"tier": "high",   "scope": "single", "persist": 0.676},
+    "size":   {"tier": "high",   "scope": "single", "persist": 0.527},
+    "growth": {"tier": "high",   "scope": "single", "persist": 0.448},
+    "rates":  {"tier": "medium", "scope": "single", "persist": 0.324},
+    "oil":    {"tier": "medium", "scope": "book",   "persist": 0.219},  # K=1: .231; K=40: .456
+    "china":  {"tier": "low",    "scope": "low",    "persist": 0.132},
+    "usd":    {"tier": "low",    "scope": "low",    "persist": 0.093},
+    "btc":    {"tier": "low",    "scope": "low",    "persist": 0.039},
+    "gold":   {"tier": "low",    "scope": "low",    "persist": 0.103},  # measured, still weak
 }
 
 
@@ -162,7 +160,7 @@ ETF_NAMES = {
 # plus the spot-crypto ETFs and Coinbase equity many watchlists actually hold. Exposed
 # so a holder sees a real book contribution instead of an "unmodeled" chip; tagged with
 # a "Crypto" sector (not "ETF") so the client groups the sleeve honestly. These load
-# btc-heavy with high idio / low equity-factor R² — correct, crypto is its own bet.
+# btc-heavy; a self-factor tracker can have zero residual risk when caps do not bind.
 # Only the cached ones are used (GBTC is NOT cached → skipped gracefully, like the rest);
 # see the module docstring on why this is clock-consistent with the existing btc factor.
 CRYPTO_NAMES = {
@@ -171,19 +169,21 @@ CRYPTO_NAMES = {
     "COIN": "Coinbase",
 }
 
-# Union universe read by `_etf_closes`; `compute_exposure` tags CRYPTO_NAMES → "Crypto",
+# Union universe read by `_etf_panels`; `compute_exposure` tags CRYPTO_NAMES → "Crypto",
 # the rest → "ETF". Keys are unique across the two maps.
 ETF_UNIVERSE = list(ETF_NAMES) + list(CRYPTO_NAMES)
 
 
-def _etf_closes() -> pd.DataFrame:
-    """Close matrix for the curated ETF universe (only those cached in data/yahoo)."""
+def _etf_panels() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Prices and returns formed on each cached ETF/crypto source's own calendar."""
     cols: dict[str, pd.Series] = {}
+    returns: dict[str, pd.Series] = {}
     for sym in ETF_UNIVERSE:
         df = store.read("yahoo", sym)
         if df is not None and "close" in getattr(df, "columns", []):
             cols[sym] = df["close"].astype(float)
-    return pd.DataFrame(cols).sort_index() if cols else pd.DataFrame()
+            returns[sym] = cols[sym].pct_change(fill_method=None)
+    return pd.DataFrame(cols).sort_index(), pd.DataFrame(returns).sort_index()
 
 
 # --------------------------------------------------------------------------- #
@@ -206,7 +206,12 @@ def factor_frame(asof=None) -> pd.DataFrame:
     F = pd.DataFrame(cols)
     if asof is not None:
         F = F.loc[:pd.Timestamp(asof)]
-    return F.dropna(how="any")
+    return _finite_factor_frame(F)
+
+
+def _finite_factor_frame(F: pd.DataFrame) -> pd.DataFrame:
+    """One common finite factor population for beta, calm and stress estimates."""
+    return F.replace([np.inf, -np.inf], np.nan).dropna(how="any")
 
 
 def orthogonalize_fit(F_win: pd.DataFrame) -> dict:
@@ -264,7 +269,8 @@ def orthogonalize_factors(F: pd.DataFrame) -> pd.DataFrame:
     Each factor is replaced by its residual after regressing out every higher-priority
     factor already processed. Market stays raw; 'growth' becomes QQQ⟂market; 'size'
     becomes IWM⟂{market,growth}; and so on. The result is a mutually-orthogonal factor
-    set whose betas read as marginal exposures and decouple into univariate cov/var.
+    set whose betas read as marginal exposures. Orthogonality holds on this fit
+    population; a ticker's missing observations still require a joint regression.
     Estimated over the whole supplied window (static transform) — callers pass the
     estimation window so the transform and the betas share a sample. Convenience
     fit+apply on one frame; use `orthogonalize_fit`/`orthogonalize_apply` when the
@@ -277,86 +283,108 @@ def orthogonalize_factors(F: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------------------------------------- #
 def _betas_on_window(R_w: pd.DataFrame, G_w: pd.DataFrame, minp: int,
                      max_abs: float) -> dict:
-    """Decoupled multivariate betas on one aligned window (factors already
-    orthogonal ⇒ beta_k = cov(r,g_k)/var(g_k)). Returns per-ticker beta vector +
-    R² + annualized idiosyncratic vol, keeping only tickers with ≥ minp observations."""
-    var = {k: float(G_w[k].var()) for k in G_w.columns}
-    cover = R_w.notna().sum()
-    keep = cover[cover >= minp].index
-    R_w = R_w[keep]
-    if R_w.empty:
+    """Joint centered fits on each ticker's finite support in the SHARED basis.
+
+    A ticker's missing rows can destroy the full-window orthogonality, so separate
+    cov/var slopes are not generally a multivariate fit. Unidentified joint models
+    are omitted: a present all-null record is treated as modeled zero risk by readers.
+    Constant factors remain null while identifiable factors and residual risk survive.
+    """
+    if R_w.empty or G_w.empty:
         return {"betas": {}, "n": {}}
-
-    betas: dict[str, pd.Series] = {}
-    fitted = np.zeros(R_w.shape, dtype=float)
-    for k in G_w.columns:
-        g = G_w[k]
-        if not var[k] or not np.isfinite(var[k]):
-            betas[k] = pd.Series(np.nan, index=R_w.columns)
-            continue
-        b = R_w.apply(lambda c: c.cov(g)) / var[k]   # Series.cov drops NaN pairwise
-        b = b.clip(-max_abs, max_abs)
-        betas[k] = b
-        fitted += np.outer(g.to_numpy(), b.to_numpy())
-
-    resid = R_w.to_numpy() - fitted
-    with np.errstate(invalid="ignore"):
-        var_y = np.nanvar(R_w.to_numpy(), axis=0)
-        var_e = np.nanvar(resid, axis=0)
-    r2 = np.where(var_y > 0, 1.0 - var_e / var_y, np.nan)
-    idio = np.sqrt(np.clip(var_e, 0, None)) * np.sqrt(TRADING_YEAR)
-
+    X = G_w.to_numpy(dtype=float)
+    factor_ok = np.isfinite(X).all(axis=1)
+    if not factor_ok.any():
+        return {"betas": {}, "n": {}}
+    full_basis = X[factor_ok]
+    active = np.any(full_basis != full_basis[0], axis=0)
+    returns = R_w.reindex(G_w.index)
     out: dict[str, dict] = {}
-    for i, t in enumerate(R_w.columns):
-        rec = {k: (round(float(betas[k][t]), 3) if np.isfinite(betas[k][t]) else None)
-               for k in G_w.columns}
-        rec["r2"] = round(float(r2[i]), 3) if np.isfinite(r2[i]) else None
-        rec["idio_vol"] = round(float(idio[i]), 3) if np.isfinite(idio[i]) else None
-        rec["n"] = int(cover[t])
+    for t in returns.columns:
+        y = returns[t].to_numpy(dtype=float)
+        valid = factor_ok & np.isfinite(y)
+        n = int(valid.sum())
+        if n < minp or not n:
+            continue
+        x, y = X[valid], y[valid]
+        # A globally varying factor that becomes constant only on this ticker's
+        # support is unidentified, not a known zero exposure in the exported model.
+        if np.any(active & ~np.any(x != x[0], axis=0)):
+            continue
+        xc, yc = x - x.mean(axis=0), y - y.mean()
+        if not np.isfinite(xc).all() or not np.isfinite(yc).all():
+            continue
+        coefficients = np.zeros(X.shape[1], dtype=float)
+        if active.any():
+            try:
+                fitted, _residuals, rank, _singular = np.linalg.lstsq(xc[:, active], yc, rcond=None)
+            except np.linalg.LinAlgError:
+                continue
+            if rank != int(active.sum()) or not np.isfinite(fitted).all():
+                continue
+            coefficients[active] = np.clip(fitted, -max_abs, max_abs)
+        residual = yc - xc @ coefficients
+        var_y, var_e = float(np.mean(yc ** 2)), float(np.mean(residual ** 2))
+        if not np.isfinite(var_y) or not np.isfinite(var_e):
+            continue
+        r2 = 1.0 - var_e / var_y if var_y > 0 else np.nan
+        idio = np.sqrt(var_e) * np.sqrt(TRADING_YEAR)
+        if not np.isfinite(idio):
+            continue
+        rec = {k: (round(float(coefficients[i]), 3) if active[i] else None)
+               for i, k in enumerate(G_w.columns)}
+        rec["r2"] = round(float(r2), 3) if np.isfinite(r2) else None
+        rec["idio_vol"] = round(float(idio), 3) if np.isfinite(idio) else None
+        rec["n"] = n
         out[str(t)] = rec
-    return {"betas": out, "n": {str(t): int(cover[t]) for t in R_w.columns}}
+    return {"betas": out, "n": {t: rec["n"] for t, rec in out.items()}}
 
 
 def stock_betas(closes: pd.DataFrame, F: pd.DataFrame, *, window: int, min_obs: int,
-                max_abs: float) -> dict:
-    """Orthogonal multivariate factor betas for every stock in `closes`, estimated on
-    the trailing `window` rows shared with the factor frame."""
+                max_abs: float, returns: pd.DataFrame | None = None) -> dict:
+    """Ticker fits within the trailing finite factor window, in its shared basis.
+
+    Optional `returns` preserves source calendars when `closes` is a union panel.
+    Without it, `closes` must retain its native observation rows and predecessor.
+    """
     if closes is None or closes.empty or F.empty:
         return {"betas": {}, "n": {}}
-    idx = F.index.intersection(closes.index)
-    if len(idx) < min_obs:
+    Fw = _finite_factor_frame(F).tail(window)
+    if len(Fw) < min_obs:
         return {"betas": {}, "n": {}}
-    idx = idx[-window:]
-    G_w = orthogonalize_factors(F.loc[idx])
-    R_w = closes.reindex(idx).pct_change(fill_method=None)
+    G_w = orthogonalize_factors(Fw)
+    # Compute before filtering factor dates/window boundaries. A caller combining
+    # source calendars supplies returns formed BEFORE that union.
+    source_returns = closes.pct_change(fill_method=None) if returns is None else returns
+    R_w = source_returns.reindex(Fw.index)
     return _betas_on_window(R_w, G_w, min_obs, max_abs)
 
 
 def raw_betas(closes: pd.DataFrame, F: pd.DataFrame, *, window: int, min_obs: int,
-              max_abs: float) -> dict:
+              max_abs: float, returns: pd.DataFrame | None = None) -> dict:
     """UNIVARIATE betas to each RAW (non-orthogonal) factor — one regressor at a time.
     These over-count shared variance (don't sum them), but each is the right total
     derivative for a single-factor SHOCK and the baseline the orthogonal set improves
     on. Same shape as stock_betas()['betas'] minus r2/idio."""
     if closes is None or closes.empty or F.empty:
         return {}
-    idx = F.index.intersection(closes.index)
-    if len(idx) < min_obs:
+    Fw = _finite_factor_frame(F).tail(window)
+    if len(Fw) < min_obs:
         return {}
-    idx = idx[-window:]
-    Fw = F.loc[idx]
-    R_w = closes.reindex(idx).pct_change(fill_method=None)
+    source_returns = closes.pct_change(fill_method=None) if returns is None else returns
+    R_w = source_returns.reindex(Fw.index).replace([np.inf, -np.inf], np.nan)
     cover = R_w.notna().sum()
     R_w = R_w[cover[cover >= min_obs].index]
     out: dict[str, dict] = {t: {} for t in R_w.columns}
     for k in Fw.columns:
         g = Fw[k]
-        var = float(g.var())
-        if not var:
+        if not float(g.var()):
             continue
-        b = (R_w.apply(lambda c: c.cov(g)) / var).clip(-max_abs, max_abs)
         for t in R_w.columns:
-            out[str(t)][k] = round(float(b[t]), 3) if np.isfinite(b[t]) else None
+            sample = g.loc[R_w[t].notna()]
+            var = float(sample.var())
+            beta = R_w[t].loc[sample.index].cov(sample) / var if var > 0 else np.nan
+            out[str(t)][k] = round(float(np.clip(beta, -max_abs, max_abs)), 3) if np.isfinite(beta) else None
     return out
 
 
@@ -367,6 +395,7 @@ def factor_cov(F: pd.DataFrame, *, window: int) -> pd.DataFrame:
     """Annualized covariance of the ORTHOGONAL factor returns over the trailing window
     (near-diagonal by construction) — the client uses it for risk decomposition and
     shocks."""
+    F = _finite_factor_frame(F)
     if F.empty:
         return pd.DataFrame()
     G = orthogonalize_factors(F.tail(window))
@@ -389,6 +418,7 @@ def factor_cov_stress(F: pd.DataFrame, *, fit_window: int, stress_window: int,
        "reason": str (only when unavailable)}.
     Small-sample guard: <`min_stress_rows` usable rows → shrink window to what exists
     (stamped in window_d); <`min_stress_days` stress days → available=False, no cov."""
+    F = _finite_factor_frame(F)
     if F.empty or "mkt" not in F.columns:
         return {"available": False, "reason": "no factor frame / missing mkt column",
                 "window_d": 0, "n_stress": 0}
@@ -501,20 +531,23 @@ def compute_exposure(asof=None, closes: pd.DataFrame | None = None) -> dict | No
     if asof is not None:
         closes = closes.loc[:pd.Timestamp(asof)]
 
-    etf = _etf_closes()                                   # add common ETFs (SPY/QQQ/sectors/…)
+    returns = closes.pct_change(fill_method=None)
+    etf, etf_returns = _etf_panels()                       # preserve each source calendar
     if not etf.empty:
         if asof is not None:
             etf = etf.loc[:pd.Timestamp(asof)]
         closes = pd.concat([closes, etf], axis=1, sort=False)
         closes = closes.loc[:, ~closes.columns.duplicated()].sort_index()
+        returns = pd.concat([returns, etf_returns], axis=1, sort=False)
+        returns = returns.loc[:, ~returns.columns.duplicated()].sort_index()
     etf_set = set(ETF_UNIVERSE)
 
     win, minp, max_abs = int(cfg["window_d"]), int(cfg["min_obs"]), float(cfg["max_abs_beta"])
-    res = stock_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs)
+    res = stock_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs, returns=returns)
     if not res["betas"]:
         log.warning("factor_exposure: no betas estimated")
         return None
-    rb = raw_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs)
+    rb = raw_betas(closes, F, window=win, min_obs=minp, max_abs=max_abs, returns=returns)
     fcov = factor_cov(F, window=win)
     keys = list(fcov.columns)
 

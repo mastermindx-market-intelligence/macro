@@ -257,7 +257,7 @@ def test_guard_path_through_compute_exposure_synthetic(monkeypatch):
 
     monkeypatch.setattr(fe, "factor_frame", lambda asof=None: F)
     monkeypatch.setattr(fe, "_closes", lambda: px)
-    monkeypatch.setattr(fe, "_etf_closes", lambda: pd.DataFrame())
+    monkeypatch.setattr(fe, "_etf_panels", lambda: (pd.DataFrame(), pd.DataFrame()))
     monkeypatch.setattr(fe, "_names_sectors", lambda: {})
     # loosen the min-obs floors so betas estimate on the short synthetic window
     monkeypatch.setattr(fe, "_cfg", lambda: {

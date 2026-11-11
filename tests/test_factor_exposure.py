@@ -8,8 +8,252 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
+import json
+from html import unescape
+from pathlib import Path
+import shutil
+import subprocess
 
 from engine import factor_exposure as fe
+
+
+def test_missing_stock_history_uses_one_estimation_sample():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.r_[np.tile([-.04, .04], 63), np.tile([-.01, .01], 63)], index=idx)
+    returns = pd.DataFrame({'FULL': market, 'RECENT': market.where(np.arange(252) >= 126)})
+    out = fe._betas_on_window(returns, market.to_frame('mkt'), 126, 5)['betas']
+    for ticker, count in [('FULL', 252), ('RECENT', 126)]:
+        assert out[ticker] == {'mkt': 1.0, 'r2': 1.0, 'idio_vol': 0.0, 'n': count}
+
+
+@pytest.mark.parametrize('seed', [4, 17, 52, 91])
+def test_masked_multifactor_fit_recovers_known_joint_loadings(seed):
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range('2024-01-01', periods=300)
+    raw = pd.DataFrame(rng.normal(0, .01, (300, 2)), index=idx, columns=['mkt', 'growth'])
+    basis = fe.orthogonalize_factors(raw)
+    # Selection induces correlation in the shared basis; the generating model
+    # remains exactly known and includes a nonzero intercept.
+    selected = (basis.mkt * basis.growth > 0).to_numpy()
+    y = (1.25 * basis.mkt - .75 * basis.growth + .002).where(selected)
+    out = fe._betas_on_window(y.to_frame('KNOWN'), basis, 100, 5)['betas']['KNOWN']
+    assert out == {'mkt': 1.25, 'growth': -.75, 'r2': 1.0, 'idio_vol': 0.0,
+                   'n': int(selected.sum())}
+
+
+@pytest.mark.parametrize('method', ['stock_betas', 'raw_betas'])
+def test_factor_date_holes_do_not_compound_stock_returns(method):
+    idx = pd.bdate_range('2024-01-01', periods=701)
+    daily = pd.Series(np.tile([.05, -.01, .03, -.02], 176)[:701], index=idx)
+    prices = (100 * (1 + daily).cumprod()).to_frame('SAME')
+    factors = prices.SAME.pct_change(fill_method=None).to_frame('mkt').dropna().iloc[::2]
+    out = getattr(fe, method)(prices, factors, window=252, min_obs=126, max_abs=5)
+    record = out['betas']['SAME'] if method == 'stock_betas' else out['SAME']
+    assert record['mkt'] == 1.0
+    if method == 'stock_betas':
+        assert (record['n'], record['r2'], record['idio_vol']) == (252, 1.0, 0.0)
+
+
+def test_first_window_return_keeps_its_predecessor():
+    idx = pd.bdate_range('2025-01-01', periods=127)
+    prices = pd.Series(100 * np.cumprod(1 + np.tile([.02, -.01], 64)[:127]), index=idx)
+    factors = prices.pct_change(fill_method=None).dropna().to_frame('mkt')
+    out = fe.stock_betas(prices.to_frame('SAME'), factors, window=126, min_obs=126, max_abs=5)
+    assert out['betas']['SAME'] == {'mkt': 1.0, 'r2': 1.0, 'idio_vol': 0.0, 'n': 126}
+
+
+def test_rank_loss_on_ticker_support_abstains_from_modeled_coverage():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    growth = market * np.r_[np.ones(126), -np.ones(126)]
+    basis = pd.DataFrame({'mkt': market, 'growth': growth})
+    returns = pd.DataFrame({'FULL': 2 * market, 'AMBIGUOUS': (2 * market).where(np.arange(252) < 126)})
+    out = fe._betas_on_window(returns, basis, 126, 5)
+    assert out['betas']['FULL']['mkt'] == 2.0
+    assert 'AMBIGUOUS' not in out['betas']
+    assert 'AMBIGUOUS' not in out['n']
+
+
+def test_finite_common_support_controls_observation_admission():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    returns = market.copy()
+    returns.iloc[:3] = [np.inf, -np.inf, np.nan]
+    factor = market.copy()
+    factor.iloc[3] = np.inf
+    out = fe._betas_on_window(returns.to_frame('SAME'), factor.to_frame('mkt'), 248, 5)
+    assert out['betas']['SAME'] == {'mkt': 1.0, 'r2': 1.0, 'idio_vol': 0.0, 'n': 248}
+    assert not fe._betas_on_window(returns.to_frame('SAME'), factor.to_frame('mkt'), 249, 5)['betas']
+
+
+def test_zero_variance_factor_does_not_poison_identified_model():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    basis = pd.DataFrame({'mkt': market, 'rates': 0.0}, index=idx)
+    out = fe._betas_on_window(market.to_frame('SAME'), basis, 126, 5)['betas']['SAME']
+    assert out == {'mkt': 1.0, 'rates': None, 'r2': 1.0, 'idio_vol': 0.0, 'n': 252}
+
+
+def test_support_induced_constant_factor_is_not_modeled_as_zero_risk():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    growth = pd.Series(np.r_[np.tile([.02, -.01], 63), np.zeros(126)], index=idx)
+    returns = market.where(np.arange(252) >= 126).to_frame('UNIDENTIFIED')
+    out = fe._betas_on_window(returns, pd.DataFrame({'mkt': market, 'growth': growth}), 126, 5)
+    assert not out['betas']
+    assert not out['n']
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='node not on PATH')
+@pytest.mark.parametrize('support_loss', ['collinear', 'constant'])
+def test_unidentified_native_fit_reaches_risk_core_as_unmodeled(support_loss):
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    growth = (market * np.r_[np.ones(126), -np.ones(126)] if support_loss == 'collinear'
+              else pd.Series(np.r_[np.zeros(126), np.tile([.02, -.01], 63)], index=idx))
+    returns = pd.DataFrame({'FULL': 2 * market,
+                            'UNIDENTIFIED': (2 * market).where(np.arange(252) < 126)})
+    native = fe._betas_on_window(returns, pd.DataFrame({'mkt': market, 'growth': growth}), 126, 5)
+    risk = Path(__file__).resolve().parents[1] / 'templates/risk_core.js'
+    program = "const fs=require('node:fs'), r=require(process.argv[1]); " \
+              "const data=JSON.parse(fs.readFileSync(0,'utf8')); " \
+              "process.stdout.write(JSON.stringify(r.coverage(data,{FULL:100,UNIDENTIFIED:200})));"
+    result = subprocess.run(['node', '-e', program, str(risk)],
+                            input=json.dumps({'betas': native['betas']}, allow_nan=False),
+                            text=True, capture_output=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    coverage = json.loads(result.stdout)
+    assert coverage['modeled'] == ['FULL']
+    assert coverage['unmodeled'] == ['UNIDENTIFIED']
+    assert coverage['unmodeledFrac'] == pytest.approx(2 / 3)
+    assert coverage['abstain'] is True
+
+
+def test_capped_coefficients_determine_residual_statistics():
+    idx = pd.bdate_range('2025-01-01', periods=252)
+    market = pd.Series(np.tile([-.01, .01], 126), index=idx)
+    out = fe._betas_on_window((4 * market + .01).to_frame('CAPPED'), market.to_frame('mkt'), 126, 2)['betas']['CAPPED']
+    assert out == {'mkt': 2.0, 'r2': .75, 'idio_vol': round(.02 * np.sqrt(252), 3), 'n': 252}
+
+
+def _native_calendar_export(monkeypatch, factor_holes=True):
+    """Native producer with only its external prices/config/name I/O controlled."""
+    rng = np.random.default_rng(316)
+    sessions = pd.bdate_range('2023-01-02', periods=700)
+    days = pd.date_range(sessions.min(), sessions.max())
+    market = pd.Series(100 * np.cumprod(1 + rng.normal(.0003, .009, len(sessions))), index=sessions)
+    btc_returns = rng.normal(.0004, .018, len(days))
+    btc = pd.Series(100 * np.cumprod(1 + btc_returns), index=days)
+    eth = pd.Series(100 * np.cumprod(1 + 1.2 * btc_returns + rng.normal(0, .003, len(days))), index=days)
+    bonds = pd.Series(100.0, index=sessions)
+    if factor_holes:
+        bonds.iloc[1::4] = np.nan
+    inputs = {'SPY': market.to_frame('close'), 'TLT': bonds.to_frame('close'),
+              'BTC-USD': btc.to_frame('close'), 'ETH-USD': eth.to_frame('close')}
+    monkeypatch.setattr(fe.store, 'read', lambda group, name: inputs.get(name) if group == 'yahoo' else None)
+    monkeypatch.setattr(fe.config, 'load', lambda: {})
+    monkeypatch.setattr(fe, '_names_sectors', lambda: {})
+    out = fe.compute_exposure(closes=pd.DataFrame({'SAME': market, 'TWIN': market}))
+    assert out is not None
+    # Exercise the actual serialized payload boundary too: no NaN/Infinity escapes.
+    return json.loads(json.dumps(out, allow_nan=False))
+
+
+@pytest.mark.parametrize('factor_holes', [False, True])
+def test_native_export_preserves_equity_and_crypto_return_calendars(monkeypatch, factor_holes):
+    out = _native_calendar_export(monkeypatch, factor_holes)
+    for ticker in ['SAME', 'TWIN', 'SPY']:
+        rec = out['betas'][ticker]
+        assert (rec['mkt'], rec['raw']['mkt'], rec['r2'], rec['idio_vol'], rec['n']) == (1.0, 1.0, 1.0, 0.0, 252)
+    btc = out['betas']['BTC-USD']
+    assert (btc['btc'], btc['raw']['btc'], btc['r2'], btc['idio_vol'], btc['n']) == (1.0, 1.0, 1.0, 0.0, 252)
+    assert out['betas']['ETH-USD']['idio_vol'] > 0
+    assert list(out['factor_cov']) == [f['key'] for f in out['factors']]
+
+
+def test_phase0_keeps_native_returns_and_reports_only_fitted_dates(monkeypatch):
+    from scripts import factor_exposure_phase0 as phase0
+    rng = np.random.default_rng(91)
+    idx = pd.bdate_range('2020-01-01', periods=1100)
+    market = pd.Series(rng.normal(0, .01, len(idx)), index=idx)
+    # Factor availability has holes, and factor history starts before the stock panel.
+    factors = market.to_frame('mkt').iloc[::2]
+    stock_index = idx[-700:]
+    closes = pd.DataFrame({f'S{i}': 100 * (1 + (.5 + i / 20) * market.loc[stock_index]).cumprod()
+                           for i in range(12)})
+    calls = []
+    native = fe.stock_betas
+    def observe(prices, frame, **kwargs):
+        result = native(prices, frame, **kwargs)
+        calls.append((frame.index.copy(), result))
+        return result
+    monkeypatch.setattr(fe, 'stock_betas', observe)
+    grid = phase0.month_grid(factors.index.intersection(stock_index), warmup=80, horizon=40)
+    result = phase0.stability(factors, closes, win=80, horizon=40, minp=40,
+                             max_abs=5, basket_sizes=[1], n_baskets=0)
+    assert result['rebalances'] == len(grid)
+    assert result['span'] == f'{grid[0].date()}..{grid[-1].date()}'
+    assert result['per_stock']['mkt'] == {'persist': 1.0, 'n': len(grid)}
+    assert len(calls) == 2 * len(grid)
+    for anchor, (insample, before), (forward, after) in zip(grid, calls[::2], calls[1::2]):
+        assert insample.max() == anchor
+        assert forward.min() > anchor
+        assert len(insample) == 80 and len(forward) == 40
+        for ticker, loading in [('S0', .5), ('S11', 1.05)]:
+            assert before['betas'][ticker]['mkt'] == loading
+            assert after['betas'][ticker]['mkt'] == loading
+            assert before['betas'][ticker]['n'] == 80
+            assert after['betas'][ticker]['n'] == 40
+
+
+def test_phase0_does_not_count_calendar_dates_without_stock_fits():
+    from scripts import factor_exposure_phase0 as phase0
+    idx = pd.bdate_range('2020-01-01', periods=700)
+    factors = pd.DataFrame({'mkt': np.tile([-.01, .01], 350)}, index=idx)
+    closes = pd.DataFrame({'MISSING': np.nan}, index=idx[-500:])
+    result = phase0.stability(factors, closes, win=80, horizon=40, minp=40,
+                             max_abs=5, basket_sizes=[1], n_baskets=0)
+    assert result['rebalances'] == 0
+    assert result['error'] == 'too few fitted rebalances (0)'
+
+
+@pytest.mark.skipif(shutil.which('node') is None, reason='node not on PATH')
+@pytest.mark.parametrize('language,label', [('en', 'S&P 500 −5%'), ('zh', '标普 −5%')])
+def test_native_export_reaches_risk_core_and_bilingual_shock_rows(monkeypatch, language, label):
+    out = _native_calendar_export(monkeypatch)
+    root = Path(__file__).resolve().parents[1]
+    program = r'''
+const fs = require('node:fs'), vm = require('node:vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const panel = {style: {}, innerHTML: '', querySelectorAll(){return [];}, querySelector(){return null;}};
+const events = [];
+const document = {documentElement: {getAttribute(k){return k==='data-lang'?input.language:k==='data-ws-mode'?'portfolio':'';}},
+  getElementById(id){return id==='fx_panel'?panel:null;}, addEventListener(){}, dispatchEvent(e){events.push(e.detail);}};
+const context = {document, window:{WS:{prov(){return {gen:7};}}}, console,
+  localStorage:{getItem(){return null;},setItem(){}}, setTimeout,
+  CustomEvent:function(name,opts){this.type=name;this.detail=opts.detail;},
+  fetch:async()=>({ok:true,json:async()=>input.data})};
+vm.runInNewContext(fs.readFileSync(input.controller,'utf8'), context);
+context.window.FX.setAutoWeights({SAME:100,TWIN:100});
+setImmediate(()=>{
+  const RiskCore=require(input.risk);
+  const book=RiskCore.book(input.data,{SAME:100,TWIN:100});
+  process.stdout.write(JSON.stringify({html:panel.innerHTML,weights:context.window.FX.currentWeights(),
+    bookBeta:book.bookBeta,coverage:book.coverage,events}));
+});
+'''
+    result = subprocess.run(['node', '-e', program], input=json.dumps({
+        'data': out, 'language': language, 'controller': str(root / 'site/factor_exposure.js'),
+        'risk': str(root / 'templates/risk_core.js')}), text=True, capture_output=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    observed = json.loads(result.stdout)
+    assert label in unescape(observed['html'])
+    assert '-5.0%' in observed['html']
+    assert observed['bookBeta']['mkt'] == 1.0
+    assert observed['coverage']['unmodeledFrac'] == 0
+    assert observed['weights']['prov'] == {'scope': 'portfolio', 'gen': 7}
+    assert observed['weights']['universe'] == ['SAME', 'TWIN']
 
 
 def _idx(n: int):
@@ -124,8 +368,8 @@ def test_compute_exposure_covers_etfs_self_consistently():
 
 def test_compute_exposure_covers_crypto_with_sane_shape():
     """Crypto universe extension (W6.1): the cached crypto names ship betas like any ETF,
-    tagged 'Crypto' (not 'ETF'), and read the honest way — btc-heavy with a real
-    idiosyncratic-vol sleeve (crypto is its own bet, low R² on equity factors is correct).
+    tagged 'Crypto' (not 'ETF'), with finite nonnegative idiosyncratic volatility.
+    BTC itself is a factor, so its correctly aligned self-fit can have zero residual.
     Would fail if crypto were dropped from the universe, mis-tagged, or if the
     orthogonalization mangled a near-pure-crypto name into NaNs."""
     out = fe.compute_exposure()
@@ -142,9 +386,10 @@ def test_compute_exposure_covers_crypto_with_sane_shape():
         # (a) tagged as its own sleeve, not lumped with ETFs
         assert rec["sector"] == "Crypto", f"{t} sector={rec['sector']!r}, expected 'Crypto'"
         assert rec["name"] == fe.CRYPTO_NAMES[t]
-        # (b) client-required fields present + a real idio sleeve (crypto is its own bet)
+        # (b) client-required fields present + a valid residual-risk estimate
         assert {"name", "sector", "is_etf", "raw", "r2", "idio_vol"} <= set(rec)
-        assert rec["idio_vol"] is not None and rec["idio_vol"] > 0.0
+        # BTC is itself a model factor; a self-factor tracker can have zero idio.
+        assert rec["idio_vol"] is not None and rec["idio_vol"] >= 0.0
         # (c) btc beta present and substantial — a crypto name reads as the crypto bet.
         #     Threshold 0.5 is loose: the real coins run ~0.9–1.1, COIN/ETFs ~0.9.
         assert rec.get("btc") is not None, f"{t} has no btc beta"
