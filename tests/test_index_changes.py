@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd  # noqa: E402
+import pytest
 
 from collectors import sp_index_changes as C  # noqa: E402
 from engine import index_changes as IC  # noqa: E402
@@ -39,7 +40,7 @@ def test_parse_rss_keeps_only_join_items():
 
 
 def test_parse_changes_page_extracts_table():
-    rows = C.parse_changes_page(_PAGE.replace("&amp;", "&"), "http://x/fa", "2026-06-11")
+    rows = C.parse_changes_page(_PAGE, "http://x/fa", "2026-06-11")
     by_t = {r["ticker"]: r for r in rows}
     assert by_t["FA"]["action"] == "addition" and by_t["FA"]["index"] == "sp600"
     assert by_t["FA"]["effective_date"] == "2026-06-16"
@@ -126,3 +127,83 @@ def test_window_thin_months_fails_closed_not_crash(monkeypatch):
     assert w["n"] == 12 and w["n_months"] == 4
     assert "hac_t" not in w                       # omitted, not None → consumers .get('hac_t',0)
     assert w.get("hac_t", 0) == 0                  # fail-closed: not scored, no crash
+
+
+@pytest.mark.parametrize('encoding', ['&amp;', '&#38;', '&#x26;', '&#160;', '&nbsp;', '&', '\u00a0'])
+@pytest.mark.parametrize('warm', [False, True])
+def test_raw_encoded_http_to_native_cache_and_snapshot(monkeypatch, tmp_path, encoding, warm):
+    import json
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    from scripts import build_index_changes as B
+
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'site_dir': 'site'}})
+    class Clock(date):
+        @classmethod
+        def today(cls):
+            return cls(2026, 6, 21)
+    monkeypatch.setattr(IC, 'date', Clock)
+    literal = _PAGE.replace('&amp;', '&')
+    if encoding in ['&#160;', '&nbsp;', '\u00a0']:
+        page = literal.replace('S&P SmallCap', 'S&P' + encoding + 'SmallCap')
+    else:
+        page = literal.replace('S&P', 'S' + encoding + 'P')
+    expected = C.parse_changes_page(literal, 'http://x/fa', '2026-06-11')
+    assert C.parse_changes_page(page, 'http://x/fa', '2026-06-11') == expected
+    cache = C._cache_path()
+    if warm:
+        old = {**expected[0], 'ticker': 'OLD', 'announce_url': 'http://old',
+               'effective_date': '2020-01-01', '_seen': 'old'}
+        pd.DataFrame([old]).to_parquet(cache)
+    calls = []
+    class Session:
+        def __init__(self):
+            self.headers = {}
+        def get(self, url, timeout):
+            calls.append(url)
+            return SimpleNamespace(status_code=200, text=_RSS if url == C._RSS else page)
+    monkeypatch.setattr(requests, 'Session', Session)
+    assert B.main() == 0
+    payload = json.loads((tmp_path / 'site/index_changes/latest.json').read_text())
+    assert payload['n_pure'] == 1 and payload['pure_additions'][0]['ticker'] == 'FA'
+    assert payload['scored'] is False and payload['is_context_only'] is True
+    stored = pd.read_parquet(cache)
+    assert set(stored.ticker) == ({'FA', 'KW', 'OLD'} if warm else {'FA', 'KW'})
+    before = cache.read_bytes()
+    assert B.main() == 0
+    assert cache.read_bytes() == before  # already-seen announcement is not appended again
+    assert len(calls) == 3  # RSS + new page, then RSS only
+
+
+@pytest.mark.parametrize('has_announcement', [False, True])
+@pytest.mark.parametrize('warm', [False, True])
+def test_unparseable_announcement_warns_but_empty_feed_does_not(monkeypatch, tmp_path, caplog,
+                                                              has_announcement, warm):
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    cache = C._cache_path()
+    if warm:
+        pd.DataFrame([{'announce_url': 'http://old', 'ticker': 'OLD', 'action': 'addition'}]).to_parquet(cache)
+    before = cache.read_bytes() if warm else None
+    class Session:
+        def __init__(self):
+            self.headers = {}
+        def get(self, url, timeout):
+            rss = _RSS if has_announcement else '<rss><channel></channel></rss>'
+            return SimpleNamespace(status_code=200, text=rss if url == C._RSS else '<html>unrecognized table</html>')
+    monkeypatch.setattr(requests, 'Session', Session)
+    result = C.fetch_index_changes()
+    assert len(result) == (1 if warm else 0)
+    assert ('not a verified no-change feed' in caplog.text) is has_announcement
+    assert (cache.read_bytes() if cache.exists() else None) == before
+
+
+def test_encoded_angle_brackets_are_text_not_markup():
+    page = _PAGE.replace('First Advantage', 'First &lt;Advantage&gt; &amp; Co')
+    rows = C.parse_changes_page(page, 'http://x/fa', '2026-06-11')
+    assert rows[0]['company'] == 'First <Advantage> & Co'

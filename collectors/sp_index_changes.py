@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import re
 from datetime import datetime, timezone
+from html import unescape
 
 import pandas as pd
 
@@ -71,7 +72,7 @@ def parse_rss(text: str) -> list[dict]:
 def parse_changes_page(html: str, url: str, announce_date: str | None) -> list[dict]:
     """The change-table rows from one announcement page. PURE.
     Returns [{ticker, index, action, effective_date, announce_date, company, announce_url}]."""
-    plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+    plain = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", html)))
     out = []
     for eff, idx, action, company, ticker, _sector in _ROW_RE.findall(plain):
         out.append({
@@ -113,6 +114,10 @@ def fetch_index_changes() -> pd.DataFrame:
                 log.info("sp_index_changes: page %s -> HTTP %d (skip)", it["url"][-30:], pg.status_code)
                 continue
             rows = parse_changes_page(pg.text, it["url"], it["announce_date"])
+            if not rows:
+                log.warning("sp_index_changes: announcement %s yielded no parseable rows; "
+                            "keeping cache (not a verified no-change feed)", it["url"])
+                continue
             fresh.extend(rows)
             log.info("sp_index_changes: %s -> %d rows", it["url"].split("/")[-1][:40], len(rows))
         except Exception as e:  # noqa: BLE001
