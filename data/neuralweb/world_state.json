@@ -5760,7 +5760,7 @@
     ],
     "freshness": {
       "asof": "2026-11-10",
-      "built_at": "2026-11-11T08:00:30Z",
+      "built_at": "2026-11-11T08:52:35Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
@@ -5897,16 +5897,16 @@
               0.5789
             ],
             [
-              "stair_step_leader",
+              "volatile_momentum_vehicle",
               0.1579
             ],
             [
-              "volatile_momentum_vehicle",
+              "stair_step_leader",
               0.1579
             ]
           ],
           "tinderbox_share": 0.0263,
-          "event_override_share": 0.0789,
+          "event_override_share": 0.0263,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -5956,7 +5956,7 @@
             ]
           ],
           "tinderbox_share": 0.029,
-          "event_override_share": 0.029,
+          "event_override_share": 0.0145,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -6001,12 +6001,12 @@
               0.2
             ],
             [
-              "failed_breakout_trap",
+              "stair_step_leader",
               0.0571
             ]
           ],
           "tinderbox_share": 0.0294,
-          "event_override_share": 0.0,
+          "event_override_share": 0.0294,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -6056,7 +6056,7 @@
             ]
           ],
           "tinderbox_share": 0.0588,
-          "event_override_share": 0.0588,
+          "event_override_share": 0.0735,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -6087,7 +6087,7 @@
               0.1477
             ],
             [
-              "speculative_unprofitable",
+              "secular_growth",
               0.0114
             ]
           ],
@@ -6206,7 +6206,7 @@
             ]
           ],
           "tinderbox_share": 0.0608,
-          "event_override_share": 0.0203,
+          "event_override_share": 0.0068,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
             "chart_labels": "label_emissions"
@@ -6274,7 +6274,7 @@
   },
   "alerts": {
     "asof": "2026-11-10",
-    "generated_utc": "2026-11-11 08:19",
+    "generated_utc": "2026-11-11 09:12",
     "total": 60,
     "critical": 2,
     "major": 2,
@@ -7063,13 +7063,13 @@
     "n_divergences": 44,
     "macro_context": {
       "regime": "Reflation",
-      "posture": "Reflation is still the confirmed label, but today's axes read growth +0.33 (improving) / inflation -0.52 (cooling) — Goldilocks on the raw sign rule. Posture: DEFENSIVE — minimum equity risk; capital preservation mode.",
+      "posture": "Reflation is still the confirmed label, but today's axes read growth +0.20 (improving) / inflation -0.52 (cooling) — Goldilocks on the raw sign rule. Posture: DEFENSIVE — minimum equity risk; capital preservation mode.",
       "fed_stance": "Hawkish"
     },
     "top_actionable": [
       {
         "ticker": "GILD",
-        "priority": 0.499,
+        "priority": 0.49,
         "lean": -1,
         "read": "fading"
       },
@@ -7081,19 +7081,19 @@
       },
       {
         "ticker": "GME",
-        "priority": 0.427,
+        "priority": 0.42,
         "lean": -1,
         "read": "fading"
       },
       {
         "ticker": "KR",
-        "priority": 0.427,
+        "priority": 0.42,
         "lean": -1,
         "read": "fading"
       },
       {
-        "ticker": "NVS",
-        "priority": 0.359,
+        "ticker": "DHR",
+        "priority": 0.352,
         "lean": -1,
         "read": "fading"
       }
@@ -7784,10 +7784,10 @@
     "revision": "settled",
     "source_session": "2026-11-10",
     "as_of": "2026-11-10",
-    "observed_at": "2026-11-11T11:21:41Z",
-    "produced_at": "2026-11-11T11:21:41Z",
+    "observed_at": "2026-11-11T12:31:18Z",
+    "produced_at": "2026-11-11T12:31:18Z",
     "stale_after": null,
-    "bundle_id": "1592b04a508b82e6",
+    "bundle_id": "2939ec0302d34258",
     "measured_state": {
       "as_of": "2026-11-10",
       "role": "slow_confirmed_trend",
@@ -8350,7 +8350,7 @@
               "weight": 0.16
             }
           },
-          "logged_at": "2026-11-11T08:25:57+00:00",
+          "logged_at": "2026-11-11T09:23:49+00:00",
           "raw_score": 46,
           "score": 46,
           "score_caps": [],
@@ -8493,7 +8493,7 @@
             "weight": 0.16
           }
         },
-        "logged_at": "2026-11-11T08:25:57+00:00",
+        "logged_at": "2026-11-11T09:23:49+00:00",
         "raw_score": 46,
         "score": 46,
         "score_caps": [],
@@ -8531,7 +8531,7 @@
               "weight": 0.16
             }
           },
-          "logged_at": "2026-11-11T08:25:57+00:00",
+          "logged_at": "2026-11-11T09:23:49+00:00",
           "raw_score": 46,
           "score": 46,
           "score_caps": [],
@@ -8738,7 +8738,7 @@
       ]
     ],
     "n_tinderbox": 263,
-    "n_event_override": 84,
+    "n_event_override": 72,
     "display_only": true
   },
   "context_risk": {
@@ -8870,7 +8870,7 @@
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-11-10",
+    "as_of": "2026-11-11",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -8964,18 +8964,16 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-11-10",
-    "built_at": "2026-11-11T08:00:30Z",
+    "built_at": "2026-11-11T08:52:35Z",
     "age_days": 1,
     "stale": false
   },
   "contradictions": {
-    "n": 3,
+    "n": 2,
     "by_severity": {
-      "note": 1,
       "tension": 2
     },
     "top_pair_ids": [
-      "regime-vs-market_state",
       "regime_vector-vs-risk_radar",
       "briefing-divergences"
     ],
@@ -10044,8 +10042,8 @@
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-11-11T11:20:25.978884+00:00",
-      "built_at": "2026-11-11T11:20:26.043703+00:00",
+      "analysis_cutoff": "2026-11-11T12:30:49.928290+00:00",
+      "built_at": "2026-11-11T12:30:49.937074+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
@@ -10056,7 +10054,7 @@
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+          "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
           "read_status": "available"
         },
         "M": {
@@ -10699,7 +10697,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -10736,7 +10734,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10773,7 +10771,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -10810,7 +10808,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -10847,7 +10845,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -11027,7 +11025,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -11249,7 +11247,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -11286,7 +11284,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "2e98a252f9aaf6367c23d9e366597aea993e0107fb38f1b5c4553abdc139ad4c",
+            "sha256": "e2c580e29661dbe0f9600dfcffbaff3f63ce7ffdecf9d8cbea4966174d48bad4",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-10",
             "precision": "date",
@@ -12623,7 +12621,7 @@
     "data/neuralweb/liquidity_plumbing.json": "2026-10-14",
     "data/rebalance_pulse/latest.json": "2026-11-06",
     "site/chinastatedata/market_state.json": null,
-    "data/neuralweb/theme_state.json": "2026-11-10",
+    "data/neuralweb/theme_state.json": "2026-11-11",
     "data/transmission/latest.json": "2026-11-06",
     "data/rates_command/latest.json": "2026-11-06",
     "data/forex/latest.json": "2026-11-09",
@@ -12646,7 +12644,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-11-11T11:21:49Z",
-  "inputs_hash": "sha256:cf2becffda4f9465207cf193850997e8eb03c34c3bcb540fda39743e235d1706",
+  "produced_at": "2026-11-11T12:31:22Z",
+  "inputs_hash": "sha256:0156abfed47cd012485143970fe5bf5c0041552c9ee3280561c0ac0e214487ab",
   "tier": "infrastructure"
 }
