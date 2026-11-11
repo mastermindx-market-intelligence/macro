@@ -132,6 +132,7 @@ from engine.confluence_tiers import (  # noqa: E402 — 3D StochRSI for the ledg
     _stoch_rsi_kd,
     _to_daily,
 )
+from engine import us_board_snapshots  # noqa: E402
 
 BOARD_PATH = "site/factordata/us_standouts.json"
 LEDGER_DIR = ROOT / "data" / "us_board_ledger"
@@ -816,8 +817,8 @@ def collect_boards(receipt: dict | None = None) -> list[dict]:
     boards: dict[str, dict] = {}
 
     # 1) snapshots (forward-accruing source) — take precedence (exact bytes at build time)
-    if SNAPSHOTS_JSONL.exists():
-        for line in SNAPSHOTS_JSONL.read_text().splitlines():
+    if us_board_snapshots.exists(SNAPSHOTS_JSONL):
+        for line in us_board_snapshots.read_lines(SNAPSHOTS_JSONL):
             line = line.strip()
             if not line:
                 continue
@@ -1723,10 +1724,11 @@ def _assemble_track(*, df, board_dates, graded_dates, survivorship, n_excluded,
 # nightly snapshot
 # --------------------------------------------------------------------------- #
 def _snapshot_existing_as_of() -> set[str]:
-    """The set of ``as_of`` values already present in SNAPSHOTS_JSONL."""
+    """The set of ``as_of`` values already present in SNAPSHOTS_JSONL
+    (base plus snapshots_parts/, engine/us_board_snapshots.py)."""
     existing: set[str] = set()
-    if SNAPSHOTS_JSONL.exists():
-        for line in SNAPSHOTS_JSONL.read_text().splitlines():
+    if us_board_snapshots.exists(SNAPSHOTS_JSONL):
+        for line in us_board_snapshots.read_lines(SNAPSHOTS_JSONL):
             try:
                 existing.add(json.loads(line).get("as_of"))
             except json.JSONDecodeError:
@@ -1741,10 +1743,11 @@ def _append_snapshot_row(row: dict) -> None:
     ``absorb_pending_replays()`` both call it, so a lane that appends the wrong bytes
     (wrong separators, no trailing newline) has exactly one place to fix rather than
     two call sites that quietly drifted apart.
+    Rows go to the base until the rollover, then to snapshots_parts/.
     """
     LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-    with SNAPSHOTS_JSONL.open("a") as f:
-        f.write(json.dumps(row, separators=(",", ":")) + "\n")
+    us_board_snapshots.append_line(
+        SNAPSHOTS_JSONL, json.dumps(row, separators=(",", ":")))
 
 
 def snapshot_today() -> str | None:
@@ -2636,12 +2639,15 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             extra_meta={"priced_through": priced_through, **era_meta},
         )
 
-    current_as_of = boards[-1].get("as_of", "")
+    # Canonical chronology also keeps the continuity read independent of caller order.
+    boards = sorted(boards, key=lambda board: board.get("as_of", ""))
+    current_as_of = max((b.get("as_of", "") for b in boards), default="")
 
-    # board_day -> buy-lane tickers, plus display metadata from the LATEST board a
-    # ticker appeared on (freshest sector / rank / tier).
+    # Metadata belongs to each original admission in this source history, not the
+    # ticker's latest appearance. Source dates are not publication/knowledge clocks.
     board_days: dict[str, set[str]] = {}
-    meta_by_tk: dict[str, dict] = {}
+    meta_by_admission: dict[tuple[str, str], dict] = {}
+    conflicting_metadata: set[tuple[str, str]] = set()
     definition_by_admission: dict[tuple[str, str], str] = {}
     n_boards_predefinition = 0
     for b in boards:
@@ -2659,8 +2665,16 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             if not tk:
                 continue
             day.add(tk)
-            meta_by_tk[tk] = {"sector": r.get("sector"), "rank": r.get("position"),
-                              "tier": r.get("align_tier")}
+            position = r.get("position")
+            valid_position = isinstance(position, (int, np.integer)) and not isinstance(position, (bool, np.bool_)) and position >= 0
+            metadata = {"sector": r.get("sector"), "rank": int(position) + 1 if valid_position else None,
+                        "tier": r.get("align_tier"),
+                        "rank_unavailable_reason": None if valid_position else "invalid_admission_position"}
+            key = (as_of_str, tk)
+            prior = meta_by_admission.get(key)
+            if prior is not None and prior != metadata:
+                conflicting_metadata.add(key)
+            meta_by_admission.setdefault(key, metadata)
             # The board definition belongs to the admission DATE, not to the
             # ticker's latest appearance.  A name can span an era boundary or
             # leave and re-enter under another selection instrument.
@@ -2676,6 +2690,26 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
     n_inflight = 0
     _ob_cache: dict[str, pd.Series | None] = {}
 
+    def _admission_metadata(tk: str, d0: str) -> dict:
+        if (d0, tk) in conflicting_metadata:
+            return {"rank": None, "tier": None, "sector": None,
+                    "rank_unavailable_reason": "conflicting_admission_metadata"}
+        return meta_by_admission.get((d0, tk), {"rank_unavailable_reason": "admission_metadata_missing"})
+
+    def _evaluation_receipt(m: dict, d0: str, sc: dict | None = None) -> dict:
+        sc = sc or {}
+        return {
+            "rank_basis": "admission_one_based" if m.get("rank") is not None else "unavailable",
+            "rank_as_of": d0 if m.get("rank") is not None else None,
+            # The retained board source does not attest original delivery time.
+            "rank_known_at": None,
+            "rank_unavailable_reason": m.get("rank_unavailable_reason"),
+            "evaluation_type": "model_episode",
+            "evaluation_rule": "us_next_close_stochrsi80_trough97_h10_v1",
+            "exit_date": sc.get("exit_date") if sc.get("matured") else None,
+            "return_end_date": sc.get("exit_date") if sc.get("matured") else sc.get("mark_date"),
+        }
+
     def _unscored(tk: str, d0: str) -> dict:
         """A persistent row for an episode that cannot be priced.
 
@@ -2687,7 +2721,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
         name that was never picked. Excluded from every summary number (it is not in
         `scored`), so the headline is unmoved.
         """
-        m = meta_by_tk.get(tk, {})
+        m = _admission_metadata(tk, d0)
         return {
             "t": tk, "nm": None, "sec": m.get("sector"), "grp": None, "d": d0,
             "e": None, "l": None, "p": None, "x": None, "dy": None,
@@ -2696,6 +2730,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             "xr": "no price data",
             "ed": None,
             "bd": definition_by_admission.get((d0, tk)),
+            **_evaluation_receipt(m, d0),
         }
 
     for ep in _ts.build_episodes(board_days):
@@ -2733,7 +2768,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             # not a survivorship casualty (conflating the two inflated the skip count
             # to 22 and listed liquid names like DE and F as unpriceable).
             n_inflight += 1
-            m = meta_by_tk.get(tk, {})
+            m = _admission_metadata(tk, d0)
             rows_out.append({
                 "t": tk, "nm": None, "sec": m.get("sector"), "grp": None, "d": d0,
                 "e": None, "l": None, "p": None, "x": None, "dy": None,
@@ -2741,10 +2776,11 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
                 "rk": m.get("rank"), "tr": m.get("tier"), "fl": [], "xr": None,
                 "ed": None,
                 "bd": definition_by_admission.get((d0, tk)),
+                **_evaluation_receipt(m, d0),
             })
             continue
 
-        m = meta_by_tk.get(tk, {})
+        m = _admission_metadata(tk, d0)
         if sc["matured"]:
             st = "up" if (sc["pnl"] or 0) > 0 else "stopped"
             latest, move = sc["exit"], sc["pnl"]
@@ -2771,6 +2807,7 @@ def emit_ledger(boards: list[dict], names: pd.DataFrame,
             "xr": sc.get("exit_reason"),
             "ed": sc.get("entry_date"),
             "bd": definition_by_admission.get((d0, tk)),
+            **_evaluation_receipt(m, d0, sc),
         })
 
     summary = _ts.summarize(scored, metric="pnl", n_inflight=n_inflight,
