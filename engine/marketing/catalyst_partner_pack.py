@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import parse_qsl, quote, unquote, urlsplit
 
+from lib.theme_materials import shared_contrast_css
+
 PACK_SCHEMA = "marketing.catalyst_partner_pack.v1"
 _UTC = timezone.utc
 _TICKER = re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
@@ -1112,40 +1114,123 @@ def write_partner_pack(pack: dict, destination: Path | str,
     )
     env = Environment(loader=FileSystemLoader(str(template_path.parent)),
                       autoescape=True, undefined=StrictUndefined)
-    # These are the ACTUAL canonical theme tokens. Extract from theme.css,
-    # rather than declaring a second colour/font/radius palette in the new
-    # preview template. Copy only the :root token block into the self-contained
-    # private preview; nothing from third-party assets or request data.
+    # Compose the actual canonical root, light semantics and shared materials.
+    # The preview must not invent a second colour/font/radius palette.
     token_path = Path(__file__).resolve().parents[2] / "templates" / "theme.css"
     try:
         canonical_css = token_path.read_text(encoding="utf-8")
     except OSError as exc:
         raise PackRejected("DESIGN_TOKENS_UNAVAILABLE") from exc
+    except UnicodeError as exc:
+        raise PackRejected("DESIGN_TOKENS_INVALID") from exc
+
+    def flat_rules(source: str, start: int = 0):
+        """Yield complete unconditional flat rules without losing selector context."""
+        masked = list(source)
+        depth = 0
+        cursor = start
+        opening = start
+        flat = True
+        tokens = re.compile(
+            r'/\*.*?\*/|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|\\.|[{};]',
+            re.S,
+        )
+        for token in tokens.finditer(source, start):
+            value = token.group()
+            if value.startswith("/*"):
+                masked[token.start():token.end()] = [
+                    c if c in "\r\n" else " " for c in value
+                ]
+                continue
+            if value == "{":
+                if depth == 0:
+                    opening, flat = token.start(), True
+                else:
+                    flat = False
+                depth += 1
+            elif value == "}":
+                _require(depth > 0, "DESIGN_TOKENS_INVALID")
+                depth -= 1
+                if depth == 0:
+                    if flat:
+                        selector = "".join(masked[cursor:opening]).strip()
+                        first = cursor
+                        while first < opening and masked[first].isspace():
+                            first += 1
+                        yield (selector, source[first:token.end()],
+                               source[opening + 1:token.start()])
+                    cursor = token.end()
+            elif value == ";" and depth == 0:
+                cursor = token.end()
+        _require(depth == 0, "DESIGN_TOKENS_INVALID")
+
+    def carries_tokens(block: str, names: tuple[str, ...]) -> bool:
+        declarations = re.sub(r"/\*.*?\*/", "", block, flags=re.S)
+        values = dict(re.findall(
+            r"(?<![\w-])(--[\w-]+)\s*:\s*([^;{}]*);", declarations,
+        ))
+        return all(values.get(name, "").strip() for name in names)
+
     first = canonical_css.find(":root {")
     last = canonical_css.find("\n}\n", first)
     _require(first >= 0 and last > first
              and last - first < 25000, "DESIGN_TOKENS_INVALID")
     theme_tokens = canonical_css[first:last + 2]
-    # Carry the exact stock light-palette override from the SAME canonical
-    # stylesheet, not a second invented palette. The first matching block
-    # only alters global buttons; the next one carries bg/panel/text tokens.
-    marker = 'html[data-theme="light"] {'
-    search_at = last + 2
+    # Light semantic colours stay in their original complete plain-light block;
+    # neutral surfaces now live in the shared projection used by standalone pages.
     light_block = ""
-    for _ in range(7):
-        offset = canonical_css.find(marker, search_at)
-        if offset < 0:
+    plain_seen = 0
+    for selector, block, body in flat_rules(canonical_css, last + 2):
+        if selector != 'html[data-theme="light"]':
+            continue
+        plain_seen += 1
+        if plain_seen > 7:
             break
-        finish = canonical_css.find("\n}", offset)
-        _require(finish > offset and finish - offset < 8000,
-                 "DESIGN_TOKENS_INVALID")
-        block = canonical_css[offset:finish + 2]
-        search_at = finish + 2
-        if all(name in block for name in ("--bg:", "--panel:", "--text:")):
+        _require(len(block) < 8000, "DESIGN_TOKENS_INVALID")
+        if carries_tokens(body, ("--up", "--down", "--warn", "--act",
+                                 "--ok", "--info", "--link")):
             light_block = block
             break
     _require(bool(light_block), "DESIGN_TOKENS_INVALID")
-    theme_tokens += "\n" + light_block
+
+    shared_start = "/* BEGIN SHARED_CONTRAST_CSS"
+    shared_end = "/* END SHARED_CONTRAST_CSS */"
+    _require(canonical_css.count(shared_start) == 1
+             and canonical_css.count(shared_end) == 1,
+             "DESIGN_TOKENS_INVALID")
+    start = canonical_css.find(shared_start)
+    finish = canonical_css.find(shared_end)
+    _require(finish > start, "DESIGN_TOKENS_INVALID")
+    expected_shared = canonical_css[start:finish + len(shared_end)]
+    try:
+        shared = shared_contrast_css(token_path)
+    except OSError as exc:
+        raise PackRejected("DESIGN_TOKENS_UNAVAILABLE") from exc
+    except ValueError as exc:
+        raise PackRejected("DESIGN_TOKENS_INVALID") from exc
+    # The exporter performs another read. A different projection must not be
+    # combined with root/semantic blocks from the first captured stylesheet.
+    _require(shared == expected_shared, "DESIGN_TOKENS_INVALID")
+    # This projection's supported neutral rule is a list of simple light-root
+    # selectors. Fail closed on functional/attribute-comma lookalikes instead
+    # of interpreting their internal commas as selector-list separators.
+    light_member = r'html(?:\.soft-contrast)?\[data-theme="light"\]'
+    light_group = light_member + r"(?:\s*,\s*" + light_member + r")*"
+    light_materials = [
+        body for selector, _block, body in flat_rules(shared)
+        if re.fullmatch(light_group, selector)
+        and 'html[data-theme="light"]' in {
+            member.strip() for member in selector.split(",")
+        }
+    ]
+    # Root/dark defaults and soft-only selectors must not conceal a missing
+    # plain-light declaration in this preview's actual shared-material block.
+    _require(len(light_materials) == 1
+             and carries_tokens(light_materials[0],
+                                ("--bg", "--panel", "--panel2",
+                                 "--text", "--muted", "--line")),
+             "DESIGN_TOKENS_INVALID")
+    theme_tokens += "\n" + light_block + "\n" + shared
     _require(all(name in theme_tokens for name in (
                  "--font-ui:", "--bg:", "--panel:", "--text:", "--muted:"))
              and "</style" not in theme_tokens.lower(), "DESIGN_TOKENS_INVALID")

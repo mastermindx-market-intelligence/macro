@@ -16,6 +16,7 @@ from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
+from unittest.mock import patch
 
 from engine.marketing.catalyst_partner_pack import (
     PackRejected, build_partner_pack, build_partner_pack_from_native_event,
@@ -268,16 +269,172 @@ class CatalystPartnerPackTests(unittest.TestCase):
             first = root_theme.index(":root {")
             last = root_theme.index("\n}\n", first)
             self.assertIn(root_theme[first:last+2], page)
-            light_marker = 'html[data-theme="light"] {'
-            light_blocks = root_theme.split(light_marker)[1:]
-            light_palette = next((light_marker + block.split(chr(10) + "}", 1)[0] + chr(10) + "}"
-                                  for block in light_blocks
-                                  if all(k in block for k in ("--bg:", "--panel:", "--text:"))), None)
-            self.assertIsNotNone(light_palette)
-            self.assertTrue(light_palette in page, "canonical light palette missing")
+            # Inspect each complete block, not a split tail that can borrow
+            # declarations from later rules outside the selected block.
+            light_blocks = re.findall(r'html\[data-theme="light"\]\s*\{[^{}]*\}', root_theme)
+            light_semantics = next((
+                block for block in light_blocks
+                if all(re.search(re.escape(token) + r"\s*:\s*[^;{}]+;", block)
+                       for token in ("--up", "--down", "--warn", "--act",
+                                     "--ok", "--info", "--link"))
+            ), None)
+            self.assertIsNotNone(light_semantics)
+            self.assertIn(light_semantics, page)
+            shared_start = root_theme.index("/* BEGIN SHARED_CONTRAST_CSS")
+            shared_end_marker = "/* END SHARED_CONTRAST_CSS */"
+            shared_end = root_theme.index(shared_end_marker, shared_start)
+            shared = root_theme[shared_start:shared_end + len(shared_end_marker)]
+            self.assertIn(shared, page, "exact canonical shared materials missing")
+            self.assertLess(page.index(light_semantics), page.index(shared))
             self.assertIn('html[data-theme="light"] {color-scheme:light;}', page)
             self.assertIn("font-family:var(--font-ui)", page)
             self.assertIn("var(--r-card", page)
+
+    def _assert_theme_refused_before_assets(self, source, code="DESIGN_TOKENS_INVALID"):
+        token_path = ROOT / "templates" / "theme.css"
+        original_read = Path.read_text
+        pack = self.make()
+
+        def read_theme(path, *args, **kwargs):
+            if path == token_path:
+                if isinstance(source, OSError):
+                    raise source
+                return source
+            return original_read(path, *args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            sentinels = {
+                "index.html": "existing preview",
+                "manifest.json": "existing manifest",
+                "intelligence-card.svg": "existing media",
+                "keep.txt": "unrelated evidence",
+            }
+            for name, value in sentinels.items():
+                (folder / name).write_text(value, encoding="utf-8")
+            with patch.object(Path, "read_text", new=read_theme):
+                with self.assertRaises(PackRejected) as caught:
+                    write_partner_pack(pack, folder)
+            self.assertEqual(caught.exception.code, code)
+            self.assertEqual({p.name for p in folder.iterdir()}, set(sentinels))
+            for name, value in sentinels.items():
+                self.assertEqual((folder / name).read_text(encoding="utf-8"), value)
+
+    def test_unavailable_theme_refuses_before_assets(self):
+        self._assert_theme_refused_before_assets(
+            OSError("fixture theme unavailable"), "DESIGN_TOKENS_UNAVAILABLE",
+        )
+
+    def test_shared_material_markers_fail_closed_before_assets(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        begin = "/* BEGIN SHARED_CONTRAST_CSS"
+        end = "/* END SHARED_CONTRAST_CSS */"
+        self.assertEqual(css.count(begin), 1)
+        self.assertEqual(css.count(end), 1)
+        reversed_markers = css.replace(begin, "__SWAP_SHARED_START__", 1)
+        reversed_markers = reversed_markers.replace(end, begin, 1)
+        reversed_markers = reversed_markers.replace("__SWAP_SHARED_START__", end, 1)
+        mutations = {
+            "missing start": css.replace(begin, "", 1),
+            "missing end": css.replace(end, "", 1),
+            "duplicate start": css + "\n" + begin,
+            "duplicate end": css + "\n" + end,
+            "reversed markers": reversed_markers,
+        }
+        for name, mutated in mutations.items():
+            with self.subTest(name=name):
+                self._assert_theme_refused_before_assets(mutated)
+
+    def test_root_and_dark_tokens_cannot_mask_missing_light_materials(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        start = css.index('html[data-theme="light"],', css.index("/* BEGIN SHARED_CONTRAST_CSS"))
+        finish = css.index("\n}", start) + 2
+        light_block = css[start:finish]
+        for token in ("--bg", "--panel", "--panel2", "--text", "--muted", "--line"):
+            broken, count = re.subn(re.escape(token) + r"\s*:[^;{}]*;", "",
+                                    light_block, count=1)
+            self.assertEqual(count, 1)
+            with self.subTest(token=token):
+                self._assert_theme_refused_before_assets(css.replace(light_block, broken, 1))
+        empty_text = re.sub(r"--text\s*:[^;{}]*;", "--text: ;", light_block, count=1)
+        self._assert_theme_refused_before_assets(css.replace(light_block, empty_text, 1))
+
+    def test_plain_light_selector_cannot_be_replaced_by_soft_or_descendant(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        selectors = 'html[data-theme="light"],\nhtml.soft-contrast[data-theme="light"]'
+        self.assertEqual(css.count(selectors), 1)
+        for replacement in (
+            'html.soft-contrast[data-theme="light"]',
+            'html[data-theme="light"] body,\nhtml.soft-contrast[data-theme="light"]',
+            '/* html[data-theme="light"] */\nhtml.soft-contrast[data-theme="light"]',
+            ':not(.unused, html[data-theme="light"], .also-unused)',
+            "html[data-query='prefix, html[data-theme=\"light\"], suffix']",
+        ):
+            with self.subTest(selector=replacement):
+                self._assert_theme_refused_before_assets(css.replace(selectors, replacement, 1))
+
+    def test_light_semantics_cannot_borrow_tokens_from_later_rules(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        block = next(block for block in re.findall(
+            r'html\[data-theme="light"\]\s*\{[^{}]*\}', css,
+        ) if all(token in block for token in ("--up:", "--down:", "--warn:")))
+        broken, count = re.subn(r"--up\s*:[^;{}]*;", "", block, count=1)
+        self.assertEqual(count, 1)
+        self._assert_theme_refused_before_assets(css.replace(block, broken, 1))
+
+    def test_semantic_rule_must_be_active_plain_light_at_top_level(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        block = next(block for block in re.findall(
+            r'html\[data-theme="light"\]\s*\{[^{}]*\}', css,
+        ) if all(token in block for token in ("--up:", "--down:", "--warn:")))
+        uncommented = re.sub(r"/\*.*?\*/", "", block, flags=re.S)
+        replacements = {
+            "descendant": ".scope " + block,
+            "multiline descendant": ".scope\n" + block,
+            "commented rule": "/* " + uncommented + " */",
+            "conditional rule": "@media print {\n" + block + "\n}",
+        }
+        for name, replacement in replacements.items():
+            with self.subTest(rule=name):
+                self._assert_theme_refused_before_assets(css.replace(block, replacement, 1))
+
+    def test_shared_materials_must_apply_outside_conditional_rules(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        start = css.index('html[data-theme="light"],', css.index("/* BEGIN SHARED_CONTRAST_CSS"))
+        finish = css.index("\n}", start) + 2
+        block = css[start:finish]
+        conditional = "@media print {\n" + block + "\n}"
+        self._assert_theme_refused_before_assets(css.replace(block, conditional, 1))
+
+    def test_incomplete_light_semantic_block_refuses_before_assets(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        block = next(block for block in re.findall(
+            r'html\[data-theme="light"\]\s*\{[^{}]*\}', css,
+        ) if all(token in block for token in ("--up:", "--down:", "--warn:")))
+        self.assertTrue(block.endswith("}"))
+        self._assert_theme_refused_before_assets(css.replace(block, block[:-1], 1))
+
+    def test_shared_materials_reject_closing_style_before_assets(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        end = "/* END SHARED_CONTRAST_CSS */"
+        self._assert_theme_refused_before_assets(
+            css.replace(end, "/* </StYlE> */\n" + end, 1),
+        )
+
+    def test_exporter_projection_must_equal_captured_canonical_section(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        start = css.index("/* BEGIN SHARED_CONTRAST_CSS")
+        end = "/* END SHARED_CONTRAST_CSS */"
+        projection = css[start:css.index(end, start) + len(end)]
+        with patch("engine.marketing.catalyst_partner_pack.shared_contrast_css",
+                   return_value=projection + "\n/* different source */"):
+            self._assert_theme_refused_before_assets(css)
+
+    def test_unavailable_exporter_read_remains_typed_and_preserves_assets(self):
+        css = (ROOT / "templates" / "theme.css").read_text(encoding="utf-8")
+        with patch("engine.marketing.catalyst_partner_pack.shared_contrast_css",
+                   side_effect=OSError("fixture second read unavailable")):
+            self._assert_theme_refused_before_assets(css, "DESIGN_TOKENS_UNAVAILABLE")
 
     def test_rights_withdrawal_retires_stale_svg_from_same_review_folder(self):
         earlier = self.make()
