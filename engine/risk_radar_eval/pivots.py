@@ -315,14 +315,17 @@ def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: lis
     out = {"near": near, "tol": tol, "n_draws": n_draws, "seed": seed,
            "eligible_share": _r(float(elig.mean())),
            "false_risk_off_per_year": {"observed": obs["false_risk_off_per_year"],
-                                       "placebo_mean": _r(float(np.mean(fro)))},
+                                       "placebo_mean": _r(float(np.mean(fro))),
+                                       "placebo_median": _r(float(np.median(fro)))},
            "premature_all_clear_per_year": {"observed": obs["premature_all_clear_per_year"],
-                                            "placebo_mean": _r(float(np.mean(prem)))}}
+                                            "placebo_mean": _r(float(np.mean(prem))),
+                                            "placebo_median": _r(float(np.median(prem)))}}
     for k, v in shares.items():
         o = obs[k]["share_flagged"]
         v = np.asarray(v)
         out[k] = {"observed": o,
                   "placebo_mean": _r(float(v.mean())) if len(v) else None,
+                  "placebo_median": _r(float(np.median(v))) if len(v) else None,
                   "placebo_p90": _r(float(np.quantile(v, 0.9))) if len(v) else None,
                   "share_draws_ge_observed": (_r(float((v >= o - 1e-12).mean()))
                                               if len(v) and o is not None else None)}
