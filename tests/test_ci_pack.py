@@ -5997,10 +5997,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# The Start-page regression adds one test file to the existing builder step.
+# All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_008),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_010),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 11
@@ -6008,6 +6010,22 @@ PACKING_PROBE_MAX_PACKS = 11
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10924, merge of main e752cc8a98a8 / #11019):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11019 Start-page regression adds tests/test_hub_glance_copy.py
+    to the existing data-base-shim builder step, so its own composition
+    carries 5,968/5,991/5,726 (its +2 on every probe, recorded in the
+    two-line comment above); this PR's own jobs still add exactly their
+    previously measured excess over main (+5/+19/+5), so the merged
+    ceilings are index 137/5,973, free-content 138/6,010, plan_book
+    131/5,731 — measured on the merged tree, not smeared. Job ceilings
+    stay 137/138/131; the free-content weight 6,010 packs into 11 packs
+    at PACK_TARGET_SECONDS 600, at the existing parent-approved pack
+    ceiling 11 — no pack change. Every selector and every assertion is
+    unchanged; main's #11019 two-line comment is kept, and every prior
+    provenance paragraph below is kept verbatim.
 
     2026-11-11 (PR #10924, second main conflict 82930233f83a / #9230):
     re-measured on the merged tree with the same probe measurement
