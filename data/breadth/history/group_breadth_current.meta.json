@@ -7,8 +7,8 @@
     "closes_end": "2026-10-09",
     "first_valid_pct_above_200": "1973-03-20"
   },
-  "build_time_utc": "2026-11-12T02:35:17+00:00",
-  "code_version": "ea78848add1f",
+  "build_time_utc": "2026-11-12T02:42:12+00:00",
+  "code_version": "f049f54252e1",
   "engine": "engine/group_breadth_history.py",
   "inputs": [
     {
@@ -21,7 +21,7 @@
     }
   ],
   "closes_store": "Tiingo EOD archive /Volumes/Mastermind/market-data/tiingo (normalized eod-bars, captures 2026-10-11..16) via scripts/build_tiingo_member_closes.py; member-level, off git",
-  "missing": "Only today's members are present: every name that left the index before 2026-10-09 is absent from every past session, and today's sector labels are applied to the whole span.",
+  "missing": "Only today's members are present: every name that left the index before 2026-10-09 is absent from every past session, and today's sector labels are applied to the whole span. Duplicate-series scan: no two member tickers carry the same price series (identical daily returns or a constant price ratio).",
   "coverage": {
     "members_in_map": 503,
     "members_priced": 485,
@@ -61,6 +61,8 @@
     "2026-10-14",
     "2026-10-15"
   ],
+  "duplicate_series_pairs": [],
+  "duplicate_series_rule": "month-by-month hash of daily returns, then pairwise check: >=60 identical returns and >=95% identical between the first and last identical session. Detection and labelling only; no store repaired.",
   "dropped_partial_rows_rule": "centred 21-row median of priced names; a row under half is dropped. Looks ahead up to 10 rows to decide which rows are sessions; values themselves use only data on or before their date.",
   "members_counted_at_year_end": {
     "1962": 8,

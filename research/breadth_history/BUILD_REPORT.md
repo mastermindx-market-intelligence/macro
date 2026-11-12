@@ -89,6 +89,39 @@ have no Tiingo history in this capture: BNY, COR, COHR, CEG, DELL, DOW, DD, ECHO
 P, FI, DOC, MMC, MRNA, OKE, Q, SNDK, TEL, VLTO (several are renamed or recently
 listed tickers the capture did not cover).
 
+## Duplicate series (one company under two tickers)
+
+Prompted by `research/data_quality/SUPN_PRICE_DEFECT_20261112.md`. The build now
+scans the members it uses (`duplicate_series_pairs` in
+`scripts/build_group_breadth_history.py`). A pair is flagged when at least 60
+overlapping daily returns are identical and identical returns make up at least
+95% of the span between the first and last identical session. The sidecar also
+records the price-ratio variation. A flagged pair is counted once: the second
+ticker is blanked over the span, in memory only. Detection and labelling only;
+no price store is repaired and nothing under `data/yahoo/` is touched.
+
+- **Members used, both bases:** no pairs. Both sidecars say so in the "missing"
+  sentence and carry an empty `duplicate_series_pairs` list.
+- **SUPN in the Tiingo archive is genuine** for 2022-06-01..06-07: 27.98, 28.11,
+  28.28, 27.97, 28.66 (2022-05-31 27.87, 06-08 28.22). The defective copy is
+  flat at 20.75. SUPN and INDV are both in the store and do not flag.
+- **The note's 16 alias pairs:** none has both tickers in the Tiingo matrix
+  (only HLX, MRSH, SKYD of those 32 names appear, each without its partner).
+- **Whole Tiingo matrix (2,161 tickers, not only members):** three pairs, none
+  a pair of members on either basis. ANR=ANRZQ (2005-02-16..2015-07-16,
+  identical, constant ratio: the same company's bankruptcy ticker), DDR=SITC and
+  JHG=JNS (99% identical, ratio drifting by 1-5%: renamed or merged successors).
+  Recorded for reference; they change no row here.
+- **The nightly ledger inherits whatever the collector's store holds.** The
+  collector reads its own yfinance cache (`data/breadth/_closes_cache.parquet`),
+  not `data/yahoo/` and not this Tiingo history. In the cache copy used here
+  (416 sessions to 2026-10-09), PSKY and SKYD share returns on 17 of 19
+  overlapping sessions (2026-09-09..10-06), a vendor alias. SKYD is the member on
+  today's list and PSKY is not, so the ledger does not double-count it, and it is
+  below the 60-session flag floor. MMC (member) has no closes in that cache;
+  MRSH carries them, so Marsh McLennan is missing from the ledger under its old
+  ticker. Neither is repaired here.
+
 ## Overlap check
 
 Against `data/breadth/sector_breadth.parquet`, share above the 200-session average,
