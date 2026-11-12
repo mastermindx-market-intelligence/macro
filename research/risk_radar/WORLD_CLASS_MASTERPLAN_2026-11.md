@@ -173,6 +173,14 @@ cannot qualify. The plan therefore proposes **Radar-P**: the same legs and state
   **P-declared** (a leg set declared from economic rationale before any fit, including legs v2
   dropped, with constants fit ≤ 2019). Only P-declared may be described as clean of 2020+ outcomes;
   the desk is told which is which.
+- **How the rotation desk treats them (Research Director, 2026-11-12):** P-legs-v2 is a *touched
+  family*: its 2020–2023 result is reported as "replication on a seen period", never discovery
+  evidence, and it is not eligible for the sealed-block read; its confirmation is the forward
+  record. P-declared is a testable candidate only if its leg set is declared before the fit from
+  pre-2020 information only (literature or pre-2020 data), even if smaller. Slice 3 therefore
+  commits the P-declared leg set and its basis in the preregistration, before any fit, and the
+  hand-off carries: path, commit, declared fitting window, leg set and its basis. The desk writes
+  its own ledger rows; this programme never touches its ledger.
 - Expected result, stated in advance: several 2020+-only legs (`bubble_ext`: lift 2.34 in 2020+,
   1.00 full history) will get small weights or drop. That is the honest cost of a clean test.
 
@@ -318,7 +326,7 @@ entry as Tier-B (display/escalator-only) until it passes on a window that is not
 
 ### Slice 3 — Radar-P preregistration and fit (pre-2020 outcomes only)
 
-- **Change**: preregistration (window, outcome definition, search space, selection metric, stop
+- **Change**: preregistration (the P-declared leg set and its pre-2020 basis, window, outcome definition, search space, selection metric, stop
   rule) committed and hash-pinned first; then a research script that fits the `tuned_in_window`
   constants using outcomes dated ≤ 2019-12-31 only, and emits a Radar-P definition file and its
   replay series labelled `historical_replay`. No change to the live engine or live state.
