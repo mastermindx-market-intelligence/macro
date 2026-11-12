@@ -101,3 +101,26 @@ against the placebo at the same false-call rate. The proposed primary statement 
 share and false calls per year, each beside its near-high (tops) or near-low (bottoms) placebo.
 None of the in-sample Radar or baseline series beats its placebo on flagged share; all of them beat
 it on false calls.
+
+## Early catches beyond the near-high reference (secondary, added 2026-11-12)
+
+Principal ruling: the mechanical "within 1% of the running high" reference (`mech_near_high_1pct`)
+is the bar for "early". `pivots.beyond_reference()` counts a signal's early catches (flagged,
+delay < 0) and removes those the reference also flags. Two columns, because the rule's rate
+condition never binds here: the reference's false-call rate (6.6/yr at ≥5%) is higher than every
+signal's, so on the **literal** reading ("caught by the reference at the same or lower false-call
+rate") nothing is removed; on the **strict** reading every turn the reference flags is removed.
+In-sample, availability lag applied, post 10. Raw: `INSAMPLE_READS_LAG1_v2.json`.
+
+| Series | ≥5% early catches (n=9) | Also caught by near-high | Beyond reference, strict | ≥7% (n=5) early / strict | ≥10% (n=3) early / strict | False risk-off /yr (≥5%) |
+|---|---:|---:|---:|---|---|---:|
+| Radar loud | 0 | 0 | 0 | 0 / 0 | 0 / 0 | 0.0 |
+| HY OAS 21d top decile (lagged) | 3 | 3 | 0 | 1 / 0 | 1 / 0 | 0.15 |
+| VIX ≥ 20 | 4 | 4 | 0 | 2 / 0 | 1 / 0 | 2.78 |
+| VIX ≥ 25 | 1 | 1 | 0 | 0 / 0 | 0 / 0 | 1.61 |
+| SPY < 200d | 0 | 0 | 0 | 0 / 0 | 0 / 0 | 0.0 |
+| Near-high reference | 8 | — | — | 4 / — | 3 / — | 6.58 |
+
+**No in-sample series makes an early catch the near-high reference does not also make.** What the
+credit and VIX series add is the false-call rate (0.15/yr against 6.6/yr), not turns. The same
+column is computed for the walk-forward series.

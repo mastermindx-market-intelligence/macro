@@ -332,6 +332,31 @@ def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: lis
     return out
 
 
+def beyond_reference(sig: dict, ref: dict, *, kind: str = "top") -> dict:
+    """Early catches of `sig` beyond a mechanical reference (principal ruling 2026-11-12, point 4).
+
+    `sig` and `ref` are `score_pivots` results on the same turns and window. An early catch is a
+    scored, flagged turn with delay < 0. It counts as incremental unless the reference also flags
+    that turn AND the reference's false risk-off rate is <= the signal's (literal rule). The strict
+    column excludes every turn the reference flags, whatever its false-call rate. Secondary read.
+    """
+    rr = {(r["kind"], r["date"]): r for r in ref["turns"] if r.get("status") == "scored"}
+    sf, rf = sig["false_risk_off_per_year"], ref["false_risk_off_per_year"]
+    ref_qualifies = rf is not None and sf is not None and rf <= sf
+    early = [r for r in sig["turns"] if r["kind"] == kind and r.get("status") == "scored"
+             and r.get("flagged") and r["delay"] is not None and r["delay"] < 0]
+    also = [r for r in early if rr.get((kind, r["date"]), {}).get("flagged")]
+    n = sum(1 for r in sig["turns"] if r["kind"] == kind and r.get("status") == "scored")
+    return {"kind": kind, "n_turns": n, "early_catches": len(early),
+            "also_caught_by_reference": len(also),
+            "incremental_literal": len(early) - (len(also) if ref_qualifies else 0),
+            "incremental_strict": len(early) - len(also),
+            "reference_false_per_year": rf, "signal_false_per_year": sf,
+            "reference_meets_rate_condition": ref_qualifies,
+            "early_dates": [r["date"] for r in early],
+            "incremental_strict_dates": [r["date"] for r in early if r not in also]}
+
+
 def _run_bounds(a: np.ndarray) -> list[tuple[int, int]]:
     out, i, n = [], 0, len(a)
     while i < n:

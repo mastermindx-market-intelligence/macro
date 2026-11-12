@@ -206,3 +206,18 @@ def test_placebo_near_high_beats_unconditional_on_tops():
     h = P.placebo(alert, near="high", **kw)
     assert h["top"]["placebo_mean"] > u["top"]["placebo_mean"]
     assert h["eligible_share"] < 1.0 and u["top"]["observed"] == 1.0
+
+
+def test_beyond_reference_literal_and_strict():
+    from engine.risk_radar_eval.pivots import beyond_reference
+    t = lambda d, f, dl: {"kind": "top", "date": d, "status": "scored", "flagged": f, "delay": dl}
+    sig = {"false_risk_off_per_year": 0.5, "turns": [t("2021-01-04", True, -5), t("2021-06-01", True, -3),
+                                                      t("2022-01-03", True, 4), t("2022-06-01", False, None)]}
+    ref_hi = {"false_risk_off_per_year": 6.0, "turns": [t("2021-01-04", True, -1), t("2021-06-01", False, None),
+                                                         t("2022-01-03", True, 0), t("2022-06-01", True, -2)]}
+    r = beyond_reference(sig, ref_hi)
+    assert (r["n_turns"], r["early_catches"], r["also_caught_by_reference"]) == (4, 2, 1)
+    assert r["incremental_literal"] == 2 and r["incremental_strict"] == 1
+    assert r["incremental_strict_dates"] == ["2021-06-01"]
+    ref_lo = dict(ref_hi, false_risk_off_per_year=0.2)
+    assert beyond_reference(sig, ref_lo)["incremental_literal"] == 1

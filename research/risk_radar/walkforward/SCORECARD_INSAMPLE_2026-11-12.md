@@ -108,6 +108,10 @@ gives the research desk the bar any challenger has to clear at the same budget. 
 
 ## 5. Insurer profile (secondary headline, added 2026-11-12; see PREREG addendum 1)
 
+> **In-sample, not a result** (principal ruling 2026-11-12). The incumbent on the years its
+> parameters were tuned on, including the sealed years. Do not quote in any summary; the
+> walk-forward series replaces it.
+
 In-sample, 2020-01-02 → 2026-11-10. Paper sleeve: alert at d's close → bills on d+1, else SPY
 total return. Raw: `INSURER_INSAMPLE_v2.json`. ≥10% drawdowns: 3 episodes; ≥7%: 5; ≥5%: 9.
 
@@ -174,6 +178,10 @@ Episode level (h21) for the lagged HY OAS baseline:
 | Mech near-high | 0.89 | 1.00 | 6.58 | 7.16 |
 
 ### Insurer profile (execution lag 1)
+
+> **In-sample, not a result** (principal ruling 2026-11-12). The incumbent on the years its
+> parameters were tuned on, including the sealed years. Do not quote in any summary; the
+> walk-forward series replaces it.
 
 | Series | Max DD | Sharpe (excess) | Sortino | ≥10% DD avoided | ≥7% DD avoided | Gains kept outside declines | Rebound kept | CAGR |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|

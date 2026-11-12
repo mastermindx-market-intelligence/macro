@@ -636,6 +636,7 @@ frozen item changed. `engine/risk_radar_eval/insurer.py` reports:
 These are shown against SPY, RSP, vol-matched SPY + bills, 60/40 and SPY-or-bills 200d. Reports
 read ≥10%, then ≥7%, then ≥5% turn recall, each with false alarms and gains forgone beside it.
 
-In-sample, the risk-off state is the best insurer-profile series (Sharpe 0.98 vs SPY 0.64; max DD
-−17% vs −34%), with the 200-day rule close behind. Credit-spread velocity wins on pivots and loses
-here. The two reads do not agree on a single best signal.
+The in-sample insurer figures are **not a result** (principal ruling 2026-11-12): they are the
+incumbent on the years its parameters were tuned on, including the sealed years. They stay in
+`walkforward/SCORECARD_INSAMPLE_2026-11-12.md` §5–§6, labelled in-sample, and out of every summary
+until the walk-forward series replaces them.
