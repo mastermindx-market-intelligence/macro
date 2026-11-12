@@ -19318,6 +19318,14 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
+      # SI curation tier guard (#11150): build_state_of_themes now reads the W-C2b
+      # tier rule from ontology.py, whose closure reaches probation.py and its
+      # contract schemas. Widening only.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
       # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
