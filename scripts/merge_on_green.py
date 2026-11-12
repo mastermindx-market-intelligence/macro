@@ -3146,13 +3146,31 @@ def _count_old_queued_runs(
             # No usable id means no way to prove zero jobs: count it.
             counted += 1
             continue
+        # Bind the probe to the run's FIRST attempt, never re-run since the
+        # cutoff (review 5874181673).  The jobs endpoint shows the latest
+        # attempt, and a re-run keeps the run id while its new attempt may
+        # briefly list no jobs; a re-run, a missing attempt number or a
+        # recent update is therefore never proof of stranding.
+        attempt = run.get("run_attempt")
+        updated = _parse_dt(run.get("updated_at"))
+        if (
+            not isinstance(attempt, int)
+            or isinstance(attempt, bool)
+            or attempt != 1
+            or updated is None
+            or updated >= cutoff
+        ):
+            counted += 1
+            continue
         jobs_status, jobs_payload = _request(
             "GET", f"{base}/runs/{run_id}/jobs?per_page=1", token
         )
         jobs_total = (
             _clean_count(jobs_payload, "total_count") if jobs_status < 400 else None
         )
-        if jobs_total != 0:
+        jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
+        # Proof needs BOTH a clean zero count and an actual empty jobs list.
+        if jobs_total != 0 or not isinstance(jobs, list) or jobs:
             counted += 1
     # Unlisted runs were never probed; unproven age is not evidence of death.
     counted += max(0, listed_total - len(page))

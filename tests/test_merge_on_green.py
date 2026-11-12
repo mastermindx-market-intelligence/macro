@@ -5026,7 +5026,7 @@ def test_stranded_queued_runs_do_not_consume_proof_slots(
             assert query["per_page"] == [str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT)]
             return 200, {
                 "total_count": len(old_ids),
-                "workflow_runs": [{"id": run_id} for run_id in old_ids],
+                "workflow_runs": [{"id": run_id, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"} for run_id in old_ids],
             }
         assert query["per_page"] == ["1"]
         if run_status == "queued":
@@ -5096,7 +5096,7 @@ def _old_queued_probe_fake(
                 return list_answer
             return 200, {
                 "total_count": len(old_runs) if list_total is None else list_total,
-                "workflow_runs": [{"id": run_id} for run_id in old_runs],
+                "workflow_runs": [{"id": run_id, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"} for run_id in old_runs],
             }
         if run_status == "queued":
             assert query["created"][0].startswith(">="), url
@@ -5123,6 +5123,10 @@ def _old_queued_probe_fake(
         ((200, {}), 1),
         ((200, {"total_count": True}), 1),
         ((200, {"total_count": "0"}), 1),
+        # A zero count is proof only with an actual, empty jobs list.
+        ((200, {"total_count": 0}), 1),
+        ((200, {"total_count": 0, "jobs": None}), 1),
+        ((200, {"total_count": 0, "jobs": [{"id": 1, "status": "queued"}]}), 1),
     ],
     ids=(
         "zero-jobs-excluded",
@@ -5131,6 +5135,9 @@ def _old_queued_probe_fake(
         "jobs-payload-missing-counted",
         "jobs-bool-counted",
         "jobs-string-counted",
+        "zero-count-no-jobs-key-counted",
+        "zero-count-null-jobs-counted",
+        "zero-count-nonempty-jobs-counted",
     ),
 )
 def test_an_old_queued_run_is_excluded_only_on_a_clean_zero_job_read(
@@ -5743,7 +5750,11 @@ def test_queued_run_proof_bounds_headroom_and_the_refresh_floor(
                 runs = [
                     {
                         "id": run_id,
+                        "run_attempt": 1,
                         "created_at": (
+                            now - dt.timedelta(minutes=age)
+                        ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "updated_at": (
                             now - dt.timedelta(minutes=age)
                         ).strftime("%Y-%m-%dT%H:%M:%SZ"),
                     }
@@ -5799,7 +5810,7 @@ def test_census_counts_an_old_queued_run_whose_jobs_read_is_not_proof_of_zero(
             if query["created"][0].startswith("<"):
                 return 200, {
                     "total_count": 1,
-                    "workflow_runs": [{"id": 777}],
+                    "workflow_runs": [{"id": 777, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"}],
                 }
             return 200, {"total_count": 0}
         if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
@@ -11170,3 +11181,38 @@ def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
     assert "\r" not in out and "\x1b" not in out
     assert "%250A" in out and "%0A" not in out
     assert len(out.removeprefix(prefix).rstrip("\n")) <= 600
+
+
+@pytest.mark.parametrize(
+    "run_fields",
+    [
+        {"run_attempt": 2, "updated_at": "2026-11-11T20:18:53Z"},
+        {"updated_at": "2026-11-11T20:18:53Z"},
+        {"run_attempt": True, "updated_at": "2026-11-11T20:18:53Z"},
+        {"run_attempt": 1, "updated_at": "2026-11-12T08:20:00Z"},
+        {"run_attempt": 1},
+    ],
+    ids=("rerun", "attempt-missing", "attempt-bool", "recently-updated", "updated-missing"),
+)
+def test_an_old_queued_run_without_first_attempt_proof_counts_even_with_zero_jobs(
+    monkeypatch, run_fields
+):
+    """Review 5874181673: the zero-job proof binds to an untouched first attempt."""
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    jobs_reads: list[int] = []
+
+    def jobs_answer_for(run_id):
+        jobs_reads.append(run_id)
+        return 200, {"total_count": 0, "jobs": []}
+
+    _old_queued_probe_fake(monkeypatch, old_runs=[777], jobs_answer_for=jobs_answer_for)
+
+    def fake_with_fields(method, url, token, payload=None, _inner=MOG._request):
+        status, body = _inner(method, url, token, payload)
+        if isinstance(body, dict) and body.get("workflow_runs"):
+            body = {**body, "workflow_runs": [{"id": 777, **run_fields}]}
+        return status, body
+
+    monkeypatch.setattr(MOG, "_request", fake_with_fields)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == 1
+    assert jobs_reads == []
