@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7385, current-main source conflict repair):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains all 401
+    owners, the six landed CI owner changes, five DATA dependency fixes,
+    and #11101's independent marketing suite contribution exactly once.
+    Preserve the board-shadow-substrate contribution and its original
+    feature objects; retain every other current-main owner and source path.
+    Carry only this carrier's 3/3/3 marginal weights onto
+    5971/5995/5729, yielding 5974/5998/5732; keep 137/138/131 job
+    ceilings, ten packs, all selectors, assertions, and runtime controls.
+    Retain all 6735 bytes/102 lines of published carrier history
+    at their original anchors and every current-main provenance paragraph.
+    This is source accounting; actual paired native proof and natural
+    successor CI are separate evidence. Original UNKNOWN effects, closed
+    grants, and private/provider/product/release limits remain unchanged.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6040,6 +6055,31 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (PR #7385, current-source HK projection composition):
+    Retain all 401 current owners and the three accepted HK feature/test
+    blobs. The complete board-shadow-substrate preimage is unchanged.
+    Native fdd099b87cf72e8221372ef55de95efa2b7d284e estimation still
+    gives 10 -> 13 for its original full-suite step. Preserve deliberate
+    unscoped K6 coverage; carry only the attributable +3 on all probes:
+    5966/5987/5724 -> 5969/5990/5727. Keep 137/138/131 jobs, ten packs,
+    all selectors, assertions, dependencies and admission/runtime limits.
+    Preserve all 88 original HK history lines and every current main byte
+    outside this exact enrollment, three literals and provenance insertion.
+    Source preimage cc7c5cb7a6a2ca1beef457ffe98813a15d750faf is retained.
+    Full inverse and native estimator proof are source conservation, not a
+    new whole-tree planner/runtime measurement. Own successor CI is owed.
+
+    2026-11-09 (PR #7385, preserving current F09 receiver): retain all
+    400 current owners and the landed beneficial-ownership argument. Restore
+    only the original full HK projection suite in board-shadow-substrate;
+    keep its deliberate unscoped K6 coverage and all existing commands.
+    The unchanged owner preimage still gives 10 -> 13, so carry only its +3:
+    5945/5966/5703 -> 5948/5969/5706. Preserve jobs 137/138/131, ten packs,
+    every assertion, selector and runtime/admission limit. Keep all 77 lines
+    of original HK provenance at the #10870 anchor and retain F09 history.
+    This is source-derived accounting, not a new paired planner or consumer
+    measurement. Natural successor CI must qualify the combined source.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6184,6 +6224,83 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     provenance, job ceilings137/138/131, ten packs and admission limits.
     This is static preserving composition, not a new full-tree measurement;
     natural current-head CI must qualify the integrated source.
+
+    2026-11-09 (PR #7385, actual shared-CI conflict reconciliation):
+    current main 536ab7d78c2fbcab8a7c8a3cdc8d09fbe2bff136 retains
+    the exact previously measured board-shadow-substrate preimage. Restore
+    only this carrier's full HK opportunity projection suite in that owner.
+    Its four-to-five command, three-to-four test-reference change remains
+    weight 10->13: command text 223->283 characters, length bucket zero.
+    Compose only the accepted own +3 onto current 5943/5964/5701:
+    index5946, free-content5967, Prophet5704. The original paired measurement
+    and its source identities are retained below. Main's landed benchmark,
+    B-17, marketing and admission-curation accounting remain intact.
+    This is source arithmetic, not a fresh planner or runtime measurement.
+    Natural successor contract and semantic CI must prove this exact
+    composition. All 400 owner IDs, 399 other owner blocks, selected-job
+    ceilings137/138/131, ten-pack bound, assertions, selection rules,
+    dependencies, timeouts and global admission/concurrency controls remain
+    unchanged. No unmerged sibling contribution or padding is included.
+
+    2026-11-08 (PR #7385, composition after the actual #7352 landing):
+    retain the accepted paired HK measurement below and current main
+    c9e06966920fa3b4b46341d344f90978f1fcd225, including the landed RIO
+    benchmark's independent +2 free-content contribution. Current catalog
+    4f2c0d2fee46d9839560f0f958f3322e5eb9ce1a has the exact original
+    board-shadow-substrate base block. Restore only its accepted full HK
+    suite between discovery-challenger and current grading; the deliberately
+    unscoped K6 traversal and all other393-owner definitions are retained.
+    The same weight derivation remains10->13: four->five commands,
+    three->four test tokens,223->283 text characters, same zero length bucket.
+    Compose only HK's measured +3 onto current ceilings5920/5941/5678:
+    index5923, free-content5944, Prophet5681. Preserve job ceilings
+    137/138/131, ten packs, all assertions/selectors/dependencies/deadlines,
+    #10752 compaction and every existing source-accounting record.
+    This is static source composition, not a new planner measurement.
+    The source-release condition still requires actual combined-tree
+    qualification through this candidate's own natural CI. No unmerged
+    sibling contribution or extra runtime capacity is included.
+
+    2026-11-06 PR #7385 (HK opportunity projection): the new
+    tests/test_hk_opportunity_projection.py suite joins the EXISTING
+    board-shadow-substrate job as one added pytest command, so the owner that
+    already rides all three probes grows by exactly three weight units.
+    Canonical paired planner measurement on base
+    5e0d4b504ef33f1e657763523f8804c31c443968 against candidate
+    a24867709370ca9c188aacae634c8b23d944ce2c (tree
+    5775b93b82353dba08d6e94f64cd60dc2c8042af, byte-identical to the tested
+    merge cd090ddbef5d494b68af382b772f305ac43f3f40), same run_ci_pack blob
+    3cbed58986d571e40af59eb03464e9419e8055a5 on both sides:
+
+        templates/index.html          137 jobs / 5,912 -> 5,915 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,930 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 -> 5,671 weight / 10 packs
+
+    The selected ID sets are identical on both sides for all three probes — no
+    job enters and no job leaves. Selected-ID SHA256, base and head alike:
+    77c5dfda07877b9b5241ece2b090d546ecbdc6f6b75e51fe9f4959896a2cd783,
+    2adb7ee729ba793795b8f66caca67f71d436d1c2b3dfb3b538bc77487d426c0e and
+    b860a93e8920ecccba0ae8401e4eef9194550a1493444d9c6de4977e1b9ba3c6. The sole
+    selected-weight delta is the existing board-shadow-substrate job, 10 -> 13
+    (+1 for the added command, +2 for its tests/test_ reference;
+    len(text)//800 stays 0). It is deliberately unscoped and already rides all
+    three probes, so it moves all three weights and nothing else moves. Fund
+    exactly those three weight ceilings, +3 each with no cushion; the
+    job-count ceilings 137/138/131, the ten-pack ceiling and every selector,
+    estimator, job ID, gate, timeout, admission and concurrency bound stay
+    unchanged. These are planner estimates, not runtime evidence.
+
+    Narrowing was not an available remedy: the owner's own manifest comment
+    records that K6's repo-wide walk for the `prophet_shadow` string literal is
+    the opaque-traversal shape `infer_job_scopes` cannot narrow, and
+    test_deliberately_unscoped_gates_stay_always_on pins that job as
+    deliberately always-on, so a declared `paths:` there would be wrong.
+
+    Re-verified against current main 62f0d3b64411559626bf4890450baf57976abb82
+    (its .github/ci/legacy-jobs.yml is still blob 1d9aa5eb and its three probe
+    rows are the same 137/5,912, 137/5,927 and 131/5,668 with the same
+    selected-ID digests), because the hosted base is current main at merge
+    time: that base moves these three weights by the same +3.
 
     2026-11-09 (PR #10870, dependency-coverage correction): the separate
     admission job conservatively owns tools/xguerrilla/** because pytest
