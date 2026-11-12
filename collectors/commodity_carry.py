@@ -76,8 +76,10 @@ def _reconstruct(asset_contracts: list[tuple[int, int, pd.Series]], history_d: i
         contracts.append({"deliv": yy * 12 + mm, "first": s.index.min(),
                           "last": s.index.max(), "s": s,
                           "sym_deliv": (yy, mm)})
+    # A later-listed distant contract must not erase an already observable pair.
+    # Per-date eligibility below still requires two contracts before emitting a row.
     idx = pd.bdate_range(
-        max(c["first"] for c in contracts), max(c["last"] for c in contracts))
+        min(c["first"] for c in contracts), max(c["last"] for c in contracts))
     idx = idx[-history_d:]
     rows = []
     for t in idx:
