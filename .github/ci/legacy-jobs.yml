@@ -301,6 +301,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "tests/__init__.py"
       - "tests/test_sector_holdings_coverage.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -311,6 +312,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -333,6 +338,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2504,6 +2510,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3582,6 +3589,7 @@ jobs:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -5405,6 +5413,11 @@ jobs:
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
       - name: admin navigation and copy UX guardrails
         run: python -m pytest tests/test_admin_navigation_ux.py -q
+      # #11154 added this suite with no run: step; the zero-run census failed
+      # every PR on a base at or after it. Same pytest-only lane as the nav test,
+      # which already imports admin.capacity_router.
+      - name: capacity observatory overflow/peak/Claude-lane extension contract
+        run: python -m pytest tests/test_capacity_observatory_extension.py -q
 
   path-prune-lint:
     if: ${{ false }}
@@ -6252,6 +6265,7 @@ jobs:
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -6956,6 +6970,10 @@ jobs:
       # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
       - "engine/group_breadth_history.py"
       - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7226,6 +7244,14 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
         run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q -o faulthandler_timeout=480
+      # SI lane 8 (#10924, 2026-11-10): the two new sector-analytics suites join this
+      # battery — the B04/B12 boundary register and the v1.1 forecast-heads contract.
+      # This job is non-exclusive (no declared paths), so the wiring adds no closure
+      # obligations. The boundaries suite skips its data/hazard and data/baskets cases
+      # when those tracked artifacts are absent (sparse checkout); the hosted full
+      # checkout runs them.
+      - name: sector analytics boundaries and forecast heads (lane 8)
+        run: python -m pytest tests/test_sector_analytics_boundaries.py tests/test_sector_forecast_heads.py -q
 
   tier-gate:
     if: ${{ false }}
@@ -7339,7 +7365,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow jsonschema==4.26.0
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
@@ -7544,6 +7570,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7967,6 +7997,9 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8190,6 +8223,7 @@ jobs:
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
+      - "lib/fabric_client.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -10758,6 +10792,7 @@ jobs:
       - "mockups/evidence/intl-gs-w3u/manifest.json"
       - "tests/__init__.py"
       - "scripts/__init__.py"
+      - "lib/fabric_client.py"
       # measured render closure of the real intl.html fixture path
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -11076,6 +11111,7 @@ jobs:
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -11463,6 +11499,7 @@ jobs:
       - "templates/intl_workspace.js"
       - "templates/intl_workspace/compare.html.j2"
       - "templates/intl_workspace/chart_cohorts.html.j2"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -12468,6 +12505,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -13818,7 +13856,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4 plotly
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -14761,6 +14799,10 @@ jobs:
       - "templates/china_altdata.html.j2"
       - "templates/options.html.j2"
       - "templates/stage_analysis.html.j2"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -14817,7 +14859,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q tests/test_mastermind_feedback.py --deselect tests/test_mastermind_feedback.py::TestRealArtifactSmoke
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -14897,7 +14939,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema==4.26.0
       - name: neural-web registry + envelope + bus-doc freshness tests
         run: python -m pytest tests/test_synapse_registry.py tests/test_neuralweb_envelope.py tests/test_signal_bus_doc.py tests/test_admin_neural_web.py tests/test_admin_intelligence_os.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_admin_intelligence_os_ui.py tests/test_admin_theme_tokens.py tests/test_eval_os_adversarial_acceptance.py tests/test_admin_metabolism.py tests/test_admin_metabolism_history.py tests/test_entity_thesis_registry.py tests/test_check_entity_thesis_registry.py tests/test_nw_lobe_descriptions.py tests/test_synapse_registry_contract.py -q
       - name: Neural Web constitution A0-A7 regression (A7 refusal + Wilson-gate sweep)
@@ -15158,6 +15200,7 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "lib/fabric_client.py"
       # ITP-ES wave 1: additive builder and test/template closure.
       - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
@@ -15623,6 +15666,7 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - lib/fabric_client.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17142,6 +17186,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
       # its current CODE consumer owner; the older signal-contract copy is DATA.
       - "engine/entry_radar/minute_resolution.py"
@@ -20675,6 +20720,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/market_ontology/__init__.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - engine/cycle_phase_age.py
       - engine/cycle_rhythm.py
@@ -20682,6 +20728,10 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23042,6 +23092,10 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
       - "tests/test_leadership_rotation_contract.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23141,6 +23195,10 @@ jobs:
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -23277,6 +23335,10 @@ jobs:
       - "tests/conftest.py"
       - "tests/fixtures/leadership_rotation/measured_read_v1.json"
       - "tests/test_leadership_measured_read.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23736,6 +23798,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      - "lib/fabric_client.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -24042,6 +24105,7 @@ jobs:
       - "tests/intl_gs_transmission_fixture.py"
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
+      - "lib/fabric_client.py"
 
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -24215,6 +24279,7 @@ jobs:
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - lib/intl_eod_publication.py
@@ -24547,6 +24612,7 @@ jobs:
       - "engine/intl_global_universe.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -25718,6 +25784,10 @@ jobs:
       # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
       - "engine/group_breadth_history.py"
       - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25923,6 +25993,10 @@ jobs:
       - "tests/test_sector_completion_ownership_map.py"
       - "tests/test_sector_metric_definitions.py"
       - "tests/test_cycle_forward_log_fence.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -27180,6 +27254,7 @@ jobs:
       - "engine/release_target_truth.py"
       - "engine/trial_ledger.py"
       - "lib/store.py"
+      - "lib/fabric_client.py"
       # Full import closure of the two runner suites (contract-delta).
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -28086,6 +28161,7 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "lib/fabric_client.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -29998,7 +30074,12 @@ jobs:
         # Harness cases use generated temporary config and fake drivers.
         # Public runtime operations refuse; no live pool/persona/profile is read.
         # Git policy checks inspect ignore/index metadata, not the private file.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
+        # test_runtime_adapter joins (2026-11-12, #11101): the source-qualified
+        # adapter suite for the same runtime boundary — five-binding gate before
+        # any effect, authorized CdpDriver subclass, base stubs still refusing.
+        # Same lane, same deps (pure stdlib + pytest, Playwright lazily imported
+        # and never touched on the refusal paths), so it runs with its sibling.
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
 
   xguerrilla-admission:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -31503,6 +31584,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -32584,6 +32666,7 @@ jobs:
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -33008,6 +33091,10 @@ jobs:
       # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
       - "engine/group_breadth_history.py"
       - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33814,6 +33901,9 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -35454,7 +35544,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_fabric_client.py tests/test_master_brain.py tests/test_master_brain_fabric_cutover.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+      # Capacity Fabric consumer adapter + AI Brief writer cutover (Chairman
+      # 2026-11-12): lib/fabric_client.py, its unit suite, and the env-gated
+      # _call_model cutover suite ride the master_brain layer that owns them.
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -36005,6 +36098,7 @@ jobs:
       - "tests/test_regime_history_china_analogs.py"
       - "tests/test_regime_history_hk_current.py"
       - "tests/test_regime_history_us_basis.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -36015,6 +36109,10 @@ jobs:
       # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
       - "engine/group_breadth_history.py"
       - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -36962,6 +37060,7 @@ jobs:
       - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "lib/fabric_client.py"
       # ITP-ES wave 1: additive builder and test/template closure.
       - "scripts/build_expectation_surface.py"
       - "tests/test_build_expectation_surface.py"
@@ -37523,6 +37622,7 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - lib/fabric_client.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38567,6 +38667,10 @@ jobs:
       - "engine/theme_graph/structural_navigation.py"
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "engine/theme_graph/curation_assertion.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -38623,7 +38727,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5 html5lib
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
@@ -39661,7 +39765,7 @@ jobs:
         # jsonschema: lib/evidence_foundation.py:19 does `from jsonschema import
         # Draft202012Validator, FormatChecker, SchemaError` at module scope, so the
         # intraday-lane suites died ModuleNotFoundError without it.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema html5lib
       # P1 unrun backfill 2026-08-14 — three consumers of plumbing this step already
       # owns joined the list, appended rather than given a step of their own because a
       # step is the masking unit here (run_ci_pack.py returns on the first non-zero
@@ -41324,6 +41428,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -42618,6 +42723,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43031,6 +43140,7 @@ jobs:
     paths:
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -43250,6 +43360,10 @@ jobs:
       - "tests/test_leadership_rotation_countercases.py"
       - "tests/test_sector_central_measured_panel.py"
       - "scripts/calibrate_rate_inflation.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -44730,6 +44844,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -47138,6 +47253,7 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "lib/fabric_client.py"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -48399,6 +48515,9 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -49917,6 +50036,7 @@ jobs:
       - tests/test_sni_a8_us_transfer_draft.py
       - tests/test_sni_s0_amendment_a01_draft.py
       - tests/test_sni_us_stress.py
+      - lib/fabric_client.py
       # Measured closure of tests/test_sni_a8_us_transfer_draft.py, which reads
       # engine/qledger.py as text to pin GRADE_HORIZONS against the owner; the
       # inferer conservatively owns that file's import closure. Listed, not hidden.
@@ -50390,6 +50510,7 @@ jobs:
       - "tests/test_sni_denominator_guard_properties.py"
       - "tests/test_sni_correction_lineage_guard_properties.py"
       - "tests/test_sni_entitlement_guard_properties.py"
+      - "lib/fabric_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50947,6 +51068,10 @@ jobs:
       - "tests/test_commodity_workspace_contracts.js"
       - "tests/test_commodity_workspace_ui.js"
       - "tests/test_commodity_workspace_presentation.js"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -51184,6 +51309,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "tests/__init__.py"
       - "tests/test_rotation_relative_trend.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -51194,6 +51320,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51395,6 +51525,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -51418,6 +51552,7 @@ jobs:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
