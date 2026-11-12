@@ -4,7 +4,7 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 
 **Every row below is seen before the set-level definition, not a nomination.** The `nomination` boolean is description, not a verdict.
 
-> Part (a) in every set below is provisional: the near-turn placebo is not matched on alert exposure (placement defect, PR comment 6835380019; on 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows, 2,000 draws, seed 0). The two confluence sets were closed on part (c), so the no-nomination verdict does not rest on (a).
+> Part (a) in every set below is provisional: the near-turn placebo is not matched on alert exposure (placement defect, PR comment 6835380019; placed mass on these tables' window not yet measured, the desk's mass table supplies it in the follow-up). The two confluence sets were closed on part (c), so the no-nomination verdict does not rest on (a).
 
 ## Pins
 

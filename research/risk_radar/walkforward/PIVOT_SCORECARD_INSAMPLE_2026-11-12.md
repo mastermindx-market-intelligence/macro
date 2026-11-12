@@ -85,7 +85,7 @@ persistence), placing each run start (a) anywhere, (b) within 1% of the running 
 1% of the lowest close since the running high. Raw: `PIVOT_PLACEBO_INSAMPLE_v2.json`. ≥5% turns,
 post 10, in-sample.
 
-> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). Figures in this table are not verified until the repair.
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On this table's window (2020-01-02 → 2026-11-10, ≥5% turns; 300 draws, seed 0) the pre-repair mean placed mass, against the alert's own mass, was (any session / near high / near low): Radar loud 263.8 / 262.9 / 262.5 of 270; HY OAS top decile, on the HY input this table was generated with (before the release-rule lag fix in bb856951), 187.9 / 188.6 / 187.4 of 189; VIX ≥ 20 498.7 / 512.1 / 540.5 of 710; SPY < 200d 323.9 / 324.3 / 320.8 of 333. Figures in this table are not verified until the repair.
 
 | Series | Tops: observed vs placebo (any / near high) | Bottoms: observed vs placebo (any / near low) | False risk-off /yr: observed vs placebo (any / near high) |
 |---|---|---|---|
@@ -98,13 +98,13 @@ post 10, in-sample.
 included. Random runs spread their starts across the calendar, so they land in more turn
 windows, and they pay for it in false calls. The real signals buy their low false-call rates by
 concentrating inside declines. That also explains why they record more premature all-clears than
-the placebo: a placebo that is rarely on inside a decline rarely switches off inside one.
+the placebo: a placebo that is rarely on inside a decline rarely switches off inside one. A re-score under the repaired placement rule, not part of this PR and not yet reviewed, leaves the direction of this paragraph unchanged for every series except the HY baseline on bottoms (re-scored on its corrected input), which then does not flag fewer bottoms than the any-session placebo; the regenerated tables are in the follow-up PR.
 
 Consequence for the shared scorecard: **a flagged share is not readable on its own.** It is read
 against the placebo at the same false-call rate. The proposed primary statement is a pair: flagged
 share and false calls per year, each beside its near-high (tops) or near-low (bottoms) placebo.
 **NOT VERIFIED (placebo placement defect, PR comment 6835380019):** both halves of this sentence are unverified: None of the in-sample Radar or baseline series beats its placebo on flagged share; all of them beat
-it on false calls.
+it on false calls. A re-score under the repaired placement rule, not part of this PR and not yet reviewed, leaves the direction of this statement unchanged; the regenerated tables are in the follow-up PR.
 
 ## Early catches beyond the near-high reference (secondary, added 2026-11-12)
 

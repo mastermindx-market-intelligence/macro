@@ -76,7 +76,7 @@ that the "within 1% of high" reference does not also make, at any depth. Same as
 
 ## 3. Against the placebo (2,000 draws, seed 0, tol 0.01; ≥5%, post 10)
 
-> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). Figures in this table are not verified until the repair.
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On this table's window (2022-01-03 → 2026-11-10 pooled, out-of-sample 2022–23 plus seen history 2024+; 2,000 draws, seed 0) the pre-repair mean placed mass for the Radar loud series was 221.1 of 235 sessions near highs and 223.4 of 235 near lows. Figures in this table are not verified until the repair.
 
 | Radar loud | Observed | Near-high / near-low placebo median | Placebo p90 | Draws ≥ observed |
 |---|---:|---:|---:|---:|
@@ -86,16 +86,16 @@ that the "within 1% of high" reference does not also make, at any depth. Same as
 | Premature all-clear /yr | 1.45 | 0.21 (near high) / 0.62 (near low) | — | — |
 
 **NOT VERIFIED (placebo placement defect, PR comment 6835380019):** both halves are unverified: Against the proposed slate-v2 pass line (flagged share ≥ placebo p90 and false calls ≤ placebo
-median), the Radar fails on flagged share for both turn kinds and passes on false calls.
+median), the Radar fails on flagged share for both turn kinds and passes on false calls. A re-score under the repaired placement rule, not part of this PR and not yet reviewed, leaves the direction of this statement unchanged; the regenerated tables are in the follow-up PR.
 
 ## 4. What this says
 
 1. **The loud Radar does not identify tops.** Pooled over out-of-sample 2022–23 and seen 2024+ it flags 0 of 6
    ≥5% tops within 10 sessions (1 within 21) and no ≥7% or ≥10% top. Random runs of the same
-   lengths placed near highs do better on every draw. (NOT VERIFIED: placebo placement defect, PR comment 6835380019) Its loud state behaves as a mid-decline
+   lengths placed near highs do better on every draw. (NOT VERIFIED: placebo placement defect, PR comment 6835380019. A re-score under the repaired placement rule, not part of this PR and not yet reviewed, does not support "every draw": a small share of draws ties the Radar rather than beating it; the regenerated tables are in the follow-up PR.) Its loud state behaves as a mid-decline
    confirmation, not a pivot call.
 2. **Its virtue is silence outside declines:** zero false risk-off calls. Its fault is the
-   all-clear: 1.45 premature all-clears a year (against a placebo median of 0.2–0.6: NOT VERIFIED, placebo placement defect, PR comment 6835380019).
+   all-clear: 1.45 premature all-clears a year (against a placebo median of 0.2–0.6: NOT VERIFIED, placebo placement defect, PR comment 6835380019). A re-score under the repaired placement rule, not part of this PR and not yet reviewed, leaves the direction of this statement unchanged; the regenerated tables are in the follow-up PR.
 3. **Credit-spread velocity remains the stronger pivot reader** (pooled: 2/6 tops flagged, one early;
    4/6 bottoms within 3 sessions; 0 false calls) but it re-alarms inside declines (3.7 premature
    all-clears a year).

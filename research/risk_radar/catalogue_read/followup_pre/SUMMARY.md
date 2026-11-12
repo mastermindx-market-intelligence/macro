@@ -15,7 +15,7 @@ Ledger row `rr-roff-confluence-k3-followup`. Window 2006-01-03..2019-12-31, pre 
 > Part (a) is provisional (placebo placement defect, PR comment 6835380019). This set was closed on
 > part (c), so the no-nomination verdict does not rest on (a).
 
-> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). The p90 in this table are not verified until the repair.
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). Placed mass on this table's window not yet measured; the desk's mass table supplies it in the follow-up. The p90 in this table are not verified until the repair.
 
 | criterion | met |
 |---|---|
