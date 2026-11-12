@@ -24,6 +24,7 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from scipy.stats import beta as _beta
 import pandas as pd
 
 from engine.risk_radar_eval import labels as L
@@ -120,7 +121,11 @@ def _episode_level(alert: pd.Series, px: pd.Series, outcomes_through, depths, ho
                 else:
                     n_false += 1
             n_ep = len(scored)
+            econ = _economics(a_np, px.reindex(full_idx).to_numpy(dtype=float), pos, scored,
+                              lo_pos=pos[lo], hi_pos=pos[hi], h=h, years=years)
             out[dkey]["by_h"][f"h{h}"] = {
+                **econ,
+                "share_caught_by_breach_ci90": _cp(caught_b, n_ep),
                 "caught_at_onset": caught,
                 "share_caught_at_onset": _r(caught / n_ep) if n_ep else None,
                 "median_lead_to_onset": _med(leads),
@@ -133,6 +138,75 @@ def _episode_level(alert: pd.Series, px: pd.Series, outcomes_through, depths, ho
                 "thin": n_ep < 5,
             }
     return out
+
+
+def _cp(k: int, n: int, level: float = 0.90):
+    """Exact (Clopper-Pearson) interval for k of n. With n ~ 9 it is honestly wide."""
+    if not n:
+        return None
+    a = (1 - level) / 2
+    lo = 0.0 if k == 0 else float(_beta.ppf(a, k, n - k + 1))
+    hi = 1.0 if k == n else float(_beta.ppf(1 - a, k + 1, n - k))
+    return [round(lo, 3), round(hi, 3)]
+
+
+def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years) -> dict:
+    """Paper accounting of an alert, descriptive only (never a trading rule).
+
+    The alert at close d is read as "out of SPY for session d+1". Next-session returns on alert
+    days are split by where session d+1 falls:
+      decline  = onset..trough of a scored episode  -> loss avoided (positive is good)
+      rebound  = trough+1..recovery                 -> rebound forgone (cost)
+      outside  = any other session                  -> return given up outside episodes (cost)
+    Per episode also: share of the peak-to-trough decline that came after the first alert
+    (first alert day in [onset-h, trough]; 0 if none), lead to breach, and sessions from the
+    trough until the alert is next off (all-clear delay).
+    """
+    n = len(px)
+    r = np.full(n, np.nan)
+    r[1:] = px[1:] / px[:-1] - 1.0
+    phase = np.zeros(n, dtype=int)  # 0 outside, 1 decline, 2 rebound
+    per_ep = []
+    for e in episodes:
+        o, t, b = pos[e.onset], pos[e.trough], pos[e.breach]
+        rc = pos[e.recovery] if e.recovery is not None else n - 1
+        phase[o:t + 1] = 1
+        phase[t + 1:rc + 1] = 2
+        pk = o - 1
+        w = np.nonzero(a_np[max(0, o - h):t + 1])[0]
+        first = max(0, o - h) + int(w[0]) if len(w) else None
+        decline = px[pk] - px[t]
+        share = 0.0
+        if first is not None and decline > 0:
+            share = float(np.clip((min(px[first], px[pk]) - px[t]) / decline, 0.0, 1.0))
+        clear = 0
+        if a_np[t]:
+            j = t
+            while j < n and a_np[j]:
+                j += 1
+            clear = j - t
+        per_ep.append({"onset": e.onset.date().isoformat(), "loss_avoided_share": round(share, 3),
+                       "lead_to_breach": (b - first) if (first is not None and first <= b) else None,
+                       "trough_to_all_clear": int(clear)})
+    sel = np.zeros(n, dtype=bool)
+    sel[lo_pos + 1:hi_pos + 2 if hi_pos + 2 <= n else n] = True   # sessions d+1 for d in window
+    on_prev = np.zeros(n, dtype=bool)
+    on_prev[1:] = a_np[:-1]
+    m = sel & on_prev & np.isfinite(r)
+    dec = float(-np.nansum(r[m & (phase == 1)]))
+    reb = float(np.nansum(r[m & (phase == 2)]))
+    outside = float(np.nansum(r[m & (phase == 0)]))
+    shares = [p["loss_avoided_share"] for p in per_ep]
+    clears = [p["trough_to_all_clear"] for p in per_ep]
+    return {
+        "loss_avoided_sum": _r(dec), "rebound_forgone_sum": _r(reb),
+        "outside_return_forgone_sum": _r(outside),
+        "net_avoided_minus_cost_sum": _r(dec - reb - outside),
+        "net_per_year": _r((dec - reb - outside) / years) if years else None,
+        "median_loss_avoided_share": _med(shares),
+        "median_trough_to_all_clear": _med(clears),
+        "per_episode": per_ep,
+    }
 
 
 def _calibration(prob: pd.Series, px: pd.Series, outcomes_through, base_rate: float | None,

@@ -93,3 +93,28 @@ def test_alert_past_outcomes_refused():
     alert = pd.Series(True, index=px.index)
     with pytest.raises(L.LabelLeakError):
         S.score(alert, px=px, outcomes_through=px.index[10], sealed_from=None)
+
+
+def test_loss_avoided_and_costs():
+    px = _dip(depth=0.12)
+    idx = px.index
+    alert = pd.Series(False, index=idx)
+    alert.iloc[34:40] = True          # mid-decline through trough (trough at idx 39)
+    r = S.score(alert, px=px, outcomes_through=idx[-1], depths=(0.10,), horizons=(5,),
+                sealed_from=None)
+    h = r["episode_level"]["dd10"]["by_h"]["h5"]
+    ep = h["per_episode"][0]
+    # first alert at idx 34: price there is partway down; share of decline after it is in (0,1)
+    assert 0.3 < ep["loss_avoided_share"] < 0.8
+    assert h["loss_avoided_sum"] > 0
+    assert h["rebound_forgone_sum"] > 0          # out on the session after the trough
+    assert h["outside_return_forgone_sum"] == 0
+    assert ep["trough_to_all_clear"] == 1
+    lo, hi = h["share_caught_by_breach_ci90"]
+    assert lo < 1.0 <= hi + 1e-9
+
+
+def test_interval_is_wide_for_nine_cases():
+    from engine.risk_radar_eval.scorecard import _cp
+    lo, hi = _cp(3, 9)
+    assert hi - lo > 0.45

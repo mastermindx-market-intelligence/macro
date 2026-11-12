@@ -58,8 +58,8 @@ Three gaps, three fixes:
 - **Badge** = one of four public states (§2.1), worded for action, not a score.
 - **Since** = date the current state began. Users act on changes, so the age of the state is the
   second most useful fact.
-- **Tape** = whether the broad market confirms (the context gate; 2020+ gated H21 precision 42.0%
-  vs 24.5% raw, census §3 — in-sample).
+- **Tape** = whether the broad market confirms (the context gate). This is confirmation, not a
+  forecast (§13).
 - **What would change it** = the nearest named trigger in each direction (§2.3), in plain words.
 
 No number other than the date appears in the first read.
@@ -410,7 +410,8 @@ One function scores any daily alert series on identical terms:
 - h21 probability calibration (Brier skill, reliability bins).
 
 The first in-sample reference is at `research/risk_radar/walkforward/SCORECARD_INSAMPLE_2026-11-12.md`.
-Its headline: the loud Radar caught **0 of 9** ≥5% episodes before onset since 2020. All 25 of
+Its headline: the loud Radar caught **0 of 9** ≥5% episodes before onset since 2020 (exact 90%
+interval 0–28%). All 25 of
 its loud runs began inside an episode already under way, so it is a confirmation signal. At a
 smaller budget, HY OAS velocity alone matches its day-level precision and leads the 10% breaches
 by 17 sessions against 3.
@@ -440,3 +441,83 @@ Slice 1 now also ships the scorecard and shared code (done on the branch, unmerg
 objective in the fitting procedure moves from day-level precision to **episode recall by breach
 at a fixed budget**; see `research/risk_radar/walkforward/FITTING_PROCEDURE_DRAFT.md`. This
 supersedes the objective stated in §3.2.
+
+---
+
+## 13. Rulings of 2026-11-12 (third) applied
+
+### 13.1 Two jobs, scored separately
+
+- **Confirmation** is the job of the loud states (RISK-OFF WARNING, RISK-OFF). Across all 25 loud
+  runs since 2020, every one began inside a drawdown already under way. The loud state says "a
+  broad risk-off move is happening". It is never presented as a forecast. Slice 2's copy says
+  this in words: "The tape confirms a risk-off move", not "X% chance of a pullback". The 43.8%
+  day figure appears nowhere in the four-second read or its first depth layer. Its successor
+  (44.8%, n=239 days, 28 runs, 9 episodes) appears only in the evidence layer, labelled
+  "day-level, in-sample, overlapping days".
+- **Early warning** is a second job with its own alert budget and its own scorecard row. Its
+  incumbent is GUARDED (caution+): on 78% of days it is too broad to be a warning. The baseline
+  it has to beat is credit-spread velocity (§13.4). Discovery of a better early-warning signal
+  belongs to the research desk under the challenger rule. This programme does not run a second
+  discovery effort.
+
+### 13.2 Scorecard additions (built)
+
+For every signal and baseline, at each depth (5/7/10%) and horizon, the scorecard
+(`engine/risk_radar_eval/scorecard.py`) now reports:
+
+- lead in sessions to the breach;
+- loss avoided, as the share of each episode's peak-to-trough decline that came after the first
+  alert;
+- costs:
+  - rebound given up (trough to recovery);
+  - return given up on alert days outside episodes;
+  - sessions from the trough to all-clear;
+- a net figure: loss avoided minus costs, per year.
+
+Every rate carries its episode count and an exact 90% binomial interval. With 9 cases that
+interval is wide (3/9 → 0.10–0.65), and nothing narrower is quoted. The episode definition is
+unchanged; pooling across sectors and markets belongs to the research desk.
+
+In-sample finding (2020–2026, `walkforward/SCORECARD_INSAMPLE_2026-11-12.md` §3b): no series
+nets positive after rebound and outside costs. The best are the Radar's risk-off state at +0.1%/yr
+and HY OAS velocity at −3.0%/yr. The loud state switches off promptly at the trough, but it comes
+on late and so captures about half of each decline.
+
+### 13.3 Proposed fit objective (to be put to PRO-RUN D's adjudication)
+
+The ruling's default: loss avoided net of cost, at a fixed budget. Proposed precisely:
+
+- **Primary**: maximise `net_avoided_minus_cost` per year over ≥7% episodes (h = 21), at a fixed
+  loud-state budget of 15% of sessions (±2 pp; configurations outside the band are infeasible).
+- **Tie-breaks**, in order: median loss-avoided share, then median lead to the −7% breach, then
+  fewer false alarms.
+- **Reported, never optimised**: day-level precision and calibration.
+- **Known weakness**: the net figure is dominated by the largest episode (2020, 2022) and by the
+  rebound term. With 9 episodes it may select for "switch off fast" rather than "switch on
+  early". D is asked to judge this. The alternative is a median-of-episodes objective.
+
+### 13.4 Baseline to beat
+
+HY OAS 21-session change in its top decile (11% budget) catches 5/9 ≥5% episodes by breach, with
+a 17-session lead to the ≥10% breaches. It is the strongest single baseline. It is recorded as
+**the baseline every challenger, and the refit incumbent, must beat**. It enters the engine only
+through the challenger rule.
+
+### 13.5 Elevated cell reconciled; quotes withdrawn
+
+The September figures (elevated 30.3%, risk-off 43.8%) reproduce exactly only with the
+`global_breadth` leg absent. The live configuration gives elevated 3.2% (n=31) and risk-off 44.8%
+(n=239). The September elevated figure is withdrawn. See
+`walkforward/ELEVATED_CELL_RECONCILIATION_2026-11-12.md`. The walk-forward series records leg
+availability per date.
+
+### 13.6 Slice 1b order
+
+The rebuilds run in this order:
+
+1. put/call from the CBOE daily archive
+2. GEX from historical option chains
+3. AI-breadth split from point-in-time constituents and the AI tag
+
+Each rebuild records its source and its first point-in-time date.

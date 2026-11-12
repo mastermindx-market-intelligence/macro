@@ -19,8 +19,10 @@ followed by such a loss; 17.6% is the share of all 2020+ days
 Reproduced with today's data: risk-off 44.8% (n=239 days) vs base 17.5%. The 239 risk-off days
 form **28 separate runs**. Days overlap heavily: one 2022 bear market contributes many of them.
 
-Discrepancy found: elevated measures **3.2% (n=31)** here against 30.3% (n=33) in the September
-study. Not yet explained; it does not affect the risk-off figure. To be reconciled in slice 1.
+Elevated measures **3.2% (n=31)** here against 30.3% (n=33) in the September study. **Reconciled:**
+the September figures reproduce exactly with the `global_breadth` leg absent. The live
+configuration includes the leg. The September elevated figure is withdrawn and 43.8% is superseded
+by 44.8% (n=239). See `ELEVATED_CELL_RECONCILIATION_2026-11-12.md`.
 
 ## 2. Episodes in the window (SPY total return, onset = session after the peak, merge within 21
 sessions of recovery)
@@ -51,6 +53,34 @@ h, else a false alarm.
 
 Probability calibration (h21, ≥5%, loud-state probabilities): Brier skill +7.2% vs base. Cells:
 13% shown → 3.7% observed (n=380); 16% → 16.7% (n=1,053); 25% → 3.2% (n=31); 33% → 44.8% (n=239).
+
+## 3b. Breach lead, loss avoided and cost (h = 21; episode counts beside every figure)
+
+90% intervals are exact binomial intervals (Clopper-Pearson). Nine cases support no tighter
+interval.
+
+| Series | Budget | ≥5% caught by breach | ≥7% caught by breach | ≥10% caught by breach (lead) | Median share of decline after first alert (≥7%) | Net per year (≥5% basis) | Median trough → all-clear |
+|---|---:|---|---|---|---:|---:|---:|
+| Radar loud | 15.7% | 0/9 [0, .28] | 3/5 [.19, .92] | 3/3 [.37, 1] (3) | 0.55 | −2.8% | 0 |
+| Radar risk-off | 13.9% | 0/9 [0, .28] | 3/5 [.19, .92] | 3/3 [.37, 1] (3) | 0.55 | +0.1% | 0 |
+| Radar caution+ | 78.0% | 9/9 [.72, 1] | 5/5 [.55, 1] | 3/3 [.37, 1] (36) | 0.78 | −9.6% | 18 |
+| SPY < 200-day avg | 19.3% | 0/9 [0, .28] | 3/5 [.19, .92] | 3/3 [.37, 1] (3) | 0.55 | −4.4% | 0 |
+| VIX ≥ 20 | 41.2% | 8/9 [.57, .99] | 5/5 [.55, 1] | 3/3 [.37, 1] (10) | 0.76 | −11.5% | 6 |
+| VIX ≥ 25 | 20.3% | 6/9 [.35, .90] | 5/5 [.55, 1] | 3/3 [.37, 1] (3) | 0.63 | −6.6% | 2 |
+| HY OAS 21d top decile | 11.0% | 5/9 [.25, .83] | 4/5 [.34, .99] | 3/3 [.37, 1] (17) | 0.60 | −3.0% | 1 |
+
+How the columns are defined (paper accounting only, never a trading rule):
+
+- An alert at day d's close counts as out of SPY for session d+1.
+- *Net* = return avoided during declines (onset to trough), minus rebound given up (trough to
+  recovery), minus return given up outside episodes. It is summed over alert sessions and divided
+  by years in the window.
+- *Trough → all-clear* = sessions after the trough before the alert turns off.
+
+**No series, including every baseline, avoids more loss than it gives up in the rebound plus
+outside costs over 2020–2026.** On this sample the risk-off state roughly breaks even, at +0.1% a
+year. It switches off promptly (all-clear 0 sessions after the trough), but it switches on late,
+so it captures about half the decline.
 
 ## 4. What this says (in-sample, so an upper bound)
 
